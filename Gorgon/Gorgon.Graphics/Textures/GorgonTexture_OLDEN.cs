@@ -164,7 +164,7 @@ namespace Gorgon.Graphics
 
 			if (format == BufferFormat.Unknown)
 			{
-				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_VIEW_UNKNOWN_FORMAT);
+				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_VIEW_UNKNOWN_FORMAT);
 			}
 
 			var formatInformation = new GorgonFormatInfo((Format)format);
@@ -217,7 +217,7 @@ namespace Gorgon.Graphics
 			if ((Settings.IsTextureCube)
 				&& ((arrayCount % 6) != 0))
 			{
-				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_VIEW_CUBE_ARRAY_SIZE_INVALID);
+				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_VIEW_CUBE_ARRAY_SIZE_INVALID);
 			}
 
 		    return _viewCache.GetDepthStencilView(format, mipSlice, arrayStart, arrayCount, flags);
@@ -259,7 +259,7 @@ namespace Gorgon.Graphics
 
             if (format == BufferFormat.Unknown)
             {
-                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_VIEW_UNKNOWN_FORMAT);
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_VIEW_UNKNOWN_FORMAT);
             }
 
 	        var formatInformation = new GorgonFormatInfo((Format)format);
@@ -273,7 +273,7 @@ namespace Gorgon.Graphics
             if ((Settings.Format != format) && (FormatInformation.Group != formatInformation.Group))
             {
                 throw new GorgonException(GorgonResult.CannotCreate,
-                                          string.Format(Resources.GORGFX_VIEW_FORMAT_GROUP_INVALID,
+                                          string.Format(Resources.GORGFX_ERR_VIEW_FORMAT_GROUP_INVALID,
                                                         Settings.Format,
                                                         format));
             }
@@ -460,7 +460,7 @@ namespace Gorgon.Graphics
 				|| (info.SizeInBytes != FormatInformation.SizeInBytes))
 			{
 				throw new GorgonException(GorgonResult.CannotCreate,
-										  string.Format(Resources.GORGFX_VIEW_FORMAT_GROUP_INVALID,
+										  string.Format(Resources.GORGFX_ERR_VIEW_FORMAT_GROUP_INVALID,
 														Settings.Format,
 														format));
 			}

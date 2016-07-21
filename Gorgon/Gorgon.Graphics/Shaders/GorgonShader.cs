@@ -25,15 +25,10 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using Gorgon.Core;
-using Gorgon.Diagnostics;
 using Gorgon.Graphics.Properties;
-using Gorgon.UI;
-using SharpDX;
-using D3D = SharpDX.Direct3D;
+using Gorgon.IO;
 using D3DCompiler = SharpDX.D3DCompiler;
 
 namespace Gorgon.Graphics
@@ -41,6 +36,19 @@ namespace Gorgon.Graphics
 	/// <summary>
 	/// The base shader object.
 	/// </summary>
+	/// <remarks>
+	/// <para>
+	/// Shaders are used to modify data on the GPU via a program uploaded to the GPU. This allows for a wide range of effects on GPU data. For example, a gaussian blur algorithm can be written using a pixel 
+	/// shader to blur an image.
+	/// </para>
+	/// <para>
+	/// In Gorgon, shaders can be compiled from a string containing source code via the <see cref="GorgonShaderFactory"/>, or loaded from a <see cref="Stream"/> or file for quicker access. The 
+	/// <see cref="GorgonShaderFactory"/> is required to compile or read shaders, they cannot be created via the <c>new</c> keyword.
+	/// </para>
+	/// <para>
+	/// All shaders in Gorgon will inherit from this type.
+	/// </para>
+	/// </remarks>
 	public abstract class GorgonShader
 		: GorgonNamedObject, IDisposable
 	{
@@ -53,13 +61,13 @@ namespace Gorgon.Graphics
 			get;
 		}
 
+
 		/// <summary>
 		/// Property to set or return whether to include debug information in the shader or not.
 		/// </summary>
 		public bool IsDebug
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -80,99 +88,128 @@ namespace Gorgon.Graphics
 		#endregion
 
 		#region Methods.
-        /*/// <summary>
-        /// Function to save the shader to a stream.
-        /// </summary>
-        /// <param name="binary"><b>true</b> to save the binary version of the shader, <b>false</b> to save the source.</param>
-        /// <param name="saveDebug"><b>true</b> to save the debug information, <b>false</b> to exclude it.</param>
-        /// <returns>An array of bytes.</returns>
-        /// <remarks>The <paramref name="saveDebug"/> parameter is only applicable when the <paramref name="binary"/> parameter is set to <b>true</b>.</remarks>
-        /// <exception cref="System.ArgumentException">Thrown when the shader is being saved as source code and the <see cref="Gorgon.Graphics.GorgonShader.SourceCode">SourceCode</see> parameter is NULL (<i>Nothing</i> in VB.Net) or empty.</exception>
-        /// <exception cref="GorgonException">Thrown when the shader fails to compile.</exception>
-        public byte[] Save(bool binary, bool saveDebug)
-        {
-            using (var memoryStream = new MemoryStream())
-            {
-                Save(memoryStream, binary, saveDebug);
-                memoryStream.Position = 0;
-
-                return memoryStream.ToArray();
-            }
-        }
-
 		/// <summary>
-		/// Function to save the shader to a stream.
+		/// Function to persist the shader data to a stream as a <see cref="GorgonChunkFile{T}"/>.
 		/// </summary>
-		/// <param name="stream">Stream to write into.</param>
-		/// <param name="binary">[Optional] <b>true</b> to save the binary version of the shader, <b>false</b> to save the source.</param>
-		/// <param name="saveDebug">[Optional] <b>true</b> to save the debug information, <b>false</b> to exclude it.</param>
-		/// <remarks>The <paramref name="saveDebug"/> parameter is only applicable when the <paramref name="binary"/> parameter is set to <b>true</b>.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the shader is being saved as source code and the <see cref="Gorgon.Graphics.GorgonShader.SourceCode">SourceCode</see> parameter is NULL (<i>Nothing</i> in VB.Net) or empty.</exception>
-		/// <exception cref="GorgonException">Thrown when the shader fails to compile.</exception>
-		public void Save(Stream stream, bool binary = false, bool saveDebug = false)
+		/// <param name="stream">The stream to write the data into.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
+		/// <exception cref="ArgumentException">Thrown when the stream is read only.</exception>
+		/// <remarks>
+		/// <para>
+		/// This will write the shader data as <see cref="GorgonChunkFile{T}"/> formatted data into the supplied <paramref name="stream"/>. Shaders may take some time to compile, saving them to a binary 
+		/// format in a stream will help cut down on the time it takes to initialize an application.
+		/// </para>
+		/// <para>
+		/// This makes use of the Gorgon <see cref="GorgonChunkFile{T}"/> format to allow flexible storage of data. The Gorgon shader format is broken into 2 chunks, both of which are available in the 
+		/// <see cref="GorgonShaderFactory.BinaryShaderMetaData"/>, and <see cref="GorgonShaderFactory.BinaryShaderByteCode"/> constants. The file header for the format is stored in the 
+		/// <see cref="GorgonShaderFactory.BinaryShaderFileHeader"/> constant.  
+		/// </para>
+		/// <para>
+		/// The file format is as follows:
+		/// <list type="bullet">
+		///		<item>
+		///			<term><see cref="GorgonShaderFactory.BinaryShaderFileHeader"/></term>
+		///			<description>This describes the type of file, and the version.</description>
+		///		</item>
+		///		<item>
+		///			<term><see cref="GorgonShaderFactory.BinaryShaderMetaData"/></term>
+		///			<description>Shader metadata, such as the <see cref="Graphics.ShaderType"/> (<see cref="int"/>), debug flag (<see cref="bool"/>), and the entry point name (<see cref="string"/>) is stored here.</description>
+		///		</item>
+		///		<item>
+		///			<term><see cref="GorgonShaderFactory.BinaryShaderByteCode"/></term>
+		///			<description>The compiled shader byte code is stored here and is loaded as a <see cref="byte"/> array.</description>
+		///		</item>
+		/// </list>
+		/// </para>
+		/// </remarks>
+		/// <seealso cref="GorgonChunkFile{T}"/>
+		/// <seealso cref="GorgonChunkFileReader"/>
+		/// <seealso cref="GorgonChunkFileWriter"/>
+		public void SaveToStream(Stream stream)
 		{
-			Shaders.ShaderBytecode compiledShader = null;
-			stream.ValidateObject("stream");
-
-		    if ((!binary) && (string.IsNullOrEmpty(SourceCode)))
-		    {
-		        throw new ArgumentException(Resources.GORGFX_SHADER_NO_CODE, nameof(binary));
-		    }
-
-		    if (!binary)
+			if (stream == null)
 			{
-				byte[] shaderSource = Encoding.UTF8.GetBytes(SourceCode);
-				stream.Write(shaderSource, 0, shaderSource.Length);
-
-			    return;
+				throw new ArgumentNullException(nameof(stream));
 			}
+
+			if (!stream.CanWrite)
+			{
+				throw new ArgumentException(Resources.GORGFX_ERR_STREAM_WRITE_ONLY, nameof(stream));
+			}
+
+			var chunkFile = new GorgonChunkFileWriter(stream, GorgonShaderFactory.BinaryShaderFileHeader.ChunkID());
 
 			try
 			{
-				compiledShader = CompileFromSource(saveDebug);
-				byte[] header = Encoding.UTF8.GetBytes(GorgonShaderBinding.BinaryShaderHeader);
-				stream.Write(header, 0, header.Length);
-				compiledShader.Save(stream);
+				GorgonBinaryWriter writer = chunkFile.OpenChunk(GorgonShaderFactory.BinaryShaderMetaData);
+				writer.WriteValue(ShaderType);
+				writer.WriteValue(IsDebug);
+				writer.Write(Name);
+				chunkFile.CloseChunk();
+
+				writer = chunkFile.OpenChunk(GorgonShaderFactory.BinaryShaderByteCode);
+				writer.Write(D3DByteCode.Data);
 			}
 			finally
 			{
-				if (compiledShader != null)
-				{
-				    compiledShader.Dispose();
-				}
+				chunkFile.CloseChunk();	
 			}
 		}
 
 		/// <summary>
-		/// Function to save the shader to a file.
+		/// Function to persist the shader data to a file as a <see cref="GorgonChunkFile{T}"/>.
 		/// </summary>
-		/// <param name="fileName">File name and path for the shader file.</param>
-		/// <param name="binary">[Optional] <b>true</b> if saving as a binary version of the shader, <b>false</b> if not.</param>
-		/// <param name="saveDebug">[Optional] <b>true</b> to save debug information with the shader, <b>false</b> to exclude it.</param>
-		/// <remarks>The <paramref name="saveDebug"/> parameter is only applicable when the <paramref name="binary"/> parameter is set to <b>true</b>.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileName"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown is the fileName parameter is an empty string.
-		/// <para>-or-</para>
-		/// <para>Thrown when the shader is being saved as source code and the <see cref="Gorgon.Graphics.GorgonShader.SourceCode">SourceCode</see> parameter is NULL (<i>Nothing</i> in VB.Net) or empty.</para>
-		/// </exception>
-		/// <exception cref="GorgonException">Thrown when the shader fails to compile.</exception>
-		public void Save(string fileName, bool binary = false, bool saveDebug = false)
+		/// <param name="path">The path to the file where the shader data will eb written.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <b>null</b>.</exception>
+		/// <exception cref="ArgumentException">Thrown when <paramref name="path"/> parameter is empty.</exception>
+		/// <remarks>
+		/// <para>
+		/// This will write the shader data as <see cref="GorgonChunkFile{T}"/> formatted data into the file. Shaders may take some time to compile, saving them to a binary format in a stream will help cut 
+		/// down on the time it takes to initialize an application.
+		/// </para>
+		/// <para>
+		/// This makes use of the Gorgon <see cref="GorgonChunkFile{T}"/> format to allow flexible storage of data. The Gorgon shader format is broken into 2 chunks, both of which are available in the 
+		/// <see cref="GorgonShaderFactory.BinaryShaderMetaData"/>, and <see cref="GorgonShaderFactory.BinaryShaderByteCode"/> constants. The file header for the format is stored in the 
+		/// <see cref="GorgonShaderFactory.BinaryShaderFileHeader"/> constant.  
+		/// </para>
+		/// <para>
+		/// The file format is as follows:
+		/// <list type="bullet">
+		///		<item>
+		///			<term><see cref="GorgonShaderFactory.BinaryShaderFileHeader"/></term>
+		///			<description>This describes the type of file, and the version.</description>
+		///		</item>
+		///		<item>
+		///			<term><see cref="GorgonShaderFactory.BinaryShaderMetaData"/></term>
+		///			<description>Shader metadata, such as the <see cref="Graphics.ShaderType"/> (<see cref="int"/>), debug flag (<see cref="bool"/>), and the entry point name (<see cref="string"/>) is stored here.</description>
+		///		</item>
+		///		<item>
+		///			<term><see cref="GorgonShaderFactory.BinaryShaderByteCode"/></term>
+		///			<description>The compiled shader byte code is stored here and is loaded as a <see cref="byte"/> array.</description>
+		///		</item>
+		/// </list>
+		/// </para>
+		/// </remarks>
+		/// <seealso cref="GorgonChunkFile{T}"/>
+		/// <seealso cref="GorgonChunkFileReader"/>
+		/// <seealso cref="GorgonChunkFileWriter"/>
+		public void SaveToFile(string path)
 		{
-			FileStream stream = null;
-
-			fileName.ValidateString("fileName");
-
-			try
+			if (path == null)
 			{
-				stream = File.Open(fileName, FileMode.Create, FileAccess.Write, FileShare.None);
-				Save(stream, binary, saveDebug);
+				throw new ArgumentNullException(nameof(path));
 			}
-			finally
+
+			if (string.IsNullOrWhiteSpace(path))
 			{
-				stream?.Dispose();
+				throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(path));
 			}
-		}*/
+
+			using (FileStream stream = File.Open(path, FileMode.Create, FileAccess.Write, FileShare.None))
+			{
+				SaveToStream(stream);
+			}
+		}
 
 		/// <summary>
 		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.

@@ -430,7 +430,7 @@ namespace Gorgon.Graphics
             {
                 if (format == BufferFormat.Unknown)
                 {
-                    throw new ArgumentException(Resources.GORGFX_VIEW_UNKNOWN_FORMAT, nameof(format));
+                    throw new ArgumentException(Resources.GORGFX_ERR_VIEW_UNKNOWN_FORMAT, nameof(format));
                 }
 
                 if (Settings.AllowRawViews)
@@ -516,7 +516,7 @@ namespace Gorgon.Graphics
             {
                 if (format == BufferFormat.Unknown)
                 {
-                    throw new ArgumentException(Resources.GORGFX_VIEW_UNKNOWN_FORMAT, nameof(format));
+                    throw new ArgumentException(Resources.GORGFX_ERR_VIEW_UNKNOWN_FORMAT, nameof(format));
                 }
 
                 // Ensure the size of the data type fits the requested format.

@@ -44,7 +44,7 @@ namespace Gorgon.Graphics
 		// The log interface used for debug logging.
 		private readonly IGorgonLog _log;
 		// The information used to create the buffer.
-		private readonly GorgonBufferInfo _info;
+		private readonly GorgonConstantBufferInfo _info;
 		// The graphic interface used to create and manipulate this buffer.
 		private readonly GorgonGraphics _graphics;
 		#endregion
@@ -53,7 +53,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property used to return the information used to create this buffer.
 		/// </summary>
-		public GorgonBufferInfo Info => _info;
+		public GorgonConstantBufferInfo Info => _info;
 
 		/// <summary>
 		/// Property to return the type of buffer.
@@ -66,7 +66,7 @@ namespace Gorgon.Graphics
 		/// Function to initialize the buffer data.
 		/// </summary>
 		/// <param name="initialData">The initial data used to populate the buffer.</param>
-		private void Initialize(GorgonPointer initialData)
+		private void Initialize(GorgonPointerBase initialData)
 		{
 			// If the buffer is not aligned to 16 bytes, then increase its size.
 			SizeInBytes = (Info.SizeInBytes + 15) & ~15;
@@ -258,7 +258,7 @@ namespace Gorgon.Graphics
 		/// <exception cref="GorgonException">
 		/// Thrown when the size of the constant buffer exceeds the maximum constant buffer size. See <see cref="IGorgonVideoDevice.MaxConstantBufferSize"/> to determine the maximum size of a constant buffer.
 		/// </exception>
-		public GorgonConstantBuffer(GorgonGraphics graphics, string name, GorgonBufferInfo info, GorgonPointer initialData = null, IGorgonLog log = null)
+		public GorgonConstantBuffer(GorgonGraphics graphics, string name, GorgonConstantBufferInfo info, GorgonPointerBase initialData = null, IGorgonLog log = null)
 			: base(graphics, name, log)
 		{
 			if (info == null)
@@ -273,10 +273,9 @@ namespace Gorgon.Graphics
 
 			_graphics = graphics;
 			_log = log ?? GorgonLogDummy.DefaultInstance;
-			_info = new GorgonBufferInfo
+			_info = new GorgonConstantBufferInfo
 			        {
 				        Usage = info.Usage,
-				        BufferType = info.BufferType,
 						SizeInBytes = info.SizeInBytes
 			        };
 

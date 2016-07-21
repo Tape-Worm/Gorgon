@@ -452,6 +452,15 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The image type [{0}] is unsupported..
+        /// </summary>
+        internal static string GORGFX_ERR_IMAGE_TYPE_UNSUPPORTED {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_IMAGE_TYPE_UNSUPPORTED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The Gorgon Graphics interface requires Windows 7 or greater..
         /// </summary>
         internal static string GORGFX_ERR_INVALID_OS {
@@ -529,6 +538,15 @@ namespace Gorgon.Graphics.Properties {
         internal static string GORGFX_ERR_NOT_A_CONSTANT_BUFFER {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_NOT_A_CONSTANT_BUFFER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The data in the stream is not a Gorgon binary shader..
+        /// </summary>
+        internal static string GORGFX_ERR_NOT_GORGON_SHADER {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_NOT_GORGON_SHADER", resourceCulture);
             }
         }
         
@@ -704,11 +722,56 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The stream is read only..
+        /// </summary>
+        internal static string GORGFX_ERR_STREAM_READ_ONLY {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_STREAM_READ_ONLY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The stream is write-only..
+        /// </summary>
+        internal static string GORGFX_ERR_STREAM_WRITE_ONLY {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_STREAM_WRITE_ONLY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The swap chain back buffer is too small: {0}x{1}. The buffer must have a width and height of least 1 pixel..
         /// </summary>
         internal static string GORGFX_ERR_SWAP_BACKBUFFER_TOO_SMALL {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_SWAP_BACKBUFFER_TOO_SMALL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The texture is immutable and cannot be updated or read back to the CPU..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_IMMUTABLE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_IMMUTABLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The texture &apos;{0}&apos; is not a shader resource, and cannot be bound to a shader..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_NOT_SHADER_RESOURCE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_NOT_SHADER_RESOURCE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The texture type [{0}] is unsupported..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_TYPE_NOT_SUPPORTED {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_TYPE_NOT_SUPPORTED", resourceCulture);
             }
         }
         
@@ -740,11 +803,38 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The array count for a cube texture must be a multiple of 6..
+        /// </summary>
+        internal static string GORGFX_ERR_VIEW_CUBE_ARRAY_SIZE_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_VIEW_CUBE_ARRAY_SIZE_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The resource format [{0}] is not the same group as the view format [{1}]..
+        /// </summary>
+        internal static string GORGFX_ERR_VIEW_FORMAT_GROUP_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_VIEW_FORMAT_GROUP_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The view cannot use a typeless format..
         /// </summary>
         internal static string GORGFX_ERR_VIEW_NO_TYPELESS {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_VIEW_NO_TYPELESS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The format for the view must not be [Unknown]..
+        /// </summary>
+        internal static string GORGFX_ERR_VIEW_UNKNOWN_FORMAT {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_VIEW_UNKNOWN_FORMAT", resourceCulture);
             }
         }
         
@@ -1478,24 +1568,6 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The stream is read only..
-        /// </summary>
-        internal static string GORGFX_STREAM_READ_ONLY {
-            get {
-                return ResourceManager.GetString("GORGFX_STREAM_READ_ONLY", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The stream is write-only..
-        /// </summary>
-        internal static string GORGFX_STREAM_WRITE_ONLY {
-            get {
-                return ResourceManager.GetString("GORGFX_STREAM_WRITE_ONLY", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to This render target is not a swap chain..
         /// </summary>
         internal static string GORGFX_TARGET_IS_NOT_SWAPCHAIN {
@@ -1600,15 +1672,6 @@ namespace Gorgon.Graphics.Properties {
         internal static string GORGFX_TEXTURE_HEIGHT_INVALID {
             get {
                 return ResourceManager.GetString("GORGFX_TEXTURE_HEIGHT_INVALID", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The texture is immutable and cannot be updated..
-        /// </summary>
-        internal static string GORGFX_TEXTURE_IMMUTABLE {
-            get {
-                return ResourceManager.GetString("GORGFX_TEXTURE_IMMUTABLE", resourceCulture);
             }
         }
         
@@ -1928,15 +1991,6 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The array count for a cube texture must be a multiple of 6..
-        /// </summary>
-        internal static string GORGFX_VIEW_CUBE_ARRAY_SIZE_INVALID {
-            get {
-                return ResourceManager.GetString("GORGFX_VIEW_CUBE_ARRAY_SIZE_INVALID", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The depth count must be between 1 and {0}..
         /// </summary>
         internal static string GORGFX_VIEW_DEPTH_COUNT_INVALID {
@@ -1969,15 +2023,6 @@ namespace Gorgon.Graphics.Properties {
         internal static string GORGFX_VIEW_ELEMENT_OUT_OF_RANGE {
             get {
                 return ResourceManager.GetString("GORGFX_VIEW_ELEMENT_OUT_OF_RANGE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The resource format [{0}] is not the same group as the view format [{1}]..
-        /// </summary>
-        internal static string GORGFX_VIEW_FORMAT_GROUP_INVALID {
-            get {
-                return ResourceManager.GetString("GORGFX_VIEW_FORMAT_GROUP_INVALID", resourceCulture);
             }
         }
         
@@ -2104,15 +2149,6 @@ namespace Gorgon.Graphics.Properties {
         internal static string GORGFX_VIEW_UAV_REQUIRES_SM5 {
             get {
                 return ResourceManager.GetString("GORGFX_VIEW_UAV_REQUIRES_SM5", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The format for the view must not be [Unknown]..
-        /// </summary>
-        internal static string GORGFX_VIEW_UNKNOWN_FORMAT {
-            get {
-                return ResourceManager.GetString("GORGFX_VIEW_UNKNOWN_FORMAT", resourceCulture);
             }
         }
         

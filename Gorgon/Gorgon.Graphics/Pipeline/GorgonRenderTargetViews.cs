@@ -73,6 +73,43 @@ namespace Gorgon.Graphics
 		/// <param name="index">The zero-based index of the element to get or set.</param>
 		/// <exception cref="T:System.ArgumentOutOfRangeException">
 		/// <paramref name="index" /> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1" />.</exception>
+		/// <exception cref="GorgonException">Thrown when the resource type for the resource bound to the <see cref="GorgonRenderTargetView"/> being assigned does not match the resource type for resources 
+		/// attached to other views in this list.
+		/// <para>-or-</para>
+		/// <para>Thrown when the array (or depth) index, or the array (or depth) count does not match the other views in this list.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown when the resource <see cref="GorgonMultiSampleInfo"/> does not match the <see cref="GorgonMultiSampleInfo"/> for other resources bound to other views on this list.</para>
+		/// </exception>
+		/// <remarks>
+		/// <para>
+		/// A <see cref="GorgonRenderTargetView"/> can only be assigned to a single slot, if the <see cref="GorgonRenderTargetView"/> is assigned to multiple slots, an exception will be thrown.
+		/// </para>
+		/// <para>
+		/// When binding a <see cref="GorgonRenderTargetView"/>, the resource must be of the same type as other resources for other views in this list. If they do not match, an exception will be thrown.
+		/// </para>
+		/// <para>
+		/// All <see cref="GorgonRenderTargetView"/> parameters, such as array (or depth) index and array (or depth) count must be the same as the other views in this list. If they are not, an 
+		/// exception will be thrown. Mip slices may be different. An exception will also be raised if the resources attached to views in this list do not have the same array/depth count.
+		/// </para>
+		/// <para>
+		/// If the views are attached to resources with multisampling enabled through <see cref="GorgonMultiSampleInfo"/>, then the <see cref="GorgonMultiSampleInfo"/> of the resource attached to the view 
+		/// being assigned must match, or an exception will be thrown.
+		/// </para>
+		/// <para>
+		/// These limitations also apply to the <see cref="DepthStencilView"/> property. All views must match the mip slice, array (or depth) index, and array (or depth) count, and the <see cref="ResourceType"/> 
+		/// for the resources attached to the views must be the same.
+		/// </para>
+		/// <para>
+		/// The format for the view may differ from the formats of other views in this list.
+		/// </para>
+		/// <para>
+		/// <note type="information">
+		/// <para>
+		/// The exceptions raised when validating a view against other views in this list are only thrown when Gorgon is compiled as DEBUG.
+		/// </para>
+		/// </note>
+		/// </para>
+		/// </remarks>
 		public GorgonRenderTargetView this[int index]
 		{
 			get
@@ -82,11 +119,12 @@ namespace Gorgon.Graphics
 			set
 			{
 #if DEBUG
-				ValidateRenderTargetDepthStencilViews(value);
+				ValidateRenderTargetDepthStencilViews(value, index);
 #endif
 
 				_views[index] = value;
 				_actualViews[index] = value?.D3DRenderTargetView;
+				_bindCount = 0;
 
 				// Update the last slot that was bound.
 				for (int i = 0; i < _views.Length; ++i)
@@ -110,6 +148,41 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to set or return the currently active depth/stencil view.
 		/// </summary>
+		/// <exception cref="GorgonException">Thrown when the resource type for the resource bound to the <see cref="GorgonDepthStencilView"/> being assigned does not match the resource type for resources 
+		/// attached to other views in this list.
+		/// <para>-or-</para>
+		/// <para>Thrown when the array (or depth) index, or the array (or depth) count does not match the other views in this list.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown when the resource <see cref="GorgonMultiSampleInfo"/> does not match the <see cref="GorgonMultiSampleInfo"/> for other resources bound to other views on this list.</para>
+		/// </exception>
+		/// <remarks>
+		/// <para>
+		/// When binding a <see cref="DepthStencilView"/>, the resource must be of the same type as other resources for other views in this list. If they do not match, an exception will be thrown.
+		/// </para>
+		/// <para>
+		/// All <see cref="GorgonDepthStencilView"/> parameters, such as array (or depth) index and array (or depth) count must be the same as the other views in this list. If they are not, an exception 
+		/// will be thrown. Mip slices may be different. An exception will also be raised if the resources attached to <see cref="GorgonRenderTargetView">GorgonRenderTargetViews</see> in this list do not 
+		/// have the same array/depth count.
+		/// </para>
+		/// <para>
+		/// If the <see cref="GorgonRenderTargetView">GorgonRenderTargetViews</see> are attached to resources with multisampling enabled through <see cref="GorgonMultiSampleInfo"/>, then the 
+		/// <see cref="GorgonMultiSampleInfo"/> of the resource attached to the <see cref="GorgonDepthStencilView"/> being assigned must match, or an exception will be thrown.
+		/// </para>
+		/// <para>
+		/// These limitations also apply to the <see cref="DepthStencilView"/> property. All views must match the mip slice, array (or depth) index, and array (or depth) count, and the <see cref="ResourceType"/> 
+		/// for the resources attached to the <see cref="GorgonRenderTargetView">GorgonRenderTargetViews</see> must be the same.
+		/// </para>
+		/// <para>
+		/// The format for the view may differ from the formats of other views in this list.
+		/// </para>
+		/// <para>
+		/// <note type="information">
+		/// <para>
+		/// The exceptions raised when validating a view against other views in this list are only thrown when Gorgon is compiled as DEBUG.
+		/// </para>
+		/// </note>
+		/// </para>
+		/// </remarks>
 		public GorgonDepthStencilView DepthStencilView
 		{
 			get
@@ -143,12 +216,8 @@ namespace Gorgon.Graphics
 				return;
 			}
 
-			var targetTexture = firstTarget.Resource as GorgonTexture;
-
-			Debug.Assert(targetTexture != null, "Render target view not bound to a texture.");
-
 			// Ensure all resources are the same type.
-			if (view.Resource.ResourceType != firstTarget.Resource.ResourceType)
+			if (view.Resource.ResourceType != firstTarget.Texture.ResourceType)
 			{
 				throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_RTV_DEPTHSTENCIL_TYPE_MISMATCH, view.Resource.ResourceType));
 			}
@@ -164,16 +233,16 @@ namespace Gorgon.Graphics
 			Debug.Assert(dsTexture != null, "Depth/stencil view not bound to a texture.");
 
 			// Check to ensure that multisample info matches.
-			if (dsTexture.Info.MultiSampleInfo.Equals(targetTexture.Info.MultiSampleInfo))
+			if (dsTexture.Info.MultiSampleInfo.Equals(firstTarget.Texture.Info.MultiSampleInfo))
 			{
 				throw new GorgonException(GorgonResult.CannotBind,
 					string.Format(Resources.GORGFX_ERR_RTV_DEPTHSTENCIL_MULTISAMPLE_MISMATCH, dsTexture.Info.MultiSampleInfo.Quality, dsTexture.Info.MultiSampleInfo.Count));
 			}
 
-			if ((dsTexture.Info.Width != targetTexture.Info.Width)
-				|| (dsTexture.Info.Height != targetTexture.Info.Height)
-				|| ((dsTexture.Info.TextureType != TextureType.Texture3D) && (dsTexture.Info.ArrayCount != targetTexture.Info.ArrayCount))
-				|| ((dsTexture.Info.TextureType == TextureType.Texture3D) && (dsTexture.Info.Depth != targetTexture.Info.Depth)))
+			if ((dsTexture.Info.Width != firstTarget.Texture.Info.Width)
+				|| (dsTexture.Info.Height != firstTarget.Texture.Info.Height)
+				|| ((dsTexture.Info.TextureType != TextureType.Texture3D) && (dsTexture.Info.ArrayCount != firstTarget.Texture.Info.ArrayCount))
+				|| ((dsTexture.Info.TextureType == TextureType.Texture3D) && (dsTexture.Info.Depth != firstTarget.Texture.Info.Depth)))
 			{
 				throw new GorgonException(GorgonResult.CannotBind, Resources.GORGFX_ERR_RTV_DEPTHSTENCIL_RESOURCE_MISMATCH);
 			}
@@ -184,7 +253,8 @@ namespace Gorgon.Graphics
 		/// Function to validate the render target views and depth/stencil view being assigned.
 		/// </summary>
 		/// <param name="target">The target view to evaluate.</param>
-		private void ValidateRenderTargetDepthStencilViews(GorgonRenderTargetView target)
+		/// <param name="targetIndex">The index of the target.</param>
+		private void ValidateRenderTargetDepthStencilViews(GorgonRenderTargetView target, int targetIndex)
 		{
 #if DEBUG
 			if (target == null)
@@ -204,45 +274,67 @@ namespace Gorgon.Graphics
 				return;
 			}
 
-			// If we don't have a render target view, we don't need to check anything, even if we have a depth/stencil.
-			// Begin checking resource data.
-			var rtvTexture = target.Resource as GorgonTexture;
-
-			Debug.Assert(rtvTexture != null, "Render target view resource is not a texture.");
-
 			// Only check if we have more than 1 render target view being applied.
-			foreach (GorgonRenderTargetView other in _views.Where(item => item != null))
+			for (int i = 0; i < _views.Length; i++)
 			{
-				if (other == target)
+				GorgonRenderTargetView other = _views[i];
+
+				if (other == null)
 				{
-					throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_RTV_ALREADY_BOUND, other.Resource.Name));
+					continue;
 				}
 
-				if (other.Resource.ResourceType != target.Resource.ResourceType)
+				if ((other == target) && (i != targetIndex))
 				{
-					throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_RTV_NOT_SAME_TYPE, other.Resource.Name));
+					throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_RTV_ALREADY_BOUND, other.Texture.Name));
 				}
 
-				var texture = other.Resource as GorgonTexture;
-
-				Debug.Assert(texture != null, $"Render target view '{other.Resource.Name}' resource is not a texture.");
-
-				if (!texture.Info.MultiSampleInfo.Equals(rtvTexture.Info.MultiSampleInfo))
+				if (other.Texture.ResourceType != target.Texture.ResourceType)
 				{
-					throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_RTV_MULTISAMPLE_MISMATCH,
-															  rtvTexture.Info.MultiSampleInfo.Quality,
-															  rtvTexture.Info.MultiSampleInfo.Count));
+					throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_RTV_NOT_SAME_TYPE, other.Texture.Name));
 				}
 
-				if ((rtvTexture.Info.TextureType != TextureType.Texture3D && texture.Info.ArrayCount != rtvTexture.Info.ArrayCount)
-				    || ((rtvTexture.Info.TextureType == TextureType.Texture2D && texture.Info.Depth != rtvTexture.Info.Depth))
-				    || (rtvTexture.Info.Width != texture.Info.Width)
-				    || (rtvTexture.Info.Height != texture.Info.Height))
+				if (!startView.Texture.Info.MultiSampleInfo.Equals(other.Texture.Info.MultiSampleInfo))
+				{
+					throw new GorgonException(GorgonResult.CannotBind,
+					                          string.Format(Resources.GORGFX_ERR_RTV_MULTISAMPLE_MISMATCH,
+					                                        other.Texture.Info.MultiSampleInfo.Quality,
+					                                        other.Texture.Info.MultiSampleInfo.Count));
+				}
+
+				if ((other.Texture.Info.TextureType != TextureType.Texture3D && startView.Texture.Info.ArrayCount != other.Texture.Info.ArrayCount)
+				    || ((other.Texture.Info.TextureType == TextureType.Texture2D && startView.Texture.Info.Depth != other.Texture.Info.Depth))
+				    || (other.Texture.Info.Width != startView.Texture.Info.Width)
+				    || (other.Texture.Info.Height != startView.Texture.Info.Height))
 				{
 					throw new GorgonException(GorgonResult.CannotBind, Resources.GORGFX_ERR_RTV_RESOURCE_MISMATCH);
 				}
 			}
 #endif
+		}
+
+		/// <summary>
+		/// Function to determine if two instances are equal.
+		/// </summary>
+		/// <param name="left">The left instance to compare.</param>
+		/// <param name="right">The right instance to compare.</param>
+		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+		public static bool Equals(GorgonRenderTargetViews left, GorgonRenderTargetViews right)
+		{
+			if ((left == null) || (right == null) || (left.D3DRenderTargetViewBindCount != right.D3DRenderTargetViewBindCount))
+			{
+				return false;
+			}
+
+			for (int i = 0; i < left.D3DRenderTargetViewBindCount; ++i)
+			{
+				if (left[i] != right[i])
+				{
+					return false;
+				}
+			}
+
+			return true;
 		}
 
 		/// <summary>
@@ -367,22 +459,23 @@ namespace Gorgon.Graphics
 		/// <param name="depthView">The depth/stencil view to assign.</param>
 		public GorgonRenderTargetViews(IEnumerable<GorgonRenderTargetView> renderTargetViews, GorgonDepthStencilView depthView = null)
 		{
-			if (renderTargetViews != null)
+			DepthStencilView = depthView;
+			if (renderTargetViews == null)
 			{
-				int index = 0;
-
-				foreach (GorgonRenderTargetView view in renderTargetViews)
-				{
-					if (index > 7)
-					{
-						break;
-					}
-
-					this[index++] = view;
-				}
+				return;
 			}
 
-			DepthStencilView = depthView;
+			int index = 0;
+
+			foreach (GorgonRenderTargetView view in renderTargetViews)
+			{
+				if (index >= _views.Length)
+				{
+					break;
+				}
+
+				this[index++] = view;
+			}
 		}
 		#endregion
 	}

@@ -196,7 +196,7 @@
   <data name="GORGFX_BUFFER_NO_OVERWRITE_NOT_VALID" xml:space="preserve">
     <value>Cannot lock this buffer with a lock type of [NoOverwrite]</value>
   </data>
-  <data name="GORGFX_VIEW_UNKNOWN_FORMAT" xml:space="preserve">
+  <data name="GORGFX_ERR_VIEW_UNKNOWN_FORMAT" xml:space="preserve">
     <value>The format for the view must not be [Unknown].</value>
   </data>
   <data name="GORGFX_VIEW_ARRAY_COUNT_INVALID" xml:space="preserve">
@@ -208,10 +208,10 @@
   <data name="GORGFX_VIEW_CANNOT_CAST_FORMAT" xml:space="preserve">
     <value>The format [{0}] is not compatiable or cannot be cast to [{1}].</value>
   </data>
-  <data name="GORGFX_VIEW_CUBE_ARRAY_SIZE_INVALID" xml:space="preserve">
+  <data name="GORGFX_ERR_VIEW_CUBE_ARRAY_SIZE_INVALID" xml:space="preserve">
     <value>The array count for a cube texture must be a multiple of 6.</value>
   </data>
-  <data name="GORGFX_VIEW_FORMAT_GROUP_INVALID" xml:space="preserve">
+  <data name="GORGFX_ERR_VIEW_FORMAT_GROUP_INVALID" xml:space="preserve">
     <value>The resource format [{0}] is not the same group as the view format [{1}].</value>
   </data>
   <data name="GORGFX_VIEW_MIP_COUNT_INVALID" xml:space="preserve">
@@ -461,7 +461,7 @@ Please report this error by pasting the details to the bug tracker in Gorgon's g
   <data name="GORGFX_SHADER_NO_CODE" xml:space="preserve">
     <value>Cannot save the shader as a source code file.  There was no source code found for the this shader.</value>
   </data>
-  <data name="GORGFX_STREAM_READ_ONLY" xml:space="preserve">
+  <data name="GORGFX_ERR_STREAM_READ_ONLY" xml:space="preserve">
     <value>The stream is read only.</value>
   </data>
   <data name="GORGFX_TOSTR_VIDEOMODE" xml:space="preserve">
@@ -539,7 +539,7 @@ Please report this error by pasting the details to the bug tracker in Gorgon's g
   <data name="GORGFX_STREAM_NO_SEEK" xml:space="preserve">
     <value>The stream cannot perform seek operations.</value>
   </data>
-  <data name="GORGFX_STREAM_WRITE_ONLY" xml:space="preserve">
+  <data name="GORGFX_ERR_STREAM_WRITE_ONLY" xml:space="preserve">
     <value>The stream is write-only.</value>
   </data>
   <data name="GORGFX_FILE_NOT_FOUND" xml:space="preserve">
@@ -578,8 +578,8 @@ Please report this error by pasting the details to the bug tracker in Gorgon's g
   <data name="GORGFX_IMAGE_FORMAT_MISMATCH" xml:space="preserve">
     <value>The texture format [{0}] must match the image data format [{1}].</value>
   </data>
-  <data name="GORGFX_TEXTURE_IMMUTABLE" xml:space="preserve">
-    <value>The texture is immutable and cannot be updated.</value>
+  <data name="GORGFX_ERR_TEXTURE_IMMUTABLE" xml:space="preserve">
+    <value>The texture is immutable and cannot be updated or read back to the CPU.</value>
   </data>
   <data name="GORGFX_TEXTURE_3D_CPU_ACCESSIBLE" xml:space="preserve">
     <value>This 3D texture is CPU accessible and cannot be copied.</value>
@@ -825,5 +825,17 @@ Errors:
   </data>
   <data name="GORGFX_ERR_NOT_A_CONSTANT_BUFFER" xml:space="preserve">
     <value>The buffer '{0}' is not a constant buffer.</value>
+  </data>
+  <data name="GORGFX_ERR_IMAGE_TYPE_UNSUPPORTED" xml:space="preserve">
+    <value>The image type [{0}] is unsupported.</value>
+  </data>
+  <data name="GORGFX_ERR_TEXTURE_NOT_SHADER_RESOURCE" xml:space="preserve">
+    <value>The texture '{0}' is not a shader resource, and cannot be bound to a shader.</value>
+  </data>
+  <data name="GORGFX_ERR_TEXTURE_TYPE_NOT_SUPPORTED" xml:space="preserve">
+    <value>The texture type [{0}] is unsupported.</value>
+  </data>
+  <data name="GORGFX_ERR_NOT_GORGON_SHADER" xml:space="preserve">
+    <value>The data in the stream is not a Gorgon binary shader.</value>
   </data>
 </root>

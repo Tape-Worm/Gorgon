@@ -90,7 +90,7 @@ namespace Gorgon.Graphics
 		{
 			if (Format == BufferFormat.Unknown)
 			{
-				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_VIEW_UNKNOWN_FORMAT);
+				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_VIEW_UNKNOWN_FORMAT);
 			}
 
 			if (FormatInformation.IsTypeless)

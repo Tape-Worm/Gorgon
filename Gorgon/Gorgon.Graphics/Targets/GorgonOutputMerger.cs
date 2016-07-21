@@ -114,7 +114,7 @@ namespace Gorgon.Graphics
                 return;
             }
 
-	        var viewResource = depthStencilView.Resource as GorgonTexture_OLDEN;
+	        /*var viewResource = depthStencilView.Resource as GorgonTexture_OLDEN;
 
             // This should never happen.
             if (viewResource == null)
@@ -171,7 +171,7 @@ namespace Gorgon.Graphics
                                                   resTexture.Name, resTexture.Settings.Multisampling.Count, resTexture.Settings.Multisampling.Quality,
                                                   viewResource.Settings.Multisampling.Count, viewResource.Settings.Multisampling.Quality));
                 }
-            }
+            }*/
         }
 
         /// <summary>
@@ -186,7 +186,7 @@ namespace Gorgon.Graphics
                 return;
             }
 
-            var viewTexture = view.Resource as GorgonTexture_OLDEN;
+            /*var viewTexture = view.Resource as GorgonTexture_OLDEN;
             var viewBuffer = view.Resource as GorgonBuffer_OLDEN;
 
             // This should never happen.
@@ -301,7 +301,7 @@ namespace Gorgon.Graphics
                     throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_RTV_BUFFER_SIZE_MISMATCH,
                         view.Resource.Name, viewBuffer.SizeInBytes, targetBuffer.SizeInBytes));
                 }
-            }
+            }*/
         }
 
         /// <summary>

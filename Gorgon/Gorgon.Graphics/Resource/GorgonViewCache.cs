@@ -179,7 +179,7 @@ namespace Gorgon.Graphics
 	    {
 			foreach (var item in _textureViews)
 			{
-				item.Value.CleanUp();
+				item.Value.Dispose();
 			}
 
 			foreach (var item in _bufferViews)
@@ -208,11 +208,6 @@ namespace Gorgon.Graphics
 		/// </summary>
 	    public void InitializeResources()
 	    {
-			foreach (var item in _textureViews)
-			{
-				item.Value.InitializeOLDEN();
-			}
-
 			foreach (var item in _bufferViews)
 			{
 				item.Value.InitializeOLDEN();
@@ -384,7 +379,7 @@ namespace Gorgon.Graphics
 			        case ResourceType.Texture1D:
 			        case ResourceType.Texture2D:
 			        case ResourceType.Texture3D:
-			            result = new GorgonRenderTargetView(_resource, (Format)format, mipSlice, arrayDepthIndex, arrayDepthCount);
+			            result = new GorgonRenderTargetView(_resource as GorgonTexture, (Format)format, mipSlice, arrayDepthIndex, arrayDepthCount);
 			            break;
 			    }
 
@@ -416,13 +411,13 @@ namespace Gorgon.Graphics
                                                       int arrayIndex,
                                                       int arrayCount)
         {
-            var buffer = (GorgonTexture_OLDEN)_resource;
+            var buffer = (GorgonTexture)_resource;
             var key = new ViewKey(format,
                                         firstMip,
                                         mipCount,
                                         buffer.ResourceType != ResourceType.Texture3D ? arrayIndex : -1,
                                         buffer.ResourceType != ResourceType.Texture3D ? arrayCount : -1,
-                                        buffer.Settings.IsTextureCube);
+                                        buffer.Info.IsCubeMap);
 
             lock (_syncLock)
             {
@@ -434,12 +429,12 @@ namespace Gorgon.Graphics
                 }
 
                 result = new GorgonTextureShaderView(buffer,
-                    format,
+                    (Format)format,
                     firstMip,
                     mipCount,
                     buffer.ResourceType != ResourceType.Texture3D ? arrayIndex : -1,
                     buffer.ResourceType != ResourceType.Texture3D ? arrayCount : -1);
-                result.InitializeOLDEN();
+                
                 _textureViews.Add(key, result);
 
                 return result;

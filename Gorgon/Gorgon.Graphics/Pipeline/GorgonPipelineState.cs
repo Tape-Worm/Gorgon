@@ -25,10 +25,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using D3D = SharpDX.Direct3D;
 
 namespace Gorgon.Graphics
@@ -61,61 +57,25 @@ namespace Gorgon.Graphics
 		/// </summary>
 		PixelShader = 0x8,
 		/// <summary>
-		/// The primitive topology has been modified.
+		/// The view port was modified.
 		/// </summary>
-		PrimitiveTopology = 0x10
+		Viewport = 0x10
 	}
 
 	/// <summary>
 	/// A pipeline state object used to set up the complete graphics pipeline for Gorgon.
 	/// </summary>
 	public class GorgonPipelineState
+		: IEquatable<GorgonPipelineState>
 	{
-		#region Variables.
-		// The render target views to set for the pipeline.
-		private GorgonRenderTargetViews _renderTargetViews;
-		// The input layout to use for defining a vertex structure.
-		private GorgonInputLayout _inputLayout;
-		// The state used for the vertex shaders.
-		private GorgonVertexShaderState _vertexShaderState;
-		// The state used for the pixel shaders.
-		private GorgonPixelShaderState _pixelShaderState;
-		// The primitive topology state.
-		private D3D.PrimitiveTopology _primitiveTopology;
-		#endregion
-
 		#region Properties.
-		/// <summary>
-		/// Property to return the current pipeline state as a <see cref="PipelineStateChangeFlags"/> value to determine state change.
-		/// </summary>
-		/// <remarks>
-		/// This is used to determine what states have changed since the last pipeline state was set. This is used to reduce overhead when changing states during a frame.
-		/// </remarks>
-		public PipelineStateChangeFlags PipelineStateChangeFlags
-		{
-			get;
-			private set;
-		}
-
 		/// <summary>
 		/// Property to set or return the current pixel shader state.
 		/// </summary>
 		public GorgonPixelShaderState PixelShader
 		{
-			get
-			{
-				return _pixelShaderState;
-			}
-			set
-			{
-				if (_pixelShaderState == value)
-				{
-					return;
-				}
-
-				_pixelShaderState = value;
-				PipelineStateChangeFlags |= PipelineStateChangeFlags.PixelShader;
-			}
+			get;
+			set;
 		}
 
 		/// <summary>
@@ -123,20 +83,8 @@ namespace Gorgon.Graphics
 		/// </summary>
 		public GorgonVertexShaderState VertexShader
 		{
-			get
-			{
-				return _vertexShaderState;
-			}
-			set
-			{
-				if (_vertexShaderState == value)
-				{
-					return;
-				}
-
-				_vertexShaderState = value;
-				PipelineStateChangeFlags |= PipelineStateChangeFlags.VertexShader;
-			}
+			get;
+			set;
 		}
 
 		/// <summary>
@@ -144,20 +92,8 @@ namespace Gorgon.Graphics
 		/// </summary>
 		public GorgonInputLayout InputLayout
 		{
-			get
-			{
-				return _inputLayout;
-			}
-			set
-			{
-				if (_inputLayout == value)
-				{
-					return;
-				}
-
-				_inputLayout = value;
-				PipelineStateChangeFlags |= PipelineStateChangeFlags.InputLayout;
-			}
+			get;
+			set;
 		}
 
 		/// <summary>
@@ -165,41 +101,68 @@ namespace Gorgon.Graphics
 		/// </summary>
 		public GorgonRenderTargetViews RenderTargetViews
 		{
-			get
-			{
-				return _renderTargetViews;
-			}
-			set
-			{
-				if (_renderTargetViews == value)
-				{
-					return;
-				}
-
-				_renderTargetViews = value;
-				PipelineStateChangeFlags |= PipelineStateChangeFlags.RenderTargetViews;
-			}
+			get;
+			set;
 		}
 
 		/// <summary>
-		/// Property to set or return the primitive topology to use when rendering.
+		/// Property to set or return the current viewport(s) for this state.
 		/// </summary>
-		public D3D.PrimitiveTopology PrimitiveTopology
+		public GorgonViewports Viewports
 		{
-			get
-			{
-				return _primitiveTopology;
-			}
-			set
-			{
-				if (_primitiveTopology == value)
-				{
-					return;
-				}
+			get;
+			set;
+		}
+		#endregion
 
-				_primitiveTopology = value;
-				PipelineStateChangeFlags |= PipelineStateChangeFlags.PrimitiveTopology;
+		#region Methods.
+		/// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+		/// <returns>true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.</returns>
+		/// <param name="other">An object to compare with this object.</param>
+		public bool Equals(GorgonPipelineState other)
+		{
+			return ((other != null)
+			        && (other.InputLayout == InputLayout)
+			        && (GorgonRenderTargetViews.Equals(other.RenderTargetViews, RenderTargetViews))
+					&& (GorgonViewports.Equals(other.Viewports, Viewports))
+			        && (PixelShader == other.PixelShader)
+			        && (VertexShader == other.VertexShader));
+		}
+
+		/// <summary>
+		/// Function to reset back to the default states.
+		/// </summary>
+		public void Reset()
+		{
+			VertexShader.Shader = null;
+			PixelShader.Shader = null;
+			InputLayout = null;
+
+			for (int i = 0; i < RenderTargetViews.Count; ++i)
+			{
+				RenderTargetViews[i] = null;
 			}
+
+			for (int i = 0; i < PixelShader.ConstantBuffers.Count; ++i)
+			{
+				PixelShader.ConstantBuffers[i] = null;
+				VertexShader.ConstantBuffers[i] = null;
+			}
+		}
+		#endregion
+
+		#region Constructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonPipelineState"/> class.
+		/// </summary>
+		public GorgonPipelineState()
+		{
+			RenderTargetViews = new GorgonRenderTargetViews();
+			PixelShader = new GorgonPixelShaderState();
+			VertexShader = new GorgonVertexShaderState();
+			Viewports = new GorgonViewports();
+
+			Reset();
 		}
 		#endregion
 	}

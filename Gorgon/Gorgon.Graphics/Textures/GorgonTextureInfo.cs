@@ -244,9 +244,9 @@ namespace Gorgon.Graphics
 		/// Property to set or return the intended usage flags for this texture.
 		/// </summary>
 		/// <remarks>
-		/// This value is defaulted to <see cref="BufferUsage.Default"/>.
+		/// This value is defaulted to <c>Default</c>.
 		/// </remarks>
-		public BufferUsage Usage
+		public D3D11.ResourceUsage Usage
 		{
 			get;
 			set;
@@ -278,7 +278,7 @@ namespace Gorgon.Graphics
 		public GorgonTextureInfo()
 		{
 			Binding = TextureBinding.ShaderResource;
-			Usage = BufferUsage.Default;
+			Usage = D3D11.ResourceUsage.Default;
 			MultiSampleInfo = GorgonMultiSampleInfo.NoMultiSampling;
 			MipLevels = 1;
 			ArrayCount = 1;

@@ -90,7 +90,7 @@
     <Compile Include="Buffers\GorgonBaseBuffer.cs" />
     <Compile Include="Buffers\GorgonBuffer.cs" />
     <Compile Include="Buffers\GorgonConstantBuffer.cs" />
-    <Compile Include="Buffers\GorgonBufferInfo.cs" />
+    <Compile Include="Buffers\GorgonConstantBufferInfo.cs" />
     <Compile Include="Buffers\GorgonBuffer_OLDEN.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -136,13 +136,18 @@
     <Compile Include="GorgonGraphics.cs" />
     <Compile Include="GorgonMultiSampleInfo.cs" />
     <Compile Include="Native\Win32 Structs\OSVERSIONINFOEX.cs" />
+    <Compile Include="Pipeline\GorgonTextureShaderViews.cs" />
+    <Compile Include="Pipeline\GorgonViewports.cs" />
+    <Compile Include="Pipeline\GorgonDrawIndexedCall.cs" />
+    <Compile Include="Pipeline\GorgonDrawStateAllocator.cs" />
     <Compile Include="Pipeline\GorgonPipelineState.cs" />
-    <Compile Include="Shaders\GorgonConstantBufferList.cs" />
-    <Compile Include="Shaders\GorgonShaderCompiler.cs" />
+    <Compile Include="Pipeline\GorgonPipelineStatePoolAllocator.cs" />
+    <Compile Include="Pipeline\GorgonConstantBuffers.cs" />
+    <Compile Include="Shaders\GorgonShaderFactory.cs" />
     <Compile Include="Shaders\GorgonShaderMacro.cs" />
     <Compile Include="Shaders\_Internal\ShaderProcessor.cs" />
     <Compile Include="States\GorgonClearTargetState.cs" />
-    <Compile Include="Targets\GorgonRenderTargetViews.cs" />
+    <Compile Include="Pipeline\GorgonRenderTargetViews.cs" />
     <Compile Include="Targets\_Interfaces\IGorgonSwapChainInfo.cs" />
     <Compile Include="Textures\GorgonTexture.cs" />
     <Compile Include="Textures\GorgonTextureInfo.cs" />
@@ -159,19 +164,19 @@
     <Compile Include="Resource\GorgonUnorderedAccessView.cs" />
     <Compile Include="Resource\GorgonBufferShaderView.cs" />
     <Compile Include="Resource\GorgonResource.cs" />
-    <Compile Include="Resource\GorgonTextureShaderView.cs" />
+    <Compile Include="Textures\GorgonTextureShaderView.cs" />
     <Compile Include="Resource\GorgonView.cs" />
     <Compile Include="Resource\GorgonViewCache.cs" />
     <Compile Include="Resource\GorgonShaderView.cs" />
     <Compile Include="Shaders\GorgonPixelShader.cs" />
-    <Compile Include="Shaders\GorgonPixelShaderState.cs" />
+    <Compile Include="Pipeline\GorgonPixelShaderState.cs" />
     <Compile Include="Shaders\GorgonShader.cs" />
     <Compile Include="Shaders\GorgonShaderBinding.cs" />
     <Compile Include="Shaders\GorgonShaderInclude.cs" />
     <Compile Include="Shaders\GorgonShaderState.cs" />
     <Compile Include="Shaders\GorgonStreamOutputElement.cs" />
     <Compile Include="Shaders\GorgonVertexShader.cs" />
-    <Compile Include="Shaders\GorgonVertexShaderState.cs" />
+    <Compile Include="Pipeline\GorgonVertexShaderState.cs" />
     <Compile Include="States\GorgonBlendState.cs" />
     <Compile Include="States\GorgonDepthStencilState.cs" />
     <Compile Include="States\GorgonRasterizerState.cs" />
@@ -223,6 +228,8 @@
       <DependentUpon>Win32ResStr.resx</DependentUpon>
     </Compile>
     <Compile Include="Textures\ITextureSettings.cs" />
+    <Compile Include="Textures\_Extensions\GorgonImageTextureExtensions.cs" />
+    <Compile Include="Textures\_Extensions\GorgonImageToTextureInfo.cs" />
     <Compile Include="_Internal\BufferFormatEqualityComparer.cs" />
     <Compile Include="_Internal\_Extensions\SharpDXExtensions.cs" />
   </ItemGroup>

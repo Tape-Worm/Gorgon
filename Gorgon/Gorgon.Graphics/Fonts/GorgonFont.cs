@@ -926,7 +926,7 @@ namespace Gorgon.Graphics
 
 			if (!stream.CanWrite)
 			{
-				throw new IOException(Resources.GORGFX_STREAM_READ_ONLY);
+				throw new IOException(Resources.GORGFX_ERR_STREAM_READ_ONLY);
 			}
 
 			GorgonChunkFileWriter fontFile = new GorgonChunkFileWriter(stream, FileHeader.ChunkID());
