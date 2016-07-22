@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using Gorgon.Core;
 using DXGI = SharpDX.DXGI;
 
 namespace Gorgon.Graphics.Imaging

@@ -24,6 +24,8 @@
 // 
 #endregion
 
+using System;
+using Gorgon.Core;
 using Gorgon.Graphics.Imaging;
 using D3D11 = SharpDX.Direct3D11;
 
@@ -32,7 +34,8 @@ namespace Gorgon.Graphics
 	/// <summary>
 	/// Provides information on how to convert a <see cref="GorgonImage"/> to a <see cref="GorgonTexture"/>.
 	/// </summary>
-	public class GorgonImageToTextureInfo
+	public class GorgonImageTextureInfo
+		: IGorgonCloneable<GorgonImageTextureInfo>
 	{
 		#region Properties.
 		/// <summary>
@@ -72,11 +75,27 @@ namespace Gorgon.Graphics
 		}
 		#endregion
 
+		#region Methods.
+		/// <summary>
+		/// Function to clone an object.
+		/// </summary>
+		/// <returns>The cloned object.</returns>
+		public GorgonImageTextureInfo Clone()
+		{
+			return new GorgonImageTextureInfo
+			       {
+				       Usage = Usage,
+				       MultiSampleInfo = MultiSampleInfo,
+				       Binding = Binding
+			       };
+		}
+		#endregion
+
 		#region Constructor/Finalizer.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonImageToTextureInfo"/> class.
+		/// Initializes a new instance of the <see cref="GorgonImageTextureInfo"/> class.
 		/// </summary>
-		public GorgonImageToTextureInfo()
+		public GorgonImageTextureInfo()
 		{
 			Usage = D3D11.ResourceUsage.Default;
 			Binding = TextureBinding.ShaderResource;

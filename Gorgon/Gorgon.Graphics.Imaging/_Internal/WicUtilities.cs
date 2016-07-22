@@ -422,7 +422,21 @@ namespace Gorgon.Graphics.Imaging
 			{
 				foreach (DXGI.Format destFormat in destFormats)
 				{
-					Guid destGuid = GetGUID(destFormat);
+					Guid destGuid;
+					
+					// If we've asked for B4G4R4A4, we have to convert using a manual conversion by converting to B8G8R8A8 first and then manually downsampling those pixels.
+					if (destFormat == DXGI.Format.B4G4R4A4_UNorm)
+					{
+						destGuid = GetGUID(DXGI.Format.B8G8R8A8_UNorm);
+
+						if ((destGuid != Guid.Empty) && ((sourceGuid == destGuid) || (converter.CanConvert(sourceGuid, destGuid))))
+						{
+							result.Add(destFormat);
+						}
+						continue;
+					}
+
+					destGuid = GetGUID(destFormat);
 
 					if (destGuid == Guid.Empty)
 					{
@@ -889,14 +903,14 @@ namespace Gorgon.Graphics.Imaging
 			Guid destFormat = GetGUID(format);
 
 			// Duplicate the settings, and update the format.
-			var resultInfo = new GorgonImageInfo(imageData.Info.ImageType, format)
-			                 {
-				                 Width = imageData.Info.Width,
-				                 Height = imageData.Info.Height,
-				                 ArrayCount = imageData.Info.ArrayCount,
-				                 Depth = imageData.Info.Depth,
-				                 MipCount = imageData.Info.MipCount
-			                 };
+			GorgonImageInfo resultInfo = new GorgonImageInfo(imageData.Info.ImageType, format)
+			                             {
+				                             Width = imageData.Info.Width,
+				                             Height = imageData.Info.Height,
+				                             ArrayCount = imageData.Info.ArrayCount,
+				                             Depth = imageData.Info.Depth,
+				                             MipCount = imageData.Info.MipCount
+			                             };
 
 			var result = new GorgonImage(resultInfo);
 

@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using Gorgon.Core;
 using DXGI = SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;
 
@@ -110,6 +111,7 @@ namespace Gorgon.Graphics
 	/// Information used to create a texture object.
 	/// </summary>
 	public class GorgonTextureInfo
+		: IGorgonCloneable<GorgonTextureInfo>
 	{
 		#region Properties.
 		/// <summary>
@@ -268,6 +270,30 @@ namespace Gorgon.Graphics
 		{
 			get;
 			set;
+		}
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Function to clone an object.
+		/// </summary>
+		/// <returns>The cloned object.</returns>
+		public GorgonTextureInfo Clone()
+		{
+			return new GorgonTextureInfo
+			       {
+				       Usage = Usage,
+				       MultiSampleInfo = MultiSampleInfo,
+				       Binding = Binding,
+				       Format = Format,
+				       IsCubeMap = IsCubeMap,
+				       Width = Width,
+				       Height = Height,
+				       TextureType = TextureType,
+				       ArrayCount = ArrayCount,
+				       Depth = Depth,
+				       MipLevels = MipLevels
+			       };
 		}
 		#endregion
 

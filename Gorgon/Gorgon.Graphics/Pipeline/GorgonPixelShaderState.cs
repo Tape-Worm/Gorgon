@@ -83,9 +83,9 @@ namespace Gorgon.Graphics
 		}
 
 		/// <summary>
-		/// Property to set or return the shader resource views for textures on this pixel shader.
+		/// Property to set or return the shader resource views for resources on this pixel shader.
 		/// </summary>
-		public GorgonTextureShaderViews TextureViews
+		public GorgonShaderResourceViews ResourceViews
 		{
 			get;
 			set;
@@ -122,7 +122,7 @@ namespace Gorgon.Graphics
 				result |= ShaderStateChanges.Constants;
 			}
 
-			if (!GorgonTextureShaderViews.Equals(TextureViews, other.TextureViews))
+			if (!GorgonShaderResourceViews.Equals(ResourceViews, other.ResourceViews))
 			{
 				result |= ShaderStateChanges.ShaderResourceViews;
 			}
@@ -138,7 +138,7 @@ namespace Gorgon.Graphics
 		public GorgonPixelShaderState()
 		{
 			ConstantBuffers = new GorgonConstantBuffers();
-			TextureViews = new GorgonTextureShaderViews();
+			ResourceViews = new GorgonShaderResourceViews();
 		}
 		#endregion
 	}

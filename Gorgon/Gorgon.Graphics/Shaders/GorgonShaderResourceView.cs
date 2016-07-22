@@ -20,78 +20,79 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: June 15, 2016 9:39:42 PM
+// Created: July 21, 2016 11:05:38 AM
 // 
 #endregion
 
 using System;
-using Gorgon.Core;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using DXGI = SharpDX.DXGI;
+using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics
 {
 	/// <summary>
-	/// Provides information on how to set up a buffer.
+	/// Base class for shader resource views.
 	/// </summary>
-	public class GorgonConstantBufferInfo
-		: IGorgonCloneable<GorgonConstantBufferInfo>
+	/// <remarks>
+	/// <para>
+	/// This base class is used to define shader resource views for strongly typed resources like textures and buffers.
+	/// </para>
+	/// </remarks>
+	public class GorgonShaderResourceView
+		: IDisposable
 	{
 		#region Properties.
 		/// <summary>
-		/// Property to set or return the intended usage flags for this texture.
+		/// Property to return the Direct 3D 11 view.
+		/// </summary>
+		protected internal D3D11.ShaderResourceView D3DView
+		{
+			get;
+			protected set;
+		}
+
+		/// <summary>
+		/// Property to return the key for the resource view.
 		/// </summary>
 		/// <remarks>
-		/// This value is defaulted to <see cref="BufferUsage.Default"/>.
+		/// <para>
+		/// This key can be used to sort, or define a unique resource view for use in caching. Users may set this key however they see fit to meet their caching/sorting needs. However, it is recommended 
+		/// that this key be left alone, and never altered after it's been applied to a cache since it should be a unique value.
+		/// </para>
+		/// <para>
+		/// See the concrete versions of this type to see how the key is formatted.
+		/// </para>
 		/// </remarks>
-		public BufferUsage Usage
+		/// <seealso cref="GorgonTextureShaderView"/>
+		/// <seealso cref="GorgonBufferShaderView"/>
+		public ulong Key
 		{
 			get;
 			set;
 		}
 
-		/// <summary>
-		/// Property to set or return the number of bytes to allocate for the buffer.
-		/// </summary>
-		/// <remarks>
-		/// <note type="important">
-		/// <para>
-		/// <para>
-		/// If the buffer is intended to be used as a <see cref="Graphics.BufferType.Constant"/> buffer, then this size should be a multiple of 16. Constant buffer alignment rules require that they be sized to the nearest 16 bytes.
-		/// </para>
-		/// <para>
-		/// If the buffer is not sized to a multiple of 16, Gorgon will attempt to adjust the size to fit the alignment requirement.
-		/// </para>
-		/// </para>
-		/// </note>
-		/// </remarks>
-		public int SizeInBytes
-		{
-			get;
-			set;
-		}
 		#endregion
 
 		#region Methods.
 		/// <summary>
-		/// Function to clone an object.
+		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
 		/// </summary>
-		/// <returns>The cloned object.</returns>
-		public GorgonConstantBufferInfo Clone()
+		public virtual void Dispose()
 		{
-			return new GorgonConstantBufferInfo
-			       {
-				       Usage = Usage,
-				       SizeInBytes = SizeInBytes
-			       };
+			D3DView?.Dispose();
 		}
 		#endregion
 
 		#region Constructor/Finalizer.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonConstantBufferInfo"/> class.
+		/// Initializes a new instance of the <see cref="GorgonShaderResourceView"/> class.
 		/// </summary>
-		public GorgonConstantBufferInfo()
+		protected GorgonShaderResourceView()
 		{
-			Usage = BufferUsage.Default;
 		}
 		#endregion
 	}

@@ -375,7 +375,7 @@ namespace Gorgon.Graphics
 
 			if ((stateChange & ShaderStateChanges.ShaderResourceViews) == ShaderStateChanges.ShaderResourceViews)
 			{
-				D3DDeviceContext.VertexShader.SetShaderResources(0, shaderState.TextureViews.D3DShaderResourceViewBindCount, shaderState.TextureViews.D3DShaderResourceViews);
+				D3DDeviceContext.VertexShader.SetShaderResources(0, shaderState.ResourceViews.D3DShaderResourceViewBindCount, shaderState.ResourceViews.D3DShaderResourceViews);
 			}
 		}
 
@@ -404,7 +404,7 @@ namespace Gorgon.Graphics
 
 			if ((stateChange & ShaderStateChanges.ShaderResourceViews) == ShaderStateChanges.ShaderResourceViews)
 			{
-				D3DDeviceContext.PixelShader.SetShaderResources(0, shaderState.TextureViews.D3DShaderResourceViewBindCount, shaderState.TextureViews.D3DShaderResourceViews);
+				D3DDeviceContext.PixelShader.SetShaderResources(0, shaderState.ResourceViews.D3DShaderResourceViewBindCount, shaderState.ResourceViews.D3DShaderResourceViews);
 			}
 		}
 
