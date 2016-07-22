@@ -26,11 +26,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using DXGI = SharpDX.DXGI;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.Math;
 using Gorgon.Native;
+using SharpDX.DirectWrite;
 
 namespace Gorgon.Graphics.Imaging
 {
@@ -390,97 +392,6 @@ namespace Gorgon.Graphics.Imaging
 			return Info.Depth <= 1 ? 1 : _imageBuffers.MipOffsetSize[mipLevel].Item2;
 		}
 
-		///// <summary>
-		///// Function to read image data from a stream.
-		///// </summary>
-		///// <param name="stream">Stream that contains the image data.</param>
-		///// <param name="size">The size of the image, in bytes.</param>
-		///// <param name="codec">The codec that will read the file.</param>
-		///// <returns>The image data from the stream.</returns>
-		///// <remarks>This will load image data from a stream.  The image data in the stream must have been encoded by a supported image codec.  
-		///// Gorgon supports several codecs such as Png, Dds, Tiff, Jpg, Bmp and Wmp "out of the box", additional user 
-		///// codecs may be defined and used to load a texture.
-		///// </remarks>
-		///// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>NULL</b> (<i>Nothing</i> in VB.Net).
-		///// <para>-or-</para>
-		///// <para>The <paramref name="codec"/> parameter is <b>NULL</b>.</para>
-		///// </exception>
-		///// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> parameter is less than or equal to 0 or larger than the length of the <paramref name="stream"/>.</exception>
-		///// <exception cref="System.ArgumentException">Thrown when the data in the stream cannot be read by the image codec.</exception>
-		///// <exception cref="System.IO.IOException">Thrown when the stream is write-only.
-		///// <para>-or-</para>
-		///// <para>The image file is corrupted or unable to be read by a codec.</para>
-		///// </exception>
-		///// <exception cref="System.IO.EndOfStreamException">Thrown if an attempt to read beyond the end of the stream is made.</exception>
-		//public static GorgonImageData FromStream(Stream stream, int size, GorgonImageCodec codec)
-		//{
-		//	GorgonImageData result = null;
-
-		//	if (stream == null)
-		//	{
-		//		throw new ArgumentNullException(nameof(stream));
-		//	}
-
-		//	if (codec == null)
-		//	{
-		//		throw new ArgumentNullException(nameof(codec));
-		//	}
-
-		//	if ((size <= 0) || (size > stream.Length))
-		//	{
-		//		throw new ArgumentOutOfRangeException(nameof(size), string.Format(Resources.GORGFX_INDEX_OUT_OF_RANGE, size, 1, stream.Length));
-		//	}
-
-		//	if (!stream.CanRead)
-		//	{
-		//		throw new IOException(Resources.GORGFX_STREAM_WRITE_ONLY);
-		//	}
-
-		//	// Check to see if the decoder can actually read the data in the stream.
-		//	if (!codec.IsReadable(stream))
-		//	{
-		//		throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, codec.Codec));
-		//	}
-
-		//	// Just apply directly if we're already using a data stream.
-		//	var gorgonDataStream = stream as GorgonDataStream;
-
-		//	// Load the data into unmanaged memory.
-		//	try
-		//	{
-		//		// Use a memory stream for ease of access.
-		//		if (gorgonDataStream == null)
-		//		{
-		//			gorgonDataStream = new GorgonDataStream(size);
-		//			stream.CopyToStream(gorgonDataStream, size);
-		//			gorgonDataStream.Position = 0;
-		//		}
-
-		//		result = codec.LoadFromStream(gorgonDataStream, size);
-
-		//		// Post process our data.
-		//		if ((codec.Width != 0) || (codec.Height != 0) || (codec.MipCount != 0) || (codec.Format != BufferFormat.Unknown))
-		//		{
-		//			codec.PostProcess(result);
-		//		}
-		//	}
-		//	catch
-		//	{
-		//		result?.Dispose();
-		//		throw;
-		//	}
-		//	finally
-		//	{
-		//		// If we haven't co-opted the pointer, then free the memory we've allocated.
-		//		if (stream != gorgonDataStream)
-		//		{
-		//			gorgonDataStream?.Dispose();
-		//		}
-		//	}
-
-		//	return result;
-		//}
-
 		/// <summary>
 		/// Function to determine if the pixel format for this image can be converted to another pixel format.
 		/// </summary>
@@ -498,9 +409,17 @@ namespace Gorgon.Graphics.Imaging
 				return true;
 			}
 
+			DXGI.Format sourceFormat = Info.Format;
+
+			// If we want to convert from B4G4R4A4 to another format, then we first have to upsample to B8R8G8A8.
+			if (sourceFormat == DXGI.Format.B4G4R4A4_UNorm)
+			{
+				sourceFormat = DXGI.Format.B8G8R8A8_UNorm;
+			}
+
 			using (var wic = new WicUtilities())
 			{
-				return wic.CanConvertFormats(Info.Format,
+				return wic.CanConvertFormats(sourceFormat,
 				                             new[]
 				                             {
 					                             format
@@ -520,7 +439,16 @@ namespace Gorgon.Graphics.Imaging
 			{
 				return new DXGI.Format[0];
 			}
-			
+
+			// If we're converting from B4G4R4A4, then we need to use another path.
+			if (Info.Format == DXGI.Format.B4G4R4A4_UNorm)
+			{
+				using (var wic = new WicUtilities())
+				{
+					return wic.CanConvertFormats(DXGI.Format.B8G8R8A8_UNorm, destFormats);
+				}
+			}
+
 			using (var wic = new WicUtilities())
 			{
 				return wic.CanConvertFormats(Info.Format, destFormats);

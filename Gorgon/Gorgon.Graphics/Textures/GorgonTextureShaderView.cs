@@ -48,9 +48,45 @@ namespace Gorgon.Graphics
 	/// Use a resource view to allow a shader access to the contents of a resource (or sub resource).  When the resource is created with a typeless format, this will allow the resource to be cast to any 
 	/// format within the same group.	
 	/// </para>
+	/// <para>
+	/// The <see cref="GorgonShaderResourceView.Key"/> Gorgon will set the view parameters as a 64 bit unsigned integer value when the view is created. This key is composed of the following bits:
+	/// <list type="table">
+	///		<listheader>
+	///			<term>Bits (inclusive)</term>
+	///			<term>Value</term>		
+	///		</listheader>
+	///		<item>
+	///			<term>0 - 3 (4 bits)</term>
+	///			<term><see cref="MipSlice">Mip slice.</see></term>
+	///		</item>
+	///		<item>
+	///			<term>4 - 7 (4 bits)</term>
+	///			<term><see cref="MipCount">Mip count.</see></term>
+	///		</item>
+	///		<item>
+	///			<term>8 - 18 (11 bits)</term>
+	///			<term><see cref="ArrayIndex">Array Index.</see></term>
+	///		</item>
+	///		<item>
+	///			<term>19 - 29 (11 bits)</term>
+	///			<term><see cref="ArrayCount">Array Count.</see></term>
+	///		</item>
+	///		<item>
+	///			<term>30 - 37 (8 bits)</term>
+	///			<term><see cref="Format"/></term>
+	///		</item>
+	/// </list>
+	/// </para>
+	/// <para>
+	/// For example, a <see cref="MipSlice"/> of 2, a <see cref="MipCount"/> of 1 and a <see cref="ArrayIndex"/> of 4, with an <see cref="ArrayCount"/> of 2 and a <see cref="Format"/> 
+	/// of <c>R8G8B8A8_UNorm</c> (28) would yield a key of: <c>30065820690</c>. 
+	/// <br/>
+	/// Or, a <see cref="MipSlice"/> of 0, and <see cref="MipCount"/> of 1, with a <see cref="ArrayIndex"/> of 0, and a <see cref="ArrayCount"/> of 1, and the same buffer format would yield a key of: 
+	/// <c>30065295376</c>.
+	/// </para>
 	/// </remarks>
 	public sealed class GorgonTextureShaderView
-		: IDisposable
+		: GorgonShaderResourceView
     {
         #region Variables.
 		// Log used for debugging.
@@ -58,68 +94,6 @@ namespace Gorgon.Graphics
         #endregion
 
         #region Properties.
-		/// <summary>
-		/// Property to return the Direct 3D 11 shader resource view.
-		/// </summary>
-		internal D3D11.ShaderResourceView D3DView
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the key for the resource view.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// This key can be used to sort, or define a unique resource view for use in caching. Users may set this key however they see fit to meet their caching/sorting needs. However, it is recommended 
-		/// that this key be left alone, and never altered after it's been applied to a cache since it should be a unique value.
-		/// </para>
-		/// <para>
-		/// By default, Gorgon will set the view parameters as a 64 bit unsigned integer value when the view is created. This key is composed of the following bits:
-		/// <para>
-		/// <list type="table">
-		///		<listheader>
-		///			<term>Bits (inclusive)</term>
-		///			<term>Value</term>		
-		///		</listheader>
-		///		<item>
-		///			<term>0 - 3 (4 bits)</term>
-		///			<term><see cref="MipSlice">Mip slice.</see></term>
-		///		</item>
-		///		<item>
-		///			<term>4 - 7 (4 bits)</term>
-		///			<term><see cref="MipCount">Mip count.</see></term>
-		///		</item>
-		///		<item>
-		///			<term>8 - 18 (11 bits)</term>
-		///			<term><see cref="ArrayIndex">Array Index.</see></term>
-		///		</item>
-		///		<item>
-		///			<term>19 - 29 (11 bits)</term>
-		///			<term><see cref="ArrayCount">Array Count.</see></term>
-		///		</item>
-		///		<item>
-		///			<term>30 - 37 (8 bits)</term>
-		///			<term><see cref="Format"/></term>
-		///		</item>
-		/// </list>
-		/// </para>
-		/// </para>
-		/// <para>
-		/// For example, a <see cref="MipSlice"/> of 2, a <see cref="MipCount"/> of 1 and a <see cref="ArrayIndex"/> of 4, with an <see cref="ArrayCount"/> of 2 and a <see cref="Format"/> 
-		/// of <see cref="BufferFormat.R8G8B8A8_UNorm"/> (28) would yield a key of: <c>30065820690</c>. 
-		/// <br/>
-		/// Or, a <see cref="MipSlice"/> of 0, and <see cref="MipCount"/> of 1, with a <see cref="ArrayIndex"/> of 0, and a <see cref="ArrayCount"/> of 1, and the same buffer format would yield a key of: 
-		/// <c>30065295376</c>.
-		/// </para>
-		/// </remarks>
-		public ulong Key
-		{
-			get;
-			set;
-		}
-
 		/// <summary>
 		/// Property to return the texture bound with this view.
 		/// </summary>
@@ -375,14 +349,14 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
 		/// </summary>
-		public void Dispose()
+		public override void Dispose()
 		{
 			if (D3DView != null)
 			{
 				_log.Print($"Shader Resource View '{Texture.Name}': Releasing D3D11 Shader resource view.", LoggingLevel.Simple);
 			}
 
-			D3DView?.Dispose();
+			base.Dispose();
 		}
 		#endregion
 

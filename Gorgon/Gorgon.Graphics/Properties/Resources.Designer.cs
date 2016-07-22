@@ -358,6 +358,15 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The binding type [{0}] cannot use with this method..
+        /// </summary>
+        internal static string GORGFX_ERR_BINDING_TYPE_CANNOT_BE_USED {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_BINDING_TYPE_CANNOT_BE_USED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Could not compile the shader source code.
         ///Errors:
         ///{0}.
@@ -479,11 +488,29 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot lock a buffer for reading if the resource does not have a usage of [Staging]..
+        /// </summary>
+        internal static string GORGFX_ERR_LOCK_CANNOT_READ_NON_STAGING {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_LOCK_CANNOT_READ_NON_STAGING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The block count must be larger than 0..
         /// </summary>
         internal static string GORGFX_ERR_MISSING_BLOCK_COUNT {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_MISSING_BLOCK_COUNT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The video device &apos;{0}&apos; does not support multisampling with a count of {1} and a quality of {2} for format [{3}]..
+        /// </summary>
+        internal static string GORGFX_ERR_MULTISAMPLE_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_MULTISAMPLE_INVALID", resourceCulture);
             }
         }
         
@@ -740,11 +767,83 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot copy to and from the same sub resource on the same texture..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_CANNOT_COPY_SAME_SUBRESOURCE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_CANNOT_COPY_SAME_SUBRESOURCE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot copy because these formats: [{0}] and [{1}] cannot be converted. Or, the device does not support format conversion..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_COPY_CANNOT_CONVERT {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_COPY_CANNOT_CONVERT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The texture is immutable and cannot be updated or read back to the CPU..
         /// </summary>
         internal static string GORGFX_ERR_TEXTURE_IMMUTABLE {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_TEXTURE_IMMUTABLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot update a texture that is Dynamic or Immutable..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_IS_DYNAMIC_OR_IMMUTABLE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_IS_DYNAMIC_OR_IMMUTABLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The textures have different multisampling parameters.  This operation requires that all textures have the same multisampling parameters..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_MULTISAMPLE_PARAMS_MISMATCH {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_MULTISAMPLE_PARAMS_MISMATCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This operation does not support multisampled textures..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_MULTISAMPLED {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_MULTISAMPLED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The textures must be the same width and height..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_MUST_BE_SAME_SIZE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_MUST_BE_SAME_SIZE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The texture &apos;{0}&apos; is not multisampled..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_NOT_MULTISAMPLED {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_NOT_MULTISAMPLED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The texure &apos;{0}&apos; is a [{1}] and cannot be copied to or from the type [{2}]..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_NOT_SAME_TYPE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_NOT_SAME_TYPE", resourceCulture);
             }
         }
         
@@ -758,11 +857,65 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The destination texture &apos;{0}&apos; must have a default usage..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_RESOLVE_DEST_NOT_DEFAULT {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_RESOLVE_DEST_NOT_DEFAULT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The resolve format must not be typeless..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_RESOLVE_FORMAT_CANNOT_BE_TYPELESS {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_RESOLVE_FORMAT_CANNOT_BE_TYPELESS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The format used to resolve this multisampled texture must be set to because the textures have identical formats..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_RESOLVE_FORMAT_MUST_BE_UNKNOWN {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_RESOLVE_FORMAT_MUST_BE_UNKNOWN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The source and destination have the same typeless format of [{0}].  The resolve format [{1}] is not a part of the same format grouping..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_RESOLVE_FORMAT_NOT_SAME_GROUP {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_RESOLVE_FORMAT_NOT_SAME_GROUP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The destination texture must have a format of [{0}]..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_RESOLVE_FORMATS_NOT_SAME {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_RESOLVE_FORMATS_NOT_SAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The texture type [{0}] is unsupported..
         /// </summary>
         internal static string GORGFX_ERR_TEXTURE_TYPE_NOT_SUPPORTED {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_TEXTURE_TYPE_NOT_SUPPORTED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A texture with a usage of [{0}] cannot be locked..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_USAGE_CANT_LOCK {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_USAGE_CANT_LOCK", resourceCulture);
             }
         }
         
@@ -1244,42 +1397,6 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot lock a buffer for reading if the resource does not have a usage of [Staging]..
-        /// </summary>
-        internal static string GORGFX_LOCK_CANNOT_READ_NON_STAGING {
-            get {
-                return ResourceManager.GetString("GORGFX_LOCK_CANNOT_READ_NON_STAGING", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot use [Discard] or [NoOverwrite] with a [Read] flag..
-        /// </summary>
-        internal static string GORGFX_LOCK_CANNOT_USE_WITH_READ {
-            get {
-                return ResourceManager.GetString("GORGFX_LOCK_CANNOT_USE_WITH_READ", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Calling lock on a resource when using a deferred context requires at least the [Discard] and/or the [NoOverwrite] flags..
-        /// </summary>
-        internal static string GORGFX_LOCK_NEED_DISCARD_NOOVERWRITE {
-            get {
-                return ResourceManager.GetString("GORGFX_LOCK_NEED_DISCARD_NOOVERWRITE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The video device &apos;{0}&apos; does not support multisampling with a count of {1} and a quality of {2} for format [{3}]..
-        /// </summary>
-        internal static string GORGFX_MULTISAMPLE_INVALID {
-            get {
-                return ResourceManager.GetString("GORGFX_MULTISAMPLE_INVALID", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The usage for this object must be set to &apos;Default&apos;..
         /// </summary>
         internal static string GORGFX_NOT_DEFAULT_USAGE {
@@ -1595,24 +1712,6 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot copy to and from the same sub resource on the same texture..
-        /// </summary>
-        internal static string GORGFX_TEXTURE_CANNOT_COPY_SAME_SUBRESOURCE {
-            get {
-                return ResourceManager.GetString("GORGFX_TEXTURE_CANNOT_COPY_SAME_SUBRESOURCE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot copy because these formats: [{0}] and [{1}] cannot be converted..
-        /// </summary>
-        internal static string GORGFX_TEXTURE_COPY_CANNOT_CONVERT {
-            get {
-                return ResourceManager.GetString("GORGFX_TEXTURE_COPY_CANNOT_CONVERT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Cannot create the texture cube array.  The array count is not a multiple of 6..
         /// </summary>
         internal static string GORGFX_TEXTURE_CUBE_MULTIPLE_OF_SIX {
@@ -1676,47 +1775,11 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot update a texture that is Dynamic or Immutable..
-        /// </summary>
-        internal static string GORGFX_TEXTURE_IS_DYNAMIC_IMMUTABLE {
-            get {
-                return ResourceManager.GetString("GORGFX_TEXTURE_IS_DYNAMIC_IMMUTABLE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The source texture and this texture are the same.  Cannot copy..
         /// </summary>
         internal static string GORGFX_TEXTURE_IS_SAME {
             get {
                 return ResourceManager.GetString("GORGFX_TEXTURE_IS_SAME", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The textures have different multisampling parameters.  This operation requires that all textures have the same multisampling parameters..
-        /// </summary>
-        internal static string GORGFX_TEXTURE_MULTISAMPLE_PARAMS_MISMATCH {
-            get {
-                return ResourceManager.GetString("GORGFX_TEXTURE_MULTISAMPLE_PARAMS_MISMATCH", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to This operation does not support multisampled textures..
-        /// </summary>
-        internal static string GORGFX_TEXTURE_MULTISAMPLED {
-            get {
-                return ResourceManager.GetString("GORGFX_TEXTURE_MULTISAMPLED", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The textures must be the same width and height..
-        /// </summary>
-        internal static string GORGFX_TEXTURE_MUST_BE_SAME_SIZE {
-            get {
-                return ResourceManager.GetString("GORGFX_TEXTURE_MUST_BE_SAME_SIZE", resourceCulture);
             }
         }
         
@@ -1739,15 +1802,6 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The texure &apos;{0}&apos; is a [{1}] and cannot be copied to or from the type [{2}]..
-        /// </summary>
-        internal static string GORGFX_TEXTURE_NOT_SAME_TYPE {
-            get {
-                return ResourceManager.GetString("GORGFX_TEXTURE_NOT_SAME_TYPE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The region ({0},{1})x({2},{3}) is out of bounds for the texture &apos;{4}&apos;..
         /// </summary>
         internal static string GORGFX_TEXTURE_OUT_OF_BOUNDS {
@@ -1757,74 +1811,11 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The destination texture &apos;{0}&apos; must have a default usage..
-        /// </summary>
-        internal static string GORGFX_TEXTURE_RESOLVE_DEST_NOT_DEFAULT {
-            get {
-                return ResourceManager.GetString("GORGFX_TEXTURE_RESOLVE_DEST_NOT_DEFAULT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The resolve format must not be typeless..
-        /// </summary>
-        internal static string GORGFX_TEXTURE_RESOLVE_FORMAT_CANNOT_BE_TYPELESS {
-            get {
-                return ResourceManager.GetString("GORGFX_TEXTURE_RESOLVE_FORMAT_CANNOT_BE_TYPELESS", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The format used to resolve this multisampled texture must be set to unknown because the textures have identical formats..
-        /// </summary>
-        internal static string GORGFX_TEXTURE_RESOLVE_FORMAT_MUST_BE_UNKNOWN {
-            get {
-                return ResourceManager.GetString("GORGFX_TEXTURE_RESOLVE_FORMAT_MUST_BE_UNKNOWN", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The source and destination have the same typeless format of &apos;{0}&apos;.  The resolve format is not a part of the same format grouping..
-        /// </summary>
-        internal static string GORGFX_TEXTURE_RESOLVE_FORMAT_NOT_SAME_GROUP {
-            get {
-                return ResourceManager.GetString("GORGFX_TEXTURE_RESOLVE_FORMAT_NOT_SAME_GROUP", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The destination texture must have a format of &apos;{0}&apos;..
-        /// </summary>
-        internal static string GORGFX_TEXTURE_RESOLVE_FORMATS_NOT_SAME {
-            get {
-                return ResourceManager.GetString("GORGFX_TEXTURE_RESOLVE_FORMATS_NOT_SAME", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The source format &apos;{0}&apos; is not in the same group as the destination format of &apos;{1}&apos;..
+        ///   Looks up a localized string similar to The source format [{0}] is not in the same group as the destination format of [{1}]..
         /// </summary>
         internal static string GORGFX_TEXTURE_RESOLVE_SRC_DEST_NOT_SAME_GROUP {
             get {
                 return ResourceManager.GetString("GORGFX_TEXTURE_RESOLVE_SRC_DEST_NOT_SAME_GROUP", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The source texture &apos;{0}&apos; is not multisampled..
-        /// </summary>
-        internal static string GORGFX_TEXTURE_SRC_NOT_MULTISAMPLED {
-            get {
-                return ResourceManager.GetString("GORGFX_TEXTURE_SRC_NOT_MULTISAMPLED", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to A texture with a usage of [{0}] cannot be locked..
-        /// </summary>
-        internal static string GORGFX_TEXTURE_USAGE_CANT_LOCK {
-            get {
-                return ResourceManager.GetString("GORGFX_TEXTURE_USAGE_CANT_LOCK", resourceCulture);
             }
         }
         
@@ -1897,15 +1888,6 @@ namespace Gorgon.Graphics.Properties {
         internal static string GORGFX_TOSTR_VIDEOMODE {
             get {
                 return ResourceManager.GetString("GORGFX_TOSTR_VIDEOMODE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The type &apos;{0}&apos; cannot use with this method..
-        /// </summary>
-        internal static string GORGFX_TYPE_CANNOT_BE_USED {
-            get {
-                return ResourceManager.GetString("GORGFX_TYPE_CANNOT_BE_USED", resourceCulture);
             }
         }
         

@@ -273,11 +273,7 @@ namespace Gorgon.Graphics
 
 			_graphics = graphics;
 			_log = log ?? GorgonLogDummy.DefaultInstance;
-			_info = new GorgonConstantBufferInfo
-			        {
-				        Usage = info.Usage,
-						SizeInBytes = info.SizeInBytes
-			        };
+			_info = info.Clone();
 
 			Initialize(initialData);
 		}

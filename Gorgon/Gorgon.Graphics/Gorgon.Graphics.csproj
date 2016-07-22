@@ -102,7 +102,8 @@
     <Compile Include="GorgonGraphics.cs" />
     <Compile Include="GorgonMultiSampleInfo.cs" />
     <Compile Include="Native\Win32 Structs\OSVERSIONINFOEX.cs" />
-    <Compile Include="Pipeline\GorgonTextureShaderViews.cs" />
+    <Compile Include="Shaders\GorgonShaderResourceView.cs" />
+    <Compile Include="Pipeline\GorgonShaderResourceViews.cs" />
     <Compile Include="Pipeline\GorgonViewports.cs" />
     <Compile Include="Pipeline\GorgonDrawIndexedCall.cs" />
     <Compile Include="Pipeline\GorgonDrawStateAllocator.cs" />
@@ -123,6 +124,8 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Resource\GorgonResource.cs" />
+    <Compile Include="Textures\_Internal\TextureLockCache.cs" />
+    <Compile Include="Textures\GorgonTextureLockData.cs" />
     <Compile Include="Textures\GorgonTextureShaderView.cs" />
     <Compile Include="Shaders\GorgonPixelShader.cs" />
     <Compile Include="Pipeline\GorgonPixelShaderState.cs" />
@@ -136,7 +139,7 @@
     <Compile Include="Targets\GorgonSwapChain.cs" />
     <Compile Include="Targets\GorgonSwapChainInfo.cs" />
     <Compile Include="Textures\_Extensions\GorgonImageTextureExtensions.cs" />
-    <Compile Include="Textures\_Extensions\GorgonImageToTextureInfo.cs" />
+    <Compile Include="Textures\_Extensions\GorgonImageTextureInfo.cs" />
     <Compile Include="_Internal\_Extensions\SharpDXExtensions.cs" />
   </ItemGroup>
   <ItemGroup>

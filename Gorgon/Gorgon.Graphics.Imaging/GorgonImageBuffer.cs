@@ -26,7 +26,7 @@
 
 using System;
 using Gorgon.Graphics.Imaging.Properties;
-using SharpDX.Mathematics.Interop;
+using DX = SharpDX;
 using DXGI = SharpDX.DXGI;
 using Gorgon.Math;
 using Gorgon.Native;
@@ -145,9 +145,9 @@ namespace Gorgon.Graphics.Imaging
 		/// The destination buffer must be the same format as the source buffer.  If it is not, then an exception will be thrown.
 		/// </para>
 		/// </remarks>
-		public void CopyTo(IGorgonImageBuffer buffer, RawRectangle? sourceRegion = null, int destX = 0, int destY = 0)
+		public void CopyTo(IGorgonImageBuffer buffer, DX.Rectangle? sourceRegion = null, int destX = 0, int destY = 0)
 		{
-			var sourceBufferDims = new RawRectangle
+			var sourceBufferDims = new DX.Rectangle
 			                       {
 				                       Left = 0,
 				                       Top = 0,
@@ -177,7 +177,7 @@ namespace Gorgon.Graphics.Imaging
 				return;
 			}
 
-			RawRectangle srcRegion;
+			DX.Rectangle srcRegion;
 
 			if (sourceRegion == null)
 			{
@@ -186,7 +186,7 @@ namespace Gorgon.Graphics.Imaging
 			else
 			{
 				// Clip the rectangle to the buffer size.
-				srcRegion = new RawRectangle
+				srcRegion = new DX.Rectangle
 				            {
 					            Left = sourceRegion.Value.Left.Max(0).Min(Width - 1),
 					            Top = sourceRegion.Value.Top.Max(0).Min(Height - 1),
@@ -225,13 +225,13 @@ namespace Gorgon.Graphics.Imaging
 			}
 
 			// Ensure that the regions actually fit within their respective buffers.
-			RawRectangle dstRegion = new RawRectangle
-			                         {
-				                         Left = destX,
-				                         Top = destY,
-				                         Right = (destX + (srcRegion.Right - srcRegion.Left)).Min(buffer.Width),
-				                         Bottom = (destY + (srcRegion.Bottom - srcRegion.Top)).Min(buffer.Height)
-			                         };
+			var dstRegion = new DX.Rectangle
+			                {
+				                Left = destX,
+				                Top = destY,
+				                Right = (destX + (srcRegion.Right - srcRegion.Left)).Min(buffer.Width),
+				                Bottom = (destY + (srcRegion.Bottom - srcRegion.Top)).Min(buffer.Height)
+			                };
 
 			// If the source/dest region is empty, then we have nothing to copy.
 			if ((srcRegion.IsEmpty)

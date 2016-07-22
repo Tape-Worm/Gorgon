@@ -846,15 +846,7 @@ namespace Gorgon.Graphics
 			Graphics = graphics;
 			
 			// Clone the info so that changes to the source won't be reflected back here and cause us grief.
-			_info = new GorgonSwapChainInfo
-			        {
-				        Format = info.Format,
-				        Width = info.Width,
-				        Height = info.Height,
-				        UseFlipMode = info.UseFlipMode,
-				        StretchBackBuffer = info.StretchBackBuffer
-			        };
-
+			_info = info.Clone();
 			Initialize();
 		}
 		#endregion

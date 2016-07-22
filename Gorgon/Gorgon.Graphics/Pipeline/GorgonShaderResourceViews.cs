@@ -36,14 +36,14 @@ using D3D11 = SharpDX.Direct3D11;
 namespace Gorgon.Graphics
 {
 	/// <summary>
-	/// A list of texture shader views to apply to the pipeline.
+	/// A list of shader resource views to apply to the pipeline.
 	/// </summary>
-	public class GorgonTextureShaderViews
-		: IList<GorgonTextureShaderView>, IReadOnlyList<GorgonTextureShaderView>
+	public class GorgonShaderResourceViews
+		: IList<GorgonShaderResourceView>, IReadOnlyList<GorgonShaderResourceView>
 	{
 		#region Variables.
 		// Render target views to apply to the pipeline.
-		private readonly GorgonTextureShaderView[] _views = new GorgonTextureShaderView[D3D11.CommonShaderStage.InputResourceSlotCount];
+		private readonly GorgonShaderResourceView[] _views = new GorgonShaderResourceView[D3D11.CommonShaderStage.InputResourceSlotCount];
 		// Actual direct 3D shader resource views to bind.
 		private readonly D3D11.ShaderResourceView[] _actualViews = new D3D11.ShaderResourceView[D3D11.CommonShaderStage.InputResourceSlotCount];
 		// The number of slots bound.
@@ -71,10 +71,10 @@ namespace Gorgon.Graphics
 		/// <param name="index">The zero-based index of the element to get or set.</param>
 		/// <exception cref="T:System.ArgumentOutOfRangeException">
 		/// <paramref name="index" /> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1" />.</exception>
-		/// <exception cref="GorgonException">Thrown when the <see cref="GorgonTextureShaderView"/> being assigned is already assigned in this list.</exception>
+		/// <exception cref="GorgonException">Thrown when the <see cref="GorgonShaderResourceView"/> being assigned is already assigned in this list.</exception>
 		/// <remarks>
 		/// <para>
-		/// A <see cref="GorgonTextureShaderView"/> can only be assigned to one slot at a time. If the view is assigned to multiple slots, an exception will be raised.
+		/// A <see cref="GorgonShaderResourceView"/> can only be assigned to one slot at a time. If the view is assigned to multiple slots, an exception will be raised.
 		/// </para>
 		/// <para>
 		/// <note type="information">
@@ -84,7 +84,7 @@ namespace Gorgon.Graphics
 		/// </note>
 		/// </para>
 		/// </remarks>
-		public GorgonTextureShaderView this[int index]
+		public GorgonShaderResourceView this[int index]
 		{
 			get
 			{
@@ -93,7 +93,8 @@ namespace Gorgon.Graphics
 			set
 			{
 #if DEBUG
-				ValidateTextureShaderViews(value, index);
+				ValidateTextureShaderViews(value as GorgonTextureShaderView, index);
+				//ValidateBufferShaderViews(value as GorgonBufferShaderView, index);
 #endif
 
 				_views[index] = value;
@@ -117,7 +118,7 @@ namespace Gorgon.Graphics
 
 		/// <summary>Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</summary>
 		/// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only; otherwise, false.</returns>
-		bool ICollection<GorgonTextureShaderView>.IsReadOnly => false;
+		bool ICollection<GorgonShaderResourceView>.IsReadOnly => false;
 		#endregion
 
 		#region Methods.
@@ -134,7 +135,7 @@ namespace Gorgon.Graphics
 				return;
 			}
 			
-			GorgonTextureShaderView startView = this.FirstOrDefault(item => item != null);
+			GorgonShaderResourceView startView = this.FirstOrDefault(item => item != null);
 
 			// If no other views are assigned, then leave.
 			if (startView == null)
@@ -149,7 +150,7 @@ namespace Gorgon.Graphics
 			// Only check if we have more than 1 shader resource view being applied.
 			for (int i = 0; i < _views.Length; i++)
 			{
-				GorgonTextureShaderView other = _views[i];
+				var other = _views[i] as GorgonTextureShaderView;
 
 				if (other == null)
 				{
@@ -170,7 +171,7 @@ namespace Gorgon.Graphics
 		/// <param name="left">The left instance to compare.</param>
 		/// <param name="right">The right instance to compare.</param>
 		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-		public static bool Equals(GorgonTextureShaderViews left, GorgonTextureShaderViews right)
+		public static bool Equals(GorgonShaderResourceViews left, GorgonShaderResourceViews right)
 		{
 			if ((left == null) || (right == null) || (left.D3DShaderResourceViewBindCount != right.D3DShaderResourceViewBindCount))
 			{
@@ -193,7 +194,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
 		/// <exception cref="NotSupportedException">This method is not supported by this type.</exception>
-		void ICollection<GorgonTextureShaderView>.Add(GorgonTextureShaderView item)
+		void ICollection<GorgonShaderResourceView>.Add(GorgonShaderResourceView item)
 		{
 			throw new NotSupportedException();
 		}
@@ -204,7 +205,7 @@ namespace Gorgon.Graphics
 		/// <param name="index">The zero-based index at which <paramref name="item" /> should be inserted.</param>
 		/// <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1" />.</param>
 		/// <exception cref="NotSupportedException">This method is not supported by this type.</exception>
-		void IList<GorgonTextureShaderView>.Insert(int index, GorgonTextureShaderView item)
+		void IList<GorgonShaderResourceView>.Insert(int index, GorgonShaderResourceView item)
 		{
 			throw new NotSupportedException();
 		}
@@ -215,7 +216,7 @@ namespace Gorgon.Graphics
 		/// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
 		/// <returns>true if <paramref name="item" /> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
 		/// <exception cref="NotSupportedException">This method is not supported by this type.</exception>
-		bool ICollection<GorgonTextureShaderView>.Remove(GorgonTextureShaderView item)
+		bool ICollection<GorgonShaderResourceView>.Remove(GorgonShaderResourceView item)
 		{
 			throw new NotSupportedException();
 		}
@@ -225,7 +226,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="index">The zero-based index of the item to remove.</param>
 		/// <exception cref="NotSupportedException">This method is not supported by this type.</exception>
-		void IList<GorgonTextureShaderView>.RemoveAt(int index)
+		void IList<GorgonShaderResourceView>.RemoveAt(int index)
 		{
 			throw new NotSupportedException();
 		}
@@ -254,7 +255,7 @@ namespace Gorgon.Graphics
 		/// <summary>Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.</summary>
 		/// <returns>true if <paramref name="item" /> is found in the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false.</returns>
 		/// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
-		public bool Contains(GorgonTextureShaderView item)
+		public bool Contains(GorgonShaderResourceView item)
 		{
 			return Array.IndexOf(_views, item) != -1;
 		}
@@ -267,7 +268,7 @@ namespace Gorgon.Graphics
 		/// <exception cref="T:System.ArgumentOutOfRangeException">
 		/// <paramref name="arrayIndex" /> is less than 0.</exception>
 		/// <exception cref="T:System.ArgumentException">The number of elements in the source <see cref="T:System.Collections.Generic.ICollection`1" /> is greater than the available space from <paramref name="arrayIndex" /> to the end of the destination <paramref name="array" />.</exception>
-		public void CopyTo(GorgonTextureShaderView[] array, int arrayIndex)
+		public void CopyTo(GorgonShaderResourceView[] array, int arrayIndex)
 		{
 			_views.CopyTo(array, arrayIndex);
 		}
@@ -275,9 +276,9 @@ namespace Gorgon.Graphics
 		/// <summary>Returns an enumerator that iterates through the collection.</summary>
 		/// <returns>An enumerator that can be used to iterate through the collection.</returns>
 		/// <filterpriority>1</filterpriority>
-		public IEnumerator<GorgonTextureShaderView> GetEnumerator()
+		public IEnumerator<GorgonShaderResourceView> GetEnumerator()
 		{
-			foreach (GorgonTextureShaderView view in _views)
+			foreach (GorgonShaderResourceView view in _views)
 			{
 				yield return view;
 			}
@@ -286,7 +287,7 @@ namespace Gorgon.Graphics
 		/// <summary>Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1" />.</summary>
 		/// <returns>The index of <paramref name="item" /> if found in the list; otherwise, -1.</returns>
 		/// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.IList`1" />.</param>
-		public int IndexOf(GorgonTextureShaderView item)
+		public int IndexOf(GorgonShaderResourceView item)
 		{
 			return Array.IndexOf(_views, item);
 		}
@@ -294,18 +295,18 @@ namespace Gorgon.Graphics
 
 		#region Constructor/Finalizer.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonTextureShaderViews"/> class.
+		/// Initializes a new instance of the <see cref="GorgonShaderResourceViews"/> class.
 		/// </summary>
-		public GorgonTextureShaderViews()
+		public GorgonShaderResourceViews()
 		{
 			
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonTextureShaderViews"/> class.
+		/// Initializes a new instance of the <see cref="GorgonShaderResourceViews"/> class.
 		/// </summary>
 		/// <param name="shaderResourceViews">The shader resource views to assign.</param>
-		public GorgonTextureShaderViews(IEnumerable<GorgonTextureShaderView> shaderResourceViews)
+		public GorgonShaderResourceViews(IEnumerable<GorgonShaderResourceView> shaderResourceViews)
 		{
 			if (shaderResourceViews == null)
 			{
@@ -313,7 +314,7 @@ namespace Gorgon.Graphics
 			}
 			int index = 0;
 
-			foreach (GorgonTextureShaderView view in shaderResourceViews)
+			foreach (GorgonShaderResourceView view in shaderResourceViews)
 			{
 				if (index >= _views.Length)
 				{

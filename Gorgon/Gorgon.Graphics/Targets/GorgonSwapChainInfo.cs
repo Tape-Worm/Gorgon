@@ -24,6 +24,8 @@
 // 
 #endregion
 
+using System;
+using Gorgon.Core;
 using DXGI = SharpDX.DXGI;
 
 namespace Gorgon.Graphics
@@ -32,6 +34,7 @@ namespace Gorgon.Graphics
 	/// Settings for defining the set up for a swap chain.
 	/// </summary>
 	public class GorgonSwapChainInfo 
+		: IGorgonCloneable<GorgonSwapChainInfo>
 	{
 		#region Properties.
 		/// <summary>
@@ -103,6 +106,24 @@ namespace Gorgon.Graphics
 		{
 			get;
 			set;
+		}
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Function to clone an object.
+		/// </summary>
+		/// <returns>The cloned object.</returns>
+		public GorgonSwapChainInfo Clone()
+		{
+			return new GorgonSwapChainInfo
+			       {
+				       Format = Format,
+				       Width = Width,
+				       Height = Height,
+				       StretchBackBuffer = StretchBackBuffer,
+				       UseFlipMode = UseFlipMode
+			       };
 		}
 		#endregion
 

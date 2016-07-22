@@ -106,15 +106,6 @@ namespace Gorgon.Graphics
 		}
 
 		/// <summary>
-		/// Property to return the graphics interface used to create and manipulate the buffer.
-		/// </summary>
-		protected GorgonGraphics Graphics
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
 		/// Property to return the type of data in the resource.
 		/// </summary>
 		public override ResourceType ResourceType => ResourceType.Buffer;
@@ -129,7 +120,6 @@ namespace Gorgon.Graphics
 		#endregion
 
 		#region Constructor.
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonBuffer" /> class.
 		/// </summary>
@@ -141,7 +131,6 @@ namespace Gorgon.Graphics
 		protected GorgonBuffer(GorgonGraphics graphics, string name, IGorgonLog log)
 			: base(graphics, name)
 		{
-			Graphics = graphics;
 			Log = log ?? GorgonLogDummy.DefaultInstance;
 		}
 		#endregion

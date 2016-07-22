@@ -554,7 +554,7 @@ Please report this error by pasting the details to the bug tracker in Gorgon's g
   <data name="GORGFX_INVALID_SETTINGS" xml:space="preserve">
     <value>Cannot use a '{0}' settings object with a '{1}' object.</value>
   </data>
-  <data name="GORGFX_MULTISAMPLE_INVALID" xml:space="preserve">
+  <data name="GORGFX_ERR_MULTISAMPLE_INVALID" xml:space="preserve">
     <value>The video device '{0}' does not support multisampling with a count of {1} and a quality of {2} for format [{3}].</value>
   </data>
   <data name="GORGFX_RENDERTARGET_ALREADY_FULLSCREEN" xml:space="preserve">
@@ -584,56 +584,50 @@ Please report this error by pasting the details to the bug tracker in Gorgon's g
   <data name="GORGFX_TEXTURE_3D_CPU_ACCESSIBLE" xml:space="preserve">
     <value>This 3D texture is CPU accessible and cannot be copied.</value>
   </data>
-  <data name="GORGFX_TEXTURE_CANNOT_COPY_SAME_SUBRESOURCE" xml:space="preserve">
+  <data name="GORGFX_ERR_TEXTURE_CANNOT_COPY_SAME_SUBRESOURCE" xml:space="preserve">
     <value>Cannot copy to and from the same sub resource on the same texture.</value>
   </data>
-  <data name="GORGFX_TEXTURE_COPY_CANNOT_CONVERT" xml:space="preserve">
-    <value>Cannot copy because these formats: [{0}] and [{1}] cannot be converted.</value>
+  <data name="GORGFX_ERR_TEXTURE_COPY_CANNOT_CONVERT" xml:space="preserve">
+    <value>Cannot copy because these formats: [{0}] and [{1}] cannot be converted. Or, the device does not support format conversion.</value>
   </data>
-  <data name="GORGFX_TEXTURE_IS_DYNAMIC_IMMUTABLE" xml:space="preserve">
+  <data name="GORGFX_ERR_TEXTURE_IS_DYNAMIC_OR_IMMUTABLE" xml:space="preserve">
     <value>Cannot update a texture that is Dynamic or Immutable.</value>
   </data>
   <data name="GORGFX_TEXTURE_IS_SAME" xml:space="preserve">
     <value>The source texture and this texture are the same.  Cannot copy.</value>
   </data>
-  <data name="GORGFX_TEXTURE_NOT_SAME_TYPE" xml:space="preserve">
+  <data name="GORGFX_ERR_TEXTURE_NOT_SAME_TYPE" xml:space="preserve">
     <value>The texure '{0}' is a [{1}] and cannot be copied to or from the type [{2}].</value>
   </data>
   <data name="GORGFX_VIEW_DRV_NO_STAGING" xml:space="preserve">
     <value>Depth views cannot be bound to resources that have a usage of [Staging].</value>
   </data>
-  <data name="GORGFX_LOCK_CANNOT_READ_NON_STAGING" xml:space="preserve">
+  <data name="GORGFX_ERR_LOCK_CANNOT_READ_NON_STAGING" xml:space="preserve">
     <value>Cannot lock a buffer for reading if the resource does not have a usage of [Staging].</value>
-  </data>
-  <data name="GORGFX_LOCK_CANNOT_USE_WITH_READ" xml:space="preserve">
-    <value>Cannot use [Discard] or [NoOverwrite] with a [Read] flag.</value>
-  </data>
-  <data name="GORGFX_LOCK_NEED_DISCARD_NOOVERWRITE" xml:space="preserve">
-    <value>Calling lock on a resource when using a deferred context requires at least the [Discard] and/or the [NoOverwrite] flags.</value>
   </data>
   <data name="GORGFX_TEXTURE_NO_OVERWRITE_NOT_VALID" xml:space="preserve">
     <value>Cannot lock this texture with a lock type of [NoOverwrite]</value>
   </data>
-  <data name="GORGFX_TEXTURE_USAGE_CANT_LOCK" xml:space="preserve">
+  <data name="GORGFX_ERR_TEXTURE_USAGE_CANT_LOCK" xml:space="preserve">
     <value>A texture with a usage of [{0}] cannot be locked.</value>
   </data>
   <data name="GORGFX_IMAGE_BUFFER_SIZE_MISMATCH" xml:space="preserve">
     <value>There is a mismatch between the image size, and the buffer size.</value>
   </data>
-  <data name="GORGFX_TEXTURE_MULTISAMPLED" xml:space="preserve">
+  <data name="GORGFX_ERR_TEXTURE_MULTISAMPLED" xml:space="preserve">
     <value>This operation does not support multisampled textures.</value>
   </data>
-  <data name="GORGFX_TEXTURE_MULTISAMPLE_PARAMS_MISMATCH" xml:space="preserve">
+  <data name="GORGFX_ERR_TEXTURE_MULTISAMPLE_PARAMS_MISMATCH" xml:space="preserve">
     <value>The textures have different multisampling parameters.  This operation requires that all textures have the same multisampling parameters.</value>
   </data>
-  <data name="GORGFX_TEXTURE_MUST_BE_SAME_SIZE" xml:space="preserve">
+  <data name="GORGFX_ERR_TEXTURE_MUST_BE_SAME_SIZE" xml:space="preserve">
     <value>The textures must be the same width and height.</value>
   </data>
   <data name="GORGFX_RESOURCE_INVALID" xml:space="preserve">
     <value>The resource type [{0}] is invalid.</value>
   </data>
-  <data name="GORGFX_TYPE_CANNOT_BE_USED" xml:space="preserve">
-    <value>The type '{0}' cannot use with this method.</value>
+  <data name="GORGFX_ERR_BINDING_TYPE_CANNOT_BE_USED" xml:space="preserve">
+    <value>The binding type [{0}] cannot use with this method.</value>
   </data>
   <data name="GORGFX_TEXTURE_CANNOT_COPY_NONSTAGING" xml:space="preserve">
     <value>Feature level SM2_a_b video devices cannot copy non-staging textures.</value>
@@ -668,26 +662,26 @@ Please report this error by pasting the details to the bug tracker in Gorgon's g
   <data name="GORGFX_TEXTURE_OUT_OF_BOUNDS" xml:space="preserve">
     <value>The region ({0},{1})x({2},{3}) is out of bounds for the texture '{4}'.</value>
   </data>
-  <data name="GORGFX_TEXTURE_RESOLVE_DEST_NOT_DEFAULT" xml:space="preserve">
+  <data name="GORGFX_ERR_TEXTURE_RESOLVE_DEST_NOT_DEFAULT" xml:space="preserve">
     <value>The destination texture '{0}' must have a default usage.</value>
   </data>
-  <data name="GORGFX_TEXTURE_RESOLVE_FORMATS_NOT_SAME" xml:space="preserve">
-    <value>The destination texture must have a format of '{0}'.</value>
+  <data name="GORGFX_ERR_TEXTURE_RESOLVE_FORMATS_NOT_SAME" xml:space="preserve">
+    <value>The destination texture must have a format of [{0}].</value>
   </data>
-  <data name="GORGFX_TEXTURE_RESOLVE_FORMAT_CANNOT_BE_TYPELESS" xml:space="preserve">
+  <data name="GORGFX_ERR_TEXTURE_RESOLVE_FORMAT_CANNOT_BE_TYPELESS" xml:space="preserve">
     <value>The resolve format must not be typeless.</value>
   </data>
-  <data name="GORGFX_TEXTURE_RESOLVE_FORMAT_MUST_BE_UNKNOWN" xml:space="preserve">
-    <value>The format used to resolve this multisampled texture must be set to unknown because the textures have identical formats.</value>
+  <data name="GORGFX_ERR_TEXTURE_RESOLVE_FORMAT_MUST_BE_UNKNOWN" xml:space="preserve">
+    <value>The format used to resolve this multisampled texture must be set to because the textures have identical formats.</value>
   </data>
-  <data name="GORGFX_TEXTURE_RESOLVE_FORMAT_NOT_SAME_GROUP" xml:space="preserve">
-    <value>The source and destination have the same typeless format of '{0}'.  The resolve format is not a part of the same format grouping.</value>
+  <data name="GORGFX_ERR_TEXTURE_RESOLVE_FORMAT_NOT_SAME_GROUP" xml:space="preserve">
+    <value>The source and destination have the same typeless format of [{0}].  The resolve format [{1}] is not a part of the same format grouping.</value>
   </data>
   <data name="GORGFX_TEXTURE_RESOLVE_SRC_DEST_NOT_SAME_GROUP" xml:space="preserve">
-    <value>The source format '{0}' is not in the same group as the destination format of '{1}'.</value>
+    <value>The source format [{0}] is not in the same group as the destination format of [{1}].</value>
   </data>
-  <data name="GORGFX_TEXTURE_SRC_NOT_MULTISAMPLED" xml:space="preserve">
-    <value>The source texture '{0}' is not multisampled.</value>
+  <data name="GORGFX_ERR_TEXTURE_NOT_MULTISAMPLED" xml:space="preserve">
+    <value>The texture '{0}' is not multisampled.</value>
   </data>
   <data name="GORGFX_FONT_BRUSH_INTERPOL_TOSTRING" xml:space="preserve">
     <value>Weighted interpolation at {0}.  Color: R={1}, G={2}, B={3}, A={4}.</value>
