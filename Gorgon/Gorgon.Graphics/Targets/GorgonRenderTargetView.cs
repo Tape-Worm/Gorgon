@@ -82,19 +82,19 @@ namespace Gorgon.Graphics
 		///			<term>Value</term>		
 		///		</listheader>
 		///		<item>
-		///			<term>0 - 4 (4 bits)</term>
+		///			<term>0 - 3 (4 bits)</term>
 		///			<term><see cref="MipSlice">Mip slice.</see></term>
 		///		</item>
 		///		<item>
-		///			<term>4 - 15 (11 bits)</term>
+		///			<term>4 - 14 (11 bits)</term>
 		///			<term><see cref="FirstArrayOrDepthIndex">Array/Depth Index.</see></term>
 		///		</item>
 		///		<item>
-		///			<term>15 - 26 (11 bits)</term>
+		///			<term>15 - 25 (11 bits)</term>
 		///			<term><see cref="ArrayOrDepthCount">Array/Depth Count.</see></term>
 		///		</item>
 		///		<item>
-		///			<term>26 - 34 (8 bits)</term>
+		///			<term>25 - 33 (8 bits)</term>
 		///			<term><see cref="Format"/></term>
 		///		</item>
 		/// </list>
@@ -102,7 +102,7 @@ namespace Gorgon.Graphics
 		/// </para>
 		/// <para>
 		/// For example, a <see cref="MipSlice"/> of 2, and a <see cref="FirstArrayOrDepthIndex"/> of 4, with an <see cref="ArrayOrDepthCount"/> of 2 and a <see cref="Format"/> 
-		/// of <see cref="BufferFormat.R8G8B8A8_UNorm"/> (28) would yield a key of: <c>1879113794</c>. 
+		/// of <c>R8G8B8A8_UNorm</c> (28) would yield a key of: <c>1879113794</c>. 
 		/// <br/>
 		/// Or, a <see cref="MipSlice"/> of 0, with a <see cref="FirstArrayOrDepthIndex"/> of 0, and a <see cref="ArrayOrDepthCount"/> of 1, and the same buffer format would yield a key of: <c>1879048208</c>.
 		/// </para>
@@ -360,12 +360,12 @@ namespace Gorgon.Graphics
 			Initialize(!texture.Info.MultiSampleInfo.Equals(GorgonMultiSampleInfo.NoMultiSampling));
 
 			// The key for a render target view is broken up into the following layout.
-			// Bits: [34 - 26]   [26 - 15]     [15 - 4]      [4 - 0]
+			// Bits: [33 - 26]   [25 - 15]     [14 - 4]      [3 - 0]
 			//       Format      Array/Depth   Array/Depth   Mip slice
 			//                   Count         Index
-	        Key = (((uint)Format) & 255) << 26
-	              | (((uint)ArrayOrDepthCount) & 2047) << 15
-	              | (((uint)FirstArrayOrDepthIndex) & 2047) << 4
+	        Key = (((uint)Format) & 0xff) << 26
+	              | (((uint)ArrayOrDepthCount) & 0x7ff) << 15
+	              | (((uint)FirstArrayOrDepthIndex) & 0x7ff) << 4
 	              | (uint)MipSlice;
         }
         #endregion

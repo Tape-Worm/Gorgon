@@ -425,6 +425,60 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The format [{0}] is not valid for a depth/stencil binding..
+        /// </summary>
+        internal static string GORGFX_ERR_DEPTHSTENCIL_FORMAT_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_DEPTHSTENCIL_FORMAT_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A texture with a binding of [DepthStencil] cannot have a binding of [UnorderedAccess] or [RenderTarget]..
+        /// </summary>
+        internal static string GORGFX_ERR_DEPTHSTENCIL_INVALID_BINDING {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_DEPTHSTENCIL_INVALID_BINDING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot use multisampling with a depth/stencil texture on feature level 10 devices or below..
+        /// </summary>
+        internal static string GORGFX_ERR_DEPTHSTENCIL_MS_FL101 {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_DEPTHSTENCIL_MS_FL101", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A depth/stencil texture must have a usage of [Default]..
+        /// </summary>
+        internal static string GORGFX_ERR_DEPTHSTENCIL_NOT_DEFAULT {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_DEPTHSTENCIL_NOT_DEFAULT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A depth/stencil cannot be bound as a shader resource unless it has a typeless format..
+        /// </summary>
+        internal static string GORGFX_ERR_DEPTHSTENCIL_TYPED_SHADER_RESOURCE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_DEPTHSTENCIL_TYPED_SHADER_RESOURCE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A 3D texture cannot be used as a depth/stencil buffer..
+        /// </summary>
+        internal static string GORGFX_ERR_DEPTHSTENCIL_VOLUME {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_DEPTHSTENCIL_VOLUME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The feature level [{0}] is not valid..
         /// </summary>
         internal static string GORGFX_ERR_FEATURE_LEVEL_INVALID {
@@ -497,6 +551,15 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The mip count must be at least 1..
+        /// </summary>
+        internal static string GORGFX_ERR_MIP_COUNT_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_MIP_COUNT_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The block count must be larger than 0..
         /// </summary>
         internal static string GORGFX_ERR_MISSING_BLOCK_COUNT {
@@ -506,11 +569,29 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The multisample count {0} with a format of [{1}] is not supported on the device &apos;{2}&apos;..
+        /// </summary>
+        internal static string GORGFX_ERR_MULTISAMPLE_COUNT_NOT_SUPPORTED {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_MULTISAMPLE_COUNT_NOT_SUPPORTED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The video device &apos;{0}&apos; does not support multisampling with a count of {1} and a quality of {2} for format [{3}]..
         /// </summary>
         internal static string GORGFX_ERR_MULTISAMPLE_INVALID {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_MULTISAMPLE_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The mip level count must be set to 1 when multisampling is enabled on a texture..
+        /// </summary>
+        internal static string GORGFX_ERR_MULTISAMPLE_INVALID_MIP {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_MULTISAMPLE_INVALID_MIP", resourceCulture);
             }
         }
         
@@ -583,6 +664,15 @@ namespace Gorgon.Graphics.Properties {
         internal static string GORGFX_ERR_PARAMETER_MUST_NOT_BE_NULL {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_PARAMETER_MUST_NOT_BE_NULL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A render target texture must have a usage of [Default]..
+        /// </summary>
+        internal static string GORGFX_ERR_RENDERTARGET_NOT_DEFAULT {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_RENDERTARGET_NOT_DEFAULT", resourceCulture);
             }
         }
         
@@ -767,6 +857,24 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The array count must be between 1 and {0}..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_ARRAYCOUNT_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_ARRAYCOUNT_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A compressed texture must have a width and height that is a multiple of 4..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_BC_SIZE_NOT_MOD_4 {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_BC_SIZE_NOT_MOD_4", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot copy to and from the same sub resource on the same texture..
         /// </summary>
         internal static string GORGFX_ERR_TEXTURE_CANNOT_COPY_SAME_SUBRESOURCE {
@@ -785,6 +893,33 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot create the [{0}].  The depth must be between 1 and {1}..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_DEPTH_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_DEPTH_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The format [{0}] is not supported for a [{1}] texture..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_FORMAT_NOT_SUPPORTED {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_FORMAT_NOT_SUPPORTED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot create the [{0}] texture. The height must be between 1 and {1}..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_HEIGHT_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_HEIGHT_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The texture is immutable and cannot be updated or read back to the CPU..
         /// </summary>
         internal static string GORGFX_ERR_TEXTURE_IMMUTABLE {
@@ -794,11 +929,29 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The texture &apos;{0}&apos; has a usage of [Immutable], but has no data to initialize the texture with..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_IMMUTABLE_REQUIRES_DATA {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_IMMUTABLE_REQUIRES_DATA", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot update a texture that is Dynamic or Immutable..
         /// </summary>
         internal static string GORGFX_ERR_TEXTURE_IS_DYNAMIC_OR_IMMUTABLE {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_TEXTURE_IS_DYNAMIC_OR_IMMUTABLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot create a texture with a multisampling count of {0}..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_MULTISAMPLE_COUNT_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_MULTISAMPLE_COUNT_INVALID", resourceCulture);
             }
         }
         
@@ -826,6 +979,15 @@ namespace Gorgon.Graphics.Properties {
         internal static string GORGFX_ERR_TEXTURE_MUST_BE_SAME_SIZE {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_TEXTURE_MUST_BE_SAME_SIZE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The texture format [{0}] must be used with a mip map count of 1..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_NO_MIP_SUPPORT {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_NO_MIP_SUPPORT", resourceCulture);
             }
         }
         
@@ -911,11 +1073,29 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A multisampled texture cannot be bound as an unordered resource..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_UNORDERED_NO_MULTISAMPLE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_UNORDERED_NO_MULTISAMPLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A texture with a usage of [{0}] cannot be locked..
         /// </summary>
         internal static string GORGFX_ERR_TEXTURE_USAGE_CANT_LOCK {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_TEXTURE_USAGE_CANT_LOCK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot create the [{0}] texture.  The width must be between 1 and {1}..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_WIDTH_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_WIDTH_INVALID", resourceCulture);
             }
         }
         
@@ -929,11 +1109,47 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The format [{0}] is not valid for an unordered access binding..
+        /// </summary>
+        internal static string GORGFX_ERR_UAV_FORMAT_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_UAV_FORMAT_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unordered access views cannot be applied to multi-sampled textures..
+        /// </summary>
+        internal static string GORGFX_ERR_UAV_NOT_SUPPORT_MULTISAMPLE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_UAV_NOT_SUPPORT_MULTISAMPLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unordered access views for textures requires a SM5 or better video device..
+        /// </summary>
+        internal static string GORGFX_ERR_UAV_REQUIRES_SM5 {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_UAV_REQUIRES_SM5", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The starting slot [{0}] after all render targets are applied and the number of unordered access views [{1}] is greater than the maximum number of available slots [{2}]..
         /// </summary>
         internal static string GORGFX_ERR_UAV_TOO_MANY {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_UAV_TOO_MANY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An unordered resource must have a usage of [Default].
+        /// </summary>
+        internal static string GORGFX_ERR_UNORDERED_RES_NOT_DEFAULT {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_UNORDERED_RES_NOT_DEFAULT", resourceCulture);
             }
         }
         
@@ -1694,15 +1910,6 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A compressed texture must have a width and height that is a multiple of 4..
-        /// </summary>
-        internal static string GORGFX_TEXTURE_BC_SIZE_NOT_MOD_4 {
-            get {
-                return ResourceManager.GetString("GORGFX_TEXTURE_BC_SIZE_NOT_MOD_4", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Feature level SM2_a_b video devices cannot copy non-staging textures..
         /// </summary>
         internal static string GORGFX_TEXTURE_CANNOT_COPY_NONSTAGING {
@@ -1712,29 +1919,11 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot create the texture cube array.  The array count is not a multiple of 6..
+        ///   Looks up a localized string similar to Cannot create the texture cube array.  Feature level 10.0 devices require an array count of 6..
         /// </summary>
-        internal static string GORGFX_TEXTURE_CUBE_MULTIPLE_OF_SIX {
+        internal static string GORGFX_TEXTURE_CUBE_REQUIRES_6_ARRAY {
             get {
-                return ResourceManager.GetString("GORGFX_TEXTURE_CUBE_MULTIPLE_OF_SIX", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot create the texture cube array.  SM4 devices require a maximum of 6 faces..
-        /// </summary>
-        internal static string GORGFX_TEXTURE_CUBE_NEEDS_MAX_SIX_SM4 {
-            get {
-                return ResourceManager.GetString("GORGFX_TEXTURE_CUBE_NEEDS_MAX_SIX_SM4", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot create a &apos;{0}&apos; with a depth of {1}.  The depth must be between 0 and {2}..
-        /// </summary>
-        internal static string GORGFX_TEXTURE_DEPTH_INVALID {
-            get {
-                return ResourceManager.GetString("GORGFX_TEXTURE_DEPTH_INVALID", resourceCulture);
+                return ResourceManager.GetString("GORGFX_TEXTURE_CUBE_REQUIRES_6_ARRAY", resourceCulture);
             }
         }
         
@@ -1748,47 +1937,11 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The format &apos;{0}&apos; is not supported for a &apos;{1}&apos; texture..
-        /// </summary>
-        internal static string GORGFX_TEXTURE_FORMAT_NOT_SUPPORTED {
-            get {
-                return ResourceManager.GetString("GORGFX_TEXTURE_FORMAT_NOT_SUPPORTED", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot create a &apos;{0}&apos; with a height of {1}.  The height must be between 0 and {2}..
-        /// </summary>
-        internal static string GORGFX_TEXTURE_HEIGHT_INVALID {
-            get {
-                return ResourceManager.GetString("GORGFX_TEXTURE_HEIGHT_INVALID", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Immutable textures require initialization data..
-        /// </summary>
-        internal static string GORGFX_TEXTURE_IMMUTABLE_REQUIRES_DATA {
-            get {
-                return ResourceManager.GetString("GORGFX_TEXTURE_IMMUTABLE_REQUIRES_DATA", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The source texture and this texture are the same.  Cannot copy..
         /// </summary>
         internal static string GORGFX_TEXTURE_IS_SAME {
             get {
                 return ResourceManager.GetString("GORGFX_TEXTURE_IS_SAME", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The texture format [{0}] must be used with a mip map count of 1..
-        /// </summary>
-        internal static string GORGFX_TEXTURE_NO_MIP_SUPPORT {
-            get {
-                return ResourceManager.GetString("GORGFX_TEXTURE_NO_MIP_SUPPORT", resourceCulture);
             }
         }
         
@@ -1816,15 +1969,6 @@ namespace Gorgon.Graphics.Properties {
         internal static string GORGFX_TEXTURE_RESOLVE_SRC_DEST_NOT_SAME_GROUP {
             get {
                 return ResourceManager.GetString("GORGFX_TEXTURE_RESOLVE_SRC_DEST_NOT_SAME_GROUP", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot create a &apos;{0}&apos; with a width of {1}.  The width must be between 0 and {2}..
-        /// </summary>
-        internal static string GORGFX_TEXTURE_WIDTH_INVALID {
-            get {
-                return ResourceManager.GetString("GORGFX_TEXTURE_WIDTH_INVALID", resourceCulture);
             }
         }
         
@@ -2081,7 +2225,7 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This resource attched to this view is not a {0} texture..
+        ///   Looks up a localized string similar to This resource attached to this view is not a {0} texture..
         /// </summary>
         internal static string GORGFX_VIEW_RESOURCE_NOT_TEXTURE {
             get {
@@ -2108,38 +2252,11 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unordered access views cannot be applied to texture cubes or multi-sampled textures..
-        /// </summary>
-        internal static string GORGFX_VIEW_UAV_NOT_SUPPORTED {
-            get {
-                return ResourceManager.GetString("GORGFX_VIEW_UAV_NOT_SUPPORTED", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unordered access views for textures requires a SM5 or better video device..
-        /// </summary>
-        internal static string GORGFX_VIEW_UAV_REQUIRES_SM5 {
-            get {
-                return ResourceManager.GetString("GORGFX_VIEW_UAV_REQUIRES_SM5", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The array requires 4 elements to clear the unordered access view..
         /// </summary>
         internal static string GORGFX_VIEW_UNORDERED_CLEAR_NEED_4_VALUES {
             get {
                 return ResourceManager.GetString("GORGFX_VIEW_UNORDERED_CLEAR_NEED_4_VALUES", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot bind an unordered access view to a resource that has a usage of [Staging] or [Dynamic]..
-        /// </summary>
-        internal static string GORGFX_VIEW_UNORDERED_NO_STAGING_DYNAMIC {
-            get {
-                return ResourceManager.GetString("GORGFX_VIEW_UNORDERED_NO_STAGING_DYNAMIC", resourceCulture);
             }
         }
         

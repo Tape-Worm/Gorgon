@@ -42,9 +42,9 @@ namespace Gorgon.Graphics
 	{
 		#region Variables.
 		// Render target views to apply to the pipeline.
-		private readonly GorgonRenderTargetView[] _views = new GorgonRenderTargetView[8];
+		private readonly GorgonRenderTargetView[] _views = new GorgonRenderTargetView[D3D11.OutputMergerStage.SimultaneousRenderTargetCount];
 		// Actual direct 3D render target views to bind.
-		private readonly D3D11.RenderTargetView[] _actualViews = new D3D11.RenderTargetView[8];
+		private readonly D3D11.RenderTargetView[] _actualViews = new D3D11.RenderTargetView[D3D11.OutputMergerStage.SimultaneousRenderTargetCount];
 		// The currently active depth stencil view.
 		private GorgonDepthStencilView _depthStencilView;
 		// The number of slots bound.

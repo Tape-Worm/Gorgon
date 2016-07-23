@@ -226,8 +226,8 @@
   <data name="GORGFX_ERR_VIEW_CANNOT_BIND_UNKNOWN_RESOURCE" xml:space="preserve">
     <value>Cannot bind the view to the resource, the resource type is not known.</value>
   </data>
-  <data name="GORGFX_VIEW_UAV_NOT_SUPPORTED" xml:space="preserve">
-    <value>Unordered access views cannot be applied to texture cubes or multi-sampled textures.</value>
+  <data name="GORGFX_ERR_UAV_NOT_SUPPORT_MULTISAMPLE" xml:space="preserve">
+    <value>Unordered access views cannot be applied to multi-sampled textures.</value>
   </data>
   <data name="GORGFX_VIEW_DEPTH_COUNT_INVALID" xml:space="preserve">
     <value>The depth count must be between 1 and {0}.</value>
@@ -302,8 +302,8 @@
     <value>Shader resource views cannot be bound to resources that have a usage of [Staging] or [Dynamic].</value>
     <comment>Applies to textures/buffers</comment>
   </data>
-  <data name="GORGFX_VIEW_UNORDERED_NO_STAGING_DYNAMIC" xml:space="preserve">
-    <value>Cannot bind an unordered access view to a resource that has a usage of [Staging] or [Dynamic].</value>
+  <data name="GORGFX_ERR_UNORDERED_RES_NOT_DEFAULT" xml:space="preserve">
+    <value>An unordered resource must have a usage of [Default]</value>
     <comment>Applies to textures/buffers</comment>
   </data>
   <data name="GORGFX_TOSTR_MULTISAMPLEINFO" xml:space="preserve">
@@ -566,14 +566,14 @@ Please report this error by pasting the details to the bug tracker in Gorgon's g
   <data name="GORGFX_RENDERTARGET_NO_WINDOW" xml:space="preserve">
     <value>No window to bind with the swap chain.</value>
   </data>
-  <data name="GORGFX_TEXTURE_DEPTH_INVALID" xml:space="preserve">
-    <value>Cannot create a '{0}' with a depth of {1}.  The depth must be between 0 and {2}.</value>
+  <data name="GORGFX_ERR_TEXTURE_DEPTH_INVALID" xml:space="preserve">
+    <value>Cannot create the [{0}].  The depth must be between 1 and {1}.</value>
   </data>
-  <data name="GORGFX_TEXTURE_HEIGHT_INVALID" xml:space="preserve">
-    <value>Cannot create a '{0}' with a height of {1}.  The height must be between 0 and {2}.</value>
+  <data name="GORGFX_ERR_TEXTURE_HEIGHT_INVALID" xml:space="preserve">
+    <value>Cannot create the [{0}] texture. The height must be between 1 and {1}.</value>
   </data>
-  <data name="GORGFX_TEXTURE_WIDTH_INVALID" xml:space="preserve">
-    <value>Cannot create a '{0}' with a width of {1}.  The width must be between 0 and {2}.</value>
+  <data name="GORGFX_ERR_TEXTURE_WIDTH_INVALID" xml:space="preserve">
+    <value>Cannot create the [{0}] texture.  The width must be between 1 and {1}.</value>
   </data>
   <data name="GORGFX_IMAGE_FORMAT_MISMATCH" xml:space="preserve">
     <value>The texture format [{0}] must match the image data format [{1}].</value>
@@ -651,7 +651,7 @@ Please report this error by pasting the details to the bug tracker in Gorgon's g
     <value>The resource attached to this view is not a {0} render target.</value>
   </data>
   <data name="GORGFX_VIEW_RESOURCE_NOT_TEXTURE" xml:space="preserve">
-    <value>This resource attched to this view is not a {0} texture.</value>
+    <value>This resource attached to this view is not a {0} texture.</value>
   </data>
   <data name="GORGFX_FONT_GLYPH_TEXTURE_NOT_FOUND" xml:space="preserve">
     <value>The texture '{0}' was not found.</value>
@@ -686,22 +686,16 @@ Please report this error by pasting the details to the bug tracker in Gorgon's g
   <data name="GORGFX_FONT_BRUSH_INTERPOL_TOSTRING" xml:space="preserve">
     <value>Weighted interpolation at {0}.  Color: R={1}, G={2}, B={3}, A={4}.</value>
   </data>
-  <data name="GORGFX_TEXTURE_BC_SIZE_NOT_MOD_4" xml:space="preserve">
+  <data name="GORGFX_ERR_TEXTURE_BC_SIZE_NOT_MOD_4" xml:space="preserve">
     <value>A compressed texture must have a width and height that is a multiple of 4.</value>
   </data>
-  <data name="GORGFX_TEXTURE_CUBE_MULTIPLE_OF_SIX" xml:space="preserve">
-    <value>Cannot create the texture cube array.  The array count is not a multiple of 6.</value>
+  <data name="GORGFX_TEXTURE_CUBE_REQUIRES_6_ARRAY" xml:space="preserve">
+    <value>Cannot create the texture cube array.  Feature level 10.0 devices require an array count of 6.</value>
   </data>
-  <data name="GORGFX_TEXTURE_CUBE_NEEDS_MAX_SIX_SM4" xml:space="preserve">
-    <value>Cannot create the texture cube array.  SM4 devices require a maximum of 6 faces.</value>
+  <data name="GORGFX_ERR_TEXTURE_FORMAT_NOT_SUPPORTED" xml:space="preserve">
+    <value>The format [{0}] is not supported for a [{1}] texture.</value>
   </data>
-  <data name="GORGFX_TEXTURE_FORMAT_NOT_SUPPORTED" xml:space="preserve">
-    <value>The format '{0}' is not supported for a '{1}' texture.</value>
-  </data>
-  <data name="GORGFX_TEXTURE_IMMUTABLE_REQUIRES_DATA" xml:space="preserve">
-    <value>Immutable textures require initialization data.</value>
-  </data>
-  <data name="GORGFX_VIEW_UAV_REQUIRES_SM5" xml:space="preserve">
+  <data name="GORGFX_ERR_UAV_REQUIRES_SM5" xml:space="preserve">
     <value>Unordered access views for textures requires a SM5 or better video device.</value>
   </data>
   <data name="GORGFX_BC_NO_ENCODER" xml:space="preserve">
@@ -716,7 +710,7 @@ Please report this error by pasting the details to the bug tracker in Gorgon's g
   <data name="GORGFX_IMAGE_CANNOT_COPY_IMAGE_DATA_MISMATCH" xml:space="preserve">
     <value>Cannot copy the image.  The source width, height (if applicable) and format must be the same as the destination.</value>
   </data>
-  <data name="GORGFX_TEXTURE_NO_MIP_SUPPORT" xml:space="preserve">
+  <data name="GORGFX_ERR_TEXTURE_NO_MIP_SUPPORT" xml:space="preserve">
     <value>The texture format [{0}] must be used with a mip map count of 1.</value>
   </data>
   <data name="GORGFX_ERR_CANNOT_MULTISAMPLE_CUBE" xml:space="preserve">
@@ -828,5 +822,50 @@ Errors:
   </data>
   <data name="GORGFX_ERR_NOT_GORGON_SHADER" xml:space="preserve">
     <value>The data in the stream is not a Gorgon binary shader.</value>
+  </data>
+  <data name="GORGFX_ERR_MIP_COUNT_INVALID" xml:space="preserve">
+    <value>The mip count must be at least 1.</value>
+  </data>
+  <data name="GORGFX_ERR_MULTISAMPLE_INVALID_MIP" xml:space="preserve">
+    <value>The mip level count must be set to 1 when multisampling is enabled on a texture.</value>
+  </data>
+  <data name="GORGFX_ERR_TEXTURE_ARRAYCOUNT_INVALID" xml:space="preserve">
+    <value>The array count must be between 1 and {0}.</value>
+  </data>
+  <data name="GORGFX_ERR_DEPTHSTENCIL_FORMAT_INVALID" xml:space="preserve">
+    <value>The format [{0}] is not valid for a depth/stencil binding.</value>
+  </data>
+  <data name="GORGFX_ERR_DEPTHSTENCIL_INVALID_BINDING" xml:space="preserve">
+    <value>A texture with a binding of [DepthStencil] cannot have a binding of [UnorderedAccess] or [RenderTarget].</value>
+  </data>
+  <data name="GORGFX_ERR_DEPTHSTENCIL_MS_FL101" xml:space="preserve">
+    <value>Cannot use multisampling with a depth/stencil texture on feature level 10 devices or below.</value>
+  </data>
+  <data name="GORGFX_ERR_DEPTHSTENCIL_NOT_DEFAULT" xml:space="preserve">
+    <value>A depth/stencil texture must have a usage of [Default].</value>
+  </data>
+  <data name="GORGFX_ERR_DEPTHSTENCIL_TYPED_SHADER_RESOURCE" xml:space="preserve">
+    <value>A depth/stencil cannot be bound as a shader resource unless it has a typeless format.</value>
+  </data>
+  <data name="GORGFX_ERR_DEPTHSTENCIL_VOLUME" xml:space="preserve">
+    <value>A 3D texture cannot be used as a depth/stencil buffer.</value>
+  </data>
+  <data name="GORGFX_ERR_MULTISAMPLE_COUNT_NOT_SUPPORTED" xml:space="preserve">
+    <value>The multisample count {0} with a format of [{1}] is not supported on the device '{2}'.</value>
+  </data>
+  <data name="GORGFX_ERR_RENDERTARGET_NOT_DEFAULT" xml:space="preserve">
+    <value>A render target texture must have a usage of [Default].</value>
+  </data>
+  <data name="GORGFX_ERR_TEXTURE_IMMUTABLE_REQUIRES_DATA" xml:space="preserve">
+    <value>The texture '{0}' has a usage of [Immutable], but has no data to initialize the texture with.</value>
+  </data>
+  <data name="GORGFX_ERR_TEXTURE_MULTISAMPLE_COUNT_INVALID" xml:space="preserve">
+    <value>Cannot create a texture with a multisampling count of {0}.</value>
+  </data>
+  <data name="GORGFX_ERR_TEXTURE_UNORDERED_NO_MULTISAMPLE" xml:space="preserve">
+    <value>A multisampled texture cannot be bound as an unordered resource.</value>
+  </data>
+  <data name="GORGFX_ERR_UAV_FORMAT_INVALID" xml:space="preserve">
+    <value>The format [{0}] is not valid for an unordered access binding.</value>
   </data>
 </root>

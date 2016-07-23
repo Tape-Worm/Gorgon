@@ -45,6 +45,55 @@ namespace Gorgon.Graphics
 		: IDisposable
 	{
 		#region Properties.
+
+		/// <summary>
+		/// Property to return the maximum number of array indices for 1D and 2D textures.
+		/// </summary>
+		int MaxTextureArrayCount
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Property to return the maximum width of a 1D or 2D texture.
+		/// </summary>
+		int MaxTextureWidth
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Property to return the maximum height of a 2D texture.
+		/// </summary>
+		int MaxTextureHeight
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Property to return the maximum width of a 3D texture.
+		/// </summary>
+		int MaxTexture3DWidth
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Property to return the maximum height of a 3D texture.
+		/// </summary>
+		int MaxTexture3DHeight
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Property to return the maximum depth of a 3D texture.
+		/// </summary>
+		int MaxTexture3DDepth
+		{
+			get;
+		}
+
 		/// <summary>
 		/// Property to return information about this video device.
 		/// </summary>
@@ -137,18 +186,56 @@ namespace Gorgon.Graphics
 		D3D11.ComputeShaderFormatSupport GetBufferFormatComputeSupport(DXGI.Format format);
 
 		/// <summary>
-		/// Function to return the maximum number of quality levels supported by the device for multi sampling.
+		/// Function to return a <see cref="GorgonMultiSampleInfo"/> with the best quality level for the given count and format.
 		/// </summary>
 		/// <param name="format">A <c>Format</c> to evaluate.</param>
-		/// <param name="count">Number of multi samples.</param>
+		/// <param name="count">The number of samples.</param>
 		/// <returns>A <see cref="GorgonMultiSampleInfo"/> containing the quality count and sample count for multi-sampling.</returns>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="count"/> is not supported by this video device.</exception>
 		/// <remarks>
 		/// <para>
-		/// Use this to return the quality count for a given multi-sample sample count. This method will return a <see cref="GorgonMultiSampleInfo"/> value type that contains both the sample count passed 
-		/// to this method, and the quality count for that sample count. If the <see cref="GorgonMultiSampleInfo.Quality"/> is less than 1, then the sample count is not supported by this video device.
+		/// Use this to return a <see cref="GorgonMultiSampleInfo"/> containing the best quality level for a given <paramref name="count"/> and <paramref name="format"/>.
+		/// </para>
+		/// <para>
+		/// If <c>Unknown</c> is passed to the <paramref name="format"/> parameter, then this method will return <see cref="GorgonMultiSampleInfo.NoMultiSampling"/>.
+		/// </para>
+		/// <para>
+		/// Before calling this method, call the <see cref="O:Gorgon.Graphics.IGorgonVideoDevice.SupportsMultiSampleCount"/> method to determine if multisampling is supported for the given <paramref name="count"/> and <paramref name="format"/>.
 		/// </para>
 		/// </remarks>
-		GorgonMultiSampleInfo GetMultiSampleQuality(DXGI.Format format, int count);
+		GorgonMultiSampleInfo GetMultiSampleInfo(DXGI.Format format, int count);
+
+		/// <summary>
+		/// Function to return whether or not the device supports multisampling for the given format and sample count.
+		/// </summary>
+		/// <param name="format">A <c>Format</c> to evaluate.</param>
+		/// <param name="count">The number of samples.</param>
+		/// <returns><b>true</b> if the device supports the format, or <b>false</b> if not.</returns>
+		/// <remarks>
+		/// <para>
+		/// Use this to determine if the video device will support multisampling with a specific sample <paramref name="count"/> and <paramref name="format"/>. 
+		/// </para>
+		/// <para>
+		/// If <c>Unknown</c> is passed to the <paramref name="format"/> parameter, then this method will return <b>true</b> because this will equate to no multisampling.
+		/// </para>
+		/// </remarks>
+		bool SupportsMultiSampleCount(DXGI.Format format, int count);
+
+		/// <summary>
+		/// Function to return whether or not the device supports multisampling for the given format and the supplied <see cref="GorgonMultiSampleInfo"/>.
+		/// </summary>
+		/// <param name="format">A <c>Format</c> to evaluate.</param>
+		/// <param name="multiSampleInfo">The multisample info to use when evaluating.</param>
+		/// <returns><b>true</b> if the device supports the format, or <b>false</b> if not.</returns>
+		/// <remarks>
+		/// <para>
+		/// Use this to determine if the video device will support multisampling with a specific <paramref name="multiSampleInfo"/> and <paramref name="format"/>. 
+		/// </para>
+		/// <para>
+		/// If <c>Unknown</c> is passed to the <paramref name="format"/> parameter, then this method will return <b>true</b> because this will equate to no multisampling.
+		/// </para>
+		/// </remarks>
+		bool SupportsMultiSampleInfo(DXGI.Format format, GorgonMultiSampleInfo multiSampleInfo);
 
 		/// <summary>
 		/// Function to find a display mode supported by the Gorgon.

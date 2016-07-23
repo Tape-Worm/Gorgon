@@ -27,9 +27,6 @@
 using System;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Imaging;
-using Gorgon.Graphics.Properties;
-using Gorgon.Math;
-using Gorgon.Native;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics
@@ -39,76 +36,6 @@ namespace Gorgon.Graphics
 	/// </summary>
 	public static class GorgonImageTextureExtensions
 	{
-		/// <summary>
-		/// Function to transfer texture data into an image buffer.
-		/// </summary>
-		/// <param name="texture">The texture to copy from.</param>
-		/// <param name="arrayIndex">The index of the array to copy from.</param>
-		/// <param name="mipLevel">The mip level to copy from.</param>
-		/// <param name="buffer">The buffer to copy into.</param>
-		private static unsafe void GetTextureData(GorgonTexture texture, int arrayIndex, int mipLevel, IGorgonImageBuffer buffer)
-		{
-			int depthCount = 1.Max(buffer.Depth);
-			int height = 1.Max(buffer.Height);
-			int rowStride = buffer.PitchInformation.RowPitch;
-			int sliceStride = buffer.PitchInformation.SlicePitch;
-			D3D11.MapMode flags = D3D11.MapMode.ReadWrite;
-
-			// If this image is compressed, then use the block height information.
-			if (buffer.PitchInformation.VerticalBlockCount > 0)
-			{
-				height = buffer.PitchInformation.HorizontalBlockCount;
-			}
-
-			// Copy the texture data into the buffer.
-			GorgonTextureLockData textureLock;
-			switch (texture.Info.TextureType)
-			{
-				case TextureType.Texture1D:
-				case TextureType.Texture2D:
-					textureLock = texture.Lock(flags, mipLevel, arrayIndex);
-					break;
-				case TextureType.Texture3D:
-					textureLock = texture.Lock(flags, mipLevel);
-					break;
-				default:
-					throw new ArgumentException(string.Format(Resources.GORGFX_IMAGE_TYPE_INVALID, texture.Info.TextureType), nameof(texture));
-			}
-
-			var bufferPtr = (byte*)buffer.Data.Address;
-
-			using (textureLock)
-			{
-				// If the strides don't match, then the texture is using padding, so copy one scanline at a time for each depth index.
-				if ((textureLock.PitchInformation.RowPitch != rowStride)
-					|| (textureLock.PitchInformation.SlicePitch != sliceStride))
-				{
-					byte* destData = bufferPtr;
-					var sourceData = (byte*)textureLock.Data.Address;
-
-					for (int depth = 0; depth < depthCount; depth++)
-					{
-						// Restart at the padded slice size.
-						byte* sourceStart = sourceData;
-
-						for (int row = 0; row < height; row++)
-						{
-							DirectAccess.MemoryCopy(destData, sourceStart, rowStride);
-							sourceStart += textureLock.PitchInformation.RowPitch;
-							destData += rowStride;
-						}
-
-						sourceData += textureLock.PitchInformation.SlicePitch;
-					}
-				}
-				else
-				{
-					// Since we have the same row and slice stride, copy everything in one shot.
-					DirectAccess.MemoryCopy(bufferPtr, (byte*)textureLock.Data.Address, sliceStride);
-				}
-			}
-		}
-
 		/// <summary>
 		/// Function to create a <see cref="GorgonTexture"/> from a <see cref="GorgonImage"/>.
 		/// </summary>
@@ -171,91 +98,6 @@ namespace Gorgon.Graphics
 			}
 
 			return new GorgonTexture(name, graphics, image, info ?? new GorgonImageTextureInfo(), log);
-		}
-
-		/// <summary>
-		/// Function to convert a texture to an image.
-		/// </summary>
-		/// <param name="texture">The texture to convert to an image.</param>
-		/// <returns>A new <see cref="GorgonImage"/> containing the texture data.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="texture"/> has a <see cref="GorgonTextureInfo.Usage"/> set to <c>Immutable</c>.
-		/// <para>-or-</para>
-		/// <para>Thrown when the type of texture is not supported.</para>
-		/// </exception>
-		public static IGorgonImage ToImage(this GorgonTexture texture)
-		{
-			if (texture == null)
-			{
-				throw new ArgumentNullException(nameof(texture));
-			}
-
-			if (texture.Info.Usage == D3D11.ResourceUsage.Immutable)
-			{
-				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TEXTURE_IMMUTABLE), nameof(texture));
-			}
-
-			GorgonTexture stagingTexture = texture;
-			GorgonImage image = null;
-
-			try
-			{
-				if (texture.Info.Usage != D3D11.ResourceUsage.Staging)
-				{
-					stagingTexture = texture.GetStagingTexture();
-				}
-
-				ImageType imageType;
-				switch (stagingTexture.Info.TextureType)
-				{
-					case TextureType.Texture1D:
-						imageType = ImageType.Image1D;
-						break;
-					case TextureType.Texture2D:
-						imageType = stagingTexture.Info.IsCubeMap ? ImageType.ImageCube : ImageType.Image2D;
-						break;
-					case TextureType.Texture3D:
-						imageType = ImageType.Image3D;
-						break;
-					default:
-						throw new ArgumentException(string.Format(Resources.GORGFX_ERR_IMAGE_TYPE_UNSUPPORTED, stagingTexture.Info.TextureType));
-				}
-
-				image = new GorgonImage(new GorgonImageInfo(imageType, stagingTexture.Info.Format)
-				                        {
-					                        Width = texture.Info.Width,
-					                        Height = texture.Info.Height,
-					                        Depth = texture.Info.Depth,
-					                        ArrayCount = texture.Info.ArrayCount,
-					                        MipCount = texture.Info.MipLevels
-				                        });
-
-				for (int array = 0; array < stagingTexture.Info.ArrayCount; array++)
-				{
-					for (int mipLevel = 0; mipLevel < stagingTexture.Info.MipLevels; mipLevel++)
-					{
-						// Get the buffer for the array and mip level.
-						var buffer = image.Buffers[mipLevel, array];
-
-						// Copy the data from the texture.
-						GetTextureData(stagingTexture, array, mipLevel, buffer);
-					}
-				}
-
-				return image;
-			}
-			catch
-			{
-				image?.Dispose();
-				throw;
-			}
-			finally
-			{
-				if (stagingTexture != texture)
-				{
-					stagingTexture?.Dispose();
-				}
-			}
 		}
 	}
 }

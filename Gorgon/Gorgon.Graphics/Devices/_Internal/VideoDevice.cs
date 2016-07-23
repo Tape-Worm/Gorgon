@@ -29,6 +29,7 @@ using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Properties;
+using Gorgon.Math;
 using DXGI = SharpDX.DXGI;
 using D3D = SharpDX.Direct3D;
 using D3D11 = SharpDX.Direct3D11;
@@ -65,6 +66,62 @@ namespace Gorgon.Graphics
 		/// Property to return the adapter for the video device.
 		/// </summary>
 		public DXGI.Adapter2 Adapter => _adapter;
+
+		/// <summary>
+		/// Property to return the maximum number of array indices for 1D and 2D textures.
+		/// </summary>
+		public int MaxTextureArrayCount => 2048;
+
+		/// <summary>
+		/// Property to return the maximum width of a 1D or 2D texture.
+		/// </summary>
+		public int MaxTextureWidth
+		{
+			get
+			{
+				switch (RequestedFeatureLevel)
+				{
+					case FeatureLevelSupport.Level_10_1:
+					case FeatureLevelSupport.Level_10_0:
+						return 8192;
+					default:
+						return 16384;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Property to return the maximum height of a 2D texture.
+		/// </summary>
+		public int MaxTextureHeight
+		{
+			get
+			{
+				switch (RequestedFeatureLevel)
+				{
+					case FeatureLevelSupport.Level_10_1:
+					case FeatureLevelSupport.Level_10_0:
+						return 8192;
+					default:
+						return 16384;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Property to return the maximum width of a 3D texture.
+		/// </summary>
+		public int MaxTexture3DWidth => 2048;
+
+		/// <summary>
+		/// Property to return the maximum height of a 3D texture.
+		/// </summary>
+		public int MaxTexture3DHeight => 2048;
+
+		/// <summary>
+		/// Property to return the maximum depth of a 3D texture.
+		/// </summary>
+		public int MaxTexture3DDepth => 2048;
 
 		/// <summary>
 		/// Property to return the maximum number of render target view slots available.
@@ -270,30 +327,98 @@ namespace Gorgon.Graphics
 		}
 
 		/// <summary>
-		/// Function to return the maximum number of quality levels supported by the device for multi sampling.
+		/// Function to return a <see cref="GorgonMultiSampleInfo"/> with the best quality level for the given count and format.
 		/// </summary>
 		/// <param name="format">A <c>Format</c> to evaluate.</param>
-		/// <param name="count">Number of multi samples.</param>
+		/// <param name="count">The number of samples.</param>
 		/// <returns>A <see cref="GorgonMultiSampleInfo"/> containing the quality count and sample count for multi-sampling.</returns>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="count"/> is not supported by this video device.</exception>
 		/// <remarks>
 		/// <para>
-		/// Use this to return the quality count for a given multi-sample sample count. This method will return a <see cref="GorgonMultiSampleInfo"/> value type that contains both the sample count passed 
-		/// to this method, and the quality count for that sample count. If the <see cref="GorgonMultiSampleInfo.Quality"/> is less than 1, then the sample count is not supported by this video device.
+		/// Use this to return a <see cref="GorgonMultiSampleInfo"/> containing the best quality level for a given <paramref name="count"/> and <paramref name="format"/>.
+		/// </para>
+		/// <para>
+		/// If <c>Unknown</c> is passed to the <paramref name="format"/> parameter, then this method will return <see cref="GorgonMultiSampleInfo.NoMultiSampling"/>.
+		/// </para>
+		/// <para>
+		/// Before calling this method, call the <see cref="O:Gorgon.Graphics.IGorgonVideoDevice.SupportsMultiSampleCount"/> method to determine if multisampling is supported for the given <paramref name="count"/> and <paramref name="format"/>.
 		/// </para>
 		/// </remarks>
-		public GorgonMultiSampleInfo GetMultiSampleQuality(DXGI.Format format, int count)
+		public GorgonMultiSampleInfo GetMultiSampleInfo(DXGI.Format format, int count)
 		{
 			if (format == DXGI.Format.Unknown)
 			{
 				return GorgonMultiSampleInfo.NoMultiSampling;
 			}
 
-			if (count < 1)
+			int quality = _device.CheckMultisampleQualityLevels(format, count);
+
+			if (quality == 0)
 			{
-				count = 1;
+				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_MULTISAMPLE_COUNT_NOT_SUPPORTED, count, format, Info.Name));
 			}
 
-			return new GorgonMultiSampleInfo(count, _device.CheckMultisampleQualityLevels(format, count));
+			return new GorgonMultiSampleInfo(count, quality - 1);
+		}
+
+		/// <summary>
+		/// Function to return whether or not the device supports multisampling for the given format and sample count.
+		/// </summary>
+		/// <param name="format">A <c>Format</c> to evaluate.</param>
+		/// <param name="count">The number of samples.</param>
+		/// <returns><b>true</b> if the device supports the format, or <b>false</b> if not.</returns>
+		/// <remarks>
+		/// <para>
+		/// Use this to determine if the video device will support multisampling with a specific sample <paramref name="count"/> and <paramref name="format"/>. 
+		/// </para>
+		/// <para>
+		/// If <c>Unknown</c> is passed to the <paramref name="format"/> parameter, then this method will return <b>true</b> because this will equate to no multisampling.
+		/// </para>
+		/// </remarks>
+		public bool SupportsMultiSampleCount(DXGI.Format format, int count)
+		{
+			if (count < 1)
+			{
+				return false;
+			}
+
+			if (format == DXGI.Format.Unknown)
+			{
+				return true;
+			}
+
+			return _device.CheckMultisampleQualityLevels(format, count) > 0;
+		}
+
+		/// <summary>
+		/// Function to return whether or not the device supports multisampling for the given format and the supplied <see cref="GorgonMultiSampleInfo"/>.
+		/// </summary>
+		/// <param name="format">A <c>Format</c> to evaluate.</param>
+		/// <param name="multiSampleInfo">The multisample info to use when evaluating.</param>
+		/// <returns><b>true</b> if the device supports the format, or <b>false</b> if not.</returns>
+		/// <remarks>
+		/// <para>
+		/// Use this to determine if the video device will support multisampling with a specific <paramref name="multiSampleInfo"/> and <paramref name="format"/>. 
+		/// </para>
+		/// <para>
+		/// If <c>Unknown</c> is passed to the <paramref name="format"/> parameter, then this method will return <b>true</b> because this will equate to no multisampling.
+		/// </para>
+		/// </remarks>
+		public bool SupportsMultiSampleInfo(DXGI.Format format, GorgonMultiSampleInfo multiSampleInfo)
+		{
+			if (format == DXGI.Format.Unknown)
+			{
+				return true;
+			}
+
+			if (multiSampleInfo.Count < 1)
+			{
+				return false;
+			}
+
+			int quality = _device.CheckMultisampleQualityLevels(format, multiSampleInfo.Count);
+
+			return ((quality != 0) && (multiSampleInfo.Quality < quality));
 		}
 
 		/// <summary>
@@ -382,7 +507,7 @@ namespace Gorgon.Graphics
 			_log = log ?? GorgonLogDummy.DefaultInstance;
 			Info = deviceInfo;
 			CreateDevice((D3D.FeatureLevel)requestedFeatureLevel);
-			RequestedFeatureLevel = FeatureLevelSupport.Level_10_0;
+			RequestedFeatureLevel = requestedFeatureLevel;
 		}
 		#endregion
 	}
