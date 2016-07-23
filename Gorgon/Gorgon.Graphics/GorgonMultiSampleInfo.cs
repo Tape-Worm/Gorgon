@@ -25,11 +25,11 @@
 #endregion
 
 using System;
-using System.Diagnostics.Contracts;
-using DXGI = SharpDX.DXGI;
 using Gorgon.Core;
 using Gorgon.Math;
 using Gorgon.Graphics.Properties;
+using DXGI = SharpDX.DXGI;
+using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics
 {
@@ -81,7 +81,7 @@ namespace Gorgon.Graphics
 		/// <para>
 		/// <note type="warning">
 		/// <para>
-		/// This value must be 0 or less than the value returned by <see cref="IGorgonVideoDevice.GetMultiSampleQuality"/>.  Failure to do so will cause an exception for objects that use this type.
+		/// This value must be 0 or less than the value returned by <see cref="IGorgonVideoDevice.GetMultiSampleInfo"/>.  Failure to do so will cause an exception for objects that use this type.
 		/// </para>
 		/// </note>
 		/// </para>
@@ -180,7 +180,7 @@ namespace Gorgon.Graphics
 		/// <param name="sampleDesc">The DXGI sample description.</param>
 		internal GorgonMultiSampleInfo(DXGI.SampleDescription sampleDesc)
 		{
-			Count = sampleDesc.Count.Max(1).Min(32);
+			Count = sampleDesc.Count.Max(1).Min(D3D11.Device.MultisampleCountMaximum);
 			Quality = sampleDesc.Quality;
 		}
 
@@ -191,16 +191,7 @@ namespace Gorgon.Graphics
 		/// <param name="quality">Image quality.</param>
 		public GorgonMultiSampleInfo(int count, int quality)
 		{
-		    if (count < 1)
-		    {
-		        count = 1;
-		    }
-		    if (count > 32)
-		    {
-		        count = 32;
-		    }
-
-		    Count = count;
+		    Count = count.Min(D3D11.Device.MultisampleCountMaximum).Max(1);
 			Quality = quality;
 		}
 		#endregion

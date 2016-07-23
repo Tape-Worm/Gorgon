@@ -42,7 +42,7 @@ namespace Gorgon.Graphics
 	/// </summary>
 	/// <remarks>
 	/// <para>
-	/// A texture shader view to allow a <see cref="GorgonTexture"/> to be bound to the GPU pipeline as a shader resource.
+	/// This is a texture shader view to allow a <see cref="GorgonTexture"/> to be bound to the GPU pipeline as a shader resource.
 	/// </para>
 	/// <para>
 	/// Use a resource view to allow a shader access to the contents of a resource (or sub resource).  When the resource is created with a typeless format, this will allow the resource to be cast to any 

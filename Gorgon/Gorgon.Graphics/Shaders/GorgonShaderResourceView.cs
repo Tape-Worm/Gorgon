@@ -74,7 +74,6 @@ namespace Gorgon.Graphics
 			get;
 			set;
 		}
-
 		#endregion
 
 		#region Methods.
