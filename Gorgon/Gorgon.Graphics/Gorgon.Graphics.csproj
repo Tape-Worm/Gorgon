@@ -86,8 +86,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Buffers\GorgonBuffer.cs" />
+    <Compile Include="Buffers\GorgonIndexBuffer.cs" />
+    <Compile Include="Buffers\GorgonVertexBuffer.cs" />
     <Compile Include="Buffers\GorgonConstantBuffer.cs" />
     <Compile Include="Buffers\GorgonConstantBufferInfo.cs" />
+    <Compile Include="Buffers\GorgonIndexBufferInfo.cs" />
+    <Compile Include="Buffers\GorgonVertexBufferInfo.cs" />
     <Compile Include="Devices\_Interfaces\IGorgonVideoOutputInfo.cs" />
     <Compile Include="Devices\_Interfaces\IGorgonVideoDeviceInfo.cs" />
     <Compile Include="Devices\_Internal\VideoDeviceInfo.cs" />
@@ -102,6 +106,8 @@
     <Compile Include="GorgonGraphics.cs" />
     <Compile Include="GorgonMultiSampleInfo.cs" />
     <Compile Include="Native\Win32 Structs\OSVERSIONINFOEX.cs" />
+    <Compile Include="Pipeline\GorgonVertexBufferBinding.cs" />
+    <Compile Include="Pipeline\GorgonVertexBufferBindings.cs" />
     <Compile Include="Shaders\GorgonShaderResourceView.cs" />
     <Compile Include="Pipeline\GorgonShaderResourceViews.cs" />
     <Compile Include="Pipeline\GorgonViewports.cs" />

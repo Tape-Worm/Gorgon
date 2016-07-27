@@ -41,7 +41,7 @@ namespace Gorgon.Graphics
 	/// <summary>
 	/// A texture used to project an image onto a graphic primitive such as a triangle.
 	/// </summary>
-	public class GorgonTexture
+	public sealed class GorgonTexture
 		: GorgonResource
 	{
 		#region Variables.
@@ -491,7 +491,7 @@ namespace Gorgon.Graphics
 
 					if (image == null)
 					{
-						D3DResource = new D3D11.Texture1D(Graphics.VideoDevice.D3DDevice, tex1DDesc);
+						D3DResource = new D3D11.Texture1D(Graphics.VideoDevice.D3DDevice(), tex1DDesc);
 						return;
 					}
 					break;
@@ -512,7 +512,7 @@ namespace Gorgon.Graphics
 
 					if (image == null)
 					{
-						D3DResource = new D3D11.Texture2D(Graphics.VideoDevice.D3DDevice, tex2DDesc);
+						D3DResource = new D3D11.Texture2D(Graphics.VideoDevice.D3DDevice(), tex2DDesc);
 						return;
 					}
 					break;
@@ -532,7 +532,7 @@ namespace Gorgon.Graphics
 
 					if (image == null)
 					{
-						D3DResource = new D3D11.Texture3D(Graphics.VideoDevice.D3DDevice, tex3DDesc);
+						D3DResource = new D3D11.Texture3D(Graphics.VideoDevice.D3DDevice(), tex3DDesc);
 						return;
 					}
 					break;
@@ -556,13 +556,13 @@ namespace Gorgon.Graphics
 			switch (Info.TextureType)
 			{
 				case TextureType.Texture1D:
-					D3DResource = new D3D11.Texture1D(Graphics.VideoDevice.D3DDevice, tex1DDesc, dataBoxes);
+					D3DResource = new D3D11.Texture1D(Graphics.VideoDevice.D3DDevice(), tex1DDesc, dataBoxes);
 					break;
 				case TextureType.Texture2D:
-					D3DResource = new D3D11.Texture2D(Graphics.VideoDevice.D3DDevice, tex2DDesc, dataBoxes);
+					D3DResource = new D3D11.Texture2D(Graphics.VideoDevice.D3DDevice(), tex2DDesc, dataBoxes);
 					break;
 				case TextureType.Texture3D:
-					D3DResource = new D3D11.Texture3D(Graphics.VideoDevice.D3DDevice, tex3DDesc, dataBoxes);
+					D3DResource = new D3D11.Texture3D(Graphics.VideoDevice.D3DDevice(), tex3DDesc, dataBoxes);
 					break;
 			}
 		}

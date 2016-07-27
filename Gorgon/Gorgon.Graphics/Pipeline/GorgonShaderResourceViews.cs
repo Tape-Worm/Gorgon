@@ -38,7 +38,7 @@ namespace Gorgon.Graphics
 	/// <summary>
 	/// A list of shader resource views to apply to the pipeline.
 	/// </summary>
-	public class GorgonShaderResourceViews
+	public sealed class GorgonShaderResourceViews
 		: IList<GorgonShaderResourceView>, IReadOnlyList<GorgonShaderResourceView>
 	{
 		#region Variables.

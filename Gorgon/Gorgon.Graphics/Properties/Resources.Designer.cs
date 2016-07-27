@@ -88,11 +88,11 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This buffer is immutable and this cannot be updated..
+        ///   Looks up a localized string similar to Only buffers with a usage of [Staging] can be read by the CPU. The buffer &apos;{0}&apos; has a usage of [{1}]..
         /// </summary>
-        internal static string GORGFX_BUFFER_IMMUTABLE {
+        internal static string GORGFX_BUFFER_ERR_WRITE_ONLY {
             get {
-                return ResourceManager.GetString("GORGFX_BUFFER_IMMUTABLE", resourceCulture);
+                return ResourceManager.GetString("GORGFX_BUFFER_ERR_WRITE_ONLY", resourceCulture);
             }
         }
         
@@ -250,24 +250,6 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A buffer with a usage of [{0}] cannot be locked..
-        /// </summary>
-        internal static string GORGFX_BUFFER_USAGE_CANT_LOCK {
-            get {
-                return ResourceManager.GetString("GORGFX_BUFFER_USAGE_CANT_LOCK", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot read this buffer..
-        /// </summary>
-        internal static string GORGFX_BUFFER_WRITE_ONLY {
-            get {
-                return ResourceManager.GetString("GORGFX_BUFFER_WRITE_ONLY", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Cannot use a deferred context to create another deferred context.  Only an immediate context may created a deferred context..
         /// </summary>
         internal static string GORGFX_CANNOT_CREATE_CONTEXT_FROM_CONTEXT {
@@ -363,6 +345,42 @@ namespace Gorgon.Graphics.Properties {
         internal static string GORGFX_ERR_BINDING_TYPE_CANNOT_BE_USED {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_BINDING_TYPE_CANNOT_BE_USED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The buffer is already locked..
+        /// </summary>
+        internal static string GORGFX_ERR_BUFFER_ALREADY_LOCKED {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_BUFFER_ALREADY_LOCKED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot update buffers with a usage of [Immutable] or [Dynamic]..
+        /// </summary>
+        internal static string GORGFX_ERR_BUFFER_IMMUTABLE_OR_DYNAMIC {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_BUFFER_IMMUTABLE_OR_DYNAMIC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only a buffer with a usage of [Dynamic] can be locked. The buffer &apos;{0}&apos; has a usage of [{1}]. .
+        /// </summary>
+        internal static string GORGFX_ERR_BUFFER_LOCK_NOT_DYNAMIC {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_BUFFER_LOCK_NOT_DYNAMIC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The lock pointer for the buffer is not owned by this buffer..
+        /// </summary>
+        internal static string GORGFX_ERR_BUFFER_LOCK_NOT_VALID {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_BUFFER_LOCK_NOT_VALID", resourceCulture);
             }
         }
         
@@ -938,7 +956,7 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot update a texture that is Dynamic or Immutable..
+        ///   Looks up a localized string similar to Cannot update a textures that have a usage of [Dynamic] or [Immutable]..
         /// </summary>
         internal static string GORGFX_ERR_TEXTURE_IS_DYNAMIC_OR_IMMUTABLE {
             get {
@@ -1109,6 +1127,24 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The type &apos;{0}&apos; has no public fields..
+        /// </summary>
+        internal static string GORGFX_ERR_TYPE_NO_FIELDS {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TYPE_NO_FIELDS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The type &apos;{0}&apos; has complex marshalling and cannot be used. .
+        /// </summary>
+        internal static string GORGFX_ERR_TYPE_NOT_VALID_FOR_NATIVE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TYPE_NOT_VALID_FOR_NATIVE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The format [{0}] is not valid for an unordered access binding..
         /// </summary>
         internal static string GORGFX_ERR_UAV_FORMAT_INVALID {
@@ -1150,6 +1186,42 @@ namespace Gorgon.Graphics.Properties {
         internal static string GORGFX_ERR_UNORDERED_RES_NOT_DEFAULT {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_UNORDERED_RES_NOT_DEFAULT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There are no public fields in the &apos;{0}&apos; vertex type ..
+        /// </summary>
+        internal static string GORGFX_ERR_VERTEX_NO_FIELDS {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_VERTEX_NO_FIELDS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A vertex must not have complex marshalling (i.e. MarshalAsAttribute), be a reference type or have non-primitive/value type fields..
+        /// </summary>
+        internal static string GORGFX_ERR_VERTEX_TYPE_NOT_VALID_FOR_NATIVE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_VERTEX_TYPE_NOT_VALID_FOR_NATIVE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The vertex buffer &apos;{0}&apos; is already bound at slot [{1}]..
+        /// </summary>
+        internal static string GORGFX_ERR_VERTEXBUFFER_ALREADY_BOUND {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_VERTEXBUFFER_ALREADY_BOUND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The size requested ({0} bytes) for the vertex buffer exceeds the maximum value of {1} bytes..
+        /// </summary>
+        internal static string GORGFX_ERR_VERTEXBUFFER_TOO_LARGE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_VERTEXBUFFER_TOO_LARGE", resourceCulture);
             }
         }
         
@@ -2027,6 +2099,15 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Vertex buffer binding.  Stride: {0}, Offset: {1}, VertexBuffer: {2}.
+        /// </summary>
+        internal static string GORGFX_TOSTR_VERTEXBUFFER_BINDING {
+            get {
+                return ResourceManager.GetString("GORGFX_TOSTR_VERTEXBUFFER_BINDING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Gorgon Video Mode: {0}x{1} Refresh Num/Denom: {2}/{3} Format: {4}.
         /// </summary>
         internal static string GORGFX_TOSTR_VIDEOMODE {
@@ -2041,24 +2122,6 @@ namespace Gorgon.Graphics.Properties {
         internal static string GORGFX_VALUE_OUT_OF_RANGE {
             get {
                 return ResourceManager.GetString("GORGFX_VALUE_OUT_OF_RANGE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The vertex buffer &apos;{0}&apos; is already bound at slot [{1}]..
-        /// </summary>
-        internal static string GORGFX_VERTEXBUFFER_ALREADY_BOUND {
-            get {
-                return ResourceManager.GetString("GORGFX_VERTEXBUFFER_ALREADY_BOUND", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Vertex buffer binding.  Stride: {0}, Offset: {1}, VertexBuffer: {2}.
-        /// </summary>
-        internal static string GORGFX_VERTEXBUFFER_BINDING_TOSTR {
-            get {
-                return ResourceManager.GetString("GORGFX_VERTEXBUFFER_BINDING_TOSTR", resourceCulture);
             }
         }
         

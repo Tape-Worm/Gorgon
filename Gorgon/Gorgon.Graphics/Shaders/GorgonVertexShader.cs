@@ -42,7 +42,7 @@ namespace Gorgon.Graphics
 	/// <see cref="GorgonShaderFactory"/> is required to compile or read shaders, they cannot be created via the <c>new</c> keyword.
 	/// </para>
 	/// </remarks>
-	public class GorgonVertexShader
+	public sealed class GorgonVertexShader
 		: GorgonShader
 	{
 		#region Properties.
@@ -82,7 +82,7 @@ namespace Gorgon.Graphics
 		internal GorgonVertexShader(IGorgonVideoDevice videoDevice, string name, bool isDebug, D3DCompiler.ShaderBytecode byteCode)
 			: base(videoDevice, name, isDebug, byteCode)
 		{
-			D3DShader = new D3D.VertexShader(videoDevice.D3DDevice, byteCode)
+			D3DShader = new D3D.VertexShader(videoDevice.D3DDevice(), byteCode)
 			            {
 				            DebugName = name + " D3D11VertexShader"
 			            };

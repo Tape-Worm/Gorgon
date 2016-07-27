@@ -29,7 +29,6 @@ using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Properties;
-using Gorgon.Math;
 using DXGI = SharpDX.DXGI;
 using D3D = SharpDX.Direct3D;
 using D3D11 = SharpDX.Direct3D11;
@@ -52,11 +51,6 @@ namespace Gorgon.Graphics
 		#endregion
 
 		#region Properties.
-		/// <summary>
-		/// Property to return the Direct 3D 11.1 device context.
-		/// </summary>
-		public D3D11.DeviceContext1 D3DDeviceContext =>  _device?.ImmediateContext1;
-
 		/// <summary>
 		/// Property to return the Direct 3D 11.1 device object
 		/// </summary>

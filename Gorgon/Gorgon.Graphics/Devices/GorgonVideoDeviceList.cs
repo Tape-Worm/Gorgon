@@ -68,7 +68,7 @@ namespace Gorgon.Graphics
 	/// </note>
 	/// </para>
 	/// </remarks>
-	public class GorgonVideoDeviceList
+	public sealed class GorgonVideoDeviceList
 		: IGorgonVideoDeviceList
 	{
 		#region Variables.

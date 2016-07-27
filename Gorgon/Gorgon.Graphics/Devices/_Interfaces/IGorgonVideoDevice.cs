@@ -45,7 +45,6 @@ namespace Gorgon.Graphics
 		: IDisposable
 	{
 		#region Properties.
-
 		/// <summary>
 		/// Property to return the maximum number of array indices for 1D and 2D textures.
 		/// </summary>
@@ -133,22 +132,6 @@ namespace Gorgon.Graphics
 		/// Property to return the maximum size, in bytes, for a constant buffer.
 		/// </summary>
 		int MaxConstantBufferSize
-		{
-			get;
-		}
-
-		/// <summary>
-		/// Property to return the Direct 3D 11.1 device context.
-		/// </summary>
-		D3D11.DeviceContext1 D3DDeviceContext
-		{
-			get;
-		}
-
-		/// <summary>
-		/// Property to return the Direct 3D 11.1 device object
-		/// </summary>
-		D3D11.Device1 D3DDevice
 		{
 			get;
 		}

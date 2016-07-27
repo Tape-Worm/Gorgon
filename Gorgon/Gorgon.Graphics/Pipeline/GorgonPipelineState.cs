@@ -25,7 +25,7 @@
 #endregion
 
 using System;
-using D3D = SharpDX.Direct3D;
+using DX = SharpDX;
 
 namespace Gorgon.Graphics
 {
@@ -59,7 +59,15 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// The view port was modified.
 		/// </summary>
-		Viewport = 0x10
+		Viewport = 0x10,
+		/// <summary>
+		/// The vertex buffers were modified.
+		/// </summary>
+		VertexBuffers = 0x20,
+		/// <summary>
+		/// The index buffer was modified.
+		/// </summary>
+		IndexBuffer = 0x40
 	}
 
 	/// <summary>
@@ -113,6 +121,24 @@ namespace Gorgon.Graphics
 			get;
 			set;
 		}
+
+		/// <summary>
+		/// Property to set or return the current vertex buffers for this state.
+		/// </summary>
+		public GorgonVertexBufferBindings VertexBuffers
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the current index buffer for this state.
+		/// </summary>
+		public GorgonIndexBuffer IndexBuffer
+		{
+			get;
+			set;
+		}
 		#endregion
 
 		#region Methods.
@@ -125,6 +151,8 @@ namespace Gorgon.Graphics
 			        && (other.InputLayout == InputLayout)
 			        && (GorgonRenderTargetViews.Equals(other.RenderTargetViews, RenderTargetViews))
 					&& (GorgonViewports.Equals(other.Viewports, Viewports))
+					&& (GorgonVertexBufferBindings.Equals(other.VertexBuffers, VertexBuffers))
+					&& (IndexBuffer == other.IndexBuffer)
 			        && (PixelShader == other.PixelShader)
 			        && (VertexShader == other.VertexShader));
 		}
@@ -137,6 +165,17 @@ namespace Gorgon.Graphics
 			VertexShader.Shader = null;
 			PixelShader.Shader = null;
 			InputLayout = null;
+			IndexBuffer = null;
+
+			for (int i = 0; i < VertexBuffers.Count; ++i)
+			{
+				VertexBuffers[i] = GorgonVertexBufferBinding.Empty;
+			}
+
+			for (int i = 0; i < Viewports.Count; ++i)
+			{
+				Viewports[i] = default(DX.ViewportF);
+			}
 
 			for (int i = 0; i < RenderTargetViews.Count; ++i)
 			{
@@ -147,6 +186,12 @@ namespace Gorgon.Graphics
 			{
 				PixelShader.ConstantBuffers[i] = null;
 				VertexShader.ConstantBuffers[i] = null;
+			}
+
+			for (int i = 0; i < PixelShader.ResourceViews.Count; ++i)
+			{
+				PixelShader.ResourceViews[i] = null;
+				VertexShader.ResourceViews[i] = null;
 			}
 		}
 		#endregion
@@ -161,6 +206,7 @@ namespace Gorgon.Graphics
 			PixelShader = new GorgonPixelShaderState();
 			VertexShader = new GorgonVertexShaderState();
 			Viewports = new GorgonViewports();
+			VertexBuffers = new GorgonVertexBufferBindings();
 
 			Reset();
 		}

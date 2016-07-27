@@ -29,11 +29,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using DX = SharpDX;
 using DXGI = SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;
 using Gorgon.Core;
 using Gorgon.Graphics.Properties;
+using Gorgon.Reflection;
 
 namespace Gorgon.Graphics
 {
@@ -50,8 +52,8 @@ namespace Gorgon.Graphics
 	/// <see cref="InputElementAttribute"/> to define where the member is located within the layout data structure.
 	/// </para>
 	/// </remarks>
-	public class GorgonInputLayout
-		: GorgonNamedObject, IDisposable
+	public sealed class GorgonInputLayout
+		: IGorgonNamedObject, IDisposable
 	{
 		#region Variables.
 		// Type mapping for types.
@@ -99,7 +101,7 @@ namespace Gorgon.Graphics
 			};
 
 		// Elements used to build the layout.
-		private GorgonInputElement[] _elements;
+		private readonly GorgonInputElement[] _elements;
 		// List of slot sizes.
 		private IDictionary<int, int> _slotSizes;
 		#endregion
@@ -143,6 +145,18 @@ namespace Gorgon.Graphics
         /// Property to return the input elements for this layout.
         /// </summary>
         public IReadOnlyList<GorgonInputElement> Elements => _elements;
+
+		/// <summary>
+		/// Property to return the name of this object.
+		/// </summary>
+		/// <remarks>
+		/// For best practises, the name should only be set once during the lifetime of an object. Hence, this interface only provides a read-only implementation of this 
+		/// property.
+		/// </remarks>
+		public string Name
+		{
+			get;
+		}
 		#endregion
 
 		#region Methods.
@@ -231,9 +245,15 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="type">The type to evaluate.</param>
 		/// <returns>The list of field info values for the members of the type.</returns>
-		private static List<Tuple<FieldInfo, InputElementAttribute>> GetFieldInfoList(Type type)
+		internal static List<Tuple<FieldInfo, InputElementAttribute>> GetFieldInfoList(Type type)
 		{
 			FieldInfo[] members = type.GetFields();
+
+			if (members.Length == 0)
+			{
+				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_VERTEX_NO_FIELDS, type.FullName));
+			}
+
 			var result = new List<Tuple<FieldInfo, InputElementAttribute>>();
 
 			for (int i = 0; i < members.Length; ++i)
@@ -244,6 +264,12 @@ namespace Gorgon.Graphics
 				if (attribute == null)
 				{
 					continue;
+				}
+
+				// If we have marshalled fields on here, then throw an exception. We don't support complex marshalling.
+				if (!member.IsFieldSafeForNative())
+				{
+					throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_VERTEX_TYPE_NOT_VALID_FOR_NATIVE);
 				}
 
 				Type returnType = member.FieldType;
@@ -268,7 +294,10 @@ namespace Gorgon.Graphics
 		/// <returns>A new <see cref="GorgonInputLayout"/> for the type passed to <typeparamref name="T"/>.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="videoDevice"/>, or the <paramref name="shader"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when an element with the same context, slot and index appears more than once in the members of the <typeparamref name="T"/> type.</exception>
-		/// <exception cref="GorgonException">Thrown when one of the members of the type <typeparamref name="T"/> is not supported.</exception>
+		/// <exception cref="GorgonException">Thrown when the type specified by <typeparamref name="T"/> is not safe for use with native functions (see <see cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>).
+		/// <para>-or-</para>
+		/// <para>Thrown when the type specified by <typeparamref name="T"/> does not contain any public members.</para>
+		/// </exception>
 		/// <remarks>
 		/// <para>
 		/// This will build a new <see cref="GorgonInputLayout"/> using the fields within a value type (<c>struct</c>). Each of the members that are to be included in the layout must be decorated with a 
@@ -276,7 +305,13 @@ namespace Gorgon.Graphics
 		/// </para>
 		/// <para>
 		/// The type parameter <typeparamref name="T"/> must be a value type (<c>struct</c>), reference types are not supported. The members of the type must also be public fields. Properties are not 
-		/// supported.
+		/// supported. Futhermore, the struct must be decorated with a <see cref="StructLayoutAttribute"/> that defines a <see cref="LayoutKind"/> of <see cref="LayoutKind.Sequential"/> or 
+		/// <see cref="LayoutKind.Explicit"/>. This is necessary to ensure that the member of the value type are in the correct order when writing to a <see cref="GorgonVertexBuffer"/> or when 
+		/// generating a <see cref="GorgonInputLayout"/> from a type.
+		/// </para>
+		/// <para>
+		/// If the type specified by <typeparamref name="T"/> has members that are not primitive types or value types with a <see cref="StructLayoutAttribute"/>, or the member has a 
+		/// <see cref="MarshalAsAttribute"/>, then an exception is thrown.  Gorgon does not support marshalling of complex types for vertices.
 		/// </para>
 		/// <para>
 		/// The types of the fields must be one of the following types:
@@ -326,12 +361,20 @@ namespace Gorgon.Graphics
 		/// If the type of the member does not match, an exception will be thrown.
 		/// </para>
 		/// </remarks>
+		/// <seealso cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>
+		/// <seealso cref="GorgonReflectionExtensions.IsSafeForNative(Type)"/>
+		/// <seealso cref="GorgonReflectionExtensions.IsSafeForNative(Type,out IReadOnlyList{FieldInfo})"/>
 		public static GorgonInputLayout CreateUsingType<T>(IGorgonVideoDevice videoDevice, GorgonVertexShader shader)
 			where T : struct
 		{
 			Type type = typeof(T);
 			int byteOffset = 0;
 			List<Tuple<FieldInfo, InputElementAttribute>> members = GetFieldInfoList(type);
+
+			if (members.Count == 0)
+			{
+				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_VERTEX_NO_FIELDS, type.FullName));
+			}
 
 			var elements = new GorgonInputElement[members.Count];
 
@@ -415,6 +458,14 @@ namespace Gorgon.Graphics
 
 		    return _slotSizes[slot];
 		}
+
+		/// <summary>
+		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+		/// </summary>
+		public void Dispose()
+		{
+			D3DLayout?.Dispose();
+		}
 		#endregion
 
 		#region Constructor/Destructor.
@@ -431,8 +482,17 @@ namespace Gorgon.Graphics
 		/// <para>Thrown when an element with the same context, slot and index appears more than once in the <paramref name="elements"/> parameter.</para>
 		/// </exception>
 		public GorgonInputLayout(string name, IGorgonVideoDevice videoDevice, GorgonVertexShader shader, IEnumerable<GorgonInputElement> elements)
-            : base(name)
 		{
+			if (name == null)
+			{
+				throw new ArgumentNullException(nameof(name));
+			}
+
+			if (string.IsNullOrWhiteSpace(name))
+			{
+				throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
+			}
+
 			if (videoDevice == null)
 			{
 				throw new ArgumentNullException(nameof(videoDevice));
@@ -447,6 +507,8 @@ namespace Gorgon.Graphics
 			{
 				throw new ArgumentNullException(nameof(elements));
 			}
+
+			Name = name;
 
 			// Make a copy so we don't allow changing of the original reference.
 			_elements = elements.ToArray();
@@ -469,16 +531,6 @@ namespace Gorgon.Graphics
 
 			UpdateVertexSize();
 			BuildD3DLayout();
-		}
-		#endregion
-
-		#region IDisposable Members
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		public void Dispose()
-		{
-			D3DLayout?.Dispose();
 		}
 		#endregion
 	}

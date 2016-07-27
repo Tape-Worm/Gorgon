@@ -26,6 +26,7 @@
 
 using System;
 using Gorgon.Core;
+using Gorgon.Graphics.Properties;
 using Gorgon.Native;
 using D3D = SharpDX.Direct3D11;
 
@@ -99,7 +100,7 @@ namespace Gorgon.Graphics
 	/// </para>
 	/// </remarks>
 	public abstract class GorgonResource
-		: GorgonNamedObject, IDisposable
+		: IGorgonNamedObject, IDisposable
 	{
 		#region Properties.
 		/// <summary>
@@ -158,6 +159,18 @@ namespace Gorgon.Graphics
 			get;
 			protected set;
 		}
+
+		/// <summary>
+		/// Property to return the name of this object.
+		/// </summary>
+		/// <remarks>
+		/// For best practises, the name should only be set once during the lifetime of an object. Hence, this interface only provides a read-only implementation of this 
+		/// property.
+		/// </remarks>
+		public string Name
+		{
+			get;
+		}
 		#endregion
 
 		#region Methods.
@@ -169,6 +182,7 @@ namespace Gorgon.Graphics
 		/// Objects that override this method should be sure to call this base method or else a memory leak may occur.
 		/// </para>
 		/// </remarks>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1816:CallGCSuppressFinalizeCorrectly", Justification = "I don't have a finalizer, plus, this method is completely overridable. Idiot.")]
 		public virtual void Dispose()
 		{
 			D3DResource?.Dispose();
@@ -262,13 +276,23 @@ namespace Gorgon.Graphics
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception> 
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
 		protected GorgonResource(GorgonGraphics graphics, string name)
-            : base(name)
 		{
+			if (name == null)
+			{
+				throw new ArgumentNullException(nameof(name));
+			}
+
+			if (string.IsNullOrWhiteSpace(name))
+			{
+				throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
+			}
+
             if (graphics == null)
             {
                 throw new ArgumentNullException(nameof(graphics));
             }
 
+			Name = name;
 			Graphics = graphics;
 		}
 		#endregion

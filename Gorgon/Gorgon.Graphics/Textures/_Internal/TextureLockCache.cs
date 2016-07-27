@@ -153,7 +153,7 @@ namespace Gorgon.Graphics
                 return;
             }
 
-	        Texture.Graphics.VideoDevice.D3DDeviceContext()
+	        Texture.Graphics.D3DDeviceContext
 	               .UnmapSubresource(Texture.D3DResource,
 	                                 D3D11.Resource.CalculateSubResourceIndex(lockData.MipLevel, lockData.ArrayIndex, Texture.Info.MipLevels));
         }
