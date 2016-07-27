@@ -71,7 +71,7 @@ namespace Gorgon.Graphics
 		/// </para>
 		/// <para>
 		/// If this flag is set, then this texture cannot be bound with the pipeline. And this is the only binding flag allowed with the texture has a <see cref="GorgonTextureInfo.Usage"/> 
-		/// of <see cref="BufferUsage.Staging"/>.
+		/// of <c>Staging</c>.
 		/// </para>
 		/// </summary>
 		None = D3D11.BindFlags.None,
@@ -88,8 +88,33 @@ namespace Gorgon.Graphics
 		/// The texture is meant to be used as a depth stencil buffer.
 		/// </para>
 		/// <para>
-		/// To use a depth/stencil buffer as a shader input, the <see cref="GorgonTextureInfo.Format"/> must be set to <see cref="BufferFormat.R32_Typeless"/>. Failure to do so when specifying this flag 
+		/// To use a depth/stencil buffer as a shader input, the <see cref="GorgonTextureInfo.Format"/> must be set to an typeless appropriate format. Failure to do so when specifying this flag 
 		/// will result in an exception.
+		/// </para>
+		/// <para>
+		/// The following table lists the acceptable typeless formats to use with a depth/stencil format:
+		/// <list type="table">
+		///		<listheader>
+		///			<term>Depth/Stencil Format</term>
+		///			<term>Typeless Format</term>
+		///		</listheader>
+		///		<item>
+		///			<term>D16_UNorm</term>
+		///			<term>R16_Typeless</term>
+		///		</item>
+		///		<item>
+		///			<term>D32_Float</term>
+		///			<term>R32_Typeless</term>
+		///		</item>
+		///		<item>
+		///			<term>D24_UNorm_S8_UInt</term>
+		///			<term>R24G8_Typeless</term>
+		///		</item>
+		///		<item>
+		///			<term>D32_Float_S8X24_UInt</term>
+		///			<term>R32G8X24_Typeless</term>
+		///		</item>
+		/// </list>
 		/// </para>
 		/// </summary>
 		DepthStencil = D3D11.BindFlags.DepthStencil,
@@ -259,8 +284,8 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// If the <see cref="Usage"/> property is set to <see cref="BufferUsage.Staging"/>, then the texture will be created with a value of <see cref="TextureBinding.None"/> as staging textures do not 
-		/// support bindings of any kind.
+		/// If the <see cref="Usage"/> property is set to <c>Staging</c>, then the texture must be created with a value of <see cref="TextureBinding.None"/> as staging textures do not 
+		/// support bindings of any kind. If this value is set to anything other than <see cref="TextureBinding.None"/>, an exception will be thrown.
 		/// </para>
 		/// <para>
 		/// This value is defaulted to <see cref="TextureBinding.ShaderResource"/>. 

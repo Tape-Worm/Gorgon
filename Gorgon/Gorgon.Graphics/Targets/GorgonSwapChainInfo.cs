@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System;
 using Gorgon.Core;
 using DXGI = SharpDX.DXGI;
 
@@ -82,7 +81,7 @@ namespace Gorgon.Graphics
 		/// Property to set or return the format of the swap chain back buffer.
 		/// </summary>
 		/// <remarks>
-		/// The default value is <see cref="BufferFormat.R8G8B8A8_UNorm"/>.
+		/// The default value is <c>R8G8B8A8_UNorm</c>.
 		/// </remarks>
 		public DXGI.Format Format
 		{

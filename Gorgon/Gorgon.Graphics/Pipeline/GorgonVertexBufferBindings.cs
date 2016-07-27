@@ -20,75 +20,89 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: July 19, 2016 8:49:29 AM
+// Created: July 26, 2016 10:35:58 PM
 // 
 #endregion
+
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using SharpDX.Mathematics.Interop;
-using DX = SharpDX;
+using Gorgon.Core;
+using Gorgon.Graphics.Properties;
+using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics
 {
 	/// <summary>
-	/// A list of viewports.
+	/// A list of <see cref="GorgonVertexBufferBinding"/> values.
 	/// </summary>
 	/// <remarks>
 	/// <para>
-	/// Viewports define the location and area to render data into.
+	/// A <see cref="GorgonVertexBufferBinding"/> is used to bind a vertex buffer to the GPU pipeline so that it may be used for rendering.
 	/// </para>
 	/// </remarks>
-	public sealed class GorgonViewports
-		: IList<DX.ViewportF>, IReadOnlyList<DX.ViewportF>
+	public sealed class GorgonVertexBufferBindings
+		: IList<GorgonVertexBufferBinding>, IReadOnlyList<GorgonVertexBufferBinding>
 	{
 		#region Variables.
-		// The list of viewports.
-		private readonly RawViewportF[] _viewports = new RawViewportF[16];
+		// The list of D3D11 vertex buffer bindings.
+		private readonly D3D11.VertexBufferBinding[] _actualBindings = new D3D11.VertexBufferBinding[D3D11.InputAssemblerStage.VertexInputResourceSlotCount];
+		// The list of vertex buffer bindings.
+		private readonly GorgonVertexBufferBinding[] _bindings = new GorgonVertexBufferBinding[D3D11.InputAssemblerStage.VertexInputResourceSlotCount];
 		#endregion
 
 		#region Properties.
 		/// <summary>
-		/// Property to return the number of viewports actually bound.
+		/// Property to return the number of vertex buffers actually bound.
 		/// </summary>
-		internal int DXViewportBindCount
+		internal int DXVertexBufferBindCount
 		{
 			get;
 			private set;
 		}
 
 		/// <summary>
-		/// Property to return the DirectX viewport array.
+		/// Property to return the D3D11 vertex buffer binding array.
 		/// </summary>
-		internal RawViewportF[] DXViewports => _viewports;
+		internal D3D11.VertexBufferBinding[] D3DBindings => _actualBindings;
 
 		/// <summary>
-		/// Property to set or return the viewport at the given index.
+		/// Property to set or return the <see cref="GorgonVertexBufferBinding"/> at the given index.
 		/// </summary>
-		public DX.ViewportF this[int index]
+		public GorgonVertexBufferBinding this[int index]
 		{
 			get
 			{
-				return _viewports[index];
+				return _bindings[index];
 			}
 
 			set
 			{
-				DX.ViewportF viewport = _viewports[index];
-				if (viewport.Equals(ref value))
+				GorgonVertexBufferBinding binding = _bindings[index];
+
+				if (binding.Equals(ref value))
 				{
 					return;
 				}
-
-				_viewports[index] = value;
-				DXViewportBindCount = 0;
-				for (int i = 0; i < _viewports.Length; ++i)
+				
+				_bindings[index] = value;
+				_actualBindings[index] = value.ToVertexBufferBinding();
+				DXVertexBufferBindCount = 0;
+				for (int i = 0; i < _bindings.Length; ++i)
 				{
-					viewport = _viewports[i];
-					if (!viewport.Bounds.IsEmpty)
+					binding = _bindings[i];
+#if DEBUG
+					// Do not allow us have the same binding in more than one slot.
+					if ((i != index) && (binding.VertexBuffer != null) && (GorgonVertexBufferBinding.Equals(ref binding, ref value)))
 					{
-						DXViewportBindCount = i + 1;
+						throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_VERTEXBUFFER_ALREADY_BOUND, value.VertexBuffer.Name, i));
+					}
+#endif
+
+					if (binding.VertexBuffer != null)
+					{
+						DXVertexBufferBindCount = i + 1;
 					}
 				}
 			}
@@ -96,11 +110,11 @@ namespace Gorgon.Graphics
 
 		/// <summary>Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
 		/// <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
-		public int Count => _viewports.Length;
+		public int Count => _bindings.Length;
 
 		/// <summary>Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</summary>
 		/// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only; otherwise, false.</returns>
-		bool ICollection<DX.ViewportF>.IsReadOnly => false;
+		bool ICollection<GorgonVertexBufferBinding>.IsReadOnly => false;
 		#endregion
 
 		#region Methods.
@@ -110,17 +124,17 @@ namespace Gorgon.Graphics
 		/// <param name="left">The left instance to compare.</param>
 		/// <param name="right">The right instance to compare.</param>
 		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-		public static bool Equals(GorgonViewports left, GorgonViewports right)
+		public static bool Equals(GorgonVertexBufferBindings left, GorgonVertexBufferBindings right)
 		{
-			if ((left == null) || (right == null) || (left.DXViewportBindCount != right.DXViewportBindCount))
+			if ((left == null) || (right == null) || (left.DXVertexBufferBindCount != right.DXVertexBufferBindCount))
 			{
 				return false;
 			}
 
-			for (int i = 0; i < left.DXViewportBindCount; ++i)
+			for (int i = 0; i < left.DXVertexBufferBindCount; ++i)
 			{
-				DX.ViewportF rightport = right[i];
-				if (!left[i].Equals(ref rightport))
+				GorgonVertexBufferBinding rightBuffer = right[i];
+				if (!left[i].Equals(ref rightBuffer))
 				{
 					return false;
 				}
@@ -132,7 +146,7 @@ namespace Gorgon.Graphics
 		/// <summary>Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
 		/// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
 		/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</exception>
-		void ICollection<DX.ViewportF>.Add(DX.ViewportF item)
+		void ICollection<GorgonVertexBufferBinding>.Add(GorgonVertexBufferBinding item)
 		{
 			throw new NotSupportedException();
 		}
@@ -141,18 +155,18 @@ namespace Gorgon.Graphics
 		/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only. </exception>
 		public void Clear()
 		{
-			for (int i = 0; i < _viewports.Length; ++i)
+			for (int i = 0; i < _bindings.Length; ++i)
 			{
-				_viewports[i] = new DX.ViewportF(DX.RectangleF.Empty);
+				_bindings[i] = default(GorgonVertexBufferBinding);
 			}
 		}
 
 		/// <summary>Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.</summary>
 		/// <returns>true if <paramref name="item" /> is found in the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false.</returns>
 		/// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
-		public bool Contains(DX.ViewportF item)
+		public bool Contains(GorgonVertexBufferBinding item)
 		{
-			return Array.IndexOf(_viewports, item) != -1;
+			return Array.IndexOf(_bindings, item) != -1;
 		}
 
 		/// <summary>Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1" /> to an <see cref="T:System.Array" />, starting at a particular <see cref="T:System.Array" /> index.</summary>
@@ -163,27 +177,26 @@ namespace Gorgon.Graphics
 		/// <exception cref="T:System.ArgumentOutOfRangeException">
 		/// <paramref name="arrayIndex" /> is less than 0.</exception>
 		/// <exception cref="T:System.ArgumentException">The number of elements in the source <see cref="T:System.Collections.Generic.ICollection`1" /> is greater than the available space from <paramref name="arrayIndex" /> to the end of the destination <paramref name="array" />.</exception>
-		public void CopyTo(DX.ViewportF[] array, int arrayIndex)
+		public void CopyTo(GorgonVertexBufferBinding[] array, int arrayIndex)
 		{
-			_viewports.CopyTo(array, arrayIndex);
+			_bindings.CopyTo(array, arrayIndex);
 		}
 
 		/// <summary>Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1" />.</summary>
 		/// <returns>The index of <paramref name="item" /> if found in the list; otherwise, -1.</returns>
 		/// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.IList`1" />.</param>
-		public int IndexOf(DX.ViewportF item)
+		public int IndexOf(GorgonVertexBufferBinding item)
 		{
-			return Array.IndexOf(_viewports, item);
+			return Array.IndexOf(_bindings, item);
 		}
 
 		/// <summary>Returns an enumerator that iterates through the collection.</summary>
 		/// <returns>An enumerator that can be used to iterate through the collection.</returns>
-		/// <filterpriority>1</filterpriority>
-		public IEnumerator<DX.ViewportF> GetEnumerator()
+		public IEnumerator<GorgonVertexBufferBinding> GetEnumerator()
 		{
-			for (int i = 0; i < _viewports.Length; ++i)
+			for (int i = 0; i < _bindings.Length; ++i)
 			{
-				yield return _viewports[i];
+				yield return _bindings[i];
 			}
 		}
 
@@ -193,7 +206,7 @@ namespace Gorgon.Graphics
 		/// <exception cref="T:System.ArgumentOutOfRangeException">
 		/// <paramref name="index" /> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1" />.</exception>
 		/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IList`1" /> is read-only.</exception>
-		void IList<DX.ViewportF>.Insert(int index, DX.ViewportF item)
+		void IList<GorgonVertexBufferBinding>.Insert(int index, GorgonVertexBufferBinding item)
 		{
 			throw new NotSupportedException();
 		}
@@ -202,7 +215,7 @@ namespace Gorgon.Graphics
 		/// <returns>true if <paramref name="item" /> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
 		/// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
 		/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</exception>
-		bool ICollection<DX.ViewportF>.Remove(DX.ViewportF item)
+		bool ICollection<GorgonVertexBufferBinding>.Remove(GorgonVertexBufferBinding item)
 		{
 			throw new NotSupportedException();
 		}
@@ -212,7 +225,7 @@ namespace Gorgon.Graphics
 		/// <exception cref="T:System.ArgumentOutOfRangeException">
 		/// <paramref name="index" /> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1" />.</exception>
 		/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IList`1" /> is read-only.</exception>
-		void IList<DX.ViewportF>.RemoveAt(int index)
+		void IList<GorgonVertexBufferBinding>.RemoveAt(int index)
 		{
 			throw new NotSupportedException();
 		}
@@ -222,23 +235,23 @@ namespace Gorgon.Graphics
 		/// <filterpriority>2</filterpriority>
 		IEnumerator IEnumerable.GetEnumerator()
 		{
-			return _viewports.GetEnumerator();
+			return _bindings.GetEnumerator();
 		}
 		#endregion
 
 		#region Constructor
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonViewports"/> class.
+		/// Initializes a new instance of the <see cref="GorgonVertexBufferBindings"/> class.
 		/// </summary>
-		public GorgonViewports()
+		public GorgonVertexBufferBindings()
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonViewports"/> class.
+		/// Initializes a new instance of the <see cref="GorgonVertexBufferBindings"/> class.
 		/// </summary>
 		/// <param name="viewports">The buffers.</param>
-		public GorgonViewports(IEnumerable<DX.ViewportF> viewports)
+		public GorgonVertexBufferBindings(IEnumerable<GorgonVertexBufferBinding> viewports)
 		{
 			if (viewports == null)
 			{
@@ -247,9 +260,9 @@ namespace Gorgon.Graphics
 
 			int index = 0;
 
-			foreach (DX.ViewportF viewport in viewports)
+			foreach (GorgonVertexBufferBinding viewport in viewports)
 			{
-				if (index > _viewports.Length)
+				if (index > _actualBindings.Length)
 				{
 					break;
 				}

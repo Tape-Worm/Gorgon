@@ -280,7 +280,7 @@ namespace Gorgon.Graphics
 			_log.Print($"Depth/Stencil View '{Texture.Name}': {Texture.ResourceType} -> Mip slice: {MipSlice}, Array Index: {ArrayIndex}, Array Count: {ArrayCount}",
 					   LoggingLevel.Verbose);
 
-			D3DView = new D3D11.DepthStencilView(Texture.Graphics.VideoDevice.D3DDevice, Texture.D3DResource, desc)
+			D3DView = new D3D11.DepthStencilView(Texture.Graphics.VideoDevice.D3DDevice(), Texture.D3DResource, desc)
 			          {
 				          DebugName = $"'{Texture.Name}': D3D11 depth/stencil view"
 			          };

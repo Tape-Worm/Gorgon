@@ -25,9 +25,13 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Runtime.Serialization.Formatters;
+using Gorgon.Core;
 using Gorgon.Core.Properties;
 
 namespace Gorgon.Reflection
@@ -375,6 +379,180 @@ namespace Gorgon.Reflection
 			//compile it
 			ObjectActivator<T> compiled = (ObjectActivator<T>)lambda.Compile();
 			return compiled;
+		}
+
+		/// <summary>
+		/// Function to determine if a field within a type is safe for native memory use.
+		/// </summary>
+		/// <param name="field">The field to evaluate.</param>
+		/// <returns><b>true</b> if the field is safe for native use, <b>false</b> if not.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="field"/> parameter is <b>null</b>.</exception>
+		/// <remarks>
+		/// <para>
+		/// This method will evaluate a value field to determine if it is safe to use with Gorgon's native memory functions. 
+		/// </para>
+		/// <para>
+		/// The following conditions must be true for the field to be considered safe:
+		/// <list type="bullet">
+		///		<item>
+		///			<term>The field type be a value type or primitive type.</term>
+		///			<description><c>struct</c> and primitive types (e.g. <see cref="int"/>, <see cref="byte"/>, etc...) are safe to use, but <c>class</c> types are not.</description>		
+		///		</item>
+		///		<item>
+		///			<term>If the field type is a value type (<c>struct</c>), then it must use the <see cref="StructLayoutAttribute"/>).</term>
+		///			<description>This defines how the members of the type are laid out in memory and is determined by the <see cref="LayoutKind"/> parameter on the attribute. The only valid values are <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/>.</description>
+		///		</item>
+		///		<item>
+		///			<term>If the field type is a value type, then Members of value types must <b>not</b> use <see cref="MarshalAsAttribute"/>.</term>
+		///			<description>The <see cref="MarshalAsAttribute"/> defines a complex marhsalling (i.e. not blittable) scenario for types. For performance reasons, Gorgon does not use marshalling at all.</description>
+		///		</item>
+		/// </list>
+		/// </para>
+		/// </remarks>
+		public static bool IsFieldSafeForNative(this FieldInfo field)
+		{
+			if (field == null)
+			{
+				throw new ArgumentNullException(nameof(field));
+			}
+
+			// Don't check static fields or if the type we're checking is the type that's being examined.
+			if ((field.IsStatic) || (field.FieldType == field.DeclaringType))
+			{
+				return true;
+			}
+
+			if (field.FieldType.IsPrimitive)
+			{
+				return true;
+			}
+
+			if (!field.FieldType.IsValueType)
+			{
+				return false;
+			}
+
+			return field.FieldType.GetCustomAttribute<MarshalAsAttribute>() == null && field.FieldType.IsSafeForNative();
+		}
+
+		/// <summary>
+		/// Function to determine if a type is safe for native memory use.
+		/// </summary>
+		/// <param name="type">The type to evaluate.</param>
+		/// <returns><b>true</b> if the type is compatible, <b>false</b> if not.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="type"/> parameter is <b>null</b>.</exception>
+		/// <remarks>
+		/// <para>
+		/// This method will evaluate a value type to determine if it, and its members are safe to use with Gorgon's native memory functions. 
+		/// </para>
+		/// <para>
+		/// The following conditions must be true for the type to be considered safe:
+		/// <list type="bullet">
+		///		<item>
+		///			<term>Must be a value type or primitive type.</term>
+		///			<description><c>struct</c> and primitive types (e.g. <see cref="int"/>, <see cref="byte"/>, etc...) are safe to use, but <c>class</c> types are not.</description>		
+		///		</item>
+		///		<item>
+		///			<term>Value types (<c>struct</c>) must use the <see cref="StructLayoutAttribute"/>).</term>
+		///			<description>This defines how the members of the type are laid out in memory and is determined by the <see cref="LayoutKind"/> parameter on the attribute. The only valid values are <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/>.</description>
+		///		</item>
+		///		<item>
+		///			<term>Members of value types must <b>not</b> use <see cref="MarshalAsAttribute"/>.</term>
+		///			<description>The <see cref="MarshalAsAttribute"/> defines a complex marhsalling (i.e. not blittable) scenario for types. For performance reasons, Gorgon does not use marshalling at all.</description>
+		///		</item>
+		/// </list>
+		/// </para>
+		/// </remarks>
+		public static bool IsSafeForNative(this Type type)
+		{
+			if (type == null)
+			{
+				throw new ArgumentNullException(nameof(type));
+			}
+
+			if ((type.StructLayoutAttribute == null) || (type.IsAutoLayout))
+			{
+				return false;
+			}
+
+			FieldInfo[] fields = type.GetFields();
+
+			if (fields.Length == 0)
+			{
+				return false;
+			}
+
+			for (int i = 0; i < fields.Length; ++i)
+			{
+				if (!fields[i].IsFieldSafeForNative())
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		/// <summary>
+		/// Function to determine if a type is safe for native memory use.
+		/// </summary>
+		/// <param name="type">The type to evaluate.</param>
+		/// <param name="incompatibleFields">A list of fields containing information about the fields that are incompatible.</param>
+		/// <returns><b>true</b> if the type is compatible, <b>false</b> if not.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="type"/> parameter is <b>null</b>.</exception>
+		/// <remarks>
+		/// <para>
+		/// This method will evaluate a value type to determine if it, and its members are safe to use with Gorgon's native memory functions. 
+		/// </para>
+		/// <para>
+		/// The following conditions must be true for the type to be considered safe:
+		/// <list type="bullet">
+		///		<item>
+		///			<term>Must be a value type or primitive type.</term>
+		///			<description><c>struct</c> and primitive types (e.g. <see cref="int"/>, <see cref="byte"/>, etc...) are safe to use, but <c>class</c> types are not.</description>		
+		///		</item>
+		///		<item>
+		///			<term>Value types (<c>struct</c>) must use the <see cref="StructLayoutAttribute"/>).</term>
+		///			<description>This defines how the members of the type are laid out in memory and is determined by the <see cref="LayoutKind"/> parameter on the attribute. The only valid values are <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/>.</description>
+		///		</item>
+		///		<item>
+		///			<term>Members of value types must <b>not</b> use <see cref="MarshalAsAttribute"/>.</term>
+		///			<description>The <see cref="MarshalAsAttribute"/> defines a complex marhsalling (i.e. not blittable) scenario for types. For performance reasons, Gorgon does not use marshalling at all.</description>
+		///		</item>
+		/// </list>
+		/// </para>
+		/// </remarks>
+		public static bool IsSafeForNative(this Type type, out IReadOnlyList<FieldInfo> incompatibleFields)
+		{
+			if (type == null)
+			{
+				throw new ArgumentNullException(nameof(type));
+			}
+
+			var result = new List<FieldInfo>();
+			incompatibleFields = result;
+
+			if ((type.StructLayoutAttribute == null) || (type.IsAutoLayout))
+			{
+				return false;
+			}
+
+			FieldInfo[] fields = type.GetFields(BindingFlags.Instance | BindingFlags.Public);
+
+			if (fields.Length == 0)
+			{
+				return false;
+			}
+
+			for (int i = 0; i < fields.Length; ++i)
+			{
+				if (!fields[i].IsFieldSafeForNative())
+				{
+					result.Add(fields[i]);
+				}
+			}
+
+			return result.Count == 0;
 		}
 	}
 }

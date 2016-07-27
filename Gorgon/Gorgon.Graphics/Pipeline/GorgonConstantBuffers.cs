@@ -35,7 +35,7 @@ namespace Gorgon.Graphics
 	/// <summary>
 	/// A list of constant buffers used for shaders.
 	/// </summary>
-	public class GorgonConstantBuffers
+	public sealed class GorgonConstantBuffers
 		: IList<GorgonConstantBuffer>, IReadOnlyList<GorgonConstantBuffer>
 	{
 		#region Variables.

@@ -25,41 +25,17 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
-using Gorgon.Collections.Specialized;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Properties;
 using Gorgon.Native;
-using Gorgon.UI;
 using DX = SharpDX;
-using D3D = SharpDX.Direct3D;
 using D3D11 = SharpDX.Direct3D11;
 using GI = SharpDX.DXGI;
 
 namespace Gorgon.Graphics
 {
-	/// <summary>
-	/// Flags used to determine how a subresource should be updated.
-	/// </summary>
-	public enum UpdateSubResourceFlags
-	{
-		/// <summary>
-		/// Perform no special logic when updating the subresource.
-		/// </summary>
-		None = D3D11.CopyFlags.None,
-		/// <summary>
-		/// Do not overwrite the existing contents of the subresource.
-		/// </summary>
-		NoOverwrite = D3D11.CopyFlags.NoOverwrite,
-		/// <summary>
-		/// The existing data in the subresource is no longer valid and should be discarded.
-		/// </summary>
-		Discard = D3D11.CopyFlags.Discard
-	}
-
 	/// <summary>
 	/// Operators used for comparison operations.
 	/// </summary>
@@ -128,8 +104,6 @@ namespace Gorgon.Graphics
         : IDisposable
     {
 		#region Variables.
-		// Tracked objects.
-		private GorgonDisposableObjectCollection _trackedObjects;
 		// Flag to indicate that the desktop window manager compositor is enabled.
 		private static bool _isDWMEnabled;                                                  
 		// Flag to indicate that we should not enable the DWM.
@@ -137,24 +111,29 @@ namespace Gorgon.Graphics
 		// The log interface used to log debug messages.
 		private readonly IGorgonLog _log;
 		// The video device to use for this graphics object.
-		private IGorgonVideoDevice _videoDevice;
+		private VideoDevice _videoDevice;
 		// Previously changed states.
 		private PipelineStateChangeFlags _previousStates;
 		// The current pipeline state.
 		private readonly GorgonPipelineState _currentState;
 		// The default pipeline state.
 		private readonly GorgonPipelineState _defaultState = new GorgonPipelineState();
-        #endregion
+		// The current device context.
+		private D3D11.DeviceContext1 _deviceContext;
+		#endregion
 
         #region Properties.
+
 		/// <summary>
 		/// Property to return the Direct 3D 11.1 device context for this graphics instance.
 		/// </summary>
-		internal D3D11.DeviceContext1 D3DDeviceContext => VideoDevice?.D3DDeviceContext();
+		internal D3D11.DeviceContext1 D3DDeviceContext => _deviceContext;
 
 		/// <summary>
 		/// Property to set or return the current render target views.
 		/// </summary>
+		// TODO: This needs to be put into renderers.
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
 		public GorgonRenderTargetViews RenderTargetViews
 		{
 			get;
@@ -204,66 +183,6 @@ namespace Gorgon.Graphics
             }
         }
 
-		/*
-		/// <summary>
-        /// Property to return the input geometry interface.
-        /// </summary>
-        /// <remarks>
-        /// The input interface covers items such as the vertex buffer, index buffer, bindings of the aforementioned buffers, the primitive type, etc...
-        /// </remarks>
-        public GorgonInputGeometry Input
-        {
-            get;
-            private set;
-        }
-		
-        /// <summary>
-        /// Property to return the interface for buffers.
-        /// </summary>
-        public GorgonBuffers Buffers
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Property to return the current rasterizer states.
-        /// </summary>
-        public GorgonRasterizerRenderState Rasterizer
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Property to return the output merging interface.
-        /// </summary>
-        /// <remarks>This is responsible for setting blending states, depth/stencil states, creating render targets, etc...</remarks>
-        public GorgonOutputMerger Output
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Property to return the textures interface.
-        /// </summary>
-        public GorgonTextures Textures
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Property to return the fonts interface.
-        /// </summary>
-        public GorgonFonts Fonts
-        {
-            get;
-            private set;
-        }
-		*/
-
 		/// <summary>
 		/// Property to set or return the video device to use for this graphics interface.
 		/// </summary>
@@ -291,11 +210,11 @@ namespace Gorgon.Graphics
         {
             get
             {
-                return SharpDX.Configuration.EnableObjectTracking;
+                return DX.Configuration.EnableObjectTracking;
             }
             set
             {
-                SharpDX.Configuration.EnableObjectTracking = value;
+                DX.Configuration.EnableObjectTracking = value;
             }
         }
 
@@ -327,20 +246,6 @@ namespace Gorgon.Graphics
 			get;
 			set;
 		}
-
-        /// <summary>
-        /// Property to set or return whether swap chains should reset their full screen setting on regaining focus.
-        /// </summary>
-        /// <remarks>
-        /// This will control whether Gorgon will try to reacquire full screen mode when a full screen swap chain window regains focus.  When this is set to <b>false</b>, and the window 
-        /// containing the full screen swap chain loses focus, it will revert to windowed mode and remain in windowed mode.  When set to <b>true</b>, it will try to reacquire full screen mode.
-        /// <para>The default value for this is <b>true</b>.  However, for a full screen multimonitor scenario, this should be set to <b>false</b>.</para>
-        /// </remarks>
-        public bool ResetFullscreenOnFocus
-        {
-            get;
-            set;
-        }
 		#endregion
 
         #region Methods.
@@ -423,7 +328,7 @@ namespace Gorgon.Graphics
 			if (views == null)
 			{
 				D3DDeviceContext.OutputMerger.SetTargets();
-				_currentState.RenderTargetViews = null;
+				_currentState.RenderTargetViews.Clear();
 				return;
 			}
 
@@ -438,20 +343,6 @@ namespace Gorgon.Graphics
 			D3DDeviceContext.OutputMerger.SetTargets(views.DepthStencilView?.D3DView, views.D3DRenderTargetViewBindCount, views.D3DRenderTargetViews);
 			_currentState.RenderTargetViews = views;
 		}
-
-		/// <summary>
-		/// Function to retrieve a list of all swap chains that are currently full screen.
-		/// </summary>
-		/// <returns>The list of full screen swap chains.</returns>
-		internal IEnumerable<GorgonSwapChain> GetFullScreenSwapChains()
-        {
-	        return new GorgonSwapChain[0];
-	        /*
-            return (from graphicsObj in _trackedObjects
-                    let swap = graphicsObj as GorgonSwapChain
-                    where (swap != null) && (!swap.Info.IsWindowed)
-                    select swap);*/
-        }
 
 		/// <summary>
 		/// Function to retrieve the current set of changed states from the supplied state.
@@ -484,6 +375,16 @@ namespace Gorgon.Graphics
 			if (!GorgonViewports.Equals(state.Viewports, _currentState.Viewports))
 			{
 				result |= PipelineStateChangeFlags.Viewport;
+			}
+
+			if (!GorgonVertexBufferBindings.Equals(state.VertexBuffers, _currentState.VertexBuffers))
+			{
+				result |= PipelineStateChangeFlags.VertexBuffers;
+			}
+
+			if (state.IndexBuffer != _currentState.IndexBuffer)
+			{
+				result |= PipelineStateChangeFlags.IndexBuffer;
 			}
 			
 			if ((state.PixelShader == null) && (_currentState.PixelShader != null))
@@ -526,27 +427,6 @@ namespace Gorgon.Graphics
 		}
 
 		/// <summary>
-		/// Function to submit recorded states to the GPU.
-		/// </summary>
-		public void Submit(GorgonDrawIndexedCall drawCall)
-		{
-			if (drawCall == null)
-			{
-				throw new ArgumentNullException(nameof(drawCall));
-			}
-
-			ApplyPipelineState(drawCall.State);
-
-			// Change the topology if necessary.
-			if (drawCall.PrimitiveTopology != D3DDeviceContext.InputAssembler.PrimitiveTopology)
-			{
-				D3DDeviceContext.InputAssembler.PrimitiveTopology = drawCall.PrimitiveTopology;
-			}
-
-			D3DDeviceContext.DrawIndexed(drawCall.IndexCount, drawCall.IndexStart, drawCall.BaseVertexIndex);
-		}
-
-		/// <summary>
 		/// Function to apply a pipeline state to the pipeline.
 		/// </summary>
 		/// <param name="state">A <see cref="GorgonPipelineState"/> to apply to the pipeline.</param>
@@ -572,7 +452,7 @@ namespace Gorgon.Graphics
 		/// </para>
 		/// </para>
 		/// </remarks>
-		public void ApplyPipelineState(GorgonPipelineState state)
+		private void ApplyPipelineState(GorgonPipelineState state)
 		{
 			state.ValidateObject(nameof(state));
 
@@ -628,6 +508,23 @@ namespace Gorgon.Graphics
 				_currentState.Viewports = state.Viewports;
 			}
 
+			if ((stateChange & PipelineStateChangeFlags.VertexBuffers) == PipelineStateChangeFlags.VertexBuffers)
+			{
+				D3DDeviceContext.InputAssembler.SetVertexBuffers(0, state.VertexBuffers.D3DBindings);
+				_currentState.VertexBuffers = state.VertexBuffers;
+			}
+
+			if ((stateChange & PipelineStateChangeFlags.IndexBuffer) == PipelineStateChangeFlags.IndexBuffer)
+			{
+				GI.Format format = GI.Format.Unknown;
+				if (state.IndexBuffer != null)
+				{
+					format = state.IndexBuffer.IndexFormat;
+				}
+
+				D3DDeviceContext.InputAssembler.SetIndexBuffer(state.IndexBuffer?.D3DBuffer, format, 0);
+			}
+
 			if (((stateChange & PipelineStateChangeFlags.VertexShader) == PipelineStateChangeFlags.VertexShader)
 				&& (vertexShaderChanges != ShaderStateChanges.None))
 			{
@@ -644,113 +541,25 @@ namespace Gorgon.Graphics
 		}
 
 		/// <summary>
-		/// Function to add an object for tracking by the main Gorgon interface.
+		/// Function to submit recorded states to the GPU for rendering.
 		/// </summary>
-		/// <param name="trackedObject">Object to add.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="trackedObject"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
-		/// <remarks>This allows Gorgon to track objects and destroy them upon <see cref="GorgonApplication.Quit">termination</see>.</remarks>
-		public void AddTrackedObject(IDisposable trackedObject)
-        {
-            if (trackedObject == null)
-            {
-                throw new ArgumentNullException(nameof(trackedObject));
-            }
-
-            _trackedObjects.Add(trackedObject);
-        }
-
-        /// <summary>
-        /// Function to remove a tracked object from the Gorgon interface.
-        /// </summary>
-        /// <param name="trackedObject">Object to remove.</param>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="trackedObject"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
-        /// <remarks>This will -not- destroy the tracked object.</remarks>
-        public void RemoveTrackedObject(IDisposable trackedObject)
-        {
-            if (trackedObject == null)
-            {
-                throw new ArgumentNullException(nameof(trackedObject));
-            }
-
-            _trackedObjects.Remove(trackedObject);
-        }
-
-        /// <summary>
-        /// Function to a list of objects being tracked by a type value.
-        /// </summary>
-        /// <typeparam name="T">Type to search for.</typeparam>
-        /// <returns>A list of objects that match the type.</returns>
-        public IList<T> GetTrackedObjectsOfType<T>()
-            where T : IDisposable
-        {
-            return (from trackedObject in _trackedObjects
-                    where trackedObject is T
-                    select (T)trackedObject).ToArray();
-        }
-
-/*		/// <summary>
-		/// Function to bind the currently active render target views and any applicable depth/stencil view to the pipeline.
-		/// </summary>
-		/// <param name="views">A <see cref="GorgonRenderTargetViews"/> that contains the render target views and depth/stencil buffer to bind to the pipeline.</param>
-		/// <exception cref="ArgumentException">Thrown when a <see cref="GorgonRenderTargetView"/> is already bound to a slot. 
-		/// <para>-or-</para>
-		/// <para>Thrown when any of the render target views and/or depth stencil view do not have the same array/depth count.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when any render target and/or depth stencil view is not the same type.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when any render target and/or depth stencil has a width/height/depth (or array count) mismatch.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when any render target and/or depth stencil multisampling quality/count is not the same.</para>
-		/// <para>This exception is only thrown when Gorgon is compiled as DEBUG.</para>
-		/// </exception>
-		/// <remarks>
-		/// <para>
-		/// This will bind <see cref="GorgonRenderTargetView"/> objects and an optional <see cref="GorgonDepthStencilView"/> to the pipeline when rendering. Users should bind a minimum of a single render 
-		/// target (e.g. a <see cref="GorgonSwapChain"/>) to be able to visualize graphical data. 
-		/// </para>
-		/// <para>
-		/// The number of render targets passed to the <paramref name="views"/> parameter will be limited to the number of render target slots for the device. The total number of available slots is 
-		/// available through the <see cref="IGorgonVideoDevice.MaxRenderTargetViewSlots"/> value on the <see cref="VideoDevice"/> property. If the number of render target views passed exceeds this value, then 
-		/// Gorgon will only set up to the maximum value and no more. No exception will be thrown. If the number of render targets is less than the maximum, then the remaining slots will be set to <b>null</b>.
-		/// </para> 
-		/// <para>
-		/// If <b>null</b> is passed to the <paramref name="views"/> parameter, then all render targets and the depth/stencil view are unbound. However, if the <paramref name="views"/> contains a depth/stencil 
-		/// view and no render target views, the only the depth/stencil view will be bound.
-		/// </para>
-		/// <para>
-		/// All resources bound to the views in the <paramref name="views"/> parameter must meet the following criteria:
-		/// <list type="bullet">
-		///		<item>
-		///			<description>Share the same type. That is one of <see cref="TextureType.Texture1D"/>, <see cref="TextureType.Texture2D"/> or <see cref="TextureType.Texture3D"/>.</description>
-		///		</item>
-		///		<item>
-		///			<description>The same array size, or depth in the case of <see cref="TextureType.Texture3D"/>.</description>
-		///		</item>
-		///		<item>
-		///			<description>The same multisample quality and count.</description>
-		///		</item>
-		/// </list>
-		/// If any of these conditions are not met, then an exception will be thrown (when Gorgon is compiled in DEBUG mode).
-		/// </para>
-		/// <para>
-		/// The same <see cref="GorgonRenderTargetView"/> cannot be bound to multiple render target slots simultaneously. However, you may set multiple non-overlapping resource views of a single resource as 
-		/// simultaneous multiple render targets. 
-		/// </para>
-		/// <para>
-		/// If the resources in the <paramref name="views"/> parameters use an array count, then all views must have the same array count.
-		/// </para>
-		/// <para>
-		/// Because unordered access views (UAVs) share the same slots as render target views, calling this method will unbind any existing unordered access views.
-		/// </para>
-		/// </remarks>
-		public void SetRenderTargets(GorgonRenderTargetViews views)
+		public void Submit(GorgonDrawIndexedCall drawCall)
 		{
-			// Bind the views to the pipeline right away.
-			views.BindRtvs(D3DDeviceContext);
+			if (drawCall == null)
+			{
+				throw new ArgumentNullException(nameof(drawCall));
+			}
 
-			RenderTargets = views;
+			ApplyPipelineState(drawCall.State);
+
+			// Change the topology if necessary.
+			if (drawCall.PrimitiveTopology != D3DDeviceContext.InputAssembler.PrimitiveTopology)
+			{
+				D3DDeviceContext.InputAssembler.PrimitiveTopology = drawCall.PrimitiveTopology;
+			}
+
+			D3DDeviceContext.DrawIndexed(drawCall.IndexCount, drawCall.IndexStart, drawCall.BaseVertexIndex);
 		}
-		*/
 
 		/// <summary>
 		/// Function to clear a specific render target view.
@@ -758,6 +567,7 @@ namespace Gorgon.Graphics
 		/// <param name="view">The <see cref="GorgonRenderTargetView"/> to clear.</param>
 		/// <param name="color">The color used to fill the view with.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="view"/> parameter is <b>null</b>. This is only thrown when Gorgon is compiled in DEBUG mode.</exception>
+		// TODO: Where should this go? Maybe on the RTV/DSV?
 		public void ClearRenderTargetView(GorgonRenderTargetView view, GorgonColor color)
 		{
 			view.ValidateObject(nameof(view));
@@ -774,11 +584,11 @@ namespace Gorgon.Graphics
         {
             if (flush)
             {
-				VideoDevice.D3DDeviceContext().Flush();
+				D3DDeviceContext.Flush();
             }
 
 			// Set default states.
-			VideoDevice.D3DDeviceContext.ClearState();
+			D3DDeviceContext.ClearState();
 
 			ApplyPipelineState(_defaultState);
 		}
@@ -789,16 +599,19 @@ namespace Gorgon.Graphics
 		public void Dispose()
 		{
 			IGorgonVideoDevice device = Interlocked.Exchange(ref _videoDevice, null);
+			D3D11.DeviceContext context = Interlocked.Exchange(ref _deviceContext, null);
 
-			if (device == null)
+			if ((device == null)
+				|| (context == null))
 			{
 				return;
 			}
 
-			// Reset the state for the context. This will ensure we don't have anything bound to the pipeline when we shut down.
-			device.D3DDeviceContext().ClearState();
+			// Disconnect from the context.
+			_log.Print($"Destroying GorgonGraphics interface for device '{0}'...", LoggingLevel.Simple, device.Info.Name);
 
-			_trackedObjects.Clear();
+			// Reset the state for the context. This will ensure we don't have anything bound to the pipeline when we shut down.
+			context.ClearState();
 			device.Dispose();
 		}
 		#endregion
@@ -883,16 +696,12 @@ namespace Gorgon.Graphics
 
 			_currentState = _defaultState;
 			_log = log ?? GorgonLogDummy.DefaultInstance;
-			ResetFullscreenOnFocus = true;
 			
 			_log.Print("Gorgon Graphics initializing...", LoggingLevel.Simple);
-
-            // Track our objects.
-            _trackedObjects = new GorgonDisposableObjectCollection();
-
 			_log.Print($"Using video device '{videoDeviceInfo.Name}' at feature level [{featureLevel.Value}] for Direct 3D 11.1.", LoggingLevel.Simple);
 
 			_videoDevice = new VideoDevice(videoDeviceInfo, featureLevel.Value, _log);
+			_deviceContext = _videoDevice.D3DDevice.ImmediateContext1;
 
 			_log.Print("Gorgon Graphics initialized.", LoggingLevel.Simple);
 		}

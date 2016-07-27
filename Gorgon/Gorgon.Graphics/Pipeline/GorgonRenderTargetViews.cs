@@ -37,7 +37,7 @@ namespace Gorgon.Graphics
 	/// <summary>
 	/// A list of render target states to apply to the pipeline.
 	/// </summary>
-	public class GorgonRenderTargetViews
+	public sealed class GorgonRenderTargetViews
 		: IList<GorgonRenderTargetView>, IReadOnlyList<GorgonRenderTargetView>
 	{
 		#region Variables.

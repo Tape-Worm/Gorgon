@@ -42,7 +42,7 @@ namespace Gorgon.Graphics
 	/// <see cref="GorgonShaderFactory"/> is required to compile or read shaders, they cannot be created via the <c>new</c> keyword.
 	/// </para>
 	/// </remarks>
-	public class GorgonPixelShader
+	public sealed class GorgonPixelShader
 		: GorgonShader
 	{
 		#region Properties.

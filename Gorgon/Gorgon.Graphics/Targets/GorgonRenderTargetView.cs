@@ -47,7 +47,7 @@ namespace Gorgon.Graphics
 	/// target. 
 	/// </para>
 	/// </remarks>
-	public class GorgonRenderTargetView
+	public sealed class GorgonRenderTargetView
 		: IDisposable
     {
 		#region Variables.
@@ -288,7 +288,7 @@ namespace Gorgon.Graphics
 	        _log.Print($"Render Target View '{Texture.Name}': {Texture.ResourceType} -> Mip slice: {MipSlice}, Array/Depth Index: {FirstArrayOrDepthIndex}, Array/Depth Count: {ArrayOrDepthCount}",
 	                   LoggingLevel.Verbose);
 
-	        D3DRenderTargetView = new D3D.RenderTargetView(Texture.Graphics.VideoDevice.D3DDevice, Texture.D3DResource, desc)
+	        D3DRenderTargetView = new D3D.RenderTargetView(Texture.Graphics.VideoDevice.D3DDevice(), Texture.D3DResource, desc)
 	                              {
 		                              DebugName = $"'{Texture.Name}': D3D 11 Render target view"
 	                              };

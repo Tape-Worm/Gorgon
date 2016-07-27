@@ -61,7 +61,7 @@ namespace Gorgon.Graphics
 	/// </para>
 	/// <seealso cref="GorgonTexture.Lock"/>
 	/// </remarks>
-	public class GorgonTextureLockData
+	public sealed class GorgonTextureLockData
         : IGorgonImageBuffer, IDisposable 
     {
 		#region Variables.

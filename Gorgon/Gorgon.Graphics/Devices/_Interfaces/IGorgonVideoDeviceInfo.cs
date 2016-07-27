@@ -45,6 +45,7 @@ namespace Gorgon.Graphics
 	/// Applications can use this to define a minimum supported video device, or take an alternate code (potentially slower) path to achieve the same result.
 	/// </para>
 	/// </remarks>
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue", Justification = "If we don't have one of these values, Gorgon will not execute.")]
 	public enum FeatureLevelSupport
 	{
 		/// <summary>

@@ -125,8 +125,7 @@ namespace Gorgon.Native
 		/// <param name="dwlConditionMask"></param>
 		/// <returns></returns>
 		[DllImport("kernel32.dll")]
-		[return: MarshalAs(UnmanagedType.U1)]
-		private static extern bool VerifyVersionInfo([In] ref OSVERSIONINFOEX lpVersionInfo, uint dwTypeMask, ulong dwlConditionMask);
+		private static extern int VerifyVersionInfo([In] ref OSVERSIONINFOEX lpVersionInfo, uint dwTypeMask, ulong dwlConditionMask);
 
 		/// <summary>
 		/// Function to determine if the version of Windows that is running is what we want.
@@ -154,7 +153,7 @@ namespace Gorgon.Native
 													VER_SERVICEPACKMAJOR,
 													VER_GREATER_EQUAL);
 
-			return VerifyVersionInfo(ref osInfoEx, VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR, versionMask);
+			return VerifyVersionInfo(ref osInfoEx, VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR, versionMask) != 0;
 		}
 
 		/// <summary>

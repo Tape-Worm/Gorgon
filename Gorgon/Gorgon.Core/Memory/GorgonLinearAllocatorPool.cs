@@ -56,6 +56,7 @@ namespace Gorgon.Core.Memory
 		/// <summary>
 		/// Property to return the list of items in the pool.
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays", Justification = "This is MEANT to modified by child classes. Seriously Microsoft??")]
 		protected T[] Items
 		{
 			get;

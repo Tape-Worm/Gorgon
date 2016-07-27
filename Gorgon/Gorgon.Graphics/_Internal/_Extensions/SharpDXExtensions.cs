@@ -48,16 +48,6 @@ namespace Gorgon.Graphics
 		}
 
 		/// <summary>
-		/// Function to retrieve the underlying Direct 3D immediate context from a <see cref="IGorgonVideoDevice"/> interface.
-		/// </summary>
-		/// <param name="videoDevice">The video device to use.</param>
-		/// <returns>The Direct 3D immediate context.</returns>
-		public static D3D11.DeviceContext1 D3DDeviceContext(this IGorgonVideoDevice videoDevice)
-		{
-			return ((VideoDevice)videoDevice).D3DDeviceContext;
-		}
-
-		/// <summary>
 		/// Function to retrieve the underlying Direct 3D device from a <see cref="IGorgonVideoDevice"/> interface.
 		/// </summary>
 		/// <param name="videoDevice">The video device to use.</param>
@@ -193,6 +183,16 @@ namespace Gorgon.Graphics
 					   SwapEffect = swapEffect,
 					   Usage = DXGI.Usage.RenderTargetOutput
 			       };
+		}
+
+		/// <summary>
+		/// Function to convert a gorgon vertex buffer binding to a D3D 11 vertex buffer binding.
+		/// </summary>
+		/// <param name="binding">The binding to convert.</param>
+		/// <returns>A new D3D 11 vertex buffer binding.</returns>
+		public static D3D11.VertexBufferBinding ToVertexBufferBinding(this GorgonVertexBufferBinding binding)
+		{
+			return new D3D11.VertexBufferBinding(binding.VertexBuffer?.D3DBuffer, binding.Stride, binding.Offset);
 		}
 	}
 }
