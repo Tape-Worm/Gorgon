@@ -1,7 +1,7 @@
-﻿#region MIT.
+﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2013 Michael Winsor
+// Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,11 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Tuesday, June 4, 2013 8:25:47 PM
+// Created: July 28, 2016 11:54:46 PM
 // 
 #endregion
 
-using System;
 using DXGI = SharpDX.DXGI;
 
 namespace Gorgon.Graphics
@@ -32,24 +31,26 @@ namespace Gorgon.Graphics
 	/// <summary> 
 	/// Settings for defining the set up for a swap chain.
 	/// </summary>
-	public class GorgonSwapChainInfo 
-		: IGorgonSwapChainInfo
+	/// <remarks>
+	/// <para>
+	/// This provides an immutable view of the swap chain information so that it cannot be modified after the buffer is created.
+	/// </para>
+	/// </remarks>
+	public interface IGorgonSwapChainInfo
 	{
-		#region Properties.
 		/// <summary>
-		/// Property to set or return whether the back buffer contents will be stretched to fit the size of the presentation target area (typically the client area of the window).
+		/// Property to return whether the back buffer contents will be stretched to fit the size of the presentation target area (typically the client area of the window).
 		/// </summary>
 		/// <remarks>
 		/// The default value for this value is <b>true</b>.
 		/// </remarks>
-		public bool StretchBackBuffer
+		bool StretchBackBuffer
 		{
 			get;
-			set;
 		}
 
 		/// <summary>
-		/// Property to set or return whether to use flip mode rather than a bitblt mode to present the back buffer to the presentation target.
+		/// Property to return whether to use flip mode rather than a bitblt mode to present the back buffer to the presentation target.
 		/// </summary>
 		/// <remarks>
 		/// <para>
@@ -71,72 +72,36 @@ namespace Gorgon.Graphics
 		/// </note>
 		/// </para>
 		/// </remarks>
-		public bool UseFlipMode
+		bool UseFlipMode
 		{
 			get;
-			set;
 		}
 
 		/// <summary>
-		/// Property to set or return the format of the swap chain back buffer.
+		/// Property to return the format of the swap chain back buffer.
 		/// </summary>
 		/// <remarks>
 		/// The default value is <c>R8G8B8A8_UNorm</c>.
 		/// </remarks>
-		public DXGI.Format Format
+		DXGI.Format Format
 		{
 			get;
-			set;
 		}
-	
+
 		/// <summary>
-		/// Property to set or return the width of the swap chain back buffer.
+		/// Property to return the width of the swap chain back buffer.
 		/// </summary>
-		public int Width
+		int Width
 		{
 			get;
-			set;
 		}
 
 		/// <summary>
-		/// Property to set or return the height of the swap chain back buffer.
+		/// Property to return the height of the swap chain back buffer.
 		/// </summary>
-		public int Height
+		int Height
 		{
 			get;
-			set;
 		}
-		#endregion
-
-		#region Constructor/Destructor.
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonSwapChainInfo"/> class.
-		/// </summary>
-		/// <param name="info">A <see cref="IGorgonSwapChainInfo"/> to copy the settings from.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
-		public GorgonSwapChainInfo(IGorgonSwapChainInfo info)
-		{
-			if (info == null)
-			{
-				throw new ArgumentNullException(nameof(info));
-			}
-
-			Format = info.Format;
-			Height = info.Height;
-			StretchBackBuffer = info.StretchBackBuffer;
-			UseFlipMode = info.UseFlipMode;
-			Width = info.Width;
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonSwapChainInfo"/> class.
-		/// </summary>
-		public GorgonSwapChainInfo()
-		{
-			StretchBackBuffer = true;
-			Format = DXGI.Format.R8G8B8A8_UNorm;
-		}
-		#endregion
 	}
 }

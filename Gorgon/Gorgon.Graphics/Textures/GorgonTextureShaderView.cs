@@ -208,10 +208,10 @@ namespace Gorgon.Graphics
 		/// <returns>The shader view description.</returns>
 		private D3D11.ShaderResourceViewDescription GetDesc2D()
 		{
-			bool isMultiSampled = ((Texture.Info.MultiSampleInfo.Count > 1)
-			                       || (Texture.Info.MultiSampleInfo.Quality > 0));
+			bool isMultisampled = ((Texture.Info.MultisampleInfo.Count > 1)
+			                       || (Texture.Info.MultisampleInfo.Quality > 0));
 
-			if (!isMultiSampled)
+			if (!isMultisampled)
 			{
 				return new D3D11.ShaderResourceViewDescription
 				       {
@@ -248,10 +248,10 @@ namespace Gorgon.Graphics
         /// </summary>
 	    private D3D11.ShaderResourceViewDescription GetDesc2DCube()
 	    {
-            bool isMultiSampled = ((Texture.Info.MultiSampleInfo.Count > 1)
-                                   || (Texture.Info.MultiSampleInfo.Quality > 0));
+            bool isMultisampled = ((Texture.Info.MultisampleInfo.Count > 1)
+                                   || (Texture.Info.MultisampleInfo.Quality > 0));
 
-	        if (isMultiSampled)
+	        if (isMultisampled)
 	        {
                 throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_CANNOT_MULTISAMPLE_CUBE);
             }

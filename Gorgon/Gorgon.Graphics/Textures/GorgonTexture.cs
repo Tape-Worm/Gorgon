@@ -47,6 +47,8 @@ namespace Gorgon.Graphics
 		#region Variables.
 		// The logging interface used for debug logging.
 		private readonly IGorgonLog _log;
+		// The information used to create the texture.
+		private readonly GorgonTextureInfo _info;
 		// The texture lock cache.
 		private readonly TextureLockCache _lockCache;
 		// List of typeless formats that are compatible with a depth view format.
@@ -94,7 +96,7 @@ namespace Gorgon.Graphics
 		/// Property to return the default shader view for this texture.
 		/// </summary>
 		/// <remarks>
-		/// If the <see cref="GorgonTextureInfo.Binding"/> property does not have a flag of <see cref="TextureBinding.ShaderResource"/>, then this value will return <b>null</b>.
+		/// If the <see cref="IGorgonTextureInfo.Binding"/> property does not have a flag of <see cref="TextureBinding.ShaderResource"/>, then this value will return <b>null</b>.
 		/// </remarks>
 		public GorgonTextureShaderView DefaultShaderResourceView
 		{
@@ -106,7 +108,7 @@ namespace Gorgon.Graphics
 		/// Property to return the default depth/stencil view for this texture.
 		/// </summary>
 		/// <remarks>
-		/// If the <see cref="GorgonTextureInfo.Binding"/> property does not have a flag of <see cref="TextureBinding.DepthStencil"/>, then this value will return <b>null</b>.
+		/// If the <see cref="IGorgonTextureInfo.Binding"/> property does not have a flag of <see cref="TextureBinding.DepthStencil"/>, then this value will return <b>null</b>.
 		/// </remarks>
 		public GorgonDepthStencilView DefaultDepthStencilView
 		{
@@ -118,7 +120,7 @@ namespace Gorgon.Graphics
 		/// Property to return the default render target view for this texture.
 		/// </summary>
 		/// <remarks>
-		/// If the <see cref="GorgonTextureInfo.Binding"/> property does not have a flag of <see cref="TextureBinding.RenderTarget"/>, then this value will return <b>null</b>.
+		/// If the <see cref="IGorgonTextureInfo.Binding"/> property does not have a flag of <see cref="TextureBinding.RenderTarget"/>, then this value will return <b>null</b>.
 		/// </remarks>
 		public GorgonRenderTargetView DefaultRenderTargetView
 		{
@@ -127,12 +129,9 @@ namespace Gorgon.Graphics
 		}
 
 		/// <summary>
-		/// Property to return the <see cref="GorgonTextureInfo"/> used to create this texture.
+		/// Property to return the <see cref="IGorgonTextureInfo"/> used to create this texture.
 		/// </summary>
-		public GorgonTextureInfo Info
-		{
-			get;
-		}
+		public IGorgonTextureInfo Info => _info;
 		#endregion
 
 		#region Methods.
@@ -233,7 +232,7 @@ namespace Gorgon.Graphics
 				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_UNORDERED_RES_NOT_DEFAULT);
 			}
 			
-			if (!Info.MultiSampleInfo.Equals(GorgonMultiSampleInfo.NoMultiSampling))
+			if (!Info.MultisampleInfo.Equals(GorgonMultisampleInfo.NoMultiSampling))
 			{
 				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_TEXTURE_UNORDERED_NO_MULTISAMPLE);
 			}
@@ -272,7 +271,7 @@ namespace Gorgon.Graphics
 				}
 			}
 
-			if ((!Info.MultiSampleInfo.Equals(GorgonMultiSampleInfo.NoMultiSampling))
+			if ((!Info.MultisampleInfo.Equals(GorgonMultisampleInfo.NoMultiSampling))
 			    && (Graphics.VideoDevice.RequestedFeatureLevel < FeatureLevelSupport.Level_10_1))
 			{
 				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_DEPTHSTENCIL_MS_FL101);
@@ -323,15 +322,15 @@ namespace Gorgon.Graphics
 				{
 					while ((Info.ArrayCount % 6) != 0)
 					{
-						Info.ArrayCount++;
+						_info.ArrayCount++;
 					}
 				}
 
-				Info.Depth = 1;
+				_info.Depth = 1;
 			}
 			else
 			{
-				Info.ArrayCount = 1;
+				_info.ArrayCount = 1;
 			}
 
 			// Ensure that we can actually use our requested format as a texture.
@@ -359,7 +358,7 @@ namespace Gorgon.Graphics
 					throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_TEXTURE_CUBE_REQUIRES_6_ARRAY);
 				}
 
-				if (!Info.MultiSampleInfo.Equals(GorgonMultiSampleInfo.NoMultiSampling))
+				if (!Info.MultisampleInfo.Equals(GorgonMultisampleInfo.NoMultiSampling))
 				{
 					throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_CANNOT_MULTISAMPLE_CUBE);
 				}
@@ -388,7 +387,7 @@ namespace Gorgon.Graphics
 				}
 
 				// Ensure the number of mip levels is not outside of the range for the width/height.
-				Info.MipLevels = Info.MipLevels.Min(GorgonImage.CalculateMaxMipCount(Info.Width, height, 1)).Max(1);
+				_info.MipLevels = Info.MipLevels.Min(GorgonImage.CalculateMaxMipCount(Info.Width, height, 1)).Max(1);
 			}
 			else
 			{
@@ -411,7 +410,7 @@ namespace Gorgon.Graphics
 				}
 
 				// Ensure the number of mip levels is not outside of the range for the width/height.
-				Info.MipLevels = Info.MipLevels.Min(GorgonImage.CalculateMaxMipCount(Info.Width, Info.Height, Info.Depth)).Max(1);
+				_info.MipLevels = Info.MipLevels.Min(GorgonImage.CalculateMaxMipCount(Info.Width, Info.Height, Info.Depth)).Max(1);
 			}
 			
 			if (Info.MipLevels > 1)
@@ -421,7 +420,7 @@ namespace Gorgon.Graphics
 					throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_TEXTURE_NO_MIP_SUPPORT, Info.Format));
 				}
 
-				if ((Info.TextureType == TextureType.Texture2D) && (!Info.MultiSampleInfo.Equals(GorgonMultiSampleInfo.NoMultiSampling)))
+				if ((Info.TextureType == TextureType.Texture2D) && (!Info.MultisampleInfo.Equals(GorgonMultisampleInfo.NoMultiSampling)))
 				{
 					throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_MULTISAMPLE_INVALID_MIP));
 				}
@@ -438,14 +437,14 @@ namespace Gorgon.Graphics
 				return;
 			}
 
-			if ((!Info.MultiSampleInfo.Equals(GorgonMultiSampleInfo.NoMultiSampling)) &&
-				(!Graphics.VideoDevice.SupportsMultiSampleInfo(Info.Format, Info.MultiSampleInfo)))
+			if ((!Info.MultisampleInfo.Equals(GorgonMultisampleInfo.NoMultiSampling)) &&
+				(!Graphics.VideoDevice.SupportsMultisampleInfo(Info.Format, Info.MultisampleInfo)))
 			{
 				throw new GorgonException(GorgonResult.CannotCreate,
 				                          string.Format(Resources.GORGFX_ERR_MULTISAMPLE_INVALID,
 				                                        Graphics.VideoDevice.Info.Name,
-				                                        Info.MultiSampleInfo.Count,
-				                                        Info.MultiSampleInfo.Quality,
+				                                        Info.MultisampleInfo.Count,
+				                                        Info.MultisampleInfo.Quality,
 				                                        Info.Format));
 			}
 		}
@@ -506,7 +505,7 @@ namespace Gorgon.Graphics
 						BindFlags = (D3D11.BindFlags)Info.Binding,
 						CpuAccessFlags = cpuFlags,
 						OptionFlags = Info.IsCubeMap ? D3D11.ResourceOptionFlags.TextureCube : D3D11.ResourceOptionFlags.None,
-						SampleDescription = Info.MultiSampleInfo.ToSampleDesc(),
+						SampleDescription = Info.MultisampleInfo.ToSampleDesc(),
 						MipLevels = Info.MipLevels
 					};
 
@@ -670,11 +669,11 @@ namespace Gorgon.Graphics
 		/// </exception>
 		/// <remarks>
 		/// <para>
-		/// This method is used to lock down a sub resource in the texture for reading/writing (depending on <see cref="GorgonTextureInfo.Usage"/>). When locking a texture, the entire texture sub resource 
+		/// This method is used to lock down a sub resource in the texture for reading/writing (depending on <see cref="IGorgonTextureInfo.Usage"/>). When locking a texture, the entire texture sub resource 
 		/// is locked and returned.  There is no setting to return a portion of the texture subresource.
 		/// </para>
 		/// <para>
-		/// This method is only works for textures with a <see cref="GorgonTextureInfo.Usage"/> of <c>Dynamic</c> or <c>Staging</c>. If the usage is not either of those values, then an exception will be thrown. 
+		/// This method is only works for textures with a <see cref="IGorgonTextureInfo.Usage"/> of <c>Dynamic</c> or <c>Staging</c>. If the usage is not either of those values, then an exception will be thrown. 
 		/// If the texture has a <see cref="TextureBinding"/> of <see cref="TextureBinding.DepthStencil"/>, then this method will throw an exception.
 		/// </para>
 		/// <para>
@@ -729,13 +728,13 @@ namespace Gorgon.Graphics
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="sourceTexture"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the formats cannot be converted because they're not of the same group or the current video device has a feature level of <see cref="FeatureLevelSupport.Level_10_0"/>.
 		/// <para>-or-</para>
-		/// <para>Thrown when the <see cref="GorgonTextureInfo.MultiSampleInfo"/>.<see cref="GorgonMultiSampleInfo.Count"/> is not the same for the source <paramref name="sourceTexture"/> and this texture.</para>
+		/// <para>Thrown when the <see cref="IGorgonTextureInfo.MultisampleInfo"/>.<see cref="GorgonMultisampleInfo.Count"/> is not the same for the source <paramref name="sourceTexture"/> and this texture.</para>
 		/// <para>-or-</para>
 		/// <para>Thrown when the texture sizes are not the same.</para>
 		/// <para>-or-</para>
 		/// <para>Thrown when the texture types are not the same.</para>
 		/// </exception>
-		/// <exception cref="NotSupportedException">Thrown when this texture has a <see cref="GorgonTextureInfo.Usage"/> setting of <c>Immutable</c>.</exception>
+		/// <exception cref="NotSupportedException">Thrown when this texture has a <see cref="IGorgonTextureInfo.Usage"/> setting of <c>Immutable</c>.</exception>
 		/// <remarks>
 		/// <para>
 		/// This method copies the contents of the <paramref name="sourceTexture"/> parameter into this texture. If a sub resource for the <paramref name="sourceTexture"/> must be copied, use the <see cref="CopySubResource"/> 
@@ -745,8 +744,8 @@ namespace Gorgon.Graphics
 		/// This method does not perform stretching, filtering or clipping.
 		/// </para>
 		/// <para>
-		/// The source <paramref name="sourceTexture"/> dimensions must be have the same dimensions, and <see cref="GorgonTextureInfo.MultiSampleInfo"/> as this texture. As well, the destination texture must not 
-		/// have a <see cref="GorgonTextureInfo.Usage"/> of <c>Immutable.</c>. If these contraints are violated, then an exception will be thrown.
+		/// The source <paramref name="sourceTexture"/> dimensions must be have the same dimensions, and <see cref="IGorgonTextureInfo.MultisampleInfo"/> as this texture. As well, the destination texture must not 
+		/// have a <see cref="IGorgonTextureInfo.Usage"/> of <c>Immutable.</c>. If these contraints are violated, then an exception will be thrown.
 		/// </para>
 		/// <para>
 		/// If the current video device has a feature level better than <see cref="FeatureLevelSupport.Level_10_0"/>, then limited format conversion will be performed if the two textures are within the same bit 
@@ -777,7 +776,7 @@ namespace Gorgon.Graphics
 				throw new NotSupportedException(Resources.GORGFX_ERR_TEXTURE_IMMUTABLE);
 			}
 
-			if ((Info.MultiSampleInfo.Count != sourceTexture.Info.MultiSampleInfo.Count) || (Info.MultiSampleInfo.Quality != sourceTexture.Info.MultiSampleInfo.Quality))
+			if ((Info.MultisampleInfo.Count != sourceTexture.Info.MultisampleInfo.Count) || (Info.MultisampleInfo.Quality != sourceTexture.Info.MultisampleInfo.Quality))
 			{
 				throw new InvalidOperationException(Resources.GORGFX_ERR_TEXTURE_MULTISAMPLE_PARAMS_MISMATCH);
 			}
@@ -816,7 +815,7 @@ namespace Gorgon.Graphics
 		/// <para>Thrown when the <paramref name="sourceTexture"/> is the same as this texture, and the <paramref name="sourceArrayIndex"/>, <paramref name="destArrayIndex"/>, <paramref name="sourceMipLevel"/> and the <paramref name="destMipLevel"/> 
 		/// specified are pointing to the same subresource.</para>
 		/// <para>-or-</para>
-		/// <para>Thrown when this texture has a <see cref="GorgonTextureInfo.Usage"/> of <c>Immutable</c>.</para>
+		/// <para>Thrown when this texture has a <see cref="IGorgonTextureInfo.Usage"/> of <c>Immutable</c>.</para>
 		/// </exception>
 		/// <exception cref="InvalidOperationException"></exception>
 		/// <remarks>
@@ -834,7 +833,7 @@ namespace Gorgon.Graphics
 		/// When copying sub resources (e.g. mip levels, array indices, etc...), the mip levels and array indices must be different if copying to the same texture.  If they are not, an exception will be thrown.
 		/// </para>
 		/// <para>
-		/// The destination texture must not have a <see cref="GorgonTextureInfo.Usage"/> of <c>Immutable</c>.
+		/// The destination texture must not have a <see cref="IGorgonTextureInfo.Usage"/> of <c>Immutable</c>.
 		/// </para>
 		/// <para>
 		/// <note type="caution">
@@ -1016,7 +1015,7 @@ namespace Gorgon.Graphics
 			}
 
 #if DEBUG
-			if (Info.MultiSampleInfo.Equals(GorgonMultiSampleInfo.NoMultiSampling))
+			if (Info.MultisampleInfo.Equals(GorgonMultisampleInfo.NoMultiSampling))
 			{
 				throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_TEXTURE_NOT_MULTISAMPLED, Name));
 			}
@@ -1078,7 +1077,7 @@ namespace Gorgon.Graphics
 		/// Function to get a staging texture from this texture.
 		/// </summary>
 		/// <returns>A new <see cref="GorgonTexture"/> containing a copy of the data in this texture, with a usage of <c>Staging</c>.</returns>
-		/// <exception cref="GorgonException">Thrown when this texture has a <see cref="GorgonTextureInfo.Usage"/> of <c>Immutable</c>.</exception>
+		/// <exception cref="GorgonException">Thrown when this texture has a <see cref="IGorgonTextureInfo.Usage"/> of <c>Immutable</c>.</exception>
 		/// <remarks>
 		/// <para>
 		/// This allows an application to make a copy of the texture for editing on the CPU. The resulting staging texture, once edited, can then be reuploaded to the same texture, or another texture.
@@ -1095,9 +1094,11 @@ namespace Gorgon.Graphics
 				throw new GorgonException(GorgonResult.AccessDenied, string.Format(Resources.GORGFX_ERR_TEXTURE_IMMUTABLE));
 			}
 
-			GorgonTextureInfo info = Info.Clone();
-			info.Usage = D3D11.ResourceUsage.Staging;
-			info.Binding = TextureBinding.None;
+			IGorgonTextureInfo info = new GorgonTextureInfo(Info)
+			                          {
+				                          Usage = D3D11.ResourceUsage.Staging,
+				                          Binding = TextureBinding.None
+			                          };
 			var staging = new GorgonTexture(Name + " [Staging]", Graphics, info);
 
 			// Copy the data from this texture into the new staging texture.
@@ -1113,15 +1114,15 @@ namespace Gorgon.Graphics
 		/// <param name="destBox">[Optional] A <see cref="GorgonBox"/> that will specify the region that will receive the data.</param>
 		/// <param name="destArrayIndex">[Optional] The array index that will receive the data (1D/2D textures only).</param>
 		/// <param name="destMipLevel">[Optional] The mip map level that will receive the data.</param>
-		/// <exception cref="NotSupportedException">Thrown when this texture has a <see cref="GorgonTextureInfo.Usage"/> of <c>Dynamic</c> or <c>Immutable</c>.
+		/// <exception cref="NotSupportedException">Thrown when this texture has a <see cref="IGorgonTextureInfo.Usage"/> of <c>Dynamic</c> or <c>Immutable</c>.
 		/// <para>-or-</para>
-		/// <para>Thrown when this texture has <see cref="GorgonTextureInfo.MultiSampleInfo"/>.</para>
+		/// <para>Thrown when this texture has <see cref="IGorgonTextureInfo.MultisampleInfo"/>.</para>
 		/// <para>-or-</para>
-		/// <para>Thrown when this texture has a <see cref="GorgonTextureInfo.Binding"/> with the <see cref="TextureBinding.DepthStencil"/> flag set.</para>
+		/// <para>Thrown when this texture has a <see cref="IGorgonTextureInfo.Binding"/> with the <see cref="TextureBinding.DepthStencil"/> flag set.</para>
 		/// </exception>
 		/// <remarks>
 		/// <para>
-		/// Use this to copy data into a texture with a <see cref="GorgonTextureInfo.Usage"/> of <c>Staging</c> or <c>Default</c>.  If the texture does not have a <c>Staging</c> or <c>Default</c> usage, then an 
+		/// Use this to copy data into a texture with a <see cref="IGorgonTextureInfo.Usage"/> of <c>Staging</c> or <c>Default</c>.  If the texture does not have a <c>Staging</c> or <c>Default</c> usage, then an 
 		/// exception will be thrown.
 		/// </para>
 		/// <para>
@@ -1133,7 +1134,7 @@ namespace Gorgon.Graphics
 		/// this value is ignored.
 		/// </para>
 		/// <para>
-		/// This method will not work with textures that have a <see cref="GorgonTextureInfo.Binding"/> that includes the <see cref="TextureBinding.DepthStencil"/> flag. If this texture has the 
+		/// This method will not work with textures that have a <see cref="IGorgonTextureInfo.Binding"/> that includes the <see cref="TextureBinding.DepthStencil"/> flag. If this texture has the 
 		/// <see cref="TextureBinding.DepthStencil"/> flag, then an exception will be thrown.
 		/// </para>
 		/// <para>
@@ -1159,7 +1160,7 @@ namespace Gorgon.Graphics
 				throw new NotSupportedException(Resources.GORGFX_ERR_TEXTURE_IS_DYNAMIC_OR_IMMUTABLE);
 			}
 
-			if ((Info.MultiSampleInfo.Count > 1) || (Info.MultiSampleInfo.Quality > 0))
+			if ((Info.MultisampleInfo.Count > 1) || (Info.MultisampleInfo.Quality > 0))
 			{
 				throw new NotSupportedException(Resources.GORGFX_ERR_TEXTURE_MULTISAMPLED);
 			}
@@ -1213,7 +1214,7 @@ namespace Gorgon.Graphics
 		/// Function to convert this texture to a <see cref="IGorgonImage"/>.
 		/// </summary>
 		/// <returns>A new <see cref="IGorgonImage"/> containing the texture data.</returns>
-		/// <exception cref="GorgonException">Thrown when this texture has a <see cref="GorgonTextureInfo.Usage"/> set to <c>Immutable</c>.
+		/// <exception cref="GorgonException">Thrown when this texture has a <see cref="IGorgonTextureInfo.Usage"/> set to <c>Immutable</c>.
 		/// <para>-or-</para>
 		/// <para>Thrown when the type of texture is not supported.</para>
 		/// </exception>
@@ -1328,20 +1329,20 @@ namespace Gorgon.Graphics
 			D3DResource.DebugName = $"Swap Chain '{swapChain.Name}': Back buffer texture #{index}.";
 
 			// Get the info from the back buffer texture.
-			Info = new GorgonTextureInfo
-			       {
-				       Format = texture.Description.Format,
-				       Width = texture.Description.Width,
-				       Height = texture.Description.Height,
-				       TextureType = TextureType.Texture2D,
-				       Usage = texture.Description.Usage,
-				       ArrayCount = texture.Description.ArraySize,
-				       MipLevels = texture.Description.MipLevels,
-				       Depth = 0,
-				       IsCubeMap = false,
-				       MultiSampleInfo = GorgonMultiSampleInfo.NoMultiSampling,
-				       Binding = (TextureBinding)texture.Description.BindFlags
-			       };
+			_info = new GorgonTextureInfo
+			        {
+				        Format = texture.Description.Format,
+				        Width = texture.Description.Width,
+				        Height = texture.Description.Height,
+				        TextureType = TextureType.Texture2D,
+				        Usage = texture.Description.Usage,
+				        ArrayCount = texture.Description.ArraySize,
+				        MipLevels = texture.Description.MipLevels,
+				        Depth = 0,
+				        IsCubeMap = false,
+				        MultisampleInfo = GorgonMultisampleInfo.NoMultiSampling,
+				        Binding = (TextureBinding)texture.Description.BindFlags
+			        };
 
 			FormatInformation = new GorgonFormatInfo(Info.Format);
 		}
@@ -1359,7 +1360,7 @@ namespace Gorgon.Graphics
 		/// This constructor is used when converting an image to a texture.
 		/// </para>
 		/// </remarks>
-		internal GorgonTexture(string name, GorgonGraphics graphics, IGorgonImage image, GorgonImageTextureInfo info, IGorgonLog log)
+		internal GorgonTexture(string name, GorgonGraphics graphics, IGorgonImage image, IGorgonImageToTextureInfo info, IGorgonLog log)
 			: base(graphics, name)
 		{
 			_log = log ?? GorgonLogDummy.DefaultInstance;
@@ -1382,20 +1383,20 @@ namespace Gorgon.Graphics
 					throw new ArgumentException(string.Format(Resources.GORGFX_ERR_IMAGE_TYPE_UNSUPPORTED, image.Info.ImageType), nameof(image));
 			}
 
-			Info = new GorgonTextureInfo
-			       {
-				       Format = image.Info.Format,
-				       Width = image.Info.Width,
-				       Height = image.Info.Height,
-				       TextureType = type,
-				       Usage = info.Usage,
-				       ArrayCount = image.Info.ArrayCount,
-				       Binding = info.Binding,
-				       Depth = image.Info.Depth,
-				       IsCubeMap = image.Info.ImageType == ImageType.ImageCube,
-				       MipLevels = image.Info.MipCount,
-				       MultiSampleInfo = info.MultiSampleInfo
-			       };
+			_info = new GorgonTextureInfo
+			        {
+				        Format = image.Info.Format,
+				        Width = image.Info.Width,
+				        Height = image.Info.Height,
+				        TextureType = type,
+				        Usage = info.Usage,
+				        ArrayCount = image.Info.ArrayCount,
+				        Binding = info.Binding,
+				        Depth = image.Info.Depth,
+				        IsCubeMap = image.Info.ImageType == ImageType.ImageCube,
+				        MipLevels = image.Info.MipCount,
+				        MultisampleInfo = info.MultisampleInfo
+			        };
 
 			Initialize(image);
 		}
@@ -1405,22 +1406,22 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="name">The name of the texture.</param>
 		/// <param name="graphics">The <see cref="GorgonGraphics"/> interface that created this texture.</param>
-		/// <param name="textureInfo">A <see cref="GorgonTextureInfo"/> object describing the properties of this texture.</param>
+		/// <param name="textureInfo">A <see cref="IGorgonTextureInfo"/> object describing the properties of this texture.</param>
 		/// <param name="log">[Optional] The logging interface used for debugging.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/>, <paramref name="graphics"/>, or the <paramref name="textureInfo"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.
 		/// <para>-or-</para>
-		/// <para>Thrown when the <see cref="GorgonTextureInfo.Usage"/> is set to <c>Immutable</c>.</para>
+		/// <para>Thrown when the <see cref="IGorgonTextureInfo.Usage"/> is set to <c>Immutable</c>.</para>
 		/// </exception>
 		/// <exception cref="GorgonException">Thrown when the texture could not be created due to misconfiguration.</exception>
 		/// <remarks>
 		/// <para>
-		/// This constructor creates an empty texture. Data may be uploaded to the texture at a later time if its <see cref="GorgonTextureInfo.Usage"/> is not set to <c>Immutable</c>. If the 
-		/// <see cref="GorgonTextureInfo.Usage"/> is set to <c>immutable</c> with this constructor, then an exception will be thrown. To use an immutable texture, use the 
+		/// This constructor creates an empty texture. Data may be uploaded to the texture at a later time if its <see cref="IGorgonTextureInfo.Usage"/> is not set to <c>Immutable</c>. If the 
+		/// <see cref="IGorgonTextureInfo.Usage"/> is set to <c>immutable</c> with this constructor, then an exception will be thrown. To use an immutable texture, use the 
 		/// <see cref="GorgonImageTextureExtensions.ToTexture"/> extension method on the <see cref="IGorgonImage"/> type.
 		/// </para>
 		/// </remarks>
-		public GorgonTexture(string name, GorgonGraphics graphics, GorgonTextureInfo textureInfo, IGorgonLog log = null)
+		public GorgonTexture(string name, GorgonGraphics graphics, IGorgonTextureInfo textureInfo, IGorgonLog log = null)
 			: base(graphics, name)
 		{
 			if (textureInfo == null)
@@ -1430,7 +1431,7 @@ namespace Gorgon.Graphics
 
 			_log = log ?? GorgonLogDummy.DefaultInstance;
 			
-			Info = textureInfo.Clone();
+			_info = new GorgonTextureInfo(textureInfo);
 
 			Initialize(null);
 

@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using Gorgon.Core;
 using Gorgon.Graphics.Imaging;
 using D3D11 = SharpDX.Direct3D11;
 
@@ -34,8 +33,8 @@ namespace Gorgon.Graphics
 	/// <summary>
 	/// Provides information on how to convert a <see cref="GorgonImage"/> to a <see cref="GorgonTexture"/>.
 	/// </summary>
-	public class GorgonImageTextureInfo
-		: IGorgonCloneable<GorgonImageTextureInfo>
+	public class GorgonImageToTextureInfo 
+		: IGorgonImageToTextureInfo
 	{
 		#region Properties.
 		/// <summary>
@@ -66,40 +65,41 @@ namespace Gorgon.Graphics
 		/// Property to set or return the multisampling information for the texture.
 		/// </summary>
 		/// <remarks>
-		/// This value is defaulted to <see cref="GorgonMultiSampleInfo.NoMultiSampling"/>.
+		/// This value is defaulted to <see cref="GorgonMultisampleInfo.NoMultiSampling"/>.
 		/// </remarks>
-		public GorgonMultiSampleInfo MultiSampleInfo
+		public GorgonMultisampleInfo MultisampleInfo
 		{
 			get;
 			set;
 		}
 		#endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to clone an object.
-		/// </summary>
-		/// <returns>The cloned object.</returns>
-		public GorgonImageTextureInfo Clone()
-		{
-			return new GorgonImageTextureInfo
-			       {
-				       Usage = Usage,
-				       MultiSampleInfo = MultiSampleInfo,
-				       Binding = Binding
-			       };
-		}
-		#endregion
-
 		#region Constructor/Finalizer.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonImageTextureInfo"/> class.
+		/// Initializes a new instance of the <see cref="GorgonImageToTextureInfo"/> class.
 		/// </summary>
-		public GorgonImageTextureInfo()
+		/// <param name="info">A <see cref="IGorgonImageToTextureInfo"/> to copy the settings from.</param>
+		/// <exception cref="ArgumentNullException"></exception>
+		public GorgonImageToTextureInfo(IGorgonImageToTextureInfo info)
+		{
+			if (info == null)
+			{
+				throw new ArgumentNullException(nameof(info));
+			}
+
+			Binding = info.Binding;
+			MultisampleInfo = info.MultisampleInfo;
+			Usage = info.Usage;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonImageToTextureInfo"/> class.
+		/// </summary>
+		public GorgonImageToTextureInfo()
 		{
 			Usage = D3D11.ResourceUsage.Default;
 			Binding = TextureBinding.ShaderResource;
-			MultiSampleInfo = GorgonMultiSampleInfo.NoMultiSampling;
+			MultisampleInfo = GorgonMultisampleInfo.NoMultiSampling;
 		}
 		#endregion
 	}

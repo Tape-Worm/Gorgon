@@ -65,34 +65,34 @@ namespace Gorgon.Graphics
 		/// Function to retrieve the changes for this shader state.
 		/// </summary>
 		/// <param name="other">The other instance to compare with this instance.</param>
-		/// <returns>A <see cref="ShaderStateChanges"/> value representing which parts of the state have changed.</returns>
-		public ShaderStateChanges GetChanges(GorgonVertexShaderState other)
+		/// <returns>A <see cref="ShaderStateChangeFlags"/> value representing which parts of the state have changed.</returns>
+		public ShaderStateChangeFlags GetChanges(GorgonVertexShaderState other)
 		{
-			var result = ShaderStateChanges.None;
+			var result = ShaderStateChangeFlags.None;
 
 			if (other == this)
 			{
-				return ShaderStateChanges.None;
+				return ShaderStateChangeFlags.None;
 			}
 
 			if (other == null)
 			{
-				return ShaderStateChanges.Constants | ShaderStateChanges.Shader;
+				return ShaderStateChangeFlags.Constants | ShaderStateChangeFlags.Shader | ShaderStateChangeFlags.ShaderResourceViews;
 			}
 
 			if (other.Shader != Shader)
 			{
-				result |= ShaderStateChanges.Shader;
+				result |= ShaderStateChangeFlags.Shader;
 			}
 
 			if (!GorgonConstantBuffers.Equals(ConstantBuffers, other.ConstantBuffers))
 			{
-				result |= ShaderStateChanges.Constants;
+				result |= ShaderStateChangeFlags.Constants;
 			}
 
 			if (!GorgonShaderResourceViews.Equals(ResourceViews, other.ResourceViews))
 			{
-				result |= ShaderStateChanges.ShaderResourceViews;
+				result |= ShaderStateChangeFlags.ShaderResourceViews;
 			}
 
 			return result;

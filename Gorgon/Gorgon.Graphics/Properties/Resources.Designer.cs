@@ -396,7 +396,7 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot use a multi-sampled texture as a texture cube..
+        ///   Looks up a localized string similar to Cannot use a multisampled texture as a texture cube..
         /// </summary>
         internal static string GORGFX_ERR_CANNOT_MULTISAMPLE_CUBE {
             get {
@@ -1154,7 +1154,7 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unordered access views cannot be applied to multi-sampled textures..
+        ///   Looks up a localized string similar to Unordered access views cannot be applied to multisampled textures..
         /// </summary>
         internal static string GORGFX_ERR_UAV_NOT_SUPPORT_MULTISAMPLE {
             get {

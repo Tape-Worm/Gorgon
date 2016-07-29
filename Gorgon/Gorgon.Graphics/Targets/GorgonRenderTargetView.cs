@@ -201,9 +201,9 @@ namespace Gorgon.Graphics
         /// <summary>
         /// Function to retrieve the view description.
         /// </summary>
-        /// <param name="isMultiSampled"><b>true</b> if the texture is multisampled, <b>false</b> if not.</param>
+        /// <param name="isMultisampled"><b>true</b> if the texture is multisampled, <b>false</b> if not.</param>
         /// <returns>The view description.</returns>
-        private D3D.RenderTargetViewDescription GetDesc2D(bool isMultiSampled)
+        private D3D.RenderTargetViewDescription GetDesc2D(bool isMultisampled)
         {
             // Set up for arrayed and multisampled texture.
             if (ArrayOrDepthCount > 1)
@@ -211,14 +211,14 @@ namespace Gorgon.Graphics
                 return new D3D.RenderTargetViewDescription
                 {
                     Format = Format,
-                    Dimension = isMultiSampled
+                    Dimension = isMultisampled
                         ? D3D.RenderTargetViewDimension.Texture2DMultisampledArray
                         : D3D.RenderTargetViewDimension.Texture2DArray,
                     Texture2DArray =
                     {
-                        MipSlice = isMultiSampled ? FirstArrayOrDepthIndex : MipSlice,
-                        FirstArraySlice = isMultiSampled ? ArrayOrDepthCount : FirstArrayOrDepthIndex,
-                        ArraySize = isMultiSampled ? 0 : ArrayOrDepthCount
+                        MipSlice = isMultisampled ? FirstArrayOrDepthIndex : MipSlice,
+                        FirstArraySlice = isMultisampled ? ArrayOrDepthCount : FirstArrayOrDepthIndex,
+                        ArraySize = isMultisampled ? 0 : ArrayOrDepthCount
                     }
                 };
             }
@@ -226,12 +226,12 @@ namespace Gorgon.Graphics
             return new D3D.RenderTargetViewDescription
             {
                 Format = Format,
-                Dimension = isMultiSampled
+                Dimension = isMultisampled
                     ? D3D.RenderTargetViewDimension.Texture2DMultisampled
                     : D3D.RenderTargetViewDimension.Texture2D,
                 Texture2D =
                 {
-                    MipSlice = isMultiSampled ? 0 : MipSlice
+                    MipSlice = isMultisampled ? 0 : MipSlice
                 }
             };
         }
@@ -258,8 +258,8 @@ namespace Gorgon.Graphics
         /// <summary>
         /// Function to perform initialization of the view.
         /// </summary>
-        /// <param name="isMultiSampled"><b>true</b> if the texture is multisampled, <b>false</b> if not.</param>
-        private void Initialize(bool isMultiSampled)
+        /// <param name="isMultisampled"><b>true</b> if the texture is multisampled, <b>false</b> if not.</param>
+        private void Initialize(bool isMultisampled)
         {
             D3D.RenderTargetViewDescription desc = default(D3D.RenderTargetViewDescription);
 
@@ -273,7 +273,7 @@ namespace Gorgon.Graphics
                     desc = GetDesc1D();
                     break;
                 case ResourceType.Texture2D:
-                    desc = GetDesc2D(isMultiSampled);
+                    desc = GetDesc2D(isMultisampled);
                     break;
                 case ResourceType.Texture3D:
                     desc = GetDesc3D();
@@ -293,6 +293,15 @@ namespace Gorgon.Graphics
 		                              DebugName = $"'{Texture.Name}': D3D 11 Render target view"
 	                              };
         }
+
+		/// <summary>
+		/// Function to clear the contents of the render target for this view.
+		/// </summary>
+		/// <param name="color">Color to use when clearing the render target view.</param>
+		public void Clear(GorgonColor color)
+		{
+			Texture.Graphics.D3DDeviceContext.ClearRenderTargetView(D3DRenderTargetView, color.ToRawColor4());
+		}
 
 		/// <summary>
 		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -357,7 +366,7 @@ namespace Gorgon.Graphics
 			
             ArrayOrDepthCount = arrayOrDepthCount.Min(arrayOrDepthCount - FirstArrayOrDepthIndex).Max(1);
 
-			Initialize(!texture.Info.MultiSampleInfo.Equals(GorgonMultiSampleInfo.NoMultiSampling));
+			Initialize(!texture.Info.MultisampleInfo.Equals(GorgonMultisampleInfo.NoMultiSampling));
 
 			// The key for a render target view is broken up into the following layout.
 			// Bits: [33 - 26]   [25 - 15]     [14 - 4]      [3 - 0]

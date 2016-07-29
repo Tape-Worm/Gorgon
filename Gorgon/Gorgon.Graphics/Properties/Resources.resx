@@ -224,7 +224,7 @@
     <value>Cannot bind the view to the resource, the resource type is not known.</value>
   </data>
   <data name="GORGFX_ERR_UAV_NOT_SUPPORT_MULTISAMPLE" xml:space="preserve">
-    <value>Unordered access views cannot be applied to multi-sampled textures.</value>
+    <value>Unordered access views cannot be applied to multisampled textures.</value>
   </data>
   <data name="GORGFX_VIEW_DEPTH_COUNT_INVALID" xml:space="preserve">
     <value>The depth count must be between 1 and {0}.</value>
@@ -708,7 +708,7 @@ Please report this error by pasting the details to the bug tracker in Gorgon's g
     <value>The texture format [{0}] must be used with a mip map count of 1.</value>
   </data>
   <data name="GORGFX_ERR_CANNOT_MULTISAMPLE_CUBE" xml:space="preserve">
-    <value>Cannot use a multi-sampled texture as a texture cube.</value>
+    <value>Cannot use a multisampled texture as a texture cube.</value>
   </data>
   <data name="GORGFX_IMAGE_BUFFER_CANT_BE_SAME" xml:space="preserve">
     <value>Cannot copy a buffer into itself.</value>

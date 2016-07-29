@@ -55,7 +55,7 @@ namespace Gorgon.Graphics
 		/// <para>
 		/// The resulting <see cref="GorgonTexture"/> will inherit the <see cref="ImageType"/> (converted to the appropriate <see cref="TextureType"/>), width, height (for 2D/3D images), depth (for 3D images), 
 		/// mip map count, array count (for 1D/2D images), and depth count (for 3D images). If the <see cref="GorgonImage"/> being converted has an <see cref="ImageType"/> of <see cref="ImageType.ImageCube"/> 
-		/// then the resulting texture will be set to a <see cref="TextureType.Texture2D"/>, and it will have its <see cref="GorgonTextureInfo.IsCubeMap"/> flag set to <b>true</b>.
+		/// then the resulting texture will be set to a <see cref="TextureType.Texture2D"/>, and it will have its <see cref="IGorgonTextureInfo.IsCubeMap"/> flag set to <b>true</b>.
 		/// </para>
 		/// <para>
 		/// The <paramref name="info"/> parameter, when defined, will allow users to control how the texture is bound to the GPU pipeline, and what its intended usage is going to be, as well as any multisample 
@@ -71,7 +71,7 @@ namespace Gorgon.Graphics
 		///		</item>
 		///		<item>
 		///			<term>Multisample info</term>
-		///			<description><see cref="GorgonMultiSampleInfo.NoMultiSampling"/></description>
+		///			<description><see cref="GorgonMultisampleInfo.NoMultiSampling"/></description>
 		///		</item>
 		/// </list>
 		/// </para>
@@ -79,7 +79,7 @@ namespace Gorgon.Graphics
 		public static GorgonTexture ToTexture(this IGorgonImage image,
 		                                      string name,
 											  GorgonGraphics graphics,
-		                                      GorgonImageTextureInfo info = null,
+		                                      GorgonImageToTextureInfo info = null,
 											  IGorgonLog log = null)
 		{
 			if (image == null)
@@ -97,7 +97,7 @@ namespace Gorgon.Graphics
 				throw new ArgumentNullException(nameof(graphics));
 			}
 
-			return new GorgonTexture(name, graphics, image, info ?? new GorgonImageTextureInfo(), log);
+			return new GorgonTexture(name, graphics, image, info ?? new GorgonImageToTextureInfo(), log);
 		}
 	}
 }

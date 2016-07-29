@@ -39,7 +39,7 @@ namespace Gorgon.Graphics
 	/// Provides information on how to set up a constant buffer.
 	/// </summary>
 	public class GorgonConstantBufferInfo
-		: IGorgonCloneable<GorgonConstantBufferInfo>
+		: IGorgonConstantBufferInfo
 	{
 		#region Properties.
 		/// <summary>
@@ -61,7 +61,7 @@ namespace Gorgon.Graphics
 		/// <note type="important">
 		/// <para>
 		/// <para>
-		/// If the buffer is intended to be used as a <see cref="Graphics.BufferType.Constant"/> buffer, then this size should be a multiple of 16. Constant buffer alignment rules require that they be sized to the nearest 16 bytes.
+		/// A <see cref="Graphics.BufferType.Constant"/> buffer, must set the size to be a multiple of 16. Constant buffer alignment rules require that they be sized to the nearest 16 bytes.
 		/// </para>
 		/// <para>
 		/// If the buffer is not sized to a multiple of 16, Gorgon will attempt to adjust the size to fit the alignment requirement.
@@ -78,12 +78,12 @@ namespace Gorgon.Graphics
 
 		#region Methods.
 		/// <summary>
-		/// Function to create a <see cref="GorgonConstantBufferInfo"/> based on the type representing a vertex.
+		/// Function to create a <see cref="IGorgonConstantBufferInfo"/> based on the type representing a vertex.
 		/// </summary>
 		/// <typeparam name="T">The type of data representing a constant. This must be a value type.</typeparam>
 		/// <param name="count">[Optional] The number of items to store in the buffer.</param>
 		/// <param name="usage">[Optional] The usage parameter for the vertex buffer.</param>
-		/// <returns>A new <see cref="GorgonConstantBufferInfo"/> to use when creating a <see cref="GorgonConstantBuffer"/>.</returns>
+		/// <returns>A new <see cref="IGorgonConstantBufferInfo"/> to use when creating a <see cref="GorgonConstantBuffer"/>.</returns>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="count"/> parameter is less than 1.</exception>
 		/// <exception cref="GorgonException">Thrown when the type specified by <typeparamref name="T"/> is not safe for use with native functions (see <see cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>).
 		/// <para>-or-</para>
@@ -106,7 +106,7 @@ namespace Gorgon.Graphics
 		/// <seealso cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>
 		/// <seealso cref="GorgonReflectionExtensions.IsSafeForNative(Type)"/>
 		/// <seealso cref="GorgonReflectionExtensions.IsSafeForNative(Type,out IReadOnlyList{FieldInfo})"/>
-		public static GorgonConstantBufferInfo CreateFromType<T>(int count = 1, D3D11.ResourceUsage usage = D3D11.ResourceUsage.Default)
+		public static IGorgonConstantBufferInfo CreateFromType<T>(int count = 1, D3D11.ResourceUsage usage = D3D11.ResourceUsage.Default)
 			where T : struct
 		{
 			if (count < 1)
@@ -133,22 +133,25 @@ namespace Gorgon.Graphics
 
 			throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_TYPE_NOT_VALID_FOR_NATIVE, dataType.FullName));
 		}
-
-		/// <summary>
-		/// Function to clone an object.
-		/// </summary>
-		/// <returns>The cloned object.</returns>
-		public GorgonConstantBufferInfo Clone()
-		{
-			return new GorgonConstantBufferInfo
-			       {
-				       Usage = Usage,
-				       SizeInBytes = SizeInBytes
-			       };
-		}
 		#endregion
 
 		#region Constructor/Finalizer.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonConstantBufferInfo"/> class.
+		/// </summary>
+		/// <param name="info">A <see cref="IGorgonConstantBufferInfo"/> to copy settings from.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
+		public GorgonConstantBufferInfo(IGorgonConstantBufferInfo info)
+		{
+			if (info == null)
+			{
+				throw new ArgumentNullException(nameof(info));
+			}
+
+			SizeInBytes = info.SizeInBytes;
+			Usage = info.Usage;
+		}
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonConstantBufferInfo"/> class.
 		/// </summary>

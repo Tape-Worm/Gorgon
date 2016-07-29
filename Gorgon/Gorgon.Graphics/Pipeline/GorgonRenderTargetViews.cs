@@ -77,7 +77,7 @@ namespace Gorgon.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when the array (or depth) index, or the array (or depth) count does not match the other views in this list.</para>
 		/// <para>-or-</para>
-		/// <para>Thrown when the resource <see cref="GorgonMultiSampleInfo"/> does not match the <see cref="GorgonMultiSampleInfo"/> for other resources bound to other views on this list.</para>
+		/// <para>Thrown when the resource <see cref="GorgonMultisampleInfo"/> does not match the <see cref="GorgonMultisampleInfo"/> for other resources bound to other views on this list.</para>
 		/// </exception>
 		/// <remarks>
 		/// <para>
@@ -91,7 +91,7 @@ namespace Gorgon.Graphics
 		/// exception will be thrown. Mip slices may be different. An exception will also be raised if the resources attached to views in this list do not have the same array/depth count.
 		/// </para>
 		/// <para>
-		/// If the views are attached to resources with multisampling enabled through <see cref="GorgonMultiSampleInfo"/>, then the <see cref="GorgonMultiSampleInfo"/> of the resource attached to the view 
+		/// If the views are attached to resources with multisampling enabled through <see cref="GorgonMultisampleInfo"/>, then the <see cref="GorgonMultisampleInfo"/> of the resource attached to the view 
 		/// being assigned must match, or an exception will be thrown.
 		/// </para>
 		/// <para>
@@ -152,7 +152,7 @@ namespace Gorgon.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when the array (or depth) index, or the array (or depth) count does not match the other views in this list.</para>
 		/// <para>-or-</para>
-		/// <para>Thrown when the resource <see cref="GorgonMultiSampleInfo"/> does not match the <see cref="GorgonMultiSampleInfo"/> for other resources bound to other views on this list.</para>
+		/// <para>Thrown when the resource <see cref="GorgonMultisampleInfo"/> does not match the <see cref="GorgonMultisampleInfo"/> for other resources bound to other views on this list.</para>
 		/// </exception>
 		/// <remarks>
 		/// <para>
@@ -164,8 +164,8 @@ namespace Gorgon.Graphics
 		/// have the same array/depth count.
 		/// </para>
 		/// <para>
-		/// If the <see cref="GorgonRenderTargetView">GorgonRenderTargetViews</see> are attached to resources with multisampling enabled through <see cref="GorgonMultiSampleInfo"/>, then the 
-		/// <see cref="GorgonMultiSampleInfo"/> of the resource attached to the <see cref="GorgonDepthStencilView"/> being assigned must match, or an exception will be thrown.
+		/// If the <see cref="GorgonRenderTargetView">GorgonRenderTargetViews</see> are attached to resources with multisampling enabled through <see cref="GorgonMultisampleInfo"/>, then the 
+		/// <see cref="GorgonMultisampleInfo"/> of the resource attached to the <see cref="GorgonDepthStencilView"/> being assigned must match, or an exception will be thrown.
 		/// </para>
 		/// <para>
 		/// These limitations also apply to the <see cref="DepthStencilView"/> property. All views must match the mip slice, array (or depth) index, and array (or depth) count, and the <see cref="ResourceType"/> 
@@ -228,10 +228,10 @@ namespace Gorgon.Graphics
 			}
 
 			// Check to ensure that multisample info matches.
-			if (view.Texture.Info.MultiSampleInfo.Equals(firstTarget.Texture.Info.MultiSampleInfo))
+			if (view.Texture.Info.MultisampleInfo.Equals(firstTarget.Texture.Info.MultisampleInfo))
 			{
 				throw new GorgonException(GorgonResult.CannotBind,
-					string.Format(Resources.GORGFX_ERR_RTV_DEPTHSTENCIL_MULTISAMPLE_MISMATCH, view.Texture.Info.MultiSampleInfo.Quality, view.Texture.Info.MultiSampleInfo.Count));
+					string.Format(Resources.GORGFX_ERR_RTV_DEPTHSTENCIL_MULTISAMPLE_MISMATCH, view.Texture.Info.MultisampleInfo.Quality, view.Texture.Info.MultisampleInfo.Count));
 			}
 
 			if ((view.Texture.Info.Width != firstTarget.Texture.Info.Width)
@@ -289,12 +289,12 @@ namespace Gorgon.Graphics
 					throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_RTV_NOT_SAME_TYPE, other.Texture.Name));
 				}
 
-				if (!startView.Texture.Info.MultiSampleInfo.Equals(other.Texture.Info.MultiSampleInfo))
+				if (!startView.Texture.Info.MultisampleInfo.Equals(other.Texture.Info.MultisampleInfo))
 				{
 					throw new GorgonException(GorgonResult.CannotBind,
 					                          string.Format(Resources.GORGFX_ERR_RTV_MULTISAMPLE_MISMATCH,
-					                                        other.Texture.Info.MultiSampleInfo.Quality,
-					                                        other.Texture.Info.MultiSampleInfo.Count));
+					                                        other.Texture.Info.MultisampleInfo.Quality,
+					                                        other.Texture.Info.MultisampleInfo.Count));
 				}
 
 				if ((other.Texture.Info.TextureType != TextureType.Texture3D && startView.Texture.Info.ArrayCount != other.Texture.Info.ArrayCount)

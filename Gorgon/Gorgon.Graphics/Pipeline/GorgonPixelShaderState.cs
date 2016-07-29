@@ -32,7 +32,7 @@ namespace Gorgon.Graphics
 	/// Flags to indicate which part of the shader state has changed.
 	/// </summary>
 	[Flags]
-	public enum ShaderStateChanges
+	public enum ShaderStateChangeFlags
 	{
 		/// <summary>
 		/// Nothing has changed.
@@ -49,7 +49,11 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// The shader resource views have changed.
 		/// </summary>
-		ShaderResourceViews = 0x4
+		ShaderResourceViews = 0x4,
+		/// <summary>
+		/// The texture sampler states have changed.
+		/// </summary>
+		SamplerStates = 0x8
 	}
 
 	/// <summary>
@@ -90,6 +94,15 @@ namespace Gorgon.Graphics
 			get;
 			set;
 		}
+
+		/// <summary>
+		/// Property to set or return the texture sampler states for texture resources on this pixel shader.
+		/// </summary>
+		public GorgonSamplerStates SamplerStates
+		{
+			get;
+			set;
+		}
 		#endregion
 
 		#region Methods.
@@ -97,34 +110,39 @@ namespace Gorgon.Graphics
 		/// Function to retrieve the changes for this shader state.
 		/// </summary>
 		/// <param name="other">The other instance to compare with this instance.</param>
-		/// <returns>A <see cref="ShaderStateChanges"/> value representing which parts of the state have changed.</returns>
-		public ShaderStateChanges GetChanges(GorgonPixelShaderState other)
+		/// <returns>A <see cref="ShaderStateChangeFlags"/> value representing which parts of the state have changed.</returns>
+		public ShaderStateChangeFlags GetChanges(GorgonPixelShaderState other)
 		{
-			var result = ShaderStateChanges.None;
+			var result = ShaderStateChangeFlags.None;
 
 			if (other == this)
 			{
-				return ShaderStateChanges.None;
+				return ShaderStateChangeFlags.None;
 			}
 
 			if (other == null)
 			{
-				return ShaderStateChanges.Constants | ShaderStateChanges.Shader;
+				return ShaderStateChangeFlags.Constants | ShaderStateChangeFlags.Shader | ShaderStateChangeFlags.ShaderResourceViews | ShaderStateChangeFlags.SamplerStates;
 			}
 
 			if (other.Shader != Shader)
 			{
-				result |= ShaderStateChanges.Shader;
+				result |= ShaderStateChangeFlags.Shader;
 			}
 
 			if (!GorgonConstantBuffers.Equals(ConstantBuffers, other.ConstantBuffers))
 			{
-				result |= ShaderStateChanges.Constants;
+				result |= ShaderStateChangeFlags.Constants;
 			}
 
 			if (!GorgonShaderResourceViews.Equals(ResourceViews, other.ResourceViews))
 			{
-				result |= ShaderStateChanges.ShaderResourceViews;
+				result |= ShaderStateChangeFlags.ShaderResourceViews;
+			}
+
+			if (!GorgonSamplerStates.Equals(SamplerStates, other.SamplerStates))
+			{
+				result |= ShaderStateChangeFlags.SamplerStates;
 			}
 
 			return result;
@@ -139,6 +157,7 @@ namespace Gorgon.Graphics
 		{
 			ConstantBuffers = new GorgonConstantBuffers();
 			ResourceViews = new GorgonShaderResourceViews();
+			SamplerStates = new GorgonSamplerStates();
 		}
 		#endregion
 	}

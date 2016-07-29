@@ -92,6 +92,9 @@
     <Compile Include="Buffers\GorgonConstantBufferInfo.cs" />
     <Compile Include="Buffers\GorgonIndexBufferInfo.cs" />
     <Compile Include="Buffers\GorgonVertexBufferInfo.cs" />
+    <Compile Include="Buffers\_Interfaces\IGorgonIndexBufferInfo.cs" />
+    <Compile Include="Buffers\_Interfaces\IGorgonVertexBufferInfo.cs" />
+    <Compile Include="Buffers\_Interfaces\IGorgonConstantBufferInfo.cs" />
     <Compile Include="Devices\_Interfaces\IGorgonVideoOutputInfo.cs" />
     <Compile Include="Devices\_Interfaces\IGorgonVideoDeviceInfo.cs" />
     <Compile Include="Devices\_Internal\VideoDeviceInfo.cs" />
@@ -106,8 +109,11 @@
     <Compile Include="GorgonGraphics.cs" />
     <Compile Include="GorgonMultiSampleInfo.cs" />
     <Compile Include="Native\Win32 Structs\OSVERSIONINFOEX.cs" />
+    <Compile Include="Pipeline\GorgonSamplerStates.cs" />
     <Compile Include="Pipeline\GorgonVertexBufferBinding.cs" />
     <Compile Include="Pipeline\GorgonVertexBufferBindings.cs" />
+    <Compile Include="Pipeline\GorgonScissorRectangles.cs" />
+    <Compile Include="Pipeline\_Internal\StateChanges.cs" />
     <Compile Include="Shaders\GorgonShaderResourceView.cs" />
     <Compile Include="Pipeline\GorgonShaderResourceViews.cs" />
     <Compile Include="Pipeline\GorgonViewports.cs" />
@@ -120,8 +126,15 @@
     <Compile Include="Shaders\GorgonShaderMacro.cs" />
     <Compile Include="Shaders\_Internal\ShaderProcessor.cs" />
     <Compile Include="Pipeline\GorgonRenderTargetViews.cs" />
+    <Compile Include="States\GorgonSamplerState.cs" />
+    <Compile Include="States\GorgonRasterState.cs" />
+    <Compile Include="States\GorgonRasterStateInfo.cs" />
+    <Compile Include="States\GorgonSamplerStateInfo.cs" />
+    <Compile Include="States\_Interfaces\IGorgonRasterStateInfo.cs" />
+    <Compile Include="States\_Interfaces\IGorgonSamplerStateInfo.cs" />
     <Compile Include="Targets\GorgonDepthStencilView.cs" />
     <Compile Include="Targets\GorgonRenderTargetView.cs" />
+    <Compile Include="Targets\_Interfaces\IGorgonSwapChainInfo.cs" />
     <Compile Include="Textures\GorgonTexture.cs" />
     <Compile Include="Textures\GorgonTextureInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -130,6 +143,8 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Resource\GorgonResource.cs" />
+    <Compile Include="Textures\_Interfaces\IGorgonTextureInfo.cs" />
+    <Compile Include="Textures\_Interfaces\IGorgonImageToTextureInfo.cs" />
     <Compile Include="Textures\_Internal\TextureLockCache.cs" />
     <Compile Include="Textures\GorgonTextureLockData.cs" />
     <Compile Include="Textures\GorgonTextureShaderView.cs" />
@@ -145,7 +160,7 @@
     <Compile Include="Targets\GorgonSwapChain.cs" />
     <Compile Include="Targets\GorgonSwapChainInfo.cs" />
     <Compile Include="Textures\_Extensions\GorgonImageTextureExtensions.cs" />
-    <Compile Include="Textures\_Extensions\GorgonImageTextureInfo.cs" />
+    <Compile Include="Textures\GorgonImageToTextureInfo.cs" />
     <Compile Include="_Internal\_Extensions\SharpDXExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -171,9 +186,7 @@
       <Name>Gorgon.Graphics.Imaging</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="States\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

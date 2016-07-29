@@ -27,6 +27,7 @@
 using System;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
+using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Properties;
 using Gorgon.Math;
 using D3D11 = SharpDX.Direct3D11;
@@ -176,6 +177,13 @@ namespace Gorgon.Graphics
 		{
 			get;
 		}
+		/// <summary>
+		/// Property to return the format information for the <see cref="Format"/> of this view.
+		/// </summary>
+		public GorgonFormatInfo FormatInformation
+		{
+			get;
+		}
 		#endregion
 
 		#region Methods.
@@ -218,7 +226,7 @@ namespace Gorgon.Graphics
 		/// <returns>The direct 3D 2D depth/stencil view description.</returns>
 		private D3D11.DepthStencilViewDescription GetDesc2D()
 		{
-			bool isMultiSampled = Texture.Info.MultiSampleInfo != GorgonMultiSampleInfo.NoMultiSampling;
+			bool isMultisampled = Texture.Info.MultisampleInfo != GorgonMultisampleInfo.NoMultiSampling;
 
 			// Set up for arrayed and multisampled texture.
 			if (Texture.Info.ArrayCount > 1)
@@ -226,14 +234,14 @@ namespace Gorgon.Graphics
 				return new D3D11.DepthStencilViewDescription
 				{
 					Format = Format,
-					Dimension = isMultiSampled
+					Dimension = isMultisampled
 									? D3D11.DepthStencilViewDimension.Texture2DMultisampledArray
 									: D3D11.DepthStencilViewDimension.Texture2DArray,
 					Texture2DArray =
 					{
-						MipSlice = isMultiSampled ? ArrayIndex : MipSlice,
-						FirstArraySlice = isMultiSampled ? ArrayCount : ArrayIndex,
-						ArraySize = isMultiSampled ? 0 : ArrayCount
+						MipSlice = isMultisampled ? ArrayIndex : MipSlice,
+						FirstArraySlice = isMultisampled ? ArrayCount : ArrayIndex,
+						ArraySize = isMultisampled ? 0 : ArrayCount
 					}
 				};
 			}
@@ -241,12 +249,12 @@ namespace Gorgon.Graphics
 			return new D3D11.DepthStencilViewDescription
 			{
 				Format = Format,
-				Dimension = isMultiSampled
+				Dimension = isMultisampled
 								? D3D11.DepthStencilViewDimension.Texture2DMultisampled
 								: D3D11.DepthStencilViewDimension.Texture2D,
 				Texture2D =
 				{
-					MipSlice = isMultiSampled ? 0 : MipSlice
+					MipSlice = isMultisampled ? 0 : MipSlice
 				}
 			};
 		}
@@ -284,6 +292,72 @@ namespace Gorgon.Graphics
 			          {
 				          DebugName = $"'{Texture.Name}': D3D11 depth/stencil view"
 			          };
+		}
+
+		/// <summary>
+		/// Function to clear the depth and stencil portion of the buffer for this view.
+		/// </summary>
+		/// <param name="depthValue">The depth value to write to the depth portion of the buffer.</param>
+		/// <param name="stencilValue">The stencil value to write to the stencil portion of the buffer.</param>
+		/// <remarks>
+		/// <para>
+		/// If the view <see cref="Format"/> does not have a stencil component, then the <paramref name="stencilValue"/> will be ignored. Likewise, if the <see cref="Format"/> lacks a depth component, 
+		/// then the <paramref name="depthValue"/> will be ignored.
+		/// </para>
+		/// </remarks>
+		public void Clear(float depthValue, byte stencilValue)
+		{
+			D3D11.DepthStencilClearFlags clearFlags = 0;
+
+			if (FormatInformation.HasDepth)
+			{
+				clearFlags = D3D11.DepthStencilClearFlags.Depth;
+			}
+
+			if (FormatInformation.HasStencil)
+			{
+				clearFlags |= D3D11.DepthStencilClearFlags.Stencil;
+			}
+
+			Texture.Graphics.D3DDeviceContext.ClearDepthStencilView(D3DView, clearFlags, depthValue, stencilValue);
+		}
+
+		/// <summary>
+		/// Function to clear the depth portion of the buffer for this view.
+		/// </summary> 
+		/// <param name="depthValue">The depth value to write to the buffer.</param>
+		/// <remarks>
+		/// <para>
+		/// If the view <see cref="Format"/> does not have a depth component, then this method will do nothing.
+		/// </para>
+		/// </remarks>
+		public void ClearDepth(float depthValue)
+		{
+			if (!FormatInformation.HasDepth)
+			{
+				return;
+			}
+
+			Texture.Graphics.D3DDeviceContext.ClearDepthStencilView(D3DView, D3D11.DepthStencilClearFlags.Depth, depthValue, 0);
+		}
+
+		/// <summary>
+		/// Function to clear the stencil portion of the buffer for this view.
+		/// </summary>
+		/// <param name="stencilValue">The stencil value to write to the buffer.</param>
+		/// <remarks>
+		/// <para>
+		/// If the view <see cref="Format"/> does not have a stencil component, then this method will do nothing.
+		/// </para>
+		/// </remarks>
+		public void ClearStencil(byte stencilValue)
+		{
+			if (!FormatInformation.HasStencil)
+			{
+				return;
+			}
+
+			Texture.Graphics.D3DDeviceContext.ClearDepthStencilView(D3DView, D3D11.DepthStencilClearFlags.Stencil, 1.0f, stencilValue);
 		}
 
 		/// <summary>
@@ -350,6 +424,8 @@ namespace Gorgon.Graphics
 			{
 				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_VIEW_UNKNOWN_FORMAT, Format), nameof(texture));
 			}
+
+			FormatInformation = new GorgonFormatInfo(Format);
 
 			MipSlice = Texture.Info.MipLevels <= 0 ? 0 : firstMipLevel.Max(0).Min(Texture.Info.MipLevels - 1);
 

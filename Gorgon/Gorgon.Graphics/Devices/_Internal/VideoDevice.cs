@@ -321,28 +321,28 @@ namespace Gorgon.Graphics
 		}
 
 		/// <summary>
-		/// Function to return a <see cref="GorgonMultiSampleInfo"/> with the best quality level for the given count and format.
+		/// Function to return a <see cref="GorgonMultisampleInfo"/> with the best quality level for the given count and format.
 		/// </summary>
 		/// <param name="format">A <c>Format</c> to evaluate.</param>
 		/// <param name="count">The number of samples.</param>
-		/// <returns>A <see cref="GorgonMultiSampleInfo"/> containing the quality count and sample count for multi-sampling.</returns>
+		/// <returns>A <see cref="GorgonMultisampleInfo"/> containing the quality count and sample count for multisampling.</returns>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="count"/> is not supported by this video device.</exception>
 		/// <remarks>
 		/// <para>
-		/// Use this to return a <see cref="GorgonMultiSampleInfo"/> containing the best quality level for a given <paramref name="count"/> and <paramref name="format"/>.
+		/// Use this to return a <see cref="GorgonMultisampleInfo"/> containing the best quality level for a given <paramref name="count"/> and <paramref name="format"/>.
 		/// </para>
 		/// <para>
-		/// If <c>Unknown</c> is passed to the <paramref name="format"/> parameter, then this method will return <see cref="GorgonMultiSampleInfo.NoMultiSampling"/>.
+		/// If <c>Unknown</c> is passed to the <paramref name="format"/> parameter, then this method will return <see cref="GorgonMultisampleInfo.NoMultiSampling"/>.
 		/// </para>
 		/// <para>
-		/// Before calling this method, call the <see cref="O:Gorgon.Graphics.IGorgonVideoDevice.SupportsMultiSampleCount"/> method to determine if multisampling is supported for the given <paramref name="count"/> and <paramref name="format"/>.
+		/// Before calling this method, call the <see cref="O:Gorgon.Graphics.IGorgonVideoDevice.SupportsMultisampleCount"/> method to determine if multisampling is supported for the given <paramref name="count"/> and <paramref name="format"/>.
 		/// </para>
 		/// </remarks>
-		public GorgonMultiSampleInfo GetMultiSampleInfo(DXGI.Format format, int count)
+		public GorgonMultisampleInfo GetMultisampleInfo(DXGI.Format format, int count)
 		{
 			if (format == DXGI.Format.Unknown)
 			{
-				return GorgonMultiSampleInfo.NoMultiSampling;
+				return GorgonMultisampleInfo.NoMultiSampling;
 			}
 
 			int quality = _device.CheckMultisampleQualityLevels(format, count);
@@ -352,7 +352,7 @@ namespace Gorgon.Graphics
 				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_MULTISAMPLE_COUNT_NOT_SUPPORTED, count, format, Info.Name));
 			}
 
-			return new GorgonMultiSampleInfo(count, quality - 1);
+			return new GorgonMultisampleInfo(count, quality - 1);
 		}
 
 		/// <summary>
@@ -369,7 +369,7 @@ namespace Gorgon.Graphics
 		/// If <c>Unknown</c> is passed to the <paramref name="format"/> parameter, then this method will return <b>true</b> because this will equate to no multisampling.
 		/// </para>
 		/// </remarks>
-		public bool SupportsMultiSampleCount(DXGI.Format format, int count)
+		public bool SupportsMultisampleCount(DXGI.Format format, int count)
 		{
 			if (count < 1)
 			{
@@ -385,7 +385,7 @@ namespace Gorgon.Graphics
 		}
 
 		/// <summary>
-		/// Function to return whether or not the device supports multisampling for the given format and the supplied <see cref="GorgonMultiSampleInfo"/>.
+		/// Function to return whether or not the device supports multisampling for the given format and the supplied <see cref="GorgonMultisampleInfo"/>.
 		/// </summary>
 		/// <param name="format">A <c>Format</c> to evaluate.</param>
 		/// <param name="multiSampleInfo">The multisample info to use when evaluating.</param>
@@ -398,7 +398,7 @@ namespace Gorgon.Graphics
 		/// If <c>Unknown</c> is passed to the <paramref name="format"/> parameter, then this method will return <b>true</b> because this will equate to no multisampling.
 		/// </para>
 		/// </remarks>
-		public bool SupportsMultiSampleInfo(DXGI.Format format, GorgonMultiSampleInfo multiSampleInfo)
+		public bool SupportsMultisampleInfo(DXGI.Format format, GorgonMultisampleInfo multiSampleInfo)
 		{
 			if (format == DXGI.Format.Unknown)
 			{
