@@ -40,9 +40,9 @@ namespace Gorgon.Graphics
 	{
 		#region Variables.
 		// Sampler states to apply to the pipeline.
-		private readonly GorgonSamplerState[] _states = new GorgonSamplerState[D3D11.CommonShaderStage.InputResourceSlotCount];
+		private readonly GorgonSamplerState[] _states = new GorgonSamplerState[D3D11.CommonShaderStage.SamplerSlotCount];
 		// Actual direct 3D sampler states to bind.
-		private readonly D3D11.SamplerState[] _actualStates = new D3D11.SamplerState[D3D11.CommonShaderStage.InputResourceSlotCount];
+		private readonly D3D11.SamplerState[] _actualStates = new D3D11.SamplerState[D3D11.CommonShaderStage.SamplerSlotCount];
 		// The number of slots bound.
 		private int _bindCount;
 		#endregion
