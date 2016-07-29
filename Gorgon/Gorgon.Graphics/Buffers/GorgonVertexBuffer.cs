@@ -45,7 +45,7 @@ namespace Gorgon.Graphics
 	/// <para>
 	/// To send vertices to the GPU using a vertex buffer, an application can upload a value type values, representing the vertices, to the buffer using one of the 
 	/// <see cref="O:Gorgon.Graphics.GorgonVertexBuffer.Update{T}(ref T)">Update&lt;T&gt;</see> overloads. For best performance, it is recommended to upload vertex data only once, or rarely. However, in 
-	/// some scenarios, and with the correct <see cref="GorgonVertexBufferInfo.Usage"/> flag, vertex animation is possible by uploading data to a dynamic vertex buffer.
+	/// some scenarios, and with the correct <see cref="IGorgonVertexBufferInfo.Usage"/> flag, vertex animation is possible by uploading data to a dynamic vertex buffer.
 	/// </para>
 	/// <para> 
 	/// <example language="csharp">
@@ -95,7 +95,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property used to return the information used to create this buffer.
 		/// </summary>
-		public GorgonVertexBufferInfo Info => _info;
+		public IGorgonVertexBufferInfo Info => _info;
 
 		/// <summary>
 		/// Property to return the type of buffer.
@@ -227,13 +227,13 @@ namespace Gorgon.Graphics
 		}
 
 		/// <summary>
-		/// Function to lock a vertex buffer for reading or writing (depending on <see cref="GorgonVertexBufferInfo.Usage"/>).
+		/// Function to lock a vertex buffer for reading or writing (depending on <see cref="IGorgonVertexBufferInfo.Usage"/>).
 		/// </summary>
 		/// <param name="mode">The type of access to the vertex buffer data.</param>
 		/// <returns>A <see cref="GorgonPointerAlias"/> used to read or write the data in the vertex buffer.</returns>
-		/// <exception cref="NotSupportedException">Thrown when if buffer does not have a <see cref="GorgonVertexBufferInfo.Usage"/> of <c>Dynamic</c> or <c>Staging</c>.
+		/// <exception cref="NotSupportedException">Thrown when if buffer does not have a <see cref="IGorgonVertexBufferInfo.Usage"/> of <c>Dynamic</c> or <c>Staging</c>.
 		/// <para>-or-</para>
-		/// <para>Thrown when if buffer does not have a <see cref="GorgonVertexBufferInfo.Usage"/> of <c>Staging</c>, and the <paramref name="mode"/> is set to <c>Read</c> or <c>ReadWrite</c>.</para>
+		/// <para>Thrown when if buffer does not have a <see cref="IGorgonVertexBufferInfo.Usage"/> of <c>Staging</c>, and the <paramref name="mode"/> is set to <c>Read</c> or <c>ReadWrite</c>.</para>
 		/// </exception>
 		/// <exception cref="InvalidOperationException">Thrown when the buffer is already locked.</exception>
 		/// <remarks>
@@ -243,7 +243,7 @@ namespace Gorgon.Graphics
 		/// </para>
 		/// <para>
 		/// Unlike the <see cref="O:Gorgon.Graphics.GorgonVertexBuffer.Update{T}">Update&lt;T&gt;</see> methods, this allows the CPU to change portions of the buffer every frame with little performance 
-		/// penalty (this, of course, is dependent upon drivers, hardware, etc...). It also allows reading from the buffer if it was created with a <see cref="GorgonVertexBufferInfo.Usage"/> of 
+		/// penalty (this, of course, is dependent upon drivers, hardware, etc...). It also allows reading from the buffer if it was created with a <see cref="IGorgonVertexBufferInfo.Usage"/> of 
 		/// <c>Staging</c>.
 		/// </para>
 		/// <para>
@@ -252,7 +252,7 @@ namespace Gorgon.Graphics
 		/// </para>
 		/// <para>
 		/// The lock access is affected by the <paramref name="mode"/> parameter. A value of <c>Read</c> or <c>ReadWrite</c> will allow read access to the buffer data but only if the buffer has a 
-		/// <see cref="GorgonVertexBufferInfo.Usage"/> of <c>Staging</c>. Applications can use one of the <c>Write</c> flags to write to the buffer. For <c>Dynamic</c> vertex buffers, it is ideal to use 
+		/// <see cref="IGorgonVertexBufferInfo.Usage"/> of <c>Staging</c>. Applications can use one of the <c>Write</c> flags to write to the buffer. For <c>Dynamic</c> vertex buffers, it is ideal to use 
 		/// <c>WriteNoOverwrite</c> to inform the GPU that you will not be overwriting parts of the buffer still being used for rendering by the GPU. If this cannot be guaranteed (for example, writing to 
 		/// the beginning of the buffer at the start of a frame), then applications should use the <c>WriteDiscard</c> to instruct the GPU that the contents of the buffer are now invalidated and it will be 
 		/// refreshed with new data entirely.
@@ -322,17 +322,17 @@ namespace Gorgon.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="bufferOffset"/> plus the size of the data exceeds the size of the buffer.</para>
 		/// </exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when the size, in bytes, of the <paramref name="data"/> parameter is larger than the total <see cref="GorgonVertexBufferInfo.SizeInBytes"/> of the buffer.
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when the size, in bytes, of the <paramref name="data"/> parameter is larger than the total <see cref="IGorgonVertexBufferInfo.SizeInBytes"/> of the buffer.
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="bufferOffset"/> is less than 0.</para>
 		/// </exception>
-		/// <exception cref="NotSupportedException">Thrown when the <see cref="GorgonVertexBufferInfo.Usage"/> is either <c>Immutable</c> or <c>Dynamic</c>.</exception>
+		/// <exception cref="NotSupportedException">Thrown when the <see cref="IGorgonVertexBufferInfo.Usage"/> is either <c>Immutable</c> or <c>Dynamic</c>.</exception>
 		/// <remarks>
 		/// <para>
 		/// Use this method to send a value type (<c>struct</c>) or primitive value to the buffer. 
 		/// </para>
 		/// <para>
-		/// This method will throw an exception when the buffer is created with a <see cref="GorgonVertexBufferInfo.Usage"/> of <c>Immutable</c> or <c>Dynamic</c>.
+		/// This method will throw an exception when the buffer is created with a <see cref="IGorgonVertexBufferInfo.Usage"/> of <c>Immutable</c> or <c>Dynamic</c>.
 		/// </para>
 		/// <para>
 		/// When sending a value type to the buffer the data must be a primitive type with no complex members (i.e. members must be value types or primitive types). Furthermore, the value type and any 
@@ -394,11 +394,11 @@ namespace Gorgon.Graphics
 		/// <param name="bufferOffset">[Optional] The number of bytes within this buffer to start writing at.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="data"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="bufferOffset"/> plus the size of the <paramref name="data"/> is larger than the buffer size.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when the size, in bytes, of the <paramref name="data"/> parameter is larger than the total <see cref="GorgonVertexBufferInfo.SizeInBytes"/> of the buffer.
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when the size, in bytes, of the <paramref name="data"/> parameter is larger than the total <see cref="IGorgonVertexBufferInfo.SizeInBytes"/> of the buffer.
 		/// <para>-or-</para>
 		/// <para>Thrown if the <paramref name="bufferOffset"/> is less than 0.</para>
 		/// </exception>
-		/// <exception cref="NotSupportedException">Thrown when the <see cref="GorgonVertexBufferInfo.Usage"/> is either <c>Immutable</c> or <c>Dynamic</c>.</exception>
+		/// <exception cref="NotSupportedException">Thrown when the <see cref="IGorgonVertexBufferInfo.Usage"/> is either <c>Immutable</c> or <c>Dynamic</c>.</exception>
 		/// <remarks>
 		/// <para>
 		/// Use this method to send a blob of byte data to the buffer. This allows for fine grained control over what gets sent to the buffer. 
@@ -407,7 +407,7 @@ namespace Gorgon.Graphics
 		/// Because this is using native, unmanaged, memory, special care must be taken to ensure that the application does not attempt to read/write out of bounds of that memory region.
 		/// </para>
 		/// <para>
-		/// This method will throw an exception when the buffer is created with a <see cref="GorgonVertexBufferInfo.Usage"/> of <c>Immutable</c> or <c>Dynamic</c>.
+		/// This method will throw an exception when the buffer is created with a <see cref="IGorgonVertexBufferInfo.Usage"/> of <c>Immutable</c> or <c>Dynamic</c>.
 		/// </para>
 		/// <para>
 		/// <note type="warning">
@@ -431,8 +431,8 @@ namespace Gorgon.Graphics
 		/// <param name="bufferOffset">[Optional] The number of bytes within this buffer to start writing at.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="data"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="offset"/>, of the <paramref name="bufferOffset"/> plus the size of the data in <paramref name="data"/> exceed the size of this buffer.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when the size, in bytes, of the <paramref name="data"/> parameter is larger than the total <see cref="GorgonVertexBufferInfo.SizeInBytes"/> of the buffer.
-		/// <exception cref="NotSupportedException">Thrown when the <see cref="GorgonVertexBufferInfo.Usage"/> is either <c>Immutable</c> or <c>Dynamic</c>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when the size, in bytes, of the <paramref name="data"/> parameter is larger than the total <see cref="IGorgonVertexBufferInfo.SizeInBytes"/> of the buffer.
+		/// <exception cref="NotSupportedException">Thrown when the <see cref="IGorgonVertexBufferInfo.Usage"/> is either <c>Immutable</c> or <c>Dynamic</c>.</exception>
 		/// <para>-or-</para>
 		/// <para>The <paramref name="offset"/>, or the <paramref name="bufferOffset"/> parameter is less than 0.</para>
 		/// </exception>
@@ -445,7 +445,7 @@ namespace Gorgon.Graphics
 		/// taken to ensure that <paramref name="offset"/> does not exceed the bounds of the memory region.
 		/// </para>
 		/// <para>
-		/// This method will throw an exception when the buffer is created with a <see cref="GorgonVertexBufferInfo.Usage"/> of <c>Immutable</c> or <c>Dynamic</c>.
+		/// This method will throw an exception when the buffer is created with a <see cref="IGorgonVertexBufferInfo.Usage"/> of <c>Immutable</c> or <c>Dynamic</c>.
 		/// </para>
 		/// <para>
 		/// <note type="warning">
@@ -473,13 +473,13 @@ namespace Gorgon.Graphics
 		/// <param name="bufferOffset">[Optional] The number of bytes within this buffer to start writing at.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="data"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="offset"/>, or the <paramref name="bufferOffset"/> plus the size of the data in <paramref name="data"/> exceed the size of this buffer.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when the size, in bytes, of the <paramref name="data"/> parameter is larger than the total <see cref="GorgonVertexBufferInfo.SizeInBytes"/> of the buffer.
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when the size, in bytes, of the <paramref name="data"/> parameter is larger than the total <see cref="IGorgonVertexBufferInfo.SizeInBytes"/> of the buffer.
 		/// <para>-or-</para>
 		/// <para>The <paramref name="size"/> parameter is less than 1, or larger than the buffer size.</para>
 		/// <para>-or-</para>
 		/// <para>The <paramref name="offset"/> or the <paramref name="bufferOffset"/> parameter is less than 0.</para>
 		/// </exception>
-		/// <exception cref="NotSupportedException">Thrown when the <see cref="GorgonVertexBufferInfo.Usage"/> is either <c>Immutable</c> or <c>Dynamic</c>.</exception>
+		/// <exception cref="NotSupportedException">Thrown when the <see cref="IGorgonVertexBufferInfo.Usage"/> is either <c>Immutable</c> or <c>Dynamic</c>.</exception>
 		/// <remarks>
 		/// <para>
 		/// Use this method to send a blob of byte data to the buffer. This allows for fine grained control over what gets sent to the buffer. 
@@ -489,7 +489,7 @@ namespace Gorgon.Graphics
 		/// taken to ensure that <paramref name="offset"/>, <paramref name="bufferOffset"/> and <paramref name="size"/> do not exceed the bounds of the memory region.
 		/// </para>
 		/// <para>
-		/// This method will throw an exception when the buffer is created with a <see cref="GorgonVertexBufferInfo.Usage"/> of <c>Immutable</c> or <c>Dynamic</c>.
+		/// This method will throw an exception when the buffer is created with a <see cref="IGorgonVertexBufferInfo.Usage"/> of <c>Immutable</c> or <c>Dynamic</c>.
 		/// </para>
 		/// <para>
 		/// <note type="warning">
@@ -565,13 +565,13 @@ namespace Gorgon.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="bufferOffset"/> plus the size of the data exceeds the size of the buffer.</para>
 		/// </exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when the size, in bytes, of the <paramref name="data"/> parameter, multiplied by the number of items to copy is larger than the total <see cref="GorgonVertexBufferInfo.SizeInBytes"/> of the buffer.
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when the size, in bytes, of the <paramref name="data"/> parameter, multiplied by the number of items to copy is larger than the total <see cref="IGorgonVertexBufferInfo.SizeInBytes"/> of the buffer.
 		/// <para>-or-</para>
 		/// <para>Thrown when the size of the type <typeparamref name="T"/> multiplied by the number of elements in <paramref name="data"/> is larger than the buffer size.</para>
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="bufferOffset"/> is less than 0.</para>
 		/// </exception>
-		/// <exception cref="NotSupportedException">Thrown when the <see cref="GorgonVertexBufferInfo.Usage"/> is either <c>Immutable</c> or <c>Dynamic</c>.</exception>
+		/// <exception cref="NotSupportedException">Thrown when the <see cref="IGorgonVertexBufferInfo.Usage"/> is either <c>Immutable</c> or <c>Dynamic</c>.</exception>
 		/// <remarks>
 		/// <para>
 		/// Use this method to send an array of value types (<c>struct</c>) or primitive values to the buffer. 
@@ -582,7 +582,7 @@ namespace Gorgon.Graphics
 		/// mandatory in order to ensure that the data gets sent to the card as-is without the .NET memory manager rearranging the members of the type. 
 		/// </para>
 		/// <para>
-		/// This method will throw an exception when the buffer is created with a <see cref="GorgonVertexBufferInfo.Usage"/> of <c>Immutable</c> or <c>Dynamic</c>.
+		/// This method will throw an exception when the buffer is created with a <see cref="IGorgonVertexBufferInfo.Usage"/> of <c>Immutable</c> or <c>Dynamic</c>.
 		/// </para>
 		/// <para>
 		/// <note type="warning">
@@ -612,13 +612,13 @@ namespace Gorgon.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="offset"/>, or the <paramref name="bufferOffset"/> plus the <paramref name="count"/> exceeds the number of elements in the <paramref name="data"/> parameter.</para>
 		/// </exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when the size, in bytes, of the <paramref name="data"/> parameter, multiplied by the number of items to copy is larger than the total <see cref="GorgonVertexBufferInfo.SizeInBytes"/> of the buffer.
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when the size, in bytes, of the <paramref name="data"/> parameter, multiplied by the number of items to copy is larger than the total <see cref="IGorgonVertexBufferInfo.SizeInBytes"/> of the buffer.
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="offset"/>, or the <paramref name="bufferOffset"/> is less than 0, or the <paramref name="count"/> is less than 1.</para>
 		/// <para>-or-</para>
 		/// <para>Thrown when the size of the type <typeparamref name="T"/> multiplied by the count (minus the offset) is larger than the buffer size.</para>
 		/// </exception>
-		/// <exception cref="NotSupportedException">Thrown when the <see cref="GorgonVertexBufferInfo.Usage"/> is either <c>Immutable</c> or <c>Dynamic</c>.</exception>
+		/// <exception cref="NotSupportedException">Thrown when the <see cref="IGorgonVertexBufferInfo.Usage"/> is either <c>Immutable</c> or <c>Dynamic</c>.</exception>
 		/// <remarks>
 		/// <para>
 		/// Use this method to send an array of value types (<c>struct</c>) or primitive values to the buffer. 
@@ -629,7 +629,7 @@ namespace Gorgon.Graphics
 		/// mandatory in order to ensure that the data gets sent to the card as-is without the .NET memory manager rearranging the members of the type. 
 		/// </para>
 		/// <para>
-		/// This method will throw an exception when the buffer is created with a <see cref="GorgonVertexBufferInfo.Usage"/> of <c>Immutable</c> or <c>Dynamic</c>.
+		/// This method will throw an exception when the buffer is created with a <see cref="IGorgonVertexBufferInfo.Usage"/> of <c>Immutable</c> or <c>Dynamic</c>.
 		/// </para>
 		/// <para>
 		/// <note type="warning">
@@ -705,7 +705,7 @@ namespace Gorgon.Graphics
 		/// <param name="log">[Optional] The log interface used for debug logging.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, <paramref name="name"/>, or <paramref name="info"/> parameters are <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> is empty.</exception>
-		public GorgonVertexBuffer(string name, GorgonGraphics graphics, GorgonVertexBufferInfo info, GorgonPointerBase initialData = null, IGorgonLog log = null)
+		public GorgonVertexBuffer(string name, GorgonGraphics graphics, IGorgonVertexBufferInfo info, GorgonPointerBase initialData = null, IGorgonLog log = null)
 			: base(graphics, name, log)
 		{
 			if (info == null)
@@ -714,7 +714,7 @@ namespace Gorgon.Graphics
 			}
 
 			_log = log ?? GorgonLogDummy.DefaultInstance;
-			_info = info.Clone();
+			_info = new GorgonVertexBufferInfo(info);
 
 			Initialize(initialData);
 		}

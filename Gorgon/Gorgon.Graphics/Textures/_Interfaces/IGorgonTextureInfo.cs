@@ -1,4 +1,4 @@
-﻿#region MIT
+#region MIT
 // 
 // Gorgon.
 // Copyright (C) 2016 Michael Winsor
@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: June 13, 2016 8:45:14 PM
+// Created: July 28, 2016 12:20:33 AM
 // 
 #endregion
 
@@ -31,56 +31,156 @@ using D3D11 = SharpDX.Direct3D11;
 namespace Gorgon.Graphics
 {
 	/// <summary>
+	/// The type of texture.
+	/// </summary>
+	public enum TextureType
+	{
+		/// <summary>
+		/// The texture will only have a single dimension.
+		/// </summary>
+		Texture1D = 0,
+		/// <summary>
+		/// The texture will have 2 dimensions.
+		/// </summary>
+		Texture2D = 1,
+		/// <summary>
+		/// The texture will have 3 dimensions.
+		/// </summary>
+		Texture3D = 2
+	}
+
+	/// <summary>
+	/// Defines the flags that describe how the texture should be used.
+	/// </summary>
+	/// <remarks>
+	/// <para>
+	/// This values can be OR'd together for use in different stages of the pipeline. For example, <c>ShaderResource | RenderTarget</c> allows the texture to be used as a render target and a shader input 
+	/// (although, not at the same time) through either a render target view, or shader resource view.
+	/// </para>
+	/// </remarks>
+	[Flags]
+	public enum TextureBinding
+	{
+		/// <summary>
+		/// <para>
+		/// No binding will be done with this texture.
+		/// </para>
+		/// <para>
+		/// This flag is mutually exclusive, and supercedes any other flags.
+		/// </para>
+		/// <para>
+		/// If this flag is set, then this texture cannot be bound with the pipeline. And this is the only binding flag allowed with the texture has a <see cref="IGorgonTextureInfo.Usage"/> 
+		/// of <c>Staging</c>.
+		/// </para>
+		/// </summary>
+		None = D3D11.BindFlags.None,
+		/// <summary>
+		/// The texture is meant to be bound as an input to a shader.
+		/// </summary>
+		ShaderResource = D3D11.BindFlags.ShaderResource,
+		/// <summary>
+		/// The texture is meant to be used as a render target.
+		/// </summary>
+		RenderTarget = D3D11.BindFlags.RenderTarget,
+		/// <summary>
+		/// <para>
+		/// The texture is meant to be used as a depth stencil buffer.
+		/// </para>
+		/// <para>
+		/// To use a depth/stencil buffer as a shader input, the <see cref="IGorgonTextureInfo.Format"/> must be set to an typeless appropriate format. Failure to do so when specifying this flag 
+		/// will result in an exception.
+		/// </para>
+		/// <para>
+		/// The following table lists the acceptable typeless formats to use with a depth/stencil format:
+		/// <list type="table">
+		///		<listheader>
+		///			<term>Depth/Stencil Format</term>
+		///			<term>Typeless Format</term>
+		///		</listheader>
+		///		<item>
+		///			<term>D16_UNorm</term>
+		///			<term>R16_Typeless</term>
+		///		</item>
+		///		<item>
+		///			<term>D32_Float</term>
+		///			<term>R32_Typeless</term>
+		///		</item>
+		///		<item>
+		///			<term>D24_UNorm_S8_UInt</term>
+		///			<term>R24G8_Typeless</term>
+		///		</item>
+		///		<item>
+		///			<term>D32_Float_S8X24_UInt</term>
+		///			<term>R32G8X24_Typeless</term>
+		///		</item>
+		/// </list>
+		/// </para>
+		/// </summary>
+		DepthStencil = D3D11.BindFlags.DepthStencil,
+		/// <summary>
+		/// <para>
+		/// The texture is meant to be used with an unordered access view.
+		/// </para>
+		/// <para>
+		/// Textures that are multisampled cannot use this flag and can only be bound to a pixel shader and/or compute shader.
+		/// </para>
+		/// <para>
+		/// This value is only supported on devices with a feature level of <see cref="FeatureLevelSupport.Level_11_0"/> or better. Any attempt to use this on a lesser device will throw an exception.
+		/// </para>
+		/// </summary>
+		UnorderedAccess = D3D11.BindFlags.UnorderedAccess
+	}
+
+	/// <summary>
 	/// Information used to create a texture object.
 	/// </summary>
-	public class GorgonTextureInfo 
-		: IGorgonTextureInfo
+	/// <remarks>
+	/// <para>
+	/// This provides an immutable view of the constant buffer information so that it cannot be modified after the buffer is created.
+	/// </para>
+	/// </remarks>
+	public interface IGorgonTextureInfo
 	{
-		#region Properties.
 		/// <summary>
-		/// Property to set or return the type of texture to use.
+		/// Property to return the type of texture to use.
 		/// </summary>
-		public TextureType TextureType
+		TextureType TextureType
 		{
 			get;
-			set;
 		}
 
 		/// <summary>
-		/// Property to set or return the width of the texture, in pixels.
+		/// Property to return the width of the texture, in pixels.
 		/// </summary>
-		public int Width
+		int Width
 		{
 			get;
-			set;
 		}
 
 		/// <summary>
-		/// Property to set or return the height of the texture, in pixels.
+		/// Property to return the height of the texture, in pixels.
 		/// </summary>
 		/// <remarks>
 		/// For textures that have a <see cref="TextureType"/> of <see cref="Graphics.TextureType.Texture1D"/>, this value is ignored.
 		/// </remarks>
-		public int Height
+		int Height
 		{
 			get;
-			set;
 		}
 
 		/// <summary>
-		/// Property to set or return the height of the texture, in pixels.
+		/// Property to return the height of the texture, in pixels.
 		/// </summary>
 		/// <remarks>
 		/// For textures that have a <see cref="TextureType"/> of <see cref="Graphics.TextureType.Texture1D"/>, or <see cref="Graphics.TextureType.Texture2D"/>, this value is ignored.
 		/// </remarks>
-		public int Depth
+		int Depth
 		{
 			get;
-			set;
 		}
 
 		/// <summary>
-		/// Property to set or return the number of array levels for a 1D or 2D texture.
+		/// Property to return the number of array levels for a 1D or 2D texture.
 		/// </summary>
 		/// <remarks>
 		/// <para>
@@ -96,14 +196,13 @@ namespace Gorgon.Graphics
 		/// This value is defaulted to 1.
 		/// </para>
 		/// </remarks>
-		public int ArrayCount
+		int ArrayCount
 		{
 			get;
-			set;
 		}
 
 		/// <summary>
-		/// Property to set or return whether this 2D texture is a cube map.
+		/// Property to return whether this 2D texture is a cube map.
 		/// </summary>
 		/// <remarks>
 		/// <para>
@@ -121,23 +220,21 @@ namespace Gorgon.Graphics
 		/// This value is defaulted to <b>false</b>.
 		/// </para>
 		/// </remarks>
-		public bool IsCubeMap
+		bool IsCubeMap
 		{
 			get;
-			set;
 		}
 
 		/// <summary>
-		/// Property to set or return the format of the texture.
+		/// Property to return the format of the texture.
 		/// </summary>
-		public DXGI.Format Format
+		DXGI.Format Format
 		{
 			get;
-			set;
 		}
 
 		/// <summary>
-		/// Property to set or return the number of mip-map levels for the texture.
+		/// Property to return the number of mip-map levels for the texture.
 		/// </summary>
 		/// <remarks>
 		/// <para>
@@ -147,38 +244,35 @@ namespace Gorgon.Graphics
 		/// This value is defaulted to 1.
 		/// </para>
 		/// </remarks>
-		public int MipLevels
+		int MipLevels
 		{
 			get;
-			set;
 		}
 
 		/// <summary>
-		/// Property to set or return the multisample quality and count for this texture.
+		/// Property to return the multisample quality and count for this texture.
 		/// </summary>
 		/// <remarks>
 		/// This value is defaulted to <see cref="GorgonMultisampleInfo.NoMultiSampling"/>.
 		/// </remarks>
-		public GorgonMultisampleInfo MultisampleInfo
+		GorgonMultisampleInfo MultisampleInfo
 		{
 			get;
-			set;
 		}
 
 		/// <summary>
-		/// Property to set or return the intended usage flags for this texture.
+		/// Property to return the intended usage flags for this texture.
 		/// </summary>
 		/// <remarks>
 		/// This value is defaulted to <c>Default</c>.
 		/// </remarks>
-		public D3D11.ResourceUsage Usage
+		SharpDX.Direct3D11.ResourceUsage Usage
 		{
 			get;
-			set;
 		}
 
 		/// <summary>
-		/// Property to set or return the flags to determine how the texture will be bound with the pipeline when rendering.
+		/// Property to return the flags to determine how the texture will be bound with the pipeline when rendering.
 		/// </summary>
 		/// <remarks>
 		/// <para>
@@ -189,50 +283,9 @@ namespace Gorgon.Graphics
 		/// This value is defaulted to <see cref="TextureBinding.ShaderResource"/>. 
 		/// </para>
 		/// </remarks>
-		public TextureBinding Binding
+		TextureBinding Binding
 		{
 			get;
-			set;
 		}
-		#endregion
-
-		#region Constructor/Finalizer.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonTextureInfo"/> class.
-		/// </summary>
-		/// <param name="info">A <see cref="IGorgonTextureInfo"/> to copy settings from.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
-		public GorgonTextureInfo(IGorgonTextureInfo info)
-		{
-			if (info == null)
-			{
-				throw new ArgumentNullException(nameof(info));
-			}
-
-			Format = info.Format;
-			ArrayCount = info.ArrayCount;
-			Binding = info.Binding;
-			Depth = info.Depth;
-			Height = info.Height;
-			IsCubeMap = info.IsCubeMap;
-			MipLevels = info.MipLevels;
-			MultisampleInfo = info.MultisampleInfo;
-			TextureType = info.TextureType;
-			Usage = info.Usage;
-			Width = info.Width;
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonTextureInfo"/> class.
-		/// </summary>
-		public GorgonTextureInfo()
-		{
-			Binding = TextureBinding.ShaderResource;
-			Usage = D3D11.ResourceUsage.Default;
-			MultisampleInfo = GorgonMultisampleInfo.NoMultiSampling;
-			MipLevels = 1;
-			ArrayCount = 1;
-		}
-		#endregion
 	}
 }

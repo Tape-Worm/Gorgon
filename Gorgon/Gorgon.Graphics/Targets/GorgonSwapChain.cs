@@ -128,7 +128,7 @@ namespace Gorgon.Graphics
 		/// Property to return the textures used as back buffers for this swap chain.
 		/// </summary>
 		/// <remarks>
-		/// For swap chains that were created with the flag <see cref="GorgonSwapChainInfo.UseFlipMode"/> set to <b>true</b>, this value will return each texture for each back buffer. The first texture will 
+		/// For swap chains that were created with the flag <see cref="IGorgonSwapChainInfo.UseFlipMode"/> set to <b>true</b>, this value will return each texture for each back buffer. The first texture will 
 		/// be read/write, but the subsequent textures will be read-only. Otherwise, this will only contain the first back buffer texture.
 		/// </remarks>
 		public IReadOnlyList<GorgonTexture> BackBufferTextures => _backBufferTextures;
@@ -154,7 +154,7 @@ namespace Gorgon.Graphics
 		/// <note type="warning">
 		/// <para>
 		/// When setting this value to <b>true</b>, there will be a small performance penalty when the application calls the <see cref="Present"/> method because the driver will have to scale the contents of the 
-		/// back buffer to fit the client area of the window (if the <see cref="GorgonSwapChainInfo.StretchBackBuffer"/> property for the <see cref="GorgonSwapChainInfo"/> passed in to the constructor is set to 
+		/// back buffer to fit the client area of the window (if the <see cref="IGorgonSwapChainInfo.StretchBackBuffer"/> property for the <see cref="IGorgonSwapChainInfo"/> passed in to the constructor is set to 
 		/// <b>true</b>).
 		/// </para>
 		/// </note>
@@ -245,7 +245,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to return the settings used to create this swap chain.
 		/// </summary>
-		public GorgonSwapChainInfo Info => _info;
+		public IGorgonSwapChainInfo Info => _info;
 
 		/// <summary>
 		/// Property to return whether the swap chain is in windowed mode or not.
@@ -783,11 +783,11 @@ namespace Gorgon.Graphics
 		/// <param name="log">[Optional] The log used for debug output.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/>, <paramref name="graphics"/>, <paramref name="window"/>, or the <paramref name="info"/> parameters are <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
-		/// <exception cref="GorgonException">Thrown when the <see cref="GorgonSwapChainInfo.Width"/>, or <see cref="GorgonSwapChainInfo.Height"/> values of the <see cref="GorgonSwapChainInfo"/> passed to the <paramref name="info"/> parameter 
+		/// <exception cref="GorgonException">Thrown when the <see cref="IGorgonSwapChainInfo.Width"/>, or <see cref="IGorgonSwapChainInfo.Height"/> values of the <see cref="IGorgonSwapChainInfo"/> passed to the <paramref name="info"/> parameter 
 		/// are less than 1.
 		/// <para>-or-</para>
 		/// <para>
-		/// Thrown when the <see cref="GorgonSwapChainInfo.Format"/> value of the <see cref="GorgonSwapChainInfo"/> passed to the <paramref name="info"/> parameter is not a supported display format.
+		/// Thrown when the <see cref="IGorgonSwapChainInfo.Format"/> value of the <see cref="IGorgonSwapChainInfo"/> passed to the <paramref name="info"/> parameter is not a supported display format.
 		/// </para>
 		/// </exception>
 		/// <remarks>
@@ -796,13 +796,13 @@ namespace Gorgon.Graphics
 		/// to the display window (<see cref="Present"/>). 
 		/// </para>
 		/// <para>
-		/// Because the buffers are independent of the <paramref name="window"/>, they may be larger or smaller than the target <paramref name="window"/>. The <see cref="GorgonSwapChainInfo.Width"/> and 
-		/// <see cref="GorgonSwapChainInfo.Height"/> properties of the <paramref name="info"/> parameter are used to define the size of these buffers. This buffer size is automatically set when the 
-		/// <paramref name="window"/> is resized by the user unless the <see cref="DoNotAutoResizeBackBuffer"/> property is set to <b>true</b> and the <see cref="GorgonSwapChainInfo.StretchBackBuffer"/> property 
-		/// for the <see cref="GorgonSwapChainInfo"/> passed to the <paramref name="info"/> parameter is set to <b>true</b> (the default).
+		/// Because the buffers are independent of the <paramref name="window"/>, they may be larger or smaller than the target <paramref name="window"/>. The <see cref="IGorgonSwapChainInfo.Width"/> and 
+		/// <see cref="IGorgonSwapChainInfo.Height"/> properties of the <paramref name="info"/> parameter are used to define the size of these buffers. This buffer size is automatically set when the 
+		/// <paramref name="window"/> is resized by the user unless the <see cref="DoNotAutoResizeBackBuffer"/> property is set to <b>true</b> and the <see cref="IGorgonSwapChainInfo.StretchBackBuffer"/> property 
+		/// for the <see cref="IGorgonSwapChainInfo"/> passed to the <paramref name="info"/> parameter is set to <b>true</b> (the default).
 		/// </para>
 		/// <para>
-		/// When choosing a buffer format in the <see cref="GorgonSwapChainInfo.Format"/> passed by the <paramref name="info"/> property, it is important to choose a format that can be used as a display format. 
+		/// When choosing a buffer format in the <see cref="IGorgonSwapChainInfo.Format"/> passed by the <paramref name="info"/> property, it is important to choose a format that can be used as a display format. 
 		/// Failure to do so will result in an exception. Users may determine if a format is supported for display by using the <see cref="IGorgonVideoDevice.GetBufferFormatSupport"/> method on the the 
 		/// <see cref="GorgonGraphics.VideoDevice"/> property of the <see cref="GorgonGraphics"/> instance passed to this method.
 		/// </para>
@@ -817,8 +817,8 @@ namespace Gorgon.Graphics
 		/// </remarks>
 		/// <seealso cref="Present"/>
 		/// <seealso cref="DoNotAutoResizeBackBuffer"/>
-		/// <seealso cref="GorgonSwapChainInfo"/>
-		public GorgonSwapChain(string name, GorgonGraphics graphics, Control window, GorgonSwapChainInfo info, IGorgonLog log = null)
+		/// <seealso cref="IGorgonSwapChainInfo"/>
+		public GorgonSwapChain(string name, GorgonGraphics graphics, Control window, IGorgonSwapChainInfo info, IGorgonLog log = null)
 			: base(name)
 		{
 			if (graphics == null)
@@ -846,7 +846,7 @@ namespace Gorgon.Graphics
 			Graphics = graphics;
 			
 			// Clone the info so that changes to the source won't be reflected back here and cause us grief.
-			_info = info.Clone();
+			_info = new GorgonSwapChainInfo(info);
 			Initialize();
 		}
 		#endregion

@@ -44,7 +44,7 @@ namespace Gorgon.Graphics
 	/// <para>
 	/// To send indices to the GPU using a index buffer, an application can upload a value type values, representing the indices, to the buffer using one of the 
 	/// <see cref="O:Gorgon.Graphics.GorgonIndexBuffer.Update{T}(ref T)">Update&lt;T&gt;</see> overloads. For best performance, it is recommended to upload index data only once, or rarely. However, in 
-	/// some scenarios, and with the correct <see cref="GorgonIndexBufferInfo.Usage"/> flag, indices can be updated regularly for things like dynamic tesselation of surface.
+	/// some scenarios, and with the correct <see cref="IGorgonIndexBufferInfo.Usage"/> flag, indices can be updated regularly for things like dynamic tesselation of surface.
 	/// </para>
 	/// <para> 
 	/// <example language="csharp">
@@ -99,7 +99,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property used to return the information used to create this buffer.
 		/// </summary>
-		public GorgonIndexBufferInfo Info => _info;
+		public IGorgonIndexBufferInfo Info => _info;
 
 		/// <summary>
 		/// Property to return the type of buffer.
@@ -231,13 +231,13 @@ namespace Gorgon.Graphics
 		}
 
 		/// <summary>
-		/// Function to lock a index buffer for reading or writing (depending on <see cref="GorgonIndexBufferInfo.Usage"/>).
+		/// Function to lock a index buffer for reading or writing (depending on <see cref="IGorgonIndexBufferInfo.Usage"/>).
 		/// </summary>
 		/// <param name="mode">The type of access to the index buffer data.</param>
 		/// <returns>A <see cref="GorgonPointerAlias"/> used to read or write the data in the index buffer.</returns>
-		/// <exception cref="NotSupportedException">Thrown when if buffer does not have a <see cref="GorgonIndexBufferInfo.Usage"/> of <c>Dynamic</c> or <c>Staging</c>.
+		/// <exception cref="NotSupportedException">Thrown when if buffer does not have a <see cref="IGorgonIndexBufferInfo.Usage"/> of <c>Dynamic</c> or <c>Staging</c>.
 		/// <para>-or-</para>
-		/// <para>Thrown when if buffer does not have a <see cref="GorgonIndexBufferInfo.Usage"/> of <c>Staging</c>, and the <paramref name="mode"/> is set to <c>Read</c> or <c>ReadWrite</c>.</para>
+		/// <para>Thrown when if buffer does not have a <see cref="IGorgonIndexBufferInfo.Usage"/> of <c>Staging</c>, and the <paramref name="mode"/> is set to <c>Read</c> or <c>ReadWrite</c>.</para>
 		/// </exception>
 		/// <exception cref="InvalidOperationException">Thrown when the buffer is already locked.</exception>
 		/// <remarks>
@@ -247,7 +247,7 @@ namespace Gorgon.Graphics
 		/// </para>
 		/// <para>
 		/// Unlike the <see cref="O:Gorgon.Graphics.GorgonIndexBuffer.Update{T}">Update&lt;T&gt;</see> methods, this allows the CPU to change portions of the buffer every frame with little performance 
-		/// penalty (this, of course, is dependent upon drivers, hardware, etc...). It also allows reading from the buffer if it was created with a <see cref="GorgonIndexBufferInfo.Usage"/> of 
+		/// penalty (this, of course, is dependent upon drivers, hardware, etc...). It also allows reading from the buffer if it was created with a <see cref="IGorgonIndexBufferInfo.Usage"/> of 
 		/// <c>Staging</c>.
 		/// </para>
 		/// <para>
@@ -256,7 +256,7 @@ namespace Gorgon.Graphics
 		/// </para>
 		/// <para>
 		/// The lock access is affected by the <paramref name="mode"/> parameter. A value of <c>Read</c> or <c>ReadWrite</c> will allow read access to the buffer data but only if the buffer has a 
-		/// <see cref="GorgonIndexBufferInfo.Usage"/> of <c>Staging</c>. Applications can use one of the <c>Write</c> flags to write to the buffer. For <c>Dynamic</c> index buffers, it is ideal to use 
+		/// <see cref="IGorgonIndexBufferInfo.Usage"/> of <c>Staging</c>. Applications can use one of the <c>Write</c> flags to write to the buffer. For <c>Dynamic</c> index buffers, it is ideal to use 
 		/// <c>WriteNoOverwrite</c> to inform the GPU that you will not be overwriting parts of the buffer still being used for rendering by the GPU. If this cannot be guaranteed (for example, writing to 
 		/// the beginning of the buffer at the start of a frame), then applications should use the <c>WriteDiscard</c> to instruct the GPU that the contents of the buffer are now invalidated and it will be 
 		/// refreshed with new data entirely.
@@ -326,10 +326,10 @@ namespace Gorgon.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="bufferOffset"/> is less than 0.</para>
 		/// </exception>
-		/// <exception cref="NotSupportedException">Thrown when the <see cref="GorgonIndexBufferInfo.Usage"/> is either <c>Immutable</c> or <c>Dynamic</c>.</exception>
+		/// <exception cref="NotSupportedException">Thrown when the <see cref="IGorgonIndexBufferInfo.Usage"/> is either <c>Immutable</c> or <c>Dynamic</c>.</exception>
 		/// <remarks>
 		/// <para>
-		/// This method will throw an exception when the buffer is created with a <see cref="GorgonIndexBufferInfo.Usage"/> of <c>Immutable</c> or <c>Dynamic</c>.
+		/// This method will throw an exception when the buffer is created with a <see cref="IGorgonIndexBufferInfo.Usage"/> of <c>Immutable</c> or <c>Dynamic</c>.
 		/// </para>
 		/// <para>
 		/// <note type="warning">
@@ -380,7 +380,7 @@ namespace Gorgon.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown if the <paramref name="bufferOffset"/> is less than 0.</para>
 		/// </exception>
-		/// <exception cref="NotSupportedException">Thrown when the <see cref="GorgonIndexBufferInfo.Usage"/> is either <c>Immutable</c> or <c>Dynamic</c>.</exception>
+		/// <exception cref="NotSupportedException">Thrown when the <see cref="IGorgonIndexBufferInfo.Usage"/> is either <c>Immutable</c> or <c>Dynamic</c>.</exception>
 		/// <remarks>
 		/// <para>
 		/// Use this method to send a blob of byte data to the buffer. This allows for fine grained control over what gets sent to the buffer. 
@@ -389,7 +389,7 @@ namespace Gorgon.Graphics
 		/// Because this is using native, unmanaged, memory, special care must be taken to ensure that the application does not attempt to read/write out of bounds of that memory region.
 		/// </para>
 		/// <para>
-		/// This method will throw an exception when the buffer is created with a <see cref="GorgonIndexBufferInfo.Usage"/> of <c>Immutable</c> or <c>Dynamic</c>.
+		/// This method will throw an exception when the buffer is created with a <see cref="IGorgonIndexBufferInfo.Usage"/> of <c>Immutable</c> or <c>Dynamic</c>.
 		/// </para>
 		/// <para>
 		/// <note type="warning">
@@ -414,7 +414,7 @@ namespace Gorgon.Graphics
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="data"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="offset"/>, of the <paramref name="bufferOffset"/> plus the size of the data in <paramref name="data"/> exceed the size of this buffer.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when the size, in bytes, of the <paramref name="data"/> parameter is larger than the total <see cref="GorgonResource.SizeInBytes"/> of the buffer.
-		/// <exception cref="NotSupportedException">Thrown when the <see cref="GorgonIndexBufferInfo.Usage"/> is either <c>Immutable</c> or <c>Dynamic</c>.</exception>
+		/// <exception cref="NotSupportedException">Thrown when the <see cref="IGorgonIndexBufferInfo.Usage"/> is either <c>Immutable</c> or <c>Dynamic</c>.</exception>
 		/// <para>-or-</para>
 		/// <para>The <paramref name="offset"/>, or the <paramref name="bufferOffset"/> parameter is less than 0.</para>
 		/// </exception>
@@ -427,7 +427,7 @@ namespace Gorgon.Graphics
 		/// taken to ensure that <paramref name="offset"/> does not exceed the bounds of the memory region.
 		/// </para>
 		/// <para>
-		/// This method will throw an exception when the buffer is created with a <see cref="GorgonIndexBufferInfo.Usage"/> of <c>Immutable</c> or <c>Dynamic</c>.
+		/// This method will throw an exception when the buffer is created with a <see cref="IGorgonIndexBufferInfo.Usage"/> of <c>Immutable</c> or <c>Dynamic</c>.
 		/// </para>
 		/// <para>
 		/// <note type="warning">
@@ -461,7 +461,7 @@ namespace Gorgon.Graphics
 		/// <para>-or-</para>
 		/// <para>The <paramref name="offset"/> or the <paramref name="bufferOffset"/> parameter is less than 0.</para>
 		/// </exception>
-		/// <exception cref="NotSupportedException">Thrown when the <see cref="GorgonIndexBufferInfo.Usage"/> is either <c>Immutable</c> or <c>Dynamic</c>.</exception>
+		/// <exception cref="NotSupportedException">Thrown when the <see cref="IGorgonIndexBufferInfo.Usage"/> is either <c>Immutable</c> or <c>Dynamic</c>.</exception>
 		/// <remarks>
 		/// <para>
 		/// Use this method to send a blob of byte data to the buffer. This allows for fine grained control over what gets sent to the buffer. 
@@ -471,7 +471,7 @@ namespace Gorgon.Graphics
 		/// taken to ensure that <paramref name="offset"/>, <paramref name="bufferOffset"/> and <paramref name="size"/> do not exceed the bounds of the memory region.
 		/// </para>
 		/// <para>
-		/// This method will throw an exception when the buffer is created with a <see cref="GorgonIndexBufferInfo.Usage"/> of <c>Immutable</c> or <c>Dynamic</c>.
+		/// This method will throw an exception when the buffer is created with a <see cref="IGorgonIndexBufferInfo.Usage"/> of <c>Immutable</c> or <c>Dynamic</c>.
 		/// </para>
 		/// <para>
 		/// <note type="warning">
@@ -549,10 +549,10 @@ namespace Gorgon.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="bufferOffset"/> is less than 0.</para>
 		/// </exception>
-		/// <exception cref="NotSupportedException">Thrown when the <see cref="GorgonIndexBufferInfo.Usage"/> is either <c>Immutable</c> or <c>Dynamic</c>.</exception>
+		/// <exception cref="NotSupportedException">Thrown when the <see cref="IGorgonIndexBufferInfo.Usage"/> is either <c>Immutable</c> or <c>Dynamic</c>.</exception>
 		/// <remarks>
 		/// <para>
-		/// This method will throw an exception when the buffer is created with a <see cref="GorgonIndexBufferInfo.Usage"/> of <c>Immutable</c> or <c>Dynamic</c>.
+		/// This method will throw an exception when the buffer is created with a <see cref="IGorgonIndexBufferInfo.Usage"/> of <c>Immutable</c> or <c>Dynamic</c>.
 		/// </para>
 		/// <para>
 		/// <note type="warning">
@@ -584,10 +584,10 @@ namespace Gorgon.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when the size of an index multiplied by the count (minus the offset) is larger than the buffer size.</para>
 		/// </exception>
-		/// <exception cref="NotSupportedException">Thrown when the <see cref="GorgonIndexBufferInfo.Usage"/> is either <c>Immutable</c> or <c>Dynamic</c>.</exception>
+		/// <exception cref="NotSupportedException">Thrown when the <see cref="IGorgonIndexBufferInfo.Usage"/> is either <c>Immutable</c> or <c>Dynamic</c>.</exception>
 		/// <remarks>
 		/// <para>
-		/// This method will throw an exception when the buffer is created with a <see cref="GorgonIndexBufferInfo.Usage"/> of <c>Immutable</c> or <c>Dynamic</c>.
+		/// This method will throw an exception when the buffer is created with a <see cref="IGorgonIndexBufferInfo.Usage"/> of <c>Immutable</c> or <c>Dynamic</c>.
 		/// </para>
 		/// <para>
 		/// <note type="warning">
@@ -660,7 +660,7 @@ namespace Gorgon.Graphics
 		/// <param name="log">[Optional] The log interface used for debug logging.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, <paramref name="name"/>, or <paramref name="info"/> parameters are <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> is empty.</exception>
-		public GorgonIndexBuffer(string name, GorgonGraphics graphics, GorgonIndexBufferInfo info, GorgonPointerBase initialData = null, IGorgonLog log = null)
+		public GorgonIndexBuffer(string name, GorgonGraphics graphics, IGorgonIndexBufferInfo info, GorgonPointerBase initialData = null, IGorgonLog log = null)
 			: base(graphics, name, log)
 		{
 			if (info == null)
@@ -669,7 +669,7 @@ namespace Gorgon.Graphics
 			}
 
 			_log = log ?? GorgonLogDummy.DefaultInstance;
-			_info = info.Clone();
+			_info = new GorgonIndexBufferInfo(info);
 			_indexSize = _info.Use16BitIndices ? sizeof(ushort) : sizeof(uint);
 
 			Initialize(initialData);

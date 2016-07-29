@@ -34,37 +34,37 @@ using D3D11 = SharpDX.Direct3D11;
 namespace Gorgon.Graphics
 {
 	/// <summary>
-	/// Values to define the number and quality of multi-sampling.
+	/// Values to define the number and quality of multisampling.
 	/// </summary>
 	/// <remarks>
 	/// <para>
-	/// Setting the <see cref="Count"/> and <see cref="Quality"/> values to 1 and 0 respectively, will disable multi-sampling.
+	/// Setting the <see cref="Count"/> and <see cref="Quality"/> values to 1 and 0 respectively, will disable multisampling.
 	/// </para>
 	/// <para>
-	/// If multi-sample anti-aliasing is being used, all bound render targets and depth buffers must have the same sample counts and quality levels.
+	/// If multisample anti-aliasing is being used, all bound render targets and depth buffers must have the same sample counts and quality levels.
 	/// </para>
 	/// </remarks>
-	public struct GorgonMultiSampleInfo
-		: IEquatable<GorgonMultiSampleInfo>
+	public struct GorgonMultisampleInfo
+		: IEquatable<GorgonMultisampleInfo>
 	{
 		#region Variables.
         /// <summary>
-        /// The default multi-sampling value.
+        /// The default multisampling value.
         /// </summary>
-        public static readonly GorgonMultiSampleInfo NoMultiSampling = new GorgonMultiSampleInfo(1, 0);
+        public static readonly GorgonMultisampleInfo NoMultiSampling = new GorgonMultisampleInfo(1, 0);
 
 		/// <summary>
-		/// A quality level for standard multi-sample quality.
+		/// A quality level for standard multisample quality.
 		/// </summary>
 		/// <remarks>
 		/// This value is always supported in Gorgon because it can only use Direct 3D 10 or better devices, and these devices are required to implement this pattern.
 		/// </remarks>
-		public static readonly int StandardMultiSamplePatternQuality = unchecked((int)0xffffffff);
+		public static readonly int StandardMultisamplePatternQuality = unchecked((int)0xffffffff);
 
 		/// <summary>
 		/// A pattern where all of the samples are located at the pixel center.
 		/// </summary>
-		public static readonly int CenteredMultiSamplePatternQuality = unchecked((int)0xfffffffe);
+		public static readonly int CenteredMultisamplePatternQuality = unchecked((int)0xfffffffe);
 
         /// <summary>
         /// The number of samples per pixel.
@@ -81,7 +81,7 @@ namespace Gorgon.Graphics
 		/// <para>
 		/// <note type="warning">
 		/// <para>
-		/// This value must be 0 or less than the value returned by <see cref="IGorgonVideoDevice.GetMultiSampleInfo"/>.  Failure to do so will cause an exception for objects that use this type.
+		/// This value must be 0 or less than the value returned by <see cref="IGorgonVideoDevice.GetMultisampleInfo"/>.  Failure to do so will cause an exception for objects that use this type.
 		/// </para>
 		/// </note>
 		/// </para>
@@ -96,7 +96,7 @@ namespace Gorgon.Graphics
 		/// <param name="left">Left value to compare.</param>
 		/// <param name="right">Right value to compare.</param>
 		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-		public static bool Equals(ref GorgonMultiSampleInfo left, ref GorgonMultiSampleInfo right)
+		public static bool Equals(ref GorgonMultisampleInfo left, ref GorgonMultisampleInfo right)
 		{
 			return left.Count == right.Count && left.Quality == right.Quality;
 		}
@@ -110,9 +110,9 @@ namespace Gorgon.Graphics
 		/// </returns>
 		public override bool Equals(object obj)
 		{
-		    if (obj is GorgonMultiSampleInfo)
+		    if (obj is GorgonMultisampleInfo)
 		    {
-		        return Equals((GorgonMultiSampleInfo)obj);
+		        return Equals((GorgonMultisampleInfo)obj);
 		    }
 
 		    return base.Equals(obj);
@@ -124,7 +124,7 @@ namespace Gorgon.Graphics
 		/// <param name="left">The left.</param>
 		/// <param name="right">The right.</param>
 		/// <returns></returns>
-		public static bool operator ==(GorgonMultiSampleInfo left, GorgonMultiSampleInfo right)
+		public static bool operator ==(GorgonMultisampleInfo left, GorgonMultisampleInfo right)
 		{
 			return Equals(ref left, ref right);
 		}
@@ -135,7 +135,7 @@ namespace Gorgon.Graphics
 		/// <param name="left">The left.</param>
 		/// <param name="right">The right.</param>
 		/// <returns></returns>
-		public static bool operator !=(GorgonMultiSampleInfo left, GorgonMultiSampleInfo right)
+		public static bool operator !=(GorgonMultisampleInfo left, GorgonMultisampleInfo right)
 		{
 			return !Equals(ref left, ref right);
 		}
@@ -167,7 +167,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="other">Other instance for the equality test.</param>
 		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-		public bool Equals(GorgonMultiSampleInfo other)
+		public bool Equals(GorgonMultisampleInfo other)
 		{
 			return Equals(ref this, ref other);
 		}
@@ -175,21 +175,21 @@ namespace Gorgon.Graphics
 
 		#region Constructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonMultiSampleInfo"/> struct.
+		/// Initializes a new instance of the <see cref="GorgonMultisampleInfo"/> struct.
 		/// </summary>
 		/// <param name="sampleDesc">The DXGI sample description.</param>
-		internal GorgonMultiSampleInfo(DXGI.SampleDescription sampleDesc)
+		internal GorgonMultisampleInfo(DXGI.SampleDescription sampleDesc)
 		{
 			Count = sampleDesc.Count.Max(1).Min(D3D11.Device.MultisampleCountMaximum);
 			Quality = sampleDesc.Quality;
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonMultiSampleInfo"/> struct.
+		/// Initializes a new instance of the <see cref="GorgonMultisampleInfo"/> struct.
 		/// </summary>
 		/// <param name="count">The number of samples per pixel.</param>
 		/// <param name="quality">Image quality.</param>
-		public GorgonMultiSampleInfo(int count, int quality)
+		public GorgonMultisampleInfo(int count, int quality)
 		{
 		    Count = count.Min(D3D11.Device.MultisampleCountMaximum).Max(1);
 			Quality = quality;

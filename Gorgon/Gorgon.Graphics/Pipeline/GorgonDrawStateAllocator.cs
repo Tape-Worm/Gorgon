@@ -63,7 +63,7 @@ namespace Gorgon.Graphics
 
 			GorgonDrawIndexedCall result = Items[index];
 			result.Reset();
-			return Items[index];
+			return result;
 		}
 		#endregion
 

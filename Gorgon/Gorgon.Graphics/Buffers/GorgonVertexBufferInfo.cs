@@ -39,11 +39,11 @@ namespace Gorgon.Graphics
 	/// Provides the necessary information required to set up a vertex buffer.
 	/// </summary>
 	public class GorgonVertexBufferInfo
-		: IGorgonCloneable<GorgonVertexBufferInfo>
+		: IGorgonVertexBufferInfo
 	{
 		#region Properties.
 		/// <summary>
-		/// Property to set or return the intend
+		/// Property to set or return the intended usage for binding to the GPU.
 		/// </summary>
 		public D3D11.ResourceUsage Usage
 		{
@@ -66,12 +66,12 @@ namespace Gorgon.Graphics
 
 		#region Methods.
 		/// <summary>
-		/// Function to create a <see cref="GorgonVertexBufferInfo"/> based on the type representing a vertex.
+		/// Function to create a <see cref="IGorgonVertexBufferInfo"/> based on the type representing a vertex.
 		/// </summary>
 		/// <typeparam name="T">The type of data representing a vertex. This must be a value type.</typeparam>
 		/// <param name="count">The number of vertices to store in the buffer.</param>
 		/// <param name="usage">[Optional] The usage parameter for the vertex buffer.</param>
-		/// <returns>A new <see cref="GorgonVertexBufferInfo"/> to use when creating a <see cref="GorgonVertexBuffer"/>.</returns>
+		/// <returns>A new <see cref="IGorgonVertexBufferInfo"/> to use when creating a <see cref="GorgonVertexBuffer"/>.</returns>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="count"/> parameter is less than 1.</exception>
 		/// <exception cref="GorgonException">Thrown when the type specified by <typeparamref name="T"/> is not safe for use with native functions (see <see cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>).
 		/// <para>-or-</para>
@@ -90,7 +90,7 @@ namespace Gorgon.Graphics
 		/// <seealso cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>
 		/// <seealso cref="GorgonReflectionExtensions.IsSafeForNative(Type)"/>
 		/// <seealso cref="GorgonReflectionExtensions.IsSafeForNative(Type,out IReadOnlyList{FieldInfo})"/>
-		public static GorgonVertexBufferInfo CreateFromType<T>(int count, D3D11.ResourceUsage usage = D3D11.ResourceUsage.Default)
+		public static IGorgonVertexBufferInfo CreateFromType<T>(int count, D3D11.ResourceUsage usage = D3D11.ResourceUsage.Default)
 			where T : struct
 		{
 			if (count < 1)
@@ -113,13 +113,13 @@ namespace Gorgon.Graphics
 		}
 
 		/// <summary>
-		/// Function to create a <see cref="GorgonVertexBufferInfo"/> based on a <see cref="GorgonInputLayout"/> and the intended slot for vertex data.
+		/// Function to create a <see cref="IGorgonVertexBufferInfo"/> based on a <see cref="GorgonInputLayout"/> and the intended slot for vertex data.
 		/// </summary>
 		/// <param name="layout">The <see cref="GorgonInputLayout"/> to evaluate.</param>
 		/// <param name="count">The number of vertices to store in the buffer.</param>
 		/// <param name="slot">The intended slot to use for the vertex data.</param>
 		/// <param name="usage">[Optional] The usage parameter for the vertex buffer.</param>
-		/// <returns>A new <see cref="GorgonVertexBufferInfo"/> to use when creating a <see cref="GorgonVertexBuffer"/>.</returns>
+		/// <returns>A new <see cref="IGorgonVertexBufferInfo"/> to use when creating a <see cref="GorgonVertexBuffer"/>.</returns>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="count"/> parameter is less than 1.
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="slot"/> is not present in the <paramref name="layout"/>.</para>
@@ -131,7 +131,7 @@ namespace Gorgon.Graphics
 		/// </para>
 		/// </remarks>
 		/// <seealso cref="GorgonInputLayout"/>
-		public static GorgonVertexBufferInfo CreateFromInputLayout(GorgonInputLayout layout, int slot, int count, D3D11.ResourceUsage usage = D3D11.ResourceUsage.Default)
+		public static IGorgonVertexBufferInfo CreateFromInputLayout(GorgonInputLayout layout, int slot, int count, D3D11.ResourceUsage usage = D3D11.ResourceUsage.Default)
 		{
 			if (layout == null)
 			{
@@ -156,22 +156,25 @@ namespace Gorgon.Graphics
 				       SizeInBytes = sizeInBytes * count
 			       };
 		}
-
-		/// <summary>
-		/// Function to clone an object.
-		/// </summary>
-		/// <returns>The cloned object.</returns>
-		public GorgonVertexBufferInfo Clone()
-		{
-			return new GorgonVertexBufferInfo
-			       {
-				       Usage = Usage,
-					   SizeInBytes = SizeInBytes
-			       };
-		}
 		#endregion
 
 		#region Constructor/Finalizer.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonVertexBufferInfo"/> class.
+		/// </summary>
+		/// <param name="info">A <see cref="IGorgonVertexBufferInfo"/> to copy settings from.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
+		public GorgonVertexBufferInfo(IGorgonVertexBufferInfo info)
+		{
+			if (info == null)
+			{
+				throw new ArgumentNullException(nameof(info));
+			}
+
+			SizeInBytes = info.SizeInBytes;
+			Usage = info.Usage;
+		}
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonVertexBufferInfo"/> class.
 		/// </summary>

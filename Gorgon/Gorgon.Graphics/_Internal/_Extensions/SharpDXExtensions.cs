@@ -146,17 +146,17 @@ namespace Gorgon.Graphics
 		}
 
 		/// <summary>
-		/// Function to convert a <see cref="GorgonMultiSampleInfo"/> to a DXGI multi sample description.
+		/// Function to convert a <see cref="GorgonMultisampleInfo"/> to a DXGI multi sample description.
 		/// </summary>
 		/// <param name="samplingInfo">The Gorgon multi sample info to convert.</param>
 		/// <returns>The DXGI multi sample description.</returns>
-		public static DXGI.SampleDescription ToSampleDesc(this GorgonMultiSampleInfo samplingInfo)
+		public static DXGI.SampleDescription ToSampleDesc(this GorgonMultisampleInfo samplingInfo)
 		{
 			return new DXGI.SampleDescription(samplingInfo.Count, samplingInfo.Quality);
 		}
 
 		/// <summary>
-		/// Function to convert a <see cref="GorgonSwapChainInfo"/> to a DXGI swap chain description value.
+		/// Function to convert a <see cref="IGorgonSwapChainInfo"/> to a DXGI swap chain description value.
 		/// </summary>
 		/// <param name="swapChainInfo">The swap chain info to convert.</param>
 		/// <returns>A DXGI swap chain description.</returns>
@@ -179,7 +179,7 @@ namespace Gorgon.Graphics
 				       Width = swapChainInfo.Width,
 				       Height = swapChainInfo.Height,
 				       Scaling = swapChainInfo.StretchBackBuffer ? DXGI.Scaling.Stretch : DXGI.Scaling.None,
-					   SampleDescription = ToSampleDesc(GorgonMultiSampleInfo.NoMultiSampling),
+					   SampleDescription = ToSampleDesc(GorgonMultisampleInfo.NoMultiSampling),
 					   SwapEffect = swapEffect,
 					   Usage = DXGI.Usage.RenderTargetOutput
 			       };
@@ -193,6 +193,51 @@ namespace Gorgon.Graphics
 		public static D3D11.VertexBufferBinding ToVertexBufferBinding(this GorgonVertexBufferBinding binding)
 		{
 			return new D3D11.VertexBufferBinding(binding.VertexBuffer?.D3DBuffer, binding.Stride, binding.Offset);
+		}
+
+		/// <summary>
+		/// Function to convert a gorgon raster state info to a D3D raster state desc.
+		/// </summary>
+		/// <param name="state">The state to convert.</param>
+		/// <returns>A new D3D 11 raster state desc.</returns>
+		public static D3D11.RasterizerStateDescription1 ToRasterStateDesc1(this IGorgonRasterStateInfo state)
+		{
+			return new D3D11.RasterizerStateDescription1
+			       {
+						CullMode = state.CullMode,
+						DepthBias = state.DepthBias,
+						IsFrontCounterClockwise = state.IsFrontCounterClockwise,
+						FillMode = state.FillMode,
+						DepthBiasClamp = state.DepthBiasClamp,
+						SlopeScaledDepthBias = state.SlopeScaledDepthBias,
+						ForcedSampleCount = state.ForcedUavSampleCount,
+						IsAntialiasedLineEnabled = state.AntialiasedLineEnabled,
+						IsDepthClipEnabled = state.DepthClipEnabled,
+						IsMultisampleEnabled = state.MultisamplingEnabled,
+						IsScissorEnabled = state.ScissorEnabled
+			       };
+		}
+
+		/// <summary>
+		/// Function to convert a gorgon sampler state info to a D3D sampler state desc.
+		/// </summary>
+		/// <param name="state">The state to convert.</param>
+		/// <returns>A new D3D 11 sampler state desc.</returns>
+		public static D3D11.SamplerStateDescription ToSamplerStateDesc(this IGorgonSamplerStateInfo state)
+		{
+			return new D3D11.SamplerStateDescription
+			       {
+				       Filter = state.Filter,
+				       AddressU = state.AddressU,
+				       AddressV = state.AddressV,
+				       AddressW = state.AddressW,
+				       BorderColor = state.BorderColor.ToRawColor4(),
+				       ComparisonFunction = state.ComparisonFunction,
+				       MaximumAnisotropy = state.MaxAnisotropy,
+				       MaximumLod = state.MaximumLevelOfDetail,
+				       MinimumLod = state.MinimumLevelOfDetail,
+				       MipLodBias = state.MipLevelOfDetailBias
+			       };
 		}
 	}
 }

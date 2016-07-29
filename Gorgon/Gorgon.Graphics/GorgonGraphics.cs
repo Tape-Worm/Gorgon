@@ -112,8 +112,8 @@ namespace Gorgon.Graphics
 		private readonly IGorgonLog _log;
 		// The video device to use for this graphics object.
 		private VideoDevice _videoDevice;
-		// Previously changed states.
-		private PipelineStateChangeFlags _previousStates;
+		// The previously set state flags.
+		private StateChanges _previousStates;
 		// The current pipeline state.
 		private readonly GorgonPipelineState _currentState;
 		// The default pipeline state.
@@ -123,22 +123,10 @@ namespace Gorgon.Graphics
 		#endregion
 
         #region Properties.
-
 		/// <summary>
 		/// Property to return the Direct 3D 11.1 device context for this graphics instance.
 		/// </summary>
 		internal D3D11.DeviceContext1 D3DDeviceContext => _deviceContext;
-
-		/// <summary>
-		/// Property to set or return the current render target views.
-		/// </summary>
-		// TODO: This needs to be put into renderers.
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-		public GorgonRenderTargetViews RenderTargetViews
-		{
-			get;
-			set;
-		}
 
 		/// <summary>
 		/// Property to set or return whether DWM composition is enabled or not.
@@ -248,14 +236,20 @@ namespace Gorgon.Graphics
 		}
 		#endregion
 
-        #region Methods.
+		#region Methods.
 		/// <summary>
 		/// Function to bind the vertex shader state to the pipeline.
 		/// </summary>
 		/// <param name="shaderState">The state to bind to the pipeline.</param>
 		/// <param name="stateChange">The states to change.</param>
-		private void BindVertexShaderState(GorgonVertexShaderState shaderState, ShaderStateChanges stateChange)
+		private void BindVertexShaderState(GorgonVertexShaderState shaderState, ShaderStateChangeFlags stateChange)
 		{
+			if (stateChange == ShaderStateChangeFlags.None)
+			{
+				_currentState.VertexShader = shaderState;
+				return;
+			}
+
 			if (shaderState == null)
 			{
 				D3DDeviceContext.VertexShader.Set(null);
@@ -264,24 +258,27 @@ namespace Gorgon.Graphics
 				{
 					D3DDeviceContext.VertexShader.SetConstantBuffer(i, null);
 				}
-				
+
+				_currentState.VertexShader = null;
 				return;
 			}
 
-			if ((stateChange & ShaderStateChanges.Shader) == ShaderStateChanges.Shader)
+			if ((stateChange & ShaderStateChangeFlags.Shader) == ShaderStateChangeFlags.Shader)
 			{
 				D3DDeviceContext.VertexShader.Set(shaderState.Shader.D3DShader);
 			}
 
-			if ((stateChange & ShaderStateChanges.Constants) == ShaderStateChanges.Constants)
+			if ((stateChange & ShaderStateChangeFlags.Constants) == ShaderStateChangeFlags.Constants)
 			{
 				D3DDeviceContext.VertexShader.SetConstantBuffers(0, shaderState.ConstantBuffers.D3DConstantBufferBindCount, shaderState.ConstantBuffers.D3DConstantBuffers);
 			}
 
-			if ((stateChange & ShaderStateChanges.ShaderResourceViews) == ShaderStateChanges.ShaderResourceViews)
+			if ((stateChange & ShaderStateChangeFlags.ShaderResourceViews) == ShaderStateChangeFlags.ShaderResourceViews)
 			{
 				D3DDeviceContext.VertexShader.SetShaderResources(0, shaderState.ResourceViews.D3DShaderResourceViewBindCount, shaderState.ResourceViews.D3DShaderResourceViews);
 			}
+
+			_currentState.VertexShader = shaderState;
 		}
 
 		/// <summary>
@@ -289,28 +286,42 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="shaderState">The state to bind to the pipeline.</param>
 		/// <param name="stateChange">The states to change.</param>
-		private void BindPixelShaderState(GorgonPixelShaderState shaderState, ShaderStateChanges stateChange)
+		private void BindPixelShaderState(GorgonPixelShaderState shaderState, ShaderStateChangeFlags stateChange)
 		{
-			if (shaderState == null)
+			if (stateChange == ShaderStateChangeFlags.None)
 			{
-				D3DDeviceContext.PixelShader.Set(null);
+				_currentState.PixelShader = null;
 				return;
 			}
 
-			if ((stateChange & ShaderStateChanges.Shader) == ShaderStateChanges.Shader)
+			if (shaderState == null)
+			{
+				D3DDeviceContext.PixelShader.Set(null);
+				_currentState.PixelShader = null;
+				return;
+			}
+
+			if ((stateChange & ShaderStateChangeFlags.Shader) == ShaderStateChangeFlags.Shader)
 			{
 				D3DDeviceContext.PixelShader.Set(shaderState.Shader.D3DShader);
 			}
 
-			if ((stateChange & ShaderStateChanges.Constants) == ShaderStateChanges.Constants)
+			if ((stateChange & ShaderStateChangeFlags.Constants) == ShaderStateChangeFlags.Constants)
 			{
 				D3DDeviceContext.PixelShader.SetConstantBuffers(0, shaderState.ConstantBuffers.D3DConstantBufferBindCount, shaderState.ConstantBuffers.D3DConstantBuffers);
 			}
 
-			if ((stateChange & ShaderStateChanges.ShaderResourceViews) == ShaderStateChanges.ShaderResourceViews)
+			if ((stateChange & ShaderStateChangeFlags.ShaderResourceViews) == ShaderStateChangeFlags.ShaderResourceViews)
 			{
 				D3DDeviceContext.PixelShader.SetShaderResources(0, shaderState.ResourceViews.D3DShaderResourceViewBindCount, shaderState.ResourceViews.D3DShaderResourceViews);
 			}
+
+			if ((stateChange & ShaderStateChangeFlags.SamplerStates) == ShaderStateChangeFlags.SamplerStates)
+			{
+				D3DDeviceContext.PixelShader.SetSamplers(0, shaderState.SamplerStates.D3DSamplerStateBindCount, shaderState.SamplerStates.D3DSamplerStates);
+			}
+
+			_currentState.PixelShader = shaderState;
 		}
 
 		/// <summary>
@@ -319,11 +330,6 @@ namespace Gorgon.Graphics
 		/// <param name="views">The render target views and depth/stencil view to apply.</param>
 		private void BindRtvs(GorgonRenderTargetViews views)
 		{
-			if (_currentState.RenderTargetViews == views)
-			{
-				return;
-			}
-
 			// Disable the render targets if we have none.
 			if (views == null)
 			{
@@ -345,85 +351,87 @@ namespace Gorgon.Graphics
 		}
 
 		/// <summary>
-		/// Function to retrieve the current set of changed states from the supplied state.
+		/// Function to bind an existing or previously created raster state.
 		/// </summary>
-		/// <param name="state">The state used to determine what's been changed since the last state.</param>
-		/// <param name="vertexShaderChanges">Any vertex shader changes required.</param>
-		/// <param name="pixelShaderChanges">Any pixel shader changes required.</param>
-		/// <returns>A <see cref="PipelineStateChangeFlags"/> type indicating which pipeline states have been changed.</returns>
-		private PipelineStateChangeFlags GetPipelineStateChanges(GorgonPipelineState state, out ShaderStateChanges vertexShaderChanges, out ShaderStateChanges pixelShaderChanges)
+		/// <param name="rasterState">The raster state to apply.</param>
+		private void BindRasterState(GorgonRasterState rasterState)
 		{
-			var result = PipelineStateChangeFlags.None;
-
-			if (_currentState == null)
+			D3DDeviceContext.Rasterizer.State = rasterState.D3DState;
+			_currentState.RasterState = rasterState;
+		}
+		
+		/// <summary>
+		/// Function to bind the active scissor rectangles to the GPU pipeline.
+		/// </summary>
+		/// <param name="scissorRects">The rectangles to bind.</param>
+		private void BindScissorRectangles(GorgonScissorRectangles scissorRects)
+		{
+			// If we have no scissor rectangles bound, then unbind them from the pipeline.
+			if ((scissorRects == null) || (scissorRects.D3DBindCount == 0))
 			{
-				pixelShaderChanges = vertexShaderChanges = ShaderStateChanges.Constants | ShaderStateChanges.Shader;
-				return PipelineStateChangeFlags.InputLayout | PipelineStateChangeFlags.PixelShader | PipelineStateChangeFlags.VertexShader
-				       | PipelineStateChangeFlags.RenderTargetViews | PipelineStateChangeFlags.Viewport;
+				D3DDeviceContext.Rasterizer.SetScissorRectangles<DX.Rectangle>(null);
+				_currentState.ScissorRectangles = scissorRects;
+				return;
 			}
 
-			if (state.InputLayout != _currentState.InputLayout)
+			// The number of binds is greater than one, or is 1, but starts further down the list, then bind the entire array.
+			if ((scissorRects.D3DBindCount > 1) || (scissorRects[0].IsEmpty))
 			{
-				result |= PipelineStateChangeFlags.InputLayout;
+				D3DDeviceContext.Rasterizer.SetScissorRectangles(scissorRects.DXScissorRectangles);
+				_currentState.ScissorRectangles = scissorRects;
+				return;
 			}
 
-			if (!GorgonRenderTargetViews.Equals(state.RenderTargetViews,  _currentState.RenderTargetViews))
+			D3DDeviceContext.Rasterizer.SetScissorRectangle(scissorRects[0].Left, scissorRects[0].Top, scissorRects[0].Right, scissorRects[0].Bottom);
+			_currentState.ScissorRectangles = scissorRects;
+		}
+
+		/// <summary>
+		/// Function to bind the input layout to the input assembler stage.
+		/// </summary>
+		/// <param name="layout">The input layout to bind to the GPU.</param>
+		private void BindInputLayout(GorgonInputLayout layout)
+		{
+			D3DDeviceContext.InputAssembler.InputLayout = layout?.D3DLayout;
+			_currentState.InputLayout = layout;
+		}
+
+		/// <summary>
+		/// Function to bind the viewports to the rasterizer stage.
+		/// </summary>
+		/// <param name="viewports">The viewports to bind.</param>
+		private void BindViewports(GorgonViewports viewports)
+		{
+			D3DDeviceContext.Rasterizer.SetViewports(viewports.DXViewports, viewports.DXViewportBindCount);
+			_currentState.Viewports = viewports;
+		}
+
+		/// <summary>
+		/// Function to bind the vertex buffer bindings to the input assembler stage.
+		/// </summary>
+		/// <param name="vertexBuffers">The vertex buffer bindings to bind.</param>
+		private void BindVertexBuffers(GorgonVertexBufferBindings vertexBuffers)
+		{
+			D3DDeviceContext.InputAssembler.SetVertexBuffers(0, vertexBuffers.D3DBindings);
+			_currentState.VertexBuffers = vertexBuffers;
+		}
+
+		/// <summary>
+		/// Function to bind the index buffer to the input assembler stage.
+		/// </summary>
+		/// <param name="indexBuffer">The index buffer to bind.</param>
+		private void BindIndexBuffer(GorgonIndexBuffer indexBuffer)
+		{
+			GI.Format format = GI.Format.Unknown;
+
+			if (indexBuffer != null)
 			{
-				result |= PipelineStateChangeFlags.RenderTargetViews;
+				format = indexBuffer.IndexFormat;
 			}
 
-			if (!GorgonViewports.Equals(state.Viewports, _currentState.Viewports))
-			{
-				result |= PipelineStateChangeFlags.Viewport;
-			}
+			D3DDeviceContext.InputAssembler.SetIndexBuffer(indexBuffer?.D3DBuffer, format, 0);
 
-			if (!GorgonVertexBufferBindings.Equals(state.VertexBuffers, _currentState.VertexBuffers))
-			{
-				result |= PipelineStateChangeFlags.VertexBuffers;
-			}
-
-			if (state.IndexBuffer != _currentState.IndexBuffer)
-			{
-				result |= PipelineStateChangeFlags.IndexBuffer;
-			}
-			
-			if ((state.PixelShader == null) && (_currentState.PixelShader != null))
-			{
-				pixelShaderChanges = ShaderStateChanges.Shader | ShaderStateChanges.Constants;
-			}
-			else if (state.PixelShader != null)
-			{
-				pixelShaderChanges = state.PixelShader.GetChanges(_currentState.PixelShader);
-			}
-			else
-			{
-				pixelShaderChanges = ShaderStateChanges.None;
-			}
-
-			if (pixelShaderChanges != ShaderStateChanges.None)
-			{
-				result |= PipelineStateChangeFlags.PixelShader;
-			}
-
-			if ((state.VertexShader == null) && (_currentState.VertexShader != null))
-			{
-				vertexShaderChanges = ShaderStateChanges.Shader | ShaderStateChanges.Constants;
-			}
-			else if (state.VertexShader != null)
-			{
-				vertexShaderChanges = state.VertexShader.GetChanges(_currentState.VertexShader);
-			}
-			else
-			{
-				vertexShaderChanges = ShaderStateChanges.None;
-			}
-
-			if (vertexShaderChanges != ShaderStateChanges.None)
-			{
-				result |= PipelineStateChangeFlags.VertexShader;
-			}
-
-			return result;
+			_currentState.IndexBuffer = indexBuffer;
 		}
 
 		/// <summary>
@@ -456,93 +464,108 @@ namespace Gorgon.Graphics
 		{
 			state.ValidateObject(nameof(state));
 
-			ShaderStateChanges pixelShaderState;
-			ShaderStateChanges vertexShaderState;
-			PipelineStateChangeFlags newState = GetPipelineStateChanges(state, out vertexShaderState, out pixelShaderState);
+			StateChanges newState;
 
-			// No change since the last state, so leave.
-			SetStates(newState, state, vertexShaderState, pixelShaderState);
+			// Gather our changes to the pipeline state.
+			state.GetChanges(_currentState, out newState);
+
+			// Apply changes.
+			SetStates(state, ref newState);
 
 			if (state == _defaultState)
 			{
-				_previousStates = PipelineStateChangeFlags.None;
+				_previousStates = default(StateChanges);
 				return;
 			}
 
 			// Reset unused states.
-			PipelineStateChangeFlags resetFlags = _previousStates & ~newState;
+			PipelineStateChangeFlags resetPipelineFlags = _previousStates.PipelineFlags & ~newState.PipelineFlags;
+			ShaderStateChangeFlags resetVertexShaderFlags = _previousStates.VertexShaderStateFlags & ~newState.VertexShaderStateFlags;
+			ShaderStateChangeFlags resetPixelShaderFlags = _previousStates.PixelShaderStateFlags & ~newState.PixelShaderStateFlags;
 			_previousStates = newState;
 
-			SetStates(resetFlags, _defaultState, vertexShaderState, pixelShaderState);
+			StateChanges resetChanges = new StateChanges
+			{
+				PipelineFlags = resetPipelineFlags,
+				PixelShaderStateFlags = resetPixelShaderFlags,
+				VertexShaderStateFlags = resetVertexShaderFlags
+			};
+
+			SetStates(_defaultState, ref resetChanges);
 		}
 
 		/// <summary>
 		/// Function to bind various states to the pipeline.
 		/// </summary>
-		/// <param name="stateChange">The type of state change taking place.</param>
 		/// <param name="state">The state to apply.</param>
-		/// <param name="vertexShaderChanges">The changes to apply to the vertex shader.</param>
-		/// <param name="pixelShaderChanges">The changes to apply to the pixel shader.</param>
-		private void SetStates(PipelineStateChangeFlags stateChange, GorgonPipelineState state, ShaderStateChanges vertexShaderChanges, ShaderStateChanges pixelShaderChanges)
+		/// <param name="stateChange">The type of state change taking place.</param>
+		private void SetStates(GorgonPipelineState state, ref StateChanges stateChange)
 		{
-			if (stateChange == PipelineStateChangeFlags.None)
+			// If we've got no pipeline changes, then do nothing.
+			if (stateChange.PipelineFlags == PipelineStateChangeFlags.None)
 			{
 				return;
 			}
 
+			PipelineStateChangeFlags flags = stateChange.PipelineFlags;
+
 			// Change render target views and/or the depth stencil view.
-			if ((stateChange & PipelineStateChangeFlags.RenderTargetViews) == PipelineStateChangeFlags.RenderTargetViews)
+			if ((flags & PipelineStateChangeFlags.RenderTargetViews) == PipelineStateChangeFlags.RenderTargetViews)
 			{
 				BindRtvs(state.RenderTargetViews);
 			}
 
-			if ((stateChange & PipelineStateChangeFlags.InputLayout) == PipelineStateChangeFlags.InputLayout)
+			if ((flags & PipelineStateChangeFlags.InputLayout) == PipelineStateChangeFlags.InputLayout)
 			{
-				D3DDeviceContext.InputAssembler.InputLayout = state.InputLayout?.D3DLayout;
-				_currentState.InputLayout = state.InputLayout;
+				BindInputLayout(state.InputLayout);
 			}
 
-			if ((stateChange & PipelineStateChangeFlags.Viewport) == PipelineStateChangeFlags.Viewport)
+			if ((flags & PipelineStateChangeFlags.Viewport) == PipelineStateChangeFlags.Viewport)
 			{
-				D3DDeviceContext.Rasterizer.SetViewports(state.Viewports.DXViewports, state.Viewports.DXViewportBindCount);
-				_currentState.Viewports = state.Viewports;
+				BindViewports(state.Viewports);
 			}
 
-			if ((stateChange & PipelineStateChangeFlags.VertexBuffers) == PipelineStateChangeFlags.VertexBuffers)
+			if ((flags & PipelineStateChangeFlags.ScissorRectangles) == PipelineStateChangeFlags.ScissorRectangles)
 			{
-				D3DDeviceContext.InputAssembler.SetVertexBuffers(0, state.VertexBuffers.D3DBindings);
-				_currentState.VertexBuffers = state.VertexBuffers;
+				BindScissorRectangles(state.ScissorRectangles);
 			}
 
-			if ((stateChange & PipelineStateChangeFlags.IndexBuffer) == PipelineStateChangeFlags.IndexBuffer)
+			if ((flags & PipelineStateChangeFlags.VertexBuffers) == PipelineStateChangeFlags.VertexBuffers)
 			{
-				GI.Format format = GI.Format.Unknown;
-				if (state.IndexBuffer != null)
-				{
-					format = state.IndexBuffer.IndexFormat;
-				}
-
-				D3DDeviceContext.InputAssembler.SetIndexBuffer(state.IndexBuffer?.D3DBuffer, format, 0);
+				BindVertexBuffers(state.VertexBuffers);
 			}
 
-			if (((stateChange & PipelineStateChangeFlags.VertexShader) == PipelineStateChangeFlags.VertexShader)
-				&& (vertexShaderChanges != ShaderStateChanges.None))
+			if ((flags & PipelineStateChangeFlags.IndexBuffer) == PipelineStateChangeFlags.IndexBuffer)
 			{
-				BindVertexShaderState(state.VertexShader, vertexShaderChanges);
-				_currentState.VertexShader = state.VertexShader;
+				BindIndexBuffer(state.IndexBuffer);
 			}
 
-			if (((stateChange & PipelineStateChangeFlags.PixelShader) == PipelineStateChangeFlags.PixelShader)
-				&& (pixelShaderChanges != ShaderStateChanges.None))
+			if ((flags & PipelineStateChangeFlags.RasterState) == PipelineStateChangeFlags.RasterState)
 			{
-				BindPixelShaderState(state.PixelShader, pixelShaderChanges);
-				_currentState.PixelShader = state.PixelShader;
+				BindRasterState(state.RasterState);
+			}
+
+			if ((flags & PipelineStateChangeFlags.VertexShader) == PipelineStateChangeFlags.VertexShader)
+			{
+				BindVertexShaderState(state.VertexShader, stateChange.VertexShaderStateFlags);
+			}
+
+			if ((flags & PipelineStateChangeFlags.PixelShader) == PipelineStateChangeFlags.PixelShader)
+			{
+				BindPixelShaderState(state.PixelShader, stateChange.PixelShaderStateFlags);
 			}
 		}
 
 		/// <summary>
-		/// Function to submit recorded states to the GPU for rendering.
+		/// Function to submit a <see cref="GorgonDrawIndexedCall"/> to the GPU.
 		/// </summary>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawCall"/> parameter is <b>null</b>.</exception>
+		/// <remarks>
+		/// <para>
+		/// This method sends a series of state changes to the GPU along with a command to render primitive data.
+		/// </para>
+		/// </remarks>
+		// TODO: Make this a lot more generic so we can submit stream out, instanceed, non-indexed, etc...
 		public void Submit(GorgonDrawIndexedCall drawCall)
 		{
 			if (drawCall == null)
@@ -552,27 +575,14 @@ namespace Gorgon.Graphics
 
 			ApplyPipelineState(drawCall.State);
 
-			// Change the topology if necessary.
+			// We can just check the current primitive topology here and assign it rather than going through the pipeline state.
+			// Plus, it doesn't make sense to apply primitive topology to the pipeline as it's only used while rendering.
 			if (drawCall.PrimitiveTopology != D3DDeviceContext.InputAssembler.PrimitiveTopology)
 			{
 				D3DDeviceContext.InputAssembler.PrimitiveTopology = drawCall.PrimitiveTopology;
 			}
 
 			D3DDeviceContext.DrawIndexed(drawCall.IndexCount, drawCall.IndexStart, drawCall.BaseVertexIndex);
-		}
-
-		/// <summary>
-		/// Function to clear a specific render target view.
-		/// </summary>
-		/// <param name="view">The <see cref="GorgonRenderTargetView"/> to clear.</param>
-		/// <param name="color">The color used to fill the view with.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="view"/> parameter is <b>null</b>. This is only thrown when Gorgon is compiled in DEBUG mode.</exception>
-		// TODO: Where should this go? Maybe on the RTV/DSV?
-		public void ClearRenderTargetView(GorgonRenderTargetView view, GorgonColor color)
-		{
-			view.ValidateObject(nameof(view));
-
-			D3DDeviceContext.ClearRenderTargetView(view.D3DRenderTargetView, color.ToRawColor4());
 		}
 
         /// <summary>
@@ -589,7 +599,6 @@ namespace Gorgon.Graphics
 
 			// Set default states.
 			D3DDeviceContext.ClearState();
-
 			ApplyPipelineState(_defaultState);
 		}
 

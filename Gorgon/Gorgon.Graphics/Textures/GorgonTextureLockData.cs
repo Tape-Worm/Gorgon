@@ -49,7 +49,7 @@ namespace Gorgon.Graphics
 	/// object is disposed, then this object will be invalid and disposed automatically.
 	/// </para>
 	/// <para>
-	/// Locks can only be placed on <see cref="GorgonTexture"/> objects that were created with a <c>Dynamic</c> or <c>Staging</c> <see cref="GorgonTextureInfo.Usage"/>. If the usage for the texture is set to 
+	/// Locks can only be placed on <see cref="GorgonTexture"/> objects that were created with a <c>Dynamic</c> or <c>Staging</c> <see cref="IGorgonTextureInfo.Usage"/>. If the usage for the texture is set to 
 	/// <c>Staging</c>, then the lock can read the data in the texture, otherwise the lock will allow write-only access to the texture.
 	/// </para>
 	/// <para>

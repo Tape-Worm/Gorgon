@@ -20,11 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: July 25, 2016 12:40:16 AM
+// Created: July 28, 2016 10:48:32 PM
 // 
 #endregion
 
-using System;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics
@@ -32,33 +31,34 @@ namespace Gorgon.Graphics
 	/// <summary>
 	/// Provides the necessary information required to set up a index buffer.
 	/// </summary>
-	public class GorgonIndexBufferInfo
-		: IGorgonIndexBufferInfo
+	/// <remarks>
+	/// <para>
+	/// This provides an immutable view of the index buffer information so that it cannot be modified after the buffer is created.
+	/// </para>
+	/// </remarks>
+	public interface IGorgonIndexBufferInfo 
 	{
-		#region Properties.
 		/// <summary>
-		/// Property to set or return the intended usage for binding to the GPU.
+		/// Property to return the intended usage for binding to the GPU.
 		/// </summary>
-		public D3D11.ResourceUsage Usage
+		D3D11.ResourceUsage Usage
 		{
 			get;
-			set;
 		}
 
 		/// <summary>
-		/// Property to set or return the number of indices to store.
+		/// Property to return the number of indices to store.
 		/// </summary>
 		/// <remarks>
 		/// This value should be larger than 0, or else an exception will be thrown when the buffer is created.
 		/// </remarks>
-		public int IndexCount
+		int IndexCount
 		{
 			get;
-			set;
 		}
 
 		/// <summary>
-		/// Property to set or return whether to use 16 bit values for indices.
+		/// Property to return whether to use 16 bit values for indices.
 		/// </summary>
 		/// <remarks>
 		/// <para>
@@ -68,39 +68,9 @@ namespace Gorgon.Graphics
 		/// The default value is <b>true</b>.
 		/// </para>
 		/// </remarks>
-		public bool Use16BitIndices
+		bool Use16BitIndices
 		{
 			get;
-			set;
 		}
-		#endregion
-
-		#region Constructor/Finalizer.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonIndexBufferInfo"/> class.
-		/// </summary>
-		/// <param name="info">A <see cref="IGorgonIndexBufferInfo"/> to copy settings from.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
-		public GorgonIndexBufferInfo(IGorgonIndexBufferInfo info)
-		{
-			if (info == null)
-			{
-				throw new ArgumentNullException(nameof(info));
-			}
-
-			Usage = info.Usage;
-			Use16BitIndices = info.Use16BitIndices;
-			IndexCount = info.IndexCount;
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonIndexBufferInfo"/> class.
-		/// </summary>
-		public GorgonIndexBufferInfo()
-		{
-			Usage = D3D11.ResourceUsage.Default;
-			Use16BitIndices = true;
-		}
-		#endregion
 	}
 }
