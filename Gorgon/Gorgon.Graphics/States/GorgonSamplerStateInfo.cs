@@ -46,7 +46,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		public static readonly IGorgonSamplerStateInfo PointFiltering = new GorgonSamplerStateInfo
 		                                                                {
-			                                                                Filter = D3D11.Filter.MinMagMipLinear
+			                                                                Filter = D3D11.Filter.MinMagMipPoint
 		                                                                };
 
 		/// <summary>

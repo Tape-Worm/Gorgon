@@ -27,9 +27,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using DX = SharpDX;
-using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics
 {
@@ -125,6 +123,32 @@ namespace Gorgon.Graphics
 
 		#region Methods.
 		/// <summary>
+		/// Function to copy the scissor states from one to another.
+		/// </summary>
+		/// <param name="scissors">The list of scissor to copy from.</param>
+		internal void CopyFrom(GorgonScissorRectangles scissors)
+		{
+			if (scissors == null)
+			{
+				Clear();
+				return;
+			}
+
+			D3DBindCount = scissors.D3DBindCount;
+
+			if ((_actualRects == null) || (_actualRects.Length != D3DBindCount))
+			{
+				_actualRects = new DX.Rectangle[D3DBindCount];
+			}
+
+			for (int i = 0; i < D3DBindCount; ++i)
+			{
+				_scissorRectangles[i] = scissors._scissorRectangles[i];
+				_actualRects[i] = scissors._actualRects[i];
+			}
+		}
+
+		/// <summary>
 		/// Function to determine if two instances are equal.
 		/// </summary>
 		/// <param name="left">The left instance to compare.</param>
@@ -165,6 +189,8 @@ namespace Gorgon.Graphics
 			{
 				_scissorRectangles[i] = DX.Rectangle.Empty;
 			}
+
+			D3DBindCount = 0;
 		}
 
 		/// <summary>Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.</summary>

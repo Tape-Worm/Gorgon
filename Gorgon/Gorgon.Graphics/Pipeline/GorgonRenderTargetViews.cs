@@ -309,6 +309,29 @@ namespace Gorgon.Graphics
 		}
 
 		/// <summary>
+		/// Function to copy the render target views from one list into this list.
+		/// </summary>
+		/// <param name="views">The views to copy.</param>
+		internal void CopyFrom(GorgonRenderTargetViews views)
+		{
+			if (views == null)
+			{
+				Clear();
+				return;
+			}
+
+			_bindCount = views._bindCount;
+
+			for (int i = 0; i < _bindCount; ++i)
+			{
+				_views[i] = views._views[i];
+				_actualViews[i] = views._actualViews[i];
+			}
+
+			_depthStencilView = views._depthStencilView;
+		}
+
+		/// <summary>
 		/// Function to determine if two instances are equal.
 		/// </summary>
 		/// <param name="left">The left instance to compare.</param>
@@ -395,6 +418,7 @@ namespace Gorgon.Graphics
 			}
 
 			DepthStencilView = null;
+			_bindCount = 0;
 		}
 
 		/// <summary>Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.</summary>

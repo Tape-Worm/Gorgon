@@ -138,7 +138,7 @@ namespace Gorgon.Graphics
 		/// <remarks>
 		/// The default value is <b>true</b>.
 		/// </remarks>
-		bool DepthClipEnabled
+		bool IsDepthClippingEnabled
 		{
 			get;
 		}
@@ -149,7 +149,7 @@ namespace Gorgon.Graphics
 		/// <remarks>
 		/// The default value is <b>false</b>.
 		/// </remarks>
-		bool ScissorEnabled
+		bool IsScissorClippingEnabled
 		{
 			get;
 		}
@@ -167,14 +167,14 @@ namespace Gorgon.Graphics
 		/// <b>false</b> will disable anti-aliasing.
 		/// </para>
 		/// <para>
-		/// This value overrides the value set in <see cref="AntialiasedLineEnabled"/>.
+		/// This value overrides the value set in <see cref="IsAntialiasedLineEnabled"/>.
 		/// </para>
 		/// <para>
 		/// The default value is <b>false</b>.
 		/// </para>
 		/// </remarks>
-		/// <seealso cref="AntialiasedLineEnabled"/>
-		bool MultisamplingEnabled
+		/// <seealso cref="IsAntialiasedLineEnabled"/>
+		bool IsMultisamplingEnabled
 		{
 			get;
 		}
@@ -184,14 +184,14 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// This only applies when drawing lines and <see cref="MultisamplingEnabled"/> is set to <b>false</b>.
+		/// This only applies when drawing lines and <see cref="IsMultisamplingEnabled"/> is set to <b>false</b>.
 		/// </para>
 		/// <para>
 		/// The default value is <b>false</b>.
 		/// </para>
 		/// </remarks>
-		/// <seealso cref="MultisamplingEnabled"/>
-		bool AntialiasedLineEnabled
+		/// <seealso cref="IsMultisamplingEnabled"/>
+		bool IsAntialiasedLineEnabled
 		{
 			get;
 		}

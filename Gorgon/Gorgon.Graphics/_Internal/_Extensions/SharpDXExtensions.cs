@@ -211,10 +211,10 @@ namespace Gorgon.Graphics
 						DepthBiasClamp = state.DepthBiasClamp,
 						SlopeScaledDepthBias = state.SlopeScaledDepthBias,
 						ForcedSampleCount = state.ForcedUavSampleCount,
-						IsAntialiasedLineEnabled = state.AntialiasedLineEnabled,
-						IsDepthClipEnabled = state.DepthClipEnabled,
-						IsMultisampleEnabled = state.MultisamplingEnabled,
-						IsScissorEnabled = state.ScissorEnabled
+						IsAntialiasedLineEnabled = state.IsAntialiasedLineEnabled,
+						IsDepthClipEnabled = state.IsDepthClippingEnabled,
+						IsMultisampleEnabled = state.IsMultisamplingEnabled,
+						IsScissorEnabled = state.IsScissorClippingEnabled
 			       };
 		}
 
@@ -237,6 +237,71 @@ namespace Gorgon.Graphics
 				       MaximumLod = state.MaximumLevelOfDetail,
 				       MinimumLod = state.MinimumLevelOfDetail,
 				       MipLodBias = state.MipLevelOfDetailBias
+			       };
+		}
+
+		/// <summary>
+		/// FUnction to convert a Gorgon blend state info to a D3D blend state 1 desc.
+		/// </summary>
+		/// <param name="state">The state convert.</param>
+		/// <returns>A new D3D blend state 1 description. </returns>
+		public static D3D11.BlendStateDescription1 ToBlendStateDesc1(this IGorgonBlendStateInfo state)
+		{
+			var result = new D3D11.BlendStateDescription1
+			             {
+				             AlphaToCoverageEnable = state.IsAlphaToCoverageEnabled,
+				             IndependentBlendEnable = state.IsIndependentBlendingEnabled,
+			             };
+			
+			for (int i = 0; i < state.RenderTargets.Count; ++i)
+			{
+				result.RenderTarget[i] = new D3D11.RenderTargetBlendDescription1
+				                         {
+					                         LogicOperation = state.RenderTargets[i].LogicOperation,
+					                         SourceAlphaBlend = state.RenderTargets[i].SourceAlphaBlend,
+					                         AlphaBlendOperation = state.RenderTargets[i].AlphaBlendOperation,
+					                         SourceBlend = state.RenderTargets[i].SourceColorBlend,
+					                         DestinationAlphaBlend = state.RenderTargets[i].DestinationAlphaBlend,
+					                         BlendOperation = state.RenderTargets[i].ColorBlendOperation,
+					                         DestinationBlend = state.RenderTargets[i].DestinationColorBlend,
+					                         IsBlendEnabled = state.RenderTargets[i].IsBlendingEnabled,
+					                         IsLogicOperationEnabled = state.RenderTargets[i].IsLogicalOperationEnabled,
+					                         RenderTargetWriteMask = state.RenderTargets[i].WriteMask
+				                         };
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Function to convert a gorgon depth/stencil state info to a D3D depth/stencil state desc.
+		/// </summary>
+		/// <param name="state">The state to convert.</param>
+		/// <returns>A new D3D 11 depth/stencil state desc.</returns>
+		public static D3D11.DepthStencilStateDescription ToDepthStencilStateDesc(this IGorgonDepthStencilStateInfo state)
+		{
+			return new D3D11.DepthStencilStateDescription
+			       {
+				       StencilReadMask = state.StencilReadMask,
+				       DepthWriteMask = state.IsDepthWriteEnabled ? D3D11.DepthWriteMask.All : D3D11.DepthWriteMask.Zero,
+				       StencilWriteMask = state.StencilWriteMask,
+				       DepthComparison = state.DepthComparison,
+				       IsStencilEnabled = state.IsStencilEnabled,
+				       IsDepthEnabled = state.IsDepthEnabled,
+				       BackFace = new D3D11.DepthStencilOperationDescription
+				                  {
+					                  Comparison = state.BackFaceStencilOp.Comparison,
+					                  FailOperation = state.BackFaceStencilOp.FailOperation,
+					                  PassOperation = state.BackFaceStencilOp.PassOperation,
+					                  DepthFailOperation = state.BackFaceStencilOp.DepthFailOperation
+				                  },
+				       FrontFace = new D3D11.DepthStencilOperationDescription
+				                   {
+					                   Comparison = state.FrontFaceStencilOp.Comparison,
+					                   FailOperation = state.FrontFaceStencilOp.FailOperation,
+					                   PassOperation = state.FrontFaceStencilOp.PassOperation,
+					                   DepthFailOperation = state.FrontFaceStencilOp.DepthFailOperation
+				                   }
 			       };
 		}
 	}

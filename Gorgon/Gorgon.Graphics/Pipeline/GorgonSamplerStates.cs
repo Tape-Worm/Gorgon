@@ -115,6 +115,27 @@ namespace Gorgon.Graphics
 
 		#region Methods.
 		/// <summary>
+		/// Function to copy the states from another set of states.
+		/// </summary>
+		/// <param name="states">The states to copy.</param>
+		public void CopyFrom(GorgonSamplerStates states)
+		{
+			if (states == null)
+			{
+				Clear();
+				return;
+			}
+
+			_bindCount = states.D3DSamplerStateBindCount;
+
+			for (int i = 0; i < _bindCount; ++i)
+			{
+				_states[i] = states._states[i];
+				_actualStates[i] = states._actualStates[i];
+			}
+		}
+
+		/// <summary>
 		/// Function to determine if two instances are equal.
 		/// </summary>
 		/// <param name="left">The left instance to compare.</param>
@@ -199,6 +220,8 @@ namespace Gorgon.Graphics
 				_states[i] = null;
 				_actualStates[i] = null;
 			}
+
+			_bindCount = 0;
 		}
 
 		/// <summary>Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.</summary>

@@ -78,7 +78,7 @@ namespace Gorgon.Core.Memory
 		/// <returns>The index of the next available slot, or -1 if no slot is available..</returns>
 		protected int Allocate()
 		{
-			int nextIndex = Interlocked.Add(ref _currentItem, 1);
+			int nextIndex = Interlocked.Increment(ref _currentItem);
 
 			if (nextIndex >= Items.Length)
 			{
@@ -99,7 +99,7 @@ namespace Gorgon.Core.Memory
 		/// </remarks>
 		public void Reset()
 		{
-			Interlocked.Exchange(ref _currentItem, 0);
+			Interlocked.Exchange(ref _currentItem, -1);
 		}
 		#endregion
 

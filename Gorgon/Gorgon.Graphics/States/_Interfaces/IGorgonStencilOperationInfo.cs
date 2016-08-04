@@ -1,4 +1,4 @@
-﻿#region MIT
+#region MIT
 // 
 // Gorgon.
 // Copyright (C) 2016 Michael Winsor
@@ -20,68 +20,74 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: July 19, 2016 7:17:17 PM
+// Created: July 29, 2016 7:40:55 PM
 // 
 #endregion
 
-using D3D = SharpDX.Direct3D;
+using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics
 {
 	/// <summary>
-	/// A draw call to submit to the pipeline.
+	/// Information used to create the stencil portion of a <see cref="GorgonDepthStencilState"/>.
 	/// </summary>
-	public class GorgonDrawIndexedCall
+	/// <remarks>
+	/// <para>
+	/// This provides an immutable view of the stencil operation state information so that it cannot be modified after the state is created.
+	/// </para>
+	/// </remarks>
+	public interface IGorgonStencilOperationInfo
 	{
 		/// <summary>
-		/// Property to return the type of primitives to draw.
-		/// </summary>
-		public D3D.PrimitiveTopology PrimitiveTopology => D3D.PrimitiveTopology.TriangleList;
-		
-		/// <summary>
-		/// Property to set or return the current render target views and depth/stencil view for this draw call.
-		/// </summary>
-		public GorgonRenderTargetViews RenderTargets
-		{
-			get;
-		} = new GorgonRenderTargetViews();
-
-		/// <summary>
-		/// Property to set or return the current pipeline state.
+		/// Property to return the comparison function to use for stencil operations.
 		/// </summary>
 		/// <remarks>
-		/// If this value is <b>null</b>, then the previous state will remain set.
+		/// <para>
+		/// This specifies the function to evaluate with stencil data being read/written and existing stencil data.
+		/// </para>
+		/// <para>
+		/// The default value is <c>Always</c>.
+		/// </para>
 		/// </remarks>
-		public GorgonPipelineState State
-		{
-			get;
-		} = new GorgonPipelineState();
-
-		/// <summary>
-		/// Property to set or return the starting index to of the buffer to draw.
-		/// </summary>
-		public int IndexStart
-
-		{
-			get;
-			set;
-		}
-		/// <summary>
-		/// Property to set or return the number of indices used to draw.
-		/// </summary>
-		public int IndexCount
+		D3D11.Comparison Comparison
 		{
 			get;
 			set;
 		}
 
 		/// <summary>
-		/// Property to return the vertex in the vertex buffer to start drawing at.
+		/// Property to return the operation to perform when the depth testing function fails, but stencil testing passes.
 		/// </summary>
-		public int BaseVertexIndex
+		/// <remarks>
+		/// The default value is <c>Keep</c>.
+		/// </remarks>
+		D3D11.StencilOperation DepthFailOperation
 		{
 			get;
 			set;
+		}
+
+		/// <summary>
+		/// Property to return the operation to perform when the stencil testing fails.
+		/// </summary>
+		/// <remarks>
+		/// The default value is <c>Keep</c>.
+		/// </remarks>
+		D3D11.StencilOperation FailOperation
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to return the operation to perform when the stencil testing passes.
+		/// </summary>
+		/// <remarks>
+		/// The default value is <c>Keep</c>.
+		/// </remarks>
+		D3D11.StencilOperation PassOperation
+		{
+			get;
 		}
 	}
 }

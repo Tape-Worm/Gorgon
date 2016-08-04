@@ -135,7 +135,6 @@
     <Compile Include="Configuration\GorgonOptionBag.cs" />
     <Compile Include="Collections\Specialized\GorgonConcurrentDictionary.cs" />
     <Compile Include="Collections\Specialized\GorgonNamedObjectDictionary.cs" />
-    <Compile Include="Collections\_Extensions\GorgonArrayExtensions.cs" />
     <Compile Include="Collections\_Interfaces\IGorgonNamedObjectReadOnlyDictionary.cs" />
     <Compile Include="Collections\_Interfaces\IGorgonNamedObjectDictionary.cs" />
     <Compile Include="Collections\Specialized\GorgonDisposableObjectCollection.cs" />

@@ -47,7 +47,6 @@ namespace Gorgon.Graphics
 		public GorgonConstantBuffers ConstantBuffers
 		{
 			get;
-			set;
 		}
 
 		/// <summary>
@@ -56,11 +55,39 @@ namespace Gorgon.Graphics
 		public GorgonShaderResourceViews ResourceViews
 		{
 			get;
-			set;
 		}
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to copy the pixel shader state from another set of states.
+		/// </summary>
+		/// <param name="state">The state to copy.</param>
+		internal void CopyStates(GorgonVertexShaderState state)
+		{
+			if (state == null)
+			{
+				Reset();
+				return;
+			}
+
+			ConstantBuffers.Clear();
+			ResourceViews.Clear();
+			ConstantBuffers.CopyFrom(state.ConstantBuffers);
+			ResourceViews.CopyFrom(state.ResourceViews);
+		}
+
+		/// <summary>
+		/// Function to reset the state object back to its original state.
+		/// </summary>
+		public void Reset()
+		{
+			Shader = null;
+
+			ConstantBuffers.Clear();
+			ResourceViews.Clear();
+		}
+
 		/// <summary>
 		/// Function to retrieve the changes for this shader state.
 		/// </summary>
@@ -69,11 +96,6 @@ namespace Gorgon.Graphics
 		public ShaderStateChangeFlags GetChanges(GorgonVertexShaderState other)
 		{
 			var result = ShaderStateChangeFlags.None;
-
-			if (other == this)
-			{
-				return ShaderStateChangeFlags.None;
-			}
 
 			if (other == null)
 			{
