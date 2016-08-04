@@ -166,6 +166,27 @@ namespace Gorgon.Graphics
 		}
 
 		/// <summary>
+		/// Function to copy the states from another set of states.
+		/// </summary>
+		/// <param name="states">The states to copy.</param>
+		public void CopyFrom(GorgonShaderResourceViews states)
+		{
+			if (states == null)
+			{
+				Clear();
+				return;
+			}
+
+			_bindCount = states._bindCount;
+
+			for (int i = 0; i < _bindCount; ++i)
+			{
+				_views[i] = states._views[i];
+				_actualViews[i] = states._actualViews[i];
+			}
+		}
+
+		/// <summary>
 		/// Function to determine if two instances are equal.
 		/// </summary>
 		/// <param name="left">The left instance to compare.</param>
@@ -250,6 +271,8 @@ namespace Gorgon.Graphics
 				_views[i] = null;
 				_actualViews[i] = null;
 			}
+
+			_bindCount = 0;
 		}
 
 		/// <summary>Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.</summary>

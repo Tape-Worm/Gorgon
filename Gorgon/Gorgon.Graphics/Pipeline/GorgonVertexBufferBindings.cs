@@ -56,7 +56,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to return the number of vertex buffers actually bound.
 		/// </summary>
-		internal int DXVertexBufferBindCount
+		internal int D3DVertexBufferBindCount
 		{
 			get;
 			private set;
@@ -88,7 +88,7 @@ namespace Gorgon.Graphics
 				
 				_bindings[index] = value;
 				_actualBindings[index] = value.ToVertexBufferBinding();
-				DXVertexBufferBindCount = 0;
+				D3DVertexBufferBindCount = 0;
 				for (int i = 0; i < _bindings.Length; ++i)
 				{
 					binding = _bindings[i];
@@ -102,7 +102,7 @@ namespace Gorgon.Graphics
 
 					if (binding.VertexBuffer != null)
 					{
-						DXVertexBufferBindCount = i + 1;
+						D3DVertexBufferBindCount = i + 1;
 					}
 				}
 			}
@@ -119,6 +119,27 @@ namespace Gorgon.Graphics
 
 		#region Methods.
 		/// <summary>
+		/// Function to copy the vertex buffer binding states from another list into this one.
+		/// </summary>
+		/// <param name="bindings">The bindings to copy.</param>
+		internal void CopyFrom(GorgonVertexBufferBindings bindings)
+		{
+			if (bindings == null)
+			{
+				Clear();
+				return;
+			}
+
+			D3DVertexBufferBindCount = bindings.D3DVertexBufferBindCount;
+
+			for (int i = 0; i < D3DVertexBufferBindCount; ++i)
+			{
+				_actualBindings[i] = bindings._actualBindings[i];
+				_bindings[i] = bindings._bindings[i];
+			}
+		}
+
+		/// <summary>
 		/// Function to determine if two instances are equal.
 		/// </summary>
 		/// <param name="left">The left instance to compare.</param>
@@ -126,12 +147,12 @@ namespace Gorgon.Graphics
 		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
 		public static bool Equals(GorgonVertexBufferBindings left, GorgonVertexBufferBindings right)
 		{
-			if ((left == null) || (right == null) || (left.DXVertexBufferBindCount != right.DXVertexBufferBindCount))
+			if ((left == null) || (right == null) || (left.D3DVertexBufferBindCount != right.D3DVertexBufferBindCount))
 			{
 				return false;
 			}
 
-			for (int i = 0; i < left.DXVertexBufferBindCount; ++i)
+			for (int i = 0; i < left.D3DVertexBufferBindCount; ++i)
 			{
 				GorgonVertexBufferBinding rightBuffer = right[i];
 				if (!left[i].Equals(ref rightBuffer))
@@ -159,6 +180,8 @@ namespace Gorgon.Graphics
 			{
 				_bindings[i] = default(GorgonVertexBufferBinding);
 			}
+
+			D3DVertexBufferBindCount = 0;
 		}
 
 		/// <summary>Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.</summary>

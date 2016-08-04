@@ -42,48 +42,51 @@ namespace Gorgon.Graphics
 		/// </summary>
 		None = 0,
 		/// <summary>
-		/// The render target views have been modified.
-		/// </summary>
-		RenderTargetViews = 0x1,
-		/// <summary>
 		/// The input layout has been modified.
 		/// </summary>
-		InputLayout = 0x2,
+		InputLayout = 0x1,
 		/// <summary>
 		/// The vertex shader state has been modified.
 		/// </summary>
-		VertexShader = 0x4,
+		VertexShader = 0x2,
 		/// <summary>
 		/// The pixel shader state has been modified.
 		/// </summary>
-		PixelShader = 0x8,
+		PixelShader = 0x4,
 		/// <summary>
 		/// The view port was modified.
 		/// </summary>
-		Viewport = 0x10,
+		Viewport = 0x8,
 		/// <summary>
 		/// The vertex buffers were modified.
 		/// </summary>
-		VertexBuffers = 0x20,
+		VertexBuffers = 0x10,
 		/// <summary>
 		/// The index buffer was modified.
 		/// </summary>
-		IndexBuffer = 0x40,
+		IndexBuffer = 0x20,
 		/// <summary>
 		/// The rasterizer state was modified.
 		/// </summary>
-		RasterState = 0x80,
+		RasterState = 0x40,
 		/// <summary>
 		/// The scissor rectangles have been updated.
 		/// </summary>
-		ScissorRectangles = 0x100
+		ScissorRectangles = 0x80,
+		/// <summary>
+		/// The depth/stencil state has been updated.
+		/// </summary>
+		DepthStencilState = 0x100,
+		/// <summary>
+		/// The blending state has been updated.
+		/// </summary>
+		BlendState = 0x200
 	}
 
 	/// <summary>
 	/// A pipeline state object used to set up the complete graphics pipeline for Gorgon.
 	/// </summary>
 	public class GorgonPipelineState
-		: IEquatable<GorgonPipelineState>
 	{
 		#region Variables.
 		// The default state flags.
@@ -97,7 +100,6 @@ namespace Gorgon.Graphics
 		public GorgonPixelShaderState PixelShader
 		{
 			get;
-			set;
 		}
 
 		/// <summary>
@@ -106,7 +108,6 @@ namespace Gorgon.Graphics
 		public GorgonVertexShaderState VertexShader
 		{
 			get;
-			set;
 		}
 
 		/// <summary>
@@ -119,21 +120,11 @@ namespace Gorgon.Graphics
 		}
 
 		/// <summary>
-		/// Property to set or return the current render target views and depth/stencil view for this 
-		/// </summary>
-		public GorgonRenderTargetViews RenderTargetViews
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
 		/// Property to set or return the current viewport(s) for this 
 		/// </summary>
 		public GorgonViewports Viewports
 		{
 			get;
-			set;
 		}
 
 		/// <summary>
@@ -142,7 +133,6 @@ namespace Gorgon.Graphics
 		public GorgonVertexBufferBindings VertexBuffers
 		{
 			get;
-			set;
 		}
 
 		/// <summary>
@@ -164,12 +154,29 @@ namespace Gorgon.Graphics
 		}
 
 		/// <summary>
+		/// Property to set or return the current depth/stencil state.
+		/// </summary>
+		public GorgonDepthStencilState DepthStencilState
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the current blending state.
+		/// </summary>
+		public GorgonBlendState BlendState
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Property to set or return the current scissor rectangles.
 		/// </summary>
 		public GorgonScissorRectangles ScissorRectangles
 		{
 			get;
-			set;
 		}
 		#endregion
 
@@ -195,11 +202,6 @@ namespace Gorgon.Graphics
 				pipelineFlags |= PipelineStateChangeFlags.InputLayout;
 			}
 
-			if (!GorgonRenderTargetViews.Equals(RenderTargetViews, state.RenderTargetViews))
-			{
-				pipelineFlags |= PipelineStateChangeFlags.RenderTargetViews;
-			}
-
 			if (!GorgonViewports.Equals(Viewports, state.Viewports))
 			{
 				pipelineFlags |= PipelineStateChangeFlags.Viewport;
@@ -223,6 +225,16 @@ namespace Gorgon.Graphics
 			if (RasterState != state.RasterState)
 			{
 				pipelineFlags |= PipelineStateChangeFlags.RasterState;
+			}
+
+			if (DepthStencilState != state.DepthStencilState)
+			{
+				pipelineFlags |= PipelineStateChangeFlags.DepthStencilState;
+			}
+
+			if (BlendState != state.BlendState)
+			{
+				pipelineFlags |= PipelineStateChangeFlags.BlendState;
 			}
 
 			// Gather shader sub state changes.
@@ -266,70 +278,23 @@ namespace Gorgon.Graphics
 			           };
 		}
 
-		/// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
-		/// <returns>true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.</returns>
-		/// <param name="other">An object to compare with this object.</param>
-		public bool Equals(GorgonPipelineState other)
-		{
-			return ((other != null)
-			        && (other.InputLayout == InputLayout)
-			        && (GorgonRenderTargetViews.Equals(other.RenderTargetViews, RenderTargetViews))
-					&& (GorgonViewports.Equals(other.Viewports, Viewports))
-					&& (GorgonVertexBufferBindings.Equals(other.VertexBuffers, VertexBuffers))
-					&& (GorgonScissorRectangles.Equals(other.ScissorRectangles, ScissorRectangles))
-					&& (IndexBuffer == other.IndexBuffer)
-			        && (PixelShader == other.PixelShader)
-			        && (VertexShader == other.VertexShader)
-					&& (RasterState == other.RasterState));
-		}
-
 		/// <summary>
 		/// Function to reset back to the default states.
 		/// </summary>
 		public void Reset()
 		{
-			VertexShader.Shader = null;
-			PixelShader.Shader = null;
 			InputLayout = null;
 			IndexBuffer = null;
 			RasterState = null;
+			DepthStencilState = null;
+			BlendState = null;
+			
+			ScissorRectangles.Clear();
+			Viewports.Clear();
+			VertexBuffers.Clear();
 
-			for (int i = 0; i < VertexBuffers.Count; ++i)
-			{
-				VertexBuffers[i] = GorgonVertexBufferBinding.Empty;
-			}
-
-			for (int i = 0; i < Viewports.Count; ++i)
-			{
-				Viewports[i] = default(DX.ViewportF);
-			}
-
-			for (int i = 0; i < RenderTargetViews.Count; ++i)
-			{
-				RenderTargetViews[i] = null;
-			}
-
-			for (int i = 0; i < ScissorRectangles.Count; ++i)
-			{
-				ScissorRectangles[i] = DX.Rectangle.Empty;
-			}
-
-			for (int i = 0; i < PixelShader.SamplerStates.Count; ++i)
-			{
-				PixelShader.SamplerStates[i] = null;
-			}
-
-			for (int i = 0; i < PixelShader.ConstantBuffers.Count; ++i)
-			{
-				PixelShader.ConstantBuffers[i] = null;
-				VertexShader.ConstantBuffers[i] = null;
-			}
-
-			for (int i = 0; i < PixelShader.ResourceViews.Count; ++i)
-			{
-				PixelShader.ResourceViews[i] = null;
-				VertexShader.ResourceViews[i] = null;
-			}
+			PixelShader.Reset();
+			VertexShader.Reset();
 		}
 		#endregion
 
@@ -339,14 +304,11 @@ namespace Gorgon.Graphics
 		/// </summary>
 		public GorgonPipelineState()
 		{
-			RenderTargetViews = new GorgonRenderTargetViews();
-			PixelShader = new GorgonPixelShaderState();
-			VertexShader = new GorgonVertexShaderState();
-			Viewports = new GorgonViewports();
 			VertexBuffers = new GorgonVertexBufferBindings();
+			Viewports = new GorgonViewports();
 			ScissorRectangles = new GorgonScissorRectangles();
-
-			Reset();
+			VertexShader = new GorgonVertexShaderState();
+			PixelShader = new GorgonPixelShaderState();
 		}
 
 		/// <summary>

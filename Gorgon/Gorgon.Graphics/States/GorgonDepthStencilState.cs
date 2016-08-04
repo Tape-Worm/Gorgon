@@ -30,21 +30,21 @@ using D3D11 = SharpDX.Direct3D11;
 namespace Gorgon.Graphics
 {
 	/// <summary>
-	/// A state object used to bind texture sampler states to the pipeline.
+	/// A state object used to bind depth/stencil states to the pipeline.
 	/// </summary>
-	public class GorgonSamplerState
+	public class GorgonDepthStencilState
 		: IDisposable
 	{
 		#region Variables.
 		// The state information for this state.
-		private readonly GorgonSamplerStateInfo _info;
+		private readonly GorgonDepthStencilStateInfo _info;
 		#endregion
 
 		#region Properties.
 		/// <summary>
-		/// Property to return the Direct 3D 11 sampler state object.
+		/// Property to return the Direct 3D 11 depth/stencil state object.
 		/// </summary>
-		internal D3D11.SamplerState D3DState
+		internal D3D11.DepthStencilState D3DState
 		{
 			get;
 		}
@@ -58,9 +58,9 @@ namespace Gorgon.Graphics
 		}
 
 		/// <summary>
-		/// Property to return the <see cref="IGorgonSamplerStateInfo"/> for this state.
+		/// Property to return the <see cref="IGorgonDepthStencilStateInfo"/> for this state.
 		/// </summary>
-		public IGorgonSamplerStateInfo Info => _info;
+		public IGorgonDepthStencilStateInfo Info => _info;
 		#endregion
 
 		#region Methods.
@@ -75,12 +75,12 @@ namespace Gorgon.Graphics
 
 		#region Constructor/Finalizer.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonSamplerState"/> class.
+		/// Initializes a new instance of the <see cref="GorgonDepthStencilState"/> class.
 		/// </summary>
 		/// <param name="graphics">The graphics object used to create this state.</param>
-		/// <param name="info">The <see cref="IGorgonSamplerStateInfo"/> used to create this object.</param>
+		/// <param name="info">The <see cref="IGorgonDepthStencilStateInfo"/> used to create this object.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, or the <paramref name="info"/> parameter is <b>null</b>.</exception>
-		public GorgonSamplerState(GorgonGraphics graphics, IGorgonSamplerStateInfo info)
+		public GorgonDepthStencilState(GorgonGraphics graphics, IGorgonDepthStencilStateInfo info)
 		{
 			if (graphics == null)
 			{
@@ -93,8 +93,8 @@ namespace Gorgon.Graphics
 			}
 
 			Graphics = graphics;
-			_info = new GorgonSamplerStateInfo(info);
-			D3DState = new D3D11.SamplerState(graphics.VideoDevice.D3DDevice(), _info.ToSamplerStateDesc());
+			_info = new GorgonDepthStencilStateInfo(info);
+			D3DState = new D3D11.DepthStencilState(graphics.VideoDevice.D3DDevice(), _info.ToDepthStencilStateDesc());
 		}
 		#endregion
 	}

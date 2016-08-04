@@ -110,6 +110,27 @@ namespace Gorgon.Graphics
 
 		#region Methods.
 		/// <summary>
+		/// Function to copy the states from another set of states.
+		/// </summary>
+		/// <param name="states">The states to copy.</param>
+		public void CopyFrom(GorgonConstantBuffers states)
+		{
+			if (states == null)
+			{
+				Clear();
+				return;
+			}
+
+			D3DConstantBufferBindCount = states.D3DConstantBufferBindCount;
+
+			for (int i = 0; i < D3DConstantBufferBindCount; ++i)
+			{
+				_buffers[i] = states._buffers[i];
+				D3DConstantBuffers[i] = states.D3DConstantBuffers[i];
+			}
+		}
+
+		/// <summary>
 		/// Function to determine if two instances are equal.
 		/// </summary>
 		/// <param name="left">The left instance to compare.</param>
@@ -149,6 +170,8 @@ namespace Gorgon.Graphics
 			{
 				_buffers[i] = null;
 			}
+
+			D3DConstantBufferBindCount = 0;
 		}
 
 		/// <summary>Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.</summary>

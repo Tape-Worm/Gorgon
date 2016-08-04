@@ -428,13 +428,6 @@ namespace Gorgon.Timing
 				// ReSharper disable once CompareOfFloatsByEqualityOperator
 			} while ((frameDelta < 0.000001) && (frameDelta != 0.0));
 
-			// If our delta since the last time was too high, then don't allow any movement until
-			// the simulation is caught up.
-			if (frameDelta > 200)
-			{
-				frameDelta = 0;
-			}
-
 			Delta = (float)frameDelta / 1000.0f;
 
 			// If the delta is 0, then put in the smallest possible positive value.

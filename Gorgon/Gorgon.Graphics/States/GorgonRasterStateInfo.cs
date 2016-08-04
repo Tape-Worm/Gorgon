@@ -86,7 +86,7 @@ namespace Gorgon.Graphics
 			get;
 		} = new GorgonRasterStateInfo
 		    {
-			    ScissorEnabled = true
+			    IsScissorClippingEnabled = true
 		    };
 		#endregion
 
@@ -198,7 +198,7 @@ namespace Gorgon.Graphics
 		/// <remarks>
 		/// The default value is <b>true</b>.
 		/// </remarks>
-		public bool DepthClipEnabled
+		public bool IsDepthClippingEnabled
 		{
 			get;
 			set;
@@ -210,7 +210,7 @@ namespace Gorgon.Graphics
 		/// <remarks>
 		/// The default value is <b>false</b>.
 		/// </remarks>
-		public bool ScissorEnabled
+		public bool IsScissorClippingEnabled
 		{
 			get;
 			set;
@@ -229,14 +229,14 @@ namespace Gorgon.Graphics
 		/// <b>false</b> will disable anti-aliasing.
 		/// </para>
 		/// <para>
-		/// This value overrides the value set in <see cref="AntialiasedLineEnabled"/>.
+		/// This value overrides the value set in <see cref="IsAntialiasedLineEnabled"/>.
 		/// </para>
 		/// <para>
 		/// The default value is <b>false</b>.
 		/// </para>
 		/// </remarks>
-		/// <seealso cref="AntialiasedLineEnabled"/>
-		public bool MultisamplingEnabled
+		/// <seealso cref="IsAntialiasedLineEnabled"/>
+		public bool IsMultisamplingEnabled
 		{
 			get;
 			set;
@@ -247,14 +247,14 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// This only applies when drawing lines and <see cref="MultisamplingEnabled"/> is set to <b>false</b>.
+		/// This only applies when drawing lines and <see cref="IsMultisamplingEnabled"/> is set to <b>false</b>.
 		/// </para>
 		/// <para>
 		/// The default value is <b>false</b>.
 		/// </para>
 		/// </remarks>
-		/// <seealso cref="MultisamplingEnabled"/>
-		public bool AntialiasedLineEnabled
+		/// <seealso cref="IsMultisamplingEnabled"/>
+		public bool IsAntialiasedLineEnabled
 		{
 			get;
 			set;
@@ -315,16 +315,16 @@ namespace Gorgon.Graphics
 				throw new ArgumentNullException(nameof(info));
 			}
 
-			AntialiasedLineEnabled = info.AntialiasedLineEnabled;
+			IsAntialiasedLineEnabled = info.IsAntialiasedLineEnabled;
 			CullMode = info.CullMode;
 			DepthBias = info.DepthBias;
 			DepthBiasClamp = info.DepthBiasClamp;
-			DepthClipEnabled = info.DepthClipEnabled;
+			IsDepthClippingEnabled = info.IsDepthClippingEnabled;
 			FillMode = info.FillMode;
 			ForcedUavSampleCount = info.ForcedUavSampleCount;
 			IsFrontCounterClockwise = info.IsFrontCounterClockwise;
-			MultisamplingEnabled = info.MultisamplingEnabled;
-			ScissorEnabled = info.ScissorEnabled;
+			IsMultisamplingEnabled = info.IsMultisamplingEnabled;
+			IsScissorClippingEnabled = info.IsScissorClippingEnabled;
 			SlopeScaledDepthBias = info.SlopeScaledDepthBias;
 		}
 
@@ -335,7 +335,7 @@ namespace Gorgon.Graphics
 		{
 			CullMode = D3D11.CullMode.Back;
 			FillMode = D3D11.FillMode.Solid;
-			DepthClipEnabled = true;
+			IsDepthClippingEnabled = true;
 		}
 		#endregion
 	}

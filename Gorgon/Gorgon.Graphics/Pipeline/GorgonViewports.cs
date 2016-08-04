@@ -105,6 +105,26 @@ namespace Gorgon.Graphics
 
 		#region Methods.
 		/// <summary>
+		/// Function to copy the viewport states from one to another.
+		/// </summary>
+		/// <param name="viewports">The list of viewports to copy from.</param>
+		internal void CopyFrom(GorgonViewports viewports)
+		{
+			if (viewports == null)
+			{
+				Clear();
+				return;
+			}
+
+			DXViewportBindCount = viewports.DXViewportBindCount;
+
+			for (int i = 0; i < DXViewportBindCount; ++i)
+			{
+				_viewports[i] = viewports._viewports[i];
+			}
+		}
+
+		/// <summary>
 		/// Function to determine if two instances are equal.
 		/// </summary>
 		/// <param name="left">The left instance to compare.</param>
@@ -145,6 +165,8 @@ namespace Gorgon.Graphics
 			{
 				_viewports[i] = new DX.ViewportF(DX.RectangleF.Empty);
 			}
+
+			DXViewportBindCount = 0;
 		}
 
 		/// <summary>Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.</summary>
