@@ -120,8 +120,23 @@
   <data name="GORGFX_TOSTR_IMAGE_CODEC" xml:space="preserve">
     <value>Gorgon {0} Image Codec</value>
   </data>
+  <data name="GORIMG_DESC_BMP_CODEC" xml:space="preserve">
+    <value>Windows Bitmap</value>
+  </data>
+  <data name="GORIMG_DESC_DDS_CODEC" xml:space="preserve">
+    <value>Direct Draw Surface</value>
+  </data>
+  <data name="GORIMG_DESC_GIF_CODEC" xml:space="preserve">
+    <value>Graphics Interchange Format</value>
+  </data>
+  <data name="GORIMG_DESC_JPG_CODEC" xml:space="preserve">
+    <value>Joint photographics experts group</value>
+  </data>
   <data name="GORIMG_DESC_PNG_CODEC" xml:space="preserve">
     <value>Portable Network Graphics</value>
+  </data>
+  <data name="GORIMG_DESC_TGA_CODEC" xml:space="preserve">
+    <value>Truevision Targa</value>
   </data>
   <data name="GORIMG_ERR_BUFFER_FORMAT_MISMATCH" xml:space="preserve">
     <value>The buffer formats must be same: [{0}].</value>

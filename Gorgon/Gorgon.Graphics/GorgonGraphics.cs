@@ -627,7 +627,7 @@ namespace Gorgon.Graphics
 			}
 
 			// Disconnect from the context.
-			_log.Print($"Destroying GorgonGraphics interface for device '{0}'...", LoggingLevel.Simple, device.Info.Name);
+			_log.Print($"Destroying GorgonGraphics interface for device '{device.Info.Name}'...", LoggingLevel.Simple);
 
 			// Reset the state for the context. This will ensure we don't have anything bound to the pipeline when we shut down.
 			context.ClearState();

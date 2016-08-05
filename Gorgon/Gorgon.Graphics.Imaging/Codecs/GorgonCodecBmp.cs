@@ -20,10 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: June 27, 2016 11:18:56 PM
+// Created: August 4, 2016 11:22:47 PM
 // 
 #endregion
-
 
 using System.Collections.Generic;
 using Gorgon.Graphics.Imaging.Properties;
@@ -33,19 +32,17 @@ using WIC = SharpDX.WIC;
 namespace Gorgon.Graphics.Imaging.Codecs
 {
 	/// <summary>
-	/// A codec to handle read/writing of PNG files.
+	/// A codec to handle read/writing of BMP files.
 	/// </summary>
 	/// <remarks>
 	/// <para>
-	/// This codec will read and write lossless compressed files using the Portable Network Graphics (PNG) format.
+	/// This codec will read and write lossless compressed files using the Windows Bitmap (BMP) format.
 	/// </para>
 	/// <para>
 	/// This codec supports the following pixel formats:
 	/// <list type="bullet">
-	///		<item><c>R8G8B8A8_UNorm</c></item>
-	///		<item><c>B8G8R8A8_UNorm</c></item>
 	///		<item><c>B8G8R8X8_UNorm</c></item>
-	///		<item><c>R16G16B16A16_UNorm</c></item>
+	///		<item><c>B5G6R5_UNorm</c></item>
 	/// </list>
 	/// </para>
 	/// <para>
@@ -56,33 +53,31 @@ namespace Gorgon.Graphics.Imaging.Codecs
 	/// </note>
 	/// </para>
 	/// </remarks>
-	public sealed class GorgonCodecPng
+	public sealed class GorgonCodecBmp
         : GorgonCodecWic
 	{
 		#region Variables.
 		// Supported formats.
-	    private readonly DXGI.Format[] _supportedPixelFormats =
-	    {
-		    DXGI.Format.R8G8B8A8_UNorm,
-		    DXGI.Format.B8G8R8A8_UNorm,
-		    DXGI.Format.B8G8R8X8_UNorm,
-		    DXGI.Format.R16G16B16A16_UNorm
-	    };
+		private readonly DXGI.Format[] _supportedFormats =
+		{
+			DXGI.Format.B8G8R8X8_UNorm,
+			DXGI.Format.B5G6R5_UNorm
+		};
 		#endregion
 
 		#region Properties.
-	    /// <summary>
-	    /// Property to return the supported pixel formats for this codec.
-	    /// </summary>
-	    public override IReadOnlyList<DXGI.Format> SupportedPixelFormats => _supportedPixelFormats;
-        #endregion
+		/// <summary>
+		/// Property to return the supported pixel formats for this codec.
+		/// </summary>
+		public override IReadOnlyList<DXGI.Format> SupportedPixelFormats => _supportedFormats;
+	    #endregion
 
-        #region Constructor/Destructor.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonCodecPng"/> class.
+		#region Constructor/Destructor.
+		/// <summary>
+        /// Initializes a new instance of the <see cref="GorgonCodecBmp"/> class.
         /// </summary>
-        public GorgonCodecPng()
-            : base("PNG", Resources.GORIMG_DESC_PNG_CODEC, new[] { "png" }, WIC.ContainerFormatGuids.Png)
+        public GorgonCodecBmp()
+            : base("BMP", Resources.GORIMG_DESC_BMP_CODEC, new[] { "bmp", "dib" }, WIC.ContainerFormatGuids.Bmp)
         {
         }
         #endregion

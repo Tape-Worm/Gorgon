@@ -1433,15 +1433,6 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Windows Bitmap.
-        /// </summary>
-        internal static string GORGFX_IMAGE_BMP_CODEC_DESC {
-            get {
-                return ResourceManager.GetString("GORGFX_IMAGE_BMP_CODEC_DESC", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Cannot copy a buffer into itself..
         /// </summary>
         internal static string GORGFX_IMAGE_BUFFER_CANT_BE_SAME {
@@ -1474,15 +1465,6 @@ namespace Gorgon.Graphics.Properties {
         internal static string GORGFX_IMAGE_CODEC_TOSTR {
             get {
                 return ResourceManager.GetString("GORGFX_IMAGE_CODEC_TOSTR", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Direct Draw Surface.
-        /// </summary>
-        internal static string GORGFX_IMAGE_DDS_CODEC_DESC {
-            get {
-                return ResourceManager.GetString("GORGFX_IMAGE_DDS_CODEC_DESC", resourceCulture);
             }
         }
         
@@ -1523,15 +1505,6 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Graphics Interchange Format.
-        /// </summary>
-        internal static string GORGFX_IMAGE_GIF_CODEC_DESC {
-            get {
-                return ResourceManager.GetString("GORGFX_IMAGE_GIF_CODEC_DESC", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to HD Photo format.
         /// </summary>
         internal static string GORGFX_IMAGE_HDP_CODEC_DESC {
@@ -1546,15 +1519,6 @@ namespace Gorgon.Graphics.Properties {
         internal static string GORGFX_IMAGE_INDEXED_NO_PALETTE {
             get {
                 return ResourceManager.GetString("GORGFX_IMAGE_INDEXED_NO_PALETTE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Joint photographics experts group.
-        /// </summary>
-        internal static string GORGFX_IMAGE_JPG_CODEC_DESC {
-            get {
-                return ResourceManager.GetString("GORGFX_IMAGE_JPG_CODEC_DESC", resourceCulture);
             }
         }
         
@@ -1600,15 +1564,6 @@ namespace Gorgon.Graphics.Properties {
         internal static string GORGFX_IMAGE_PNG_CODEC_DESC {
             get {
                 return ResourceManager.GetString("GORGFX_IMAGE_PNG_CODEC_DESC", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Truevision Targa.
-        /// </summary>
-        internal static string GORGFX_IMAGE_TGA_CODEC_DESC {
-            get {
-                return ResourceManager.GetString("GORGFX_IMAGE_TGA_CODEC_DESC", resourceCulture);
             }
         }
         

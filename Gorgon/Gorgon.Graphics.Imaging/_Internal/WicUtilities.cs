@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Graphics.Imaging.Properties;
@@ -300,9 +301,12 @@ namespace Gorgon.Graphics.Imaging
 		/// <param name="bitmap">The WIC bitmap source to use for the converter.</param>
 		/// <param name="targetFormat">The WIC format to convert to.</param>
 		/// <param name="dither">The type of dithering to apply to the image data during conversion (if down sampling).</param>
+		/// <param name="palette">The 8 bit palette to apply.</param>
+		/// <param name="alpha8Bit">Percentage of alpha for 8 bit paletted images.</param>
 		/// <returns>The WIC converter.</returns>
-		private WIC.FormatConverter GetFormatConverter(WIC.BitmapSource bitmap, Guid targetFormat, ImageDithering dither)
+		private WIC.FormatConverter GetFormatConverter(WIC.BitmapSource bitmap, Guid targetFormat, ImageDithering dither, WIC.Palette palette, float alpha8Bit)
 		{
+			WIC.BitmapPaletteType paletteType = WIC.BitmapPaletteType.Custom;
 			var result = new WIC.FormatConverter(_factory);
 
 			if (!result.CanConvert(bitmap.PixelFormat, targetFormat))
@@ -310,9 +314,25 @@ namespace Gorgon.Graphics.Imaging
 				throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, "WICGuid{" + targetFormat + "}"));
 			}
 
-			// TODO: Get 8 bit palette information.
-			// TODO: Pass palette info to this method, and to frame.Palette.
-			result.Initialize(bitmap, targetFormat, (WIC.BitmapDitherType)dither, null, 0, WIC.BitmapPaletteType.Custom);
+			if (palette != null)
+			{
+				// Change dithering from ordered to error diffusion when we use 8 bit palettes.
+				switch (dither)
+				{
+					case ImageDithering.Ordered4x4:
+					case ImageDithering.Ordered8x8:
+					case ImageDithering.Ordered16x16:
+						if (palette.TypeInfo == WIC.BitmapPaletteType.Custom)
+						{
+							dither = ImageDithering.ErrorDiffusion;
+						}
+						break;
+				}
+
+				paletteType = palette.TypeInfo;
+			}
+
+			result.Initialize(bitmap, targetFormat, (WIC.BitmapDitherType)dither, palette, alpha8Bit * 100.0 , paletteType);
 
 			return result;
 		}
@@ -354,6 +374,68 @@ namespace Gorgon.Graphics.Imaging
 		}
 
 		/// <summary>
+		/// Function to retrieve palette information from an 8 bit indexed image.
+		/// </summary>
+		/// <param name="frame">The bitmap frame that holds the palette info.</param>
+		/// <param name="options">The list of options used to override.</param>
+		/// <param name="reading"><b>true</b> if reading a frame, <b>false</b> if writing a frame.</param>
+		/// <returns>The palette information.</returns>
+		private Tuple<WIC.Palette, float> GetPalette(WIC.BitmapFrameDecode frame, IGorgonCodecWicDecodingOptions options, bool reading)
+		{
+			// If there's no palette option on the decoder, then we do nothing.
+			if ((options != null) && (!options.Options.Options.ContainsKey("Palette")))
+			{
+				return null;
+			}
+
+			if (frame == null)
+			{
+				return null;
+			}
+
+			IList<GorgonColor> paletteColors = options?.Options.GetOption<IList<GorgonColor>>("Palette") ?? new GorgonColor[0];
+			float alpha = options?.Options.GetOption<float>("AlphaThreshold") ?? 0.0f;
+			WIC.Palette wicPalette;
+
+			// If there are no colors set, then extract it from the frame.
+			if (paletteColors.Count == 0)
+			{
+				if (reading)
+				{
+					return null;
+				}
+
+				wicPalette = new WIC.Palette(_factory);
+				wicPalette.Initialize(frame, 256, !alpha.EqualsEpsilon(0));
+
+				return new Tuple<WIC.Palette, float>(wicPalette, alpha);
+			}
+
+			// Generate from our custom palette.
+			var dxColors = new DX.Color[paletteColors.Count];
+			int size = paletteColors.Count.Min(dxColors.Length);
+
+			for (int i = 0; i < size; i++)
+			{
+				GorgonColor color = paletteColors[i];
+
+				if (color.Alpha >= alpha)
+				{
+					dxColors[i] = new DX.Color(color.ToVector4());
+				}
+				else
+				{
+					dxColors[i] = new DX.Color(0, 0, 0, 0);
+				}
+			}
+
+			wicPalette = new WIC.Palette(_factory);
+			wicPalette.Initialize(dxColors);
+
+			return new Tuple<WIC.Palette, float>(wicPalette, alpha);
+		}
+
+		/// <summary>
 		/// Function to encode image data into a single frame for a WIC bitmap image.
 		/// </summary>
 		/// <param name="encoder">The WIC encoder to use.</param>
@@ -386,7 +468,8 @@ namespace Gorgon.Graphics.Imaging
 				{
 					using (WIC.Bitmap bitmap = GetBitmap(buffer, requestedFormat))
 					{
-						using (WIC.BitmapSource converter = GetFormatConverter(bitmap, pixelFormat, options?.Dithering ?? ImageDithering.None))
+						// TODO: Should pass palette info.
+						using (WIC.BitmapSource converter = GetFormatConverter(bitmap, pixelFormat, options?.Dithering ?? ImageDithering.None, null, 0))
 						{
 							frame.WriteSource(converter);
 						}
@@ -560,8 +643,8 @@ namespace Gorgon.Graphics.Imaging
 		/// <param name="srcFormat">Source image format.</param>
 		/// <param name="convertFormat">Conversion format.</param>
 		/// <param name="frame">Frame containing the image data.</param>
-		/// <param name="dither">The type of dithering to use when converting the pixel format bit depth.</param>
-		private void ReadFrame(IGorgonImage data, Guid srcFormat, Guid convertFormat, WIC.BitmapFrameDecode frame, ImageDithering dither)
+		/// <param name="decodingOptions">Options used to decode the image data.</param>
+		private void ReadFrame(IGorgonImage data, Guid srcFormat, Guid convertFormat, WIC.BitmapFrameDecode frame, IGorgonCodecWicDecodingOptions decodingOptions)
 		{
 			var buffer = data.Buffers[0];
 
@@ -572,32 +655,42 @@ namespace Gorgon.Graphics.Imaging
 				return;
 			}
 
+			ImageDithering dither = decodingOptions?.Dithering ?? ImageDithering.None;
+			WIC.Bitmap tempBitmap = null;
 			WIC.BitmapSource formatConverter = null;
 			WIC.BitmapSource sourceBitmap = frame;
-			Tuple<WIC.Palette, double, WIC.BitmapPaletteType> paletteInfo = null;
+			Tuple<WIC.Palette, float> paletteInfo = null;
 
 			try
 			{
 				// Perform conversion.
-				bool isIndexed = ((frame.PixelFormat == WIC.PixelFormat.Format8bppIndexed)
-				                  || (frame.PixelFormat == WIC.PixelFormat.Format4bppIndexed)
-				                  || (frame.PixelFormat == WIC.PixelFormat.Format2bppIndexed)
-				                  || (frame.PixelFormat == WIC.PixelFormat.Format1bppIndexed));
-				
-
-				if (isIndexed)
+				if ((frame.PixelFormat == WIC.PixelFormat.Format8bppIndexed)
+				    || (frame.PixelFormat == WIC.PixelFormat.Format4bppIndexed)
+				    || (frame.PixelFormat == WIC.PixelFormat.Format2bppIndexed)
+				    || (frame.PixelFormat == WIC.PixelFormat.Format1bppIndexed))
 				{
-					//paletteInfo = GetPaletteInfo(wic, null);
-
-					// Create a temporary bitmap to convert our indexed image.
-					sourceBitmap = new WIC.Bitmap(_factory, frame, WIC.BitmapCreateCacheOption.NoCache);
+					paletteInfo = GetPalette(frame, decodingOptions, true);
 				}
 
-				formatConverter = GetFormatConverter(sourceBitmap, convertFormat, dither);
+				if (paletteInfo != null)
+				{ 
+					// Create a temporary bitmap to convert our indexed image.
+					tempBitmap = new WIC.Bitmap(_factory, frame, WIC.BitmapCreateCacheOption.NoCache)
+					             {
+						             Palette = paletteInfo.Item1
+					             };
+					formatConverter = GetFormatConverter(tempBitmap, convertFormat, dither, paletteInfo.Item1, paletteInfo.Item2);
+				}
+				else
+				{
+					formatConverter = GetFormatConverter(sourceBitmap, convertFormat, dither, null, 0.0f);
+				}
+
 				formatConverter.CopyPixels(buffer.PitchInformation.RowPitch, new IntPtr(buffer.Data.Address), buffer.PitchInformation.SlicePitch);
 			}
 			finally
 			{
+				tempBitmap?.Dispose();
 				paletteInfo?.Item1?.Dispose();
 				formatConverter?.Dispose();
 				sourceBitmap?.Dispose();
@@ -626,7 +719,7 @@ namespace Gorgon.Graphics.Imaging
 
 				// There's a chance that, due the filter applied, that the format is now different. 
 				// So we'll need to convert.
-				using (WIC.FormatConverter converter = GetFormatConverter(scaler, bitmap.PixelFormat, ImageDithering.None))
+				using (WIC.FormatConverter converter = GetFormatConverter(scaler, bitmap.PixelFormat, ImageDithering.None, null, 0))
 				{
 					converter.CopyPixels(buffer.PitchInformation.RowPitch, new IntPtr(buffer.Data.Address), buffer.PitchInformation.SlicePitch);
 				}
@@ -735,7 +828,7 @@ namespace Gorgon.Graphics.Imaging
 
 				// TODO: Read multiple frames if necessary.
 				// Read a single frame of data.
-				ReadFrame(result, frame.PixelFormat, pixelFormat, frame, decodingOptions?.Dithering ?? ImageDithering.None);
+				ReadFrame(result, frame.PixelFormat, pixelFormat, frame, decodingOptions);
 
 				// If we've not read the full length of the data (WIC seems to ignore the CRC on the IEND chunk for PNG files for example),
 				// then we need to move the pointer up by however many bytes we've missed.
@@ -939,7 +1032,7 @@ namespace Gorgon.Graphics.Imaging
 							{
 								// Create a WIC bitmap so we have a source for conversion.
 								bitmap = new WIC.Bitmap(_factory, srcBuffer.Width, srcBuffer.Height, sourceFormat, rect, srcBuffer.PitchInformation.SlicePitch);
-								WIC.BitmapSource converterSource = formatConverter = GetFormatConverter(bitmap, destFormat, dithering);
+								WIC.BitmapSource converterSource = formatConverter = GetFormatConverter(bitmap, destFormat, dithering, null, 0);
 
 								// If we have an sRgb conversion, then apply that after converting formats.
 								if ((isSrcSRgb) || (isDestSRgb))

@@ -473,14 +473,8 @@ Please report this error by pasting the details to the bug tracker in Gorgon's g
   <data name="GORGFX_FONT_KERNING_PAIR_TOSTR" xml:space="preserve">
     <value>{0}/{1}</value>
   </data>
-  <data name="GORGFX_IMAGE_BMP_CODEC_DESC" xml:space="preserve">
-    <value>Windows Bitmap</value>
-  </data>
   <data name="GORGFX_IMAGE_CODEC_TOSTR" xml:space="preserve">
     <value>Gorgon {0} Image Codec</value>
-  </data>
-  <data name="GORGFX_IMAGE_DDS_CODEC_DESC" xml:space="preserve">
-    <value>Direct Draw Surface</value>
   </data>
   <data name="GORGFX_IMAGE_FILE_INCORRECT_DECODER" xml:space="preserve">
     <value>The data in the stream could not be decoded as a {0} file.</value>
@@ -488,17 +482,11 @@ Please report this error by pasting the details to the bug tracker in Gorgon's g
   <data name="GORGFX_IMAGE_FILE_INCORRECT_ENCODER" xml:space="preserve">
     <value>The data could not be encoded into a {0} file.</value>
   </data>
-  <data name="GORGFX_IMAGE_GIF_CODEC_DESC" xml:space="preserve">
-    <value>Graphics Interchange Format</value>
-  </data>
   <data name="GORGFX_IMAGE_HDP_CODEC_DESC" xml:space="preserve">
     <value>HD Photo format</value>
   </data>
   <data name="GORGFX_IMAGE_INDEXED_NO_PALETTE" xml:space="preserve">
     <value>An indexed image requires a palette with {0} entries.</value>
-  </data>
-  <data name="GORGFX_IMAGE_JPG_CODEC_DESC" xml:space="preserve">
-    <value>Joint photographics experts group</value>
   </data>
   <data name="GORGFX_IMAGE_MIPCOUNT_ARRAYCOUNT_TOO_LARGE" xml:space="preserve">
     <value>The mip level count and the array count exceed the length of the array.</value>
@@ -514,9 +502,6 @@ Please report this error by pasting the details to the bug tracker in Gorgon's g
   </data>
   <data name="GORGFX_IMAGE_PNG_CODEC_DESC" xml:space="preserve">
     <value>Portable Network Graphics</value>
-  </data>
-  <data name="GORGFX_IMAGE_TGA_CODEC_DESC" xml:space="preserve">
-    <value>Truevision Targa</value>
   </data>
   <data name="GORGFX_IMAGE_TIF_CODEC_DESC" xml:space="preserve">
     <value>Tagged Image File Format</value>

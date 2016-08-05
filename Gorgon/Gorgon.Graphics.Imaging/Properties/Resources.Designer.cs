@@ -70,11 +70,56 @@ namespace Gorgon.Graphics.Imaging.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Windows Bitmap.
+        /// </summary>
+        internal static string GORIMG_DESC_BMP_CODEC {
+            get {
+                return ResourceManager.GetString("GORIMG_DESC_BMP_CODEC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Direct Draw Surface.
+        /// </summary>
+        internal static string GORIMG_DESC_DDS_CODEC {
+            get {
+                return ResourceManager.GetString("GORIMG_DESC_DDS_CODEC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Graphics Interchange Format.
+        /// </summary>
+        internal static string GORIMG_DESC_GIF_CODEC {
+            get {
+                return ResourceManager.GetString("GORIMG_DESC_GIF_CODEC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Joint photographics experts group.
+        /// </summary>
+        internal static string GORIMG_DESC_JPG_CODEC {
+            get {
+                return ResourceManager.GetString("GORIMG_DESC_JPG_CODEC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Portable Network Graphics.
         /// </summary>
         internal static string GORIMG_DESC_PNG_CODEC {
             get {
                 return ResourceManager.GetString("GORIMG_DESC_PNG_CODEC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Truevision Targa.
+        /// </summary>
+        internal static string GORIMG_DESC_TGA_CODEC {
+            get {
+                return ResourceManager.GetString("GORIMG_DESC_TGA_CODEC", resourceCulture);
             }
         }
         
