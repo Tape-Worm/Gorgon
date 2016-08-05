@@ -63,11 +63,18 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Codecs\GorgonCodecBmp.cs" />
+    <Compile Include="Codecs\GorgonCodecGif.cs" />
+    <Compile Include="Codecs\GorgonCodecJpeg.cs" />
+    <Compile Include="Codecs\GorgonCodecJpegEncodingOptions.cs" />
+    <Compile Include="Codecs\GorgonCodecGifDecodingOptions.cs" />
     <Compile Include="Codecs\GorgonCodecWicDecodingOptions.cs" />
     <Compile Include="Codecs\GorgonCodecPng.cs" />
     <Compile Include="Codecs\GorgonCodecWic.cs" />
     <Compile Include="Codecs\GorgonCodecPngEncodingOptions.cs" />
     <Compile Include="Codecs\GorgonImageCodec.cs" />
+    <Compile Include="Codecs\_Interfaces\IGorgonImageCodec.cs" />
+    <Compile Include="Codecs\_Interfaces\IGorgonCodecJpegEncodingOptions.cs" />
     <Compile Include="Codecs\_Interfaces\IGorgonCodecPngEncodingOptions.cs" />
     <Compile Include="Codecs\_Interfaces\IGorgonCodecWicDecodingOptions.cs" />
     <Compile Include="Codecs\_Interfaces\IGorgonCodecWicEncodingOptions.cs" />

@@ -20,32 +20,28 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: June 27, 2016 11:18:56 PM
+// Created: August 4, 2016 11:27:19 PM
 // 
 #endregion
 
-
 using System.Collections.Generic;
 using Gorgon.Graphics.Imaging.Properties;
-using DXGI = SharpDX.DXGI;
 using WIC = SharpDX.WIC;
+using DXGI = SharpDX.DXGI;
 
 namespace Gorgon.Graphics.Imaging.Codecs
 {
 	/// <summary>
-	/// A codec to handle read/writing of PNG files.
+	/// A codec to handle read/writing of JPEG files.
 	/// </summary>
 	/// <remarks>
 	/// <para>
-	/// This codec will read and write lossless compressed files using the Portable Network Graphics (PNG) format.
+	/// This codec will read and write lossy compression files using the Joint Photographics Experts Group (JPEG) format.
 	/// </para>
 	/// <para>
 	/// This codec supports the following pixel formats:
 	/// <list type="bullet">
-	///		<item><c>R8G8B8A8_UNorm</c></item>
-	///		<item><c>B8G8R8A8_UNorm</c></item>
 	///		<item><c>B8G8R8X8_UNorm</c></item>
-	///		<item><c>R16G16B16A16_UNorm</c></item>
 	/// </list>
 	/// </para>
 	/// <para>
@@ -56,33 +52,61 @@ namespace Gorgon.Graphics.Imaging.Codecs
 	/// </note>
 	/// </para>
 	/// </remarks>
-	public sealed class GorgonCodecPng
+	public sealed class GorgonCodecJpeg
         : GorgonCodecWic
-	{
-		#region Variables.
+    {
+        #region Variables.
 		// Supported formats.
-	    private readonly DXGI.Format[] _supportedPixelFormats =
-	    {
-		    DXGI.Format.R8G8B8A8_UNorm,
-		    DXGI.Format.B8G8R8A8_UNorm,
-		    DXGI.Format.B8G8R8X8_UNorm,
-		    DXGI.Format.R16G16B16A16_UNorm
-	    };
-		#endregion
+		private readonly DXGI.Format[] _supportedFormats =
+		{
+			DXGI.Format.B8G8R8X8_UNorm
+		};
 
-		#region Properties.
+		// Image quality for lossy compressed images.
+		private float _imageQuality = 1.0f;
+        #endregion
+
+        #region Properties.
+		/// <summary>
+		/// Property to return the supported pixel formats for this codec.
+		/// </summary>
+		public override IReadOnlyList<DXGI.Format> SupportedPixelFormats => _supportedFormats;
+
 	    /// <summary>
-	    /// Property to return the supported pixel formats for this codec.
-	    /// </summary>
-	    public override IReadOnlyList<DXGI.Format> SupportedPixelFormats => _supportedPixelFormats;
+        /// Property to set or return the quality of an image compressed with lossy compression.
+        /// </summary>
+        /// <remarks>
+        /// Use this property to control the fidelity of an image compressed with lossy compression.  0.0f will give the 
+        /// lowest quality and 1.0f will give the highest.
+        /// </remarks>
+        public float ImageQuality
+        {
+            get
+            {
+                return _imageQuality;
+            }
+            set
+            {
+                if (value < 0.0f)
+                {
+                    value = 0.0f;
+                }
+                if (value > 1.0f)
+                {
+                    value = 1.0f;
+                }
+
+                _imageQuality = value;
+            }
+        }
         #endregion
 
         #region Constructor/Destructor.
         /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonCodecPng"/> class.
+        /// Initializes a new instance of the <see cref="GorgonCodecJpeg" /> class.
         /// </summary>
-        public GorgonCodecPng()
-            : base("PNG", Resources.GORIMG_DESC_PNG_CODEC, new[] { "png" }, WIC.ContainerFormatGuids.Png)
+        public GorgonCodecJpeg()
+            : base("JPEG", Resources.GORIMG_DESC_JPG_CODEC, new[] { "jpg", "jpeg", "jpe", "jif", "jfif", "jfi" }, WIC.ContainerFormatGuids.Jpeg)
         {
         }
         #endregion
