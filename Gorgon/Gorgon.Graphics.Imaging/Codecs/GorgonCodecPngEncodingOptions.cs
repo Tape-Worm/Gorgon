@@ -34,7 +34,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 	/// Options used when encoding an image to a stream as a PNG file..
 	/// </summary>
 	public sealed class GorgonCodecPngEncodingOptions
-		: IGorgonCodecPngEncodingOptions
+		: IGorgonPngEncodingOptions
 	{
 		#region Properties.
 		/// <summary>

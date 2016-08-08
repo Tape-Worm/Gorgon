@@ -31,8 +31,6 @@ using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using DXGI = SharpDX.DXGI;
 using DX = SharpDX;
-using SharpDX.Direct2D1;
-using WIC = SharpDX.WIC;
 
 namespace Gorgon.Graphics.Imaging.Codecs
 {
@@ -88,6 +86,14 @@ namespace Gorgon.Graphics.Imaging.Codecs
 
 		#region Properties
 		/// <summary>
+		/// Property to return the list of names used to locate frame offsets in metadata.
+		/// </summary>
+		/// <remarks>
+		/// Implementors must put the horizontal offset name first, and the vertical name second.  Failure to do so will lead to incorrect offsets.
+		/// </remarks>
+		protected virtual IReadOnlyList<string> FrameOffsetMetadataNames => null;
+
+		/// <summary>
 		/// Property to set or return the file format that is supported by this codec.
 		/// </summary>
 		protected Guid SupportedFileFormat
@@ -134,170 +140,24 @@ namespace Gorgon.Graphics.Imaging.Codecs
 
 		#region Methods.
 		/// <summary>
-		/// Function to read multiple frames from a decoder that supports multiple frames.
+		/// Function to retrieve custom metadata when encoding an image frame.
 		/// </summary>
-		/// <param name="wic">WIC interface.</param>
-		/// <param name="data">Image data to populate.</param>
-		/// <param name="decoder">Decoder for the image.</param>
-		private void ReadFrames(WicUtilities wic, IGorgonImage data, WIC.BitmapDecoder decoder)
+		/// <param name="frameIndex">The index of the frame being encoded.</param>
+		/// <param name="options">The encoding options to use.</param>
+		/// <param name="settings">The settings for the image being encoded.</param>
+		/// <returns>A dictionary containing the key/value pair describing the metadata to write to the frame, or <b>null</b> if the frame contains no metadata.</returns>
+		protected virtual IReadOnlyDictionary<string, object> GetCustomEncodingMetadata(int frameIndex, IGorgonWicEncodingOptions options, IGorgonImageInfo settings)
 		{
-/*			Guid bestPixelFormat = wic.GetGUID(data.Info.Format);
-
-			// Find the best fit pixel format.
-			if (bestPixelFormat == Guid.Empty)
-			{
-				throw new IOException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, data.Info.Format));
-			}
-
-			for (int array = 0; array < data.Info.ArrayCount; array++)
-			{
-				var buffer = data.Buffers[0, array];
-
-				// Get the frame data.
-				using (var frame = decoder.GetFrame(array))
-				{
-					IntPtr bufferPointer = new IntPtr(buffer.Data.Address);
-					Guid frameFormat = frame.PixelFormat;
-					int frameWidth = frame.Size.Width;
-					int frameHeight = frame.Size.Height;
-
-					// If the formats match, then we don't need to do conversion.
-					if (bestPixelFormat == frameFormat)
-					{
-						frame.CopyPixels(buffer.PitchInformation.RowPitch, bufferPointer, buffer.PitchInformation.SlicePitch);
-						continue;
-					}
-
-				    // Poop.  We need to convert this image.
-				    using (var converter = new FormatConverter(wic.Factory))
-                    {
-				        converter.Initialize(frame,
-				                                bestPixelFormat,
-				                                (BitmapDitherType)Dithering,
-				                                null,
-				                                0.0,
-				                                BitmapPaletteType.Custom);
-
-				        if (((frameWidth == data.Info.Width) && (frameHeight == data.Info.Height))
-				            || ((!needsSizeAdjust) && (Clip)))
-				        {
-				            converter.CopyPixels(buffer.PitchInformation.RowPitch,
-				                                 bufferPointer,
-				                                 buffer.PitchInformation.SlicePitch);
-				            continue;
-				        }
-
-				        // And we need to scale the image.
-				        if (!Clip)
-				        {
-				            using(var scaler = new BitmapScaler(wic.Factory))
-				            {
-				                scaler.Initialize(converter,
-				                                    data.Info.Width,
-				                                    data.Info.Height,
-				                                    (BitmapInterpolationMode)Filter);
-				                scaler.CopyPixels(buffer.PitchInformation.RowPitch,
-				                                    bufferPointer,
-				                                    buffer.PitchInformation.SlicePitch);
-				            }
-
-				            continue;
-				        }
-
-				        using(var clipper = new BitmapClipper(wic.Factory))
-				        {
-				            clipper.Initialize(frame,
-				                                new Rectangle(0, 0, data.Info.Width, data.Info.Height));
-				            clipper.CopyPixels(buffer.PitchInformation.RowPitch,
-				                                bufferPointer,
-				                                buffer.PitchInformation.SlicePitch);
-				        }
-				    }
-				}
-			}*/
+			return null;
 		}
 
 		/// <summary>
-		/// Function to read the data from a frame.
+		/// Function to retrieve the names of the metadata items used to get frame offsets.
 		/// </summary>
-		/// <param name="wic">WIC interface.</param>
-		/// <param name="data">Image data to populate.</param>
-		/// <param name="srcFormat">Source image format.</param>
-		/// <param name="convertFormat">Conversion format.</param>
-		/// <param name="frame">Frame containing the image data.</param>
-		private void ReadFrame(WicUtilities wic, IGorgonImage data, Guid srcFormat, Guid convertFormat, WIC.BitmapFrameDecode frame)
+		/// <returns>A hashset of metadata names.</returns>
+		protected virtual HashSet<string> GetFrameOffsetMetadataNames()
 		{
-/*			var buffer = data.Buffers[0];
-
-			// We don't need to convert, so just leave.
-			if ((convertFormat == Guid.Empty) || (srcFormat == convertFormat))
-			{
-				frame.CopyPixels(buffer.PitchInformation.RowPitch, new IntPtr(buffer.Data.Address), buffer.PitchInformation.SlicePitch);
-				return;
-			}
-
-			// Perform conversion.
-			using (var converter = new FormatConverter(wic.Factory))
-			{
-				bool isIndexed = ((frame.PixelFormat == PixelFormat.Format8bppIndexed)
-							|| (frame.PixelFormat == PixelFormat.Format4bppIndexed)
-							|| (frame.PixelFormat == PixelFormat.Format2bppIndexed)
-							|| (frame.PixelFormat == PixelFormat.Format1bppIndexed));
-				Tuple<Palette, double, BitmapPaletteType> paletteInfo = null;
-
-				try
-				{
-					// If the pixel format is indexed, then retrieve a palette.
-					if (isIndexed)
-					{
-						paletteInfo = GetPaletteInfo(wic, null);
-					}
-
-					// If we've defined a palette for an indexed image, then copy it to a bitmap and set its palette.
-					if (paletteInfo?.Item1 != null)
-					{
-						using (var tempBitmap = new Bitmap(wic.Factory, frame, BitmapCreateCacheOption.CacheOnDemand))
-						{
-							tempBitmap.Palette = paletteInfo.Item1;
-							converter.Initialize(tempBitmap, convertFormat, (BitmapDitherType)Dithering, paletteInfo.Item1, paletteInfo.Item2, paletteInfo.Item3);
-							converter.CopyPixels(buffer.PitchInformation.RowPitch, new IntPtr(buffer.Data.Address), buffer.PitchInformation.SlicePitch);
-						}
-
-						return;
-					}
-
-					// Only apply palettes to indexed image data.
-					converter.Initialize(frame, convertFormat, (BitmapDitherType)Dithering, null, 0.0, BitmapPaletteType.Custom);
-					converter.CopyPixels(buffer.PitchInformation.RowPitch, new IntPtr(buffer.Data.Address), buffer.PitchInformation.SlicePitch);
-				}
-				finally
-				{
-					paletteInfo?.Item1?.Dispose();
-				}
-			}*/
-		}
-
-		/// <summary>
-		/// Function to retrieve palette information for indexed images.
-		/// </summary>
-		/// <param name="wic">The WIC interface.</param>
-		/// <param name="bitmap">The bitmap to derive the palette from (only used when encoding).</param>
-		/// <returns>A tuple containing the palette data, alpha percentage and the type of palette.  NULL if we're encoding and we want to generate the palette from the frame.</returns>
-		internal virtual Tuple<WIC.Palette, double, WIC.BitmapPaletteType> GetPaletteInfo(WicUtilities wic, Bitmap bitmap)
-		{
-			return new Tuple<WIC.Palette, double, WIC.BitmapPaletteType>(null, 0, WIC.BitmapPaletteType.Custom);
-		}
-
-		/// <summary>
-		/// Function to add custom metadata to the frame.
-		/// </summary>
-		/// <param name="encoder">Encoder being used to encode the image.</param>
-		/// <param name="frame">Frame to encode.</param>
-		/// <param name="frameIndex">Index of the current frame.</param>
-		/// <param name="settings">Image data settings.</param>
-		/// <param name="paletteColors">Palette colors used to encode the 8 bit images.</param>
-		internal virtual void AddCustomMetaData(WIC.BitmapEncoder encoder, WIC.BitmapFrameEncode frame, int frameIndex, GorgonImageInfo settings, GorgonColor[] paletteColors)
-		{
+			return new HashSet<string>();
 		}
 
 		/// <summary>
@@ -338,7 +198,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 
 			try
 			{
-				IGorgonImage result = wic.DecodeImageData(stream, size, SupportedFileFormat, options as IGorgonCodecWicDecodingOptions);
+				IGorgonImage result = wic.DecodeImageData(stream, size, SupportedFileFormat, options as IGorgonWicDecodingOptions, FrameOffsetMetadataNames);
 
 				if (result == null)
 				{
@@ -379,13 +239,14 @@ namespace Gorgon.Graphics.Imaging.Codecs
 				throw new IOException(string.Format(Resources.GORIMG_ERR_STREAM_IS_READONLY));
 			}
 
-			var options = encodingOptions as IGorgonCodecWicEncodingOptions;
+			var options = encodingOptions as IGorgonWicEncodingOptions;
 
 			var wic = new WicUtilities();
 
 			try
 			{
-				wic.EncodeImageData(imageData, stream, SupportedFileFormat, options);
+				IReadOnlyDictionary<string, object> metaData = GetCustomEncodingMetadata(0, encodingOptions as IGorgonWicEncodingOptions, imageData.Info);
+				wic.EncodeImageData(imageData, stream, SupportedFileFormat, options, metaData);
 			}
 			finally
 			{
@@ -530,7 +391,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <para>Thrown when the stream cannot perform seek operations.</para>
 		/// </exception>
 		/// <exception cref="EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
-		public GorgonImageInfo GetMetaData(Stream stream, IGorgonCodecWicDecodingOptions options)
+		public GorgonImageInfo GetMetaData(Stream stream, IGorgonWicDecodingOptions options)
 		{
 		    if (stream == null)
             {
@@ -569,6 +430,90 @@ namespace Gorgon.Graphics.Imaging.Codecs
             {
 				wic.Dispose();
             }
+		}
+
+		/// <summary>
+		/// Function to retrieve the horizontal and vertical offsets for the frames in a multi-frame image.
+		/// </summary>
+		/// <param name="fileName">The path to the file to retrieve the offsets from.</param>
+		/// <returns>A list of <c>Point</c> values that indicate the offset within the image for each frame.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileName"/> parameter is <b>NULL</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="fileName"/> parameter is empty.</exception>
+		/// <exception cref="EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
+		/// <remarks>
+		/// <para>
+		/// For image codecs that support multiple frames, this reads a list of offset values for each frame so that the frame can be positioned correctly within the base image. If the image does not have 
+		/// multiple frames, or the codec does not support multiple frames, then an empty list is returned.
+		/// </para>
+		/// </remarks>
+		public IReadOnlyList<DX.Point> GetFrameOffsets(string fileName)
+		{
+			if (fileName == null)
+			{
+				throw new ArgumentNullException(nameof(fileName));
+			}
+
+			if (string.IsNullOrWhiteSpace(fileName))
+			{
+				throw new ArgumentException(Resources.GORIMG_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(fileName));
+			}
+
+			using (FileStream stream = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.Read))
+			{
+				return GetFrameOffsets(stream);
+			}
+		}
+
+		/// <summary>
+		/// Function to retrieve the horizontal and vertical offsets for the frames in a multi-frame image.
+		/// </summary>
+		/// <param name="stream">The stream containing the image data.</param>
+		/// <returns>A list of <c>Point</c> values that indicate the offset within the image for each frame.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>NULL</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="IOException">Thrown when the stream is write-only.
+		/// <para>-or-</para>
+		/// <para>Thrown when the stream cannot perform seek operations.</para>
+		/// </exception>
+		/// <exception cref="EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
+		/// <remarks>
+		/// <para>
+		/// For image codecs that support multiple frames, this reads a list of offset values for each frame so that the frame can be positioned correctly within the base image. If the image does not have 
+		/// multiple frames, or the codec does not support multiple frames, then an empty list is returned.
+		/// </para>
+		/// </remarks>
+		public IReadOnlyList<DX.Point> GetFrameOffsets(Stream stream)
+		{
+			if (!SupportsMultipleFrames)
+			{
+				return new DX.Point[0];
+			}
+
+			var wic = new WicUtilities();
+
+			try
+			{
+				if ((FrameOffsetMetadataNames == null) || (FrameOffsetMetadataNames.Count == 0))
+				{
+					return new DX.Point[0];
+				}
+
+				IReadOnlyList<DX.Point> result = wic.GetFrameOffsetMetadata(stream, SupportedFileFormat, FrameOffsetMetadataNames);
+
+				if (result == null)
+				{
+					throw new IOException(string.Format(Resources.GORIMG_ERR_FILE_FORMAT_NOT_CORRECT, Codec));
+				}
+
+				return result;
+			}
+			catch (DX.SharpDXException)
+			{
+				throw new IOException(string.Format(Resources.GORIMG_ERR_FILE_FORMAT_NOT_CORRECT, Codec));
+			}
+			finally
+			{
+				wic.Dispose();
+			}
 		}
 
 		/// <summary>
