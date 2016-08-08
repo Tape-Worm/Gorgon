@@ -27,21 +27,17 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using Gorgon.Graphics;
 using Gorgon.Graphics.Imaging.Properties;
-using Gorgon.IO;
 using Gorgon.Math;
-using SharpDX.WIC;
-using Bitmap = SharpDX.WIC.Bitmap;
-using DX = SharpDX;
+using WIC = SharpDX.WIC;
 
 namespace Gorgon.Graphics.Imaging.Codecs
 {
 	/// <summary>
 	/// A codec to handle reading/writing GIF files.
 	/// </summary>
-	/// <remarks>A codec allows for reading and/or writing of data in an encoded format.  Users may inherit from this object to define their own 
+	/// <remarks>
+	/// A codec allows for reading and/or writing of data in an encoded format.  Users may inherit from this object to define their own 
 	/// image formats, or use one of the predefined image codecs available in Gorgon.
 	/// <para>The limitations of this codec are as follows:
 	/// <list type="bullet">
@@ -55,260 +51,100 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		: GorgonCodecWic
 	{
 		#region Variables.
-		// Alpha threshold.
-		private float _alphaPercent;
+		// Meta data names for the frame offsets.
+		private static readonly string[] _frameOffsetItems =
+		{
+			"/imgdesc/Left",
+			"/imgdesc/Top"
+		};
 		#endregion
 
 		#region Properties.
 		/// <summary>
+		/// Property to return the list of names used to locate frame offsets in metadata.
+		/// </summary>
+		/// <remarks>
+		/// Implementors must put the horizontal offset name first, and the vertical name second.  Failure to do so will lead to incorrect offsets.
+		/// </remarks>
+		protected override IReadOnlyList<string> FrameOffsetMetadataNames => _frameOffsetItems;
+		
+		/// <summary>
 		/// Property to return whether the codec supports decoding/encoding multiple frames or not.
 		/// </summary>
 		public override bool SupportsMultipleFrames => true;
-
-		// TODO: This goes into decoding options.
-		/// <summary>
-		/// Property to set or return the delays between each frame in 1/10 of a second.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// This property will store the delays between individual frames (image array indices) for animation.  If this value is left as NULL (<i>Nothing</i> in VB.Net), then no frame delays will be put 
-		/// in to the GIF file.  If the array has less elements than the number of frames available, then a delay of 0 will be used for remaining delays and if the array has more delays than frames, then 
-		/// any frame delays after the number of images will be discarded.
-		/// </para>
-		/// <para>
-		/// This property is only used on image data with multiple array indices.
-		/// </para>
-		/// <para>
-		/// The property only applies to encoding of the image.
-		/// </para>
-		/// <para>
-		/// The default value is <b>null</b>.
-		/// </para>
-		/// </remarks>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-		public IList<ushort> FrameDelays
-		{
-			get;
-			set;
-		}
-
-		// TODO: This goes into encoding/decoding options.
-		/// <summary>
-		/// Property to set or return whether all frames in a multi-frame image should be encoded/decoded or not.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// This property will encode or decode multiple frames from or into an array.  Note that this is only supported on codecs that support multiple frames (e.g. animated Gif). Images that do not 
-		/// support multiple frames will ignore this flag.
-		/// </para>
-		/// <para>
-		/// This property applies to both encoding and decoding of image data.
-		/// </para>
-		/// <para>
-		/// The default value is <b>false</b>.
-		/// </para>
-		/// </remarks>
-		public bool UseAllFrames
-		{
-			get;
-			set;
-		}
-
-		// TODO: This goes into encoding/decoding options.
-		/// <summary>
-		/// Property to return the palette to assign to the 8 bit indexed data for this image.
-		/// </summary>		
-		/// <remarks>
-		/// <para>
-		/// Use this to alter the color palette for the GIF as it's decoded or encoded.  This list will only support up to 256 indices.  More than 256 indices will be ignored.  
-		/// </para>
-		/// <para>
-		/// This value does not apply to GIF files with multiple frames.
-		/// </para>
-		/// <para>
-		/// This property affects both encoding and decoding.
-		/// </para>
-		/// </remarks>
-		public IList<GorgonColor> Palette
-		{
-		    get;
-		}
-
-		// TODO: This goes into encoding/decoding options.
-		/// <summary>
-		/// Property to set or return the alpha threshold percentage for this codec.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// Use this to determine what percentage of alpha values should be considered transparent for the GIF.  A value of 50 will mean that alpha with values of 128 or less will be considered 
-		/// transparent.
-		/// </para>
-		/// <para>
-		/// This value does not apply to GIF files with multiple frames.
-		/// </para>
-		/// <para>
-		/// This property affects both encoding and decoding.
-		/// </para>
-		/// <para>
-		/// The default value is 0.
-		/// </para>
-		/// </remarks>
-		public float AlphaThresholdPercent
-		{
-			get
-			{
-				return _alphaPercent;
-			}
-			set
-			{
-				_alphaPercent = value.Max(0).Max(1);
-			}
-		}
 		#endregion
 
 		#region Methods.
-		/*/// <summary>
-		/// Function to add custom meta data to the frame.
+		/// <summary>
+		/// Function to retrieve custom metadata when encoding an image frame.
 		/// </summary>
-		/// <param name="encoder">Encoder being used to encode the image.</param>
-		/// <param name="frame">Frame to encode.</param>
-		/// <param name="frameIndex">Index of the current frame.</param>
-		/// <param name="settings">Image data settings.</param>
-		/// <param name="paletteColors">Palette colors used to encode the images.</param>
-		internal override void AddCustomMetaData(BitmapEncoder encoder, BitmapFrameEncode frame, int frameIndex, IImageSettings settings, DX.Color[] paletteColors)
+		/// <param name="frameIndex">The index of the frame being encoded.</param>
+		/// <param name="options">The encoding options to use.</param>
+		/// <param name="settings">The settings for the image being encoded.</param>
+		/// <returns>A dictionary containing the key/value pair describing the metadata to write to the frame, or <b>null</b> if the frame contains no metadata.</returns>
+		protected override IReadOnlyDictionary<string, object> GetCustomEncodingMetadata(int frameIndex, IGorgonWicEncodingOptions options, IGorgonImageInfo settings)
 		{
-			// Do nothing.
-			if (FrameDelays == null)
-			{
-				return;
-			}
+			var gifOptions = options as GorgonGifCodecEncodingOptions;
+			var result = new Dictionary<string, object>();
 
-			if (frame == null)
-			{
-				return;
-			}
-
-			if ((settings.ArrayCount <= 1) || (!UseAllFrames))
-			{
-				return;
-			}
-
-			using (var writer = frame.MetadataQueryWriter)
-			{
-				ushort delayValue = 0;
-
-				if ((FrameDelays != null) && (frameIndex >= 0) && (frameIndex < FrameDelays.Count))
+			if (gifOptions?.Palette != null)
+			{ 
+				for (int i = 0; i < gifOptions.Palette.Count; ++i)
 				{
-					delayValue = FrameDelays[frameIndex];
+					if (!gifOptions.Palette[i].Alpha.EqualsEpsilon(0))
+					{
+						continue;
+					}
+
+					result["/grctlext/TransparencyFlag"] = true;
+					result["/grctlext/TransparentColorIndex"] = i;
 				}
-
-				bool hasTransparency = paletteColors.Any(item => item.A == 0);
-
-				writer.SetMetadataByName("/grctlext/Delay", delayValue);
-				writer.SetMetadataByName("/grctlext/Disposal", (byte)1);
-				writer.SetMetadataByName("/grctlext/TransparencyFlag", hasTransparency);
-
-				if (!hasTransparency)
-				{
-					return;
-				}
-
-				var transparentIndex = (byte)Array.FindIndex(paletteColors, item => item.A == 0);
-				writer.SetMetadataByName("/grctlext/TransparentColorIndex", transparentIndex);
 			}
-		}*/
 
-		/*/// <summary>
-		/// Function to retrieve the offset for the frame being decoded.
+			bool saveAllFrames = gifOptions?.SaveAllFrames ?? true;
+
+			if ((settings == null)
+				|| (settings.ArrayCount < 2)
+				|| (!saveAllFrames))
+			{
+				return result.Count == 0 ? null : result;
+			}
+
+			// Write out frame delays.
+			ushort delayValue = 0;
+
+			if ((gifOptions?.FrameDelays != null) && (frameIndex >= 0) && (frameIndex < gifOptions.FrameDelays.Count))
+			{
+				delayValue = (ushort)gifOptions.FrameDelays[frameIndex];
+			}
+
+			result["/grctlext/Delay"] = delayValue;
+			// TODO: This is broken in SharpDX 3.0.2.
+			//result["/grctlext/Disposal"] = (byte)1;
+
+			return result;
+		}
+
+		/// <summary>
+		/// Function to retrieve a list of frame delays for each frame in an animated GIF.
 		/// </summary>
-		/// <param name="frame">Frame to decode.</param>
-		/// <returns>
-		/// The position of the offset.
-		/// </returns>
-		internal override DX.Point GetFrameOffset(BitmapFrameDecode frame)
-		{
-			DX.Point offset = DX.Point.Empty;
-
-			if (frame == null)
-			{
-				return offset;
-			}
-
-			// Get frame offsets.
-			using (var reader = frame.MetadataQueryReader)
-			{
-				var offsetX = reader.GetMetadataByName("/imgdesc/Left");
-				var offsetY = reader.GetMetadataByName("/imgdesc/Top");
-
-				if (offsetX != null)
-				{
-					offset.X = (ushort)offsetX;
-				}
-				if (offsetY != null)
-				{
-					offset.Y = (ushort)offsetY;
-				}
-			}
-
-			return offset;
-		}*/
-
-		/*/// <summary>
-		/// Function to retrieve palette information for indexed images.
-		/// </summary>
-		/// <param name="wic">The WIC interface.</param>
-		/// <param name="bitmap">The bitmap to derive the palette from (only used when encoding).</param>
-		/// <returns>
-		/// A tuple containing the palette data, alpha percentage and the type of palette.
-		/// </returns>
-		internal override Tuple<Palette, double, BitmapPaletteType> GetPaletteInfo(GorgonWICImage wic, Bitmap bitmap)
-		{			
-			Palette palette;
-
-			if (Palette.Count == 0)
-			{
-				// If decoding, just return the default, otherwise we'll need to generate from the frame.
-				if (bitmap == null)
-				{
-					return base.GetPaletteInfo(wic, null);
-				}
-
-				palette = new Palette(wic.Factory);
-				palette.Initialize(bitmap, 256, true);
-					
-				return new Tuple<Palette,double,BitmapPaletteType>(palette, AlphaThresholdPercent, BitmapPaletteType.Custom);
-			}
-
-			// Generate from our custom palette.
-			var paletteColors = new DX.Color4[256];
-			int size = paletteColors.Length.Min(Palette.Count);
-
-			for (int i = 0; i < size; i++)
-			{
-				GorgonColor color = Palette[i];
-
-				paletteColors[i] = new DX.Color4(color.Red, color.Green, color.Blue, color.Alpha);
-			}
-
-			palette = new Palette(wic.Factory);
-			palette.Initialize(paletteColors);
-
-			return new Tuple<Palette, double, BitmapPaletteType>(palette, AlphaThresholdPercent, BitmapPaletteType.Custom);
-		}*/
-
-        /// <summary>
-        /// Function to retrieve a list of frame delays for each frame in an animated GIF.
-        /// </summary>
-        /// <param name="filePath">Path to the animated GIF file.</param>
-        /// <returns>An array of frame delays (1/100th of a second), or an empty array if the image is not an animated GIF.</returns>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="filePath"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
-        /// <exception cref="System.ArgumentException">Thown when the filePath parameter is empty.</exception>
-        /// <exception cref="System.IO.IOException">Thrown when the stream parameter is write-only.
-        /// <para>-or-</para>
-        /// <para>The data in the stream could not be decoded as GIF file.</para>
-        /// </exception>
-        /// <exception cref="System.IO.EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
-        public ushort[] GetFrameDelays(string filePath)
+		/// <param name="filePath">Path to the animated GIF file.</param>
+		/// <returns>An array of frame delays (1/100th of a second), or an empty array if the image is not an animated GIF.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentException">Thown when the filePath parameter is empty.</exception>
+		/// <exception cref="IOException">Thrown when the stream parameter is write-only.
+		/// <para>-or-</para>
+		/// <para>The data in the stream could not be decoded as GIF file.</para>
+		/// <para>-or-</para>
+		/// <para>The stream cannot perform seek operations.</para>
+		/// </exception>
+		/// <exception cref="EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
+		/// <remarks>
+		/// <para>
+		/// This will return the delay (in 1/100ths of a second) between each frame in a multi-frame animated GIF. If the GIF file only has a single frame, then an empty array is returned.
+		/// </para>
+		/// </remarks>
+		public IReadOnlyList<int> GetFrameDelays(string filePath)
         {
             if (filePath == null)
             {
@@ -330,22 +166,23 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// Function to retrieve a list of frame delays for each frame in an animated GIF.
         /// </summary>
         /// <param name="stream">Stream containing the animated GIF.</param>
-        /// <returns>
-        /// An array of frame delays (1/100th of a second), or an empty array if the image is not an animated GIF.
-        /// </returns>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
-        /// <exception cref="System.IO.IOException">Thrown when the stream parameter is write-only.
+        /// <returns>An array of frame delays (1/100th of a second), or an empty array if the image is not an animated GIF.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
+        /// <exception cref="IOException">Thrown when the stream parameter is write-only.
         /// <para>-or-</para>
         /// <para>The data in the stream could not be decoded as GIF file.</para>
         /// <para>-or-</para>
         /// <para>The stream cannot perform seek operations.</para>
         /// </exception>
-        /// <exception cref="System.IO.EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
-        public ushort[] GetFrameDelays(Stream stream)
+        /// <exception cref="EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
+        /// <remarks>
+        /// <para>
+        /// This will return the delay (in 1/100ths of a second) between each frame in a multi-frame animated GIF. If the GIF file only has a single frame, then an empty array is returned.
+        /// </para>
+        /// </remarks>
+        public IReadOnlyList<int> GetFrameDelays(Stream stream)
         {
-	        var result = new ushort[0];
-
-	        /*if (stream == null)
+	        if (stream == null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
@@ -360,82 +197,17 @@ namespace Gorgon.Graphics.Imaging.Codecs
                 throw new IOException(Resources.GORIMG_ERR_STREAM_CANNOT_SEEK);
             }
 
-			if (!UseAllFrames)
-			{
-				return result;
-			}
-
             long position = stream.Position;
+			var wic = new WicUtilities();
             
 			try
 			{
-			    var wrapperStream = new GorgonStreamWrapper(stream);
-
-				// Get our WIC interface.				
-				using (var wic = new GorgonWICImage())
-				{
-					using (var decoder = new BitmapDecoder(wic.Factory, SupportedFormat))
-					{
-						using (var wicStream = new WICStream(wic.Factory, wrapperStream))
-						{
-							try
-							{
-								decoder.Initialize(wicStream, DecodeOptions.CacheOnDemand);
-							}
-							catch (DX.SharpDXException)
-							{
-								// Repackage the exception to keep in line with our API defintion.
-								throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
-							}
-
-							if (decoder.FrameCount < 2)
-							{
-								return result;
-							}
-
-							result = new ushort[decoder.FrameCount];
-
-							for (int frame = 0; frame < result.Length; frame++)
-							{
-								using (var frameImage = decoder.GetFrame(frame))
-								{
-									// Check to see if we can actually read this thing.
-									if (frame == 0)
-									{
-										Guid temp;
-										IImageSettings settings = ReadMetaData(wic, decoder, frameImage, out temp);
-
-										if (settings.Format == BufferFormat.Unknown)
-										{
-											throw new IOException(string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, settings.Format));
-										}
-									}
-
-									using (var reader = frameImage.MetadataQueryReader)
-									{
-										var metaData = reader.GetMetadataByName("/grctlext/Delay");
-
-										if (metaData != null)
-										{
-											result[frame] = (ushort)metaData;
-										}
-										else
-										{
-											result[frame] = 0;
-										}
-									}
-								}
-							}
-						}
-					}
-				}
+				return wic.GetFrameDelays(stream, SupportedFileFormat, "/grctlext/Delay");
 			}
             finally
             {
                 stream.Position = position;
             }
-			*/
-            return result;
         }
 		#endregion
 
@@ -444,10 +216,8 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// Initializes a new instance of the <see cref="GorgonCodecGif" /> class.
 		/// </summary>
 		public GorgonCodecGif()
-			: base("GIF", Resources.GORIMG_DESC_GIF_CODEC, new[] { "gif" }, ContainerFormatGuids.Gif)
+			: base("GIF", Resources.GORIMG_DESC_GIF_CODEC, new[] { "gif" }, WIC.ContainerFormatGuids.Gif)
 		{
-			FrameDelays = null;
-            Palette = new List<GorgonColor>(256);
 		}
 		#endregion
 	}

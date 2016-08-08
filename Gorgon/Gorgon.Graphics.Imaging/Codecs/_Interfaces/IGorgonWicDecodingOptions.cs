@@ -20,26 +20,45 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: August 4, 2016 11:35:25 PM
+// Created: June 29, 2016 10:27:45 PM
 // 
 #endregion
-
 
 namespace Gorgon.Graphics.Imaging.Codecs
 {
 	/// <summary>
-	/// Provides options used when encoding an image 
+	/// Provides options used when decoding a <see cref="IGorgonImage"/>.
 	/// </summary>
-	public interface IGorgonCodecJpegEncodingOptions
-		: IGorgonCodecWicEncodingOptions
+	/// <remarks>
+	/// <para>
+	/// This particular interface provides common WIC (Windows Imaging Component) specific options for use when encoding an image across multiple image formats.
+	/// </para>
+	/// </remarks>
+	public interface IGorgonWicDecodingOptions
+		: IGorgonImageCodecDecodingOptions
 	{
 		/// <summary>
-		/// Property to set or return the quality of an image compressed with lossy compression.
+		/// Property to set or return flags used to determine how to handle bit depth conversion for specific formats.
+		/// </summary>
+		WICFlags Flags
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the type of dithering to use if the codec needs to reduce the bit depth for a pixel format.
 		/// </summary>
 		/// <remarks>
-		/// Use this property to control the fidelity of an image compressed with lossy compression. A value of 0.0f will give the lowest quality and 1.0f will give the highest.
+		/// <para>
+		/// This flag is used to determine which type of dithering algorithm should be used when converting the bit depth for a pixel format to a lower bit depth. If the pixel format of the image is supported 
+		/// natively by the codec, then this value will be ignored.
+		/// </para> 
+		/// <para> 
+		/// With dithering applied, the image will visually appear closer to the original by using patterns to simulate a greater number of colors.
+		/// </para>
 		/// </remarks>
-		float ImageQuality
+		ImageDithering Dithering
 		{
 			get;
 			set;

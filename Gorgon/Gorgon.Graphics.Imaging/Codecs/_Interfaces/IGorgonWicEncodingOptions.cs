@@ -20,40 +20,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: June 29, 2016 10:27:45 PM
+// Created: June 28, 2016 10:41:11 PM
 // 
 #endregion
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Gorgon.Graphics.Imaging.Codecs
 {
 	/// <summary>
-	/// Provides options used when decoding a <see cref="IGorgonImage"/>.
+	/// Provides options used when encoding a <see cref="IGorgonImage"/> for persistence.
 	/// </summary>
 	/// <remarks>
 	/// <para>
 	/// This particular interface provides common WIC (Windows Imaging Component) specific options for use when encoding an image across multiple image formats.
 	/// </para>
 	/// </remarks>
-	public interface IGorgonCodecWicDecodingOptions
-		: IGorgonImageCodecDecodingOptions
+	public interface IGorgonWicEncodingOptions
+		: IGorgonImageCodecEncodingOptions
 	{
 		/// <summary>
-		/// Property to set or return flags used to determine how to handle bit depth conversion for specific formats.
-		/// </summary>
-		WICFlags Flags
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the type of dithering to use if the codec needs to reduce the bit depth for a pixel format.
+		/// Property to set or return the type of <see cref="ImageDithering"/> to use.
 		/// </summary>
 		/// <remarks>
 		/// <para>
@@ -65,6 +50,24 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// </para>
 		/// </remarks>
 		ImageDithering Dithering
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the horizontal dots-per-inch for the encoded image.
+		/// </summary>
+		double DpiX
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the vertical dots-per-index for the encoded image.
+		/// </summary>
+		double DpiY
 		{
 			get;
 			set;

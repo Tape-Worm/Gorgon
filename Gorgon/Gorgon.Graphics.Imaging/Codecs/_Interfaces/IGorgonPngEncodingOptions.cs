@@ -67,8 +67,8 @@ namespace Gorgon.Graphics.Imaging.Codecs
 	/// <summary>
 	/// Provides options used when encoding an image 
 	/// </summary>
-	public interface IGorgonCodecPngEncodingOptions
-		: IGorgonCodecWicEncodingOptions
+	public interface IGorgonPngEncodingOptions
+		: IGorgonWicEncodingOptions
 	{
 		/// <summary>
 		/// Property to set or return whether to use interlacing when encoding an image as a PNG file.

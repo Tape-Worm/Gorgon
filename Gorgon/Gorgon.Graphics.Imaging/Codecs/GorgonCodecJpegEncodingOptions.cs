@@ -34,7 +34,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 	/// Options used when encoding an image to a stream as a JPEG file.
 	/// </summary>
 	public sealed class GorgonCodecJpegEncodingOptions
-		: IGorgonCodecJpegEncodingOptions
+		: IGorgonJpegEncodingOptions
 	{
 		#region Properties.
 		/// <summary>
@@ -148,7 +148,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// With dithering applied, the image will visually appear closer to the original by using patterns to simulate a greater number of colors.
 		/// </para>
 		/// </remarks>
-		ImageDithering IGorgonCodecWicEncodingOptions.Dithering
+		ImageDithering IGorgonWicEncodingOptions.Dithering
 		{
 			get
 			{

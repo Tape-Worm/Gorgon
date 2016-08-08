@@ -41,8 +41,12 @@ namespace Gorgon.Graphics.Imaging.Codecs
 	/// <para>
 	/// This codec supports the following pixel formats:
 	/// <list type="bullet">
-	///		<item><c>B8G8R8X8_UNorm</c></item>
-	///		<item><c>B5G6R5_UNorm</c></item>
+	///		<item>
+	///			<description><c>B8G8R8X8_UNorm</c></description>
+	///		</item>
+	///		<item>
+	///			<description><c>B5G6R5_UNorm</c></description>
+	///		</item>
 	/// </list>
 	/// </para>
 	/// <para>

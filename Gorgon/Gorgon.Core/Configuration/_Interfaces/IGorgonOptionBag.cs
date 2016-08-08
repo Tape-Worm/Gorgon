@@ -35,9 +35,9 @@ namespace Gorgon.Configuration
 	public interface IGorgonOptionBag
 	{
 		/// <summary>
-		/// Property to return the list of available options and their expected types.
+		/// Property to return the list of available option names and their expected types.
 		/// </summary>
-		IReadOnlyDictionary<string, Type> Options
+		IReadOnlyDictionary<string, Type> OptionKeys
 		{
 			get;
 		}

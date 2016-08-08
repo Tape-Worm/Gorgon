@@ -28,7 +28,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Graphics.Imaging.Properties;
@@ -366,11 +365,23 @@ namespace Gorgon.Graphics.Imaging
 		/// </summary>
 		/// <param name="frame">The frame that holds the options to set.</param>
 		/// <param name="options">The list of options to apply.</param>
-		private static void SetFrameOptions(WIC.BitmapFrameEncode frame, IGorgonCodecWicEncodingOptions options)
+		private static void SetFrameOptions(WIC.BitmapFrameEncode frame, IGorgonWicEncodingOptions options)
 		{
 			// Options that do not exist will have their default value for that type applied.
-			frame.Options.InterlaceOption = options.Options.GetOption<bool>("Interlacing");
-			frame.Options.FilterOption = (WIC.PngFilterOption)options.Options.GetOption<PNGFilter>("Filter");
+			if (options.Options.OptionKeys.ContainsKey("Interlacing"))
+			{
+				frame.Options.InterlaceOption = options.Options.GetOption<bool>("Interlacing");
+			}
+
+			if (options.Options.OptionKeys.ContainsKey("Filter"))
+			{
+				frame.Options.FilterOption = (WIC.PngFilterOption)options.Options.GetOption<PNGFilter>("Filter");
+			}
+
+			if (options.Options.OptionKeys.ContainsKey("ImageQuality"))
+			{
+				frame.Options.ImageQuality = options.Options.GetOption<float>("ImageQuality");
+			}
 		}
 
 		/// <summary>
@@ -378,12 +389,64 @@ namespace Gorgon.Graphics.Imaging
 		/// </summary>
 		/// <param name="frame">The bitmap frame that holds the palette info.</param>
 		/// <param name="options">The list of options used to override.</param>
-		/// <param name="reading"><b>true</b> if reading a frame, <b>false</b> if writing a frame.</param>
 		/// <returns>The palette information.</returns>
-		private Tuple<WIC.Palette, float> GetPalette(WIC.BitmapFrameDecode frame, IGorgonCodecWicDecodingOptions options, bool reading)
+		private Tuple<WIC.Palette, float> GetDecoderPalette(WIC.BitmapFrameDecode frame, IGorgonWicDecodingOptions options)
 		{
 			// If there's no palette option on the decoder, then we do nothing.
-			if ((options != null) && (!options.Options.Options.ContainsKey("Palette")))
+			if ((options != null) && (!options.Options.OptionKeys.ContainsKey("Palette")))
+			{
+				return null;
+			}
+
+			if (frame == null)
+			{
+				return null;
+			}
+
+			IList<GorgonColor> paletteColors = options?.Options.GetOption<IList<GorgonColor>>("Palette") ?? new GorgonColor[0];
+			float alpha = options?.Options.GetOption<float>("AlphaThreshold") ?? 0.0f;
+
+			// If there are no colors set, then extract it from the frame.
+			if (paletteColors.Count == 0)
+			{
+				return null;
+			}
+
+			// Generate from our custom palette.
+			var dxColors = new DX.Color[paletteColors.Count];
+			int size = paletteColors.Count.Min(dxColors.Length);
+
+			for (int i = 0; i < size; i++)
+			{
+				GorgonColor color = paletteColors[i];
+
+				if (color.Alpha >= alpha)
+				{
+					// We set the alpha to 1.0 because we only get opaque or transparent colors for 8 bit.
+					dxColors[i] = new DX.Color(color.ToVector3(), 1.0f);
+				}
+				else
+				{
+					dxColors[i] = new DX.Color(0, 0, 0, 0);
+				}
+			}
+
+			var wicPalette = new WIC.Palette(_factory);
+			wicPalette.Initialize(dxColors);
+			
+			return new Tuple<WIC.Palette, float>(wicPalette, alpha);
+		}
+
+		/// <summary>
+		/// Function to retrieve palette information from an 8 bit indexed image.
+		/// </summary>
+		/// <param name="frame">The bitmap frame that holds the palette info.</param>
+		/// <param name="options">The list of options used to override.</param>
+		/// <returns>The palette information.</returns>
+		private Tuple<WIC.Palette, float> GetEncoderPalette(WIC.Bitmap frame, IGorgonWicEncodingOptions options)
+		{
+			// If there's no palette option on the decoder, then we do nothing.
+			if ((options != null) && (!options.Options.OptionKeys.ContainsKey("Palette")))
 			{
 				return null;
 			}
@@ -400,11 +463,6 @@ namespace Gorgon.Graphics.Imaging
 			// If there are no colors set, then extract it from the frame.
 			if (paletteColors.Count == 0)
 			{
-				if (reading)
-				{
-					return null;
-				}
-
 				wicPalette = new WIC.Palette(_factory);
 				wicPalette.Initialize(frame, 256, !alpha.EqualsEpsilon(0));
 
@@ -421,7 +479,8 @@ namespace Gorgon.Graphics.Imaging
 
 				if (color.Alpha >= alpha)
 				{
-					dxColors[i] = new DX.Color(color.ToVector4());
+					// We set the alpha to 1.0 because we only get opaque or transparent colors for 8 bit.
+					dxColors[i] = new DX.Color(color.ToVector3(), 1.0f);
 				}
 				else
 				{
@@ -436,6 +495,27 @@ namespace Gorgon.Graphics.Imaging
 		}
 
 		/// <summary>
+		/// Function to encode metadata into the frame.
+		/// </summary>
+		/// <param name="metaData">The metadata to encode.</param>
+		/// <param name="encoderFrame">The frame being encoded.</param>
+		private static void EncodeMetaData(IReadOnlyDictionary<string, object> metaData, WIC.BitmapFrameEncode encoderFrame)
+		{
+			using (WIC.MetadataQueryWriter writer = encoderFrame.MetadataQueryWriter)
+			{
+				foreach (KeyValuePair<string, object> item in metaData)
+				{
+					if (string.IsNullOrWhiteSpace(item.Key))
+					{
+						continue;
+					}
+
+					writer.SetMetadataByName(item.Key, item.Value);
+				}
+			}
+		}
+
+		/// <summary>
 		/// Function to encode image data into a single frame for a WIC bitmap image.
 		/// </summary>
 		/// <param name="encoder">The WIC encoder to use.</param>
@@ -443,13 +523,19 @@ namespace Gorgon.Graphics.Imaging
 		/// <param name="pixelFormat">The pixel format for the image data.</param>
 		/// <param name="options">Optional encoding options (depends on codec).</param>
 		/// <param name="frameIndex">The current frame index.</param>
-		private void EncodeFrame(WIC.BitmapEncoder encoder, IGorgonImage imageData, Guid pixelFormat, IGorgonCodecWicEncodingOptions options, int frameIndex)
+		/// <param name="metaData">Optional meta data used to encode the image data.</param>
+		private void EncodeFrame(WIC.BitmapEncoder encoder, IGorgonImage imageData, Guid pixelFormat, IGorgonWicEncodingOptions options, int frameIndex, IReadOnlyDictionary<string, object> metaData)
 		{
 			Guid requestedFormat = pixelFormat;
+			WIC.BitmapFrameEncode frame = null;
+			Tuple<WIC.Palette, float> paletteInfo = null;
+			WIC.Bitmap bitmap = null;
 
-			using (var frame = new WIC.BitmapFrameEncode(encoder))
+			try
 			{
-				IGorgonImageBuffer buffer = imageData.Buffers[frameIndex];
+				IGorgonImageBuffer buffer = imageData.Buffers[0, frameIndex];
+
+				frame = new WIC.BitmapFrameEncode(encoder);
 
 				frame.Initialize();
 				frame.SetSize(buffer.Width, buffer.Height);
@@ -463,16 +549,29 @@ namespace Gorgon.Graphics.Imaging
 					SetFrameOptions(frame, options);
 				}
 
+				if ((metaData != null) && (metaData.Count > 0))
+				{
+					EncodeMetaData(metaData, frame);
+				}
+
 				// If there's a disparity between what we asked for, and what we actually support, then convert to the correct format.
 				if (requestedFormat != pixelFormat)
 				{
-					using (WIC.Bitmap bitmap = GetBitmap(buffer, requestedFormat))
+					bitmap = GetBitmap(buffer, requestedFormat);
+
+					// If we're using indexed pixel format(s), then get the palette.
+					if ((pixelFormat == WIC.PixelFormat.Format8bppIndexed)
+						|| (pixelFormat == WIC.PixelFormat.Format4bppIndexed)
+						|| (pixelFormat == WIC.PixelFormat.Format2bppIndexed)
+						|| (pixelFormat == WIC.PixelFormat.Format1bppIndexed))
 					{
-						// TODO: Should pass palette info.
-						using (WIC.BitmapSource converter = GetFormatConverter(bitmap, pixelFormat, options?.Dithering ?? ImageDithering.None, null, 0))
-						{
-							frame.WriteSource(converter);
-						}
+						paletteInfo = GetEncoderPalette(bitmap, options);
+						frame.Palette = paletteInfo?.Item1;
+					}
+
+					using (WIC.BitmapSource converter = GetFormatConverter(bitmap, pixelFormat, options?.Dithering ?? ImageDithering.None, paletteInfo?.Item1, paletteInfo?.Item2 ?? 0.0f))
+					{
+						frame.WriteSource(converter);
 					}
 				}
 				else
@@ -481,6 +580,12 @@ namespace Gorgon.Graphics.Imaging
 				}
 
 				frame.Commit();
+			}
+			finally
+			{
+				paletteInfo?.Item1?.Dispose();
+				bitmap?.Dispose();
+				frame?.Dispose();
 			}
 		}
 
@@ -553,7 +658,7 @@ namespace Gorgon.Graphics.Imaging
 		/// <param name="wicStream">The WIC stream containing the file data.</param>
 		/// <param name="actualPixelFormat">The actual pixel format of the image data, used when conversion is necessary.</param>
 		/// <returns>A <see cref="GorgonImageInfo"/> containing information about the image data.</returns>
-		private GorgonImageInfo GetImageMetaData(Stream stream, Guid fileFormat, IGorgonCodecWicDecodingOptions options, out WIC.BitmapFrameDecode frame, out WIC.BitmapDecoder decoder, out WIC.WICStream wicStream, out Guid actualPixelFormat)
+		private GorgonImageInfo GetImageMetaData(Stream stream, Guid fileFormat, IGorgonWicDecodingOptions options, out WIC.BitmapFrameDecode frame, out WIC.BitmapDecoder decoder, out WIC.WICStream wicStream, out Guid actualPixelFormat)
 		{
 			wicStream = new WIC.WICStream(_factory, stream);
 
@@ -571,10 +676,18 @@ namespace Gorgon.Graphics.Imaging
 			DXGI.Format format = FindBestFormat(frame.PixelFormat, options?.Flags ?? WICFlags.None, out actualPixelFormat);
 
 			int arrayCount = 1;
+			bool readAllFrames = decoder.DecoderInfo.IsMultiframeSupported;
 
-			if ((options != null) && (decoder.DecoderInfo.IsMultiframeSupported))
+			if ((readAllFrames) 
+				&& (options != null) 
+				&& (options.Options.OptionKeys.ContainsKey(nameof(IGorgonWicDecodingOptions.ReadAllFrames))))
 			{
-				arrayCount = options.ReadAllFrames ? decoder.FrameCount : 1;
+				readAllFrames = options.ReadAllFrames;
+			}
+
+			if (readAllFrames)
+			{
+				arrayCount = decoder.FrameCount.Max(1);
 			}
 
 			return new GorgonImageInfo(ImageType.Image2D, format)
@@ -594,7 +707,8 @@ namespace Gorgon.Graphics.Imaging
 		/// <param name="imageStream">The stream that will contain the encoded data.</param>
 		/// <param name="imageFileFormat">The file format to use for encoding.</param>
 		/// <param name="options">The encoding options for the codec performing the encode operation.</param>
-		public void EncodeImageData(IGorgonImage imageData, Stream imageStream, Guid imageFileFormat, IGorgonCodecWicEncodingOptions options)
+		/// <param name="metaData">Optional metadata to further describe the encoding process.</param>
+		public void EncodeImageData(IGorgonImage imageData, Stream imageStream, Guid imageFileFormat, IGorgonWicEncodingOptions options, IReadOnlyDictionary<string, object> metaData)
 		{
 			WIC.BitmapEncoder encoder = null;
 			WIC.BitmapEncoderInfo encoderInfo = null;
@@ -614,17 +728,23 @@ namespace Gorgon.Graphics.Imaging
 
 				encoderInfo = encoder.EncoderInfo;
 
-				if ((options != null) 
-					&& (options.SaveAllFrames) 
-					&& (imageData.Info.ArrayCount > 1) 
-					&& (encoderInfo.IsMultiframeSupported))
+				bool saveAllFrames = encoderInfo.IsMultiframeSupported && imageData.Info.ArrayCount > 1;
+
+				if ((saveAllFrames) 
+					&& (options != null) 
+					&& (options.Options.OptionKeys.ContainsKey(nameof(IGorgonWicEncodingOptions.SaveAllFrames))))
+				{
+					saveAllFrames = options.SaveAllFrames;
+				}
+
+				if (saveAllFrames)
 				{
 					frameCount = imageData.Info.ArrayCount;
 				}
 
 				for (int i = 0; i < frameCount; ++i)
 				{
-					EncodeFrame(encoder, imageData, pixelFormat, options, i);
+					EncodeFrame(encoder, imageData, pixelFormat, options, i, metaData);
 				}
 
 				encoder.Commit();
@@ -637,6 +757,62 @@ namespace Gorgon.Graphics.Imaging
 		}
 
 		/// <summary>
+		/// Function to decode all frames in a multi-frame image.
+		/// </summary>
+		/// <param name="data">The image data that will receive the multi-frame data.</param>
+		/// <param name="srcFormat">The source pixel format.</param>
+		/// <param name="convertFormat">The destination pixel format.</param>
+		/// <param name="decoder">The decoder used to read the image data.</param>
+		/// <param name="decodingOptions">Options used in decoding the image.</param>
+		/// <param name="frameOffsetMetadataItems">Names used to look up metadata describing the offset of each frame.</param>
+		private void ReadAllFrames(IGorgonImage data, Guid srcFormat, Guid convertFormat, WIC.BitmapDecoder decoder, IGorgonWicDecodingOptions decodingOptions, IReadOnlyList<string> frameOffsetMetadataItems)
+		{
+			ImageDithering dithering = ImageDithering.None;
+			WIC.BitmapFrameDecode frame = null;
+			WIC.FormatConverter converter = null;
+
+			if ((decodingOptions != null) && (decodingOptions.Options.OptionKeys.ContainsKey(nameof(IGorgonWicDecodingOptions.Dithering))))
+			{
+				dithering = decodingOptions.Dithering;
+			}
+
+			try
+			{
+				for (int i = 0; i < data.Info.ArrayCount; ++i)
+				{
+					IGorgonImageBuffer buffer = data.Buffers[0, i];
+
+					frame?.Dispose();
+					frame = decoder.GetFrame(i);
+
+					//int width = frame.Size.Width;
+					//int height = frame.Size.Height;
+					DX.Point offset = frameOffsetMetadataItems?.Count > 0 ? GetFrameOffsetMetadataItems(frame, frameOffsetMetadataItems) : new DX.Point(0, 0);
+
+					// Get the pointer to the buffer and adjust its offset to that of the current frame.
+					IntPtr bufferPtr = new IntPtr(buffer.Data.Address) + (offset.Y * buffer.PitchInformation.RowPitch) + (offset.X * buffer.PitchInformation.RowPitch / buffer.Width);
+					
+					WIC.BitmapSource bitmapSource = frame;
+
+					// Convert the format as necessary.
+					if (srcFormat != convertFormat)
+					{
+						converter = new WIC.FormatConverter(_factory);
+						converter.Initialize(frame, convertFormat, (WIC.BitmapDitherType)dithering, null, 0.0, WIC.BitmapPaletteType.Custom);
+						bitmapSource = converter;
+					}
+
+					bitmapSource.CopyPixels(buffer.PitchInformation.RowPitch, bufferPtr, buffer.PitchInformation.SlicePitch);
+				}
+			}
+			finally
+			{
+				converter?.Dispose();
+				frame?.Dispose();
+			}
+		}
+
+		/// <summary>
 		/// Function to read the data from a frame.
 		/// </summary>
 		/// <param name="data">Image data to populate.</param>
@@ -644,7 +820,7 @@ namespace Gorgon.Graphics.Imaging
 		/// <param name="convertFormat">Conversion format.</param>
 		/// <param name="frame">Frame containing the image data.</param>
 		/// <param name="decodingOptions">Options used to decode the image data.</param>
-		private void ReadFrame(IGorgonImage data, Guid srcFormat, Guid convertFormat, WIC.BitmapFrameDecode frame, IGorgonCodecWicDecodingOptions decodingOptions)
+		private void ReadFrame(IGorgonImage data, Guid srcFormat, Guid convertFormat, WIC.BitmapFrameDecode frame, IGorgonWicDecodingOptions decodingOptions)
 		{
 			var buffer = data.Buffers[0];
 
@@ -669,7 +845,7 @@ namespace Gorgon.Graphics.Imaging
 				    || (frame.PixelFormat == WIC.PixelFormat.Format2bppIndexed)
 				    || (frame.PixelFormat == WIC.PixelFormat.Format1bppIndexed))
 				{
-					paletteInfo = GetPalette(frame, decodingOptions, true);
+					paletteInfo = GetDecoderPalette(frame, decodingOptions);
 				}
 
 				if (paletteInfo != null)
@@ -679,7 +855,7 @@ namespace Gorgon.Graphics.Imaging
 					             {
 						             Palette = paletteInfo.Item1
 					             };
-					formatConverter = GetFormatConverter(tempBitmap, convertFormat, dither, paletteInfo.Item1, paletteInfo.Item2);
+					formatConverter = GetFormatConverter(tempBitmap, convertFormat, ImageDithering.None, paletteInfo.Item1, paletteInfo.Item2);
 				}
 				else
 				{
@@ -754,6 +930,91 @@ namespace Gorgon.Graphics.Imaging
 		}
 
 		/// <summary>
+		/// Function to retrieve metadata items from a stream containing an image.
+		/// </summary>
+		/// <param name="frame">The frame containing the metadata.</param>
+		/// <param name="metadataNames">The names of the metadata items to read.</param>
+		/// <returns>The offset for the frame.</returns>
+		private static DX.Point GetFrameOffsetMetadataItems(WIC.BitmapFrameDecode frame, IReadOnlyList<string> metadataNames)
+		{
+			using (WIC.MetadataQueryReader reader = frame.MetadataQueryReader)
+			{
+				object xValue;
+				object yValue;
+
+				reader.TryGetMetadataByName(metadataNames[0], out xValue);
+				reader.TryGetMetadataByName(metadataNames[1], out yValue);
+
+				if (xValue == null)
+				{
+					xValue = 0;
+				}
+
+				if (yValue == null)
+				{
+					yValue = 0;
+				}
+
+				return new DX.Point(Convert.ToInt32(xValue), Convert.ToInt32(yValue));
+			}
+		}
+
+		/// <summary>
+		/// Function to retrieve metadata items from a stream containing an image.
+		/// </summary>
+		/// <param name="stream">The stream used to read the data.</param>
+		/// <param name="fileFormat">The file format to use.</param>
+		/// <param name="metadataNames">The names of the metadata items to read.</param>
+		/// <returns>A list of frame offsets.</returns>
+		public IReadOnlyList<DX.Point> GetFrameOffsetMetadata(Stream stream, Guid fileFormat, IReadOnlyList<string> metadataNames)
+		{
+			long oldPosition = stream.Position;
+			var wrapper = new GorgonStreamWrapper(stream, stream.Position);
+			WIC.BitmapDecoder decoder = null;
+			WIC.WICStream wicStream = null;
+			WIC.BitmapFrameDecode frame = null;
+
+			try
+			{
+				// We don't be needing this.
+				wicStream = new WIC.WICStream(_factory, wrapper);
+
+				decoder = new WIC.BitmapDecoder(_factory, fileFormat);
+				decoder.Initialize(wicStream, WIC.DecodeOptions.CacheOnDemand);
+
+				if (decoder.ContainerFormat != fileFormat)
+				{
+					return null;
+				}
+
+				if (!decoder.DecoderInfo.IsMultiframeSupported)
+				{
+					return new DX.Point[0];
+				}
+
+				var result = new DX.Point[decoder.FrameCount];
+
+				for (int i = 0; i < result.Length; ++i)
+				{
+					frame?.Dispose();
+					frame = decoder.GetFrame(i);
+
+					result[i] = GetFrameOffsetMetadataItems(frame, metadataNames);
+				}
+
+				return result;
+			}
+			finally
+			{
+				stream.Position = oldPosition;
+
+				wicStream?.Dispose();
+				decoder?.Dispose();
+				frame?.Dispose();
+			}
+		}
+
+		/// <summary>
 		/// Function to retrieve the metadata for an image from a stream.
 		/// </summary>
 		/// <param name="stream">The stream containing the image data.</param>
@@ -775,7 +1036,7 @@ namespace Gorgon.Graphics.Imaging
 
 				return GetImageMetaData(wrapper,
 				                        fileFormat,
-										options as IGorgonCodecWicDecodingOptions, 
+										options as IGorgonWicDecodingOptions, 
 				                        out frame,
 				                        out decoder,
 				                        out wicStream,
@@ -790,7 +1051,7 @@ namespace Gorgon.Graphics.Imaging
 				frame?.Dispose();
 			}
 		}
-		
+
 		/// <summary>
 		/// Function to decode image data from a file within a stream.
 		/// </summary>
@@ -798,8 +1059,9 @@ namespace Gorgon.Graphics.Imaging
 		/// <param name="length">The size of the image data to read, in bytes.</param>
 		/// <param name="imageFileFormat">The file format for the image data in the stream.</param>
 		/// <param name="decodingOptions">Options used for decoding the image data.</param>
+		/// <param name="frameOffsetMetadataItems">Names used to look up metadata describing the offset of each frame.</param>
 		/// <returns>A <see cref="IGorgonImage"/> containing the decoded image file data.</returns>
-		public IGorgonImage DecodeImageData(Stream stream, long length, Guid imageFileFormat, IGorgonCodecWicDecodingOptions decodingOptions)
+		public IGorgonImage DecodeImageData(Stream stream, long length, Guid imageFileFormat, IGorgonWicDecodingOptions decodingOptions, IReadOnlyList<string> frameOffsetMetadataItems)
 		{
 			WIC.BitmapDecoder decoder = null;
 			WIC.BitmapFrameDecode frame = null;
@@ -826,9 +1088,16 @@ namespace Gorgon.Graphics.Imaging
 				// Build the image.
 				result = new GorgonImage(info);
 
-				// TODO: Read multiple frames if necessary.
-				// Read a single frame of data.
-				ReadFrame(result, frame.PixelFormat, pixelFormat, frame, decodingOptions);
+				// Read a single frame of data. This value will be set larger than 1 if the decoder supports multi-frame images, and the options for the codec 
+				// specify that all frames are to be read (true is the default if no options are specified).
+				if (info.ArrayCount > 1)
+				{
+					ReadAllFrames(result, frame.PixelFormat, pixelFormat, decoder, decodingOptions, frameOffsetMetadataItems);
+				}
+				else
+				{
+					ReadFrame(result, frame.PixelFormat, pixelFormat, frame, decodingOptions);
+				}
 
 				// If we've not read the full length of the data (WIC seems to ignore the CRC on the IEND chunk for PNG files for example),
 				// then we need to move the pointer up by however many bytes we've missed.
@@ -1060,6 +1329,70 @@ namespace Gorgon.Graphics.Imaging
 			{
 				result.Dispose();
 				throw;
+			}
+		}
+
+		/// <summary>
+		/// Function to retrieve frame delays for a multi-frame image.
+		/// </summary>
+		/// <param name="stream">The stream containing the image.</param>
+		/// <param name="decoderFormat">The format of the data being decoded</param>
+		/// <param name="delayMetaDataName">The name of the metadata to look up.</param>
+		/// <returns>A list of codec specific time delays.</returns>
+		public int[] GetFrameDelays(Stream stream, Guid decoderFormat, string delayMetaDataName)
+		{
+			long oldPosition = stream.Position;
+			var wrapper = new GorgonStreamWrapper(stream, stream.Position);
+			WIC.BitmapDecoder decoder = null;
+			WIC.WICStream wicStream = null;
+			WIC.BitmapFrameDecode frame = null;
+			
+			try
+			{
+				// We don't be needing this.
+				wicStream = new WIC.WICStream(_factory, wrapper);
+
+				decoder = new WIC.BitmapDecoder(_factory, decoderFormat);
+				decoder.Initialize(wicStream, WIC.DecodeOptions.CacheOnDemand);
+
+				if (decoder.ContainerFormat != decoderFormat)
+				{
+					return null;
+				}
+
+				if (!decoder.DecoderInfo.IsMultiframeSupported)
+				{
+					return new int[0];
+				}
+
+				var result = new int[decoder.FrameCount];
+
+				for (int i = 0; i < result.Length; ++i)
+				{
+					frame?.Dispose();
+					frame = decoder.GetFrame(i);
+
+					object value;
+
+					frame.MetadataQueryReader.TryGetMetadataByName(delayMetaDataName, out value);
+
+					if (value == null)
+					{
+						continue;
+					}
+					
+					result[i] = Convert.ToInt32(value);
+				}
+
+				return result;
+			}
+			finally
+			{
+				stream.Position = oldPosition;
+
+				wicStream?.Dispose();
+				decoder?.Dispose();
+				frame?.Dispose();
 			}
 		}
 

@@ -42,10 +42,18 @@ namespace Gorgon.Graphics.Imaging.Codecs
 	/// <para>
 	/// This codec supports the following pixel formats:
 	/// <list type="bullet">
-	///		<item><c>R8G8B8A8_UNorm</c></item>
-	///		<item><c>B8G8R8A8_UNorm</c></item>
-	///		<item><c>B8G8R8X8_UNorm</c></item>
-	///		<item><c>R16G16B16A16_UNorm</c></item>
+	///		<item>
+	///			<description><c>R8G8B8A8_UNorm</c></description>
+	///		</item>
+	///		<item>
+	///			<description><c>B8G8R8A8_UNorm</c></description>
+	///		</item>
+	///		<item>
+	///			<description><c>B8G8R8X8_UNorm</c></description>
+	///		</item>
+	///		<item>
+	///			<description><c>R16G16B16A16_UNorm</c></description>
+	///		</item>
 	/// </list>
 	/// </para>
 	/// <para>
