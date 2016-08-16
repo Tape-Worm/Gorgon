@@ -767,14 +767,9 @@ namespace Gorgon.Graphics.Imaging
 		/// <param name="frameOffsetMetadataItems">Names used to look up metadata describing the offset of each frame.</param>
 		private void ReadAllFrames(IGorgonImage data, Guid srcFormat, Guid convertFormat, WIC.BitmapDecoder decoder, IGorgonWicDecodingOptions decodingOptions, IReadOnlyList<string> frameOffsetMetadataItems)
 		{
-			ImageDithering dithering = ImageDithering.None;
+			ImageDithering dithering = decodingOptions?.Dithering ?? ImageDithering.None;
 			WIC.BitmapFrameDecode frame = null;
 			WIC.FormatConverter converter = null;
-
-			if ((decodingOptions != null) && (decodingOptions.Options.OptionKeys.ContainsKey(nameof(IGorgonWicDecodingOptions.Dithering))))
-			{
-				dithering = decodingOptions.Dithering;
-			}
 
 			try
 			{
@@ -784,9 +779,6 @@ namespace Gorgon.Graphics.Imaging
 
 					frame?.Dispose();
 					frame = decoder.GetFrame(i);
-
-					//int width = frame.Size.Width;
-					//int height = frame.Size.Height;
 					DX.Point offset = frameOffsetMetadataItems?.Count > 0 ? GetFrameOffsetMetadataItems(frame, frameOffsetMetadataItems) : new DX.Point(0, 0);
 
 					// Get the pointer to the buffer and adjust its offset to that of the current frame.
@@ -1070,8 +1062,6 @@ namespace Gorgon.Graphics.Imaging
 
 			try
 			{
-				var wrapper = new GorgonStreamWrapper(stream, stream.Position, length);
-
 				Guid pixelFormat;
 				GorgonImageInfo info = GetImageMetaData(stream, imageFileFormat, decodingOptions, out frame, out decoder, out decoderStream, out pixelFormat);
 
@@ -1097,13 +1087,6 @@ namespace Gorgon.Graphics.Imaging
 				else
 				{
 					ReadFrame(result, frame.PixelFormat, pixelFormat, frame, decodingOptions);
-				}
-
-				// If we've not read the full length of the data (WIC seems to ignore the CRC on the IEND chunk for PNG files for example),
-				// then we need to move the pointer up by however many bytes we've missed.
-				if (wrapper.Position < length)
-				{
-					wrapper.Position = length;
 				}
 
 				return result;

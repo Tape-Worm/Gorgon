@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.IO;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
+using Gorgon.IO;
 using DXGI = SharpDX.DXGI;
 
 namespace Gorgon.Graphics.Imaging.Codecs
@@ -269,6 +270,25 @@ namespace Gorgon.Graphics.Imaging.Codecs
 
 		#region Methods.
 		/// <summary>
+		/// Function to decode an image from a <see cref="GorgonDataStream"/>.
+		/// </summary>
+		/// <param name="stream">The stream containing the image data to read.</param>
+		/// <param name="size">The size of the image within the stream, in bytes.</param>
+		/// <param name="options">Options used for decoding the image data.</param>
+		/// <returns>A <see cref="IGorgonImage"/> containing the image data from the stream.</returns>
+		/// <exception cref="GorgonException">Thrown when the image data in the stream has a pixel format that is unsupported.</exception>
+		/// <remarks>
+		/// <para>
+		/// A codec must implement this method in order to decode the image data. 
+		/// </para>
+		/// <para>
+		/// When the image is loaded, it is read in its native format into memory first, and then this method is called to decode the data in memory into a <see cref="IGorgonImage"/> object.  While this 
+		/// consumes more memory, it is necessary when handling streams that do not have seek capability (e.g. <see cref="System.Net.Sockets.NetworkStream"/>).
+		/// </para>
+		/// </remarks>
+		protected abstract IGorgonImage OnDecodeFromStream(Stream stream, long size, IGorgonImageCodecDecodingOptions options);
+
+		/// <summary>
 		/// Function to load an image from a stream.
 		/// </summary>
 		/// <param name="stream">The stream containing the image data to read.</param>
@@ -280,7 +300,59 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> parameter is less than 1.</exception>
 		/// <exception cref="EndOfStreamException">Thrown when the amount of data requested exceeds the size of the stream minus its current position.</exception>
 		/// <exception cref="GorgonException">Thrown when the image data in the stream has a pixel format that is unsupported.</exception>
-		public abstract IGorgonImage LoadFromStream(Stream stream, long size, IGorgonImageCodecDecodingOptions options = null);
+		public IGorgonImage LoadFromStream(Stream stream, long size, IGorgonImageCodecDecodingOptions options = null)
+		{
+			if (stream == null)
+			{
+				throw new ArgumentNullException(nameof(stream));
+			}
+
+			if (!stream.CanRead)
+			{
+				throw new ArgumentException(Resources.GORIMG_ERR_STREAM_IS_WRITEONLY, nameof(stream));
+			}
+
+			if (size + stream.Position > stream.Length)
+			{
+				throw new EndOfStreamException();
+			}
+
+			if (size < 1)
+			{
+				throw new ArgumentOutOfRangeException(nameof(size), Resources.GORIMG_ERR_IMAGE_BYTE_LENGTH_TOO_SHORT);
+			}
+
+			Stream streamAlias = stream;
+			long basePosition = stream.Position;
+
+			try
+			{
+				// If the base stream is not a seekable stream, then copy it into memory.
+				if (!stream.CanSeek)
+				{
+					streamAlias = new GorgonDataStream((int)size);
+					stream.CopyTo(streamAlias);
+					streamAlias.Position = 0;
+				}
+
+				IGorgonImage result = OnDecodeFromStream(streamAlias, size, options);
+
+				// Move the base stream to the number of bytes written (this is already done if we've copied the stream into memory above).
+				if (streamAlias.Position < basePosition + size)
+				{
+					stream.Position = basePosition + size;
+				}
+
+				return result;
+			}
+			finally
+			{
+				if (streamAlias != stream)
+				{
+					streamAlias.Dispose();
+				}
+			}
+		}
 
 		/// <summary>
 		/// Function to load an image from a stream.
@@ -334,7 +406,13 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <param name="encodingOptions">[Optional] Options used to encode the image data when it is persisted to the stream.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/>, or the <paramref name="imageData"/> parameter is <b>NULL</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="stream"/> is read only.</exception>
-		/// <exception cref="GorgonException">Thrown when the image data in the stream has a pixel format that is unsupported.</exception>
+		/// <exception cref="NotSupportedException">Thrown when the image data in the stream has a pixel format that is unsupported by the codec.</exception>
+		/// <remarks>
+		/// <para>
+		/// When persisting image data via a codec, the image must have a format that the codec can recognize. This list of supported formats is provided by the <see cref="SupportedPixelFormats"/> 
+		/// property. Applications may convert their image data a supported format before saving the data using a codec.
+		/// </para>
+		/// </remarks>
 		public abstract void SaveToStream(IGorgonImage imageData, Stream stream, IGorgonImageCodecEncodingOptions encodingOptions = null);
 
 		/// <summary>
@@ -345,7 +423,13 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <param name="encodingOptions">[Optional] Options used to encode the image data when it is persisted to the stream.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath"/>, or the <paramref name="imageData"/> parameter is <b>NULL</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="filePath"/> is empty..</exception>
-		/// <exception cref="GorgonException">Thrown when the image data in the stream has a pixel format that is unsupported.</exception>
+		/// <exception cref="NotSupportedException">Thrown when the image data in the stream has a pixel format that is unsupported by the codec.</exception>
+		/// <remarks>
+		/// <para>
+		/// When persisting image data via a codec, the image must have a format that the codec can recognize. This list of supported formats is provided by the <see cref="SupportedPixelFormats"/> 
+		/// property. Applications may convert their image data a supported format before saving the data using a codec.
+		/// </para>
+		/// </remarks>
 		public void SaveToFile(IGorgonImage imageData, string filePath, IGorgonImageCodecEncodingOptions encodingOptions = null)
 		{
 			if (filePath == null)
@@ -385,7 +469,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// </summary>
 		/// <param name="stream">The stream containing the metadata to read.</param>
 		/// <returns>
-		/// The image meta data as a <see cref="GorgonImageInfo"/> value.
+		/// The image meta data as a <see cref="IGorgonImageInfo"/> value.
 		/// </returns>
 		/// <exception cref="IOException">Thrown when the <paramref name="stream"/> is write-only or if the stream cannot perform seek operations.
 		/// <para>-or-</para>
@@ -400,7 +484,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// may cause undesirable results.
 		/// </para> 
 		/// </remarks>
-		public abstract GorgonImageInfo GetMetaData(Stream stream);
+		public abstract IGorgonImageInfo GetMetaData(Stream stream);
 
 		/// <summary>
 		/// Returns a <see cref="string" /> that represents this instance.

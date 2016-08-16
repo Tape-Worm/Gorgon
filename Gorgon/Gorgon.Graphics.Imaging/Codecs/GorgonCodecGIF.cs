@@ -37,14 +37,12 @@ namespace Gorgon.Graphics.Imaging.Codecs
 	/// A codec to handle reading/writing GIF files.
 	/// </summary>
 	/// <remarks>
-	/// A codec allows for reading and/or writing of data in an encoded format.  Users may inherit from this object to define their own 
-	/// image formats, or use one of the predefined image codecs available in Gorgon.
-	/// <para>The limitations of this codec are as follows:
-	/// <list type="bullet">
-	///		<item>
-	///			<description>Only supports saving as 8 bit indexed only.  Fidelity loss may be dramatic.</description>
-	///		</item>
-	/// </list>
+	/// <para>
+	/// This codec will read and write lossless compressed files using the Graphics Interchange Format (GIF).
+	/// </para>
+	/// <para>
+	/// This codec only supports 1, 4, and 8 bit indexed pixel formats, and uses a palette to define the actual colors at the indices for each pixel. All data decoded will be encoded using the 
+	/// 32 bit <c>R8G8B8A8_UNorm</c> pixel format. Data encoded with this codec will be downsampled to 8 bit indexed data.
 	/// </para>
 	/// </remarks>
 	public sealed class GorgonCodecGif

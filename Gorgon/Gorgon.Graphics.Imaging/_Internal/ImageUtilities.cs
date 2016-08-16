@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Diagnostics;
 using DXGI = SharpDX.DXGI;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.Math;
@@ -55,7 +56,7 @@ namespace Gorgon.Graphics.Imaging
 	/// <summary>
 	/// Utilities to facilitate in manipulating image data.
 	/// </summary>
-	class ImageUtilities
+	static class ImageUtilities
 	{
 		/// <summary>
 		/// Function to expand a 16BPP scan line in an image to a 32BPP RGBA line.
@@ -242,7 +243,283 @@ namespace Gorgon.Graphics.Imaging
 				DirectAccess.MemoryCopy(dest, src, size);
 			}
 		}
+		
+		/// <summary>
+		/// Function to copy a scanline from the source to the destination.
+		/// </summary>
+		/// <param name="src">The source data to copy.</param>
+		/// <param name="srcPitch">The pitch of the source data scanline.</param>
+		/// <param name="dest">The destination buffer that will receive the copied data.</param>
+		/// <param name="format">The format used to copy.</param>
+		/// <param name="flipHorizontal"><b>true</b> to write horizontal pixel values from right to left, or <b>false</b> to write left to right.</param>
+		/// <returns><b>true</b> if the line contains all 0 alpha values, <b>false</b> if not.</returns>
+		public static unsafe bool CopyScanline(void* src, int srcPitch, void* dest, DXGI.Format format, bool flipHorizontal)
+		{
+			bool result = true;
 
+			// Do a straight copy.
+			switch (format)
+			{
+				case DXGI.Format.R32G32B32A32_Typeless:
+				case DXGI.Format.R32G32B32A32_Float:
+				case DXGI.Format.R32G32B32A32_UInt:
+				case DXGI.Format.R32G32B32A32_SInt:
+				{
+					uint alphaMask = (format == DXGI.Format.R32G32B32_Float)
+						                 ? 0x3F800000
+						                 : ((format == DXGI.Format.R32G32B32_SInt) ? 0x7FFFFFFF : 0xFFFFFFFF);
+
+					var srcPtr = (uint*)src;
+					var destPtr = (uint*)dest;
+
+					for (int i = 0; i < srcPitch; i += 16)
+					{
+						uint alpha = *(srcPtr + 3) & alphaMask;
+
+						if (alpha != 0)
+						{
+							result = false;
+						}
+
+						// If not in place copy, then copy to destination.
+						if (dest == src)
+						{
+							continue;
+						}
+
+						if (!flipHorizontal)
+						{
+							*(destPtr++) = *(srcPtr++);
+							*(destPtr++) = *(srcPtr++);
+							*(destPtr++) = *(srcPtr++);
+							*(destPtr++) = *(srcPtr++);
+						}
+						else
+						{
+							*(destPtr--) = *(srcPtr++);
+							*(destPtr--) = *(srcPtr++);
+							*(destPtr--) = *(srcPtr++);
+							*(destPtr--) = *(srcPtr++);
+						}
+					}
+				}
+					return result;
+				case DXGI.Format.R16G16B16A16_Typeless:
+				case DXGI.Format.R16G16B16A16_Float:
+				case DXGI.Format.R16G16B16A16_UNorm:
+				case DXGI.Format.R16G16B16A16_UInt:
+				case DXGI.Format.R16G16B16A16_SNorm:
+				case DXGI.Format.R16G16B16A16_SInt:
+				{
+					uint alphaMask = 0xFFFF0000;
+
+					switch (format)
+					{
+						case DXGI.Format.R16G16B16A16_Float:
+							alphaMask = 0x3C000000;
+							break;
+						case DXGI.Format.R16G16B16A16_SInt:
+						case DXGI.Format.R16G16B16A16_SNorm:
+							alphaMask = 0x7FFF0000;
+							break;
+					}
+
+					var srcPtr = (uint*)src;
+					var destPtr = (uint*)dest;
+
+					for (int i = 0; i < srcPitch; i += 8)
+					{
+						uint alpha = *(srcPtr + 1) & alphaMask;
+
+						if (alpha != 0)
+						{
+							result = false;
+						}
+
+						// If not in-place copy, then copy from the source.
+						if (src == dest)
+						{
+							continue;
+						}
+
+						if (!flipHorizontal)
+						{
+							*(destPtr++) = *(srcPtr++);
+							*(destPtr++) = *(srcPtr++);
+						}
+						else
+						{
+							*(destPtr--) = *(srcPtr++);
+							*(destPtr--) = *(srcPtr++);
+						}
+					}
+				}
+					return result;
+				case DXGI.Format.R10G10B10A2_Typeless:
+				case DXGI.Format.R10G10B10A2_UNorm:
+				case DXGI.Format.R10G10B10A2_UInt:
+				case DXGI.Format.R10G10B10_Xr_Bias_A2_UNorm:
+				{
+					var srcPtr = (uint*)src;
+					var destPtr = (uint*)dest;
+
+					for (int i = 0; i < srcPitch; i += 4)
+					{
+						uint pixel = *(srcPtr++);
+						uint alpha = pixel & 0xC0000000;
+
+						if (alpha != 0)
+						{
+							result = false;
+						}
+
+						if (dest == src)
+						{
+							continue;
+						}
+
+						if (!flipHorizontal)
+						{
+							*(destPtr++) = pixel;
+						}
+						else
+						{
+							*(destPtr--) = pixel;
+						}
+					}
+				}
+					return result;
+				case DXGI.Format.R8G8B8A8_Typeless:
+				case DXGI.Format.R8G8B8A8_UNorm:
+				case DXGI.Format.R8G8B8A8_UNorm_SRgb:
+				case DXGI.Format.R8G8B8A8_UInt:
+				case DXGI.Format.R8G8B8A8_SNorm:
+				case DXGI.Format.R8G8B8A8_SInt:
+				case DXGI.Format.B8G8R8A8_UNorm:
+				case DXGI.Format.B8G8R8A8_Typeless:
+				case DXGI.Format.B8G8R8A8_UNorm_SRgb:
+				{
+					uint alphaMask = ((format == DXGI.Format.R8G8B8A8_SInt) || (format == DXGI.Format.R8G8B8A8_SNorm)) ? 0x7F000000 : 0xFF000000;
+
+					var srcPtr = (uint*)src;
+					var destPtr = (uint*)dest;
+
+					for (int i = 0; i < srcPitch; i += 4)
+					{
+						uint pixel = *(srcPtr++);
+						uint alpha = pixel & alphaMask;
+
+						if (alpha != 0)
+						{
+							result = false;
+						}
+
+						if (src == dest)
+						{
+							continue;
+						}
+
+						if (!flipHorizontal)
+						{
+							*(destPtr++) = pixel;
+						}
+						else
+						{
+							*(destPtr--) = pixel;
+						}
+					}
+				}
+					return result;
+				case DXGI.Format.B5G5R5A1_UNorm:
+				case DXGI.Format.B4G4R4A4_UNorm:
+				{
+					ushort alphaMask = (ushort)(format == DXGI.Format.B5G5R5A1_UNorm ? 0x8000 : 0xF000);
+					var srcPtr = (ushort*)src;
+					var destPtr = (ushort*)dest;
+
+					for (int i = 0; i < srcPitch; i += 2)
+					{
+						ushort pixel = *(srcPtr++);
+						int alpha = pixel & alphaMask;
+
+						if (alpha != 0)
+						{
+							result = false;
+						}
+
+						if (src == dest)
+						{
+							continue;
+						}
+
+						// If not in-place copy, then copy from the source.
+						if (!flipHorizontal)
+						{
+							*(destPtr++) = pixel;
+						}
+						else
+						{
+							*(destPtr--) = pixel;
+						}
+					}
+				}
+					return result;
+				case DXGI.Format.R8_UNorm:
+				case DXGI.Format.B5G6R5_UNorm:
+					if (dest == src)
+					{
+						return false;
+					}
+
+					if (flipHorizontal)
+					{
+						byte* srcPtr = (byte*)src;
+						byte* destPtr = (byte*)dest;
+
+						for (int x = 0; x < srcPitch; ++x)
+						{
+							*(destPtr--) = *(srcPtr++);
+						}
+						return false;
+					}
+
+					DirectAccess.MemoryCopy(dest, src, srcPitch);
+
+					return false;
+				case DXGI.Format.A8_UNorm:
+				{
+					var srcPtr = (byte*)src;
+					var destPtr = (byte*)dest;
+
+					for (int x = 0; x < srcPitch; ++x)
+					{
+						byte alpha = *(srcPtr++);
+
+						if (alpha != 0)
+						{
+							result = false;
+						}
+
+						if (dest == src)
+						{
+							continue;
+						}
+
+						if (!flipHorizontal)
+						{
+							*(destPtr++) = alpha;
+						}
+						else
+						{
+							*(destPtr--) = alpha;
+						}
+					}
+				}
+					return result;
+			}
+
+			return false;
+		}
 
 		/// <summary>
 		/// Function to copy (or update in-place) a line with opaque alpha substituion (if required).
@@ -253,9 +530,9 @@ namespace Gorgon.Graphics.Imaging
 		/// <param name="destPitch">The pitch of the destination data.</param>
 		/// <param name="format">Format of the destination buffer.</param>
 		/// <param name="bitFlags">Image bit conversion control flags.</param>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="format"/> parameter is Unknown.</exception>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="src"/> or the <paramref name="dest"/> parameter is <b>NULL</b>.</exception>
-		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="srcPitch"/> or the <paramref name="destPitch"/> parameter is less than 0.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="format"/> parameter is Unknown.</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="src"/> or the <paramref name="dest"/> parameter is <b>NULL</b>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="srcPitch"/> or the <paramref name="destPitch"/> parameter is less than 0.</exception>
 		/// <remarks>Use this method to copy a single scanline of an image and (optionally) set an opaque constant alpha value.</remarks>
 		public static unsafe void CopyScanline(void* src, int srcPitch, void* dest, int destPitch, DXGI.Format format, ImageBitFlags bitFlags)
 		{
@@ -297,11 +574,11 @@ namespace Gorgon.Graphics.Imaging
 								// If not in-place copy, then copy from the source.
 								if (src != dest)
 								{
-									*destPtr = *srcPtr;
-									srcPtr += 4;
+									*(destPtr++) = *(srcPtr++);
+									*(destPtr++) = *(srcPtr++);
+									*(destPtr++) = *(srcPtr++);
 								}
-
-								*destPtr += 3;
+								
 								*(destPtr++) = alpha;
 							}
 						}
@@ -439,6 +716,62 @@ namespace Gorgon.Graphics.Imaging
 			if (dest != src)
 			{
 				DirectAccess.MemoryCopy(dest, src, size);
+			}
+		}
+
+		/// <summary>
+		/// Function to expand a 24 bit per pixel scanline into a 32 bit per pixel scanline.
+		/// </summary>
+		/// <param name="src">The source data to expand.</param>
+		/// <param name="srcPitch">The number of bytes for a scanline in the source data.</param>
+		/// <param name="dest">The pointer to the destination buffer to fill.</param>
+		/// <param name="reverse"><b>true</b> to fill the destination from the right side, <b>false</b> to fill from the left.</param>
+		public static unsafe void Expand24BPPScanLine(void* src, int srcPitch, void* dest, bool reverse)
+		{
+			var srcPtr = (byte*)src;
+			var destPtr = (uint*)dest;
+
+			for (int x = 0; x < srcPitch; x += 3)
+			{
+				uint pixel = (uint)((*(srcPtr++)) | (*(srcPtr++) << 8) | (*(srcPtr++) << 16) | 0xFF000000);
+
+				if (reverse)
+				{
+					*(destPtr--) = pixel;
+				}
+				else
+				{
+					*(destPtr++) = pixel;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Function to compress a 32 bit scanline to a 24 bit bit scanline.
+		/// </summary>
+		/// <param name="src">The pointer to the source data.</param>
+		/// <param name="srcPitch">The pitch of the source data.</param>
+		/// <param name="dest">The pointer to the destination data.</param>
+		/// <param name="destPitch">The pitch of the destination data.</param>
+		public static unsafe void Compress24BPPScanLine(void* src, int srcPitch, void* dest, int destPitch)
+		{
+			var srcPtr = (uint*)src;
+			var destPtr = (byte*)dest;
+			byte* endPtr = destPtr + destPitch;
+
+			for (int srcCount = 0; srcCount < srcPitch; srcCount += 4)
+			{
+				uint pixel = *(srcPtr++);
+
+				// Ensure we don't have a buffer overrun.
+				if (destPtr + 2 > endPtr)
+				{
+					return;
+				}
+
+				*(destPtr++) = (byte)((pixel & 0xFF));				//R
+				*(destPtr++) = (byte)((pixel & 0xFF00) >> 8);		//G
+				*(destPtr++) = (byte)((pixel & 0xFF0000) >> 16);    //B
 			}
 		}
 	}

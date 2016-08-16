@@ -76,6 +76,8 @@ namespace Gorgon.Graphics
 		private List<IGorgonVideoDeviceInfo> _devices = new List<IGorgonVideoDeviceInfo>();
 		// Log used for debugging info.
 		private readonly IGorgonLog _log;
+		// The formats used to test against full screen video modes.
+		private static DXGI.Format[] _formats;
 		#endregion
 
 		#region Properties.
@@ -259,12 +261,21 @@ namespace Gorgon.Graphics
 		/// <returns>A list of display compatible full screen video modes.</returns>
 		private static IReadOnlyList<DXGI.ModeDescription1> GetVideoModes(D3D11.Device1 D3DDevice, DXGI.Output1 giOutput)
 		{
-			var formats = (DXGI.Format[])Enum.GetValues(typeof(DXGI.Format));
-
 			var result = new List<DXGI.ModeDescription1>();
+			DXGI.Format[] formats = null;
+
+			if (Interlocked.Exchange(ref formats, _formats) == null)
+			{
+				formats = ((DXGI.Format[])Enum.GetValues(typeof(DXGI.Format)))
+					.Where(item =>
+					       (D3DDevice.CheckFormatSupport(item) & D3D11.FormatSupport.Display) == D3D11.FormatSupport.Display)
+					.ToArray();
+
+				Interlocked.Exchange(ref _formats, formats);
+			}
 
 			// Test each format for display compatibility.
-			foreach (var format in formats)
+			foreach (var format in _formats)
 			{
 				DXGI.ModeDescription1[] modes = giOutput.GetDisplayModeList1(format, DXGI.DisplayModeEnumerationFlags.Scaling | DXGI.DisplayModeEnumerationFlags.Interlaced);
 

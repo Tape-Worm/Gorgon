@@ -345,7 +345,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// </summary>
 		/// <param name="stream">The stream containing the metadata to read.</param>
 		/// <returns>
-		/// The image meta data as a <see cref="GorgonImageInfo"/> value.
+		/// The image meta data as a <see cref="IGorgonImageInfo"/> value.
 		/// </returns>
 		/// <exception cref="IOException">Thrown when the <paramref name="stream"/> is write-only or if the stream cannot perform seek operations.
 		/// <para>-or-</para>
@@ -360,7 +360,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// may cause undesirable results.
 		/// </para> 
 		/// </remarks>
-		GorgonImageInfo GetMetaData(Stream stream);
+		IGorgonImageInfo GetMetaData(Stream stream);
 		#endregion
 	}
 }
