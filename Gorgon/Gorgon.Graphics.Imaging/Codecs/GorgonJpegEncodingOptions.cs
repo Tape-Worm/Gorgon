@@ -24,8 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
 using Gorgon.Configuration;
 
 namespace Gorgon.Graphics.Imaging.Codecs
@@ -70,11 +68,11 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		{
 			get
 			{
-				return Options.GetOption<double>(nameof(DpiX));
+				return Options.GetOptionValue<double>(nameof(DpiX));
 			}
 			set
 			{
-				Options.SetOption(nameof(DpiX), value);
+				Options.SetOptionValue(nameof(DpiX), value);
 			}
 		}
 
@@ -93,11 +91,11 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		{
 			get
 			{
-				return Options.GetOption<double>(nameof(DpiY));
+				return Options.GetOptionValue<double>(nameof(DpiY));
 			}
 			set
 			{
-				Options.SetOption(nameof(DpiY), value);
+				Options.SetOptionValue(nameof(DpiY), value);
 			}
 		}
 
@@ -111,7 +109,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		{
 			get
 			{
-				return Options.GetOption<float>(nameof(ImageQuality));
+				return Options.GetOptionValue<float>(nameof(ImageQuality));
 			}
 			set
 			{
@@ -124,7 +122,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 					value = 1.0f;
 				}
 
-				Options.SetOption(nameof(ImageQuality), value);
+				Options.SetOptionValue(nameof(ImageQuality), value);
 			}
 		}
 
@@ -168,18 +166,12 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// </summary>
 		public GorgonJpegEncodingOptions()
 		{
-			Options = new GorgonOptionBag(new Dictionary<string, Tuple<object, Type>>
+			Options = new GorgonOptionBag(new []
 			                              {
-				                              {
-					                              nameof(ImageQuality), new Tuple<object, Type>(1.0f, typeof(float))
-				                              },
-				                              {
-					                              nameof(DpiX), new Tuple<object, Type>(72.0, typeof(double))
-				                              },
-				                              {
-					                              nameof(DpiY), new Tuple<object, Type>(72.0, typeof(double))
-				                              }
-			                              });
+				                              GorgonOption.CreateSingleOption(nameof(ImageQuality), 1.0f, 0, 1.0f),
+											  GorgonOption.CreateDoubleOption(nameof(DpiX), 72.0),
+											  GorgonOption.CreateDoubleOption(nameof(DpiY), 72.0),
+										  });
 		}
 		#endregion
 	}

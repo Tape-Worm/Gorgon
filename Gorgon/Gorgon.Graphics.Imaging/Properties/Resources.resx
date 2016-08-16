@@ -141,6 +141,9 @@
   <data name="GORIMG_ERR_CANNOT_COPY_DATA_MISMATCH" xml:space="preserve">
     <value>The source and destination image do not share the same width, height, or pixel format.</value>
   </data>
+  <data name="GORIMG_ERR_CODEC_NOT_IN_PLUGIN" xml:space="preserve">
+    <value>The codec '{0}' was not found in the plug in.</value>
+  </data>
   <data name="GORIMG_ERR_FILE_FORMAT_NOT_CORRECT" xml:space="preserve">
     <value>The file data stored in the stream is not a '{0}' file.</value>
   </data>
@@ -195,5 +198,8 @@ This could lead to a buffer overrun.</value>
   </data>
   <data name="GORIMG_TOSTR_IMAGE_CODEC" xml:space="preserve">
     <value>Gorgon {0} Image Codec</value>
+  </data>
+  <data name="GORIMG_TOSTR_IMGE_CODEC_PLUGIN_DESC" xml:space="preserve">
+    <value>Gorgon Image Codec {0} ({1})</value>
   </data>
 </root>

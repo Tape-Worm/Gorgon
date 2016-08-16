@@ -24,8 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
 using Gorgon.Configuration;
 
 namespace Gorgon.Graphics.Imaging.Codecs
@@ -82,12 +80,12 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		{
 			get
 			{
-				return Options.GetOption<bool>(nameof(SetZeroAlphaAsOpaque));
+				return Options.GetOptionValue<bool>(nameof(SetZeroAlphaAsOpaque));
 			}
 
 			set
 			{
-				Options.SetOption(nameof(SetZeroAlphaAsOpaque), value);
+				Options.SetOptionValue(nameof(SetZeroAlphaAsOpaque), value);
 			}
 		}
 		#endregion
@@ -98,12 +96,10 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// </summary>
 		public GorgonTgaDecodingOptions()
 		{
-			Options = new GorgonOptionBag(new Dictionary<string, Tuple<object, Type>>
-										  {
-											  {
-												  nameof(SetZeroAlphaAsOpaque), new Tuple<object, Type>(true, typeof(bool))
-											  }
-										  });
+			Options = new GorgonOptionBag(new []
+			                              {
+				                              GorgonOption.CreateOption(nameof(SetZeroAlphaAsOpaque), true)
+			                              });
 		}
 		#endregion
 	}

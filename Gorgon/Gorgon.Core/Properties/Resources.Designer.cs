@@ -463,6 +463,15 @@ namespace Gorgon.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The option &apos;{0}&apos; is already included in this option bag..
+        /// </summary>
+        internal static string GOR_ERR_OPTION_ALREADY_EXISTS {
+            get {
+                return ResourceManager.GetString("GOR_ERR_OPTION_ALREADY_EXISTS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The parameter must not be empty..
         /// </summary>
         internal static string GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY {

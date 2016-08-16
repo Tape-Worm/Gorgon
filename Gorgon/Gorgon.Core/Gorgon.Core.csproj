@@ -132,6 +132,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration\GorgonOption.cs" />
     <Compile Include="Configuration\GorgonOptionBag.cs" />
     <Compile Include="Collections\Specialized\GorgonConcurrentDictionary.cs" />
     <Compile Include="Collections\Specialized\GorgonNamedObjectDictionary.cs" />
@@ -143,6 +144,7 @@
     <Compile Include="Collections\_Interfaces\IGorgonNamedObjectReadOnlyList.cs" />
     <Compile Include="Configuration\GorgonApplicationSettingAttribute.cs" />
     <Compile Include="Configuration\GorgonApplicationSettings.cs" />
+    <Compile Include="Configuration\_Interfaces\IGorgonOption.cs" />
     <Compile Include="Configuration\_Interfaces\IGorgonOptionBag.cs" />
     <Compile Include="Design\LocalCategoryAttribute.cs" />
     <Compile Include="Design\LocalDescriptionAttribute.cs" />

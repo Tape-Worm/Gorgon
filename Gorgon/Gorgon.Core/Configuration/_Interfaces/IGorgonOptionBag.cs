@@ -24,8 +24,8 @@
 // 
 #endregion
 
-using System;
 using System.Collections.Generic;
+using Gorgon.Collections;
 
 namespace Gorgon.Configuration
 {
@@ -33,15 +33,8 @@ namespace Gorgon.Configuration
 	/// Provides a functionality for setting and reading various options from a defined option bag.
 	/// </summary>
 	public interface IGorgonOptionBag
+		: IGorgonNamedObjectReadOnlyList<IGorgonOption>
 	{
-		/// <summary>
-		/// Property to return the list of available option names and their expected types.
-		/// </summary>
-		IReadOnlyDictionary<string, Type> OptionKeys
-		{
-			get;
-		}
-
 		/// <summary>
 		/// Function to retrieve the value for an option.
 		/// </summary>
@@ -49,7 +42,7 @@ namespace Gorgon.Configuration
 		/// <param name="optionName">The name of the option.</param>
 		/// <returns>The value stored with the option.</returns>
 		/// <exception cref="KeyNotFoundException">Thrown when the option specified by the <paramref name="optionName"/> was not found.</exception>
-		T GetOption<T>(string optionName);
+		T GetOptionValue<T>(string optionName);
 
 		/// <summary>
 		/// Function to assign a value for an option.
@@ -58,6 +51,6 @@ namespace Gorgon.Configuration
 		/// <param name="optionName">The name of the option.</param>
 		/// <param name="value">The value to assign to the option.</param>
 		/// <exception cref="KeyNotFoundException">Thrown when the option specified by the <paramref name="optionName"/> was not found.</exception>
-		void SetOption<T>(string optionName, T value);
+		void SetOptionValue<T>(string optionName, T value);
 	}
 }

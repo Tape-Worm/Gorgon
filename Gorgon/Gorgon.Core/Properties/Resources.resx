@@ -1005,4 +1005,7 @@ Code: 0x{2}</value>
   <data name="GOR_TOSTR_BOX" xml:space="preserve">
     <value>Gorgon Box: {0}x{1}x{2}-{3}x{4}x{5} (Width: {6}, Height: {7}, Depth {8})</value>
   </data>
+  <data name="GOR_ERR_OPTION_ALREADY_EXISTS" xml:space="preserve">
+    <value>The option '{0}' is already included in this option bag.</value>
+  </data>
 </root>

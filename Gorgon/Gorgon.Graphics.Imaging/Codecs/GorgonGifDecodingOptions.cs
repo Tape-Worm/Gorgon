@@ -24,10 +24,8 @@
 // 
 #endregion
 
-using System;
 using System.Collections.Generic;
 using Gorgon.Configuration;
-using Gorgon.Math;
 
 namespace Gorgon.Graphics.Imaging.Codecs
 {
@@ -80,11 +78,11 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		{
 			get
 			{
-				return Options.GetOption<bool>(nameof(ReadAllFrames));
+				return Options.GetOptionValue<bool>(nameof(ReadAllFrames));
 			}
 			set
 			{
-				Options.SetOption(nameof(ReadAllFrames), value);
+				Options.SetOptionValue(nameof(ReadAllFrames), value);
 			}
 		}
 
@@ -117,11 +115,11 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		{
 			get
 			{
-				return Options.GetOption<IList<GorgonColor>>(nameof(Palette));
+				return Options.GetOptionValue<IList<GorgonColor>>(nameof(Palette));
 			}
 			set
 			{
-				Options.SetOption(nameof(Palette), value);
+				Options.SetOptionValue(nameof(Palette), value);
 			}
 		}
 
@@ -144,11 +142,11 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		{
 			get
 			{
-				return Options.GetOption<float>(nameof(AlphaThreshold));
+				return Options.GetOptionValue<float>(nameof(AlphaThreshold));
 			}
 			set
 			{
-				Options.SetOption(nameof(AlphaThreshold), value.Max(0).Min(1));
+				Options.SetOptionValue(nameof(AlphaThreshold), value);
 			}
 		}
 
@@ -183,17 +181,11 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// </summary>
 		public GorgonGifDecodingOptions()
 		{
-			Options = new GorgonOptionBag(new Dictionary<string, Tuple<object, Type>>
+			Options = new GorgonOptionBag(new []
 			                              {
-				                              {
-					                              nameof(ReadAllFrames), new Tuple<object, Type>(false, typeof(bool))
-				                              },
-				                              {
-					                              nameof(Palette), new Tuple<object, Type>(new List<GorgonColor>(), typeof(IList<GorgonColor>))
-				                              },
-				                              {
-					                              nameof(AlphaThreshold), new Tuple<object, Type>(0.0f, typeof(float))
-				                              }
+				                              GorgonOption.CreateOption(nameof(ReadAllFrames), false),
+											  GorgonOption.CreateOption(nameof(Palette), new List<GorgonColor>()),
+											  GorgonOption.CreateSingleOption(nameof(AlphaThreshold), 0.0f, 0.0f, 1.0f)
 			                              });
 		}
 		#endregion

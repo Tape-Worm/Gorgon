@@ -64,11 +64,11 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		{
 			get
 			{
-				return Options.GetOption<IList<GorgonColor>>(nameof(Palette));
+				return Options.GetOptionValue<IList<GorgonColor>>(nameof(Palette));
 			}
 			set
 			{
-				Options.SetOption(nameof(Palette), value);
+				Options.SetOptionValue(nameof(Palette), value);
 			}
 		}
 
@@ -91,11 +91,11 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		{
 			get
 			{
-				return Options.GetOption<float>(nameof(AlphaThreshold));
+				return Options.GetOptionValue<float>(nameof(AlphaThreshold));
 			}
 			set
 			{
-				Options.SetOption(nameof(AlphaThreshold), value.Max(0).Min(1));
+				Options.SetOptionValue(nameof(AlphaThreshold), value.Max(0).Min(1));
 			}
 		}
 
@@ -116,11 +116,11 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		{
 			get
 			{
-				return Options.GetOption<IList<int>>(nameof(FrameDelays));
+				return Options.GetOptionValue<IList<int>>(nameof(FrameDelays));
 			}
 			set
 			{
-				Options.SetOption(nameof(FrameDelays), value);
+				Options.SetOptionValue(nameof(FrameDelays), value);
 			}
 		}
 
@@ -143,11 +143,11 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		{
 			get
 			{
-				return Options.GetOption<ImageDithering>(nameof(Dithering));
+				return Options.GetOptionValue<ImageDithering>(nameof(Dithering));
 			}
 			set
 			{
-				Options.SetOption(nameof(Dithering), value);
+				Options.SetOptionValue(nameof(Dithering), value);
 			}
 		}
 
@@ -158,11 +158,11 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		{
 			get
 			{
-				return Options.GetOption<double>(nameof(DpiX));
+				return Options.GetOptionValue<double>(nameof(DpiX));
 			}
 			set
 			{
-				Options.SetOption(nameof(DpiX), value);
+				Options.SetOptionValue(nameof(DpiX), value);
 			}
 		}
 
@@ -173,11 +173,11 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		{
 			get
 			{
-				return Options.GetOption<double>(nameof(DpiY));
+				return Options.GetOptionValue<double>(nameof(DpiY));
 			}
 			set
 			{
-				Options.SetOption(nameof(DpiY), value);
+				Options.SetOptionValue(nameof(DpiY), value);
 			}
 		}
 
@@ -196,11 +196,11 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		{
 			get
 			{
-				return Options.GetOption<bool>(nameof(IGorgonImageCodecEncodingOptions.SaveAllFrames));
+				return Options.GetOptionValue<bool>(nameof(IGorgonImageCodecEncodingOptions.SaveAllFrames));
 			}
 			set
 			{
-				Options.SetOption(nameof(IGorgonImageCodecEncodingOptions.SaveAllFrames), value);
+				Options.SetOptionValue(nameof(IGorgonImageCodecEncodingOptions.SaveAllFrames), value);
 			}
 		}
 		#endregion
@@ -211,29 +211,15 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// </summary>
 		public GorgonGifEncodingOptions()
 		{
-			Options = new GorgonOptionBag(new Dictionary<string, Tuple<object, Type>>
+			Options = new GorgonOptionBag(new []
 			                              {
-				                              {
-					                              nameof(Dithering), new Tuple<object, Type>(ImageDithering.None, typeof(ImageDithering))
-				                              },
-				                              {
-					                              nameof(SaveAllFrames), new Tuple<object, Type>(true, typeof(bool))
-				                              },
-				                              {
-					                              nameof(DpiX), new Tuple<object, Type>(72.0, typeof(double))
-				                              },
-				                              {
-					                              nameof(DpiY), new Tuple<object, Type>(72.0, typeof(double))
-				                              },
-				                              {
-					                              nameof(Palette), new Tuple<object, Type>(new List<GorgonColor>(), typeof(IList<GorgonColor>))
-				                              },
-				                              {
-					                              nameof(AlphaThreshold), new Tuple<object, Type>(0.0f, typeof(float))
-				                              },
-				                              {
-					                              nameof(FrameDelays), new Tuple<object, Type>(new List<int>(), typeof(IList<int>))
-				                              }
+				                              GorgonOption.CreateOption(nameof(Dithering), ImageDithering.None),
+											  GorgonOption.CreateOption(nameof(SaveAllFrames), true),
+											  GorgonOption.CreateDoubleOption(nameof(DpiX), 72.0),
+											  GorgonOption.CreateDoubleOption(nameof(DpiY), 72.0),
+											  GorgonOption.CreateOption(nameof(Palette), new List<GorgonColor>()),
+											  GorgonOption.CreateSingleOption(nameof(AlphaThreshold), 1.0f, 0.0f, 1.0f),
+											  GorgonOption.CreateOption(nameof(FrameDelays), new List<int>())
 			                              });
 		}
 		#endregion

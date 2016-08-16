@@ -368,19 +368,19 @@ namespace Gorgon.Graphics.Imaging
 		private static void SetFrameOptions(WIC.BitmapFrameEncode frame, IGorgonWicEncodingOptions options)
 		{
 			// Options that do not exist will have their default value for that type applied.
-			if (options.Options.OptionKeys.ContainsKey("Interlacing"))
+			if (options.Options.Contains("Interlacing"))
 			{
-				frame.Options.InterlaceOption = options.Options.GetOption<bool>("Interlacing");
+				frame.Options.InterlaceOption = options.Options["Interlacing"].GetValue<bool>();
 			}
 
-			if (options.Options.OptionKeys.ContainsKey("Filter"))
+			if (options.Options.Contains("Filter"))
 			{
-				frame.Options.FilterOption = (WIC.PngFilterOption)options.Options.GetOption<PngFilter>("Filter");
+				frame.Options.FilterOption = options.Options["Filter"].GetValue<WIC.PngFilterOption>();
 			}
 
-			if (options.Options.OptionKeys.ContainsKey("ImageQuality"))
+			if (options.Options.Contains("ImageQuality"))
 			{
-				frame.Options.ImageQuality = options.Options.GetOption<float>("ImageQuality");
+				frame.Options.ImageQuality = options.Options["ImageQuality"].GetValue<float>();
 			}
 		}
 
@@ -393,7 +393,7 @@ namespace Gorgon.Graphics.Imaging
 		private Tuple<WIC.Palette, float> GetDecoderPalette(WIC.BitmapFrameDecode frame, IGorgonWicDecodingOptions options)
 		{
 			// If there's no palette option on the decoder, then we do nothing.
-			if ((options != null) && (!options.Options.OptionKeys.ContainsKey("Palette")))
+			if ((options != null) && (!options.Options.Contains("Palette")))
 			{
 				return null;
 			}
@@ -403,8 +403,8 @@ namespace Gorgon.Graphics.Imaging
 				return null;
 			}
 
-			IList<GorgonColor> paletteColors = options?.Options.GetOption<IList<GorgonColor>>("Palette") ?? new GorgonColor[0];
-			float alpha = options?.Options.GetOption<float>("AlphaThreshold") ?? 0.0f;
+			IList<GorgonColor> paletteColors = options?.Options["Palette"].GetValue<IList<GorgonColor>>() ?? new GorgonColor[0];
+			float alpha = options?.Options["AlphaThreshold"].GetValue<float>() ?? 0.0f;
 
 			// If there are no colors set, then extract it from the frame.
 			if (paletteColors.Count == 0)
@@ -446,7 +446,7 @@ namespace Gorgon.Graphics.Imaging
 		private Tuple<WIC.Palette, float> GetEncoderPalette(WIC.Bitmap frame, IGorgonWicEncodingOptions options)
 		{
 			// If there's no palette option on the decoder, then we do nothing.
-			if ((options != null) && (!options.Options.OptionKeys.ContainsKey("Palette")))
+			if ((options != null) && (!options.Options.Contains("Palette")))
 			{
 				return null;
 			}
@@ -456,8 +456,8 @@ namespace Gorgon.Graphics.Imaging
 				return null;
 			}
 
-			IList<GorgonColor> paletteColors = options?.Options.GetOption<IList<GorgonColor>>("Palette") ?? new GorgonColor[0];
-			float alpha = options?.Options.GetOption<float>("AlphaThreshold") ?? 0.0f;
+			IList<GorgonColor> paletteColors = options?.Options["Palette"].GetValue<IList<GorgonColor>>() ?? new GorgonColor[0];
+			float alpha = options?.Options["AlphaThreshold"].GetValue<float>() ?? 0.0f;
 			WIC.Palette wicPalette;
 
 			// If there are no colors set, then extract it from the frame.
@@ -679,8 +679,7 @@ namespace Gorgon.Graphics.Imaging
 			bool readAllFrames = decoder.DecoderInfo.IsMultiframeSupported;
 
 			if ((readAllFrames) 
-				&& (options != null) 
-				&& (options.Options.OptionKeys.ContainsKey(nameof(IGorgonWicDecodingOptions.ReadAllFrames))))
+				&& (options != null))
 			{
 				readAllFrames = options.ReadAllFrames;
 			}
@@ -732,7 +731,7 @@ namespace Gorgon.Graphics.Imaging
 
 				if ((saveAllFrames) 
 					&& (options != null) 
-					&& (options.Options.OptionKeys.ContainsKey(nameof(IGorgonWicEncodingOptions.SaveAllFrames))))
+					&& (options.Options.Contains(nameof(IGorgonWicEncodingOptions.SaveAllFrames))))
 				{
 					saveAllFrames = options.SaveAllFrames;
 				}
