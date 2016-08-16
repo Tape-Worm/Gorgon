@@ -269,6 +269,15 @@ namespace Gorgon.Graphics.Imaging.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This codec does not support TGA files encoded using 2 or 4 way interleaving, or color mapped data..
+        /// </summary>
+        internal static string GORIMG_ERR_TGA_TYPE_NOT_SUPPORTED {
+            get {
+                return ResourceManager.GetString("GORIMG_ERR_TGA_TYPE_NOT_SUPPORTED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Image pitch information.  Width={0} bytes, Size={1} bytes..
         /// </summary>
         internal static string GORIMG_TOSTR_FMTPITCH {

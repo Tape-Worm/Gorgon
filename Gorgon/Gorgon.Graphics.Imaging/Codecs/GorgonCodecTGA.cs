@@ -1,7 +1,7 @@
 ﻿#region MIT.
 // 
 // Gorgon.
-// Copyright (C) 2013 Michael Winsor
+// Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +28,7 @@
 // DirectXTex by Chuck Walburn (http://directxtex.codeplex.com)
 
 #region SharpDX/DirectXTex licenses
-// Copyright (c) 2010-2013 SharpDX - Alexandre Mutel
+// Copyright (c) 2010-2016 SharpDX - Alexandre Mutel
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -105,83 +105,14 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.InteropServices;
-using Gorgon.Graphics;
-using Gorgon.Graphics.Properties;
+using Gorgon.Core;
+using Gorgon.Graphics.Imaging.Properties;
+using Gorgon.IO;
 using Gorgon.Native;
+using DXGI = SharpDX.DXGI;
 
-namespace Gorgon.IO
+namespace Gorgon.Graphics.Imaging.Codecs
 {
-    #region Enums.
-    /// <summary>
-    /// Image types.
-    /// </summary>
-    enum TGAImageType
-        : byte
-    {
-        /// <summary>
-        /// No image data.
-        /// </summary>
-        NoImage = 0,
-        /// <summary>
-        /// Color mapped image data.
-        /// </summary>
-        ColorMapped = 1,
-        /// <summary>
-        /// True color image data.
-        /// </summary>
-        TrueColor = 2,
-        /// <summary>
-        /// Black and white image data.
-        /// </summary>
-        BlackAndWhite = 3,
-        /// <summary>
-        /// Compressed color mapped image data.
-        /// </summary>
-        ColorMappedRLE = 9,
-        /// <summary>
-        /// Compressed true color image data.
-        /// </summary>
-        TrueColorRLE = 10,
-        /// <summary>
-        /// Compressed black and white data.
-        /// </summary>
-        BlackAndWhiteRLE = 11
-    }
-
-    /// <summary>
-    /// Descriptor flags.
-    /// </summary>
-    [Flags]
-    enum TGADescriptor
-        : byte
-    {		
-		/// <summary>
-		/// 16 bit.
-		/// </summary>
-		RGB555A1 = 0x1,
-		/// <summary>
-		/// 32 bit
-		/// </summary>
-		RGB888A8 = 0x8,
-        /// <summary>
-        /// Invert on the x-axis.
-        /// </summary>
-        InvertX = 0x10,
-        /// <summary>
-        /// Invert on the y-axis.
-        /// </summary>
-        InvertY = 0x20,
-        /// <summary>
-        /// 2 way interleaved (depreciated).
-        /// </summary>
-        Interleaved2Way = 0x40,
-        /// <summary>
-        /// 4 way interleaved (depreciated).
-        /// </summary>
-        Interleaved4Way = 0x80
-    }
-
     /// <summary>
     /// TGA specific conversion flags.
     /// </summary>
@@ -208,197 +139,121 @@ namespace Gorgon.IO
         /// Run length encoded.
         /// </summary>
         RLE = 0x8,
-        /// <summary>
-        /// Swizzle BGR to RGB/RGB to BGR
-        /// </summary>
-        Swizzle = 0x10000,
+		/// <summary>
+		/// Convert alpha to opaque if all scanlines have 0 alpha.
+		/// </summary>
+		SetOpaqueAlpha = 0x10,
+		/// <summary>
+		/// Swizzle BGR to RGB/RGB to BGR
+		/// </summary>
+		Swizzle = 0x10000,
         /// <summary>
         /// 24 bit format.
         /// </summary>
-        RGB888 = 0x20000
+        RGB888 = 0x20000,
     }
-    #endregion
 
-    /// <summary>
+	/// <summary>
 	/// A codec to handle reading/writing Truevision TGA files.
 	/// </summary>
-    /// <remarks>A codec allows for reading and/or writing of data in an encoded format.  Users may inherit from this object to define their own 
-    /// image formats, or use one of the predefined image codecs available in Gorgon.
-    /// <para>The codec accepts and returns a <see cref="Gorgon.Graphics.GorgonImageData">GorgonImageData</see> type, which is filled from or read into the encoded file.</para>
-    /// <para>The TGA encoder has the following limitations:
-    /// <list type="bullet">
-    ///     <item>
-    ///         <description>No color map support.</description>
-    ///     </item>
-    ///     <item>
-    ///         <description>Interleaved files are not supported.</description>
-    ///     </item>
-    ///     <item>
-    ///         <description>Supports the following formats: 8 bit grayscale, 16, 24 and 32 bits per pixel images.</description>
-    ///     </item>
-    ///     <item>
-    ///         <description>Writes uncompressed files only.  RLE is only supported for reading.</description>
-    ///     </item>
+	/// <remarks>
+	/// <para>
+	/// This codec will read RLE compressed and uncompressed files, and write compressed files using the Truevision Targa (TGA) format.
+	/// </para>
+	/// <para>
+	/// Most 16/24/32 bit TGA files will be readable using this codec, however the following limitations may keep the file from being decoded by this codec:
+	/// <list type="bullet">
 	///     <item>
-	///			<description>Only supports saving the first depth slice, mip level and first array index.  Other depth slices, mip levels and array indices are ignored.</description>
+	///         <description>No color map support.</description>
 	///     </item>
-    /// </list>
-    /// </para>
-    /// </remarks>
-    public unsafe sealed class GorgonCodecTGA
+	///     <item>
+	///         <description>Interleaved files are not supported.</description>
+	///     </item>
+	///     <item>
+	///         <description>Supports the following formats: 8 bit grayscale, 16, 24 and 32 bits per pixel images.</description>
+	///     </item>
+	/// </list>
+	/// </para>
+	/// </remarks>
+	public sealed unsafe class GorgonCodecTga
 		: GorgonImageCodec
 	{
-		#region Value Types.
-        /// <summary>
-        /// Header information.
-        /// </summary>
-        [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        struct TGAHeader
-        {
-            /// <summary>
-            /// Length of the ID.
-            /// </summary>
-            public readonly byte IDLength;
-            /// <summary>
-            /// Color map type.
-            /// </summary>
-            public readonly byte ColorMapType;
-            /// <summary>
-            /// Image type.
-            /// </summary>
-            public TGAImageType ImageType;
-            /// <summary>
-            /// First color map index.
-            /// </summary>
-            private readonly ushort ColorMapFirst;
-            /// <summary>
-            /// Length of the color map indices.
-            /// </summary>
-            public readonly ushort ColorMapLength;
-            /// <summary>
-            /// Size of the color map.
-            /// </summary>
-            private readonly byte ColorMapSize;
-            /// <summary>
-            /// Starting horizontal position.
-            /// </summary>
-            private readonly ushort XOrigin;
-            /// <summary>
-            /// Starting vertical position.
-            /// </summary>
-            private readonly ushort YOrigin;
-            /// <summary>
-            /// Width of the image.
-            /// </summary>
-            public ushort Width;
-            /// <summary>
-            /// Height of the image.
-            /// </summary>
-            public ushort Height;
-            /// <summary>
-            /// Bits per pixel.
-            /// </summary>
-            public byte BPP;
-            /// <summary>
-            /// Descriptor flag.
-            /// </summary>
-            public TGADescriptor Descriptor;
-        }
-		#endregion
-
         #region Variables.
         // List of supported image formats.
-        private readonly BufferFormat[] _supportedFormats =
-        {
-            // 8 bit grayscale.
-            BufferFormat.R8_UNorm,
-            // 16 bit.
-            BufferFormat.B5G5R5A1_UNorm,
-            // 24 bit.
-            BufferFormat.R8G8B8A8_UNorm,
-			BufferFormat.B8G8R8A8_UNorm,
-			BufferFormat.B8G8R8X8_UNorm
-        };
+		private readonly DXGI.Format[] _supportedFormats =
+		{
+			// 8 bit grayscale.
+			DXGI.Format.R8_UNorm,
+			DXGI.Format.A8_UNorm,
+			// 16 bit (only supports 5 bit color and 1 bit alpha).
+			DXGI.Format.B5G5R5A1_UNorm,
+			// 24/32 bit.
+			DXGI.Format.R8G8B8A8_UNorm,
+			DXGI.Format.B8G8R8A8_UNorm,
+			DXGI.Format.B8G8R8X8_UNorm
+		};
         #endregion
 
         #region Properties.
-	    /// <summary>
-        /// Property to return the data formats for the image.
-        /// </summary>
-        public override IEnumerable<BufferFormat> SupportedFormats => _supportedFormats;
+		/// <summary>
+		/// Property to return the pixel formats supported by the codec.
+		/// </summary>
+		public override IReadOnlyList<DXGI.Format> SupportedPixelFormats => _supportedFormats;
 
-	    /// <summary>
+		/// <summary>
 		/// Property to return whether the image codec supports block compression.
 		/// </summary>
 		public override bool SupportsBlockCompression => false;
 
-	    /// <summary>
-		/// Property to set or return whether to set the alpha on the image as opaque if no alpha values are present.
-		/// </summary>
-		/// <remarks>Setting this to <b>true</b> will set all alpha values to an opaque value if the image does not contain an alpha value greater than 0 for any pixel.
-		/// <para>This property only applied to images that are being read.</para>
-		/// <para>If the image format does not contain alpha, then this setting is ignored.</para>
-		/// <para>The default value is <b>true</b>.</para>
-		/// </remarks>
-		public bool SetOpaqueIfZeroAlpha
-		{
-			get;
-			set;
-		}
-
 		/// <summary>
 		/// Property to return the friendly description of the format.
 		/// </summary>
-		public override string CodecDescription => Resources.GORGFX_IMAGE_TGA_CODEC_DESC;
+		public override string CodecDescription => Resources.GORIMG_DESC_TGA_CODEC;
 
 	    /// <summary>
 		/// Property to return the abbreviated name of the codec (e.g. PNG).
 		/// </summary>
 		public override string Codec => "TGA";
 
-	    #endregion
+		/// <summary>
+		/// Property to return whether the codec supports decoding/encoding multiple frames or not.
+		/// </summary>
+		public override bool SupportsMultipleFrames => false;
+
+		/// <summary>
+		/// Property to return whether the image codec supports mip maps.
+		/// </summary>
+		public override bool SupportsMipMaps => false;
+
+		/// <summary>
+		/// Property to return whether the image codec supports a depth component for volume textures.
+		/// </summary>
+		public override bool SupportsDepth => false;
+		#endregion
 
 		#region Methods.
-        /// <summary>
-        /// Property to return whether the image codec supports image arrays.
-        /// </summary>
-        public override bool SupportsArray => false;
-
-	    /// <summary>
-        /// Property to return whether the image codec supports mip maps.
-        /// </summary>
-        public override bool SupportsMipMaps => false;
-
-	    /// <summary>
-        /// Property to return whether the image codec supports a depth component for volume textures.
-        /// </summary>
-        public override bool SupportsDepth => false;
-
-	    /// <summary>
-		/// Function to read in the DDS header from a stream.
+		/// <summary>
+		/// Function to read in the TGA header from a stream.
 		/// </summary>
-		/// <param name="stream">Stream containing the data.</param>
-        /// <param name="conversionFlags">Flags for conversion.</param>
+		/// <param name="reader">The reader used to read the stream containing the data.</param>
+		/// <param name="conversionFlags">Flags for conversion.</param>
 		/// <returns>New image settings.</returns>
-        private IImageSettings ReadHeader(GorgonDataStream stream, out TGAConversionFlags conversionFlags)
+		private static IGorgonImageInfo ReadHeader(GorgonBinaryReader reader, out TGAConversionFlags conversionFlags)
         {            
-            IImageSettings settings = new GorgonTexture2DSettings();
-
-			conversionFlags = TGAConversionFlags.None;
+            conversionFlags = TGAConversionFlags.None;
 
             // Get the header for the file.
-            var header = stream.Read<TGAHeader>();
+            TGAHeader header = reader.ReadValue<TGAHeader>();
 
             if ((header.ColorMapType != 0) || (header.ColorMapLength != 0)
 				|| (header.Width <= 0) || (header.Height <= 0)
 				|| ((header.Descriptor & TGADescriptor.Interleaved2Way) == TGADescriptor.Interleaved2Way)
 				|| ((header.Descriptor & TGADescriptor.Interleaved4Way) == TGADescriptor.Interleaved4Way))
             {
-                throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
+                throw new NotSupportedException(Resources.GORIMG_ERR_TGA_TYPE_NOT_SUPPORTED);
             }
 
-            settings.MipCount = 1;
-            settings.ArrayCount = 1;
+			DXGI.Format pixelFormat = DXGI.Format.Unknown;
 
             switch (header.ImageType)
             {
@@ -407,11 +262,11 @@ namespace Gorgon.IO
                     switch (header.BPP)
                     {
                         case 16:
-                            settings.Format = BufferFormat.B5G5R5A1_UNorm;
+                            pixelFormat = DXGI.Format.B5G5R5A1_UNorm;
                             break;
                         case 24:
                         case 32:
-                            settings.Format = BufferFormat.R8G8B8A8_UNorm;
+                            pixelFormat = DXGI.Format.R8G8B8A8_UNorm;
                             if (header.BPP == 24)
                             {
                                 conversionFlags |= TGAConversionFlags.Expand;
@@ -428,11 +283,11 @@ namespace Gorgon.IO
                 case TGAImageType.BlackAndWhiteRLE:
                     if (header.BPP == 8)
                     {
-                        settings.Format = BufferFormat.R8_UNorm;
+                        pixelFormat = DXGI.Format.R8_UNorm;
                     }
                     else
                     {
-						throw new IOException(string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, header.ImageType));
+						throw new IOException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, header.ImageType));
                     }
 
                     if (header.ImageType == TGAImageType.BlackAndWhiteRLE)
@@ -441,11 +296,16 @@ namespace Gorgon.IO
                     }
                     break;
                 default:
-					throw new IOException(string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, header.ImageType));
+					throw new IOException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, header.ImageType));
             }
 
-            settings.Width = header.Width;
-            settings.Height = header.Height;
+		    var settings = new GorgonImageInfo(ImageType.Image2D, pixelFormat)
+		                   {
+			                   MipCount = 1,
+			                   ArrayCount = 1,
+			                   Width = header.Width,
+			                   Height = header.Height
+		                   };
 
             if ((header.Descriptor & TGADescriptor.InvertX) == TGADescriptor.InvertX)
             {
@@ -465,19 +325,19 @@ namespace Gorgon.IO
             // Skip these bytes.
             for (int i = 0; i < header.IDLength; i++)
 		    {
-		        stream.ReadByte();
+		        reader.ReadByte();
 		    }
-
-		    return settings;
+			
+			return settings;
         }
 
 		/// <summary>
 		/// Function to write out the DDS header to the stream.
 		/// </summary>
 		/// <param name="settings">Meta data for the image header.</param>
-		/// <param name="writer">Writer interface for the stream.</param>
-		/// <param name="conversionFlags">Flags for image conversion.</param>
-		private void WriteHeader(IImageSettings settings, GorgonBinaryWriter writer, out TGAConversionFlags conversionFlags)
+		/// <param name="conversionFlags">Flags required for image conversion.</param>
+		/// <returns>A TGA header value, populated with the correct settings.</returns>
+		private TGAHeader GetHeader(IGorgonImageInfo settings, out TGAConversionFlags conversionFlags)
 		{
 			TGAHeader header = default(TGAHeader);
 
@@ -486,7 +346,7 @@ namespace Gorgon.IO
 			if ((settings.Width > 0xFFFF)
 				|| (settings.Height > 0xFFFF))
 			{
-				throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_ENCODER, Codec));
+				throw new IOException(string.Format(Resources.GORIMG_ERR_FILE_FORMAT_NOT_CORRECT, Codec));
 			}
 
 			header.Width = (ushort)(settings.Width);
@@ -494,466 +354,347 @@ namespace Gorgon.IO
 
 			switch (settings.Format)
 			{
-				case BufferFormat.R8G8B8A8_UNorm:
-				case BufferFormat.R8G8B8A8_UNorm_SRgb:
+				case DXGI.Format.R8G8B8A8_UNorm:
+				case DXGI.Format.R8G8B8A8_UNorm_SRgb:
 					header.ImageType = TGAImageType.TrueColor;
 					header.BPP = 32;
 					header.Descriptor = TGADescriptor.InvertY | TGADescriptor.RGB888A8;
 					conversionFlags |= TGAConversionFlags.Swizzle;
 					break;
-				case BufferFormat.B8G8R8A8_UNorm:
-				case BufferFormat.B8G8R8A8_UNorm_SRgb:
+				case DXGI.Format.B8G8R8A8_UNorm:
+				case DXGI.Format.B8G8R8A8_UNorm_SRgb:
 					header.ImageType = TGAImageType.TrueColor;
 					header.BPP = 32;
 					header.Descriptor = TGADescriptor.InvertY | TGADescriptor.RGB888A8;
 					break;
-				case BufferFormat.B8G8R8X8_UNorm:
-				case BufferFormat.B8G8R8X8_UNorm_SRgb:
+				case DXGI.Format.B8G8R8X8_UNorm:
+				case DXGI.Format.B8G8R8X8_UNorm_SRgb:
 					header.ImageType = TGAImageType.TrueColor;
 					header.BPP = 24;
 					header.Descriptor = TGADescriptor.InvertY;
 					conversionFlags |= TGAConversionFlags.RGB888;
 					break;
 
-				case BufferFormat.R8_UNorm:
-				case BufferFormat.A8_UNorm:
+				case DXGI.Format.R8_UNorm:
+				case DXGI.Format.A8_UNorm:
 					header.ImageType = TGAImageType.BlackAndWhite;
 					header.BPP = 8;
 					header.Descriptor = TGADescriptor.InvertY;
 					break;
 
-				case BufferFormat.B5G5R5A1_UNorm:
+				case DXGI.Format.B5G5R5A1_UNorm:
 					header.ImageType = TGAImageType.TrueColor;
 					header.BPP = 16;
 					header.Descriptor = TGADescriptor.InvertY | TGADescriptor.RGB555A1;
 					break;
 				default:
-					throw new IOException(string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, settings.Format));
+					throw new IOException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, settings.Format));
 			}
 
 			// Persist to stream.
-			writer.WriteValue(header);
+			return header;
 		}
 
 		/// <summary>
-		/// Function to compress a 32 bit scanline to a 24 bit bit scanline.
+		/// Function to decode an uncompressed run of pixel data.
 		/// </summary>
-		/// <param name="src">The pointer to the source data.</param>
-		/// <param name="srcPitch">The pitch of the source data.</param>
-		/// <param name="dest">The pointer to the destination data.</param>
-		/// <param name="destPitch">The pitch of the destination data.</param>
-		private static void Compress24BPPScanLine(void* src, int srcPitch, void* dest, int destPitch)
+		/// <param name="reader">The reader used to read the data in the stream.</param>
+		/// <param name="dest">The destination buffer pointer.</param>
+		/// <param name="x">The current horizontal position in the scanline.</param>
+		/// <param name="runLength">The size of the run, in pixels.</param>
+		/// <param name="width">The total width of the run.</param>
+		/// <param name="expand"><b>true</b> to expand a 24bpp scanline to 32bpp, or <b>false</b> if no expansion is needed.</param>
+		/// <param name="flipHorizontal"><b>true</b> to decode the pixels from right to left, or <b>false</b> to decode from left to right.</param>
+		/// <param name="format">The pixel format.</param>
+		/// <returns><b>true</b> if the run contains entirely transparent pixels, or <b>false</b> if not.</returns>
+		private bool DecodeRleEncodedRun(GorgonBinaryReader reader, ref byte* dest, ref int x, int runLength, int width, bool expand, bool flipHorizontal, DXGI.Format format)
 		{
-			var srcPtr = (uint*)src;
-			var destPtr = (byte*)dest;
-			byte* endPtr = destPtr + destPitch;
-
-			for (int srcCount = 0; srcCount < srcPitch; srcCount += 4)
-			{
-				uint pixel = *(srcPtr++);
-
-				if (destPtr + 2 > endPtr)
-				{
-					return;
-				}
-
-				*(destPtr++) = (byte)(pixel & 0xFF);			//B
-				*(destPtr++) = (byte)((pixel & 0xFF) >> 8);		//G
-				*(destPtr++) = (byte)((pixel & 0xFF) >> 16);	//R
-			}
-		}
-
-	    /// <summary>
-	    /// Function to read uncompressed TGA scanline data.
-	    /// </summary>
-	    /// <param name="src">Pointer to the source data.</param>
-	    /// <param name="width">Image width.</param>
-	    /// <param name="dest">Destination buffer pointner</param>
-	    /// <param name="end">End of the scan line.</param>
-	    /// <param name="format">Format of the destination buffer.</param>
-	    /// <param name="conversionFlags">Flags used for conversion.</param>
-	    private bool ReadCompressed(ref byte *src, int width, byte *dest, byte *end, BufferFormat format, TGAConversionFlags conversionFlags)
-		{
-			bool setOpaque = true;
-			bool flipHorizontal = (conversionFlags & TGAConversionFlags.InvertX) == TGAConversionFlags.InvertX;			
+			bool result = true;
 
 			switch (format)
 			{
-				case BufferFormat.R8_UNorm:
-					for (int x = 0; x < width; )
+				case DXGI.Format.R8_UNorm:
+					for (; runLength > 0; --runLength, ++x)
 					{
-						if (src >= end)
+						if (x >= width)
 						{
-							throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
+							throw new IOException(string.Format(Resources.GORIMG_ERR_FILE_FORMAT_NOT_CORRECT, Codec));
 						}
 
-						int size = ((*src & 0x7F) + 1);
-
-						// Do a repeat run.
-						if ((*(src++) & 0x80) != 0)
+						if (!flipHorizontal)
 						{
-							if (src >= end)
-							{
-								throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
-							}
-
-							for (; size > 0; --size, ++x)
-							{
-								if (x >= width)
-								{
-									throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
-								}
-
-								if (!flipHorizontal)
-								{
-									*(dest++) = *src;
-								}
-								else
-								{
-									*(dest--) = *src;
-								}
-							}
-
-							++src;
+							*(dest++) = reader.ReadByte();
 						}
 						else
 						{
-							if (src + size > end)
-							{
-								throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
-							}
-
-							for (; size > 0; --size, ++x)
-							{
-								if (x >= width)
-								{
-									throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
-								}
-
-								if (!flipHorizontal)
-								{
-									*(dest++) = *(src++);
-								}
-								else
-								{
-									*(dest--) = *(src++);
-								}
-							}
+							*(dest--) = reader.ReadByte();
 						}
 					}
-					return false;
-				case BufferFormat.B5G5R5A1_UNorm:
+					break;
+				case DXGI.Format.B5G5R5A1_UNorm:
+				{
+					ushort* destPtr = (ushort*)dest;
+					ushort pixel = reader.ReadUInt16();
+
+					if ((pixel & 0x8000) != 0)
 					{
-						var destPtr = (ushort*)dest;
-
-						for (int x = 0; x < width; )
-						{
-							if (src >= end)
-							{
-								throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
-							}
-
-							int size = ((*src & 0x7F) + 1);							
-
-							// Do a repeat run.
-							if ((*(src++) & 0x80) != 0)
-							{
-								if ((src + 1) >= end)
-								{
-									throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
-								}
-
-								var pixel = (ushort)(*(src++) | (*(src++) << 8));
-
-								if ((pixel & 0x8000) != 0)
-								{
-									setOpaque = false;
-								}
-
-								for (; size > 0; size--, ++x)
-								{
-									if (x >= width)
-									{
-										throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
-									}
-
-									if (!flipHorizontal)
-									{
-										*(destPtr++) = pixel;
-									}
-									else
-									{
-										*(destPtr--) = pixel;
-									}
-								}
-							}
-							else
-							{
-								if (src + (size * 2) > end)
-								{
-									throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
-								}
-
-								for (; size > 0; size--, ++x)
-								{
-									if (x >= width)
-									{
-										throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
-									}
-
-									var pixel = (ushort)(*(src++) | (*(src++) << 8));
-
-									if ((pixel & 0x8000) != 0)
-									{
-										setOpaque = false;
-									}
-
-									if (!flipHorizontal)
-									{
-										*(destPtr++) = pixel;
-									}
-									else
-									{
-										*(destPtr--) = pixel;
-									}
-								}								
-							}							
-						}
-						return setOpaque;
+						result = false;
 					}
-				case BufferFormat.R8G8B8A8_UNorm:
+
+					for (; runLength > 0; runLength--, ++x)
 					{
-						var destPtr = (uint*)dest;
-						
-						for (int x = 0; x < width;)
+						if (x >= width)
 						{
-							if (src >= end)
-							{
-								throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
-							}
-
-							uint pixel;
-							int size = (*src & 0x7F) + 1;							
-
-							if ((*(src++) & 0x80) != 0)
-							{								
-								// Do expansion.
-								if ((conversionFlags & TGAConversionFlags.Expand) == TGAConversionFlags.Expand)
-								{
-									if (src + 2 >= end)
-									{
-										throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
-									}
-
-									pixel = ((uint)(*src << 16) | (uint)(*(src + 1) << 8) | (*(src + 2)) | 0xFF000000);
-									src += 3;
-									setOpaque = false;
-								}
-								else
-								{
-									if (src + 3 >= end)
-									{
-										throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
-									}
-
-									pixel = ((uint)(*src << 16) | (uint)(*(src + 1) << 8) | (*(src + 2)) | (uint)(*(src + 3) << 24));									
-
-									if (*(src + 3) > 0)
-									{
-										setOpaque = false;
-									}
-
-									src += 4;
-								}
-
-								for (; size > 0; --size, ++x)
-								{
-									if (x >= width)
-									{
-										throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
-									}
-
-									if (!flipHorizontal)
-									{
-										*(destPtr++) = pixel;
-									}
-									else
-									{
-										*(destPtr--) = pixel;
-									}
-								}
-							}
-							else
-							{
-								if ((conversionFlags & TGAConversionFlags.Expand) == TGAConversionFlags.Expand)
-								{
-									if (src + (size * 3) > end)
-									{
-										throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
-									}
-								}
-								else
-								{
-									if (src + (size * 4) > end)
-									{
-										throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
-									}
-								}
-
-								for (; size > 0; --size, ++x)
-								{
-									if (x >= width)
-									{
-										throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
-									}
-
-									if ((conversionFlags & TGAConversionFlags.Expand) == TGAConversionFlags.Expand)
-									{
-										if (src + 2 >= end)
-										{
-											throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
-										}
-
-										pixel = ((uint)(*src << 16) | (uint)(*(src + 1) << 8) | (*(src + 2)) | 0xFF000000);
-										src += 3;
-
-										setOpaque = false;
-									}
-									else
-									{
-										if (src + 3 >= end)
-										{
-											throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
-										}
-
-										pixel = ((uint)(*src << 16) | (uint)(*(src + 1) << 8) | (*(src + 2)) | (uint)(*(src + 3) << 24));
-
-										if (*(src + 3) > 0)
-										{
-											setOpaque = false;
-										}
-
-										src += 4;
-									}
-
-									if (!flipHorizontal)
-									{
-										*(destPtr++) = pixel;
-									}
-									else
-									{
-										*(destPtr--) = pixel;
-									}
-								}
-							}
+							throw new IOException(string.Format(Resources.GORIMG_ERR_FILE_FORMAT_NOT_CORRECT, Codec));
 						}
 
-						return setOpaque;
+						if (!flipHorizontal)
+						{
+							*(destPtr++) = pixel;
+						}
+						else
+						{
+							*(destPtr--) = pixel;
+						}
 					}
+
+						dest = (byte *)destPtr;
+					}
+					return result;
+				case DXGI.Format.R8G8B8A8_UNorm:
+				{
+					uint pixel;
+
+					// Do expansion.
+					if (expand)
+					{
+						pixel = (uint)(reader.ReadByte() << 16 | reader.ReadByte() << 8 | reader.ReadByte() | 0xFF000000);
+						result = false;
+					}
+					else
+					{
+						pixel = reader.ReadUInt32();
+
+						if ((pixel & 0xFF000000) != 0)
+						{
+							result = false;
+						}
+					}
+
+					uint* destPtr = (uint*)dest;
+
+					for (; runLength > 0; --runLength, ++x)
+					{
+						if (x >= width)
+						{
+							throw new IOException(string.Format(Resources.GORIMG_ERR_FILE_FORMAT_NOT_CORRECT, Codec));
+						}
+
+						if (!flipHorizontal)
+						{
+							*(destPtr++) = pixel;
+						}
+						else
+						{
+							*(destPtr--) = pixel;
+						}
+					}
+
+					dest = (byte*)destPtr;
+				}
+					return result;
 			}
 
 			return false;
-
 		}
 
-	    /// <summary>
-	    /// Function to read uncompressed TGA scanline data.
-	    /// </summary>
-	    /// <param name="src">Pointer to the source data.</param>
-	    /// <param name="srcPitch">Pitch of the source scan line.</param>
-	    /// <param name="dest">Destination buffer pointner</param>
-	    /// <param name="format">Format of the destination buffer.</param>
-	    /// <param name="conversionFlags">Flags used for conversion.</param>
-	    private static bool ReadUncompressed(byte* src, int srcPitch, byte* dest, BufferFormat format, TGAConversionFlags conversionFlags)
+		/// <summary>
+		/// Function to decode an uncompressed run of pixel data.
+		/// </summary>
+		/// <param name="reader">The reader used to read the data from the stream.</param>
+		/// <param name="dest">The destination buffer pointer.</param>
+		/// <param name="x">The current horizontal position in the scanline.</param>
+		/// <param name="runLength">The size of the run, in pixels.</param>
+		/// <param name="width">The total width of the run.</param>
+		/// <param name="expand"><b>true</b> to expand a 24bpp scanline to 32bpp, or <b>false</b> if no expansion is needed.</param>
+		/// <param name="flipHorizontal"><b>true</b> to decode the pixels from right to left, or <b>false</b> to decode from left to right.</param>
+		/// <param name="format">The pixel format.</param>
+		/// <returns><b>true</b> if the run contains entirely transparent pixels, or <b>false</b> if not.</returns>
+		private bool DecodeUncompressedRun(GorgonBinaryReader reader, ref byte* dest, ref int x, int runLength, int width, bool expand, bool flipHorizontal, DXGI.Format format)
 		{
-			bool setOpaque = true;
-			bool flipHorizontal = (conversionFlags & TGAConversionFlags.InvertX) == TGAConversionFlags.InvertX;
+			bool result = true;
 
 			switch (format)
 			{
-				case BufferFormat.R8_UNorm:
-					for (int x = 0; x < srcPitch; x++)
+				case DXGI.Format.R8_UNorm:
+					for (; runLength > 0; --runLength, ++x)
 					{
+						if (x >= width)
+						{
+							throw new IOException(string.Format(Resources.GORIMG_ERR_FILE_FORMAT_NOT_CORRECT, Codec));
+						}
+
 						if (!flipHorizontal)
 						{
-							*(dest++) = *(src++);
+							*(dest++) = reader.ReadByte();
 						}
 						else
 						{
-							*(dest--) = *(src++);
-						}						
+							*(dest--) = reader.ReadByte();
+						}
 					}
+					break;
+				case DXGI.Format.B5G5R5A1_UNorm:
+				{
+					ushort* destPtr = (ushort*)dest;
+
+					for (; runLength > 0; runLength--, ++x)
+					{
+						if (x >= width)
+						{
+							throw new IOException(string.Format(Resources.GORIMG_ERR_FILE_FORMAT_NOT_CORRECT, Codec));
+						}
+
+						ushort pixel = reader.ReadUInt16();
+
+						if ((pixel & 0x8000) != 0)
+						{
+							result = false;
+						}
+
+						if (!flipHorizontal)
+						{
+							*(destPtr++) = pixel;
+						}
+						else
+						{
+							*(destPtr--) = pixel;
+						}
+					}
+
+					// Send the updated destination address back to the calling function.
+					// This is kind of ugly, but too lazy to make it nice.
+					dest = (byte*)destPtr;
+				}
+					return result;
+				case DXGI.Format.R8G8B8A8_UNorm:
+				{
+					uint* destPtr = (uint*)dest;
+
+					for (; runLength > 0; --runLength, ++x)
+					{
+						if (x >= width)
+						{
+							throw new IOException(string.Format(Resources.GORIMG_ERR_FILE_FORMAT_NOT_CORRECT, Codec));
+						}
+
+						uint pixel;
+
+						if (expand)
+						{
+							pixel = (uint)(reader.ReadByte() << 16 | reader.ReadByte() << 8 | reader.ReadByte() | 0xFF000000);
+							result = false;
+						}
+						else
+						{
+							pixel = reader.ReadUInt32();
+
+							if ((pixel & 0xFF000000) != 0)
+							{
+								result = false;
+							}
+						}
+
+						if (!flipHorizontal)
+						{
+							*(destPtr++) = pixel;
+						}
+						else
+						{
+							*(destPtr--) = pixel;
+						}
+					}
+
+					// Send the updated destination address back to the calling function.
+					// This is kind of ugly, but too lazy to make it nice.
+					dest = (byte*)destPtr;
+				}
+					return result;
+			}
+
+			return false;
+		}
+
+		/// <summary>
+		/// Function to read uncompressed TGA scanline data.
+		/// </summary>
+		/// <param name="reader">The reader used to read in the data from the source stream.</param>
+		/// <param name="width">Image width.</param>
+		/// <param name="dest">Destination buffer pointner</param>
+		/// <param name="format">Format of the destination buffer.</param>
+		/// <param name="conversionFlags">Flags used for conversion.</param>
+		private bool ReadCompressed(GorgonBinaryReader reader, int width, byte *dest, DXGI.Format format, TGAConversionFlags conversionFlags)
+		{
+			bool setOpaque = true;
+			bool flipHorizontal = (conversionFlags & TGAConversionFlags.InvertX) == TGAConversionFlags.InvertX;
+			bool expand = (conversionFlags & TGAConversionFlags.Expand) == TGAConversionFlags.Expand;
+
+			for (int x = 0; x < width;)
+			{
+				if (reader.BaseStream.Position >= reader.BaseStream.Length)
+				{
+					throw new IOException(string.Format(Resources.GORIMG_ERR_FILE_FORMAT_NOT_CORRECT, Codec));
+				}
+
+				byte rleBlock = reader.ReadByte();
+				int size = (rleBlock & 0x7F) + 1;
+				if ((rleBlock & 0x80) != 0)
+				{
+					if (!DecodeRleEncodedRun(reader, ref dest, ref x, size, width, expand, flipHorizontal, format))
+					{
+						setOpaque = false;
+					}
+					continue;
+				}
+
+				if (!DecodeUncompressedRun(reader, ref dest, ref x, size, width, expand, flipHorizontal, format))
+				{
+					setOpaque = false;
+				}
+			}
+
+			return setOpaque;
+		}
+
+		/// <summary>
+		/// Function to read uncompressed TGA scanline data.
+		/// </summary>
+		/// <param name="srcPtr">The pointer to the buffer containing the source data.</param>
+		/// <param name="srcPitch">Pitch of the source scan line.</param>
+		/// <param name="dest">Destination buffer pointner</param>
+		/// <param name="format">Format of the destination buffer.</param>
+		/// <param name="conversionFlags">Flags used for conversion.</param>
+		private static bool ReadUncompressed(GorgonPointer srcPtr, int srcPitch, byte* dest, DXGI.Format format, TGAConversionFlags conversionFlags)
+		{
+			bool flipHorizontal = (conversionFlags & TGAConversionFlags.InvertX) == TGAConversionFlags.InvertX;
+
+			void* src = (void*)srcPtr.Address;
+
+			switch (format)
+			{
+				case DXGI.Format.R8_UNorm:
+				case DXGI.Format.B5G5R5A1_UNorm:
+					return ImageUtilities.CopyScanline(src, srcPitch, dest, format, flipHorizontal);
+				case DXGI.Format.R8G8B8A8_UNorm:
+					if ((conversionFlags & TGAConversionFlags.Expand) != TGAConversionFlags.Expand)
+					{
+						return ImageUtilities.CopyScanline(src, srcPitch, dest, format, flipHorizontal);
+					}
+
+					ImageUtilities.Expand24BPPScanLine(src, srcPitch, dest, flipHorizontal);
+
+					// We're already opaque by virtue of being 24 bit.
 					return false;
-				case BufferFormat.B5G5R5A1_UNorm:
-					{
-						var destPtr = (ushort*)dest;
-
-						for (int x = 0; x < srcPitch; x += 2)
-						{
-							var pixel = (ushort)(*(src++) | (*(src++) << 8));
-
-							if ((pixel & 0x8000) != 0)
-							{
-								setOpaque = false;
-							}
-
-							if (!flipHorizontal)
-							{
-								*(destPtr++) = pixel;
-							}
-							else
-							{
-								*(destPtr--) = pixel;
-							}
-						}
-
-						return setOpaque;
-					}
-				case BufferFormat.R8G8B8A8_UNorm:
-					{
-						var destPtr = (uint*)dest;
-						int x = 0;
-
-						while (x < srcPitch)
-						{
-							uint pixel;
-
-							// We need to expand from 24 bit.
-							if ((conversionFlags & TGAConversionFlags.Expand) == TGAConversionFlags.Expand)
-							{
-								pixel = ((uint)(*(src++) << 16) | (uint)(*(src++) << 8) | (*(src++)) | 0xFF000000);
-								setOpaque = false;
-								x += 3;
-							}
-							else
-							{
-								uint alpha = 0;
-
-								pixel = ((uint)(*(src++) << 16) | (uint)(*(src++) << 8) | (*(src++)) | alpha);
-								alpha = (uint)(*(src++) << 24);
-
-								pixel |= alpha;									
-
-								if (alpha != 0)
-								{
-									setOpaque = false;
-								}
-
-								x += 4;
-							}
-
-							if (!flipHorizontal)
-							{
-								*(destPtr++) = pixel;
-							}
-							else
-							{
-								*(destPtr--) = pixel;
-							}
-						}
-
-						return setOpaque;
-					}					
 			}
 
 			return false;
@@ -962,20 +703,22 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Function to perform the copying of image data into the buffer.
 		/// </summary>
-		/// <param name="data">The pointer to the data to copy from.</param>
+		/// <param name="reader">A reader used to read the data from the source stream.</param>
 		/// <param name="image">Image data.</param>
 		/// <param name="conversionFlags">Flags used to convert the image.</param>
-		private void CopyImageData(GorgonPointerBase data, GorgonImageData image, TGAConversionFlags conversionFlags)
+		private void CopyImageData(GorgonBinaryReader reader, IGorgonImage image, TGAConversionFlags conversionFlags)
 		{
-			var buffer = image.Buffers[0];	        // Get the first buffer only.
-			var formatInfo = new GorgonBufferFormatInfo(image.Settings.Format);
+			// TGA only supports 1 array level, and 1 mip level, so we only need to get the first buffer.
+			var buffer = image.Buffers[0];	        
+			
+			// Determine how large a row is, in bytes.
+			var formatInfo = new GorgonFormatInfo(image.Info.Format);
 
 			GorgonPitchLayout srcPitch = (conversionFlags & TGAConversionFlags.Expand) == TGAConversionFlags.Expand
-				                             ? new GorgonPitchLayout(image.Settings.Width * 3, image.Settings.Width * 3 * image.Settings.Height)
-				                             : formatInfo.GetPitchForFormat(image.Settings.Width, image.Settings.Height, PitchFlags.None);
+				                             ? new GorgonPitchLayout(image.Info.Width * 3, image.Info.Width * 3 * image.Info.Height)
+				                             : formatInfo.GetPitchForFormat(image.Info.Width, image.Info.Height);
 
 			// Otherwise, allocate a buffer for conversion.
-			var srcPtr = (byte*)data.Address;
 			var destPtr = (byte*)buffer.Data.Address;
 
 			// Adjust destination for inverted axes.
@@ -986,186 +729,232 @@ namespace Gorgon.IO
 
 			if ((conversionFlags & TGAConversionFlags.InvertY) != TGAConversionFlags.InvertY)
 			{
-				destPtr += (image.Settings.Height - 1) * buffer.PitchInformation.RowPitch;
+				destPtr += (image.Info.Height - 1) * buffer.PitchInformation.RowPitch;
 			}
 
-			// Get bounds of image memory.
-			long scanSize = data.Size - data.Address;
-			byte* endScan = (byte*)(data.Address + scanSize);
-
+			// Used to counter the number of lines to force as opaque.
 			int opaqueLineCount = 0;
-			for (int y = 0; y < image.Settings.Height; y++)
+			// The buffer used to hold an uncompressed scanline.
+			GorgonPointer line = null;
+
+			try
 			{
-				bool setOpaque;
+				for (int y = 0; y < image.Info.Height; y++)
+				{
+					// Indicates that the scanline has an alpha of 0 for the entire run.
+					bool lineHasZeroAlpha;
 
-				if ((conversionFlags & TGAConversionFlags.RLE) == TGAConversionFlags.RLE)
-				{
-					setOpaque = ReadCompressed(ref srcPtr, image.Settings.Width, destPtr, endScan, image.Settings.Format, conversionFlags);
-				}
-				else
-				{
-					setOpaque = ReadUncompressed(srcPtr, srcPitch.RowPitch, destPtr, image.Settings.Format, conversionFlags);
-					srcPtr += srcPitch.RowPitch;
-				}
+					if ((conversionFlags & TGAConversionFlags.RLE) == TGAConversionFlags.RLE)
+					{
+						lineHasZeroAlpha = ReadCompressed(reader, image.Info.Width, destPtr, image.Info.Format, conversionFlags);
+					}
+					else
+					{
+						// Read the current scanline into memory.
+						if (line == null)
+						{
+							line = new GorgonPointer(srcPitch.RowPitch);
+						}
+						
+						reader.Read((void *)line.Address, srcPitch.RowPitch);
 
-				if ((setOpaque) && (SetOpaqueIfZeroAlpha))
-				{
-					opaqueLineCount++;
-				}
-					
-				if ((conversionFlags & TGAConversionFlags.InvertY) != TGAConversionFlags.InvertY)
-				{
-					destPtr -= buffer.PitchInformation.RowPitch;
-				}
-				else
-				{
-					destPtr += buffer.PitchInformation.RowPitch;
+						lineHasZeroAlpha = ReadUncompressed(line, srcPitch.RowPitch, destPtr, image.Info.Format, conversionFlags);
+					}
+
+					if ((lineHasZeroAlpha) && ((conversionFlags & TGAConversionFlags.SetOpaqueAlpha) == TGAConversionFlags.SetOpaqueAlpha))
+					{
+						opaqueLineCount++;
+					}
+
+					// The components of the pixel data in a TGA file need swizzling for 32 bit.
+					if (formatInfo.BitDepth == 32)
+					{
+						ImageUtilities.SwizzleScanline(destPtr, buffer.PitchInformation.RowPitch, destPtr, buffer.PitchInformation.RowPitch, image.Info.Format, ImageBitFlags.None);
+					}
+
+					if ((conversionFlags & TGAConversionFlags.InvertY) != TGAConversionFlags.InvertY)
+					{
+						destPtr -= buffer.PitchInformation.RowPitch;
+					}
+					else
+					{
+						destPtr += buffer.PitchInformation.RowPitch;
+					}
 				}
 			}
+			finally
+			{
+				line?.Dispose();
+			}
 
-			if (opaqueLineCount != image.Settings.Height)
+			if (opaqueLineCount != image.Info.Height)
 			{
 				return;
 			}
 
 			// Set the alpha to opaque if we don't have any alpha values (i.e. alpha = 0 for all pixels).
 			destPtr = (byte*)buffer.Data.Address;
-			for (int y = 0; y < image.Settings.Height; y++)
+			for (int y = 0; y < image.Info.Height; y++)
 			{
-				CopyScanline(destPtr, buffer.PitchInformation.RowPitch, destPtr, buffer.PitchInformation.RowPitch, image.Settings.Format, ImageBitFlags.OpaqueAlpha);
+				ImageUtilities.CopyScanline(destPtr,
+				                            buffer.PitchInformation.RowPitch,
+				                            destPtr,
+				                            buffer.PitchInformation.RowPitch,
+				                            image.Info.Format,
+				                            ImageBitFlags.OpaqueAlpha);
 				destPtr += buffer.PitchInformation.RowPitch;
 			}
 		}
 
-        /// <summary>
-        /// Function to load an image from a stream.
-        /// </summary>
-        /// <param name="stream">Stream containing the data to load.</param>
-        /// <param name="size">Size of the data to read, in bytes.</param>
-        /// <returns>
-        /// The image data that was in the stream.
-        /// </returns>
-		protected internal override GorgonImageData LoadFromStream(GorgonDataStream stream, int size)
+		/// <summary>
+		/// Function to load an image from a stream.
+		/// </summary>
+		/// <param name="stream">The stream containing the image data to read.</param>
+		/// <param name="size">The size of the image within the stream, in bytes.</param>
+		/// <param name="options">[Optional] Options used for decoding the image data.</param>
+		/// <returns>A <see cref="IGorgonImage"/> containing the image data from the stream.</returns>
+		/// <exception cref="GorgonException">Thrown when the image data in the stream has a pixel format that is unsupported.</exception>
+		protected override IGorgonImage OnDecodeFromStream(Stream stream, long size, IGorgonImageCodecDecodingOptions options)
 		{
-			GorgonImageData imageData = null;
-	        TGAConversionFlags flags;
+			var tgaOptions = options as IGorgonTgaDecodingOptions;
 
-            if (DirectAccess.SizeOf<TGAHeader>() > size)
-            {
-                throw new EndOfStreamException(Resources.GORGFX_STREAM_EOF);
-            }
-
-			// Read the header information.
-			IImageSettings settings = ReadHeader(stream, out flags);
-
-			if (ArrayCount > 1)
+			if (DirectAccess.SizeOf<TGAHeader>() >= size)
 			{
-				settings.ArrayCount = ArrayCount;
+				throw new EndOfStreamException();
 			}
 
-            try
-            {
-                // Create our image data structure.
-			    imageData = new GorgonImageData(settings);
-
-				// Copy the data from the stream to the buffer.
-				CopyImageData(stream.GetPointer(), imageData, flags);
-			}
-			catch 
+			using (var reader = new GorgonBinaryReader(stream, true))
 			{
-				// Clean up any memory allocated if we can't copy the image.
-				imageData?.Dispose();
+				TGAConversionFlags flags;
+				IGorgonImageInfo info = ReadHeader(reader, out flags);
 
-				throw;
+				IGorgonImage image = new GorgonImage(info);
+
+				if ((tgaOptions == null) || (tgaOptions.SetZeroAlphaAsOpaque))
+				{
+					flags |= TGAConversionFlags.SetOpaqueAlpha;
+				}
+
+				CopyImageData(reader, image, flags);
+
+				stream.Position = size;
+
+				return image;
 			}
-
-			return imageData;
 		}
 
 		/// <summary>
-		/// Function to persist image data to a stream.
+		/// Function to persist a <see cref="IGorgonImage"/> to a stream.
 		/// </summary>
-		/// <param name="imageData"><see cref="Gorgon.Graphics.GorgonImageData">Gorgon image data</see> to persist.</param>
-		/// <param name="stream">Stream that will contain the data.</param>
-		protected internal override void SaveToStream(GorgonImageData imageData, Stream stream)
+		/// <param name="imageData">A <see cref="IGorgonImage"/> to persist to the stream.</param>
+		/// <param name="stream">The stream that will receive the image data.</param>
+		/// <param name="encodingOptions">[Optional] Options used to encode the image data when it is persisted to the stream.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/>, or the <paramref name="imageData"/> parameter is <b>NULL</b>.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="stream"/> is read only.</exception>
+		/// <exception cref="NotSupportedException">Thrown when the image data in the stream has a pixel format that is unsupported by the codec.</exception>
+		/// <remarks>
+		/// <para>
+		/// When persisting image data via a codec, the image must have a format that the codec can recognize. This list of supported formats is provided by the <see cref="SupportedPixelFormats"/> 
+		/// property. Applications may convert their image data a supported format before saving the data using a codec.
+		/// </para>
+		/// </remarks>
+		public override void SaveToStream(IGorgonImage imageData, Stream stream, IGorgonImageCodecEncodingOptions encodingOptions = null)
 		{
-			// Use a binary writer.
+			// Ensure that we can actually read this format.  We do not perform total pixel conversion on behalf of the user, they are responsible for that.
+			// We will, however, support swizzling and pixel compression (e.g. 32 -> 24 bit).
+			if (Array.IndexOf(_supportedFormats, imageData.Info.Format) == -1)
+			{
+				throw new NotSupportedException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, imageData.Info.Format));
+			}
+
 			using (var writer = new GorgonBinaryWriter(stream, true))
 			{
-				// Write the header for the file.
+				// Write the header for the file before we dump the file contents.
 				TGAConversionFlags conversionFlags;
-				WriteHeader(imageData.Settings, writer, out conversionFlags);
+				TGAHeader header = GetHeader(imageData.Info, out conversionFlags);
 
 				GorgonPitchLayout pitch;
+
 				if ((conversionFlags & TGAConversionFlags.RGB888) == TGAConversionFlags.RGB888)
 				{
-					pitch = new GorgonPitchLayout(imageData.Settings.Width * 3, imageData.Settings.Width * 3 * imageData.Settings.Height);
+					pitch = new GorgonPitchLayout(imageData.Info.Width * 3, imageData.Info.Width * 3 * imageData.Info.Height);
 				}
 				else
 				{
-					var formatInfo = new GorgonBufferFormatInfo(imageData.Settings.Format);
-					pitch = formatInfo.GetPitchForFormat(imageData.Settings.Width, imageData.Settings.Height, PitchFlags.None);
+					var formatInfo = new GorgonFormatInfo(imageData.Info.Format);
+					pitch = formatInfo.GetPitchForFormat(imageData.Info.Width, imageData.Info.Height);
 				}
 
 				// Get the pointer to the first mip/array/depth level.
-				var srcPointer = (byte *)imageData.Buffers[0].Data.Address;
+				var srcPointer = (byte*)imageData.Buffers[0].Data.Address;
 				var srcPitch = imageData.Buffers[0].PitchInformation;
 
-				// If the two pitches are equal, then just write out the buffer.
+				// If the two pitches are equal and we have no conversion requirements, then just write out the buffer.
 				if ((pitch == srcPitch) && (conversionFlags == TGAConversionFlags.None))
 				{
+					writer.WriteValue(header);
 					writer.Write(srcPointer, srcPitch.SlicePitch);
 					return;
 				}
 
-				// If we have to do a conversion, create a worker buffer.
+				// We have a conversion, which will require a new buffer to write out to the stream.
 				using (var convertBuffer = new GorgonPointer(pitch.SlicePitch))
 				{
 					var destPtr = (byte*)convertBuffer.Address;
 
 					// Write out each scan line.					
-					for (int y = 0; y < imageData.Settings.Height; y++)
+					for (int y = 0; y < imageData.Info.Height; y++)
 					{
 						if ((conversionFlags & TGAConversionFlags.RGB888) == TGAConversionFlags.RGB888)
 						{
-							Compress24BPPScanLine(srcPointer, srcPitch.RowPitch, destPtr, pitch.RowPitch);
+							ImageUtilities.Compress24BPPScanLine(srcPointer, srcPitch.RowPitch, destPtr, pitch.RowPitch);
 						}
 						else if ((conversionFlags & TGAConversionFlags.Swizzle) == TGAConversionFlags.Swizzle)
 						{
-							SwizzleScanline(srcPointer, srcPitch.RowPitch, destPtr, pitch.RowPitch, imageData.Settings.Format, ImageBitFlags.None);
+							ImageUtilities.SwizzleScanline(srcPointer, srcPitch.RowPitch, destPtr, pitch.RowPitch, imageData.Info.Format, ImageBitFlags.None);
 						}
 						else
 						{
-							CopyScanline(srcPointer, srcPitch.RowPitch, destPtr, pitch.RowPitch, imageData.Settings.Format, ImageBitFlags.None);
+							ImageUtilities.CopyScanline(srcPointer, srcPitch.RowPitch, destPtr, pitch.RowPitch, imageData.Info.Format, ImageBitFlags.None);
 						}
 
 						destPtr += pitch.RowPitch;
 						srcPointer += srcPitch.RowPitch;
 					}
 
-					// Persist to the stream.
-					writer.Write((byte *)convertBuffer.Address, pitch.SlicePitch);
+					// Persist the working buffer to the stream.
+					writer.WriteValue(header);
+					writer.Write((byte*)convertBuffer.Address, pitch.SlicePitch);
 				}
 			}
 		}
 
 		/// <summary>
-		/// Function to read file meta data.
+		/// Function to read the meta data for image data within a stream.
 		/// </summary>
-		/// <param name="stream">Stream used to read the metadata.</param>
+		/// <param name="stream">The stream containing the metadata to read.</param>
 		/// <returns>
-		/// The image meta data as a <see cref="Gorgon.Graphics.IImageSettings">IImageSettings</see> value.
+		/// The image meta data as a <see cref="IGorgonImageInfo"/> value.
 		/// </returns>
-		/// <exception cref="System.IO.IOException">Thrown when the <paramref name="stream"/> is write-only or if the stream cannot perform seek operations.
+		/// <exception cref="IOException">Thrown when the <paramref name="stream"/> is write-only or if the stream cannot perform seek operations.
 		/// <para>-or-</para>
 		/// <para>Thrown if the file is corrupt or can't be read by the codec.</para>
 		/// </exception>
-		/// <exception cref="System.IO.EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
-		public override IImageSettings GetMetaData(Stream stream)
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>NULL</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="IOException">Thrown when the <paramref name="stream"/> is write-only or if the stream cannot perform seek operations.</exception>
+		/// <exception cref="EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
+		/// <remarks>
+		/// <para>
+		/// Ensure that the file can be read by calling the <see cref="IsReadable"/> method prior to calling this method.
+		/// </para> 
+		/// </remarks>
+		/// <seealso cref="IsReadable"/>
+		public override IGorgonImageInfo GetMetaData(Stream stream)
 		{
-            long position = 0;
 			int headerSize = DirectAccess.SizeOf<TGAHeader>();
-
+            long position = 0;
+			
+			
             if (stream == null)
             {
                 throw new ArgumentNullException(nameof(stream));
@@ -1173,52 +962,63 @@ namespace Gorgon.IO
 
             if (!stream.CanRead)
             {
-                throw new IOException(Resources.GORGFX_STREAM_WRITE_ONLY);
+                throw new IOException(Resources.GORIMG_ERR_STREAM_IS_WRITEONLY);
             }
 
             if (!stream.CanSeek)
             {
-                throw new IOException(Resources.GORGFX_STREAM_NO_SEEK);
+                throw new IOException(Resources.GORIMG_ERR_STREAM_CANNOT_SEEK);
             }
 
-            if (stream.Length - stream.Position < sizeof(uint) + DirectAccess.SizeOf<TGAHeader>())
+            if (stream.Length - stream.Position < sizeof(uint) + headerSize)
             {
-                throw new EndOfStreamException(Resources.GORGFX_STREAM_EOF);
+                throw new EndOfStreamException();
             }
+
+			GorgonDataStream headerBuffer = null;
+			GorgonBinaryReader reader = null;
 
             try
             {
-                position = stream.Position;
+				TGAConversionFlags conversion;
+				
+				position = stream.Position;
+				headerBuffer = stream as GorgonDataStream;
 
-	            TGAConversionFlags conversion;
-	            var gorgonDataStream = stream as GorgonDataStream;
-	            if (gorgonDataStream != null)
-                {
-                    return ReadHeader(gorgonDataStream, out conversion);
-                }
+	            if (headerBuffer != null)
+	            {
+					reader = new GorgonBinaryReader(headerBuffer);
+					return ReadHeader(reader, out conversion);
+	            }
 
-                using (var memoryStream = new GorgonDataStream(headerSize))
-                {
-					stream.CopyToStream(memoryStream, headerSize);
-					memoryStream.Position = 0;
-					return ReadHeader(memoryStream, out conversion);
-                }
+	            headerBuffer = new GorgonDataStream(headerSize);
+	            stream.CopyToStream(headerBuffer, headerSize);
+	            headerBuffer.Position = 0;
+				reader = new GorgonBinaryReader(headerBuffer);
+
+	            return ReadHeader(reader, out conversion);
             }
             finally
             {
                 stream.Position = position;
+
+				reader?.Dispose();
+
+	            if (stream != headerBuffer)
+	            {
+		            headerBuffer?.Dispose();
+	            }
             }            
 		}
 
 		/// <summary>
-		/// Function to determine if this codec can read the file or not.
+		/// Function to determine if this codec can read the image data within the stream or not.
 		/// </summary>
-		/// <param name="stream">Stream used to read the file information.</param>
-		/// <returns>
-		/// <b>true</b> if the codec can read the file, <b>false</b> if not.
-		/// </returns>
-		/// <exception cref="System.IO.IOException">Thrown when the <paramref name="stream"/> is write-only or if the stream cannot perform seek operations.</exception>
-		/// <exception cref="System.IO.EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
+		/// <param name="stream">The stream that is used to read the image data.</param>
+		/// <returns><b>true</b> if the codec can read the file, <b>false</b> if not.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>NULL</b>.</exception>
+		/// <exception cref="IOException">Thrown when the <paramref name="stream"/> is write-only or if the stream cannot perform seek operations.</exception>
+		/// <exception cref="EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
 		public override bool IsReadable(Stream stream)
         {
 			TGAHeader header;
@@ -1231,12 +1031,12 @@ namespace Gorgon.IO
 
             if (!stream.CanRead)
             {
-                throw new IOException(Resources.GORGFX_STREAM_READ_ONLY);
+                throw new IOException(Resources.GORIMG_ERR_STREAM_IS_WRITEONLY);
             }
 
             if (!stream.CanSeek)
             {
-                throw new IOException(Resources.GORGFX_STREAM_NO_SEEK);
+                throw new IOException(Resources.GORIMG_ERR_STREAM_CANNOT_SEEK);
             }
             
             if (stream.Length - stream.Position < DirectAccess.SizeOf<TGAHeader>())
@@ -1283,12 +1083,10 @@ namespace Gorgon.IO
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonCodecTGA" /> class.
+		/// Initializes a new instance of the <see cref="GorgonCodecTga" /> class.
 		/// </summary>
-		public GorgonCodecTGA()
+		public GorgonCodecTga()
 		{
-			SetOpaqueIfZeroAlpha = true;
-
 			CodecCommonExtensions = new[] { "tga", "tpic" };
 		}
 		#endregion

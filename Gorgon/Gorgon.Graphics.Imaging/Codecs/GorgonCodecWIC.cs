@@ -27,8 +27,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
+using Gorgon.IO;
 using DXGI = SharpDX.DXGI;
 using DX = SharpDX;
 
@@ -167,48 +169,43 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <param name="size">The size of the image within the stream, in bytes.</param>
 		/// <param name="options">[Optional] Options used for decoding the image data.</param>
 		/// <returns>A <see cref="IGorgonImage"/> containing the image data from the stream.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>NULL</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="stream"/> is write only.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> parameter is less than 1.</exception>
-		/// <exception cref="EndOfStreamException">Thrown when the amount of data requested exceeds the size of the stream minus its current position.</exception>
 		/// <exception cref="GorgonException">Thrown when the image data in the stream has a pixel format that is unsupported.</exception>
-		public override IGorgonImage LoadFromStream(Stream stream, long size, IGorgonImageCodecDecodingOptions options = null)
+		protected override IGorgonImage OnDecodeFromStream(Stream stream, long size, IGorgonImageCodecDecodingOptions options)
 		{
-			if (size < 1)
-			{
-				throw new ArgumentOutOfRangeException(nameof(size), Resources.GORIMG_ERR_IMAGE_BYTE_LENGTH_TOO_SHORT);
-			}
-
-			if (stream == null)
-			{
-				throw new ArgumentNullException(nameof(stream));
-			}
-
-			if (!stream.CanRead)
-			{
-				throw new ArgumentException(Resources.GORIMG_ERR_STREAM_IS_WRITEONLY, nameof(stream));
-			}
-
-			if (stream.Position + size > stream.Length)
-			{
-				throw new EndOfStreamException();
-			}
-
 			var wic = new WicUtilities();
+			Stream streamAlias = stream;
 
 			try
 			{
-				IGorgonImage result = wic.DecodeImageData(stream, size, SupportedFileFormat, options as IGorgonWicDecodingOptions, FrameOffsetMetadataNames);
+				// If we have a stream position that does not begin exactly at the start of the stream, we have to wrap that stream in a 
+				// dummy stream wrapper. This is to get around a problem in the underlying COM stream object used by WIC that throws an 
+				// exception when the stream position is not exactly 0. 
+				if (streamAlias.Position != 0)
+				{
+					streamAlias = new GorgonStreamWrapper(stream, 0, size);
+				}
+
+				IGorgonImage result = wic.DecodeImageData(streamAlias, size, SupportedFileFormat, options as IGorgonWicDecodingOptions, FrameOffsetMetadataNames);
 
 				if (result == null)
 				{
 					throw new IOException(string.Format(Resources.GORIMG_ERR_FILE_FORMAT_NOT_CORRECT, Codec));
 				}
 
+				if (stream.Position != streamAlias.Position)
+				{
+					stream.Position += streamAlias.Position;
+				}
+
 				return result;
 			}
 			finally
 			{
+				if (streamAlias != stream)
+				{
+					streamAlias?.Dispose();
+				}
+
 				wic.Dispose();
 			}
 		}
@@ -221,7 +218,13 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <param name="encodingOptions">[Optional] Options used to encode the image data when it is persisted to the stream.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/>, or the <paramref name="imageData"/> parameter is <b>NULL</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="stream"/> is read only.</exception>
-		/// <exception cref="GorgonException">Thrown when the image data in the stream has a pixel format that is unsupported.</exception>
+		/// <exception cref="NotSupportedException">Thrown when the image data in the stream has a pixel format that is unsupported by the codec.</exception>
+		/// <remarks>
+		/// <para>
+		/// When persisting image data via a codec, the image must have a format that the codec can recognize. This list of supported formats is provided by the <see cref="SupportedPixelFormats"/> 
+		/// property. Applications may convert their image data a supported format before saving the data using a codec.
+		/// </para>
+		/// </remarks>
 		public override void SaveToStream(IGorgonImage imageData, Stream stream, IGorgonImageCodecEncodingOptions encodingOptions = null)
 		{
 			if (imageData == null)
@@ -245,6 +248,11 @@ namespace Gorgon.Graphics.Imaging.Codecs
 
 			try
 			{
+				if (SupportedPixelFormats.All(item => item != imageData.Info.Format))
+				{
+					throw new NotSupportedException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, imageData.Info.Format));
+				}
+
 				IReadOnlyDictionary<string, object> metaData = GetCustomEncodingMetadata(0, encodingOptions as IGorgonWicEncodingOptions, imageData.Info);
 				wic.EncodeImageData(imageData, stream, SupportedFileFormat, options, metaData);
 			}
@@ -252,107 +260,6 @@ namespace Gorgon.Graphics.Imaging.Codecs
 			{
 				wic.Dispose();
 			}
-
-			/*
-			// Wrap the stream so WIC doesn't mess up the position.
-			using (var wrapperStream = new GorgonStreamWrapper(stream))
-			{
-				using (var wic = new GorgonWICImage())
-				{
-					// Find a compatible format.
-					Guid targetFormat = wic.GetGUID(imageData.Info.Format);
-
-					if (targetFormat == Guid.Empty)
-					{
-						throw new IOException(string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, imageData.Info.Format));
-					}
-
-					Guid actualFormat = targetFormat;
-
-					using (var encoder = new BitmapEncoder(wic.Factory, SupportedFileFormat))
-					{
-						try
-						{
-							encoder.Initialize(wrapperStream);
-							AddCustomMetaData(encoder, null, 0, imageData.Settings, null);
-						}
-						catch (SharpDXException)
-						{
-							// Repackage this exception to keep in line with our API.
-							throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_ENCODER, Codec));
-						}
-
-						using (var encoderInfo = encoder.EncoderInfo)
-						{
-							if ((imageData.Info.ArrayCount > 1) && (CodecUseAllFrames) && (encoderInfo.IsMultiframeSupported))
-							{
-								frameCount = imageData.Info.ArrayCount;
-							}							
-
-							for (int frameIndex = 0; frameIndex < frameCount; frameIndex++)
-							{
-								using (var frame = new BitmapFrameEncode(encoder))
-								{
-									var buffer = imageData.Buffers[0, frameIndex];
-
-									frame.Initialize();
-									frame.SetSize(buffer.Width, buffer.Height);
-									frame.SetResolution(72, 72);
-									frame.SetPixelFormat(ref actualFormat);
-
-                                    SetFrameOptions(frame);
-
-									// If the image encoder doesn't like the format we've chosen, then we'll need to convert to 
-									// the best format for the codec.
-									if (targetFormat != actualFormat)
-									{
-										var rect = new DataRectangle(new IntPtr(buffer.Data.Address), buffer.PitchInformation.RowPitch);
-										using (var bitmap = new Bitmap(wic.Factory, buffer.Width, buffer.Height, targetFormat, rect))
-										{
-											// If we're using a codec that supports 8 bit indexed data, then get the palette info.									
-											var paletteInfo = GetPaletteInfo(wic, bitmap);
-
-											if (paletteInfo == null)
-											{
-												throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_ENCODER, Codec));
-											}
-
-											try
-											{
-												using (var converter = new FormatConverter(wic.Factory))
-												{
-													converter.Initialize(bitmap, actualFormat, (BitmapDitherType)Dithering, paletteInfo.Item1, paletteInfo.Item2, paletteInfo.Item3);
-													if (paletteInfo.Item1 != null)
-													{
-														frame.Palette = paletteInfo.Item1;
-													}
-
-													AddCustomMetaData(encoder, frame, frameIndex, imageData.Settings, paletteInfo.Item1?.GetColors<Color>());
-													frame.WriteSource(converter);													
-												}
-											}
-											finally
-											{
-												paletteInfo.Item1?.Dispose();
-											}
-										}
-									}
-									else
-									{
-										// No conversion was needed, just dump as-is.										
-										AddCustomMetaData(encoder, frame, frameIndex, imageData.Settings, null);
-										frame.WritePixels(buffer.Height, new IntPtr(buffer.Data.Address), buffer.PitchInformation.RowPitch, buffer.PitchInformation.SlicePitch);
-									}									
-
-									frame.Commit();
-								}
-							}
-						}
-
-						encoder.Commit();
-					}
-				}
-			}*/
 		}
 
 		/// <summary>
@@ -375,7 +282,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// may cause undesirable results.
 		/// </para> 
 		/// </remarks>
-		public override GorgonImageInfo GetMetaData(Stream stream) => GetMetaData(stream, null);
+		public override IGorgonImageInfo GetMetaData(Stream stream) => GetMetaData(stream, null);
 
 		/// <summary>
 		/// Function to read file meta data.
@@ -391,7 +298,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <para>Thrown when the stream cannot perform seek operations.</para>
 		/// </exception>
 		/// <exception cref="EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
-		public GorgonImageInfo GetMetaData(Stream stream, IGorgonWicDecodingOptions options)
+		public IGorgonImageInfo GetMetaData(Stream stream, IGorgonWicDecodingOptions options)
 		{
 		    if (stream == null)
             {

@@ -187,6 +187,9 @@ This could lead to a buffer overrun.</value>
   <data name="GORIMG_ERR_STREAM_IS_WRITEONLY" xml:space="preserve">
     <value>The stream is write only.</value>
   </data>
+  <data name="GORIMG_ERR_TGA_TYPE_NOT_SUPPORTED" xml:space="preserve">
+    <value>This codec does not support TGA files encoded using 2 or 4 way interleaving, or color mapped data.</value>
+  </data>
   <data name="GORIMG_TOSTR_FMTPITCH" xml:space="preserve">
     <value>Image pitch information.  Width={0} bytes, Size={1} bytes.</value>
   </data>

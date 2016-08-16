@@ -175,6 +175,9 @@ namespace Gorgon.Graphics.Imaging
 
 			// Validate the array size.
 			newInfo.ArrayCount = newInfo.ImageType == ImageType.Image3D ? 1 : newInfo.ArrayCount.Max(1);
+
+			// Validate depth count.
+			newInfo.Depth = newInfo.ImageType != ImageType.Image3D ? 1 : newInfo.Depth.Max(1);
 			
 			// Limit to the lesser value.
 			int maxMipCount = CalculateMaxMipCount(info);

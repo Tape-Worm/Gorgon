@@ -166,6 +166,9 @@ namespace Gorgon.Graphics.Imaging
 
 			ImageType = imageType;
 			Format = format;
+			ArrayCount = 1;
+			Depth = 1;
+			MipCount = 1;
 		}
 
 		/// <summary>

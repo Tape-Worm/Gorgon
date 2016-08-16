@@ -63,6 +63,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Codecs\GorgonCodecTga.cs" />
     <Compile Include="Codecs\GorgonGifCodecDecodingOptions.cs" />
     <Compile Include="Codecs\GorgonCodecBmp.cs" />
     <Compile Include="Codecs\GorgonCodecGif.cs" />
@@ -73,12 +74,15 @@
     <Compile Include="Codecs\GorgonCodecWic.cs" />
     <Compile Include="Codecs\GorgonCodecPngEncodingOptions.cs" />
     <Compile Include="Codecs\GorgonImageCodec.cs" />
+    <Compile Include="Codecs\GorgonTgaCodecDecodingOptions.cs" />
     <Compile Include="Codecs\_Interfaces\IGorgonImageCodec.cs" />
+    <Compile Include="Codecs\_Interfaces\IGorgonTgaDecodingOptions.cs" />
     <Compile Include="Codecs\_Interfaces\IGorgonJpegEncodingOptions.cs" />
     <Compile Include="Codecs\_Interfaces\IGorgonPngEncodingOptions.cs" />
     <Compile Include="Codecs\_Interfaces\IGorgonWicDecodingOptions.cs" />
     <Compile Include="Codecs\_Interfaces\IGorgonWicEncodingOptions.cs" />
     <Compile Include="Codecs\_Interfaces\IGorgonImageCodecDecodingOptions.cs" />
+    <Compile Include="Codecs\_Internal\TGAHeader.cs" />
     <Compile Include="GorgonFormatInfo.cs" />
     <Compile Include="GorgonImage.cs" />
     <Compile Include="GorgonImageBuffer.cs" />
@@ -110,14 +114,15 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\Gorgon.Core\Gorgon.Core.csproj">
       <Project>{933569ed-52a9-4232-a929-1d4c4489b5a1}</Project>
       <Name>Gorgon.Core</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
