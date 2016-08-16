@@ -63,25 +63,26 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Codecs\GorgonCodecDds.cs" />
     <Compile Include="Codecs\GorgonCodecTga.cs" />
-    <Compile Include="Codecs\GorgonGifCodecDecodingOptions.cs" />
+    <Compile Include="Codecs\GorgonDdsEncodingOptions.cs" />
+    <Compile Include="Codecs\GorgonDdsDecodingOptions.cs" />
+    <Compile Include="Codecs\GorgonGifDecodingOptions.cs" />
     <Compile Include="Codecs\GorgonCodecBmp.cs" />
     <Compile Include="Codecs\GorgonCodecGif.cs" />
     <Compile Include="Codecs\GorgonCodecJpeg.cs" />
-    <Compile Include="Codecs\GorgonCodecJpegEncodingOptions.cs" />
-    <Compile Include="Codecs\GorgonGifCodecEncodingOptions.cs" />
+    <Compile Include="Codecs\GorgonJpegEncodingOptions.cs" />
+    <Compile Include="Codecs\GorgonGifEncodingOptions.cs" />
     <Compile Include="Codecs\GorgonCodecPng.cs" />
     <Compile Include="Codecs\GorgonCodecWic.cs" />
-    <Compile Include="Codecs\GorgonCodecPngEncodingOptions.cs" />
+    <Compile Include="Codecs\GorgonPngEncodingOptions.cs" />
     <Compile Include="Codecs\GorgonImageCodec.cs" />
-    <Compile Include="Codecs\GorgonTgaCodecDecodingOptions.cs" />
+    <Compile Include="Codecs\GorgonTgaDecodingOptions.cs" />
     <Compile Include="Codecs\_Interfaces\IGorgonImageCodec.cs" />
-    <Compile Include="Codecs\_Interfaces\IGorgonTgaDecodingOptions.cs" />
-    <Compile Include="Codecs\_Interfaces\IGorgonJpegEncodingOptions.cs" />
-    <Compile Include="Codecs\_Interfaces\IGorgonPngEncodingOptions.cs" />
     <Compile Include="Codecs\_Interfaces\IGorgonWicDecodingOptions.cs" />
     <Compile Include="Codecs\_Interfaces\IGorgonWicEncodingOptions.cs" />
     <Compile Include="Codecs\_Interfaces\IGorgonImageCodecDecodingOptions.cs" />
+    <Compile Include="Codecs\_Internal\DdsHeader.cs" />
     <Compile Include="Codecs\_Internal\TGAHeader.cs" />
     <Compile Include="GorgonFormatInfo.cs" />
     <Compile Include="GorgonImage.cs" />

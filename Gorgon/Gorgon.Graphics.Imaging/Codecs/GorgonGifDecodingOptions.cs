@@ -39,7 +39,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 	/// When decoding a GIF file into a <see cref="GorgonImage"/>, the <see cref="IGorgonWicDecodingOptions.Dithering"/> property is ignored.
 	/// </para>
 	/// </remarks>
-	public class GorgonGifCodecDecodingOptions
+	public class GorgonGifDecodingOptions
 		: IGorgonWicDecodingOptions
 	{
 		#region Properties.
@@ -179,9 +179,9 @@ namespace Gorgon.Graphics.Imaging.Codecs
 
 		#region Constructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonGifCodecDecodingOptions"/> class.
+		/// Initializes a new instance of the <see cref="GorgonGifDecodingOptions"/> class.
 		/// </summary>
-		public GorgonGifCodecDecodingOptions()
+		public GorgonGifDecodingOptions()
 		{
 			Options = new GorgonOptionBag(new Dictionary<string, Tuple<object, Type>>
 			                              {

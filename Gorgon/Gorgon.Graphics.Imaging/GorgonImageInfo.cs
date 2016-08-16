@@ -91,6 +91,7 @@ namespace Gorgon.Graphics.Imaging
 		public DXGI.Format Format
 		{
 			get;
+			set;
 		}
 
 		/// <summary>

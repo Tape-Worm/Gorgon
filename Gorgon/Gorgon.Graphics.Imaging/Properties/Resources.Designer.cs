@@ -61,15 +61,6 @@ namespace Gorgon.Graphics.Imaging.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Gorgon {0} Image Codec.
-        /// </summary>
-        internal static string GORGFX_TOSTR_IMAGE_CODEC {
-            get {
-                return ResourceManager.GetString("GORGFX_TOSTR_IMAGE_CODEC", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Windows Bitmap.
         /// </summary>
         internal static string GORIMG_DESC_BMP_CODEC {
@@ -292,6 +283,15 @@ namespace Gorgon.Graphics.Imaging.Properties {
         internal static string GORIMG_TOSTR_FMTPITCH_COMPRESSED {
             get {
                 return ResourceManager.GetString("GORIMG_TOSTR_FMTPITCH_COMPRESSED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gorgon {0} Image Codec.
+        /// </summary>
+        internal static string GORIMG_TOSTR_IMAGE_CODEC {
+            get {
+                return ResourceManager.GetString("GORIMG_TOSTR_IMAGE_CODEC", resourceCulture);
             }
         }
     }

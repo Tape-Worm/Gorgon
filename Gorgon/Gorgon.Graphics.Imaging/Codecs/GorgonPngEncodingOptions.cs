@@ -20,21 +20,57 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: August 4, 2016 11:32:12 PM
+// Created: June 28, 2016 10:38:40 PM
 // 
 #endregion
 
 using System;
 using System.Collections.Generic;
+using WIC = SharpDX.WIC;
 using Gorgon.Configuration;
 
 namespace Gorgon.Graphics.Imaging.Codecs
 {
 	/// <summary>
-	/// Options used when encoding an image to a stream as a JPEG file.
+	/// Filter to apply for compression optimization.
 	/// </summary>
-	public sealed class GorgonCodecJpegEncodingOptions
-		: IGorgonJpegEncodingOptions
+	public enum PngFilter
+	{
+		/// <summary>
+		/// The system will chose the best filter based on the image data.
+		/// </summary>
+		DontCare = WIC.PngFilterOption.Unspecified,
+		/// <summary>
+		/// No filtering.
+		/// </summary>
+		None = WIC.PngFilterOption.None,
+		/// <summary>
+		/// Sub filtering.
+		/// </summary>
+		Sub = WIC.PngFilterOption.Sub,
+		/// <summary>
+		/// Up filtering.
+		/// </summary>
+		Up = WIC.PngFilterOption.Up,
+		/// <summary>
+		/// Average filtering.
+		/// </summary>
+		Average = WIC.PngFilterOption.Average,
+		/// <summary>
+		/// Paeth filtering.
+		/// </summary>
+		Paeth = WIC.PngFilterOption.Paeth,
+		/// <summary>
+		/// Adaptive filtering.  The system will choose the best filter based on a per-scanline basis.
+		/// </summary>
+		Adaptive = WIC.PngFilterOption.Adaptive
+	}
+
+	/// <summary>
+	/// Options used when encoding an image to a stream as a PNG file..
+	/// </summary>
+	public sealed class GorgonPngEncodingOptions
+		: IGorgonWicEncodingOptions
 	{
 		#region Properties.
 		/// <summary>
@@ -102,38 +138,39 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		}
 
 		/// <summary>
-		/// Property to set or return the quality of an image compressed with lossy compression.
+		/// Property to set or return whether to use interlacing when encoding an image as a PNG file.
 		/// </summary>
 		/// <remarks>
-		/// Use this property to control the fidelity of an image compressed with lossy compression. A value of 0.0f will give the lowest quality and 1.0f will give the highest.
+		/// The default value is <b>false</b>.
 		/// </remarks>
-		public float ImageQuality
+		public bool Interlacing
 		{
 			get
 			{
-				return Options.GetOption<float>(nameof(ImageQuality));
+				return Options.GetOption<bool>(nameof(Interlacing));
 			}
 			set
 			{
-				if (value < 0.0f)
-				{
-					value = 0.0f;
-				}
-				if (value > 1.0f)
-				{
-					value = 1.0f;
-				}
-
-				Options.SetOption(nameof(ImageQuality), value);
+				Options.SetOption(nameof(Interlacing), value);
 			}
 		}
 
 		/// <summary>
-		/// Property to return the list of options available to the codec.
+		/// Property to set or return the type of filter to use when when compressing the PNG file.
 		/// </summary>
-		public IGorgonOptionBag Options
+		/// <remarks>
+		/// The default value is <see cref="PngFilter.DontCare"/>.
+		/// </remarks>
+		public PngFilter Filter
 		{
-			get;
+			get
+			{
+				return Options.GetOption<PngFilter>(nameof(Filter));
+			}
+			set
+			{
+				Options.SetOption(nameof(Filter), value);
+			}
 		}
 
 		/// <summary>
@@ -147,31 +184,47 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <para> 
 		/// With dithering applied, the image will visually appear closer to the original by using patterns to simulate a greater number of colors.
 		/// </para>
+		/// <para>
+		/// The default value is <see cref="ImageDithering.None"/>.
+		/// </para>
 		/// </remarks>
-		ImageDithering IGorgonWicEncodingOptions.Dithering
+		public ImageDithering Dithering
 		{
 			get
 			{
-				return ImageDithering.None;
+				return Options.GetOption<ImageDithering>(nameof(Dithering));
 			}
-
 			set
 			{
-				// Intentionally left blank.
+				Options.SetOption(nameof(Dithering), value);
 			}
+		}
+
+		/// <summary>
+		/// Property to return the list of options available to the codec.
+		/// </summary>
+		public IGorgonOptionBag Options
+		{
+			get;
 		}
 		#endregion
 
 		#region Constructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonCodecJpegEncodingOptions"/> class.
+		/// Initializes a new instance of the <see cref="GorgonPngEncodingOptions"/> class.
 		/// </summary>
-		public GorgonCodecJpegEncodingOptions()
+		public GorgonPngEncodingOptions()
 		{
 			Options = new GorgonOptionBag(new Dictionary<string, Tuple<object, Type>>
 			                              {
 				                              {
-					                              nameof(ImageQuality), new Tuple<object, Type>(1.0f, typeof(float))
+					                              nameof(Dithering), new Tuple<object, Type>(ImageDithering.None, typeof(ImageDithering))
+				                              },
+				                              {
+					                              nameof(Filter), new Tuple<object, Type>(PngFilter.DontCare, typeof(PngFilter))
+				                              },
+				                              {
+					                              nameof(Interlacing), new Tuple<object, Type>(false, typeof(bool))
 				                              },
 				                              {
 					                              nameof(DpiX), new Tuple<object, Type>(72.0, typeof(double))

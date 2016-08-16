@@ -139,7 +139,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 	///				<list type="bullet">
 	///					<item>
 	///						<description>
-	///							No support for the following Direct 3D 9 image formats:
+	///							No support for typless formats or the following legacy Direct 3D 9 image formats:
 	///							<para>
 	///							<list type="bullet">
 	///							<item>
@@ -494,7 +494,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// </returns>
 		public override string ToString()
         {
-	        return string.Format(Resources.GORGFX_TOSTR_IMAGE_CODEC, Codec);
+	        return string.Format(Resources.GORIMG_TOSTR_IMAGE_CODEC, Codec);
         }
 		#endregion
 

@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: June 28, 2016 10:38:40 PM
+// Created: August 4, 2016 11:32:12 PM
 // 
 #endregion
 
@@ -31,10 +31,10 @@ using Gorgon.Configuration;
 namespace Gorgon.Graphics.Imaging.Codecs
 {
 	/// <summary>
-	/// Options used when encoding an image to a stream as a PNG file..
+	/// Options used when encoding an image to a stream as a JPEG file.
 	/// </summary>
-	public sealed class GorgonCodecPngEncodingOptions
-		: IGorgonPngEncodingOptions
+	public sealed class GorgonJpegEncodingOptions
+		: IGorgonWicEncodingOptions
 	{
 		#region Properties.
 		/// <summary>
@@ -102,39 +102,38 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		}
 
 		/// <summary>
-		/// Property to set or return whether to use interlacing when encoding an image as a PNG file.
+		/// Property to set or return the quality of an image compressed with lossy compression.
 		/// </summary>
 		/// <remarks>
-		/// The default value is <b>false</b>.
+		/// Use this property to control the fidelity of an image compressed with lossy compression. A value of 0.0f will give the lowest quality and 1.0f will give the highest.
 		/// </remarks>
-		public bool Interlacing
+		public float ImageQuality
 		{
 			get
 			{
-				return Options.GetOption<bool>(nameof(Interlacing));
+				return Options.GetOption<float>(nameof(ImageQuality));
 			}
 			set
 			{
-				Options.SetOption(nameof(Interlacing), value);
+				if (value < 0.0f)
+				{
+					value = 0.0f;
+				}
+				if (value > 1.0f)
+				{
+					value = 1.0f;
+				}
+
+				Options.SetOption(nameof(ImageQuality), value);
 			}
 		}
 
 		/// <summary>
-		/// Property to set or return the type of filter to use when when compressing the PNG file.
+		/// Property to return the list of options available to the codec.
 		/// </summary>
-		/// <remarks>
-		/// The default value is <see cref="PNGFilter.DontCare"/>.
-		/// </remarks>
-		public PNGFilter Filter
+		public IGorgonOptionBag Options
 		{
-			get
-			{
-				return Options.GetOption<PNGFilter>(nameof(Filter));
-			}
-			set
-			{
-				Options.SetOption(nameof(Filter), value);
-			}
+			get;
 		}
 
 		/// <summary>
@@ -148,47 +147,31 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <para> 
 		/// With dithering applied, the image will visually appear closer to the original by using patterns to simulate a greater number of colors.
 		/// </para>
-		/// <para>
-		/// The default value is <see cref="ImageDithering.None"/>.
-		/// </para>
 		/// </remarks>
-		public ImageDithering Dithering
+		ImageDithering IGorgonWicEncodingOptions.Dithering
 		{
 			get
 			{
-				return Options.GetOption<ImageDithering>(nameof(Dithering));
+				return ImageDithering.None;
 			}
+
 			set
 			{
-				Options.SetOption(nameof(Dithering), value);
+				// Intentionally left blank.
 			}
-		}
-
-		/// <summary>
-		/// Property to return the list of options available to the codec.
-		/// </summary>
-		public IGorgonOptionBag Options
-		{
-			get;
 		}
 		#endregion
 
 		#region Constructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonCodecPngEncodingOptions"/> class.
+		/// Initializes a new instance of the <see cref="GorgonJpegEncodingOptions"/> class.
 		/// </summary>
-		public GorgonCodecPngEncodingOptions()
+		public GorgonJpegEncodingOptions()
 		{
 			Options = new GorgonOptionBag(new Dictionary<string, Tuple<object, Type>>
 			                              {
 				                              {
-					                              nameof(Dithering), new Tuple<object, Type>(ImageDithering.None, typeof(ImageDithering))
-				                              },
-				                              {
-					                              nameof(Filter), new Tuple<object, Type>(PNGFilter.DontCare, typeof(PNGFilter))
-				                              },
-				                              {
-					                              nameof(Interlacing), new Tuple<object, Type>(false, typeof(bool))
+					                              nameof(ImageQuality), new Tuple<object, Type>(1.0f, typeof(float))
 				                              },
 				                              {
 					                              nameof(DpiX), new Tuple<object, Type>(72.0, typeof(double))

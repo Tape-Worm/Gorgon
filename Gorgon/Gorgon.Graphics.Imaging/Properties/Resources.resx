@@ -117,9 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="GORGFX_TOSTR_IMAGE_CODEC" xml:space="preserve">
-    <value>Gorgon {0} Image Codec</value>
-  </data>
   <data name="GORIMG_DESC_BMP_CODEC" xml:space="preserve">
     <value>Windows Bitmap</value>
   </data>
@@ -195,5 +192,8 @@ This could lead to a buffer overrun.</value>
   </data>
   <data name="GORIMG_TOSTR_FMTPITCH_COMPRESSED" xml:space="preserve">
     <value>Image pitch information.  Width={0} bytes, Size={1} bytes.  Format is compressed. Block count width: {2}, Block count height: {3}</value>
+  </data>
+  <data name="GORIMG_TOSTR_IMAGE_CODEC" xml:space="preserve">
+    <value>Gorgon {0} Image Codec</value>
   </data>
 </root>
