@@ -24,8 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
 using Gorgon.Configuration;
 
 namespace Gorgon.Graphics.Imaging.Codecs
@@ -78,8 +76,14 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// </remarks>
 		public DdsLegacyFlags LegacyFormatConversionFlags
 		{
-			get;
-			set;
+			get
+			{
+				return Options.GetOptionValue<DdsLegacyFlags>(nameof(LegacyFormatConversionFlags));
+			}
+			set
+			{
+				Options.SetOptionValue(nameof(LegacyFormatConversionFlags), value);
+			}
 		}
 		#endregion
 
@@ -89,11 +93,9 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// </summary>
 		public GorgonDdsEncodingOptions()
 		{
-			Options = new GorgonOptionBag(new Dictionary<string, Tuple<object, Type>>
+			Options = new GorgonOptionBag(new []
 			                              {
-				                              {
-					                              nameof(LegacyFormatConversionFlags), new Tuple<object, Type>(false, typeof(DdsLegacyFlags))
-				                              }
+				                              GorgonOption.CreateOption(nameof(LegacyFormatConversionFlags), DdsLegacyFlags.None)
 			                              });
 		}
 		#endregion

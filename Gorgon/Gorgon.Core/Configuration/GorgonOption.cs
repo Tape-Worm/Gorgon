@@ -1,0 +1,572 @@
+﻿#region MIT
+// 
+// Gorgon.
+// Copyright (C) 2016 Michael Winsor
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+// 
+// Created: August 16, 2016 4:02:49 PM
+// 
+#endregion
+
+using System;
+using Gorgon.Core;
+
+namespace Gorgon.Configuration
+{
+	/// <summary>
+	/// An option to be stored in a <see cref="IGorgonOptionBag"/>.
+	/// </summary>
+	public class GorgonOption
+		: GorgonNamedObject, IGorgonOption
+	{
+		#region Variables.
+		// The value stored in this option.
+		private object _value;
+		// The default value stored in this option.
+		private readonly object _defaultValue;
+		// The minimum allowed value for this option.
+		private readonly object _minValue;
+		// The maximum allowed value for this option.
+		private readonly object _maxValue;
+		#endregion
+
+		#region Properties.
+		/// <summary>
+		/// Property to return the type of data stored in the option.
+		/// </summary>
+		public Type Type
+		{
+			get;
+		}
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Function to retrieve the default value for this option.
+		/// </summary>
+		/// <typeparam name="T">The type of the value.</typeparam>
+		/// <returns>The value, strongly typed.</returns>
+		public T GetDefaultValue<T>()
+		{
+			Type type = typeof(T);
+
+			if (typeof(T) != type)
+			{
+				return (T)Convert.ChangeType(_defaultValue, type);
+			}
+
+			return (T)_defaultValue;
+		}
+
+		/// <summary>
+		/// Function to retrieve the minimum allowed value for this option.
+		/// </summary>
+		/// <typeparam name="T">The type of the value.</typeparam>
+		/// <returns>The value, strongly typed.</returns>
+		public T GetMinValue<T>()
+		{
+			Type type = typeof(T);
+
+			if (typeof(T) != type)
+			{
+				return (T)Convert.ChangeType(_minValue, type);
+			}
+
+			return (T)_minValue;
+		}
+
+		/// <summary>
+		/// Function to retrieve the maximum allowed value for this option.
+		/// </summary>
+		/// <typeparam name="T">The type of the value.</typeparam>
+		/// <returns>The value, strongly typed.</returns>
+		public T GetMaxValue<T>()
+		{
+			Type type = typeof(T);
+
+			if (typeof(T) != type)
+			{
+				return (T)Convert.ChangeType(_maxValue, type);
+			}
+
+			return (T)_maxValue;
+		}
+
+		/// <summary>
+		/// Function to retrieve the value stored in this option.
+		/// </summary>
+		/// <typeparam name="T">The type for the value.</typeparam>
+		/// <returns>The value, strongly typed.</returns>
+		public T GetValue<T>()
+		{
+			Type type = typeof(T);
+
+			if ((typeof(T) != Type) && (_value is IConvertible))
+			{
+				return (T)Convert.ChangeType(_value, type);
+			}
+
+			return (T)_value;
+		}
+
+		/// <summary>
+		/// Function to assign a value for the option.
+		/// </summary>
+		/// <typeparam name="T">The type parmeter for the value.</typeparam>
+		/// <param name="value">The value to assign.</param>
+		public void SetValue<T>(T value)
+		{
+			object newValue = value;
+			
+			// Convert to the type used by this option.
+			if ((typeof(T) != Type) && (value is IConvertible))
+			{
+				newValue = Convert.ChangeType(value, Type);
+			}
+
+			// If we're using a numeric, or date/time value, ensure that it's within the min/max range.
+			switch (Type.GetTypeCode(Type))
+			{
+				case TypeCode.SByte:
+				case TypeCode.Byte:
+				case TypeCode.Int16:
+				case TypeCode.Int32:
+				case TypeCode.Int64:
+				case TypeCode.UInt16:
+				case TypeCode.UInt32:
+				case TypeCode.UInt64:
+				case TypeCode.Double:
+				case TypeCode.Single:
+				case TypeCode.Decimal:
+				{
+					// Convert to a decimal first, just because it's the largest primitive number format.
+					decimal convertedValue = (decimal)Convert.ChangeType(newValue, typeof(decimal));
+
+					if (_minValue != null)
+					{
+						decimal minValue = (decimal)Convert.ChangeType(_minValue, typeof(decimal));
+
+						if (convertedValue < minValue)
+						{
+							convertedValue = minValue;
+						}
+					}
+
+					if (_maxValue != null)
+					{
+						decimal maxValue = (decimal)Convert.ChangeType(_maxValue, typeof(decimal));
+
+						if (convertedValue > maxValue)
+						{
+							convertedValue = maxValue;
+						}
+					}
+
+					newValue = Convert.ChangeType(convertedValue, Type);
+				}
+					break;
+				case TypeCode.DateTime:
+				{
+					DateTime convertedValue = (DateTime)Convert.ChangeType(newValue, typeof(DateTime));
+
+					if (_minValue != null)
+					{
+						DateTime minValue = (DateTime)Convert.ChangeType(_minValue, typeof(DateTime));
+
+						if (convertedValue < minValue)
+						{
+							convertedValue = minValue;
+						}
+					}
+
+					if (_maxValue != null)
+					{
+						DateTime maxValue = (DateTime)Convert.ChangeType(_maxValue, typeof(DateTime));
+						if (convertedValue > maxValue)
+						{
+							convertedValue = maxValue;
+						}
+					}
+
+					newValue = Convert.ChangeType(convertedValue, Type);
+				}
+					break;
+			}
+
+			_value = newValue;
+		}
+
+		/// <summary>
+		/// Function to create an option that stores a byte value.
+		/// </summary>
+		/// <param name="name">The name of the option.</param>
+		/// <param name="defaultValue">The default value for the option.</param>
+		/// <param name="minValue">[Optional] The minimum value for the option.</param>
+		/// <param name="maxValue">[Optional] The maximum value for the option.</param>
+		/// <returns>A new <see cref="IGorgonOption"/>.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> is empty.</exception>
+		public static IGorgonOption CreateByteOption(string name, byte defaultValue, byte? minValue = null, byte? maxValue = null)
+		{
+			if ((minValue != null) && (defaultValue < minValue.Value))
+			{
+				defaultValue = minValue.Value;
+			}
+
+			if ((maxValue != null) && (defaultValue > maxValue.Value))
+			{
+				defaultValue = maxValue.Value;
+			}
+
+			return new GorgonOption(name, typeof(byte), defaultValue, minValue != null ? (object)minValue.Value : null, maxValue != null ? (object)maxValue.Value : null);
+		}
+
+		/// <summary>
+		/// Function to create an option that stores a signed byte value.
+		/// </summary>
+		/// <param name="name">The name of the option.</param>
+		/// <param name="defaultValue">The default value for the option.</param>
+		/// <param name="minValue">[Optional] The minimum value for the option.</param>
+		/// <param name="maxValue">[Optional] The maximum value for the option.</param>
+		/// <returns>A new <see cref="IGorgonOption"/>.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> is empty.</exception>
+		public static IGorgonOption CreateSByteOption(string name, sbyte defaultValue, sbyte? minValue = null, sbyte? maxValue = null)
+		{
+			if ((minValue != null) && (defaultValue < minValue.Value))
+			{
+				defaultValue = minValue.Value;
+			}
+
+			if ((maxValue != null) && (defaultValue > maxValue.Value))
+			{
+				defaultValue = maxValue.Value;
+			}
+
+			return new GorgonOption(name, typeof(sbyte), defaultValue, minValue != null ? (object)minValue.Value : null, maxValue != null ? (object)maxValue.Value : null);
+		}
+
+		/// <summary>
+		/// Function to create an option that stores a signed byte value.
+		/// </summary>
+		/// <param name="name">The name of the option.</param>
+		/// <param name="defaultValue">The default value for the option.</param>
+		/// <param name="minValue">[Optional] The minimum value for the option.</param>
+		/// <param name="maxValue">[Optional] The maximum value for the option.</param>
+		/// <returns>A new <see cref="IGorgonOption"/>.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> is empty.</exception>
+		public static IGorgonOption CreateInt16Option(string name, short defaultValue, short? minValue = null, short? maxValue = null)
+		{
+			if ((minValue != null) && (defaultValue < minValue.Value))
+			{
+				defaultValue = minValue.Value;
+			}
+
+			if ((maxValue != null) && (defaultValue > maxValue.Value))
+			{
+				defaultValue = maxValue.Value;
+			}
+
+			return new GorgonOption(name, typeof(short), defaultValue, minValue != null ? (object)minValue.Value : null, maxValue != null ? (object)maxValue.Value : null);
+		}
+
+		/// <summary>
+		/// Function to create an option that stores a signed byte value.
+		/// </summary>
+		/// <param name="name">The name of the option.</param>
+		/// <param name="defaultValue">The default value for the option.</param>
+		/// <param name="minValue">[Optional] The minimum value for the option.</param>
+		/// <param name="maxValue">[Optional] The maximum value for the option.</param>
+		/// <returns>A new <see cref="IGorgonOption"/>.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> is empty.</exception>
+		public static IGorgonOption CreateUInt16Option(string name, ushort defaultValue, ushort? minValue = null, ushort? maxValue = null)
+		{
+			if ((minValue != null) && (defaultValue < minValue.Value))
+			{
+				defaultValue = minValue.Value;
+			}
+
+			if ((maxValue != null) && (defaultValue > maxValue.Value))
+			{
+				defaultValue = maxValue.Value;
+			}
+
+			return new GorgonOption(name, typeof(ushort), defaultValue, minValue != null ? (object)minValue.Value : null, maxValue != null ? (object)maxValue.Value : null);
+		}
+
+		/// <summary>
+		/// Function to create an option that stores a signed byte value.
+		/// </summary>
+		/// <param name="name">The name of the option.</param>
+		/// <param name="defaultValue">The default value for the option.</param>
+		/// <param name="minValue">[Optional] The minimum value for the option.</param>
+		/// <param name="maxValue">[Optional] The maximum value for the option.</param>
+		/// <returns>A new <see cref="IGorgonOption"/>.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> is empty.</exception>
+		public static IGorgonOption CreateInt32Option(string name, int defaultValue, int? minValue = null, int? maxValue = null)
+		{
+			if ((minValue != null) && (defaultValue < minValue.Value))
+			{
+				defaultValue = minValue.Value;
+			}
+
+			if ((maxValue != null) && (defaultValue > maxValue.Value))
+			{
+				defaultValue = maxValue.Value;
+			}
+
+			return new GorgonOption(name, typeof(int), defaultValue, minValue != null ? (object)minValue.Value : null, maxValue != null ? (object)maxValue.Value : null);
+		}
+
+		/// <summary>
+		/// Function to create an option that stores a signed byte value.
+		/// </summary>
+		/// <param name="name">The name of the option.</param>
+		/// <param name="defaultValue">The default value for the option.</param>
+		/// <param name="minValue">[Optional] The minimum value for the option.</param>
+		/// <param name="maxValue">[Optional] The maximum value for the option.</param>
+		/// <returns>A new <see cref="IGorgonOption"/>.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> is empty.</exception>
+		public static IGorgonOption CreateUInt32Option(string name, uint defaultValue, uint? minValue = null, uint? maxValue = null)
+		{
+			if ((minValue != null) && (defaultValue < minValue.Value))
+			{
+				defaultValue = minValue.Value;
+			}
+
+			if ((maxValue != null) && (defaultValue > maxValue.Value))
+			{
+				defaultValue = maxValue.Value;
+			}
+
+			return new GorgonOption(name, typeof(uint), defaultValue, minValue != null ? (object)minValue.Value : null, maxValue != null ? (object)maxValue.Value : null);
+		}
+
+		/// <summary>
+		/// Function to create an option that stores a signed byte value.
+		/// </summary>
+		/// <param name="name">The name of the option.</param>
+		/// <param name="defaultValue">The default value for the option.</param>
+		/// <param name="minValue">[Optional] The minimum value for the option.</param>
+		/// <param name="maxValue">[Optional] The maximum value for the option.</param>
+		/// <returns>A new <see cref="IGorgonOption"/>.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> is empty.</exception>
+		public static IGorgonOption CreateInt64Option(string name, long defaultValue, long? minValue = null, long? maxValue = null)
+		{
+			if ((minValue != null) && (defaultValue < minValue.Value))
+			{
+				defaultValue = minValue.Value;
+			}
+
+			if ((maxValue != null) && (defaultValue > maxValue.Value))
+			{
+				defaultValue = maxValue.Value;
+			}
+
+			return new GorgonOption(name, typeof(long), defaultValue, minValue != null ? (object)minValue.Value : null, maxValue != null ? (object)maxValue.Value : null);
+		}
+
+		/// <summary>
+		/// Function to create an option that stores a signed byte value.
+		/// </summary>
+		/// <param name="name">The name of the option.</param>
+		/// <param name="defaultValue">The default value for the option.</param>
+		/// <param name="minValue">[Optional] The minimum value for the option.</param>
+		/// <param name="maxValue">[Optional] The maximum value for the option.</param>
+		/// <returns>A new <see cref="IGorgonOption"/>.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> is empty.</exception>
+		public static IGorgonOption CreateUInt64Option(string name, ulong defaultValue, ulong? minValue = null, ulong? maxValue = null)
+		{
+			if ((minValue != null) && (defaultValue < minValue.Value))
+			{
+				defaultValue = minValue.Value;
+			}
+
+			if ((maxValue != null) && (defaultValue > maxValue.Value))
+			{
+				defaultValue = maxValue.Value;
+			}
+
+			return new GorgonOption(name, typeof(ulong), defaultValue, minValue != null ? (object)minValue.Value : null, maxValue != null ? (object)maxValue.Value : null);
+		}
+
+		/// <summary>
+		/// Function to create an option that stores a signed byte value.
+		/// </summary>
+		/// <param name="name">The name of the option.</param>
+		/// <param name="defaultValue">The default value for the option.</param>
+		/// <param name="minValue">[Optional] The minimum value for the option.</param>
+		/// <param name="maxValue">[Optional] The maximum value for the option.</param>
+		/// <returns>A new <see cref="IGorgonOption"/>.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> is empty.</exception>
+		public static IGorgonOption CreateDoubleOption(string name, double defaultValue, double? minValue = null, double? maxValue = null)
+		{
+			if ((minValue != null) && (defaultValue < minValue.Value))
+			{
+				defaultValue = minValue.Value;
+			}
+
+			if ((maxValue != null) && (defaultValue > maxValue.Value))
+			{
+				defaultValue = maxValue.Value;
+			}
+
+			return new GorgonOption(name, typeof(double), defaultValue, minValue != null ? (object)minValue.Value : null, maxValue != null ? (object)maxValue.Value : null);
+		}
+
+		/// <summary>
+		/// Function to create an option that stores a signed byte value.
+		/// </summary>
+		/// <param name="name">The name of the option.</param>
+		/// <param name="defaultValue">The default value for the option.</param>
+		/// <param name="minValue">[Optional] The minimum value for the option.</param>
+		/// <param name="maxValue">[Optional] The maximum value for the option.</param>
+		/// <returns>A new <see cref="IGorgonOption"/>.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> is empty.</exception>
+		public static IGorgonOption CreateSingleOption(string name, float defaultValue, float? minValue = null, float? maxValue = null)
+		{
+			if ((minValue != null) && (defaultValue < minValue.Value))
+			{
+				defaultValue = minValue.Value;
+			}
+
+			if ((maxValue != null) && (defaultValue > maxValue.Value))
+			{
+				defaultValue = maxValue.Value;
+			}
+
+			return new GorgonOption(name, typeof(float), defaultValue, minValue != null ? (object)minValue.Value : null, maxValue != null ? (object)maxValue.Value : null);
+		}
+
+		/// <summary>
+		/// Function to create an option that stores a signed byte value.
+		/// </summary>
+		/// <param name="name">The name of the option.</param>
+		/// <param name="defaultValue">The default value for the option.</param>
+		/// <param name="minValue">[Optional] The minimum value for the option.</param>
+		/// <param name="maxValue">[Optional] The maximum value for the option.</param>
+		/// <returns>A new <see cref="IGorgonOption"/>.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> is empty.</exception>
+		public static IGorgonOption CreateDecimalOption(string name, decimal defaultValue, decimal? minValue = null, decimal? maxValue = null)
+		{
+			if ((minValue != null) && (defaultValue < minValue.Value))
+			{
+				defaultValue = minValue.Value;
+			}
+
+			if ((maxValue != null) && (defaultValue > maxValue.Value))
+			{
+				defaultValue = maxValue.Value;
+			}
+
+			return new GorgonOption(name, typeof(decimal), defaultValue, minValue != null ? (object)minValue.Value : null, maxValue != null ? (object)maxValue.Value : null);
+		}
+
+		/// <summary>
+		/// Function to create an option that stores a signed byte value.
+		/// </summary>
+		/// <param name="name">The name of the option.</param>
+		/// <param name="defaultValue">The default value for the option.</param>
+		/// <param name="minValue">[Optional] The minimum value for the option.</param>
+		/// <param name="maxValue">[Optional] The maximum value for the option.</param>
+		/// <returns>A new <see cref="IGorgonOption"/>.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> is empty.</exception>
+		public static IGorgonOption CreateDateTimeOption(string name, DateTime defaultValue, DateTime? minValue = null, DateTime? maxValue = null)
+		{
+			if ((minValue != null) && (defaultValue < minValue.Value))
+			{
+				defaultValue = minValue.Value;
+			}
+
+			if ((maxValue != null) && (defaultValue > maxValue.Value))
+			{
+				defaultValue = maxValue.Value;
+			}
+
+			return new GorgonOption(name, typeof(decimal), defaultValue, minValue != null ? (object)minValue.Value : null, maxValue != null ? (object)maxValue.Value : null);
+		}
+
+		/// <summary>
+		/// Function to create an option that stores a signed byte value.
+		/// </summary>
+		/// <typeparam name="T">The type of value to store.</typeparam>
+		/// <param name="name">The name of the option.</param>
+		/// <param name="defaultValue">[Optional] The default value for the option.</param>
+		/// <returns>A new <see cref="IGorgonOption"/>.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> is empty.</exception>
+		/// <remarks>
+		/// <para>
+		/// If the <paramref name="defaultValue"/> is omitted, then the default value for the type is used.
+		/// </para>
+		/// </remarks>
+		public static IGorgonOption CreateOption<T>(string name, T defaultValue = default(T))
+		{
+			return new GorgonOption(name, typeof(T), defaultValue, null, null);
+		}
+
+		/// <summary>
+		/// Function to create an option that stores a signed byte value.
+		/// </summary>
+		/// <typeparam name="T">The type of value to store.</typeparam>
+		/// <param name="name">The name of the option.</param>
+		/// <param name="value">The initial value to assign.</param>
+		/// <param name="defaultValue">The default value for the option.</param>
+		/// <returns>A new <see cref="IGorgonOption"/>.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> is empty.</exception>
+		public static IGorgonOption CreateOption<T>(string name, T value, T defaultValue)
+		{
+			IGorgonOption result = new GorgonOption(name, typeof(T), defaultValue, null, null);
+			result.SetValue(value);
+			return result;
+		}
+		#endregion
+
+		#region Constructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonNamedObject" /> class.
+		/// </summary>
+		/// <param name="name">The name of this object.</param>
+		/// <param name="type">The type of data for the value stored in this option.</param>
+		/// <param name="defaultValue">The default value for this option.</param>
+		/// <param name="minValue">The minimum allowed value for this option.</param>
+		/// <param name="maxValue">The maximum allowed value for this option.</param>
+		private GorgonOption(string name, Type type, object defaultValue, object minValue, object maxValue)
+			: base(name)
+		{
+			Type = type;
+			_defaultValue = defaultValue;
+			_value = _defaultValue;
+			_minValue = minValue;
+			_maxValue = maxValue;
+		}
+		#endregion
+	}
+}

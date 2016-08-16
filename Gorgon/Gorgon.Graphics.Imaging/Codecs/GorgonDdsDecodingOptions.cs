@@ -105,8 +105,14 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// </remarks>
 		public DdsLegacyFlags LegacyFormatConversionFlags
 		{
-			get;
-			set;
+			get
+			{
+				return Options.GetOptionValue<DdsLegacyFlags>(nameof(LegacyFormatConversionFlags));
+			}
+			set
+			{
+				Options.SetOptionValue(nameof(LegacyFormatConversionFlags), value);
+			}
 		}
 		
 		/// <summary>
@@ -127,11 +133,11 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		{
 			get
 			{
-				return Options.GetOption<IList<GorgonColor>>(nameof(Palette));
+				return Options.GetOptionValue<IList<GorgonColor>>(nameof(Palette));
 			}
 			set
 			{
-				Options.SetOption(nameof(Palette), value);
+				Options.SetOptionValue(nameof(Palette), value);
 			}
 		}
 
@@ -160,14 +166,10 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// </summary>
 		public GorgonDdsDecodingOptions()
 		{
-			Options = new GorgonOptionBag(new Dictionary<string, Tuple<object, Type>>
+			Options = new GorgonOptionBag(new []
 			                              {
-				                              {
-					                              nameof(LegacyFormatConversionFlags), new Tuple<object, Type>(false, typeof(DdsLegacyFlags))
-				                              },
-				                              {
-					                              nameof(Palette), new Tuple<object, Type>(new List<GorgonColor>(), typeof(IList<GorgonColor>))
-				                              }
+												GorgonOption.CreateOption(nameof(LegacyFormatConversionFlags), DdsLegacyFlags.None),
+												GorgonOption.CreateOption(nameof(Palette), new List<GorgonColor>())
 			                              });
 		}
 		#endregion

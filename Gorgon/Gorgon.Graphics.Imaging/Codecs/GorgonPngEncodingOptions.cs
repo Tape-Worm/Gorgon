@@ -24,8 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
 using WIC = SharpDX.WIC;
 using Gorgon.Configuration;
 
@@ -106,11 +104,11 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		{
 			get
 			{
-				return Options.GetOption<double>(nameof(DpiX));
+				return Options.GetOptionValue<double>(nameof(DpiX));
 			}
 			set
 			{
-				Options.SetOption(nameof(DpiX), value);
+				Options.SetOptionValue(nameof(DpiX), value);
 			}
 		}
 
@@ -129,11 +127,11 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		{
 			get
 			{
-				return Options.GetOption<double>(nameof(DpiY));
+				return Options.GetOptionValue<double>(nameof(DpiY));
 			}
 			set
 			{
-				Options.SetOption(nameof(DpiY), value);
+				Options.SetOptionValue(nameof(DpiY), value);
 			}
 		}
 
@@ -147,11 +145,11 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		{
 			get
 			{
-				return Options.GetOption<bool>(nameof(Interlacing));
+				return Options.GetOptionValue<bool>(nameof(Interlacing));
 			}
 			set
 			{
-				Options.SetOption(nameof(Interlacing), value);
+				Options.SetOptionValue(nameof(Interlacing), value);
 			}
 		}
 
@@ -165,11 +163,11 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		{
 			get
 			{
-				return Options.GetOption<PngFilter>(nameof(Filter));
+				return Options.GetOptionValue<PngFilter>(nameof(Filter));
 			}
 			set
 			{
-				Options.SetOption(nameof(Filter), value);
+				Options.SetOptionValue(nameof(Filter), value);
 			}
 		}
 
@@ -192,11 +190,11 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		{
 			get
 			{
-				return Options.GetOption<ImageDithering>(nameof(Dithering));
+				return Options.GetOptionValue<ImageDithering>(nameof(Dithering));
 			}
 			set
 			{
-				Options.SetOption(nameof(Dithering), value);
+				Options.SetOptionValue(nameof(Dithering), value);
 			}
 		}
 
@@ -215,23 +213,13 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// </summary>
 		public GorgonPngEncodingOptions()
 		{
-			Options = new GorgonOptionBag(new Dictionary<string, Tuple<object, Type>>
+			Options = new GorgonOptionBag(new []
 			                              {
-				                              {
-					                              nameof(Dithering), new Tuple<object, Type>(ImageDithering.None, typeof(ImageDithering))
-				                              },
-				                              {
-					                              nameof(Filter), new Tuple<object, Type>(PngFilter.DontCare, typeof(PngFilter))
-				                              },
-				                              {
-					                              nameof(Interlacing), new Tuple<object, Type>(false, typeof(bool))
-				                              },
-				                              {
-					                              nameof(DpiX), new Tuple<object, Type>(72.0, typeof(double))
-				                              },
-				                              {
-					                              nameof(DpiY), new Tuple<object, Type>(72.0, typeof(double))
-				                              }
+				                              GorgonOption.CreateOption(nameof(Dithering), ImageDithering.None),
+											  GorgonOption.CreateOption(nameof(Filter), PngFilter.None),
+											  GorgonOption.CreateOption(nameof(Interlacing), false),
+											  GorgonOption.CreateOption(nameof(DpiX), 72),
+											  GorgonOption.CreateOption(nameof(DpiY), 72)
 			                              });
 		}
 		#endregion

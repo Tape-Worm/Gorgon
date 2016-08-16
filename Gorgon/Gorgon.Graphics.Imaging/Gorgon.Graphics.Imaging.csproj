@@ -64,6 +64,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Codecs\GorgonCodecDds.cs" />
+    <Compile Include="Codecs\GorgonImageCodecDescription.cs" />
+    <Compile Include="Codecs\GorgonImageCodecPlugIn.cs" />
     <Compile Include="Codecs\GorgonCodecTga.cs" />
     <Compile Include="Codecs\GorgonDdsEncodingOptions.cs" />
     <Compile Include="Codecs\GorgonDdsDecodingOptions.cs" />

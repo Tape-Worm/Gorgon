@@ -133,6 +133,15 @@ namespace Gorgon.Graphics.Imaging.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The codec &apos;{0}&apos; was not found in the plug in..
+        /// </summary>
+        internal static string GORIMG_ERR_CODEC_NOT_IN_PLUGIN {
+            get {
+                return ResourceManager.GetString("GORIMG_ERR_CODEC_NOT_IN_PLUGIN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The file data stored in the stream is not a &apos;{0}&apos; file..
         /// </summary>
         internal static string GORIMG_ERR_FILE_FORMAT_NOT_CORRECT {
@@ -292,6 +301,15 @@ namespace Gorgon.Graphics.Imaging.Properties {
         internal static string GORIMG_TOSTR_IMAGE_CODEC {
             get {
                 return ResourceManager.GetString("GORIMG_TOSTR_IMAGE_CODEC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gorgon Image Codec {0} ({1}).
+        /// </summary>
+        internal static string GORIMG_TOSTR_IMGE_CODEC_PLUGIN_DESC {
+            get {
+                return ResourceManager.GetString("GORIMG_TOSTR_IMGE_CODEC_PLUGIN_DESC", resourceCulture);
             }
         }
     }
