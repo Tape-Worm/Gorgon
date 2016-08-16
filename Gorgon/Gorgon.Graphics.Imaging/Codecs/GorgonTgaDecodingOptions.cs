@@ -26,9 +26,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Gorgon.Configuration;
 
 namespace Gorgon.Graphics.Imaging.Codecs
@@ -36,8 +33,8 @@ namespace Gorgon.Graphics.Imaging.Codecs
 	/// <summary>
 	/// Options used when decoding an image from a stream as a TGA file.
 	/// </summary>
-	public class GorgonTgaCodecDecodingOptions
-		: IGorgonTgaDecodingOptions
+	public class GorgonTgaDecodingOptions
+		: IGorgonImageCodecDecodingOptions
 	{
 		#region Properties.
 		/// <summary>
@@ -46,7 +43,6 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		public IGorgonOptionBag Options
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -98,9 +94,9 @@ namespace Gorgon.Graphics.Imaging.Codecs
 
 		#region Constructor/Finalizer.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonTgaCodecDecodingOptions"/> class.
+		/// Initializes a new instance of the <see cref="GorgonTgaDecodingOptions"/> class.
 		/// </summary>
-		public GorgonTgaCodecDecodingOptions()
+		public GorgonTgaDecodingOptions()
 		{
 			Options = new GorgonOptionBag(new Dictionary<string, Tuple<object, Type>>
 										  {

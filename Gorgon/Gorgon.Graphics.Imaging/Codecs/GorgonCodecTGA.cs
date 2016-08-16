@@ -243,12 +243,12 @@ namespace Gorgon.Graphics.Imaging.Codecs
             conversionFlags = TGAConversionFlags.None;
 
             // Get the header for the file.
-            TGAHeader header = reader.ReadValue<TGAHeader>();
+            TgaHeader header = reader.ReadValue<TgaHeader>();
 
             if ((header.ColorMapType != 0) || (header.ColorMapLength != 0)
 				|| (header.Width <= 0) || (header.Height <= 0)
-				|| ((header.Descriptor & TGADescriptor.Interleaved2Way) == TGADescriptor.Interleaved2Way)
-				|| ((header.Descriptor & TGADescriptor.Interleaved4Way) == TGADescriptor.Interleaved4Way))
+				|| ((header.Descriptor & TgaDescriptor.Interleaved2Way) == TgaDescriptor.Interleaved2Way)
+				|| ((header.Descriptor & TgaDescriptor.Interleaved4Way) == TgaDescriptor.Interleaved4Way))
             {
                 throw new NotSupportedException(Resources.GORIMG_ERR_TGA_TYPE_NOT_SUPPORTED);
             }
@@ -257,8 +257,8 @@ namespace Gorgon.Graphics.Imaging.Codecs
 
             switch (header.ImageType)
             {
-                case TGAImageType.TrueColor:
-                case TGAImageType.TrueColorRLE:
+                case TgaImageType.TrueColor:
+                case TgaImageType.TrueColorRLE:
                     switch (header.BPP)
                     {
                         case 16:
@@ -274,13 +274,13 @@ namespace Gorgon.Graphics.Imaging.Codecs
                             break;
                     }
 
-                    if (header.ImageType == TGAImageType.TrueColorRLE)
+                    if (header.ImageType == TgaImageType.TrueColorRLE)
                     {
                         conversionFlags |= TGAConversionFlags.RLE;
                     }
                     break;
-                case TGAImageType.BlackAndWhite:
-                case TGAImageType.BlackAndWhiteRLE:
+                case TgaImageType.BlackAndWhite:
+                case TgaImageType.BlackAndWhiteRLE:
                     if (header.BPP == 8)
                     {
                         pixelFormat = DXGI.Format.R8_UNorm;
@@ -290,7 +290,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 						throw new IOException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, header.ImageType));
                     }
 
-                    if (header.ImageType == TGAImageType.BlackAndWhiteRLE)
+                    if (header.ImageType == TgaImageType.BlackAndWhiteRLE)
                     {
                         conversionFlags |= TGAConversionFlags.RLE;
                     }
@@ -307,12 +307,12 @@ namespace Gorgon.Graphics.Imaging.Codecs
 			                   Height = header.Height
 		                   };
 
-            if ((header.Descriptor & TGADescriptor.InvertX) == TGADescriptor.InvertX)
+            if ((header.Descriptor & TgaDescriptor.InvertX) == TgaDescriptor.InvertX)
             {
                 conversionFlags |= TGAConversionFlags.InvertX;
             }
 
-            if ((header.Descriptor & TGADescriptor.InvertY) == TGADescriptor.InvertY)
+            if ((header.Descriptor & TgaDescriptor.InvertY) == TgaDescriptor.InvertY)
             {
                 conversionFlags |= TGAConversionFlags.InvertY;
             }
@@ -337,9 +337,9 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <param name="settings">Meta data for the image header.</param>
 		/// <param name="conversionFlags">Flags required for image conversion.</param>
 		/// <returns>A TGA header value, populated with the correct settings.</returns>
-		private TGAHeader GetHeader(IGorgonImageInfo settings, out TGAConversionFlags conversionFlags)
+		private TgaHeader GetHeader(IGorgonImageInfo settings, out TGAConversionFlags conversionFlags)
 		{
-			TGAHeader header = default(TGAHeader);
+			TgaHeader header = default(TgaHeader);
 
 			conversionFlags = TGAConversionFlags.None;
 
@@ -356,36 +356,36 @@ namespace Gorgon.Graphics.Imaging.Codecs
 			{
 				case DXGI.Format.R8G8B8A8_UNorm:
 				case DXGI.Format.R8G8B8A8_UNorm_SRgb:
-					header.ImageType = TGAImageType.TrueColor;
+					header.ImageType = TgaImageType.TrueColor;
 					header.BPP = 32;
-					header.Descriptor = TGADescriptor.InvertY | TGADescriptor.RGB888A8;
+					header.Descriptor = TgaDescriptor.InvertY | TgaDescriptor.RGB888A8;
 					conversionFlags |= TGAConversionFlags.Swizzle;
 					break;
 				case DXGI.Format.B8G8R8A8_UNorm:
 				case DXGI.Format.B8G8R8A8_UNorm_SRgb:
-					header.ImageType = TGAImageType.TrueColor;
+					header.ImageType = TgaImageType.TrueColor;
 					header.BPP = 32;
-					header.Descriptor = TGADescriptor.InvertY | TGADescriptor.RGB888A8;
+					header.Descriptor = TgaDescriptor.InvertY | TgaDescriptor.RGB888A8;
 					break;
 				case DXGI.Format.B8G8R8X8_UNorm:
 				case DXGI.Format.B8G8R8X8_UNorm_SRgb:
-					header.ImageType = TGAImageType.TrueColor;
+					header.ImageType = TgaImageType.TrueColor;
 					header.BPP = 24;
-					header.Descriptor = TGADescriptor.InvertY;
+					header.Descriptor = TgaDescriptor.InvertY;
 					conversionFlags |= TGAConversionFlags.RGB888;
 					break;
 
 				case DXGI.Format.R8_UNorm:
 				case DXGI.Format.A8_UNorm:
-					header.ImageType = TGAImageType.BlackAndWhite;
+					header.ImageType = TgaImageType.BlackAndWhite;
 					header.BPP = 8;
-					header.Descriptor = TGADescriptor.InvertY;
+					header.Descriptor = TgaDescriptor.InvertY;
 					break;
 
 				case DXGI.Format.B5G5R5A1_UNorm:
-					header.ImageType = TGAImageType.TrueColor;
+					header.ImageType = TgaImageType.TrueColor;
 					header.BPP = 16;
-					header.Descriptor = TGADescriptor.InvertY | TGADescriptor.RGB555A1;
+					header.Descriptor = TgaDescriptor.InvertY | TgaDescriptor.RGB555A1;
 					break;
 				default:
 					throw new IOException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, settings.Format));
@@ -816,9 +816,9 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <exception cref="GorgonException">Thrown when the image data in the stream has a pixel format that is unsupported.</exception>
 		protected override IGorgonImage OnDecodeFromStream(Stream stream, long size, IGorgonImageCodecDecodingOptions options)
 		{
-			var tgaOptions = options as IGorgonTgaDecodingOptions;
+			var tgaOptions = options as GorgonTgaDecodingOptions;
 
-			if (DirectAccess.SizeOf<TGAHeader>() >= size)
+			if (DirectAccess.SizeOf<TgaHeader>() >= size)
 			{
 				throw new EndOfStreamException();
 			}
@@ -830,7 +830,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 
 				IGorgonImage image = new GorgonImage(info);
 
-				if ((tgaOptions == null) || (tgaOptions.SetZeroAlphaAsOpaque))
+				if (tgaOptions?.SetZeroAlphaAsOpaque ?? true)
 				{
 					flags |= TGAConversionFlags.SetOpaqueAlpha;
 				}
@@ -871,7 +871,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 			{
 				// Write the header for the file before we dump the file contents.
 				TGAConversionFlags conversionFlags;
-				TGAHeader header = GetHeader(imageData.Info, out conversionFlags);
+				TgaHeader header = GetHeader(imageData.Info, out conversionFlags);
 
 				GorgonPitchLayout pitch;
 
@@ -951,7 +951,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <seealso cref="IsReadable"/>
 		public override IGorgonImageInfo GetMetaData(Stream stream)
 		{
-			int headerSize = DirectAccess.SizeOf<TGAHeader>();
+			int headerSize = DirectAccess.SizeOf<TgaHeader>();
             long position = 0;
 			
 			
@@ -1021,7 +1021,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <exception cref="EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
 		public override bool IsReadable(Stream stream)
         {
-			TGAHeader header;
+			TgaHeader header;
 			long position = 0;
 
 			if (stream == null)
@@ -1039,7 +1039,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
                 throw new IOException(Resources.GORIMG_ERR_STREAM_CANNOT_SEEK);
             }
             
-            if (stream.Length - stream.Position < DirectAccess.SizeOf<TGAHeader>())
+            if (stream.Length - stream.Position < DirectAccess.SizeOf<TgaHeader>())
 			{
 				return false;
 			}
@@ -1048,7 +1048,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 			{
                 position = stream.Position;
 				var reader = new GorgonBinaryReader(stream, true); 
-				header = reader.ReadValue<TGAHeader>();
+				header = reader.ReadValue<TgaHeader>();
 			}
 			finally
 			{
@@ -1060,7 +1060,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 				return false;
 			}
 
-			if ((header.Descriptor & (TGADescriptor.Interleaved2Way | TGADescriptor.Interleaved4Way)) != 0)
+			if ((header.Descriptor & (TgaDescriptor.Interleaved2Way | TgaDescriptor.Interleaved4Way)) != 0)
 			{
 				return false;
 			}
@@ -1070,13 +1070,13 @@ namespace Gorgon.Graphics.Imaging.Codecs
 				return false;
 			}
 
-			if ((header.ImageType != TGAImageType.TrueColor) && (header.ImageType != TGAImageType.TrueColorRLE)
-				&& (header.ImageType != TGAImageType.BlackAndWhite) && (header.ImageType != TGAImageType.BlackAndWhiteRLE))
+			if ((header.ImageType != TgaImageType.TrueColor) && (header.ImageType != TgaImageType.TrueColorRLE)
+				&& (header.ImageType != TgaImageType.BlackAndWhite) && (header.ImageType != TgaImageType.BlackAndWhiteRLE))
 			{
 				return false;
 			}
 
-			return ((header.ImageType != TGAImageType.BlackAndWhite) && (header.ImageType != TGAImageType.BlackAndWhiteRLE)) ||
+			return ((header.ImageType != TgaImageType.BlackAndWhite) && (header.ImageType != TgaImageType.BlackAndWhiteRLE)) ||
 			       (header.BPP == 8);
         }
 		#endregion

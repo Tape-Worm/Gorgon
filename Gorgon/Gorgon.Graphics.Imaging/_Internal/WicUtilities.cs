@@ -375,7 +375,7 @@ namespace Gorgon.Graphics.Imaging
 
 			if (options.Options.OptionKeys.ContainsKey("Filter"))
 			{
-				frame.Options.FilterOption = (WIC.PngFilterOption)options.Options.GetOption<PNGFilter>("Filter");
+				frame.Options.FilterOption = (WIC.PngFilterOption)options.Options.GetOption<PngFilter>("Filter");
 			}
 
 			if (options.Options.OptionKeys.ContainsKey("ImageQuality"))

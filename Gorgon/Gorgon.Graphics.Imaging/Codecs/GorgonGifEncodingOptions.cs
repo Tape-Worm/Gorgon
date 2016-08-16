@@ -34,7 +34,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 	/// <summary>
 	/// Options used when decoding an image from a stream as a GIF file.
 	/// </summary>
-	public class GorgonGifCodecEncodingOptions
+	public class GorgonGifEncodingOptions
 		: IGorgonWicEncodingOptions
 	{
 		#region Properties.
@@ -207,9 +207,9 @@ namespace Gorgon.Graphics.Imaging.Codecs
 
 		#region Constructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonGifCodecEncodingOptions"/> class.
+		/// Initializes a new instance of the <see cref="GorgonGifEncodingOptions"/> class.
 		/// </summary>
-		public GorgonGifCodecEncodingOptions()
+		public GorgonGifEncodingOptions()
 		{
 			Options = new GorgonOptionBag(new Dictionary<string, Tuple<object, Type>>
 			                              {

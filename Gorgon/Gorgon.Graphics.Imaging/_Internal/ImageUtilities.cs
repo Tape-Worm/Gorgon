@@ -124,9 +124,9 @@ namespace Gorgon.Graphics.Imaging
 						break;
 					case DXGI.Format.B4G4R4A4_UNorm:
 						A = (uint)((srcPixel & 0xF000) >> 12);
-						R = (uint)((srcPixel & 0x0F00) >> 8);
-						G = (uint)((srcPixel & 0x00F0) >> 4);
-						B = (uint)(srcPixel & 0x000F);
+						R = (uint)((srcPixel & 0xF00) >> 8);
+						G = (uint)((srcPixel & 0xF0) >> 4);
+						B = (uint)(srcPixel & 0xF);
 						R = ((R << 4) | R);
 						G = ((G << 4) | G) << 8;
 						B = ((B << 4) | B) << 16;

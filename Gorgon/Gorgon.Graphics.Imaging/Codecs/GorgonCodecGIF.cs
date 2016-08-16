@@ -82,7 +82,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <returns>A dictionary containing the key/value pair describing the metadata to write to the frame, or <b>null</b> if the frame contains no metadata.</returns>
 		protected override IReadOnlyDictionary<string, object> GetCustomEncodingMetadata(int frameIndex, IGorgonWicEncodingOptions options, IGorgonImageInfo settings)
 		{
-			var gifOptions = options as GorgonGifCodecEncodingOptions;
+			var gifOptions = options as GorgonGifEncodingOptions;
 			var result = new Dictionary<string, object>();
 
 			if (gifOptions?.Palette != null)

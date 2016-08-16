@@ -32,7 +32,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 	/// <summary>
 	/// Image types.
 	/// </summary>
-	enum TGAImageType
+	enum TgaImageType
 		: byte
 	{
 		/// <summary>
@@ -69,7 +69,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 	/// TGA pixel format descriptor flags.
 	/// </summary>
 	[Flags]
-	enum TGADescriptor
+	enum TgaDescriptor
 		: byte
 	{
 		/// <summary>
@@ -102,7 +102,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 	/// Header information for TGA file.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential, Pack = 1)]
-	struct TGAHeader
+	struct TgaHeader
 	{
 		/// <summary>
 		/// Length of the ID.
@@ -115,7 +115,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <summary>
 		/// Image type.
 		/// </summary>
-		public TGAImageType ImageType;
+		public TgaImageType ImageType;
 		/// <summary>
 		/// First color map index.
 		/// </summary>
@@ -151,6 +151,6 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <summary>
 		/// Descriptor flag.
 		/// </summary>
-		public TGADescriptor Descriptor;
+		public TgaDescriptor Descriptor;
 	}
 }
