@@ -367,7 +367,6 @@ namespace Gorgon.Graphics.Imaging
 		/// <param name="options">The list of options to apply.</param>
 		private static void SetFrameOptions(WIC.BitmapFrameEncode frame, IGorgonWicEncodingOptions options)
 		{
-			// Options that do not exist will have their default value for that type applied.
 			if (options.Options.Contains("Interlacing"))
 			{
 				frame.Options.InterlaceOption = options.Options["Interlacing"].GetValue<bool>();

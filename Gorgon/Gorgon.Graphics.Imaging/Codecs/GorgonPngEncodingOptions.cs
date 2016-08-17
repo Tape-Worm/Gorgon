@@ -26,6 +26,7 @@
 
 using WIC = SharpDX.WIC;
 using Gorgon.Configuration;
+using Gorgon.Graphics.Imaging.Properties;
 
 namespace Gorgon.Graphics.Imaging.Codecs
 {
@@ -215,11 +216,11 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		{
 			Options = new GorgonOptionBag(new []
 			                              {
-				                              GorgonOption.CreateOption(nameof(Dithering), ImageDithering.None),
-											  GorgonOption.CreateOption(nameof(Filter), PngFilter.None),
-											  GorgonOption.CreateOption(nameof(Interlacing), false),
-											  GorgonOption.CreateOption(nameof(DpiX), 72),
-											  GorgonOption.CreateOption(nameof(DpiY), 72)
+				                              GorgonOption.CreateOption(nameof(Dithering), ImageDithering.None, Resources.GORIMG_OPT_WIC_DITHERING),
+											  GorgonOption.CreateOption(nameof(Filter), PngFilter.None, Resources.GORIMG_OPT_PNG_FILTERING),
+											  GorgonOption.CreateOption(nameof(Interlacing), false, Resources.GORIMG_OPT_PNG_INTERLACED),
+											  GorgonOption.CreateOption(nameof(DpiX), 72, Resources.GORIMG_WIC_DPIX),
+											  GorgonOption.CreateOption(nameof(DpiY), 72, Resources.GORIMG_WIC_DPIY)
 			                              });
 		}
 		#endregion

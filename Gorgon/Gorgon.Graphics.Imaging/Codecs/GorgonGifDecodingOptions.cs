@@ -26,6 +26,7 @@
 
 using System.Collections.Generic;
 using Gorgon.Configuration;
+using Gorgon.Graphics.Imaging.Properties;
 
 namespace Gorgon.Graphics.Imaging.Codecs
 {
@@ -183,9 +184,9 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		{
 			Options = new GorgonOptionBag(new []
 			                              {
-				                              GorgonOption.CreateOption(nameof(ReadAllFrames), false),
+				                              GorgonOption.CreateOption(nameof(ReadAllFrames), false, Resources.GORIMG_OPT_READ_ALL_FRAMES),
 											  GorgonOption.CreateOption(nameof(Palette), new List<GorgonColor>()),
-											  GorgonOption.CreateSingleOption(nameof(AlphaThreshold), 0.0f, 0.0f, 1.0f)
+											  GorgonOption.CreateSingleOption(nameof(AlphaThreshold), 0.0f, Resources.GORIMG_OPT_GIF_ALPHA_THRESHOLD, 0.0f, 1.0f)
 			                              });
 		}
 		#endregion

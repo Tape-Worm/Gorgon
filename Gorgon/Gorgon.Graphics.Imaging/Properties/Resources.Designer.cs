@@ -278,6 +278,96 @@ namespace Gorgon.Graphics.Imaging.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Alpha value threshold for transparency.
+        /// </summary>
+        internal static string GORIMG_OPT_GIF_ALPHA_THRESHOLD {
+            get {
+                return ResourceManager.GetString("GORIMG_OPT_GIF_ALPHA_THRESHOLD", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Image quality.
+        /// </summary>
+        internal static string GORIMG_OPT_JPG_QUALITY {
+            get {
+                return ResourceManager.GetString("GORIMG_OPT_JPG_QUALITY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Scanline fitering type.
+        /// </summary>
+        internal static string GORIMG_OPT_PNG_FILTERING {
+            get {
+                return ResourceManager.GetString("GORIMG_OPT_PNG_FILTERING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use interlacing.
+        /// </summary>
+        internal static string GORIMG_OPT_PNG_INTERLACED {
+            get {
+                return ResourceManager.GetString("GORIMG_OPT_PNG_INTERLACED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Read all frames as image array.
+        /// </summary>
+        internal static string GORIMG_OPT_READ_ALL_FRAMES {
+            get {
+                return ResourceManager.GetString("GORIMG_OPT_READ_ALL_FRAMES", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save all frames as image array.
+        /// </summary>
+        internal static string GORIMG_OPT_SAVE_ALL_FRAMES {
+            get {
+                return ResourceManager.GetString("GORIMG_OPT_SAVE_ALL_FRAMES", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Force opaque when image is transparent.
+        /// </summary>
+        internal static string GORIMG_OPT_TGA_SETZEROALPHA_OPAQUE {
+            get {
+                return ResourceManager.GetString("GORIMG_OPT_TGA_SETZEROALPHA_OPAQUE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Dithering type.
+        /// </summary>
+        internal static string GORIMG_OPT_WIC_DITHERING {
+            get {
+                return ResourceManager.GetString("GORIMG_OPT_WIC_DITHERING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Horizontal DPI.
+        /// </summary>
+        internal static string GORIMG_OPT_WIC_DPIX {
+            get {
+                return ResourceManager.GetString("GORIMG_OPT_WIC_DPIX", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Vertical DPI.
+        /// </summary>
+        internal static string GORIMG_OPT_WIC_DPIY {
+            get {
+                return ResourceManager.GetString("GORIMG_OPT_WIC_DPIY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Image pitch information.  Width={0} bytes, Size={1} bytes..
         /// </summary>
         internal static string GORIMG_TOSTR_FMTPITCH {
