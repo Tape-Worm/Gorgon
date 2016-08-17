@@ -279,6 +279,10 @@ namespace Gorgon.Graphics.Imaging.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to Alpha value threshold for transparency.
+        ///
+        ///GIF encoded images can use a single color index from the palette to indicate transparency. When downsampling an image to an indexed color palette, and the alpha value of the pixel is less than the value specified here, the codec will treat the pixel as the transparent index in the GIF image palette.
+        ///
+        ///This value has a range of 0 to 1.0.  Where 0 indicates no transparency, and 1.0 means all pixels are transparent..
         /// </summary>
         internal static string GORIMG_OPT_GIF_ALPHA_THRESHOLD {
             get {
@@ -288,6 +292,10 @@ namespace Gorgon.Graphics.Imaging.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to Image quality.
+        ///
+        ///Specifies the lossy compression quality to use when encoding a JPEG image.  The higher the value, the worse the less compression that is used, and the better the image quality.
+        ///
+        ///This value has a range of 0 to 1.0.  Where 0 is the best compression, but the worst quality, and 1.0 is no compression and the best quality..
         /// </summary>
         internal static string GORIMG_OPT_JPG_QUALITY {
             get {
@@ -297,6 +305,8 @@ namespace Gorgon.Graphics.Imaging.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to Scanline fitering type.
+        ///
+        ///Specified how to filter scanlines when encoding PNG files..
         /// </summary>
         internal static string GORIMG_OPT_PNG_FILTERING {
             get {
@@ -305,7 +315,9 @@ namespace Gorgon.Graphics.Imaging.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Use interlacing.
+        ///   Looks up a localized string similar to Use interlacing
+        ///
+        ///Specifies whether or not to use interlacing for scanlines in the PNG file..
         /// </summary>
         internal static string GORIMG_OPT_PNG_INTERLACED {
             get {
@@ -315,6 +327,8 @@ namespace Gorgon.Graphics.Imaging.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to Read all frames as image array.
+        ///
+        ///Images with multiple frames will have these frames decoded as multiple indices in the image..
         /// </summary>
         internal static string GORIMG_OPT_READ_ALL_FRAMES {
             get {
@@ -324,6 +338,8 @@ namespace Gorgon.Graphics.Imaging.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to Save all frames as image array.
+        ///
+        ///Images with multiple frames will have these frames encoded as array indices in the image..
         /// </summary>
         internal static string GORIMG_OPT_SAVE_ALL_FRAMES {
             get {
@@ -333,6 +349,10 @@ namespace Gorgon.Graphics.Imaging.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to Force opaque when image is transparent.
+        ///
+        ///Some 32 bit per pixel TGA images are written out with their alpha values as 0, even though color data is present in the image. This option will force the TGA file to be decoded as though it has opaque alpha channels.
+        ///
+        ///Note: If there are a mix of alpha values in the image, then this option will be ignored. .
         /// </summary>
         internal static string GORIMG_OPT_TGA_SETZEROALPHA_OPAQUE {
             get {
@@ -342,6 +362,8 @@ namespace Gorgon.Graphics.Imaging.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to Dithering type.
+        ///
+        ///Defines how to handle downsampling the pixel data from a higher bit depth so that image quality is preserved..
         /// </summary>
         internal static string GORIMG_OPT_WIC_DITHERING {
             get {
