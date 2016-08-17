@@ -56,6 +56,17 @@ namespace Gorgon.Configuration
 		}
 
 		/// <summary>
+		/// Property to return text to display regarding this option.
+		/// </summary>
+		/// <remarks>
+		/// This is pulled from the first line of the <see cref="Description"/>.
+		/// </remarks>
+		public string Text
+		{
+			get;
+		}
+
+		/// <summary>
 		/// Property to return the friendly description of this option.
 		/// </summary>
 		public string Description
@@ -231,6 +242,12 @@ namespace Gorgon.Configuration
 		/// <returns>A new <see cref="IGorgonOption"/>.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> is empty.</exception>
+		/// <remarks>
+		/// <para>
+		/// The <see cref="Text"/> for this option is derived from the <paramref name="description"/> by using the first line of text (ended by a new line character). If the <paramref name="description"/> 
+		/// is a single line, then the <see cref="Text"/> and <see cref="Description"/> fields will be the same.
+		/// </para>
+		/// </remarks>
 		public static IGorgonOption CreateByteOption(string name, byte defaultValue, string description = null, byte? minValue = null, byte? maxValue = null)
 		{
 			if ((minValue != null) && (defaultValue < minValue.Value))
@@ -262,6 +279,12 @@ namespace Gorgon.Configuration
 		/// <returns>A new <see cref="IGorgonOption"/>.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> is empty.</exception>
+		/// <remarks>
+		/// <para>
+		/// The <see cref="Text"/> for this option is derived from the <paramref name="description"/> by using the first line of text (ended by a new line character). If the <paramref name="description"/> 
+		/// is a single line, then the <see cref="Text"/> and <see cref="Description"/> fields will be the same.
+		/// </para>
+		/// </remarks>
 		public static IGorgonOption CreateSByteOption(string name, sbyte defaultValue, string description = null, sbyte? minValue = null, sbyte? maxValue = null)
 		{
 			if ((minValue != null) && (defaultValue < minValue.Value))
@@ -293,6 +316,12 @@ namespace Gorgon.Configuration
 		/// <returns>A new <see cref="IGorgonOption"/>.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> is empty.</exception>
+		/// <remarks>
+		/// <para>
+		/// The <see cref="Text"/> for this option is derived from the <paramref name="description"/> by using the first line of text (ended by a new line character). If the <paramref name="description"/> 
+		/// is a single line, then the <see cref="Text"/> and <see cref="Description"/> fields will be the same.
+		/// </para>
+		/// </remarks>
 		public static IGorgonOption CreateInt16Option(string name, short defaultValue, string description = null, short? minValue = null, short? maxValue = null)
 		{
 			if ((minValue != null) && (defaultValue < minValue.Value))
@@ -324,6 +353,12 @@ namespace Gorgon.Configuration
 		/// <returns>A new <see cref="IGorgonOption"/>.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> is empty.</exception>
+		/// <remarks>
+		/// <para>
+		/// The <see cref="Text"/> for this option is derived from the <paramref name="description"/> by using the first line of text (ended by a new line character). If the <paramref name="description"/> 
+		/// is a single line, then the <see cref="Text"/> and <see cref="Description"/> fields will be the same.
+		/// </para>
+		/// </remarks>
 		public static IGorgonOption CreateUInt16Option(string name, ushort defaultValue, string description = null, ushort? minValue = null, ushort? maxValue = null)
 		{
 			if ((minValue != null) && (defaultValue < minValue.Value))
@@ -355,6 +390,12 @@ namespace Gorgon.Configuration
 		/// <returns>A new <see cref="IGorgonOption"/>.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> is empty.</exception>
+		/// <remarks>
+		/// <para>
+		/// The <see cref="Text"/> for this option is derived from the <paramref name="description"/> by using the first line of text (ended by a new line character). If the <paramref name="description"/> 
+		/// is a single line, then the <see cref="Text"/> and <see cref="Description"/> fields will be the same.
+		/// </para>
+		/// </remarks>
 		public static IGorgonOption CreateInt32Option(string name, int defaultValue, string description, int? minValue = null, int? maxValue = null)
 		{
 			if ((minValue != null) && (defaultValue < minValue.Value))
@@ -386,6 +427,12 @@ namespace Gorgon.Configuration
 		/// <returns>A new <see cref="IGorgonOption"/>.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> is empty.</exception>
+		/// <remarks>
+		/// <para>
+		/// The <see cref="Text"/> for this option is derived from the <paramref name="description"/> by using the first line of text (ended by a new line character). If the <paramref name="description"/> 
+		/// is a single line, then the <see cref="Text"/> and <see cref="Description"/> fields will be the same.
+		/// </para>
+		/// </remarks>
 		public static IGorgonOption CreateUInt32Option(string name, uint defaultValue, string description = null, uint? minValue = null, uint? maxValue = null)
 		{
 			if ((minValue != null) && (defaultValue < minValue.Value))
@@ -417,6 +464,12 @@ namespace Gorgon.Configuration
 		/// <returns>A new <see cref="IGorgonOption"/>.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> is empty.</exception>
+		/// <remarks>
+		/// <para>
+		/// The <see cref="Text"/> for this option is derived from the <paramref name="description"/> by using the first line of text (ended by a new line character). If the <paramref name="description"/> 
+		/// is a single line, then the <see cref="Text"/> and <see cref="Description"/> fields will be the same.
+		/// </para>
+		/// </remarks>
 		public static IGorgonOption CreateInt64Option(string name, long defaultValue, string description = null, long? minValue = null, long? maxValue = null)
 		{
 			if ((minValue != null) && (defaultValue < minValue.Value))
@@ -448,6 +501,12 @@ namespace Gorgon.Configuration
 		/// <returns>A new <see cref="IGorgonOption"/>.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> is empty.</exception>
+		/// <remarks>
+		/// <para>
+		/// The <see cref="Text"/> for this option is derived from the <paramref name="description"/> by using the first line of text (ended by a new line character). If the <paramref name="description"/> 
+		/// is a single line, then the <see cref="Text"/> and <see cref="Description"/> fields will be the same.
+		/// </para>
+		/// </remarks>
 		public static IGorgonOption CreateUInt64Option(string name, ulong defaultValue, string description = null, ulong? minValue = null, ulong? maxValue = null)
 		{
 			if ((minValue != null) && (defaultValue < minValue.Value))
@@ -479,6 +538,12 @@ namespace Gorgon.Configuration
 		/// <returns>A new <see cref="IGorgonOption"/>.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> is empty.</exception>
+		/// <remarks>
+		/// <para>
+		/// The <see cref="Text"/> for this option is derived from the <paramref name="description"/> by using the first line of text (ended by a new line character). If the <paramref name="description"/> 
+		/// is a single line, then the <see cref="Text"/> and <see cref="Description"/> fields will be the same.
+		/// </para>
+		/// </remarks>
 		public static IGorgonOption CreateDoubleOption(string name, double defaultValue, string description = null, double? minValue = null, double? maxValue = null)
 		{
 			if ((minValue != null) && (defaultValue < minValue.Value))
@@ -505,6 +570,12 @@ namespace Gorgon.Configuration
 		/// <returns>A new <see cref="IGorgonOption"/>.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> is empty.</exception>
+		/// <remarks>
+		/// <para>
+		/// The <see cref="Text"/> for this option is derived from the <paramref name="description"/> by using the first line of text (ended by a new line character). If the <paramref name="description"/> 
+		/// is a single line, then the <see cref="Text"/> and <see cref="Description"/> fields will be the same.
+		/// </para>
+		/// </remarks>
 		public static IGorgonOption CreateSingleOption(string name, float defaultValue, string description = null, float? minValue = null, float? maxValue = null)
 		{
 			if ((minValue != null) && (defaultValue < minValue.Value))
@@ -536,6 +607,12 @@ namespace Gorgon.Configuration
 		/// <returns>A new <see cref="IGorgonOption"/>.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> is empty.</exception>
+		/// <remarks>
+		/// <para>
+		/// The <see cref="Text"/> for this option is derived from the <paramref name="description"/> by using the first line of text (ended by a new line character). If the <paramref name="description"/> 
+		/// is a single line, then the <see cref="Text"/> and <see cref="Description"/> fields will be the same.
+		/// </para>
+		/// </remarks>
 		public static IGorgonOption CreateDecimalOption(string name, decimal defaultValue, string description = null, decimal? minValue = null, decimal? maxValue = null)
 		{
 			if ((minValue != null) && (defaultValue < minValue.Value))
@@ -567,6 +644,12 @@ namespace Gorgon.Configuration
 		/// <returns>A new <see cref="IGorgonOption"/>.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> is empty.</exception>
+		/// <remarks>
+		/// <para>
+		/// The <see cref="Text"/> for this option is derived from the <paramref name="description"/> by using the first line of text (ended by a new line character). If the <paramref name="description"/> 
+		/// is a single line, then the <see cref="Text"/> and <see cref="Description"/> fields will be the same.
+		/// </para>
+		/// </remarks>
 		public static IGorgonOption CreateDateTimeOption(string name, DateTime defaultValue, string description = null, DateTime? minValue = null, DateTime? maxValue = null)
 		{
 			if ((minValue != null) && (defaultValue < minValue.Value))
@@ -594,6 +677,10 @@ namespace Gorgon.Configuration
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> is empty.</exception>
 		/// <remarks>
 		/// <para>
+		/// The <see cref="Text"/> for this option is derived from the <paramref name="description"/> by using the first line of text (ended by a new line character). If the <paramref name="description"/> 
+		/// is a single line, then the <see cref="Text"/> and <see cref="Description"/> fields will be the same.
+		/// </para>
+		/// <para>
 		/// If the <paramref name="defaultValue"/> is omitted, then the default value for the type is used.
 		/// </para>
 		/// </remarks>
@@ -613,6 +700,12 @@ namespace Gorgon.Configuration
 		/// <returns>A new <see cref="IGorgonOption"/>.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> is empty.</exception>
+		/// <remarks>
+		/// <para>
+		/// The <see cref="Text"/> for this option is derived from the <paramref name="description"/> by using the first line of text (ended by a new line character). If the <paramref name="description"/> 
+		/// is a single line, then the <see cref="Text"/> and <see cref="Description"/> fields will be the same.
+		/// </para>
+		/// </remarks>
 		public static IGorgonOption CreateOption<T>(string name, T value, T defaultValue, string description = null)
 		{
 			IGorgonOption result = new GorgonOption(name, typeof(T), defaultValue, null, null, description);
@@ -640,6 +733,18 @@ namespace Gorgon.Configuration
 			_minValue = minValue;
 			_maxValue = maxValue;
 			Description = description ?? string.Empty;
+
+			// Extract the text from the description.
+			int newLineIndex = Description.IndexOf('\n');
+
+			if ((newLineIndex != -1) && (newLineIndex != Description.Length - 1))
+			{
+				Text = Description.Substring(newLineIndex + 1);
+			}
+			else
+			{
+				Text = Description;
+			}
 		}
 		#endregion
 	}

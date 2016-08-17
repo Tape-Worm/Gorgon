@@ -191,28 +191,50 @@ This could lead to a buffer overrun.</value>
     <value>This codec does not support TGA files encoded using 2 or 4 way interleaving, or color mapped data.</value>
   </data>
   <data name="GORIMG_OPT_GIF_ALPHA_THRESHOLD" xml:space="preserve">
-    <value>Alpha value threshold for transparency</value>
+    <value>Alpha value threshold for transparency.
+
+GIF encoded images can use a single color index from the palette to indicate transparency. When downsampling an image to an indexed color palette, and the alpha value of the pixel is less than the value specified here, the codec will treat the pixel as the transparent index in the GIF image palette.
+
+This value has a range of 0 to 1.0.  Where 0 indicates no transparency, and 1.0 means all pixels are transparent.</value>
   </data>
   <data name="GORIMG_OPT_JPG_QUALITY" xml:space="preserve">
-    <value>Image quality</value>
+    <value>Image quality.
+
+Specifies the lossy compression quality to use when encoding a JPEG image.  The higher the value, the worse the less compression that is used, and the better the image quality.
+
+This value has a range of 0 to 1.0.  Where 0 is the best compression, but the worst quality, and 1.0 is no compression and the best quality.</value>
   </data>
   <data name="GORIMG_OPT_PNG_FILTERING" xml:space="preserve">
-    <value>Scanline fitering type</value>
+    <value>Scanline fitering type.
+
+Specified how to filter scanlines when encoding PNG files.</value>
   </data>
   <data name="GORIMG_OPT_PNG_INTERLACED" xml:space="preserve">
-    <value>Use interlacing</value>
+    <value>Use interlacing
+
+Specifies whether or not to use interlacing for scanlines in the PNG file.</value>
   </data>
   <data name="GORIMG_OPT_READ_ALL_FRAMES" xml:space="preserve">
-    <value>Read all frames as image array</value>
+    <value>Read all frames as image array.
+
+Images with multiple frames will have these frames decoded as multiple indices in the image.</value>
   </data>
   <data name="GORIMG_OPT_SAVE_ALL_FRAMES" xml:space="preserve">
-    <value>Save all frames as image array</value>
+    <value>Save all frames as image array.
+
+Images with multiple frames will have these frames encoded as array indices in the image.</value>
   </data>
   <data name="GORIMG_OPT_TGA_SETZEROALPHA_OPAQUE" xml:space="preserve">
-    <value>Force opaque when image is transparent</value>
+    <value>Force opaque when image is transparent.
+
+Some 32 bit per pixel TGA images are written out with their alpha values as 0, even though color data is present in the image. This option will force the TGA file to be decoded as though it has opaque alpha channels.
+
+Note: If there are a mix of alpha values in the image, then this option will be ignored. </value>
   </data>
   <data name="GORIMG_OPT_WIC_DITHERING" xml:space="preserve">
-    <value>Dithering type</value>
+    <value>Dithering type.
+
+Defines how to handle downsampling the pixel data from a higher bit depth so that image quality is preserved.</value>
   </data>
   <data name="GORIMG_OPT_WIC_DPIX" xml:space="preserve">
     <value>Horizontal DPI</value>
