@@ -206,6 +206,22 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		public virtual bool SupportsMultipleFrames => false;
 
 		/// <summary>
+		/// Property to return whether the codec supports encoding of image data.
+		/// </summary>
+		/// <remarks>
+		/// If this value is <b>false</b>, then the codec is effectively read only.
+		/// </remarks>
+		public virtual bool CanEncode => true;
+
+		/// <summary>
+		/// Property to return whether the codec supports decoding of image data.
+		/// </summary>
+		/// <remarks>
+		/// If this value is <b>false</b>, then the codec is effectively write only.
+		/// </remarks>
+		public virtual bool CanDecode => true;
+
+		/// <summary>
 		/// Property to return the common file name extension(s) for a codec.
 		/// </summary>
 		public IReadOnlyList<string> CodecCommonExtensions

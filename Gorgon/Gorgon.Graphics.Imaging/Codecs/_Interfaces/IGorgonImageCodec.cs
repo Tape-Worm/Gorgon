@@ -198,6 +198,28 @@ namespace Gorgon.Graphics.Imaging.Codecs
 	{
 		#region Properties.
 		/// <summary>
+		/// Property to return whether the codec supports encoding of image data.
+		/// </summary>
+		/// <remarks>
+		/// If this value is <b>false</b>, then the codec is effectively read only.
+		/// </remarks>
+		bool CanEncode
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Property to return whether the codec supports decoding of image data.
+		/// </summary>
+		/// <remarks>
+		/// If this value is <b>false</b>, then the codec is effectively write only.
+		/// </remarks>
+		bool CanDecode
+		{
+			get;
+		}
+
+		/// <summary>
 		/// Property to return whether the codec supports decoding/encoding multiple frames or not.
 		/// </summary>
 		bool SupportsMultipleFrames
