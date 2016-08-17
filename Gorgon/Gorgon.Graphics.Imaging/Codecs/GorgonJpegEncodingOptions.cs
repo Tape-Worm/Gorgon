@@ -169,9 +169,9 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		{
 			Options = new GorgonOptionBag(new []
 			                              {
-				                              GorgonOption.CreateSingleOption(nameof(ImageQuality), 1.0f, Resources.GORIMG_JPG_QUALITY, 0, 1.0f),
-											  GorgonOption.CreateDoubleOption(nameof(DpiX), 72.0, Resources.GORIMG_WIC_DPIX),
-											  GorgonOption.CreateDoubleOption(nameof(DpiY), 72.0, Resources.GORIMG_WIC_DPIY),
+				                              GorgonOption.CreateSingleOption(nameof(ImageQuality), 1.0f, Resources.GORIMG_OPT_JPG_QUALITY, 0, 1.0f),
+											  GorgonOption.CreateDoubleOption(nameof(DpiX), 72.0, Resources.GORIMG_OPT_WIC_DPIX),
+											  GorgonOption.CreateDoubleOption(nameof(DpiY), 72.0, Resources.GORIMG_OPT_WIC_DPIY),
 										  });
 		}
 		#endregion

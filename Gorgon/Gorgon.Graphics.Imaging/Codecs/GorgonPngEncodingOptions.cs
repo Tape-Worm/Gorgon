@@ -219,8 +219,8 @@ namespace Gorgon.Graphics.Imaging.Codecs
 				                              GorgonOption.CreateOption(nameof(Dithering), ImageDithering.None, Resources.GORIMG_OPT_WIC_DITHERING),
 											  GorgonOption.CreateOption(nameof(Filter), PngFilter.None, Resources.GORIMG_OPT_PNG_FILTERING),
 											  GorgonOption.CreateOption(nameof(Interlacing), false, Resources.GORIMG_OPT_PNG_INTERLACED),
-											  GorgonOption.CreateOption(nameof(DpiX), 72, Resources.GORIMG_WIC_DPIX),
-											  GorgonOption.CreateOption(nameof(DpiY), 72, Resources.GORIMG_WIC_DPIY)
+											  GorgonOption.CreateOption(nameof(DpiX), 72, Resources.GORIMG_OPT_WIC_DPIX),
+											  GorgonOption.CreateOption(nameof(DpiY), 72, Resources.GORIMG_OPT_WIC_DPIY)
 			                              });
 		}
 		#endregion
