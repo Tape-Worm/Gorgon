@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using Gorgon.Configuration;
+using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.Math;
 
 namespace Gorgon.Graphics.Imaging.Codecs
@@ -213,12 +214,12 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		{
 			Options = new GorgonOptionBag(new []
 			                              {
-				                              GorgonOption.CreateOption(nameof(Dithering), ImageDithering.None),
-											  GorgonOption.CreateOption(nameof(SaveAllFrames), true),
-											  GorgonOption.CreateDoubleOption(nameof(DpiX), 72.0),
-											  GorgonOption.CreateDoubleOption(nameof(DpiY), 72.0),
+				                              GorgonOption.CreateOption(nameof(Dithering), ImageDithering.None, Resources.GORIMG_OPT_WIC_DITHERING),
+											  GorgonOption.CreateOption(nameof(SaveAllFrames), true, Resources.GORIMG_OPT_SAVE_ALL_FRAMES),
+											  GorgonOption.CreateDoubleOption(nameof(DpiX), 72.0, Resources.GORIMG_OPT_WIC_DPIX),
+											  GorgonOption.CreateDoubleOption(nameof(DpiY), 72.0, Resources.GORIMG_OPT_WIC_DPIY),
 											  GorgonOption.CreateOption(nameof(Palette), new List<GorgonColor>()),
-											  GorgonOption.CreateSingleOption(nameof(AlphaThreshold), 1.0f, 0.0f, 1.0f),
+											  GorgonOption.CreateSingleOption(nameof(AlphaThreshold), 1.0f, Resources.GORIMG_OPT_GIF_ALPHA_THRESHOLD, 0.0f, 1.0f),
 											  GorgonOption.CreateOption(nameof(FrameDelays), new List<int>())
 			                              });
 		}

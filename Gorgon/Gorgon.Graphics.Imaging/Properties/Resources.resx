@@ -190,6 +190,36 @@ This could lead to a buffer overrun.</value>
   <data name="GORIMG_ERR_TGA_TYPE_NOT_SUPPORTED" xml:space="preserve">
     <value>This codec does not support TGA files encoded using 2 or 4 way interleaving, or color mapped data.</value>
   </data>
+  <data name="GORIMG_OPT_GIF_ALPHA_THRESHOLD" xml:space="preserve">
+    <value>Alpha value threshold for transparency</value>
+  </data>
+  <data name="GORIMG_OPT_JPG_QUALITY" xml:space="preserve">
+    <value>Image quality</value>
+  </data>
+  <data name="GORIMG_OPT_PNG_FILTERING" xml:space="preserve">
+    <value>Scanline fitering type</value>
+  </data>
+  <data name="GORIMG_OPT_PNG_INTERLACED" xml:space="preserve">
+    <value>Use interlacing</value>
+  </data>
+  <data name="GORIMG_OPT_READ_ALL_FRAMES" xml:space="preserve">
+    <value>Read all frames as image array</value>
+  </data>
+  <data name="GORIMG_OPT_SAVE_ALL_FRAMES" xml:space="preserve">
+    <value>Save all frames as image array</value>
+  </data>
+  <data name="GORIMG_OPT_TGA_SETZEROALPHA_OPAQUE" xml:space="preserve">
+    <value>Force opaque when image is transparent</value>
+  </data>
+  <data name="GORIMG_OPT_WIC_DITHERING" xml:space="preserve">
+    <value>Dithering type</value>
+  </data>
+  <data name="GORIMG_OPT_WIC_DPIX" xml:space="preserve">
+    <value>Horizontal DPI</value>
+  </data>
+  <data name="GORIMG_OPT_WIC_DPIY" xml:space="preserve">
+    <value>Vertical DPI</value>
+  </data>
   <data name="GORIMG_TOSTR_FMTPITCH" xml:space="preserve">
     <value>Image pitch information.  Width={0} bytes, Size={1} bytes.</value>
   </data>

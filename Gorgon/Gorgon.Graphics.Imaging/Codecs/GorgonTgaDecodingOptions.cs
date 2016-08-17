@@ -25,6 +25,7 @@
 #endregion
 
 using Gorgon.Configuration;
+using Gorgon.Graphics.Imaging.Properties;
 
 namespace Gorgon.Graphics.Imaging.Codecs
 {
@@ -98,7 +99,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		{
 			Options = new GorgonOptionBag(new []
 			                              {
-				                              GorgonOption.CreateOption(nameof(SetZeroAlphaAsOpaque), true)
+				                              GorgonOption.CreateOption(nameof(SetZeroAlphaAsOpaque), true, Resources.GORIMG_OPT_TGA_SETZEROALPHA_OPAQUE)
 			                              });
 		}
 		#endregion
