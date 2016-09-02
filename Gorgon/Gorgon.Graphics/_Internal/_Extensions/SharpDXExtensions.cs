@@ -241,36 +241,25 @@ namespace Gorgon.Graphics
 		}
 
 		/// <summary>
-		/// FUnction to convert a Gorgon blend state info to a D3D blend state 1 desc.
+		/// FUnction to convert a Gorgon render target blend state info to a D3D render target blend state 1 desc.
 		/// </summary>
 		/// <param name="state">The state convert.</param>
 		/// <returns>A new D3D blend state 1 description. </returns>
-		public static D3D11.BlendStateDescription1 ToBlendStateDesc1(this IGorgonBlendStateInfo state)
+		public static D3D11.RenderTargetBlendDescription1 ToRenderTargetBlendStateDesc1(this IGorgonRenderTargetBlendStateInfo state)
 		{
-			var result = new D3D11.BlendStateDescription1
-			             {
-				             AlphaToCoverageEnable = state.IsAlphaToCoverageEnabled,
-				             IndependentBlendEnable = state.IsIndependentBlendingEnabled,
-			             };
-			
-			for (int i = 0; i < state.RenderTargets.Count; ++i)
-			{
-				result.RenderTarget[i] = new D3D11.RenderTargetBlendDescription1
-				                         {
-					                         LogicOperation = state.RenderTargets[i].LogicOperation,
-					                         SourceAlphaBlend = state.RenderTargets[i].SourceAlphaBlend,
-					                         AlphaBlendOperation = state.RenderTargets[i].AlphaBlendOperation,
-					                         SourceBlend = state.RenderTargets[i].SourceColorBlend,
-					                         DestinationAlphaBlend = state.RenderTargets[i].DestinationAlphaBlend,
-					                         BlendOperation = state.RenderTargets[i].ColorBlendOperation,
-					                         DestinationBlend = state.RenderTargets[i].DestinationColorBlend,
-					                         IsBlendEnabled = state.RenderTargets[i].IsBlendingEnabled,
-					                         IsLogicOperationEnabled = state.RenderTargets[i].IsLogicalOperationEnabled,
-					                         RenderTargetWriteMask = state.RenderTargets[i].WriteMask
-				                         };
-			}
-
-			return result;
+			return new D3D11.RenderTargetBlendDescription1
+			       {
+				       LogicOperation = state.LogicOperation,
+				       SourceAlphaBlend = state.SourceAlphaBlend,
+				       AlphaBlendOperation = state.AlphaBlendOperation,
+				       SourceBlend = state.SourceColorBlend,
+				       DestinationAlphaBlend = state.DestinationAlphaBlend,
+				       BlendOperation = state.ColorBlendOperation,
+				       DestinationBlend = state.DestinationColorBlend,
+				       IsBlendEnabled = state.IsBlendingEnabled,
+				       IsLogicOperationEnabled = state.IsLogicalOperationEnabled,
+				       RenderTargetWriteMask = state.WriteMask
+			       };
 		}
 
 		/// <summary>

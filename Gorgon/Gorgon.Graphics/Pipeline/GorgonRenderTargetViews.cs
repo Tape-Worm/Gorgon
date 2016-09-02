@@ -35,10 +35,10 @@ using D3D11 = SharpDX.Direct3D11;
 namespace Gorgon.Graphics
 {
 	/// <summary>
-	/// A list of render target states to apply to the pipeline.
+	/// A list of <see cref="GorgonRenderTargetView"/> objects, and optionally, a <see cref="GorgonDepthStencilView"/>, to apply to the pipeline.
 	/// </summary>
 	public sealed class GorgonRenderTargetViews
-		: IList<GorgonRenderTargetView>, IReadOnlyList<GorgonRenderTargetView>
+		: IList<GorgonRenderTargetView>, IGorgonRenderTargetViews
 	{
 		#region Variables.
 		// Render target views to apply to the pipeline.
@@ -47,8 +47,6 @@ namespace Gorgon.Graphics
 		private readonly D3D11.RenderTargetView[] _actualViews = new D3D11.RenderTargetView[D3D11.OutputMergerStage.SimultaneousRenderTargetCount];
 		// The currently active depth stencil view.
 		private GorgonDepthStencilView _depthStencilView;
-		// The number of slots bound.
-		private int _bindCount;
 		#endregion
 
 		#region Properties.
@@ -58,9 +56,17 @@ namespace Gorgon.Graphics
 		internal D3D11.RenderTargetView[] D3DRenderTargetViews => _actualViews;
 
 		/// <summary>
-		/// Property to return the number of render target views actually bound.
+		/// Property to return the number of binding slots actually used.
 		/// </summary>
-		internal int D3DRenderTargetViewBindCount => _bindCount;
+		/// <remarks>
+		/// This will return the total count from the start to the last <b>non-null</b> entry.  For example, if index 0 is <b>non-null</b>, index 1 is <b>null</b> and index 2 is <b>non-null</b>, then this 
+		/// property would return 3 because the item at index 2 is <b>non-null</b>, regardless of whether index 1 is <b>null</b> or not.
+		/// </remarks>
+		public int BindCount
+		{
+			get;
+			private set;
+		}
 
 		/// <summary>
 		/// Property to return whether there are any target or depth stencil views set in this list.
@@ -123,14 +129,14 @@ namespace Gorgon.Graphics
 
 				_views[index] = value;
 				_actualViews[index] = value?.D3DRenderTargetView;
-				_bindCount = 0;
+				BindCount = 0;
 
 				// Update the last slot that was bound.
 				for (int i = 0; i < _views.Length; ++i)
 				{
 					if (_views[i] != null)
 					{
-						_bindCount = i + 1;
+						BindCount = i + 1;
 					}
 				}
 			}
@@ -156,7 +162,7 @@ namespace Gorgon.Graphics
 		/// </exception>
 		/// <remarks>
 		/// <para>
-		/// When binding a <see cref="DepthStencilView"/>, the resource must be of the same type as other resources for other views in this list. If they do not match, an exception will be thrown.
+		/// When binding a <see cref="GorgonDepthStencilView"/>, the resource must be of the same type as other resources for other views in this list. If they do not match, an exception will be thrown.
 		/// </para>
 		/// <para>
 		/// All <see cref="GorgonDepthStencilView"/> parameters, such as array (or depth) index and array (or depth) count must be the same as the other views in this list. If they are not, an exception 
@@ -320,9 +326,9 @@ namespace Gorgon.Graphics
 				return;
 			}
 
-			_bindCount = views._bindCount;
+			BindCount = views.BindCount;
 
-			for (int i = 0; i < _bindCount; ++i)
+			for (int i = 0; i < BindCount; ++i)
 			{
 				_views[i] = views._views[i];
 				_actualViews[i] = views._actualViews[i];
@@ -339,12 +345,12 @@ namespace Gorgon.Graphics
 		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
 		public static bool Equals(GorgonRenderTargetViews left, GorgonRenderTargetViews right)
 		{
-			if ((left == null) || (right == null) || (left.D3DRenderTargetViewBindCount != right.D3DRenderTargetViewBindCount))
+			if ((left == null) || (right == null) || (left.BindCount != right.BindCount))
 			{
 				return false;
 			}
 
-			for (int i = 0; i < left.D3DRenderTargetViewBindCount; ++i)
+			for (int i = 0; i < left.BindCount; ++i)
 			{
 				if (left[i] != right[i])
 				{
@@ -418,7 +424,7 @@ namespace Gorgon.Graphics
 			}
 
 			DepthStencilView = null;
-			_bindCount = 0;
+			BindCount = 0;
 		}
 
 		/// <summary>Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.</summary>

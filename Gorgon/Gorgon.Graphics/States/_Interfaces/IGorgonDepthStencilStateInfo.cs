@@ -29,7 +29,7 @@ using D3D11 = SharpDX.Direct3D11;
 namespace Gorgon.Graphics
 {
 	/// <summary>
-	/// Information used to create a <see cref="GorgonDepthStencilState"/>.
+	/// Information used to describe a depth/stencil state.
 	/// </summary>
 	/// <remarks>
 	/// <para>
@@ -134,5 +134,12 @@ namespace Gorgon.Graphics
 		{
 			get;
 		}
+
+		/// <summary>
+		/// Function to compare equality for this and another <see cref="IGorgonDepthStencilStateInfo"/>.
+		/// </summary>
+		/// <param name="info">The <see cref="IGorgonDepthStencilStateInfo"/> to compare.</param>
+		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+		bool IsEqual(IGorgonDepthStencilStateInfo info);
 	}
 }

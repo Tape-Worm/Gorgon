@@ -47,16 +47,20 @@ namespace Gorgon.Graphics
 	{
 		#region Variables.
 		// The list of D3D11 vertex buffer bindings.
-		private readonly D3D11.VertexBufferBinding[] _actualBindings = new D3D11.VertexBufferBinding[D3D11.InputAssemblerStage.VertexInputResourceSlotCount];
+		private D3D11.VertexBufferBinding[] _actualBindings = new D3D11.VertexBufferBinding[1];
 		// The list of vertex buffer bindings.
 		private readonly GorgonVertexBufferBinding[] _bindings = new GorgonVertexBufferBinding[D3D11.InputAssemblerStage.VertexInputResourceSlotCount];
 		#endregion
 
 		#region Properties.
 		/// <summary>
-		/// Property to return the number of vertex buffers actually bound.
+		/// Property to return the number of binding slots actually used.
 		/// </summary>
-		internal int D3DVertexBufferBindCount
+		/// <remarks>
+		/// This will return the total count from the start to the last <b>non-null</b> entry.  For example, if index 0 is <b>non-null</b>, index 1 is <b>null</b> and index 2 is <b>non-null</b>, then this 
+		/// property would return 3 because the item at index 2 is <b>non-null</b>, regardless of whether index 1 is <b>null</b> or not.
+		/// </remarks>
+		public int BindCount
 		{
 			get;
 			private set;
@@ -87,8 +91,8 @@ namespace Gorgon.Graphics
 				}
 				
 				_bindings[index] = value;
-				_actualBindings[index] = value.ToVertexBufferBinding();
-				D3DVertexBufferBindCount = 0;
+
+				BindCount = 0;
 				for (int i = 0; i < _bindings.Length; ++i)
 				{
 					binding = _bindings[i];
@@ -102,9 +106,19 @@ namespace Gorgon.Graphics
 
 					if (binding.VertexBuffer != null)
 					{
-						D3DVertexBufferBindCount = i + 1;
+						BindCount = i + 1;
 					}
 				}
+
+				// This creates garbage, but there's not a whole lot we can do because the SetVertexBuffers method on the IA does not allow us to specify a count.
+				// If we had proper array slicing, this wouldn't be a problem as we'd be able to pass back the array as a slice of itself (aliased).
+				// Maybe .NET 4.7/5.0/whatever will bring this in?
+				if (_actualBindings.Length != BindCount)
+				{
+					_actualBindings = new D3D11.VertexBufferBinding[BindCount];
+				}
+
+				_actualBindings[index] = value.ToVertexBufferBinding();
 			}
 		}
 
@@ -130,9 +144,9 @@ namespace Gorgon.Graphics
 				return;
 			}
 
-			D3DVertexBufferBindCount = bindings.D3DVertexBufferBindCount;
+			BindCount = bindings.BindCount;
 
-			for (int i = 0; i < D3DVertexBufferBindCount; ++i)
+			for (int i = 0; i < BindCount; ++i)
 			{
 				_actualBindings[i] = bindings._actualBindings[i];
 				_bindings[i] = bindings._bindings[i];
@@ -147,12 +161,12 @@ namespace Gorgon.Graphics
 		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
 		public static bool Equals(GorgonVertexBufferBindings left, GorgonVertexBufferBindings right)
 		{
-			if ((left == null) || (right == null) || (left.D3DVertexBufferBindCount != right.D3DVertexBufferBindCount))
+			if ((left == null) || (right == null) || (left.BindCount != right.BindCount))
 			{
 				return false;
 			}
 
-			for (int i = 0; i < left.D3DVertexBufferBindCount; ++i)
+			for (int i = 0; i < left.BindCount; ++i)
 			{
 				GorgonVertexBufferBinding rightBuffer = right[i];
 				if (!left[i].Equals(ref rightBuffer))
@@ -181,7 +195,7 @@ namespace Gorgon.Graphics
 				_bindings[i] = default(GorgonVertexBufferBinding);
 			}
 
-			D3DVertexBufferBindCount = 0;
+			BindCount = 0;
 		}
 
 		/// <summary>Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.</summary>

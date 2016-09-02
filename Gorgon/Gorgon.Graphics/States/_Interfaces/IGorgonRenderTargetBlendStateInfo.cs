@@ -187,5 +187,12 @@ namespace Gorgon.Graphics
 		{
 			get;
 		}
+
+		/// <summary>
+		/// Function to compare equality for this and another <see cref="IGorgonRenderTargetBlendStateInfo"/>.
+		/// </summary>
+		/// <param name="info">The <see cref="IGorgonRenderTargetBlendStateInfo"/> to compare.</param>
+		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+		bool IsEqual(IGorgonRenderTargetBlendStateInfo info);
 	}
 }

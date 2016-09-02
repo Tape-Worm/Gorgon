@@ -45,9 +45,13 @@ namespace Gorgon.Graphics
 
 		#region Properties.
 		/// <summary>
-		/// Property to return the number of buffers actually bound.
+		/// Property to return the number of binding slots actually used.
 		/// </summary>
-		internal int D3DConstantBufferBindCount
+		/// <remarks>
+		/// This will return the total count from the start to the last <b>non-null</b> entry.  For example, if index 0 is <b>non-null</b>, index 1 is <b>null</b> and index 2 is <b>non-null</b>, then this 
+		/// property would return 3 because the item at index 2 is <b>non-null</b>, regardless of whether index 1 is <b>null</b> or not.
+		/// </remarks>
+		public int BindCount
 		{
 			get;
 			private set;
@@ -80,13 +84,13 @@ namespace Gorgon.Graphics
 
 				_buffers[index] = value;
 				D3DConstantBuffers[index] = value?.D3DBuffer;
-				D3DConstantBufferBindCount = 0;
+				BindCount = 0;
 
 				for (int i = 0; i < _buffers.Length; ++i)
 				{
 					if (_buffers[i] != null)
 					{
-						D3DConstantBufferBindCount = i + 1;
+						BindCount = i + 1;
 					}
 #if DEBUG
 					if ((value != null) && (_buffers[i] == value) && (i != index))
@@ -121,9 +125,9 @@ namespace Gorgon.Graphics
 				return;
 			}
 
-			D3DConstantBufferBindCount = states.D3DConstantBufferBindCount;
+			BindCount = states.BindCount;
 
-			for (int i = 0; i < D3DConstantBufferBindCount; ++i)
+			for (int i = 0; i < BindCount; ++i)
 			{
 				_buffers[i] = states._buffers[i];
 				D3DConstantBuffers[i] = states.D3DConstantBuffers[i];
@@ -138,12 +142,12 @@ namespace Gorgon.Graphics
 		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
 		public static bool Equals(GorgonConstantBuffers left, GorgonConstantBuffers right)
 		{
-			if ((left == null) || (right == null) || (left.D3DConstantBufferBindCount != right.D3DConstantBufferBindCount))
+			if ((left == null) || (right == null) || (left.BindCount != right.BindCount))
 			{
 				return false;
 			}
 
-			for (int i = 0; i < left.D3DConstantBufferBindCount; ++i)
+			for (int i = 0; i < left.BindCount; ++i)
 			{
 				if (left[i] != right[i])
 				{
@@ -171,7 +175,7 @@ namespace Gorgon.Graphics
 				_buffers[i] = null;
 			}
 
-			D3DConstantBufferBindCount = 0;
+			BindCount = 0;
 		}
 
 		/// <summary>Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.</summary>

@@ -29,7 +29,7 @@ using D3D11 = SharpDX.Direct3D11;
 namespace Gorgon.Graphics
 {
 	/// <summary>
-	/// Information used to describe a rasterization state for a <see cref="GorgonRasterState"/>.
+	/// Information used to describe a rasterization state.
 	/// </summary>
 	/// <remarks>
 	/// <para>
@@ -235,5 +235,12 @@ namespace Gorgon.Graphics
 		{
 			get;
 		}
+
+		/// <summary>
+		/// Function to compare equality for this and another <see cref="IGorgonRasterStateInfo"/>.
+		/// </summary>
+		/// <param name="info">The <see cref="IGorgonRasterStateInfo"/> to compare.</param>
+		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+		bool IsEqual(IGorgonRasterStateInfo info);
 	}
 }

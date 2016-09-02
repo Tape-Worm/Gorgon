@@ -25,12 +25,13 @@
 #endregion
 
 using System;
+using Gorgon.Math;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics
 {
 	/// <summary>
-	/// Information used to describe a rasterization state for a <see cref="GorgonRasterState"/>.
+	/// Information used to describe a rasterization state.
 	/// </summary>
 	public class GorgonRasterStateInfo 
 		: IGorgonRasterStateInfo
@@ -299,6 +300,29 @@ namespace Gorgon.Graphics
 		{
 			get;
 			set;
+		}
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Function to compare equality for this and another <see cref="IGorgonRasterStateInfo"/>.
+		/// </summary>
+		/// <param name="info">The <see cref="IGorgonRasterStateInfo"/> to compare.</param>
+		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+		public bool IsEqual(IGorgonRasterStateInfo info)
+		{
+			return info != null
+			       && IsAntialiasedLineEnabled == info.IsAntialiasedLineEnabled
+			       && CullMode == info.CullMode
+			       && DepthBias == info.DepthBias
+			       && DepthBiasClamp.EqualsEpsilon(info.DepthBiasClamp)
+			       && IsDepthClippingEnabled == info.IsDepthClippingEnabled
+			       && FillMode == info.FillMode
+			       && ForcedUavSampleCount == info.ForcedUavSampleCount
+			       && IsFrontCounterClockwise == info.IsFrontCounterClockwise
+			       && IsMultisamplingEnabled == info.IsMultisamplingEnabled
+			       && IsScissorClippingEnabled == info.IsScissorClippingEnabled
+			       && SlopeScaledDepthBias.EqualsEpsilon(info.SlopeScaledDepthBias);
 		}
 		#endregion
 

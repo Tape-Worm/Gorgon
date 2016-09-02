@@ -25,8 +25,13 @@
 #endregion
 
 using System;
+using System.Diagnostics;
 using System.Linq;
+using Gorgon.Graphics.Properties;
+using Gorgon.Math;
+using SharpDX.Mathematics.Interop;
 using DX = SharpDX;
+using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics
 {
@@ -58,29 +63,21 @@ namespace Gorgon.Graphics
 		/// </summary>
 		Viewport = 0x8,
 		/// <summary>
-		/// The vertex buffers were modified.
-		/// </summary>
-		VertexBuffers = 0x10,
-		/// <summary>
-		/// The index buffer was modified.
-		/// </summary>
-		IndexBuffer = 0x20,
-		/// <summary>
 		/// The rasterizer state was modified.
 		/// </summary>
-		RasterState = 0x40,
+		RasterState = 0x10,
 		/// <summary>
 		/// The scissor rectangles have been updated.
 		/// </summary>
-		ScissorRectangles = 0x80,
+		ScissorRectangles = 0x20,
 		/// <summary>
 		/// The depth/stencil state has been updated.
 		/// </summary>
-		DepthStencilState = 0x100,
+		DepthStencilState = 0x40,
 		/// <summary>
 		/// The blending state has been updated.
 		/// </summary>
-		BlendState = 0x200
+		BlendState = 0x80,
 	}
 
 	/// <summary>
@@ -90,94 +87,81 @@ namespace Gorgon.Graphics
 	{
 		#region Variables.
 		// The default state flags.
-		private static readonly StateChanges _defaultStates;
+		private static readonly PipelineStateChangeFlags _defaultStates;
+		// Information used to create the pipeline state.
+		private readonly GorgonPipelineStateInfo _info;
 		#endregion
 
 		#region Properties.
 		/// <summary>
-		/// Property to set or return the current pixel shader 
+		/// Property to return the Direct 3D 11 input layout.
 		/// </summary>
-		public GorgonPixelShaderState PixelShader
-		{
-			get;
-		}
-
-		/// <summary>
-		/// Property to set or return the current vertex shader 
-		/// </summary>
-		public GorgonVertexShaderState VertexShader
-		{
-			get;
-		}
-
-		/// <summary>
-		/// Property to set or return the current input layout used to define how vertices are interpreted in a vertex shader and/or vertex buffer.
-		/// </summary>
-		public GorgonInputLayout InputLayout
+		internal D3D11.InputLayout D3DInputLayout
 		{
 			get;
 			set;
 		}
 
 		/// <summary>
-		/// Property to set or return the current viewport(s) for this 
+		/// Property to return the Direct 3D 11 raster state.
 		/// </summary>
-		public GorgonViewports Viewports
-		{
-			get;
-		}
-
-		/// <summary>
-		/// Property to set or return the current vertex buffers for this 
-		/// </summary>
-		public GorgonVertexBufferBindings VertexBuffers
-		{
-			get;
-		}
-
-		/// <summary>
-		/// Property to set or return the current index buffer for this 
-		/// </summary>
-		public GorgonIndexBuffer IndexBuffer
+		internal D3D11.RasterizerState1 D3DRasterState
 		{
 			get;
 			set;
 		}
 
 		/// <summary>
-		/// Property to set or return the current rasterizer state.
+		/// Property to return the Direct 3D 11 depth/stencil state.
 		/// </summary>
-		public GorgonRasterState RasterState
+		internal D3D11.DepthStencilState D3DDepthStencilState
 		{
 			get;
 			set;
 		}
 
 		/// <summary>
-		/// Property to set or return the current depth/stencil state.
+		/// Property to return the Direct 3D 11 blend state.
 		/// </summary>
-		public GorgonDepthStencilState DepthStencilState
+		internal D3D11.BlendState1 D3DBlendState
 		{
 			get;
 			set;
 		}
 
 		/// <summary>
-		/// Property to set or return the current blending state.
+		/// Property to return the DirectX scissor rectangles.
 		/// </summary>
-		public GorgonBlendState BlendState
+		internal RawRectangle[] DXScissorRectangles
 		{
 			get;
 			set;
 		}
 
 		/// <summary>
-		/// Property to set or return the current scissor rectangles.
+		/// Property to return the Direct viewports.
 		/// </summary>
-		public GorgonScissorRectangles ScissorRectangles
+		internal RawViewportF[] DXViewports
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to return the ID of the pipeline state.
+		/// </summary>
+		/// <remarks>
+		/// This is used to store a globally cached version of the pipeline state.
+		/// </remarks>
+		public int ID
 		{
 			get;
 		}
+
+		/// <summary>
+		/// Property to return the <see cref="IGorgonPipelineStateInfo"/> used to create this object.
+		/// </summary>
+		public IGorgonPipelineStateInfo Info => _info;
 		#endregion
 
 		#region Methods.
@@ -185,130 +169,115 @@ namespace Gorgon.Graphics
 		/// Function to compare this pipeline state with another pipeline state.
 		/// </summary>
 		/// <param name="state">The state to compare.</param>
-		/// <param name="newState">The changes between the two states.</param>
-		internal void GetChanges(GorgonPipelineState state, out StateChanges newState)
+		/// <returns>The states that have been changed between this state and the other <paramref name="state"/>.</returns>
+		public PipelineStateChangeFlags GetChanges(GorgonPipelineState state)
 		{
 			if (state == null)
 			{
-				newState = _defaultStates;
-				return;
+				return _defaultStates;
 			}
 
 			var pipelineFlags = PipelineStateChangeFlags.None;
 
 			// Get main pipeline changes.
-			if (InputLayout != state.InputLayout)
+			if (D3DInputLayout != state.D3DInputLayout)
 			{
 				pipelineFlags |= PipelineStateChangeFlags.InputLayout;
 			}
 
-			if (!GorgonViewports.Equals(Viewports, state.Viewports))
+			if (_info.Viewports != state._info.Viewports)
 			{
-				pipelineFlags |= PipelineStateChangeFlags.Viewport;
+				int leftCount = _info.Viewports?.Length ?? 0;
+				int rightCount = state._info.Viewports?.Length ?? 0;
+
+				if ((leftCount != rightCount)
+				    || (_info.Viewports == null)
+				    || (state._info.Viewports == null))
+				{
+					pipelineFlags |= PipelineStateChangeFlags.Viewport;
+				}
+				else
+				{
+					for (int i = 0; i < leftCount; ++i)
+					{
+						if (_info.Viewports[i].Equals(ref state._info.Viewports[i]))
+						{
+							continue;
+						}
+
+						pipelineFlags |= PipelineStateChangeFlags.ScissorRectangles;
+						break;
+					}
+				}
 			}
 
-			if (!GorgonScissorRectangles.Equals(ScissorRectangles, state.ScissorRectangles))
+			if (_info.ScissorRectangles != state._info.ScissorRectangles)
 			{
-				pipelineFlags |= PipelineStateChangeFlags.ScissorRectangles;
+				int leftCount = _info.ScissorRectangles?.Length ?? 0;
+				int rightCount = state._info.ScissorRectangles?.Length ?? 0;
+
+				if ((leftCount != rightCount)
+					|| (_info.ScissorRectangles == null)
+					|| (state._info.ScissorRectangles == null))
+				{
+					pipelineFlags |= PipelineStateChangeFlags.ScissorRectangles;
+				}
+				else
+				{
+					for (int i = 0; i < leftCount; ++i)
+					{
+						if (_info.ScissorRectangles[i].Equals(ref state._info.ScissorRectangles[i]))
+						{
+							continue;
+						}
+
+						pipelineFlags |= PipelineStateChangeFlags.ScissorRectangles;
+						break;
+					}
+				}
 			}
 
-			if (!GorgonVertexBufferBindings.Equals(VertexBuffers, state.VertexBuffers))
-			{
-				pipelineFlags |= PipelineStateChangeFlags.VertexBuffers;
-			}
-
-			if (IndexBuffer != state.IndexBuffer)
-			{
-				pipelineFlags |= PipelineStateChangeFlags.IndexBuffer;
-			}
-
-			if (RasterState != state.RasterState)
-			{
-				pipelineFlags |= PipelineStateChangeFlags.RasterState;
-			}
-
-			if (DepthStencilState != state.DepthStencilState)
-			{
-				pipelineFlags |= PipelineStateChangeFlags.DepthStencilState;
-			}
-
-			if (BlendState != state.BlendState)
-			{
-				pipelineFlags |= PipelineStateChangeFlags.BlendState;
-			}
-
-			// Gather shader sub state changes.
-			ShaderStateChangeFlags pixelShaderFlags;
-			ShaderStateChangeFlags vertexShaderFlags;
-
-			if (PixelShader != null)
-			{
-				pixelShaderFlags = PixelShader.GetChanges(state.PixelShader);
-			}
-			else
-			{
-				pixelShaderFlags = ShaderStateChangeFlags.Shader | ShaderStateChangeFlags.Constants | ShaderStateChangeFlags.ShaderResourceViews | ShaderStateChangeFlags.SamplerStates;
-			}
-
-			if (VertexShader != null)
-			{
-				vertexShaderFlags = VertexShader.GetChanges(state.VertexShader);
-			}
-			else
-			{
-				vertexShaderFlags = ShaderStateChangeFlags.Shader | ShaderStateChangeFlags.Constants | ShaderStateChangeFlags.ShaderResourceViews;
-			}
-
-			// If the shaders have sub state changes, then record that the shader info has changed on the pipeline.
-			if (pixelShaderFlags != ShaderStateChangeFlags.None)
+			if (_info.PixelShader != state._info.PixelShader)
 			{
 				pipelineFlags |= PipelineStateChangeFlags.PixelShader;
 			}
 
-			if (vertexShaderFlags != ShaderStateChangeFlags.None)
+			if (_info.VertexShader != state._info.VertexShader)
 			{
 				pipelineFlags |= PipelineStateChangeFlags.VertexShader;
 			}
 
-			newState = new StateChanges
-			           {
-				           PipelineFlags = pipelineFlags,
-				           PixelShaderStateFlags = pixelShaderFlags,
-				           VertexShaderStateFlags = vertexShaderFlags
-			           };
-		}
+			if (D3DRasterState != state.D3DRasterState)
+			{
+				pipelineFlags |= PipelineStateChangeFlags.RasterState;
+			}
 
-		/// <summary>
-		/// Function to reset back to the default states.
-		/// </summary>
-		public void Reset()
-		{
-			InputLayout = null;
-			IndexBuffer = null;
-			RasterState = null;
-			DepthStencilState = null;
-			BlendState = null;
-			
-			ScissorRectangles.Clear();
-			Viewports.Clear();
-			VertexBuffers.Clear();
+			if (D3DDepthStencilState != state.D3DDepthStencilState)
+			{
+				pipelineFlags |= PipelineStateChangeFlags.DepthStencilState;
+			}
 
-			PixelShader.Reset();
-			VertexShader.Reset();
+			if (D3DBlendState != state.D3DBlendState)
+			{
+				pipelineFlags |= PipelineStateChangeFlags.BlendState;
+			}
+
+
+			return pipelineFlags;
 		}
 		#endregion
 
 		#region Constructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonPipelineState"/> class.
+		/// Initializes a new instance of the <see cref="GorgonPipelineState" /> class.
 		/// </summary>
-		public GorgonPipelineState()
+		/// <param name="graphics">The <see cref="GorgonGraphics"/> instance that is used to create the state data.</param>
+		/// <param name="stateInfo">The <see cref="IGorgonPipelineStateInfo"/> used to create this state object.</param>
+		/// <param name="id">The ID of the cache entry for this pipeline state.</param>
+		internal GorgonPipelineState(GorgonGraphics graphics, IGorgonPipelineStateInfo stateInfo, int id)
 		{
-			VertexBuffers = new GorgonVertexBufferBindings();
-			Viewports = new GorgonViewports();
-			ScissorRectangles = new GorgonScissorRectangles();
-			VertexShader = new GorgonVertexShaderState();
-			PixelShader = new GorgonPixelShaderState();
+			_info = new GorgonPipelineStateInfo(stateInfo);
+			ID = id;
 		}
 
 		/// <summary>
@@ -318,26 +287,11 @@ namespace Gorgon.Graphics
 		{
 			// Initialize our default flags for a null current 
 			var pipelineFlags = (PipelineStateChangeFlags[])Enum.GetValues(typeof(PipelineStateChangeFlags));
-			var shaderFlags = (ShaderStateChangeFlags[])Enum.GetValues(typeof(ShaderStateChangeFlags));
-			PipelineStateChangeFlags currentPipelineFlags = PipelineStateChangeFlags.None;
-			ShaderStateChangeFlags currentShaderFlags = ShaderStateChangeFlags.None;
 
 			foreach (PipelineStateChangeFlags flag in pipelineFlags.Where(item => item != PipelineStateChangeFlags.None))
 			{
-				currentPipelineFlags |= flag;
+				_defaultStates |= flag;
 			}
-
-			foreach (ShaderStateChangeFlags flag in shaderFlags.Where(item => item != ShaderStateChangeFlags.None))
-			{
-				currentShaderFlags |= flag;
-			}
-
-			_defaultStates = new StateChanges
-			                 {
-				                 VertexShaderStateFlags = currentShaderFlags,
-				                 PixelShaderStateFlags = currentShaderFlags,
-				                 PipelineFlags = currentPipelineFlags
-			                 };
 		}
 		#endregion
 	}
