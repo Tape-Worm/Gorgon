@@ -65,6 +65,92 @@ namespace Gorgon.Math
 
 		#region Methods.
 		/// <summary>
+		/// Function to perform an approximation of a sine calculation.
+		/// </summary>
+		/// <param name="rads">The angle, in radians.</param>
+		/// <returns>The sine value for the angle.</returns>
+		/// <remarks>
+		/// <para>
+		/// This method will produce an approximation of the value returned by <see cref="Sin(float)"/>. Because this is an approximation, this method should not be used when accuracy is important. 
+		/// </para>
+		/// <para>
+		/// This version of the sine function has better performance than the <see cref="Sin(float)"/> method, and as such, should be used in performance intensive situations.
+		/// </para>
+		/// <para>
+		/// This code was adapted from the <a href="http://www.gamedev.net" target="_blank">GameDev.Net</a> post by L.Spiro found here: 
+		/// <a href="http://www.gamedev.net/topic/681723-faster-sin-and-cos/" target="_blank">http://www.gamedev.net/topic/681723-faster-sin-and-cos/</a>.
+		/// </para>
+		/// </remarks>
+		public static float FastSin(this float rads)
+		{
+			int i32I = (int)(rads * 0.31830988618379067153776752674503f);  // 1 / PI.
+			rads = (rads - (i32I) * 3.1415926535897932384626433832795f);
+
+			float fX2 = rads * rads;
+
+			return ((i32I & 1) == 1)
+				       ? -rads * ((float)(1.00000000000000000000e+00) +
+				                  fX2 * ((float)(-1.66666671633720397949e-01) +
+				                         fX2 * ((float)(8.33333376795053482056e-03) +
+				                                fX2 * ((float)(-1.98412497411482036114e-04) +
+				                                       fX2 * ((float)(2.75565571428160183132e-06) +
+				                                              fX2 * ((float)(-2.50368472620721149724e-08) +
+				                                                     fX2 * ((float)(1.58849267073435385100e-10) +
+				                                                            fX2 * (float)(-6.58925550841432672300e-13))))))))
+				       : rads * ((float)(1.00000000000000000000e+00) +
+				                 fX2 * ((float)(-1.66666671633720397949e-01) +
+				                        fX2 * ((float)(8.33333376795053482056e-03) +
+				                               fX2 * ((float)(-1.98412497411482036114e-04) +
+				                                      fX2 * ((float)(2.75565571428160183132e-06) +
+				                                             fX2 * ((float)(-2.50368472620721149724e-08) +
+				                                                    fX2 * ((float)(1.58849267073435385100e-10) +
+				                                                           fX2 * (float)(-6.58925550841432672300e-13))))))));
+		}
+
+		/// <summary>
+		/// Function to perform an approximation of a cosine calculation.
+		/// </summary>
+		/// <param name="rads">The angle, in radians.</param>
+		/// <returns>The cosine value for the angle.</returns>
+		/// <remarks>
+		/// <para>
+		/// This method will produce an approximation of the value returned by <see cref="Cos(float)"/>. Because this is an approximation, this method should not be used when accuracy is important. 
+		/// </para>
+		/// <para>
+		/// This version of the cosine function has better performance than the <see cref="Cos(float)"/> method, and as such, should be used in performance intensive situations.
+		/// </para>
+		/// <para>
+		/// This code was adapted from the <a href="http://www.gamedev.net" target="_blank">GameDev.Net</a> post by L.Spiro found here: 
+		/// <a href="http://www.gamedev.net/topic/681723-faster-sin-and-cos/" target="_blank">http://www.gamedev.net/topic/681723-faster-sin-and-cos/</a>.
+		/// </para>
+		/// </remarks>
+		public static float FastCos(this float rads)
+		{
+			int i32I = (int)(rads * 0.31830988618379067153776752674503f);  // 1 / PI.
+			rads = (rads - (i32I) * 3.1415926535897932384626433832795f);
+
+			float fX2 = rads * rads;
+
+			return ((i32I & 1) == 1)
+				       ? -(float)(1.00000000000000000000e+00) -
+				         fX2 * ((float)(-5.00000000000000000000e-01) +
+				                fX2 * ((float)(4.16666641831398010254e-02) +
+				                       fX2 * ((float)(-1.38888671062886714935e-03) +
+				                              fX2 * ((float)(2.48006890615215525031e-05) +
+				                                     fX2 * ((float)(-2.75369927749125054106e-07) +
+				                                            fX2 * ((float)(2.06207229069832465029e-09) +
+				                                                   fX2 * (float)(-9.77507137733812925262e-12)))))))
+				       : (float)(1.00000000000000000000e+00) +
+				         fX2 * ((float)(-5.00000000000000000000e-01) +
+				                fX2 * ((float)(4.16666641831398010254e-02) +
+				                       fX2 * ((float)(-1.38888671062886714935e-03) +
+				                              fX2 * ((float)(2.48006890615215525031e-05) +
+				                                     fX2 * ((float)(-2.75369927749125054106e-07) +
+				                                            fX2 * ((float)(2.06207229069832465029e-09) +
+				                                                   fX2 * (float)(-9.77507137733812925262e-12)))))));
+		}
+
+		/// <summary>
 		/// Function to return the maximum value between two <see cref="byte"/> values.
 		/// </summary>
 		/// <param name="value1">The first value to test.</param>

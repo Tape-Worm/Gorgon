@@ -28,6 +28,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Gorgon.Core;
+using Gorgon.Diagnostics;
+using Gorgon.Graphics.Properties;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics
@@ -43,8 +45,6 @@ namespace Gorgon.Graphics
 		private readonly GorgonSamplerState[] _states = new GorgonSamplerState[D3D11.CommonShaderStage.SamplerSlotCount];
 		// Actual direct 3D sampler states to bind.
 		private readonly D3D11.SamplerState[] _actualStates = new D3D11.SamplerState[D3D11.CommonShaderStage.SamplerSlotCount];
-		// The number of slots bound.
-		private int _bindCount;
 		#endregion
 
 		#region Properties.
@@ -54,9 +54,22 @@ namespace Gorgon.Graphics
 		internal D3D11.SamplerState[] D3DSamplerStates => _actualStates;
 
 		/// <summary>
-		/// Property to return the number of sampler states actually bound.
+		/// Property to return the starting index begin binding at.
 		/// </summary>
-		internal int D3DSamplerStateBindCount => _bindCount;
+		public int BindIndex
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the number of binding slots actually used.
+		/// </summary>
+		public int BindCount
+		{
+			get;
+			private set;
+		}
 
 		/// <summary>
 		/// Property to return whether there are any target or depth stencil views set in this list.
@@ -68,19 +81,6 @@ namespace Gorgon.Graphics
 		/// <param name="index">The zero-based index of the element to get or set.</param>
 		/// <exception cref="T:System.ArgumentOutOfRangeException">
 		/// <paramref name="index" /> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1" />.</exception>
-		/// <exception cref="GorgonException">Thrown when the <see cref="GorgonSamplerState"/> being assigned is already assigned in this list.</exception>
-		/// <remarks>
-		/// <para>
-		/// A <see cref="GorgonSamplerState"/> can only be assigned to one slot at a time. If the view is assigned to multiple slots, an exception will be raised.
-		/// </para>
-		/// <para>
-		/// <note type="information">
-		/// <para>
-		/// The exceptions raised when validating a view against other views in this list are only thrown when Gorgon is compiled as DEBUG.
-		/// </para>
-		/// </note>
-		/// </para>
-		/// </remarks>
 		public GorgonSamplerState this[int index]
 		{
 			get
@@ -91,16 +91,8 @@ namespace Gorgon.Graphics
 			{
 				_states[index] = value;
 				_actualStates[index] = value?.D3DState;
-				_bindCount = 0;
-
-				// Update the last slot that was bound.
-				for (int i = 0; i < _states.Length; ++i)
-				{
-					if (_states[i] != null)
-					{
-						_bindCount = i + 1;
-					}
-				}
+				BindIndex = index;
+				BindCount = 1;
 			}
 		}
 
@@ -115,6 +107,51 @@ namespace Gorgon.Graphics
 
 		#region Methods.
 		/// <summary>
+		/// Function to set multiple <see cref="GorgonSamplerState"/> objects at once.
+		/// </summary>
+		/// <param name="startSlot">The starting slot to assign.</param>
+		/// <param name="samplerStates">The sampler states to assign.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="samplerStates"/> parameter is <b>null</b>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="startSlot"/> is less than 0.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="startSlot"/> plus the number of <paramref name="samplerStates"/> exceeds the size of this list.</exception>
+		/// <remarks>
+		/// <para>
+		/// Use this method to set a series of <see cref="GorgonSamplerState"/> items at once. This will yield better performance than attempting to assign a single <see cref="GorgonSamplerState"/> 
+		/// at a time via the indexer.
+		/// </para>
+		/// <para>
+		/// <note type="warning">
+		/// Any exceptions thrown by this method will only be thrown when Gorgon is compiled as <b>DEBUG</b>.
+		/// </note>
+		/// </para>
+		/// </remarks>
+		public void SetMultiple(int startSlot, GorgonSamplerState[] samplerStates)
+		{
+#if DEBUG
+			samplerStates.ValidateObject(nameof(samplerStates));
+
+			if (startSlot < 0)
+			{
+				throw new ArgumentOutOfRangeException(nameof(startSlot));
+			}
+
+			if (startSlot + samplerStates.Length > _states.Length)
+			{
+				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TOO_MANY_ITEMS, startSlot, samplerStates.Length, _states.Length));
+			}
+#endif
+
+			for (int i = startSlot; i < startSlot + samplerStates.Length; ++i)
+			{
+				_states[i] = samplerStates[i];
+				_actualStates[i] = samplerStates[i]?.D3DState;
+			}
+
+			BindIndex = startSlot;
+			BindCount = samplerStates.Length;
+		}
+
+		/// <summary>
 		/// Function to copy the states from another set of states.
 		/// </summary>
 		/// <param name="states">The states to copy.</param>
@@ -126,9 +163,9 @@ namespace Gorgon.Graphics
 				return;
 			}
 
-			_bindCount = states.D3DSamplerStateBindCount;
+			BindCount = states.BindCount;
 
-			for (int i = 0; i < _bindCount; ++i)
+			for (int i = 0; i < BindCount; ++i)
 			{
 				_states[i] = states._states[i];
 				_actualStates[i] = states._actualStates[i];
@@ -143,12 +180,12 @@ namespace Gorgon.Graphics
 		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
 		public static bool Equals(GorgonSamplerStates left, GorgonSamplerStates right)
 		{
-			if ((left == null) || (right == null) || (left.D3DSamplerStateBindCount != right.D3DSamplerStateBindCount))
+			if ((left == null) || (right == null) || (left.BindCount != right.BindCount))
 			{
 				return false;
 			}
 
-			for (int i = 0; i < left.D3DSamplerStateBindCount; ++i)
+			for (int i = 0; i < left.BindCount; ++i)
 			{
 				if (left[i] != right[i])
 				{
@@ -221,7 +258,7 @@ namespace Gorgon.Graphics
 				_actualStates[i] = null;
 			}
 
-			_bindCount = 0;
+			BindCount = 0;
 		}
 
 		/// <summary>Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.</summary>

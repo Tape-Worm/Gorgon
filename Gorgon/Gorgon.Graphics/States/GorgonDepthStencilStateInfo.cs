@@ -30,7 +30,7 @@ using D3D11 = SharpDX.Direct3D11;
 namespace Gorgon.Graphics
 {
 	/// <summary>
-	/// Information used to create a <see cref="GorgonDepthStencilState"/>.
+	/// Information used to describe a depth/stencil state.
 	/// </summary>
 	public class GorgonDepthStencilStateInfo 
 		: IGorgonDepthStencilStateInfo
@@ -201,6 +201,32 @@ namespace Gorgon.Graphics
 		public GorgonStencilOperationInfo BackFaceStencilOp
 		{
 			get;
+		}
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Function to compare equality for this and another <see cref="IGorgonDepthStencilStateInfo"/>.
+		/// </summary>
+		/// <param name="info">The <see cref="IGorgonDepthStencilStateInfo"/> to compare.</param>
+		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+		public bool IsEqual(IGorgonDepthStencilStateInfo info)
+		{
+			return info != null
+			       && BackFaceStencilOp.Comparison == info.BackFaceStencilOp.Comparison
+			       && BackFaceStencilOp.DepthFailOperation == info.BackFaceStencilOp.DepthFailOperation
+			       && BackFaceStencilOp.FailOperation == info.BackFaceStencilOp.FailOperation
+			       && BackFaceStencilOp.PassOperation == info.BackFaceStencilOp.PassOperation
+			       && FrontFaceStencilOp.Comparison == info.FrontFaceStencilOp.Comparison
+			       && FrontFaceStencilOp.DepthFailOperation == info.FrontFaceStencilOp.DepthFailOperation
+			       && FrontFaceStencilOp.FailOperation == info.FrontFaceStencilOp.FailOperation
+			       && FrontFaceStencilOp.PassOperation == info.FrontFaceStencilOp.PassOperation
+			       && DepthComparison == info.DepthComparison
+			       && IsDepthEnabled == info.IsDepthEnabled
+			       && IsDepthWriteEnabled == info.IsDepthWriteEnabled
+			       && IsStencilEnabled == info.IsStencilEnabled
+			       && StencilReadMask == info.StencilReadMask
+			       && StencilWriteMask == info.StencilWriteMask;
 		}
 		#endregion
 

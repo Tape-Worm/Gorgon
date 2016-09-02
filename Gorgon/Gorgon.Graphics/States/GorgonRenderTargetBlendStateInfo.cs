@@ -35,6 +35,38 @@ namespace Gorgon.Graphics
 	public class GorgonRenderTargetBlendStateInfo 
 		: IGorgonRenderTargetBlendStateInfo
 	{
+		#region Variables.
+		/// <summary>
+		/// The default blending state.
+		/// </summary>
+		public static readonly IGorgonRenderTargetBlendStateInfo Default = new GorgonRenderTargetBlendStateInfo();
+
+		/// <summary>
+		/// Render target 0 blending enabled, blending operations don't allow for blending.
+		/// </summary>
+		public static readonly IGorgonRenderTargetBlendStateInfo NoBlending;
+
+		/// <summary>
+		/// Modulated blending on render target 0.
+		/// </summary>
+		public static readonly IGorgonRenderTargetBlendStateInfo Modulated;
+
+		/// <summary>
+		/// Additive blending on render target 0.
+		/// </summary>
+		public static readonly IGorgonRenderTargetBlendStateInfo Additive;
+
+		/// <summary>
+		/// Premultiplied alpha blending on render target 0.
+		/// </summary>
+		public static readonly IGorgonRenderTargetBlendStateInfo Premultiplied;
+
+		/// <summary>
+		/// Inverse color blending on render target 0.
+		/// </summary>
+		public static readonly IGorgonRenderTargetBlendStateInfo Inverted;
+		#endregion
+
 		#region Properties.
 		/// <summary>
 		/// Property to set or return whether blending should be enabled for this render target.
@@ -198,13 +230,35 @@ namespace Gorgon.Graphics
 		}
 		#endregion
 
+		#region Methods.
+		/// <summary>
+		/// Function to compare equality for this and another <see cref="IGorgonRenderTargetBlendStateInfo"/>.
+		/// </summary>
+		/// <param name="info">The <see cref="IGorgonRenderTargetBlendStateInfo"/> to compare.</param>
+		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+		public bool IsEqual(IGorgonRenderTargetBlendStateInfo info)
+		{
+			return info != null
+			       && WriteMask == info.WriteMask
+			       && AlphaBlendOperation == info.AlphaBlendOperation
+			       && ColorBlendOperation == info.ColorBlendOperation
+			       && DestinationAlphaBlend == info.DestinationAlphaBlend
+			       && DestinationColorBlend == info.DestinationColorBlend
+			       && IsBlendingEnabled == info.IsBlendingEnabled
+			       && IsLogicalOperationEnabled == info.IsLogicalOperationEnabled
+			       && LogicOperation == info.LogicOperation
+			       && SourceAlphaBlend == info.SourceAlphaBlend
+			       && SourceColorBlend == info.SourceColorBlend;
+		}
+		#endregion
+
 		#region Constructor/Finalizer.
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonRenderTargetBlendStateInfo"/> class.
 		/// </summary>
 		/// <param name="info">A <see cref="IGorgonRenderTargetBlendStateInfo"/> to copy settings from.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
-		internal GorgonRenderTargetBlendStateInfo(IGorgonRenderTargetBlendStateInfo info)
+		public GorgonRenderTargetBlendStateInfo(IGorgonRenderTargetBlendStateInfo info)
 		{
 			if (info == null)
 			{
@@ -226,13 +280,55 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonRenderTargetBlendStateInfo"/> class.
 		/// </summary>
-		internal GorgonRenderTargetBlendStateInfo()
+		public GorgonRenderTargetBlendStateInfo()
 		{
 			LogicOperation = D3D11.LogicOperation.Noop;
 			SourceAlphaBlend = SourceColorBlend = D3D11.BlendOption.One;
 			DestinationAlphaBlend = DestinationColorBlend = D3D11.BlendOption.Zero;
 			AlphaBlendOperation = ColorBlendOperation = D3D11.BlendOperation.Add;
 			WriteMask = D3D11.ColorWriteMaskFlags.All;
+		}
+
+		/// <summary>
+		/// Initializes static members of the <see cref="GorgonRenderTargetBlendStateInfo"/> class.
+		/// </summary>
+		static GorgonRenderTargetBlendStateInfo()
+		{
+			// No blending.
+			NoBlending = new GorgonRenderTargetBlendStateInfo();
+
+			// Modulated blending.
+			Modulated = new GorgonRenderTargetBlendStateInfo
+			{
+				IsBlendingEnabled = true,
+				SourceColorBlend = D3D11.BlendOption.SourceAlpha,
+				DestinationColorBlend = D3D11.BlendOption.InverseSourceAlpha
+			};
+
+
+			// Additive
+			Additive = new GorgonRenderTargetBlendStateInfo
+			{
+				IsBlendingEnabled = true,
+				SourceColorBlend = D3D11.BlendOption.SourceAlpha,
+				DestinationColorBlend = D3D11.BlendOption.One
+			};
+
+			// Premultiplied
+			Premultiplied = new GorgonRenderTargetBlendStateInfo
+			{
+				IsBlendingEnabled = true,
+				SourceColorBlend = D3D11.BlendOption.One,
+				DestinationColorBlend = D3D11.BlendOption.InverseSourceAlpha
+			};
+
+			// Inverted
+			Inverted = new GorgonRenderTargetBlendStateInfo
+			{
+				IsBlendingEnabled = true,
+				SourceColorBlend = D3D11.BlendOption.InverseDestinationColor,
+				DestinationColorBlend = D3D11.BlendOption.InverseSourceColor
+			};
 		}
 		#endregion
 	}

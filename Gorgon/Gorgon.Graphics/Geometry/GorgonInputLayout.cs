@@ -53,7 +53,7 @@ namespace Gorgon.Graphics
 	/// </para>
 	/// </remarks>
 	public sealed class GorgonInputLayout
-		: IGorgonNamedObject, IDisposable
+		: IGorgonNamedObject
 	{
 		#region Variables.
 		// Type mapping for types.
@@ -103,14 +103,14 @@ namespace Gorgon.Graphics
 		// Elements used to build the layout.
 		private readonly GorgonInputElement[] _elements;
 		// List of slot sizes.
-		private IDictionary<int, int> _slotSizes;
+		private Dictionary<int, int> _slotSizes;
 		#endregion
 
 		#region Properties.
 		/// <summary>
 		/// Property to return the Direct3D input layout.
 		/// </summary>
-		internal D3D11.InputLayout D3DLayout
+		internal D3D11.InputElement[] D3DInputElements
 		{
 			get;
 			private set;
@@ -165,19 +165,12 @@ namespace Gorgon.Graphics
 		/// </summary>
 		private void BuildD3DLayout()
 		{
-			D3DLayout?.Dispose();
-
-			var elements = new D3D11.InputElement[_elements.Length];
+			D3DInputElements = new D3D11.InputElement[_elements.Length];
 
 			for (int i = 0; i < _elements.Length; ++i)
 			{
-				elements[i] = _elements[i].D3DInputElement;
+				D3DInputElements[i] = _elements[i].D3DInputElement;
 			}
-
-			D3DLayout = new D3D11.InputLayout(VideoDevice.D3DDevice(), Shader.D3DByteCode, elements)
-			{
-				DebugName = Name + " D3D11InputLayout"
-			};
 		}
 
 		/// <summary>
@@ -460,11 +453,26 @@ namespace Gorgon.Graphics
 		}
 
 		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+		/// Function to compare this <see cref="GorgonInputLayout"/> with another to determine equality.
 		/// </summary>
-		public void Dispose()
+		/// <param name="layout">The <see cref="GorgonInputLayout"/> to compare with.</param>
+		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+		public bool IsEqual(GorgonInputLayout layout)
 		{
-			D3DLayout?.Dispose();
+			if (layout._elements.Length != _elements.Length)
+			{
+				return false;
+			}
+			
+			for (int i = 0; i < _elements.Length; ++i)
+			{
+				if (!GorgonInputElement.Equals(ref _elements[i], ref layout._elements[i]))
+				{
+					return false;
+				}
+			}
+
+			return true;
 		}
 		#endregion
 

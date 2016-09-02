@@ -533,6 +533,15 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The input layout requires a valid vertex shader..
+        /// </summary>
+        internal static string GORGFX_ERR_INPUT_LAYOUT_NEEDS_SHADER {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_INPUT_LAYOUT_NEEDS_SHADER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The Gorgon Graphics interface requires Windows 7 or greater..
         /// </summary>
         internal static string GORGFX_ERR_INVALID_OS {
@@ -1114,6 +1123,15 @@ namespace Gorgon.Graphics.Properties {
         internal static string GORGFX_ERR_TEXTURE_WIDTH_INVALID {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_TEXTURE_WIDTH_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The starting index ({0}) and the number of items ({1}) are larger than the destination size of {2}..
+        /// </summary>
+        internal static string GORGFX_ERR_TOO_MANY_ITEMS {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TOO_MANY_ITEMS", resourceCulture);
             }
         }
         

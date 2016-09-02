@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System;
 using D3D = SharpDX.Direct3D;
 
 namespace Gorgon.Graphics
@@ -37,14 +38,14 @@ namespace Gorgon.Graphics
 		/// Property to return the type of primitives to draw.
 		/// </summary>
 		public D3D.PrimitiveTopology PrimitiveTopology => D3D.PrimitiveTopology.TriangleList;
-		
+
 		/// <summary>
-		/// Property to set or return the current render target views and depth/stencil view for this draw call.
+		/// Property to set or return resources to use in the draw call.
 		/// </summary>
-		public GorgonRenderTargetViews RenderTargets
+		public GorgonPipelineResources Resources
 		{
 			get;
-		} = new GorgonRenderTargetViews();
+		} = new GorgonPipelineResources();
 
 		/// <summary>
 		/// Property to set or return the current pipeline state.
@@ -55,17 +56,18 @@ namespace Gorgon.Graphics
 		public GorgonPipelineState State
 		{
 			get;
-		} = new GorgonPipelineState();
+			set;
+		}
 
 		/// <summary>
 		/// Property to set or return the starting index to of the buffer to draw.
 		/// </summary>
 		public int IndexStart
-
 		{
 			get;
 			set;
 		}
+
 		/// <summary>
 		/// Property to set or return the number of indices used to draw.
 		/// </summary>
@@ -82,6 +84,71 @@ namespace Gorgon.Graphics
 		{
 			get;
 			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the factor used to modulate the pixel shader, render target or both.
+		/// </summary>
+		/// <remarks>
+		/// To use this value, ensure that the blend state was creating using <c>Factor</c> operation.
+		/// </remarks>
+		public GorgonColor BlendFactor
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the mask used to define which samples get updated in the active render targets.
+		/// </summary>
+		public int BlendSampleMask
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the depth/stencil reference value used when performing a depth/stencil test.
+		/// </summary>
+		public int DepthStencilReference
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonDrawIndexedCall"/> class.
+		/// </summary>
+		/// <param name="drawCall">The draw call to copy data from.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawCall"/> parameter is <b>null</b>.</exception>
+		public GorgonDrawIndexedCall(GorgonDrawIndexedCall drawCall)
+		{
+			if (drawCall == null)
+			{
+				throw new ArgumentNullException(nameof(drawCall));
+			}
+
+			BaseVertexIndex = drawCall.BaseVertexIndex;
+			IndexStart = drawCall.IndexStart;
+			IndexCount = drawCall.IndexCount;
+			BlendFactor = drawCall.BlendFactor;
+			BlendSampleMask = drawCall.BlendSampleMask;
+			DepthStencilReference = drawCall.DepthStencilReference;
+			// Not sure about this?  Would a deep copy be better?
+			State = drawCall.State;
+			Resources = drawCall.Resources;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonDrawIndexedCall"/> class.
+		/// </summary>
+		public GorgonDrawIndexedCall()
+		{
+			unchecked
+			{
+				BlendSampleMask = (int)(0xffffffff);
+				BlendFactor = new GorgonColor(1, 1, 1, 1);
+			}
 		}
 	}
 }

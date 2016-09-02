@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Gorgon.Core;
+using Gorgon.Diagnostics;
 using Gorgon.Graphics.Properties;
 using D3D11 = SharpDX.Direct3D11;
 
@@ -46,8 +47,6 @@ namespace Gorgon.Graphics
 		private readonly GorgonShaderResourceView[] _views = new GorgonShaderResourceView[D3D11.CommonShaderStage.InputResourceSlotCount];
 		// Actual direct 3D shader resource views to bind.
 		private readonly D3D11.ShaderResourceView[] _actualViews = new D3D11.ShaderResourceView[D3D11.CommonShaderStage.InputResourceSlotCount];
-		// The number of slots bound.
-		private int _bindCount;
 		#endregion
 
 		#region Properties.
@@ -57,9 +56,22 @@ namespace Gorgon.Graphics
 		internal D3D11.ShaderResourceView[] D3DShaderResourceViews => _actualViews;
 
 		/// <summary>
-		/// Property to return the number of shader resource views actually bound.
+		/// Property to return the starting index begin binding at.
 		/// </summary>
-		internal int D3DShaderResourceViewBindCount => _bindCount;
+		public int BindIndex
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to return the number of binding slots actually used.
+		/// </summary>
+		public int BindCount
+		{
+			get;
+			private set;
+		}
 
 		/// <summary>
 		/// Property to return whether there are any target or depth stencil views set in this list.
@@ -94,21 +106,12 @@ namespace Gorgon.Graphics
 			{
 #if DEBUG
 				ValidateTextureShaderViews(value as GorgonTextureShaderView, index);
-				//ValidateBufferShaderViews(value as GorgonBufferShaderView, index);
 #endif
 
 				_views[index] = value;
 				_actualViews[index] = value?.D3DView;
-				_bindCount = 0;
-
-				// Update the last slot that was bound.
-				for (int i = 0; i < _views.Length; ++i)
-				{
-					if (_views[i] != null)
-					{
-						_bindCount = i + 1;
-					}
-				}
+				BindIndex = index;
+				BindCount = 1;
 			}
 		}
 
@@ -166,6 +169,54 @@ namespace Gorgon.Graphics
 		}
 
 		/// <summary>
+		/// Function to set multiple <see cref="GorgonTextureShaderView"/> objects at once.
+		/// </summary>
+		/// <param name="startSlot">The starting slot to assign.</param>
+		/// <param name="views">The views to assign.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="views"/> parameter is <b>null</b>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="startSlot"/> is less than 0.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="startSlot"/> plus the number of <paramref name="views"/> exceeds the size of this list.</exception>
+		/// <remarks>
+		/// <para>
+		/// Use this method to set a series of <see cref="GorgonTextureShaderView"/> items at once. This will yield better performance than attempting to assign a single <see cref="GorgonTextureShaderView"/> 
+		/// at a time via the indexer.
+		/// </para>
+		/// <para>
+		/// <note type="warning">
+		/// Any exceptions thrown by this method will only be thrown when Gorgon is compiled as <b>DEBUG</b>.
+		/// </note>
+		/// </para>
+		/// </remarks>
+		public void SetMultiple(int startSlot, GorgonTextureShaderView[] views)
+		{
+#if DEBUG
+			views.ValidateObject(nameof(views));
+
+			if (startSlot < 0)
+			{
+				throw new ArgumentOutOfRangeException(nameof(startSlot));
+			}
+
+			if (startSlot + views.Length > _views.Length)
+			{
+				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TOO_MANY_ITEMS, startSlot, views.Length, _views.Length));
+			}
+#endif
+
+			for (int i = startSlot; i < startSlot + views.Length; ++i)
+			{
+#if DEBUG
+				ValidateTextureShaderViews(views[i], i);
+#endif
+				_views[i] = views[i];
+				_actualViews[i] = views[i]?.D3DView;
+			}
+
+			BindIndex = startSlot;
+			BindCount = views.Length;
+		}
+
+		/// <summary>
 		/// Function to copy the states from another set of states.
 		/// </summary>
 		/// <param name="states">The states to copy.</param>
@@ -177,9 +228,9 @@ namespace Gorgon.Graphics
 				return;
 			}
 
-			_bindCount = states._bindCount;
+			BindCount = states.BindCount;
 
-			for (int i = 0; i < _bindCount; ++i)
+			for (int i = 0; i < BindCount; ++i)
 			{
 				_views[i] = states._views[i];
 				_actualViews[i] = states._actualViews[i];
@@ -194,12 +245,12 @@ namespace Gorgon.Graphics
 		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
 		public static bool Equals(GorgonShaderResourceViews left, GorgonShaderResourceViews right)
 		{
-			if ((left == null) || (right == null) || (left.D3DShaderResourceViewBindCount != right.D3DShaderResourceViewBindCount))
+			if ((left == null) || (right == null) || (left.BindCount != right.BindCount))
 			{
 				return false;
 			}
 
-			for (int i = 0; i < left.D3DShaderResourceViewBindCount; ++i)
+			for (int i = 0; i < left.BindCount; ++i)
 			{
 				if (left[i] != right[i])
 				{
@@ -272,7 +323,7 @@ namespace Gorgon.Graphics
 				_actualViews[i] = null;
 			}
 
-			_bindCount = 0;
+			BindCount = 0;
 		}
 
 		/// <summary>Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.</summary>

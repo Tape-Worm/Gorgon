@@ -874,4 +874,10 @@ Errors:
   <data name="GORGFX_ERR_TYPE_NOT_VALID_FOR_NATIVE" xml:space="preserve">
     <value>The type '{0}' has complex marshalling and cannot be used. </value>
   </data>
+  <data name="GORGFX_ERR_INPUT_LAYOUT_NEEDS_SHADER" xml:space="preserve">
+    <value>The input layout requires a valid vertex shader.</value>
+  </data>
+  <data name="GORGFX_ERR_TOO_MANY_ITEMS" xml:space="preserve">
+    <value>The starting index ({0}) and the number of items ({1}) are larger than the destination size of {2}.</value>
+  </data>
 </root>
