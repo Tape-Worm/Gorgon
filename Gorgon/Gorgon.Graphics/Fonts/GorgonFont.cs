@@ -193,7 +193,7 @@ namespace Gorgon.Graphics
 		/// <param name="bitmap">Bitmap to copy.</param>
 		/// <param name="image">Image to receive the data.</param>
 		/// <param name="arrayIndex">The index in the bitmap array to copy from.</param>
-		private static unsafe void CopyBitmap(Drawing.Bitmap bitmap, GorgonImage image, int arrayIndex)
+		private unsafe void CopyBitmap(Drawing.Bitmap bitmap, GorgonImage image, int arrayIndex)
 		{
 			BitmapData sourcePixels = bitmap.LockBits(new Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
 
@@ -216,8 +216,12 @@ namespace Gorgon.Graphics
 						// Thus, R is the lowest byte, and A is the highest: A(24), B(16), G(8), R(0).
 						var color = new GorgonColor(*offset);
 
-						// Convert to premultiplied.
-						color = new GorgonColor(color.Red * color.Alpha, color.Green * color.Alpha, color.Blue * color.Alpha, color.Alpha);
+						if (Info.UsePremultipliedTextures)
+						{
+							// Convert to premultiplied.
+							color = new GorgonColor(color.Red * color.Alpha, color.Green * color.Alpha, color.Blue * color.Alpha, color.Alpha);
+						}
+
 						image.Buffers[0, arrayIndex].Data.Write(destOffset, color.ToABGR());
 						offset++;
 						destOffset += image.FormatInfo.SizeInBytes;
@@ -758,6 +762,8 @@ namespace Gorgon.Graphics
 				writer.Write(Info.PackingSpacing);
 				writer.Write(Info.TextureWidth);
 				writer.Write(Info.TextureHeight);
+				writer.Write(Info.UsePremultipliedTextures);
+				writer.Write(Info.UseKerningPairs);
 				fontFile.CloseChunk();
 
 				writer = fontFile.OpenChunk(FontHeightChunk);

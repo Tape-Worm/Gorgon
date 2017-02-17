@@ -249,6 +249,26 @@ namespace Gorgon.Graphics
 		}
 
 		/// <summary>
+		/// Property to return whether premultiplied textures are used when generating the glyphs for the font.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// This defines whether the textures used to store the glyphs of the font will use premultiplied alpha. Premultiplied alpha is used to give a more accurate representation of blending between 
+		/// colors, and is accomplished by multiplying the RGB values by the Alpha component of a pixel.
+		/// </para>
+		/// <para>
+		/// If this value is <b>true</b>, then applications should use the <see cref="GorgonBlendStateInfo.Premultiplied"/> blending state when rendering text.
+		/// </para>
+		/// <para>
+		/// The default value is <b>false</b>.
+		/// </para>
+		/// </remarks>
+		bool UsePremultipliedTextures
+		{
+			get;
+		}
+
+		/// <summary>
 		/// Property to return a <see cref="GorgonGlyphBrush"/> to use for special effects on the glyphs for the font.
 		/// </summary>
 		/// <remarks>
