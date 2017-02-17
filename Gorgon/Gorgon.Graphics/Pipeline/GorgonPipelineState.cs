@@ -25,12 +25,8 @@
 #endregion
 
 using System;
-using System.Diagnostics;
 using System.Linq;
-using Gorgon.Graphics.Properties;
-using Gorgon.Math;
 using SharpDX.Mathematics.Interop;
-using DX = SharpDX;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics
@@ -47,37 +43,25 @@ namespace Gorgon.Graphics
 		/// </summary>
 		None = 0,
 		/// <summary>
-		/// The input layout has been modified.
-		/// </summary>
-		InputLayout = 0x1,
-		/// <summary>
 		/// The vertex shader state has been modified.
 		/// </summary>
-		VertexShader = 0x2,
+		VertexShader = 0x1,
 		/// <summary>
 		/// The pixel shader state has been modified.
 		/// </summary>
-		PixelShader = 0x4,
-		/// <summary>
-		/// The view port was modified.
-		/// </summary>
-		Viewport = 0x8,
+		PixelShader = 0x2,
 		/// <summary>
 		/// The rasterizer state was modified.
 		/// </summary>
-		RasterState = 0x10,
-		/// <summary>
-		/// The scissor rectangles have been updated.
-		/// </summary>
-		ScissorRectangles = 0x20,
+		RasterState = 0x4,
 		/// <summary>
 		/// The depth/stencil state has been updated.
 		/// </summary>
-		DepthStencilState = 0x40,
+		DepthStencilState = 0x8,
 		/// <summary>
 		/// The blending state has been updated.
 		/// </summary>
-		BlendState = 0x80,
+		BlendState = 0x10
 	}
 
 	/// <summary>
@@ -93,15 +77,6 @@ namespace Gorgon.Graphics
 		#endregion
 
 		#region Properties.
-		/// <summary>
-		/// Property to return the Direct 3D 11 input layout.
-		/// </summary>
-		internal D3D11.InputLayout D3DInputLayout
-		{
-			get;
-			set;
-		}
-
 		/// <summary>
 		/// Property to return the Direct 3D 11 raster state.
 		/// </summary>
@@ -179,64 +154,6 @@ namespace Gorgon.Graphics
 
 			var pipelineFlags = PipelineStateChangeFlags.None;
 
-			// Get main pipeline changes.
-			if (D3DInputLayout != state.D3DInputLayout)
-			{
-				pipelineFlags |= PipelineStateChangeFlags.InputLayout;
-			}
-
-			if (_info.Viewports != state._info.Viewports)
-			{
-				int leftCount = _info.Viewports?.Length ?? 0;
-				int rightCount = state._info.Viewports?.Length ?? 0;
-
-				if ((leftCount != rightCount)
-				    || (_info.Viewports == null)
-				    || (state._info.Viewports == null))
-				{
-					pipelineFlags |= PipelineStateChangeFlags.Viewport;
-				}
-				else
-				{
-					for (int i = 0; i < leftCount; ++i)
-					{
-						if (_info.Viewports[i].Equals(ref state._info.Viewports[i]))
-						{
-							continue;
-						}
-
-						pipelineFlags |= PipelineStateChangeFlags.ScissorRectangles;
-						break;
-					}
-				}
-			}
-
-			if (_info.ScissorRectangles != state._info.ScissorRectangles)
-			{
-				int leftCount = _info.ScissorRectangles?.Length ?? 0;
-				int rightCount = state._info.ScissorRectangles?.Length ?? 0;
-
-				if ((leftCount != rightCount)
-					|| (_info.ScissorRectangles == null)
-					|| (state._info.ScissorRectangles == null))
-				{
-					pipelineFlags |= PipelineStateChangeFlags.ScissorRectangles;
-				}
-				else
-				{
-					for (int i = 0; i < leftCount; ++i)
-					{
-						if (_info.ScissorRectangles[i].Equals(ref state._info.ScissorRectangles[i]))
-						{
-							continue;
-						}
-
-						pipelineFlags |= PipelineStateChangeFlags.ScissorRectangles;
-						break;
-					}
-				}
-			}
-
 			if (_info.PixelShader != state._info.PixelShader)
 			{
 				pipelineFlags |= PipelineStateChangeFlags.PixelShader;
@@ -262,7 +179,6 @@ namespace Gorgon.Graphics
 				pipelineFlags |= PipelineStateChangeFlags.BlendState;
 			}
 
-
 			return pipelineFlags;
 		}
 		#endregion
@@ -271,10 +187,9 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonPipelineState" /> class.
 		/// </summary>
-		/// <param name="graphics">The <see cref="GorgonGraphics"/> instance that is used to create the state data.</param>
 		/// <param name="stateInfo">The <see cref="IGorgonPipelineStateInfo"/> used to create this state object.</param>
 		/// <param name="id">The ID of the cache entry for this pipeline state.</param>
-		internal GorgonPipelineState(GorgonGraphics graphics, IGorgonPipelineStateInfo stateInfo, int id)
+		internal GorgonPipelineState(IGorgonPipelineStateInfo stateInfo, int id)
 		{
 			_info = new GorgonPipelineStateInfo(stateInfo);
 			ID = id;

@@ -149,6 +149,26 @@ namespace Gorgon.Graphics.Imaging
 			get;
 			set;
 		}
+
+		/// <summary>
+		/// Property to return whether the image data is using premultiplied alpha.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// Premultiplied alpha is used to display correct alpha blending. This flag indicates that the data in the image has already been transformed to use premultiplied alpha.
+		/// </para>
+		/// <para>
+		/// For more information see: <a href="https://blogs.msdn.microsoft.com/shawnhar/2009/11/06/premultiplied-alpha/">Shawn Hargreaves Blog</a>
+		/// </para>
+		/// <para>
+		/// The default value is <b>false</b>.
+		/// </para>
+		/// </remarks>
+		public bool HasPremultipliedAlpha
+		{
+			get;
+			set;
+		}
 		#endregion
 
 		#region Constructor/Finalizer.
@@ -176,7 +196,7 @@ namespace Gorgon.Graphics.Imaging
 		/// Initializes a new instance of the <see cref="GorgonImageInfo"/> class.
 		/// </summary>
 		/// <param name="info">The initial image information to copy into this instance.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>NULL</b>.</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <see cref="Format"/> value of the <paramref name="info"/> parameter is set to <c>Format.Unknown</c>.</exception>
 		/// <remarks>
 		/// <para>
@@ -202,6 +222,7 @@ namespace Gorgon.Graphics.Imaging
 			Width = info.Width;
 			ImageType = info.ImageType;
 			MipCount = info.MipCount.Max(1);
+			HasPremultipliedAlpha = info.HasPremultipliedAlpha;
 		}
 		#endregion
 	}

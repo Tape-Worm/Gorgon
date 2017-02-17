@@ -231,24 +231,22 @@ namespace Gorgon.Graphics
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Function to compare equality for this and another <see cref="IGorgonRenderTargetBlendStateInfo"/>.
-		/// </summary>
-		/// <param name="info">The <see cref="IGorgonRenderTargetBlendStateInfo"/> to compare.</param>
-		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-		public bool IsEqual(IGorgonRenderTargetBlendStateInfo info)
+		/// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+		/// <returns>true if the current object is equal to the <paramref name="info" /> parameter; otherwise, false.</returns>
+		/// <param name="info">An object to compare with this object.</param>
+		public bool Equals(IGorgonRenderTargetBlendStateInfo info)
 		{
 			return info != null
-			       && WriteMask == info.WriteMask
-			       && AlphaBlendOperation == info.AlphaBlendOperation
-			       && ColorBlendOperation == info.ColorBlendOperation
-			       && DestinationAlphaBlend == info.DestinationAlphaBlend
-			       && DestinationColorBlend == info.DestinationColorBlend
-			       && IsBlendingEnabled == info.IsBlendingEnabled
-			       && IsLogicalOperationEnabled == info.IsLogicalOperationEnabled
-			       && LogicOperation == info.LogicOperation
-			       && SourceAlphaBlend == info.SourceAlphaBlend
-			       && SourceColorBlend == info.SourceColorBlend;
+				   && WriteMask == info.WriteMask
+				   && AlphaBlendOperation == info.AlphaBlendOperation
+				   && ColorBlendOperation == info.ColorBlendOperation
+				   && DestinationAlphaBlend == info.DestinationAlphaBlend
+				   && DestinationColorBlend == info.DestinationColorBlend
+				   && IsBlendingEnabled == info.IsBlendingEnabled
+				   && IsLogicalOperationEnabled == info.IsLogicalOperationEnabled
+				   && LogicOperation == info.LogicOperation
+				   && SourceAlphaBlend == info.SourceAlphaBlend
+				   && SourceColorBlend == info.SourceColorBlend;
 		}
 		#endregion
 

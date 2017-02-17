@@ -255,7 +255,7 @@ namespace Gorgon.Graphics
 
             if (formatInfo.BitDepth == 0)
             {
-	            throw new ArgumentException(string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, format), nameof(format));
+	            throw new ArgumentException(string.Format(Resources.GORGFX_ERR_FORMAT_NOT_SUPPORTED, format), nameof(format));
             }
 
             if ((slot < 0) || (slot > 15))

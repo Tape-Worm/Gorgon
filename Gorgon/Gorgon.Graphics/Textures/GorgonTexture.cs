@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Imaging;
@@ -45,6 +46,8 @@ namespace Gorgon.Graphics
 		: GorgonResource
 	{
 		#region Variables.
+		// The ID number of the texture.
+		private static int _textureID;
 		// The logging interface used for debug logging.
 		private readonly IGorgonLog _log;
 		// The information used to create the texture.
@@ -62,6 +65,14 @@ namespace Gorgon.Graphics
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to return the ID for this texture.
+		/// </summary>
+		public int TextureID
+		{
+			get;
+		}
+
 		/// <summary>
 		/// Property to return the information about the format of the texture.
 		/// </summary>
@@ -979,7 +990,7 @@ namespace Gorgon.Graphics
 		/// <param name="destMipLevel">[Optional] The mip map level that will receive the resolved texture data.</param>
 		/// <param name="srcArrayIndex">[Optional] The array index in the source to resolve (for 1D/2D textures only).</param>
 		/// <param name="srcMipLevel">[Optional] The source mip level to resolve.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="destination"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="destination"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the format of this texture, and the format <paramref name="destination"/> texture are not typeless, and are not the same format.
 		/// <para>-or-</para>
 		/// <para>Thrown when the format of both this texture and the <paramref name="destination"/> texture are typeless, but the resolve format is not set to a bit group compatible format, or the textures do not have bit group compatible formats.</para>
@@ -1345,6 +1356,7 @@ namespace Gorgon.Graphics
 			        };
 
 			FormatInformation = new GorgonFormatInfo(Info.Format);
+			TextureID = Interlocked.Increment(ref _textureID);
 		}
 
 		/// <summary>
@@ -1399,6 +1411,7 @@ namespace Gorgon.Graphics
 			        };
 
 			Initialize(image);
+			TextureID = Interlocked.Increment(ref _textureID);
 		}
 
 		/// <summary>
@@ -1436,6 +1449,8 @@ namespace Gorgon.Graphics
 			Initialize(null);
 
 			_lockCache = new TextureLockCache(this);
+
+			TextureID = Interlocked.Increment(ref _textureID);
 		}
 		#endregion
 	}

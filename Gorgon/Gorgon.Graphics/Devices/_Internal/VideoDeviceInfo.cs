@@ -154,8 +154,8 @@ namespace Gorgon.Graphics
 		                       VideoDeviceType deviceType)
 		{
 			_adapterDesc = adapter.Description2;
-			// Ensure that any trailing NULLs are removed. This is unlikely to happen with D3D 11.x, but if we ever jump up to 12, we have to 
-			// watch out for this as SharpDX does not strip the NULLs.
+			// Ensure that any trailing nulls are removed. This is unlikely to happen with D3D 11.x, but if we ever jump up to 12, we have to 
+			// watch out for this as SharpDX does not strip the nulls.
 			Name = _adapterDesc.Description.Replace("\0", string.Empty);
 			Index = index;
 			VideoDeviceType = deviceType;

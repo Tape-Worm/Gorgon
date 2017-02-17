@@ -304,25 +304,23 @@ namespace Gorgon.Graphics
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Function to compare equality for this and another <see cref="IGorgonRasterStateInfo"/>.
-		/// </summary>
-		/// <param name="info">The <see cref="IGorgonRasterStateInfo"/> to compare.</param>
-		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-		public bool IsEqual(IGorgonRasterStateInfo info)
+		/// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+		/// <returns>true if the current object is equal to the <paramref name="info" /> parameter; otherwise, false.</returns>
+		/// <param name="info">An object to compare with this object.</param>
+		public bool Equals(IGorgonRasterStateInfo info)
 		{
 			return info != null
-			       && IsAntialiasedLineEnabled == info.IsAntialiasedLineEnabled
-			       && CullMode == info.CullMode
-			       && DepthBias == info.DepthBias
-			       && DepthBiasClamp.EqualsEpsilon(info.DepthBiasClamp)
-			       && IsDepthClippingEnabled == info.IsDepthClippingEnabled
-			       && FillMode == info.FillMode
-			       && ForcedUavSampleCount == info.ForcedUavSampleCount
-			       && IsFrontCounterClockwise == info.IsFrontCounterClockwise
-			       && IsMultisamplingEnabled == info.IsMultisamplingEnabled
-			       && IsScissorClippingEnabled == info.IsScissorClippingEnabled
-			       && SlopeScaledDepthBias.EqualsEpsilon(info.SlopeScaledDepthBias);
+				   && IsAntialiasedLineEnabled == info.IsAntialiasedLineEnabled
+				   && CullMode == info.CullMode
+				   && DepthBias == info.DepthBias
+				   && DepthBiasClamp.EqualsEpsilon(info.DepthBiasClamp)
+				   && IsDepthClippingEnabled == info.IsDepthClippingEnabled
+				   && FillMode == info.FillMode
+				   && ForcedUavSampleCount == info.ForcedUavSampleCount
+				   && IsFrontCounterClockwise == info.IsFrontCounterClockwise
+				   && IsMultisamplingEnabled == info.IsMultisamplingEnabled
+				   && IsScissorClippingEnabled == info.IsScissorClippingEnabled
+				   && SlopeScaledDepthBias.EqualsEpsilon(info.SlopeScaledDepthBias);
 		}
 		#endregion
 

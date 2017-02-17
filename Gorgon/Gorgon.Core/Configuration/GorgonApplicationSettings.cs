@@ -344,7 +344,7 @@ namespace Gorgon.Configuration
 		/// properties on the object.
 		/// </para>
 		/// <para>
-		/// Assigning <b>null</b> (<i>Nothing</i> in VB.Net) to this property will turn off version checking.
+		/// Assigning <b>null</b> to this property will turn off version checking.
 		/// </para>
 		/// </remarks>
 		public Version Version
@@ -853,7 +853,7 @@ namespace Gorgon.Configuration
 		/// </summary>
 		/// <param name="section">Section that will contain the new section.</param>
 		/// <param name="name">Name of the section.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter was <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter was <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the applicationName parameter is empty or the <paramref name="section"/> does not exist.</exception>
 		private void AddSection(string section, string name)
 		{
@@ -947,7 +947,7 @@ namespace Gorgon.Configuration
 		/// This method will gather the values of the properties marked with the <see cref="GorgonApplicationSettingAttribute"/> and persist them into an XML file at the location provided to the <see cref="Path"/> property.
 		/// </para>
 		/// <para>
-		/// No versioning will be applied to the settings file when the <see cref="Version"/> property is <b>null</b> (<i>Nothing</i> in VB.Net).
+		/// No versioning will be applied to the settings file when the <see cref="Version"/> property is <b>null</b>.
 		/// </para>
 		/// </remarks>
 		/// <exception cref="DirectoryNotFoundException">Thrown when the directory pointed at by the <see cref="Path"/> property does not exist.</exception>
@@ -1042,7 +1042,7 @@ namespace Gorgon.Configuration
 		/// <see cref="GorgonApplicationSettingAttribute.DefaultValue"/> property, then that value is used instead.
 		/// </para> 
 		/// <para>
-		/// For dictionaries and lists, their contents will be cleared if the property value is not <b>null</b> (<i>Nothing</i> in VB.Net). For array types, the array values will be reset to the 
+		/// For dictionaries and lists, their contents will be cleared if the property value is not <b>null</b>. For array types, the array values will be reset to the 
 		/// default value for the element type.
 		/// </para>
 		/// </remarks>
@@ -1068,7 +1068,7 @@ namespace Gorgon.Configuration
 		/// <param name="applicationName">Name of the application.</param>
 		/// <param name="settingsVersion">The version of the settings file.</param>
 		/// <param name="log">The application logging interface.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="applicationName"/> parameter was <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="applicationName"/> parameter was <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="applicationName"/> parameter is empty.</exception>
 		/// <remarks>
 		/// <para>
@@ -1089,7 +1089,7 @@ namespace Gorgon.Configuration
 		/// </para>
 		/// <para>
 		/// Objects that inherit this class are only required to submit the <paramref name="applicationName"/> parameter. This parameter just identifies which application is using the setting object type. 
-		/// The <paramref name="settingsVersion"/> property can be set to <b>null</b> (<i>Nothing</i> in VB.Net) to disable version checking. Likewise, the <paramref name="log"/> parameter may be set to 
+		/// The <paramref name="settingsVersion"/> property can be set to <b>null</b> to disable version checking. Likewise, the <paramref name="log"/> parameter may be set to 
 		/// <b>null</b> to disable logging for this object.
 		/// </para>
 		/// </remarks>

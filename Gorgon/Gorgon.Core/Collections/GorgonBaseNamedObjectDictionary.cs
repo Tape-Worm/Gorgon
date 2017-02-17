@@ -304,7 +304,7 @@ namespace Gorgon.Collections
 		/// Function to remove an item by its name.
 		/// </summary>
 		/// <param name="name">The name of the object to remove.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
 		/// <exception cref="KeyNotFoundException">Thrown when no item with the name specified could be found in the dictionary.</exception>
 		void IGorgonNamedObjectDictionary<T>.Remove(string name)

@@ -39,8 +39,8 @@ namespace Gorgon.UI
 		/// </summary>
 		/// <typeparam name="T">The type of control to find. Must inherit from <see cref="Control"/>.</typeparam>
 		/// <param name="control">The control to start the search from.</param>
-		/// <returns>The very first ancestor of this control matching <typeparamref name="T"/>, or <b>null</b> (<i>Nothing</i> in VB.Net) if the control has no ancestor of the given type.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="control"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <returns>The very first ancestor of this control matching <typeparamref name="T"/>, or <b>null</b> if the control has no ancestor of the given type.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="control"/> parameter is <b>null</b>.</exception>
 		public static T GetFirstAncestor<T>(this Control control)
 			where T : Control
 		{
@@ -69,8 +69,8 @@ namespace Gorgon.UI
 		/// </summary>
 		/// <typeparam name="T">The type of control to find. Must inherit from <see cref="Control"/>.</typeparam>
 		/// <param name="control">The control to start the search from.</param>
-		/// <returns>The very first ancestor of this control matching <typeparamref name="T"/>, or <b>null</b> (<i>Nothing</i> in VB.Net) if the control has no ancestor of the given type.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="control"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <returns>The very first ancestor of this control matching <typeparamref name="T"/>, or <b>null</b> if the control has no ancestor of the given type.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="control"/> parameter is <b>null</b>.</exception>
 		public static T GetAncestor<T>(this Control control)
 			where T : Control
 		{
@@ -104,8 +104,8 @@ namespace Gorgon.UI
 		/// </summary>
 		/// <typeparam name="T">Type of form. Must inherit from <see cref="Form"/>.</typeparam>
 		/// <param name="control">The control to start searching from.</param>
-		/// <returns>The <see cref="Form"/> of type <typeparamref name="T"/> if found, <b>null</b> (<i>Nothing</i> in VB.Net) if not.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="control"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <returns>The <see cref="Form"/> of type <typeparamref name="T"/> if found, <b>null</b> if not.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="control"/> parameter is <b>null</b>.</exception>
 		public static T GetForm<T>(this Control control)
 			where T : Form
 		{

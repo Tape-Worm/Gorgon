@@ -31,6 +31,15 @@ namespace Gorgon.Graphics
 	/// <summary>
 	/// A brush used to draw glyphs using a solid fill color.
 	/// </summary>
+	/// <remarks>
+	/// <para>
+	/// This is the default brush type used when no brush is specified when creating font glyphs.
+	/// </para>
+	/// </remarks>
+	/// <seealso cref="GorgonGlyphTextureBrush"/>
+	/// <seealso cref="GorgonGlyphHatchBrush"/>
+	/// <seealso cref="GorgonGlyphLinearGradientBrush"/>
+	/// <seealso cref="GorgonGlyphPathGradientBrush"/>
 	public class GorgonGlyphSolidBrush
 		: GorgonGlyphBrush
 	{

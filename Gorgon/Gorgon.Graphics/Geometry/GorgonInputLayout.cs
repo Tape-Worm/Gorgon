@@ -30,6 +30,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Threading;
 using DX = SharpDX;
 using DXGI = SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;
@@ -53,7 +54,7 @@ namespace Gorgon.Graphics
 	/// </para>
 	/// </remarks>
 	public sealed class GorgonInputLayout
-		: IGorgonNamedObject
+		: IGorgonNamedObject, IEquatable<GorgonInputLayout>, IDisposable
 	{
 		#region Variables.
 		// Type mapping for types.
@@ -104,17 +105,15 @@ namespace Gorgon.Graphics
 		private readonly GorgonInputElement[] _elements;
 		// List of slot sizes.
 		private Dictionary<int, int> _slotSizes;
+		// The Direct 3D input layout.
+		private D3D11.InputLayout _d3DInputLayout;
 		#endregion
 
 		#region Properties.
 		/// <summary>
-		/// Property to return the Direct3D input layout.
+		/// Property to return the Direct 3D input layout.
 		/// </summary>
-		internal D3D11.InputElement[] D3DInputElements
-		{
-			get;
-			private set;
-		}
+		internal D3D11.InputLayout D3DInputLayout => _d3DInputLayout;
 
 		/// <summary>
 		/// Property to return the video device that created this object.
@@ -165,12 +164,15 @@ namespace Gorgon.Graphics
 		/// </summary>
 		private void BuildD3DLayout()
 		{
-			D3DInputElements = new D3D11.InputElement[_elements.Length];
+			// ReSharper disable once InconsistentNaming
+			var d3dElements = new D3D11.InputElement[_elements.Length];
 
 			for (int i = 0; i < _elements.Length; ++i)
 			{
-				D3DInputElements[i] = _elements[i].D3DInputElement;
+				d3dElements[i] = _elements[i].D3DInputElement;
 			}
+
+			_d3DInputLayout = new D3D11.InputLayout(VideoDevice.D3DDevice(), Shader.D3DByteCode.Data, d3dElements);
 		}
 
 		/// <summary>
@@ -452,14 +454,12 @@ namespace Gorgon.Graphics
 		    return _slotSizes[slot];
 		}
 
-		/// <summary>
-		/// Function to compare this <see cref="GorgonInputLayout"/> with another to determine equality.
-		/// </summary>
-		/// <param name="layout">The <see cref="GorgonInputLayout"/> to compare with.</param>
-		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-		public bool IsEqual(GorgonInputLayout layout)
+		/// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+		/// <returns>true if the current object is equal to the <paramref name="layout" /> parameter; otherwise, false.</returns>
+		/// <param name="layout">An object to compare with this object.</param>
+		public bool Equals(GorgonInputLayout layout)
 		{
-			if (layout._elements.Length != _elements.Length)
+			if (layout?._elements.Length != _elements.Length)
 			{
 				return false;
 			}
@@ -473,6 +473,15 @@ namespace Gorgon.Graphics
 			}
 
 			return true;
+		}
+
+		/// <summary>
+		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+		/// </summary>
+		public void Dispose()
+		{
+			D3D11.InputLayout layout = Interlocked.Exchange(ref _d3DInputLayout, null);
+			layout?.Dispose();
 		}
 		#endregion
 

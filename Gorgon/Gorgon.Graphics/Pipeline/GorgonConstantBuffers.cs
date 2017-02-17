@@ -23,11 +23,14 @@
 // Created: July 9, 2016 3:47:30 PM
 // 
 #endregion
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Gorgon.Core;
+using Gorgon.Diagnostics;
+using Gorgon.Graphics.Pipeline;
+using Gorgon.Graphics.Properties;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics
@@ -35,127 +38,214 @@ namespace Gorgon.Graphics
 	/// <summary>
 	/// A list of constant buffers used for shaders.
 	/// </summary>
+	/// <remarks>
+	/// <para>
+	/// A <see cref="GorgonConstantBuffer"/> is used to pass data into a shader.
+	/// </para>
+	/// <para>
+	/// This object is immutable, and as such, cannot be modified after creation. 
+	/// </para>
+	/// </remarks>
 	public sealed class GorgonConstantBuffers
-		: IList<GorgonConstantBuffer>, IReadOnlyList<GorgonConstantBuffer>
+		: IGorgonBoundList<GorgonConstantBuffer>, IReadOnlyList<GorgonConstantBuffer>
 	{
 		#region Variables.
-		// The list of constant buffers.
+		// The native Direct3D 11 constant buffer list.
+		private readonly D3D11.Buffer[] _nativeBuffers = new D3D11.Buffer[D3D11.CommonShaderStage.ConstantBufferApiSlotCount];
+		// The list of buffers that are bound to this list.
 		private readonly GorgonConstantBuffer[] _buffers = new GorgonConstantBuffer[D3D11.CommonShaderStage.ConstantBufferApiSlotCount];
 		#endregion
 
 		#region Properties.
 		/// <summary>
-		/// Property to return the number of binding slots actually used.
+		/// Property to return the D3D11 constant buffers.
 		/// </summary>
-		/// <remarks>
-		/// This will return the total count from the start to the last <b>non-null</b> entry.  For example, if index 0 is <b>non-null</b>, index 1 is <b>null</b> and index 2 is <b>non-null</b>, then this 
-		/// property would return 3 because the item at index 2 is <b>non-null</b>, regardless of whether index 1 is <b>null</b> or not.
-		/// </remarks>
+		internal D3D11.Buffer[] D3DConstantBuffers => _nativeBuffers;
+
+		/// <summary>
+		/// Property to return the maximum number of <see cref="GorgonConstantBuffer"/> objects that can be bound in this list.
+		/// </summary>
+		public int Count => _buffers.Length;
+
+		/// <summary>
+		/// Property to return the number of buffers that are bound.
+		/// </summary>
 		public int BindCount
 		{
 			get;
 			private set;
 		}
 
-		/// <summary>
-		/// Property to return the D3D11 constant buffers.
-		/// </summary>
-		internal D3D11.Buffer[] D3DConstantBuffers
-		{
-			get;
-		}
+		/// <summary>Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</summary>
+		/// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only; otherwise, false.</returns>
+		bool ICollection<GorgonConstantBuffer>.IsReadOnly => false;
 
 		/// <summary>
-		/// Property to set or return the constant buffer at the given index.
+		/// Property to return the starting index begin binding at.
 		/// </summary>
+		int IGorgonBoundList<GorgonConstantBuffer>.BindIndex => 0;
+
+		/// <summary>
+		/// Property to return whether there are items to bind in this list.
+		/// </summary>
+		public bool IsEmpty => BindCount == 0;
+
+
+		/// <summary>Gets the element at the specified index in the read-only list.</summary>
+		/// <returns>The element at the specified index in the read-only list.</returns>
+		/// <param name="index">The zero-based index of the element to get. </param>
 		public GorgonConstantBuffer this[int index]
 		{
 			get
 			{
 				return _buffers[index];
 			}
-
 			set
 			{
-				if (_buffers[index] == value)
-				{
-					return;
-				}
-
 				_buffers[index] = value;
-				D3DConstantBuffers[index] = value?.D3DBuffer;
-				BindCount = 0;
-
-				for (int i = 0; i < _buffers.Length; ++i)
-				{
-					if (_buffers[i] != null)
-					{
-						BindCount = i + 1;
-					}
-#if DEBUG
-					if ((value != null) && (_buffers[i] == value) && (i != index))
-					{
-						_buffers[index] = null;
-						throw new GorgonException(GorgonResult.CannotBind, string.Format(Properties.Resources.GORGFX_CONSTANTBUFFER_ALREADY_BOUND, value.Name, i));
-					}
-#endif
-				}
+				_nativeBuffers[index] = value?.D3DBuffer;
+				BindCount = value == null ? 0 : 1;
 			}
 		}
-
-		/// <summary>Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
-		/// <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
-		public int Count => _buffers.Length;
-
-		/// <summary>Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</summary>
-		/// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only; otherwise, false.</returns>
-		bool ICollection<GorgonConstantBuffer>.IsReadOnly => false;
 		#endregion
 
 		#region Methods.
 		/// <summary>
-		/// Function to copy the states from another set of states.
+		/// Function to set multiple <see cref="GorgonConstantBuffer"/> objects at once.
 		/// </summary>
-		/// <param name="states">The states to copy.</param>
-		public void CopyFrom(GorgonConstantBuffers states)
+		/// <param name="startSlot">The starting slot to assign.</param>
+		/// <param name="buffers">The buffers to assign.</param>
+		/// <param name="count">[Optional] The number of items to copy from <paramref name="buffers"/>.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="buffers"/> parameter is <b>null</b>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="startSlot"/> is less than 0.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="startSlot"/> plus the number of <paramref name="buffers"/> exceeds the size of this list.</exception>
+		/// <remarks>
+		/// <para>
+		/// Use this method to set a series of objects of type <see cref="GorgonConstantBuffer"/> at once. This will yield better performance than attempting to assign a single item 
+		/// at a time via the indexer.
+		/// </para>
+		/// <para>
+		/// This implementation ignores the <paramref name="startSlot"/> parameter.
+		/// </para>
+		/// <para>
+		/// <note type="warning">
+		/// Any exceptions thrown by this method will only be thrown when Gorgon is compiled as <b>DEBUG</b>.
+		/// </note>
+		/// </para>
+		/// </remarks>
+		void IGorgonBoundList<GorgonConstantBuffer>.SetRange(int startSlot, IReadOnlyList<GorgonConstantBuffer> buffers, int? count)
 		{
-			if (states == null)
+			SetRange(buffers, count);
+		}
+
+		/// <summary>
+		/// Function to set multiple <see cref="GorgonConstantBuffer"/> objects at once.
+		/// </summary>
+		/// <param name="buffers">The buffers to assign.</param>
+		/// <param name="count">[Optional] The number of items to copy from <paramref name="buffers"/>.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="buffers"/> parameter is <b>null</b>.</exception>
+		/// <exception cref="ArgumentException">Thrown when the number of <paramref name="buffers"/> exceeds the size of this list.</exception>
+		/// <remarks>
+		/// <para>
+		/// Use this method to set a series of objects of type <see cref="GorgonConstantBuffer"/> at once. This will yield better performance than attempting to assign a single item 
+		/// at a time via the indexer.
+		/// </para>
+		/// <para>
+		/// <note type="warning">
+		/// Any exceptions thrown by this method will only be thrown when Gorgon is compiled as <b>DEBUG</b>.
+		/// </note>
+		/// </para>
+		/// </remarks>
+		public void SetRange(IReadOnlyList<GorgonConstantBuffer> buffers, int? count = null)
+		{
+			buffers.ValidateObject(nameof(buffers));
+
+			if (count == null)
+			{
+				count = buffers.Count;
+			}
+
+#if DEBUG
+			if (count > _buffers.Length)
+			{
+				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TOO_MANY_ITEMS, 0, count.Value, _buffers.Length));
+			}
+
+			if (count > buffers.Count)
+			{
+				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TOO_MANY_ITEMS, 0, count.Value, buffers.Count));
+			}
+#endif
+
+			if (count == 0)
 			{
 				Clear();
 				return;
 			}
 
-			BindCount = states.BindCount;
-
-			for (int i = 0; i < BindCount; ++i)
+			for (int i = 0; i < count.Value; ++i)
 			{
-				_buffers[i] = states._buffers[i];
-				D3DConstantBuffers[i] = states.D3DConstantBuffers[i];
+				GorgonConstantBuffer buffer = buffers[i];
+#if DEBUG
+				// Validate to ensure that this buffer is not bound anywhere else within this binding list.
+				if (buffer != null)
+				{
+					int existingItem = Array.IndexOf(_buffers, buffer);
+
+					if ((existingItem != -1) && (existingItem != i))
+					{
+						throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_RESOURCE_BOUND, buffer.Name, i));
+					}
+				}
+#endif
+				_buffers[i] = buffers[i];
+				_nativeBuffers[i] = buffers[i]?.D3DBuffer;
+			}
+
+			BindCount = count.Value;
+		}
+
+		/// <summary>Returns an enumerator that iterates through the collection.</summary>
+		/// <returns>An enumerator that can be used to iterate through the collection.</returns>
+		/// <filterpriority>1</filterpriority>
+		public IEnumerator<GorgonConstantBuffer> GetEnumerator()
+		{
+			for (int i = 0; i < Count; ++i)
+			{
+				yield return _buffers[i];
 			}
 		}
 
-		/// <summary>
-		/// Function to determine if two instances are equal.
-		/// </summary>
-		/// <param name="left">The left instance to compare.</param>
-		/// <param name="right">The right instance to compare.</param>
-		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-		public static bool Equals(GorgonConstantBuffers left, GorgonConstantBuffers right)
+		/// <summary>Returns an enumerator that iterates through a collection.</summary>
+		/// <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
+		/// <filterpriority>2</filterpriority>
+		IEnumerator IEnumerable.GetEnumerator()
 		{
-			if ((left == null) || (right == null) || (left.BindCount != right.BindCount))
-			{
-				return false;
-			}
+			return GetEnumerator();
+		}
 
-			for (int i = 0; i < left.BindCount; ++i)
-			{
-				if (left[i] != right[i])
-				{
-					return false;
-				}
-			}
+		/// <summary>Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1" />.</summary>
+		/// <returns>The index of <paramref name="item" /> if found in the list; otherwise, -1.</returns>
+		/// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.IList`1" />.</param>
+		public int IndexOf(GorgonConstantBuffer item)
+		{
+			return Array.IndexOf(_buffers, item);
+		}
 
-			return true;
+		/// <summary>Inserts an item to the <see cref="T:System.Collections.Generic.IList`1" /> at the specified index.</summary>
+		/// <param name="index">The zero-based index at which <paramref name="item" /> should be inserted.</param>
+		/// <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1" />.</param>
+		/// <exception cref="T:System.ArgumentOutOfRangeException">
+		/// <paramref name="index" /> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1" />.</exception>
+		/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IList`1" /> is read-only.</exception>
+		void IList<GorgonConstantBuffer>.Insert(int index, GorgonConstantBuffer item)
+		{
+			throw new NotSupportedException();
+		}
+
+		void IList<GorgonConstantBuffer>.RemoveAt(int index)
+		{
+			throw new NotSupportedException();
 		}
 
 		/// <summary>Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
@@ -173,6 +263,7 @@ namespace Gorgon.Graphics
 			for (int i = 0; i < _buffers.Length; ++i)
 			{
 				_buffers[i] = null;
+				_nativeBuffers[i] = null;
 			}
 
 			BindCount = 0;
@@ -183,7 +274,7 @@ namespace Gorgon.Graphics
 		/// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
 		public bool Contains(GorgonConstantBuffer item)
 		{
-			return Array.IndexOf(_buffers, item) != -1;
+			return IndexOf(item) != -1;
 		}
 
 		/// <summary>Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1" /> to an <see cref="T:System.Array" />, starting at a particular <see cref="T:System.Array" /> index.</summary>
@@ -199,36 +290,6 @@ namespace Gorgon.Graphics
 			_buffers.CopyTo(array, arrayIndex);
 		}
 
-		/// <summary>Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1" />.</summary>
-		/// <returns>The index of <paramref name="item" /> if found in the list; otherwise, -1.</returns>
-		/// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.IList`1" />.</param>
-		public int IndexOf(GorgonConstantBuffer item)
-		{
-			return Array.IndexOf(_buffers, item);
-		}
-
-		/// <summary>Returns an enumerator that iterates through the collection.</summary>
-		/// <returns>An enumerator that can be used to iterate through the collection.</returns>
-		/// <filterpriority>1</filterpriority>
-		public IEnumerator<GorgonConstantBuffer> GetEnumerator()
-		{
-			for (int i = 0; i < _buffers.Length; ++i)
-			{
-				yield return _buffers[i];
-			}
-		}
-
-		/// <summary>Inserts an item to the <see cref="T:System.Collections.Generic.IList`1" /> at the specified index.</summary>
-		/// <param name="index">The zero-based index at which <paramref name="item" /> should be inserted.</param>
-		/// <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1" />.</param>
-		/// <exception cref="T:System.ArgumentOutOfRangeException">
-		/// <paramref name="index" /> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1" />.</exception>
-		/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IList`1" /> is read-only.</exception>
-		void IList<GorgonConstantBuffer>.Insert(int index, GorgonConstantBuffer item)
-		{
-			throw new NotSupportedException();
-		}
-
 		/// <summary>Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
 		/// <returns>true if <paramref name="item" /> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
 		/// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
@@ -237,58 +298,30 @@ namespace Gorgon.Graphics
 		{
 			throw new NotSupportedException();
 		}
-
-		/// <summary>Removes the <see cref="T:System.Collections.Generic.IList`1" /> item at the specified index.</summary>
-		/// <param name="index">The zero-based index of the item to remove.</param>
-		/// <exception cref="T:System.ArgumentOutOfRangeException">
-		/// <paramref name="index" /> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1" />.</exception>
-		/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IList`1" /> is read-only.</exception>
-		void IList<GorgonConstantBuffer>.RemoveAt(int index)
-		{
-			throw new NotSupportedException();
-		}
-
-		/// <summary>Returns an enumerator that iterates through a collection.</summary>
-		/// <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
-		/// <filterpriority>2</filterpriority>
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return _buffers.GetEnumerator();
-		}
 		#endregion
 
 		#region Constructor
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonConstantBuffers"/> class.
 		/// </summary>
-		public GorgonConstantBuffers()
+		/// <param name="buffers">The list of <see cref="GorgonConstantBuffer"/> objects to copy into this list.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="buffers"/> parameter is <b>null</b>.</exception>
+		/// <exception cref="GorgonException">Thrown when a <see cref="GorgonConstantBuffer"/> is bound more than once in the <paramref name="buffers"/> list.</exception>
+		public GorgonConstantBuffers(IEnumerable<GorgonConstantBuffer> buffers)
 		{
-			D3DConstantBuffers = new D3D11.Buffer[_buffers.Length];			
+			if (buffers == null)
+			{
+				throw new ArgumentNullException(nameof(buffers));
+			}
+
+			SetRange(buffers.ToArray());
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonConstantBuffers"/> class.
 		/// </summary>
-		/// <param name="buffers">The buffers.</param>
-		public GorgonConstantBuffers(IEnumerable<GorgonConstantBuffer> buffers)
-			: this()
+		public GorgonConstantBuffers()
 		{
-			if (buffers == null)
-			{
-				return;
-			}
-
-			int index = 0;
-
-			foreach (GorgonConstantBuffer buffer in buffers)
-			{
-				if (index >= _buffers.Length)
-				{
-					break;
-				}
-
-				this[index++] = buffer;
-			}
 		}
 		#endregion
 	}

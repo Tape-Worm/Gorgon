@@ -145,8 +145,8 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="name">The name of the macro.</param>
 		/// <param name="value">[Optional] The value for the macro.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
 		public GorgonShaderMacro(string name, string value = null)
 		{
 			if (name == null)

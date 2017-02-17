@@ -162,7 +162,7 @@ namespace Gorgon.Input
 		/// Initializes a new instance of the <see cref="GorgonRawHID"/> class.
 		/// </summary>
 		/// <param name="hidInfo">The human interface device information used to determine which keyboard to use.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="hidInfo"/> is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="hidInfo"/> is <b>null</b>.</exception>
 		public GorgonRawHID(GorgonRawHIDInfo hidInfo)
 		{
 			if (hidInfo == null)

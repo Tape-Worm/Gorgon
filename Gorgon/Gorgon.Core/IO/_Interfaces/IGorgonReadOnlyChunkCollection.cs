@@ -40,7 +40,7 @@ namespace Gorgon.IO
 		/// Property to return a chunk by a string identifier.
 		/// </summary>
 		/// <remarks>
-		/// If the chunk is not found, then this property will return <b>null</b> (<i>Nothing</i> in VB.Net).
+		/// If the chunk is not found, then this property will return <b>null</b>.
 		/// </remarks>
 		GorgonChunk this[string chunkName]
 		{
@@ -51,7 +51,7 @@ namespace Gorgon.IO
 		/// Property to return a chunk by its <see cref="ulong"/> ID.
 		/// </summary>
 		/// <remarks>
-		/// If the chunk is not found, then this property will return <b>null</b> (<i>Nothing</i> in VB.Net).
+		/// If the chunk is not found, then this property will return <b>null</b>.
 		/// </remarks>
 		GorgonChunk this[ulong ID]
 		{

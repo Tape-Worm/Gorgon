@@ -205,28 +205,26 @@ namespace Gorgon.Graphics
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Function to compare equality for this and another <see cref="IGorgonDepthStencilStateInfo"/>.
-		/// </summary>
-		/// <param name="info">The <see cref="IGorgonDepthStencilStateInfo"/> to compare.</param>
-		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-		public bool IsEqual(IGorgonDepthStencilStateInfo info)
+		/// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+		/// <returns>true if the current object is equal to the <paramref name="info" /> parameter; otherwise, false.</returns>
+		/// <param name="info">An object to compare with this object.</param>
+		public bool Equals(IGorgonDepthStencilStateInfo info)
 		{
 			return info != null
-			       && BackFaceStencilOp.Comparison == info.BackFaceStencilOp.Comparison
-			       && BackFaceStencilOp.DepthFailOperation == info.BackFaceStencilOp.DepthFailOperation
-			       && BackFaceStencilOp.FailOperation == info.BackFaceStencilOp.FailOperation
-			       && BackFaceStencilOp.PassOperation == info.BackFaceStencilOp.PassOperation
-			       && FrontFaceStencilOp.Comparison == info.FrontFaceStencilOp.Comparison
-			       && FrontFaceStencilOp.DepthFailOperation == info.FrontFaceStencilOp.DepthFailOperation
-			       && FrontFaceStencilOp.FailOperation == info.FrontFaceStencilOp.FailOperation
-			       && FrontFaceStencilOp.PassOperation == info.FrontFaceStencilOp.PassOperation
-			       && DepthComparison == info.DepthComparison
-			       && IsDepthEnabled == info.IsDepthEnabled
-			       && IsDepthWriteEnabled == info.IsDepthWriteEnabled
-			       && IsStencilEnabled == info.IsStencilEnabled
-			       && StencilReadMask == info.StencilReadMask
-			       && StencilWriteMask == info.StencilWriteMask;
+				   && BackFaceStencilOp.Comparison == info.BackFaceStencilOp.Comparison
+				   && BackFaceStencilOp.DepthFailOperation == info.BackFaceStencilOp.DepthFailOperation
+				   && BackFaceStencilOp.FailOperation == info.BackFaceStencilOp.FailOperation
+				   && BackFaceStencilOp.PassOperation == info.BackFaceStencilOp.PassOperation
+				   && FrontFaceStencilOp.Comparison == info.FrontFaceStencilOp.Comparison
+				   && FrontFaceStencilOp.DepthFailOperation == info.FrontFaceStencilOp.DepthFailOperation
+				   && FrontFaceStencilOp.FailOperation == info.FrontFaceStencilOp.FailOperation
+				   && FrontFaceStencilOp.PassOperation == info.FrontFaceStencilOp.PassOperation
+				   && DepthComparison == info.DepthComparison
+				   && IsDepthEnabled == info.IsDepthEnabled
+				   && IsDepthWriteEnabled == info.IsDepthWriteEnabled
+				   && IsStencilEnabled == info.IsStencilEnabled
+				   && StencilReadMask == info.StencilReadMask
+				   && StencilWriteMask == info.StencilWriteMask;
 		}
 		#endregion
 

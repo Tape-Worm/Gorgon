@@ -230,7 +230,7 @@ namespace Gorgon.Examples
 		/// <summary>
 		/// Function to fill the file system tree view.
 		/// </summary>
-		/// <param name="directory">Parent directory to fill, or NULL (<i>Nothing</i> in VB.Net) to fill the root directory.</param>
+		/// <param name="directory">Parent directory to fill, or <b>null</b> to fill the root directory.</param>
 		private void FillTree(IGorgonVirtualDirectory directory)
 		{
 			TreeNodeCollection nodes;

@@ -345,7 +345,7 @@ namespace Gorgon.Input
 		/// <param name="keyboardInfo">[Optional] The keyboard information used to determine which keyboard to use.</param>
 		/// <exception cref="InvalidCastException">Thrown if the <paramref name="keyboardInfo"/> is not the expected type.</exception>
 		/// <remarks>
-		/// When the <paramref name="keyboardInfo"/> is set to <b>null</b> (<i>Nothing</i> in VB.Net), the system keyboard (that is, all keyboards attached to the computer) will be used. No differentiation between 
+		/// When the <paramref name="keyboardInfo"/> is set to <b>null</b>, the system keyboard (that is, all keyboards attached to the computer) will be used. No differentiation between 
 		/// keyboard devices is made. To specify an individual keyboard, pass an appropriate <see cref="IGorgonKeyboardInfo"/> obtained from the <see cref="GorgonRawInput.EnumerateKeyboards"/> method.
 		/// </remarks>
 		public GorgonRawKeyboard(IGorgonKeyboardInfo keyboardInfo = null)

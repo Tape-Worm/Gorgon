@@ -107,9 +107,12 @@ namespace Gorgon.Graphics
 		/// <returns>The <see cref="GorgonColor"/> representation.</returns>
 		public static GorgonColor FromABGR(int abgrColor)
 		{
-			GorgonColor channels = abgrColor;
+			byte a = (byte)((abgrColor >> 24) & 0xff);
+			byte b = (byte)((abgrColor >> 16) & 0xff);
+			byte g = (byte)((abgrColor >> 8) & 0xff);
+			byte r = (byte)(abgrColor & 0xff);
 
-			return new GorgonColor(channels.Blue, channels.Green, channels.Red, channels.Alpha);
+			return new GorgonColor(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
 		}
 
 		/// <summary>
@@ -119,9 +122,12 @@ namespace Gorgon.Graphics
 		/// <returns>The GorgonColor representation.</returns>
 		public static GorgonColor FromBGRA(int bgraColor)
 		{
-			GorgonColor channels = bgraColor;
+			byte b = (byte)((bgraColor >> 24) & 0xff);
+			byte g = (byte)((bgraColor >> 16) & 0xff);
+			byte r = (byte)((bgraColor >> 8) & 0xff);
+			byte a = (byte)(bgraColor & 0xff);
 
-			return new GorgonColor(channels.Green, channels.Red, channels.Alpha, channels.Blue);
+			return new GorgonColor(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
 		}
 
 		/// <summary>
@@ -131,9 +137,12 @@ namespace Gorgon.Graphics
 		/// <returns>The <see cref="GorgonColor"/> representation.</returns>
 		public static GorgonColor FromRGBA(int rgbaColor)
 		{
-			GorgonColor channels = rgbaColor;
+			byte r = (byte)((rgbaColor >> 24) & 0xff);
+			byte g = (byte)((rgbaColor >> 16) & 0xff);
+			byte b = (byte)((rgbaColor >> 8) & 0xff);
+			byte a = (byte)(rgbaColor & 0xff);
 
-			return new GorgonColor(channels.Alpha, channels.Red, channels.Green, channels.Blue);
+			return new GorgonColor(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
 		}		
 
 		/// <summary>

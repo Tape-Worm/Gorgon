@@ -68,7 +68,7 @@ namespace Gorgon.Graphics.Imaging
 		/// <param name="destPitch">The pitch of the destination data.</param>
 		/// <param name="bitFlags">Image bit conversion control flags.</param>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="srcFormat" /> is not a 16 BPP format.</exception>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="src"/> or the <paramref name="dest"/> parameter is <b>NULL</b>.</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="src"/> or the <paramref name="dest"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="srcPitch"/> or the <paramref name="destPitch"/> parameter is less than 0.</exception>
 		/// <remarks>
 		/// <para>
@@ -150,7 +150,7 @@ namespace Gorgon.Graphics.Imaging
 		/// <param name="format">Format of the destination buffer.</param>
 		/// <param name="bitFlags">Image bit conversion control flags.</param>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="format"/> parameter is Unknown.</exception>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="src"/> or the <paramref name="dest"/> parameter is <b>NULL</b>.</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="src"/> or the <paramref name="dest"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="srcPitch"/> or the <paramref name="destPitch"/> parameter is less than 0.</exception>
 		/// <remarks>
 		/// <para>
@@ -531,7 +531,7 @@ namespace Gorgon.Graphics.Imaging
 		/// <param name="format">Format of the destination buffer.</param>
 		/// <param name="bitFlags">Image bit conversion control flags.</param>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="format"/> parameter is Unknown.</exception>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="src"/> or the <paramref name="dest"/> parameter is <b>NULL</b>.</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="src"/> or the <paramref name="dest"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="srcPitch"/> or the <paramref name="destPitch"/> parameter is less than 0.</exception>
 		/// <remarks>Use this method to copy a single scanline of an image and (optionally) set an opaque constant alpha value.</remarks>
 		public static unsafe void CopyScanline(void* src, int srcPitch, void* dest, int destPitch, DXGI.Format format, ImageBitFlags bitFlags)

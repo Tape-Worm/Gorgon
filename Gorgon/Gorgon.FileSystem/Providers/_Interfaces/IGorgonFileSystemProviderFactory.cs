@@ -81,7 +81,7 @@ namespace Gorgon.IO.Providers
 		/// </summary>
 		/// <param name="providerPluginName">The fully qualified type name of the plugin that contains the file system provider.</param>
 		/// <returns>The new file system provider object, or if it was previously created, the previously created instance.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="providerPluginName"/> is <b>null</b> (<i>Nothing</i> in VB.Net)</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="providerPluginName"/> is <b>null</b></exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="providerPluginName"/> is empty.</exception>
 		/// <exception cref="GorgonException">Thrown when the plugin specified by the <paramref name="providerPluginName"/> parameter was not found.</exception>
 		GorgonFileSystemProvider CreateProvider(string providerPluginName);
@@ -92,7 +92,7 @@ namespace Gorgon.IO.Providers
 		/// <param name="pluginAssembly">[Optional] The name of the assembly to load file system providers from.</param>
 		/// <returns>A list of file system providers</returns>
 		/// <remarks>
-		/// When the <paramref name="pluginAssembly"/> parameter is set to <b>null</b> (<i>Nothing</i> in VB.Net), then only the file system providers within that assembly will 
+		/// When the <paramref name="pluginAssembly"/> parameter is set to <b>null</b>, then only the file system providers within that assembly will 
 		/// be loaded. Otherwise, all file system providers available in the <see cref="GorgonPluginService"/> passed to the object constructor will be created (or have 
 		/// a previously created instance returned).
 		/// </remarks>

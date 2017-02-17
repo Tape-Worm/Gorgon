@@ -25,7 +25,6 @@
 #endregion
 
 using System.Collections.Generic;
-using DX = SharpDX;
 
 namespace Gorgon.Graphics
 {
@@ -54,22 +53,6 @@ namespace Gorgon.Graphics
 		/// Property to return the current vertex shader 
 		/// </summary>
 		GorgonVertexShader VertexShader
-		{
-			get;
-		}
-
-		/// <summary>
-		/// Property to return the current input layout used to define how vertices are interpreted in a vertex shader and/or vertex buffer.
-		/// </summary>
-		GorgonInputLayout InputLayout
-		{
-			get;
-		}
-
-		/// <summary>
-		/// Property to return the current viewport(s) for this pipeline state information.
-		/// </summary>
-		IReadOnlyList<DX.ViewportF> Viewports
 		{
 			get;
 		}
@@ -128,14 +111,6 @@ namespace Gorgon.Graphics
 		/// Property to return the current blending state for an individual render target.
 		/// </summary>
 		IReadOnlyList<IGorgonRenderTargetBlendStateInfo> RenderTargetBlendState
-		{
-			get;
-		}
-
-		/// <summary>
-		/// Property to return the current scissor rectangles used to clip the pixels being rendered.
-		/// </summary>
-		IReadOnlyList<DX.Rectangle> ScissorRectangles
 		{
 			get;
 		}

@@ -29,7 +29,7 @@ using D3D11 = SharpDX.Direct3D11;
 namespace Gorgon.Graphics
 {
 	/// <summary>
-	/// Information used to create the stencil portion of a <see cref="GorgonDepthStencilState"/>.
+	/// Information used to create the stencil portion of a <see cref="GorgonDepthStencilStateInfo"/>.
 	/// </summary>
 	public class GorgonStencilOperationInfo 
 		: IGorgonStencilOperationInfo

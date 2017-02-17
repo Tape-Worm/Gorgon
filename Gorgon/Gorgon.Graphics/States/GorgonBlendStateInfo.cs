@@ -31,7 +31,7 @@ using D3D11 = SharpDX.Direct3D11;
 namespace Gorgon.Graphics
 {
 	/// <summary>
-	/// Information used to build a <see cref="GorgonBlendState"/>.
+	/// Information used to build a blending state.
 	/// </summary>
 	public class GorgonBlendStateInfo 
 		: IGorgonBlendStateInfo

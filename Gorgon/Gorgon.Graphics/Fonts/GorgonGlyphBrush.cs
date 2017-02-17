@@ -86,7 +86,7 @@ namespace Gorgon.Graphics
 				case GlyphBrushType.LinearGradient:
 					return new GorgonGlyphLinearGradientBrush();
 				case GlyphBrushType.Texture:
-					return new GorgonGlyphTextureBrush(graphics);
+					//return new GorgonGlyphTextureBrush(graphics);
 				case GlyphBrushType.Hatched:
 					return new GorgonGlyphHatchBrush();
 				default:
@@ -98,7 +98,7 @@ namespace Gorgon.Graphics
 		/// Function to convert this brush to the equivalent GDI+ brush type.
 		/// </summary>
 		/// <returns>The GDI+ brush type for this object.</returns>
-		abstract internal Brush ToGDIBrush();
+		internal abstract Brush ToGDIBrush();
 		#endregion
 	}
 }

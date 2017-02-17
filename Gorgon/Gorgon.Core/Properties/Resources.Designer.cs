@@ -373,7 +373,7 @@ namespace Gorgon.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The pointer passed to the stream is NULL..
+        ///   Looks up a localized string similar to The pointer passed to the stream is <b>null</b>..
         /// </summary>
         internal static string GOR_ERR_DATASTREAM_POINTER_IS_NULL {
             get {

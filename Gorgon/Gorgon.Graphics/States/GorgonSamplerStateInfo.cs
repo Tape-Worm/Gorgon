@@ -275,7 +275,7 @@ namespace Gorgon.Graphics
 			AddressV = D3D11.TextureAddressMode.Clamp;
 			AddressW = D3D11.TextureAddressMode.Clamp;
 			MaxAnisotropy = 1;
-			BorderColor = GorgonColor.Transparent;
+			BorderColor = GorgonColor.White;
 			MinimumLevelOfDetail = float.MinValue;
 			MaximumLevelOfDetail = float.MaxValue;
 			ComparisonFunction = D3D11.Comparison.Never;

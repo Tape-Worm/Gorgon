@@ -56,5 +56,13 @@ namespace Gorgon.Graphics
 		{
 			get;
 		}
+
+		/// <summary>
+		/// Property to return whether or not a buffer can be used to receive a stream of data from the GPU.
+		/// </summary>
+		bool IsStreamOut
+		{
+			get;
+		}
 	}
 }

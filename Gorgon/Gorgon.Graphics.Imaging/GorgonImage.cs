@@ -26,13 +26,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using DXGI = SharpDX.DXGI;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.Math;
 using Gorgon.Native;
-using SharpDX.DirectWrite;
 
 namespace Gorgon.Graphics.Imaging
 {
@@ -459,32 +457,44 @@ namespace Gorgon.Graphics.Imaging
 		}
 
 		/// <summary>
-		/// Function to copy the this image into the destination image.
+		/// Function to copy an image into this image object.
 		/// </summary>
-		/// <param name="dest">The image that will receive the copy of this image.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="dest"/> parameter is <b>NULL</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown if the format, width, or height of the <paramref name="dest"/> image are not the same as this image.</exception>
+		/// <param name="source">The image that will be copied into this image.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="source"/> parameter is <b>null</b>.</exception>
 		/// <remarks>
 		/// <para>
-		/// This will clone this image into the destination image specified by the <paramref name="dest"/> parameter. All information in the <paramref name="dest"/> image will be replaced by the copy made 
-		/// by this method. If copying parts of an image into a new image is required, then see the <see cref="IGorgonImageBuffer"/>.<see cref="IGorgonImageBuffer.CopyTo"/> method.
+		/// This will clone the <paramref name="source"/> image into the this image. All information in this image will be replaced with the image data present in <paramref name="source"/>. If copying parts of 
+		/// an image into a new image is required, then see the <see cref="IGorgonImageBuffer"/>.<see cref="IGorgonImageBuffer.CopyTo"/> method.
 		/// </para>
 		/// </remarks>
-		public void CopyTo(IGorgonImage dest)
+		public void CopyFrom(IGorgonImage source)
 		{
-			if (dest == null)
+			if (source == null)
 			{
-				throw new ArgumentNullException(nameof(dest));
+				throw new ArgumentNullException(nameof(source));
 			}
 
-			// We need the concrete implementation for this, so we can get at its internals and force a copy.
-			var concreteImage = (GorgonImage)dest;
+			_imageInfo = new GorgonImageInfo(source.Info);
+			_imageData.Dispose();
+			FormatInfo = new GorgonFormatInfo(_imageInfo.Format);
+			SizeInBytes = CalculateSizeInBytes(_imageInfo);
+			Initialize(source.ImageData, true);
+		}
 
-			concreteImage._imageInfo = _imageInfo;
-			concreteImage._imageData.Dispose();
-			concreteImage.FormatInfo = new GorgonFormatInfo(Info.Format);
-			concreteImage.SizeInBytes = CalculateSizeInBytes(Info);
-			concreteImage.Initialize(ImageData, true);
+		/// <summary>
+		/// Function to make a clone of this image.
+		/// </summary>
+		/// <returns>A new <see cref="IGorgonImage"/> that contains an identical copy of this image and its data.</returns>
+		public IGorgonImage Clone()
+		{
+			var image = new GorgonImage(_imageInfo)
+			            {
+				            FormatInfo = new GorgonFormatInfo(_imageInfo.Format),
+							SizeInBytes = CalculateSizeInBytes(_imageInfo)
+			            };
+			image.Initialize(ImageData, true);
+
+			return image;
 		}
 
 		/// <summary>
@@ -502,11 +512,11 @@ namespace Gorgon.Graphics.Imaging
 		/// </summary>
 		/// <param name="info">A <see cref="IGorgonImageInfo"/> containing information used to create the image.</param>
 		/// <param name="data">[Optional] A <see cref="IGorgonPointer"/> that points to a blob of existing image data.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>NULL</b>.</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="GorgonException">Thrown when the image format is unknown or is unsupported.</exception>
 		/// <remarks>
 		/// <para>
-		/// If the <paramref name="data"/> parameter is <b>NULL</b>, then a new, empty, image will be created, otherwise the buffer that is pointed at by <paramref name="data"/> will be wrapped by this 
+		/// If the <paramref name="data"/> parameter is <b>null</b>, then a new, empty, image will be created, otherwise the buffer that is pointed at by <paramref name="data"/> will be wrapped by this 
 		/// object to provide a view of the data as image data. The <paramref name="data"/> passed to this image must be large enough to accomodate the size of the image described by <paramref name="info"/>, 
 		/// otherwise an exception will be thrown. To determine how large the image size will be, in bytes, use the static <see cref="CalculateSizeInBytes(IGorgonImageInfo,PitchFlags)"/> method to determine the 
 		/// potential size of an image prior to creation.

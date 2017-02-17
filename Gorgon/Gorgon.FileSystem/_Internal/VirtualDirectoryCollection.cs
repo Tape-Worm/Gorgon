@@ -92,7 +92,7 @@ namespace Gorgon.IO
 		/// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.
 		/// </summary>
 		/// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="item"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="item"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when this collection already contains a directory with the same name as the <paramref name="item"/> parameter.</exception>
 		private void Add(VirtualDirectory item)
 		{

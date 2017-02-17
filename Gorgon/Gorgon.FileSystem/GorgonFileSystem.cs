@@ -637,7 +637,7 @@ namespace Gorgon.IO
 		/// <param name="directoryMask">The directory name or mask to search for.</param>
 		/// <param name="recursive">[Optional] <b>true</b> to search all child directories, <b>false</b> to search only the immediate directory.</param>
 		/// <returns>An enumerable object containing <see cref="IGorgonVirtualDirectory"/> objects that match the <paramref name="directoryMask"/>.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="directoryMask"/> or the <paramref name="path"/> parameter is <b>null</b> (or Nothing in VB.NET).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="directoryMask"/> or the <paramref name="path"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="directoryMask"/> or the <paramref name="path"/> parameter are empty.</exception>
 		/// <exception cref="DirectoryNotFoundException">Thrown when the directory in specified by the <paramref name="path"/> parameter was not found.</exception>
 		/// <remarks>
@@ -666,7 +666,7 @@ namespace Gorgon.IO
 		/// <param name="directoryMask">The directory name or mask to search for.</param>
 		/// <param name="recursive">[Optional] <b>true</b> to search all child directories, <b>false</b> to search only the immediate directory.</param>
 		/// <returns>An enumerable object containing <see cref="IGorgonVirtualDirectory"/> objects that match the <paramref name="directoryMask"/>.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="directoryMask"/> parameter is <b>null</b> (or Nothing in VB.NET).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="directoryMask"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="directoryMask"/> parameter is empty.</exception>
 		/// <remarks> 
 		/// <para>
@@ -695,7 +695,7 @@ namespace Gorgon.IO
 		/// <param name="fileMask">The file name or mask to search for.</param>
 		/// <param name="recursive">[Optional] <b>true</b> to search all directories, <b>false</b> to search only the immediate directory.</param>
 		/// <returns>An enumerable object containing <see cref="IGorgonVirtualFile"/> objects that match the <paramref name="fileMask"/>.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileMask"/> or the <paramref name="path"/> parameter is <b>null</b> (or Nothing in VB.NET).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileMask"/> or the <paramref name="path"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="fileMask"/> or the <paramref name="path"/> are empty.</exception>
 		/// <exception cref="DirectoryNotFoundException">Thrown when the directory in specified by the <paramref name="path"/> parameter was not found.</exception>
 		/// <remarks>
@@ -724,7 +724,7 @@ namespace Gorgon.IO
 		/// <param name="fileMask">The file name or mask to search for.</param>
 		/// <param name="recursive">[Optional] <b>true</b> to search all directories, <b>false</b> to search only the immediate directory.</param>
 		/// <returns>An enumerable object containing <see cref="IGorgonVirtualFile"/> objects that match the <paramref name="fileMask"/>.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileMask"/> parameter is <b>null</b> (or Nothing in VB.NET).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileMask"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="fileMask"/> is empty.</exception>
 		/// <remarks>
 		/// <para>
@@ -749,8 +749,8 @@ namespace Gorgon.IO
 		/// Function to retrieve a <see cref="IGorgonVirtualFile"/> from the file system.
 		/// </summary>
 		/// <param name="path">Path to the file to retrieve.</param>
-		/// <returns>The <see cref="IGorgonVirtualFile"/> requested or <b>null</b> (<i>Nothing</i> in VB.Net) if the file was not found.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <b>null</b> (or Nothing in VB.NET).</exception>
+		/// <returns>The <see cref="IGorgonVirtualFile"/> requested or <b>null</b> if the file was not found.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="path"/> parameter is empty.
 		/// <para>-or-</para>
 		/// <para>Thrown when there is no file name in the <paramref name="path"/>.</para>
@@ -788,9 +788,9 @@ namespace Gorgon.IO
 		/// Function to retrieve a directory from the file system.
 		/// </summary>
 		/// <param name="path">Path to the directory to retrieve.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net)</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <b>null</b></exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="path"/> parameter is an empty string.</exception>
-		/// <returns>A <see cref="IGorgonVirtualDirectory"/> if found, <b>null</b> (<i>Nothing</i> in VB.Net) if not.</returns>
+		/// <returns>A <see cref="IGorgonVirtualDirectory"/> if found, <b>null</b> if not.</returns>
 		/// <remarks>
 		/// <para>
 		/// This is the primary method of accessing directories from the file system. It will return a <see cref="IGorgonVirtualDirectory"/> object that will allow users retrieve the files or any sub 
@@ -979,7 +979,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="physicalPath">The physical file system path.</param>
 		/// <param name="mountLocation">The virtual sub directory that the physical location is mounted under.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="physicalPath"/> or the <paramref name="mountLocation"/> parameters are <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="physicalPath"/> or the <paramref name="mountLocation"/> parameters are <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="physicalPath"/> or the <paramref name="mountLocation"/> parameters are empty.
 		/// <para>-or-</para>
 		/// <para>Thrown when the mount point with the <paramref name="physicalPath"/> and <paramref name="mountLocation"/> was not found in the file system.</para>
@@ -1020,7 +1020,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="physicalPath">The physical path to unmount.</param>
 		/// <remarks>This overload will unmount all the mounted virtual files/directories for every mount point with the specified <paramref name="physicalPath"/>.</remarks>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="physicalPath"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="physicalPath"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="physicalPath"/> parameter is empty.
 		/// <para>-or-</para>
 		/// <para>Thrown when the mount point with the <paramref name="physicalPath"/> was not found in the file system.</para>
@@ -1056,7 +1056,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="physicalPath">Path to the physical file system directory or file that contains the files/directories to enumerate.</param>
 		/// <param name="mountPath">[Optional] Virtual directory path to mount into.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="physicalPath"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="physicalPath"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="physicalPath"/> parameter is an empty string.
 		/// <para>-or-</para>
 		/// <para>Thrown if mounting a directory and there is no directory in the path.</para>
@@ -1177,7 +1177,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="provider">A single file system provider to assign to this file system.</param>
 		/// <param name="log">[Optional] The application log file.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="provider" /> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="provider" /> parameter is <b>null</b>.</exception>
 		/// <remarks>
 		/// To retrieve a <paramref name="provider"/>, use the <see cref="GorgonFileSystemProviderFactory.CreateProvider"/> method.
 		/// </remarks>
@@ -1200,7 +1200,7 @@ namespace Gorgon.IO
 		/// <remarks>
 		/// To get a list of providers to pass in, use the <see cref="GorgonFileSystemProviderFactory"/> object to create the providers.
 		/// </remarks>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="providers"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="providers"/> parameter is <b>null</b>.</exception>
 		public GorgonFileSystem(IEnumerable<IGorgonFileSystemProvider> providers, IGorgonLog log = null)
 			: this(log)
 		{

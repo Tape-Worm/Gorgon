@@ -303,7 +303,7 @@ namespace Gorgon.UI
 		/// then the application will exit its message loop and shut down.
 		/// </para>
 		/// <para>
-		/// Setting this value to <b>null</b> (<i>Nothing</i> in VB.Net) when no <see cref="MainForm"/> or <see cref="ApplicationContext"/> is assigned will lead to an exception being thrown. This is 
+		/// Setting this value to <b>null</b> when no <see cref="MainForm"/> or <see cref="ApplicationContext"/> is assigned will lead to an exception being thrown. This is 
 		/// because this method is the only thing the application has to do, and without it, there'd be no application processing.
 		/// </para>
 		/// <para> 
@@ -315,7 +315,7 @@ namespace Gorgon.UI
 		/// </para>
 		/// </remarks>
 		/// <exception cref="InvalidOperationException">
-		/// Thrown when an attempt to set this property to <b>null</b> (<i>Nothing</i> in VB.Net) is made and there is no <see cref="MainForm"/> or <see cref="ApplicationContext"/> 
+		/// Thrown when an attempt to set this property to <b>null</b> is made and there is no <see cref="MainForm"/> or <see cref="ApplicationContext"/> 
 		/// attached to the application.
 		/// </exception>
 		public static Func<bool> IdleMethod
@@ -400,7 +400,7 @@ namespace Gorgon.UI
 		/// Property to set or return the current application context.
 		/// </summary>
 		/// <remarks>
-		/// This value will return <b>null</b> (<i>Nothing</i> in VB.Net) if this application wasn't started with the <see cref="Run(System.Windows.Forms.ApplicationContext,System.Func{bool})"/> method.
+		/// This value will return <b>null</b> if this application wasn't started with the <see cref="Run(System.Windows.Forms.ApplicationContext,System.Func{bool})"/> method.
 		/// </remarks>
 		public static ApplicationContext ApplicationContext
 		{
@@ -685,7 +685,7 @@ namespace Gorgon.UI
 		/// </summary>
 		/// <param name="context">The <see cref="System.Windows.Forms.ApplicationContext"/> to use for this application.</param>
 		/// <param name="idleMethod">[Optional] A method to execute while the application is idle.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="context"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="context"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="InvalidOperationException">Thrown when the application is already executing. Check the <see cref="IsRunning"/> property before calling this method.</exception>
 		/// <remarks>
 		/// <para>
@@ -771,7 +771,7 @@ namespace Gorgon.UI
 		/// </summary>
 		/// <param name="mainForm">The main application <see cref="Form"/> to use for this application.</param>
 		/// <param name="idleMethod">[Optional] A method to execute while the application is idle.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="mainForm"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="mainForm"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="InvalidOperationException">Thrown when the application is already executing. Check the <see cref="IsRunning"/> property before calling this method.</exception>
 		/// <remarks>
 		/// <para>
@@ -856,7 +856,7 @@ namespace Gorgon.UI
 		/// Function to begin execution of a <see cref="GorgonApplication"/>.
 		/// </summary>
 		/// <param name="idleMethod">A method to execute while the application is idle.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="idleMethod"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="idleMethod"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="InvalidOperationException">Thrown when the application is already executing. Check the <see cref="IsRunning"/> property before calling this method.</exception>
 		/// <remarks>
 		/// <para>

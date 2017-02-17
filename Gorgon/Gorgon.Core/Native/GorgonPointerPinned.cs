@@ -205,7 +205,7 @@ namespace Gorgon.Native
 		/// <param name="array">Array containing the items to pin.</param>
 		/// <param name="index">Index within the array to pin.</param>
 		/// <param name="count">The number of items in the array to pin.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="array" /> parameter is <b>null</b> (<i>Nothing</i> in VB.Net) (Only when Gorgon is compiled in DEBUG mode).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="array" /> parameter is <b>null</b> (Only when Gorgon is compiled in DEBUG mode).</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="count" /> parameter is less than zero. (Only when Gorgon is compiled in DEBUG mode)
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="count" /> parameter is less than one. (Only when Gorgon is compiled in DEBUG mode)</para>
@@ -280,7 +280,7 @@ namespace Gorgon.Native
 		/// <param name="array">Array containing the items to pin.</param>
 		/// <param name="index">Index within the array to pin.</param>
 		/// <param name="count">The number of items in the array to pin.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="array" /> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="array" /> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="count" /> parameter is less than zero.
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="count" /> parameter is less than one.</para>
@@ -338,7 +338,7 @@ namespace Gorgon.Native
 		/// Initializes a new instance of the <see cref="GorgonPointerPinned{T}"/> class.
 		/// </summary>
 		/// <param name="array">Array containing the items to pin.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="array" /> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="array" /> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when the number of items in the array is less than one.</exception>
 		/// <remarks>
 		/// <para>

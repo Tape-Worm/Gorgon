@@ -26,7 +26,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Windows;
 using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -300,7 +299,7 @@ namespace Gorgon.Graphics
 			// Ensure that we can use this format for display.
 			if ((Graphics.VideoDevice.GetBufferFormatSupport(Info.Format) & D3D11.FormatSupport.Display) != D3D11.FormatSupport.Display)
 			{
-				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, Info.Format));
+				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_FORMAT_NOT_SUPPORTED, Info.Format));
 			}
 
 			if ((Info.Width < 1) || (Info.Height < 1))
@@ -322,17 +321,16 @@ namespace Gorgon.Graphics
 
 				CreateResources();
 				
-				// Make a weak reference to this event so that we don't hold on to objects that should be removed by the GC.
-				WeakEventManager<Control, EventArgs>.AddHandler(Window, nameof(Window.Resize), Window_Resize);
-
+				Window.Resize += Window_Resize;
+				
 				// We assign these events to the parent form so that a window resize is smooth, currently using the Resize event only introduces massive
 				// lag when resizing the back buffers. This will counter that by only resizing when the resize operation ends.
-				WeakEventManager<Form, EventArgs>.AddHandler(_parentForm, nameof(_parentForm.ResizeBegin), ParentForm_ResizeBegin);
-				WeakEventManager<Form, EventArgs>.AddHandler(_parentForm, nameof(_parentForm.ResizeEnd), ParentForm_ResizeEnd);
+				_parentForm.ResizeBegin += ParentForm_ResizeBegin;
+				_parentForm.ResizeEnd += ParentForm_ResizeEnd;
 
 				// Use these events to restore full screen or windowed state when the application regains or loses focus.
-				WeakEventManager<Form, EventArgs>.AddHandler(_parentForm, nameof(_parentForm.Activated), ParentForm_Activated);
-				WeakEventManager<Form, EventArgs>.AddHandler(_parentForm, nameof(_parentForm.Deactivate), ParentForm_Deactivated);
+				_parentForm.Activated += ParentForm_Activated;
+				_parentForm.Deactivate += ParentForm_Deactivated;
 			}
 		}
 
@@ -485,15 +483,15 @@ namespace Gorgon.Graphics
 
 			if (Window != null)
 			{
-				WeakEventManager<Control, EventArgs>.RemoveHandler(Window, nameof(Window.Resize), Window_Resize);
+				Window.Resize -= Window_Resize;
 			}
 
 			if (_parentForm != null)
 			{
-				WeakEventManager<Form, EventArgs>.RemoveHandler(_parentForm, nameof(_parentForm.ResizeBegin), ParentForm_ResizeBegin);
-				WeakEventManager<Form, EventArgs>.RemoveHandler(_parentForm, nameof(_parentForm.ResizeEnd), ParentForm_ResizeEnd);
-				WeakEventManager<Form, EventArgs>.RemoveHandler(_parentForm, nameof(_parentForm.Activated), ParentForm_Activated);
-				WeakEventManager<Form, EventArgs>.RemoveHandler(_parentForm, nameof(_parentForm.Deactivate), ParentForm_Deactivated);
+				_parentForm.ResizeBegin -= ParentForm_ResizeBegin;
+				_parentForm.ResizeEnd -= ParentForm_ResizeEnd;
+				_parentForm.Activated -= ParentForm_Activated;
+				_parentForm.Deactivate -= ParentForm_Deactivated;
 			}
 			
 			ReleaseResources();

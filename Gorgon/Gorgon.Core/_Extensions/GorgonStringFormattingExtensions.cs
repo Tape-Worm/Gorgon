@@ -43,7 +43,7 @@ namespace Gorgon.Core
 		/// <param name="theString">The string to search.</param>
 		/// <param name="character">Character to search for.</param>
 		/// <returns>The index of the character, or -1 if not found.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="theString"/> parameter is <c>null</c> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="theString"/> parameter is <b>null</b>.</exception>
 		public static int IndexOf(this StringBuilder theString, char character)
 		{
 			if (theString == null)
@@ -74,7 +74,7 @@ namespace Gorgon.Core
 		/// <param name="characters">Characters to search for.</param>
 		/// <param name="comparison">[Optional] One of the enumeration values that specifies the rules for the search.</param>
 		/// <returns>The index of the character, or -1 if not found.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="theString"/> parameter is <c>null</c> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="theString"/> parameter is <b>null</b>.</exception>
 		public static int IndexOf(this StringBuilder theString, string characters, StringComparison comparison = StringComparison.InvariantCulture)
 		{
 			if (theString == null)
@@ -106,7 +106,7 @@ namespace Gorgon.Core
 		/// <param name="theString">The string to search.</param>
 		/// <param name="character">Character to search for.</param>
 		/// <returns>The index of the character, or -1 if not found.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="theString"/> parameter is <c>null</c> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="theString"/> parameter is <b>null</b>.</exception>
 		public static int LastIndexOf(this StringBuilder theString, char character)
 		{
 			if (theString == null)
@@ -137,7 +137,7 @@ namespace Gorgon.Core
 		/// <param name="characters">Characters to search for.</param>
 		/// <param name="comparison">[Optional] One of the enumeration values that specifies the rules for the search.</param>
 		/// <returns>The index of the character, or -1 if not found.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="theString"/> parameter is <c>null</c> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="theString"/> parameter is <b>null</b>.</exception>
 		public static int LastIndexOf(this StringBuilder theString, string characters, StringComparison comparison = StringComparison.InvariantCulture)
 		{
 			if (theString == null)
@@ -373,7 +373,7 @@ namespace Gorgon.Core
 		/// If the <paramref name="includeLength"/> parameter is <b>true</b>, then the return value will also include the number of 7-bit bytes required to encode the length of the string.
 		/// </para>
 		/// <para>
-		/// If the <paramref name="encoding"/> parameter is <c>null</c> (<i>Nothing</i> in VB.Net), then UTF-8 encoding will be used.
+		/// If the <paramref name="encoding"/> parameter is <b>null</b>, then UTF-8 encoding will be used.
 		/// </para>
 		/// </remarks>
 		public static int GetByteCount(this string value, bool includeLength, Encoding encoding = null)

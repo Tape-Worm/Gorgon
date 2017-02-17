@@ -149,7 +149,7 @@ namespace Gorgon.Input
 		/// </summary>
 		/// <param name="device">The device to register with the raw input provider.</param>
 		/// <param name="settings">[Optional] Settings for the device type.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="device"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="device"/> parameter is <b>null</b>.</exception>
 		/// <remarks>
 		/// <para>
 		/// This will register the <see cref="IGorgonRawInputDevice"/> with the application. For the very first device of a specific type (e.g. a mouse, keyboard, etc...) the Raw Input object will set up 
@@ -233,7 +233,7 @@ namespace Gorgon.Input
 		/// Function to unregister the device from the raw input provider.
 		/// </summary>
 		/// <param name="device">The device to unregister from the raw input provider.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="device"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="device"/> parameter is <b>null</b>.</exception>
 		/// <remarks>
 		/// This will unregister a previously registered <see cref="IGorgonRawInputDevice"/>. When the last device of a specific type (e.g. a mouse, keyboard, etc...) is unregistered, then the 
 		/// Raw Input messages for that device type will also be unregistered and the application will no longer receive messages from that type of device.
@@ -385,7 +385,7 @@ namespace Gorgon.Input
 		/// </summary>
 		/// <param name="applicationWindow">The main application window.</param>
 		/// <param name="log">[Optional] The logger used for debugging.</param>
-		/// <exception cref="ArgumentNullException">thrown when the <paramref name="applicationWindow"/> is set to <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">thrown when the <paramref name="applicationWindow"/> is set to <b>null</b>.</exception>
 		/// <remarks>
 		/// <para>
 		/// This constructor will only allow Windows Forms controls as the main application window. For other window types, use the overloaded constructor.

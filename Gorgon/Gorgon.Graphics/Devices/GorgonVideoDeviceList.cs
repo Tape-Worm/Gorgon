@@ -354,7 +354,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Function to return a video device by its unique identifier.
 		/// </summary>
-		/// <returns>A <see cref="VideoDeviceInfo"/> for the device with the specified LUID, or <b>null</b> (<i>Nothing</i> in VB.Net) if no device was found with the appropriate <paramref name="luid"/>.</returns>
+		/// <returns>A <see cref="VideoDeviceInfo"/> for the device with the specified LUID, or <b>null</b> if no device was found with the appropriate <paramref name="luid"/>.</returns>
 		public IGorgonVideoDeviceInfo GetByLuid(long luid)
 		{
 			return _devices.FirstOrDefault(item => item.Luid == luid);

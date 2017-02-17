@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using DX = SharpDX;
 using D3D11 = SharpDX.Direct3D11;
 using System.Collections.Generic;
 using Gorgon.Math;
@@ -43,6 +42,12 @@ namespace Gorgon.Graphics
 	public class GorgonPipelineStateInfo 
 		: IGorgonPipelineStateInfo
 	{
+		// Cached copy of the default render target blend state list.
+		private static readonly IGorgonRenderTargetBlendStateInfo[] _defaultRtBlendState =
+		{
+			GorgonRenderTargetBlendStateInfo.Default
+		};
+
 		/// <summary>
 		/// Property to set or return the current pixel shader 
 		/// </summary>
@@ -56,27 +61,6 @@ namespace Gorgon.Graphics
 		/// Property to set or return the current vertex shader 
 		/// </summary>
 		public GorgonVertexShader VertexShader
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the current input layout used to define how vertices are interpreted in a vertex shader and/or vertex buffer.
-		/// </summary>
-		public GorgonInputLayout InputLayout
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the current viewport(s) for this pipeline state information.
-		/// </summary>
-		/// <remarks>
-		/// This will only support up to 16 viewport items. If the array is larger than 16 items, the only the first 16 items will be used.
-		/// </remarks>
-		public DX.ViewportF[] Viewports
 		{
 			get;
 			set;
@@ -149,31 +133,9 @@ namespace Gorgon.Graphics
 		}
 
 		/// <summary>
-		/// Property to set or return the current scissor rectangles used to clip the pixels being rendered.
-		/// </summary>
-		/// <remarks>
-		/// This will only support up to 16 scissor rectangles. If the array is larger than 16 items, the only the first 16 items will be used.
-		/// </remarks>
-		public DX.Rectangle[] ScissorRectangles
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to return the current viewport(s) for this pipeline state information.
-		/// </summary>
-		IReadOnlyList<DX.ViewportF> IGorgonPipelineStateInfo.Viewports => Viewports;
-
-		/// <summary>
 		/// Property to return the current blending state for an individual render target.
 		/// </summary>
 		IReadOnlyList<IGorgonRenderTargetBlendStateInfo> IGorgonPipelineStateInfo.RenderTargetBlendState => RenderTargetBlendState;
-
-		/// <summary>
-		/// Property to return the current scissor rectangles used to clip the pixels being rendered.
-		/// </summary>
-		IReadOnlyList<DX.Rectangle> IGorgonPipelineStateInfo.ScissorRectangles => ScissorRectangles;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonPipelineStateInfo"/> class.
@@ -190,41 +152,21 @@ namespace Gorgon.Graphics
 			IsIndependentBlendingEnabled = info.IsIndependentBlendingEnabled;
 			IsAlphaToCoverageEnabled = info.IsAlphaToCoverageEnabled;
 			PixelShader = info.PixelShader;
-			DepthStencilState = info.DepthStencilState;
-			InputLayout = info.InputLayout;
-			RasterState = info.RasterState;
 			VertexShader = info.VertexShader;
 
-			if (info.RenderTargetBlendState != null)
-			{
-				RenderTargetBlendState = new IGorgonRenderTargetBlendStateInfo[info.RenderTargetBlendState.Count.Min(D3D11.OutputMergerStage.SimultaneousRenderTargetCount)];
+			DepthStencilState = info.DepthStencilState;
+			RasterState = info.RasterState;
 
-				for (int i = 0; i < RenderTargetBlendState.Length; ++i)
-				{
-					RenderTargetBlendState[i] = new GorgonRenderTargetBlendStateInfo(info.RenderTargetBlendState[i]);
-				}
-			}
-
-			if (info.ScissorRectangles != null)
-			{
-				ScissorRectangles = new DX.Rectangle[info.ScissorRectangles.Count.Min(16)];
-
-				for (int i = 0; i < ScissorRectangles.Length.Min(16); ++i)
-				{
-					ScissorRectangles[i] = info.ScissorRectangles[i];
-				}
-			}
-
-			if (info.Viewports == null)
+			if (info.RenderTargetBlendState == null)
 			{
 				return;
 			}
 
-			Viewports = new DX.ViewportF[info.Viewports.Count.Min(16)];
+			RenderTargetBlendState = new IGorgonRenderTargetBlendStateInfo[info.RenderTargetBlendState.Count.Min(D3D11.OutputMergerStage.SimultaneousRenderTargetCount)];
 
-			for (int i = 0; i < Viewports.Length.Min(16); ++i)
+			for (int i = 0; i < RenderTargetBlendState.Length; ++i)
 			{
-				Viewports[i] = info.Viewports[i];
+				RenderTargetBlendState[i] = new GorgonRenderTargetBlendStateInfo(info.RenderTargetBlendState[i]);
 			}
 		}
 
@@ -233,6 +175,9 @@ namespace Gorgon.Graphics
 		/// </summary>
 		public GorgonPipelineStateInfo()
 		{
+			RasterState = GorgonRasterStateInfo.Default;
+			DepthStencilState = GorgonDepthStencilStateInfo.Default;
+			RenderTargetBlendState = _defaultRtBlendState;
 		}
 	}
 }

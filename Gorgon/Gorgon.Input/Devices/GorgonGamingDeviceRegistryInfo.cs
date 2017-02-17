@@ -40,11 +40,11 @@ namespace Gorgon.Input
 		/// Function to get the human readable name for a gaming device from a <see cref="GorgonRawHIDInfo"/> object.
 		/// </summary>
 		/// <param name="hidDeviceInfo">The human interface device information to evaluate.</param>
-		/// <returns>A string containing the human readable name for the gaming device, or <b>null</b> (<i>Nothing</i> in VB.Net) if the device name could not be determined.</returns>
+		/// <returns>A string containing the human readable name for the gaming device, or <b>null</b> if the device name could not be determined.</returns>
 		/// <remarks>
 		/// <para>
 		/// This will retrieve the friendly name for a gaming device from a <see cref="GorgonRawHIDInfo"/> object. If the <see cref="GorgonRawHIDInfo.Usage"/> is not a <see cref="HIDUsage.Gamepad"/> or 
-		/// <see cref="HIDUsage.Joystick"/>, or it does not have a <see cref="GorgonRawHIDInfo.HIDPath"/>, this method will return <b>null</b> (<i>Nothing</i> in VB.Net).
+		/// <see cref="HIDUsage.Joystick"/>, or it does not have a <see cref="GorgonRawHIDInfo.HIDPath"/>, this method will return <b>null</b>.
 		/// </para>
 		/// <para>
 		/// This is meant for raw input gaming human interface devices. As such, if this is used on an XInput controller, then the device will not be given a name and <b>null</b> will be returned. If 

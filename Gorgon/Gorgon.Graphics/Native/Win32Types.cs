@@ -36,7 +36,7 @@ namespace Gorgon.Native
 	enum MonitorFlags
 	{
 		/// <summary>
-		/// Return NULL.
+		/// Return <b>null</b>.
 		/// </summary>
 		MONITOR_DEFAULTTONULL = 0,
 		/// <summary>

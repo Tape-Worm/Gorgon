@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doc>
+  <assembly>
+    <name>Gorgon.Graphics</name>
+  </assembly>
+  <members>
+    <member name="N:Gorgon.Graphics" />
+    <member name="T:Gorgon.Graphics.GorgonFont"> <summary>
+ A font used to render text data.
+ </summary>
+ <remarks>
+ <para>
+ This type contains all the necessary information used to render glyphs to represent characters on the screen. Complete kerning information is provided as well (if available on the original font object),
+ and can be customized by the user.
+ </para>
+ <para>
+ The font also contains a customizable glyph collection that users can modify to provide custom glyph to character mapping (e.g. a special texture used for a single character).
+ </para>
+ <para>
+ Applications can also persist this font to a <see cref="T:System.IO.Stream"/> or file for reuse.
+ </para>
+ </remarks></member>
+  </members>
+</doc>
