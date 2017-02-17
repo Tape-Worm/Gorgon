@@ -113,7 +113,7 @@ namespace Gorgon.IO
 		/// Property to return the parent of this directory.
 		/// </summary>
 		/// <remarks>
-		/// If this value is <b>null</b> (<i>Nothing</i> in VB.Net), then this will be the root directory for the file system.
+		/// If this value is <b>null</b>, then this will be the root directory for the file system.
 		/// </remarks>
 		IGorgonVirtualDirectory IGorgonVirtualDirectory.Parent => Parent;
 
@@ -121,7 +121,7 @@ namespace Gorgon.IO
 		/// Property to return the parent of this directory.
 		/// </summary>
 		/// <remarks>
-		/// If this value is <b>null</b> (<i>Nothing</i> in VB.Net), then this will be the root directory for the file system.
+		/// If this value is <b>null</b>, then this will be the root directory for the file system.
 		/// </remarks>
 		public VirtualDirectory Parent
 		{
@@ -196,7 +196,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="file">The <see cref="IGorgonVirtualFile"/> to search for.</param>
 		/// <returns><b>true</b> if found, <b>false</b> if not.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="file"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="file"/> parameter is <b>null</b>.</exception>
 		/// <remarks>
 		/// Use this to determine if a <see cref="IGorgonVirtualFile"/> exists under this directory or any of its sub directories. This search includes all sub directories for this and child directories. 
 		/// To determine if a file exists in the immediate directory, use the <see cref="IGorgonNamedObjectReadOnlyDictionary{T}.Contains"/> method.
@@ -216,7 +216,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="fileName">The name of the file to search for.</param>
 		/// <returns><b>true</b> if found, <b>false</b> if not.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileName"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileName"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="fileName"/> parameter is empty.</exception>
 		/// <remarks>
 		/// Use this to determine if a <see cref="IGorgonVirtualFile"/> exists under this directory or any of its sub directories. This search includes all sub directories for this and child directories. 

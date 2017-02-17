@@ -348,7 +348,7 @@ namespace Gorgon.IO
 		/// <param name="appSpecificIds">The allowable application specific ids for file validation.</param>
 		/// <remarks>
 		/// </remarks>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/>, or the <paramref name="appSpecificIds"/> parameters are <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/>, or the <paramref name="appSpecificIds"/> parameters are <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="appSpecificIds"/> contains no values.
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="stream"/> is write-only</para>

@@ -112,7 +112,7 @@ namespace Gorgon.IO.Providers
 		/// Some providers will compress files, and the actual size will not match the <see cref="IGorgonPhysicalFileInfo.Length"/> property. This property will return the true size of the file in the physical file system. 
 		/// </para>
 		/// <para>
-		/// For file system providers that do not support compression, this value will be <b>null</b> (<i>Nothing</i> in VB.Net).
+		/// For file system providers that do not support compression, this value will be <b>null</b>.
 		/// </para>
 		/// </remarks>
 		public long? CompressedLength => null;

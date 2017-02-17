@@ -60,7 +60,7 @@ namespace Gorgon.Input
 		/// </summary>
 		/// <param name="driverType">The fully qualified type name of the driver to load.</param>
 		/// <returns>The gaming device driver plug in.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="driverType"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net)</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="driverType"/> parameter is <b>null</b></exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="driverType"/> parameter is empty
 		/// <para>-or-</para>
 		/// <para>Thrown when the driver type name specified by <paramref name="driverType"/> was not found in any of the loaded plug in assemblies.</para>
@@ -96,7 +96,7 @@ namespace Gorgon.Input
 		/// </summary>
 		/// <param name="plugInService">The plug in service to use when loading drivers.</param>
 		/// <param name="log">[Optional] The logger used for debugging.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="plugInService"/> is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="plugInService"/> is <b>null</b>.</exception>
 		public GorgonGamingDeviceDriverFactory(IGorgonPluginService plugInService, IGorgonLog log = null)
 		{
 			_log = log ?? GorgonLogDummy.DefaultInstance;

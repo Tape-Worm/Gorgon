@@ -194,7 +194,11 @@ namespace Gorgon.Graphics
 		/// <typeparam name="T">Type of data to copy into the resource.  The data must be a value type.</typeparam>
 		/// <param name="guid">GUID to associate with the data.</param>
 		/// <param name="data">Data to set.</param>
-		/// <remarks>Set <paramref name="data"/> to NULL (<i>Nothing</i> in VB.Net) to remove the data from the resource.</remarks>
+		/// <remarks>
+		/// <para>
+		/// Set <paramref name="data"/> to <b>null</b> to remove the data from the resource.
+		/// </para>
+		/// </remarks>
 		public void SetApplicationData<T>(Guid guid, T? data)
 			where T : struct
 		{
@@ -273,7 +277,7 @@ namespace Gorgon.Graphics
 		/// Names for the resource are required, but do not need to be unique. These are used to help with debugging and can be used for managing resources in an application.
 		/// </para>
 		/// </remarks>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception> 
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception> 
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
 		protected GorgonResource(GorgonGraphics graphics, string name)
 		{

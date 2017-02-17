@@ -64,7 +64,7 @@ namespace Gorgon.IO
 		/// <param name="count">The number of bytes to copy.</param>
 		/// <param name="bufferSize">[Optional] The size of the temporary buffer used to buffer the data between streams.</param>
 		/// <returns>The number of bytes copied, or 0 if no data was copied or at the end of a stream.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="destination"/>, or the <paramref name="stream"/> parameters are <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="destination"/>, or the <paramref name="stream"/> parameters are <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="stream"/> is write-only.
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="destination"/> is read-only.</para>
@@ -155,7 +155,7 @@ namespace Gorgon.IO
 		/// <para>
 		/// This will encode the string as a series of bytes into a stream.  The length of the string, in bytes, will be prefixed to the string as a series of 7 bit byte values.
 		/// </para>
-		/// <para>If the <paramref name="encoding"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net), then UTF-8 encoding will be used.</para>
+		/// <para>If the <paramref name="encoding"/> parameter is <b>null</b>, then UTF-8 encoding will be used.</para>
 		/// <para>
 		/// This method is <b>not</b> thread safe. Use care when using threads with this method.
 		/// </para>
@@ -216,7 +216,7 @@ namespace Gorgon.IO
 		/// Gorgon stores its strings in a stream by prefixing the string data with the length of the string, in bytes.  This length is encoded as a series of 7-bit bytes.
 		/// </para>
 		/// <para>
-		/// If the <paramref name="encoding"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net), then UTF-8 encoding is used.
+		/// If the <paramref name="encoding"/> parameter is <b>null</b>, then UTF-8 encoding is used.
 		/// </para>
 		/// <para>
 		/// This method is <b>not</b> thread safe. Use care when using threads with this method.
@@ -280,7 +280,7 @@ namespace Gorgon.IO
 		/// Gorgon stores its strings in a stream by prefixing the string data with the length of the string.  This length is encoded as a series of 7-bit bytes.
 		/// </para>
 		/// <para>
-		/// If the <paramref name="encoding"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net), then UTF-8 encoding is used.
+		/// If the <paramref name="encoding"/> parameter is <b>null</b>, then UTF-8 encoding is used.
 		/// </para>
 		/// <para>
 		/// This method is <b>not</b> thread safe. Use care when using threads with this method.
@@ -387,7 +387,7 @@ namespace Gorgon.IO
 		/// This will replace any illegal filename characters with the underscore character.
 		/// </para>
 		/// <para>
-		/// If <b>null</b> (<i>Nothing</i> in VB.Net) or <see cref="string.Empty"/> are passed to this method, then an empty string will be returned. If the path does not contain a 
+		/// If <b>null</b> or <see cref="string.Empty"/> are passed to this method, then an empty string will be returned. If the path does not contain a 
 		/// filename, then an empty string will be returned as well.
 		/// </para>
 		/// </remarks>
@@ -430,7 +430,7 @@ namespace Gorgon.IO
         /// passed to <paramref name="directorySeparator"/>.
         /// </para>
         /// <para>
-		/// If <b>null</b> (<i>Nothing</i> in VB.Net) or <see cref="string.Empty"/> are passed to this method, then an empty string will be returned. If the path contains only a filename, 
+		/// If <b>null</b> or <see cref="string.Empty"/> are passed to this method, then an empty string will be returned. If the path contains only a filename, 
 		/// that string will be formatted as though it were a directory path.
 		/// </para>
         /// </remarks>
@@ -508,7 +508,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="path">The path to split.</param>
 		/// <param name="directorySeparator">The separator to split the path on.</param>
-		/// <returns>An array containing the parts of the path, or an empty array if the path is <b>null</b> (<i>Nothing</i> in VB.Net) or empty.</returns>
+		/// <returns>An array containing the parts of the path, or an empty array if the path is <b>null</b> or empty.</returns>
 		/// <remarks>
 		/// This will take a path a split it into individual pieces for evaluation. The <paramref name="directorySeparator"/> parameter will be the character 
 		/// used to determine how to split the path. For example:
@@ -631,7 +631,7 @@ namespace Gorgon.IO
 		/// </list>
 		/// </para>
 		/// </remarks>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="chunkName"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="chunkName"/> parameter is <b>null</b>.</exception>
 		public static ulong ChunkID(this string chunkName)
 		{
 			if (chunkName == null)

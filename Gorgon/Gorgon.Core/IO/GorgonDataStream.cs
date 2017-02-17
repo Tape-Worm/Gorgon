@@ -1486,7 +1486,7 @@ namespace Gorgon.IO
 		/// This constructor will take an <see cref="IGorgonPointer"/>, and wrap it within this stream object. The stream will <b>not</b> own the <see cref="IGorgonPointer"/>, and consequently, will 
 		/// not be responsible for freeing the memory it may have allocated. To free the memory, the code that created the <see cref="IGorgonPointer"/> must call its dispose method.
 		/// </remarks>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="pointer"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="pointer"/> parameter is <b>null</b>.</exception>
 		public GorgonDataStream(IGorgonPointer pointer)
 		{
 			if (pointer == null)

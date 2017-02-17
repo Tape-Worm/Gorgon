@@ -128,7 +128,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// </summary>
 		/// <param name="filePath">Path to the animated GIF file.</param>
 		/// <returns>An array of frame delays (1/100th of a second), or an empty array if the image is not an animated GIF.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thown when the filePath parameter is empty.</exception>
 		/// <exception cref="IOException">Thrown when the stream parameter is write-only.
 		/// <para>-or-</para>
@@ -165,7 +165,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// </summary>
         /// <param name="stream">Stream containing the animated GIF.</param>
         /// <returns>An array of frame delays (1/100th of a second), or an empty array if the image is not an animated GIF.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
         /// <exception cref="IOException">Thrown when the stream parameter is write-only.
         /// <para>-or-</para>
         /// <para>The data in the stream could not be decoded as GIF file.</para>

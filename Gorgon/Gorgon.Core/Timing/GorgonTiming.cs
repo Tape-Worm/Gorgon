@@ -375,7 +375,7 @@ namespace Gorgon.Timing
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// This value cannot be set to <b>null</b> (<i>Nothing</i> in VB.Net).
+		/// This value cannot be set to <b>null</b>.
 		/// </para>
 		/// </remarks>
 		public static IGorgonTimer Timer

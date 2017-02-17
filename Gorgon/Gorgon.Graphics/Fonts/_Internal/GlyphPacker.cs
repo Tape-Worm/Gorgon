@@ -36,7 +36,8 @@ namespace Gorgon.Graphics
 	class GlyphNode
 	{
 		#region Variables.
-		private bool _noMoreRoom;				// Flag to indicate that there is no more room to add a leaf.
+		// Flag to indicate that we have no more space.
+		private bool _noMoreRoom;
 		#endregion
 
 		#region Properties.
@@ -80,7 +81,6 @@ namespace Gorgon.Graphics
 		/// Property to return whether this node is a leaf node.
 		/// </summary>
 		public bool IsLeaf => ((Left == null) && (Right == null));
-
 		#endregion
 
 		#region Methods.
@@ -153,7 +153,7 @@ namespace Gorgon.Graphics
 	/// <summary>
 	/// Used to determine where glyphs should be packed onto a texture.
 	/// </summary>
-	static class GorgonGlyphPacker
+	static class GlyphPacker
 	{
 		#region Properties.
 		/// <summary>
@@ -170,12 +170,13 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Function to create the root node.
 		/// </summary>
-		/// <param name="imageSize">Size of the image.</param>
-		public static void CreateRoot(Size imageSize)
+		/// <param name="textureWidth">The width of the texture.</param>
+		/// <param name="textureHeight">The height of the texture.</param>
+		public static void CreateRoot(int textureWidth, int textureHeight)
 		{
 			Root = new GlyphNode(null)
 				{
-					Region = new Rectangle(0, 0, imageSize.Width, imageSize.Height)
+					Region = new Rectangle(0, 0, textureWidth, textureHeight)
 				};
 		}
 
@@ -183,7 +184,7 @@ namespace Gorgon.Graphics
 		/// Function to add a node to the 
 		/// </summary>
 		/// <param name="dimensions">The glyph dimensions.</param>
-		/// <returns>A rectangle for the area on the image that the glyph will be located at.  NULL if there's no room.</returns>
+		/// <returns>A rectangle for the area on the image that the glyph will be located at, or <b>null</b> if there's no room.</returns>
 		public static Rectangle? Add(Size dimensions)
 		{
 			if ((dimensions.Width > Root.Region.Width) || (dimensions.Height > Root.Region.Height))
@@ -199,12 +200,7 @@ namespace Gorgon.Graphics
 
 			GlyphNode newNode = Root.AddNode(dimensions);
 
-			if (newNode == null)
-			{
-				return null;
-			}
-
-			return newNode.Region;
+			return newNode?.Region;
 		}
 		#endregion
 	}

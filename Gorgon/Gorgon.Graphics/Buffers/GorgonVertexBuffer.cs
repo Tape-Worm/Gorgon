@@ -133,11 +133,18 @@ namespace Gorgon.Graphics
 
 			_log.Print($"{Name} Vertex Buffer: Creating D3D11 buffer. Size: {SizeInBytes} bytes", LoggingLevel.Simple);
 
+			D3D11.BindFlags bindFlags = D3D11.BindFlags.VertexBuffer;
+
+			if (_info.IsStreamOut)
+			{
+				bindFlags |= D3D11.BindFlags.StreamOutput;
+			}
+
 			var desc  = new D3D11.BufferDescription
 			{
 				SizeInBytes = Info.SizeInBytes,
 				Usage = _info.Usage,
-				BindFlags = D3D11.BindFlags.VertexBuffer,
+				BindFlags = bindFlags,
 				OptionFlags = D3D11.ResourceOptionFlags.None,
 				CpuAccessFlags = cpuFlags,
 				StructureByteStride = 0

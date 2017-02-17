@@ -337,7 +337,7 @@ namespace Gorgon.Native
 		/// <param name="array">The array that will receive the data from unmanaged memory.</param>
 		/// <param name="index">The index in the array to start at.</param>
 		/// <param name="count">The number of items to fill the array with.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="array"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="array"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/>, or the <paramref name="count"/> parameters are less than zero.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="index"/> + the <paramref name="count"/> is larger than the total length of <paramref name="array"/>.
 		/// <para>-or-</para>
@@ -368,7 +368,7 @@ namespace Gorgon.Native
 		/// <param name="array">The array that will receive the data from unmanaged memory.</param>
 		/// <param name="index">The index in the array to start at.</param>
 		/// <param name="count">The number of items to fill the array with.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="array"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="array"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/>, or the <paramref name="count"/> parameters are less than zero.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="index"/> + the <paramref name="count"/> is larger than the total length of <paramref name="array"/>.</exception>
 		/// <remarks>
@@ -397,7 +397,7 @@ namespace Gorgon.Native
 		/// <typeparam name="T">Type of value in the array. Must be a value or primitive type.</typeparam>
 		/// <param name="offset">Offset within the unmanaged memory to start reading from, in bytes.</param>
 		/// <param name="array">The array that will receive the data from unmanaged memory.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="array"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="array"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when a buffer overrun is detected because the size, in bytes, of the array length plus the <paramref name="offset"/> is too large for the unmanaged memory represented by this <see cref="IGorgonPointer"/>.
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="offset"/> is less than 0.</para>
@@ -423,7 +423,7 @@ namespace Gorgon.Native
 		/// </summary>
 		/// <typeparam name="T">Type of value in the array. Must be a value or primitive type.</typeparam>
 		/// <param name="array">The array that will receive the data from unmanaged memory.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="array"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="array"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when a buffer overrun is detected because the size, in bytes, of the array length is too large for the unmanaged memory represented by this <see cref="IGorgonPointer"/>.</exception>
 		/// <remarks>
 		/// <para>
@@ -453,7 +453,7 @@ namespace Gorgon.Native
 		/// <param name="array">The array that will be copied into unmanaged memory.</param>
 		/// <param name="index">The index in the array to start copying from.</param>
 		/// <param name="count">The number of items to in the array to copy.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="array"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="array"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/>, or the <paramref name="count"/> parameters are less than zero.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="index"/> + the <paramref name="count"/> is larger than the total length of <paramref name="array"/>.
 		/// <para>-or-</para>
@@ -483,7 +483,7 @@ namespace Gorgon.Native
 		/// <typeparam name="T">Type of value in the array. Must be a value or primitive type.</typeparam>
 		/// <param name="offset">Offset, in bytes, within the unmanaged memory to start writing into.</param>
 		/// <param name="array">The array that will be copied into unmanaged memory.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="array"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="array"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when a buffer overrun is detected because the size, in bytes, of the array length plus the <paramref name="offset"/> is too large for the unmanaged memory represented by this <see cref="IGorgonPointer"/>.
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="offset"/> is less than zero.</para>
@@ -511,7 +511,7 @@ namespace Gorgon.Native
 		/// <param name="array">The array that will be copied into unmanaged memory.</param>
 		/// <param name="index">The index in the array to start copying from.</param>
 		/// <param name="count">The number of items to in the array to copy.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="array"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="array"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/>, or the <paramref name="count"/> parameters are less than zero.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="index"/> + the <paramref name="count"/> is larger than the total length of <paramref name="array"/>.
 		/// <para>-or-</para>
@@ -542,7 +542,7 @@ namespace Gorgon.Native
 		/// </summary>
 		/// <typeparam name="T">Type of value in the array. Must be a value or primitive type.</typeparam>
 		/// <param name="array">The array that will be copied into unmanaged memory.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="array"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="array"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when a buffer overrun is detected because the size, in bytes, of the array length is too large for the unmanaged memory represented by this <see cref="IGorgonPointer"/>.</exception>
 		/// <remarks>
 		/// <para>
@@ -575,7 +575,7 @@ namespace Gorgon.Native
 		/// <param name="sourceOffset">The offset, in bytes, within the source to start copying from.</param>
 		/// <param name="sourceSize">The number of bytes to copy from the source.</param>
 		/// <param name="destinationOffset">[Optional] The offset, in bytes, within this <see cref="IGorgonPointer"/> to start copying to.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="source"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="source"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="sourceOffset"/>, <paramref name="sourceSize"/>, or the <paramref name="destinationOffset"/> parameters are less than zero.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="sourceOffset"/> plus the <paramref name="sourceSize"/> exceeds the size of the source <paramref name="source"/>.
 		/// <para>-or-</para>
@@ -604,7 +604,7 @@ namespace Gorgon.Native
 		/// </summary>
 		/// <param name="source">The <see cref="IGorgonPointer"/> to copy data from.</param>
 		/// <param name="sourceSize">The number of bytes to copy from the source.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="source"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="source"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="sourceSize"/> parameter is less than zero.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="sourceSize"/> will exceeds the size of the source <paramref name="source"/> or the destination pointer.</exception>
 		/// <remarks>

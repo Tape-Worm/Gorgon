@@ -23,7 +23,7 @@
 // Created: July 30, 2016 12:41:48 PM
 // 
 #endregion
-
+using System;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics
@@ -37,6 +37,7 @@ namespace Gorgon.Graphics
 	/// </para>
 	/// </remarks>
 	public interface IGorgonRenderTargetBlendStateInfo
+		: IEquatable<IGorgonRenderTargetBlendStateInfo>
 	{
 		/// <summary>
 		/// Property to return whether blending should be enabled for this render target.
@@ -187,12 +188,5 @@ namespace Gorgon.Graphics
 		{
 			get;
 		}
-
-		/// <summary>
-		/// Function to compare equality for this and another <see cref="IGorgonRenderTargetBlendStateInfo"/>.
-		/// </summary>
-		/// <param name="info">The <see cref="IGorgonRenderTargetBlendStateInfo"/> to compare.</param>
-		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-		bool IsEqual(IGorgonRenderTargetBlendStateInfo info);
 	}
 }

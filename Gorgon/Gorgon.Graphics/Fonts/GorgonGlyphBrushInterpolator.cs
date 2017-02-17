@@ -64,7 +64,7 @@ namespace Gorgon.Graphics.Fonts
 		/// </returns>
 		public override string ToString()
 		{
-			return string.Format(Resources.GORGFX_FONT_BRUSH_INTERPOL_TOSTRING,
+			return string.Format(Resources.GORGFX_TOSTR_FONT_BRUSH_INTERPOLATION,
 			                     Weight,
 			                     Color.Red,
 			                     Color.Green,

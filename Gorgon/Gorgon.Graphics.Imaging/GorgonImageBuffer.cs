@@ -125,7 +125,7 @@ namespace Gorgon.Graphics.Imaging
 		/// <param name="sourceRegion">[Optional] The region in the source to copy.</param>
 		/// <param name="destX">[Optional] Horizontal offset in the destination buffer.</param>
 		/// <param name="destY">[Optional] Vertical offset in the destination buffer.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="buffer" /> parameter is <b>NULL</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="buffer" /> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="buffer" /> is not the same format as this buffer.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when the source region does not fit within the bounds of this buffer.</exception>
 		/// <remarks>
@@ -134,7 +134,7 @@ namespace Gorgon.Graphics.Imaging
 		/// destination size. If this buffer, and the buffer passed to <paramref name="buffer"/> share the same pointer address, then this method will return immediately without making any changes.
 		/// </para>
 		/// <para>
-		/// Users may define an area on this buffer to copy by specifying the <paramref name="sourceRegion" /> parameter. If <b>NULL</b> is passed to this parameter, then the entire buffer will be copied 
+		/// Users may define an area on this buffer to copy by specifying the <paramref name="sourceRegion" /> parameter. If <b>null</b> is passed to this parameter, then the entire buffer will be copied 
 		/// to the destination.
 		/// </para>
 		/// <para>

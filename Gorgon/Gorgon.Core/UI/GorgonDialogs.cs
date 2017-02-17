@@ -214,7 +214,7 @@ namespace Gorgon.UI
 		/// If <paramref name="autoShowDetails"/> is set to <b>true</b>, then the details pane will automatically be shown when the window appears.
 		/// </para>
 		/// <para>
-		/// If the <paramref name="message"/> parameter is <b>null</b> (<i>Nothing in VB.Net</i>) or an empty string, then the <see cref="Exception.Message"/> property is used to display the error message.
+		/// If the <paramref name="message"/> parameter is <b>null</b> or an empty string, then the <see cref="Exception.Message"/> property is used to display the error message.
 		/// </para>
 		/// </remarks>
 		public static void ErrorBox(Form owner, string message, string caption, Exception exception, bool autoShowDetails = false)
@@ -253,7 +253,7 @@ namespace Gorgon.UI
 		/// <remarks>
 		/// <para>
 		/// This will display an enhanced error dialog with a details button. This button will expand the window to show the <paramref name="details"/> passed to the method. If the <paramref name="details"/> 
-		/// are <b>null</b> (<i>Nothing</i> in VB.Net), or empty, then the details button will not show.
+		/// are <b>null</b>, or empty, then the details button will not show.
 		/// </para>
 		/// <para>
 		/// If <paramref name="autoShowDetails"/> is set to <b>true</b>, then the details pane will automatically be shown when the window appears. This only applies when the <paramref name="details"/> parameter 
@@ -348,7 +348,7 @@ namespace Gorgon.UI
 		/// <remarks>
 		/// <para>
 		/// This will show an enhanced warning dialog with a details button. This button will expand the window to show the <paramref name="details"/> passed to the method. If the <paramref name="details"/> 
-		/// are <b>null</b> (<i>Nothing</i> in VB.Net), or empty, then the details button will not show.
+		/// are <b>null</b>, or empty, then the details button will not show.
 		/// </para>
 		/// <para>
 		/// If <paramref name="autoShowDetails"/> is set to <b>true</b>, then the details pane will automatically be shown when the window appears. This only applies when the <paramref name="details"/> parameter 

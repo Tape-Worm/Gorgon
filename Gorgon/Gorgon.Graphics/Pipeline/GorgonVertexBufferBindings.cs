@@ -28,7 +28,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Gorgon.Core;
+using Gorgon.Diagnostics;
+using Gorgon.Graphics.Pipeline;
 using Gorgon.Graphics.Properties;
 using D3D11 = SharpDX.Direct3D11;
 
@@ -43,139 +46,229 @@ namespace Gorgon.Graphics
 	/// </para>
 	/// </remarks>
 	public sealed class GorgonVertexBufferBindings
-		: IList<GorgonVertexBufferBinding>, IReadOnlyList<GorgonVertexBufferBinding>
+		: IGorgonBoundList<GorgonVertexBufferBinding>, IReadOnlyList<GorgonVertexBufferBinding>
 	{
 		#region Variables.
 		// The list of D3D11 vertex buffer bindings.
-		private D3D11.VertexBufferBinding[] _actualBindings = new D3D11.VertexBufferBinding[1];
-		// The list of vertex buffer bindings.
+		private D3D11.VertexBufferBinding[] _nativeBindings = new D3D11.VertexBufferBinding[0];
+		// The list of bindings associated with this object.
 		private readonly GorgonVertexBufferBinding[] _bindings = new GorgonVertexBufferBinding[D3D11.InputAssemblerStage.VertexInputResourceSlotCount];
 		#endregion
 
 		#region Properties.
 		/// <summary>
-		/// Property to return the number of binding slots actually used.
+		/// Property to return the D3D11 vertex buffer binding array.
+		/// </summary>
+		internal D3D11.VertexBufferBinding[] D3DBindings => _nativeBindings;
+
+		/// <summary>
+		/// Property to return the maximum number of bindings that can be held in this list.
+		/// </summary>
+		public int Count => _bindings.Length;
+
+		/// <summary>
+		/// Property to return the starting index begin binding at.
+		/// </summary>
+		int IGorgonBoundList<GorgonVertexBufferBinding>.BindIndex => 0;
+
+		/// <summary>
+		/// Property to return the input layout assigned to the buffer bindings.
 		/// </summary>
 		/// <remarks>
-		/// This will return the total count from the start to the last <b>non-null</b> entry.  For example, if index 0 is <b>non-null</b>, index 1 is <b>null</b> and index 2 is <b>non-null</b>, then this 
-		/// property would return 3 because the item at index 2 is <b>non-null</b>, regardless of whether index 1 is <b>null</b> or not.
+		/// The input layout defines how the vertex data is arranged within the vertex buffers.
 		/// </remarks>
-		public int BindCount
+		public GorgonInputLayout InputLayout
 		{
 			get;
-			private set;
+			internal set;
 		}
 
 		/// <summary>
-		/// Property to return the D3D11 vertex buffer binding array.
+		/// Property to return the number of binding slots actually used.
 		/// </summary>
-		internal D3D11.VertexBufferBinding[] D3DBindings => _actualBindings;
+		public int BindCount => _nativeBindings.Length;
 
 		/// <summary>
-		/// Property to set or return the <see cref="GorgonVertexBufferBinding"/> at the given index.
+		/// Property to return whether there are items to bind in this list.
 		/// </summary>
+		public bool IsEmpty => _nativeBindings.Length == 0;
+
+		/// <summary>Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</summary>
+		/// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only; otherwise, false.</returns>
+		bool ICollection<GorgonVertexBufferBinding>.IsReadOnly => false;
+
+		/// <summary>Gets the element at the specified index in the read-only list.</summary>
+		/// <returns>The element at the specified index in the read-only list.</returns>
+		/// <param name="index">The zero-based index of the element to get. </param>
 		public GorgonVertexBufferBinding this[int index]
 		{
 			get
 			{
 				return _bindings[index];
 			}
-
 			set
 			{
-				GorgonVertexBufferBinding binding = _bindings[index];
-
-				if (binding.Equals(ref value))
-				{
-					return;
-				}
-				
 				_bindings[index] = value;
 
-				BindCount = 0;
-				for (int i = 0; i < _bindings.Length; ++i)
+				if (GorgonVertexBufferBinding.Empty.Equals(value))
 				{
-					binding = _bindings[i];
-#if DEBUG
-					// Do not allow us have the same binding in more than one slot.
-					if ((i != index) && (binding.VertexBuffer != null) && (GorgonVertexBufferBinding.Equals(ref binding, ref value)))
-					{
-						throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_VERTEXBUFFER_ALREADY_BOUND, value.VertexBuffer.Name, i));
-					}
-#endif
-
-					if (binding.VertexBuffer != null)
-					{
-						BindCount = i + 1;
-					}
+					_nativeBindings = new D3D11.VertexBufferBinding[0];
+					return;
 				}
 
-				// This creates garbage, but there's not a whole lot we can do because the SetVertexBuffers method on the IA does not allow us to specify a count.
-				// If we had proper array slicing, this wouldn't be a problem as we'd be able to pass back the array as a slice of itself (aliased).
-				// Maybe .NET 4.7/5.0/whatever will bring this in?
-				if (_actualBindings.Length != BindCount)
+				if ((_nativeBindings == null)
+				    || (_nativeBindings.Length != 1))
 				{
-					_actualBindings = new D3D11.VertexBufferBinding[BindCount];
+					_nativeBindings = new D3D11.VertexBufferBinding[1];
 				}
-
-				_actualBindings[index] = value.ToVertexBufferBinding();
 			}
 		}
-
-		/// <summary>Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
-		/// <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
-		public int Count => _bindings.Length;
-
-		/// <summary>Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</summary>
-		/// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only; otherwise, false.</returns>
-		bool ICollection<GorgonVertexBufferBinding>.IsReadOnly => false;
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Function to copy the vertex buffer binding states from another list into this one.
-		/// </summary>
-		/// <param name="bindings">The bindings to copy.</param>
-		internal void CopyFrom(GorgonVertexBufferBindings bindings)
+		/// <summary>Returns an enumerator that iterates through the collection.</summary>
+		/// <returns>An enumerator that can be used to iterate through the collection.</returns>
+		/// <filterpriority>1</filterpriority>
+		public IEnumerator<GorgonVertexBufferBinding> GetEnumerator()
 		{
-			if (bindings == null)
+			for (int i = 0; i < _bindings.Length; ++i)
 			{
-				Clear();
-				return;
-			}
-
-			BindCount = bindings.BindCount;
-
-			for (int i = 0; i < BindCount; ++i)
-			{
-				_actualBindings[i] = bindings._actualBindings[i];
-				_bindings[i] = bindings._bindings[i];
+				yield return _bindings[i];
 			}
 		}
 
-		/// <summary>
-		/// Function to determine if two instances are equal.
-		/// </summary>
-		/// <param name="left">The left instance to compare.</param>
-		/// <param name="right">The right instance to compare.</param>
-		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-		public static bool Equals(GorgonVertexBufferBindings left, GorgonVertexBufferBindings right)
+		/// <summary>Returns an enumerator that iterates through a collection.</summary>
+		/// <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
+		/// <filterpriority>2</filterpriority>
+		IEnumerator IEnumerable.GetEnumerator()
 		{
-			if ((left == null) || (right == null) || (left.BindCount != right.BindCount))
+			return _bindings.GetEnumerator();
+		}
+
+		/// <summary>
+		/// Function to set multiple objects of type <see cref="GorgonVertexBufferBinding" /> at once.
+		/// </summary>
+		/// <param name="startSlot">The starting slot to assign.</param>
+		/// <param name="bindings">The views to assign.</param>
+		/// <param name="count">[Optional] The number of items to copy from <paramref name="bindings"/>.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="bindings" /> parameter is <b>null</b>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="startSlot" /> is less than 0.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="startSlot" /> plus the number of <paramref name="bindings" /> exceeds the size of this list.</exception>
+		/// <remarks><para>
+		/// Use this method to set a series of objects of type <see cref="GorgonVertexBufferBinding" /> at once. This will yield better performance than attempting to assign a single item
+		/// at a time via the indexer.
+		/// </para>
+		/// <para>
+		/// In this implementation, the <paramref name="startSlot" /> parameter is ignored.
+		/// </para>
+		/// <para>
+		///   <note type="warning">
+		/// Any exceptions thrown by this method will only be thrown when Gorgon is compiled as <b>DEBUG</b>.
+		/// </note>
+		/// </para></remarks>
+		void IGorgonBoundList<GorgonVertexBufferBinding>.SetRange(int startSlot, IReadOnlyList<GorgonVertexBufferBinding> bindings, int? count)
+		{
+			SetRange(bindings, count);
+		}
+
+		/// <summary>
+		/// Function to set multiple objects of type <see cref="GorgonVertexBufferBinding"/> at once.
+		/// </summary>
+		/// <param name="bindings">The views to assign.</param>
+		/// <param name="count">[Optional] The number of items to copy from <paramref name="bindings"/>.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="bindings"/> parameter is <b>null</b>.</exception>
+		/// <exception cref="ArgumentException">Thrown when the number of <paramref name="bindings"/> exceeds the size of this list.</exception>
+		/// <remarks>
+		/// <para>
+		/// Use this method to set a series of objects of type <see cref="GorgonVertexBufferBinding"/> at once. This will yield better performance than attempting to assign a single item 
+		/// at a time via the indexer.
+		/// </para>
+		/// <para>
+		/// <note type="warning">
+		/// Any exceptions thrown by this method will only be thrown when Gorgon is compiled as <b>DEBUG</b>.
+		/// </note>
+		/// </para>
+		/// </remarks>
+		public void SetRange(IReadOnlyList<GorgonVertexBufferBinding> bindings, int? count = null)
+		{
+			bindings.ValidateObject(nameof(bindings));
+
+			if (count == null)
 			{
-				return false;
+				count = bindings.Count;
 			}
 
-			for (int i = 0; i < left.BindCount; ++i)
+#if DEBUG
+			if (count > _bindings.Length)
 			{
-				GorgonVertexBufferBinding rightBuffer = right[i];
-				if (!left[i].Equals(ref rightBuffer))
+				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TOO_MANY_ITEMS, 0, count.Value, _bindings.Length));
+			}
+
+			if (count > bindings.Count)
+			{
+				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TOO_MANY_ITEMS, 0, count.Value, bindings.Count));
+			}
+#endif
+
+			if (count == 0)
+			{
+				_nativeBindings = new D3D11.VertexBufferBinding[0];
+				return;
+			}
+
+			if ((_nativeBindings == null)
+				|| (_nativeBindings.Length != count.Value))
+			{
+				_nativeBindings = new D3D11.VertexBufferBinding[count.Value];
+			}
+
+			for (int i = 0; i < count.Value; ++i)
+			{
+				GorgonVertexBufferBinding binding = bindings[i];
+#if DEBUG
+				// Validate to ensure that this buffer is not bound anywhere else within this binding list.
+				if (binding.VertexBuffer != null)
 				{
-					return false;
-				}
-			}
+					int existingItem = Array.IndexOf(_bindings, binding);
 
-			return true;
+					if ((existingItem != -1) && (existingItem != i))
+					{
+						throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_RESOURCE_BOUND, binding.VertexBuffer.Name, i));
+					}
+				}
+#endif
+				_nativeBindings[i] = binding.ToVertexBufferBinding();
+				_bindings[i] = binding;
+			}
+		}
+
+		/// <summary>Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1" />.</summary>
+		/// <returns>The index of <paramref name="item" /> if found in the list; otherwise, -1.</returns>
+		/// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.IList`1" />.</param>
+		public int IndexOf(GorgonVertexBufferBinding item)
+		{
+			return Array.IndexOf(_bindings, item);
+		}
+
+		/// <summary>Inserts an item to the <see cref="T:System.Collections.Generic.IList`1" /> at the specified index.</summary>
+		/// <param name="index">The zero-based index at which <paramref name="item" /> should be inserted.</param>
+		/// <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1" />.</param>
+		/// <exception cref="T:System.ArgumentOutOfRangeException">
+		/// <paramref name="index" /> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1" />.</exception>
+		/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IList`1" /> is read-only.</exception>
+		void IList<GorgonVertexBufferBinding>.Insert(int index, GorgonVertexBufferBinding item)
+		{
+			throw new NotSupportedException();
+		}
+
+		/// <summary>Removes the <see cref="T:System.Collections.Generic.IList`1" /> item at the specified index.</summary>
+		/// <param name="index">The zero-based index of the item to remove.</param>
+		/// <exception cref="T:System.ArgumentOutOfRangeException">
+		/// <paramref name="index" /> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1" />.</exception>
+		/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IList`1" /> is read-only.</exception>
+		void IList<GorgonVertexBufferBinding>.RemoveAt(int index)
+		{
+			throw new NotSupportedException();
 		}
 
 		/// <summary>Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
@@ -190,12 +283,12 @@ namespace Gorgon.Graphics
 		/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only. </exception>
 		public void Clear()
 		{
+			_nativeBindings = new D3D11.VertexBufferBinding[0];
+
 			for (int i = 0; i < _bindings.Length; ++i)
 			{
-				_bindings[i] = default(GorgonVertexBufferBinding);
+				_bindings[i] = GorgonVertexBufferBinding.Empty;
 			}
-
-			BindCount = 0;
 		}
 
 		/// <summary>Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.</summary>
@@ -203,7 +296,7 @@ namespace Gorgon.Graphics
 		/// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
 		public bool Contains(GorgonVertexBufferBinding item)
 		{
-			return Array.IndexOf(_bindings, item) != -1;
+			return IndexOf(item) > -1;
 		}
 
 		/// <summary>Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1" /> to an <see cref="T:System.Array" />, starting at a particular <see cref="T:System.Array" /> index.</summary>
@@ -219,35 +312,6 @@ namespace Gorgon.Graphics
 			_bindings.CopyTo(array, arrayIndex);
 		}
 
-		/// <summary>Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1" />.</summary>
-		/// <returns>The index of <paramref name="item" /> if found in the list; otherwise, -1.</returns>
-		/// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.IList`1" />.</param>
-		public int IndexOf(GorgonVertexBufferBinding item)
-		{
-			return Array.IndexOf(_bindings, item);
-		}
-
-		/// <summary>Returns an enumerator that iterates through the collection.</summary>
-		/// <returns>An enumerator that can be used to iterate through the collection.</returns>
-		public IEnumerator<GorgonVertexBufferBinding> GetEnumerator()
-		{
-			for (int i = 0; i < _bindings.Length; ++i)
-			{
-				yield return _bindings[i];
-			}
-		}
-
-		/// <summary>Inserts an item to the <see cref="T:System.Collections.Generic.IList`1" /> at the specified index.</summary>
-		/// <param name="index">The zero-based index at which <paramref name="item" /> should be inserted.</param>
-		/// <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1" />.</param>
-		/// <exception cref="T:System.ArgumentOutOfRangeException">
-		/// <paramref name="index" /> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1" />.</exception>
-		/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IList`1" /> is read-only.</exception>
-		void IList<GorgonVertexBufferBinding>.Insert(int index, GorgonVertexBufferBinding item)
-		{
-			throw new NotSupportedException();
-		}
-
 		/// <summary>Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
 		/// <returns>true if <paramref name="item" /> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
 		/// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
@@ -256,55 +320,45 @@ namespace Gorgon.Graphics
 		{
 			throw new NotSupportedException();
 		}
-
-		/// <summary>Removes the <see cref="T:System.Collections.Generic.IList`1" /> item at the specified index.</summary>
-		/// <param name="index">The zero-based index of the item to remove.</param>
-		/// <exception cref="T:System.ArgumentOutOfRangeException">
-		/// <paramref name="index" /> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1" />.</exception>
-		/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IList`1" /> is read-only.</exception>
-		void IList<GorgonVertexBufferBinding>.RemoveAt(int index)
-		{
-			throw new NotSupportedException();
-		}
-
-		/// <summary>Returns an enumerator that iterates through a collection.</summary>
-		/// <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
-		/// <filterpriority>2</filterpriority>
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return _bindings.GetEnumerator();
-		}
 		#endregion
 
 		#region Constructor
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonVertexBufferBindings"/> class.
 		/// </summary>
-		public GorgonVertexBufferBindings()
+		internal GorgonVertexBufferBindings()
 		{
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonVertexBufferBindings"/> class.
 		/// </summary>
-		/// <param name="viewports">The buffers.</param>
-		public GorgonVertexBufferBindings(IEnumerable<GorgonVertexBufferBinding> viewports)
+		/// <param name="inputLayout">The input layout that describes the arrangement of the vertex data within the buffers being bound.</param>
+		/// <param name="bindings">[Optional] A list of <see cref="GorgonVertexBufferBinding"/> items to copy.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="inputLayout"/>, or the <paramref name="bindings"/> parameter is <b>null</b>.</exception>
+		/// <exception cref="GorgonException">Thrown when a <see cref="GorgonVertexBufferBinding"/> is bound more than once in the <paramref name="bindings"/> list.</exception>
+		public GorgonVertexBufferBindings(GorgonInputLayout inputLayout, IEnumerable<GorgonVertexBufferBinding> bindings)
+			: this(inputLayout)
 		{
-			if (viewports == null)
+			if (bindings == null)
 			{
-				return;
+				throw new ArgumentNullException(nameof(bindings));
 			}
 
-			int index = 0;
+			InputLayout = inputLayout;
+			SetRange(bindings.ToArray());
+		}
 
-			foreach (GorgonVertexBufferBinding viewport in viewports)
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonVertexBufferBindings"/> class.
+		/// </summary>
+		/// <param name="inputLayout">The input layout that describes the arrangement of the vertex data within the buffers being bound.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="inputLayout"/> parameter is <b>null</b>.</exception>
+		public GorgonVertexBufferBindings(GorgonInputLayout inputLayout)
+		{
+			if (inputLayout == null)
 			{
-				if (index > _actualBindings.Length)
-				{
-					break;
-				}
-
-				this[index++] = viewport;
+				throw new ArgumentNullException(nameof(inputLayout));
 			}
 		}
 		#endregion

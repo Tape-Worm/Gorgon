@@ -25,7 +25,9 @@
 #endregion
 
 using System;
-using System.Linq;
+using System.Runtime.CompilerServices;
+using Gorgon.Diagnostics;
+using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics
 {
@@ -71,7 +73,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Samplers for the pixel shader changed.
 		/// </summary>
-		PixelShaderSampler = 0x80
+		PixelShaderSampler = 0x80,
 	}
 
 	/// <summary>
@@ -80,17 +82,53 @@ namespace Gorgon.Graphics
 	public class GorgonPipelineResources
 	{
 		#region Variables.
-		// The default resource state for the pipeline.
-		private static readonly PipelineResourceChangeFlags _defaultState;
+		// The list of vertex buffer resources bound.
+		private GorgonVertexBufferBindings _vertexBuffers;
+		// The list of render target resources bound.
+		private GorgonRenderTargetViews _renderTargets;
+		// The list of constant buffers for a pixel shader.
+		private GorgonConstantBuffers _pixelShaderConstantBuffers;
+		// The list of constant buffers for a vertex shader.
+		private GorgonConstantBuffers _vertexShaderConstantBuffers;
+		// The index buffer.
+		private GorgonIndexBuffer _indexBuffer;
+		// The list of texture samplers for a pixel shader.
+		private GorgonSamplerStates _pixelShaderSamplers;
+		// The list of pixel shader resources.
+		private GorgonShaderResourceViews _pixelShaderResources;
+		// The list of vertex shader resources.
+		private GorgonShaderResourceViews _vertexShaderResources;
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to set or return the available changes on this resource list.
+		/// </summary>
+		internal PipelineResourceChangeFlags Changes
+		{
+			get;
+			set;
+		}
+
 		/// <summary>
 		/// Property to return the vertex buffers to bind to the pipeline.
 		/// </summary>
 		public GorgonVertexBufferBindings VertexBuffers
 		{
-			get;
+			get
+			{
+				return _vertexBuffers;
+			}
+			set
+			{
+				if (_vertexBuffers == value)
+				{
+					return;
+				}
+
+				_vertexBuffers = value;
+				Changes |= PipelineResourceChangeFlags.VertexBuffer;
+			}
 		}
 
 		/// <summary>
@@ -98,8 +136,20 @@ namespace Gorgon.Graphics
 		/// </summary>
 		public GorgonIndexBuffer IndexBuffer
 		{
-			get;
-			set;
+			get
+			{
+				return _indexBuffer;
+			}
+			set
+			{
+				if (_indexBuffer == value)
+				{
+					return;
+				}
+
+				_indexBuffer = value;
+				Changes |= PipelineResourceChangeFlags.IndexBuffer;
+			}
 		}
 
 		/// <summary>
@@ -107,15 +157,41 @@ namespace Gorgon.Graphics
 		/// </summary>
 		public GorgonRenderTargetViews RenderTargets
 		{
-			get;
+			get
+			{
+				return _renderTargets;
+			}
+			set
+			{
+				if (_renderTargets == value)
+				{
+					return;
+				}
+
+				_renderTargets = value;
+				Changes |= PipelineResourceChangeFlags.RenderTargets;
+			}
 		}
-		
+
 		/// <summary>
 		/// Property to return the pixel shader constant buffers to bind to the pipeline.
 		/// </summary>
 		public GorgonConstantBuffers PixelShaderConstantBuffers
 		{
-			get;
+			get
+			{
+				return _pixelShaderConstantBuffers;
+			}
+			set
+			{
+				if (_pixelShaderConstantBuffers == value)
+				{
+					return;
+				}
+
+				_pixelShaderConstantBuffers = value;
+				Changes |= PipelineResourceChangeFlags.PixelShaderConstantBuffer;
+			}
 		}
 
 		/// <summary>
@@ -123,7 +199,20 @@ namespace Gorgon.Graphics
 		/// </summary>
 		public GorgonConstantBuffers VertexShaderConstantBuffers
 		{
-			get;
+			get
+			{
+				return _vertexShaderConstantBuffers;
+			}
+			set
+			{
+				if (_vertexShaderConstantBuffers == value)
+				{
+					return;
+				}
+
+				_vertexShaderConstantBuffers = value;
+				Changes |= PipelineResourceChangeFlags.VertexShaderConstantBuffer;
+			}
 		}
 
 		/// <summary>
@@ -131,7 +220,20 @@ namespace Gorgon.Graphics
 		/// </summary>
 		public GorgonShaderResourceViews PixelShaderResources
 		{
-			get;
+			get
+			{
+				return _pixelShaderResources;
+			}
+			set
+			{
+				if (_pixelShaderResources == value)
+				{
+					return;
+				}
+
+				_pixelShaderResources = value;
+				Changes |= PipelineResourceChangeFlags.PixelShaderResource;
+			}
 		}
 
 		/// <summary>
@@ -139,7 +241,20 @@ namespace Gorgon.Graphics
 		/// </summary>
 		public GorgonShaderResourceViews VertexShaderResources
 		{
-			get;
+			get
+			{
+				return _vertexShaderResources;
+			}
+			set
+			{
+				if (_vertexShaderResources == value)
+				{
+					return;
+				}
+
+				_vertexShaderResources = value;
+				Changes |= PipelineResourceChangeFlags.VertexShaderResource;
+			}
 		}
 
 		/// <summary>
@@ -147,111 +262,54 @@ namespace Gorgon.Graphics
 		/// </summary>
 		public GorgonSamplerStates PixelShaderSamplers
 		{
-			get;
+			get
+			{
+				return _pixelShaderSamplers;
+			}
+			set
+			{
+				if (_pixelShaderSamplers == value)
+				{
+					return;
+				}
+
+				_pixelShaderSamplers = value;
+				Changes |= PipelineResourceChangeFlags.PixelShaderSampler;
+			}
 		}
 		#endregion
 
 		#region Methods.
 		/// <summary>
-		/// Function to return the differences in state changes between two <see cref="GorgonPipelineResources"/> objects.
+		/// Function to copy the pipeline resources from another instance.
 		/// </summary>
-		/// <param name="resources">The <see cref="GorgonPipelineResources"/> to evaluate.</param>
-		/// <returns>A <see cref="PipelineResourceChangeFlags"/> type to indicate which parts of the resource bindings have changed.</returns>
-		public PipelineResourceChangeFlags GetChanges(GorgonPipelineResources resources)
+		/// <param name="resources">The resources to copy.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="resources"/> parameter is <b>null</b>.</exception>
+		/// <remarks>
+		/// <para>
+		/// This will copy the items from another <see cref="GorgonPipelineResources"/> state into this state. This is a shallow copy, and the items hold the same references as the original 
+		/// <paramref name="resources"/>.
+		/// </para>
+		/// <para>
+		/// <note type="important">
+		/// <para>
+		/// Exceptions are only thrown from this method when Gorgon is compiled as <b>DEBUG</b>.
+		/// </para>
+		/// </note>
+		/// </para>
+		/// </remarks>
+		public void CopyResourceState(GorgonPipelineResources resources)
 		{
-			if (resources == null)
-			{
-				return _defaultState;
-			}
+			resources.ValidateObject(nameof(resources));
 
-			var result = PipelineResourceChangeFlags.None;
-
-			if (IndexBuffer != resources.IndexBuffer)
-			{
-				result |= PipelineResourceChangeFlags.IndexBuffer;
-			}
-
-			if (!GorgonVertexBufferBindings.Equals(VertexBuffers, resources.VertexBuffers))
-			{
-				result |= PipelineResourceChangeFlags.VertexBuffer;
-			}
-
-			if (!GorgonRenderTargetViews.Equals(RenderTargets, resources.RenderTargets))
-			{
-				result |= PipelineResourceChangeFlags.RenderTargets;
-			}
-
-			if (!GorgonConstantBuffers.Equals(PixelShaderConstantBuffers, resources.PixelShaderConstantBuffers))
-			{
-				result |= PipelineResourceChangeFlags.PixelShaderConstantBuffer;
-			}
-
-			if (!GorgonConstantBuffers.Equals(VertexShaderConstantBuffers, resources.VertexShaderConstantBuffers))
-			{
-				result |= PipelineResourceChangeFlags.VertexShaderConstantBuffer;
-			}
-
-			if (!GorgonShaderResourceViews.Equals(PixelShaderResources, resources.PixelShaderResources))
-			{
-				result |= PipelineResourceChangeFlags.PixelShaderResource;
-			}
-
-			if (!GorgonShaderResourceViews.Equals(VertexShaderResources, resources.VertexShaderResources))
-			{
-				result |= PipelineResourceChangeFlags.VertexShaderResource;
-			}
-
-			if (!GorgonSamplerStates.Equals(PixelShaderSamplers, resources.PixelShaderSamplers))
-			{
-				result |= PipelineResourceChangeFlags.PixelShaderSampler;
-			}
-
-			return result;
-		}
-
-		/// <summary>
-		/// Function to unbind the resources.
-		/// </summary>
-		public void Reset()
-		{
-			IndexBuffer = null;
-			RenderTargets.Clear();
-			VertexBuffers.Clear();
-			PixelShaderResources.Clear();
-			PixelShaderConstantBuffers.Clear();
-			PixelShaderSamplers.Clear();
-
-			VertexShaderConstantBuffers.Clear();
-			VertexShaderResources.Clear();
-		}
-		#endregion
-
-		#region Constructor/Finalizer.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonPipelineResources"/> class.
-		/// </summary>
-		public GorgonPipelineResources()
-		{
-			VertexBuffers = new GorgonVertexBufferBindings();
-			RenderTargets = new GorgonRenderTargetViews();
-			PixelShaderConstantBuffers = new GorgonConstantBuffers();
-			VertexShaderConstantBuffers = new GorgonConstantBuffers();
-			VertexShaderResources = new GorgonShaderResourceViews();
-			PixelShaderResources = new GorgonShaderResourceViews();
-			PixelShaderSamplers = new GorgonSamplerStates();
-		}
-
-		/// <summary>
-		/// Initializes static members of the <see cref="GorgonPipelineResources"/> class.
-		/// </summary>
-		static GorgonPipelineResources()
-		{
-			var states = (PipelineResourceChangeFlags[])Enum.GetValues(typeof(PipelineResourceChangeFlags));
-
-			foreach (PipelineResourceChangeFlags state in states.Where(item => item != PipelineResourceChangeFlags.None))
-			{
-				_defaultState |= state;
-			}
+			VertexBuffers = resources.VertexBuffers;
+			IndexBuffer = resources.IndexBuffer;
+			PixelShaderResources = resources.PixelShaderResources;
+			VertexShaderResources = resources.VertexShaderResources;
+			PixelShaderConstantBuffers = resources.PixelShaderConstantBuffers;
+			VertexShaderConstantBuffers = resources.VertexShaderConstantBuffers;
+			PixelShaderSamplers = resources.PixelShaderSamplers;
+			RenderTargets = resources.RenderTargets;
 		}
 		#endregion
 	}

@@ -93,7 +93,7 @@ namespace Gorgon.Native
 		/// </summary>
 		/// <param name="HDC">A handle to the device context.</param>
 		/// <param name="numberOfPairs">The number of pairs in the keyPairs array. If the font has more than nNumPairs kerning pairs, the function returns an error.</param>
-		/// <param name="kernPairs">A pointer to an array of KERNINGPAIR structures that receives the kerning pairs. The array must contain at least as many structures as specified by the nNumPairs parameter. If this parameter is NULL, the function returns the total number of kerning pairs for the font.</param>
+		/// <param name="kernPairs">A pointer to an array of KERNINGPAIR structures that receives the kerning pairs. The array must contain at least as many structures as specified by the nNumPairs parameter. If this parameter is <b>null</b>, the function returns the total number of kerning pairs for the font.</param>
 		/// <returns>If the function succeeds, the return value is the number of kerning pairs returned.  If the function fails, the return value is zero.</returns>
 		[DllImport("gdi32.dll", EntryPoint = "GetKerningPairsW", CharSet = CharSet.Unicode)]
 		private static extern uint GetKerningPairsW(IntPtr HDC, uint numberOfPairs, KERNINGPAIR* kernPairs);
@@ -310,12 +310,12 @@ namespace Gorgon.Native
 		/// <param name="firstCharacter">First character to return.</param>
 		/// <param name="lastCharacter">Last character to return.</param>
 		/// <returns>A list of font ABC values.</returns>
-		public static IDictionary<char, ABC> GetCharABCWidths(char firstCharacter, char lastCharacter)
+		public static Dictionary<char, ABC> GetCharABCWidths(char firstCharacter, char lastCharacter)
 		{
 			uint firstCharIndex = Convert.ToUInt32(firstCharacter);
 			uint lastCharIndex = Convert.ToUInt32(lastCharacter);
 			int size = (int)(lastCharIndex - firstCharIndex) + 1;
-			var result = new SortedDictionary<char, ABC>();
+			var result = new Dictionary<char, ABC>();
 
 			if (_hdc == IntPtr.Zero)
 			{

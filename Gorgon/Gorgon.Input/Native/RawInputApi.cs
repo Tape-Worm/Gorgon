@@ -246,7 +246,7 @@ namespace Gorgon.Native
 		InputSink = 0x00000100,
 		/// <summary>If set, the mouse button click does not activate the other window.</summary>
 		CaptureMouse = 0x00000200,
-		/// <summary>If set, the application-defined keyboard device hot keys are not handled. However, the system hot keys; for example, ALT+TAB and CTRL+ALT+DEL, are still handled. By default, all keyboard hotkeys are handled. NoHotKeys can be specified even if NoLegacy is not specified and WindowHandle is NULL.</summary>
+		/// <summary>If set, the application-defined keyboard device hot keys are not handled. However, the system hot keys; for example, ALT+TAB and CTRL+ALT+DEL, are still handled. By default, all keyboard hotkeys are handled. NoHotKeys can be specified even if NoLegacy is not specified and WindowHandle is <b>null</b>.</summary>
 		NoHotKeys = 0x00000200,
 		/// <summary>If set, application keys are handled.  NoLegacy must be specified.  Keyboard only.</summary>
 		AppKeys = 0x00000400,
@@ -445,7 +445,7 @@ namespace Gorgon.Native
 		/// Function to retrieve an existing device type registration.
 		/// </summary>
 		/// <param name="usage">Device usage to filter.</param>
-		/// <returns>The raw input device structure if the device type was previously registered. Or <b>null</b> (<i>Nothing</i> in VB.Net) if not.</returns>
+		/// <returns>The raw input device structure if the device type was previously registered. Or <b>null</b> if not.</returns>
 		public static RAWINPUTDEVICE? GetDeviceRegistration(HIDUsage usage)
 		{
 			uint deviceCount = 0;
@@ -641,7 +641,7 @@ namespace Gorgon.Native
 					throw new Win32Exception(string.Format(Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA, win32Error));
 				}
 
-				// The strings that come back from native land will end with a NULL terminator, so crop that off.
+				// The strings that come back from native land will end with a null terminator, so crop that off.
 				return new string(data, 0, dataSize - 1);
 			}
 		}

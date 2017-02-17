@@ -226,7 +226,7 @@ namespace Gorgon.Graphics
 		/// <param name="output">The output to use when looking for a video mode.</param>
 		/// <param name="videoMode">The <c>ModeDescription1</c> used to find the closest match.</param>
 		/// <returns>A <c>ModeDescription1</c> that is the nearest match for the provided video mode.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="output"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="output"/> parameter is <b>null</b>.</exception>
 		/// <remarks>
 		/// <para>
 		/// Users may leave the <c>ModeDescription1</c> values at unspecified (either 0, or default enumeration values) to indicate that these values should not be used in the search.

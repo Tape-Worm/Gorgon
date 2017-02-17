@@ -29,6 +29,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Gorgon.Core;
+using Gorgon.Diagnostics;
+using Gorgon.Graphics.Pipeline;
 using Gorgon.Graphics.Properties;
 using D3D11 = SharpDX.Direct3D11;
 
@@ -38,13 +40,13 @@ namespace Gorgon.Graphics
 	/// A list of <see cref="GorgonRenderTargetView"/> objects, and optionally, a <see cref="GorgonDepthStencilView"/>, to apply to the pipeline.
 	/// </summary>
 	public sealed class GorgonRenderTargetViews
-		: IList<GorgonRenderTargetView>, IGorgonRenderTargetViews
+		: IGorgonBoundList<GorgonRenderTargetView>, IReadOnlyList<GorgonRenderTargetView>
 	{
 		#region Variables.
 		// Render target views to apply to the pipeline.
 		private readonly GorgonRenderTargetView[] _views = new GorgonRenderTargetView[D3D11.OutputMergerStage.SimultaneousRenderTargetCount];
 		// Actual direct 3D render target views to bind.
-		private readonly D3D11.RenderTargetView[] _actualViews = new D3D11.RenderTargetView[D3D11.OutputMergerStage.SimultaneousRenderTargetCount];
+		private readonly D3D11.RenderTargetView[] _nativeViews = new D3D11.RenderTargetView[D3D11.OutputMergerStage.SimultaneousRenderTargetCount];
 		// The currently active depth stencil view.
 		private GorgonDepthStencilView _depthStencilView;
 		#endregion
@@ -53,7 +55,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to return the list of actual Direct 3D 11 views.
 		/// </summary>
-		internal D3D11.RenderTargetView[] D3DRenderTargetViews => _actualViews;
+		internal D3D11.RenderTargetView[] D3DRenderTargetViews => _nativeViews;
 
 		/// <summary>
 		/// Property to return the number of binding slots actually used.
@@ -71,7 +73,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to return whether there are any target or depth stencil views set in this list.
 		/// </summary>
-		public bool IsEmpty => _actualViews.Length == 0 && _depthStencilView == null;
+		public bool IsEmpty => BindCount == 0 && _depthStencilView == null;
 
 		/// <summary>Gets or sets the element at the specified index.</summary>
 		/// <returns>The element at the specified index.</returns>
@@ -127,18 +129,14 @@ namespace Gorgon.Graphics
 				ValidateRenderTargetDepthStencilViews(value, index);
 #endif
 
-				_views[index] = value;
-				_actualViews[index] = value?.D3DRenderTargetView;
-				BindCount = 0;
-
-				// Update the last slot that was bound.
-				for (int i = 0; i < _views.Length; ++i)
+				if (_views[index] == value)
 				{
-					if (_views[i] != null)
-					{
-						BindCount = i + 1;
-					}
+					return;
 				}
+
+				_views[index] = value;
+				_nativeViews[index] = value?.D3DRenderTargetView;
+				BindCount = value != null ? 1 : 0;
 			}
 		}
 
@@ -196,6 +194,11 @@ namespace Gorgon.Graphics
 			}
 			set
 			{
+				if (_depthStencilView == value)
+				{
+					return;
+				}
+
 #if DEBUG
 				GorgonRenderTargetView firstTarget = this.FirstOrDefault(item => item != null);
 				ValidateDepthStencilView(value, firstTarget);
@@ -204,6 +207,11 @@ namespace Gorgon.Graphics
 				_depthStencilView = value;
 			}
 		}
+
+		/// <summary>
+		/// Property to return the starting index begin binding at.
+		/// </summary>
+		int IGorgonBoundList<GorgonRenderTargetView>.BindIndex => 0;
 		#endregion
 
 		#region Methods.
@@ -315,53 +323,6 @@ namespace Gorgon.Graphics
 		}
 
 		/// <summary>
-		/// Function to copy the render target views from one list into this list.
-		/// </summary>
-		/// <param name="views">The views to copy.</param>
-		internal void CopyFrom(GorgonRenderTargetViews views)
-		{
-			if (views == null)
-			{
-				Clear();
-				return;
-			}
-
-			BindCount = views.BindCount;
-
-			for (int i = 0; i < BindCount; ++i)
-			{
-				_views[i] = views._views[i];
-				_actualViews[i] = views._actualViews[i];
-			}
-
-			_depthStencilView = views._depthStencilView;
-		}
-
-		/// <summary>
-		/// Function to determine if two instances are equal.
-		/// </summary>
-		/// <param name="left">The left instance to compare.</param>
-		/// <param name="right">The right instance to compare.</param>
-		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-		public static bool Equals(GorgonRenderTargetViews left, GorgonRenderTargetViews right)
-		{
-			if ((left == null) || (right == null) || (left.BindCount != right.BindCount))
-			{
-				return false;
-			}
-
-			for (int i = 0; i < left.BindCount; ++i)
-			{
-				if (left[i] != right[i])
-				{
-					return false;
-				}
-			}
-
-			return true;
-		}
-
-		/// <summary>
 		/// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.
 		/// </summary>
 		/// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
@@ -420,11 +381,12 @@ namespace Gorgon.Graphics
 			for (int i = 0; i < _views.Length; ++i)
 			{
 				_views[i] = null;
-				_actualViews[i] = null;
+				_nativeViews[i] = null;
 			}
 
 			DepthStencilView = null;
 			BindCount = 0;
+			
 		}
 
 		/// <summary>Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.</summary>
@@ -466,9 +428,112 @@ namespace Gorgon.Graphics
 		{
 			return Array.IndexOf(_views, item);
 		}
-		#endregion
 
-		#region Constructor/Finalizer.
+		/// <summary>
+		/// Function to set multiple objects of type <see cref="GorgonRenderTargetView" /> at once.
+		/// </summary>
+		/// <param name="startSlot">The starting slot to assign.</param>
+		/// <param name="views">The views to assign.</param>
+		/// <param name="count">The number of items to copy from <paramref name="views"/>.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="views" /> parameter is <b>null</b>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="startSlot" /> is less than 0.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="startSlot" /> plus the number of <paramref name="views" /> exceeds the size of this list.</exception>
+		/// <remarks><para>
+		/// Use this method to set a series of objects of type <see cref="GorgonRenderTargetView" /> at once. This will yield better performance than attempting to assign a single item
+		/// at a time via the indexer.
+		/// </para>
+		/// <para>
+		/// This implementation ignores the <paramref name="startSlot" /> parameter.
+		/// </para>
+		/// <para>
+		///   <note type="warning">
+		/// Any exceptions thrown by this method will only be thrown when Gorgon is compiled as <b>DEBUG</b>.
+		/// </note>
+		/// </para></remarks>
+		void IGorgonBoundList<GorgonRenderTargetView>.SetRange(int startSlot, IReadOnlyList<GorgonRenderTargetView> views, int? count)
+		{
+			SetRange(views, _depthStencilView, count);
+		}
+
+		/// <summary>
+		/// Function to set multiple objects of type <see cref="GorgonRenderTargetView"/> at once.
+		/// </summary>
+		/// <param name="views">The views to assign.</param>
+		/// <param name="depthStencilView">[Optional] A depth/stencil view to bind with the targets.</param>
+		/// <param name="count">[Optional] The number of items to copy from <paramref name="views"/>.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="views"/> parameter is <b>null</b>.</exception>
+		/// <exception cref="ArgumentException">Thrown when the number of <paramref name="views"/> exceeds the size of this list.</exception>
+		/// <remarks>
+		/// <para>
+		/// Use this method to set a series of objects of type <see cref="GorgonRenderTargetView"/> at once. This will yield better performance than attempting to assign a single item 
+		/// at a time via the indexer.
+		/// </para>
+		/// <para>
+		/// <note type="warning">
+		/// Any exceptions thrown by this method will only be thrown when Gorgon is compiled as <b>DEBUG</b>.
+		/// </note>
+		/// </para>
+		/// </remarks>
+		public void SetRange(IReadOnlyList<GorgonRenderTargetView> views, GorgonDepthStencilView depthStencilView = null, int? count = null)
+		{
+			views.ValidateObject(nameof(views));
+
+			if (count == null)
+			{
+				count = views.Count;
+			}
+
+#if DEBUG
+			if (count > _views.Length)
+			{
+				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TOO_MANY_ITEMS, 0, count.Value, _views.Length));
+			}
+
+			if (count > views.Count)
+			{
+				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TOO_MANY_ITEMS, 0, count.Value, views.Count));
+			}
+#endif
+
+			if (count == 0)
+			{
+				Clear();
+
+				if (depthStencilView != null)
+				{
+					DepthStencilView = depthStencilView;
+				}
+
+				return;
+			}
+
+			for (int i = 0; i < count.Value; ++i)
+			{
+				GorgonRenderTargetView view = views[i];
+
+				if (_views[i] == view)
+				{
+					continue;
+				}
+
+#if DEBUG
+				// Validate to ensure that this buffer is not bound anywhere else within this binding list.
+				if (view != null)
+				{
+					ValidateRenderTargetDepthStencilViews(view, i);
+				}
+#endif
+				_views[i] = view;
+				_nativeViews[i] = view?.D3DRenderTargetView;
+			}
+
+			DepthStencilView = depthStencilView;
+
+			BindCount = count.Value;
+		}
+#endregion
+
+#region Constructor/Finalizer.
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonRenderTargetViews"/> class.
 		/// </summary>
@@ -502,6 +567,6 @@ namespace Gorgon.Graphics
 				this[index++] = view;
 			}
 		}
-		#endregion
+#endregion
 	}
 }

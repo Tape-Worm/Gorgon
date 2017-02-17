@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Gorgon.Core;
 using WIC = SharpDX.WIC;
 using Gorgon.Native;
 
@@ -84,7 +85,7 @@ namespace Gorgon.Graphics.Imaging
 	/// </para>
 	/// </remarks>
 	public interface IGorgonImage 
-		: IDisposable
+		: IDisposable, IGorgonCloneable<IGorgonImage>
 	{
 		/// <summary>
 		/// Property to return the pointer to the beginning of the internal buffer.
@@ -154,16 +155,16 @@ namespace Gorgon.Graphics.Imaging
 		IReadOnlyList<SharpDX.DXGI.Format> CanConvertToFormats(SharpDX.DXGI.Format[] destFormats);
 
 		/// <summary>
-		/// Function to copy the image data from this image into the destination image.
+		/// Function to copy an image into this image object.
 		/// </summary>
-		/// <param name="dest">The image that will receive the copy of this image.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="dest"/> parameter is <b>NULL</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown if the format, width, or height of the <paramref name="dest"/> image are not the same as this image.</exception>
+		/// <param name="source">The image that will be copied into this image.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="source"/> parameter is <b>null</b>.</exception>
 		/// <remarks>
 		/// <para>
-		/// This method should make a complete copy of this image into the <paramref name="dest"/> image. All <see cref="IGorgonImageInfo"/> values, and image data should be the same after the copy is complete.
+		/// This will clone the <paramref name="source"/> image into the this image. All information in this image will be replaced with the image data present in <paramref name="source"/>. If copying parts of 
+		/// an image into a new image is required, then see the <see cref="IGorgonImageBuffer"/>.<see cref="IGorgonImageBuffer.CopyTo"/> method.
 		/// </para>
 		/// </remarks>
-		void CopyTo(IGorgonImage dest);
+		void CopyFrom(IGorgonImage source);
 	}
 }

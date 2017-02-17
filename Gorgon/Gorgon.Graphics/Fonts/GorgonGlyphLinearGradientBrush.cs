@@ -27,6 +27,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using DX = SharpDX;
 using Gorgon.Graphics.Fonts;
 
 namespace Gorgon.Graphics
@@ -34,6 +35,15 @@ namespace Gorgon.Graphics
 	/// <summary>
 	/// A brush used to draw glyphs using a linear gradient value.
 	/// </summary>
+	/// <remarks>
+	/// <para>
+	/// This allows glyphs to be drawn using multiple colors that fade into one another.
+	/// </para>
+	/// </remarks>
+	/// <seealso cref="GorgonGlyphSolidBrush"/>
+	/// <seealso cref="GorgonGlyphHatchBrush"/>
+	/// <seealso cref="GorgonGlyphPathGradientBrush"/>
+	/// <seealso cref="GorgonGlyphTextureBrush"/>
 	public class GorgonGlyphLinearGradientBrush
 		: GorgonGlyphBrush
 	{
@@ -41,7 +51,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to set or return the region for the gradient.
 		/// </summary>
-		internal Rectangle GradientRegion
+		internal DX.Rectangle GradientRegion
 		{
 			get;
 			set;
@@ -168,7 +178,11 @@ namespace Gorgon.Graphics
 		/// </returns>
 		internal override Brush ToGDIBrush()
 		{
-			var result = new LinearGradientBrush(GradientRegion, StartColor, EndColor, Angle, ScaleAngle)
+			var result = new LinearGradientBrush(new Rectangle(GradientRegion.X, GradientRegion.Y, GradientRegion.Width, GradientRegion.Height),
+			                                     StartColor,
+			                                     EndColor,
+			                                     Angle,
+			                                     ScaleAngle)
 			             {
 				             GammaCorrection = GammaCorrection
 			             };

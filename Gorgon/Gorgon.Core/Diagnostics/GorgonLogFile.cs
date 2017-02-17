@@ -418,7 +418,7 @@ namespace Gorgon.Diagnostics
 		/// </summary>
 		/// <param name="appname">File name for the log file.</param>
 		/// <param name="extraPath">Additional directories for the path.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="appname"/> parameter is <b>null</b> (<i>Nothing</i> in VB.NET).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="appname"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="appname"/> parameter is empty.</exception>
 		public GorgonLogFile(string appname, string extraPath)
 		{

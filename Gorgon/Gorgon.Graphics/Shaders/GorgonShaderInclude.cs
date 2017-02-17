@@ -177,9 +177,9 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="includeName">Name of the include file.</param>
 		/// <param name="includeSourceFile">The include source code file.</param>
-		/// <remarks>The <paramref name="includeSourceFile"/> can be set to NULL (<i>Nothing</i> in VB.Net) or empty if the include line is pointing to a file.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="includeName"/> parameters is NULL (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the includeName parameter is empty.</exception>
+		/// <remarks>The <paramref name="includeSourceFile"/> can be set to <b>null</b> or empty if the include line is pointing to a file.</remarks>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="includeName"/> parameters is <b>null</b>.</exception>
+		/// <exception cref="ArgumentException">Thrown when the includeName parameter is empty.</exception>
 		public GorgonShaderInclude(string includeName, string includeSourceFile)
 		{
 			if (includeName == null)

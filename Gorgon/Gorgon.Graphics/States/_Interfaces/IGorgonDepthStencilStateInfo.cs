@@ -23,7 +23,7 @@
 // Created: July 29, 2016 7:58:11 PM
 // 
 #endregion
-
+using System;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics
@@ -37,6 +37,7 @@ namespace Gorgon.Graphics
 	/// </para>
 	/// </remarks>
 	public interface IGorgonDepthStencilStateInfo
+		: IEquatable<IGorgonDepthStencilStateInfo>
 	{
 		/// <summary>
 		/// Property to return the depth comparison function.
@@ -134,12 +135,5 @@ namespace Gorgon.Graphics
 		{
 			get;
 		}
-
-		/// <summary>
-		/// Function to compare equality for this and another <see cref="IGorgonDepthStencilStateInfo"/>.
-		/// </summary>
-		/// <param name="info">The <see cref="IGorgonDepthStencilStateInfo"/> to compare.</param>
-		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-		bool IsEqual(IGorgonDepthStencilStateInfo info);
 	}
 }

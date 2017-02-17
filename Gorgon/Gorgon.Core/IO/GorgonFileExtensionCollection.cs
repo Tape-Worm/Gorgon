@@ -99,7 +99,7 @@ namespace Gorgon.IO
 		/// Function to remove a file extension from the collection.
 		/// </summary>
 		/// <param name="extension">The file extension to remove from the collection.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="extension"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="extension"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="KeyNotFoundException">Thrown when the <paramref name="extension"/> could not be found in the collection.</exception>
 		public void Remove(string extension)
 		{

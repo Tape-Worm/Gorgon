@@ -166,7 +166,7 @@
   <data name="GORGFX_TOSTR_VERTEXBUFFER_BINDING" xml:space="preserve">
     <value>Vertex buffer binding.  Stride: {0}, Offset: {1}, VertexBuffer: {2}</value>
   </data>
-  <data name="GORGFX_FORMAT_NOT_SUPPORTED" xml:space="preserve">
+  <data name="GORGFX_ERR_FORMAT_NOT_SUPPORTED" xml:space="preserve">
     <value>The format [{0}] is not supported.</value>
   </data>
   <data name="GORGFX_ERR_LAYOUT_ELEMENT_IN_USE" xml:space="preserve">
@@ -306,12 +306,6 @@
   <data name="GORGFX_TOSTR_MULTISAMPLEINFO" xml:space="preserve">
     <value>Multisampling count: {0}, quality: {1}.</value>
   </data>
-  <data name="GORGFX_CONSTANTBUFFER_ALREADY_BOUND" xml:space="preserve">
-    <value>The constant buffer '{0}' is already bound at slot [{1}].</value>
-  </data>
-  <data name="GORGFX_ERR_VERTEXBUFFER_ALREADY_BOUND" xml:space="preserve">
-    <value>The vertex buffer '{0}' is already bound at slot [{1}].</value>
-  </data>
   <data name="GORGFX_RENDERTARGET_NOT_SWAPCHAIN" xml:space="preserve">
     <value>The render target '{0}' is not bound to a swap chain.</value>
   </data>
@@ -431,11 +425,8 @@ Please report this error by pasting the details to the bug tracker in Gorgon's g
   <data name="GORGFX_TOSTR_DEVICE" xml:space="preserve">
     <value>Gorgon Graphics Video Device: {0}</value>
   </data>
-  <data name="GORGFX_FONT_DEFAULT_CHAR_DOES_NOT_EXIST" xml:space="preserve">
+  <data name="GORGFX_ERR_FONT_DEFAULT_CHAR_DOES_NOT_EXIST" xml:space="preserve">
     <value>The default character '{0}' does not exist in the font character set.</value>
-  </data>
-  <data name="GORGFX_FONT_FAMILY_NAME_MUST_NOT_BE_EMPTY" xml:space="preserve">
-    <value>The font family name must not be NULL or empty.</value>
   </data>
   <data name="GORGFX_FONT_GLYPH_HAS_NO_TEXTURE" xml:space="preserve">
     <value>The glyph for character '{0}' does not have a texture assigned to it.</value>
@@ -449,7 +440,7 @@ Please report this error by pasting the details to the bug tracker in Gorgon's g
   <data name="GORGFX_FONT_TEXTURE_NOT_FOUND" xml:space="preserve">
     <value>The texture '{0}' was not found in this collection.</value>
   </data>
-  <data name="GORGFX_FONT_TEXTURE_SIZE_TOO_LARGE" xml:space="preserve">
+  <data name="GORGFX_ERR_FONT_TEXTURE_SIZE_TOO_LARGE" xml:space="preserve">
     <value>The font texture size ({0}x{1}) is too large.</value>
   </data>
   <data name="GORGFX_OUTPUT_SOFTWARE_DEV_NAME" xml:space="preserve">
@@ -467,10 +458,10 @@ Please report this error by pasting the details to the bug tracker in Gorgon's g
   <data name="GORGFX_FONT_GLYPH_NODE_TOO_LARGE" xml:space="preserve">
     <value>Glyph node size is too large for the image.</value>
   </data>
-  <data name="GORGFX_FONT_GLYPH_TOSTR" xml:space="preserve">
+  <data name="GORGFX_TOSTR_FONT_GLYPH" xml:space="preserve">
     <value>Gorgon Font Glyph: {0}</value>
   </data>
-  <data name="GORGFX_FONT_KERNING_PAIR_TOSTR" xml:space="preserve">
+  <data name="GORGFX_TOSTR_FONT_KERNING_PAIR" xml:space="preserve">
     <value>{0}/{1}</value>
   </data>
   <data name="GORGFX_IMAGE_CODEC_TOSTR" xml:space="preserve">
@@ -662,7 +653,7 @@ Please report this error by pasting the details to the bug tracker in Gorgon's g
   <data name="GORGFX_ERR_TEXTURE_NOT_MULTISAMPLED" xml:space="preserve">
     <value>The texture '{0}' is not multisampled.</value>
   </data>
-  <data name="GORGFX_FONT_BRUSH_INTERPOL_TOSTRING" xml:space="preserve">
+  <data name="GORGFX_TOSTR_FONT_BRUSH_INTERPOLATION" xml:space="preserve">
     <value>Weighted interpolation at {0}.  Color: R={1}, G={2}, B={3}, A={4}.</value>
   </data>
   <data name="GORGFX_ERR_TEXTURE_BC_SIZE_NOT_MOD_4" xml:space="preserve">
@@ -879,5 +870,26 @@ Errors:
   </data>
   <data name="GORGFX_ERR_TOO_MANY_ITEMS" xml:space="preserve">
     <value>The starting index ({0}) and the number of items ({1}) are larger than the destination size of {2}.</value>
+  </data>
+  <data name="GORGFX_ERR_OBJECT_IS_FROZEN" xml:space="preserve">
+    <value>The object type '{0}' is in a frozen state and cannot be modified.</value>
+  </data>
+  <data name="GORGFX_ERR_RESOURCE_BOUND" xml:space="preserve">
+    <value>The resource object '{0}' is already bound in slot {1}.</value>
+  </data>
+  <data name="GORGFX_ERR_FONT_GLYPH_IMAGE_NOT_2D" xml:space="preserve">
+    <value>A glyph can only use a 2D image.</value>
+  </data>
+  <data name="GORGFX_ERR_FONT_SIZE_TOO_SMALL" xml:space="preserve">
+    <value>The font size {0} is too small.</value>
+  </data>
+  <data name="GORGFX_ERR_GLYPH_CHARACTER_ASSIGNED" xml:space="preserve">
+    <value>The character '{0}' already has a glyph assigned.</value>
+  </data>
+  <data name="GORGFX_ERR_GLYPH_TEXTURE_FORMAT_INVALID" xml:space="preserve">
+    <value>The texture format for the glyph is not valid.</value>
+  </data>
+  <data name="GORGFX_ERR_FONT_DEFAULT_CHAR_NOT_VALID" xml:space="preserve">
+    <value>The character code 0x{0:x4} used by the default character is not valid.</value>
   </data>
 </root>

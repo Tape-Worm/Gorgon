@@ -98,7 +98,7 @@ namespace Gorgon.IO.Providers
 		/// <para>
 		/// <note type="important">
 		/// <para>
-		/// If the provider accesses a physical file system directory or file for its information, then this value should always return <see cref="string.Empty"/> or <b>null</b> (<i>Nothing</i> in VB.Net).
+		/// If the provider accesses a physical file system directory or file for its information, then this value should always return <see cref="string.Empty"/> or <b>null</b>.
 		/// </para>
 		/// </note>
 		/// </para>
@@ -126,7 +126,7 @@ namespace Gorgon.IO.Providers
 		/// <param name="physicalLocation">The physical location containing files and directories to enumerate.</param>
 		/// <param name="mountPoint">A <see cref="IGorgonVirtualDirectory"/> that the directories and files from the physical file system will be mounted into.</param>		
 		/// <returns>A <see cref="GorgonPhysicalFileSystemData"/> object containing information about the directories and files contained within the physical file system.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="physicalLocation"/>, or the <paramref name="mountPoint"/> parameters are <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="physicalLocation"/>, or the <paramref name="mountPoint"/> parameters are <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="physicalLocation"/> parameter is empty.</exception>
 		/// <remarks>
 		/// Since this provider holds data in its own block of memory, there's nothing to enumerate when the provider is loaded. Thus, this will always return empty data.
@@ -150,8 +150,8 @@ namespace Gorgon.IO.Providers
 		/// Function to open a stream to a file on the physical file system from the <see cref="IGorgonVirtualFile"/> passed in.
 		/// </summary>
 		/// <param name="file">The <see cref="IGorgonVirtualFile"/> that will be used to locate the file that will be opened on the physical file system.</param>
-		/// <returns>A <see cref="Stream"/> to the file, or <b>null</b> (<i>Nothing</i> in VB.Net) if the file does not exist.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="file"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <returns>A <see cref="Stream"/> to the file, or <b>null</b> if the file does not exist.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="file"/> parameter is <b>null</b>.</exception>
 		/// <remarks>
 		/// <para>
 		/// This will take the <see cref="IGorgonVirtualFile"/> and open its corresponding physical file location as a stream for reading. The stream that is returned will be opened, and as such, it is the 
@@ -168,7 +168,7 @@ namespace Gorgon.IO.Providers
 		/// </summary>
 		/// <param name="physicalPath">Path to the packed file containing the file system.</param>
 		/// <returns><b>true</b> if the provider can read the packed file, <b>false</b> if not.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="physicalPath"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="physicalPath"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="physicalPath"/> parameter is an empty string.</exception>
 		/// <remarks>
 		/// This value will return <b>true</b> when the <paramref name="physicalPath"/> is set to <c>::\\Memory</c> on the <c>physicalLocation</c> parameter for the <see cref="IGorgonFileSystem.Mount"/> method.
@@ -184,7 +184,7 @@ namespace Gorgon.IO.Providers
 		/// <param name="physicalLocation">The physical location containing files and directories to enumerate.</param>
 		/// <param name="mountPoint">A <see cref="IGorgonVirtualDirectory"/> that the directories and files from the physical file system will be mounted into.</param>		
 		/// <returns>A <see cref="GorgonPhysicalFileSystemData"/> object containing information about the directories and files contained within the physical file system.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="physicalLocation"/>, or the <paramref name="mountPoint"/> parameters are <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="physicalLocation"/>, or the <paramref name="mountPoint"/> parameters are <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="physicalLocation"/> parameter is empty.</exception>
 		/// <remarks>
 		/// Since this provider holds data in its own block of memory, there's nothing to enumerate when the provider is loaded. Thus, this will always return empty data.
@@ -198,8 +198,8 @@ namespace Gorgon.IO.Providers
 		/// Function to open a stream to a file on the physical file system from the <see cref="IGorgonVirtualFile"/> passed in.
 		/// </summary>
 		/// <param name="file">The <see cref="IGorgonVirtualFile"/> that will be used to locate the file that will be opened on the physical file system.</param>
-		/// <returns>A <see cref="Stream"/> to the file, or <b>null</b> (<i>Nothing</i> in VB.Net) if the file does not exist.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="file"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <returns>A <see cref="Stream"/> to the file, or <b>null</b> if the file does not exist.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="file"/> parameter is <b>null</b>.</exception>
 		/// <remarks>
 		/// <para>
 		/// This will take the <see cref="IGorgonVirtualFile"/> and open its corresponding physical file location as a stream for reading. The stream that is returned will be opened, and as such, it is the 

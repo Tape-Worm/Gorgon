@@ -52,7 +52,7 @@ namespace Gorgon.Input
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// This is used to target Raw Input messages to a specific window in the application. If this value is left at <b>null</b> (<i>Nothing</i> in VB.Net), then the messages will be sent to which ever 
+		/// This is used to target Raw Input messages to a specific window in the application. If this value is left at <b>null</b>, then the messages will be sent to which ever 
 		/// window has keyboard focus in the application.
 		/// </para>
 		/// <para>

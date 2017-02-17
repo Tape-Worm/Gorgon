@@ -194,7 +194,7 @@ namespace Gorgon.Input
 		/// </summary>
 		/// <param name="hwnd">Window handle to hook.</param>
 		/// <param name="filter">Filter to install into the hook</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="hwnd"/> parameter is <see cref="IntPtr.Zero"/>, or the <paramref name="filter"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="hwnd"/> parameter is <see cref="IntPtr.Zero"/>, or the <paramref name="filter"/> parameter is <b>null</b>.</exception>
 		public static void AddFilter(IntPtr hwnd, IMessageFilter filter)
 		{
 			if (hwnd == IntPtr.Zero)
@@ -227,7 +227,7 @@ namespace Gorgon.Input
 		/// </summary>
 		/// <param name="hwnd">Window handle to hook.</param>
 		/// <param name="filter">Filter to uninstall from the hook</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="hwnd"/> parameter is <see cref="IntPtr.Zero"/>, or the <paramref name="filter"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="hwnd"/> parameter is <see cref="IntPtr.Zero"/>, or the <paramref name="filter"/> parameter is <b>null</b>.</exception>
 		public static void RemoveFilter(IntPtr hwnd, IMessageFilter filter)
 		{
 			if (hwnd == IntPtr.Zero)

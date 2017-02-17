@@ -723,7 +723,7 @@ namespace Gorgon.Input
 		/// <param name="mouseInfo">[Optional] A <see cref="IGorgonMouseInfo"/> value to determine which device to use..</param>
 		/// <exception cref="InvalidCastException">Thrown if the <paramref name="mouseInfo"/> is not the expected type.</exception>
 		/// <remarks>
-		/// When the <paramref name="mouseInfo"/> is set to <b>null</b> (<i>Nothing</i> in VB.Net), the system mouse (that is, all mice attached to the computer) will be used. No differentiation between 
+		/// When the <paramref name="mouseInfo"/> is set to <b>null</b>, the system mouse (that is, all mice attached to the computer) will be used. No differentiation between 
 		/// mouse devices is made. To specify an individual mouse, pass an appropriate <see cref="IGorgonMouseInfo"/> obtained from the <see cref="GorgonRawInput.EnumerateMice"/> method.
 		/// </remarks>
 		public GorgonRawMouse(IGorgonMouseInfo mouseInfo = null)

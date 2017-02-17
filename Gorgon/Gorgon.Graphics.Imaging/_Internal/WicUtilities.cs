@@ -254,7 +254,7 @@ namespace Gorgon.Graphics.Imaging
 		/// Function to retrieve a WIC equivalent format GUID based on the Gorgon buffer format.
 		/// </summary>
 		/// <param name="format">Format to look up.</param>
-		/// <returns>The GUID for the format, or NULL (<i>Nothing</i> in VB.Net) if not found.</returns>
+		/// <returns>The GUID for the format, or <b>null</b> if not found.</returns>
 		private Guid GetGUID(DXGI.Format format)
 		{
 			for (int i = 0; i < _wicDXGIFormats.Length; i++)

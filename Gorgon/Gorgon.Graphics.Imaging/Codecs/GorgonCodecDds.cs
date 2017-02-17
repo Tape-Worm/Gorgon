@@ -1439,7 +1439,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <param name="imageData">A <see cref="IGorgonImage"/> to persist to the stream.</param>
 		/// <param name="stream">The stream that will receive the image data.</param>
 		/// <param name="encodingOptions">[Optional] Options used to encode the image data when it is persisted to the stream.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/>, or the <paramref name="imageData"/> parameter is <b>NULL</b>.</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/>, or the <paramref name="imageData"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="stream"/> is read only.</exception>
 		/// <exception cref="NotSupportedException">Thrown when the image data in the stream has a pixel format that is unsupported by the codec.</exception>
 		/// <remarks>
@@ -1527,7 +1527,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <para>-or-</para>
 		/// <para>Thrown if the file is corrupt or can't be read by the codec.</para>
 		/// </exception>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>NULL</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="IOException">Thrown when the <paramref name="stream"/> is write-only or if the stream cannot perform seek operations.</exception>
 		/// <exception cref="EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
 		/// <remarks>

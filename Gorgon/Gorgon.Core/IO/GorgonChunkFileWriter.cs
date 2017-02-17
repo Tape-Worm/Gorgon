@@ -283,7 +283,7 @@ namespace Gorgon.IO
 		/// <remarks>
 		/// The <paramref name="stream"/> passed to this method requires that the <see cref="System.IO.Stream.CanSeek"/> property returns a value of <b>true</b>.
 		/// </remarks>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream" /> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream" /> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="stream" /> is has its <see cref="Stream.CanSeek" /> property set to <b>false</b>.
 		/// <para>-or-</para>
 		/// <para>

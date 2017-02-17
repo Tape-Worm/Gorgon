@@ -1,7 +1,7 @@
-﻿#region MIT.
+﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2013 Michael Winsor
+// Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,66 +20,64 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Saturday, October 12, 2013 11:22:36 PM
+// Created: December 19, 2016 11:26:40 AM
 // 
 #endregion
-
-using System.Drawing;
-using System.Drawing.Drawing2D;
 
 namespace Gorgon.Graphics
 {
 	/// <summary>
-	/// A brush used to draw glyphs using a hatching patterns.
+	/// A basic draw call that submits data from a vertex buffer.
 	/// </summary>
-	public class GorgonGlyphHatchBrush
-		: GorgonGlyphBrush
+	/// <remarks>
+	/// <para>
+	/// A draw call is used to submit vertex (and potentially index and instance) data to the GPU pipeline or an output buffer. This type will contain all the necessary information used to set the state of the 
+	/// pipeline prior to rendering any data.
+	/// </para>
+	/// <para>
+	/// This type supports instancing which allows the GPU to draw the same item multiple times using an instance buffer.
+	/// </para>
+	/// <para>
+	/// This type does not support index buffers.
+	/// </para>
+	/// </remarks>
+	public class GorgonDrawCallInstanced
+		: GorgonDrawCallBase
 	{
-		#region Properties.
 		/// <summary>
-		/// Property to return the type of brush.
+		/// Property to set or return the vertex number to start at within the vertex buffer.
 		/// </summary>
-		public override GlyphBrushType BrushType => GlyphBrushType.Hatched;
-
-		/// <summary>
-		/// Property to set or return the style to use for the hatching pattern.
-		/// </summary>
-		public HatchStyle HatchStyle
+		public int VertexStartIndex
 		{
 			get;
 			set;
 		}
 
 		/// <summary>
-		/// Property to set or return the foreground color for the hatching pattern.
+		/// Property to set or return the number of vertices to draw per instance.
 		/// </summary>
-		public GorgonColor ForegroundColor
+		public int VertexCountPerInstance
 		{
 			get;
 			set;
 		}
 
 		/// <summary>
-		/// Property to set or return the background color for the hatching pattern.
+		/// Property to set or return the number of instances to draw.
 		/// </summary>
-		public GorgonColor BackgroundColor
+		public int InstanceCount
 		{
 			get;
 			set;
 		}
-		#endregion
 
-		#region Methods.
 		/// <summary>
-		/// Function to convert this brush to the equivalent GDI+ brush type.
+		/// Property to set or return the instance number to start at within the instance buffer.
 		/// </summary>
-		/// <returns>
-		/// The GDI+ brush type for this object.
-		/// </returns>
-		internal override Brush ToGDIBrush()
+		public int StartInstanceIndex
 		{
-			return new HatchBrush(HatchStyle, ForegroundColor, BackgroundColor);
+			get;
+			set;
 		}
-		#endregion
 	}
 }

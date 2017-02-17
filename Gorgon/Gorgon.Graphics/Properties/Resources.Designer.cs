@@ -277,15 +277,6 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The constant buffer &apos;{0}&apos; is already bound at slot [{1}]..
-        /// </summary>
-        internal static string GORGFX_CONSTANTBUFFER_ALREADY_BOUND {
-            get {
-                return ResourceManager.GetString("GORGFX_CONSTANTBUFFER_ALREADY_BOUND", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Cannot update a texture used as a depth/stencil buffer..
         /// </summary>
         internal static string GORGFX_DEPTH_OPERATION_NOT_SUPPORTED {
@@ -515,11 +506,83 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The default character &apos;{0}&apos; does not exist in the font character set..
+        /// </summary>
+        internal static string GORGFX_ERR_FONT_DEFAULT_CHAR_DOES_NOT_EXIST {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_FONT_DEFAULT_CHAR_DOES_NOT_EXIST", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The character code 0x{0:x4} used by the default character is not valid..
+        /// </summary>
+        internal static string GORGFX_ERR_FONT_DEFAULT_CHAR_NOT_VALID {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_FONT_DEFAULT_CHAR_NOT_VALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The font file data is corrupt..
         /// </summary>
         internal static string GORGFX_ERR_FONT_FILE_CORRUPT {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_FONT_FILE_CORRUPT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A glyph can only use a 2D image..
+        /// </summary>
+        internal static string GORGFX_ERR_FONT_GLYPH_IMAGE_NOT_2D {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_FONT_GLYPH_IMAGE_NOT_2D", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The font size {0} is too small..
+        /// </summary>
+        internal static string GORGFX_ERR_FONT_SIZE_TOO_SMALL {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_FONT_SIZE_TOO_SMALL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The font texture size ({0}x{1}) is too large..
+        /// </summary>
+        internal static string GORGFX_ERR_FONT_TEXTURE_SIZE_TOO_LARGE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_FONT_TEXTURE_SIZE_TOO_LARGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The format [{0}] is not supported..
+        /// </summary>
+        internal static string GORGFX_ERR_FORMAT_NOT_SUPPORTED {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_FORMAT_NOT_SUPPORTED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The character &apos;{0}&apos; already has a glyph assigned..
+        /// </summary>
+        internal static string GORGFX_ERR_GLYPH_CHARACTER_ASSIGNED {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_GLYPH_CHARACTER_ASSIGNED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The texture format for the glyph is not valid..
+        /// </summary>
+        internal static string GORGFX_ERR_GLYPH_TEXTURE_FORMAT_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_GLYPH_TEXTURE_FORMAT_INVALID", resourceCulture);
             }
         }
         
@@ -677,6 +740,15 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The object type &apos;{0}&apos; is in a frozen state and cannot be modified..
+        /// </summary>
+        internal static string GORGFX_ERR_OBJECT_IS_FROZEN {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_OBJECT_IS_FROZEN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The parameter must not be empty..
         /// </summary>
         internal static string GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY {
@@ -709,6 +781,15 @@ namespace Gorgon.Graphics.Properties {
         internal static string GORGFX_ERR_REQUIRES_FEATURE_LEVEL {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_REQUIRES_FEATURE_LEVEL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The resource object &apos;{0}&apos; is already bound in slot {1}..
+        /// </summary>
+        internal static string GORGFX_ERR_RESOURCE_BOUND {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_RESOURCE_BOUND", resourceCulture);
             }
         }
         
@@ -1226,15 +1307,6 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The vertex buffer &apos;{0}&apos; is already bound at slot [{1}]..
-        /// </summary>
-        internal static string GORGFX_ERR_VERTEXBUFFER_ALREADY_BOUND {
-            get {
-                return ResourceManager.GetString("GORGFX_ERR_VERTEXBUFFER_ALREADY_BOUND", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The size requested ({0} bytes) for the vertex buffer exceeds the maximum value of {1} bytes..
         /// </summary>
         internal static string GORGFX_ERR_VERTEXBUFFER_TOO_LARGE {
@@ -1307,15 +1379,6 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Weighted interpolation at {0}.  Color: R={1}, G={2}, B={3}, A={4}..
-        /// </summary>
-        internal static string GORGFX_FONT_BRUSH_INTERPOL_TOSTRING {
-            get {
-                return ResourceManager.GetString("GORGFX_FONT_BRUSH_INTERPOL_TOSTRING", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Could not retrieve character widths for the specified characters..
         /// </summary>
         internal static string GORGFX_FONT_CANNOT_RETRIEVE_ABC {
@@ -1330,24 +1393,6 @@ namespace Gorgon.Graphics.Properties {
         internal static string GORGFX_FONT_CANNOT_RETRIEVE_KERNING {
             get {
                 return ResourceManager.GetString("GORGFX_FONT_CANNOT_RETRIEVE_KERNING", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The default character &apos;{0}&apos; does not exist in the font character set..
-        /// </summary>
-        internal static string GORGFX_FONT_DEFAULT_CHAR_DOES_NOT_EXIST {
-            get {
-                return ResourceManager.GetString("GORGFX_FONT_DEFAULT_CHAR_DOES_NOT_EXIST", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The font family name must not be NULL or empty..
-        /// </summary>
-        internal static string GORGFX_FONT_FAMILY_NAME_MUST_NOT_BE_EMPTY {
-            get {
-                return ResourceManager.GetString("GORGFX_FONT_FAMILY_NAME_MUST_NOT_BE_EMPTY", resourceCulture);
             }
         }
         
@@ -1379,24 +1424,6 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Gorgon Font Glyph: {0}.
-        /// </summary>
-        internal static string GORGFX_FONT_GLYPH_TOSTR {
-            get {
-                return ResourceManager.GetString("GORGFX_FONT_GLYPH_TOSTR", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {0}/{1}.
-        /// </summary>
-        internal static string GORGFX_FONT_KERNING_PAIR_TOSTR {
-            get {
-                return ResourceManager.GetString("GORGFX_FONT_KERNING_PAIR_TOSTR", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to External textures require a System.IO.FileStream object..
         /// </summary>
         internal static string GORGFX_FONT_MUST_BE_FILE_STREAM {
@@ -1420,24 +1447,6 @@ namespace Gorgon.Graphics.Properties {
         internal static string GORGFX_FONT_TEXTURE_NOT_FOUND {
             get {
                 return ResourceManager.GetString("GORGFX_FONT_TEXTURE_NOT_FOUND", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The font texture size ({0}x{1}) is too large..
-        /// </summary>
-        internal static string GORGFX_FONT_TEXTURE_SIZE_TOO_LARGE {
-            get {
-                return ResourceManager.GetString("GORGFX_FONT_TEXTURE_SIZE_TOO_LARGE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The format [{0}] is not supported..
-        /// </summary>
-        internal static string GORGFX_FORMAT_NOT_SUPPORTED {
-            get {
-                return ResourceManager.GetString("GORGFX_FORMAT_NOT_SUPPORTED", resourceCulture);
             }
         }
         
@@ -2041,6 +2050,33 @@ namespace Gorgon.Graphics.Properties {
         internal static string GORGFX_TOSTR_FMTPITCH_COMPRESSED {
             get {
                 return ResourceManager.GetString("GORGFX_TOSTR_FMTPITCH_COMPRESSED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Weighted interpolation at {0}.  Color: R={1}, G={2}, B={3}, A={4}..
+        /// </summary>
+        internal static string GORGFX_TOSTR_FONT_BRUSH_INTERPOLATION {
+            get {
+                return ResourceManager.GetString("GORGFX_TOSTR_FONT_BRUSH_INTERPOLATION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gorgon Font Glyph: {0}.
+        /// </summary>
+        internal static string GORGFX_TOSTR_FONT_GLYPH {
+            get {
+                return ResourceManager.GetString("GORGFX_TOSTR_FONT_GLYPH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0}/{1}.
+        /// </summary>
+        internal static string GORGFX_TOSTR_FONT_KERNING_PAIR {
+            get {
+                return ResourceManager.GetString("GORGFX_TOSTR_FONT_KERNING_PAIR", resourceCulture);
             }
         }
         

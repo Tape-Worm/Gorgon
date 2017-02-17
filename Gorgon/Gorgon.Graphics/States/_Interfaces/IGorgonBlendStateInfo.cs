@@ -29,7 +29,7 @@ using System.Collections.Generic;
 namespace Gorgon.Graphics
 {
 	/// <summary>
-	/// Information used to build a <see cref="GorgonBlendState"/>.
+	/// Information used to build a <see cref="GorgonBlendStateInfo"/>.
 	/// </summary>
 	/// <remarks>
 	/// <para>

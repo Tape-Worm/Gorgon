@@ -125,7 +125,7 @@ namespace Gorgon.IO
 		/// Property to return the location on the physical file system to use as the writable area for a <see cref="IGorgonFileSystem"/>.
 		/// </summary>
 		/// <remarks>
-		/// This value may return <b>null</b> (<i>Nothing</i> in VB.Net) or an empty string if there's no actual location on a physical file system (e.g. the file system is located in memory).
+		/// This value may return <b>null</b> or an empty string if there's no actual location on a physical file system (e.g. the file system is located in memory).
 		/// </remarks>
 		public string WriteLocation
 		{
@@ -273,8 +273,8 @@ namespace Gorgon.IO
 		/// <param name="sourceFileSystem">The <see cref="IGorgonFileSystem"/> to copy.</param>
 		/// <param name="copyProgress">A method callback used to track the progress of the copy operation.</param>
 		/// <param name="allowOverwrite">[Optional] <b>true</b> to allow overwriting of files that already exist in the file system with the same path, <b>false</b> to throw an exception when a file with the same path is encountered.</param>
-		/// <returns>A <see cref="Tuple{T1,T2}"/> containing the number of directories (<c>item1</c>) and the number of files (<c>item2</c>) copied, or <b>null</b> (<i>Nothing</i> in VB.Net) if the operation was cancelled.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="sourceFileSystem"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <returns>A <see cref="Tuple{T1,T2}"/> containing the number of directories (<c>item1</c>) and the number of files (<c>item2</c>) copied, or <b>null</b> if the operation was cancelled.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="sourceFileSystem"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="IOException">Thrown when the a file exists in <see cref="IGorgonFileSystemWriter{T}.FileSystem"/>, and the <paramref name="allowOverwrite"/> parameter is set to <b>false</b>.</exception>
 		/// <remarks>
 		/// <para>
@@ -302,7 +302,7 @@ namespace Gorgon.IO
 		/// <param name="cancelToken">The <see cref="CancellationToken"/> used to cancel an in progress copy.</param>
 		/// <param name="copyProgress">A method callback used to track the progress of the copy operation.</param>
 		/// <param name="allowOverwrite">[Optional] <b>true</b> to allow overwriting of files that already exist in the file system with the same path, <b>false</b> to throw an exception when a file with the same path is encountered.</param>
-		/// <returns>A <see cref="Tuple{T1,T2}"/> containing the number of directories (<c>item1</c>) and the number of files (<c>item2</c>) copied, or <b>null</b> (<i>Nothing</i> in VB.Net) if the operation was cancelled.</returns>
+		/// <returns>A <see cref="Tuple{T1,T2}"/> containing the number of directories (<c>item1</c>) and the number of files (<c>item2</c>) copied, or <b>null</b> if the operation was cancelled.</returns>
 		/// <remarks>
 		/// <para>
 		/// This copies all the file and directory information from one file system, into the <see cref="IGorgonFileSystemWriter{T}.FileSystem"/> linked to this writer. 
@@ -403,7 +403,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="path">Path to the directory (or directories) to create.</param>
 		/// <returns>A <see cref="IGorgonVirtualDirectory"/> representing the final directory in the <paramref name="path"/>.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">
 		/// Thrown when the <paramref name="path"/> is empty.
 		/// <para>-or-</para>
@@ -453,7 +453,7 @@ namespace Gorgon.IO
 		/// Function to delete a directory from the writable area.
 		/// </summary>
 		/// <param name="path">Path to the directory to delete.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="path"/> is empty.</exception>
 		/// <exception cref="DirectoryNotFoundException">Thrown when the directory specified by the <paramref name="path"/> could not be found.</exception>
 		/// <remarks>
@@ -533,7 +533,7 @@ namespace Gorgon.IO
 		/// <param name="path">The path to the file to read/write.</param>
 		/// <param name="mode">The mode to determine how to read/write the file.</param>
 		/// <returns>An open <see cref="FileStream"/> to the file.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="path"/> is empty.
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="path"/> does not contain a file name.</para>
@@ -624,7 +624,7 @@ namespace Gorgon.IO
 		/// Function to delete a file from the file system.
 		/// </summary>
 		/// <param name="path">The path to the file to delete.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="path"/> is empty.</exception>
 		/// <exception cref="FileNotFoundException">Thrown when the file referenced by the <paramref name="path"/> was not found.</exception>
 		/// <remarks>
@@ -690,7 +690,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="fileSystem">A file system used to track the updates when writing.</param>
 		/// <param name="writeLocation">The directory on the physical file system to actually write data into.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileSystem"/>, or the <paramref name="writeLocation"/> parameters are <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileSystem"/>, or the <paramref name="writeLocation"/> parameters are <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="writeLocation"/> is empty.</exception>
 		public GorgonFileSystemWriter(GorgonFileSystem fileSystem, string writeLocation)
 			: base(Resources.GORFS_FOLDER_WRITER_FS_DESC)

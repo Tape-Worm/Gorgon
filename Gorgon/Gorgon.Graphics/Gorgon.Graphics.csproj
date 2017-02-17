@@ -81,8 +81,9 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Buffers\GorgonBuffer.cs" />
@@ -103,20 +104,43 @@
     <Compile Include="Devices\_Internal\VideoOutputInfo.cs" />
     <Compile Include="Devices\_Interfaces\IGorgonVideoDevice.cs" />
     <Compile Include="Devices\_Interfaces\IGorgonVideoDeviceList.cs" />
+    <Compile Include="Fonts\_Internal\GdiFontData.cs" />
+    <Compile Include="Fonts\GorgonFont.cs" />
+    <Compile Include="Fonts\GorgonFontGlyphCollection.cs" />
+    <Compile Include="Fonts\GorgonFontInfo.cs" />
+    <Compile Include="Fonts\GorgonFontFactory.cs" />
+    <Compile Include="Fonts\GorgonGlyph.cs" />
+    <Compile Include="Fonts\GorgonGlyphBrush.cs" />
+    <Compile Include="Fonts\GorgonGlyphBrushInterpolator.cs" />
+    <Compile Include="Fonts\GorgonGlyphHatchBrush.cs" />
+    <Compile Include="Fonts\GorgonGlyphLinearGradientBrush.cs" />
+    <Compile Include="Fonts\_Internal\GlyphInfo.cs" />
+    <Compile Include="Fonts\_Internal\GlyphPacker.cs" />
+    <Compile Include="Fonts\GorgonGlyphPathGradientBrush.cs" />
+    <Compile Include="Fonts\GorgonGlyphSolidBrush.cs" />
+    <Compile Include="Fonts\GorgonGlyphTextureBrush.cs" />
+    <Compile Include="Fonts\GorgonKerningPair.cs" />
+    <Compile Include="Fonts\_Interfaces\IGorgonFontInfo.cs" />
+    <Compile Include="Fonts\_Internal\GlyphDraw.cs" />
+    <Compile Include="Fonts\_Internal\GlyphRegions.cs" />
     <Compile Include="Geometry\GorgonInputElement.cs" />
     <Compile Include="Geometry\GorgonInputLayout.cs" />
-    <Compile Include="Geometry\InputElementAttribute.cs" />
+    <Compile Include="Geometry\_Attributes\InputElementAttribute.cs" />
     <Compile Include="GorgonGraphics.cs" />
     <Compile Include="GorgonMultiSampleInfo.cs" />
     <Compile Include="Native\Win32 Structs\OSVERSIONINFOEX.cs" />
+    <Compile Include="Pipeline\GorgonDrawCall.cs" />
+    <Compile Include="Pipeline\GorgonDrawInstancedCall.cs" />
+    <Compile Include="Pipeline\GorgonDrawCallBase.cs" />
+    <Compile Include="Pipeline\GorgonDrawIndexedInstancedCall.cs" />
     <Compile Include="Pipeline\GorgonPipelineResources.cs" />
     <Compile Include="Pipeline\GorgonPipelineState.cs" />
     <Compile Include="Pipeline\GorgonPipelineStateInfo.cs" />
     <Compile Include="Pipeline\GorgonSamplerStates.cs" />
     <Compile Include="Pipeline\GorgonVertexBufferBinding.cs" />
     <Compile Include="Pipeline\GorgonVertexBufferBindings.cs" />
+    <Compile Include="Pipeline\_Interfaces\IGorgonBoundList.cs" />
     <Compile Include="Pipeline\_Interfaces\IGorgonPipelineStateInfo.cs" />
-    <Compile Include="Pipeline\_Interfaces\IGorgonRenderTargetViews.cs" />
     <Compile Include="Shaders\GorgonShaderResourceView.cs" />
     <Compile Include="Pipeline\GorgonShaderResourceViews.cs" />
     <Compile Include="Pipeline\GorgonDrawIndexedCall.cs" />
@@ -176,8 +200,8 @@
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -190,7 +214,9 @@
       <Name>Gorgon.Graphics.Imaging</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="States\__OBSOLETE__\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

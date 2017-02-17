@@ -482,7 +482,7 @@ namespace Gorgon.Graphics
 
 			try
 			{
-				D3DCompiler.ShaderBytecode byteCode = D3DCompiler.ShaderBytecode.Compile(processedSource,
+				D3DCompiler.CompilationResult byteCode = D3DCompiler.ShaderBytecode.Compile(processedSource,
 				                                                                         entryPoint,
 				                                                                         profile,
 				                                                                         flags,
@@ -490,6 +490,11 @@ namespace Gorgon.Graphics
 				                                                                         actualMacros,
 				                                                                         null,
 				                                                                         sourceFileName);
+
+				if ((byteCode.HasErrors) || (byteCode.Bytecode == null))
+				{
+					throw new GorgonException(GorgonResult.CannotCompile, string.Format(Resources.GORGFX_ERR_CANNOT_COMPILE_SHADER, byteCode.Message));
+				}
 
 				return GetShader<T>(videoDevice, shaderType.Item2, entryPoint, debug, byteCode);
 			}

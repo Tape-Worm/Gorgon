@@ -24,41 +24,23 @@
 // 
 #endregion
 
-using System;
-using D3D = SharpDX.Direct3D;
-
 namespace Gorgon.Graphics
 {
 	/// <summary>
-	/// A draw call to submit to the pipeline.
+	/// A draw call that submits data from a vertex buffer and uses indexing from an index buffer to reference the vertices.
 	/// </summary>
+	/// <remarks>
+	/// <para>
+	/// A draw call is used to submit vertex (and potentially index and instance) data to the GPU pipeline or an output buffer. This type will contain all the necessary information used to set the state of the 
+	/// pipeline prior to rendering any data.
+	/// </para>
+	/// <para>
+	/// This type does not support instancing.
+	/// </para>
+	/// </remarks>
 	public class GorgonDrawIndexedCall
+		: GorgonDrawCallBase
 	{
-		/// <summary>
-		/// Property to return the type of primitives to draw.
-		/// </summary>
-		public D3D.PrimitiveTopology PrimitiveTopology => D3D.PrimitiveTopology.TriangleList;
-
-		/// <summary>
-		/// Property to set or return resources to use in the draw call.
-		/// </summary>
-		public GorgonPipelineResources Resources
-		{
-			get;
-		} = new GorgonPipelineResources();
-
-		/// <summary>
-		/// Property to set or return the current pipeline state.
-		/// </summary>
-		/// <remarks>
-		/// If this value is <b>null</b>, then the previous state will remain set.
-		/// </remarks>
-		public GorgonPipelineState State
-		{
-			get;
-			set;
-		}
-
 		/// <summary>
 		/// Property to set or return the starting index to of the buffer to draw.
 		/// </summary>
@@ -78,65 +60,12 @@ namespace Gorgon.Graphics
 		}
 
 		/// <summary>
-		/// Property to return the vertex in the vertex buffer to start drawing at.
+		/// Property to set or return the vertex in the vertex buffer to start drawing at.
 		/// </summary>
 		public int BaseVertexIndex
 		{
 			get;
 			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the factor used to modulate the pixel shader, render target or both.
-		/// </summary>
-		/// <remarks>
-		/// To use this value, ensure that the blend state was creating using <c>Factor</c> operation.
-		/// </remarks>
-		public GorgonColor BlendFactor
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the mask used to define which samples get updated in the active render targets.
-		/// </summary>
-		public int BlendSampleMask
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the depth/stencil reference value used when performing a depth/stencil test.
-		/// </summary>
-		public int DepthStencilReference
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonDrawIndexedCall"/> class.
-		/// </summary>
-		/// <param name="drawCall">The draw call to copy data from.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawCall"/> parameter is <b>null</b>.</exception>
-		public GorgonDrawIndexedCall(GorgonDrawIndexedCall drawCall)
-		{
-			if (drawCall == null)
-			{
-				throw new ArgumentNullException(nameof(drawCall));
-			}
-
-			BaseVertexIndex = drawCall.BaseVertexIndex;
-			IndexStart = drawCall.IndexStart;
-			IndexCount = drawCall.IndexCount;
-			BlendFactor = drawCall.BlendFactor;
-			BlendSampleMask = drawCall.BlendSampleMask;
-			DepthStencilReference = drawCall.DepthStencilReference;
-			// Not sure about this?  Would a deep copy be better?
-			State = drawCall.State;
-			Resources = drawCall.Resources;
 		}
 
 		/// <summary>

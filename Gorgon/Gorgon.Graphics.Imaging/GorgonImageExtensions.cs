@@ -157,7 +157,7 @@ namespace Gorgon.Graphics.Imaging
 				}
 
 				// Update the base image with our worker image.
-				destImage.CopyTo(baseImage);
+				baseImage.CopyFrom(destImage);
 
 				return baseImage;
 			}
@@ -176,7 +176,7 @@ namespace Gorgon.Graphics.Imaging
 		private static IGorgonImage ConvertToB4G4R4A4(IGorgonImage baseImage, ImageDithering dithering)
 		{
 			// This temporary image will be used to convert to B8G8R8A8.
-			IGorgonImage tempImage = baseImage;
+			IGorgonImage newImage = baseImage;
 
 			IGorgonImageInfo destInfo = new GorgonImageInfo(baseImage.Info.ImageType, DXGI.Format.B4G4R4A4_UNorm)
 			{
@@ -193,33 +193,32 @@ namespace Gorgon.Graphics.Imaging
 			try
 			{
 				// If necessary, convert to B8G8R8A8. Otherwise, we'll just downsample directly.
-				if ((tempImage.Info.Format != DXGI.Format.B8G8R8A8_UNorm)
-					&& (tempImage.Info.Format != DXGI.Format.R8G8B8A8_UNorm))
+				if ((newImage.Info.Format != DXGI.Format.B8G8R8A8_UNorm)
+					&& (newImage.Info.Format != DXGI.Format.R8G8B8A8_UNorm))
 				{
-					tempImage = new GorgonImage(baseImage.Info);
-					baseImage.CopyTo(tempImage);
-					ConvertToFormat(tempImage, DXGI.Format.B8G8R8A8_UNorm, dithering);
+					newImage = baseImage.Clone();
+					ConvertToFormat(newImage, DXGI.Format.B8G8R8A8_UNorm, dithering);
 				}
 
 				// The next step is to manually downsample to R4G4B4A4.
 				// Because we're doing this manually, dithering won't be an option unless unless we've downsampled from a much higher bit format when converting to B8G8R8A8.
-				for (int array = 0; array < tempImage.Info.ArrayCount; ++array)
+				for (int array = 0; array < newImage.Info.ArrayCount; ++array)
 				{
-					for (int mip = 0; mip < tempImage.Info.MipCount; ++mip)
+					for (int mip = 0; mip < newImage.Info.MipCount; ++mip)
 					{
-						int depthCount = tempImage.GetDepthCount(mip);
+						int depthCount = newImage.GetDepthCount(mip);
 
 						for (int depth = 0; depth < depthCount; depth++)
 						{
 							IGorgonImageBuffer destBuffer = destImage.Buffers[mip, destInfo.ImageType == ImageType.Image3D ? depth : array];
-							IGorgonImageBuffer srcBuffer = tempImage.Buffers[mip, tempImage.Info.ImageType == ImageType.Image3D ? depth : array];
+							IGorgonImageBuffer srcBuffer = newImage.Buffers[mip, newImage.Info.ImageType == ImageType.Image3D ? depth : array];
 
 							ConvertPixelsToB4G4R4A4(destBuffer, srcBuffer);
 						}
 					}
 				}
 
-				destImage.CopyTo(baseImage);
+				baseImage.CopyFrom(destImage);
 
 				return baseImage;
 			}
@@ -227,9 +226,9 @@ namespace Gorgon.Graphics.Imaging
 			{
 				destImage.Dispose();
 
-				if (tempImage != baseImage)
+				if (newImage != baseImage)
 				{
-					tempImage.Dispose();
+					newImage.Dispose();
 				}
 			}
 		}
@@ -241,7 +240,7 @@ namespace Gorgon.Graphics.Imaging
 		/// <param name="mipCount">The number of mip map levels.</param>
 		/// <param name="filter">[Optional] The filter to apply when copying the data from one mip level to another.</param>
 		/// <returns>A <see cref="IGorgonImage"/> containing the updated mip map data.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="baseImage"/> parameter is <b>NULL</b>.</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="baseImage"/> parameter is <b>null</b>.</exception>
 		/// <remarks>
 		/// <para>
 		/// This method will generate a new mip map chain for the <paramref name="mipCount"/>. If the current number of mip maps is not the same as the requested number, then the image buffer will be 
@@ -286,13 +285,13 @@ namespace Gorgon.Graphics.Imaging
 
 				if (mipCount < 2)
 				{
-					newImage.CopyTo(baseImage);
+					baseImage.CopyFrom(newImage);
 					return baseImage;
 				}
 
 				wic.GenerateMipImages(newImage, filter);
 
-				newImage.CopyTo(baseImage);
+				baseImage.CopyFrom(newImage);
 				return baseImage;
 			}
 			finally
@@ -309,7 +308,7 @@ namespace Gorgon.Graphics.Imaging
 		/// <param name="cropRect">The rectangle that will be used to crop the image.</param>
 		/// <param name="newDepth">The new depth for the image (for <see cref="ImageType.Image3D"/> images).</param>
 		/// <returns>A <see cref="IGorgonImage"/> containing the resized image.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="baseImage"/> parameter is <b>NULL</b>.</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="baseImage"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="newDepth"/> parameter is less than 1.</exception>
 		/// <remarks>
 		/// <para>
@@ -360,7 +359,7 @@ namespace Gorgon.Graphics.Imaging
 				newImage = wic.Resize(baseImage, cropRect.X, cropRect.Y, cropRect.Width, cropRect.Height, newDepth, calcMipLevels, ImageFilter.Point, true);
 
 				// Send the data over to the new image.
-				newImage.CopyTo(baseImage);
+				baseImage.CopyFrom(newImage);
 
 				return baseImage;
 			}
@@ -380,7 +379,7 @@ namespace Gorgon.Graphics.Imaging
 		/// <param name="newDepth">The new depth for the image (for <see cref="ImageType.Image3D"/> images).</param>
 		/// <param name="filter">[Optional] The type of filtering to apply to the scaled image to help smooth larger and smaller images.</param>
 		/// <returns>A <see cref="IGorgonImage"/> containing the resized image.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="baseImage"/> parameter is <b>NULL</b>.</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="baseImage"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="newWidth"/>, <paramref name="newHeight"/>, or <paramref name="newDepth"/> parameters are less than 1.</exception>
 		/// <exception cref="GorgonException">Thrown if there was an error during resizing regarding image pixel format conversion due to the type of <paramref name="filter"/> applied.</exception>
 		/// <remarks>
@@ -436,7 +435,7 @@ namespace Gorgon.Graphics.Imaging
 				int calcMipLevels = GorgonImage.CalculateMaxMipCount(newWidth, newHeight, newDepth).Min(baseImage.Info.MipCount);
 				newImage = wic.Resize(baseImage, 0, 0, newWidth, newHeight, newDepth, calcMipLevels, filter, false);
 
-				newImage.CopyTo(baseImage);
+				baseImage.CopyFrom(newImage);
 
 				return baseImage;
 			}
@@ -454,7 +453,7 @@ namespace Gorgon.Graphics.Imaging
 		/// <param name="format">The new pixel format for the image.</param>
 		/// <param name="dithering">[Optional] Flag to indicate the type of dithering to perform when the bit depth for the <paramref name="format"/> is lower than the original bit depth.</param>
 		/// <returns>A <see cref="IGorgonImage"/> containing the image data with the converted pixel format.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="baseImage"/> is <b>NULL</b>.</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="baseImage"/> is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="format"/> is set to <c>Format.Unknown</c>.
 		/// <para>-or-</para>
 		/// <para>Thrown when the original format could not be converted into the desired <paramref name="format"/>.</para>
@@ -510,7 +509,7 @@ namespace Gorgon.Graphics.Imaging
 				wic = new WicUtilities();
 				newImage = wic.ConvertToFormat(baseImage, format, dithering, baseImage.FormatInfo.IsSRgb, destInfo.IsSRgb);
 
-				newImage.CopyTo(baseImage);
+				baseImage.CopyFrom(newImage);
 
 				return baseImage;
 			}
@@ -518,6 +517,79 @@ namespace Gorgon.Graphics.Imaging
 			{
 				newImage?.Dispose();
 				wic?.Dispose();
+			}
+		}
+
+		/// <summary>
+		/// Function to convert the image data into a premultiplied format.
+		/// </summary>
+		/// <param name="baseImage">The image to convert.</param>
+		/// <returns>A <see cref="IGorgonImage"/> containing the image data with the premultiplied alpha pixel data.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="baseImage"/> is <b>null</b>.</exception>
+		/// <exception cref="ArgumentException">Thrown when the original format could not be converted to <c>R8G8B8A8_UNorm</c>.</exception>
+		/// <remarks>
+		/// <para>
+		/// Use this to convert an image to a premultiplied format. This takes each Red, Green and Blue element and multiplies them by the Alpha element.
+		/// </para>
+		/// <para>
+		/// Because this method will only operate on <c>R8G8B8A8_UNorm</c> formattted image data, the image will be converted to that format and converted back to its original format after the alpha is 
+		/// premultiplied. This may cause color fidelity issues. If the image cannot be converted, then an exception will be thrown. 
+		/// </para>
+		/// </remarks>
+		public static IGorgonImage ConvertToPremultipliedAlpha(this IGorgonImage baseImage)
+		{
+			IGorgonImage newImage = null;
+
+			if (baseImage == null)
+			{
+				throw new ArgumentNullException(nameof(baseImage));
+			}
+
+			try
+			{
+				// Worker image.
+				var cloneImageInfo = new GorgonImageInfo(baseImage.Info)
+				                     {
+					                     HasPremultipliedAlpha = true
+				                     };
+				newImage = new GorgonImage(cloneImageInfo);
+				newImage.CopyFrom(baseImage);			
+
+				if (newImage.Info.Format != DXGI.Format.R8G8B8A8_UNorm)
+				{
+					if (!newImage.CanConvertToFormat(DXGI.Format.R8G8B8A8_UNorm))
+					{
+						throw new ArgumentException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, DXGI.Format.R8G8B8A8_UNorm), nameof(baseImage));
+					}
+
+					// Clone the image so we can convert it to the correct format.
+					newImage.ConvertToFormat(DXGI.Format.R8G8B8A8_UNorm);
+				}
+
+				unsafe
+				{
+					int* imagePtr = (int *)(newImage.ImageData.Address);
+
+					for (int i = 0; i < newImage.SizeInBytes; i += newImage.FormatInfo.SizeInBytes)
+					{
+						var color = GorgonColor.FromABGR(*imagePtr);
+						color = new GorgonColor(color.Red * color.Alpha, color.Green * color.Alpha, color.Blue * color.Alpha, color.Alpha);
+						*(imagePtr++) = color.ToABGR();
+					}
+				}
+
+				if (newImage.Info.Format != baseImage.Info.Format)
+				{
+					newImage.ConvertToFormat(baseImage.Info.Format);
+				}
+				
+				baseImage.CopyFrom(newImage);
+
+				return baseImage;
+			}
+			finally
+			{
+				newImage?.Dispose();
 			}
 		}
 	}

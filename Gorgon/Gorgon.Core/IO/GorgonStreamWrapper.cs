@@ -523,7 +523,7 @@ namespace Gorgon.IO
         /// <remarks>
         /// If writing to the stream, the <paramref name="streamSize"/> is ignored.
         /// </remarks>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="parentStream"/> is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="parentStream"/> is <b>null</b>.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="streamStart"/> or the <paramref name="streamSize"/> parameters are less than 0</exception>
         /// <exception cref="ArgumentException">Thrown when the <see cref="Stream.CanSeek"/> property on the parent stream is <b>false</b>.
         /// <para>-or-</para>
@@ -562,7 +562,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="parentStream">The parent of this stream.</param>
 		/// <param name="streamStart">The position in the parent stream to start at, in bytes.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="parentStream"/> is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="parentStream"/> is <b>null</b>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="streamStart"/> parameter is less than 0.
 		/// <para>-or-</para>
 		/// <para>The <paramref name="streamStart"/> is larger than or equal to the size of the <paramref name="parentStream"/>.</para>
@@ -577,7 +577,7 @@ namespace Gorgon.IO
 		/// Initializes a new instance of the <see cref="GorgonStreamWrapper"/> class.
 		/// </summary>
 		/// <param name="parentStream">The parent of this stream.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="parentStream"/> is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="parentStream"/> is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <see cref="Stream.CanSeek"/> property on the parent stream is <b>false</b>.</exception>
 		public GorgonStreamWrapper(Stream parentStream)
 			: this(parentStream, 0, parentStream?.Length ?? 0)

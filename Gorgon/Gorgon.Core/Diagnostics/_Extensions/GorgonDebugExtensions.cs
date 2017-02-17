@@ -38,7 +38,7 @@ namespace Gorgon.Diagnostics
 	{
 		#region Methods.
 		/// <summary>
-		/// Function to throw an exception if a string is <b>null</b> (<i>Nothing</i> in VB.Net) or empty.
+		/// Function to throw an exception if a string is <b>null</b> or empty.
 		/// </summary>
 		/// <param name="value">The value being passed.</param>
 		/// <param name="paramName">The name of the parameter.</param>
@@ -469,14 +469,14 @@ namespace Gorgon.Diagnostics
 		}
 
 		/// <summary>
-		/// Function to throw an exception if an object is <b>null</b> (<i>Nothing</i> in VB.Net).
+		/// Function to throw an exception if an object is <b>null</b>.
 		/// </summary>
 		/// <typeparam name="T">A reference type to evaluate. This must be a reference type.</typeparam>
 		/// <param name="value">Value to evaluate.</param>
 		/// <param name="paramName">Name of the parameter to evaluate.</param>
 		/// <remarks>
 		/// <para>
-		/// This will evaluate the value of the type specified by <typeparamref name="T"/> for <b>null</b> (<i>Nothing</i> in VB.Net).
+		/// This will evaluate the value of the type specified by <typeparamref name="T"/> for <b>null</b>.
 		/// </para>
 		/// <para>
 		/// This will only throw exceptions when we're in DEBUG mode.  Release mode will do nothing.
@@ -492,14 +492,14 @@ namespace Gorgon.Diagnostics
 		}
 
 		/// <summary>
-		/// Function to throw an exception if a <see cref="Nullable{T}"/> type is <b>null</b> (<i>Nothing</i> in VB.Net).
+		/// Function to throw an exception if a <see cref="Nullable{T}"/> type is <b>null</b>.
 		/// </summary>
 		/// <typeparam name="T">A reference type to evaluate. This must be a value type.</typeparam>
 		/// <param name="value">Value to evaluate.</param>
 		/// <param name="paramName">Name of the parameter to evaluate.</param>
 		/// <remarks>
 		/// <para>
-		/// This will evaluate the value of the nullable value type specified by <typeparamref name="T"/> for <b>null</b> (<i>Nothing</i> in VB.Net).
+		/// This will evaluate the value of the nullable value type specified by <typeparamref name="T"/> for <b>null</b>.
 		/// </para>
 		/// <para>
 		/// This will only throw exceptions when we're in DEBUG mode.  Release mode will do nothing.

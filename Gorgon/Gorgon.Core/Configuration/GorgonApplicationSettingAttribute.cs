@@ -120,7 +120,7 @@ namespace Gorgon.Configuration
 		/// Initializes a new instance of the <see cref="GorgonApplicationSettingAttribute"/> class.
 		/// </summary>
 		/// <param name="section">Section for the setting.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="section"/> parameter is <c>null</c> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="section"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="section"/> is empty.</exception>
 		public GorgonApplicationSettingAttribute(string section)
 		{

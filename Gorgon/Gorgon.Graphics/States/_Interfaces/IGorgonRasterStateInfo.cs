@@ -23,7 +23,7 @@
 // Created: July 28, 2016 11:36:48 PM
 // 
 #endregion
-
+using System;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics
@@ -37,6 +37,7 @@ namespace Gorgon.Graphics
 	/// </para>
 	/// </remarks>
 	public interface IGorgonRasterStateInfo
+		: IEquatable<IGorgonRasterStateInfo>
 	{
 		/// <summary>
 		/// Property to return the current culling mode.
@@ -235,12 +236,5 @@ namespace Gorgon.Graphics
 		{
 			get;
 		}
-
-		/// <summary>
-		/// Function to compare equality for this and another <see cref="IGorgonRasterStateInfo"/>.
-		/// </summary>
-		/// <param name="info">The <see cref="IGorgonRasterStateInfo"/> to compare.</param>
-		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-		bool IsEqual(IGorgonRasterStateInfo info);
 	}
 }

@@ -37,6 +37,15 @@ namespace Gorgon.Graphics
 	/// <summary>
 	/// A brush that paints the font glyphs using a gradient that follows a specific path.
 	/// </summary>
+	/// <remarks>
+	/// <para>
+	/// This allows glyphs to be drawn using multiple colors that fade into one another.
+	/// </para>
+	/// </remarks>
+	/// <seealso cref="GorgonGlyphSolidBrush"/>
+	/// <seealso cref="GorgonGlyphHatchBrush"/>
+	/// <seealso cref="GorgonGlyphLinearGradientBrush"/>
+	/// <seealso cref="GorgonGlyphTextureBrush"/>
 	public class GorgonGlyphPathGradientBrush
 		: GorgonGlyphBrush
 	{
@@ -49,7 +58,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to set or return the wrapping mode for the gradient fill.
 		/// </summary>
-		public WrapMode WrapMode
+		public GlyphBrushWrapMode WrapMode
 		{
 			get;
 			set;
@@ -132,7 +141,7 @@ namespace Gorgon.Graphics
 		/// </returns>
 		internal override Brush ToGDIBrush()
 		{
-			var result = new PathGradientBrush(Points.Select(item => new PointF(item.X, item.Y)).ToArray(), WrapMode);
+			var result = new PathGradientBrush(Points.Select(item => new PointF(item.X, item.Y)).ToArray(), (WrapMode)WrapMode);
 
 			var blend = new Blend(BlendFactors.Count.Max(BlendPositions.Count).Max(1));
 			

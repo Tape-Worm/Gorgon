@@ -265,7 +265,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="chunkName">The name of the chunk.</param>
 		/// <returns>A <see cref="GorgonBinaryReader"/>, or <see cref="GorgonBinaryWriter"/> that will allow reading or writing within the chunk.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="chunkName"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="chunkName"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="chunkName"/> parameter is empty.</exception>
 		/// <remarks>
 		/// See the <see cref="GorgonChunkFileReader.OpenChunk(ulong)"/>, or the <see cref="GorgonChunkFileWriter.OpenChunk(ulong)"/> method for more information.
@@ -296,7 +296,7 @@ namespace Gorgon.IO
 		/// <remarks>
 		/// The <paramref name="stream"/> passed to this method requires that the <see cref="System.IO.Stream.CanSeek"/> property returns a value of <b>true</b>.
 		/// </remarks>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream" /> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream" /> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="stream"/> is has its <see cref="System.IO.Stream.CanSeek"/> property set to <b>false</b>.</exception>
 		protected GorgonChunkFile(Stream stream)
 		{

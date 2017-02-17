@@ -126,6 +126,23 @@ namespace Gorgon.Graphics.Imaging
 		}
 
 		/// <summary>
+		/// Property to return whether the image data is using premultiplied alpha.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// Premultiplied alpha is used to display correct alpha blending. This flag indicates that the data in the image has already been transformed to use premultiplied alpha.
+		/// </para>
+		/// <para>
+		/// For more information see: <a href="https://blogs.msdn.microsoft.com/shawnhar/2009/11/06/premultiplied-alpha/">Shawn Hargreaves Blog</a>
+		/// </para>
+		/// </remarks>
+		bool HasPremultipliedAlpha
+		{
+			get;
+		}
+
+
+		/// <summary>
 		/// Property to return the number of mip map levels in the image.
 		/// </summary>
 		/// <remarks>
