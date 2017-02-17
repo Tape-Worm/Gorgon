@@ -314,7 +314,7 @@ namespace Gorgon.IO
 			}
 
 			// Don't advance any further than our boundaries.
-			if ((_currentPosition + 1) >= _streamLength)
+			if ((_currentPosition + 1) > _streamLength)
 			{
 				return -1;
 			}

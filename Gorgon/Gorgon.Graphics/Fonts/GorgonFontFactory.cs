@@ -135,7 +135,9 @@ namespace Gorgon.Graphics
 				OutlineSize = reader.ReadInt32(),
 				PackingSpacing = reader.ReadInt32(),
 				TextureWidth = reader.ReadInt32(),
-				TextureHeight = reader.ReadInt32()
+				TextureHeight = reader.ReadInt32(),
+				UsePremultipliedTextures = reader.ReadValue<bool>(),
+				UseKerningPairs = reader.ReadBoolean()
 			};
 			fontFile.CloseChunk();
 
