@@ -508,7 +508,7 @@ namespace Gorgon.Graphics.Imaging
 					{
 						continue;
 					}
-
+					
 					writer.SetMetadataByName(item.Key, item.Value);
 				}
 			}

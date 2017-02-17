@@ -117,8 +117,8 @@ namespace Gorgon.Graphics.Imaging.Codecs
 			}
 
 			result["/grctlext/Delay"] = delayValue;
-			// TODO: This is broken in SharpDX 3.0.2.
-			//result["/grctlext/Disposal"] = (byte)1;
+			// TODO: There's a bug in SharpDX that keep this from working properly. 
+			result["/grctlext/Disposal"] = (ushort)1;
 
 			return result;
 		}
