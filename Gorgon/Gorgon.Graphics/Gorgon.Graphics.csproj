@@ -104,6 +104,7 @@
     <Compile Include="Devices\_Internal\VideoOutputInfo.cs" />
     <Compile Include="Devices\_Interfaces\IGorgonVideoDevice.cs" />
     <Compile Include="Devices\_Interfaces\IGorgonVideoDeviceList.cs" />
+    <Compile Include="Fonts\GorgonFontTextFormatter.cs" />
     <Compile Include="Fonts\_Internal\GdiFontData.cs" />
     <Compile Include="Fonts\GorgonFont.cs" />
     <Compile Include="Fonts\GorgonFontGlyphCollection.cs" />
