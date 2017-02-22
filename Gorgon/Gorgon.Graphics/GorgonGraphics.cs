@@ -321,23 +321,22 @@ namespace Gorgon.Graphics
 		    D3D11.BlendState1 blendState = null;
 		    D3D11.RasterizerState1 rasterState = null;
 
-		    int blendStateEqualCount = 0;
-		    PipelineStateChangeFlags inheritedState = PipelineStateChangeFlags.None;
 		    IGorgonPipelineStateInfo newStateInfo = newState;
 
 		    for (int i = 0; i < _stateCache.Count; ++i)
 		    {
-			    GorgonPipelineState cachedState = _stateCache[i];
+				int blendStateEqualCount = 0;
+				PipelineStateChangeFlags inheritedState = PipelineStateChangeFlags.None;
+				GorgonPipelineState cachedState = _stateCache[i];
 			    IGorgonPipelineStateInfo cachedStateInfo = _stateCache[i].Info;
 
-			    if (cachedStateInfo.PixelShader == newStateInfo.PixelShader)
+			    if (cachedStateInfo.PixelShader == newStateInfo.PixelShader) 
 			    {
 				    inheritedState |= PipelineStateChangeFlags.PixelShader;
 			    }
 
 			    if (cachedStateInfo.VertexShader == newStateInfo.VertexShader)
 			    {
-
 				    inheritedState |= PipelineStateChangeFlags.VertexShader;
 			    }
 

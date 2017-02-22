@@ -430,8 +430,9 @@ namespace Gorgon.Graphics
 		/// Function to measure the width of an individual line of text.
 		/// </summary>
 		/// <param name="line">The line to measure.</param>
+		/// <param name="useOutline"><b>true</b> to use the font outline, <b>false</b> to disregard it.</param>
 		/// <returns>The width of the line.</returns>
-		private float MeasureLine(string line)
+		private float MeasureLine(string line, bool useOutline)
 		{
 			float size = 0;
 			bool firstChar = true;
@@ -462,14 +463,14 @@ namespace Gorgon.Graphics
 				// Whitespace will use the glyph width.
 				if (char.IsWhiteSpace(character))
 				{
-					size += glyph.GlyphCoordinates.Width - 1;
+					size += glyph.Advance;
 					continue;
 				}
 
 				// Include the initial offset.
 				if (firstChar)
 				{
-					size += glyph.Offset.X;
+					size += (useOutline && glyph.OutlineCoordinates.Width > 0) ? glyph.OutlineOffset.X : glyph.Offset.X;
 					firstChar = false;
 				}
 
@@ -822,6 +823,7 @@ namespace Gorgon.Graphics
 			int maxLength = wordText.Length;
 			int index = 0;
 			float position = 0.0f;
+			bool firstChar = true;
 
 			while (index < maxLength)
 			{
@@ -831,6 +833,7 @@ namespace Gorgon.Graphics
 				if ((character == '\n')
 					|| (character == '\r'))
 				{
+					firstChar = true;
 					position = 0;
 					++index;
 					continue;
@@ -843,17 +846,12 @@ namespace Gorgon.Graphics
 					glyph = defaultGlyph;
 				}
 
-				float glyphCellWidth;
+				float glyphCellWidth = glyph.Advance;
 
-
-				if (!char.IsWhiteSpace(character))
+				if (firstChar)
 				{
-					glyphCellWidth = glyph.Offset.X + glyph.Advance;
-				}
-				else
-				{
-					// For whitespace, fall back to the glyph width (just in case advances are wrong).
-					glyphCellWidth = glyph.GlyphCoordinates.Width - 1;
+					glyphCellWidth += glyph.Offset.X;
+					firstChar = false;
 				}
 
 				// If we're using kerning, then adjust for the kerning value.
@@ -911,6 +909,7 @@ namespace Gorgon.Graphics
 						++index;
 					}
 					position = 0;
+					firstChar = true;
 					// Move to next character.
 					++index;
 					continue;
@@ -919,6 +918,7 @@ namespace Gorgon.Graphics
 				// Extract the space.
 				wordText[whiteSpaceIndex] = '\n';
 				position = 0;
+				firstChar = true;
 				index = whiteSpaceIndex + 1;
 			}
 
@@ -950,15 +950,15 @@ namespace Gorgon.Graphics
 		/// if <paramref name="useOutline"/> is <b>true</b> and <see cref="HasOutline"/> is <b>true</b>). For example, to achieve a double spacing effect, change this value to 2.0f.
 		/// </para>
 		/// </remarks>
-		public DX.Vector2 MeasureText(string text, bool useOutline, int tabSpaceCount = 4, float lineSpacing = 1.0f, float? wordWrapWidth = null)
+		public DX.Size2F MeasureText(string text, bool useOutline, int tabSpaceCount = 4, float lineSpacing = 1.0f, float? wordWrapWidth = null)
 		{
 			if (string.IsNullOrEmpty(text))
 			{
-				return DX.Vector2.Zero;
+				return DX.Size2F.Zero;
 			}
 
 			string formattedText = text.FormatStringForRendering(tabSpaceCount);
-			DX.Vector2 result = DX.Vector2.Zero;
+			DX.Size2F result = DX.Size2F.Zero;
 
 			if (wordWrapWidth != null)
 			{
@@ -974,30 +974,30 @@ namespace Gorgon.Graphics
 
 			if (lineSpacing.EqualsEpsilon(1.0f))
 			{
-				result.Y = lines.Length * FontHeight;
+				result.Height = lines.Length * FontHeight;
 			}
 			else
 			{
 				// For a modified line spacing, we have to adjust for the last line not being affected by the line spacing.
-				result.Y = (lines.Length - 1) * (((FontHeight) * lineSpacing)) + (FontHeight);
+				result.Height = (lines.Length - 1) * (((FontHeight) * lineSpacing)) + (FontHeight);
 			}
 
 			if ((HasOutline) && (useOutline))
 			{
-				result.Y += Info.OutlineSize * 2.0f;
+				result.Height += Info.OutlineSize * 0.5f;
 			}
 
 			// Get width.
 			for (int i = 0; i < lines.Length; ++i)
 			{
-				float lineWidth = MeasureLine(lines[i]);
+				float lineWidth = MeasureLine(lines[i], useOutline && HasOutline);
 
 				if ((HasOutline) && (useOutline))
 				{
-					lineWidth += Info.OutlineSize * 2.0f;
+					lineWidth += Info.OutlineSize;
 				}
 
-				result.X = result.X.Max(lineWidth);
+				result.Width = result.Width.Max(lineWidth);
 			}
 
 			return result;
