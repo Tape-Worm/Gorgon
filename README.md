@@ -47,9 +47,9 @@ To use the library
 Source code
 -----------
 
-The master branch contains the current release version of Gorgon 1.1.  
+The master branch contains the most current version of 2.0.
 
-The 2.x branch contains version 2.0 of Gorgon which supports Direct 3D 11.  
+To access the older version (which uses DirectX 9), use the 1.1.4529.31450 branch.
 
 Acknowledgements
 ================
