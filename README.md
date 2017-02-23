@@ -11,7 +11,7 @@ Gorgon is licensed under the [MIT license](http://opensource.org/licenses/MIT).
 How far along are you?  Is it done yet?  How about now?
 -------------------------------------------------------
 
-Gorgon 2.0 is currently in active development.  At this point there is no definite release date.
+Gorgon 2.0 is currently "done", in that it's got all of the functionality that it was intended to have. The only part that's "incomplete" is the editor, and even that is pretty much done and usable.
 
 What can it do?
 ---------------
@@ -50,7 +50,6 @@ Source code
 The master branch contains the current release version of Gorgon 1.1.  
 
 The 2.x branch contains version 2.0 of Gorgon which supports Direct 3D 11.  
-**Please note:** *This version is still in development and should not be used in a production environment as breaking changes can and will happen.*
 
 Acknowledgements
 ================
