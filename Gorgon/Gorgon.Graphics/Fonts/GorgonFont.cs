@@ -432,7 +432,7 @@ namespace Gorgon.Graphics
 		/// <param name="line">The line to measure.</param>
 		/// <param name="useOutline"><b>true</b> to use the font outline, <b>false</b> to disregard it.</param>
 		/// <returns>The width of the line.</returns>
-		private float MeasureLine(string line, bool useOutline)
+		private float GetLineWidth(string line, bool useOutline)
 		{
 			float size = 0;
 			bool firstChar = true;
@@ -794,6 +794,44 @@ namespace Gorgon.Graphics
 		}
 
 		/// <summary>
+		/// Function to retrieve the glyph used for the default character assigned in the font <see cref="Info"/>.
+		/// </summary>
+		/// <returns>The <see cref="GorgonGlyph"/> representing the default character.</returns>
+		/// <exception cref="KeyNotFoundException">Thrown when no glyph could be located that matches the default character.</exception>
+		/// <remarks>
+		/// <para>
+		/// The default character is assigned to the <see cref="IGorgonFontInfo.DefaultCharacter"/> property of the <see cref="IGorgonFontInfo"/> type passed to the constructor of the font.
+		/// </para>
+		/// </remarks>
+		/// <seealso cref="IGorgonFontInfo"/>
+		public GorgonGlyph GetDefaultGlyph()
+		{
+			GorgonGlyph glyph;
+
+			if (!TryGetDefaultGlyph(out glyph))
+			{
+				throw new KeyNotFoundException(string.Format(Resources.GORGFX_ERR_FONT_DEFAULT_CHAR_NOT_VALID, Info.DefaultCharacter));
+			}
+
+			return glyph;
+		}
+
+		/// <summary>
+		/// Function to retrieve the glyph used for the default character assigned in the font <see cref="Info"/>.
+		/// </summary>
+		/// <returns><b>true</b> if the glyph was found, or <b>false</b> if not.</returns>
+		/// <remarks>
+		/// <para>
+		/// The default character is assigned to the <see cref="IGorgonFontInfo.DefaultCharacter"/> property of the <see cref="IGorgonFontInfo"/> type passed to the constructor of the font.
+		/// </para>
+		/// </remarks>
+		/// <seealso cref="IGorgonFontInfo"/>
+		public bool TryGetDefaultGlyph(out GorgonGlyph glyph)
+		{
+			return Glyphs.TryGetValue(Info.DefaultCharacter, out glyph);
+		}
+
+		/// <summary>
 		/// Function to perform word wrapping on a string based on this font.
 		/// </summary>
 		/// <param name="text">The text to word wrap.</param>
@@ -926,6 +964,45 @@ namespace Gorgon.Graphics
 		}
 
 		/// <summary>
+		/// Function to measure a single line of text using this font.
+		/// </summary>
+		/// <param name="text">The single line of text to measure.</param>
+		/// <param name="useOutline"><b>true</b> to include the outline in the measurement, <b>false</b> to exclude.</param>
+		/// <param name="lineSpacing">[Optional] The factor used to determine the amount of space between each line.</param>
+		/// <returns>A vector containing the width and height of the text line when rendered using this font.</returns>
+		/// <remarks>
+		/// <para>
+		/// This will measure the specified <paramref name="text"/> and return the size, in pixels, of the region containing the text. Unlike the <see cref="MeasureText"/> method, this method does not format 
+		/// the text or take into account newline/carriage returns. It is meant for a single line of text only.
+		/// </para>
+		/// <para>
+		/// If the <paramref name="useOutline"/> parameter is <b>true</b>, then the outline size is taken into account when measuring, otherwise only the standard glyph size is taken into account. If the font 
+		/// <see cref="HasOutline"/> property is <b>false</b>, then this parameter is ignored.
+		/// </para>
+		/// <para>
+		/// The <paramref name="lineSpacing"/> parameter adjusts the amount of space between each line by multiplying it with the <see cref="FontHeight"/> value (and the <see cref="IGorgonFontInfo.OutlineSize"/> * 2 
+		/// if <paramref name="useOutline"/> is <b>true</b> and <see cref="HasOutline"/> is <b>true</b>). For example, to achieve a double spacing effect, change this value to 2.0f.
+		/// </para>
+		/// </remarks>
+		/// <seealso cref="MeasureText"/>
+		public DX.Size2F MeasureLine(string text, bool useOutline, float lineSpacing = 1.0f)
+		{
+			if (string.IsNullOrEmpty(text))
+			{
+				return DX.Size2F.Zero;
+			}
+
+			float lineWidth = GetLineWidth(text, useOutline && HasOutline);
+
+			if ((HasOutline) && (useOutline))
+			{
+				lineWidth += Info.OutlineSize;
+			}
+
+			return new DX.Size2F(lineWidth, FontHeight * lineSpacing);
+		}
+
+		/// <summary>
 		/// Function to measure the specified text using this font.
 		/// </summary>
 		/// <param name="text">The text to measure.</param>
@@ -949,7 +1026,11 @@ namespace Gorgon.Graphics
 		/// The <paramref name="lineSpacing"/> parameter adjusts the amount of space between each line by multiplying it with the <see cref="FontHeight"/> value (and the <see cref="IGorgonFontInfo.OutlineSize"/> * 2 
 		/// if <paramref name="useOutline"/> is <b>true</b> and <see cref="HasOutline"/> is <b>true</b>). For example, to achieve a double spacing effect, change this value to 2.0f.
 		/// </para>
+		/// <para>
+		/// If measuring a single line of text with no breaks (i.e. newline or carriage return), and no word wrapping, then call the <see cref="MeasureLine"/> method instead for better performance.
+		/// </para>
 		/// </remarks>
+		/// <seealso cref="MeasureLine"/>
 		public DX.Size2F MeasureText(string text, bool useOutline, int tabSpaceCount = 4, float lineSpacing = 1.0f, float? wordWrapWidth = null)
 		{
 			if (string.IsNullOrEmpty(text))
@@ -990,7 +1071,7 @@ namespace Gorgon.Graphics
 			// Get width.
 			for (int i = 0; i < lines.Length; ++i)
 			{
-				float lineWidth = MeasureLine(lines[i], useOutline && HasOutline);
+				float lineWidth = GetLineWidth(lines[i], useOutline && HasOutline);
 
 				if ((HasOutline) && (useOutline))
 				{

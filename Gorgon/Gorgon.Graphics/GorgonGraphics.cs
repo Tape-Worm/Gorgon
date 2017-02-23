@@ -41,49 +41,6 @@ using GI = SharpDX.DXGI;
 namespace Gorgon.Graphics
 {
 	/// <summary>
-	/// Operators used for comparison operations.
-	/// </summary>
-	public enum ComparisonOperator
-	{
-		/// <summary>
-		/// Unknown.
-		/// </summary>
-		Unknown = 0,
-		/// <summary>
-		/// Never pass the comparison.
-		/// </summary>
-		Never = 1,
-		/// <summary>
-		/// If the source data is less than the destination data, the comparison passes.
-		/// </summary>
-		Less = 2,
-		/// <summary>
-		/// If the source data is equal to the destination data, the comparison passes.
-		/// </summary>
-		Equal = 3,
-		/// <summary>
-		/// If the source data is less than or equal to the destination data, the comparison passes.
-		/// </summary>
-		LessEqual = 4,
-		/// <summary>
-		/// If the source data is greater than the destination data, the comparison passes.
-		/// </summary>
-		Greater = 5,
-		/// <summary>
-		/// If the source data is not equal to the destination data, the comparison passes.
-		/// </summary>
-		NotEqual = 6,
-		/// <summary>
-		/// If the source data is greater than or equal to the destination data, the comparison passes.
-		/// </summary>
-		GreaterEqual = 7,
-		/// <summary>
-		/// Always pass the comparison.
-		/// </summary>
-		Always = 8
-	}
-
-	/// <summary>
 	/// The primary object for the graphics sub system.
 	/// </summary>
 	/// <remarks>This interface is used to create all objects (buffers, shaders, etc...) that are to be used for graphics.  An interface is tied to a single physical video device, to use 
@@ -746,6 +703,25 @@ namespace Gorgon.Graphics
 		}
 
 		/// <summary>
+		/// Function to clear the cached pipeline states.
+		/// </summary>
+		private void ClearStateCache()
+		{
+			lock (_stateCacheLock)
+			{
+				// Wipe out the state cache.
+				for (int i = 0; i < _stateCache.Count; ++i)
+				{
+					_stateCache[i].D3DRasterState?.Dispose();
+					_stateCache[i].D3DDepthStencilState?.Dispose();
+					_stateCache[i].D3DBlendState?.Dispose();
+				}
+
+				_stateCache.Clear();
+			}
+		}
+
+		/// <summary>
 		/// Function to submit a <see cref="GorgonDrawIndexedCall"/> to the GPU.
 		/// </summary>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawCall"/> parameter is <b>null</b>.</exception>
@@ -878,13 +854,22 @@ namespace Gorgon.Graphics
 		}
 
 		/// <summary>
-		/// Function to create a pipeline state.
+		/// Function to retrieve a pipeline state.
 		/// </summary>
 		/// <param name="info">Information used to define the pipeline state.</param>
 		/// <returns>A new <see cref="GorgonPipelineState"/>, or an existing one if one was already created.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="info"/> has no <see cref="IGorgonPipelineStateInfo.VertexShader"/>.</exception>
-		public GorgonPipelineState CreatePipelineState(IGorgonPipelineStateInfo info)
+		/// <remarks>
+		/// <para>
+		/// This method will create a new pipeline state, or retrieve an existing state if a cached state already exists that exactly matches the information passed to the <paramref name="info"/> parameter. 
+		/// </para>
+		/// <para>
+		/// When a new pipeline state is created, sub-states like blending, depth/stencil, etc... may be reused from previously cached pipeline states and other uncached sub-states will be created anew. This 
+		/// new pipeline state is then cached for reuse later in order to speed up the process of creating a series of states.
+		/// </para>
+		/// </remarks>
+		public GorgonPipelineState GetPipelineState(IGorgonPipelineStateInfo info)
 	    {
 		    if (info == null)
 		    {
@@ -912,18 +897,34 @@ namespace Gorgon.Graphics
 		/// Function to clear the states for the graphics object.
 		/// </summary>
 		/// <param name="flush">[Optional] <b>true</b> to flush the queued graphics object commands, <b>false</b> to leave as is.</param>
-		/// <remarks>If <paramref name="flush"/> is set to <b>true</b>, then a performance penalty is incurred.</remarks>
+		/// <remarks>
+		/// <para>
+		/// This method will reset all current states to an uninitialized state, and will clear the internal pipeline state cache. 
+		/// </para>
+		/// <para>
+		/// If the <paramref name="flush"/> parameter is set to <b>true</b>, then any commands on the GPU that are pending will be flushed.
+		/// </para>
+		/// <para>
+		/// <note type="warning">
+		/// <para>
+		/// This method will cause a significant performance hit, so its use is generally discouraged in performance sensitive situations.
+		/// </para>
+		/// </note>
+		/// </para>
+		/// </remarks>
 		public void ClearState(bool flush = false)
         {
-            if (flush)
+			// Reset state on the device context.
+			D3DDeviceContext.ClearState();
+
+			if (flush)
             {
 				D3DDeviceContext.Flush();
             }
 
-			// Set default states.
-			D3DDeviceContext.ClearState();
 			_lastDrawCall = null;
-		}
+			ClearStateCache();
+        }
 
 		/// <summary>
 		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -939,15 +940,7 @@ namespace Gorgon.Graphics
 				return;
 			}
 
-			// Wipe out the state cache.
-			for (int i = 0; i < _stateCache.Count; ++i)
-			{
-				_stateCache[i].D3DRasterState?.Dispose();
-				_stateCache[i].D3DDepthStencilState?.Dispose();
-				_stateCache[i].D3DBlendState?.Dispose();
-			}
-
-			_stateCache.Clear();
+			ClearStateCache();
 
 			// Disconnect from the context.
 			_log.Print($"Destroying GorgonGraphics interface for device '{device.Info.Name}'...", LoggingLevel.Simple);
