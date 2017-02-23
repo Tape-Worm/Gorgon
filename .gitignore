@@ -15,7 +15,9 @@ x64/
 x86/
 build/
 bld/
-
+Docs/Help/
+Gorgon/Broken/
+Test/
 
 # Roslyn cache directories
 *.ide/
