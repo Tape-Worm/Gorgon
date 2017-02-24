@@ -23,9 +23,8 @@
 // Created: December 20, 2016 11:29:23 AM
 // 
 #endregion
-
+using System;
 using System.Collections.Generic;
-using System.Drawing;
 using Gorgon.Graphics.Core;
 
 namespace Gorgon.Graphics.Fonts
@@ -58,6 +57,29 @@ namespace Gorgon.Graphics.Fonts
 		/// Pixels.
 		/// </summary>
 		Pixels = 1
+	}
+
+	/// <summary>
+	/// Font style.
+	/// </summary>
+	public enum FontStyle
+	{
+		/// <summary>
+		/// Normal font without bold or italics.
+		/// </summary>
+		Normal = 0,
+		/// <summary>
+		/// Bolded font.
+		/// </summary>
+		Bold = 1,
+		/// <summary>
+		/// Italicized font.
+		/// </summary>
+		Italics = 2,
+		/// <summary>
+		/// Bolded and italicized font.
+		/// </summary>
+		BoldItalics = 3
 	}
 
 	/// <summary>

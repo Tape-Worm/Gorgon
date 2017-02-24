@@ -28,8 +28,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using DX = SharpDX;
-using System.Drawing;
-using System.Drawing.Imaging;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts.Properties;
 
@@ -338,7 +336,7 @@ namespace Gorgon.Graphics.Fonts
 		/// Property to set or return the style for the font.
 		/// </summary>
 		/// <remarks>
-		/// The default value is <see cref="System.Drawing.FontStyle.Regular"/>.
+		/// The default value is <see cref="Fonts.FontStyle.Normal"/>.
 		/// </remarks>
 		public FontStyle FontStyle
 		{
@@ -424,25 +422,6 @@ namespace Gorgon.Graphics.Fonts
 		}
 		#endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to return a font height in pixels based on the point size.
-		/// </summary>
-		/// <param name="pointSize">Size of the font, in points.</param>
-		/// <param name="outlineSize">Size of the outline, if applicable.</param>
-		/// <returns>The height of the font in pixels.</returns>
-		public static float GetFontHeight(float pointSize, int outlineSize)
-		{
-			using (var tempBmp = new Bitmap(1, 1, PixelFormat.Format32bppArgb))
-			{
-				using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(tempBmp))
-				{
-					return ((pointSize * g.DpiY) / 72.0f) + outlineSize;
-				}
-			}
-		}
-		#endregion
-
 		#region Constructor/Destructor.
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonFontInfo"/> class.
@@ -514,7 +493,7 @@ namespace Gorgon.Graphics.Fonts
 			OutlineColor1 = GorgonColor.Transparent;
 			OutlineColor2 = GorgonColor.Transparent;
 			OutlineSize = 0;
-			FontStyle = FontStyle.Regular;
+			FontStyle = FontStyle.Normal;
 			DefaultCharacter = ' ';
 			AntiAliasingMode = FontAntiAliasMode.AntiAlias;
 			Size = size;

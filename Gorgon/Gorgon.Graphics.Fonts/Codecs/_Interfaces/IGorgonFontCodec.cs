@@ -25,10 +25,11 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Gorgon.Core;
 
-namespace Gorgon.Graphics.Fonts
+namespace Gorgon.Graphics.Fonts.Codecs
 {
 	/// <summary>
 	/// A encoder/decoder for reading and writing font data.
@@ -39,8 +40,33 @@ namespace Gorgon.Graphics.Fonts
 	/// </para>
 	/// </remarks>
 	public interface IGorgonFontCodec
+		: IGorgonNamedObject
 	{
 		#region Properties.
+		/// <summary>
+		/// Property to return the common file name extension(s) for a codec.
+		/// </summary>
+		IReadOnlyList<string> CodecCommonExtensions
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Property to return the friendly description of the codec.
+		/// </summary>
+		string CodecDescription
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Property to return the abbreviated name of the codec (e.g. PNG).
+		/// </summary>
+		string Codec
+		{
+			get;
+		}
+
 		/// <summary>
 		/// Property to return the default filename extension for font files.
 		/// </summary>

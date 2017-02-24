@@ -31,7 +31,7 @@ using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts.Properties;
 
-namespace Gorgon.Graphics.Fonts
+namespace Gorgon.Graphics.Fonts.Codecs
 {
 	/// <summary>
 	/// The base class used to define functionality to allow applications to write their own codecs for reading/writing font data.
@@ -42,7 +42,7 @@ namespace Gorgon.Graphics.Fonts
 	/// with a <seealso cref="GorgonFontFactory"/>.
 	/// </para>
 	/// </remarks>
-	public abstract class GorgonFontCodecBase 
+	public abstract class GorgonFontCodec 
 		: IGorgonFontCodec
 	{
 		#region Properties.
@@ -91,6 +91,40 @@ namespace Gorgon.Graphics.Fonts
 		{
 			get;
 		}
+
+		/// <summary>
+		/// Property to return the common file name extension(s) for a codec.
+		/// </summary>
+		public IReadOnlyList<string> CodecCommonExtensions
+		{
+			get;
+			protected set;
+		}
+
+		/// <summary>
+		/// Property to return the friendly description of the codec.
+		/// </summary>
+		public abstract string CodecDescription
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Property to return the abbreviated name of the codec (e.g. GorFont).
+		/// </summary>
+		public abstract string Codec
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Property to return the name of this object.
+		/// </summary>
+		/// <remarks>
+		/// For best practises, the name should only be set once during the lifetime of an object. Hence, this interface only provides a read-only implementation of this 
+		/// property.
+		/// </remarks>
+		string IGorgonNamedObject.Name => Codec;
 		#endregion
 
 		#region Methods.
@@ -215,11 +249,6 @@ namespace Gorgon.Graphics.Fonts
 		/// <returns>
 		/// The font meta data as a <see cref="IGorgonFontInfo"/> value.
 		/// </returns>
-		/// <remarks>
-		/// <para>
-		/// Implementors should ensure that the stream position is restored prior to exiting this method. Failure to do so may cause problems when reading the data from the stream.
-		/// </para>
-		/// </remarks>
 		protected abstract IGorgonFontInfo OnGetMetaData(Stream stream);
 
 		/// <summary>
@@ -266,7 +295,16 @@ namespace Gorgon.Graphics.Fonts
 				throw new EndOfStreamException();
 			}
 
-			return OnGetMetaData(stream);
+			long streamPosition = stream.Position;
+
+			try
+			{
+				return OnGetMetaData(stream);
+			}
+			finally
+			{
+				stream.Position = streamPosition;
+			}
 		}
 
 		/// <summary>
@@ -427,15 +465,26 @@ namespace Gorgon.Graphics.Fonts
 				return OnLoadFromStream(name, stream);
 			}
 		}
+
+		/// <summary>
+		/// Returns a <see cref="string" /> that represents this instance.
+		/// </summary>
+		/// <returns>
+		/// A <see cref="string" /> that represents this instance.
+		/// </returns>
+		public override string ToString()
+		{
+			return string.Format(Resources.GORGFX_TOSTR_FONT_CODEC, Codec);
+		}
 		#endregion
 
 		#region Constructor/Finalizer.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonFontCodec"/> class.
+		/// Initializes a new instance of the <see cref="GorgonCodecGorFont"/> class.
 		/// </summary>
 		/// <param name="factory">The font factory that holds cached font information.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="factory"/> parameter is <b>null</b>.</exception>
-		protected GorgonFontCodecBase(GorgonFontFactory factory)
+		protected GorgonFontCodec(GorgonFontFactory factory)
 		{
 			if (factory == null)
 			{
@@ -443,6 +492,7 @@ namespace Gorgon.Graphics.Fonts
 			}
 
 			Factory = factory;
+			CodecCommonExtensions = new string[] { };
 		}
 		#endregion
 	}

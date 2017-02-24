@@ -281,21 +281,6 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// </summary>
 		public override bool SupportsBlockCompression => true;
 
-		
-		// TODO: Add to encoder/decoder options.		
-		/*/// <summary>
-        /// Property to set or return the flags used when converting legacy pixel formats to the buffer format.
-        /// </summary>
-        /// <remarks>
-        /// Use this to control how Gorgon converts data from a legacy DDS file format.  This only applies to DDS files generated with files saved by Direct3D 9 interfaces.
-        /// <para>The property applies to both encoding and decoding image data.</para>
-        /// <para>The default value is None.</para></remarks>
-        public DdsFlags FUCKLegacyConversionFlags
-        {
-            get;
-            set;
-        }*/
-
 		/// <summary>
 		/// Property to return the friendly description of the format.
 		/// </summary>
