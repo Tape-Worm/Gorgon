@@ -31,12 +31,13 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using Gorgon.Core;
-using Gorgon.Graphics.Core.Properties;
+using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Fonts.Properties;
 using Gorgon.IO;
 using Gorgon.Math;
 using Gorgon.Native;
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Fonts
 {
 	/// <summary>
 	/// A factory used to create, read, and cache font data.

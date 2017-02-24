@@ -33,16 +33,17 @@ using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using Gorgon.Core;
-using Gorgon.Graphics.Core.Properties;
+using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Fonts.Properties;
 using Gorgon.Graphics.Imaging;
 using Gorgon.IO;
 using Gorgon.Math;
 using Gorgon.Native;
 using DX = SharpDX;
-using SharpDX.Direct3D11;
-using SharpDX.DXGI;
+using D3D11 = SharpDX.Direct3D11;
+using DXGI = SharpDX.DXGI;
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Fonts
 {
 	/// <summary>
 	/// A font used to render text data.
@@ -313,7 +314,7 @@ namespace Gorgon.Graphics.Core
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
 		private void GenerateTextures(Dictionary<Drawing.Bitmap, IEnumerable<GlyphInfo>> glyphData)
 		{
-			var imageSettings = new GorgonImageInfo(ImageType.Image2D, Format.R8G8B8A8_UNorm)
+			var imageSettings = new GorgonImageInfo(ImageType.Image2D, DXGI.Format.R8G8B8A8_UNorm)
 			{
 				Width = Info.TextureWidth,
 				Height = Info.TextureHeight,
@@ -321,12 +322,12 @@ namespace Gorgon.Graphics.Core
 			};
 			var textureSettings = new GorgonTextureInfo
 			{
-				Format = Format.R8G8B8A8_UNorm,
+				Format = DXGI.Format.R8G8B8A8_UNorm,
 				Width = Info.TextureWidth,
 				Height = Info.TextureHeight,
 				Depth = 1,
 				TextureType = TextureType.Texture2D,
-				Usage = ResourceUsage.Default,
+				Usage = D3D11.ResourceUsage.Default,
 				Binding = TextureBinding.ShaderResource,
 				IsCubeMap = false,
 				MipLevels = 1,
@@ -358,7 +359,7 @@ namespace Gorgon.Graphics.Core
 												  new GorgonImageToTextureInfo
 												  {
 													  Binding = TextureBinding.ShaderResource,
-													  Usage = ResourceUsage.Default,
+													  Usage = D3D11.ResourceUsage.Default,
 													  MultisampleInfo = GorgonMultisampleInfo.NoMultiSampling
 												  });
 						_internalTextures.Add(texture);
@@ -518,7 +519,7 @@ namespace Gorgon.Graphics.Core
 				{
 					string textureName = reader.ReadString();
 					
-					image = new GorgonImage(new GorgonImageInfo(ImageType.Image2D, Format.R8G8B8A8_UNorm)
+					image = new GorgonImage(new GorgonImageInfo(ImageType.Image2D, DXGI.Format.R8G8B8A8_UNorm)
 					                        {
 						                        ArrayCount = reader.ReadInt32(),
 												Depth = 1,
@@ -546,7 +547,7 @@ namespace Gorgon.Graphics.Core
 					                                      new GorgonImageToTextureInfo
 					                                      {
 						                                      MultisampleInfo = GorgonMultisampleInfo.NoMultiSampling,
-						                                      Usage = ResourceUsage.Default,
+						                                      Usage = D3D11.ResourceUsage.Default,
 						                                      Binding = TextureBinding.ShaderResource
 					                                      }));
 					image.Dispose();
@@ -613,7 +614,7 @@ namespace Gorgon.Graphics.Core
 				// The associated texture was not found, thus the file is corrupt.
 				if (texture == null)
 				{
-					throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORGFX_FONT_GLYPH_TEXTURE_NOT_FOUND, textureName));	
+					throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORGFX_ERR_FONT_GLYPH_TEXTURE_NOT_FOUND, textureName));	
 				}
 
 				// Read the glyphs for this texture.
@@ -1104,7 +1105,7 @@ namespace Gorgon.Graphics.Core
 
 			if (!stream.CanSeek)
 			{
-				throw new IOException(Resources.GORGFX_STREAM_NO_SEEK);
+				throw new IOException(Resources.GORGFX_ERR_STREAM_NO_SEEK);
 			}
 
 			GorgonChunkFileWriter fontFile = new GorgonChunkFileWriter(stream, FileHeader.ChunkID());

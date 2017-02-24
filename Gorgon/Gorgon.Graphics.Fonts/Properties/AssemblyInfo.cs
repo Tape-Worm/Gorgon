@@ -1,7 +1,7 @@
-﻿#region MIT.
+﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2011 Michael Winsor
+// Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,31 +20,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Sunday, July 24, 2011 10:16:37 PM
+// Created: February 23, 2017 9:06:11 PM
 // 
 #endregion
 
-namespace Gorgon.Native
-{
-	// ReSharper disable InconsistentNaming
+using System.Reflection;
+using System.Runtime.InteropServices;
 
-	/// <summary>
-	/// Get monitor from window flags.
-	/// </summary>
-	enum MonitorFlags
-	{
-		/// <summary>
-		/// Return <b>null</b>.
-		/// </summary>
-		MONITOR_DEFAULTTONULL = 0,
-		/// <summary>
-		/// Return the primary monitor.
-		/// </summary>
-		MONITOR_DEFAULTTOPRIMARY = 1,
-		/// <summary>
-		/// Return the monitor nearest to the window.
-		/// </summary>
-		MONITOR_DEFAULTTONEAREST = 2
-	}
-	// ReSharper restore InconsistentNaming
-}
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+#if DEBUG
+[assembly: AssemblyTitle("Gorgon Graphics Fonts [DEBUG]")]
+#else
+[assembly: AssemblyTitle("Gorgon Graphics Fonts")]
+#endif
+[assembly: AssemblyDescription("Provides functionality to create, read and store bitmap fonts for use in text rendering.")]
+
+// The following GUID is for the ID of the typelib if this project is exposed to COM
+[assembly: Guid("1dfb5973-950a-4b6e-84af-953de57c9213")]

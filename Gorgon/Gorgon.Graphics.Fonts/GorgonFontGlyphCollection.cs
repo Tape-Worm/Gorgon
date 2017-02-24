@@ -28,7 +28,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Fonts
 {
 	/// <summary>
 	/// A collection of glyphs for a <see cref="GorgonFont"/>.

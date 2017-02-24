@@ -107,26 +107,6 @@
     <Compile Include="Devices\_Internal\VideoOutputInfo.cs" />
     <Compile Include="Devices\_Interfaces\IGorgonVideoDevice.cs" />
     <Compile Include="Devices\_Interfaces\IGorgonVideoDeviceList.cs" />
-    <Compile Include="Fonts\GorgonFontTextFormatter.cs" />
-    <Compile Include="Fonts\_Internal\GdiFontData.cs" />
-    <Compile Include="Fonts\GorgonFont.cs" />
-    <Compile Include="Fonts\GorgonFontGlyphCollection.cs" />
-    <Compile Include="Fonts\GorgonFontInfo.cs" />
-    <Compile Include="Fonts\GorgonFontFactory.cs" />
-    <Compile Include="Fonts\GorgonGlyph.cs" />
-    <Compile Include="Fonts\GorgonGlyphBrush.cs" />
-    <Compile Include="Fonts\GorgonGlyphBrushInterpolator.cs" />
-    <Compile Include="Fonts\GorgonGlyphHatchBrush.cs" />
-    <Compile Include="Fonts\GorgonGlyphLinearGradientBrush.cs" />
-    <Compile Include="Fonts\_Internal\GlyphInfo.cs" />
-    <Compile Include="Fonts\_Internal\GlyphPacker.cs" />
-    <Compile Include="Fonts\GorgonGlyphPathGradientBrush.cs" />
-    <Compile Include="Fonts\GorgonGlyphSolidBrush.cs" />
-    <Compile Include="Fonts\GorgonGlyphTextureBrush.cs" />
-    <Compile Include="Fonts\GorgonKerningPair.cs" />
-    <Compile Include="Fonts\_Interfaces\IGorgonFontInfo.cs" />
-    <Compile Include="Fonts\_Internal\GlyphDraw.cs" />
-    <Compile Include="Fonts\_Internal\GlyphRegions.cs" />
     <Compile Include="Geometry\GorgonInputElement.cs" />
     <Compile Include="Geometry\GorgonInputLayout.cs" />
     <Compile Include="Geometry\_Attributes\InputElementAttribute.cs" />
@@ -220,6 +200,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Fonts\" />
     <Folder Include="States\__OBSOLETE__\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -30,9 +30,10 @@ using System.Linq;
 using DX = SharpDX;
 using System.Drawing;
 using System.Drawing.Imaging;
-using Gorgon.Graphics.Core.Properties;
+using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Fonts.Properties;
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Fonts
 {
 	/// <summary>
 	/// Provides information used to create a new <see cref="GorgonFont"/>.
@@ -61,7 +62,7 @@ namespace Gorgon.Graphics.Core
 		/// This will affect the <see cref="Size"/> value in that it will alter the meaning of the units.
 		/// </para>
 		/// <para>
-		/// The default value is <see cref="Core.FontHeightMode.Pixels"/>.
+		/// The default value is <see cref="Fonts.FontHeightMode.Pixels"/>.
 		/// </para>
 		/// </remarks>
 		public FontHeightMode FontHeightMode
@@ -85,8 +86,8 @@ namespace Gorgon.Graphics.Core
 		/// This is the height of the font, including ascent and descent.
 		/// </para>
 		/// <para>
-		/// This is affected by the <see cref="Core.FontHeightMode"/>. If the <see cref="FontHeightMode"/> is set to <see cref="Core.FontHeightMode.Points"/>, then this unit is the height 
-		/// size height for the font. Otherwise, this represents the font height in <see cref="Core.FontHeightMode.Pixels"/>.
+		/// This is affected by the <see cref="Fonts.FontHeightMode"/>. If the <see cref="FontHeightMode"/> is set to <see cref="Fonts.FontHeightMode.Points"/>, then this unit is the height 
+		/// size height for the font. Otherwise, this represents the font height in <see cref="Fonts.FontHeightMode.Pixels"/>.
 		/// </para>
 		/// </remarks>
 		public float Size

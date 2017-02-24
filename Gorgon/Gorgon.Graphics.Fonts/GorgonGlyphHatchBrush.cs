@@ -27,7 +27,7 @@
 using System.Drawing;
 using System.Drawing.Drawing2D;
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Fonts
 {
 	/// <summary>
 	/// The patterns used to draw the glyphs.

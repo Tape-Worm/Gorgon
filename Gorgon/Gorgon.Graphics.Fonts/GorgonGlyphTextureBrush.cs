@@ -28,14 +28,15 @@ using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using DX = SharpDX;
 using DXGI = SharpDX.DXGI;
-using Gorgon.Graphics.Core.Properties;
+using Gorgon.Graphics.Fonts.Properties;
 using Gorgon.Math;
 using Gorgon.Native;
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Fonts
 {
 	/// <summary>
 	/// Defines how to draw the <see cref="GorgonGlyphTextureBrush"/>, or <see cref="GorgonGlyphPathGradientBrush"/> if the paint area is larger than the texture region.

@@ -25,8 +25,9 @@
 #endregion
 
 using System.Drawing;
+using Gorgon.Graphics.Core;
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Fonts
 {
 	/// <summary>
 	/// The type of glyph brush to use when painting the glyphs for the font.

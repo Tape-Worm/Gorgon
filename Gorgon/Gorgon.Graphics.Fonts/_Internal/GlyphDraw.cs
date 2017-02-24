@@ -32,7 +32,7 @@ using System.Globalization;
 using Gorgon.Math;
 using DX = SharpDX;
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Fonts
 {
 	/// <summary>
 	/// Provides functionality to draw and measure glyph data.

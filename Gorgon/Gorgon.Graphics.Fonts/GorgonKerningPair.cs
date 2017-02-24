@@ -26,9 +26,9 @@
 
 using System;
 using Gorgon.Core;
-using Gorgon.Graphics.Core.Properties;
+using Gorgon.Graphics.Fonts.Properties;
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Fonts
 {
 	/// <summary>
 	/// A kerning pair value.
