@@ -31,7 +31,7 @@ using System.Linq;
 using DX = SharpDX;
 using Gorgon.Math;
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Fonts
 {
 	/// <summary>
 	/// A brush that paints the font glyphs using a gradient that follows a specific path.

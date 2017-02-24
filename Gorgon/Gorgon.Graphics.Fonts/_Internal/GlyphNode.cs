@@ -1,7 +1,7 @@
-﻿#region MIT.
+#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2012 Michael Winsor
+// Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,15 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Saturday, April 14, 2012 10:56:23 AM
+// Created: February 23, 2017 9:49:20 PM
 // 
 #endregion
 
-using System;
 using System.Drawing;
-using Gorgon.Graphics.Core.Properties;
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Fonts
 {
 	/// <summary>
 	/// A node for the glyph packing.
@@ -146,61 +144,6 @@ namespace Gorgon.Graphics.Core
 		{
 			Region = Rectangle.Empty;
 			Parent = parentNode;
-		}
-		#endregion
-	}
-
-	/// <summary>
-	/// Used to determine where glyphs should be packed onto a texture.
-	/// </summary>
-	static class GlyphPacker
-	{
-		#region Properties.
-		/// <summary>
-		/// Property to return the root node.
-		/// </summary>
-		public static GlyphNode Root
-		{
-			get;
-			private set;
-		}
-		#endregion
-
-		#region Methods.
-		/// <summary>
-		/// Function to create the root node.
-		/// </summary>
-		/// <param name="textureWidth">The width of the texture.</param>
-		/// <param name="textureHeight">The height of the texture.</param>
-		public static void CreateRoot(int textureWidth, int textureHeight)
-		{
-			Root = new GlyphNode(null)
-				{
-					Region = new Rectangle(0, 0, textureWidth, textureHeight)
-				};
-		}
-
-		/// <summary>
-		/// Function to add a node to the 
-		/// </summary>
-		/// <param name="dimensions">The glyph dimensions.</param>
-		/// <returns>A rectangle for the area on the image that the glyph will be located at, or <b>null</b> if there's no room.</returns>
-		public static Rectangle? Add(Size dimensions)
-		{
-			if ((dimensions.Width > Root.Region.Width) || (dimensions.Height > Root.Region.Height))
-			{
-				throw new ArgumentOutOfRangeException(nameof(dimensions), Resources.GORGFX_FONT_GLYPH_NODE_TOO_LARGE);
-			}
-
-			// Do nothing here.
-			if ((dimensions.Width == 0) || (dimensions.Height == 0))
-			{
-				return Rectangle.Empty;
-			}
-
-			GlyphNode newNode = Root.AddNode(dimensions);
-
-			return newNode?.Region;
 		}
 		#endregion
 	}

@@ -26,8 +26,9 @@
 
 using System.Collections.Generic;
 using System.Drawing;
+using Gorgon.Graphics.Core;
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Fonts
 {
 	/// <summary>
 	/// Anti-aliasing modes for the font.
@@ -80,7 +81,7 @@ namespace Gorgon.Graphics.Core
 		/// This will affect the <see cref="Size"/> value in that it will alter the meaning of the units.
 		/// </para>
 		/// <para>
-		/// The default value is <see cref="Core.FontHeightMode.Pixels"/>.
+		/// The default value is <see cref="Fonts.FontHeightMode.Pixels"/>.
 		/// </para>
 		/// </remarks>
 		FontHeightMode FontHeightMode
@@ -104,8 +105,8 @@ namespace Gorgon.Graphics.Core
 		/// This sets the height of the font.
 		/// </para>
 		/// <para>
-		/// This is affected by the <see cref="Core.FontHeightMode"/>. If the <see cref="FontHeightMode"/> is set to <see cref="Core.FontHeightMode.Points"/>, then this unit is the height 
-		/// size height for the font. Otherwise, this represents the font height in <see cref="Core.FontHeightMode.Pixels"/>.
+		/// This is affected by the <see cref="Fonts.FontHeightMode"/>. If the <see cref="FontHeightMode"/> is set to <see cref="Fonts.FontHeightMode.Points"/>, then this unit is the height 
+		/// size height for the font. Otherwise, this represents the font height in <see cref="Fonts.FontHeightMode.Pixels"/>.
 		/// </para>
 		/// </remarks>
 		float Size

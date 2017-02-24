@@ -23,11 +23,11 @@
 // Created: February 15, 2017 9:07:03 PM
 // 
 #endregion
-
+using Gorgon.Graphics.Core;
 using Drawing = System.Drawing;
 using DX = SharpDX;
 
-namespace Gorgon.Graphics.Core
+namespace Gorgon.Graphics.Fonts
 {
 	/// <summary>
 	/// Information about a glyph.
