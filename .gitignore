@@ -16,7 +16,8 @@ x86/
 build/
 bld/
 Docs/Help/
-Gorgon/BrokeAsFuck/
+Gorgon/OldAndBroken/
+Gorgon/__OBSOLETE__/
 Test/*
 !Test/Gorgon.Core.Test/
 !Test/Gorgon.Input.Test/
