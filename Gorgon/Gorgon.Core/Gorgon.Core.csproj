@@ -190,6 +190,7 @@
     <Compile Include="Plugins\_Attributes\ExcludeAsPluginAttribute.cs" />
     <Compile Include="Plugins\_Interfaces\IGorgonPluginService.cs" />
     <Compile Include="Plugins\_Interfaces\IClrStrongName.cs" />
+    <Compile Include="SharedAssemblyInfo.cs" />
     <Compile Include="Timing\GorgonTimerMultimedia.cs" />
     <Compile Include="Timing\_Interfaces\IGorgonTimer.cs" />
     <Compile Include="UI\_Extensions\GorgonControlExtensions.cs" />

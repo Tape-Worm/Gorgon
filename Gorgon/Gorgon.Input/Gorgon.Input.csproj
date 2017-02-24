@@ -65,6 +65,9 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Gorgon.Core\SharedAssemblyInfo.cs">
+      <Link>SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Devices\GorgonGamingDevice.cs" />
     <Compile Include="Devices\GorgonGamingDeviceAxis.cs" />
     <Compile Include="Devices\GorgonGamingDeviceAxisEqualityComparer.cs" />

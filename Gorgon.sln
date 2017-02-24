@@ -63,6 +63,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Graphics.Imaging", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Graphics.Core", "Gorgon\Gorgon.Graphics.Core\Gorgon.Graphics.Core.csproj", "{EA4B0A1A-586A-47A4-89C1-3E6A4E821C31}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Graphics.Fonts", "Gorgon\Gorgon.Graphics.Fonts\Gorgon.Graphics.Fonts.csproj", "{1DFB5973-950A-4B6E-84AF-953DE57C9213}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -165,6 +167,10 @@ Global
 		{EA4B0A1A-586A-47A4-89C1-3E6A4E821C31}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EA4B0A1A-586A-47A4-89C1-3E6A4E821C31}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EA4B0A1A-586A-47A4-89C1-3E6A4E821C31}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1DFB5973-950A-4B6E-84AF-953DE57C9213}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1DFB5973-950A-4B6E-84AF-953DE57C9213}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1DFB5973-950A-4B6E-84AF-953DE57C9213}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1DFB5973-950A-4B6E-84AF-953DE57C9213}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

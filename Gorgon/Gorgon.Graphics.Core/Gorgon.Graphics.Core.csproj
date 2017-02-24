@@ -86,6 +86,9 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Gorgon.Core\SharedAssemblyInfo.cs">
+      <Link>SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Buffers\GorgonBuffer.cs" />
     <Compile Include="Buffers\GorgonIndexBuffer.cs" />
     <Compile Include="Buffers\GorgonVertexBuffer.cs" />

@@ -25,7 +25,6 @@
 #endregion
 
 using System.Reflection;
-using System.Resources;
 using System.Runtime.InteropServices;
 
 //
@@ -33,37 +32,12 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 //
-[assembly: AssemblyTitle("Gorgon Core Functionality")]
-[assembly: AssemblyDescription("Contains core functionality used by Gorgon and the various Gorgon libraries.")]
 #if DEBUG
-[assembly: AssemblyConfiguration("DEBUG")]
+[assembly: AssemblyTitle("Gorgon Core Functionality [DEBUG]")]
 #else
-[assembly: AssemblyConfiguration("RELEASE")]
+[assembly: AssemblyTitle("Gorgon Core Functionality")]
 #endif
-[assembly: AssemblyCompany("Michael Winsor")]
-[assembly: AssemblyProduct("Gorgon")]
-[assembly: AssemblyCopyright("Copyright © Michael Winsor 2011")]
-[assembly: AssemblyTrademark("")]
-
-// Setting ComVisible to false makes the types in this assembly not visible 
-// to COM components.  If you need to access a type in this assembly from 
-// COM, set the ComVisible attribute to true on that type.
-[assembly: ComVisible(false)]
+[assembly: AssemblyDescription("Contains common core functionality used by the various Gorgon libraries.")]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("850FCA24-C086-4396-A304-42454546EF53")]
-
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("2.0.*")]
-[assembly: AssemblyFileVersion("2.0.0.0")]
-[assembly: NeutralResourcesLanguage("en-US")]

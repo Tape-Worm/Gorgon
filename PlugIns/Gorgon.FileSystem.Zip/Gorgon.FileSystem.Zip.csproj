@@ -73,6 +73,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\Gorgon\Gorgon.Core\SharedAssemblyInfo.cs">
+      <Link>SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="ZipFileStream.cs" />
     <Compile Include="ZipPhysicalFileInfo.cs" />
     <Compile Include="ZipProvider.cs" />

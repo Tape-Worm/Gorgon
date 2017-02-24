@@ -70,6 +70,9 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\Gorgon\Gorgon.Core\SharedAssemblyInfo.cs">
+      <Link>SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Devices\XInputDevice.cs" />
     <Compile Include="Devices\XInputDeviceInfo.cs" />
     <Compile Include="Devices\_Internal\ButtonFlagsEqualityComparer.cs" />

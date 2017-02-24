@@ -1,7 +1,7 @@
-﻿#region MIT.
+﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2013 Michael Winsor
+// Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,45 +20,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Friday, January 18, 2013 8:46:35 AM
+// Created: February 23, 2017 9:06:11 PM
 // 
 #endregion
 
 using System.Reflection;
 using System.Runtime.InteropServices;
 
+//
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Gorgon File System Example")]
-[assembly: AssemblyDescription("An example showing how to write data with the virtual file system.")]
+//
 #if DEBUG
-[assembly: AssemblyConfiguration("DEBUG")]
+[assembly: AssemblyTitle("Gorgon File System Example [DEBUG]")]
 #else
-[assembly: AssemblyConfiguration("RELEASE")]
+[assembly: AssemblyTitle("Gorgon File System Example")]
 #endif
-[assembly: AssemblyProduct("Gorgon")]
-[assembly: AssemblyCompany("Michael Winsor")]
-[assembly: AssemblyCopyright("Copyright © Michael Winsor 2012")]
-[assembly: AssemblyTrademark("")]
-
-// Setting ComVisible to false makes the types in this assembly not visible 
-// to COM components.  If you need to access a type in this assembly from 
-// COM, set the ComVisible attribute to true on that type.
-[assembly: ComVisible(false)]
+[assembly: AssemblyDescription("An example showing how to write data with the virtual file system.")]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("edcb9f56-2610-424e-99eb-bcf21dff58c0")]
-
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Build and Revision Numbers 
-// by using the '*' as shown below:
-// [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2.0.*")]
-[assembly: AssemblyFileVersion("2.0.0.0")]
+[assembly: Guid("1432B01F-4684-4EAE-A16C-92B47FA6FCED")]
