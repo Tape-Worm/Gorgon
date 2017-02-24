@@ -67,9 +67,11 @@
     <Compile Include="..\Gorgon.Core\SharedAssemblyInfo.cs">
       <Link>SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Codecs\GorgonCodecBmFont.cs" />
+    <Compile Include="Codecs\_Internal\BmFontInfo.cs" />
     <Compile Include="GorgonFont.cs" />
-    <Compile Include="GorgonFontCodec.cs" />
-    <Compile Include="GorgonFontCodecBase.cs" />
+    <Compile Include="Codecs\GorgonCodecGorFont.cs" />
+    <Compile Include="Codecs\GorgonFontCodec.cs" />
     <Compile Include="GorgonFontFactory.cs" />
     <Compile Include="GorgonFontGlyphCollection.cs" />
     <Compile Include="GorgonFontInfo.cs" />
@@ -91,7 +93,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="_Interfaces\IGorgonFontCodec.cs" />
+    <Compile Include="Codecs\_Interfaces\IGorgonFontCodec.cs" />
     <Compile Include="_Interfaces\IGorgonFontInfo.cs" />
     <Compile Include="_Internal\GdiFontData.cs" />
     <Compile Include="_Internal\GlyphDraw.cs" />

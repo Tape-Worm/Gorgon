@@ -61,11 +61,38 @@ namespace Gorgon.Graphics.Fonts.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to BmFont.
+        /// </summary>
+        internal static string GORGFX_DESC_BMFONT_CODEC {
+            get {
+                return ResourceManager.GetString("GORGFX_DESC_BMFONT_CODEC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gorgon.
+        /// </summary>
+        internal static string GORGFX_DESC_GORFONT_CODEC {
+            get {
+                return ResourceManager.GetString("GORGFX_DESC_GORFONT_CODEC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The font &apos;{0}&apos; is already registered..
         /// </summary>
         internal static string GORGFX_ERR_FONT_ALREADY_REGISTERED {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_FONT_ALREADY_REGISTERED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The BmFont codec needs a FileStream type..
+        /// </summary>
+        internal static string GORGFX_ERR_FONT_BMFONT_NEEDS_FILE_STREAM {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_FONT_BMFONT_NEEDS_FILE_STREAM", resourceCulture);
             }
         }
         
@@ -111,6 +138,15 @@ namespace Gorgon.Graphics.Fonts.Properties {
         internal static string GORGFX_ERR_FONT_FILE_CORRUPT {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_FONT_FILE_CORRUPT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The format for this font file is not valid..
+        /// </summary>
+        internal static string GORGFX_ERR_FONT_FILE_FORMAT_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_FONT_FILE_FORMAT_INVALID", resourceCulture);
             }
         }
         
@@ -169,11 +205,30 @@ namespace Gorgon.Graphics.Fonts.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The font texture file &apos;{0}&apos; was not found..
+        /// </summary>
+        internal static string GORGFX_ERR_FONT_TEXTURE_FILE_NOT_FOUND {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_FONT_TEXTURE_FILE_NOT_FOUND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The texture &apos;{0}&apos; was not found in this collection..
         /// </summary>
         internal static string GORGFX_ERR_FONT_TEXTURE_NOT_FOUND {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_FONT_TEXTURE_NOT_FOUND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The font can only load textures of the following types:
+        ///{0}.
+        /// </summary>
+        internal static string GORGFX_ERR_FONT_TEXTURE_NOT_VALID {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_FONT_TEXTURE_NOT_VALID", resourceCulture);
             }
         }
         
@@ -264,6 +319,15 @@ namespace Gorgon.Graphics.Fonts.Properties {
         internal static string GORGFX_TOSTR_FONT_BRUSH_INTERPOLATION {
             get {
                 return ResourceManager.GetString("GORGFX_TOSTR_FONT_BRUSH_INTERPOLATION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gorgon {0} Font Codec.
+        /// </summary>
+        internal static string GORGFX_TOSTR_FONT_CODEC {
+            get {
+                return ResourceManager.GetString("GORGFX_TOSTR_FONT_CODEC", resourceCulture);
             }
         }
         

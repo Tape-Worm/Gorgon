@@ -26,7 +26,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -39,7 +38,7 @@ using Gorgon.Graphics.Fonts.Properties;
 using Gorgon.Graphics.Imaging;
 using Gorgon.IO;
 
-namespace Gorgon.Graphics.Fonts
+namespace Gorgon.Graphics.Fonts.Codecs
 {
 	/// <summary>
 	/// A font codec used to read/write font data using the standard Gorgon Font format.
@@ -49,8 +48,8 @@ namespace Gorgon.Graphics.Fonts
 	/// This codec will create binary font data using the native font file format for Gorgon. 
 	/// </para>
 	/// </remarks>
-	public class GorgonFontCodec
-		: GorgonFontCodecBase
+	public sealed class GorgonCodecGorFont
+		: GorgonFontCodec
 	{
 		#region Constants.
 		// FONTHIGH chunk.
@@ -93,6 +92,16 @@ namespace Gorgon.Graphics.Fonts
 		/// Property to return whether the codec supports fonts with outlines.
 		/// </summary>
 		public override bool SupportsFontOutlines => true;
+
+		/// <summary>
+		/// Property to return the friendly description of the codec.
+		/// </summary>
+		public override string CodecDescription => Resources.GORGFX_DESC_GORFONT_CODEC;
+
+		/// <summary>
+		/// Property to return the abbreviated name of the codec (e.g. GorFont).
+		/// </summary>
+		public override string Codec => "GorFont";
 		#endregion
 
 		#region Methods.
@@ -466,28 +475,23 @@ namespace Gorgon.Graphics.Fonts
 		/// <returns>
 		/// The font meta data as a <see cref="IGorgonFontInfo"/> value.
 		/// </returns>
-		/// <remarks>
-		/// <para>
-		/// Implementors should ensure that the stream position is restored prior to exiting this method. Failure to do so may cause problems when reading the data from the stream.
-		/// </para>
-		/// </remarks>
 		protected override IGorgonFontInfo OnGetMetaData(Stream stream)
 		{
-			long streamPosition = stream.Position;
 			GorgonChunkFileReader fontFile = null;
 
 			try
 			{
 				fontFile = new GorgonChunkFileReader(stream,
-													 new[]
-													 {
-														 FileHeader.ChunkID()
-													 });
+				                                     new[]
+				                                     {
+					                                     FileHeader.ChunkID()
+				                                     });
+				fontFile.Open();
+
 				return GetFontInfo(fontFile);
 			}
 			finally
 			{
-				stream.Position = streamPosition;
 				fontFile?.Close();
 			}
 		}
@@ -604,13 +608,17 @@ namespace Gorgon.Graphics.Fonts
 
 		#region Constructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonFontCodec"/> class.
+		/// Initializes a new instance of the <see cref="GorgonCodecGorFont"/> class.
 		/// </summary>
 		/// <param name="factory">The font factory that holds cached font information.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="factory"/> parameter is <b>null</b>.</exception>
-		public GorgonFontCodec(GorgonFontFactory factory)
+		public GorgonCodecGorFont(GorgonFontFactory factory)
 			: base(factory)
 		{
+			CodecCommonExtensions = new[]
+			                        {
+				                        ".gorFont"
+			                        };
 		}
 		#endregion
 	}

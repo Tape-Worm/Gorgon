@@ -117,8 +117,17 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="GORGFX_DESC_BMFONT_CODEC" xml:space="preserve">
+    <value>BmFont</value>
+  </data>
+  <data name="GORGFX_DESC_GORFONT_CODEC" xml:space="preserve">
+    <value>Gorgon</value>
+  </data>
   <data name="GORGFX_ERR_FONT_ALREADY_REGISTERED" xml:space="preserve">
     <value>The font '{0}' is already registered.</value>
+  </data>
+  <data name="GORGFX_ERR_FONT_BMFONT_NEEDS_FILE_STREAM" xml:space="preserve">
+    <value>The BmFont codec needs a FileStream type.</value>
   </data>
   <data name="GORGFX_ERR_FONT_CANNOT_RETRIEVE_ABC" xml:space="preserve">
     <value>Could not retrieve character widths for the specified characters.</value>
@@ -134,6 +143,9 @@
   </data>
   <data name="GORGFX_ERR_FONT_FILE_CORRUPT" xml:space="preserve">
     <value>The font file data is corrupt.</value>
+  </data>
+  <data name="GORGFX_ERR_FONT_FILE_FORMAT_INVALID" xml:space="preserve">
+    <value>The format for this font file is not valid.</value>
   </data>
   <data name="GORGFX_ERR_FONT_GLYPH_HAS_NO_TEXTURE" xml:space="preserve">
     <value>The glyph for character '{0}' does not have a texture assigned to it.</value>
@@ -153,8 +165,15 @@
   <data name="GORGFX_ERR_FONT_TEXTURE_EXISTS" xml:space="preserve">
     <value>The texture '{0}' already exists in this collection.</value>
   </data>
+  <data name="GORGFX_ERR_FONT_TEXTURE_FILE_NOT_FOUND" xml:space="preserve">
+    <value>The font texture file '{0}' was not found.</value>
+  </data>
   <data name="GORGFX_ERR_FONT_TEXTURE_NOT_FOUND" xml:space="preserve">
     <value>The texture '{0}' was not found in this collection.</value>
+  </data>
+  <data name="GORGFX_ERR_FONT_TEXTURE_NOT_VALID" xml:space="preserve">
+    <value>The font can only load textures of the following types:
+{0}</value>
   </data>
   <data name="GORGFX_ERR_FONT_TEXTURE_SIZE_TOO_LARGE" xml:space="preserve">
     <value>The font texture size ({0}x{1}) is too large.</value>
@@ -185,6 +204,9 @@
   </data>
   <data name="GORGFX_TOSTR_FONT_BRUSH_INTERPOLATION" xml:space="preserve">
     <value>Weighted interpolation at {0}.  Color: R={1}, G={2}, B={3}, A={4}.</value>
+  </data>
+  <data name="GORGFX_TOSTR_FONT_CODEC" xml:space="preserve">
+    <value>Gorgon {0} Font Codec</value>
   </data>
   <data name="GORGFX_TOSTR_FONT_GLYPH" xml:space="preserve">
     <value>Gorgon Font Glyph: {0}</value>
