@@ -48,6 +48,9 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Gorgon.Core\SharedAssemblyInfo.cs">
+      <Link>SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="GorgonFileSystem.cs" />
     <Compile Include="GorgonFileSystemRamDiskWriter.cs" />
     <Compile Include="GorgonFileSystemWriter.cs" />

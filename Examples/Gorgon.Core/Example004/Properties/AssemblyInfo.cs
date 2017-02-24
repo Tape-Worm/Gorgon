@@ -1,7 +1,7 @@
-﻿#region MIT.
+﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2012 Michael Winsor
+// Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Tuesday, September 18, 2012 8:01:36 PM
+// Created: February 23, 2017 9:06:11 PM
 // 
 #endregion
 
@@ -32,36 +32,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 //
-[assembly: AssemblyTitle("Gorgon Core Objects Example #4")]
-[assembly: AssemblyDescription("Example application #4.")]
 #if DEBUG
-[assembly: AssemblyConfiguration("DEBUG")]
+[assembly: AssemblyTitle("Gorgon Core Example #4 [DEBUG]")]
 #else
-[assembly: AssemblyConfiguration("RELEASE")]
+[assembly: AssemblyTitle("Gorgon Core Example #4 ")]
 #endif
-[assembly: AssemblyCompany("Michael Winsor")]
-[assembly: AssemblyProduct("Gorgon")]
-[assembly: AssemblyCopyright("Copyright © Michael Winsor 2012")]
-[assembly: AssemblyTrademark("")]
-
-// Setting ComVisible to false makes the types in this assembly not visible 
-// to COM components.  If you need to access a type in this assembly from 
-// COM, set the ComVisible attribute to true on that type.
-[assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("DC539171-2198-4C5A-891E-CAD4F6225041")]
-
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("2.0.*")]
-[assembly: AssemblyFileVersion("2.0.0.0")]
+[assembly: Guid("C87C32BB-C596-4F42-A397-A41E743F1893")]

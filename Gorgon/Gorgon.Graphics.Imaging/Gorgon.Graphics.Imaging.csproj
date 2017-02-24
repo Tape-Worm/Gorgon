@@ -64,6 +64,9 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Gorgon.Core\SharedAssemblyInfo.cs">
+      <Link>SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Codecs\GorgonCodecDds.cs" />
     <Compile Include="Codecs\GorgonImageCodecDescription.cs" />
     <Compile Include="Codecs\GorgonImageCodecPlugIn.cs" />

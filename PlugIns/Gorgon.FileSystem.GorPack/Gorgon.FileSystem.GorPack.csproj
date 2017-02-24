@@ -65,6 +65,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\Gorgon\Gorgon.Core\SharedAssemblyInfo.cs">
+      <Link>SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="GorPackFileStream.cs" />
     <Compile Include="GorPackPhysicalFileInfo.cs" />
     <Compile Include="GorPackProvider.cs" />
