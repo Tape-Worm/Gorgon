@@ -61,6 +61,15 @@ namespace Gorgon.Graphics.Fonts.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The font &apos;{0}&apos; is already registered..
+        /// </summary>
+        internal static string GORGFX_ERR_FONT_ALREADY_REGISTERED {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_FONT_ALREADY_REGISTERED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Could not retrieve character widths for the specified characters..
         /// </summary>
         internal static string GORGFX_ERR_FONT_CANNOT_RETRIEVE_ABC {
