@@ -24,7 +24,7 @@
 // 
 #endregion
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// A basic draw call that submits data from a vertex buffer.

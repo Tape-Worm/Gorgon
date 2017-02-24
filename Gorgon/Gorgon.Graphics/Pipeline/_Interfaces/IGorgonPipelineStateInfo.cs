@@ -26,7 +26,7 @@
 
 using System.Collections.Generic;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// Pipeline state information used to create a <see cref="GorgonPipelineState"/> to bind state information to the GPU.

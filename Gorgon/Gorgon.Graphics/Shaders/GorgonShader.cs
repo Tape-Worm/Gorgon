@@ -27,11 +27,11 @@
 using System;
 using System.IO;
 using Gorgon.Core;
-using Gorgon.Graphics.Properties;
+using Gorgon.Graphics.Core.Properties;
 using Gorgon.IO;
 using D3DCompiler = SharpDX.D3DCompiler;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// Shader types.
@@ -144,7 +144,7 @@ namespace Gorgon.Graphics
 		///		</item>
 		///		<item>
 		///			<term><see cref="GorgonShaderFactory.BinaryShaderMetaData"/></term>
-		///			<description>Shader metadata, such as the <see cref="Graphics.ShaderType"/> (<see cref="int"/>), debug flag (<see cref="bool"/>), and the entry point name (<see cref="string"/>) is stored here.</description>
+		///			<description>Shader metadata, such as the <see cref="Core.ShaderType"/> (<see cref="int"/>), debug flag (<see cref="bool"/>), and the entry point name (<see cref="string"/>) is stored here.</description>
 		///		</item>
 		///		<item>
 		///			<term><see cref="GorgonShaderFactory.BinaryShaderByteCode"/></term>
@@ -212,7 +212,7 @@ namespace Gorgon.Graphics
 		///		</item>
 		///		<item>
 		///			<term><see cref="GorgonShaderFactory.BinaryShaderMetaData"/></term>
-		///			<description>Shader metadata, such as the <see cref="Graphics.ShaderType"/> (<see cref="int"/>), debug flag (<see cref="bool"/>), and the entry point name (<see cref="string"/>) is stored here.</description>
+		///			<description>Shader metadata, such as the <see cref="Core.ShaderType"/> (<see cref="int"/>), debug flag (<see cref="bool"/>), and the entry point name (<see cref="string"/>) is stored here.</description>
 		///		</item>
 		///		<item>
 		///			<term><see cref="GorgonShaderFactory.BinaryShaderByteCode"/></term>

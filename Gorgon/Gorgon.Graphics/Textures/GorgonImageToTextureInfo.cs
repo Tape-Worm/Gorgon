@@ -28,7 +28,7 @@ using System;
 using Gorgon.Graphics.Imaging;
 using D3D11 = SharpDX.Direct3D11;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// Provides information on how to convert a <see cref="GorgonImage"/> to a <see cref="GorgonTexture"/>.

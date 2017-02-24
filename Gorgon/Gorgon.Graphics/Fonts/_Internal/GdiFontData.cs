@@ -27,7 +27,7 @@
 using System;
 using Drawing = System.Drawing;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// Defines a structure to hold GDI font data used for rendering glyphs.

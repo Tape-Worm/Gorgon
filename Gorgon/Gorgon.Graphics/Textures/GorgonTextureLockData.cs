@@ -25,17 +25,12 @@
 #endregion
 
 using System;
-using Gorgon.Core;
 using Gorgon.Graphics.Imaging;
-using Gorgon.Graphics.Properties;
-using Gorgon.Math;
 using Gorgon.Native;
-using SharpDX.Mathematics.Interop;
 using DX = SharpDX;
 using DXGI = SharpDX.DXGI;
-using D3D11 = SharpDX.Direct3D11;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// A lock used to update texture data from the CPU.

@@ -29,11 +29,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
-using Gorgon.Graphics.Pipeline;
-using Gorgon.Graphics.Properties;
+using Gorgon.Graphics.Core.Properties;
 using D3D11 = SharpDX.Direct3D11;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// A list of constant buffers used for shaders.

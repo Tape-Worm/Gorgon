@@ -28,7 +28,7 @@ using System;
 using DXGI = SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// The type of texture.
@@ -161,7 +161,7 @@ namespace Gorgon.Graphics
 		/// Property to return the height of the texture, in pixels.
 		/// </summary>
 		/// <remarks>
-		/// For textures that have a <see cref="TextureType"/> of <see cref="Graphics.TextureType.Texture1D"/>, this value is ignored.
+		/// For textures that have a <see cref="TextureType"/> of <see cref="Core.TextureType.Texture1D"/>, this value is ignored.
 		/// </remarks>
 		int Height
 		{
@@ -172,7 +172,7 @@ namespace Gorgon.Graphics
 		/// Property to return the height of the texture, in pixels.
 		/// </summary>
 		/// <remarks>
-		/// For textures that have a <see cref="TextureType"/> of <see cref="Graphics.TextureType.Texture1D"/>, or <see cref="Graphics.TextureType.Texture2D"/>, this value is ignored.
+		/// For textures that have a <see cref="TextureType"/> of <see cref="Core.TextureType.Texture1D"/>, or <see cref="Core.TextureType.Texture2D"/>, this value is ignored.
 		/// </remarks>
 		int Depth
 		{
@@ -187,7 +187,7 @@ namespace Gorgon.Graphics
 		/// When this value is greater than 0, the texture will be used as a texture array. If the texture is supposed to be a cube map, then this value should be a multiple of 6 (1 for each face in the cube).
 		/// </para>
 		/// <para>
-		/// For textures that have a <see cref="TextureType"/> of <see cref="Graphics.TextureType.Texture3D"/>, this value is ignored.
+		/// For textures that have a <see cref="TextureType"/> of <see cref="Core.TextureType.Texture3D"/>, this value is ignored.
 		/// </para>
 		/// <para>
 		/// For video devices with a feature level of <see cref="FeatureLevelSupport.Level_10_0"/>, there can only be a single cube map and thus this value must be set to 6 when creating a cube map texture.
@@ -214,7 +214,7 @@ namespace Gorgon.Graphics
 		/// texture.
 		/// </para>
 		/// <para>
-		/// For textures that have a <see cref="TextureType"/> of <see cref="Graphics.TextureType.Texture1D"/> or <see cref="Graphics.TextureType.Texture3D"/>, this value is ignored.
+		/// For textures that have a <see cref="TextureType"/> of <see cref="Core.TextureType.Texture1D"/> or <see cref="Core.TextureType.Texture3D"/>, this value is ignored.
 		/// </para>
 		/// <para>
 		/// This value is defaulted to <b>false</b>.

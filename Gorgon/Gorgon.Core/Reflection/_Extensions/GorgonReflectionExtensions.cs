@@ -30,8 +30,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Runtime.Serialization.Formatters;
-using Gorgon.Core;
 using Gorgon.Core.Properties;
 
 namespace Gorgon.Reflection

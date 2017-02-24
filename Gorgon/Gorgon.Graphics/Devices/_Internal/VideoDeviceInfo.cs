@@ -28,7 +28,7 @@ using DXGI = SharpDX.DXGI;
 using D3D = SharpDX.Direct3D;
 using Gorgon.Collections;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// Provides information about a video device in the system.

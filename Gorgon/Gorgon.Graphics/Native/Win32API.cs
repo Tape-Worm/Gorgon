@@ -31,7 +31,7 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Security;
 using Gorgon.Core;
-using Gorgon.Graphics.Properties;
+using Gorgon.Graphics.Core.Properties;
 
 namespace Gorgon.Native
 {

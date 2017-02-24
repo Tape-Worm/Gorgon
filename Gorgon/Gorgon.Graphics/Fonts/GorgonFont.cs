@@ -33,8 +33,8 @@ using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using Gorgon.Core;
+using Gorgon.Graphics.Core.Properties;
 using Gorgon.Graphics.Imaging;
-using Gorgon.Graphics.Properties;
 using Gorgon.IO;
 using Gorgon.Math;
 using Gorgon.Native;
@@ -42,7 +42,7 @@ using DX = SharpDX;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// A font used to render text data.

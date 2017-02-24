@@ -27,11 +27,11 @@
 using System;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging;
-using Gorgon.Graphics.Properties;
+using Gorgon.Graphics.Core.Properties;
 using DXGI = SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// An input element for a buffer.

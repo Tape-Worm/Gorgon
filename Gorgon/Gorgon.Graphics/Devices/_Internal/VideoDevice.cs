@@ -28,12 +28,12 @@ using System;
 using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
-using Gorgon.Graphics.Properties;
+using Gorgon.Graphics.Core.Properties;
 using DXGI = SharpDX.DXGI;
 using D3D = SharpDX.Direct3D;
 using D3D11 = SharpDX.Direct3D11;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// A wrapper for a Direct 3D 11 device object and adapter.

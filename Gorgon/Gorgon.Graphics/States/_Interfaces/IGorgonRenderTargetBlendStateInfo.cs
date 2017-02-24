@@ -26,7 +26,7 @@
 using System;
 using D3D11 = SharpDX.Direct3D11;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// Information for independent blend states across multiple render targets.

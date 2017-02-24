@@ -28,11 +28,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Gorgon.Diagnostics;
-using Gorgon.Graphics.Pipeline;
-using Gorgon.Graphics.Properties;
+using Gorgon.Graphics.Core.Properties;
 using D3D11 = SharpDX.Direct3D11;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// A list of texture sampler states to apply to the pipeline.

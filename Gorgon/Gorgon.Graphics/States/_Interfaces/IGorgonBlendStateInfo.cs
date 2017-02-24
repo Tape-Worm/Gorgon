@@ -26,7 +26,7 @@
 
 using System.Collections.Generic;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// Information used to build a <see cref="GorgonBlendStateInfo"/>.

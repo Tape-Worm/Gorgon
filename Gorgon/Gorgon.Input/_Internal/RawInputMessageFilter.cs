@@ -29,7 +29,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Forms;
 using Gorgon.Input;
-using Gorgon.Input.Properties;
 
 namespace Gorgon.Native
 {

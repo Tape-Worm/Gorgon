@@ -27,7 +27,7 @@
 using System.Text;
 using Gorgon.Math;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// The text formatter used to format a string for rendering.

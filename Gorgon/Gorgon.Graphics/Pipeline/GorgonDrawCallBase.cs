@@ -28,7 +28,7 @@ using System.Collections.Generic;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// A common class for draw calls.

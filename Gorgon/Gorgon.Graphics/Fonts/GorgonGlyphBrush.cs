@@ -26,7 +26,7 @@
 
 using System.Drawing;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// The type of glyph brush to use when painting the glyphs for the font.

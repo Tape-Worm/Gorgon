@@ -29,13 +29,13 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
-using Gorgon.Graphics.Properties;
+using Gorgon.Graphics.Core.Properties;
 using Gorgon.UI;
 using DX = SharpDX;
 using DXGI = SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// A swap chain used to display graphics to a window.

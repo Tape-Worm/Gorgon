@@ -22,7 +22,7 @@ Gorgon provides a set of libraries that are capable of handling pretty much any 
   * __[Gorgon.Input]__ A flexible input library to handle joysticks (gamepads), keyboard and mouse input via the raw input API.  Using plug-ins the input system can utilize Xbox360 controllers (via XInput) or standard joysticks (via DirectInput).  The input library can use events or polling to retrieve data from the various input sources.
   * __[Gorgon.Graphics]__ A "low-level" graphics API that sits on top of Direct 3D 11.1. Provides a simplified system to build objects such as render targets, swap chains, buffers, etc... The rendering portion of the API provides a simple mechanism to create state information and provide bundled up draw calls for modern rendering techniques.
   * __[Gorgon.Graphics.Imaging]__ Functionality to load, save and manipulate many popular image formats (bmp, jpg, png, dds, tga, etc...). This library also contains functionality to use a fluent interface to manipulate images for things like cropping, scaling, etc...
-  * __[TBD]__ An extensive bitmap font creation interface (within the graphics module) that supports kerning.
+  * __[TBD]__ An extensive bitmap font creation interface (within the graphics module) that supports kerning, outlining of font glyphs, and other customizations to help generate impressive looking text.
   * __[TBD]__ A 2D renderer that sits on top of the graphics module to make developing 2D games/applications much easier.  
   * __[TBD]__ An animation module that allows the creation of flexible animations for various types of objects.
   * __[TBD]__ A flexible content editor to allow for the creation of sprites, fonts, etc...  

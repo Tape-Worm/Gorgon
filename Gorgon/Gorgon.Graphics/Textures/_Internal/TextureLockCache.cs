@@ -29,11 +29,11 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using Gorgon.Core;
-using Gorgon.Graphics.Properties;
+using Gorgon.Graphics.Core.Properties;
 using DX = SharpDX;
 using D3D11 = SharpDX.Direct3D11;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
     /// <summary>
     /// A cache for locks on a resource or sub-resource.

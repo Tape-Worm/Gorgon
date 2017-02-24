@@ -26,7 +26,7 @@
 
 using D3D11 = SharpDX.Direct3D11;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// Information used to create the stencil portion of a <see cref="GorgonDepthStencilStateInfo"/>.

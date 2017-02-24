@@ -28,14 +28,14 @@ using System;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Imaging;
-using Gorgon.Graphics.Properties;
+using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D;
 using DXGI = SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// A shader view for textures.

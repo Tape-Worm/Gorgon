@@ -28,9 +28,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using DX = SharpDX;
-using Gorgon.Graphics.Fonts;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// A brush used to draw glyphs using a linear gradient value.

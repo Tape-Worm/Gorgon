@@ -24,7 +24,7 @@
 // 
 #endregion
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// A draw call that submits data from a vertex buffer and uses indexing from an index buffer to reference the vertices.

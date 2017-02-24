@@ -26,7 +26,7 @@
 
 using System.Drawing;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// A brush used to draw glyphs using a solid fill color.

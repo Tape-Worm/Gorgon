@@ -26,7 +26,7 @@
 
 using DX = SharpDX;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// Defines the rectangular regions for a glyph and its outline.

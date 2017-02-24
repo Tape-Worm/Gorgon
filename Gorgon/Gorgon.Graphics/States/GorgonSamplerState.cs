@@ -27,7 +27,7 @@
 using System;
 using D3D11 = SharpDX.Direct3D11;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// A state object used to bind texture sampler states to the pipeline.

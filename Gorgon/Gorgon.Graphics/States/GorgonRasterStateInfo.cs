@@ -28,7 +28,7 @@ using System;
 using Gorgon.Math;
 using D3D11 = SharpDX.Direct3D11;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// Information used to describe a rasterization state.

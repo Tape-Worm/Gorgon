@@ -29,13 +29,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Gorgon.Core;
-using Gorgon.Graphics.Properties;
+using Gorgon.Graphics.Core.Properties;
 using Gorgon.IO;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D;
 using D3DCompiler = SharpDX.D3DCompiler;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// A factory used to create various <see cref="GorgonShader"/> based types.

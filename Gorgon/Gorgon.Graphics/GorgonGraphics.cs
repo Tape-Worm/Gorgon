@@ -30,7 +30,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
-using Gorgon.Graphics.Properties;
+using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
 using Gorgon.Native;
 using SharpDX.Mathematics.Interop;
@@ -38,30 +38,32 @@ using DX = SharpDX;
 using D3D11 = SharpDX.Direct3D11;
 using GI = SharpDX.DXGI;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// The primary object for the graphics sub system.
 	/// </summary>
 	/// <remarks>This interface is used to create all objects (buffers, shaders, etc...) that are to be used for graphics.  An interface is tied to a single physical video device, to use 
-	/// multiple video devices, create additional graphics interfaces and assign the device to the <see cref="Gorgon.Graphics.GorgonGraphics.VideoDevice">VideoDevice</see> property.
+	/// multiple video devices, create additional graphics interfaces and assign the device to the <see cref="VideoDevice"/> property.
 	/// <para>The constructor for this object can take a value known as a device feature level to specify the base line video device capabilities to use.  This feature level value specifies 
 	/// what capabilities we have available. To have Gorgon use the best available feature level for your video device, you may call the GorgonGraphics constructor 
 	/// without any parameters and it will use the best available feature level for your device.</para>
-	/// <para>Along with the feature level, the graphics object can also take a <see cref="Gorgon.Graphics.VideoDevice">Video Device</see> object as a parameter.  Specifying a 
+	/// <para>Along with the feature level, the graphics object can also take a <see cref="IGorgonVideoDevice"/> object as a parameter.  Specifying a 
 	/// video device will force Gorgon to use that video device for rendering. If a video device is not specified, then the first detected video device will be used.</para>
 	/// <para>Please note that graphics objects cannot be shared between devices and must be duplicated.</para>
 	/// <para>Objects created by this interface will be automatically tracked and disposed when this interface is disposed.  This is meant to help handle memory leak problems.  However, 
 	/// it is important to note that this is not a good practice and the developer is responsible for calling Dispose on all objects that they create, graphics or otherwise.</para>
 	/// <para>This object will enumerate video devices, monitor outputs (for multi-head adapters), and video modes for each of the video devices in the system upon creation.  These
-    /// items are accessible from the <see cref="Gorgon.Graphics.GorgonVideoDeviceList">GorgonVideoDeviceEnumerator</see> class.</para>
-    /// <para>These objects can also be used in a deferred context.  This means that when a graphics object is deferred, it can be used in a multi threaded environment to allow set up of 
-    /// a scene by recording commands sent to the video device for execution later on the rendering process.  This is handy where multiple passes for the same scene are required (e.g. a deferred renderer).</para>
+	/// items are accessible from the <see cref="GorgonVideoDeviceList"/> class.</para>
+	/// <para>These objects can also be used in a deferred context.  This means that when a graphics object is deferred, it can be used in a multi threaded environment to allow set up of 
+	/// a scene by recording commands sent to the video device for execution later on the rendering process.  This is handy where multiple passes for the same scene are required (e.g. a deferred renderer).</para>
 	/// <para>Please note that this object requires Direct3D 11 (but not necessarily a Direct3D 11 video card) and at least Windows Vista Service Pack 2 or higher.  
 	/// Windows XP and operating systems before it will not work, and an exception will be thrown if this object is created on those platforms.</para>
-    /// <para>Deferred graphics contexts require a video device with a feature level of SM5 or better.</para>
+	/// <para>Deferred graphics contexts require a video device with a feature level of SM5 or better.</para>
 	/// </remarks>
-    public sealed class GorgonGraphics
+	/// <seealso cref="IGorgonVideoDevice"/>
+	/// <seealso cref="GorgonVideoDeviceList"/>
+	public sealed class GorgonGraphics
         : IDisposable
     {
 		#region Variables.

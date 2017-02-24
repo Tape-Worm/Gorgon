@@ -29,7 +29,7 @@ using System.Collections.Generic;
 using SharpDX;
 using DXGI = SharpDX.DXGI;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// Provides information about an output on a <see cref="VideoDevice"/>.

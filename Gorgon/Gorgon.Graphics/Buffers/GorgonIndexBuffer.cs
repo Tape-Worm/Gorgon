@@ -27,12 +27,12 @@
 using System;
 using D3D11 = SharpDX.Direct3D11;
 using Gorgon.Diagnostics;
-using Gorgon.Graphics.Properties;
+using Gorgon.Graphics.Core.Properties;
 using Gorgon.Native;
 using DX = SharpDX;
 using DXGI = SharpDX.DXGI;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// A buffer for indices used to look up vertices within a <see cref="GorgonVertexBuffer"/>.

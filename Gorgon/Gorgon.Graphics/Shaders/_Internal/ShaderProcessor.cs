@@ -29,9 +29,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Gorgon.Core;
-using Gorgon.Graphics.Properties;
+using Gorgon.Graphics.Core.Properties;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// A processor used to analyze shader source code and inject any special #GorgonInclude directives.
