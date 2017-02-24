@@ -27,6 +27,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Gorgon.Graphics.Core;
 
 namespace Gorgon.Graphics.Fonts
 {
@@ -187,9 +189,41 @@ namespace Gorgon.Graphics.Fonts
         {
             return _list.TryGetValue(character, out glyph);
         }
+
+		/// <summary>
+		/// Function to retrieve the glyphs in this collection grouped by their respective textures.
+		/// </summary>
+		/// <returns>A grouping containing the texture and the list of glyphs associated with it.</returns>
+		/// <remarks>
+		/// <para>
+		/// This will only return glyphs that are associated with a texture. Glyphs that do not have a texture (e.g. the glyph representing a space character) will not be included in this list.
+		/// </para>
+		/// </remarks>
+		public IReadOnlyDictionary<GorgonTexture, IReadOnlyList<GorgonGlyph>> GetGlyphsByTexture()
+		{
+			var groupedGlyphs = from glyph in this
+			                    let textureView = glyph.TextureView[0] as GorgonTextureShaderView
+			                    where textureView != null
+			                    group glyph by textureView.Texture;
+
+			return groupedGlyphs.ToDictionary(k => k.Key, v => (IReadOnlyList<GorgonGlyph>)v.ToArray());
+		}
 		#endregion
 
 		#region Constructor/Destructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonGlyphCollection"/> class.
+		/// </summary>
+		/// <param name="glyphs">The glyphs to import into this collection.</param>
+		internal GorgonGlyphCollection(IEnumerable<GorgonGlyph> glyphs)
+			: this()
+		{
+			foreach (GorgonGlyph glyph in glyphs)
+			{
+				_list[glyph.Character] = glyph;
+			}
+		}
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonGlyphCollection"/> class.
 		/// </summary>

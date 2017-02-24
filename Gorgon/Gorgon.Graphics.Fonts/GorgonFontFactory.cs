@@ -27,15 +27,11 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using System.Linq;
 using System.Threading;
-using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts.Properties;
-using Gorgon.IO;
 using Gorgon.Math;
-using Gorgon.Native;
 
 namespace Gorgon.Graphics.Fonts
 {
@@ -65,8 +61,6 @@ namespace Gorgon.Graphics.Fonts
 		: IDisposable
 	{
 		#region Variables.
-		// The graphics interface used to generate the fonts.
-		private readonly GorgonGraphics _graphics;
 		// The default font.
 		private GorgonFont _default;
 		// Thread synchronization.
@@ -76,6 +70,14 @@ namespace Gorgon.Graphics.Fonts
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to return the graphics interface used to generate the fonts.
+		/// </summary>
+		public GorgonGraphics Graphics
+		{
+			get;
+		}
+
 		/// <summary>
 		/// Property to return the default font.
 		/// </summary>
@@ -100,7 +102,7 @@ namespace Gorgon.Graphics.Fonts
 
 			        // Create the default font.
 				    _default = new GorgonFont("Gorgon.Font.Default.SegoeUI_14px",
-				                              _graphics,
+				                              this,
 				                              new GorgonFontInfo("Segoe UI", 14)
 				                              {
 					                              AntiAliasingMode = FontAntiAliasMode.AntiAlias,
@@ -118,171 +120,108 @@ namespace Gorgon.Graphics.Fonts
 
 		#region Methods.
 		/// <summary>
-		/// Function to read the information for a font.
+		/// Function to compare two <see cref="IGorgonFontInfo"/> types to determine equality.
 		/// </summary>
-		/// <param name="fontFile">The reader for the chunked font file format.</param>
-		/// <returns>A new <see cref="IGorgonFontInfo"/> containing the font information.</returns>
-		internal static GorgonFontInfo ReadFontInfo(GorgonChunkFileReader fontFile)
+		/// <param name="left">The left instance to compare.</param>
+		/// <param name="right">The right instance to compare.</param>
+		/// <returns><b>true</b> if the fonts are different, <b>false</b> if not.</returns>
+		private static bool IsFontDifferent(IGorgonFontInfo left, IGorgonFontInfo right)
 		{
-			GorgonBinaryReader reader = fontFile.OpenChunk(GorgonFont.FontInfoChunk);
-			GorgonFontInfo info = new GorgonFontInfo(reader.ReadString(), reader.ReadSingle(), reader.ReadValue<FontHeightMode>())
-			{
-				FontStyle = reader.ReadValue<FontStyle>(),
-				DefaultCharacter = reader.ReadChar(),
-				Characters = reader.ReadString(),
-				AntiAliasingMode = reader.ReadValue<FontAntiAliasMode>(),
-				OutlineColor1 = new GorgonColor(reader.ReadInt32()),
-				OutlineColor2 = new GorgonColor(reader.ReadInt32()),
-				OutlineSize = reader.ReadInt32(),
-				PackingSpacing = reader.ReadInt32(),
-				TextureWidth = reader.ReadInt32(),
-				TextureHeight = reader.ReadInt32(),
-				UsePremultipliedTextures = reader.ReadValue<bool>(),
-				UseKerningPairs = reader.ReadBoolean()
-			};
-			fontFile.CloseChunk();
-
-			return info;
+			return ((left.UseKerningPairs != right.UseKerningPairs)
+					|| (left.FontHeightMode != right.FontHeightMode)
+					|| (left.TextureWidth != right.TextureWidth)
+					|| (left.TextureHeight != right.TextureHeight)
+					|| (left.AntiAliasingMode != right.AntiAliasingMode)
+					|| (left.Brush != right.Brush)
+					|| (left.DefaultCharacter != right.DefaultCharacter)
+					|| (!string.Equals(left.FontFamilyName, right.FontFamilyName, StringComparison.CurrentCultureIgnoreCase))
+					|| (left.FontStyle != right.FontStyle)
+					|| (left.OutlineColor1 != right.OutlineColor1)
+					|| (left.OutlineColor2 != right.OutlineColor2)
+					|| (left.OutlineSize != right.OutlineSize)
+					|| (left.PackingSpacing != right.PackingSpacing)
+					|| (!left.Size.EqualsEpsilon(right.Size))
+					|| (!left.Characters.SequenceEqual(right.Characters)));
 		}
-
+		
 		/// <summary>
-		/// Function to read a font from a stream.
+		/// Function to register a font within the font cache.
 		/// </summary>
-		/// <param name="name">Name of the font object.</param>
-		/// <param name="stream">Stream to read from.</param>
-		/// <returns>The font in the stream.</returns>
-		/// <remarks>
-		/// <para>Fonts may only be created on the immediate context.</para></remarks>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> or the <paramref name="name"/> parameters are <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown if the name parameter is an empty string.
-		/// <para>-or-</para>
-		/// <para>Thrown if the font uses external textures, but the stream is not a file stream.</para></exception>
-		/// <exception cref="GorgonException">Thrown if the font cannot be read.
-		/// <para>-or-</para>
-		/// <para>Thrown if the graphics context is deferred.</para>
-		/// </exception>
-		public GorgonFont FromStream(string name, Stream stream)
+		/// <param name="font">The font to register.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="font"/> parameter is <b>null</b>.</exception>
+		/// <exception cref="ArgumentException">Thrown if the <paramref name="font"/> is already registered in the factory cache.</exception>
+		internal void RegisterFont(GorgonFont font)
 		{
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
-            }
+			if (font == null)
+			{
+				throw new ArgumentNullException(nameof(font));
+			}
 
-            if (stream == null)
-            {
-                throw new ArgumentNullException(nameof(stream));
-            }
-
-            if (stream.Length == 0)
-            {
-				throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(stream));
-            }
+			if (font.Factory != this)
+			{
+				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_FONT_ALREADY_REGISTERED, font.Name), nameof(font));
+			}
 
 			lock (_syncLock)
 			{
-				GorgonChunkFileReader fontFile = null;
+				GorgonFont existing;
 
-				try
+				if (_fontCache.TryGetValue(font.Name, out existing))
 				{
-					fontFile = new GorgonChunkFileReader(stream,
-					                                     new[]
-					                                     {
-						                                     GorgonFont.FileHeader.ChunkID()
-					                                     });
-					fontFile.Open();
-
-					var font = new GorgonFont(name, _graphics);
-
-					// Read the font information chunk data.
-					GorgonFontInfo info = ReadFontInfo(fontFile);
-
-					// Check the cache for a font with the same name and having the same information.
-					GorgonFont existingFont;
-
-					if ((_fontCache.TryGetValue(name, out existingFont))
-					    && (!IsFontDifferent(existingFont.Info, info)))
+					// This is the exact same reference, so do nothing.
+					if (existing == font)
 					{
-						font.Dispose();
-						return existingFont;
+						return;
 					}
 
-					font.ReadFont(fontFile, info);
-
-					_fontCache[name] = font;
-
-					return font;
+					throw new ArgumentException(string.Format(Resources.GORGFX_ERR_FONT_ALREADY_REGISTERED, font.Name), nameof(font));
 				}
-				finally
-				{
-					fontFile?.Close();
-				}
+
+				_fontCache[font.Name] = font;
 			}
 		}
 
 		/// <summary>
-		/// Function to read a font from memory.
+		/// Function to unregister a font from the factory cache.
 		/// </summary>
-		/// <param name="name">Name of the font object.</param>
-		/// <param name="fontData">Byte array containing the font data.</param>
-		/// <returns>The font in the array.</returns>
+		/// <param name="font">The font to unregister.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="font"/> parameter is <b>null</b>.</exception>
 		/// <remarks>
-		/// <para>Fonts may only be created on the immediate context.</para></remarks>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="fontData"/> or the <paramref name="name"/> parameters are <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown if the name parameter is an empty string.
-		/// <para>-or-</para>
-		/// <para>Thrown if the font uses external textures.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown if the fontData array is empty.</para>
-		/// </exception>
-		/// <exception cref="GorgonException">Thrown if the font cannot be read.
-		/// <para>-or-</para>
-		/// <para>Thrown if the graphics context is deferred.</para>
-		/// </exception>
-		public GorgonFont FromMemory(string name, byte[] fontData)
-        {
-            using (IGorgonPointer pointer = new GorgonPointerPinned<byte>(fontData))
-            {
-                return FromStream(name, new GorgonDataStream(pointer));
-            }
-        }
-
-		/// <summary>
-		/// Function to read a font from a file.
-		/// </summary>
-		/// <param name="name">Name of the font object.</param>
-		/// <param name="fileName">Path and filename of the font to load.</param>
-		/// <returns>The font in the file.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileName"/> or the <paramref name="name"/> parameters are <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown if the fileName or name parameters are empty strings.
-		/// <para>-or-</para>
-		/// <para>Thrown if the font uses external textures, but the stream is not a file stream.</para></exception>
-		/// <exception cref="GorgonException">Thrown if the font cannot be read.
-		/// <para>-or-</para>
-		/// <para>Thrown if the graphics context is deferred.</para>
-		/// </exception>
-		public GorgonFont FromFile(string name, string fileName)
+		/// <para>
+		/// This will remove the specified <paramref name="font"/> from the cache, but it will not destroy the font. If a font with the same name exists, but the font is not the same reference as the font passed in 
+		/// then nothing is done and the function will exit, the same happens when the font does not exist in the cache.
+		/// </para>
+		/// </remarks>
+		internal void UnregisterFont(GorgonFont font)
 		{
-			FileStream stream = null;
-
-            if (fileName == null)
-            {
-                throw new ArgumentNullException(nameof(fileName));
-            }
-
-            if (string.IsNullOrWhiteSpace(fileName))
-            {
-                throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(fileName));
-            }
-            
-            try
+			if (font == null)
 			{
-				stream = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
-				return FromStream(name, stream);
+				throw new ArgumentException(nameof(font));
 			}
-			finally
-            {
-	            stream?.Dispose();
-            }
+
+			// Don't allow fonts not registered with this factory to be removed from the cache.
+			if (font.Factory != this)
+			{
+				return;
+			}
+
+			lock (_syncLock)
+			{
+				GorgonFont existing;
+
+				if (!_fontCache.TryGetValue(font.Name, out existing))
+				{
+					return;
+				}
+
+				// If this font is not the same as the one we want, then do nothing.
+				if (existing != font)
+				{
+					return;
+				}
+
+				_fontCache.Remove(font.Name);
+			}
 		}
 
 		/// <summary>
@@ -302,28 +241,47 @@ namespace Gorgon.Graphics.Fonts
 		}
 
 		/// <summary>
-		/// Function to compare two <see cref="IGorgonFontInfo"/> types to determine equality.
+		/// Function to determine if the font cache contains a font with the specified name, and the specified font information.
 		/// </summary>
-		/// <param name="left">The left instance to compare.</param>
-		/// <param name="right">The right instance to compare.</param>
-		/// <returns><b>true</b> if the fonts are different, <b>false</b> if not.</returns>
-		private static bool IsFontDifferent(IGorgonFontInfo left, IGorgonFontInfo right)
+		/// <param name="name">The name of the font to find.</param>
+		/// <param name="fontInfo">The information about the font to find.</param>
+		/// <returns><b>true</b> if found, <b>false</b> if not.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/>, or the <paramref name="fontInfo"/> parameter is <b>null</b>.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+		/// <remarks>
+		/// <para>
+		/// The <paramref name="name"/> parameter is used in caching, and is user defined. It is not necessary to have it share the same name as the font family name in the <paramref name="fontInfo"/> parameter, 
+		/// however it is best practice to indicate the font family name in the name for ease of use. 
+		/// </para>
+		/// <para>
+		/// If a font with the same name was previously created by this factory, then this method will return <b>true</b> if the <paramref name="fontInfo"/> is the same as the cached version. If no font with the 
+		/// same name or the <paramref name="fontInfo"/> is different, then this method will return <b>false</b>.
+		/// </para>
+		/// </remarks>
+		public bool HasFont(string name, IGorgonFontInfo fontInfo)
 		{
-			return ((left.UseKerningPairs != right.UseKerningPairs)
-			        || (left.FontHeightMode != right.FontHeightMode)
-			        || (left.TextureWidth != right.TextureWidth)
-			        || (left.TextureHeight != right.TextureHeight)
-			        || (left.AntiAliasingMode != right.AntiAliasingMode)
-			        || (left.Brush != right.Brush)
-			        || (left.DefaultCharacter != right.DefaultCharacter)
-			        || (!string.Equals(left.FontFamilyName, right.FontFamilyName, StringComparison.CurrentCultureIgnoreCase))
-			        || (left.FontStyle != right.FontStyle)
-			        || (left.OutlineColor1 != right.OutlineColor1)
-			        || (left.OutlineColor2 != right.OutlineColor2)
-			        || (left.OutlineSize != right.OutlineSize)
-			        || (left.PackingSpacing != right.PackingSpacing)
-			        || (!left.Size.EqualsEpsilon(right.Size))
-			        || (!left.Characters.SequenceEqual(right.Characters)));
+			if (name == null)
+			{
+				throw new ArgumentNullException(nameof(name));
+			}
+
+			if (string.IsNullOrWhiteSpace(name))
+			{
+				throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
+			}
+
+			if (fontInfo == null)
+			{
+				throw new ArgumentNullException(nameof(fontInfo));
+			}
+
+			lock (_syncLock)
+			{
+				GorgonFont result;
+
+				return ((_fontCache.TryGetValue(name, out result))
+				        && (!IsFontDifferent(fontInfo, result.Info)));
+			}
 		}
 
 		/// <summary>
@@ -382,8 +340,8 @@ namespace Gorgon.Graphics.Fonts
 					return result;
 				}
 
-				if ((fontInfo.TextureWidth > _graphics.VideoDevice.MaxTextureWidth)
-				    || (fontInfo.TextureHeight > _graphics.VideoDevice.MaxTextureHeight))
+				if ((fontInfo.TextureWidth > Graphics.VideoDevice.MaxTextureWidth)
+				    || (fontInfo.TextureHeight > Graphics.VideoDevice.MaxTextureHeight))
 				{
 					throw new ArgumentException(string.Format(Resources.GORGFX_ERR_FONT_TEXTURE_SIZE_TOO_LARGE,
 					                                          fontInfo.TextureWidth,
@@ -405,7 +363,7 @@ namespace Gorgon.Graphics.Fonts
 				result?.Dispose();
 
 				// If not found, then create a new font and cache it.
-				_fontCache[name] = result = new GorgonFont(name, _graphics, fontInfo);
+				_fontCache[name] = result = new GorgonFont(name, this, fontInfo);
 				result.GenerateFont();
 
 				return result;
@@ -438,7 +396,7 @@ namespace Gorgon.Graphics.Fonts
 				throw new ArgumentNullException(nameof(graphics));
 			}
 
-			_graphics = graphics;
+			Graphics = graphics;
 		}
 		#endregion
 	}

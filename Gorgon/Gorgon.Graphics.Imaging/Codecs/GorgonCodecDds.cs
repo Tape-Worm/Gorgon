@@ -1632,17 +1632,18 @@ namespace Gorgon.Graphics.Imaging.Codecs
                 return false;
             }
 
+	        GorgonBinaryReader reader = null;
+
             try
             {
                 position = stream.Position;
-                using (var reader = new GorgonBinaryReader(stream, true))
-                {
-                    magicNumber = reader.ReadUInt32();
-                }
+	            reader = new GorgonBinaryReader(stream, true);
+                magicNumber = reader.ReadUInt32();
             }
             finally
             {
                 stream.Position = position;
+				reader?.Dispose();
             }
             return magicNumber == MagicNumber;
         }
