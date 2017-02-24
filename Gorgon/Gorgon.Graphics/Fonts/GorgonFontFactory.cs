@@ -250,8 +250,6 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="name">Name of the font object.</param>
 		/// <param name="fileName">Path and filename of the font to load.</param>
-		/// <remarks>
-		/// <para>Fonts may only be created on the immediate context.</para></remarks>
 		/// <returns>The font in the file.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileName"/> or the <paramref name="name"/> parameters are <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown if the fileName or name parameters are empty strings.
