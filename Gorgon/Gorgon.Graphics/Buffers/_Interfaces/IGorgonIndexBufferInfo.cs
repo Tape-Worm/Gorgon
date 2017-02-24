@@ -26,7 +26,7 @@
 
 using D3D11 = SharpDX.Direct3D11;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// Provides the necessary information required to set up a index buffer.

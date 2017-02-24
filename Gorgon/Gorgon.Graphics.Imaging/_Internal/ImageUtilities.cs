@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using System.Diagnostics;
 using DXGI = SharpDX.DXGI;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.Math;

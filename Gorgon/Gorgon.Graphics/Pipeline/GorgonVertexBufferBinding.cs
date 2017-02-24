@@ -25,10 +25,9 @@
 #endregion
 
 using Gorgon.Core;
-using Gorgon.Graphics.Properties;
-using D3D = SharpDX.Direct3D11;
+using Gorgon.Graphics.Core.Properties;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// A binding state for a <see cref="GorgonVertexBuffer"/>.

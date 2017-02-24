@@ -1,6 +1,6 @@
 using Gorgon.Collections;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// Functionality to retrieve information about the installed video devices on the system.

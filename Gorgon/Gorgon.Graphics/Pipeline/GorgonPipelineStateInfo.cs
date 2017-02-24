@@ -29,7 +29,7 @@ using D3D11 = SharpDX.Direct3D11;
 using System.Collections.Generic;
 using Gorgon.Math;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// Pipeline state information used to create a pipeline state for the underlying renderer.

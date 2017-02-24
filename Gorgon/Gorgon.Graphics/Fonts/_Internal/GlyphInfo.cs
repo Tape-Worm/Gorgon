@@ -27,7 +27,7 @@
 using Drawing = System.Drawing;
 using DX = SharpDX;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// Information about a glyph.

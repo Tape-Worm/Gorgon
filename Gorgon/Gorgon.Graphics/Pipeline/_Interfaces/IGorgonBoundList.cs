@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Gorgon.Graphics.Pipeline
+namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// Defines a list that is used in binding to the pipeline.

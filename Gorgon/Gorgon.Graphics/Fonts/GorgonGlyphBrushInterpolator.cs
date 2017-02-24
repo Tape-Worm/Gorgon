@@ -26,10 +26,10 @@
 
 using System;
 using Gorgon.Core;
-using Gorgon.Graphics.Properties;
+using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
 
-namespace Gorgon.Graphics.Fonts
+namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// An interpolation value used to weight the color blending in a gradient brush.

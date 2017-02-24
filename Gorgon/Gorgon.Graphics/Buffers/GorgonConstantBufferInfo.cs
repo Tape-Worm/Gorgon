@@ -28,12 +28,12 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Gorgon.Core;
-using Gorgon.Graphics.Properties;
+using Gorgon.Graphics.Core.Properties;
 using Gorgon.Native;
 using Gorgon.Reflection;
 using D3D11 = SharpDX.Direct3D11;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// Provides information on how to set up a constant buffer.
@@ -61,7 +61,7 @@ namespace Gorgon.Graphics
 		/// <note type="important">
 		/// <para>
 		/// <para>
-		/// A <see cref="Graphics.BufferType.Constant"/> buffer, must set the size to be a multiple of 16. Constant buffer alignment rules require that they be sized to the nearest 16 bytes.
+		/// A <see cref="Core.BufferType.Constant"/> buffer, must set the size to be a multiple of 16. Constant buffer alignment rules require that they be sized to the nearest 16 bytes.
 		/// </para>
 		/// <para>
 		/// If the buffer is not sized to a multiple of 16, Gorgon will attempt to adjust the size to fit the alignment requirement.

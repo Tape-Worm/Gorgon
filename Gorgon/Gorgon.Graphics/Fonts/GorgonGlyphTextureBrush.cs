@@ -31,11 +31,11 @@ using System.Drawing.Imaging;
 using Gorgon.Graphics.Imaging;
 using DX = SharpDX;
 using DXGI = SharpDX.DXGI;
-using Gorgon.Graphics.Properties;
+using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
 using Gorgon.Native;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// Defines how to draw the <see cref="GorgonGlyphTextureBrush"/>, or <see cref="GorgonGlyphPathGradientBrush"/> if the paint area is larger than the texture region.

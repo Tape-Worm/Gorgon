@@ -28,7 +28,7 @@ using System;
 using Gorgon.Diagnostics;
 using D3D11 = SharpDX.Direct3D11;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// The type of data to be stored in the buffer.

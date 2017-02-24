@@ -27,11 +27,11 @@
 using System;
 using Gorgon.Core;
 using Gorgon.Math;
-using Gorgon.Graphics.Properties;
+using Gorgon.Graphics.Core.Properties;
 using DXGI = SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// Values to define the number and quality of multisampling.

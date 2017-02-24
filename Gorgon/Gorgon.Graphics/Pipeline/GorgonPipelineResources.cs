@@ -25,11 +25,9 @@
 #endregion
 
 using System;
-using System.Runtime.CompilerServices;
 using Gorgon.Diagnostics;
-using D3D11 = SharpDX.Direct3D11;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// Flags to indicate what part of the pipeline was changed.

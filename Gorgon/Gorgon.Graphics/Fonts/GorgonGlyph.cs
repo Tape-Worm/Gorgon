@@ -28,11 +28,11 @@ using System;
 using System.Globalization;
 using DX = SharpDX;
 using Gorgon.Core;
-using Gorgon.Graphics.Properties;
+using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
 using SharpDX.DXGI;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// A glyph used to define a character in a <see cref="GorgonFont"/>.

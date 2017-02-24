@@ -28,7 +28,7 @@ using System.IO;
 using D3DCompiler = SharpDX.D3DCompiler;
 using D3D = SharpDX.Direct3D11;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// A shader that operates on a single pixel (fragment) at a time on the GPU.

@@ -27,7 +27,7 @@
 using System;
 using DXGI = SharpDX.DXGI;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// An attribute to mark a field in a value type as an input element.

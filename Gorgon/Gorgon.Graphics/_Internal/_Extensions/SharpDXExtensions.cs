@@ -30,7 +30,7 @@ using SharpDX.Mathematics.Interop;
 using DXGI = SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// Extension methods for SharpDX object conversion.

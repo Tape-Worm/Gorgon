@@ -28,7 +28,7 @@ using D3D = SharpDX.Direct3D;
 using Gorgon.Collections;
 using Gorgon.Core;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// Defines the level of support for functionality for a video device.

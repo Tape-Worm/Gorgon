@@ -26,7 +26,7 @@
 
 using DXGI = SharpDX.DXGI;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
 	/// <summary> 
 	/// Settings for defining the set up for a swap chain.
