@@ -3,7 +3,7 @@ What is Gorgon?
 
 A modular set of libraries useful for graphics and/or video game development.  Gorgon uses Direct 3D 11.1 (via [SharpDX](http://sharpdx.org)) to provide high performance graphics for your applications.
 
-What’s the licensing? 
+Whatâ€™s the licensing? 
 -------------------------------------------------
 
 Gorgon is licensed under the [MIT license](http://opensource.org/licenses/MIT).
@@ -23,9 +23,9 @@ Gorgon provides a set of libraries that are capable of handling pretty much any 
   - [x] __[Gorgon.Graphics.Core]__ A "low-level" graphics API that sits on top of Direct 3D 11.1. Provides a simplified system to build objects such as render targets, swap chains, buffers, etc... The rendering portion of the API provides a simple mechanism to submit batched state and draw information back to the underlying D3D API.
   - [x] __[Gorgon.Graphics.Imaging]__ Functionality to load, save and manipulate many popular image formats (bmp, jpg, png, dds, tga, etc...). This library also contains functionality to use a fluent interface to manipulate images for things like cropping, scaling, etc...
   - [x] __[Gorgon.Graphics.Fonts]__ An extensive bitmap font creation interface (within the graphics module) that supports kerning, outlining of font glyphs, and other customizations to help generate impressive looking text.
-  - [x] __[TBD]__ A 2D renderer that sits on top of the graphics module to make developing 2D games/applications much easier.  
-  - [x] __[TBD]__ An animation module that allows the creation of flexible animations for various types of objects.
-  - [x] __[TBD]__ A flexible content editor to allow for the creation of sprites, fonts, etc...  
+  - [] __[TBD]__ A 2D renderer that sits on top of the graphics module to make developing 2D games/applications much easier.  
+  - [] __[TBD]__ An animation module that allows the creation of flexible animations for various types of objects.
+  - [] __[TBD]__ A flexible content editor to allow for the creation of sprites, fonts, etc...  
 
 What's required?
 ----------------
