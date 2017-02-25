@@ -17,15 +17,59 @@ What can it do?
 ---------------
 
 Gorgon provides a set of libraries that are capable of handling pretty much any task thrown at it.  It includes:
-  - [x] __[Gorgon.Core]__ Core functionality, plug in support and utility functionality. This is the base library that everything else uses.
-  - [x] __[Gorgon.FileSystem]__ A virtual file system that can mount a directory as a file system root, or using various plug-ins, can mount a packed file (e.g. a zip file) as a virtual file system root.  This module is based on the popular [PhysFS library](http://icculus.org/physfs/).
-  - [x] __[Gorgon.Input]__ A flexible input library to handle joysticks (gamepads), keyboard and mouse input via the raw input API.  Using plug-ins the input system can utilize Xbox360 controllers (via XInput) or standard joysticks (via DirectInput).  The input library can use events or polling to retrieve data from the various input sources.
-  - [x] __[Gorgon.Graphics.Core]__ A "low-level" graphics API that sits on top of Direct 3D 11.1. Provides a simplified system to build objects such as render targets, swap chains, buffers, etc... The rendering portion of the API provides a simple mechanism to submit batched state and draw information back to the underlying D3D API.
-  - [x] __[Gorgon.Graphics.Imaging]__ Functionality to load, save and manipulate many popular image formats (bmp, jpg, png, dds, tga, etc...). This library also contains functionality to use a fluent interface to manipulate images for things like cropping, scaling, etc...
-  - [x] __[Gorgon.Graphics.Fonts]__ An extensive bitmap font creation interface (within the graphics module) that supports kerning, outlining of font glyphs, and other customizations to help generate impressive looking text.
-  - [ ] __[TBD]__ A 2D renderer that sits on top of the graphics module to make developing 2D games/applications much easier.  
-  - [ ] __[TBD]__ An animation module that allows the creation of flexible animations for various types of objects.
-  - [ ] __[TBD]__ A flexible content editor to allow for the creation of sprites, fonts, etc...  
+  - [x] __[Gorgon.Core](Gorgon/Gorgon.Core)__
+  
+  Core functionality, plug in support and utility functionality. This is the base library that everything else uses.
+  
+  - [x] __[Gorgon.FileSystem](Gorgon/Gorgon.FileSystem)__ 
+  
+  A virtual file system that can mount a directory as a file system root, or using various file system providers, can mount a packed file as a virtual file system root.  This code is based on the popular [PhysFS library](http://icculus.org/physfs/).
+  
+  By default, Gorgon's basic virtual file system is based on the folder/files on the Windows file system, but using filesystem providers via plug ins, applications can read any type of file storage container can be used if the appropriate plug in is available for it. Gorgon comes with two plug ins for file system providers:
+   * __[Gorgon.FileSystem.GorPack](Gorgon/PlugIns/Gorgon.FileSystem.GorPack):__ Gorgon's proprietary packed file system format, using BZip2 compression.
+   * __[Gorgon.FileSystem.Zip](Gorgon/PlugIns/Gorgon.FileSystem.Zip):__ Mounts standard .zip files as virtual file systems.
+  
+  By default, the file system provider
+  
+  - [x] __[Gorgon.Input](Gorgon/Gorgon.Input)__ 
+  
+  A flexible input library to handle joysticks/gamepads, keyboard and mouse input. The input library can use events or polling to retrieve data from the various input sources. 
+ 
+ Keyboard and mouse input is provided using the Windows Raw Input API, and joystick/gamepad support is driven by the following plug ins:
+ * __[Gorgon.Input.XInput](Gorgon/PlugIns/Gorgon.Input.XInput):__ Support for the XBox 360 controller (and potentially XBox One controller - not tested)
+ * __[Gorgon.Input.DirectInput](Gorgon/PlugIns/Gorgon.Input.DirectInput):__ Support for gaming devices that are not covered by the XInput API.
+      
+  - [x] __[Gorgon.Graphics.Core](Gorgon/Gorgon.Graphics.Core)__ 
+  
+  A "low-level" graphics API that sits on top of Direct 3D 11.1. Provides a simplified system to build objects such as render targets, swap chains, buffers, etc... The rendering portion of the API provides a simple mechanism to submit batched state and draw information back to the underlying D3D API.
+  
+  - [x] __[Gorgon.Graphics.Imaging](Gorgon/Gorgon.Graphics.Imaging)__ 
+  
+  Functionality to load, save and manipulate many popular image formats, or, using plug in support any custom image file type. This library also contains functionality to use a fluent interface to manipulate images for things like cropping, scaling, etc... Currently, the following file formats are supported right out of the box:
+   * DDS - Direct Draw Surface
+   * TGA - Truevision Targa
+   * PNG - Portable Network Graphics
+   * JPG - Joint Photographic Experts Group
+   * BMP - Windows Bitmap
+   * GIF - Graphic Interchange Format (supports animated gifs as well)
+
+   Applications can extend the support for file formats by adding their own custom plug in to read/write in their desired format(s).
+  
+  - [x] __[Gorgon.Graphics.Fonts](Gorgon/Gorgon.Graphics.Fonts)__ 
+  
+  An extensive bitmap font creation interface (within the graphics module) that supports kerning, outlining of font glyphs, and other customizations to help generate impressive looking text.
+  
+  - [ ] __[TBD]__ 
+  
+  A 2D renderer that sits on top of the graphics module to make developing 2D games/applications much easier.  
+  
+  - [ ] __[TBD]__ 
+  
+  An animation module that allows the creation of flexible animations for various types of objects.
+  
+  - [ ] __[TBD]__ 
+  
+  A flexible content editor to allow for the creation of sprites, fonts, etc...  
 
 What's required?
 ----------------
