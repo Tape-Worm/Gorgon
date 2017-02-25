@@ -45,19 +45,27 @@ Gorgon provides a set of libraries that are capable of handling pretty much any 
   
   - [x] __[Gorgon.Graphics.Imaging](Gorgon/Gorgon.Graphics.Imaging)__ 
   
-  Functionality to load, save and manipulate many popular image formats, or, using plug in support any custom image file type. This library also contains functionality to use a fluent interface to manipulate images for things like cropping, scaling, etc... Currently, the following file formats are supported right out of the box:
-   * DDS - Direct Draw Surface
-   * TGA - Truevision Targa
-   * PNG - Portable Network Graphics
-   * JPG - Joint Photographic Experts Group
-   * BMP - Windows Bitmap
-   * GIF - Graphic Interchange Format (supports animated gifs as well)
+  Functionality to read and write image formats. This also contains functionality to use a fluent interface to manipulate images for things like cropping, scaling, etc... 
+  
+  Gorgon uses [codecs](https://github.com/Tape-Worm/Gorgon/blob/3.0/Gorgon/Gorgon.Graphics.Imaging/Codecs) to read/write images and includes codecs for the following formats:
+   * __DDS__ - Direct Draw Surface
+   * __TGA__ - Truevision Targa
+   * __PNG__ - Portable Network Graphics
+   * __JPG__ - Joint Photographic Experts Group
+   * __BMP__ - Windows Bitmap
+   * __GIF__ - Graphic Interchange Format (supports animated gifs as well)
 
-   Applications can extend the support for file formats by adding their own custom plug in to read/write in their desired format(s).
+   In additon to the support above, applications can extend the support for file formats by adding their own custom codec plug in to read/write in their desired format(s).
   
   - [x] __[Gorgon.Graphics.Fonts](Gorgon/Gorgon.Graphics.Fonts)__ 
   
   An extensive bitmap font creation interface (within the graphics module) that supports kerning, outlining of font glyphs, and other customizations to help generate impressive looking text.
+  
+  Currently Gorgon supports reading and writing of font files through codecs. Support is included for:
+   * __GorFont:__ A proprietary binary format for Gorgon.
+   * __[BmFont](http://www.angelcode.com/products/bmfont/):__ A popular font file type created by Andreas Jönsson (Note: this support is limited to the text based file format at this time). 
+
+  In addition to the support above, applications can introduce their own codecs to read/write whatever font types they wish by extending the [GorgonFontCodec](Gorgon/Gorgon/Gorgon.Graphics.Fonts/Codecs) type. (Plug in support is pending at this time)
   
   - [ ] __[TBD]__ 
   
