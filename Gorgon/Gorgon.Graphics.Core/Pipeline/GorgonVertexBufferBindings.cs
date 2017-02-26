@@ -119,6 +119,7 @@ namespace Gorgon.Graphics.Core
 				    || (_nativeBindings.Length != 1))
 				{
 					_nativeBindings = new D3D11.VertexBufferBinding[1];
+					_nativeBindings[0] = value.ToVertexBufferBinding();
 				}
 			}
 		}
@@ -344,7 +345,6 @@ namespace Gorgon.Graphics.Core
 				throw new ArgumentNullException(nameof(bindings));
 			}
 
-			InputLayout = inputLayout;
 			SetRange(bindings.ToArray());
 		}
 
@@ -359,6 +359,8 @@ namespace Gorgon.Graphics.Core
 			{
 				throw new ArgumentNullException(nameof(inputLayout));
 			}
+
+			InputLayout = inputLayout;
 		}
 		#endregion
 	}

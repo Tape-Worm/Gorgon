@@ -705,10 +705,42 @@ namespace Gorgon.Graphics.Core
 		}
 
 		/// <summary>
+		/// Function to copy the last draw call state.
+		/// </summary>
+		/// <param name="drawCall">The draw call containing the state to copy.</param>
+		private void CopyDrawCallState(GorgonDrawCallBase drawCall)
+		{
+			if (_lastDrawCall == null)
+			{
+				// We only need state info, so a basic draw call is fine.
+				_lastDrawCall = new GorgonDrawCall();
+			}
+
+			_lastDrawCall.Resources.CopyResourceState(drawCall.Resources);
+			_lastDrawCall.BlendFactor = drawCall.BlendFactor;
+			_lastDrawCall.BlendSampleMask = drawCall.BlendSampleMask;
+			_lastDrawCall.DepthStencilReference = drawCall.DepthStencilReference;
+			_lastDrawCall.PrimitiveTopology = drawCall.PrimitiveTopology;
+			_lastDrawCall.ScissorRectangles = drawCall.ScissorRectangles;
+			_lastDrawCall.State = drawCall.State;
+			_lastDrawCall.Viewports = drawCall.Viewports;
+		}
+		
+		/// <summary>
 		/// Function to clear the cached pipeline states.
 		/// </summary>
-		private void ClearStateCache()
+		/// <remarks>
+		/// <para>
+		/// This will destroy any previously cached pipeline states. Because of this, any states that were previously created must be re-created using the <seealso cref="GetPipelineState"/> method.
+		/// </para>
+		/// </remarks>
+		public void ClearStateCache()
 		{
+			if (D3DDeviceContext != null)
+			{
+				ClearState();
+			}
+
 			lock (_stateCacheLock)
 			{
 				// Wipe out the state cache.
@@ -752,8 +784,8 @@ namespace Gorgon.Graphics.Core
 			ApplyPerDrawStates(drawCall);
 			
 			D3DDeviceContext.DrawIndexed(drawCall.IndexCount, drawCall.IndexStart, drawCall.BaseVertexIndex);
-			
-			_lastDrawCall = drawCall;
+
+			CopyDrawCallState(drawCall);
 		}
 
 		/// <summary>
@@ -786,7 +818,7 @@ namespace Gorgon.Graphics.Core
 
 			D3DDeviceContext.Draw(drawCall.VertexCount, drawCall.VertexStartIndex);
 
-			_lastDrawCall = drawCall;
+			CopyDrawCallState(drawCall);
 		}
 
 		/// <summary>
@@ -819,7 +851,7 @@ namespace Gorgon.Graphics.Core
 
 			D3DDeviceContext.DrawInstanced(drawCall.VertexCountPerInstance, drawCall.InstanceCount, drawCall.VertexStartIndex, drawCall.StartInstanceIndex);
 
-			_lastDrawCall = drawCall;
+			CopyDrawCallState(drawCall);
 		}
 
 		/// <summary>
@@ -852,7 +884,7 @@ namespace Gorgon.Graphics.Core
 
 			D3DDeviceContext.DrawIndexedInstanced(drawCall.IndexCountPerInstance, drawCall.InstanceCount, drawCall.IndexStart, drawCall.BaseVertexIndex, drawCall.StartInstanceIndex);
 
-			_lastDrawCall = drawCall;
+			CopyDrawCallState(drawCall);
 		}
 
 		/// <summary>
@@ -901,7 +933,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="flush">[Optional] <b>true</b> to flush the queued graphics object commands, <b>false</b> to leave as is.</param>
 		/// <remarks>
 		/// <para>
-		/// This method will reset all current states to an uninitialized state, and will clear the internal pipeline state cache. 
+		/// This method will reset all current states to an uninitialized state.
 		/// </para>
 		/// <para>
 		/// If the <paramref name="flush"/> parameter is set to <b>true</b>, then any commands on the GPU that are pending will be flushed.
@@ -909,7 +941,7 @@ namespace Gorgon.Graphics.Core
 		/// <para>
 		/// <note type="warning">
 		/// <para>
-		/// This method will cause a significant performance hit, so its use is generally discouraged in performance sensitive situations.
+		/// This method will cause a significant performance hit if the <paramref name="flush"/> parameter is set to <b>true</b>, so its use is generally discouraged in performance sensitive situations.
 		/// </para>
 		/// </note>
 		/// </para>
@@ -925,7 +957,7 @@ namespace Gorgon.Graphics.Core
             }
 
 			_lastDrawCall = null;
-			ClearStateCache();
+			_currentPipelineResources.Reset();
         }
 
 		/// <summary>
