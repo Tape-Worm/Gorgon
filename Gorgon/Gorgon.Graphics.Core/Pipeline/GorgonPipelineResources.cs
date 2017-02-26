@@ -309,6 +309,23 @@ namespace Gorgon.Graphics.Core
 			PixelShaderSamplers = resources.PixelShaderSamplers;
 			RenderTargets = resources.RenderTargets;
 		}
+
+		/// <summary>
+		/// Function to reset to an empty resources object.
+		/// </summary>
+		public void Reset()
+		{
+			VertexBuffers = null;
+			IndexBuffer = null;
+			PixelShaderResources = null;
+			VertexShaderResources = null;
+			PixelShaderConstantBuffers = null;
+			VertexShaderConstantBuffers = null;
+			PixelShaderSamplers = null;
+			RenderTargets = null;
+
+			Changes = PipelineResourceChangeFlags.None;
+		}
 		#endregion
 	}
 }

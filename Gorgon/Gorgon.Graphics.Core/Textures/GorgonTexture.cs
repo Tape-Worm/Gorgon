@@ -1300,6 +1300,82 @@ namespace Gorgon.Graphics.Core
 		}
 
 		/// <summary>
+		/// Function to convert a texel coordinate into a pixel coordinate.
+		/// </summary>
+		/// <param name="texelCoordinates">The texel coordinates to convert.</param>
+		/// <returns>The pixel coordinates.</returns>
+		public DX.Point ToPixel(DX.Vector2 texelCoordinates)
+		{
+			return new DX.Point((int)(texelCoordinates.X * Info.Width), (int)(texelCoordinates.Y * Info.Height));
+		}
+
+		/// <summary>
+		/// Function to convert a pixel coordinate into a texel coordinate.
+		/// </summary>
+		/// <param name="pixelCoordinates">The pixel coordinate to convert.</param>
+		/// <returns>The texel coordinates.</returns>
+		public DX.Vector2 ToTexel(DX.Point pixelCoordinates)
+		{
+			return new DX.Vector2(pixelCoordinates.X / (float)Info.Width, pixelCoordinates.Y / (float)Info.Height);
+		}
+
+		/// <summary>
+		/// Function to convert a pixel coordinate into a texel coordinate.
+		/// </summary>
+		/// <param name="pixelCoordinates">The pixel coordinate to convert.</param>
+		/// <returns>The texel coordinates.</returns>
+		public DX.Vector2 ToTexel(DX.Vector2 pixelCoordinates)
+		{
+			return new DX.Vector2(pixelCoordinates.X / Info.Width, pixelCoordinates.Y / Info.Height);
+		}
+
+		/// <summary>
+		/// Function to convert a texel size into a pixel size.
+		/// </summary>
+		/// <param name="texelCoordinates">The texel size to convert.</param>
+		/// <returns>The pixel size.</returns>
+		public DX.Size2 ToPixel(DX.Size2F texelCoordinates)
+		{
+			return new DX.Size2((int)(texelCoordinates.Width * Info.Width), (int)(texelCoordinates.Height * Info.Height));
+		}
+
+		/// <summary>
+		/// Function to convert a pixel size into a texel size.
+		/// </summary>
+		/// <param name="pixelCoordinates">The pixel size to convert.</param>
+		/// <returns>The texel size.</returns>
+		public DX.Size2F ToTexel(DX.Size2 pixelCoordinates)
+		{
+			return new DX.Size2F(pixelCoordinates.Width / (float)Info.Width, pixelCoordinates.Height / (float)Info.Height);
+		}
+
+		/// <summary>
+		/// Function to convert a texel rectangle into a pixel rectangle.
+		/// </summary>
+		/// <param name="texelCoordinates">The texel rectangle to convert.</param>
+		/// <returns>The pixel rectangle.</returns>
+		public DX.Rectangle ToPixel(DX.RectangleF texelCoordinates)
+		{
+			return new DX.Rectangle((int)(texelCoordinates.Left * Info.Width),
+			                        (int)(texelCoordinates.Top * Info.Height),
+			                        (int)(texelCoordinates.Width * Info.Width),
+			                        (int)(texelCoordinates.Height * Info.Height));
+		}
+
+		/// <summary>
+		/// Function to convert a pixel rectangle into a texel rectangle.
+		/// </summary>
+		/// <param name="pixelCoordinates">The pixel rectangle to convert.</param>
+		/// <returns>The texel rectangle.</returns>
+		public DX.RectangleF ToTexel(DX.Rectangle pixelCoordinates)
+		{
+			return new DX.RectangleF(pixelCoordinates.Left / (float)Info.Width,
+			                         pixelCoordinates.Top / (float)Info.Height,
+			                         pixelCoordinates.Width / (float)Info.Width,
+			                         pixelCoordinates.Height / (float)Info.Height);
+		}
+
+		/// <summary>
 		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
 		/// </summary>
 		public override void Dispose()

@@ -241,7 +241,7 @@ namespace Gorgon.Graphics.Core
 			}
 
 			// Check to ensure that multisample info matches.
-			if (view.Texture.Info.MultisampleInfo.Equals(firstTarget.Texture.Info.MultisampleInfo))
+			if (!view.Texture.Info.MultisampleInfo.Equals(firstTarget.Texture.Info.MultisampleInfo))
 			{
 				throw new GorgonException(GorgonResult.CannotBind,
 					string.Format(Resources.GORGFX_ERR_RTV_DEPTHSTENCIL_MULTISAMPLE_MISMATCH, view.Texture.Info.MultisampleInfo.Quality, view.Texture.Info.MultisampleInfo.Count));

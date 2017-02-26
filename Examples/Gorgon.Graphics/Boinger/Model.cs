@@ -23,9 +23,10 @@
 // Created: Sunday, December 30, 2012 2:35:20 PM
 // 
 #endregion
-
+using System;
+using Gorgon.Graphics.Core;
 using Gorgon.Math;
-using SlimMath;
+using DX = SharpDX;
 
 namespace Gorgon.Graphics.Example
 {
@@ -33,25 +34,36 @@ namespace Gorgon.Graphics.Example
 	/// The base model object.
 	/// </summary>
 	abstract class Model
+		: IDisposable
 	{
 		#region Variables.
-		private Matrix _worldMatrix = Matrix.Identity;				// Our world matrix.
-		private Matrix _positionMatrix = Matrix.Identity;			// Our position matrix.
-		private Matrix _scaleMatrix = Matrix.Identity;				// Our scale matrix.
-		private Matrix _rotationMatrix = Matrix.Identity;			// Our rotation matrix.
-		private Vector3 _position = Vector3.Zero;					// Our position.
-		private Vector3 _scale = new Vector3(1);					// Our scale.
-		private Vector3 _rotation = Vector3.Zero;					// Our rotation.
-		private bool _isPositionChanged;					        // Flag to indicate that our position has been updated.
-		private bool _isScaleChanged;						        // Flag to indicate that our scale has been updated.
-		private bool _isRotationChanged;					        // Flag to inidcate that our rotation has been updated.
+		// Our world matrix.
+		private DX.Matrix _worldMatrix = DX.Matrix.Identity;
+		// Our position matrix.
+		private DX.Matrix _positionMatrix = DX.Matrix.Identity;         
+		// Our scale matrix.
+		private DX.Matrix _scaleMatrix = DX.Matrix.Identity;
+		// Our rotation matrix.
+		private DX.Matrix _rotationMatrix = DX.Matrix.Identity;
+		// Our position.
+		private DX.Vector3 _position = DX.Vector3.Zero;                 
+		// Our scale.
+		private DX.Vector3 _scale = DX.Vector3.One;
+		// Our rotation.
+		private DX.Vector3 _rotation = DX.Vector3.Zero;
+		// Flag to indicate that our position has been updated.	
+		private bool _isPositionChanged;
+		// Flag to indicate that our scale has been updated.
+		private bool _isScaleChanged;
+		// Flag to inidcate that our rotation has been updated.
+		private bool _isRotationChanged;					        
 		#endregion
 
 		#region Properties.
 		/// <summary>
 		/// Property to return the world matrix.
 		/// </summary>
-		protected Matrix WorldMatrix => _worldMatrix;
+		protected DX.Matrix WorldMatrix => _worldMatrix;
 
 		/// <summary>
 		/// Property to set or return the vertices for our object.
@@ -90,9 +102,22 @@ namespace Gorgon.Graphics.Example
 		}
 
 		/// <summary>
+		/// Property to return the draw call for this model.
+		/// </summary>
+		protected GorgonDrawIndexedCall DrawCall
+		{
+			get;
+		} = new GorgonDrawIndexedCall();
+
+		/// <summary>
+		/// Property to return the resources on the pipeline for this object.
+		/// </summary>
+		public GorgonPipelineResources Resources => DrawCall.Resources;
+
+		/// <summary>
 		/// Property to set or return the world position of the object.
 		/// </summary>
-		public Vector3 Position
+		public DX.Vector3 Position
 		{
 			get
 			{
@@ -113,7 +138,7 @@ namespace Gorgon.Graphics.Example
 		/// <summary>
 		/// Property to set or return the scale of the object.
 		/// </summary>
-		public Vector3 Scale
+		public DX.Vector3 Scale
 		{
 			get
 			{
@@ -134,7 +159,7 @@ namespace Gorgon.Graphics.Example
 		/// <summary>
 		/// Property to set or return the rotation of the object, in degrees.
 		/// </summary>
-		public Vector3 Rotation
+		public DX.Vector3 Rotation
 		{
 			get
 			{
@@ -174,20 +199,20 @@ namespace Gorgon.Graphics.Example
 
 			    if (_isRotationChanged)
 				{
-                    Quaternion quatRotation;		// Quaternion for rotation.
+                    DX.Quaternion quatRotation;		// Quaternion for rotation.
 
 				    // Convert degrees to radians.
-					var rotRads = new Vector3(_rotation.X.ToRadians(), _rotation.Y.ToRadians(), _rotation.Z.ToRadians());
+					var rotRads = new DX.Vector3(_rotation.X.ToRadians(), _rotation.Y.ToRadians(), _rotation.Z.ToRadians());
 				    
-				    Quaternion.RotationYawPitchRoll(rotRads.Y, rotRads.X, rotRads.Z, out quatRotation);
-					Matrix.RotationQuaternion(ref quatRotation, out _rotationMatrix);
+				    DX.Quaternion.RotationYawPitchRoll(rotRads.Y, rotRads.X, rotRads.Z, out quatRotation);
+					DX.Matrix.RotationQuaternion(ref quatRotation, out _rotationMatrix);
 				}
 
-				Matrix temp;
+				DX.Matrix temp;
 
 				// Build our world matrix.
-				Matrix.Multiply(ref _scaleMatrix, ref _rotationMatrix, out temp);
-				Matrix.Multiply(ref temp, ref _positionMatrix, out _worldMatrix);
+				DX.Matrix.Multiply(ref _scaleMatrix, ref _rotationMatrix, out temp);
+				DX.Matrix.Multiply(ref temp, ref _positionMatrix, out _worldMatrix);
 			}
 
 			Program.UpdateWVP(ref _worldMatrix);
@@ -196,7 +221,19 @@ namespace Gorgon.Graphics.Example
 		/// <summary>
 		/// Function to draw the model.
 		/// </summary>
-		public abstract void Draw();
+		/// <param name="viewPort">The viewport to draw into.</param>
+		/// <param name="state">The pipeline state to apply when drawing.</param>
+		public abstract void Draw(DX.ViewportF[] viewPort, GorgonPipelineState state);
+
+		/// <summary>
+		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+		/// </summary>
+		/// <exception cref="System.NotImplementedException"></exception>
+		public void Dispose()
+		{
+			VertexBuffer?.Dispose();
+			IndexBuffer?.Dispose();
+		}
 		#endregion
 
 		#region Constructor/Destructor.
@@ -205,7 +242,7 @@ namespace Gorgon.Graphics.Example
 		/// </summary>
 		protected Model()
 		{
-			Scale = new Vector3(1.0f);
+			Scale = new DX.Vector3(1.0f);
 		}
 		#endregion
 	}

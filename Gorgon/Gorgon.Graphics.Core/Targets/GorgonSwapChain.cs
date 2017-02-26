@@ -445,15 +445,22 @@ namespace Gorgon.Graphics.Core
 					return;
 				}
 
+				// If we maximize, or restore, then we'll need to force a buffer resize.
+				if ((!_resized) && 
+					((_parentForm.WindowState == FormWindowState.Maximized) || (_parentForm.WindowState == FormWindowState.Normal)))
+				{
+					_resized = true;
+				}
+
 				// If we're entering/exiting full screen, or not at the end of a resize operation, or the window client size is invalid, or the window is in a minimized state, 
 				// or the window size has not changed (can occur when the window is moved) then do nothing.
 				if (!_screenStateTransition)
 				{
-					if ((!_resized)
-					    || (Window.ClientSize.Width < 1)
+					if ((Window.ClientSize.Width < 1)
 					    || (Window.ClientSize.Height < 1)
 						|| ((Window.ClientSize.Width == _info.Width) && (Window.ClientSize.Height == _info.Height))
-					    || (_parentForm.WindowState == FormWindowState.Minimized))
+					    || (_parentForm.WindowState == FormWindowState.Minimized)
+						|| (!_resized))
 					{
 						return;
 					}

@@ -279,18 +279,18 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonSamplerStates"/> class.
 		/// </summary>
-		/// <param name="shaderResourceViews">The shader resource views to assign.</param>
+		/// <param name="samplerStates">The shader resource views to assign.</param>
 		/// <param name="startSlot">[Optional] The starting slot to use for the sampler states.</param>
-		public GorgonSamplerStates(IEnumerable<GorgonSamplerState> shaderResourceViews, int startSlot = 0)
+		public GorgonSamplerStates(IEnumerable<GorgonSamplerState> samplerStates, int startSlot = 0)
 		{
-			if (shaderResourceViews == null)
+			if (samplerStates == null)
 			{
 				return;
 			}
 
 			int index = startSlot;
 			
-			foreach (GorgonSamplerState view in shaderResourceViews)
+			foreach (GorgonSamplerState view in samplerStates)
 			{
 				if (index >= _states.Length)
 				{
