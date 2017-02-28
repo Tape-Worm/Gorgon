@@ -5,7 +5,7 @@ branches:
   only:
   - master
 skip_non_tags: true
-configuration: Release
+configuration: ReleaseAndDeploy
 platform: Any CPU
 shallow_clone: true
 assembly_info:
