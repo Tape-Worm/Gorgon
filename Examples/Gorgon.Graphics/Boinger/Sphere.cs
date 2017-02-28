@@ -59,7 +59,10 @@ namespace Gorgon.Graphics.Example
 		{
 			// If our transforms have updated, then calculate the new world matrix.
 			UpdateTransform();
-			
+
+			DrawCall.Resources.IndexBuffer = IndexBuffer;
+			DrawCall.Resources.VertexBuffers = VertexBufferBindings;
+
 			DrawCall.Viewports = viewPort;
 			DrawCall.State = state;
 
@@ -78,6 +81,7 @@ namespace Gorgon.Graphics.Example
 	    /// <param name="ringCount">Number of rings in the sphere.</param>
 	    /// <param name="segmentCount">Number of segments in the sphere.</param>
 	    public Sphere(GorgonInputLayout inputLayout, float radius, DX.Vector2 textureOffset, DX.Size2F textureScale, int ringCount = 8, int segmentCount = 16)
+			: base(inputLayout)
 		{
 	        int index = 0;						// Current index.
 			int vertexIndex = 0;				// Current vertex index.
@@ -157,14 +161,11 @@ namespace Gorgon.Graphics.Example
 				                                                                             }, indexPtr);
 			}
 
-			Resources.IndexBuffer = IndexBuffer;
-			Resources.VertexBuffers = new GorgonVertexBufferBindings(inputLayout)
-			                          {
-				                          [0] = new GorgonVertexBufferBinding(VertexBuffer, BoingerVertex.Size)
-			                          };
 			DrawCall.IndexStart = 0;
 			DrawCall.IndexCount = Indices.Length;
 			DrawCall.PrimitiveTopology = PrimitiveTopology.TriangleList;
+
+			VertexBufferBindings[0] = new GorgonVertexBufferBinding(VertexBuffer, BoingerVertex.Size);
 		}
 		#endregion
 	}

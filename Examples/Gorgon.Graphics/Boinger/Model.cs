@@ -56,7 +56,11 @@ namespace Gorgon.Graphics.Example
 		// Flag to indicate that our scale has been updated.
 		private bool _isScaleChanged;
 		// Flag to inidcate that our rotation has been updated.
-		private bool _isRotationChanged;					        
+		private bool _isRotationChanged;
+		// The texture for the model.
+		private GorgonTexture _texture;
+		// The texture sampler for the model.
+		private GorgonSamplerState _textureSampler;
 		#endregion
 
 		#region Properties.
@@ -64,6 +68,14 @@ namespace Gorgon.Graphics.Example
 		/// Property to return the world matrix.
 		/// </summary>
 		protected DX.Matrix WorldMatrix => _worldMatrix;
+
+		/// <summary>
+		/// Property to return the input layout of the vertices for the mesh stored within this model.
+		/// </summary>
+		protected GorgonInputLayout InputLayout
+		{
+			get;
+		}
 
 		/// <summary>
 		/// Property to set or return the vertices for our object.
@@ -110,9 +122,44 @@ namespace Gorgon.Graphics.Example
 		} = new GorgonDrawIndexedCall();
 
 		/// <summary>
-		/// Property to return the resources on the pipeline for this object.
+		/// Property to return the vertex buffer bindings for this model.
 		/// </summary>
-		public GorgonPipelineResources Resources => DrawCall.Resources;
+		protected GorgonVertexBufferBindings VertexBufferBindings
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Property to set or return the texture assigned to the model.
+		/// </summary>
+		public GorgonTexture Texture
+		{
+			get
+			{
+				return _texture;
+			}
+			set
+			{
+				if (_texture == value)
+				{
+					return;
+				}
+
+				_texture = value;
+
+				if (_texture != null)
+				{
+					DrawCall.Resources.PixelShaderResources = new GorgonShaderResourceViews(new[]
+					                                                                        {
+						                                                                        _texture.DefaultShaderResourceView
+					                                                                        });
+				}
+				else
+				{
+					DrawCall.Resources.PixelShaderResources = null;
+				}
+			}
+		}
 
 		/// <summary>
 		/// Property to set or return the world position of the object.
@@ -240,9 +287,12 @@ namespace Gorgon.Graphics.Example
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Model" /> class.
 		/// </summary>
-		protected Model()
+		/// <param name="inputLayout">The input layout of the vertices for the mesh contained within the model.</param>
+		protected Model(GorgonInputLayout inputLayout)
 		{
 			Scale = new DX.Vector3(1.0f);
+			InputLayout = inputLayout;
+			VertexBufferBindings = new GorgonVertexBufferBindings(InputLayout);
 		}
 		#endregion
 	}

@@ -533,7 +533,9 @@ namespace Gorgon.Graphics.Example
 			          };
 
 			// Set up default positions and orientations.
+			_planes[0].Texture = _texture;
 			_planes[0].Position = new DX.Vector3(0, 0, 3.0f);
+			_planes[1].Texture = _texture;
 			_planes[1].Position = new DX.Vector3(0, -3.5f, 3.5f);
 			_planes[1].Rotation = new DX.Vector3(90.0f, 0, 0);			
 
@@ -548,7 +550,8 @@ namespace Gorgon.Graphics.Example
             // Give the sphere a place to live.
 			_sphere = new Sphere(_inputLayout, 1.0f, textureOffset, textureSize)
 			          {
-				          Position = new DX.Vector3(2.2f, 1.5f, 2.5f)
+				          Position = new DX.Vector3(2.2f, 1.5f, 2.5f),
+						  Texture = _texture
 			          };
 			_sphere.Resources.VertexShaderConstantBuffers = new GorgonConstantBuffers(new[]
 			                                                                          {
