@@ -60,6 +60,9 @@ namespace Gorgon.Graphics.Example
 			// If our transforms have updated, then calculate the new world matrix.
 			UpdateTransform();
 
+			DrawCall.Resources.IndexBuffer = IndexBuffer;
+			DrawCall.Resources.VertexBuffers = VertexBufferBindings;
+
 			DrawCall.Viewports = viewPort;
 			DrawCall.State = state;
 
@@ -75,6 +78,7 @@ namespace Gorgon.Graphics.Example
 		/// <param name="size">The width and height of the plane.</param>
 		/// <param name="textureCoordinates">Texture coordinates.</param>
 		public Plane(GorgonInputLayout inputLayout, DX.Vector2 size, DX.RectangleF textureCoordinates)
+			: base(inputLayout)
 		{
 			Size = size;
 
@@ -120,14 +124,11 @@ namespace Gorgon.Graphics.Example
 					                                    indexPtr);
 				}
 
-			Resources.IndexBuffer = IndexBuffer;
-			Resources.VertexBuffers = new GorgonVertexBufferBindings(inputLayout)
-			{
-				[0] = new GorgonVertexBufferBinding(VertexBuffer, BoingerVertex.Size)
-			};
 			DrawCall.IndexStart = 0;
 			DrawCall.IndexCount = Indices.Length;
 			DrawCall.PrimitiveTopology = D3D.PrimitiveTopology.TriangleList;
+
+			VertexBufferBindings[0] = new GorgonVertexBufferBinding(VertexBuffer, BoingerVertex.Size);
 		}
 		#endregion
 	}
