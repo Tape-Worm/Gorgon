@@ -61,6 +61,25 @@
   <PropertyGroup>
     <StartupObject>GorgonLibrary.Editor.Program</StartupObject>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <DelaySign>true</DelaySign>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>GorgonPub.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseAndDeploy|AnyCPU'">
+    <OutputPath>bin\Release</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="KRBTabControl">
       <HintPath>..\..\Dependencies\KRBTabControl\KRBTabControl.dll</HintPath>
@@ -179,6 +198,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="GorgonPub.snk" />
     <None Include="Resources\show_all_16x16.png" />
     <None Include="Resources\folder_open_16x161.png" />
     <None Include="Resources\folder_16x161.png" />

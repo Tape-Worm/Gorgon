@@ -101,6 +101,20 @@
     <Prefer32Bit>false</Prefer32Bit>
     <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseAndDeploy|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Release</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DocumentationFile>bin\Release\Gorgon.Common.xml</DocumentationFile>
+    <Optimize>true</Optimize>
+    <FileAlignment>4096</FileAlignment>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Gorgon.MemoryAccess">
       <HintPath>..\Gorgon.Memory\Gorgon.MemoryAccess.dll</HintPath>

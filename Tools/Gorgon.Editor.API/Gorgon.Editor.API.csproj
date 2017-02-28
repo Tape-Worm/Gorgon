@@ -37,6 +37,17 @@
   <PropertyGroup>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseAndDeploy|AnyCPU'">
+    <OutputPath>bin\Release</OutputPath>
+    <DefineConstants>TRACE;_DEPLOY</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DocumentationFile>bin\Release\Gorgon.Editor.API.XML</DocumentationFile>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="KRBTabControl">
       <HintPath>..\..\Dependencies\KRBTabControl\KRBTabControl.dll</HintPath>
@@ -109,9 +120,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Controls\EditorTreeNode.cs" />
-    <Compile Include="Controls\EditorTreeView.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Controls\EditorTreeView.cs" />
     <Compile Include="Forms\ColorDialog.cs">
       <SubType>Form</SubType>
     </Compile>

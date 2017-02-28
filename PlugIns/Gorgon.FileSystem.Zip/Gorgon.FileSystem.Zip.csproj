@@ -62,6 +62,16 @@
   <PropertyGroup>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseAndDeploy|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Release</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="ICSharpCode.SharpZipLib">
       <HintPath>..\..\Dependencies\SharpZipLib_0860\ICSharpCode.SharpZipLib.dll</HintPath>
@@ -120,11 +130,11 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "$(TargetDir)ICSharpCode.SharpZipLib.dll" "$(SolutionDir)..\PlugIns\Bin\$(ConfigurationName)\"
-copy "$(TargetDir)$(ProjectName).pdb" "$(SolutionDir)..\PlugIns\Bin\$(ConfigurationName)\"
-copy "$(TargetPath)" "$(SolutionDir)..\PlugIns\Bin\$(ConfigurationName)\"
-copy "$(TargetDir)$(ProjectName).dll" "$(SolutionDir)..\Tools\Gorgon.Editor\bin\$(ConfigurationName)\PlugIns\"
-copy "$(TargetDir)$(ProjectName).pdb" "$(SolutionDir)..\Tools\Gorgon.Editor\bin\$(ConfigurationName)\PlugIns\"
+    <PostBuildEvent>copy "$(TargetDir)ICSharpCode.SharpZipLib.dll" "$(SolutionDir)..\PlugIns\$(OutDir)"
+copy "$(TargetDir)$(ProjectName).pdb" "$(SolutionDir)..\PlugIns\$(OutDir)"
+copy "$(TargetPath)" "$(SolutionDir)..\PlugIns\$(OutDir)"
+copy "$(TargetDir)$(ProjectName).dll" "$(SolutionDir)..\Tools\Gorgon.Editor\$(OutDir)PlugIns\"
+copy "$(TargetDir)$(ProjectName).pdb" "$(SolutionDir)..\Tools\Gorgon.Editor\$(OutDir)PlugIns\"
 </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
