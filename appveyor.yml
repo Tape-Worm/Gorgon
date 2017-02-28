@@ -26,14 +26,7 @@ install:
 
     ren Gorgon.enc GorgonFull.snk
 before_build:
-- ps: >-
-    $fileData = [convert]::FromBase64String($env:gkey)
-
-
-    Set-Content "GorgonFull.snk" -Value $fileData -Encoding byte
-
-
-    .\ProjectSigner.exe GorgonFull.snk -y
+- ps: .\ProjectSigner.exe GorgonFull.snk -y
 build:
   project: Gorgon/Gorgon.sln
   parallel: true
