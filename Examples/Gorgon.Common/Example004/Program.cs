@@ -150,7 +150,11 @@ namespace GorgonLibrary.Examples
 
 				        // Call our text color writer to print the text in the plug-in color.
 				        int writerIndex = keyValue.KeyChar - '0';
-				        writers[writerIndex - 1].WriteString(string.Format("You pressed #{0}.", writerIndex));
+
+					    if ((writerIndex >= 0) && (writerIndex <= 3))
+					    {
+						    writers[writerIndex - 1].WriteString(string.Format("You pressed #{0}.", writerIndex));
+					    }
 				    }
 
 				    Console.CursorTop = cursorY;

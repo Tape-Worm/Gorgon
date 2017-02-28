@@ -106,7 +106,7 @@ namespace GorgonLibrary.Input.Raw
 		    }
 
 			// Do nothing if we have no data.
-			if (dataSize == 0)
+			if (dataSize < 4)
 			{
 				return;
 			}
@@ -121,9 +121,10 @@ namespace GorgonLibrary.Input.Raw
 		        }
 
 				// The strings that come back from native land will end with a NULL terminator, so crop that off.
-		        var regPath = new string(data, 0, dataSize - 1);
+			    var regPath = new string(data, 0, dataSize - 1);
+			    
 
-		        if (regPath.Length == 0)
+			    if (regPath.Length == 0)
 		        {
 					throw new Win32Exception(Resources.GORINP_RAW_CANNOT_READ_DATA);
 		        }
