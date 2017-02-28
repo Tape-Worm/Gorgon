@@ -46,13 +46,6 @@ after_build:
     }
 
 
-    if (Test-Path 'GorgonFull.snk')
-
-    {
-        del 'GorgonFull.snk'
-    }
-
-
     mkdir $artifactDir
 
     mkdir $artifactBin
