@@ -1,9 +1,12 @@
+# Gorgon [![BuildStatus](https://ci.appveyor.com/api/projects/status/7bwgi85435urivwu/branch/master?svg=true)](https://ci.appveyor.com/project/Tape-Worm/gorgon/)
+
+
 What is Gorgon?
 ===============
 
 A modular set of libraries useful for graphics and/or video game development.  Gorgon uses Direct 3D (via [SharpDX](http://sharpdx.org)) to provide high performance graphics for your applications.
 
-What’s the licensing? 
+Whatâ€™s the licensing? 
 -------------------------------------------------
 
 Gorgon is licensed under the [MIT license](http://opensource.org/licenses/MIT).
