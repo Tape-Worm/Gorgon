@@ -28,7 +28,15 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
+#if !DEBUG && _DEPLOY
+[assembly: InternalsVisibleTo("Gorgon.Editor, PublicKey=002400000480000094000000060200000024000052534131000400000100010099ab3e9d6160dd" +
+											"629f3d53173ad052f5e0127ab32336d385860fed858d2ef4ae3485813ea60a69cd6b8f67f1c5cc" +
+											"82f869cdc37a565216def48b45447fec94533d497ef3f6fd2eddcec7052efbb8ea089b772536eb" +
+											"ad3fc884202542e41e3bc9c2a3d05babf0685a54fb3b60f41e3723eae704f794739679e1989bed" +
+											"1ebbc2c1")]
+#else
 [assembly: InternalsVisibleTo("Gorgon.Editor")]
+#endif
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information

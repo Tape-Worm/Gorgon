@@ -46,6 +46,17 @@
   <PropertyGroup>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseAndDeploy|AnyCPU'">
+    <OutputPath>bin\Release</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DocumentationFile>bin\Release\Gorgon.Graphics.xml</DocumentationFile>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Gorgon.MemoryAccess, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c001d94e9acbbee7, processorArchitecture=MSIL">
       <HintPath>..\Gorgon.Memory\Gorgon.MemoryAccess.dll</HintPath>

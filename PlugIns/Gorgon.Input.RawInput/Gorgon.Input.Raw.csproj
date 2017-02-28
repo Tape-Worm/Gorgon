@@ -56,6 +56,19 @@
     <AssemblyOriginatorKeyFile>
     </AssemblyOriginatorKeyFile>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseAndDeploy|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Release</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DocumentationFile>bin\Release\Gorgon.Input.Raw.xml</DocumentationFile>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Gorgon.MemoryAccess, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c001d94e9acbbee7, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -109,10 +122,10 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "$(TargetDir)$(ProjectName).pdb" "$(SolutionDir)..\PlugIns\Bin\$(ConfigurationName)\"
-copy "$(TargetPath)" "$(SolutionDir)..\PlugIns\Bin\$(ConfigurationName)\"
-copy "$(TargetDir)$(ProjectName).pdb" "$(SolutionDir)..\Tools\Gorgon.Editor\Bin\$(ConfigurationName)\"
-copy "$(TargetPath)" "$(SolutionDir)..\Tools\Gorgon.Editor\Bin\$(ConfigurationName)\"
+    <PostBuildEvent>copy "$(TargetDir)$(ProjectName).pdb" "$(SolutionDir)..\PlugIns\$(OutDir)"
+copy "$(TargetPath)" "$(SolutionDir)..\PlugIns\$(OutDir)"
+copy "$(TargetDir)$(ProjectName).pdb" "$(SolutionDir)..\Tools\Gorgon.Editor\$(OutDir)"
+copy "$(TargetPath)" "$(SolutionDir)..\Tools\Gorgon.Editor\$(OutDir)"
 </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
