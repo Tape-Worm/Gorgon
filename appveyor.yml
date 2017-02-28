@@ -1,0 +1,68 @@
+version: 2.0.{build}
+pull_requests:
+  do_not_increment_build_number: true
+branches:
+  only:
+  - master
+skip_non_tags: true
+configuration: Release
+platform: Any CPU
+shallow_clone: true
+assembly_info:
+  patch: true
+  file: '**\AssemblyInfo.*'
+  assembly_version: '{version}'
+  assembly_file_version: '{version}'
+  assembly_informational_version: '{version}'
+environment:
+  gkey:
+    secure: f6g/LcaNrmHvIerZFFg2/eLB/zlA3Ij+TJ+bmDR0BK/3oGRrU+fI39G09ggaadvRj7nJ1rOF3iq31k7ix4TirABpcD3TpmOoAHQYeWQayCICY+0r9ihMR1+PQCdH5UyHU350aO2ILJFBWm2yLRU2E8mT0lfKp9G5DHKlMs6g1qhb1qfasU5iJDA/je+k6InPf2UdTnIVuCAdOU4jgK/7340eV8NBoLMmiSLhR9utDCgptdEqmvx3KE+30L5bjxhLC1Q/rbMJe92zoa6d8TgAfT5pto4C7i2p/15fLHb2I8mz1h2Ix4A/QItUG2xZwsGQlPRZe6JWskYNnc31lyxOuppv1guN9VuBtMbsiHAAQ6l+/2g+3uD7abb6pbLZB4xIB68s081ZmWkwnt0yNhH5K3M9R9nm+Aa3Mbi0rfMsoCjGoTV5fDILW+5CgeSZHM6TdvgozY/RTTExsbXpJLfm7GPRQ8RcqgVfUSI8DK5DNVGp6yTlCfScAZSoycfSvqAtP7azgNAAyxIhMGEJCRTBl2wZRzfXusvG2607Rr9kIuxQDB9NOP/LZAC23+DAFroZFzXl1vLTBRPTYgxstyHgc/lQ1jWtN4rp5m+cWXMlmkfMTxjXPEW5yY3lc1fV92HGPNE4RAD09Q02FIRlziK6qxktxTo85sLNTVrQcdsQ91/Nzdp2ka+k6BTlxhXacYEsQptgrnCMkkB3MHRmZfW7B+7zE8FQ/FkkS6HJMQ/yLPZg9hSPBJSWxygxwNunET5XgJs0QkYtq1vZ0XzI68Vdm+9jIMOOd5pmSU3IiMmzUhMY0svlsV/Ukg92YAvibfbrDo2eGSfIP0ycxjs2H+5rwC4KaFQtVbknR5aJpFnz2alTEdi+ZoUHLNmDGRkqxaXlpIXX3LxYAjemRXw7rkXcQUneam5G39EDMJwo9+WN2usevWsDHcJFpDAYCezndkjgpGIX6X2mMUanW+7lnDaCpv7dA5rtk1ygeMlsJfX5Oi1iOyzqMztvBRhIsqG1mRfpEhgPfFEV/ywJ/7AbX1IWAD/o6u5asXEV6Fz2xq1RjHPCXqliu2y2BaiJEHn4+UaX6jqW4zY0xBiADd2vFufV82nrUkaJKqMWEpHjLm2aqpj4OERPWBxToOgralVgKcErIlYucP8qGE5mmMyebpaT4whmbC7IyryFBSLQlSZ6Y1v/7u0ACoAvTupfEijLyVOV9rHjLPoEdmAnfjNqoMGAtU+4cY1On5uhXF2/iMO2ajK0Pp+Owqif9w5qY03SLpQ+A+5zeNS1fg+J0Y8Zgov+pnOZLY5k3UwjGX8FKcCL7/cQygwZ/4/POfsSkNlFRTM0fGA7CXjOrq3F9vio9Q1caWRkNe5MY5YfEVce0I/6M8GlabVQXpZQ79LJuRDpj6KPcx3JOtAocKEjx+TvCP/jH7WbyU7XzKGSprCHl8es6tdfM8PFKTaK4xW5rZyChNj8
+build:
+  project: Gorgon/Gorgon.sln
+  parallel: true
+  verbosity: normal
+after_build:
+- ps: >-
+    $artifactDir = "Artifacts"
+
+    $artifactBin = "$artifactDir\\Bin\\"
+
+    $artifactPlugIns = "$artifactDir\\PlugIns\\"
+
+
+    if (!(Test-Path 'Artifacts'))
+
+    {
+        mkdir $artifactDir
+        mkdir $artifactBin
+        mkdir $artifactPlugIns
+    }
+
+
+    del "$artifactsBin*.*" -Recurse
+
+    del "$artifactsPlugIns*.*" -Recurse
+
+
+    $gorgonDllsXmls = (Get-ChildItem "Gorgon\\" -include *.dll, *.xml -Recurse | where { $_.FullName -notmatch "\\obj\\" -and $_.FullName -notmatch "\\debug\\"})
+
+    $plugInDlls = (Get-ChildItem "PlugIns\\Bin\\" -include *.dll -Recurse | where { $_.FullName -notmatch "\\debug\\"})
+
+
+    ForEach ($dll in $gorgonDllsXmls)
+
+    {
+        Copy-Item $dll.FullName $artifactBin
+    }
+
+
+    ForEach ($plugInDll in $plugInDlls)
+
+    {
+        Copy-Item $plugInDll.FullName $artifactPlugIns
+    }
+test: off
+artifacts:
+- path: Artifacts\
+  name: Gorgon2.0
+deploy: off

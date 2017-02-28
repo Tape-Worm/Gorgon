@@ -1,3 +1,6 @@
+# Gorgon [![BuildStatus](https://ci.appveyor.com/api/projects/status/7bwgi85435urivwu/branch/master?svg=true)](https://ci.appveyor.com/project/Tape-Worm/gorgon/)
+
+
 What is Gorgon?
 ===============
 
