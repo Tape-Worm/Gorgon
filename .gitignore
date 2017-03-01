@@ -18,6 +18,7 @@ bld/
 Docs/Help/
 Gorgon/Broken/
 Test/
+Artifacts/
 
 # Roslyn cache directories
 *.ide/

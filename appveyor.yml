@@ -35,11 +35,17 @@ after_build:
 
     $artifactPlugIns = "$artifactDir\\PlugIns\\"
 
+    $artifactTools = "$artifactDir\\Tools\\"
+
+    $artifactEditor = "$artifactTools\\Gorgon.Editor"
+
+    $artifactEditorPlugIns = "$artifactEditor\\PlugIns"
+
 
     if (Test-Path $artifactDir)
 
     {
-        rmdir $artifactDir -recurse
+        rmdir $artifactDir -force -recurse
     }
 
 
@@ -49,10 +55,20 @@ after_build:
 
     mkdir $artifactPlugIns
 
+    mkdir $artifactTools
+
+    mkdir $artifactEditor
+
+    mkdir $artifactEditorPlugIns
+
 
     $gorgonDllsXmls = (Get-ChildItem "Gorgon\\" -include *.dll, *.xml -Recurse | where { $_.FullName -notmatch "\\obj\\" -and $_.FullName -notmatch "\\debug\\"})
 
     $plugInDlls = (Get-ChildItem "PlugIns\\Bin\\" -include *.dll -Recurse | where { $_.FullName -notmatch "\\debug\\"})
+
+    $toolFiles = (Get-ChildItem "Tools\\Gorgon.Editor\\Bin\\Release\*" -include *.dll, Gorgon.Editor.exe, Gorgon.Editor.exe.config, texconv.exe )
+
+    $toolPlugIns = (Get-ChildItem "Tools\\Gorgon.Editor\\Bin\\Release\\PlugIns\*" -include *.dll)
 
 
     ForEach ($dll in $gorgonDllsXmls)
@@ -66,6 +82,20 @@ after_build:
 
     {
         Copy-Item $plugInDll.FullName $artifactPlugIns
+    }
+
+
+    ForEach ($toolFile in $toolFiles)
+
+    {
+        Copy-Item $toolFile.FullName $artifactEditor
+    }
+
+
+    Foreach ($toolPlugIn in $toolPlugIns)
+
+    {
+        Copy-Item $toolPlugIn.FullName $artifactEditorPlugIns
     }
 test: off
 artifacts:
