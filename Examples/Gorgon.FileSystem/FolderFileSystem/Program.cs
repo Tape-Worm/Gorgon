@@ -30,6 +30,7 @@ using System.IO;
 using System.Linq;
 using GorgonLibrary.Examples.Properties;
 using GorgonLibrary.IO;
+using GorgonLibrary.Math;
 
 namespace GorgonLibrary.Examples
 {
@@ -104,7 +105,7 @@ namespace GorgonLibrary.Examples
 		{
             try
             {
-                Console.WindowHeight = 26;
+                Console.WindowHeight = 26.Max(Console.WindowHeight);
                 Console.BufferHeight = Console.WindowHeight;
 
                 // Create a new file system.
