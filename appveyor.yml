@@ -46,3 +46,13 @@ deploy:
   force_update: true
   on:
     branch: master
+- provider: GitHub
+  tag: ${appveyor_build_version}
+  release: Gorgon 2.0
+  description: Precompiled binaries
+  auth_token:
+    secure: UpmzL/Lmrgy8OVxV3NfBRc2OlHH1tNAw/8U/H5sOTdqSsGeU3D8HBE7Cq1l1D+23
+  artifact: Gorgon2.0_Examples
+  force_update: true
+  on:
+    branch: master
