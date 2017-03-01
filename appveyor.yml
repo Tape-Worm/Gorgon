@@ -41,7 +41,8 @@ deploy:
   release: Gorgon 2.0
   description: Precompiled binaries
   auth_token:
-    secure: P/If+ydICPEN/0yA+nniZYoA6WzbWjlOvLWlcp3rhMszJhzIb2bZeI0yTCVzCW0/
+    secure: UpmzL/Lmrgy8OVxV3NfBRc2OlHH1tNAw/8U/H5sOTdqSsGeU3D8HBE7Cq1l1D+23
   artifact: Gorgon2.0
+  force_update: true
   on:
     branch: master
