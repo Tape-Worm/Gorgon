@@ -5,7 +5,7 @@ branches:
   only:
   - master
 skip_non_tags: true
-configuration: Release
+configuration: ReleaseAndDeploy
 platform: Any CPU
 shallow_clone: true
 assembly_info:
@@ -15,54 +15,34 @@ assembly_info:
   assembly_file_version: '{version}'
   assembly_informational_version: '{version}'
 environment:
-  gkey:
-    secure: f6g/LcaNrmHvIerZFFg2/eLB/zlA3Ij+TJ+bmDR0BK/3oGRrU+fI39G09ggaadvRj7nJ1rOF3iq31k7ix4TirABpcD3TpmOoAHQYeWQayCICY+0r9ihMR1+PQCdH5UyHU350aO2ILJFBWm2yLRU2E8mT0lfKp9G5DHKlMs6g1qhb1qfasU5iJDA/je+k6InPf2UdTnIVuCAdOU4jgK/7340eV8NBoLMmiSLhR9utDCgptdEqmvx3KE+30L5bjxhLC1Q/rbMJe92zoa6d8TgAfT5pto4C7i2p/15fLHb2I8mz1h2Ix4A/QItUG2xZwsGQlPRZe6JWskYNnc31lyxOuppv1guN9VuBtMbsiHAAQ6l+/2g+3uD7abb6pbLZB4xIB68s081ZmWkwnt0yNhH5K3M9R9nm+Aa3Mbi0rfMsoCjGoTV5fDILW+5CgeSZHM6TdvgozY/RTTExsbXpJLfm7GPRQ8RcqgVfUSI8DK5DNVGp6yTlCfScAZSoycfSvqAtP7azgNAAyxIhMGEJCRTBl2wZRzfXusvG2607Rr9kIuxQDB9NOP/LZAC23+DAFroZFzXl1vLTBRPTYgxstyHgc/lQ1jWtN4rp5m+cWXMlmkfMTxjXPEW5yY3lc1fV92HGPNE4RAD09Q02FIRlziK6qxktxTo85sLNTVrQcdsQ91/Nzdp2ka+k6BTlxhXacYEsQptgrnCMkkB3MHRmZfW7B+7zE8FQ/FkkS6HJMQ/yLPZg9hSPBJSWxygxwNunET5XgJs0QkYtq1vZ0XzI68Vdm+9jIMOOd5pmSU3IiMmzUhMY0svlsV/Ukg92YAvibfbrDo2eGSfIP0ycxjs2H+5rwC4KaFQtVbknR5aJpFnz2alTEdi+ZoUHLNmDGRkqxaXlpIXX3LxYAjemRXw7rkXcQUneam5G39EDMJwo9+WN2usevWsDHcJFpDAYCezndkjgpGIX6X2mMUanW+7lnDaCpv7dA5rtk1ygeMlsJfX5Oi1iOyzqMztvBRhIsqG1mRfpEhgPfFEV/ywJ/7AbX1IWAD/o6u5asXEV6Fz2xq1RjHPCXqliu2y2BaiJEHn4+UaX6jqW4zY0xBiADd2vFufV82nrUkaJKqMWEpHjLm2aqpj4OERPWBxToOgralVgKcErIlYucP8qGE5mmMyebpaT4whmbC7IyryFBSLQlSZ6Y1v/7u0ACoAvTupfEijLyVOV9rHjLPoEdmAnfjNqoMGAtU+4cY1On5uhXF2/iMO2ajK0Pp+Owqif9w5qY03SLpQ+A+5zeNS1fg+J0Y8Zgov+pnOZLY5k3UwjGX8FKcCL7/cQygwZ/4/POfsSkNlFRTM0fGA7CXjOrq3F9vio9Q1caWRkNe5MY5YfEVce0I/6M8GlabVQXpZQ79LJuRDpj6KPcx3JOtAocKEjx+TvCP/jH7WbyU7XzKGSprCHl8es6tdfM8PFKTaK4xW5rZyChNj8
+  gkey: eDKrI8Wf1hH2rloYqjD2dTEALUqY89j3yyj5KV82MHko6K62_9eWE98bOj8hif2Q
+install:
+- ps: >-
+    nuget install secure-file -ExcludeVersion
+
+    secure-file\tools\secure-file -decrypt Gorgon.enc -secret $env:gkey -out GorgonFull.snk
+before_build:
+- ps: .\ProjectSigner.exe GorgonFull.snk -y
 build:
   project: Gorgon/Gorgon.sln
   parallel: true
   verbosity: normal
 after_build:
-- ps: >-
-    $artifactDir = "Artifacts"
-
-    $artifactBin = "$artifactDir\\Bin\\"
-
-    $artifactPlugIns = "$artifactDir\\PlugIns\\"
-
-
-    if (!(Test-Path 'Artifacts'))
-
-    {
-        mkdir $artifactDir
-        mkdir $artifactBin
-        mkdir $artifactPlugIns
-    }
-
-
-    del "$artifactsBin*.*" -Recurse
-
-    del "$artifactsPlugIns*.*" -Recurse
-
-
-    $gorgonDllsXmls = (Get-ChildItem "Gorgon\\" -include *.dll, *.xml -Recurse | where { $_.FullName -notmatch "\\obj\\" -and $_.FullName -notmatch "\\debug\\"})
-
-    $plugInDlls = (Get-ChildItem "PlugIns\\Bin\\" -include *.dll -Recurse | where { $_.FullName -notmatch "\\debug\\"})
-
-
-    ForEach ($dll in $gorgonDllsXmls)
-
-    {
-        Copy-Item $dll.FullName $artifactBin
-    }
-
-
-    ForEach ($plugInDll in $plugInDlls)
-
-    {
-        Copy-Item $plugInDll.FullName $artifactPlugIns
-    }
+- ps: "$artifactDir = \"Artifacts\"\n$artifactBin = \"$artifactDir\\\\Bin\\\\\"\n$artifactPlugIns = \"$artifactDir\\\\PlugIns\\\\\"\n$artifactTools = \"$artifactDir\\\\Tools\\\\\"\n$artifactEditor = \"$artifactTools\\\\Gorgon.Editor\"\n$artifactEditorPlugIns = \"$artifactEditor\\\\PlugIns\"\n\nif (Test-Path $artifactDir)\n{\n    rmdir $artifactDir -force -recurse\n}\n\nmkdir $artifactDir\nmkdir $artifactBin\nmkdir $artifactPlugIns\nmkdir $artifactTools\nmkdir $artifactEditor\nmkdir $artifactEditorPlugIns\n\n$gorgonDllsXmls = (Get-ChildItem \"Gorgon\\\\\" -include *.dll, *.xml -Recurse | where { $_.FullName -notmatch \"\\\\obj\\\\\" -and $_.FullName -notmatch \"\\\\debug\\\\\"})\n$plugInDlls = (Get-ChildItem \"PlugIns\\\\Bin\\\\\" -include *.dll -Recurse | where { $_.FullName -notmatch \"\\\\debug\\\\\"})\n$toolFiles = (Get-ChildItem \"Tools\\\\Gorgon.Editor\\\\Bin\\\\Release\\*\" -include *.dll, Gorgon.Editor.exe, Gorgon.Editor.exe.config, texconv.exe )\n$toolPlugIns = (Get-ChildItem \"Tools\\\\Gorgon.Editor\\\\Bin\\\\Release\\\\PlugIns\\*\" -include *.dll)\n\nForEach ($dll in $gorgonDllsXmls)\n{\n    Copy-Item $dll.FullName $artifactBin\n}\n\nForEach ($plugInDll in $plugInDlls)\n{\n    Copy-Item $plugInDll.FullName $artifactPlugIns\n}\n\nForEach ($toolFile in $toolFiles)\n{\n    Copy-Item $toolFile.FullName $artifactEditor\n}\n\nForeach ($toolPlugIn in $toolPlugIns)\n{\n    Copy-Item $toolPlugIn.FullName $artifactEditorPlugIns\n}\n\n# Begin Example Artifacts.\nfunction Patch-Config()\n{\n    Param ([string]$configFile)\n\n    [xml]$xmlFile = [xml](Get-Content $configFile)\n\n    $plugInPathNode = $xmlFile.SelectSingleNode(\"//setting[@name='PlugInLocation']\")\n\n    if ($plugInPathNode -ne $null)\n    {\n        $plugInPathNode.Value = $plugInPathNode.Value.Replace(\"..\\\", [string]::Empty)\n        $plugInPathNode.Value = $plugInPathNode.Value.Replace(\"Bin\\{0}\", [string]::Empty)\n        $plugInPathNode.Value = \"..\\{0}\" -f $plugInPathNode.Value\n    }\n\n    $plugInPathNode = $xmlFile.SelectSingleNode(\"//setting[@name='InputPlugInPath']\")\n\n    if ($plugInPathNode -ne $null)\n    {\n        $plugInPathNode.Value = $plugInPathNode.Value.Replace(\"..\\\", [string]::Empty)\n        $plugInPathNode.Value = $plugInPathNode.Value.Replace(\"Bin\\{0}\", [string]::Empty)\n        $plugInPathNode.Value = \"..\\{0}\" -f $plugInPathNode.Value\n    }\n\n    $resourcePathNode = $xmlFile.SelectSingleNode(\"//setting[@name='ResourceLocation']\")\n\n    if ($resourcePathNode -ne $null)\n    {\n        $resourcePathNode.Value = $resourcePathNode.Value.Replace(\"..\\\", [string]::Empty)\n        $resourcePathNode.Value = \"..\\{0}\" -f $resourcePathNode.Value\n    }\n\n    $xmlFile.Save($configFile)\n}\n\n$artifactDir = \"Artifacts_Examples\"\n$artifactBin = \"$artifactDir\\\\Bin\\\\\"\n$artifactPlugIns = \"$artifactDir\\\\PlugIns\\\\\"\n$artifactResources = \"$artifactDir\\Resources\\\"\n\n\nif (Test-Path $artifactDir)\n{\n    rmdir $artifactDir -force -Recurse\n}\n\nmkdir $artifactDir\nmkdir $artifactBin\nmkdir $artifactPlugIns\nmkdir $artifactResources\n\n$baseSrcResources = \"Resources\\\"\n$resourceList = (\n    \"Textures\\Balls\\BallsTexture.dds\",\n    \"FileSystems\\BZipFileSystem.gorPack\",\n    \"FileSystems\\FolderSystem\\<<DIRECTORY>>\",\n    \"FileSystems\\VFSRoot\\<<DIRECTORY>>\",\n    \"FileSystems\\VFSRoot.Zip\",\n    \"FileSystems\\FileSystem.Zip\"\n)\n\n$gorgonExamples = (Get-ChildItem \"Examples\\\\\" -include *.dll,*.exe, *.config -Recurse | where { $_.FullName -notmatch \"app.config\" -and $_.FullName -notmatch \".vshost.exe\" -and $_.FullName -notmatch \"\\\\DemoLauncher\\\\\" -and $_.FullName -notmatch \"\\\\Primitives\\\\\" -and $_.FullName -notmatch \"\\\\debug\\\\\" -and $_.FullName -notmatch \"\\\\obj\\\\\" -and $_.FullName -notmatch \"\\\\Fonts\\\\\"})\n$plugInDlls = (Get-ChildItem \"PlugIns\\\\Bin\\\\\" -include *.dll -Recurse | where { $_.FullName -notmatch \"\\\\debug\\\\\" -and $_.BaseName -notmatch \"sharpdx\"})\n$ballTexture\n\nForEach ($example in $gorgonExamples)\n{\n    if ($example.FullName.EndsWith(\".config\"))\n    {\n        Patch-Config -configFile $example.FullName\n    }\n\n    Copy-Item $example.FullName $artifactBin\n}\n\nForEach ($plugInDll in $plugInDlls)\n{\n    Copy-Item $plugInDll.FullName $artifactPlugIns\n}\n\nForEach ($resource in $resourceList)\n{\n    [string]$destDir = \"$artifactResources{0}\" -f (Split-Path $resource)\n\n    if (-not (Test-Path $destDir))\n    {\n        mkdir $destDir\n    }\n\n    if ($resource.EndsWith(\"<<DIRECTORY>>\"))\n    {\n        $srcDir = \"$baseSrcResources{0}\" -f (Split-Path $resource)\n        Get-ChildItem -Path $srcDir | Copy-Item -Destination $destDir -Recurse -Container         \n    } Else\n    {\n        Copy-Item $baseSrcResources$resource $destDir\n    }\n}"
 test: off
 artifacts:
 - path: Artifacts\
   name: Gorgon2.0
-deploy: off
+- path: Artifacts_Examples\
+  name: Gorgon2.0_Examples
+deploy:
+- provider: GitHub
+  tag: ${appveyor_build_version}
+  release: Gorgon 2.0
+  description: "![gorgon_2 x_logo_full_site](https://cloud.githubusercontent.com/assets/9710137/23449195/86a8701c-fe12-11e6-9079-c4a8997bd311.png)\nZip files containing the binaries for Gorgon v2.0\n\nThe _Gorgon2.0_ zip file contains the libraries for use in development environments, and the editor. This contains only the binaries.\n\nThe _Gorgon2.0_Examples_ zip file contains the binaries for the example applications included with Gorgon. It is **highly** recommended to download this if you're uncertain whether Gorgon will suit your needs or not."
+  auth_token:
+    secure: UpmzL/Lmrgy8OVxV3NfBRc2OlHH1tNAw/8U/H5sOTdqSsGeU3D8HBE7Cq1l1D+23
+  artifact: Gorgon2.0,Gorgon2.0_Examples
+  force_update: true
+  on:
+    branch: master

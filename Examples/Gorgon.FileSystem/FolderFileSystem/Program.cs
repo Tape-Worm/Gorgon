@@ -31,6 +31,7 @@ using Gorgon.Core;
 using Gorgon.Examples.Properties;
 using Gorgon.IO;
 using Gorgon.UI;
+using GorgonLibrary.Math;
 
 namespace Gorgon.Examples
 {
@@ -100,7 +101,7 @@ namespace Gorgon.Examples
 		{
             try
             {
-                Console.WindowHeight = 26;
+                Console.WindowHeight = 26.Max(Console.WindowHeight);
                 Console.BufferHeight = Console.WindowHeight;
 
                 // Create a new file system.

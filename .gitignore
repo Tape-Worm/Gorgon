@@ -22,6 +22,8 @@ Gorgon/*.txt
 Test/*
 !Test/Gorgon.Core.Test/
 !Test/Gorgon.Input.Test/
+Artifacts/
+Artifacts_Examples/
 
 # Roslyn cache directories
 *.ide/
@@ -189,4 +191,5 @@ UpgradeLog*.htm
 # Microsoft Fakes
 FakesAssemblies/
 /Deploy.ps1
-*.snk
+/Deploy_Examples.ps1
+GorgonFull.snk
