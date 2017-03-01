@@ -16,7 +16,7 @@ assembly_info:
   assembly_informational_version: '{version}'
 environment:
   gkey:
-    secure: vryCJoQOHCDH8tYcpoN8wg7hLGByI0VHQmz3qIJ+aq0=
+    secure: 24L6ZxEROBbJxD03e/uYEg==
 install:
 - ps: >-
     nuget install secure-file -ExcludeVersion
