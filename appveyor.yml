@@ -35,4 +35,13 @@ artifacts:
   name: Gorgon2.0
 - path: Artifacts_Examples\
   name: Gorgon2.0_Examples
-deploy: off
+deploy:
+- provider: GitHub
+  tag: ${appveyor_build_version}
+  release: Gorgon 2.0
+  description: Precompiled binaries
+  auth_token:
+    secure: P/If+ydICPEN/0yA+nniZYoA6WzbWjlOvLWlcp3rhMszJhzIb2bZeI0yTCVzCW0/
+  artifact: Gorgon2.0
+  on:
+    branch: master
