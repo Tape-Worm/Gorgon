@@ -70,8 +70,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "$(TargetDir)\TVImageCodec.dll" "$(ProjectDir)..\CodecPlugIn\bin\$(ConfigurationName)\"
-copy "$(TargetDir)\TVImageCodec.pdb" "$(ProjectDir)..\CodecPlugIn\bin\$(ConfigurationName)\"</PostBuildEvent>
+    <PostBuildEvent>copy "$(TargetDir)\TVImageCodec.dll" "$(ProjectDir)..\CodecPlugIn\$(OutDir)"
+copy "$(TargetDir)\TVImageCodec.pdb" "$(ProjectDir)..\CodecPlugIn\$(OutDir)"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
