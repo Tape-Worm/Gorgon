@@ -21,9 +21,9 @@ install:
 - ps: >-
     nuget install secure-file -ExcludeVersion
 
-    secure-file\tools\secure-file -decrypt Gorgon.enc -secret %gkey% -out GorgonFull.snk
+    secure-file\tools\secure-file -decrypt Gorgon.enc -secret $env:gkey -out GorgonFull.snk
 
-    Write-Output %gkey%
+    Write-Output $env:gkey
 before_build:
 - ps: .\ProjectSigner.exe GorgonFull.snk -y
 build:
