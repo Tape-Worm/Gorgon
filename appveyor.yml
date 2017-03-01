@@ -28,77 +28,11 @@ build:
   parallel: true
   verbosity: normal
 after_build:
-- ps: >-
-    $artifactDir = "Artifacts"
-
-    $artifactBin = "$artifactDir\\Bin\\"
-
-    $artifactPlugIns = "$artifactDir\\PlugIns\\"
-
-    $artifactTools = "$artifactDir\\Tools\\"
-
-    $artifactEditor = "$artifactTools\\Gorgon.Editor"
-
-    $artifactEditorPlugIns = "$artifactEditor\\PlugIns"
-
-
-    if (Test-Path $artifactDir)
-
-    {
-        rmdir $artifactDir -force -recurse
-    }
-
-
-    mkdir $artifactDir
-
-    mkdir $artifactBin
-
-    mkdir $artifactPlugIns
-
-    mkdir $artifactTools
-
-    mkdir $artifactEditor
-
-    mkdir $artifactEditorPlugIns
-
-
-    $gorgonDllsXmls = (Get-ChildItem "Gorgon\\" -include *.dll, *.xml -Recurse | where { $_.FullName -notmatch "\\obj\\" -and $_.FullName -notmatch "\\debug\\"})
-
-    $plugInDlls = (Get-ChildItem "PlugIns\\Bin\\" -include *.dll -Recurse | where { $_.FullName -notmatch "\\debug\\"})
-
-    $toolFiles = (Get-ChildItem "Tools\\Gorgon.Editor\\Bin\\Release\*" -include *.dll, Gorgon.Editor.exe, Gorgon.Editor.exe.config, texconv.exe )
-
-    $toolPlugIns = (Get-ChildItem "Tools\\Gorgon.Editor\\Bin\\Release\\PlugIns\*" -include *.dll)
-
-
-    ForEach ($dll in $gorgonDllsXmls)
-
-    {
-        Copy-Item $dll.FullName $artifactBin
-    }
-
-
-    ForEach ($plugInDll in $plugInDlls)
-
-    {
-        Copy-Item $plugInDll.FullName $artifactPlugIns
-    }
-
-
-    ForEach ($toolFile in $toolFiles)
-
-    {
-        Copy-Item $toolFile.FullName $artifactEditor
-    }
-
-
-    Foreach ($toolPlugIn in $toolPlugIns)
-
-    {
-        Copy-Item $toolPlugIn.FullName $artifactEditorPlugIns
-    }
+- ps: "$artifactDir = \"Artifacts\"\n$artifactBin = \"$artifactDir\\\\Bin\\\\\"\n$artifactPlugIns = \"$artifactDir\\\\PlugIns\\\\\"\n$artifactTools = \"$artifactDir\\\\Tools\\\\\"\n$artifactEditor = \"$artifactTools\\\\Gorgon.Editor\"\n$artifactEditorPlugIns = \"$artifactEditor\\\\PlugIns\"\n\nif (Test-Path $artifactDir)\n{\n    rmdir $artifactDir -force -recurse\n}\n\nmkdir $artifactDir\nmkdir $artifactBin\nmkdir $artifactPlugIns\nmkdir $artifactTools\nmkdir $artifactEditor\nmkdir $artifactEditorPlugIns\n\n$gorgonDllsXmls = (Get-ChildItem \"Gorgon\\\\\" -include *.dll, *.xml -Recurse | where { $_.FullName -notmatch \"\\\\obj\\\\\" -and $_.FullName -notmatch \"\\\\debug\\\\\"})\n$plugInDlls = (Get-ChildItem \"PlugIns\\\\Bin\\\\\" -include *.dll -Recurse | where { $_.FullName -notmatch \"\\\\debug\\\\\"})\n$toolFiles = (Get-ChildItem \"Tools\\\\Gorgon.Editor\\\\Bin\\\\Release\\*\" -include *.dll, Gorgon.Editor.exe, Gorgon.Editor.exe.config, texconv.exe )\n$toolPlugIns = (Get-ChildItem \"Tools\\\\Gorgon.Editor\\\\Bin\\\\Release\\\\PlugIns\\*\" -include *.dll)\n\nForEach ($dll in $gorgonDllsXmls)\n{\n    Copy-Item $dll.FullName $artifactBin\n}\n\nForEach ($plugInDll in $plugInDlls)\n{\n    Copy-Item $plugInDll.FullName $artifactPlugIns\n}\n\nForEach ($toolFile in $toolFiles)\n{\n    Copy-Item $toolFile.FullName $artifactEditor\n}\n\nForeach ($toolPlugIn in $toolPlugIns)\n{\n    Copy-Item $toolPlugIn.FullName $artifactEditorPlugIns\n}\n\n# Begin Example Artifacts.\nfunction Patch-Config()\n{\n    Param ([string]$configFile)\n\n    [xml]$xmlFile = [xml](Get-Content $configFile)\n\n    $plugInPathNode = $xmlFile.SelectSingleNode(\"//setting[@name='PlugInLocation']\")\n\n    if ($plugInPathNode -ne $null)\n    {\n        $plugInPathNode.Value = $plugInPathNode.Value.Replace(\"..\\\", [string]::Empty)\n        $plugInPathNode.Value = $plugInPathNode.Value.Replace(\"Bin\\{0}\", [string]::Empty)\n        $plugInPathNode.Value = \"..\\{0}\" -f $plugInPathNode.Value\n    }\n\n    $plugInPathNode = $xmlFile.SelectSingleNode(\"//setting[@name='InputPlugInPath']\")\n\n    if ($plugInPathNode -ne $null)\n    {\n        $plugInPathNode.Value = $plugInPathNode.Value.Replace(\"..\\\", [string]::Empty)\n        $plugInPathNode.Value = $plugInPathNode.Value.Replace(\"Bin\\{0}\", [string]::Empty)\n        $plugInPathNode.Value = \"..\\{0}\" -f $plugInPathNode.Value\n    }\n\n    $resourcePathNode = $xmlFile.SelectSingleNode(\"//setting[@name='ResourceLocation']\")\n\n    if ($resourcePathNode -ne $null)\n    {\n        $resourcePathNode.Value = $resourcePathNode.Value.Replace(\"..\\\", [string]::Empty)\n        $resourcePathNode.Value = \"..\\{0}\" -f $resourcePathNode.Value\n    }\n\n    $xmlFile.Save($configFile)\n}\n\n$artifactDir = \"Artifacts_Examples\"\n$artifactBin = \"$artifactDir\\\\Bin\\\\\"\n$artifactPlugIns = \"$artifactDir\\\\PlugIns\\\\\"\n$artifactResources = \"$artifactDir\\Resources\\\"\n\n\nif (Test-Path $artifactDir)\n{\n    rmdir $artifactDir -force -Recurse\n}\n\nmkdir $artifactDir\nmkdir $artifactBin\nmkdir $artifactPlugIns\nmkdir $artifactResources\n\n$baseSrcResources = \"Resources\\\"\n$resourceList = (\n    \"Textures\\Balls\\BallsTexture.dds\",\n    \"FileSystems\\BZipFileSystem.gorPack\",\n    \"FileSystems\\FolderSystem\\<<DIRECTORY>>\",\n    \"FileSystems\\VFSRoot\\<<DIRECTORY>>\",\n    \"FileSystems\\VFSRoot.Zip\",\n    \"FileSystems\\FileSystem.Zip\"\n)\n\n$gorgonExamples = (Get-ChildItem \"Examples\\\\\" -include *.dll,*.exe, *.config -Recurse | where { $_.FullName -notmatch \"app.config\" -and $_.FullName -notmatch \".vshost.exe\" -and $_.FullName -notmatch \"\\\\DemoLauncher\\\\\" -and $_.FullName -notmatch \"\\\\Primitives\\\\\" -and $_.FullName -notmatch \"\\\\debug\\\\\" -and $_.FullName -notmatch \"\\\\obj\\\\\" -and $_.FullName -notmatch \"\\\\Fonts\\\\\"})\n$plugInDlls = (Get-ChildItem \"PlugIns\\\\Bin\\\\\" -include *.dll -Recurse | where { $_.FullName -notmatch \"\\\\debug\\\\\" -and $_.BaseName -notmatch \"sharpdx\"})\n$ballTexture\n\nForEach ($example in $gorgonExamples)\n{\n    if ($example.FullName.EndsWith(\".config\"))\n    {\n        Patch-Config -configFile $example.FullName\n    }\n\n    Copy-Item $example.FullName $artifactBin\n}\n\nForEach ($plugInDll in $plugInDlls)\n{\n    Copy-Item $plugInDll.FullName $artifactPlugIns\n}\n\nForEach ($resource in $resourceList)\n{\n    [string]$destDir = \"$artifactResources{0}\" -f (Split-Path $resource)\n\n    if (-not (Test-Path $destDir))\n    {\n        mkdir $destDir\n    }\n\n    if ($resource.EndsWith(\"<<DIRECTORY>>\"))\n    {\n        $srcDir = \"$baseSrcResources{0}\" -f (Split-Path $resource)\n        Get-ChildItem -Path $srcDir | Copy-Item -Destination $destDir -Recurse -Container         \n    } Else\n    {\n        Copy-Item $baseSrcResources$resource $destDir\n    }\n}"
 test: off
 artifacts:
 - path: Artifacts\
   name: Gorgon2.0
+- path: Artifacts_Examples\
+  name: Gorgon2.0_Examples
 deploy: off

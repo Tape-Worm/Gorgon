@@ -19,6 +19,7 @@ Docs/Help/
 Gorgon/Broken/
 Test/
 Artifacts/
+Artifacts_Examples/
 
 # Roslyn cache directories
 *.ide/
@@ -184,4 +185,5 @@ UpgradeLog*.htm
 # Microsoft Fakes
 FakesAssemblies/
 /Deploy.ps1
+/Deploy_Examples.ps1
 GorgonFull.snk
