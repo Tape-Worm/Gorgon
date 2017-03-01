@@ -3,11 +3,11 @@ Requirements:
 Please note that you will need the following in order to compile Gorgon, its tools and the examples:
 1. Visual Studio 2012 (http://www.visualstudio.com/en-us/downloads/download-visual-studio-vs#DownloadFamilies_2)
 2. DirectX SDK June 2010 (http://www.microsoft.com/en-us/download/details.aspx?id=6812)
-   	-or-
+   	   -or-
    The windows SDK (comes with the latest DirectX SDK, installed with Visual Studio 2012 or better).
    
 The DirectX redistributable (http://www.microsoft.com/en-us/download/details.aspx?id=35) may be used for 
-development if the debug libraries for Gorgon are not required (not recommended).
+development if the debug libraries for Gorgon are not required (this is not recommended).
 
 .NET 4.5 and Direct3D 11 are required to run all samples, tools and anything produced with Gorgon.
 
