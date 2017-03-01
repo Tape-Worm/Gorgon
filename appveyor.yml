@@ -39,7 +39,7 @@ deploy:
 - provider: GitHub
   tag: ${appveyor_build_version}
   release: Gorgon 2.0
-  description: Precompiled binaries
+  description: '![gorgon_2 x_logo_full_site](https://cloud.githubusercontent.com/assets/9710137/23449195/86a8701c-fe12-11e6-9079-c4a8997bd311.png) Zip files containing the binaries for Gorgon v2.0  The _Gorgon2.0_ zip file contains the libraries for use in development environments, and the editor. This contains only the binaries.  The _Gorgon2.0_Examples_ zip file contains the binaries for the example applications included with Gorgon.  It is **highly** recommended to download this if you''re uncertain whether Gorgon will suit your needs or not.'
   auth_token:
     secure: UpmzL/Lmrgy8OVxV3NfBRc2OlHH1tNAw/8U/H5sOTdqSsGeU3D8HBE7Cq1l1D+23
   artifact: Gorgon2.0
@@ -49,7 +49,7 @@ deploy:
 - provider: GitHub
   tag: ${appveyor_build_version}
   release: Gorgon 2.0
-  description: Precompiled binaries
+  description: '![gorgon_2 x_logo_full_site](https://cloud.githubusercontent.com/assets/9710137/23449195/86a8701c-fe12-11e6-9079-c4a8997bd311.png) Zip files containing the binaries for Gorgon v2.0  The _Gorgon2.0_ zip file contains the libraries for use in development environments, and the editor. This contains only the binaries.  The _Gorgon2.0_Examples_ zip file contains the binaries for the example applications included with Gorgon.  It is **highly** recommended to download this if you''re uncertain whether Gorgon will suit your needs or not.'
   auth_token:
     secure: UpmzL/Lmrgy8OVxV3NfBRc2OlHH1tNAw/8U/H5sOTdqSsGeU3D8HBE7Cq1l1D+23
   artifact: Gorgon2.0_Examples
