@@ -31,7 +31,7 @@ using Gorgon.Core;
 using Gorgon.Examples.Properties;
 using Gorgon.IO;
 using Gorgon.UI;
-using GorgonLibrary.Math;
+using Gorgon.Math;
 
 namespace Gorgon.Examples
 {

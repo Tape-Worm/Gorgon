@@ -26,7 +26,6 @@
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Native;
-using SharpDX.Direct3D;
 using DX = SharpDX;
 using D3D11 = SharpDX.Direct3D11;
 
@@ -46,41 +45,21 @@ namespace Gorgon.Graphics.Example
 		{
 			get;
 			private set;
-		}		
-		#endregion
-
-		#region Methods.
-		/// <summary>
-		/// Function to draw the model.
-		/// </summary>
-		/// <param name="viewPort">The viewport to draw into.</param>
-		/// <param name="state">The pipeline state to apply when drawing.</param>
-		public override void Draw(DX.ViewportF[] viewPort, GorgonPipelineState state)
-		{
-			// If our transforms have updated, then calculate the new world matrix.
-			UpdateTransform();
-
-			DrawCall.Resources.IndexBuffer = IndexBuffer;
-			DrawCall.Resources.VertexBuffers = VertexBufferBindings;
-
-			DrawCall.Viewports = viewPort;
-			DrawCall.State = state;
-
-			Program.Graphics.Submit(DrawCall);
 		}
 		#endregion
 
 		#region Constructor/Destructor.
-	    /// <summary>
-	    /// Initializes a new instance of the <see cref="Sphere" /> class.
-	    /// </summary>
-	    /// <param name="inputLayout">The input layout for the vertices in this mesh.</param>
-	    /// <param name="radius">Radius of the sphere</param>
-	    /// <param name="textureOffset">Offset of the texture.</param>
-	    /// <param name="textureScale">Scale of the texture.</param>
-	    /// <param name="ringCount">Number of rings in the sphere.</param>
-	    /// <param name="segmentCount">Number of segments in the sphere.</param>
-	    public Sphere(GorgonInputLayout inputLayout, float radius, DX.Vector2 textureOffset, DX.Size2F textureScale, int ringCount = 8, int segmentCount = 16)
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Sphere" /> class.
+		/// </summary>
+		/// <param name="graphics">The graphics interface used to create the buffers for this object.</param>
+		/// <param name="inputLayout">The input layout for the vertices in this mesh.</param>
+		/// <param name="radius">Radius of the sphere</param>
+		/// <param name="textureOffset">Offset of the texture.</param>
+		/// <param name="textureScale">Scale of the texture.</param>
+		/// <param name="ringCount">Number of rings in the sphere.</param>
+		/// <param name="segmentCount">Number of segments in the sphere.</param>
+		public Sphere(GorgonGraphics graphics, GorgonInputLayout inputLayout, float radius, DX.Vector2 textureOffset, DX.Size2F textureScale, int ringCount = 8, int segmentCount = 16)
 			: base(inputLayout)
 		{
 	        int index = 0;						// Current index.
@@ -141,31 +120,27 @@ namespace Gorgon.Graphics.Example
 				}
 			}
 
-			// Create our buffers.
+			// Copy the above vertex/index data into a vertex and index buffer so we can render our sphere.
 			using (var indexPtr = new GorgonPointerPinned<int>(Indices))
 			using (var vertexPtr = new GorgonPointerPinned<BoingerVertex>(Vertices))
 			{
-				VertexBuffer = new GorgonVertexBuffer("Sphere Vertex Buffer",
-				                                      Program.Graphics,
-				                                      new GorgonVertexBufferInfo
-				                                      {
-					                                      Usage = D3D11.ResourceUsage.Immutable,
-					                                      SizeInBytes = Vertices.Length * BoingerVertex.Size
-				                                      }, vertexPtr);
+				VertexBufferBindings[0] = new GorgonVertexBufferBinding(new GorgonVertexBuffer("Sphere Vertex Buffer",
+				                                                                               graphics,
+				                                                                               new GorgonVertexBufferInfo
+				                                                                               {
+					                                                                               Usage = D3D11.ResourceUsage.Immutable,
+					                                                                               SizeInBytes = Vertices.Length * BoingerVertex.Size
+				                                                                               },
+				                                                                               vertexPtr),
+				                                                        BoingerVertex.Size);
 
-				IndexBuffer = new GorgonIndexBuffer("Sphere Index Buffer", Program.Graphics, new GorgonIndexBufferInfo
+				IndexBuffer = new GorgonIndexBuffer("Sphere Index Buffer", graphics, new GorgonIndexBufferInfo
 				                                                                             {
 					                                                                             Usage = D3D11.ResourceUsage.Immutable,
 																								 IndexCount = Indices.Length,
 																								 Use16BitIndices = false
 				                                                                             }, indexPtr);
 			}
-
-			DrawCall.IndexStart = 0;
-			DrawCall.IndexCount = Indices.Length;
-			DrawCall.PrimitiveTopology = PrimitiveTopology.TriangleList;
-
-			VertexBufferBindings[0] = new GorgonVertexBufferBinding(VertexBuffer, BoingerVertex.Size);
 		}
 		#endregion
 	}

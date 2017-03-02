@@ -49,35 +49,15 @@ namespace Gorgon.Graphics.Example
 		}		
 		#endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to draw the model.
-		/// </summary>
-		/// <param name="viewPort">The viewport to draw into.</param>
-		/// <param name="state">The pipeline state to apply when drawing.</param>
-		public override void Draw(DX.ViewportF[] viewPort, GorgonPipelineState state)
-		{
-			// If our transforms have updated, then calculate the new world matrix.
-			UpdateTransform();
-
-			DrawCall.Resources.IndexBuffer = IndexBuffer;
-			DrawCall.Resources.VertexBuffers = VertexBufferBindings;
-
-			DrawCall.Viewports = viewPort;
-			DrawCall.State = state;
-
-			Program.Graphics.Submit(DrawCall);
-		}
-		#endregion
-
 		#region Constructor/Destructor.
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Plane" /> class.
 		/// </summary>
+		/// <param name="graphics">The graphics interface used to create the buffers for this object.</param>
 		/// <param name="inputLayout">The input layout for the vertices in this mesh.</param>
 		/// <param name="size">The width and height of the plane.</param>
 		/// <param name="textureCoordinates">Texture coordinates.</param>
-		public Plane(GorgonInputLayout inputLayout, DX.Vector2 size, DX.RectangleF textureCoordinates)
+		public Plane(GorgonGraphics graphics, GorgonInputLayout inputLayout, DX.Vector2 size, DX.RectangleF textureCoordinates)
 			: base(inputLayout)
 		{
 			Size = size;
@@ -102,33 +82,29 @@ namespace Gorgon.Graphics.Example
 				          3
 			          };
 
+			// Copy the above vertex/index data into a vertex and index buffer so we can render our plane.
 			using (var vertexPtr = new GorgonPointerPinned<BoingerVertex>(Vertices))
-				using (var indexPtr = new GorgonPointerPinned<int>(Indices))
-				{
-					VertexBuffer = new GorgonVertexBuffer("Plane Vertex Buffer",
-					                                      Program.Graphics,
-					                                      new GorgonVertexBufferInfo
-					                                      {
-						                                      Usage = D3D11.ResourceUsage.Immutable,
-						                                      SizeInBytes = Vertices.Length * BoingerVertex.Size
-					                                      },
-					                                      vertexPtr);
-					IndexBuffer = new GorgonIndexBuffer("Plane Index Buffer",
-					                                    Program.Graphics,
-					                                    new GorgonIndexBufferInfo
-					                                    {
-						                                    Usage = D3D11.ResourceUsage.Immutable,
-						                                    IndexCount = Indices.Length,
-						                                    Use16BitIndices = false
-					                                    },
-					                                    indexPtr);
-				}
-
-			DrawCall.IndexStart = 0;
-			DrawCall.IndexCount = Indices.Length;
-			DrawCall.PrimitiveTopology = D3D.PrimitiveTopology.TriangleList;
-
-			VertexBufferBindings[0] = new GorgonVertexBufferBinding(VertexBuffer, BoingerVertex.Size);
+			using (var indexPtr = new GorgonPointerPinned<int>(Indices))
+			{
+				VertexBufferBindings[0] = new GorgonVertexBufferBinding(new GorgonVertexBuffer("Plane Vertex Buffer",
+					                                                                            graphics,
+					                                                                            new GorgonVertexBufferInfo
+					                                                                            {
+						                                                                            Usage = D3D11.ResourceUsage.Immutable,
+						                                                                            SizeInBytes = Vertices.Length * BoingerVertex.Size
+					                                                                            },
+					                                                                            vertexPtr),
+					                                                    BoingerVertex.Size);
+				IndexBuffer = new GorgonIndexBuffer("Plane Index Buffer",
+					                                graphics,
+					                                new GorgonIndexBufferInfo
+					                                {
+						                                Usage = D3D11.ResourceUsage.Immutable,
+						                                IndexCount = Indices.Length,
+						                                Use16BitIndices = false
+					                                },
+					                                indexPtr);
+			}
 		}
 		#endregion
 	}
