@@ -1,7 +1,7 @@
-﻿#region MIT.
+﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2013 Michael Winsor
+// Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Thursday, August 8, 2013 10:46:12 PM
+// Created: March 2, 2017 12:18:50 AM
 // 
 #endregion
 
@@ -28,8 +28,14 @@ using System.Windows.Forms;
 
 namespace Gorgon.Graphics.Example
 {
+	/// <summary>
+	/// Main application form.
+	/// </summary>
 	public partial class formMain : Form
 	{
+		/// <summary>
+		/// Initializes a new instance of the <see cref="formMain"/> class.
+		/// </summary>
 		public formMain()
 		{
 			InitializeComponent();

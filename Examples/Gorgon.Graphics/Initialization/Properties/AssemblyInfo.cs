@@ -27,42 +27,17 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
 
+//
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
+//
 #if DEBUG
-[assembly: AssemblyTitle("Initialization [DEBUG VERSION]")]
-[assembly: AssemblyDescription("A basic example showing how to initialize the graphics API. [DEBUG VERSION]")]
-[assembly: AssemblyConfiguration("DEBUG")]
-[assembly: AssemblyProduct("Gorgon [DEBUG VERSON]")]
+[assembly: AssemblyTitle("Initialization [DEBUG]")]
 #else
 [assembly: AssemblyTitle("Initialization")]
-[assembly: AssemblyDescription("A basic example showing how to initialize the graphics API.")]
-[assembly: AssemblyConfiguration("RELEASE")]
-[assembly: AssemblyProduct("Gorgon")]
 #endif
-[assembly: AssemblyCompany("Michael Winsor")]
-[assembly: AssemblyCopyright("Copyright © Michael Winsor 2012")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-
-// Setting ComVisible to false makes the types in this assembly not visible 
-// to COM components.  If you need to access a type in this assembly from 
-// COM, set the ComVisible attribute to true on that type.
-[assembly: ComVisible(false)]
+[assembly: AssemblyDescription("A basic example showing how to initialize the Gorgon.Graphics.Core API.")]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("94b2a18d-25ab-4973-9526-99aa53d17bf6")]
-
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Build and Revision Numbers 
-// by using the '*' as shown below:
-// [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2.0.*")]
-[assembly: AssemblyFileVersion("2.0.0.0")]
