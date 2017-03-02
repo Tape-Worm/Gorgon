@@ -672,6 +672,13 @@ namespace Gorgon.Graphics.Core
 				// Switch to the format we want so that ResizeBackBuffers will work correctly.
 				_info.Format = desiredMode.Format;
 
+				// Bring the control up before attempting to switch to full screen.
+				// Otherwise things get real weird, real fast.
+				if (!Window.Visible)
+				{
+					Window.Show();
+				}
+
 				// Before every call to ResizeTarget, we must indicate that we want to handle the resize event on the control.
 				// Failure to do so will bring up warnings in the debug log output about presentation inefficiencies.
 				_screenStateTransition = true;

@@ -59,16 +59,9 @@ namespace Gorgon.Graphics.Example
 		private bool _isRotationChanged;
 		// The texture for the model.
 		private GorgonTexture _texture;
-		// The texture sampler for the model.
-		private GorgonSamplerState _textureSampler;
 		#endregion
 
 		#region Properties.
-		/// <summary>
-		/// Property to return the world matrix.
-		/// </summary>
-		protected DX.Matrix WorldMatrix => _worldMatrix;
-
 		/// <summary>
 		/// Property to return the input layout of the vertices for the mesh stored within this model.
 		/// </summary>
@@ -96,69 +89,34 @@ namespace Gorgon.Graphics.Example
 		}
 
 		/// <summary>
-		/// Property to set or return the vertex buffer for this object.
+		/// Property to return the index buffer for this object.
 		/// </summary>
-		protected GorgonVertexBuffer VertexBuffer
+		public GorgonIndexBuffer IndexBuffer
 		{
 			get;
-			set;
+			protected set;
 		}
-
-		/// <summary>
-		/// Property to set or return the index buffer for this object.
-		/// </summary>
-		protected GorgonIndexBuffer IndexBuffer
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to return the draw call for this model.
-		/// </summary>
-		protected GorgonDrawIndexedCall DrawCall
-		{
-			get;
-		} = new GorgonDrawIndexedCall();
 
 		/// <summary>
 		/// Property to return the vertex buffer bindings for this model.
 		/// </summary>
-		protected GorgonVertexBufferBindings VertexBufferBindings
+		public GorgonVertexBufferBindings VertexBufferBindings
 		{
 			get;
 		}
 
 		/// <summary>
-		/// Property to set or return the texture assigned to the model.
+		/// Property to return the world matrix.
 		/// </summary>
-		public GorgonTexture Texture
+		public DX.Matrix WorldMatrix => _worldMatrix;
+
+		/// <summary>
+		/// Property to set or return the material used on the model.
+		/// </summary>
+		public Material Material
 		{
-			get
-			{
-				return _texture;
-			}
-			set
-			{
-				if (_texture == value)
-				{
-					return;
-				}
-
-				_texture = value;
-
-				if (_texture != null)
-				{
-					DrawCall.Resources.PixelShaderResources = new GorgonShaderResourceViews(new[]
-					                                                                        {
-						                                                                        _texture.DefaultShaderResourceView
-					                                                                        });
-				}
-				else
-				{
-					DrawCall.Resources.PixelShaderResources = null;
-				}
-			}
+			get;
+			set;
 		}
 
 		/// <summary>
@@ -229,48 +187,51 @@ namespace Gorgon.Graphics.Example
 		/// <summary>
 		/// Function to update the transformation matrix of the plane.
 		/// </summary>
-		protected void UpdateTransform()
+		private void UpdateTransform()
 		{
 			// Don't recalculate unless we have changes.
-			if ((_isPositionChanged) || (_isScaleChanged) || (_isRotationChanged))
+			if ((!_isPositionChanged) && (!_isScaleChanged) && (!_isRotationChanged))
 			{
-				if (_isPositionChanged)
-				{
-					_positionMatrix.TranslationVector = Position;
-				}
-
-				if (_isScaleChanged)
-				{
-					_scaleMatrix.ScaleVector = Scale;
-				}
-
-			    if (_isRotationChanged)
-				{
-                    DX.Quaternion quatRotation;		// Quaternion for rotation.
-
-				    // Convert degrees to radians.
-					var rotRads = new DX.Vector3(_rotation.X.ToRadians(), _rotation.Y.ToRadians(), _rotation.Z.ToRadians());
-				    
-				    DX.Quaternion.RotationYawPitchRoll(rotRads.Y, rotRads.X, rotRads.Z, out quatRotation);
-					DX.Matrix.RotationQuaternion(ref quatRotation, out _rotationMatrix);
-				}
-
-				DX.Matrix temp;
-
-				// Build our world matrix.
-				DX.Matrix.Multiply(ref _scaleMatrix, ref _rotationMatrix, out temp);
-				DX.Matrix.Multiply(ref temp, ref _positionMatrix, out _worldMatrix);
+				return;
 			}
 
-			Program.UpdateWVP(ref _worldMatrix);
-		}		
+			if (_isPositionChanged)
+			{
+				_positionMatrix.TranslationVector = Position;
+			}
+
+			if (_isScaleChanged)
+			{
+				_scaleMatrix.ScaleVector = Scale;
+			}
+
+			if (_isRotationChanged)
+			{
+				DX.Quaternion quatRotation;		// Quaternion for rotation.
+
+				// Convert degrees to radians.
+				var rotRads = new DX.Vector3(_rotation.X.ToRadians(), _rotation.Y.ToRadians(), _rotation.Z.ToRadians());
+				    
+				DX.Quaternion.RotationYawPitchRoll(rotRads.Y, rotRads.X, rotRads.Z, out quatRotation);
+				DX.Matrix.RotationQuaternion(ref quatRotation, out _rotationMatrix);
+			}
+
+			DX.Matrix temp;
+
+			// Build our world matrix.
+			DX.Matrix.Multiply(ref _scaleMatrix, ref _rotationMatrix, out temp);
+			DX.Matrix.Multiply(ref temp, ref _positionMatrix, out _worldMatrix);
+		}
 
 		/// <summary>
-		/// Function to draw the model.
+		/// Property to return the world matrix for this model.
 		/// </summary>
-		/// <param name="viewPort">The viewport to draw into.</param>
-		/// <param name="state">The pipeline state to apply when drawing.</param>
-		public abstract void Draw(DX.ViewportF[] viewPort, GorgonPipelineState state);
+		/// <param name="worldMatrix">The world matrix from the model.</param>
+		public void GetWorldMatrix(out DX.Matrix worldMatrix)
+		{
+			UpdateTransform();
+			worldMatrix = _worldMatrix;
+		}
 
 		/// <summary>
 		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -278,7 +239,10 @@ namespace Gorgon.Graphics.Example
 		/// <exception cref="System.NotImplementedException"></exception>
 		public void Dispose()
 		{
-			VertexBuffer?.Dispose();
+			foreach(GorgonVertexBufferBinding binding in VertexBufferBindings)
+			{
+				binding.VertexBuffer?.Dispose();
+			}
 			IndexBuffer?.Dispose();
 		}
 		#endregion

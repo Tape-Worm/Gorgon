@@ -365,6 +365,7 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="enumerateWARPDevice">[Optional] <b>true</b> to enumerate the WARP software device, or <b>false</b> to exclude it.</param>
 		/// <param name="enumerateRefRasterizer">[Optional] <b>true</b> to enumerate the reference rasterizer device, or <b>false</b> to exclude it.</param>
+		/// <exception cref="GorgonException">Thrown if no suitable video device could be found in the computer.</exception>
 		/// <remarks>
 		/// <para>
 		/// Use this method to populate this list with information about the video devices installed in the system.
@@ -374,6 +375,9 @@ namespace Gorgon.Graphics.Core
 		/// </para>
 		/// <para>
 		/// If Gorgon is <i>not</i> compiled in DEBUG mode, then the <paramref name="enumerateRefRasterizer"/> parameter is ignored as it only applies to debugging scenarios.
+		/// </para>
+		/// <para>
+		/// Gorgon requires a video device that is capable of supporting Direct 3D 10 at minimum. If no suitable devices are found installed in the computer, then an exception will be thrown.
 		/// </para>
 		/// <para>
 		/// <note type="caution">

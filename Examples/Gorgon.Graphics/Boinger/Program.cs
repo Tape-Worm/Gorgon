@@ -25,17 +25,14 @@
 #endregion
 
 using System;
-using System.Drawing.Imaging;
-using System.IO;
-using System.Linq;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Example.Properties;
 using Gorgon.Graphics.Imaging;
-using Gorgon.Graphics.Imaging.Codecs;
-using Gorgon.IO;
+using Gorgon.Graphics.Imaging.GdiPlus;
 using Gorgon.Math;
 using Gorgon.Native;
 using Gorgon.Timing;
@@ -88,7 +85,7 @@ namespace Gorgon.Graphics.Example
 	/// to deal with poor error support and other "gotchas" that tend to pop up.  It also has some time saving functionality to
 	/// deal with mundane tasks like setting up a swap chain, pixel shaders, etc...
 	/// 
-	/// This example is a recreation of the Amiga "Boing" demo (http://www.youtube.com/watch?v=-ga41edXw3A).
+	/// This example is a recreation of the Amiga "Boing" demo (https://www.youtube.com/watch?v=8EpOq5H8wUI).
 	/// 
 	/// 
 	/// Before I go any further: This example is NOT a good example of how to write a 3D application.  
@@ -98,8 +95,9 @@ namespace Gorgon.Graphics.Example
 	/// 
 	/// Anyway, on with the show....
 	/// 
-	/// In this example we create a swap chain, and set up the application for 3D rendering andbuild 2 types of objects:  
-	/// A plane (2 of them, 1 for the floor and another for the rear wall), and a sphere.  
+	/// In this example we create a swap chain, and set up the application for 3D rendering and build 2 types of objects:  
+	/// * 2 planes (1 for the floor and another for the rear wall)
+	/// * A sphere.  
 	/// 
 	/// Once the initialization is done, we render the objects.  We transform the sphere using a world matrix for its rotation,
 	/// translation and scaling.  Note that there's a shadow under the sphere, this is just the same sphere drawn again without
@@ -110,25 +108,29 @@ namespace Gorgon.Graphics.Example
 	/// 1. Draw the text manually myself.  And, there was no way in hell I was doing that.
 	/// 2. Use the 2D renderer.
 	/// 
+	/// // TODO: This is not accurate anymore.
 	/// You'll note that in the render loop, before we render the text, we call _2D.Begin2D().  This takes  a copy of the current 
 	/// state and then overwrites that state with the 2D stuff and then we render the text.  Finally, we call _2D.End2D() and that 
 	/// restores the previous state (the states are stored in a stack in a LIFO order) so the 3D renderer doesn't get all messed up.
 	/// When mixing the renderers like this, it's crucial to ensure that state doesn't get clobbered or else things won't show up 
 	/// properly.
 	/// 
-	/// This example is considered advanced, and a firm understanding of a graphics API like Direct 3D 11 is recommended.
+	/// This example is considered advanced, and a firm understanding of a graphics API like Direct 3D 11.1 is recommended.
 	/// It's also very "low level", in that there's not a whole lot that's done for you by the API.  It's a very manual process to 
 	/// get everything initialized and thus there's a lot of set up code.  This is unlike the 2D renderer, which takes very little
 	/// effort to get up and running (technically, you barely have to touch the base graphics library to get the 2D renderer doing
 	/// something useful).
 	/// </summary>
+	[SuppressMessage("ReSharper", "LocalizableElement")]
 	static class Program
 	{
 		#region Variables.
 		// Format for our depth/stencil buffer.
-		private static DXGI.Format _depthFormat = DXGI.Format.D24_UNorm_S8_UInt;
+		private static DXGI.Format _depthFormat;
 		// Main application form.
 		private static formMain _mainForm;
+		// The graphics interface for the application.
+		private static GorgonGraphics _graphics;
 		// Our primary swap chain.
 		private static GorgonSwapChain _swap;
 		// Our primary vertex shader.
@@ -144,8 +146,9 @@ namespace Gorgon.Graphics.Example
 		// Our depth/stencil texture.
 		private static GorgonTexture _depthStencilTexture;
 		// Our world/view/project matrix buffer.
-		private static GorgonConstantBuffer _wvpBuffer;			    
-		//private static Gorgon2D _2D;								// 2D interface.
+		private static GorgonConstantBuffer _wvpBuffer;
+		// TODO: 2D interface. 
+		//private static Gorgon2D _2D;								
 		// Our view matrix.
 		private static DX.Matrix _viewMatrix = DX.Matrix.Identity;
 		// Our projection matrix.
@@ -168,25 +171,14 @@ namespace Gorgon.Graphics.Example
 		private static DXGI.ModeDescription1 _selectedVideoMode;
 		// The current output.
 		private static IGorgonVideoOutputInfo _output;
-		// The current viewport.
-		private static DX.ViewportF[] _viewPort;
 		// The texture sampler state to use.
 		private static GorgonSamplerState _samplerState;
 		// The default pipeline state.		
 		private static GorgonPipelineState _pipelineState;
 		// The default shadow state.
 		private static GorgonPipelineState _shadowState;
-		#endregion
-
-		#region Properties.
-		/// <summary>
-		/// Property to return the graphics interface for the application.
-		/// </summary>
-		public static GorgonGraphics Graphics
-		{
-			get;
-			private set;
-		}
+		// The draw call used to send our data to the GPU.
+		private static GorgonDrawIndexedCall _drawCall;
 		#endregion
 
 		#region Methods.
@@ -250,9 +242,41 @@ namespace Gorgon.Graphics.Example
 			_sphere.Rotation = new DX.Vector3(0, _rotate, -12.0f);
 			_sphere.Position = position;
 
-			_rotate += 90.0f * GorgonTiming.Delta * _rotateSpeed.Sin();
+			_rotate += 90.0f * GorgonTiming.Delta * (_rotateSpeed.Sin() * 1.5f);
 			_rotateSpeed += GorgonTiming.Delta / 1.25f;
 		}
+
+		/// <summary>
+		/// Function to send model data to the GPU for rendering.
+		/// </summary>
+		/// <param name="model">The model containing the data to render.</param>
+		/// <param name="currentState">The pipeline state to apply.</param>
+		private static void RenderModel(Model model, GorgonPipelineState currentState)
+		{
+			DX.Matrix worldMatrix;
+
+			// Send the transform for the model to the GPU so we can update its position and rotation.
+			// We're using an "out" and "ref" here because a matrix is a large struct, which loses its performance after 16 bytes.
+			// By making a reference to the struct, we can keep the performance high.
+			model.GetWorldMatrix(out worldMatrix);
+			UpdateWVP(ref worldMatrix);
+
+			// Set up the draw call to render this models Index and Vertex buffers along with the current pipeline state.
+			_drawCall.IndexStart = 0;
+			_drawCall.IndexCount = model.IndexBuffer.Info.IndexCount;
+			_drawCall.Resources.IndexBuffer = model.IndexBuffer;
+			_drawCall.Resources.VertexBuffers = model.VertexBufferBindings;
+			_drawCall.Resources.PixelShaderResources = model.Material.Texture;
+			_drawCall.Resources.PixelShaderSamplers = model.Material.TextureSampler;
+			_drawCall.State = currentState;
+
+			// Finally, send the draw call to the GPU.
+			_graphics.Submit(_drawCall);
+		}
+
+		// TODO: This is temporary until we get 2D rendering in place.
+		// TODO: Its purpose right now is to ensure that updating the window caption doesn't hurt our framerate (which it really does unless we limit it).
+		private static IGorgonTimer _tempTimer = new GorgonTimerMultimedia();
 
 		/// <summary>
 		/// Function to handle idle time for the application.
@@ -263,51 +287,53 @@ namespace Gorgon.Graphics.Example
 			// Animate the ball.
 			UpdateBall();
 
-			// Clear to our gray color.
+			// Clear to our gray color and clear out the depth buffer.
 			_swap.RenderTargetView.Clear(Color.FromArgb(173, 173, 173));
 			_depthStencilTexture.DefaultDepthStencilView.Clear(1.0f, 0);
 
+			// Render the back and floor planes.
+			// ReSharper disable once ForCanBeConvertedToForeach
 			for (int i = 0; i < _planes.Length; ++i)
 			{
-				_planes[i].Draw(_viewPort, _pipelineState);
+				RenderModel(_planes[i], _pipelineState);
 			}
 
-			_sphere.Draw(_viewPort, _pipelineState);
-
-			DX.Vector3 spherePosition = _sphere.Position;
-			_sphere.Position = new DX.Vector3(spherePosition.X + 0.25f, spherePosition.Y - 0.125f, spherePosition.Z);
-
-			_sphere.Draw(_viewPort, _shadowState);
+			// Render the ball.
+			RenderModel(_sphere, _pipelineState);
 			
+			// Remember the position and rotation so we can restore them later.
+			DX.Vector3 spherePosition = _sphere.Position;
+			DX.Vector3 sphereRotation = _sphere.Rotation;
+
+			// Offset the position of the ball so we can fake a shadow under the ball.
+			_sphere.Position = new DX.Vector3(spherePosition.X + 0.25f, spherePosition.Y - 0.125f, spherePosition.Z + 0.5f);
+			// Scale on the z-axis so the ball "shadow" has no real depth, and on the x & y to make it look slightly bigger.
+			_sphere.Scale = new DX.Vector3(1.155f, 1.155f, 0.001f);
+			// Reset the rotation so we don't rotate our flattend ball "shadow" (it'd look real weird if it rotated).
+			_sphere.Rotation = DX.Vector3.Zero;
+
+			// Render the shadow.
+			RenderModel(_sphere, _shadowState);
+			
+			// Restore our original positioning so we can render the ball in the correct place on the next frame.
 			_sphere.Position = spherePosition;
+			// Reset scale on the z-axis so the ball so it'll be normal for the next frame.
+			_sphere.Scale = DX.Vector3.One;
+			// Reset the rotation so it'll be in the correct place on the next frame.
+			_sphere.Rotation = sphereRotation;
 
-			_mainForm.Text = $"FPS: {GorgonTiming.FPS:0.00}";
-
-			/*
-			// Draw our planes.
-			foreach (var plane in _planes)
+			// TODO: This is temporary until we get 2D rendering in place.
+			// TODO: This updates the caption of the window with the FPS every second.  We have to limit the rate of updates because it really hits our FPS hard.
+			if (_tempTimer.Milliseconds > 999)
 			{
-				plane.Draw();
+				_mainForm.Text = $"FPS: {GorgonTiming.FPS:0.00}";
+				_tempTimer.Reset();
 			}
-
-			// Draw the main sphere.
-			_sphere.Draw();
-
-			// Draw the sphere shadow first.
-			var spherePosition = _sphere.Position;
-			Graphics.Output.DepthStencilState.States = _noDepth;
-			Graphics.Shaders.PixelShader.Current = _pixelShaderShadow;
-			_sphere.Position = new Vector3(spherePosition.X + 0.25f, spherePosition.Y - 0.125f, spherePosition.Z);
-			_sphere.Draw();
-
-			// Reset our sphere position, pixel shader and depth writing state.
-			_sphere.Position = spherePosition;
-			Graphics.Output.DepthStencilState.States = _depth;
-			Graphics.Shaders.PixelShader.Current = _pixelShader;*/
 
 			// Draw our text.
 			// Use this to show how incredibly slow and terrible my 3D code is.
 
+			// TODO: Disabled until we get 2D rendering up and running again.
 			// Tell the 2D renderer to remember the current state of the 3D scene.
 			/*_3DState = _2D.Begin2D();
 
@@ -343,7 +369,13 @@ namespace Gorgon.Graphics.Example
 		/// Function to update the world/view/projection matrix.
 		/// </summary>
 		/// <param name="world">The world matrix to update.</param>
-		public static void UpdateWVP(ref DX.Matrix world)
+		/// <remarks>
+		/// <para>
+		/// This is what sends the transformation information for the model plus any view space transforms (projection & view) to the GPU so the shader can transform the vertices in the 
+		/// model and project them into 2D space on your render target.
+		/// </para>
+		/// </remarks>
+		private static void UpdateWVP(ref DX.Matrix world)
 		{
 			DX.Matrix temp;
 			DX.Matrix wvp;
@@ -362,6 +394,71 @@ namespace Gorgon.Graphics.Example
 		}
 
 		/// <summary>
+		/// Function to create the primary graphics interface.
+		/// </summary>
+		/// <returns>A new graphics interface, or <b>null</b> if a suitable video device was not found on the system.</returns>
+		/// <remarks>
+		/// <para>
+		/// This method will create a new graphics interface for our application to use. It will select the video device with the most suitable depth buffer available, and if it cannot find a suitable 
+		/// device, it will indicate that by returning <b>null</b>.
+		/// </para>
+		/// </remarks>
+		private static GorgonGraphics CreateGraphicsInterface()
+		{
+			GorgonGraphics graphics = null;
+
+			// Find out which devices we have installed in the system.
+			IGorgonVideoDeviceList deviceList = new GorgonVideoDeviceList();
+			deviceList.Enumerate();
+
+			int selectedDeviceIndex = 0;
+			IGorgonVideoDevice selectedDevice = null;
+
+			while (selectedDeviceIndex < deviceList.Count)
+			{
+				// Reset back to a 24 bit depth with 8 bit stencil.
+				_depthFormat = DXGI.Format.D24_UNorm_S8_UInt;
+
+				// Destroy the previous interface.
+				graphics?.Dispose();
+
+				// Create the main graphics interface.
+				graphics = new GorgonGraphics(deviceList[selectedDeviceIndex++]);
+
+				// Validate depth buffer for this device.
+				// Odds are good that if this fails, you should probably invest in a better video card.  Preferably something created after 2005.
+				D3D11.FormatSupport support = graphics.VideoDevice.GetBufferFormatSupport(_depthFormat);
+
+				if ((support & D3D11.FormatSupport.DepthStencil) == D3D11.FormatSupport.DepthStencil)
+				{
+					selectedDevice = graphics.VideoDevice;
+					break;
+				}
+
+				// Fall back to 16 bit depth-buffer (no stencil) support.
+				_depthFormat = DXGI.Format.D16_UNorm;
+				support = graphics.VideoDevice.GetBufferFormatSupport(_depthFormat);
+
+				if ((support & D3D11.FormatSupport.DepthStencil) != D3D11.FormatSupport.DepthStencil)
+				{
+					continue;
+				}
+
+				selectedDevice = graphics.VideoDevice;
+				break;
+			}
+
+			// If, somehow, we are on a device from the dark ages, then we can't continue.
+			if (selectedDevice != null)
+			{
+				return graphics;
+			}
+
+			GorgonDialogs.ErrorBox(_mainForm, $"The selected video device ('{deviceList[0].Name}') does not support a 24 or 16 bit depth buffer.");
+			return null;
+		}
+
+		/// <summary>
 		/// Function to initialize the application.
 		/// </summary>
 		private static void Initialize()
@@ -375,32 +472,17 @@ namespace Gorgon.Graphics.Example
 			// Add a keybinding to switch to full screen or windowed.
 			_mainForm.KeyDown += _mainForm_KeyDown;
 
-			// Create the main graphics interface.
-			IGorgonVideoDeviceList deviceList = new GorgonVideoDeviceList();
-			deviceList.Enumerate();
-			Graphics = new GorgonGraphics(deviceList[0]);
-			
-			// Validate depth buffer for this device.
-			// Odds are good that if this fails, you should probably invest in a
-			// better video card.  Preferably something created after 2005.
-			D3D11.FormatSupport support = Graphics.VideoDevice.GetBufferFormatSupport(_depthFormat);
-			if ((support & D3D11.FormatSupport.DepthStencil) != D3D11.FormatSupport.DepthStencil)
+			_graphics = CreateGraphicsInterface();
+
+			// If we couldn't create the graphics interface, then leave.
+			if (_graphics == null)
 			{
-				_depthFormat = DXGI.Format.D16_UNorm;
-				support = Graphics.VideoDevice.GetBufferFormatSupport(_depthFormat);
-
-				if ((support & D3D11.FormatSupport.DepthStencil) != D3D11.FormatSupport.DepthStencil)
-				{
-					return;
-				}
-
-				GorgonDialogs.ErrorBox(_mainForm, "Video device does not support a 24 or 16 bit depth buffer.");
 				return;
 			}
-
+			
 			// Create a 1280x800 window with a depth buffer.
 			// We can modify the resolution in the config file for the application, but like other Gorgon examples, the default is 1280x800.
-			_swap = new GorgonSwapChain("Main", Graphics, _mainForm, 
+			_swap = new GorgonSwapChain("Main", _graphics, _mainForm, 
 			                                        new GorgonSwapChainInfo
 			                                        {
 														// Set up for 32 bit RGBA normalized display.
@@ -414,15 +496,16 @@ namespace Gorgon.Graphics.Example
 			_mainForm.Location = new Point(Screen.PrimaryScreen.WorkingArea.Width / 2 - _mainForm.Width / 2, 
 											Screen.PrimaryScreen.WorkingArea.Height / 2 - _mainForm.Height / 2);
 
+
 			// If we've asked for full screen mode, then locate the correct video mode and set us up.
-			_output = Graphics.VideoDevice.Info.Outputs[Screen.PrimaryScreen.DeviceName];
+			_output = _graphics.VideoDevice.Info.Outputs[Screen.PrimaryScreen.DeviceName];
 			var mode = new DXGI.ModeDescription1
 				        {
 					        Format = DXGI.Format.R8G8B8A8_UNorm,
 					        Height = Settings.Default.Resolution.Height,
 					        Width = Settings.Default.Resolution.Width
 				        };
-			_selectedVideoMode = Graphics.VideoDevice.FindNearestVideoMode(_output, ref mode);
+			_selectedVideoMode = _graphics.VideoDevice.FindNearestVideoMode(_output, ref mode);
 
 			if (!Settings.Default.IsWindowed)
 			{
@@ -435,55 +518,60 @@ namespace Gorgon.Graphics.Example
 			_swap.AfterSwapChainResized += Swap_AfterResized;
 			_swap.BeforeSwapChainResized += Swap_BeforeResized;
 
-			// Create the 2D interface for our text.
+			// Initialize our draw call so we can render the objects.
+			// All objects are using triangle lists, so we must tell the draw call that's what we need to render.
+			_drawCall = new GorgonDrawIndexedCall
+			            {
+				            PrimitiveTopology = D3D.PrimitiveTopology.TriangleList
+			            };
+
+			// TODO: Create the 2D interface for our text.
 			//_2D = Graphics.Output.Create2DRenderer(_swap);									
-			
+
 			// Create our shaders.
 			// Our vertex shader.  This is a simple shader, it just processes a vertex by multiplying it against
 			// the world/view/projection matrix and spits it back out.
-			_vertexShader = GorgonShaderFactory.Compile<GorgonVertexShader>(Graphics.VideoDevice, Resources.Shader, "BoingerVS");
+			_vertexShader = GorgonShaderFactory.Compile<GorgonVertexShader>(_graphics.VideoDevice, Resources.Shader, "BoingerVS");
 			// Our main pixel shader.  This is a very simple shader, it just reads a texture and spits it back out.  Has no
 			// diffuse capability.
-			_pixelShader = GorgonShaderFactory.Compile<GorgonPixelShader>(Graphics.VideoDevice, Resources.Shader, "BoingerPS");
+			_pixelShader = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics.VideoDevice, Resources.Shader, "BoingerPS");
 			// Our shadow shader for our ball "shadow".  This is hard coded to send back black (R:0, G:0, B:0) at 50% opacity (A: 0.5).
-			_pixelShaderShadow = GorgonShaderFactory.Compile<GorgonPixelShader>(Graphics.VideoDevice, Resources.Shader, "BoingerShadowPS");
+			_pixelShaderShadow = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics.VideoDevice, Resources.Shader, "BoingerShadowPS");
 
 			// Create the vertex input layout.
 			// We need to create a layout for our vertex type because the shader won't know
 			// how to interpret the data we're sending it otherwise.  This is why we need a 
 			// vertex shader before we even create the layout.
-			_inputLayout = GorgonInputLayout.CreateUsingType<BoingerVertex>(Graphics.VideoDevice, _vertexShader);
+			_inputLayout = GorgonInputLayout.CreateUsingType<BoingerVertex>(_graphics.VideoDevice, _vertexShader);
 
 			// Create the view port.
 			// This just tells the renderer how big our display is.
-			_viewPort = new[]
-			            {
-				            new DX.ViewportF(0, 0, _mainForm.ClientSize.Width, _mainForm.ClientSize.Height, 0.0f, 1.0f)
-			            };
+			_drawCall.Viewports = new[]
+			                      {
+				                      new DX.ViewportF(0, 0, _mainForm.ClientSize.Width, _mainForm.ClientSize.Height, 0.0f, 1.0f)
+			                      };
 
-			// Load our textures from the resources.
-			// This contains our textures for the walls and ball.  
-			IGorgonImageCodec codec = new GorgonCodecPng();
-
-			// Resources are stored as System.Drawing.Bitmap files, so we need to convert into raw data before loading with the codec.
-			using (var stream = new MemoryStream())
+			// Resources are stored as System.Drawing.Bitmap files, so we need to convert into an IGorgonImage so we can upload it to a texture.
+			// We also will generate mip-map levels for this image so that scaling the texture will look better. 
+			int mipCount = GorgonImage.CalculateMaxMipCount(new GorgonImageInfo(ImageType.Image2D, DXGI.Format.R8G8B8A8_UNorm)
+			                                                {
+				                                                Width = Resources.Texture.Width,
+				                                                Height = Resources.Texture.Height
+			                                                });
+			using (IGorgonImage image = Resources.Texture.ConvertToGorgonImage()
+			                                     .GenerateMipMaps(mipCount))
 			{
-				Resources.Texture.Save(stream, ImageFormat.Png);
-				stream.Position = 0;
-				using (IGorgonImage image = codec.LoadFromStream(stream))
-				{
-					_texture = image.ToTexture("Texture",
-					                           Graphics,
-					                           new GorgonImageToTextureInfo
-					                           {
-						                           Usage = D3D11.ResourceUsage.Immutable,
-						                           Binding = TextureBinding.ShaderResource
-					                           });
-				}
+				_texture = image.ToTexture("Texture",
+				                           _graphics,
+				                           new GorgonImageToTextureInfo
+				                           {
+					                           Usage = D3D11.ResourceUsage.Immutable,
+					                           Binding = TextureBinding.ShaderResource
+				                           });
 			}
 
 			// Create a surface for our depth buffer.
-			_depthStencilTexture = new GorgonTexture("Boinger Depth Stencil Texture", Graphics, new GorgonTextureInfo
+			_depthStencilTexture = new GorgonTexture("Boinger Depth Stencil Texture", _graphics, new GorgonTextureInfo
 			                                                                                    {
 				                                                                                    Usage = D3D11.ResourceUsage.Default,
 																									Format = _depthFormat,
@@ -494,92 +582,110 @@ namespace Gorgon.Graphics.Example
 			                                                                                    });
 
 			// Create a sampler state for sampling our texture data.
-			_samplerState = new GorgonSamplerState(Graphics, GorgonSamplerStateInfo.PointFiltering);
+			_samplerState = new GorgonSamplerState(_graphics, new GorgonSamplerStateInfo(GorgonSamplerStateInfo.PointFiltering)
+			                                                  {
+				                                                  AddressU = D3D11.TextureAddressMode.Wrap,
+																  AddressV = D3D11.TextureAddressMode.Wrap
+			                                                  });
 
 			// Set up our view matrix.
 			// Move the camera (view matrix) back 2.2 units.  This will give us enough room to see what's
 			// going on.
-			DX.Matrix.Translation(0, 0, 2.2f, out _viewMatrix);			
+			DX.Matrix.Translation(0, 0, 2.2f, out _viewMatrix);
 
 			// Set up our projection matrix.
-			// This matrix is probably the cause of almost EVERY problem you'll ever run into in 3D programming.
-			// Basically we're telling the renderer that we want to have a vertical FOV of 75 degrees, with the aspect ratio
-			// based on our form width and height.  The final values indicate how to distribute Z values across depth (tip: 
-			// it's not linear).
+			// This matrix is probably the cause of almost EVERY problem you'll ever run into in 3D programming. Basically we're telling the renderer that we 
+			// want to have a vertical FOV of 75 degrees, with the aspect ratio based on our form width and height.  The final values indicate how to 
+			// distribute Z values across depth (tip: it's not linear).
 			_projMatrix = DX.Matrix.PerspectiveFovLH((75.0f).ToRadians(), _mainForm.Width / (float)_mainForm.Height, 0.125f, 500.0f);
 
 			// Create our constant buffer and backing store.			
-			// Our constant buffers are how we send data to our shaders.  This one in particular will be responsible
-			// for sending our world/view/projection matrix to the vertex shader.  The stream we're creating after
-			// the constant buffer is our system memory store for the data.  Basically we write to the system 
-			// memory and then upload that data to the video card.  This is very different from how things used to
-			// work, but allows a lot more flexibility.  
-			_wvpBuffer = new GorgonConstantBuffer("WVPBuffer", Graphics, new GorgonConstantBufferInfo
+			// Our constant buffers are how we send data to our shaders.  This one in particular will be responsible for sending our world/view/projection matrix 
+			// to the vertex shader.  The stream we're creating after the constant buffer is our system memory store for the data.  Basically we write to the 
+			// system memory and then upload that data to the video card.  
+			_wvpBuffer = new GorgonConstantBuffer("WVPBuffer", _graphics, new GorgonConstantBufferInfo
 			                                                             {
 				                                                             Usage = D3D11.ResourceUsage.Default,
 																			 SizeInBytes = DX.Matrix.SizeInBytes
 			                                                             });
 
 			// Create our planes.
-			// Here's where we create the 2 planes for our rear wall and floor.  We set the texture size to texel units
-			// because that's how the video card expects them.  However, it's a little hard to eyeball 0.67798223f by looking
-			// at the texture image display, so we use the ToTexel function to determine our texel size.
-			
-			var textureSize = _texture.ToTexel(new DX.Size2(500, 500));
+			// Here's where we create the 2 planes for our rear wall and floor.  We set the texture size to texel units because that's how the video card expects 
+			// them.  However, it's a little hard to eyeball 0.67798223f by looking at the texture image display, so we use the ToTexel function to determine our 
+			// texel size.
+			var textureSize = _texture.ToTexel(new DX.Size2(511, 511));
+
+			// And here we set up the planes with a material, and initial positioning.
 			_planes = new[]
 			          {
-				          new Plane(_inputLayout, new DX.Vector2(3.5f), new DX.RectangleF(0, 0, textureSize.Width, textureSize.Height)),
-				          new Plane(_inputLayout, new DX.Vector2(3.5f), new DX.RectangleF(0, 0, textureSize.Width, textureSize.Height))
+				          new Plane(_graphics, _inputLayout, new DX.Vector2(3.5f), new DX.RectangleF(0, 0, textureSize.Width, textureSize.Height))
+				          {
+					          Material = new Material
+					                     {
+						                     Texture =
+						                     {
+							                     [0] = _texture.DefaultShaderResourceView
+						                     },
+						                     TextureSampler =
+						                     {
+							                     [0] = _samplerState
+						                     }
+					                     },
+					          Position = new DX.Vector3(0, 0, 3.0f)
+				          },
+				          new Plane(_graphics, _inputLayout, new DX.Vector2(3.5f), new DX.RectangleF(0, 0, textureSize.Width, textureSize.Height))
+				          {
+					          Material = new Material
+					                     {
+						                     Texture =
+						                     {
+							                     [0] = _texture.DefaultShaderResourceView
+						                     },
+						                     TextureSampler =
+						                     {
+							                     [0] = _samplerState
+						                     }
+					                     },
+					          Position = new DX.Vector3(0, -3.5f, 3.5f),
+					          Rotation = new DX.Vector3(90.0f, 0, 0)
+				          }
 			          };
-
-			// Set up default positions and orientations.
-			_planes[0].Texture = _texture;
-			_planes[0].Position = new DX.Vector3(0, 0, 3.0f);
-			_planes[1].Texture = _texture;
-			_planes[1].Position = new DX.Vector3(0, -3.5f, 3.5f);
-			_planes[1].Rotation = new DX.Vector3(90.0f, 0, 0);			
 
 			// Create our sphere.
-			// Again, here we're using texels to align the texture coordinates to the other image
-			// packed into the texture (atlasing).  
+			// Again, here we're using texels to align the texture coordinates to the other image packed into the texture (atlasing).  
 			var textureOffset = _texture.ToTexel(new DX.Vector2(516, 0));
-			// This is to scale our texture coordinates because the actual image is much smaller
-			// (256x256) than the full texture (1024x512).
-			textureSize.Width = 0.245f;
-			textureSize.Height = 0.5f;
+			// This is to scale our texture coordinates because the actual image is much smaller (255x255) than the full texture (1024x512).
+			textureSize = _texture.ToTexel(new DX.Size2(255, 255));
             // Give the sphere a place to live.
-			_sphere = new Sphere(_inputLayout, 1.0f, textureOffset, textureSize)
+			_sphere = new Sphere(_graphics, _inputLayout, 1.0f, textureOffset, textureSize)
 			          {
 				          Position = new DX.Vector3(2.2f, 1.5f, 2.5f),
-						  Texture = _texture
+				          Material = new Material
+				                     {
+					                     Texture =
+					                     {
+						                     [0] = _texture.DefaultShaderResourceView
+					                     },
+					                     TextureSampler =
+					                     {
+						                     [0] = _samplerState
+					                     }
+				                     }
 			          };
-			_sphere.Resources.VertexShaderConstantBuffers = new GorgonConstantBuffers(new[]
-			                                                                          {
-				                                                                          _wvpBuffer
-			                                                                          });
-			_sphere.Resources.PixelShaderResources = new GorgonShaderResourceViews(new[]
-			                                                                       {
-				                                                                       _texture.DefaultShaderResourceView
-			                                                                       });
-			_sphere.Resources.PixelShaderSamplers = new GorgonSamplerStates(new[]
+
+			// Add resources that are common throughout the application to the draw call.
+			_drawCall.Resources.VertexShaderConstantBuffers = new GorgonConstantBuffers(new[]
+			                                                                            {
+				                                                                            _wvpBuffer
+			                                                                            });
+			_drawCall.Resources.RenderTargets = new GorgonRenderTargetViews(new[]
 			                                                                {
-				                                                                _samplerState
-			                                                                });
-			_sphere.Resources.RenderTargets = new GorgonRenderTargetViews(new[]
-			                                                              {
-				                                                              _swap.RenderTargetView
-			                                                              },
-			                                                              _depthStencilTexture.DefaultDepthStencilView);
+				                                                                _swap.RenderTargetView
+			                                                                },
+			                                                                _depthStencilTexture.DefaultDepthStencilView);
 
-			for (int i = 0; i < _planes.Length; ++i)
-			{
-				_planes[i].Resources.VertexShaderConstantBuffers = _sphere.Resources.VertexShaderConstantBuffers;
-				_planes[i].Resources.PixelShaderResources = _sphere.Resources.PixelShaderResources;
-				_planes[i].Resources.PixelShaderSamplers = _sphere.Resources.PixelShaderSamplers;
-				_planes[i].Resources.RenderTargets = _sphere.Resources.RenderTargets;
-			}
-
-			_pipelineState = Graphics.GetPipelineState(new GorgonPipelineStateInfo
+			// Initialize a pipeline state so that the graphics can be rendered using the correct shaders, depth buffer, and blending.
+			_pipelineState = _graphics.GetPipelineState(new GorgonPipelineStateInfo
 			                                           {
 				                                           DepthStencilState = GorgonDepthStencilStateInfo.DepthStencilEnabled,
 				                                           PixelShader = _pixelShader,
@@ -590,61 +696,13 @@ namespace Gorgon.Graphics.Example
 					                                                                    GorgonRenderTargetBlendStateInfo.Modulated
 				                                                                    }
 			                                           });
-			_shadowState = Graphics.GetPipelineState(new GorgonPipelineStateInfo(_pipelineState.Info)
+			// This state is slightly different in that it uses a new shader to draw a "shadow" just behind the ball.
+			_shadowState = _graphics.GetPipelineState(new GorgonPipelineStateInfo(_pipelineState.Info)
 			                                         {
 				                                         DepthStencilState = GorgonDepthStencilStateInfo.DepthStencilEnabledNoWrite,
 				                                         PixelShader = _pixelShaderShadow
 			                                         });
 
-			// Bind our objects to the pipeline and set default states.
-			// At this point we need to give the graphics card a bunch of things
-			// it needs to do its job.  
-			/*
-
-			// Give our current input layout.
-			Graphics.Input.Layout = _inputLayout;
-			// We're drawing individual triangles for this (and this is usyally the case).
-			Graphics.Input.PrimitiveType = PrimitiveType.TriangleList;
-
-			// Bind our current vertex shader and send over our world/view/projection matrix
-			// constant buffer.
-			Graphics.Shaders.VertexShader.Current = _vertexShader;
-			Graphics.Shaders.VertexShader.ConstantBuffers[0] = _wvpBuffer;
-
-			// Do the same with the pixel shader, only we're binding our texture to it as well.
-			// We also need to bind a sampler to the texture because without it, the shader won't
-			// know how to interpret the texture data (e.g. how will the shader know if the texture
-			// is supposed to be bilinear filtered or point filtered?)
-			Graphics.Shaders.PixelShader.Current = _pixelShader;
-			Graphics.Shaders.PixelShader.Resources[0] = _texture;
-			Graphics.Shaders.PixelShader.TextureSamplers[0] = GorgonTextureSamplerStates.LinearFilter;
-
-			// Turn on alpha blending.
-			Graphics.Output.BlendingState.States = GorgonBlendStates.ModulatedBlending;
-
-			// Turn on depth writing.
-			// This is our depth writing state.  When this is on, all polygon data sent to the card
-			// will write to our depth buffer.  Normally we want this, but for translucent objects, it's
-			// problematic....
-			_depth = new GorgonDepthStencilStates
-			    {
-				    DepthComparison = ComparisonOperator.LessEqual,
-				    IsDepthEnabled = true,
-				    IsDepthWriteEnabled = true,
-				    IsStencilEnabled = false
-			    };
-
-			// Turn off depth writing.
-			// So, we copy the depth state and turn off depth writing so that translucent objects 
-			// won't write to the depth buffer but can still read it.
-			_noDepth = _depth;
-			_noDepth.IsDepthWriteEnabled = false;
-			Graphics.Output.DepthStencilState.States = _depth;
-
-			// Bind our swap chain and set up the default rasterizer states.
-			Graphics.Output.SetRenderTarget(_swap, _swap.DepthStencilBuffer);
-			Graphics.Rasterizer.States = GorgonRasterizerStates.CullBackFace;
-			Graphics.Rasterizer.SetViewport(view);*/
 
 			// I know, there's a lot in here.  Thing is, if this were Direct 3D 11 code, it'd probably MUCH 
 			// more code and that's even before creating our planes and sphere.
@@ -659,7 +717,11 @@ namespace Gorgon.Graphics.Example
 		private static void Swap_BeforeResized(object sender, EventArgs e)
 		{
 			// Reset currently active states.
-			Graphics.ClearState();
+			_graphics.ClearState();
+
+			// Destroy the depth/stencil that we're using so we can update it.
+			_depthStencilTexture?.Dispose();
+			_depthStencilTexture = null;
 		}
 
 		/// <summary>
@@ -670,16 +732,18 @@ namespace Gorgon.Graphics.Example
 		/// <exception cref="System.NotSupportedException"></exception>
 		static void _mainForm_KeyDown(object sender, KeyEventArgs e)
 		{
-			if ((e.Alt) && (e.KeyCode == Keys.Enter))
+			if ((!e.Alt) || (e.KeyCode != Keys.Enter))
 			{
-				if (!_swap.IsWindowed)
-				{
-					_swap.ExitFullScreen();
-				}
-				else
-				{
-					_swap.EnterFullScreen(ref _selectedVideoMode, _output);
-				}
+				return;
+			}
+
+			if (!_swap.IsWindowed)
+			{
+				_swap.ExitFullScreen();
+			}
+			else
+			{
+				_swap.EnterFullScreen(ref _selectedVideoMode, _output);
 			}
 		}
 
@@ -691,18 +755,15 @@ namespace Gorgon.Graphics.Example
 		/// <exception cref="System.NotSupportedException"></exception>
 		static void Swap_AfterResized(object sender, EventArgs e)
 		{
+			// This method allows us to restore the swap chain, viewport and depth buffer after it's been resized.  If we didn't do this, we'd lose 
+			// our image because it has to be unbound while the buffers are resized for the swap chain.
+
 			// Reset our projection matrix to match our new size.
 			_projMatrix = DX.Matrix.PerspectiveFovLH((75.0f).ToRadians(), _mainForm.Width / (float)_mainForm.Height, 0.125f, 500.0f);
 
-			// Update our viewport to reflect the new size.
-			_viewPort = new[]
-			            {
-				            new DX.ViewportF(0, 0, _mainForm.ClientSize.Width, _mainForm.ClientSize.Height, 0.0f, 1.0f)
-			            };
-
-			_depthStencilTexture?.Dispose();
+			// Recreate our depth/stencil buffer and reassign our render targets since they'll be discarded on resize.
 			_depthStencilTexture = new GorgonTexture("Boinger Depth Stencil Texture",
-			                                         Graphics,
+			                                         _graphics,
 			                                         new GorgonTextureInfo
 			                                         {
 				                                         Usage = D3D11.ResourceUsage.Default,
@@ -713,17 +774,17 @@ namespace Gorgon.Graphics.Example
 				                                         TextureType = TextureType.Texture2D
 			                                         });
 
-			// Reset the render targets on the resources list.
-			_sphere.Resources.RenderTargets = new GorgonRenderTargetViews
-			                                  {
-				                                  [0] = _swap.RenderTargetView,
-												  DepthStencilView = _depthStencilTexture.DefaultDepthStencilView
-			                                  };
+			_drawCall.Resources.RenderTargets = new GorgonRenderTargetViews
+			                                    {
+				                                    [0] = _swap.RenderTargetView,
+				                                    DepthStencilView = _depthStencilTexture.DefaultDepthStencilView
+			                                    };
 
-			for (int i = 0; i < _planes.Length; ++i)
-			{
-				_planes[i].Resources.RenderTargets = _sphere.Resources.RenderTargets;
-			}
+			// Update the viewport to reflect the new window size.
+			_drawCall.Viewports = new[]
+						{
+							new DX.ViewportF(0, 0, _mainForm.ClientSize.Width, _mainForm.ClientSize.Height, 0.0f, 1.0f)
+						};
 		}
 		#endregion
 
@@ -747,13 +808,14 @@ namespace Gorgon.Graphics.Example
 			}
 			finally
 			{
+				// Always call dispose so we can free the native memory allocated for the backing graphics API.
 				_sphere?.Dispose();
 
 				if (_planes != null)
 				{
-					for (int i = 0; i < _planes.Length; ++i)
+					foreach (Plane plane in _planes)
 					{
-						_planes[i]?.Dispose();
+						plane?.Dispose();
 					}
 				}
 
@@ -766,7 +828,7 @@ namespace Gorgon.Graphics.Example
 				_pixelShaderShadow?.Dispose();
 				_inputLayout?.Dispose();
 				_swap?.Dispose();
-				Graphics?.Dispose();
+				_graphics?.Dispose();
 			}
 		}
 	}

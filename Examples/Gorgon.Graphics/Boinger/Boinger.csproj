@@ -70,6 +70,7 @@
     <Compile Include="..\..\..\Gorgon\Gorgon.Core\SharedAssemblyInfo.cs">
       <Link>SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Material.cs" />
     <Compile Include="Sphere.cs" />
     <Compile Include="formMain.cs">
       <SubType>Form</SubType>
