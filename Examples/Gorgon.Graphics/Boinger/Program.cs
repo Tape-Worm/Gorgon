@@ -1,7 +1,7 @@
-﻿#region MIT.
+﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2012 Michael Winsor
+// Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Sunday, December 30, 2012 9:40:28 AM
+// Created: March 2, 2017 7:46:37 PM
 // 
 #endregion
 
@@ -597,7 +597,7 @@ namespace Gorgon.Graphics.Example
 			// This matrix is probably the cause of almost EVERY problem you'll ever run into in 3D programming. Basically we're telling the renderer that we 
 			// want to have a vertical FOV of 75 degrees, with the aspect ratio based on our form width and height.  The final values indicate how to 
 			// distribute Z values across depth (tip: it's not linear).
-			_projMatrix = DX.Matrix.PerspectiveFovLH((75.0f).ToRadians(), _mainForm.Width / (float)_mainForm.Height, 0.125f, 500.0f);
+			_projMatrix = DX.Matrix.PerspectiveFovLH((75.0f).ToRadians(), _mainForm.ClientSize.Width / (float)_mainForm.ClientSize.Height, 0.125f, 500.0f);
 
 			// Create our constant buffer and backing store.			
 			// Our constant buffers are how we send data to our shaders.  This one in particular will be responsible for sending our world/view/projection matrix 
@@ -759,7 +759,7 @@ namespace Gorgon.Graphics.Example
 			// our image because it has to be unbound while the buffers are resized for the swap chain.
 
 			// Reset our projection matrix to match our new size.
-			_projMatrix = DX.Matrix.PerspectiveFovLH((75.0f).ToRadians(), _mainForm.Width / (float)_mainForm.Height, 0.125f, 500.0f);
+			_projMatrix = DX.Matrix.PerspectiveFovLH((75.0f).ToRadians(), _mainForm.ClientSize.Width / (float)_mainForm.ClientSize.Height, 0.125f, 500.0f);
 
 			// Recreate our depth/stencil buffer and reassign our render targets since they'll be discarded on resize.
 			_depthStencilTexture = new GorgonTexture("Boinger Depth Stencil Texture",
