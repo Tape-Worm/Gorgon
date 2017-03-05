@@ -73,6 +73,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Initialization", "Examples\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.MiniTri", "Examples\Gorgon.Graphics\Gorgon.MiniTri\Gorgon.MiniTri.csproj", "{31061BD5-E5C2-4578-93BE-8ED2FF95086F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.MiniTri.Texture", "Examples\Gorgon.Graphics\Gorgon.MiniTri.Texture\Gorgon.MiniTri.Texture.csproj", "{FD481DA1-5A0F-4678-98A3-B9986422233B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GlassCube", "Examples\Gorgon.Graphics\GlassCube\GlassCube.csproj", "{EDC602B0-403D-4A3D-8A60-13992B351C95}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -248,6 +252,18 @@ Global
 		{31061BD5-E5C2-4578-93BE-8ED2FF95086F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{31061BD5-E5C2-4578-93BE-8ED2FF95086F}.ReleaseAndDeploy|Any CPU.ActiveCfg = ReleaseAndDeploy|Any CPU
 		{31061BD5-E5C2-4578-93BE-8ED2FF95086F}.ReleaseAndDeploy|Any CPU.Build.0 = ReleaseAndDeploy|Any CPU
+		{FD481DA1-5A0F-4678-98A3-B9986422233B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD481DA1-5A0F-4678-98A3-B9986422233B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD481DA1-5A0F-4678-98A3-B9986422233B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD481DA1-5A0F-4678-98A3-B9986422233B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD481DA1-5A0F-4678-98A3-B9986422233B}.ReleaseAndDeploy|Any CPU.ActiveCfg = ReleaseAndDeploy|Any CPU
+		{FD481DA1-5A0F-4678-98A3-B9986422233B}.ReleaseAndDeploy|Any CPU.Build.0 = ReleaseAndDeploy|Any CPU
+		{EDC602B0-403D-4A3D-8A60-13992B351C95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EDC602B0-403D-4A3D-8A60-13992B351C95}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EDC602B0-403D-4A3D-8A60-13992B351C95}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EDC602B0-403D-4A3D-8A60-13992B351C95}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EDC602B0-403D-4A3D-8A60-13992B351C95}.ReleaseAndDeploy|Any CPU.ActiveCfg = Release|Any CPU
+		{EDC602B0-403D-4A3D-8A60-13992B351C95}.ReleaseAndDeploy|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -274,5 +290,7 @@ Global
 		{256CC806-B7DC-4125-A350-F78F520D9742} = {C421D2F1-B2C4-4136-A33E-52A17B0E907C}
 		{A2C5074D-6A13-483B-8F1B-F36487B3815C} = {C421D2F1-B2C4-4136-A33E-52A17B0E907C}
 		{31061BD5-E5C2-4578-93BE-8ED2FF95086F} = {C421D2F1-B2C4-4136-A33E-52A17B0E907C}
+		{FD481DA1-5A0F-4678-98A3-B9986422233B} = {C421D2F1-B2C4-4136-A33E-52A17B0E907C}
+		{EDC602B0-403D-4A3D-8A60-13992B351C95} = {C421D2F1-B2C4-4136-A33E-52A17B0E907C}
 	EndGlobalSection
 EndGlobal

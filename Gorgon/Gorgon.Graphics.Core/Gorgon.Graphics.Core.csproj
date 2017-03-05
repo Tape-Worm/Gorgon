@@ -137,7 +137,7 @@
     <Compile Include="States\GorgonRenderTargetBlendStateInfo.cs" />
     <Compile Include="States\GorgonRasterStateInfo.cs" />
     <Compile Include="States\GorgonDepthStencilStateInfo.cs" />
-    <Compile Include="States\GorgonSamplerState.cs" />
+    <Compile Include="Pipeline\GorgonSamplerState.cs" />
     <Compile Include="States\GorgonSamplerStateInfo.cs" />
     <Compile Include="States\GorgonStencilOperationInfo.cs" />
     <Compile Include="States\_Interfaces\IGorgonBlendStateInfo.cs" />

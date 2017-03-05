@@ -24,6 +24,7 @@ Test/*
 !Test/Gorgon.Input.Test/
 Artifacts/
 Artifacts_Examples/
+Resources/__OLDE__/
 
 # Roslyn cache directories
 *.ide/

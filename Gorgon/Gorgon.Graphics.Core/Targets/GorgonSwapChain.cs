@@ -488,6 +488,10 @@ namespace Gorgon.Graphics.Core
 				return;
 			}
 
+			// Unhook any event handlers subscribed to us.
+			BeforeSwapChainResized = null;
+			AfterSwapChainResized = null;
+
 			if (Window != null)
 			{
 				Window.Resize -= Window_Resize;
