@@ -1,7 +1,7 @@
-﻿#region MIT.
+﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2014 Michael Winsor
+// Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Monday, November 03, 2014 9:30:55 PM
+// Created: March 5, 2017 9:59:08 PM
 // 
 #endregion
 
@@ -32,37 +32,10 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 #if DEBUG
 [assembly: AssemblyTitle("TV image codec plug-in [DEBUG VERSION]")]
-[assembly: AssemblyDescription("An example to show how to create an image codec so the user can load/save their own image formats. [DEBUG VERSION]")]
-[assembly: AssemblyConfiguration("DEBUG")]
-[assembly: AssemblyProduct("Gorgon [DEBUG VERSON]")]
 #else
 [assembly: AssemblyTitle("TV image codec plug-in")]
-[assembly: AssemblyDescription("An example to show how to create an image codec so the user can load/save their own image formats.")]
-[assembly: AssemblyConfiguration("RELEASE")]
-[assembly: AssemblyProduct("Gorgon")]
 #endif
-[assembly: AssemblyCompany("Michael Winsor")]
-[assembly: AssemblyCopyright("Copyright © Michael Winsor 2012")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-
-// Setting ComVisible to false makes the types in this assembly not visible 
-// to COM components.  If you need to access a type in this assembly from 
-// COM, set the ComVisible attribute to true on that type.
-[assembly: ComVisible(false)]
+[assembly: AssemblyDescription("An example to show how to create an image codec so the user can load/save their own image formats.")]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("88DFDDBE-29E5-42A0-B588-697E83A00675")]
-
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Build and Revision Numbers 
-// by using the '*' as shown below:
-// [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2.0.*")]
-[assembly: AssemblyFileVersion("2.0.0.0")]

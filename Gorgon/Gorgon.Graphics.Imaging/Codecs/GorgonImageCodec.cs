@@ -297,10 +297,6 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <para>
 		/// A codec must implement this method in order to decode the image data. 
 		/// </para>
-		/// <para>
-		/// When the image is loaded, it is read in its native format into memory first, and then this method is called to decode the data in memory into a <see cref="IGorgonImage"/> object.  While this 
-		/// consumes more memory, it is necessary when handling streams that do not have seek capability (e.g. <see cref="System.Net.Sockets.NetworkStream"/>).
-		/// </para>
 		/// </remarks>
 		protected abstract IGorgonImage OnDecodeFromStream(Stream stream, long size, IGorgonImageCodecDecodingOptions options);
 

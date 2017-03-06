@@ -1,7 +1,7 @@
-﻿#region MIT.
+﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2014 Michael Winsor
+// Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,11 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Monday, November 03, 2014 9:29:01 PM
+// Created: March 5, 2017 10:00:01 PM
 // 
 #endregion
-
-using Gorgon.IO;
+using System.Collections.Generic;
+using Gorgon.Graphics.Imaging.Codecs;
 
 namespace Gorgon.Graphics.Example
 {
@@ -35,28 +35,84 @@ namespace Gorgon.Graphics.Example
     /// This plug-in will encode/decode images as 1 pixel per channel.  This will give the image an appearance similar to the line patterns on a CRT TV screen.  Well, somewhat.
     /// </remarks>
     public class TvImageCodecPlugIn
-        : GorgonCodecPlugIn
+        : GorgonImageCodecPlugIn
     {
-        #region Methods.
-        /// <summary>
-        /// Function to create an image codec object.
-        /// </summary>
-        /// <returns>
-        /// The custom image codec.
-        /// </returns>
-        public override GorgonImageCodec CreateCodec()
-        {
-            return new TvImageCodec();
-        }
-        #endregion
+		#region Properties.
+	    /// <summary>
+	    /// Property to return the names of the available codecs for this plug in.
+	    /// </summary>
+	    /// <remarks>
+	    /// This returns a <see cref="IReadOnlyDictionary{TKey,TValue}"/> containing the name of the plug in as its key, and an optional friendly description as its value.
+	    /// </remarks>
+	    public override IReadOnlyList<GorgonImageCodecDescription> Codecs
+	    {
+		    get;
+	    }
+		#endregion
 
-        #region Constructor/Destructor.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TvImageCodecPlugIn"/> class.
-        /// </summary>
-        public TvImageCodecPlugIn()
+		#region Methods.
+	    /// <summary>
+	    /// Function to create a new <see cref="IGorgonImageCodec"/>.
+	    /// </summary>
+	    /// <param name="codec">The codec to retrieve from the plug in.</param>
+	    /// <returns>A new <see cref="IGorgonImageCodec"/> object.</returns>
+	    /// <remarks>
+	    /// <para>
+	    /// Implementors must implement this method to return the codec from the plug in assembly.
+	    /// </para>
+	    /// </remarks>
+	    protected override IGorgonImageCodec OnCreateCodec(string codec)
+	    {
+		    return new TvImageCodec();
+	    }
+
+	    /// <summary>
+	    /// Function to create image decoding options for the codec.
+	    /// </summary>
+	    /// <param name="codec">The name of the codec to which the options will apply.</param>
+	    /// <returns>A new <see cref="IGorgonImageCodecDecodingOptions"/> object.</returns>
+	    /// <remarks>
+	    /// <para>
+	    /// Implementors must implement this method to return any optional decoding options for the codec to use when decoding data. If no decoding options apply to the codec, then this method should 
+	    /// return <b>null</b>.
+	    /// </para>
+	    /// </remarks>
+	    protected override IGorgonImageCodecDecodingOptions OnCreateCodecDecodingOptions(string codec)
+	    {
+		    return null;
+	    }
+
+	    /// <summary>
+	    /// Function to create image encoding options for the codec.
+	    /// </summary>
+	    /// <param name="codec">The name of the codec to which the options will apply.</param>
+	    /// <returns>A new <see cref="IGorgonImageCodecEncodingOptions"/> object.</returns>
+	    /// <remarks>
+	    /// <para>
+	    /// Implementors must implement this method to return any optional encoding options for the codec to use when encoding data. If no encoding options apply to the codec, then this method should 
+	    /// return <b>null</b>.
+	    /// </para>
+	    /// </remarks>
+	    protected override IGorgonImageCodecEncodingOptions OnCreateCodecEncodingOptions(string codec)
+	    {
+		    return null;
+	    }
+	    #endregion
+
+		#region Constructor/Destructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="TvImageCodecPlugIn"/> class.
+		/// </summary>
+		public TvImageCodecPlugIn()
             : base("A TV image codec, used for example only.")
         {
+	        Codecs = new[]
+	                 {
+		                 new GorgonImageCodecDescription(typeof(TvImageCodec))
+		                 {
+			                 Description = Description
+		                 }
+	                 };
         }
         #endregion
     }
