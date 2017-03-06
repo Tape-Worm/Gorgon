@@ -43,26 +43,23 @@ using SharpDX.Direct3D;
 
 namespace Gorgon.Graphics.Example
 {
-#warning Need to document this.
-	/// <summary>
-	/// This is an example based on the MiniTri example that will draw a single triangle.
+    /// <summary>
+	/// This is an example based on the MiniTri example that will draw a single triangle with a texture.
 	/// 
-	/// Here we will use shaders, a vertex buffer, an input layout and a constant buffer to define how to render a multicolored triangle to the window.
+	/// Like the MiniTri example, we'll be drawing a single triangle, but instead of using a single color per vertex on the triangle, we'll be applying a texture to the triangle. 
 	/// 
-	/// This example is a little more complex than the Initialization example, and requires more code to set everything up. But, compared to a Direct 
-	/// 3D version of this code, it is still much more simple.
+	/// To map the location within the texture to a point in the triangle, we'll change our vertex structure to use a Vector2 called UV. This is the UV coordinates for mapping the texture to the vertex. 
+	/// This value is in Texel space, and has a range of 0.0f - 1.0f, where 0.0 is the top/left, and 1.0f is the right/bottom. Larger values than 1.0f will either be clamped (the default), wrapped, or 
+	/// have a border color drawn.
 	/// 
-	/// We render the triangle by submitting a draw call to the GPU via a GorgonDrawCall object that will contain everything the GPU needs to know in 
-	/// order to render the triangle. Resources, such as the vertex buffer, and constant buffer are tied to the draw call and the pipeline state, 
-	/// which contains things like culling information, pixel shader, and vertex shader will also be assigned to the draw call.
+	/// To assign a texture, we modify our draw call to assign the texture's resource view to the PixelShaderResources on the draw call.
 	/// 
-	/// Gorgon is smart enough to know if a draw call has been submitted already and will only assign the resources and state once (unless the call is 
-	/// changed). This provides a big performance boost. Of course, for a single triangle like the one in this example, this really doesn't matter.
+	/// To properly sample the texture in the pixel shader, we'll also create a texture sampler which defines how the texture data should be read when processing in the pixel shader. This example uses 
+	/// default sampling which uses a bilinear filter to smooth the texture when it is zoomed in or out. Like the texture resource view, we assign this sampler to the PixelShaderSamplers on the draw 
+	/// call. 
 	/// 
-	/// The biggest advantage of using this method of submitting draw calls is that, unlike Direct 3D, the calls are stateless. This way we can avoid 
-	/// things like state bleed where a previously forgotten state will interfere with a subsequent draw call. It does this by ensuring the draw call 
-	/// has all of the information it needs (hence why a draw call has so many fields), and will set that state per call (of course, if a state has 
-	/// not changed, it will not set it because there's no need).
+	/// One final note: The textures and samplers are assigned to slots. These slots must correspond to the slots declared in the pixel shader. So, for example, if we have declared a texture at slot 4 
+	/// in out pixel shader, then slot 4 on the PixelShaderResources must contain the texture, likewise for samplers.
 	/// </summary>
 	static class Program
 	{

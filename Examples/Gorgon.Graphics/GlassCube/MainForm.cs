@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using System.Threading;
 using System.Windows.Forms;
 using DX = SharpDX;
 using DXGI = SharpDX.DXGI;
@@ -46,7 +45,7 @@ using SharpDX.Direct3D11;
 namespace GorgonLibrary.Example
 {
     /// <summary>
-    /// Main form.
+    /// The main window for our example.
     /// </summary>
     public partial class formMain : Form
     {
@@ -153,6 +152,7 @@ namespace GorgonLibrary.Example
 		        return true;
 	        }
 
+			// Spin the cube.
 			_rotation.X += GorgonRandom.RandomSingle(45, 90) * GorgonTiming.Delta * (_rotationSpeed.X.FastSin() * 1.5f);
 			_rotation.Y += GorgonRandom.RandomSingle(45, 90) * GorgonTiming.Delta * (_rotationSpeed.Y.FastSin() * 1.5f);
 			_rotation.Z += GorgonRandom.RandomSingle(45, 90) * GorgonTiming.Delta * (_rotationSpeed.Z.FastSin() * 1.5f);
@@ -178,8 +178,10 @@ namespace GorgonLibrary.Example
 
 			_cube.RotateXYZ(_rotation.X, _rotation.Y, _rotation.Z);
 			_cube.GetWorldMatrix(out worldMatrix);
+			// Send our world matrix to the constant buffer so the vertex shader can update the vertices.
 			UpdateWVP(ref worldMatrix);
 
+			// And, as always, send the cube to the GPU for rendering.
 			_graphics.Submit(_drawCall);
 
 			_swap.Present();
@@ -220,12 +222,16 @@ namespace GorgonLibrary.Example
 		                                              SizeInBytes = DX.Matrix.SizeInBytes
 	                                              });
 
-			// Set up our view.
+			// We use this as our initial world transform.
+			// Since it's an identity, it will put the cube in the default orientation defined by the vertices.
 	        DX.Matrix dummyMatrix = DX.Matrix.Identity;
 	        
+			// Create a new projection matrix so we can transform from 3D to 2D space.
 			DX.Matrix.PerspectiveFovLH(60.0f.ToRadians(), (float)ClientSize.Width / ClientSize.Height, 0.1f, 1000.0f, out _projectionMatrix);
+			// Pull the camera back 1.5 units on the Z axis. Otherwise, we'd end up inside of the cube.
 			DX.Matrix.Translation(0, 0, 1.5f, out _viewMatrix);
 			
+			// Initialize the constant buffer.
 			UpdateWVP(ref dummyMatrix);
 
 	        _cube = new Cube(_graphics, _inputLayout);
@@ -248,6 +254,9 @@ namespace GorgonLibrary.Example
 			                    VertexBuffers = _cube.VertexBuffer,
 			                    PixelShaderSamplers = new GorgonSamplerStates
 			                                          {
+														  // Start with bilinear filtering on the cube texture.
+														  // This will smooth out the appearance of the texture as it is scaled closer or further away 
+														  // from our view.
 				                                          [0] = _bilinearSampler
 			                                          },
 			                    VertexShaderConstantBuffers = new GorgonConstantBuffers
@@ -266,7 +275,10 @@ namespace GorgonLibrary.Example
 			                                                       PixelShader = _pixelShader,
 			                                                       VertexShader = _vertexShader,
 			                                                       DepthStencilState = GorgonDepthStencilStateInfo.Default,
+																   // We turn off culling so we can see through the cube.
 			                                                       RasterState = GorgonRasterStateInfo.NoCulling,
+																   // We turn on blending so that the alpha in the texture can allow a 
+																   // translucency effect and we can see the other faces through the cube.
 			                                                       RenderTargetBlendState =
 			                                                       {
 				                                                       [0] = GorgonRenderTargetBlendStateInfo.Modulated
@@ -295,7 +307,8 @@ namespace GorgonLibrary.Example
 	        }
 
 			// When we assign a new sampler state, we have to use the GorgonSamplerStates object to pass in 1 or more samplers. Assigning a sampler to a 
-			// slot on an existing sampler state list will not be picked up. This is done to keep from impacting performance.
+			// slot on an existing sampler state list will not be picked up. This is done to keep from having to check each sampler slot every time a state 
+			// is changed and will slightly improve performance.
 			if (_drawCall.Resources.PixelShaderSamplers[0] == _bilinearSampler)
 	        {
 		        _drawCall.Resources.PixelShaderSamplers = new GorgonSamplerStates
@@ -354,7 +367,10 @@ namespace GorgonLibrary.Example
 				                                                                    {
 					                                                                    Format = DXGI.Format.R8G8B8A8_UNorm,
 																						Width = ClientSize.Width,
-																						Height = ClientSize.Height
+																						Height = ClientSize.Height,
+																						// We don't need this, as it's the default, but it's included for 
+																						// completeness.
+																						StretchBackBuffer = true
 				                                                                    });
 				// Register an event to tell us when the swap chain was resized.
 				// We need to do this in order to resize our projection matrix & viewport to match our client area.
