@@ -1,7 +1,7 @@
-﻿#region MIT.
+﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2014 Michael Winsor
+// Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,21 +20,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Monday, November 03, 2014 8:48:53 PM
+// Created: March 5, 2017 10:33:01 PM
 // 
 #endregion
 
 using System;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.IO;
 using System.Windows.Forms;
+using DX = SharpDX;
+using DXGI = SharpDX.DXGI;
 using Gorgon.Graphics;
+using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Example.Properties;
+using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 using Gorgon.Plugins;
-using Gorgon.Renderers;
 using Gorgon.UI;
-using SlimMath;
 
 namespace CodecPlugIn
 {
@@ -51,7 +54,7 @@ namespace CodecPlugIn
         // Image to display, loaded from our plug-in.
         private GorgonTexture2D _image;
 		// Our custom codec loaded from the plug-in.
-	    private GorgonImageCodec _customCodec;
+	    private IGorgonImageCodec _customCodec;
         #endregion
 
         #region Methods.
@@ -65,13 +68,13 @@ namespace CodecPlugIn
                 return;
             }
 
-            Vector2 windowSize = ClientSize;
-            Vector2 imageSize = _image.Settings.Size;
-            Vector2 newSize;
-            Vector2 position;
+            DX.Vector2 windowSize = new DX.Vector2(ClientSize.Width, ClientSize.Height);
+            DX.Vector2 imageSize = _image.Settings.Size;
+            DX.Vector2 newSize;
+            DX.Vector2 position;
 
             // Calculate the scale between the images.
-            var scale = new Vector2(windowSize.X / imageSize.X, windowSize.Y / imageSize.Y);
+            var scale = new DX.Vector2(windowSize.X / imageSize.X, windowSize.Y / imageSize.Y);
 
             // Only scale on a single axis if we don't have a 1:1 aspect ratio.
             if (scale.Y > scale.X)
@@ -84,14 +87,14 @@ namespace CodecPlugIn
             }
 
             // Scale the image.
-            Vector2.Modulate(ref scale, ref imageSize, out newSize);
+            DX.Vector2.Multiply(ref scale, ref imageSize, out newSize);
 
             // Set up to center the window.
-            Vector2.Divide(ref windowSize, 2.0f, out windowSize);
-            Vector2.Divide(ref newSize, 2.0f, out imageSize);
+            DX.Vector2.Divide(ref windowSize, 2.0f, out windowSize);
+            DX.Vector2.Divide(ref newSize, 2.0f, out imageSize);
 
             // Find the position.
-            Vector2.Subtract(ref windowSize, ref imageSize, out position);
+            DX.Vector2.Subtract(ref windowSize, ref imageSize, out position);
 
             // Now draw the image.
             _2D.Drawing.BlendingMode = BlendingMode.Modulate;
@@ -129,14 +132,14 @@ namespace CodecPlugIn
 				GorgonPluginService pluginService = new GorgonPluginService(pluginAssemblies);
 
 				// Find the plugin.
-				var plugIn = pluginService.GetPlugin<GorgonCodecPlugIn>(pluginName);
+				var plugIn = pluginService.GetPlugin<GorgonImageCodecPlugIn>(pluginName);
 
 				if (plugIn == null)
 				{
 					return false;
 				}
 
-				_customCodec = plugIn.CreateCodec();
+				_customCodec = plugIn.CreateCodec(pluginName);
 			}
 
 			return _customCodec != null;
