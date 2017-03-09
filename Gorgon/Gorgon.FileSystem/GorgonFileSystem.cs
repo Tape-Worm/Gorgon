@@ -1145,7 +1145,7 @@ namespace Gorgon.IO
 
 				physicalPath = Path.GetFullPath(physicalPath);
 				string fileName = Path.GetFileName(physicalPath).FormatFileName();
-				string directory = Path.GetDirectoryName(physicalPath)?.FormatDirectory(Path.DirectorySeparatorChar);
+				string directory = Path.GetDirectoryName(physicalPath).FormatDirectory(Path.DirectorySeparatorChar);
 
 				// If we have a file, then mount the file using a provider.
 				if (!string.IsNullOrWhiteSpace(fileName))

@@ -23,12 +23,7 @@
 // Created: February 24, 2017 10:04:58 AM
 // 
 #endregion
-
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DX = SharpDX;
 
 namespace Gorgon.Graphics.Fonts.Codecs

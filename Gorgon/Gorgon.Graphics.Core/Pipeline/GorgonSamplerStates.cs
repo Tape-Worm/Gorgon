@@ -197,6 +197,7 @@ namespace Gorgon.Graphics.Core
 		/// <filterpriority>1</filterpriority>
 		public IEnumerator<GorgonSamplerState> GetEnumerator()
 		{
+			// ReSharper disable once ForCanBeConvertedToForeach
 			for (int i = 0; i < _states.Length; ++i)
 			{
 				yield return _states[i];

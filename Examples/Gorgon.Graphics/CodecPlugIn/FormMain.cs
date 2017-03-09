@@ -25,15 +25,13 @@
 #endregion
 
 using System;
-using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.IO;
 using System.Windows.Forms;
 using DX = SharpDX;
 using DXGI = SharpDX.DXGI;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using Gorgon.Graphics.Example.Properties;
+using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 using Gorgon.Plugins;
@@ -46,61 +44,69 @@ namespace CodecPlugIn
     /// </summary>
     public partial class FormMain : Form
     {
-        #region Variables.
-        // The main graphics interface.
-        private GorgonGraphics _graphics;
-        // Our 2D graphics interface.
-        private Gorgon2D _2D;
-        // Image to display, loaded from our plug-in.
-        private GorgonTexture2D _image;
+		#region Variables.
+		// The main graphics interface.
+		private GorgonGraphics _graphics;
+		// The swap chain to use.
+	    private GorgonSwapChain _swap;
+		// Image to display, loaded from our plug-in.
+		private GorgonTexture _texture;
+		// The image in system memory.
+	    private IGorgonImage _image;
 		// Our custom codec loaded from the plug-in.
-	    private IGorgonImageCodec _customCodec;
-        #endregion
+		private IGorgonImageCodec _customCodec;
+		// The blitter used to draw the texture.
+	    private GorgonTextureBlitter _blitter;
+		#endregion
 
-        #region Methods.
-        /// <summary>
-        /// Function to draw the image to the screen.
-        /// </summary>
-        private void Draw()
-        {
-            if (_image == null)
-            {
-                return;
-            }
+		#region Methods.
+		/// <summary>
+		/// Function called after the swap chain is resized.
+		/// </summary>
+		/// <param name="sender">The sender.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		/// <exception cref="System.NotImplementedException"></exception>
+		private void AfterSwapChainResized(object sender, EventArgs e)
+		{
+			_blitter.RenderTarget = _swap.RenderTargetView;
+		}
 
-            DX.Vector2 windowSize = new DX.Vector2(ClientSize.Width, ClientSize.Height);
-            DX.Vector2 imageSize = _image.Settings.Size;
-            DX.Vector2 newSize;
-            DX.Vector2 position;
+		/// <summary>
+		/// Function called during idle time.
+		/// </summary>
+		/// <returns><b>true</b> to continue execution, <b>false</b> to stop.</returns>
+		private bool Idle()
+		{
+			_swap.RenderTargetView.Clear(GorgonColor.White);
 
-            // Calculate the scale between the images.
-            var scale = new DX.Vector2(windowSize.X / imageSize.X, windowSize.Y / imageSize.Y);
+			var windowSize = new DX.Size2F(ClientSize.Width, ClientSize.Height);
+			var imageSize = new DX.Size2F(_texture.Info.Width, _texture.Info.Height);
 
-            // Only scale on a single axis if we don't have a 1:1 aspect ratio.
-            if (scale.Y > scale.X)
-            {
-                scale.Y = scale.X;
-            }
-            else
-            {
-                scale.X = scale.Y;
-            }
+			// Calculate the scale between the images.
+			var scale = new DX.Size2F(windowSize.Width / imageSize.Width, windowSize.Height / imageSize.Height);
 
-            // Scale the image.
-            DX.Vector2.Multiply(ref scale, ref imageSize, out newSize);
+			// Only scale on a single axis if we don't have a 1:1 aspect ratio.
+			if (scale.Height > scale.Width)
+			{
+				scale.Height = scale.Width;
+			}
+			else
+			{
+				scale.Width = scale.Height;
+			}
 
-            // Set up to center the window.
-            DX.Vector2.Divide(ref windowSize, 2.0f, out windowSize);
-            DX.Vector2.Divide(ref newSize, 2.0f, out imageSize);
+			// Scale the image.
+			var size = new DX.Size2((int)(scale.Width * imageSize.Width), (int)(scale.Height * imageSize.Height));
 
-            // Find the position.
-            DX.Vector2.Subtract(ref windowSize, ref imageSize, out position);
+			// Find the position.
+			var location = new DX.Point((int)(windowSize.Width / 2 - size.Width / 2), (int)(windowSize.Height / 2 - size.Height / 2));
 
-            // Now draw the image.
-            _2D.Drawing.BlendingMode = BlendingMode.Modulate;
-            _2D.Drawing.SmoothingMode = SmoothingMode.Smooth;
-            _2D.Drawing.Blit(_image, new RectangleF((Point)position, (Size)newSize), new RectangleF(0, 0, 1, 1));
-        }
+			_blitter.Blit(_texture, location.X, location.Y, size.Width, size.Height);
+
+			_swap.Present();
+
+			return true;
+		}
 
 		/// <summary>
 		/// Function to load our useless image codec plug-in.
@@ -151,26 +157,24 @@ namespace CodecPlugIn
 		private void ConvertImage()
 		{
 			// The path to our image file for our custom codec.
-			string tempPath = Path.ChangeExtension(Path.GetTempPath().FormatDirectory(Path.DirectorySeparatorChar) + Path.GetRandomFileName(), "Useless");
-			// The new texture holding image data read by the custom codec.
-			GorgonTexture2D newTexture = null;
+			string tempPath = Path.ChangeExtension(Path.GetTempPath().FormatDirectory(Path.DirectorySeparatorChar) + Path.GetRandomFileName(), "tvImage");
 
 			try
 			{
 				// Save the current texture using our useless new custom codec.
-				_image.Save(tempPath, _customCodec);
-
-				newTexture = _graphics.Textures.FromFile<GorgonTexture2D>("UselessTexture", tempPath, _customCodec);
-
-				// Free the old texture and assign to the new one.
+				_customCodec.SaveToFile(_image.ConvertToFormat(DXGI.Format.R8G8B8A8_UNorm), tempPath);
 				_image.Dispose();
-				_image = newTexture;
+				_texture?.Dispose();
+
+				_image = _customCodec.LoadFromFile(tempPath);
+				
+				_texture = _image.ToTexture("Converted Texture", _graphics);
+				
 			}
 			catch
 			{
 				// Clean up the new texture should we have an exception (this shouldn't happen, better safe than sorry).
-				newTexture?.Dispose();
-
+				_image?.Dispose();
 				throw;
 			}
 			finally
@@ -188,7 +192,22 @@ namespace CodecPlugIn
 			}
 	    }
 
-        /// <summary>
+		/// <summary>
+		/// Raises the <see cref="E:System.Windows.Forms.Form.FormClosing" /> event.
+		/// </summary>
+		/// <param name="e">A <see cref="T:System.Windows.Forms.FormClosingEventArgs" /> that contains the event data.</param>
+		protected override void OnFormClosing(FormClosingEventArgs e)
+	    {
+		    base.OnFormClosing(e);
+			
+			_blitter?.Dispose();
+			_texture?.Dispose();
+			_swap?.Dispose();
+			_graphics?.Dispose();
+		    _image?.Dispose();
+	    }
+
+	    /// <summary>
         /// Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.
         /// </summary>
         /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
@@ -200,8 +219,44 @@ namespace CodecPlugIn
 
             try
             {
-                // Set up the graphics interface.
-                _graphics = new GorgonGraphics();
+				// Load the custom codec.
+				if (!LoadCodec())
+				{
+					GorgonDialogs.ErrorBox(this, "Unable to load the image codec plug-in.");
+					GorgonApplication.Quit();
+					return;
+				}
+
+
+				// Set up the graphics interface.
+				IGorgonVideoDeviceList devices = new GorgonVideoDeviceList();
+				devices.Enumerate();
+
+				// 
+				_graphics = new GorgonGraphics(devices[0]);
+
+	            _swap = new GorgonSwapChain("Codec Plugin SwapChain",
+	                                        _graphics,
+	                                        this,
+	                                        new GorgonSwapChainInfo
+	                                        {
+		                                        Width = ClientSize.Width,
+		                                        Height = ClientSize.Height,
+		                                        Format = DXGI.Format.R8G8B8A8_UNorm
+	                                        });
+				_swap.AfterSwapChainResized += AfterSwapChainResized;
+
+				// Load the image to use as a texture.
+	            IGorgonImageCodec png = new GorgonCodecPng();
+				_image = png.LoadFromFile(Program.GetResourcePath(@"Textures\CodecPlugIn\SourceTexture.png"));
+
+				ConvertImage();
+
+				_blitter = new GorgonTextureBlitter(_graphics, _swap.RenderTargetView);
+
+				GorgonApplication.IdleMethod = Idle;
+
+				/*_graphics = new GorgonGraphics();
 
                 // Create our 2D renderer to display the image.
                 _2D = _graphics.Output.Create2DRenderer(this, 1280, 800);
@@ -217,16 +272,8 @@ namespace CodecPlugIn
                                                                         new GorgonCodecDDS());
 
 
-				// Load the custom codec.
-	            if (!LoadCodec())
-	            {
-					GorgonDialogs.ErrorBox(this, "Unable to load the useless image codec plug-in.");
-					GorgonApplication.Quit();
-		            return;
-	            }
-
-				// Convert the image to our custom codec.
-				ConvertImage();
+	            // Convert the image to our custom codec.
+	            ConvertImage();
 
                 // Set up our idle time processing.
                 GorgonApplication.IdleMethod = () =>
@@ -240,8 +287,8 @@ namespace CodecPlugIn
                                                        // We're not making an action game here.
                                                        _2D.Render(2);
                                                        return true;
-                                                   };
-            }
+                                                   };*/
+			}
             catch (Exception ex)
             {
                 GorgonDialogs.ErrorBox(this, ex);
@@ -252,7 +299,7 @@ namespace CodecPlugIn
                 Cursor.Current = Cursors.Default;
             }
         }
-        #endregion
+	    #endregion
 
         #region Constructor/Destructor.
         /// <summary>

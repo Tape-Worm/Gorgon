@@ -182,18 +182,18 @@ namespace Gorgon.Graphics.Fonts.Codecs
 		{
 			var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-			for (int i = 0; i < lineItems.Length; ++i)
+			foreach (string line in lineItems)
 			{
-				if (string.IsNullOrWhiteSpace(lineItems[i]))
+				if (string.IsNullOrWhiteSpace(line))
 				{
 					continue;
 				}
 
-				string[] keyValuePair = lineItems[i].Split(new[]
-				                                       {
-					                                       '='
-				                                       },
-				                                       StringSplitOptions.RemoveEmptyEntries);
+				string[] keyValuePair = line.Split(new[]
+				                                {
+					                                '='
+				                                },
+				                                StringSplitOptions.RemoveEmptyEntries);
 
 				// If there's no value, then use an empty string for that, otherwise, add as normal.
 				result.Add(keyValuePair[0], keyValuePair.Length == 1 ? string.Empty : keyValuePair[1]);

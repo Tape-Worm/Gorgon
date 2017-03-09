@@ -49,7 +49,7 @@ namespace Gorgon.Examples
 			var time = new TimeSpan(0, 0, (int)GorgonTiming.SecondsSinceStart);
 
 			// Get the time.
-			string timeString = $"Application up time: {time.Hours}:{time.Minutes.ToString("00")}:{time.Seconds.ToString("00")}";
+			string timeString = $"Application up time: {time.Hours}:{time.Minutes:00}:{time.Seconds:00}";
 
 			// Display the amount of time that the application has been running.
 			Console.BackgroundColor = ConsoleColor.Black;

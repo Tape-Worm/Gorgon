@@ -60,6 +60,8 @@ namespace Gorgon.Core.Collections
 
 			if (equalityItem != null)
 			{
+				// ReSharper disable once LoopCanBeConvertedToQuery
+				// ReSharper disable once ForCanBeConvertedToForeach
 				for (int i = 0; i < list.Count; ++i)
 				{
 					if (equalityItem.Equals(list[i]))
@@ -76,6 +78,7 @@ namespace Gorgon.Core.Collections
 
 			if (comparerItem != null)
 			{
+				// ReSharper disable once ForCanBeConvertedToForeach
 				for (int i = 0; i < list.Count; ++i)
 				{
 					if (comparerItem.CompareTo(list[i]) == 0)
@@ -88,6 +91,7 @@ namespace Gorgon.Core.Collections
 			}
 
 			// Finally, fall back to the object (and potentially boxing) method.
+			// ReSharper disable once ForCanBeConvertedToForeach
 			for (int i = 0; i < list.Count; ++i)
 			{
 				if (item.Equals(list[i]))

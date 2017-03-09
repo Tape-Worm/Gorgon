@@ -108,7 +108,7 @@ namespace Gorgon.Graphics.Example
         {
 	        Codecs = new[]
 	                 {
-		                 new GorgonImageCodecDescription(typeof(TvImageCodec))
+		                 new GorgonImageCodecDescription(typeof(TvImageCodecPlugIn))
 		                 {
 			                 Description = Description
 		                 }

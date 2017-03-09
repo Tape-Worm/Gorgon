@@ -150,6 +150,7 @@
     <Compile Include="Targets\GorgonRenderTargetView.cs" />
     <Compile Include="Targets\_Interfaces\IGorgonSwapChainInfo.cs" />
     <Compile Include="Textures\GorgonTexture.cs" />
+    <Compile Include="Textures\GorgonTextureBlitter.cs" />
     <Compile Include="Textures\GorgonTextureInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -159,6 +160,7 @@
     <Compile Include="Resource\GorgonResource.cs" />
     <Compile Include="Textures\_Interfaces\IGorgonTextureInfo.cs" />
     <Compile Include="Textures\_Interfaces\IGorgonImageToTextureInfo.cs" />
+    <Compile Include="Textures\_Internal\BltVertex.cs" />
     <Compile Include="Textures\_Internal\TextureLockCache.cs" />
     <Compile Include="Textures\GorgonTextureLockData.cs" />
     <Compile Include="Textures\GorgonTextureShaderView.cs" />
@@ -181,6 +183,7 @@
     <None Include="app.config" />
     <None Include="packages.config" />
     <None Include="Resources\Gorgon_2.x_Logo_Small.png" />
+    <None Include="Resources\GraphicsShaders.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">

@@ -835,4 +835,7 @@ Errors:
   <data name="GORGFX_ERR_RESOURCE_BOUND" xml:space="preserve">
     <value>The resource object '{0}' is already bound in slot {1}.</value>
   </data>
+  <data name="GraphicsShaders" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\GraphicsShaders.hlsl;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
 </root>

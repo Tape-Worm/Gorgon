@@ -752,6 +752,7 @@ namespace Gorgon.Graphics.Fonts
 			}
 
 			// Get width.
+			// ReSharper disable once ForCanBeConvertedToForeach
 			for (int i = 0; i < lines.Length; ++i)
 			{
 				float lineWidth = GetLineWidth(lines[i], useOutline && HasOutline);

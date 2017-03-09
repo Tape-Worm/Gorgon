@@ -20,24 +20,38 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: February 23, 2017 9:04:08 PM
+// Created: March 6, 2017 10:58:50 PM
 // 
 #endregion
 
-using System.Reflection;
 using System.Runtime.InteropServices;
+using Gorgon.Graphics.Core;
+using Gorgon.Native;
+using DX = SharpDX;
 
-//
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-//
-#if DEBUG
-[assembly: AssemblyTitle("Gorgon Input [DEBUG]")]
-#else
-[assembly: AssemblyTitle("Gorgon Input")]
-#endif
-[assembly: AssemblyDescription("Provides functionality to access the various input devices attached to the system.")]
+namespace Gorgon.Graphics
+{
+	/// <summary>
+	/// The vertex of the blitter used to blit textures to the current render target.
+	/// </summary>
+	[StructLayout(LayoutKind.Sequential, Pack = 1)]
+	struct BltVertex
+	{
+		/// <summary>
+		/// The size of the vertex, in bytes.
+		/// </summary>
+		public static readonly int Size = DirectAccess.SizeOf<BltVertex>();
 
-// The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("1c059ba8-f70b-40d6-bfc4-0a57fb00d758")]
+		/// <summary>
+		/// The position of the vertex.
+		/// </summary>
+		[InputElement(0, "SV_POSITION")]
+		public DX.Vector4 Position;
+
+		/// <summary>
+		/// The texture coordinate for the vertex.
+		/// </summary>
+		[InputElement(1, "TEXCOORD")]
+		public DX.Vector2 Uv;
+	}
+}

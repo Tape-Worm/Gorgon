@@ -23,7 +23,6 @@
 // Created: December 20, 2016 11:29:23 AM
 // 
 #endregion
-using System;
 using System.Collections.Generic;
 using Gorgon.Graphics.Core;
 

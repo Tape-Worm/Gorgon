@@ -251,6 +251,7 @@ namespace Gorgon.Graphics.Core
 
 			var result = new List<Tuple<FieldInfo, InputElementAttribute>>();
 
+			// ReSharper disable once ForCanBeConvertedToForeach
 			for (int i = 0; i < members.Length; ++i)
 			{
 				FieldInfo member = members[i];
