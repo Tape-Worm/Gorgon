@@ -115,12 +115,14 @@ namespace Gorgon.Graphics.Core
 					return;
 				}
 
-				if ((_nativeBindings == null)
-				    || (_nativeBindings.Length != 1))
+				if ((_nativeBindings != null) && (_nativeBindings.Length == 1))
 				{
-					_nativeBindings = new D3D11.VertexBufferBinding[1];
 					_nativeBindings[0] = value.ToVertexBufferBinding();
+					return;
 				}
+
+				_nativeBindings = new D3D11.VertexBufferBinding[1];
+				_nativeBindings[0] = value.ToVertexBufferBinding();
 			}
 		}
 		#endregion
@@ -131,6 +133,7 @@ namespace Gorgon.Graphics.Core
 		/// <filterpriority>1</filterpriority>
 		public IEnumerator<GorgonVertexBufferBinding> GetEnumerator()
 		{
+			// ReSharper disable once ForCanBeConvertedToForeach
 			for (int i = 0; i < _bindings.Length; ++i)
 			{
 				yield return _bindings[i];

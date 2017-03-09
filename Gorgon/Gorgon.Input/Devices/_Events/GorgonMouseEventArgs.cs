@@ -133,6 +133,7 @@ namespace Gorgon.Input
 			RelativePosition = relativePosition;
 			WheelDelta = wheelDelta;
 			ClickCount = clickCount;
+			IsAbsolute = isAbsolute;
 		}
 		#endregion
 	}

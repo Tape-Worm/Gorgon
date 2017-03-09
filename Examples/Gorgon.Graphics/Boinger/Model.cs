@@ -57,8 +57,6 @@ namespace Gorgon.Graphics.Example
 		private bool _isScaleChanged;
 		// Flag to inidcate that our rotation has been updated.
 		private bool _isRotationChanged;
-		// The texture for the model.
-		private GorgonTexture _texture;
 		#endregion
 
 		#region Properties.

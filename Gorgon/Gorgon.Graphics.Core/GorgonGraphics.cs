@@ -282,6 +282,7 @@ namespace Gorgon.Graphics.Core
 
 		    IGorgonPipelineStateInfo newStateInfo = newState;
 
+		    // ReSharper disable once ForCanBeConvertedToForeach
 		    for (int i = 0; i < _stateCache.Count; ++i)
 		    {
 				int blendStateEqualCount = 0;
@@ -744,6 +745,7 @@ namespace Gorgon.Graphics.Core
 			lock (_stateCacheLock)
 			{
 				// Wipe out the state cache.
+				// ReSharper disable once ForCanBeConvertedToForeach
 				for (int i = 0; i < _stateCache.Count; ++i)
 				{
 					_stateCache[i].D3DRasterState?.Dispose();

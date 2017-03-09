@@ -480,6 +480,8 @@ namespace Gorgon.Reflection
 				return false;
 			}
 
+			// ReSharper disable once LoopCanBeConvertedToQuery
+			// ReSharper disable once ForCanBeConvertedToForeach
 			for (int i = 0; i < fields.Length; ++i)
 			{
 				if (!fields[i].IsFieldSafeForNative())
@@ -542,6 +544,8 @@ namespace Gorgon.Reflection
 				return false;
 			}
 
+			// ReSharper disable once LoopCanBeConvertedToQuery
+			// ReSharper disable once ForCanBeConvertedToForeach
 			for (int i = 0; i < fields.Length; ++i)
 			{
 				if (!fields[i].IsFieldSafeForNative())

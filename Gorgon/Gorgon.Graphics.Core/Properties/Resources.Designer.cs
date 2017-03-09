@@ -2197,5 +2197,13 @@ namespace Gorgon.Graphics.Core.Properties {
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
+        
+        /// <summary>
+        /// </summary>
+        internal static string GraphicsShaders {
+            get {
+                return ResourceManager.GetString("GraphicsShaders", resourceCulture);
+            }
+        }
     }
 }

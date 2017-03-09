@@ -313,31 +313,6 @@ namespace Gorgon.Examples
 		}
 
 		/// <summary>
-		/// Function to initialize the controller and its dead zones.
-		/// </summary>
-		/// <param name="controller">The controller to initialize.</param>
-		/// <returns><b>true</b> if the controller is connected and set up, <b>false</b> if not.</returns>
-		private static bool SetupGamePad(IGorgonGamingDevice controller)
-		{
-			if (!controller.IsConnected)
-			{
-				return false;
-			}
-
-			/*GorgonRange xRange = controller.Info.AxisInfo[GamingDeviceAxis.LeftStickX].Range;
-			GorgonRange yRange = controller.Info.AxisInfo[GamingDeviceAxis.LeftStickY].Range;
-			GorgonRange x2Range = controller.Info.AxisInfo[GamingDeviceAxis.RightStickX].Range;
-			GorgonRange y2Range = controller.Info.AxisInfo[GamingDeviceAxis.RightStickY].Range;
-
-			controller.Axis[GamingDeviceAxis.LeftStickX].DeadZone = new GorgonRange(xRange.Minimum / 4, xRange.Maximum / 4);
-			controller.Axis[GamingDeviceAxis.LeftStickY].DeadZone = new GorgonRange(yRange.Minimum / 4, yRange.Maximum / 4);
-			controller.Axis[GamingDeviceAxis.RightStickX].DeadZone = new GorgonRange(x2Range.Minimum / 128, x2Range.Maximum / 128);
-			controller.Axis[GamingDeviceAxis.RightStickY].DeadZone = new GorgonRange(y2Range.Minimum / 128, y2Range.Maximum / 128);*/
-
-			return true;
-		}
-
-		/// <summary>
 		/// Function to enumerate and update the active controllers list.
 		/// </summary>
 		private void UpdateActiveControllers()
@@ -355,7 +330,7 @@ namespace Gorgon.Examples
 
 			for (int i = 0; i < _controllers.Count; i++)
 			{
-				if (!SetupGamePad(_controllers[i]))
+				if (!_controllers[i].IsConnected)
 				{
 					continue;
 				}
@@ -407,7 +382,7 @@ namespace Gorgon.Examples
 				GorgonApplication.IdleMethod += Idle;
 
 				// Launch a background task to check for connected devices.
-				Task.Run(() => CheckForConnectedDevices());
+				Task.Run(CheckForConnectedDevices);
 			}
 			catch (Exception ex)
 			{

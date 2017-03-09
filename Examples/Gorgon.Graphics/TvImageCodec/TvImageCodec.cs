@@ -149,7 +149,7 @@ namespace Gorgon.Graphics.Example
             }
 
             // We only support 2D images with the tv format.
-            var settings = new GorgonImageInfo(ImageType.Image2D, DXGI.Format.R8G8B8A8_UInt);
+            var settings = new GorgonImageInfo(ImageType.Image2D, DXGI.Format.R8G8B8A8_UNorm);
             TvHeader header;
 
             // Load the header for the image.
@@ -216,7 +216,7 @@ namespace Gorgon.Graphics.Example
 				{
 					// Ensure that we move to the next line by the row pitch and not the amount of pixels.
 					// Some images put padding in for alignment reasons which can throw off the data offsets.
-				    long ptrPosition = imagePtr.Address + (y * result.Buffers[0].PitchInformation.RowPitch);
+				    long ptrPosition = (y * result.Buffers[0].PitchInformation.RowPitch);
 
 					// Decode the pixels in the scan line for our resulting image.
 					for (int x = 0; x < settings.Width; ++x)
@@ -285,53 +285,42 @@ namespace Gorgon.Graphics.Example
 				// In essence, we'll be writing one channel as a byte and moving to the next pixel. 
 				// Get the pointer to our image buffer.
 			    IGorgonPointer imagePtr = imageData.ImageData;
-		        // Allocate a buffer to store our scanline before dumping to the file.
-			    var scanLineBuffer = new byte[imageData.Info.Width * 2];
 
-		        using (IGorgonPointer scanlinePtr = new GorgonPointer(imageData.Info.Width * 2))
-		        {
-			        // For each scan line in the image we'll encode the data as described above.
-			        for (int y = 0; y < imageData.Info.Height; ++y)
-			        {
-						// The pointer position in the scanline buffer.
-						long scanlinePtrPos = 0;
+			    // For each scan line in the image we'll encode the data as described above.
+			    for (int y = 0; y < imageData.Info.Height; ++y)
+			    {
+					// Ensure that we move to the next line by the row pitch and not the amount of pixels.
+					// Some images put padding in for alignment reasons which can throw off the data offsets.
+					// Also, the width is not suitable as a pixel is often more than 1 byte.
+					long pointerPos = (y * imageData.Buffers[0].PitchInformation.RowPitch);
 
-						// Ensure that we move to the next line by the row pitch and not the amount of pixels.
-						// Some images put padding in for alignment reasons which can throw off the data offsets.
-						// Also, the width is not suitable as a pixel is often more than 1 byte.
-						long pointerPos = imagePtr.Address + (y * imageData.Buffers[0].PitchInformation.RowPitch);
+				    // Loop through the scan line until we're at its end.
+				    for (int x = 0; x < imageData.Info.Width; ++x)
+				    {
+					    // We're assuming our image data is 4 bytes/pixel, but in real world scenarios this is dependent upon 
+					    // the format of the data.
+					    uint pixel = imagePtr.Read<uint>(pointerPos);
+					    pointerPos += sizeof(uint);
 
-				        // Loop through the scan line until we're at its end.
-				        for (int x = 0; x < imageData.Info.Width; ++x)
-				        {
-					        // We're assuming our image data is 4 bytes/pixel, but in real world scenarios this is dependent upon 
-					        // the format of the data.
-					        uint pixel = imagePtr.Read<uint>(pointerPos++);
+					    // Get the alpha channel for this pixel.
+					    var alpha = (byte)((pixel >> 24) & 0xff);
 
-					        // Get the alpha channel for this pixel.
-					        var alpha = (byte)((pixel >> 24) & 0xff);
+					    // Since we encode 1 byte per color component for each pixel, we need to bump up the bit shift
+					    // by 8 bits.  Once we get above 24 bits we'll start over since we're only working with 2 bytes 
+					    // per pixel in the destination.
 
-					        // Since we encode 1 byte per color component for each pixel, we need to bump up the bit shift
-					        // by 8 bits.  Once we get above 24 bits we'll start over since we're only working with 2 bytes 
-					        // per pixel in the destination.
+					    // We determine how many bits to shift the pixel based on horizontal positioning.
+					    // We assume that the image is based on 4 bytes/pixel.  In most cases this value should be 
+					    // determined by dividing the row pitch by the image width.
 
-					        // We determine how many bits to shift the pixel based on horizontal positioning.
-					        // We assume that the image is based on 4 bytes/pixel.  In most cases this value should be 
-					        // determined by dividing the row pitch by the image width.
+					    // Get the color component for the pixel.
+					    var color = (byte)((pixel >> (8 * (x % 3))) & 0xff);
 
-					        // Get the color component for the pixel.
-					        var color = (byte)((pixel >> (8 * (x % 3))) & 0xff);
-
-					        // Write it to the scanline.
-					        // We're encoding a pixel as a single color component with its alpha channel
-					        // value into an unsigned 16 bit number.
-							scanlinePtr.Write(scanlinePtrPos, (ushort)((color << 8) | alpha));
-					        scanlinePtrPos += sizeof(ushort);
-				        }
-
-				        // Send the scanline to the file.
-				        writer.Write(scanLineBuffer);
-			        }
+					    // Write it to the scanline.
+					    // We're encoding a pixel as a single color component with its alpha channel
+					    // value into an unsigned 16 bit number.
+						writer.Write((ushort)((color << 8) | alpha));
+				    }
 		        }
 	        }
         }

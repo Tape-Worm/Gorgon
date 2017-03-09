@@ -81,8 +81,8 @@ namespace Gorgon.Examples
 				Console.WriteLine();
 				Console.WriteLine("Computer name:\t\t{0}", GorgonComputerInfo.ComputerName);
 				Console.WriteLine("# of processors:\t{0}", GorgonComputerInfo.ProcessorCount);
-				Console.WriteLine("Total RAM:\t\t{0} ({1} bytes)", GorgonComputerInfo.TotalPhysicalRAM.FormatMemory(), GorgonComputerInfo.TotalPhysicalRAM.ToString("#,###"));
-				Console.WriteLine("Available RAM:\t\t{0} ({1} bytes)", GorgonComputerInfo.AvailablePhysicalRAM.FormatMemory(), GorgonComputerInfo.AvailablePhysicalRAM.ToString("#,###"));
+				Console.WriteLine("Total RAM:\t\t{0} ({1:#,###} bytes)", GorgonComputerInfo.TotalPhysicalRAM.FormatMemory(), GorgonComputerInfo.TotalPhysicalRAM);
+				Console.WriteLine("Available RAM:\t\t{0} ({1:#,###} bytes)", GorgonComputerInfo.AvailablePhysicalRAM.FormatMemory(), GorgonComputerInfo.AvailablePhysicalRAM);
 				Console.WriteLine();
 				Console.WriteLine("Windows version:\t{0} {1}", GorgonComputerInfo.OperatingSystemVersionText, string.IsNullOrEmpty(GorgonComputerInfo.OperatingSystemServicePack) ? string.Empty : GorgonComputerInfo.OperatingSystemServicePack);
 				Console.WriteLine("Windows architecture:\t{0}", GorgonComputerInfo.OperatingSystemArchitecture);

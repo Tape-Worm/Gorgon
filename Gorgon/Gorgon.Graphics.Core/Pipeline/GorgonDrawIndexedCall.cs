@@ -23,8 +23,6 @@
 // Created: July 19, 2016 7:17:17 PM
 // 
 #endregion
-using SharpDX.Direct3D;
-
 namespace Gorgon.Graphics.Core
 {
 	/// <summary>

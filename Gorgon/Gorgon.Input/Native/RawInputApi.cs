@@ -283,7 +283,7 @@ namespace Gorgon.Native
 		/// <param name="cbSizeHeader">Size of the header.</param>
 		/// <returns>0 if successful if pData is null, otherwise number of bytes if pData is not null.</returns>
 		[DllImport("user32.dll")]
-		private unsafe static extern int GetRawInputData(IntPtr hRawInput, RawInputCommand uiCommand, void* pData, ref int pcbSize, int cbSizeHeader);
+		private static extern unsafe int GetRawInputData(IntPtr hRawInput, RawInputCommand uiCommand, void* pData, ref int pcbSize, int cbSizeHeader);
 
 		/// <summary>
 		/// Function to enumerate raw input devices.
@@ -335,7 +335,7 @@ namespace Gorgon.Native
 		/// <param name="cbSizeHeader">Size of the raw input header value.</param>
 		/// <returns>0 if successful, -1 if not.</returns>
 		[DllImport("user32.dll")]
-		private static unsafe extern int GetRawInputBuffer(RAWINPUT* pData, uint* pcbSize, uint cbSizeHeader);
+		private static extern unsafe int GetRawInputBuffer(RAWINPUT* pData, uint* pcbSize, uint cbSizeHeader);
 
 
 		/// <summary>
