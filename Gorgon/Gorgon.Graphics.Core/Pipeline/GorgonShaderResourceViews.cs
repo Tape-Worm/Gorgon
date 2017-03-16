@@ -25,14 +25,11 @@
 #endregion
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using Gorgon.Core;
-using Gorgon.Diagnostics;
+using Gorgon.Graphics.Core.Pipeline;
 using Gorgon.Graphics.Core.Properties;
-using Gorgon.Math;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
@@ -41,99 +38,41 @@ namespace Gorgon.Graphics.Core
 	/// A list of shader resource views to apply to the pipeline.
 	/// </summary>
 	public sealed class GorgonShaderResourceViews
-		: IGorgonBoundList<GorgonShaderResourceView>, IReadOnlyList<GorgonShaderResourceView>
+		: GorgonResourceBindingList<GorgonShaderResourceView>
 	{
+		#region Constants.
+		/// <summary>
+		/// The maximum number of allowed shader resources that can be bound at the same time.
+		/// </summary>
+		public const int MaximumShaderResourceViewCount = 32;
+		#endregion
+
 		#region Variables.
-		// Render target views to apply to the pipeline.
-		private readonly GorgonShaderResourceView[] _views = new GorgonShaderResourceView[D3D11.CommonShaderStage.InputResourceSlotCount];
-		// Actual direct 3D shader resource views to bind.
-		private readonly D3D11.ShaderResourceView[] _nativeViews = new D3D11.ShaderResourceView[D3D11.CommonShaderStage.InputResourceSlotCount];
+		// The flags to indicate whether the first bank of shader resource views are dirty or not.
+		private int _dirty;
+		// The native resource bindings.
+		private NativeSrvBinding _nativeViews = new NativeSrvBinding
+		                                        {
+			                                        Srvs = new D3D11.ShaderResourceView[MaximumShaderResourceViewCount]
+		                                        };
 		#endregion
 
 		#region Properties.
 		/// <summary>
-		/// Property to return the list of actual Direct 3D 11 views.
+		/// Property to return whether the list is in a dirty state or not.
 		/// </summary>
-		internal D3D11.ShaderResourceView[] D3DShaderResourceViews => _nativeViews;
-
-		/// <summary>
-		/// Property to return the starting index begin binding at.
-		/// </summary>
-		public int BindIndex
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the number of binding slots actually used.
-		/// </summary>
-		public int BindCount
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return whether there are any target or depth stencil views set in this list.
-		/// </summary>
-		public bool IsEmpty => BindCount == 0;
-
-		/// <summary>Gets or sets the element at the specified index.</summary>
-		/// <returns>The element at the specified index.</returns>
-		/// <param name="index">The zero-based index of the element to get or set.</param>
-		/// <exception cref="T:System.ArgumentOutOfRangeException">
-		/// <paramref name="index" /> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1" />.</exception>
-		/// <exception cref="GorgonException">Thrown when the <see cref="GorgonShaderResourceView"/> being assigned is already assigned in this list.</exception>
-		/// <remarks>
-		/// <para>
-		/// A <see cref="GorgonShaderResourceView"/> can only be assigned to one slot at a time. If the view is assigned to multiple slots, an exception will be raised.
-		/// </para>
-		/// <para>
-		/// <note type="information">
-		/// <para>
-		/// The exceptions raised when validating a view against other views in this list are only thrown when Gorgon is compiled as DEBUG.
-		/// </para>
-		/// </note>
-		/// </para>
-		/// </remarks>
-		public GorgonShaderResourceView this[int index]
-		{
-			get
-			{
-				return _views[index];
-			}
-			set
-			{
-#if DEBUG
-				ValidateTextureShaderViews(value as GorgonTextureShaderView, index);
-#endif
-
-				_views[index] = value;
-				_nativeViews[index] = value?.D3DView;
-				BindIndex = value == null ? 0 : index;
-				BindCount = value == null ? 0 : 1;
-			}
-		}
-
-		/// <summary>Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
-		/// <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
-		public int Count => _views.Length;
-
-		/// <summary>Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</summary>
-		/// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only; otherwise, false.</returns>
-		bool ICollection<GorgonShaderResourceView>.IsReadOnly => false;
+		internal bool IsDirty => _dirty != 0;
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Function to validate the shader resource views and depth/stencil view being assigned.
-		/// </summary>
-		/// <param name="view">The view to evaluate.</param>
-		/// <param name="index">The index of the view being assigned.</param>
-		private void ValidateTextureShaderViews(GorgonTextureShaderView view, int index)
-		{
 #if DEBUG
+		/// <summary>
+		/// Function to validate an item being assigned to a slot.
+		/// </summary>
+		/// <param name="view">The view to validate.</param>
+		/// <param name="index">The index of the slot being assigned.</param>
+		protected override void OnValidate(GorgonShaderResourceView view, int index)
+		{
 			if (view == null)
 			{
 				return;
@@ -147,14 +86,10 @@ namespace Gorgon.Graphics.Core
 				return;
 			}
 
-			// If we don't have a shader resource view, we don't need to check anything, even if we have a depth/stencil.
-			// Begin checking resource data.
-			Debug.Assert(view.Texture != null, "Shader resource view is not a texture.");
-
 			// Only check if we have more than 1 shader resource view being applied.
-			for (int i = 0; i < _views.Length; i++)
+			for (int i = 0; i < Count; i++)
 			{
-				var other = _views[i] as GorgonTextureShaderView;
+				var other = this[i] as GorgonTextureShaderView;
 
 				if (other == null)
 				{
@@ -166,7 +101,108 @@ namespace Gorgon.Graphics.Core
 					throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_VIEW_ALREADY_BOUND, other.Texture.Name));
 				}
 			}
+		}
 #endif
+
+		/// <summary>
+		/// Function to resize the native binding object list if needed.
+		/// </summary>
+		/// <param name="newSize">The new size for the list.</param>
+		/// <remarks>
+		/// <para>
+		/// This method must be overridden by the implementing class so that the native list is resized along with this list after calling <see cref="GorgonResourceBindingList{T}.Resize"/>.
+		/// </para>
+		/// </remarks>
+		protected override void OnResizeNativeList(int newSize)
+		{
+			
+		}
+
+		/// <summary>
+		/// Function to clear the list of native binding objects.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// The implementing class must implement this in order to unassign items from the native binding object list when the <see cref="GorgonResourceBindingList{T}.Clear"/> method is called.
+		/// </para>
+		/// </remarks>
+		protected override void OnClearNativeItems()
+		{
+			Array.Clear(_nativeViews.Srvs, 0, _nativeViews.Srvs.Length);
+			_nativeViews.StartSlot = 0;
+			_nativeViews.Count = 0;
+
+			unchecked
+			{
+				// When clearing all slots are marked as dirty.
+				_dirty = (int)0xffffffff;
+			}
+		}
+
+		/// <summary>
+		/// Function called when an item is assigned to a slot in the binding list.
+		/// </summary>
+		/// <param name="index">The index of the slot being assigned.</param>
+		/// <param name="item">The item being assigned.</param>
+		protected override void OnSetNativeItem(int index, GorgonShaderResourceView item)
+		{
+			_nativeViews.Srvs[index] = item?.D3DView;
+			_dirty |= 1 << index;
+		}
+
+		/// <summary>
+		/// Function to retrieve the native shader resource view binding.
+		/// </summary>
+		/// <returns>A native shader resource view binding.</returns>
+		internal NativeSrvBinding GetNativeShaderResources()
+		{
+			// Nothing's been changed, so send back our array.
+			if (_dirty == 0)
+			{
+				return _nativeViews;
+			}
+
+			int firstSlot = -1;
+			int slotCount = 0;
+			D3D11.ShaderResourceView[] srvs = _nativeViews.Srvs;
+
+			for (int i = 0; i < MaximumShaderResourceViewCount; ++i)
+			{
+				int dirtyMask = 1 << i;
+
+				// Skip this index if we don't have a slot assigned.
+				if ((_dirty & dirtyMask) != dirtyMask)
+				{
+					continue;
+				}
+
+				// Record our first slot used.
+				if (firstSlot == -1)
+				{
+					firstSlot = i;
+				}
+
+				srvs[i] = this[i]?.D3DView;
+
+				// Remove this bit.
+				_dirty &= ~dirtyMask;
+
+				++slotCount;
+
+				if (_dirty == 0)
+				{
+					break;
+				}
+			}
+
+			_nativeViews = new NativeSrvBinding
+			               {
+				               Srvs = srvs,
+				               Count = slotCount,
+				               StartSlot = firstSlot
+			               };
+
+			return _nativeViews;
 		}
 
 		/// <summary>
@@ -175,28 +211,28 @@ namespace Gorgon.Graphics.Core
 		/// <param name="startSlot">The starting slot to assign.</param>
 		/// <param name="views">The views to assign.</param>
 		/// <param name="count">[Optional] The number of items to copy from <paramref name="views"/>.</param>
-		/// <exception cref="System.ArgumentOutOfRangeException">startSlot</exception>
-		/// <exception cref="ArgumentException"></exception>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="views" /> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="startSlot" /> is less than 0.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="startSlot" /> plus the number of <paramref name="views" /> exceeds the size of this list.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="startSlot" /> plus the number of <paramref name="views"/> exceeds the size of this list.</exception>
+		/// <exception cref="GorgonException">Thrown when the same shader resource view is assigned to more than 1 slot.
+		/// <para>-or-</para>
+		/// <para>The list is locked for writing.</para>
+		/// </exception>
 		/// <remarks>
 		/// <para>
 		/// Use this method to set a series of <see cref="GorgonShaderResourceView" /> items at once. This will yield better performance than attempting to assign a single <see cref="GorgonShaderResourceView" />
 		/// at a time via the indexer.
 		/// </para>
 		/// <para>
-		///   <note type="warning">
+		/// <note type="warning">
 		/// Any exceptions thrown by this method will only be thrown when Gorgon is compiled as <b>DEBUG</b>.
 		/// </note>
 		/// </para></remarks>
 		public void SetRange(int startSlot, IReadOnlyList<GorgonShaderResourceView> views, int? count = null)
 		{
-			views.ValidateObject(nameof(views));
-
 			if (count == null)
 			{
-				count = views.Count;
+				count = views?.Count ?? 0;
 			}
 
 #if DEBUG
@@ -205,139 +241,74 @@ namespace Gorgon.Graphics.Core
 				throw new ArgumentOutOfRangeException(nameof(startSlot));
 			}
 
-			if (count > views.Count)
+			if (count.Value < 0)
 			{
-				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TOO_MANY_ITEMS, 0, count.Value, views.Count));
+				throw new ArgumentOutOfRangeException(nameof(count));
 			}
 
-			if (startSlot + count > _views.Length)
+			if (count + startSlot > MaximumShaderResourceViewCount)
 			{
-				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TOO_MANY_ITEMS, startSlot, count.Value, _views.Length));
+				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TOO_MANY_ITEMS, startSlot, count.Value, MaximumShaderResourceViewCount));
+			}
+
+			if (count > (views?.Count ?? 0))
+			{
+				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TOO_MANY_ITEMS, 0, count.Value, views?.Count), nameof(count));
 			}
 #endif
-
-			for (int i = startSlot; i < startSlot + count.Value; ++i)
+			// Resize accordingly if we have a mismatch.
+			if (count.Value != Count)
 			{
-#if DEBUG
-				var textureView = views[i] as GorgonTextureShaderView;
+				Resize(count.Value);
+			}
 
-				if (textureView != null)
+			if ((views == null) || (count == 0))
+			{
+				Clear();
+				return;
+			}
+
+			for (int i = 0; i < count.Value; ++i)
+			{
+				this[i + startSlot] = views[i];
+			}
+		}
+
+
+		/// <summary>
+		/// Function to copy the elements from a resource binding list to this list.
+		/// </summary>
+		/// <param name="source">The source list to copy.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="source"/> parameter is <b>null</b>.</exception>
+		public void CopyFrom(GorgonShaderResourceViews source)
+		{
+			int dirty = 0;
+
+			if (source == null)
+			{
+				throw new ArgumentNullException(nameof(source));
+			}
+
+			for (int i = 0; i < source.Count; ++i)
+			{
+				int mask = 1 << i;
+
+				if (this[i] == source[i])
 				{
-					ValidateTextureShaderViews(textureView, i);
+					// If this index was already dirty, then we need to ensure it stays that way.
+					if ((_dirty & mask) == mask)
+					{
+						dirty |= mask;
+					}
+					continue;
 				}
-#endif
-				_views[i] = views[i];
-				_nativeViews[i] = views[i]?.D3DView;
+
+				this[i] = source[i];
+				dirty |= mask;
 			}
 
-			BindIndex = startSlot;
-			BindCount = count.Value;
-		}
-
-		/// <summary>
-		/// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.
-		/// </summary>
-		/// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
-		/// <exception cref="NotSupportedException">This method is not supported by this type.</exception>
-		void ICollection<GorgonShaderResourceView>.Add(GorgonShaderResourceView item)
-		{
-			throw new NotSupportedException();
-		}
-
-		/// <summary>
-		/// Inserts an item to the <see cref="T:System.Collections.Generic.IList`1" /> at the specified index.
-		/// </summary>
-		/// <param name="index">The zero-based index at which <paramref name="item" /> should be inserted.</param>
-		/// <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1" />.</param>
-		/// <exception cref="NotSupportedException">This method is not supported by this type.</exception>
-		void IList<GorgonShaderResourceView>.Insert(int index, GorgonShaderResourceView item)
-		{
-			throw new NotSupportedException();
-		}
-
-		/// <summary>
-		/// Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1" />.
-		/// </summary>
-		/// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
-		/// <returns>true if <paramref name="item" /> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
-		/// <exception cref="NotSupportedException">This method is not supported by this type.</exception>
-		bool ICollection<GorgonShaderResourceView>.Remove(GorgonShaderResourceView item)
-		{
-			throw new NotSupportedException();
-		}
-
-		/// <summary>
-		/// Removes the <see cref="T:System.Collections.Generic.IList`1" /> item at the specified index.
-		/// </summary>
-		/// <param name="index">The zero-based index of the item to remove.</param>
-		/// <exception cref="NotSupportedException">This method is not supported by this type.</exception>
-		void IList<GorgonShaderResourceView>.RemoveAt(int index)
-		{
-			throw new NotSupportedException();
-		}
-
-		/// <summary>
-		/// Returns an enumerator that iterates through a collection.
-		/// </summary>
-		/// <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return _views.GetEnumerator();
-		}
-
-		/// <summary>
-		/// Function to unbind all the shader resource views and depth/stencil views.
-		/// </summary>
-		public void Clear()
-		{
-			for (int i = 0; i < _views.Length; ++i)
-			{
-				_views[i] = null;
-				_nativeViews[i] = null;
-			}
-
-			BindIndex = 0;
-			BindCount = 0;
-		}
-
-		/// <summary>Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.</summary>
-		/// <returns>true if <paramref name="item" /> is found in the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false.</returns>
-		/// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
-		public bool Contains(GorgonShaderResourceView item)
-		{
-			return Array.IndexOf(_views, item) != -1;
-		}
-
-		/// <summary>Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1" /> to an <see cref="T:System.Array" />, starting at a particular <see cref="T:System.Array" /> index.</summary>
-		/// <param name="array">The one-dimensional <see cref="T:System.Array" /> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1" />. The <see cref="T:System.Array" /> must have zero-based indexing.</param>
-		/// <param name="arrayIndex">The zero-based index in <paramref name="array" /> at which copying begins.</param>
-		/// <exception cref="T:System.ArgumentNullException">
-		/// <paramref name="array" /> is null.</exception>
-		/// <exception cref="T:System.ArgumentOutOfRangeException">
-		/// <paramref name="arrayIndex" /> is less than 0.</exception>
-		/// <exception cref="T:System.ArgumentException">The number of elements in the source <see cref="T:System.Collections.Generic.ICollection`1" /> is greater than the available space from <paramref name="arrayIndex" /> to the end of the destination <paramref name="array" />.</exception>
-		public void CopyTo(GorgonShaderResourceView[] array, int arrayIndex)
-		{
-			_views.CopyTo(array, arrayIndex);
-		}
-
-		/// <summary>Returns an enumerator that iterates through the collection.</summary>
-		/// <returns>An enumerator that can be used to iterate through the collection.</returns>
-		/// <filterpriority>1</filterpriority>
-		public IEnumerator<GorgonShaderResourceView> GetEnumerator()
-		{
-			foreach (GorgonShaderResourceView view in _views)
-			{
-				yield return view;
-			}
-		}
-
-		/// <summary>Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1" />.</summary>
-		/// <returns>The index of <paramref name="item" /> if found in the list; otherwise, -1.</returns>
-		/// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.IList`1" />.</param>
-		public int IndexOf(GorgonShaderResourceView item)
-		{
-			return Array.IndexOf(_views, item);
+			// Update dirty flags.
+			_dirty = dirty;
 		}
 		#endregion
 
@@ -345,21 +316,9 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonShaderResourceViews"/> class.
 		/// </summary>
-		/// <param name="maxSize">The maximum number of available slots.</param>
-		public GorgonShaderResourceViews(int maxSize)
-		{
-			// Render target views to apply to the pipeline.
-			_views = new GorgonShaderResourceView[maxSize.Min(D3D11.CommonShaderStage.InputResourceSlotCount)];
-			// Actual direct 3D shader resource views to bind.
-			_nativeViews = new D3D11.ShaderResourceView[maxSize.Min(D3D11.CommonShaderStage.InputResourceSlotCount)];
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonShaderResourceViews"/> class.
-		/// </summary>
 		public GorgonShaderResourceViews()
+			: base(MaximumShaderResourceViewCount, MaximumShaderResourceViewCount)
 		{
-
 		}
 
 		/// <summary>
@@ -367,26 +326,27 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="shaderResourceViews">The shader resource views to assign.</param>
 		/// <param name="startSlot">[Optional] The starting slot to use for the shader resource views.</param>
+		/// <exception cref="ArgumentException">Thrown if the number of <paramref name="shaderResourceViews"/> exceeds the <see cref="MaximumShaderResourceViewCount"/>.</exception>
+		/// <exception cref="GorgonException">Thrown when the same shader resource view is assigned to more than 1 slot.</exception>
+		/// <remarks>
+		/// <para>
+		/// This overload will set many shader resource views at once.
+		/// </para>
+		/// <para>
+		/// All <paramref name="shaderResourceViews"/> must be assigned to a separate slot, that is, the resource view cannot be assigned to more than 1 slot at a time.
+		/// </para>
+		/// <para>
+		/// <note type="warning">
+		/// <para>
+		/// For the sake of performance, Exceptions thrown by this constructor will only be thrown when Gorgon is compiled as DEBUG.
+		/// </para>
+		/// </note>
+		/// </para>
+		/// </remarks>
 		public GorgonShaderResourceViews(IEnumerable<GorgonShaderResourceView> shaderResourceViews, int startSlot = 0)
+			: this()
 		{
-			if (shaderResourceViews == null)
-			{
-				return;
-			}
-
-			int index = startSlot;
-
-			foreach (GorgonShaderResourceView view in shaderResourceViews)
-			{
-				if (index >= _views.Length)
-				{
-					break;
-				}
-
-				this[index++] = view;
-			}
-
-			BindIndex = startSlot;
+			SetRange(startSlot, shaderResourceViews?.ToArray());
 		}
 		#endregion
 	}

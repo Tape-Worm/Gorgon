@@ -58,9 +58,10 @@ namespace Gorgon.Graphics.Fonts
 		/// <summary>
 		/// Property to return the texture that the glyph can be found on.
 		/// </summary>
-		public GorgonShaderResourceViews TextureView
+		public GorgonTextureShaderView TextureView
 		{
 			get;
+			private set;
 		}
 
 		/// <summary>
@@ -191,9 +192,7 @@ namespace Gorgon.Graphics.Fonts
 				throw new ArgumentNullException(nameof(texture));
 			}
 
-			var currentView = TextureView[0] as GorgonTextureShaderView;
-
-			if ((texture.DefaultShaderResourceView == currentView)
+			if ((texture.DefaultShaderResourceView == TextureView)
 			    && (glyphCoordinates == GlyphCoordinates)
 				&& (outlineCoordinates == OutlineCoordinates)
 				&& (TextureIndex == textureArrayIndex))
@@ -201,7 +200,7 @@ namespace Gorgon.Graphics.Fonts
 				return;
 			}
 
-			if (texture.DefaultShaderResourceView != currentView)
+			if (texture.DefaultShaderResourceView != TextureView)
 			{
 				if (texture.Info.TextureType != TextureType.Texture2D)
 				{
@@ -216,11 +215,11 @@ namespace Gorgon.Graphics.Fonts
 					throw new ArgumentException(Resources.GORGFX_ERR_GLYPH_TEXTURE_FORMAT_INVALID, nameof(texture));
 				}
 
-				TextureView[0] = currentView = texture.DefaultShaderResourceView;
+				TextureView = texture.DefaultShaderResourceView;
 			}
 
 			// Ensure that this index is valid.
-			textureArrayIndex = textureArrayIndex.Max(0).Min(currentView?.Texture.Info.ArrayCount - 1 ?? 0);
+			textureArrayIndex = textureArrayIndex.Max(0).Min(TextureView?.Texture.Info.ArrayCount - 1 ?? 0);
 
 			TextureIndex = textureArrayIndex;
 			GlyphCoordinates = glyphCoordinates;
@@ -285,7 +284,6 @@ namespace Gorgon.Graphics.Fonts
 		{
 			Character = character;
 			Advance = advance;
-			TextureView = new GorgonShaderResourceViews(1);
 		}
 		#endregion
 	}

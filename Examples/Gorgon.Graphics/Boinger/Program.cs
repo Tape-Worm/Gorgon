@@ -266,7 +266,7 @@ namespace Gorgon.Graphics.Example
 			_drawCall.IndexCount = model.IndexBuffer.Info.IndexCount;
 			_drawCall.Resources.IndexBuffer = model.IndexBuffer;
 			_drawCall.Resources.VertexBuffers = model.VertexBufferBindings;
-			_drawCall.Resources.PixelShaderResources = model.Material.Texture;
+			_drawCall.Resources.PixelShaderResourceViews[0] = model.Material.Texture;
 			_drawCall.Resources.PixelShaderSamplers = model.Material.TextureSampler;
 			_drawCall.State = currentState;
 
@@ -622,10 +622,7 @@ namespace Gorgon.Graphics.Example
 				          {
 					          Material = new Material
 					                     {
-						                     Texture =
-						                     {
-							                     [0] = _texture.DefaultShaderResourceView
-						                     },
+						                     Texture = _texture.DefaultShaderResourceView,
 						                     TextureSampler =
 						                     {
 							                     [0] = _samplerState
@@ -637,10 +634,7 @@ namespace Gorgon.Graphics.Example
 				          {
 					          Material = new Material
 					                     {
-						                     Texture =
-						                     {
-							                     [0] = _texture.DefaultShaderResourceView
-						                     },
+						                     Texture = _texture.DefaultShaderResourceView,
 						                     TextureSampler =
 						                     {
 							                     [0] = _samplerState
@@ -662,10 +656,7 @@ namespace Gorgon.Graphics.Example
 				          Position = new DX.Vector3(2.2f, 1.5f, 2.5f),
 				          Material = new Material
 				                     {
-					                     Texture =
-					                     {
-						                     [0] = _texture.DefaultShaderResourceView
-					                     },
+					                     Texture = _texture.DefaultShaderResourceView,
 					                     TextureSampler =
 					                     {
 						                     [0] = _samplerState

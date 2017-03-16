@@ -26,7 +26,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -83,8 +82,8 @@ namespace Gorgon.Graphics.Core
 	    private readonly List<GorgonPipelineState> _stateCache = new List<GorgonPipelineState>();
 		// Synchronization lock for creating new pipeline cache entries.
 		private readonly object _stateCacheLock = new object();
-		// The currently active pipeline resources.
-		private readonly GorgonPipelineResources _currentPipelineResources;
+		// The currently set pipeline resources.
+	    private GorgonPipelineResources _currentPipelineResources;
 		#endregion
 
 		#region Properties.
@@ -377,12 +376,19 @@ namespace Gorgon.Graphics.Core
 
 			if (vertexBuffers != null)
 			{
-				bindings = vertexBuffers.D3DBindings;
+				bindings = vertexBuffers.NativeBindings;
 				inputLayout = vertexBuffers.InputLayout.D3DInputLayout;
 			}
 
 			D3DDeviceContext.InputAssembler.InputLayout = inputLayout;
-			D3DDeviceContext.InputAssembler.SetVertexBuffers(0, bindings);
+			if (bindings != null)
+			{
+				D3DDeviceContext.InputAssembler.SetVertexBuffers(0, bindings);
+			}
+			else
+			{
+				D3DDeviceContext.InputAssembler.SetVertexBuffers(0, new D3D11.VertexBufferBinding(null, 0, 0));
+			}
 		}
 
 		/// <summary>
@@ -391,18 +397,15 @@ namespace Gorgon.Graphics.Core
 		/// <param name="renderTargetViews">The render targets to bind to the pipeline.</param>
 		private void SetRenderTargets(GorgonRenderTargetViews renderTargetViews)
 	    {
-		    D3D11.DepthStencilView depthView = null;
-		    D3D11.RenderTargetView[] targetViews = null;
-		    int bindCount = 0;
-
-		    if (renderTargetViews != null)
+			// We've no render targets, so unbind all.
+			if (renderTargetViews == null)
 		    {
-			    depthView = renderTargetViews.DepthStencilView?.D3DView;
-			    bindCount = renderTargetViews.BindCount;
-			    targetViews = renderTargetViews.D3DRenderTargetViews;
+			    D3DDeviceContext.OutputMerger.SetTargets(null, 0, (D3D11.RenderTargetView[])null);
+			    return;
 		    }
 
-			D3DDeviceContext.OutputMerger.SetTargets(depthView, bindCount, targetViews);
+			// Otherwise, copy into our target list.
+			D3DDeviceContext.OutputMerger.SetTargets(renderTargetViews.DepthStencilView?.D3DView, renderTargetViews.Count, renderTargetViews.NativeViews);
 	    }
 
 		/// <summary>
@@ -413,49 +416,18 @@ namespace Gorgon.Graphics.Core
 		private void SetShaderSamplers(ShaderType shaderType, GorgonSamplerStates samplerStates)
 		{
 			D3D11.SamplerState[] samplers = null;
-			int bindIndex = 0;
 			int bindCount = 0;
 
 			if (samplerStates != null)
 			{
-				samplers = samplerStates.D3DSamplerStates;
-				bindIndex = samplerStates.BindIndex;
-				bindCount = samplerStates.BindCount;
+				samplers = samplerStates.NativeStates;
+				bindCount = samplerStates.NativeStates.Length;
 			}
 
 			switch (shaderType)
 			{
 				case ShaderType.Pixel:
-					D3DDeviceContext.PixelShader.SetSamplers(bindIndex, bindCount, samplers);
-					break;
-			}
-		}
-
-		/// <summary>
-		/// Function to set the shader resources for a given shader type.
-		/// </summary>
-		/// <param name="shaderType">The type of shader to apply the resources towards.</param>
-		/// <param name="shaderViews">The resource views to set.</param>
-		private void SetShaderResources(ShaderType shaderType, GorgonShaderResourceViews shaderViews)
-		{
-			D3D11.ShaderResourceView[] views = null;
-			int bindIndex = 0;
-			int bindCount = 0;
-
-			if (shaderViews != null)
-			{
-				views = shaderViews.D3DShaderResourceViews;
-				bindIndex = shaderViews.BindIndex;
-				bindCount = shaderViews.BindCount;
-			}
-
-			switch (shaderType)
-			{
-				case ShaderType.Vertex:
-					D3DDeviceContext.VertexShader.SetShaderResources(bindIndex, bindCount, views);
-					break;
-				case ShaderType.Pixel:
-					D3DDeviceContext.PixelShader.SetShaderResources(bindIndex, bindCount, views);
+					D3DDeviceContext.PixelShader.SetSamplers(0, bindCount, samplers);
 					break;
 			}
 		}
@@ -465,7 +437,6 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="shaderType">The type of shader to apply the constant buffers towards.</param>
 		/// <param name="constantBuffers">The constant buffers to set.</param>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private void SetConstantBuffers(ShaderType shaderType, GorgonConstantBuffers constantBuffers)
 	    {
 		    D3D11.Buffer[] buffers = null;
@@ -473,8 +444,8 @@ namespace Gorgon.Graphics.Core
 
 		    if (constantBuffers != null)
 		    {
-			    buffers = constantBuffers.D3DConstantBuffers;
-			    bindCount = constantBuffers.BindCount;
+			    buffers = constantBuffers.NativeBuffers;
+			    bindCount = constantBuffers.NativeBuffers.Length;
 		    }
 
 		    switch (shaderType)
@@ -495,70 +466,55 @@ namespace Gorgon.Graphics.Core
 		private void ApplyResources(GorgonPipelineResources resources)
 		{
 			// If we didn't have any resources to bind (or unbind), then leave.  We'll keep the last state.
-			if (resources == null)
-			{
-				_currentPipelineResources.VertexShaderResources = null;
-				_currentPipelineResources.PixelShaderResources = null;
-				_currentPipelineResources.VertexShaderConstantBuffers = null;
-				_currentPipelineResources.PixelShaderConstantBuffers = null;
-				_currentPipelineResources.PixelShaderSamplers = null;
-				_currentPipelineResources.IndexBuffer = null;
-				_currentPipelineResources.RenderTargets = null;
-				_currentPipelineResources.VertexBuffers = null;
-			}
-			else
-			{
-				_currentPipelineResources.CopyResourceState(resources);
-			}
+			PipelineResourceChangeFlags changes = _currentPipelineResources.GetDifference(resources);
 
-			PipelineResourceChangeFlags changes = _currentPipelineResources.Changes;
-
-			if (changes == PipelineResourceChangeFlags.None)
+			if ((_currentPipelineResources != null)
+				&& (changes == PipelineResourceChangeFlags.None))
 			{
 				return;
 			}
 
 			if ((changes & PipelineResourceChangeFlags.RenderTargets) == PipelineResourceChangeFlags.RenderTargets)
 			{
-				SetRenderTargets(_currentPipelineResources.RenderTargets);
+				SetRenderTargets(resources.RenderTargets);
 			}
 
 			if ((changes & PipelineResourceChangeFlags.VertexBuffer) == PipelineResourceChangeFlags.VertexBuffer)
 			{
-				SetVertexBuffers(_currentPipelineResources.VertexBuffers);
+				SetVertexBuffers(resources.VertexBuffers);
 			}
 
 			if ((changes & PipelineResourceChangeFlags.PixelShaderConstantBuffer) == PipelineResourceChangeFlags.PixelShaderConstantBuffer)
 			{
-				SetConstantBuffers(ShaderType.Pixel, _currentPipelineResources.PixelShaderConstantBuffers);
+				SetConstantBuffers(ShaderType.Pixel, resources.PixelShaderConstantBuffers);
 			}
 
 			if ((changes & PipelineResourceChangeFlags.VertexShaderConstantBuffer) == PipelineResourceChangeFlags.VertexShaderConstantBuffer)
 			{
-				SetConstantBuffers(ShaderType.Vertex, _currentPipelineResources.VertexShaderConstantBuffers);
+				SetConstantBuffers(ShaderType.Vertex, resources.VertexShaderConstantBuffers);
 			}
 
 			if ((changes & PipelineResourceChangeFlags.PixelShaderResource) == PipelineResourceChangeFlags.PixelShaderResource)
 			{
-				SetShaderResources(ShaderType.Pixel, _currentPipelineResources.PixelShaderResources);
+				resources.SetShaderResourceViews(D3DDeviceContext, ShaderType.Pixel);
 			}
 
 			if ((changes & PipelineResourceChangeFlags.VertexShaderResource) == PipelineResourceChangeFlags.VertexShaderResource)
 			{
-				SetShaderResources(ShaderType.Vertex, _currentPipelineResources.VertexShaderResources);
+				throw new Exception("Needs to be done.");
 			}
 
 			if ((changes & PipelineResourceChangeFlags.PixelShaderSampler) == PipelineResourceChangeFlags.PixelShaderSampler)
 			{
-				SetShaderSamplers(ShaderType.Pixel, _currentPipelineResources.PixelShaderSamplers);
+				SetShaderSamplers(ShaderType.Pixel, resources.PixelShaderSamplers);
 			}
 
 			if ((changes & PipelineResourceChangeFlags.IndexBuffer) == PipelineResourceChangeFlags.IndexBuffer)
 			{
-				SetIndexbuffer(_currentPipelineResources.IndexBuffer);
+				SetIndexbuffer(resources.IndexBuffer);
 			}
 
-			_currentPipelineResources.Changes = PipelineResourceChangeFlags.None;
+			_currentPipelineResources = resources;
 		}
 
 		/// <summary>
@@ -717,7 +673,6 @@ namespace Gorgon.Graphics.Core
 				_lastDrawCall = new GorgonDrawCall();
 			}
 
-			_lastDrawCall.Resources.CopyResourceState(drawCall.Resources);
 			_lastDrawCall.BlendFactor = drawCall.BlendFactor;
 			_lastDrawCall.BlendSampleMask = drawCall.BlendSampleMask;
 			_lastDrawCall.DepthStencilReference = drawCall.DepthStencilReference;

@@ -349,13 +349,13 @@ namespace Gorgon.Graphics.Example
 									                              [0] = _constantBuffer
 								                              },
 								// Bind the texture to this draw call.
-								PixelShaderResources = new GorgonShaderResourceViews
-								                       {
-															// We put this texture in slot 0, and this must be synchronized with the 
-															// pixel shader. Hence why the declaration of the texture in the shader 
-															// has a t0 semantic.
-									                       [0] = _texture.DefaultShaderResourceView
-								                       },
+								// We put this texture in slot 0, and this must be synchronized with the 
+								// pixel shader. Hence why the declaration of the texture in the shader 
+								// has a t0 semantic.
+								PixelShaderResourceViews =
+								{
+									[0] = _texture.DefaultShaderResourceView
+								},
 								// Bind the texture sampler to this draw call.
 								PixelShaderSamplers =  new GorgonSamplerStates
 								                       {

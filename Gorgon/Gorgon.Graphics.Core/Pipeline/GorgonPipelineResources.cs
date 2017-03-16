@@ -25,7 +25,9 @@
 #endregion
 
 using System;
+using D3D11 = SharpDX.Direct3D11;
 using Gorgon.Diagnostics;
+using Gorgon.Graphics.Core.Pipeline;
 
 namespace Gorgon.Graphics.Core
 {
@@ -77,8 +79,15 @@ namespace Gorgon.Graphics.Core
 	/// <summary>
 	/// Used to bind resource types (e.g. buffers, textures, etc...) to the GPU pipeline.
 	/// </summary>
-	public class GorgonPipelineResources
+	public sealed class GorgonPipelineResources
 	{
+		#region Constants.
+		/// <summary>
+		/// The maximum number of allowed shader resources that can be bound at the same time.
+		/// </summary>
+		public const int MaximumShaderResourceViewCount = D3D11.CommonShaderStage.InputResourceSlotCount;
+		#endregion
+
 		#region Variables.
 		// The list of vertex buffer resources bound.
 		private GorgonVertexBufferBindings _vertexBuffers;
@@ -92,8 +101,6 @@ namespace Gorgon.Graphics.Core
 		private GorgonIndexBuffer _indexBuffer;
 		// The list of texture samplers for a pixel shader.
 		private GorgonSamplerStates _pixelShaderSamplers;
-		// The list of pixel shader resources.
-		private GorgonShaderResourceViews _pixelShaderResources;
 		// The list of vertex shader resources.
 		private GorgonShaderResourceViews _vertexShaderResources;
 		#endregion
@@ -111,6 +118,9 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Property to return the vertex buffers to bind to the pipeline.
 		/// </summary>
+		/// <remarks>
+		/// Once a set of <see cref="GorgonVertexBufferBindings"/> are assigned to this property, it will be locked and cannot be changed until it is unassigned.
+		/// </remarks>
 		public GorgonVertexBufferBindings VertexBuffers
 		{
 			get
@@ -119,13 +129,7 @@ namespace Gorgon.Graphics.Core
 			}
 			set
 			{
-				if (_vertexBuffers == value)
-				{
-					return;
-				}
-
-				_vertexBuffers = value;
-				Changes |= PipelineResourceChangeFlags.VertexBuffer;
+				SetVertexBuffers(value);
 			}
 		}
 
@@ -153,6 +157,9 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Property to return the render targets to bind to the pipeline.
 		/// </summary>
+		/// <remarks>
+		/// Once a set of <see cref="GorgonRenderTargetViews"/> are assigned to this property, it will be locked and cannot be changed until it is unassigned.
+		/// </remarks>
 		public GorgonRenderTargetViews RenderTargets
 		{
 			get
@@ -161,19 +168,16 @@ namespace Gorgon.Graphics.Core
 			}
 			set
 			{
-				if (_renderTargets == value)
-				{
-					return;
-				}
-
-				_renderTargets = value;
-				Changes |= PipelineResourceChangeFlags.RenderTargets;
+				SetRenderTargets(value, false);
 			}
 		}
 
 		/// <summary>
 		/// Property to return the pixel shader constant buffers to bind to the pipeline.
 		/// </summary>
+		/// <remarks>
+		/// Once a set of <see cref="GorgonConstantBuffers"/> are assigned to this property, it will be locked and cannot be changed until it is unassigned.
+		/// </remarks>
 		public GorgonConstantBuffers PixelShaderConstantBuffers
 		{
 			get
@@ -182,19 +186,16 @@ namespace Gorgon.Graphics.Core
 			}
 			set
 			{
-				if (_pixelShaderConstantBuffers == value)
-				{
-					return;
-				}
-
-				_pixelShaderConstantBuffers = value;
-				Changes |= PipelineResourceChangeFlags.PixelShaderConstantBuffer;
+				SetShaderConstantBuffers(value, false, ShaderType.Pixel);
 			}
 		}
 
 		/// <summary>
 		/// Property to return the vertex shader constant buffers to bind to the pipeline.
 		/// </summary>
+		/// <remarks>
+		/// Once a set of <see cref="GorgonConstantBuffers"/> are assigned to this property, it will be locked and cannot be changed until it is unassigned.
+		/// </remarks>
 		public GorgonConstantBuffers VertexShaderConstantBuffers
 		{
 			get
@@ -203,37 +204,16 @@ namespace Gorgon.Graphics.Core
 			}
 			set
 			{
-				if (_vertexShaderConstantBuffers == value)
-				{
-					return;
-				}
-
-				_vertexShaderConstantBuffers = value;
-				Changes |= PipelineResourceChangeFlags.VertexShaderConstantBuffer;
+				SetShaderConstantBuffers(value, false, ShaderType.Vertex);
 			}
 		}
 
 		/// <summary>
-		/// Property to return the pixel shader resources to bind to the pipeline.
+		/// Property to return the vertex shader resources to bind to the pipeline.
 		/// </summary>
-		public GorgonShaderResourceViews PixelShaderResources
-		{
-			get
-			{
-				return _pixelShaderResources;
-			}
-			set
-			{
-				if (_pixelShaderResources == value)
-				{
-					return;
-				}
-
-				_pixelShaderResources = value;
-				Changes |= PipelineResourceChangeFlags.PixelShaderResource;
-			}
-		}
-
+		/// <remarks>
+		/// Once a set of <see cref="GorgonShaderResourceViews"/> are assigned to this property, it will be locked and cannot be changed until it is unassigned.
+		/// </remarks>
 		/// <summary>
 		/// Property to return the vertex shader resources to bind to the pipeline.
 		/// </summary>
@@ -256,8 +236,19 @@ namespace Gorgon.Graphics.Core
 		}
 
 		/// <summary>
+		/// Property to set or return the list of pixel shader resource views.
+		/// </summary>
+		public GorgonShaderResourceViews PixelShaderResourceViews
+		{
+			get;
+		} = new GorgonShaderResourceViews();
+
+		/// <summary>
 		/// Property to return the pixel shader samplers to bind to the pipeline.
 		/// </summary>
+		/// <remarks>
+		/// Once a set of <see cref="GorgonSamplerStates"/> are assigned to this property, it will be locked and cannot be changed until it is unassigned.
+		/// </remarks>
 		public GorgonSamplerStates PixelShaderSamplers
 		{
 			get
@@ -266,18 +257,227 @@ namespace Gorgon.Graphics.Core
 			}
 			set
 			{
-				if (_pixelShaderSamplers == value)
-				{
-					return;
-				}
-
-				_pixelShaderSamplers = value;
-				Changes |= PipelineResourceChangeFlags.PixelShaderSampler;
+				SetShaderSamplers(value, false, ShaderType.Pixel);
 			}
 		}
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to assign the vertex buffer bindings to the resource list.
+		/// </summary>
+		/// <param name="value">The resources to assign.</param>
+		private void SetVertexBuffers(GorgonVertexBufferBindings value)
+		{
+			if (_vertexBuffers == value)
+			{
+				return;
+			}
+
+			_vertexBuffers = value;
+			Changes |= PipelineResourceChangeFlags.VertexBuffer;
+		}
+
+
+		/// <summary>
+		/// Function to assign the render target views to the resource list.
+		/// </summary>
+		/// <param name="value">The resources to assign.</param>
+		/// <param name="noLockChange"><b>true</b> to change locking state on the resource, <b>false</b> to leave alone.</param>
+		private void SetRenderTargets(GorgonRenderTargetViews value, bool noLockChange)
+		{
+			if (_renderTargets == value)
+			{
+				return;
+			}
+
+			if ((_renderTargets != null)
+				&& (!noLockChange))
+			{
+				_renderTargets.IsLocked = false;
+			}
+
+			_renderTargets = value;
+
+			if ((_renderTargets != null)
+				&& (!noLockChange))
+			{
+				_renderTargets.IsLocked = true;
+			}
+
+			Changes |= PipelineResourceChangeFlags.RenderTargets;
+		}
+
+		/// <summary>
+		/// Function to assign the constant buffers to the resource list.
+		/// </summary>
+		/// <param name="value">The resources to assign.</param>
+		/// <param name="noLockChange"><b>true</b> to change locking state on the resource, <b>false</b> to leave alone.</param>
+		/// <param name="shaderType">The type of shader to update.</param>
+		private void SetShaderConstantBuffers(GorgonConstantBuffers value, bool noLockChange, ShaderType shaderType)
+		{
+			switch (shaderType)
+			{
+				case ShaderType.Pixel:
+					if (_pixelShaderConstantBuffers == value)
+					{
+						return;
+					}
+
+					if ((_pixelShaderConstantBuffers != null)
+						&& (!noLockChange))
+					{
+						_pixelShaderConstantBuffers.IsLocked = false;
+					}
+
+					_pixelShaderConstantBuffers = value;
+					Changes |= PipelineResourceChangeFlags.PixelShaderConstantBuffer;
+
+					if ((_pixelShaderConstantBuffers != null)
+						&& (!noLockChange))
+					{
+						_pixelShaderConstantBuffers.IsLocked = true;
+					}
+					break;
+				case ShaderType.Vertex:
+					if (_vertexShaderConstantBuffers == value)
+					{
+						return;
+					}
+
+					if ((_vertexShaderConstantBuffers != null)
+						&& (!noLockChange))
+					{
+						_vertexShaderConstantBuffers.IsLocked = false;
+					}
+
+					_vertexShaderConstantBuffers = value;
+					Changes |= PipelineResourceChangeFlags.VertexShaderConstantBuffer;
+
+					if ((_vertexShaderConstantBuffers != null)
+						&& (!noLockChange))
+					{
+						_vertexShaderConstantBuffers.IsLocked = true;
+					}
+					break;
+			}
+		}
+
+		/// <summary>
+		/// Function to assign the sampler states to the resource list.
+		/// </summary>
+		/// <param name="value">The resources to assign.</param>
+		/// <param name="noLockChange"><b>true</b> to change locking state on the resource, <b>false</b> to leave alone.</param>
+		/// <param name="shaderType">The type of shader to update.</param>
+		private void SetShaderSamplers(GorgonSamplerStates value, bool noLockChange, ShaderType shaderType)
+		{
+			switch (shaderType)
+			{
+				case ShaderType.Pixel:
+					if (_pixelShaderSamplers == value)
+					{
+						return;
+					}
+
+					if ((_pixelShaderSamplers != null)
+						&& (!noLockChange))
+					{
+						_pixelShaderSamplers.IsLocked = false;
+					}
+
+					_pixelShaderSamplers = value;
+					Changes |= PipelineResourceChangeFlags.PixelShaderSampler;
+
+					if ((_pixelShaderSamplers != null)
+						&& (!noLockChange))
+					{
+						_pixelShaderSamplers.IsLocked = true;
+					}
+					break;
+			}
+		}
+
+		/// <summary>
+		/// Function to set the shader resource views for a shader.
+		/// </summary>
+		/// <param name="device">The Direct 3D 11 device context to use.</param>
+		/// <param name="shaderType">The type of shader to set the resources on.</param>
+		internal void SetShaderResourceViews(D3D11.DeviceContext1 device, ShaderType shaderType)
+		{
+			switch (shaderType)
+			{
+				case ShaderType.Pixel:
+					NativeSrvBinding binding = PixelShaderResourceViews.GetNativeShaderResources();
+					device.PixelShader.SetShaderResources(binding.StartSlot, binding.Count, binding.Srvs);
+					break;
+			}
+		}
+
+		/// <summary>
+		/// Function to retrieve the differences between this pipeline resources and another.
+		/// </summary>
+		/// <param name="resources">The resources to compare with.</param>
+		/// <returns>The differences between the resources.</returns>
+		internal PipelineResourceChangeFlags GetDifference(GorgonPipelineResources resources)
+		{
+			// If we had no state prior to this, then return all states as changed.
+			if (resources == null)
+			{
+				return PipelineResourceChangeFlags.IndexBuffer
+				       | PipelineResourceChangeFlags.PixelShaderConstantBuffer
+				       | PipelineResourceChangeFlags.PixelShaderResource
+				       | PipelineResourceChangeFlags.PixelShaderSampler
+				       | PipelineResourceChangeFlags.RenderTargets
+				       | PipelineResourceChangeFlags.VertexBuffer
+				       | PipelineResourceChangeFlags.VertexShaderConstantBuffer
+				       | PipelineResourceChangeFlags.VertexShaderResource;
+			}
+
+			var result = PipelineResourceChangeFlags.None;
+
+			if (IndexBuffer != resources.IndexBuffer)
+			{
+				result |= PipelineResourceChangeFlags.IndexBuffer;
+			}
+
+			if (RenderTargets != resources.RenderTargets)
+			{
+				result |= PipelineResourceChangeFlags.RenderTargets;
+			}
+
+			if (VertexBuffers != resources.VertexBuffers)
+			{
+				result |= PipelineResourceChangeFlags.VertexBuffer;
+			}
+
+			if (VertexShaderConstantBuffers != resources.VertexShaderConstantBuffers)
+			{
+				result |= PipelineResourceChangeFlags.VertexShaderConstantBuffer;
+			}
+
+			if (VertexShaderResources != resources.VertexShaderResources)
+			{
+				result |= PipelineResourceChangeFlags.VertexShaderResource;
+			}
+
+			if (PixelShaderConstantBuffers != resources.PixelShaderConstantBuffers)
+			{
+				result |= PipelineResourceChangeFlags.PixelShaderConstantBuffer;
+			}
+
+			if (PixelShaderSamplers != resources.PixelShaderSamplers)
+			{
+				result |= PipelineResourceChangeFlags.PixelShaderSampler;
+			}
+
+			if ((PixelShaderResourceViews != resources.PixelShaderResourceViews) || (PixelShaderResourceViews?.IsDirty ?? false))
+			{
+				result |= PipelineResourceChangeFlags.PixelShaderResource;
+			}
+
+			return result;
+		}
+
 		/// <summary>
 		/// Function to copy the pipeline resources from another instance.
 		/// </summary>
@@ -300,24 +500,29 @@ namespace Gorgon.Graphics.Core
 		{
 			resources.ValidateObject(nameof(resources));
 
-			VertexBuffers = resources.VertexBuffers;
+			SetVertexBuffers(resources.VertexBuffers);
+			SetRenderTargets(resources.RenderTargets, true);
+			SetShaderSamplers(resources.PixelShaderSamplers, true, ShaderType.Pixel);
+			SetShaderConstantBuffers(resources.PixelShaderConstantBuffers, true, ShaderType.Pixel);
+			SetShaderConstantBuffers(resources.VertexShaderConstantBuffers, true, ShaderType.Vertex);
+			PixelShaderResourceViews.CopyFrom(resources.PixelShaderResourceViews);
+
 			IndexBuffer = resources.IndexBuffer;
-			PixelShaderResources = resources.PixelShaderResources;
-			VertexShaderResources = resources.VertexShaderResources;
-			PixelShaderConstantBuffers = resources.PixelShaderConstantBuffers;
-			VertexShaderConstantBuffers = resources.VertexShaderConstantBuffers;
-			PixelShaderSamplers = resources.PixelShaderSamplers;
-			RenderTargets = resources.RenderTargets;
 		}
 
 		/// <summary>
 		/// Function to reset to an empty resources object.
 		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// Applications should call this after the <see cref="GorgonDrawCallBase"/> is submitted to the <see cref="GorgonGraphics"/> interface if the resources assigned need to be modified.
+		/// </para>
+		/// </remarks>
 		public void Reset()
 		{
 			VertexBuffers = null;
 			IndexBuffer = null;
-			PixelShaderResources = null;
+			PixelShaderResourceViews.Clear();
 			VertexShaderResources = null;
 			PixelShaderConstantBuffers = null;
 			VertexShaderConstantBuffers = null;

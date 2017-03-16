@@ -25,9 +25,9 @@
 #endregion
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using Gorgon.Diagnostics;
+using System.Linq;
+using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using D3D11 = SharpDX.Direct3D11;
 
@@ -37,179 +37,68 @@ namespace Gorgon.Graphics.Core
 	/// A list of texture sampler states to apply to the pipeline.
 	/// </summary>
 	public sealed class GorgonSamplerStates
-		: IGorgonBoundList<GorgonSamplerState>, IReadOnlyList<GorgonSamplerState>
+		: GorgonResourceBindingList<GorgonSamplerState>
 	{
+		#region Constants.
+		/// <summary>
+		/// The maximum number of allowed sampler states that can be bound at the same time.
+		/// </summary>
+		public const int MaximumSamplerStateCount = D3D11.CommonShaderStage.SamplerSlotCount;
+		#endregion		
+		
 		#region Variables.
-		// Sampler states to apply to the pipeline.
-		private readonly GorgonSamplerState[] _states = new GorgonSamplerState[D3D11.CommonShaderStage.SamplerSlotCount];
 		// Actual direct 3D sampler states to bind.
-		private readonly D3D11.SamplerState[] _nativeStates = new D3D11.SamplerState[D3D11.CommonShaderStage.SamplerSlotCount];
+		private D3D11.SamplerState[] _nativeStates;
 		#endregion
 
 		#region Properties.
 		/// <summary>
 		/// Property to return the list of actual Direct 3D 11 states.
 		/// </summary>
-		internal D3D11.SamplerState[] D3DSamplerStates => _nativeStates;
-
-		/// <summary>
-		/// Property to return the starting index begin binding at.
-		/// </summary>
-		public int BindIndex
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the number of binding slots actually used.
-		/// </summary>
-		public int BindCount
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return whether there are any target or depth stencil views set in this list.
-		/// </summary>
-		public bool IsEmpty => BindCount == 0;
-
-		/// <summary>Gets or sets the element at the specified index.</summary>
-		/// <returns>The element at the specified index.</returns>
-		/// <param name="index">The zero-based index of the element to get or set.</param>
-		/// <exception cref="T:System.ArgumentOutOfRangeException">
-		/// <paramref name="index" /> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1" />.</exception>
-		public GorgonSamplerState this[int index]
-		{
-			get
-			{
-				return _states[index];
-			}
-			set
-			{
-				_states[index] = value;
-				_nativeStates[index] = value?.D3DState;
-				BindIndex = value == null ? 0 : index;
-				BindCount = value == null ? 0 : 1;
-			}
-		}
-
-		/// <summary>Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
-		/// <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
-		public int Count => _states.Length;
-
-		/// <summary>Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</summary>
-		/// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only; otherwise, false.</returns>
-		bool ICollection<GorgonSamplerState>.IsReadOnly => false;
+		internal D3D11.SamplerState[] NativeStates => _nativeStates;
 		#endregion
 
 		#region Methods.
 		/// <summary>
-		/// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.
+		/// Function called when an item is assigned to a slot in the binding list.
 		/// </summary>
-		/// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
-		/// <exception cref="NotSupportedException">This method is not supported by this type.</exception>
-		void ICollection<GorgonSamplerState>.Add(GorgonSamplerState item)
+		/// <param name="index">The index of the slot being assigned.</param>
+		/// <param name="item">The item being assigned.</param>
+		/// <remarks>
+		/// <para>
+		/// Implementors must override this method to assign the native version of the object to bind. 
+		/// </para>
+		/// </remarks>
+		protected override void OnSetNativeItem(int index, GorgonSamplerState item)
 		{
-			throw new NotSupportedException();
+			_nativeStates[index] = item?.D3DState;
 		}
 
 		/// <summary>
-		/// Inserts an item to the <see cref="T:System.Collections.Generic.IList`1" /> at the specified index.
+		/// Function to clear the list of native binding objects.
 		/// </summary>
-		/// <param name="index">The zero-based index at which <paramref name="item" /> should be inserted.</param>
-		/// <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1" />.</param>
-		/// <exception cref="NotSupportedException">This method is not supported by this type.</exception>
-		void IList<GorgonSamplerState>.Insert(int index, GorgonSamplerState item)
+		/// <remarks>
+		/// <para>
+		/// The implementing class must implement this in order to unassign items from the native binding object list when the <see cref="GorgonResourceBindingList{T}.Clear"/> method is called.
+		/// </para>
+		/// </remarks>
+		protected override void OnClearNativeItems()
 		{
-			throw new NotSupportedException();
+			Array.Clear(_nativeStates, 0, _nativeStates.Length);
 		}
 
 		/// <summary>
-		/// Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1" />.
+		/// Function to resize the native binding object list if needed.
 		/// </summary>
-		/// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
-		/// <returns>true if <paramref name="item" /> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
-		/// <exception cref="NotSupportedException">This method is not supported by this type.</exception>
-		bool ICollection<GorgonSamplerState>.Remove(GorgonSamplerState item)
+		/// <param name="newSize">The new size for the list.</param>
+		/// <remarks>
+		/// <para>
+		/// This method must be overridden by the implementing class so that the native list is resized along with this list after calling <see cref="GorgonResourceBindingList{T}.Resize"/>.
+		/// </para>
+		/// </remarks>
+		protected override void OnResizeNativeList(int newSize)
 		{
-			throw new NotSupportedException();
-		}
-
-		/// <summary>
-		/// Removes the <see cref="T:System.Collections.Generic.IList`1" /> item at the specified index.
-		/// </summary>
-		/// <param name="index">The zero-based index of the item to remove.</param>
-		/// <exception cref="NotSupportedException">This method is not supported by this type.</exception>
-		void IList<GorgonSamplerState>.RemoveAt(int index)
-		{
-			throw new NotSupportedException();
-		}
-
-		/// <summary>
-		/// Returns an enumerator that iterates through a collection.
-		/// </summary>
-		/// <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return _states.GetEnumerator();
-		}
-
-		/// <summary>
-		/// Function to unbind all the shader resource views and depth/stencil views.
-		/// </summary>
-		public void Clear()
-		{
-			for (int i = 0; i < _states.Length; ++i)
-			{
-				_states[i] = null;
-				_nativeStates[i] = null;
-			}
-
-			BindIndex = 0;
-			BindCount = 0;
-		}
-
-		/// <summary>Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.</summary>
-		/// <returns>true if <paramref name="item" /> is found in the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false.</returns>
-		/// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
-		public bool Contains(GorgonSamplerState item)
-		{
-			return Array.IndexOf(_states, item) != -1;
-		}
-
-		/// <summary>Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1" /> to an <see cref="T:System.Array" />, starting at a particular <see cref="T:System.Array" /> index.</summary>
-		/// <param name="array">The one-dimensional <see cref="T:System.Array" /> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1" />. The <see cref="T:System.Array" /> must have zero-based indexing.</param>
-		/// <param name="arrayIndex">The zero-based index in <paramref name="array" /> at which copying begins.</param>
-		/// <exception cref="T:System.ArgumentNullException">
-		/// <paramref name="array" /> is null.</exception>
-		/// <exception cref="T:System.ArgumentOutOfRangeException">
-		/// <paramref name="arrayIndex" /> is less than 0.</exception>
-		/// <exception cref="T:System.ArgumentException">The number of elements in the source <see cref="T:System.Collections.Generic.ICollection`1" /> is greater than the available space from <paramref name="arrayIndex" /> to the end of the destination <paramref name="array" />.</exception>
-		public void CopyTo(GorgonSamplerState[] array, int arrayIndex)
-		{
-			_states.CopyTo(array, arrayIndex);
-		}
-
-		/// <summary>Returns an enumerator that iterates through the collection.</summary>
-		/// <returns>An enumerator that can be used to iterate through the collection.</returns>
-		/// <filterpriority>1</filterpriority>
-		public IEnumerator<GorgonSamplerState> GetEnumerator()
-		{
-			// ReSharper disable once ForCanBeConvertedToForeach
-			for (int i = 0; i < _states.Length; ++i)
-			{
-				yield return _states[i];
-			}
-		}
-
-		/// <summary>Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1" />.</summary>
-		/// <returns>The index of <paramref name="item" /> if found in the list; otherwise, -1.</returns>
-		/// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.IList`1" />.</param>
-		public int IndexOf(GorgonSamplerState item)
-		{
-			return Array.IndexOf(_states, item);
+			Array.Resize(ref _nativeStates, newSize);
 		}
 
 		/// <summary>
@@ -234,38 +123,53 @@ namespace Gorgon.Graphics.Core
 		/// </remarks>
 		public void SetRange(int startSlot, IReadOnlyList<GorgonSamplerState> samplerStates, int? count = null)
 		{
-			samplerStates.ValidateObject(nameof(samplerStates));
-
 			if (count == null)
 			{
-				count = samplerStates.Count;
+				count = samplerStates?.Count ?? 0;
 			}
 
 #if DEBUG
+			if (IsLocked)
+			{
+				throw new GorgonException(GorgonResult.AccessDenied, Resources.GORGFX_ERR_BINDING_LIST_LOCKED);
+			}
+
 			if (startSlot < 0)
 			{
 				throw new ArgumentOutOfRangeException(nameof(startSlot));
 			}
 
-			if (count > samplerStates.Count)
+			if (count.Value < 0)
 			{
-				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TOO_MANY_ITEMS, 0, count.Value, samplerStates.Count));
+				throw new ArgumentOutOfRangeException(nameof(count));
 			}
 
-			if (startSlot + count > _states.Length)
+			if (count + startSlot > MaximumSamplerStateCount)
 			{
-				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TOO_MANY_ITEMS, startSlot, count.Value, _states.Length));
+				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TOO_MANY_ITEMS, startSlot, count.Value, MaximumSamplerStateCount));
+			}
+
+			if (count > (samplerStates?.Count ?? 0))
+			{
+				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TOO_MANY_ITEMS, 0, count.Value, samplerStates?.Count), nameof(count));
 			}
 #endif
-
-			for (int i = startSlot; i < startSlot + count.Value; ++i)
+			// Resize accordingly if we have a mismatch.
+			if (count.Value != Count)
 			{
-				_states[i] = samplerStates[i];
-				_nativeStates[i] = samplerStates[i]?.D3DState;
+				Resize(count.Value);
 			}
 
-			BindIndex = startSlot;
-			BindCount = count.Value;
+			if ((samplerStates == null) || (count == 0))
+			{
+				Clear();
+				return;
+			}
+
+			for (int i = 0; i < count.Value; ++i)
+			{
+				this[i + startSlot] = samplerStates[i];
+			}
 		}
 		#endregion
 
@@ -273,8 +177,28 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonSamplerStates"/> class.
 		/// </summary>
-		public GorgonSamplerStates()
+		/// <param name="size">The number of shader resources to hold in this list.</param>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> parameter is less than 0.</exception>
+		/// <remarks>
+		/// <para>
+		/// If the <paramref name="size"/> parameter is larger than the maximum allowed number of sampler states, then the size will be adjusted to that maximum instead of the amount requested. See the 
+		/// <seealso cref="MaximumSamplerStateCount"/> constant to determine what the maximum is.
+		/// </para>
+		/// <para>
+		/// If the size is omitted, then room is made for 1 sampler state.
+		/// </para>
+		/// <para>
+		/// <note type="warning">
+		/// <para>
+		/// For the sake of performance, Exceptions thrown by this constructor will only be thrown when Gorgon is compiled as DEBUG.
+		/// </para>
+		/// </note>
+		/// </para>
+		/// </remarks>
+		public GorgonSamplerStates(int size = 1)
+			: base(size, MaximumSamplerStateCount)
 		{
+			_nativeStates = new D3D11.SamplerState[size];
 		}
 
 		/// <summary>
@@ -282,26 +206,26 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="samplerStates">The shader resource views to assign.</param>
 		/// <param name="startSlot">[Optional] The starting slot to use for the sampler states.</param>
+		/// <exception cref="ArgumentException">Thrown if the number of <paramref name="samplerStates"/> exceeds the <see cref="MaximumSamplerStateCount"/>.
+		/// <para>-or-</para>
+		/// <para>Thrown when the <paramref name="startSlot"/> is larger than or equal to the number of items in <paramref name="samplerStates"/>, or larger than or equal to the <seealso cref="MaximumSamplerStateCount"/>.</para>
+		/// </exception>
+		/// <remarks>
+		/// <para>
+		/// This overload will set many sampler states at once.
+		/// </para>
+		/// <para>
+		/// <note type="warning">
+		/// <para>
+		/// For the sake of performance, Exceptions thrown by this constructor will only be thrown when Gorgon is compiled as DEBUG.
+		/// </para>
+		/// </note>
+		/// </para>
+		/// </remarks>
 		public GorgonSamplerStates(IEnumerable<GorgonSamplerState> samplerStates, int startSlot = 0)
+			: this()
 		{
-			if (samplerStates == null)
-			{
-				return;
-			}
-
-			int index = startSlot;
-			
-			foreach (GorgonSamplerState view in samplerStates)
-			{
-				if (index >= _states.Length)
-				{
-					break;
-				}
-
-				this[index++] = view;
-			}
-
-			BindIndex = startSlot;
+			SetRange(startSlot, samplerStates.ToArray());
 		}
 		#endregion
 	}

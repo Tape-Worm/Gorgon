@@ -120,11 +120,13 @@
     <Compile Include="Pipeline\GorgonPipelineResources.cs" />
     <Compile Include="Pipeline\GorgonPipelineState.cs" />
     <Compile Include="Pipeline\GorgonPipelineStateInfo.cs" />
+    <Compile Include="Pipeline\GorgonResourceBindingList.cs" />
     <Compile Include="Pipeline\GorgonSamplerStates.cs" />
     <Compile Include="Pipeline\GorgonVertexBufferBinding.cs" />
     <Compile Include="Pipeline\GorgonVertexBufferBindings.cs" />
-    <Compile Include="Pipeline\_Interfaces\IGorgonBoundList.cs" />
+    <Compile Include="Pipeline\GorgonRenderTargetViews.cs" />
     <Compile Include="Pipeline\_Interfaces\IGorgonPipelineStateInfo.cs" />
+    <Compile Include="Pipeline\_Internal\NativeSrvBinding.cs" />
     <Compile Include="Shaders\GorgonShaderResourceView.cs" />
     <Compile Include="Pipeline\GorgonShaderResourceViews.cs" />
     <Compile Include="Pipeline\GorgonDrawIndexedCall.cs" />
@@ -132,7 +134,6 @@
     <Compile Include="Shaders\GorgonShaderFactory.cs" />
     <Compile Include="Shaders\GorgonShaderMacro.cs" />
     <Compile Include="Shaders\_Internal\ShaderProcessor.cs" />
-    <Compile Include="Pipeline\GorgonRenderTargetViews.cs" />
     <Compile Include="States\GorgonBlendStateInfo.cs" />
     <Compile Include="States\GorgonRenderTargetBlendStateInfo.cs" />
     <Compile Include="States\GorgonRasterStateInfo.cs" />

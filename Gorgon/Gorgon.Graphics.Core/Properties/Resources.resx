@@ -157,9 +157,6 @@
   <data name="GORGFX_BUFFER_NOT_MULTIPLE" xml:space="preserve">
     <value>Cannot create the buffer.  The buffer size of {0} bytes is not a multiple of {1}.</value>
   </data>
-  <data name="GORGFX_TOSTR_VERTEXBUFFER_BINDING" xml:space="preserve">
-    <value>Vertex buffer binding.  Stride: {0}, Offset: {1}, VertexBuffer: {2}</value>
-  </data>
   <data name="GORGFX_ERR_FORMAT_NOT_SUPPORTED" xml:space="preserve">
     <value>The format [{0}] is not supported.</value>
   </data>
@@ -837,5 +834,14 @@ Errors:
   </data>
   <data name="GraphicsShaders" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\GraphicsShaders.hlsl;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="GORGFX_ERR_BINDING_LIST_LOCKED" xml:space="preserve">
+    <value>These bindings are locked and cannot be modified until it is unbound from the resource list.</value>
+  </data>
+  <data name="GORGFX_ERR_VERTEX_BUFFER_BINDING_ALREADY_BOUND" xml:space="preserve">
+    <value>This vertex buffer binding is already bound in slot {0}.</value>
+  </data>
+  <data name="GORGFX_TOSTR_VERTEXBUFFER_BINDING" xml:space="preserve">
+    <value>Vertex buffer binding.  Stride: {0}, Offset: {1}, VertexBuffer: {2}</value>
   </data>
 </root>
