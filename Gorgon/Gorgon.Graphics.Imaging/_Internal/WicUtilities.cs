@@ -1084,6 +1084,10 @@ namespace Gorgon.Graphics.Imaging
 				}
 				else
 				{
+					// For some reason, if we don't dispose of this here, we get and an A/V when trying to dispose it below.
+					// Could possibly be because the native object is destroyed before we exit the method?
+					decoder?.Dispose();
+					decoder = null;
 					ReadFrame(result, frame.PixelFormat, pixelFormat, frame, decodingOptions);
 				}
 

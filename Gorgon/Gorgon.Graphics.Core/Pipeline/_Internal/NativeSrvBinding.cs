@@ -20,34 +20,48 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: March 1, 2017 12:52:33 PM
+// Created: March 14, 2017 11:28:39 PM
 // 
 #endregion
 
-using Gorgon.Graphics.Core;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using D3D11 = SharpDX.Direct3D11;
 
-namespace Gorgon.Graphics.Example
+namespace Gorgon.Graphics.Core.Pipeline
 {
 	/// <summary>
-	/// Represents a material applied to a model.
+	/// A native binding for a shader resource view.
 	/// </summary>
-	public class Material
+	struct NativeSrvBinding
+		: IEquatable<NativeSrvBinding>
 	{
 		/// <summary>
-		/// Property to set or return the texture for the model.
+		/// The shader resource views to bind.
 		/// </summary>
-		public GorgonTextureShaderView Texture
-		{
-			get;
-			set;
-		}
+		public D3D11.ShaderResourceView[] Srvs;
+		/// <summary>
+		/// The starting slot to bind.
+		/// </summary>
+		public int StartSlot;
+		/// <summary>
+		/// The number of slots to bind.
+		/// </summary>
+		public int Count;
 
 		/// <summary>
-		/// Property to set or return the sampler used to sample the texture in the shader.
+		/// Equalses the specified binding.
 		/// </summary>
-		public GorgonSamplerStates TextureSampler
+		/// <param name="binding">The binding.</param>
+		/// <returns><b>true</b> if XXXX, <b>false</b> otherwise.</returns>
+		public bool Equals(NativeSrvBinding binding)
 		{
-			get;
-		} = new GorgonSamplerStates();
+			return binding.Srvs == Srvs
+			       && binding.StartSlot == StartSlot
+			       && binding.Count == Count;
+		}
 	}
 }

@@ -166,7 +166,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
 			GorgonBinaryWriter writer = fontFile.OpenChunk(GlyphDataChunk);
 
 			GorgonGlyph[] nonTextureGlyphs = (from GorgonGlyph glyph in fontData.Glyphs
-			                                  where glyph.TextureView[0] == null
+			                                  where glyph.TextureView == null
 			                                  select glyph).ToArray();
 
 			// Write all information for glyphs that don't use textures (whitespace).

@@ -331,6 +331,15 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to These bindings are locked and cannot be modified until it is unbound from the resource list..
+        /// </summary>
+        internal static string GORGFX_ERR_BINDING_LIST_LOCKED {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_BINDING_LIST_LOCKED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The binding type [{0}] cannot use with this method..
         /// </summary>
         internal static string GORGFX_ERR_BINDING_TYPE_CANNOT_BE_USED {
@@ -1231,6 +1240,15 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_UNORDERED_RES_NOT_DEFAULT {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_UNORDERED_RES_NOT_DEFAULT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This vertex buffer binding is already bound in slot {0}..
+        /// </summary>
+        internal static string GORGFX_ERR_VERTEX_BUFFER_BINDING_ALREADY_BOUND {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_VERTEX_BUFFER_BINDING_ALREADY_BOUND", resourceCulture);
             }
         }
         
@@ -2199,6 +2217,26 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to // Texture and sampler for blitting a texture.
+        ///Texture2D _bltTexture : register(t0);
+        ///SamplerState _bltSampler : register(s0);
+        ///
+        ///// Our default blitting vertex.
+        ///struct GorgonBltVertex
+        ///{
+        ///   float4 position : SV_POSITION;
+        ///   float2 uv : TEXCOORD;
+        ///};
+        ///
+        ///// The transformation matrices (for vertex shader).
+        ///cbuffer GorgonBltWorldViewProjection : register(b0)
+        ///{
+        ///	float4x4 WorldViewProjection;
+        ///}
+        ///
+        ///// Our vertex shader for blitting textures.
+        ///GorgonBltVertex GorgonBltVertexShader(GorgonBltVertex vertex)
+        /// [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string GraphicsShaders {
             get {

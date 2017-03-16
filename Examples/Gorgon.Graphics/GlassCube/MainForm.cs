@@ -151,7 +151,7 @@ namespace GorgonLibrary.Example
 	        {
 		        return true;
 	        }
-
+			
 			// Spin the cube.
 			_rotation.X += GorgonRandom.RandomSingle(45, 90) * GorgonTiming.Delta * (_rotationSpeed.X.FastSin() * 1.5f);
 			_rotation.Y += GorgonRandom.RandomSingle(45, 90) * GorgonTiming.Delta * (_rotationSpeed.Y.FastSin() * 1.5f);
@@ -175,6 +175,21 @@ namespace GorgonLibrary.Example
 			_rotationSpeed.X += GorgonTiming.Delta / 1.25f;
 			_rotationSpeed.Y += GorgonTiming.Delta / 1.25f;
 			_rotationSpeed.Z += GorgonTiming.Delta / 1.25f;
+
+			if (_rotationSpeed.X > 2.0f)
+			{
+				_rotationSpeed.X = 0.0f;
+			}
+
+			if (_rotationSpeed.Y > 2.0f)
+			{
+				_rotationSpeed.Y = 0.0f;
+			}
+
+			if (_rotationSpeed.Z > 2.0f)
+			{
+				_rotationSpeed.Z = 0.0f;
+			}
 
 			_cube.RotateXYZ(_rotation.X, _rotation.Y, _rotation.Z);
 			_cube.GetWorldMatrix(out worldMatrix);
@@ -246,12 +261,12 @@ namespace GorgonLibrary.Example
 			                                    {
 				                                    [0] = _swap.RenderTargetView
 			                                    },
-			                    PixelShaderResources = new GorgonShaderResourceViews
-			                                           {
-				                                           [0] = _texture.DefaultShaderResourceView
-			                                           },
 			                    IndexBuffer = _cube.IndexBuffer,
 			                    VertexBuffers = _cube.VertexBuffer,
+								PixelShaderResourceViews =
+								{
+									[0] = _texture.DefaultShaderResourceView
+								},
 			                    PixelShaderSamplers = new GorgonSamplerStates
 			                                          {
 														  // Start with bilinear filtering on the cube texture.
@@ -285,7 +300,7 @@ namespace GorgonLibrary.Example
 			                                                       },
 		                                                       })
 	                    };
-        }
+		}
 
         /// <summary>
         /// Raises the <see cref="E:System.Windows.Forms.Control.KeyDown"></see> event.

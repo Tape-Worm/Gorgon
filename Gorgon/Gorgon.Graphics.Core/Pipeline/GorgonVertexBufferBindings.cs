@@ -45,7 +45,7 @@ namespace Gorgon.Graphics.Core
 	/// </para>
 	/// </remarks>
 	public sealed class GorgonVertexBufferBindings
-		: IGorgonBoundList<GorgonVertexBufferBinding>, IReadOnlyList<GorgonVertexBufferBinding>
+		: IList<GorgonVertexBufferBinding>, IReadOnlyList<GorgonVertexBufferBinding>
 	{
 		#region Variables.
 		// The list of D3D11 vertex buffer bindings.
@@ -58,17 +58,12 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Property to return the D3D11 vertex buffer binding array.
 		/// </summary>
-		internal D3D11.VertexBufferBinding[] D3DBindings => _nativeBindings;
+		internal D3D11.VertexBufferBinding[] NativeBindings => _nativeBindings;
 
 		/// <summary>
 		/// Property to return the maximum number of bindings that can be held in this list.
 		/// </summary>
 		public int Count => _bindings.Length;
-
-		/// <summary>
-		/// Property to return the starting index begin binding at.
-		/// </summary>
-		int IGorgonBoundList<GorgonVertexBufferBinding>.BindIndex => 0;
 
 		/// <summary>
 		/// Property to return the input layout assigned to the buffer bindings.
@@ -146,32 +141,6 @@ namespace Gorgon.Graphics.Core
 		IEnumerator IEnumerable.GetEnumerator()
 		{
 			return _bindings.GetEnumerator();
-		}
-
-		/// <summary>
-		/// Function to set multiple objects of type <see cref="GorgonVertexBufferBinding" /> at once.
-		/// </summary>
-		/// <param name="startSlot">The starting slot to assign.</param>
-		/// <param name="bindings">The views to assign.</param>
-		/// <param name="count">[Optional] The number of items to copy from <paramref name="bindings"/>.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="bindings" /> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="startSlot" /> is less than 0.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="startSlot" /> plus the number of <paramref name="bindings" /> exceeds the size of this list.</exception>
-		/// <remarks><para>
-		/// Use this method to set a series of objects of type <see cref="GorgonVertexBufferBinding" /> at once. This will yield better performance than attempting to assign a single item
-		/// at a time via the indexer.
-		/// </para>
-		/// <para>
-		/// In this implementation, the <paramref name="startSlot" /> parameter is ignored.
-		/// </para>
-		/// <para>
-		///   <note type="warning">
-		/// Any exceptions thrown by this method will only be thrown when Gorgon is compiled as <b>DEBUG</b>.
-		/// </note>
-		/// </para></remarks>
-		void IGorgonBoundList<GorgonVertexBufferBinding>.SetRange(int startSlot, IReadOnlyList<GorgonVertexBufferBinding> bindings, int? count)
-		{
-			SetRange(bindings, count);
 		}
 
 		/// <summary>

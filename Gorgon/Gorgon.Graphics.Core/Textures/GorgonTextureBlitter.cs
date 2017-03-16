@@ -263,15 +263,7 @@ namespace Gorgon.Graphics
 
 			// Apply the correct sampler.
 			_drawCall.Resources.PixelShaderSamplers = _samplerState[0] == null ? _defaultSampler : _samplerState;
-
-			if ((_drawCall.Resources.PixelShaderResources == null)
-			    || (_drawCall.Resources.PixelShaderResources[0] != texture.DefaultShaderResourceView))
-			{
-				_drawCall.Resources.PixelShaderResources = new GorgonShaderResourceViews
-				                                           {
-					                                           [0] = texture.DefaultShaderResourceView
-				                                           };
-			}
+			_drawCall.Resources.PixelShaderResourceViews[0] = texture.DefaultShaderResourceView;
 
 			// Calculate position on the texture.
 			DX.Vector2 topLeft = texture.ToTexel(new DX.Point(srcX, srcY));

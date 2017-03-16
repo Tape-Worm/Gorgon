@@ -1,8 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<RuleSet Name="Code analysis rules for Gorgon" Description="Code analysis rules for Gorgon - Disables CA2213 as it's being deprecated (see https://github.com/dotnet/roslyn-analyzers/issues/310)" ToolsVersion="14.0">
+<RuleSet Name="Code analysis rules for Gorgon" Description="Code analysis rules for Gorgon - Disables CA2213 as it's being deprecated (see https://github.com/dotnet/roslyn-analyzers/issues/310)" ToolsVersion="15.0">
   <Include Path="basiccorrectnessrules.ruleset" Action="Default" />
   <Rules AnalyzerId="Microsoft.Analyzers.ManagedCodeAnalysis" RuleNamespace="Microsoft.Rules.Managed">
     <Rule Id="CA1032" Action="Warning" />
+    <Rule Id="CA1033" Action="None" />
     <Rule Id="CA1054" Action="Warning" />
     <Rule Id="CA1055" Action="Warning" />
     <Rule Id="CA1056" Action="Warning" />
