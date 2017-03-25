@@ -1184,12 +1184,7 @@ namespace Gorgon.IO
 		public GorgonFileSystem(IGorgonFileSystemProvider provider, IGorgonLog log = null)
 			: this(log)
 		{
-			if (provider == null)
-			{
-				throw new ArgumentNullException(nameof(provider));
-			}
-
-			_providers[provider.GetType().FullName] = provider;
+			_providers[provider.GetType().FullName] = provider ?? throw new ArgumentNullException(nameof(provider));
 		}
 
 		/// <summary>

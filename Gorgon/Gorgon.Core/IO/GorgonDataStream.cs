@@ -1489,13 +1489,8 @@ namespace Gorgon.IO
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="pointer"/> parameter is <b>null</b>.</exception>
 		public GorgonDataStream(IGorgonPointer pointer)
 		{
-			if (pointer == null)
-			{
-				throw new ArgumentNullException(nameof(pointer));
-			}
-
 			_ownsPointer = false;
-			_pointer = pointer;
+			_pointer = pointer ?? throw new ArgumentNullException(nameof(pointer));
 			StreamAccess = StreamAccess.ReadWrite;
 		}
 		#endregion

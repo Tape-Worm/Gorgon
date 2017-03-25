@@ -25,24 +25,20 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core.Pipeline
 {
 	/// <summary>
-	/// A native binding for a shader resource view.
+	/// A binding for a native Direct 3D object.
 	/// </summary>
-	struct NativeSrvBinding
-		: IEquatable<NativeSrvBinding>
+	struct NativeBinding<T>
+		: IEquatable<NativeBinding<T>>
+		where T : class
 	{
 		/// <summary>
 		/// The shader resource views to bind.
 		/// </summary>
-		public D3D11.ShaderResourceView[] Srvs;
+		public T[] Srvs;
 		/// <summary>
 		/// The starting slot to bind.
 		/// </summary>
@@ -57,7 +53,7 @@ namespace Gorgon.Graphics.Core.Pipeline
 		/// </summary>
 		/// <param name="binding">The binding.</param>
 		/// <returns><b>true</b> if XXXX, <b>false</b> otherwise.</returns>
-		public bool Equals(NativeSrvBinding binding)
+		public bool Equals(NativeBinding<T> binding)
 		{
 			return binding.Srvs == Srvs
 			       && binding.StartSlot == StartSlot

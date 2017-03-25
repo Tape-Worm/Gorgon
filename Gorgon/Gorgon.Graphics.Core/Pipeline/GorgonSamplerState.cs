@@ -82,17 +82,12 @@ namespace Gorgon.Graphics.Core
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, or the <paramref name="info"/> parameter is <b>null</b>.</exception>
 		public GorgonSamplerState(GorgonGraphics graphics, IGorgonSamplerStateInfo info)
 		{
-			if (graphics == null)
-			{
-				throw new ArgumentNullException(nameof(graphics));
-			}
-
 			if (info == null)
 			{
 				throw new ArgumentNullException(nameof(info));
 			}
 
-			Graphics = graphics;
+			Graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
 			_info = new GorgonSamplerStateInfo(info);
 			D3DState = new D3D11.SamplerState(graphics.VideoDevice.D3DDevice(), _info.ToSamplerStateDesc());
 		}

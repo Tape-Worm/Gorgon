@@ -486,12 +486,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="factory"/> parameter is <b>null</b>.</exception>
 		protected GorgonFontCodec(GorgonFontFactory factory)
 		{
-			if (factory == null)
-			{
-				throw new ArgumentNullException(nameof(factory));
-			}
-
-			Factory = factory;
+			Factory = factory ?? throw new ArgumentNullException(nameof(factory));
 			CodecCommonExtensions = new string[] { };
 		}
 		#endregion

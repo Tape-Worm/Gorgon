@@ -322,12 +322,7 @@ namespace Gorgon.Graphics
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
 		public GorgonTextureBlitter(GorgonGraphics graphics, GorgonRenderTargetView renderTarget)
 		{
-			if (graphics == null)
-			{
-				throw new ArgumentNullException(nameof(graphics));
-			}
-
-			_graphics = graphics;
+			_graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
 
 			_samplerState = new GorgonSamplerStates();
 			_defaultSampler = new GorgonSamplerStates

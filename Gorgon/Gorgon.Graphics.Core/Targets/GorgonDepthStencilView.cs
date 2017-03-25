@@ -395,13 +395,7 @@ namespace Gorgon.Graphics.Core
 									  IGorgonLog log = null)
 		{
 			_log = log ?? GorgonLogDummy.DefaultInstance;
-
-			if (texture == null)
-			{
-				throw new ArgumentNullException(nameof(texture));
-			}
-
-			Texture = texture;
+			Texture = texture ?? throw new ArgumentNullException(nameof(texture));
 
 			format = format == DXGI.Format.Unknown ? Texture.Info.Format : format;
 

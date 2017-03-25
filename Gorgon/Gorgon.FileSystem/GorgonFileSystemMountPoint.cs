@@ -152,11 +152,6 @@ namespace Gorgon.IO
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="physicalPath"/>, or the <paramref name="mountLocation"/> parameter is empty.</exception>
 		internal GorgonFileSystemMountPoint(IGorgonFileSystemProvider provider, string physicalPath, string mountLocation, bool isFakeMountPoint = false)
 		{
-			if (provider == null)
-			{
-				throw new ArgumentNullException(nameof(provider));
-			}
-
 			if (physicalPath == null)
 			{
 				throw new ArgumentNullException(nameof(physicalPath));
@@ -177,7 +172,7 @@ namespace Gorgon.IO
 				throw new ArgumentException(Resources.GORFS_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(mountLocation));
 			}
 
-			Provider = provider;
+			Provider = provider ?? throw new ArgumentNullException(nameof(provider));
 			PhysicalPath = physicalPath;
 			MountLocation = mountLocation;
 			IsFakeMount = isFakeMountPoint;

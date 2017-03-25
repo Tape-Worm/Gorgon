@@ -390,12 +390,7 @@ namespace Gorgon.Graphics.Fonts
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
 		public GorgonFontFactory(GorgonGraphics graphics)
 		{
-			if (graphics == null)
-			{
-				throw new ArgumentNullException(nameof(graphics));
-			}
-
-			Graphics = graphics;
+			Graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
 		}
 		#endregion
 	}

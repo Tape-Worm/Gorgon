@@ -158,17 +158,12 @@ namespace Gorgon.IO.Providers
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginService"/> parameter is <b>null</b>.</exception>
 		public GorgonFileSystemProviderFactory(IGorgonPluginService pluginService, IGorgonLog log = null)
 		{
-			if (pluginService == null)
-			{
-				throw new ArgumentNullException(nameof(pluginService));
-			}
-
 			if (log != null)
 			{
 				_log = log;
 			}
 
-			_pluginService = pluginService;
+			_pluginService = pluginService ?? throw new ArgumentNullException(nameof(pluginService));
 		}
 		#endregion
 	}

@@ -695,11 +695,6 @@ namespace Gorgon.IO
 		public GorgonFileSystemWriter(GorgonFileSystem fileSystem, string writeLocation)
 			: base(Resources.GORFS_FOLDER_WRITER_FS_DESC)
 		{
-			if (fileSystem == null)
-			{
-				throw new ArgumentNullException(nameof(fileSystem));
-			}
-
 			if (writeLocation == null)
 			{
 				throw new ArgumentNullException(nameof(writeLocation));
@@ -711,7 +706,7 @@ namespace Gorgon.IO
 			}
 
 			// We need the concrete type in here because we need access to its internals.
-			_fileSystem = fileSystem;
+			_fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
 			WriteLocation = writeLocation.FormatDirectory(Path.DirectorySeparatorChar);
 			_mountPoint = new GorgonFileSystemMountPoint(fileSystem.DefaultProvider, WriteLocation, "/");
 		}
