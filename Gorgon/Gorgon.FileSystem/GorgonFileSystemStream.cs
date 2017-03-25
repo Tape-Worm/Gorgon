@@ -358,19 +358,9 @@ namespace Gorgon.IO
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="baseStream"/> or the <paramref name="file"/> parameter is <b>null</b>.</exception>
 		protected internal GorgonFileSystemStream(IGorgonVirtualFile file, Stream baseStream)
 		{
-			if (file == null)
-			{
-				throw new ArgumentNullException(nameof(file));
-			}
-
-			if (baseStream == null)
-			{
-				throw new ArgumentNullException(nameof(baseStream));
-			}
-
 			CloseUnderlyingStream = true;
-			_baseStream = baseStream;
-			FileEntry = file;
+			_baseStream = baseStream ?? throw new ArgumentNullException(nameof(baseStream));
+			FileEntry = file ?? throw new ArgumentNullException(nameof(file));
 
 			// Reset the position to the beginning.
 			if (_baseStream.CanSeek)

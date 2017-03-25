@@ -327,12 +327,7 @@ namespace Gorgon.Graphics.Core
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="inputLayout"/> parameter is <b>null</b>.</exception>
 		public GorgonVertexBufferBindings(GorgonInputLayout inputLayout)
 		{
-			if (inputLayout == null)
-			{
-				throw new ArgumentNullException(nameof(inputLayout));
-			}
-
-			InputLayout = inputLayout;
+			InputLayout = inputLayout ?? throw new ArgumentNullException(nameof(inputLayout));
 		}
 		#endregion
 	}

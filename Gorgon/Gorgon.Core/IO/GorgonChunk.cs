@@ -36,7 +36,12 @@ namespace Gorgon.IO
 	public struct GorgonChunk
 		: IEquatable<GorgonChunk>
 	{
-		#region Variables.
+		#region Variables.		
+		/// <summary>
+		/// An empty chunk.
+		/// </summary>
+		public static readonly GorgonChunk EmptyChunk = default(GorgonChunk);
+
 		/// <summary>
 		/// The ID for the chunk.
 		/// </summary>

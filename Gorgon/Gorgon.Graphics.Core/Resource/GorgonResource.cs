@@ -291,13 +291,8 @@ namespace Gorgon.Graphics.Core
 				throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
 			}
 
-            if (graphics == null)
-            {
-                throw new ArgumentNullException(nameof(graphics));
-            }
-
 			Name = name;
-			Graphics = graphics;
+			Graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
 		}
 		#endregion
 	}

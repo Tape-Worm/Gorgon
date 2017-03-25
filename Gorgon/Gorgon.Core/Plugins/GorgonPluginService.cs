@@ -565,12 +565,7 @@ namespace Gorgon.Plugins
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="assemblyCache"/> is <b>null</b>.</exception>
 		public GorgonPluginService(GorgonPluginAssemblyCache assemblyCache, IGorgonLog log = null)
 		{
-			if (assemblyCache == null)
-			{
-				throw new ArgumentNullException(nameof(assemblyCache));
-			}
-
-			PluginAssemblyCache = assemblyCache;
+			PluginAssemblyCache = assemblyCache ?? throw new ArgumentNullException(nameof(assemblyCache));
 
 			if (log != null)
 			{

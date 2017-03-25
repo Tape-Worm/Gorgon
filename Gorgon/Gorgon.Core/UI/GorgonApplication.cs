@@ -720,12 +720,7 @@ namespace Gorgon.UI
 		/// <seealso cref="IdleMethod"/>
 		public static void Run(ApplicationContext context, Func<bool> idleMethod = null)
 		{
-		    if (context == null)
-		    {
-		        throw new InvalidOperationException(Resources.GOR_ERR_APPLICATION_NOCONTEXT);
-		    }
-
-            if (IsRunning)
+			if (IsRunning)
             {
                 throw new InvalidOperationException(Resources.GOR_ERR_APPLICATION_ALREADY_RUNNING);
             }
@@ -740,7 +735,7 @@ namespace Gorgon.UI
 		        IdleMethod = idleMethod;
 		    }
 
-			ApplicationContext = context;
+			ApplicationContext = context ?? throw new InvalidOperationException(Resources.GOR_ERR_APPLICATION_NOCONTEXT);
 
 			try
 			{
@@ -806,11 +801,6 @@ namespace Gorgon.UI
 		/// <seealso cref="MainForm"/>
 		public static void Run(Form mainForm, Func<bool> idleMethod = null)
 		{
-			if (mainForm == null)
-			{
-				throw new ArgumentNullException(nameof(mainForm));
-			}
-
 			if (IsRunning)
 			{
 				throw new InvalidOperationException(Resources.GOR_ERR_APPLICATION_ALREADY_RUNNING);
@@ -826,7 +816,7 @@ namespace Gorgon.UI
 				IdleMethod = idleMethod;
 			}
 
-			_mainForm = mainForm;
+			_mainForm = mainForm ?? throw new ArgumentNullException(nameof(mainForm));
 
 			try
 			{
@@ -885,11 +875,6 @@ namespace Gorgon.UI
 		/// <seealso cref="IdleMethod"/>
 		public static void Run(Func<bool> idleMethod)
 		{
-			if (idleMethod == null)
-			{
-				throw new ArgumentNullException(nameof(idleMethod));
-			}
-
 			if (IsRunning)
 			{
 			    throw new InvalidOperationException(Resources.GOR_ERR_APPLICATION_ALREADY_RUNNING);
@@ -900,7 +885,7 @@ namespace Gorgon.UI
 				throw new InvalidOperationException(Resources.GOR_ERR_APPLICATION_RUN_ONLY_FROM_ONE_THREAD);
 			}
 
-			IdleMethod = idleMethod;
+			IdleMethod = idleMethod ?? throw new ArgumentNullException(nameof(idleMethod));
 
 			try
 			{

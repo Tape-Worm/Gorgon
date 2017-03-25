@@ -511,16 +511,6 @@ namespace Gorgon.Graphics.Core
 				throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
 			}
 
-			if (videoDevice == null)
-			{
-				throw new ArgumentNullException(nameof(videoDevice));
-			}
-
-			if (shader == null)
-			{
-				throw new ArgumentNullException(nameof(shader));
-			}
-
 			if (elements == null)
 			{
 				throw new ArgumentNullException(nameof(elements));
@@ -544,8 +534,8 @@ namespace Gorgon.Graphics.Core
 				FindDuplicateElements(_elements, _elements[i], i, nameof(elements));
 			}
 
-			VideoDevice = videoDevice;
-			Shader = shader;
+			VideoDevice = videoDevice ?? throw new ArgumentNullException(nameof(videoDevice));
+			Shader = shader ?? throw new ArgumentNullException(nameof(shader));
 
 			UpdateVertexSize();
 			BuildD3DLayout();

@@ -295,7 +295,7 @@ namespace Gorgon.IO
 
 			GorgonChunk chunk = Chunks[chunkId];
 
-			if (chunk == null)
+			if (chunk.Equals(GorgonChunk.EmptyChunk))
 			{
 				throw new KeyNotFoundException(string.Format(Resources.GOR_ERR_CHUNK_NOT_FOUND, chunkId.FormatHex()));	
 			}

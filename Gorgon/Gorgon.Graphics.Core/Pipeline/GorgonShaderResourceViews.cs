@@ -51,10 +51,10 @@ namespace Gorgon.Graphics.Core
 		// The flags to indicate whether the first bank of shader resource views are dirty or not.
 		private int _dirty;
 		// The native resource bindings.
-		private NativeSrvBinding _nativeViews = new NativeSrvBinding
-		                                        {
-			                                        Srvs = new D3D11.ShaderResourceView[MaximumShaderResourceViewCount]
-		                                        };
+		private NativeBinding<D3D11.ShaderResourceView> _nativeViews = new NativeBinding<D3D11.ShaderResourceView>
+		                                                                  {
+			                                                                  Srvs = new D3D11.ShaderResourceView[MaximumShaderResourceViewCount]
+		                                                                  };
 		#endregion
 
 		#region Properties.
@@ -154,12 +154,12 @@ namespace Gorgon.Graphics.Core
 		/// Function to retrieve the native shader resource view binding.
 		/// </summary>
 		/// <returns>A native shader resource view binding.</returns>
-		internal NativeSrvBinding GetNativeShaderResources()
+		internal ref NativeBinding<D3D11.ShaderResourceView> GetNativeShaderResources()
 		{
 			// Nothing's been changed, so send back our array.
 			if (_dirty == 0)
 			{
-				return _nativeViews;
+				return ref this._nativeViews;
 			}
 
 			int firstSlot = -1;
@@ -195,14 +195,14 @@ namespace Gorgon.Graphics.Core
 				}
 			}
 
-			_nativeViews = new NativeSrvBinding
+			_nativeViews = new NativeBinding<D3D11.ShaderResourceView>
 			               {
 				               Srvs = srvs,
 				               Count = slotCount,
 				               StartSlot = firstSlot
 			               };
 
-			return _nativeViews;
+			return ref _nativeViews;
 		}
 
 		/// <summary>

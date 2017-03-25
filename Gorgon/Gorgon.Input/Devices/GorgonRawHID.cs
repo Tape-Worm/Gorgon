@@ -165,12 +165,7 @@ namespace Gorgon.Input
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="hidInfo"/> is <b>null</b>.</exception>
 		public GorgonRawHID(GorgonRawHIDInfo hidInfo)
 		{
-			if (hidInfo == null)
-			{
-				throw new ArgumentNullException(nameof(hidInfo));
-			}
-
-			Info = hidInfo;
+			Info = hidInfo ?? throw new ArgumentNullException(nameof(hidInfo));
 		}
 		#endregion
 	}
