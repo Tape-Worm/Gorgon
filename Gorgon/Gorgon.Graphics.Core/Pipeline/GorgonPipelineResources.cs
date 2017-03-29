@@ -407,7 +407,7 @@ namespace Gorgon.Graphics.Core
 			switch (shaderType)
 			{
 				case ShaderType.Pixel:
-					NativeBinding<D3D11.ShaderResourceView> binding = PixelShaderResourceViews.GetNativeShaderResources();
+					ref NativeBinding<D3D11.ShaderResourceView> binding = ref PixelShaderResourceViews.GetNativeShaderResources();
 					device.PixelShader.SetShaderResources(binding.StartSlot, binding.Count, binding.Srvs);
 					break;
 			}
