@@ -51,10 +51,7 @@ namespace Gorgon.Collections.Specialized
 		/// </summary>
 		public T this[string name]
 		{
-			get
-			{
-				return Items[name];
-			}
+			get => Items[name];
 			set
 			{
 				if (!Items.ContainsKey(name))

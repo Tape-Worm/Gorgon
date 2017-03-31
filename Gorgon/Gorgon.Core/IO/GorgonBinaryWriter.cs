@@ -61,10 +61,7 @@ namespace Gorgon.IO
 		/// </remarks>
 		public int BufferSize
 		{
-			get
-			{
-				return _bufferSize;
-			}
+			get => _bufferSize;
 			set
 			{
 				if (value < 128)

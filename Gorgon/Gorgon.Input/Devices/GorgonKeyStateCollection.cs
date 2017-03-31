@@ -60,10 +60,7 @@ namespace Gorgon.Input
 
 				return result;
 			}
-			set
-			{
-				_keys[key] = value;
-			}
+			set => _keys[key] = value;
 		}
 		#endregion
 

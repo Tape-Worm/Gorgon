@@ -67,14 +67,8 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// </remarks>
 		public double DpiX
 		{
-			get
-			{
-				return Options.GetOptionValue<double>(nameof(DpiX));
-			}
-			set
-			{
-				Options.SetOptionValue(nameof(DpiX), value);
-			}
+			get => Options.GetOptionValue<double>(nameof(DpiX));
+			set => Options.SetOptionValue(nameof(DpiX), value);
 		}
 
 		/// <summary>
@@ -90,14 +84,8 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// </remarks>
 		public double DpiY
 		{
-			get
-			{
-				return Options.GetOptionValue<double>(nameof(DpiY));
-			}
-			set
-			{
-				Options.SetOptionValue(nameof(DpiY), value);
-			}
+			get => Options.GetOptionValue<double>(nameof(DpiY));
+			set => Options.SetOptionValue(nameof(DpiY), value);
 		}
 
 		/// <summary>
@@ -108,10 +96,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// </remarks>
 		public float ImageQuality
 		{
-			get
-			{
-				return Options.GetOptionValue<float>(nameof(ImageQuality));
-			}
+			get => Options.GetOptionValue<float>(nameof(ImageQuality));
 			set
 			{
 				if (value < 0.0f)

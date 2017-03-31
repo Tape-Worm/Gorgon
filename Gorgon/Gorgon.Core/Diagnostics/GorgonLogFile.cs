@@ -77,10 +77,7 @@ namespace Gorgon.Diagnostics
 		/// </summary>
 		public LoggingLevel LogFilterLevel
 		{
-			get
-			{
-				return _filterLevel;
-			}
+			get => _filterLevel;
 			set
 			{
 				if ((_filterLevel != value) && (value != LoggingLevel.NoLogging))

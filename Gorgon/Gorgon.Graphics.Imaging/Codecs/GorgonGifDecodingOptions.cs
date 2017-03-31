@@ -77,14 +77,8 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// </remarks>
 		public bool ReadAllFrames
 		{
-			get
-			{
-				return Options.GetOptionValue<bool>(nameof(ReadAllFrames));
-			}
-			set
-			{
-				Options.SetOptionValue(nameof(ReadAllFrames), value);
-			}
+			get => Options.GetOptionValue<bool>(nameof(ReadAllFrames));
+			set => Options.SetOptionValue(nameof(ReadAllFrames), value);
 		}
 
 		/// <summary>
@@ -114,14 +108,8 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// </remarks>
 		public IList<GorgonColor> Palette
 		{
-			get
-			{
-				return Options.GetOptionValue<IList<GorgonColor>>(nameof(Palette));
-			}
-			set
-			{
-				Options.SetOptionValue(nameof(Palette), value);
-			}
+			get => Options.GetOptionValue<IList<GorgonColor>>(nameof(Palette));
+			set => Options.SetOptionValue(nameof(Palette), value);
 		}
 
 		/// <summary>
@@ -141,14 +129,8 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// </remarks>
 		public float AlphaThreshold
 		{
-			get
-			{
-				return Options.GetOptionValue<float>(nameof(AlphaThreshold));
-			}
-			set
-			{
-				Options.SetOptionValue(nameof(AlphaThreshold), value);
-			}
+			get => Options.GetOptionValue<float>(nameof(AlphaThreshold));
+			set => Options.SetOptionValue(nameof(AlphaThreshold), value);
 		}
 
 		/// <summary>

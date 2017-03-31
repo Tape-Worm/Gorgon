@@ -155,14 +155,8 @@ namespace Gorgon.UI
 		/// <seealso cref="Application.CurrentCulture"/>
 		public static CultureInfo CurrentCulture
 		{
-			get
-			{
-				return Application.CurrentCulture;
-			}
-			set
-			{
-				Application.CurrentCulture = value;
-			}
+			get => Application.CurrentCulture;
+			set => Application.CurrentCulture = value;
 		}
 
 		/// <summary>
@@ -249,10 +243,7 @@ namespace Gorgon.UI
 		/// </remarks>
 		public static int UnfocusedSleepTime
 		{
-			get
-			{
-				return _unfocusedSleepTime;
-			}
+			get => _unfocusedSleepTime;
 			set
 			{
 				if (value < 0)
@@ -320,10 +311,7 @@ namespace Gorgon.UI
 		/// </exception>
 		public static Func<bool> IdleMethod
 		{
-			get
-			{
-				return _loop;
-			}
+			get => _loop;
 			set
 			{
 				// If we have no application form, or context and we try disable the loop, leave. 

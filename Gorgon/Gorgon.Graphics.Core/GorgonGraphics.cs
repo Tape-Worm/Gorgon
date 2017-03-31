@@ -160,15 +160,9 @@ namespace Gorgon.Graphics.Core
 		/// </remarks>
 		public static bool IsObjectTrackingEnabled
         {
-            get
-            {
-                return DX.Configuration.EnableObjectTracking;
-            }
-            set
-            {
-				DX.Configuration.EnableObjectTracking = value;
-            }
-        }
+            get => DX.Configuration.EnableObjectTracking;
+			set => DX.Configuration.EnableObjectTracking = value;
+		}
 
 		/// <summary>
 		/// Property to set or return whether debug output is enabled for the underlying graphics API.

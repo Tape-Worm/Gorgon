@@ -134,10 +134,7 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		public GorgonVertexBufferBindings VertexBuffers
 		{
-			get
-			{
-				return _vertexBuffers;
-			}
+			get => _vertexBuffers;
 			set
 			{
 				if (_vertexBuffers == value)
@@ -155,10 +152,7 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		public GorgonIndexBuffer IndexBuffer
 		{
-			get
-			{
-				return _indexBuffer;
-			}
+			get => _indexBuffer;
 			set
 			{
 				if (_indexBuffer == value)
@@ -179,14 +173,8 @@ namespace Gorgon.Graphics.Core
 		/// </remarks>
 		public GorgonRenderTargetViews RenderTargets
 		{
-			get
-			{
-				return _renderTargets;
-			}
-			set
-			{
-				SetRenderTargets(value, false);
-			}
+			get => _renderTargets;
+			set => SetRenderTargets(value, false);
 		}
 
 		/// <summary>
@@ -197,14 +185,8 @@ namespace Gorgon.Graphics.Core
 		/// </remarks>
 		public GorgonConstantBuffers PixelShaderConstantBuffers
 		{
-			get
-			{
-				return _pixelShaderConstantBuffers;
-			}
-			set
-			{
-				SetShaderConstantBuffers(value, false, ShaderType.Pixel);
-			}
+			get => _pixelShaderConstantBuffers;
+			set => SetShaderConstantBuffers(value, false, ShaderType.Pixel);
 		}
 
 		/// <summary>
@@ -215,14 +197,8 @@ namespace Gorgon.Graphics.Core
 		/// </remarks>
 		public GorgonConstantBuffers VertexShaderConstantBuffers
 		{
-			get
-			{
-				return _vertexShaderConstantBuffers;
-			}
-			set
-			{
-				SetShaderConstantBuffers(value, false, ShaderType.Vertex);
-			}
+			get => _vertexShaderConstantBuffers;
+			set => SetShaderConstantBuffers(value, false, ShaderType.Vertex);
 		}
 
 		/// <summary>
@@ -421,7 +397,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="theseResources">The resources to compare from this resource list.</param>
 		/// <param name="otherResources">The resources to compare from the other resource list.</param>
 		/// <returns></returns>
-		private bool ShaderResourcesChanged(GorgonShaderResourceViews theseResources, GorgonShaderResourceViews otherResources)
+		private static bool ShaderResourcesChanged(GorgonShaderResourceViews theseResources, GorgonShaderResourceViews otherResources)
 		{
 			// If the resources are the same, then just check the dirty flag.
 			if (theseResources == otherResources)
@@ -457,7 +433,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="theseResources">The resources to compare from this resource list.</param>
 		/// <param name="otherResources">The resources to compare from the other resource list.</param>
 		/// <returns></returns>
-		private bool SamplersChanged(GorgonSamplerStates theseResources, GorgonSamplerStates otherResources)
+		private static bool SamplersChanged(GorgonSamplerStates theseResources, GorgonSamplerStates otherResources)
 		{
 			// If the resources are the same, then just check the dirty flag.
 			if (theseResources == otherResources)
@@ -493,16 +469,17 @@ namespace Gorgon.Graphics.Core
 		/// <param name="theseResources">The resources to compare from this resource list.</param>
 		/// <param name="otherResources">The resources to compare from the other resource list.</param>
 		/// <returns></returns>
-		private bool VertexBuffersChanged(GorgonVertexBufferBindings theseResources, GorgonVertexBufferBindings otherResources)
+		private static bool VertexBuffersChanged(GorgonVertexBufferBindings theseResources, GorgonVertexBufferBindings otherResources)
 		{
 			// If the resources are the same, then just check the dirty flag.
-			if (theseResources == otherResources)
+			if ((theseResources == otherResources)
+				|| ((theseResources == null) && (otherResources == null)))
 			{
 				return theseResources?.IsDirty ?? false;
 			}
 
 			if (((theseResources != null) && (otherResources == null))
-				|| ((otherResources != null) && (theseResources == null)))
+				|| (theseResources == null))
 			{
 				return true;
 			}

@@ -61,14 +61,8 @@ namespace Gorgon.Input
 		/// </remarks>
 		public int Value
 		{
-			get
-			{
-				return DeadZone.Equals(GorgonRange.Empty) || !DeadZone.Contains(_value) ? _value : _defaultValue;
-			}
-			set
-			{
-				_value = value;
-			}
+			get => DeadZone.Equals(GorgonRange.Empty) || !DeadZone.Contains(_value) ? _value : _defaultValue;
+			set => _value = value;
 		}
 
 		/// <summary>

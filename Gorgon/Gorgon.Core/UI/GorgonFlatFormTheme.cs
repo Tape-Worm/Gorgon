@@ -97,10 +97,7 @@ namespace Gorgon.UI
 		[LocalDescription(typeof(Resources), "PROP_THEME_TOOLSTRIPBACKCOLOR_DESC")]
 		public Color ToolStripBackColor
 		{
-			get
-			{
-				return _toolStripBackColor;
-			}
+			get => _toolStripBackColor;
 			set
 			{
 				_toolStripBackColor = value;
@@ -116,10 +113,7 @@ namespace Gorgon.UI
 		[LocalDescription(typeof(Resources), "PROP_THEME_TOOLSTRIPARROWCOLOR_DESC")]
 		public Color ToolStripArrowColor
 		{
-			get
-			{
-				return _toolStripArrowColor;
-			}
+			get => _toolStripArrowColor;
 			set
 			{
 				_toolStripArrowColor = value;
@@ -135,10 +129,7 @@ namespace Gorgon.UI
 		[LocalDescription(typeof(Resources), "PROP_THEME_MENUCHECKBACKCOLORHILIGHT_DESC")]
 		public Color CheckBoxBackColorHilight
 		{
-			get
-			{
-				return _checkBoxBackColorHilight;
-			}
+			get => _checkBoxBackColorHilight;
 			set
 			{
 				_checkBoxBackColorHilight = value;
@@ -154,10 +145,7 @@ namespace Gorgon.UI
 		[LocalDescription(typeof(Resources), "PROP_THEME_MENUCHECKBACKCOLOR_DESC")]
 		public Color CheckBoxBackColor
 		{
-			get
-			{
-				return _checkBoxBackColor;
-			}
+			get => _checkBoxBackColor;
 			set
 			{
 				_checkBoxBackColor = value;
@@ -173,10 +161,7 @@ namespace Gorgon.UI
 		[LocalDescription(typeof(Resources), "PROP_THEME_DROPDOWNBORDERCOLOR_DESC")]
 		public Color DropDownBorderColor
 		{
-			get
-			{
-				return _dropDownBorderColor;
-			}
+			get => _dropDownBorderColor;
 			set
 			{
 				_dropDownBorderColor = value;
@@ -193,10 +178,7 @@ namespace Gorgon.UI
 		[NotifyParentProperty(true)]
 		public Color ForeColor
 		{
-			get
-			{
-				return _foreColor;
-			}
+			get => _foreColor;
 			set
 			{
 				_foreColor = value;
@@ -212,10 +194,7 @@ namespace Gorgon.UI
 		[LocalDescription(typeof(Resources), "PROP_THEME_FORECOLOR_INACTIVE_DESC")]
 		public Color ForeColorInactive
 		{
-			get
-			{
-				return _foreColorInactive;
-			}
+			get => _foreColorInactive;
 			set
 			{
 				_foreColorInactive = value;
@@ -231,10 +210,7 @@ namespace Gorgon.UI
 		[LocalDescription(typeof(Resources), "PROP_THEME_DISABLECOLOR_DESC")]
 		public Color DisabledColor
 		{
-			get
-			{
-				return _disabledColor;
-			}
+			get => _disabledColor;
 			set
 			{
 				_disabledColor = value;
@@ -250,10 +226,7 @@ namespace Gorgon.UI
 		[LocalDescription(typeof(Resources), "PROP_THEME_HILIGHTFORECOLOR_DESC")]
 		public Color HilightForeColor
 		{
-			get
-			{
-				return _hilightForeColor;
-			}
+			get => _hilightForeColor;
 			set
 			{
 				_hilightForeColor = value;
@@ -269,10 +242,7 @@ namespace Gorgon.UI
 		[LocalDescription(typeof(Resources), "PROP_THEME_HILIGHTBACKCOLOR_DESC")]
 		public Color HilightBackColor
 		{
-			get
-			{
-				return _hilightBackColor;
-			}
+			get => _hilightBackColor;
 			set
 			{
 				_hilightBackColor = value;
@@ -288,10 +258,7 @@ namespace Gorgon.UI
 		[LocalDescription(typeof(Resources), "PROP_THEME_WINBACKCOLOR_DESC")]
 		public Color WindowBackground
 		{
-			get
-			{
-				return _windowBackground;
-			}
+			get => _windowBackground;
 			set
 			{
 				_windowBackground = value;
@@ -307,10 +274,7 @@ namespace Gorgon.UI
 		[LocalDescription(typeof(Resources), "PROP_THEME_WINBACKCOLOR_DESC")]
 		public Color ContentPanelBackground
 		{
-			get
-			{
-				return _contentBackground;
-			}
+			get => _contentBackground;
 			set
 			{
 				_contentBackground = value;
@@ -326,10 +290,7 @@ namespace Gorgon.UI
 		[LocalDescription(typeof(Resources), "PROP_THEME_WINBORDERACTIVE_DESC")]
 		public Color WindowBorderActive
 		{
-			get
-			{
-				return _windowBorderActive;
-			}
+			get => _windowBorderActive;
 			set
 			{
 				_windowBorderActive = value;
@@ -345,10 +306,7 @@ namespace Gorgon.UI
 		[LocalDescription(typeof(Resources), "PROP_THEME_WINBORDERINACTIVE_DESC")]
 		public Color WindowBorderInactive
 		{
-			get
-			{
-				return _windowBorderInactive;
-			}
+			get => _windowBorderInactive;
 			set
 			{
 				_windowBorderInactive = value;
@@ -364,10 +322,7 @@ namespace Gorgon.UI
 		[LocalDescription(typeof(Resources), "PROP_THEME_WINICONHILIGHT_DESC")]
 		public Color WindowSizeIconsForeColor
 		{
-			get
-			{
-				return _windowSizeIconsForeColor;
-			}
+			get => _windowSizeIconsForeColor;
 			set
 			{
 				_windowSizeIconsForeColor = value;
@@ -383,10 +338,7 @@ namespace Gorgon.UI
 		[LocalDescription(typeof(Resources), "PROP_THEME_WINICONHILIGHT_DESC")]
 		public Color WindowSizeIconsForeColorHilight
 		{
-			get
-			{
-				return _windowSizeIconsForeColorHilight;
-			}
+			get => _windowSizeIconsForeColorHilight;
 			set
 			{
 				_windowSizeIconsForeColorHilight = value;
@@ -402,10 +354,7 @@ namespace Gorgon.UI
 		[LocalDescription(typeof(Resources), "PROP_THEME_WINICONBACKHILIGHT_DESC")]
 		public Color WindowSizeIconsBackColorHilight
 		{
-			get
-			{
-				return _windowSizeIconsBackColorHilight;
-			}
+			get => _windowSizeIconsBackColorHilight;
 			set
 			{
 				_windowSizeIconsBackColorHilight = value;
@@ -421,10 +370,7 @@ namespace Gorgon.UI
 		[LocalDescription(typeof(Resources), "PROP_THEME_WINCLOSEFORECOLOR_DESC")]
 		public Color WindowCloseIconForeColor
 		{
-			get
-			{
-				return _windowCloseIconForeColor;
-			}
+			get => _windowCloseIconForeColor;
 			set
 			{
 				_windowCloseIconForeColor = value;
@@ -440,10 +386,7 @@ namespace Gorgon.UI
 		[LocalDescription(typeof(Resources), "PROP_THEME_WINCLOSEFORECOLORHILIGHT_DESC")]
 		public Color WindowCloseIconForeColorHilight
 		{
-			get
-			{
-				return _windowCloseIconForeColorHilight;
-			}
+			get => _windowCloseIconForeColorHilight;
 			set
 			{
 				_windowCloseIconForeColorHilight = value;
@@ -459,10 +402,7 @@ namespace Gorgon.UI
 		[LocalDescription(typeof(Resources), "PROP_THEME_WINCLOSEBACKCOLORHILIGHT_DESC")]
 		public Color WindowCloseIconBackColorHilight
 		{
-			get
-			{
-				return _windowCloseIconBackColorHilight;
-			}
+			get => _windowCloseIconBackColorHilight;
 			set
 			{
 				_windowCloseIconBackColorHilight = value;
@@ -478,10 +418,7 @@ namespace Gorgon.UI
 		[LocalDescription(typeof(Resources), "PROP_THEME_CHECKENABLED_IMAGE")]
 		public Image MenuCheckEnabledImage
 		{
-			get
-			{
-				return _checkEnabledImage;
-			}
+			get => _checkEnabledImage;
 			set
 			{
 				_checkEnabledImage = value;
@@ -497,10 +434,7 @@ namespace Gorgon.UI
 		[LocalDescription(typeof(Resources), "PROP_THEME_CHECKDISABLED_IMAGE")]
 		public Image MenuCheckDisabledImage
 		{
-			get
-			{
-				return _checkDisabledImage;
-			}
+			get => _checkDisabledImage;
 			set
 			{
 				_checkDisabledImage = value;

@@ -143,10 +143,7 @@ namespace Gorgon.Core
 		/// </summary>
 		public static int Seed
 		{
-			get
-			{
-				return _seed;
-			}
+			get => _seed;
 			set
 			{
 				_seed = value;
@@ -162,10 +159,7 @@ namespace Gorgon.Core
 		/// </remarks>
 		public static IReadOnlyList<byte> SimplexPermutations
 		{
-			get
-			{
-				return _permutations;
-			}
+			get => _permutations;
 			set
 			{
 			    if (value == null)

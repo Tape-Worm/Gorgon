@@ -62,14 +62,8 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// </remarks>
 		public IList<GorgonColor> Palette
 		{
-			get
-			{
-				return Options.GetOptionValue<IList<GorgonColor>>(nameof(Palette));
-			}
-			set
-			{
-				Options.SetOptionValue(nameof(Palette), value);
-			}
+			get => Options.GetOptionValue<IList<GorgonColor>>(nameof(Palette));
+			set => Options.SetOptionValue(nameof(Palette), value);
 		}
 
 		/// <summary>
@@ -89,14 +83,8 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// </remarks>
 		public float AlphaThreshold
 		{
-			get
-			{
-				return Options.GetOptionValue<float>(nameof(AlphaThreshold));
-			}
-			set
-			{
-				Options.SetOptionValue(nameof(AlphaThreshold), value.Max(0).Min(1));
-			}
+			get => Options.GetOptionValue<float>(nameof(AlphaThreshold));
+			set => Options.SetOptionValue(nameof(AlphaThreshold), value.Max(0).Min(1));
 		}
 
 		/// <summary>
@@ -114,14 +102,8 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// </remarks>
 		public IList<int> FrameDelays
 		{
-			get
-			{
-				return Options.GetOptionValue<IList<int>>(nameof(FrameDelays));
-			}
-			set
-			{
-				Options.SetOptionValue(nameof(FrameDelays), value);
-			}
+			get => Options.GetOptionValue<IList<int>>(nameof(FrameDelays));
+			set => Options.SetOptionValue(nameof(FrameDelays), value);
 		}
 
 		/// <summary>
@@ -141,14 +123,8 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// </remarks>
 		public ImageDithering Dithering
 		{
-			get
-			{
-				return Options.GetOptionValue<ImageDithering>(nameof(Dithering));
-			}
-			set
-			{
-				Options.SetOptionValue(nameof(Dithering), value);
-			}
+			get => Options.GetOptionValue<ImageDithering>(nameof(Dithering));
+			set => Options.SetOptionValue(nameof(Dithering), value);
 		}
 
 		/// <summary>
@@ -156,14 +132,8 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// </summary>
 		public double DpiX
 		{
-			get
-			{
-				return Options.GetOptionValue<double>(nameof(DpiX));
-			}
-			set
-			{
-				Options.SetOptionValue(nameof(DpiX), value);
-			}
+			get => Options.GetOptionValue<double>(nameof(DpiX));
+			set => Options.SetOptionValue(nameof(DpiX), value);
 		}
 
 		/// <summary>
@@ -171,14 +141,8 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// </summary>
 		public double DpiY
 		{
-			get
-			{
-				return Options.GetOptionValue<double>(nameof(DpiY));
-			}
-			set
-			{
-				Options.SetOptionValue(nameof(DpiY), value);
-			}
+			get => Options.GetOptionValue<double>(nameof(DpiY));
+			set => Options.SetOptionValue(nameof(DpiY), value);
 		}
 
 		/// <summary>
@@ -194,14 +158,8 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// </remarks>
 		public bool SaveAllFrames
 		{
-			get
-			{
-				return Options.GetOptionValue<bool>(nameof(IGorgonImageCodecEncodingOptions.SaveAllFrames));
-			}
-			set
-			{
-				Options.SetOptionValue(nameof(IGorgonImageCodecEncodingOptions.SaveAllFrames), value);
-			}
+			get => Options.GetOptionValue<bool>(nameof(IGorgonImageCodecEncodingOptions.SaveAllFrames));
+			set => Options.SetOptionValue(nameof(IGorgonImageCodecEncodingOptions.SaveAllFrames), value);
 		}
 		#endregion
 

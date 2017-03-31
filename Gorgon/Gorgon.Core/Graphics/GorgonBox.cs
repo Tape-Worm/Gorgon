@@ -92,29 +92,17 @@ namespace Gorgon.Graphics
         /// </summary>
         public int Left
         {
-            get
-            {
-                return X;
-            }
-            set
-            {
-                X = value;
-            }
-        }
+            get => X;
+			set => X = value;
+		}
 
         /// <summary>
         /// Property to set or return the top value for the box.
         /// </summary>
         public int Top
         {
-            get
-            {
-                return Y;
-            }
-            set
-            {
-                Y = value;
-            }
+            get => Y;
+	        set => Y = value;
         }
 
         /// <summary>
@@ -122,14 +110,8 @@ namespace Gorgon.Graphics
         /// </summary>
         public int Front
         {
-            get
-            {
-                return Z;
-            }
-            set
-            {
-                Z = value;
-            }
+            get => Z;
+	        set => Z = value;
         }
 
         /// <summary>

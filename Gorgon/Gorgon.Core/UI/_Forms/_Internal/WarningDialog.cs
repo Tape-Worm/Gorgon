@@ -54,10 +54,7 @@ namespace Gorgon.UI
 		/// </summary>
 		public string WarningDetails
 		{
-			get
-			{
-				return _warningDetails;
-			}
+			get => _warningDetails;
 			set
 			{
 				if (string.IsNullOrEmpty(value))

@@ -77,10 +77,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		public GorgonRenderTargetView RenderTarget
 		{
-			get
-			{
-				return _drawCall.Resources.RenderTargets?[0];
-			}
+			get => _drawCall.Resources.RenderTargets?[0];
 			set
 			{
 				if (_drawCall.Resources.RenderTargets?[0] == value)
@@ -103,14 +100,8 @@ namespace Gorgon.Graphics
 		/// </summary>
 		public GorgonSamplerState SamplerState
 		{
-			get
-			{
-				return _samplerState;
-			}
-			set
-			{
-				_samplerState = value;
-			}
+			get => _samplerState;
+			set => _samplerState = value;
 		}
 
 		/// <summary>

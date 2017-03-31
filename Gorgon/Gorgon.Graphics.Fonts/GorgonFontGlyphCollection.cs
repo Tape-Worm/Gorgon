@@ -63,14 +63,8 @@ namespace Gorgon.Graphics.Fonts
 		/// </summary>
 		public GorgonGlyph this[char character]
 		{
-			get
-			{
-				return _list[character];
-			}
-			internal set
-			{
-				_list[character] = value;
-			}
+			get => _list[character];
+			internal set => _list[character] = value;
 		}
 		#endregion
 

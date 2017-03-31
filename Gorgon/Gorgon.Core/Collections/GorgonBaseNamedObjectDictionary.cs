@@ -274,10 +274,7 @@ namespace Gorgon.Collections
 		/// </summary>
 		T IGorgonNamedObjectDictionary<T>.this[string name]
 		{
-			get
-			{
-				return _list[name];
-			}
+			get => _list[name];
 			set
 			{
 				if (!_list.ContainsKey(name))

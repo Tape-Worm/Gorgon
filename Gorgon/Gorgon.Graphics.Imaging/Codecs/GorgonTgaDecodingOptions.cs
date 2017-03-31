@@ -79,15 +79,9 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// </remarks>
 		public bool SetZeroAlphaAsOpaque
 		{
-			get
-			{
-				return Options.GetOptionValue<bool>(nameof(SetZeroAlphaAsOpaque));
-			}
+			get => Options.GetOptionValue<bool>(nameof(SetZeroAlphaAsOpaque));
 
-			set
-			{
-				Options.SetOptionValue(nameof(SetZeroAlphaAsOpaque), value);
-			}
+			set => Options.SetOptionValue(nameof(SetZeroAlphaAsOpaque), value);
 		}
 		#endregion
 

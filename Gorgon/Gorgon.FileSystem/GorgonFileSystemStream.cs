@@ -105,14 +105,8 @@ namespace Gorgon.IO
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public override long Position
 		{
-			get
-			{
-				return _baseStream.Position;
-			}
-			set
-			{
-				_baseStream.Position = value;
-			}
+			get => _baseStream.Position;
+			set => _baseStream.Position = value;
 		}
 
 		/// <summary>
@@ -123,14 +117,8 @@ namespace Gorgon.IO
 		/// <exception cref="T:System.InvalidOperationException">The <see cref="P:System.IO.Stream.ReadTimeout"/> method always throws an <see cref="T:System.InvalidOperationException"/>. </exception>
 		public override int ReadTimeout
 		{
-			get
-			{
-				return _baseStream.ReadTimeout;
-			}
-			set
-			{
-				_baseStream.ReadTimeout = value;
-			}
+			get => _baseStream.ReadTimeout;
+			set => _baseStream.ReadTimeout = value;
 		}
 
 		/// <summary>
@@ -141,14 +129,8 @@ namespace Gorgon.IO
 		/// <exception cref="T:System.InvalidOperationException">The <see cref="P:System.IO.Stream.WriteTimeout"/> method always throws an <see cref="T:System.InvalidOperationException"/>. </exception>
 		public override int WriteTimeout
 		{
-			get
-			{
-				return _baseStream.WriteTimeout;
-			}
-			set
-			{
-				_baseStream.WriteTimeout = value;
-			}
+			get => _baseStream.WriteTimeout;
+			set => _baseStream.WriteTimeout = value;
 		}
 		#endregion
 

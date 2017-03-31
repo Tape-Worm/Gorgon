@@ -122,10 +122,7 @@ namespace Gorgon.Graphics.Example
 		/// </summary>
 		public DX.Vector3 Position
 		{
-			get
-			{
-				return _position;
-			}
+			get => _position;
 			set
 			{
 				if (value.Equals(_position))
@@ -143,10 +140,7 @@ namespace Gorgon.Graphics.Example
 		/// </summary>
 		public DX.Vector3 Scale
 		{
-			get
-			{
-				return _scale;
-			}
+			get => _scale;
 			set
 			{
 				if (value.Equals(_scale))
@@ -164,10 +158,7 @@ namespace Gorgon.Graphics.Example
 		/// </summary>
 		public DX.Vector3 Rotation
 		{
-			get
-			{
-				return _rotation;
-			}
+			get => _rotation;
 			set
 			{
 				if (value.Equals(_rotation))

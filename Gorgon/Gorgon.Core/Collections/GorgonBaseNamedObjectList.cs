@@ -193,14 +193,8 @@ namespace Gorgon.Collections
 		/// </summary>
 		T IList<T>.this[int index]
 		{
-			get
-			{
-				return _list[index];
-			}
-			set
-			{
-				_list[index] = value;
-			}
+			get => _list[index];
+			set => _list[index] = value;
 		}
 		#endregion
 

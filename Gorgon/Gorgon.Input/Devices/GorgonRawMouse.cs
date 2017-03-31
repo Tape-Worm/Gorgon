@@ -191,10 +191,7 @@ namespace Gorgon.Input
 		/// </summary>
 		public int DoubleClickDelay
 		{
-			get
-			{
-				return _doubleClickDelay;
-			}
+			get => _doubleClickDelay;
 			set
 			{
 				if (value < 0)
@@ -257,10 +254,7 @@ namespace Gorgon.Input
 		/// </remarks>
 		public Rectangle PositionConstraint
 		{
-			get
-			{
-				return _positionConstraint;
-			}
+			get => _positionConstraint;
 			set
 			{
 				_positionConstraint = value;
@@ -282,10 +276,7 @@ namespace Gorgon.Input
 		/// </remarks>
 		public GorgonRange WheelConstraint
 		{
-			get
-			{
-				return _wheelConstraint;
-			}
+			get => _wheelConstraint;
 			set
 			{
 				_wheelConstraint = value;
@@ -308,14 +299,8 @@ namespace Gorgon.Input
 		/// </remarks>
 		public Size DoubleClickSize
 		{
-			get
-			{
-				return _doubleClickSize;
-			}
-			set
-			{
-				_doubleClickSize = new Size(value.Width.Abs(), value.Height.Abs());
-			}
+			get => _doubleClickSize;
+			set => _doubleClickSize = new Size(value.Width.Abs(), value.Height.Abs());
 		}
 
 		/// <summary>
@@ -337,14 +322,8 @@ namespace Gorgon.Input
 		/// </remarks>
 		public Point Position
 		{
-			get
-			{
-				return _position;
-			}
-			set
-			{
-				_position = ConstrainPositionData(value);
-			}
+			get => _position;
+			set => _position = ConstrainPositionData(value);
 		}
 
 		/// <summary>
@@ -355,10 +334,7 @@ namespace Gorgon.Input
 		/// </remarks>
 		public int WheelPosition
 		{
-			get
-			{
-				return _wheelPosition;
-			}
+			get => _wheelPosition;
 			set
 			{
 				_wheelPosition = value;

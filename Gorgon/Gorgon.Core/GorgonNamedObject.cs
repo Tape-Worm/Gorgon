@@ -97,14 +97,8 @@ namespace Gorgon.Core
 		/// </remarks>
 		public virtual string Name
 		{
-			get
-			{
-			    return _name;
-			}
-			protected set
-			{
-			    _name = value;
-			}
+			get => _name;
+			protected set => _name = value;
 		}
 		#endregion
 	}
