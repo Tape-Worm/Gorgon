@@ -90,7 +90,6 @@ namespace Gorgon.IO
 		public bool KeepStreamOpen
 		{
 			get;
-			private set;
 		}
 		#endregion
 

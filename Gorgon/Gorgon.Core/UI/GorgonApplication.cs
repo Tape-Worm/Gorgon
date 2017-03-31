@@ -211,7 +211,6 @@ namespace Gorgon.UI
 		public static int ThreadID
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>

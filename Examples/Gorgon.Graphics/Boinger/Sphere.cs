@@ -44,7 +44,6 @@ namespace Gorgon.Graphics.Example
 		public float Radius
 		{
 			get;
-			private set;
 		}
 		#endregion
 

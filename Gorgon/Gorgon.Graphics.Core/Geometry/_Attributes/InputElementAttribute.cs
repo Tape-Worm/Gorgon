@@ -95,7 +95,6 @@ namespace Gorgon.Graphics.Core
 		internal int ExplicitOrder
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -104,7 +103,6 @@ namespace Gorgon.Graphics.Core
 		internal bool AutoOffset
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -117,7 +115,6 @@ namespace Gorgon.Graphics.Core
 		public string Context
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -184,7 +181,6 @@ namespace Gorgon.Graphics.Core
 		public int Offset
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
