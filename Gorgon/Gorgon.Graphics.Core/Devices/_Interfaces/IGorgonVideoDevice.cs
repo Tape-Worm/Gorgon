@@ -102,7 +102,7 @@ namespace Gorgon.Graphics.Core
 		}
 
 		/// <summary>
-		/// Property to return the actual supported <see cref="FeatureLevelSupport"/> from the device.
+		/// Property to return the supported <see cref="FeatureLevelSupport"/> for the device.
 		/// </summary>
 		/// <remarks>
 		/// <para>

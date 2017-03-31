@@ -270,7 +270,7 @@ namespace Gorgon.Graphics.Example
 				            Resources =
 				            {
 					            // This will bind the vertex buffer to the GPU so it can be read from when rendering.
-					            VertexBuffers = new GorgonVertexBufferBindings(_inputLayout)
+					            VertexBuffers = new GorgonVertexBufferBindings(_inputLayout, 1)
 					                            {
 						                            [0] = new GorgonVertexBufferBinding(_vertexBuffer, MiniTriVertex.SizeInBytes)
 					                            },

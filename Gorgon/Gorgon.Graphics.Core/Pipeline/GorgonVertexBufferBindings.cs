@@ -28,11 +28,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using Gorgon.Core;
-using Gorgon.Diagnostics;
-using Gorgon.Graphics.Core.Properties;
 using D3D11 = SharpDX.Direct3D11;
+using Gorgon.Graphics.Core.Properties;
 
 namespace Gorgon.Graphics.Core
 {
@@ -47,18 +44,27 @@ namespace Gorgon.Graphics.Core
 	public sealed class GorgonVertexBufferBindings
 		: IList<GorgonVertexBufferBinding>, IReadOnlyList<GorgonVertexBufferBinding>
 	{
+		#region Constants.
+		/// <summary>
+		/// The maximum number of vertex buffers allow to be bound at the same time.
+		/// </summary>
+		public const int MaximumVertexBufferCount = D3D11.InputAssemblerStage.VertexInputResourceSlotCount;
+		#endregion
+
 		#region Variables.
-		// The list of D3D11 vertex buffer bindings.
-		private D3D11.VertexBufferBinding[] _nativeBindings = new D3D11.VertexBufferBinding[0];
-		// The list of bindings associated with this object.
-		private readonly GorgonVertexBufferBinding[] _bindings = new GorgonVertexBufferBinding[D3D11.InputAssemblerStage.VertexInputResourceSlotCount];
+		// The flags to indicate whether the first bank of shader resource views are dirty or not.
+		private int _dirty;
+		// The binding wrappers.
+		private GorgonVertexBufferBinding[] _bindings;
+		// The native resource bindings.
+		private NativeBinding<D3D11.VertexBufferBinding> _nativeBinding;
 		#endregion
 
 		#region Properties.
 		/// <summary>
-		/// Property to return the D3D11 vertex buffer binding array.
+		/// Property to return whether the list is in a dirty state or not.
 		/// </summary>
-		internal D3D11.VertexBufferBinding[] NativeBindings => _nativeBindings;
+		internal bool IsDirty => _dirty != 0;
 
 		/// <summary>
 		/// Property to return the maximum number of bindings that can be held in this list.
@@ -77,16 +83,6 @@ namespace Gorgon.Graphics.Core
 			internal set;
 		}
 
-		/// <summary>
-		/// Property to return the number of binding slots actually used.
-		/// </summary>
-		public int BindCount => _nativeBindings.Length;
-
-		/// <summary>
-		/// Property to return whether there are items to bind in this list.
-		/// </summary>
-		public bool IsEmpty => _nativeBindings.Length == 0;
-
 		/// <summary>Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</summary>
 		/// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only; otherwise, false.</returns>
 		bool ICollection<GorgonVertexBufferBinding>.IsReadOnly => false;
@@ -102,22 +98,13 @@ namespace Gorgon.Graphics.Core
 			}
 			set
 			{
+				if (_bindings[index].Equals(ref value))
+				{
+					return;
+				}
+
 				_bindings[index] = value;
-
-				if (GorgonVertexBufferBinding.Empty.Equals(value))
-				{
-					_nativeBindings = new D3D11.VertexBufferBinding[0];
-					return;
-				}
-
-				if ((_nativeBindings != null) && (_nativeBindings.Length == 1))
-				{
-					_nativeBindings[0] = value.ToVertexBufferBinding();
-					return;
-				}
-
-				_nativeBindings = new D3D11.VertexBufferBinding[1];
-				_nativeBindings[0] = value.ToVertexBufferBinding();
+				_dirty |= 1 << index;
 			}
 		}
 		#endregion
@@ -141,77 +128,6 @@ namespace Gorgon.Graphics.Core
 		IEnumerator IEnumerable.GetEnumerator()
 		{
 			return _bindings.GetEnumerator();
-		}
-
-		/// <summary>
-		/// Function to set multiple objects of type <see cref="GorgonVertexBufferBinding"/> at once.
-		/// </summary>
-		/// <param name="bindings">The views to assign.</param>
-		/// <param name="count">[Optional] The number of items to copy from <paramref name="bindings"/>.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="bindings"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the number of <paramref name="bindings"/> exceeds the size of this list.</exception>
-		/// <remarks>
-		/// <para>
-		/// Use this method to set a series of objects of type <see cref="GorgonVertexBufferBinding"/> at once. This will yield better performance than attempting to assign a single item 
-		/// at a time via the indexer.
-		/// </para>
-		/// <para>
-		/// <note type="warning">
-		/// Any exceptions thrown by this method will only be thrown when Gorgon is compiled as <b>DEBUG</b>.
-		/// </note>
-		/// </para>
-		/// </remarks>
-		public void SetRange(IReadOnlyList<GorgonVertexBufferBinding> bindings, int? count = null)
-		{
-			bindings.ValidateObject(nameof(bindings));
-
-			if (count == null)
-			{
-				count = bindings.Count;
-			}
-
-#if DEBUG
-			if (count > _bindings.Length)
-			{
-				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TOO_MANY_ITEMS, 0, count.Value, _bindings.Length));
-			}
-
-			if (count > bindings.Count)
-			{
-				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TOO_MANY_ITEMS, 0, count.Value, bindings.Count));
-			}
-#endif
-
-			if (count == 0)
-			{
-				_nativeBindings = new D3D11.VertexBufferBinding[0];
-				return;
-			}
-
-			if ((_nativeBindings == null)
-				|| (_nativeBindings.Length != count.Value))
-			{
-				_nativeBindings = new D3D11.VertexBufferBinding[count.Value];
-			}
-
-			for (int i = 0; i < count.Value; ++i)
-			{
-				GorgonVertexBufferBinding binding = bindings[i];
-#if DEBUG
-				// Validate to ensure that this buffer is not bound anywhere else within this binding list.
-				if (binding.VertexBuffer != null)
-				{
-					int existingItem = Array.IndexOf(_bindings, binding);
-
-					if ((existingItem != -1) && (existingItem != i))
-					{
-						throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_RESOURCE_BOUND, binding.VertexBuffer.Name, i));
-					}
-				}
-#endif
-				_nativeBindings[i] = binding.ToVertexBufferBinding();
-				_bindings[i] = binding;
-			}
 		}
 
 		/// <summary>Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1" />.</summary>
@@ -255,11 +171,12 @@ namespace Gorgon.Graphics.Core
 		/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only. </exception>
 		public void Clear()
 		{
-			_nativeBindings = new D3D11.VertexBufferBinding[0];
+			Array.Clear(_nativeBinding.Bindings, 0, MaximumVertexBufferCount);
+			_nativeBinding.StartSlot = _nativeBinding.Count = 0;
 
-			for (int i = 0; i < _bindings.Length; ++i)
+			unchecked
 			{
-				_bindings[i] = GorgonVertexBufferBinding.Empty;
+				_dirty = (int)(System.Math.Pow(2, Count));
 			}
 		}
 
@@ -292,42 +209,133 @@ namespace Gorgon.Graphics.Core
 		{
 			throw new NotSupportedException();
 		}
+
+		/// <summary>
+		/// Function to retrieve the native bindings.
+		/// </summary>
+		/// <returns>A native bindings item.</returns>
+		internal ref NativeBinding<D3D11.VertexBufferBinding> GetNativeBindings()
+		{
+			// Nothing's been changed, so send back our array.
+			if (_dirty == 0)
+			{
+				return ref _nativeBinding;
+			}
+
+			int firstSlot = -1;
+			int slotCount = 0;
+			D3D11.VertexBufferBinding[] buffers = _nativeBinding.Bindings;
+
+			for (int i = 0; i < MaximumVertexBufferCount; ++i)
+			{
+				int dirtyMask = 1 << i;
+
+				// Skip this index if we don't have a slot assigned.
+				if ((_dirty & dirtyMask) != dirtyMask)
+				{
+					continue;
+				}
+
+				// Record our first slot used.
+				if (firstSlot == -1)
+				{
+					firstSlot = i;
+				}
+
+				buffers[i] = this[i].ToVertexBufferBinding();
+
+				// Remove this bit.
+				_dirty &= ~dirtyMask;
+
+				++slotCount;
+
+				if (_dirty == 0)
+				{
+					break;
+				}
+			}
+
+			_nativeBinding = new NativeBinding<D3D11.VertexBufferBinding>
+			{
+				Bindings = buffers,
+				Count = slotCount,
+				StartSlot = firstSlot
+			};
+
+			return ref _nativeBinding;
+		}
+
+		/// <summary>
+		/// Function to copy the elements from a resource binding list to this list.
+		/// </summary>
+		/// <param name="source">The source list to copy.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="source"/> parameter is <b>null</b>.</exception>
+		public void CopyFrom(GorgonVertexBufferBindings source)
+		{
+			int dirty = 0;
+
+			if (source == null)
+			{
+				throw new ArgumentNullException(nameof(source));
+			}
+
+			ref NativeBinding<D3D11.VertexBufferBinding> bindings = ref source.GetNativeBindings();
+
+			// Resize the arrays if they differ.
+			if ((bindings.Count > Count)
+				|| (bindings.Count < Count))
+			{
+				Array.Resize(ref _bindings, bindings.Count);
+				Array.Resize(ref _nativeBinding.Bindings, bindings.Count);
+			}
+
+			for (int i = bindings.StartSlot; i < bindings.StartSlot + bindings.Count; ++i)
+			{
+				int mask = 1 << i;
+
+				if (this[i].Equals(source[i]))
+				{
+					// If this index was already dirty, then we need to ensure it stays that way.
+					if ((_dirty & mask) == mask)
+					{
+						dirty |= mask;
+					}
+					continue;
+				}
+
+				this[i] = source[i];
+				dirty |= mask;
+			}
+
+			// Update dirty flags.
+			_dirty = dirty;
+		}
 		#endregion
 
 		#region Constructor
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonVertexBufferBindings"/> class.
 		/// </summary>
-		internal GorgonVertexBufferBindings()
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonVertexBufferBindings"/> class.
-		/// </summary>
 		/// <param name="inputLayout">The input layout that describes the arrangement of the vertex data within the buffers being bound.</param>
-		/// <param name="bindings">[Optional] A list of <see cref="GorgonVertexBufferBinding"/> items to copy.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="inputLayout"/>, or the <paramref name="bindings"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="GorgonException">Thrown when a <see cref="GorgonVertexBufferBinding"/> is bound more than once in the <paramref name="bindings"/> list.</exception>
-		public GorgonVertexBufferBindings(GorgonInputLayout inputLayout, IEnumerable<GorgonVertexBufferBinding> bindings)
-			: this(inputLayout)
+		/// <param name="size">The number of vertex buffers to store in this list.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="inputLayout"/> parameter is <b>null</b>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> parameter is less than 0.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="size"/> is larger than the <see cref="MaximumVertexBufferCount"/>.</exception>
+		public GorgonVertexBufferBindings(GorgonInputLayout inputLayout, int size)
 		{
-			if (bindings == null)
+			if (size < 0)
 			{
-				throw new ArgumentNullException(nameof(bindings));
+				throw new ArgumentOutOfRangeException(nameof(size));
 			}
 
-			SetRange(bindings.ToArray());
-		}
+			if (size > MaximumVertexBufferCount)
+			{
+				throw new ArgumentException(string.Format(Resources.GORGFX_ARG_OUT_OF_RANGE, MaximumVertexBufferCount, 0));
+			}
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonVertexBufferBindings"/> class.
-		/// </summary>
-		/// <param name="inputLayout">The input layout that describes the arrangement of the vertex data within the buffers being bound.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="inputLayout"/> parameter is <b>null</b>.</exception>
-		public GorgonVertexBufferBindings(GorgonInputLayout inputLayout)
-		{
 			InputLayout = inputLayout ?? throw new ArgumentNullException(nameof(inputLayout));
+			_bindings = new GorgonVertexBufferBinding[size];
+			_nativeBinding.Bindings = new D3D11.VertexBufferBinding[size];
 		}
 		#endregion
 	}

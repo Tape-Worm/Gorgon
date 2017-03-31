@@ -85,17 +85,5 @@ namespace Gorgon.Graphics.Core
 			get;
 			set;
 		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonDrawIndexedInstancedCall"/> class.
-		/// </summary>
-		public GorgonDrawIndexedInstancedCall()
-		{
-			unchecked
-			{
-				BlendSampleMask = (int)(0xffffffff);
-				BlendFactor = new GorgonColor(1, 1, 1, 1);
-			}
-		}
 	}
 }

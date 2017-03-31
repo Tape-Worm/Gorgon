@@ -54,9 +54,9 @@ namespace Gorgon.Graphics
 		// The bindings for the vertex buffer.
 		private GorgonVertexBufferBindings _vertexBufferBindings;
 		// The sampler state to use for blitting the texture.
-		private GorgonSamplerStates _samplerState;
+		private GorgonSamplerState _samplerState;
 		// The default sampler to use.
-		private readonly GorgonSamplerStates _defaultSampler;
+		private readonly GorgonSamplerState _defaultSampler;
 		// World/view/projection matrix.
 		private GorgonConstantBuffer _wvpBuffer;
 		// Flag used to indicate that we're in the middle of initialization.
@@ -105,14 +105,11 @@ namespace Gorgon.Graphics
 		{
 			get
 			{
-				return _samplerState[0];
+				return _samplerState;
 			}
 			set
 			{
-				_samplerState = new GorgonSamplerStates
-				                {
-					                [0] = value
-				                };
+				_samplerState = value;
 			}
 		}
 
@@ -188,7 +185,7 @@ namespace Gorgon.Graphics
 
 				_inputLayout = GorgonInputLayout.CreateUsingType<BltVertex>(_graphics.VideoDevice, _vertexShader);
 
-				_vertexBufferBindings = new GorgonVertexBufferBindings(_inputLayout)
+				_vertexBufferBindings = new GorgonVertexBufferBindings(_inputLayout, 1)
 				                        {
 					                        [0] = new GorgonVertexBufferBinding(new GorgonVertexBuffer("Gorgon Blitter Vertex Buffer",
 					                                                                                   _graphics,
@@ -262,7 +259,7 @@ namespace Gorgon.Graphics
 			UpdateWorldViewProjection();
 
 			// Apply the correct sampler.
-			_drawCall.Resources.PixelShaderSamplers = _samplerState[0] == null ? _defaultSampler : _samplerState;
+			_drawCall.Resources.PixelShaderSamplers[0] = _samplerState ?? _defaultSampler;
 			_drawCall.Resources.PixelShaderResourceViews[0] = texture.DefaultShaderResourceView;
 
 			// Calculate position on the texture.
@@ -305,7 +302,7 @@ namespace Gorgon.Graphics
 		public void Dispose()
 		{
 			_wvpBuffer?.Dispose();
-			_defaultSampler[0].Dispose();
+			_defaultSampler.Dispose();
 			_vertexBufferBindings?[0].VertexBuffer?.Dispose();
 			_inputLayout?.Dispose();
 			_vertexShader?.Dispose();
@@ -324,20 +321,17 @@ namespace Gorgon.Graphics
 		{
 			_graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
 
-			_samplerState = new GorgonSamplerStates();
-			_defaultSampler = new GorgonSamplerStates
-			                  {
-				                  [0] = new GorgonSamplerState(_graphics, GorgonSamplerStateInfo.Default)
-			                  };
+			_defaultSampler = new GorgonSamplerState(_graphics, GorgonSamplerStateInfo.Default);
 			_drawCall = new GorgonDrawCall
-			            {
-				            PrimitiveTopology = D3D.PrimitiveTopology.TriangleList,
-				            VertexCount = _vertices.Length,
-				            Resources =
-				            {
-					            PixelShaderSamplers = _samplerState
-				            }
-			            };
+			{
+				PrimitiveTopology = D3D.PrimitiveTopology.TriangleList,
+				VertexCount = _vertices.Length,
+				Resources = {
+								PixelShaderSamplers = {
+									[0] = _samplerState
+								}
+							}
+			};
 
 			RenderTarget = renderTarget;
 		}
