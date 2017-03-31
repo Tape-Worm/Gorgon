@@ -103,10 +103,7 @@ namespace Gorgon.Configuration
 		/// </remarks>
 		public object DefaultValue
 		{
-			get
-			{
-				return _default;
-			}
+			get => _default;
 			set
 			{
 				_default = value;

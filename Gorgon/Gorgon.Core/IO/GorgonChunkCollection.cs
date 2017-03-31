@@ -47,14 +47,8 @@ namespace Gorgon.IO
 		/// </summary>
 		public GorgonChunk this[int index]
 		{
-			get
-			{
-				return _list[index];
-			}
-			set
-			{
-				_list[index] = value;
-			}
+			get => _list[index];
+			set => _list[index] = value;
 		}
 		#endregion
 

@@ -161,10 +161,7 @@ namespace Gorgon.Plugins
 		/// </remarks>
 		public Func<AppDomain, ResolveEventArgs, Assembly> AssemblyResolver
 		{
-			get
-			{
-				return _resolver;
-			}
+			get => _resolver;
 			set
 			{
 				AppDomain.CurrentDomain.AssemblyResolve -= CurrentDomain_AssemblyResolveEvent;

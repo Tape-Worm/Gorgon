@@ -74,14 +74,8 @@ namespace Gorgon.UI
 		[Browsable(true), LocalDescription(typeof(Resources), "PROP_TABSTOP_DESC"), LocalCategory(typeof(Resources), "PROP_CATEGORY_DESIGN"), DefaultValue(true)]
 		public new bool TabStop
 		{
-			get
-			{
-				return base.TabStop;
-			}
-			set
-			{
-				base.TabStop = value;
-			}
+			get => base.TabStop;
+			set => base.TabStop = value;
 		}
 
 		/// <summary>
@@ -90,10 +84,7 @@ namespace Gorgon.UI
 		[Browsable(true), LocalDescription(typeof(Resources), "PROP_TABSTOP_DESC"), LocalCategory(typeof(Resources), "PROP_CATEGORY_APPEARANCE"), DefaultValue(true)]
 		public bool ShowFocus
 		{
-			get
-			{
-				return _showFocus;
-			}
+			get => _showFocus;
 			set
 			{
 				if (_showFocus == value)

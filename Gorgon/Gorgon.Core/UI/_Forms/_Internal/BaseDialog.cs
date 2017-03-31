@@ -50,14 +50,8 @@ namespace Gorgon.UI
 		/// </summary>
 		protected int MessageWidth
 		{
-			get
-			{
-				return _maxTextSize.Width;
-			}
-			set
-			{
-				_maxTextSize.Width = value;
-			}
+			get => _maxTextSize.Width;
+			set => _maxTextSize.Width = value;
 		}
 
 		/// <summary>
@@ -65,14 +59,8 @@ namespace Gorgon.UI
 		/// </summary>
 		public int MessageHeight
 		{
-			get
-			{ 
-				return _maxTextSize.Height;
-			}
-			set
-			{
-				_maxTextSize.Height = value;
-			}
+			get => _maxTextSize.Height;
+			set => _maxTextSize.Height = value;
 		}
 
 		/// <summary>
@@ -80,14 +68,8 @@ namespace Gorgon.UI
 		/// </summary>
 		public Image DialogImage
 		{
-			get
-			{
-				return pictureDialog.Image;
-			}
-			set
-			{
-				pictureDialog.Image = value;
-			}
+			get => pictureDialog.Image;
+			set => pictureDialog.Image = value;
 		}
 
 		/// <summary>
@@ -96,14 +78,8 @@ namespace Gorgon.UI
 		[Browsable(false)]
 		public DialogResult ButtonAction
 		{
-			get
-			{
-				return buttonOK.DialogResult;
-			}
-			set
-			{
-				buttonOK.DialogResult = value;
-			}
+			get => buttonOK.DialogResult;
+			set => buttonOK.DialogResult = value;
 		}
 
 		/// <summary>
@@ -112,10 +88,7 @@ namespace Gorgon.UI
 		[Browsable(false)]
 		public virtual string Message
 		{
-			get
-			{
-				return _message;
-			}
+			get => _message;
 			set
 			{
 				_message = value;

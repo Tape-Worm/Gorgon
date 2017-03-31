@@ -48,10 +48,7 @@ namespace Gorgon.UI
 		[Browsable(false)]
 		public bool ShowCancel
 		{
-			get
-			{
-				return _showCancel;
-			}
+			get => _showCancel;
 			set
 			{
 				_showCancel = value;

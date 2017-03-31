@@ -76,14 +76,8 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// </remarks>
 		public DdsLegacyFlags LegacyFormatConversionFlags
 		{
-			get
-			{
-				return Options.GetOptionValue<DdsLegacyFlags>(nameof(LegacyFormatConversionFlags));
-			}
-			set
-			{
-				Options.SetOptionValue(nameof(LegacyFormatConversionFlags), value);
-			}
+			get => Options.GetOptionValue<DdsLegacyFlags>(nameof(LegacyFormatConversionFlags));
+			set => Options.SetOptionValue(nameof(LegacyFormatConversionFlags), value);
 		}
 		#endregion
 

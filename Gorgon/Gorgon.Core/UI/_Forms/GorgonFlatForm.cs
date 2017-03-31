@@ -190,10 +190,7 @@ namespace Gorgon.UI
 		/// </summary>
 		private ResizeDirection ResizeDir
 		{
-			get
-			{
-				return _resizeDirection;
-			}
+			get => _resizeDirection;
 			set
 			{
 				_resizeDirection = value;
@@ -229,10 +226,7 @@ namespace Gorgon.UI
 		[Browsable(false), EditorBrowsable(EditorBrowsableState.Never), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public new Color BackColor
 		{
-			get
-			{
-				return _theme.WindowBackground;
-			}
+			get => _theme.WindowBackground;
 			set
 			{
 				_theme.WindowBackground = value;
@@ -246,10 +240,7 @@ namespace Gorgon.UI
 		[Browsable(false), EditorBrowsable(EditorBrowsableState.Never), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public new Color ForeColor
 		{
-			get
-			{
-				return _theme.ForeColor;
-			}
+			get => _theme.ForeColor;
 			set
 			{
 				_theme.ForeColor = value;
@@ -280,10 +271,7 @@ namespace Gorgon.UI
 		RefreshProperties(RefreshProperties.All)]
 		public GorgonFlatFormTheme Theme
 		{
-			get
-			{
-				return _theme;
-			}
+			get => _theme;
 			set
 			{
 				if (value == null)
@@ -316,15 +304,9 @@ namespace Gorgon.UI
 		[Browsable(false), EditorBrowsable(EditorBrowsableState.Never), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public new FormBorderStyle FormBorderStyle
 		{
-			get
-			{
-				return FormBorderStyle.None;
-			}
+			get => FormBorderStyle.None;
 			// ReSharper disable once ValueParameterNotUsed
-			set
-			{
-				base.FormBorderStyle = FormBorderStyle.None;
-			}
+			set => base.FormBorderStyle = FormBorderStyle.None;
 		}
 
 		/// <summary>
@@ -334,10 +316,7 @@ namespace Gorgon.UI
 		RefreshProperties(RefreshProperties.All)]
 		public bool ShowBorder
 		{
-			get
-			{
-				return _border;
-			}
+			get => _border;
 			set
 			{
 				_border = value;
@@ -356,10 +335,7 @@ namespace Gorgon.UI
 		RefreshProperties(RefreshProperties.All), DefaultValue(1)]
 		public int BorderSize
 		{
-			get
-			{
-				return _borderWidth;
-			}
+			get => _borderWidth;
 			set
 			{
 				if (value < 0)
@@ -444,10 +420,7 @@ namespace Gorgon.UI
 		[Browsable(true), LocalCategory(typeof(Resources), "PROP_CATEGORY_DESIGN"), LocalDescription(typeof(Resources), "PROP_SHOWICON_DESC")]
 		public new bool ShowIcon
 		{
-			get
-			{
-				return base.ShowIcon;
-			}
+			get => base.ShowIcon;
 			set
 			{
 				base.ShowIcon = value;
@@ -461,10 +434,7 @@ namespace Gorgon.UI
 		[Browsable(true), LocalCategory(typeof(Resources), "PROP_CATEGORY_WINDOWSTYLE"), LocalDescription(typeof(Resources), "PROP_WINDOWCAPTION_DESC")]
 		public bool ShowWindowCaption
 		{
-			get
-			{
-				return _showWindowCaption;
-			}
+			get => _showWindowCaption;
 			set
 			{
 				_showWindowCaption = value;
@@ -478,10 +448,7 @@ namespace Gorgon.UI
 		[Browsable(true), LocalCategory(typeof(Resources), "PROP_CATEGORY_APPEARANCE"), LocalDescription(typeof(Resources), "PROP_TEXT_DESC")]
 		public override string Text
 		{
-			get
-			{
-				return base.Text;
-			}
+			get => base.Text;
 			set
 			{
 				base.Text = value;
@@ -496,10 +463,7 @@ namespace Gorgon.UI
 		[Browsable(true), LocalCategory(typeof(Resources), "PROP_CATEGORY_APPEARANCE"), LocalDescription(typeof(Resources), "PROP_ICON_DESC")]
 		public new Icon Icon
 		{
-			get
-			{
-				return base.Icon;
-			}
+			get => base.Icon;
 			set
 			{
 				base.Icon = value;
@@ -545,10 +509,7 @@ namespace Gorgon.UI
 		/// <returns>A <see cref="T:System.Windows.Forms.FormWindowState" /> that represents whether form is minimized, maximized, or normal. The default is <see cref="System.Windows.Forms.FormWindowState.Normal"/>.</returns>
 		public new FormWindowState WindowState
 		{
-			get
-			{
-				return _windowState;
-			}
+			get => _windowState;
 			set
 			{
 				if (_windowState == value)

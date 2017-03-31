@@ -204,10 +204,7 @@ namespace Gorgon.Plugins
 		/// </summary>
 		public string this[int index]
 		{
-			get
-			{
-				return _paths[index];
-			}
+			get => _paths[index];
 			set
 			{
 				if (string.IsNullOrWhiteSpace(value))

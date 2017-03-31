@@ -99,10 +99,7 @@ namespace Gorgon.IO.GorPack
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public override long Position
 		{
-			get
-			{
-				return _position;
-			}
+			get => _position;
 			set
 			{
 				if (value < 0)
@@ -124,14 +121,8 @@ namespace Gorgon.IO.GorPack
 		/// <exception cref="T:System.InvalidOperationException">The <see cref="P:System.IO.Stream.WriteTimeout"/> method always throws an <see cref="T:System.InvalidOperationException"/>. </exception>
 		public override int WriteTimeout
 		{
-			get
-			{
-				return _bzipStream.WriteTimeout;
-			}
-			set
-			{
-				_bzipStream.WriteTimeout = value;
-			}
+			get => _bzipStream.WriteTimeout;
+			set => _bzipStream.WriteTimeout = value;
 		}
 
 		/// <summary>
@@ -142,14 +133,8 @@ namespace Gorgon.IO.GorPack
 		/// <exception cref="T:System.InvalidOperationException">The <see cref="P:System.IO.Stream.ReadTimeout"/> method always throws an <see cref="T:System.InvalidOperationException"/>. </exception>
 		public override int ReadTimeout
 		{
-			get
-			{
-				return _bzipStream.ReadTimeout;
-			}
-			set
-			{
-				_bzipStream.ReadTimeout = value;
-			}
+			get => _bzipStream.ReadTimeout;
+			set => _bzipStream.ReadTimeout = value;
 		}
 		#endregion
 

@@ -331,10 +331,7 @@ namespace Gorgon.Timing
 		/// </remarks>
 		public static long MaxAverageCount
 		{
-			get
-			{
-				return _maxAverageCount;
-			}
+			get => _maxAverageCount;
 			set
 			{
 			    if (_maxAverageCount < 0)
@@ -380,10 +377,7 @@ namespace Gorgon.Timing
 		/// </remarks>
 		public static IGorgonTimer Timer
 		{
-			get
-			{
-				return _timer;
-			}
+			get => _timer;
 			set
 			{
 				if (value == null)

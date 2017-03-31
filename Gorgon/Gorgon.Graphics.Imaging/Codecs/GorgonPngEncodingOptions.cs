@@ -103,14 +103,8 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// </remarks>
 		public double DpiX
 		{
-			get
-			{
-				return Options.GetOptionValue<double>(nameof(DpiX));
-			}
-			set
-			{
-				Options.SetOptionValue(nameof(DpiX), value);
-			}
+			get => Options.GetOptionValue<double>(nameof(DpiX));
+			set => Options.SetOptionValue(nameof(DpiX), value);
 		}
 
 		/// <summary>
@@ -126,14 +120,8 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// </remarks>
 		public double DpiY
 		{
-			get
-			{
-				return Options.GetOptionValue<double>(nameof(DpiY));
-			}
-			set
-			{
-				Options.SetOptionValue(nameof(DpiY), value);
-			}
+			get => Options.GetOptionValue<double>(nameof(DpiY));
+			set => Options.SetOptionValue(nameof(DpiY), value);
 		}
 
 		/// <summary>
@@ -144,14 +132,8 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// </remarks>
 		public bool Interlacing
 		{
-			get
-			{
-				return Options.GetOptionValue<bool>(nameof(Interlacing));
-			}
-			set
-			{
-				Options.SetOptionValue(nameof(Interlacing), value);
-			}
+			get => Options.GetOptionValue<bool>(nameof(Interlacing));
+			set => Options.SetOptionValue(nameof(Interlacing), value);
 		}
 
 		/// <summary>
@@ -162,14 +144,8 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// </remarks>
 		public PngFilter Filter
 		{
-			get
-			{
-				return Options.GetOptionValue<PngFilter>(nameof(Filter));
-			}
-			set
-			{
-				Options.SetOptionValue(nameof(Filter), value);
-			}
+			get => Options.GetOptionValue<PngFilter>(nameof(Filter));
+			set => Options.SetOptionValue(nameof(Filter), value);
 		}
 
 		/// <summary>
@@ -189,14 +165,8 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// </remarks>
 		public ImageDithering Dithering
 		{
-			get
-			{
-				return Options.GetOptionValue<ImageDithering>(nameof(Dithering));
-			}
-			set
-			{
-				Options.SetOptionValue(nameof(Dithering), value);
-			}
+			get => Options.GetOptionValue<ImageDithering>(nameof(Dithering));
+			set => Options.SetOptionValue(nameof(Dithering), value);
 		}
 
 		/// <summary>

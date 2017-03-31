@@ -83,11 +83,8 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// </remarks>
         public float ImageQuality
         {
-            get
-            {
-                return _imageQuality;
-            }
-            set
+            get => _imageQuality;
+		    set
             {
                 if (value < 0.0f)
                 {

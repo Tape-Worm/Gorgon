@@ -52,14 +52,8 @@ namespace Gorgon.Collections.Specialized
 		/// </summary>
 		public T this[int index]
 		{
-			get
-			{
-				return Items[index];
-			}
-			set
-			{
-				Items[index] = value;
-			}
+			get => Items[index];
+			set => Items[index] = value;
 		}
 
 		/// <summary>

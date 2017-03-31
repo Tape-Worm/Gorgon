@@ -301,10 +301,7 @@ namespace Gorgon.Configuration
 		/// </remarks>
 		public string Path
 		{
-			get
-			{
-				return _path;
-			}
+			get => _path;
 			set
 			{
 				if (string.IsNullOrWhiteSpace(value))

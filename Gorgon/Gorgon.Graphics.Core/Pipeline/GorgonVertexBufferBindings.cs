@@ -92,10 +92,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="index">The zero-based index of the element to get. </param>
 		public GorgonVertexBufferBinding this[int index]
 		{
-			get
-			{
-				return _bindings[index];
-			}
+			get => _bindings[index];
 			set
 			{
 				if (_bindings[index].Equals(ref value))

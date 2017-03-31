@@ -112,10 +112,7 @@ namespace Gorgon.Examples
 		/// </summary>
 		public bool IsActive
 		{
-			get
-			{
-				return _isActive;
-			}
+			get => _isActive;
 			set
 			{
 				if ((_alpha <= 0.0f) || (_maxTime <= 0.0f))
@@ -183,10 +180,7 @@ namespace Gorgon.Examples
 		/// </summary>
 		public float Time
 		{
-			get
-			{
-				return _time;
-			}
+			get => _time;
 			set
 			{
 				if (value <= 0.0f)
@@ -205,10 +199,7 @@ namespace Gorgon.Examples
 		/// </summary>
 		public float VibrationAmount
 		{
-			get
-			{
-				return _vibAmount;
-			}
+			get => _vibAmount;
 			set
 			{
 				if (value <= 0.0f)
@@ -227,10 +218,7 @@ namespace Gorgon.Examples
 		/// </summary>
 		public float SprayAlpha
 		{
-			get
-			{
-				return _alpha;
-			}
+			get => _alpha;
 			set
 			{
 				if (value <= 0.0f)

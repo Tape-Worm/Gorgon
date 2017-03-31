@@ -80,14 +80,8 @@ namespace Gorgon.Collections.Specialized
 		/// <exception cref="T:System.NotSupportedException">The property setter is not supported on this type.</exception>
 		IDisposable IList<IDisposable>.this[int index]
 		{
-			get
-			{
-				return this[index];
-			}
-			set
-			{
-				throw new NotSupportedException();
-			}
+			get => this[index];
+			set => throw new NotSupportedException();
 		}
 		#endregion
 

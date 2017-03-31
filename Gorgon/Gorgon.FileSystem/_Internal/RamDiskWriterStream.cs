@@ -96,10 +96,7 @@ namespace Gorgon.IO
 		/// <exception cref="T:System.IO.IOException">An I/O error occurs. </exception><exception cref="T:System.NotSupportedException">The stream does not support seeking. </exception><exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception><filterpriority>1</filterpriority>
 		public override long Position
 		{
-			get
-			{
-				return _blobStream.Position;
-			}
+			get => _blobStream.Position;
 			set
 			{
 				if (!CanSeek)

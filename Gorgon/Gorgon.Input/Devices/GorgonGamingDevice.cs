@@ -197,10 +197,7 @@ namespace Gorgon.Input
 		/// </remarks>
 		public bool IsAcquired
 		{
-			get
-			{
-				return _isAcquired;
-			}
+			get => _isAcquired;
 			set
 			{
 				if (_isAcquired == value)

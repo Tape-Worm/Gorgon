@@ -110,10 +110,7 @@ namespace Gorgon.Graphics.Fonts
 		/// </remarks>
 		public int TextureWidth
 		{
-			get
-			{
-				return _textureSize.Width;
-			}
+			get => _textureSize.Width;
 			set
 			{
 				if (value < 256)
@@ -146,10 +143,7 @@ namespace Gorgon.Graphics.Fonts
 		/// </remarks>
 		public int TextureHeight
 		{
-			get
-			{
-				return _textureSize.Height;
-			}
+			get => _textureSize.Height;
 			set
 			{
 				if (value < 256)
@@ -199,10 +193,7 @@ namespace Gorgon.Graphics.Fonts
 		/// </remarks>
 		public IEnumerable<char> Characters
 		{
-			get
-			{
-				return _characters;
-			}
+			get => _characters;
 			set
 			{
 				if (value == null)
@@ -377,10 +368,7 @@ namespace Gorgon.Graphics.Fonts
 		/// </remarks>
 		public int PackingSpacing
 		{
-			get
-			{
-				return _packSpace;
-			}
+			get => _packSpace;
 			set
 			{
 				if (value < 0)

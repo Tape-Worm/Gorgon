@@ -94,10 +94,7 @@ namespace Gorgon.IO.Zip
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public override long Position
 		{
-			get
-			{
-				return _position;
-			}
+			get => _position;
 			set
 			{
 			    if (value < 0)
@@ -123,14 +120,8 @@ namespace Gorgon.IO.Zip
 		/// <exception cref="T:System.InvalidOperationException">The <see cref="P:System.IO.Stream.WriteTimeout"/> method always throws an <see cref="T:System.InvalidOperationException"/>. </exception>
 		public override int WriteTimeout
 		{
-			get
-			{
-				return _zipStream.WriteTimeout;
-			}
-			set
-			{
-				_zipStream.WriteTimeout = value;
-			}
+			get => _zipStream.WriteTimeout;
+			set => _zipStream.WriteTimeout = value;
 		}
 
 		/// <summary>
@@ -141,14 +132,8 @@ namespace Gorgon.IO.Zip
 		/// <exception cref="T:System.InvalidOperationException">The <see cref="P:System.IO.Stream.ReadTimeout"/> method always throws an <see cref="T:System.InvalidOperationException"/>. </exception>
 		public override int ReadTimeout
 		{
-			get
-			{
-				return _zipStream.ReadTimeout;
-			}
-			set
-			{
-				_zipStream.ReadTimeout = value;
-			}
+			get => _zipStream.ReadTimeout;
+			set => _zipStream.ReadTimeout = value;
 		}
 		#endregion
 
