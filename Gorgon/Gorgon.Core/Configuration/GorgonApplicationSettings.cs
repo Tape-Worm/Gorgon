@@ -800,14 +800,9 @@ namespace Gorgon.Configuration
 		        return true;
 		    }
 
-		    if (_rootNode == null)
-		    {
-		        throw new GorgonException(GorgonResult.InvalidFileFormat, 
-                                            string.Format(Resources.GOR_ERR_SETTING_INVALID_FILE, _path));
-		    }
-
-		    // If we don't have a version attribute, then we're not versioning this file.
-			_versionAttr = _rootNode.Attribute(VersionAttrName);
+			// If we don't have a version attribute, then we're not versioning this file.
+			_versionAttr = _rootNode?.Attribute(VersionAttrName) ?? throw new GorgonException(GorgonResult.InvalidFileFormat, 
+			                                                                                  string.Format(Resources.GOR_ERR_SETTING_INVALID_FILE, _path));
 		    if (_versionAttr == null)
 		    {
 		        return true;

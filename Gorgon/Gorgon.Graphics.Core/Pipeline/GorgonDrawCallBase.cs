@@ -23,9 +23,8 @@
 // Created: December 19, 2016 11:26:44 AM
 // 
 #endregion
-using System;
+
 using System.Collections.Generic;
-using Gorgon.Diagnostics;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D;
 

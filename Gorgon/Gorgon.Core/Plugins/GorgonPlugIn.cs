@@ -48,7 +48,6 @@ namespace Gorgon.Plugins
 		public AssemblyName Assembly
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>

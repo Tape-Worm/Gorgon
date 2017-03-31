@@ -54,7 +54,6 @@ namespace Gorgon.Graphics.Fonts
 		public GlyphNode Parent
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>

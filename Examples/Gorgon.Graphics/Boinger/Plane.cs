@@ -45,7 +45,6 @@ namespace Gorgon.Graphics.Example
 		public DX.Vector2 Size
 		{
 			get;
-			private set;
 		}		
 		#endregion
 

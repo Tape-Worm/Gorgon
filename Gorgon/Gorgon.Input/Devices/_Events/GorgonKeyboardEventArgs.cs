@@ -42,7 +42,6 @@ namespace Gorgon.Input
 		public Keys Key
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -74,7 +73,6 @@ namespace Gorgon.Input
 		public int ScanCodeData
 		{
 			get;
-			private set;
 		}
 		#endregion
 

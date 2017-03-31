@@ -511,15 +511,10 @@ namespace Gorgon.Graphics.Core
 				throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
 			}
 
-			if (elements == null)
-			{
-				throw new ArgumentNullException(nameof(elements));
-			}
-
 			Name = name;
 
 			// Make a copy so we don't allow changing of the original reference.
-			_elements = elements.ToArray();
+			_elements = elements?.ToArray() ?? throw new ArgumentNullException(nameof(elements));
 
 			if (_elements.Length == 0)
 			{
