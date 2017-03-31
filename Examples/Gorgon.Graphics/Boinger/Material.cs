@@ -45,9 +45,10 @@ namespace Gorgon.Graphics.Example
 		/// <summary>
 		/// Property to set or return the sampler used to sample the texture in the shader.
 		/// </summary>
-		public GorgonSamplerStates TextureSampler
+		public GorgonSamplerState TextureSampler
 		{
 			get;
-		} = new GorgonSamplerStates();
+			set;
+		}
 	}
 }

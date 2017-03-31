@@ -267,7 +267,7 @@ namespace Gorgon.Graphics.Example
 			_drawCall.Resources.IndexBuffer = model.IndexBuffer;
 			_drawCall.Resources.VertexBuffers = model.VertexBufferBindings;
 			_drawCall.Resources.PixelShaderResourceViews[0] = model.Material.Texture;
-			_drawCall.Resources.PixelShaderSamplers = model.Material.TextureSampler;
+			_drawCall.Resources.PixelShaderSamplers[0] = model.Material.TextureSampler;
 			_drawCall.State = currentState;
 
 			// Finally, send the draw call to the GPU.
@@ -497,18 +497,18 @@ namespace Gorgon.Graphics.Example
 											Screen.PrimaryScreen.WorkingArea.Height / 2 - _mainForm.Height / 2);
 
 
-			// If we've asked for full screen mode, then locate the correct video mode and set us up.
-			_output = _graphics.VideoDevice.Info.Outputs[Screen.PrimaryScreen.DeviceName];
-			var mode = new DXGI.ModeDescription1
+			if (!Settings.Default.IsWindowed)
+			{
+				// If we've asked for full screen mode, then locate the correct video mode and set us up.
+				_output = _graphics.VideoDevice.Info.Outputs[Screen.PrimaryScreen.DeviceName];
+				var mode = new DXGI.ModeDescription1
 				        {
 					        Format = DXGI.Format.R8G8B8A8_UNorm,
 					        Height = Settings.Default.Resolution.Height,
 					        Width = Settings.Default.Resolution.Width
 				        };
-			_selectedVideoMode = _graphics.VideoDevice.FindNearestVideoMode(_output, ref mode);
-
-			if (!Settings.Default.IsWindowed)
-			{
+				_selectedVideoMode = _graphics.VideoDevice.FindNearestVideoMode(_output, ref mode);
+					
 				_swap.EnterFullScreen(ref mode, _output);
 			}
 
@@ -623,10 +623,7 @@ namespace Gorgon.Graphics.Example
 					          Material = new Material
 					                     {
 						                     Texture = _texture.DefaultShaderResourceView,
-						                     TextureSampler =
-						                     {
-							                     [0] = _samplerState
-						                     }
+						                     TextureSampler = _samplerState
 					                     },
 					          Position = new DX.Vector3(0, 0, 3.0f)
 				          },
@@ -635,10 +632,7 @@ namespace Gorgon.Graphics.Example
 					          Material = new Material
 					                     {
 						                     Texture = _texture.DefaultShaderResourceView,
-						                     TextureSampler =
-						                     {
-							                     [0] = _samplerState
-						                     }
+						                     TextureSampler = _samplerState
 					                     },
 					          Position = new DX.Vector3(0, -3.5f, 3.5f),
 					          Rotation = new DX.Vector3(90.0f, 0, 0)
@@ -657,10 +651,7 @@ namespace Gorgon.Graphics.Example
 				          Material = new Material
 				                     {
 					                     Texture = _texture.DefaultShaderResourceView,
-					                     TextureSampler =
-					                     {
-						                     [0] = _samplerState
-					                     }
+					                     TextureSampler = _samplerState
 				                     }
 			          };
 
@@ -723,7 +714,7 @@ namespace Gorgon.Graphics.Example
 		/// <exception cref="System.NotSupportedException"></exception>
 		static void _mainForm_KeyDown(object sender, KeyEventArgs e)
 		{
-			if ((!e.Alt) || (e.KeyCode != Keys.Enter))
+			if ((!e.Alt) || (e.KeyCode != Keys.Enter) || (_output == null))
 			{
 				return;
 			}

@@ -44,18 +44,24 @@ namespace Gorgon.Graphics.Core
 		/// The maximum number of allowed sampler states that can be bound at the same time.
 		/// </summary>
 		public const int MaximumSamplerStateCount = D3D11.CommonShaderStage.SamplerSlotCount;
-		#endregion		
-		
-		#region Variables.
-		// Actual direct 3D sampler states to bind.
-		private D3D11.SamplerState[] _nativeStates;
 		#endregion
+
+		#region Variables.
+		// The flags to indicate whether the first bank of shader resource views are dirty or not.
+		private int _dirty;
+		// The native resource bindings.
+		private NativeBinding<D3D11.SamplerState> _nativeBinding= new NativeBinding<D3D11.SamplerState>
+		{
+			Bindings = new D3D11.SamplerState[MaximumSamplerStateCount]
+		};
+		#endregion
+
 
 		#region Properties.
 		/// <summary>
-		/// Property to return the list of actual Direct 3D 11 states.
+		/// Property to return whether the list is in a dirty state or not.
 		/// </summary>
-		internal D3D11.SamplerState[] NativeStates => _nativeStates;
+		internal bool IsDirty => _dirty != 0;
 		#endregion
 
 		#region Methods.
@@ -71,7 +77,7 @@ namespace Gorgon.Graphics.Core
 		/// </remarks>
 		protected override void OnSetNativeItem(int index, GorgonSamplerState item)
 		{
-			_nativeStates[index] = item?.D3DState;
+			_dirty |= 1 << index;			
 		}
 
 		/// <summary>
@@ -84,7 +90,12 @@ namespace Gorgon.Graphics.Core
 		/// </remarks>
 		protected override void OnClearNativeItems()
 		{
-			Array.Clear(_nativeStates, 0, _nativeStates.Length);
+			Array.Clear(_nativeBinding.Bindings, 0, _nativeBinding.Bindings.Length);
+			_nativeBinding.StartSlot = 0;
+			_nativeBinding.Count = 0;
+
+			// When clearing all slots are marked as dirty.
+			_dirty = 0xffff;
 		}
 
 		/// <summary>
@@ -98,78 +109,100 @@ namespace Gorgon.Graphics.Core
 		/// </remarks>
 		protected override void OnResizeNativeList(int newSize)
 		{
-			Array.Resize(ref _nativeStates, newSize);
+			
 		}
 
 		/// <summary>
-		/// Function to set multiple objects of type <see cref="GorgonSamplerState"/> at once.
+		/// Function to retrieve the native bindings.
 		/// </summary>
-		/// <param name="startSlot">The starting slot to assign.</param>
-		/// <param name="samplerStates">The samplers to assign.</param>
-		/// <param name="count">[Optional] The number of items to copy from <paramref name="samplerStates"/>.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="samplerStates"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="startSlot"/> is less than 0.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="startSlot"/> plus the number of <paramref name="samplerStates"/> exceeds the size of this list.</exception>
-		/// <remarks>
-		/// <para>
-		/// Use this method to set a series of objects of type <see cref="GorgonSamplerState"/> at once. This will yield better performance than attempting to assign a single item 
-		/// at a time via the indexer.
-		/// </para>
-		/// <para>
-		/// <note type="warning">
-		/// Any exceptions thrown by this method will only be thrown when Gorgon is compiled as <b>DEBUG</b>.
-		/// </note>
-		/// </para>
-		/// </remarks>
-		public void SetRange(int startSlot, IReadOnlyList<GorgonSamplerState> samplerStates, int? count = null)
+		/// <returns>A native bindings item.</returns>
+		internal ref NativeBinding<D3D11.SamplerState> GetNativeBindings()
 		{
-			if (count == null)
+			// Nothing's been changed, so send back our array.
+			if (_dirty == 0)
 			{
-				count = samplerStates?.Count ?? 0;
+				return ref _nativeBinding;
 			}
 
-#if DEBUG
-			if (IsLocked)
+			int firstSlot = -1;
+			int slotCount = 0;
+			D3D11.SamplerState[] samplers = _nativeBinding.Bindings;
+
+			for (int i = 0; i < MaximumSamplerStateCount; ++i)
 			{
-				throw new GorgonException(GorgonResult.AccessDenied, Resources.GORGFX_ERR_BINDING_LIST_LOCKED);
+				int dirtyMask = 1 << i;
+
+				// Skip this index if we don't have a slot assigned.
+				if ((_dirty & dirtyMask) != dirtyMask)
+				{
+					continue;
+				}
+
+				// Record our first slot used.
+				if (firstSlot == -1)
+				{
+					firstSlot = i;
+				}
+
+				samplers[i] = this[i]?.D3DState;
+
+				// Remove this bit.
+				_dirty &= ~dirtyMask;
+
+				++slotCount;
+
+				if (_dirty == 0)
+				{
+					break;
+				}
 			}
 
-			if (startSlot < 0)
+			_nativeBinding = new NativeBinding<D3D11.SamplerState>
 			{
-				throw new ArgumentOutOfRangeException(nameof(startSlot));
+				Bindings = samplers,
+				Count = slotCount,
+				StartSlot = firstSlot
+			};
+
+			return ref _nativeBinding;
+		}
+
+		/// <summary>
+		/// Function to copy the elements from a resource binding list to this list.
+		/// </summary>
+		/// <param name="source">The source list to copy.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="source"/> parameter is <b>null</b>.</exception>
+		public void CopyFrom(GorgonSamplerStates source)
+		{
+			int dirty = 0;
+
+			if (source == null)
+			{
+				throw new ArgumentNullException(nameof(source));
 			}
 
-			if (count.Value < 0)
+			ref NativeBinding<D3D11.SamplerState> bindings = ref source.GetNativeBindings();
+
+			for (int i = bindings.StartSlot; i < bindings.StartSlot + bindings.Count; ++i)
 			{
-				throw new ArgumentOutOfRangeException(nameof(count));
+				int mask = 1 << i;
+
+				if (this[i] == source[i])
+				{
+					// If this index was already dirty, then we need to ensure it stays that way.
+					if ((_dirty & mask) == mask)
+					{
+						dirty |= mask;
+					}
+					continue;
+				}
+
+				this[i] = source[i];
+				dirty |= mask;
 			}
 
-			if (count + startSlot > MaximumSamplerStateCount)
-			{
-				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TOO_MANY_ITEMS, startSlot, count.Value, MaximumSamplerStateCount));
-			}
-
-			if (count > (samplerStates?.Count ?? 0))
-			{
-				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TOO_MANY_ITEMS, 0, count.Value, samplerStates?.Count), nameof(count));
-			}
-#endif
-			// Resize accordingly if we have a mismatch.
-			if (count.Value != Count)
-			{
-				Resize(count.Value);
-			}
-
-			if ((samplerStates == null) || (count == 0))
-			{
-				Clear();
-				return;
-			}
-
-			for (int i = 0; i < count.Value; ++i)
-			{
-				this[i + startSlot] = samplerStates[i];
-			}
+			// Update dirty flags.
+			_dirty = dirty;
 		}
 		#endregion
 
@@ -177,55 +210,9 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonSamplerStates"/> class.
 		/// </summary>
-		/// <param name="size">The number of shader resources to hold in this list.</param>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> parameter is less than 0.</exception>
-		/// <remarks>
-		/// <para>
-		/// If the <paramref name="size"/> parameter is larger than the maximum allowed number of sampler states, then the size will be adjusted to that maximum instead of the amount requested. See the 
-		/// <seealso cref="MaximumSamplerStateCount"/> constant to determine what the maximum is.
-		/// </para>
-		/// <para>
-		/// If the size is omitted, then room is made for 1 sampler state.
-		/// </para>
-		/// <para>
-		/// <note type="warning">
-		/// <para>
-		/// For the sake of performance, Exceptions thrown by this constructor will only be thrown when Gorgon is compiled as DEBUG.
-		/// </para>
-		/// </note>
-		/// </para>
-		/// </remarks>
-		public GorgonSamplerStates(int size = 1)
-			: base(size, MaximumSamplerStateCount)
+		public GorgonSamplerStates()
+			: base(MaximumSamplerStateCount, MaximumSamplerStateCount)
 		{
-			_nativeStates = new D3D11.SamplerState[size];
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonSamplerStates"/> class.
-		/// </summary>
-		/// <param name="samplerStates">The shader resource views to assign.</param>
-		/// <param name="startSlot">[Optional] The starting slot to use for the sampler states.</param>
-		/// <exception cref="ArgumentException">Thrown if the number of <paramref name="samplerStates"/> exceeds the <see cref="MaximumSamplerStateCount"/>.
-		/// <para>-or-</para>
-		/// <para>Thrown when the <paramref name="startSlot"/> is larger than or equal to the number of items in <paramref name="samplerStates"/>, or larger than or equal to the <seealso cref="MaximumSamplerStateCount"/>.</para>
-		/// </exception>
-		/// <remarks>
-		/// <para>
-		/// This overload will set many sampler states at once.
-		/// </para>
-		/// <para>
-		/// <note type="warning">
-		/// <para>
-		/// For the sake of performance, Exceptions thrown by this constructor will only be thrown when Gorgon is compiled as DEBUG.
-		/// </para>
-		/// </note>
-		/// </para>
-		/// </remarks>
-		public GorgonSamplerStates(IEnumerable<GorgonSamplerState> samplerStates, int startSlot = 0)
-			: this()
-		{
-			SetRange(startSlot, samplerStates.ToArray());
 		}
 		#endregion
 	}

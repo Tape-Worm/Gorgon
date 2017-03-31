@@ -254,7 +254,7 @@ namespace Gorgon.Graphics.Example
 		{
 			Scale = new DX.Vector3(1.0f);
 			InputLayout = inputLayout;
-			VertexBufferBindings = new GorgonVertexBufferBindings(InputLayout);
+			VertexBufferBindings = new GorgonVertexBufferBindings(InputLayout, 1);
 		}
 		#endregion
 	}

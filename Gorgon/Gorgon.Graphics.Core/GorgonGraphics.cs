@@ -366,32 +366,6 @@ namespace Gorgon.Graphics.Core
 		}
 
 		/// <summary>
-		/// Function to bind vertex buffers to the pipeline.
-		/// </summary>
-		/// <param name="vertexBuffers">The vertex buffer bindings to bind to the pipeline.</param>
-		private void SetVertexBuffers(GorgonVertexBufferBindings vertexBuffers)
-		{
-			D3D11.VertexBufferBinding[] bindings = null;
-			D3D11.InputLayout inputLayout = null;
-
-			if (vertexBuffers != null)
-			{
-				bindings = vertexBuffers.NativeBindings;
-				inputLayout = vertexBuffers.InputLayout.D3DInputLayout;
-			}
-
-			D3DDeviceContext.InputAssembler.InputLayout = inputLayout;
-			if (bindings != null)
-			{
-				D3DDeviceContext.InputAssembler.SetVertexBuffers(0, bindings);
-			}
-			else
-			{
-				D3DDeviceContext.InputAssembler.SetVertexBuffers(0, new D3D11.VertexBufferBinding(null, 0, 0));
-			}
-		}
-
-		/// <summary>
 		/// Function to bind render targets to the pipeline.
 		/// </summary>
 		/// <param name="renderTargetViews">The render targets to bind to the pipeline.</param>
@@ -407,30 +381,6 @@ namespace Gorgon.Graphics.Core
 			// Otherwise, copy into our target list.
 			D3DDeviceContext.OutputMerger.SetTargets(renderTargetViews.DepthStencilView?.D3DView, renderTargetViews.Count, renderTargetViews.NativeViews);
 	    }
-
-		/// <summary>
-		/// Function to set the shader texture samplers for a given shader type.
-		/// </summary>
-		/// <param name="shaderType">The type of shader to apply the samplers towards.</param>
-		/// <param name="samplerStates">The samplers to set.</param>
-		private void SetShaderSamplers(ShaderType shaderType, GorgonSamplerStates samplerStates)
-		{
-			D3D11.SamplerState[] samplers = null;
-			int bindCount = 0;
-
-			if (samplerStates != null)
-			{
-				samplers = samplerStates.NativeStates;
-				bindCount = samplerStates.NativeStates.Length;
-			}
-
-			switch (shaderType)
-			{
-				case ShaderType.Pixel:
-					D3DDeviceContext.PixelShader.SetSamplers(0, bindCount, samplers);
-					break;
-			}
-		}
 
 		/// <summary>
 		/// Function to set the constant buffers for a given shader type.
@@ -481,7 +431,7 @@ namespace Gorgon.Graphics.Core
 
 			if ((changes & PipelineResourceChangeFlags.VertexBuffer) == PipelineResourceChangeFlags.VertexBuffer)
 			{
-				SetVertexBuffers(resources.VertexBuffers);
+				resources.SetVertexBuffers(D3DDeviceContext);
 			}
 
 			if ((changes & PipelineResourceChangeFlags.PixelShaderConstantBuffer) == PipelineResourceChangeFlags.PixelShaderConstantBuffer)
@@ -501,12 +451,30 @@ namespace Gorgon.Graphics.Core
 
 			if ((changes & PipelineResourceChangeFlags.VertexShaderResource) == PipelineResourceChangeFlags.VertexShaderResource)
 			{
-				throw new Exception("Needs to be done.");
+				resources.SetShaderResourceViews(D3DDeviceContext, ShaderType.Vertex);
 			}
 
 			if ((changes & PipelineResourceChangeFlags.PixelShaderSampler) == PipelineResourceChangeFlags.PixelShaderSampler)
 			{
-				SetShaderSamplers(ShaderType.Pixel, resources.PixelShaderSamplers);
+				resources.SetShaderSamplers(D3DDeviceContext, ShaderType.Pixel);
+			}
+
+			if ((changes & PipelineResourceChangeFlags.VertexShaderSampler) == PipelineResourceChangeFlags.VertexShaderSampler)
+			{
+				if (VideoDevice.RequestedFeatureLevel < FeatureLevelSupport.Level_11_0)
+				{
+#if DEBUG
+					// If we want all states changed, and we don't support this, then just leave.
+					if (changes != PipelineResourceChangeFlags.All)
+					{
+						throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_FEATURE_LEVEL_NOT_SUPPORTED, FeatureLevelSupport.Level_11_0, VideoDevice.Info.Name));
+					}
+#endif
+				}
+				else
+				{
+					resources.SetShaderSamplers(D3DDeviceContext, ShaderType.Vertex);
+				}
 			}
 
 			if ((changes & PipelineResourceChangeFlags.IndexBuffer) == PipelineResourceChangeFlags.IndexBuffer)

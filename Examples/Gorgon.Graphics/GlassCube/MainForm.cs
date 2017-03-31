@@ -267,8 +267,7 @@ namespace GorgonLibrary.Example
 								{
 									[0] = _texture.DefaultShaderResourceView
 								},
-			                    PixelShaderSamplers = new GorgonSamplerStates
-			                                          {
+			                    PixelShaderSamplers = {
 														  // Start with bilinear filtering on the cube texture.
 														  // This will smooth out the appearance of the texture as it is scaled closer or further away 
 														  // from our view.
@@ -326,17 +325,11 @@ namespace GorgonLibrary.Example
 			// is changed and will slightly improve performance.
 			if (_drawCall.Resources.PixelShaderSamplers[0] == _bilinearSampler)
 	        {
-		        _drawCall.Resources.PixelShaderSamplers = new GorgonSamplerStates
-		                                                  {
-			                                                  [0] = _pointSampler
-		                                                  };
+		        _drawCall.Resources.PixelShaderSamplers[0] = _pointSampler;
 	        }
 	        else
 	        {
-		        _drawCall.Resources.PixelShaderSamplers = new GorgonSamplerStates
-		                                                  {
-			                                                  [0] = _bilinearSampler
-		                                                  };
+		        _drawCall.Resources.PixelShaderSamplers[0] = _bilinearSampler;
 	        }
         }
 

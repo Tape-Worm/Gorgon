@@ -334,7 +334,7 @@ namespace Gorgon.Graphics.Example
 				            Resources =
 				            {
 					            // This will bind the vertex buffer to the GPU so it can be read from when rendering.
-					            VertexBuffers = new GorgonVertexBufferBindings(_inputLayout)
+					            VertexBuffers = new GorgonVertexBufferBindings(_inputLayout, 1)
 					                            {
 						                            [0] = new GorgonVertexBufferBinding(_vertexBuffer, MiniTriVertex.SizeInBytes)
 					                            },
@@ -357,8 +357,7 @@ namespace Gorgon.Graphics.Example
 									[0] = _texture.DefaultShaderResourceView
 								},
 								// Bind the texture sampler to this draw call.
-								PixelShaderSamplers =  new GorgonSamplerStates
-								                       {
+								PixelShaderSamplers =  {
 														   // Like a texture resource, we have to assign this to the slot referenced in the 
 														   // pixel shader.
 									                       [0] = _textureSampler

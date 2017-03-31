@@ -27,6 +27,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Math;
@@ -226,6 +227,18 @@ namespace Gorgon.Graphics.Core
 		IEnumerator IEnumerable.GetEnumerator()
 		{
 			return _bindingItems.GetEnumerator();
+		}
+
+		/// <summary>
+		/// Function to retrieve the native object at the specified index.
+		/// </summary>
+		/// <typeparam name="K">The type of native object.</typeparam>
+		/// <param name="index">The index of the native object.</param>
+		/// <returns>The native object at the specified index.</returns>
+		protected internal virtual K GetNativeObject<K>(int index)
+			where K : DX.ComObject
+		{
+			return null;
 		}
 
 		/// <summary>

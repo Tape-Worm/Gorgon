@@ -218,7 +218,7 @@ namespace GorgonLibrary.Example
 													},
 													indexPtr);
 
-				VertexBuffer = new GorgonVertexBufferBindings(inputLayout)
+				VertexBuffer = new GorgonVertexBufferBindings(inputLayout, 1)
 				{
 					[0] = new GorgonVertexBufferBinding(new GorgonVertexBuffer("GlassCube Vertex Buffer",
 																								graphics,
