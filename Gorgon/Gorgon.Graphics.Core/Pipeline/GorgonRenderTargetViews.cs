@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
@@ -77,17 +76,22 @@ namespace Gorgon.Graphics.Core
 		#endregion
 
 		#region Variables.
-		// The D3D11 render target views to apply.
-		private D3D11.RenderTargetView[] _nativeViews;
+		// The flags to indicate whether the first bank of shader resource views are dirty or not.
+		private int _dirty;
+		// The native bindings.
+		private NativeBinding<D3D11.RenderTargetView> _native = new NativeBinding<D3D11.RenderTargetView>
+		                                                        {
+			                                                        Bindings = new D3D11.RenderTargetView[MaximumRenderTargetCount]
+		                                                        };
 		// The currently active depth stencil view.
 		private GorgonDepthStencilView _depthStencilView;
 		#endregion
 
 		#region Properties.
 		/// <summary>
-		/// Property to return the Direct 3D render target views.
+		/// Property to return whether the list is in a dirty state or not.
 		/// </summary>
-		internal D3D11.RenderTargetView[] NativeViews => _nativeViews;
+		internal bool IsDirty => _dirty != 0;
 
 		/// <summary>
 		/// Property to set or return the currently active depth/stencil view.
@@ -261,20 +265,6 @@ namespace Gorgon.Graphics.Core
 #endif
 
 		/// <summary>
-		/// Function to resize the native binding object list if needed.
-		/// </summary>
-		/// <param name="newSize">The new size for the list.</param>
-		/// <remarks>
-		/// <para>
-		/// This method must be overridden by the implementing class so that the native list is resized along with this list after calling <see cref="GorgonResourceBindingList{T}.Resize"/>.
-		/// </para>
-		/// </remarks>
-		protected override void OnResizeNativeList(int newSize)
-		{
-			Array.Resize(ref _nativeViews, newSize);
-		}
-
-		/// <summary>
 		/// Function to clear the list of native binding objects.
 		/// </summary>
 		/// <remarks>
@@ -282,9 +272,15 @@ namespace Gorgon.Graphics.Core
 		/// The implementing class must implement this in order to unassign items from the native binding object list when the <see cref="GorgonResourceBindingList{T}.Clear"/> method is called.
 		/// </para>
 		/// </remarks>
-		protected override void OnClearNativeItems()
+		protected override void OnClearItems()
 		{
-			Array.Clear(_nativeViews, 0, _nativeViews.Length);
+			Array.Clear(_native.Bindings, 0, _native.Count);
+			DepthStencilView = null;
+
+			unchecked
+			{
+				_dirty = 0xff;
+			}
 		}
 
 		/// <summary>
@@ -292,80 +288,106 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="index">The index of the slot being assigned.</param>
 		/// <param name="item">The item being assigned.</param>
-		protected override void OnSetNativeItem(int index, GorgonRenderTargetView item)
+		protected override void OnSetItem(int index, GorgonRenderTargetView item)
 		{
-			_nativeViews[index] = item?.D3DRenderTargetView;
+			_dirty |= 1 << index;
 		}
 
 		/// <summary>
-		/// Function to set multiple objects of type <see cref="GorgonRenderTargetView"/> at once.
+		/// Function to retrieve the native bindings.
 		/// </summary>
-		/// <param name="views">The views to assign.</param>
-		/// <param name="depthStencilView">[Optional] A depth/stencil view to bind with the targets.</param>
-		/// <param name="count">[Optional] The number of items to copy from <paramref name="views"/>.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="views"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the number of <paramref name="views"/> exceeds the size of this list.</exception>
-		/// <exception cref="GorgonException">Thrown when the list is locked for writing.</exception>
-		/// <remarks>
-		/// <para>
-		/// Use this method to set a series of objects of type <see cref="GorgonRenderTargetView"/> at once. This will yield better performance than attempting to assign a single item 
-		/// at a time via the indexer.
-		/// </para>
-		/// <para>
-		/// All <paramref name="views"/> must be the same width/height and depth, have the same format, the same number of array indices, and the same number of mip counts. They must also have 
-		/// the same multisampling settings. If a <paramref name="depthStencilView"/> is assigned, then it too must have the same width/height and depth, array indices, mip count, and share the same multi sample 
-		/// settings. Failure to do this will result in an exception.
-		/// </para>
-		/// <para>
-		/// <note type="warning">
-		/// <para>
-		/// For the sake of performance, Exceptions thrown by this constructor will only be thrown when Gorgon is compiled as DEBUG.
-		/// </para>
-		/// </note>
-		/// </para>
-		/// </remarks>
-		public void SetRange(IReadOnlyList<GorgonRenderTargetView> views, GorgonDepthStencilView depthStencilView = null, int? count = null)
+		/// <returns>A native bindings item.</returns>
+		internal ref NativeBinding<D3D11.RenderTargetView> GetNativeBindings()
 		{
-			if (count == null)
+			// Nothing's been changed, so send back our array.
+			if (_dirty == 0)
 			{
-				count = views?.Count ?? 0;
+				return ref _native;
 			}
 
-#if DEBUG
-			if (IsLocked)
+			int firstSlot = -1;
+			int slotCount = 0;
+
+			D3D11.RenderTargetView[] rtvs = _native.Bindings;
+
+			for (int i = 0; i < MaximumRenderTargetCount; ++i)
 			{
-				throw new GorgonException(GorgonResult.AccessDenied, Resources.GORGFX_ERR_BINDING_LIST_LOCKED);
+				int dirtyMask = 1 << i;
+
+				// Skip this index if we don't have a slot assigned.
+				if ((_dirty & dirtyMask) != dirtyMask)
+				{
+					continue;
+				}
+
+				// Record our first slot used.
+				if (firstSlot == -1)
+				{
+					firstSlot = i;
+				}
+
+				rtvs[i] = this[i]?.D3DRenderTargetView;
+
+				// Remove this bit.
+				_dirty &= ~dirtyMask;
+
+				++slotCount;
+
+				if (_dirty == 0)
+				{
+					break;
+				}
 			}
 
-			if (count > (views?.Count ?? 0))
+			_native = new NativeBinding<D3D11.RenderTargetView>
+			          {
+				          Bindings = rtvs,
+				          Count = slotCount,
+				          StartSlot = firstSlot == -1 ? 0 : firstSlot
+			          };
+
+			return ref _native;
+		}
+
+
+		/// <summary>
+		/// Function to copy the elements from a resource binding list to this list.
+		/// </summary>
+		/// <param name="source">The source list to copy.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="source"/> parameter is <b>null</b>.</exception>
+		public void CopyFrom(GorgonRenderTargetViews source)
+		{
+			int dirty = 0;
+
+			if (source == null)
 			{
-				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TOO_MANY_ITEMS, 0, count.Value, views?.Count));
+				throw new ArgumentNullException(nameof(source));
 			}
 
-			if (count > MaximumRenderTargetCount)
+			ref NativeBinding<D3D11.RenderTargetView> bindings = ref source.GetNativeBindings();
+
+			for (int i = bindings.StartSlot; i < bindings.StartSlot + bindings.Count; ++i)
 			{
-				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TOO_MANY_ITEMS, 0, count.Value, MaximumRenderTargetCount));
-			}
-#endif
-			// Resize accordingly if we have a mismatch.
-			if (count.Value != Count)
-			{
-				Resize(count.Value);
+				int mask = 1 << i;
+
+				if (this[i] == source[i])
+				{
+					// If this index was already dirty, then we need to ensure it stays that way.
+					if ((_dirty & mask) == mask)
+					{
+						dirty |= mask;
+					}
+					continue;
+				}
+
+				this[i] = source[i];
+				dirty |= mask;
 			}
 
-			if ((views == null) || (count == 0))
-			{
-				Clear();
-				DepthStencilView = depthStencilView;
-				return;
-			}
+			DepthStencilView = source.DepthStencilView;
 
-			for (int i = 0; i < count.Value; ++i)
-			{
-				this[i] = views[i];
-			}
-
-			DepthStencilView = depthStencilView;
+			// Update dirty flags.
+			_dirty = dirty;
 		}
 		#endregion
 
@@ -373,58 +395,9 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonRenderTargetViews"/> class.
 		/// </summary>
-		/// <param name="size">[Optional] The number of render targets to hold in this list.</param>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> parameter is less than 0.</exception>
-		/// <remarks>
-		/// <para>
-		/// If the <paramref name="size"/> parameter is larger than the maximum allowed number of render targets, then the size will be adjusted to that maximum instead of the amount requested. See the 
-		/// <seealso cref="MaximumRenderTargetCount"/> constant to determine what the maximum is.
-		/// </para>
-		/// <para>
-		/// If the size is omitted, then room is made for 1 render target view.
-		/// </para>
-		/// <para>
-		/// <note type="warning">
-		/// <para>
-		/// For the sake of performance, Exceptions thrown by this constructor will only be thrown when Gorgon is compiled as DEBUG.
-		/// </para>
-		/// </note>
-		/// </para>
-		/// </remarks>
-		public GorgonRenderTargetViews(int size = 1)
-			: base(size, MaximumRenderTargetCount)
+		public GorgonRenderTargetViews()
+			: base(MaximumRenderTargetCount, MaximumRenderTargetCount)
 		{
-			_nativeViews = new D3D11.RenderTargetView[size];
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonRenderTargetViews"/> class.
-		/// </summary>
-		/// <param name="renderTargetViews">The render target views to assign.</param>
-		/// <param name="depthStencilView">[Optional] The depth/stencil view to assign.</param>
-		/// <exception cref="ArgumentException">Thrown if the number of <paramref name="renderTargetViews"/> exceeds the <see cref="MaximumRenderTargetCount"/>.</exception>
-		/// <exception cref="GorgonException">Thrown when any of the <paramref name="renderTargetViews"/>, and/or the <paramref name="depthStencilView"/> are mismatched.</exception>
-		/// <remarks>
-		/// <para>
-		/// This overload will set many render target views, and an optional depth/stencil view at once on this list.
-		/// </para>
-		/// <para>
-		/// All <paramref name="renderTargetViews"/> must be the same width/height and depth, have the same format, the same number of array indices, and the same number of mip counts. They must also have 
-		/// the same multisampling settings. If a <paramref name="depthStencilView"/> is assigned, then it too must have the same width/height and depth, array indices, mip count, and share the same multi sample 
-		/// settings. Failure to do this will result in an exception.
-		/// </para>
-		/// <para>
-		/// <note type="warning">
-		/// <para>
-		/// For the sake of performance, Exceptions thrown by this constructor will only be thrown when Gorgon is compiled as DEBUG.
-		/// </para>
-		/// </note>
-		/// </para>
-		/// </remarks>
-		public GorgonRenderTargetViews(IEnumerable<GorgonRenderTargetView> renderTargetViews, GorgonDepthStencilView depthStencilView = null)
-			: this()
-		{
-			SetRange(renderTargetViews?.ToArray(), depthStencilView);
 		}
 		#endregion
 	}

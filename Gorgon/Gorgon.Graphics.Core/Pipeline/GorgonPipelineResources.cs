@@ -113,12 +113,6 @@ namespace Gorgon.Graphics.Core
 		#endregion
 
 		#region Variables.
-		// The list of render target resources bound.
-		private GorgonRenderTargetViews _renderTargets;
-		// The list of constant buffers for a pixel shader.
-		private GorgonConstantBuffers _pixelShaderConstantBuffers;
-		// The list of constant buffers for a vertex shader.
-		private GorgonConstantBuffers _vertexShaderConstantBuffers;
 		// The index buffer.
 		private GorgonIndexBuffer _indexBuffer;
 		// The list of vertex buffers.
@@ -168,38 +162,26 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Property to return the render targets to bind to the pipeline.
 		/// </summary>
-		/// <remarks>
-		/// Once a set of <see cref="GorgonRenderTargetViews"/> are assigned to this property, it will be locked and cannot be changed until it is unassigned.
-		/// </remarks>
 		public GorgonRenderTargetViews RenderTargets
 		{
-			get => _renderTargets;
-			set => SetRenderTargets(value, false);
-		}
+			get;
+		} = new GorgonRenderTargetViews();
 
 		/// <summary>
 		/// Property to return the pixel shader constant buffers to bind to the pipeline.
 		/// </summary>
-		/// <remarks>
-		/// Once a set of <see cref="GorgonConstantBuffers"/> are assigned to this property, it will be locked and cannot be changed until it is unassigned.
-		/// </remarks>
 		public GorgonConstantBuffers PixelShaderConstantBuffers
 		{
-			get => _pixelShaderConstantBuffers;
-			set => SetShaderConstantBuffers(value, false, ShaderType.Pixel);
-		}
+			get;
+		} = new GorgonConstantBuffers();
 
 		/// <summary>
 		/// Property to return the vertex shader constant buffers to bind to the pipeline.
 		/// </summary>
-		/// <remarks>
-		/// Once a set of <see cref="GorgonConstantBuffers"/> are assigned to this property, it will be locked and cannot be changed until it is unassigned.
-		/// </remarks>
 		public GorgonConstantBuffers VertexShaderConstantBuffers
 		{
-			get => _vertexShaderConstantBuffers;
-			set => SetShaderConstantBuffers(value, false, ShaderType.Vertex);
-		}
+			get;
+		} = new GorgonConstantBuffers();
 
 		/// <summary>
 		/// Property to return the vertex shader resources to bind to the pipeline.
@@ -245,6 +227,164 @@ namespace Gorgon.Graphics.Core
 
 		#region Methods.
 		/// <summary>
+		/// Function to determine if the shader resources on this resource list are the same as another.
+		/// </summary>
+		/// <param name="theseResources">The resources to compare from this resource list.</param>
+		/// <param name="otherResources">The resources to compare from the other resource list.</param>
+		/// <returns><b>true</b> if there's a change, or <b>false</b> if not.</returns>
+		private static bool ShaderResourcesChanged(GorgonShaderResourceViews theseResources, GorgonShaderResourceViews otherResources)
+		{
+			// If the resources are the same, then just check the dirty flag.
+			if (theseResources == otherResources)
+			{
+				return theseResources.IsDirty;
+			}
+
+			ref NativeBinding<D3D11.ShaderResourceView> sourceViews = ref theseResources.GetNativeBindings();
+			ref NativeBinding<D3D11.ShaderResourceView> destViews = ref otherResources.GetNativeBindings();
+
+			return CompareNativeBinding(ref sourceViews, ref destViews);
+		}
+
+		/// <summary>
+		/// Function to perform the comparison between two sets of native bindings.
+		/// </summary>
+		/// <typeparam name="T">The type of data in the binding.</typeparam>
+		/// <param name="theseBindings">These bindings to use for comparison.</param>
+		/// <param name="otherBindings">The other bindings to use for comparison.</param>
+		/// <returns><b>true</b> if the bindings are equal, <b>false</b> if not.</returns>
+		private static bool CompareNativeBinding<T>(ref NativeBinding<T> theseBindings, ref NativeBinding<T> otherBindings)
+			where T : class
+		{
+			// If there's a change in slots and counts, then we have a change.
+			if ((theseBindings.StartSlot != otherBindings.StartSlot)
+			    || (theseBindings.Count != otherBindings.Count))
+			{
+				return true;
+			}
+
+			// Otherwise, we'll have to go through and compare each element.
+			for (int i = theseBindings.StartSlot; i < theseBindings.StartSlot + theseBindings.Count; ++i)
+			{
+				if (theseBindings.Bindings[i] != otherBindings.Bindings[i])
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		/// <summary>
+		/// Function to determine if the constant buffers on this resource list are the same as another.
+		/// </summary>
+		/// <param name="theseResources">The resources to compare from this resource list.</param>
+		/// <param name="otherResources">The resources to compare from the other resource list.</param>
+		/// <returns><b>true</b> if there's a change, or <b>false</b> if not.</returns>
+		private static bool ConstantBuffersChanged(GorgonConstantBuffers theseResources, GorgonConstantBuffers otherResources)
+		{
+			// If the resources are the same, then just check the dirty flag.
+			if (theseResources == otherResources)
+			{
+				return theseResources.IsDirty;
+			}
+
+			ref NativeBinding<D3D11.Buffer> sourceViews = ref theseResources.GetNativeBindings();
+			ref NativeBinding<D3D11.Buffer> destViews = ref otherResources.GetNativeBindings();
+
+			return CompareNativeBinding(ref sourceViews, ref destViews);
+		}
+
+		/// <summary>
+		/// Function to determine if the shader samplers on this resource list are the same as another.
+		/// </summary>
+		/// <param name="theseResources">The resources to compare from this resource list.</param>
+		/// <param name="otherResources">The resources to compare from the other resource list.</param>
+		/// <returns><b>true</b> if there's a change, or <b>false</b> if not.</returns>
+		private static bool SamplersChanged(GorgonSamplerStates theseResources, GorgonSamplerStates otherResources)
+		{
+			// If the resources are the same, then just check the dirty flag.
+			if (theseResources == otherResources)
+			{
+				return theseResources.IsDirty;
+			}
+
+			ref NativeBinding<D3D11.SamplerState> sourceViews = ref theseResources.GetNativeBindings();
+			ref NativeBinding<D3D11.SamplerState> destViews = ref otherResources.GetNativeBindings();
+
+			return CompareNativeBinding(ref sourceViews, ref destViews);
+		}
+
+		/// <summary>
+		/// Function to determine if the render targets on this resource list are the same as another.
+		/// </summary>
+		/// <param name="theseResources">The resources to compare from this resource list.</param>
+		/// <param name="otherResources">The resources to compare from the other resource list.</param>
+		/// <returns><b>true</b> if there's a change, or <b>false</b> if not.</returns>
+		private static bool RenderTargetsChanged(GorgonRenderTargetViews theseResources, GorgonRenderTargetViews otherResources)
+		{
+			// If the resources are the same, then just check the dirty flag.
+			if (theseResources == otherResources)
+			{
+				return theseResources.IsDirty;
+			}
+
+			if (theseResources.DepthStencilView != otherResources.DepthStencilView)
+			{
+				return true;
+			}
+
+			ref NativeBinding<D3D11.RenderTargetView> sourceViews = ref theseResources.GetNativeBindings();
+			ref NativeBinding<D3D11.RenderTargetView> destViews = ref otherResources.GetNativeBindings();
+
+			return CompareNativeBinding(ref sourceViews, ref destViews);
+		}
+
+		/// <summary>
+		/// Function to determine if the vertex buffers on this resource list are the same as another.
+		/// </summary>
+		/// <param name="theseResources">The resources to compare from this resource list.</param>
+		/// <param name="otherResources">The resources to compare from the other resource list.</param>
+		/// <returns></returns>
+		private static bool VertexBuffersChanged(GorgonVertexBufferBindings theseResources, GorgonVertexBufferBindings otherResources)
+		{
+			// If the resources are the same, then just check the dirty flag.
+			if ((theseResources == otherResources)
+			    || ((theseResources == null) && (otherResources == null)))
+			{
+				return theseResources?.IsDirty ?? false;
+			}
+
+			if (((theseResources != null) && (otherResources == null))
+			    || (theseResources == null))
+			{
+				return true;
+			}
+
+			if (theseResources.InputLayout != otherResources.InputLayout)
+			{
+				return true;
+			}
+
+			// If there's a change in slots and counts, then we have a change.
+			if (theseResources.Count != otherResources.Count)
+			{
+				return true;
+			}
+
+			// Otherwise, we'll have to go through and compare each element.
+			for (int i = 0; i < theseResources.Count; ++i)
+			{
+				if (theseResources[i] != otherResources[i])
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		/// <summary>
 		/// Function to assign the vertex buffer bindings to the resource list.
 		/// </summary>
 		/// <param name="device">The Direct 3D 11 device context to use.</param>
@@ -263,90 +403,36 @@ namespace Gorgon.Graphics.Core
 				device.InputAssembler.InputLayout = VertexBuffers.InputLayout.D3DInputLayout;
 			}
 			
-			ref NativeBinding<D3D11.VertexBufferBinding> bindings = ref VertexBuffers.GetNativeBindings();
-			device.InputAssembler.SetVertexBuffers(bindings.StartSlot, bindings.Bindings);
+			device.InputAssembler.SetVertexBuffers(0, VertexBuffers.NativeBindings);
 		}
 
 		/// <summary>
 		/// Function to assign the render target views to the resource list.
 		/// </summary>
-		/// <param name="value">The resources to assign.</param>
-		/// <param name="noLockChange"><b>true</b> to change locking state on the resource, <b>false</b> to leave alone.</param>
-		private void SetRenderTargets(GorgonRenderTargetViews value, bool noLockChange)
+		/// <param name="device">The Direct 3D 11 device context to use.</param>
+		internal void SetRenderTargets(D3D11.DeviceContext1 device)
 		{
-			if (_renderTargets == value)
-			{
-				return;
-			}
-
-			if ((_renderTargets != null)
-				&& (!noLockChange))
-			{
-				_renderTargets.IsLocked = false;
-			}
-
-			_renderTargets = value;
-
-			if ((_renderTargets != null)
-				&& (!noLockChange))
-			{
-				_renderTargets.IsLocked = true;
-			}
-
-			_changes |= PipelineResourceChangeFlags.RenderTargets;
+			ref NativeBinding<D3D11.RenderTargetView> bindings = ref RenderTargets.GetNativeBindings();
+			D3D11.DepthStencilView depthStencilView = RenderTargets.DepthStencilView?.D3DView;
+			device.OutputMerger.SetTargets(depthStencilView, bindings.Count, bindings.Bindings);
 		}
 
 		/// <summary>
 		/// Function to assign the constant buffers to the resource list.
 		/// </summary>
-		/// <param name="value">The resources to assign.</param>
-		/// <param name="noLockChange"><b>true</b> to change locking state on the resource, <b>false</b> to leave alone.</param>
-		/// <param name="shaderType">The type of shader to update.</param>
-		private void SetShaderConstantBuffers(GorgonConstantBuffers value, bool noLockChange, ShaderType shaderType)
+		/// <param name="device">The Direct 3D 11 device context to use.</param>
+		/// <param name="shaderType">The type of shader to set the resources on.</param>
+		internal void SetShaderConstantBuffers(D3D11.DeviceContext1 device, ShaderType shaderType)
 		{
 			switch (shaderType)
 			{
 				case ShaderType.Pixel:
-					if (_pixelShaderConstantBuffers == value)
-					{
-						return;
-					}
-
-					if ((_pixelShaderConstantBuffers != null)
-						&& (!noLockChange))
-					{
-						_pixelShaderConstantBuffers.IsLocked = false;
-					}
-
-					_pixelShaderConstantBuffers = value;
-					_changes |= PipelineResourceChangeFlags.PixelShaderConstantBuffer;
-
-					if ((_pixelShaderConstantBuffers != null)
-						&& (!noLockChange))
-					{
-						_pixelShaderConstantBuffers.IsLocked = true;
-					}
+					ref NativeBinding<D3D11.Buffer> psBindings = ref PixelShaderConstantBuffers.GetNativeBindings();
+					device.PixelShader.SetConstantBuffers(psBindings.StartSlot, psBindings.Count, psBindings.Bindings);
 					break;
 				case ShaderType.Vertex:
-					if (_vertexShaderConstantBuffers == value)
-					{
-						return;
-					}
-
-					if ((_vertexShaderConstantBuffers != null)
-						&& (!noLockChange))
-					{
-						_vertexShaderConstantBuffers.IsLocked = false;
-					}
-
-					_vertexShaderConstantBuffers = value;
-					_changes |= PipelineResourceChangeFlags.VertexShaderConstantBuffer;
-
-					if ((_vertexShaderConstantBuffers != null)
-						&& (!noLockChange))
-					{
-						_vertexShaderConstantBuffers.IsLocked = true;
-					}
+					ref NativeBinding<D3D11.Buffer> vsBindings = ref VertexShaderConstantBuffers.GetNativeBindings();
+					device.VertexShader.SetConstantBuffers(vsBindings.StartSlot, vsBindings.Bindings.Length, vsBindings.Bindings);
 					break;
 			}
 		}
@@ -392,125 +478,6 @@ namespace Gorgon.Graphics.Core
 		}
 
 		/// <summary>
-		/// Function to determine if the shader resources on this resource list are the same as another.
-		/// </summary>
-		/// <param name="theseResources">The resources to compare from this resource list.</param>
-		/// <param name="otherResources">The resources to compare from the other resource list.</param>
-		/// <returns></returns>
-		private static bool ShaderResourcesChanged(GorgonShaderResourceViews theseResources, GorgonShaderResourceViews otherResources)
-		{
-			// If the resources are the same, then just check the dirty flag.
-			if (theseResources == otherResources)
-			{
-				return theseResources.IsDirty;
-			}
-
-			ref NativeBinding<D3D11.ShaderResourceView> sourceViews = ref theseResources.GetNativeBindings();
-			ref NativeBinding<D3D11.ShaderResourceView> destViews = ref otherResources.GetNativeBindings();
-
-			// If there's a change in slots and counts, then we have a change.
-			if ((sourceViews.StartSlot != destViews.StartSlot)
-				|| (sourceViews.Count != destViews.Count))
-			{
-				return true;
-			}
-
-			// Otherwise, we'll have to go through and compare each element.
-			for (int i = sourceViews.StartSlot; i < sourceViews.StartSlot + sourceViews.Count; ++i)
-			{
-				if (theseResources[i] != otherResources[i])
-				{
-					return true;
-				}
-			}
-
-			return false;
-		}
-
-		/// <summary>
-		/// Function to determine if the shader resources on this resource list are the same as another.
-		/// </summary>
-		/// <param name="theseResources">The resources to compare from this resource list.</param>
-		/// <param name="otherResources">The resources to compare from the other resource list.</param>
-		/// <returns></returns>
-		private static bool SamplersChanged(GorgonSamplerStates theseResources, GorgonSamplerStates otherResources)
-		{
-			// If the resources are the same, then just check the dirty flag.
-			if (theseResources == otherResources)
-			{
-				return theseResources.IsDirty;
-			}
-
-			ref NativeBinding<D3D11.SamplerState> sourceViews = ref theseResources.GetNativeBindings();
-			ref NativeBinding<D3D11.SamplerState> destViews = ref otherResources.GetNativeBindings();
-
-			// If there's a change in slots and counts, then we have a change.
-			if ((sourceViews.StartSlot != destViews.StartSlot)
-				|| (sourceViews.Count != destViews.Count))
-			{
-				return true;
-			}
-
-			// Otherwise, we'll have to go through and compare each element.
-			for (int i = sourceViews.StartSlot; i < sourceViews.StartSlot + sourceViews.Count; ++i)
-			{
-				if (theseResources[i] != otherResources[i])
-				{
-					return true;
-				}
-			}
-
-			return false;
-		}
-
-		/// <summary>
-		/// Function to determine if the vertex buffers on this resource list are the same as another.
-		/// </summary>
-		/// <param name="theseResources">The resources to compare from this resource list.</param>
-		/// <param name="otherResources">The resources to compare from the other resource list.</param>
-		/// <returns></returns>
-		private static bool VertexBuffersChanged(GorgonVertexBufferBindings theseResources, GorgonVertexBufferBindings otherResources)
-		{
-			// If the resources are the same, then just check the dirty flag.
-			if ((theseResources == otherResources)
-				|| ((theseResources == null) && (otherResources == null)))
-			{
-				return theseResources?.IsDirty ?? false;
-			}
-
-			if (((theseResources != null) && (otherResources == null))
-				|| (theseResources == null))
-			{
-				return true;
-			}
-
-			if (theseResources.InputLayout != otherResources.InputLayout)
-			{
-				return true;
-			}
-
-			ref NativeBinding<D3D11.VertexBufferBinding> sourceViews = ref theseResources.GetNativeBindings();
-			ref NativeBinding<D3D11.VertexBufferBinding> destViews = ref otherResources.GetNativeBindings();
-
-			// If there's a change in slots and counts, then we have a change.
-			if (sourceViews.Count != destViews.Count)
-			{
-				return true;
-			}
-
-			// Otherwise, we'll have to go through and compare each element.
-			for (int i = sourceViews.StartSlot; i < sourceViews.StartSlot + sourceViews.Count; ++i)
-			{
-				if (theseResources[i] != otherResources[i])
-				{
-					return true;
-				}
-			}
-
-			return false;
-		}
-
-		/// <summary>
 		/// Function to retrieve the differences between this pipeline resources and another.
 		/// </summary>
 		/// <param name="resources">The resources to compare with.</param>
@@ -533,7 +500,7 @@ namespace Gorgon.Graphics.Core
 				result |= PipelineResourceChangeFlags.IndexBuffer;
 			}
 
-			if (RenderTargets != resources.RenderTargets)
+			if (RenderTargetsChanged(RenderTargets, resources.RenderTargets))
 			{
 				result |= PipelineResourceChangeFlags.RenderTargets;
 			}
@@ -543,7 +510,7 @@ namespace Gorgon.Graphics.Core
 				result |= PipelineResourceChangeFlags.VertexBuffer;
 			}
 
-			if (VertexShaderConstantBuffers != resources.VertexShaderConstantBuffers)
+			if (ConstantBuffersChanged(VertexShaderConstantBuffers, resources.VertexShaderConstantBuffers))
 			{
 				result |= PipelineResourceChangeFlags.VertexShaderConstantBuffer;
 			}
@@ -558,7 +525,7 @@ namespace Gorgon.Graphics.Core
 				result |= PipelineResourceChangeFlags.VertexShaderSampler;
 			}
 
-			if (PixelShaderConstantBuffers != resources.PixelShaderConstantBuffers)
+			if (ConstantBuffersChanged(PixelShaderConstantBuffers, resources.PixelShaderConstantBuffers))
 			{
 				result |= PipelineResourceChangeFlags.PixelShaderConstantBuffer;
 			}
@@ -612,11 +579,11 @@ namespace Gorgon.Graphics.Core
 				VertexBuffers.CopyFrom(resources.VertexBuffers);
 			}
 			
-			SetRenderTargets(resources.RenderTargets, true);
+			RenderTargets.CopyFrom(resources.RenderTargets);
 			PixelShaderSamplers.CopyFrom(resources.PixelShaderSamplers);
 			VertexShaderSamplers.CopyFrom(resources.VertexShaderSamplers);
-			SetShaderConstantBuffers(resources.PixelShaderConstantBuffers, true, ShaderType.Pixel);
-			SetShaderConstantBuffers(resources.VertexShaderConstantBuffers, true, ShaderType.Vertex);
+			PixelShaderConstantBuffers.CopyFrom(resources.PixelShaderConstantBuffers);
+			VertexShaderConstantBuffers.CopyFrom(resources.VertexShaderConstantBuffers);
 			PixelShaderResourceViews.CopyFrom(resources.PixelShaderResourceViews);
 			VertexShaderResourceViews.CopyFrom(resources.VertexShaderResourceViews);
 
@@ -637,10 +604,10 @@ namespace Gorgon.Graphics.Core
 			IndexBuffer = null;
 			PixelShaderResourceViews.Clear();
 			VertexShaderResourceViews.Clear();
-			PixelShaderConstantBuffers = null;
-			VertexShaderConstantBuffers = null;
+			PixelShaderConstantBuffers.Clear();
+			VertexShaderConstantBuffers.Clear();
 			PixelShaderSamplers.Clear();
-			RenderTargets = null;
+			RenderTargets.Clear();
 
 			_changes = PipelineResourceChangeFlags.None;
 		}

@@ -77,19 +77,16 @@ namespace Gorgon.Graphics
 		/// </summary>
 		public GorgonRenderTargetView RenderTarget
 		{
-			get => _drawCall.Resources.RenderTargets?[0];
+			get => _drawCall.Resources.RenderTargets[0];
 			set
 			{
-				if (_drawCall.Resources.RenderTargets?[0] == value)
+				if (_drawCall.Resources.RenderTargets[0] == value)
 				{
 					return;
 				}
 
 				// Assign the new one.
-				_drawCall.Resources.RenderTargets = new GorgonRenderTargetViews
-				                                    {
-					                                    [0] = value
-				                                    };
+				_drawCall.Resources.RenderTargets[0] = value;
 				_targetSize = new DX.Size2(value?.Texture.Info.Width ?? 0, value?.Texture.Info.Height ?? 0);
 				_needsWvpUpdate = true;
 			}
@@ -195,10 +192,8 @@ namespace Gorgon.Graphics
 
 				// Finish initalizing the draw call.
 				_drawCall.Resources.VertexBuffers = _vertexBufferBindings;
-				_drawCall.Resources.VertexShaderConstantBuffers = new GorgonConstantBuffers
-				                                                  {
-					                                                  [0] = _wvpBuffer
-				                                                  };
+				_drawCall.Resources.VertexShaderConstantBuffers[0] = _wvpBuffer;
+				
 				_drawCall.State = _graphics.GetPipelineState(new GorgonPipelineStateInfo
 				                                             {
 					                                             PixelShader = _pixelShader,

@@ -389,7 +389,7 @@ namespace Gorgon.Graphics.Imaging
 		/// <param name="frame">The bitmap frame that holds the palette info.</param>
 		/// <param name="options">The list of options used to override.</param>
 		/// <returns>The palette information.</returns>
-		private Tuple<WIC.Palette, float> GetDecoderPalette(WIC.BitmapFrameDecode frame, IGorgonWicDecodingOptions options)
+		private (WIC.Palette Palette, float Alpha)? GetDecoderPalette(WIC.BitmapFrameDecode frame, IGorgonWicDecodingOptions options)
 		{
 			// If there's no palette option on the decoder, then we do nothing.
 			if ((options != null) && (!options.Options.Contains("Palette")))
@@ -433,7 +433,7 @@ namespace Gorgon.Graphics.Imaging
 			var wicPalette = new WIC.Palette(_factory);
 			wicPalette.Initialize(dxColors);
 			
-			return new Tuple<WIC.Palette, float>(wicPalette, alpha);
+			return (wicPalette, alpha);
 		}
 
 		/// <summary>
@@ -442,7 +442,7 @@ namespace Gorgon.Graphics.Imaging
 		/// <param name="frame">The bitmap frame that holds the palette info.</param>
 		/// <param name="options">The list of options used to override.</param>
 		/// <returns>The palette information.</returns>
-		private Tuple<WIC.Palette, float> GetEncoderPalette(WIC.Bitmap frame, IGorgonWicEncodingOptions options)
+		private (WIC.Palette Palette, float Alpha)? GetEncoderPalette(WIC.Bitmap frame, IGorgonWicEncodingOptions options)
 		{
 			// If there's no palette option on the decoder, then we do nothing.
 			if ((options != null) && (!options.Options.Contains("Palette")))
@@ -465,7 +465,7 @@ namespace Gorgon.Graphics.Imaging
 				wicPalette = new WIC.Palette(_factory);
 				wicPalette.Initialize(frame, 256, !alpha.EqualsEpsilon(0));
 
-				return new Tuple<WIC.Palette, float>(wicPalette, alpha);
+				return (wicPalette, alpha);
 			}
 
 			// Generate from our custom palette.
@@ -490,7 +490,7 @@ namespace Gorgon.Graphics.Imaging
 			wicPalette = new WIC.Palette(_factory);
 			wicPalette.Initialize(dxColors);
 
-			return new Tuple<WIC.Palette, float>(wicPalette, alpha);
+			return (wicPalette, alpha);
 		}
 
 		/// <summary>
@@ -527,7 +527,7 @@ namespace Gorgon.Graphics.Imaging
 		{
 			Guid requestedFormat = pixelFormat;
 			WIC.BitmapFrameEncode frame = null;
-			Tuple<WIC.Palette, float> paletteInfo = null;
+			(WIC.Palette Palette, float Alpha)? paletteInfo = null;
 			WIC.Bitmap bitmap = null;
 
 			try
@@ -565,10 +565,10 @@ namespace Gorgon.Graphics.Imaging
 						|| (pixelFormat == WIC.PixelFormat.Format1bppIndexed))
 					{
 						paletteInfo = GetEncoderPalette(bitmap, options);
-						frame.Palette = paletteInfo?.Item1;
+						frame.Palette = paletteInfo?.Palette;
 					}
 
-					using (WIC.BitmapSource converter = GetFormatConverter(bitmap, pixelFormat, options?.Dithering ?? ImageDithering.None, paletteInfo?.Item1, paletteInfo?.Item2 ?? 0.0f))
+					using (WIC.BitmapSource converter = GetFormatConverter(bitmap, pixelFormat, options?.Dithering ?? ImageDithering.None, paletteInfo?.Palette, paletteInfo?.Alpha ?? 0.0f))
 					{
 						frame.WriteSource(converter);
 					}
@@ -825,7 +825,7 @@ namespace Gorgon.Graphics.Imaging
 			WIC.Bitmap tempBitmap = null;
 			WIC.BitmapSource formatConverter = null;
 			WIC.BitmapSource sourceBitmap = frame;
-			Tuple<WIC.Palette, float> paletteInfo = null;
+			(WIC.Palette Palette, float Alpha)? paletteInfo = null;
 
 			try
 			{
@@ -843,9 +843,9 @@ namespace Gorgon.Graphics.Imaging
 					// Create a temporary bitmap to convert our indexed image.
 					tempBitmap = new WIC.Bitmap(_factory, frame, WIC.BitmapCreateCacheOption.NoCache)
 					             {
-						             Palette = paletteInfo.Item1
+						             Palette = paletteInfo.Value.Palette
 					             };
-					formatConverter = GetFormatConverter(tempBitmap, convertFormat, ImageDithering.None, paletteInfo.Item1, paletteInfo.Item2);
+					formatConverter = GetFormatConverter(tempBitmap, convertFormat, ImageDithering.None, paletteInfo.Value.Palette, paletteInfo.Value.Alpha);
 				}
 				else
 				{

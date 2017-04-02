@@ -132,7 +132,7 @@ namespace Gorgon.IO
 		/// <param name="sourceFileSystem">The <see cref="IGorgonFileSystem"/> to copy.</param>
 		/// <param name="copyProgress">A method callback used to track the progress of the copy operation.</param>
 		/// <param name="allowOverwrite">[Optional] <b>true</b> to allow overwriting of files that already exist in the file system with the same path, <b>false</b> to throw an exception when a file with the same path is encountered.</param>
-		/// <returns>A <see cref="Tuple{T1,T2}"/> containing the number of directories (<c>item1</c>) and the number of files (<c>item2</c>) copied, or <b>null</b> if the operation was cancelled.</returns>
+		/// <returns>A <see cref="ValueTuple{T1, T2}"/> containing the number of directories (<c>item1</c>) and the number of files (<c>item2</c>) copied, or <b>null</b> if the operation was cancelled.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="sourceFileSystem"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="IOException">Thrown when the a file exists in <see cref="FileSystem"/>, and the <paramref name="allowOverwrite"/> parameter is set to <b>false</b>.</exception>
 		/// <remarks>
@@ -144,7 +144,7 @@ namespace Gorgon.IO
 		/// <paramref name="sourceFileSystem"/>, then an exception will be raised.
 		/// </para>
 		/// </remarks>
-		Tuple<int, int> CopyFrom(IGorgonFileSystem sourceFileSystem, Func<GorgonWriterCopyProgress, bool> copyProgress = null, bool allowOverwrite = true);
+		(int DirectoryCount, int FileCount)? CopyFrom(IGorgonFileSystem sourceFileSystem, Func<GorgonWriterCopyProgress, bool> copyProgress = null, bool allowOverwrite = true);
 
 		/// <summary>
 		/// Function to asynchronously copy the contents of a file system to the writable area.
@@ -153,7 +153,7 @@ namespace Gorgon.IO
 		/// <param name="cancelToken">The <see cref="CancellationToken"/> used to cancel an in progress copy.</param>
 		/// <param name="copyProgress">A method callback used to track the progress of the copy operation.</param>
 		/// <param name="allowOverwrite">[Optional] <b>true</b> to allow overwriting of files that already exist in the file system with the same path, <b>false</b> to throw an exception when a file with the same path is encountered.</param>
-		/// <returns>A <see cref="Tuple{T1,T2}"/> containing the number of directories (<c>item1</c>) and the number of files (<c>item2</c>) copied, or <b>null</b> if the operation was cancelled.</returns>
+		/// <returns>A <see cref="ValueTuple{T1,T2}"/> containing the number of directories (<c>item1</c>) and the number of files (<c>item2</c>) copied, or <b>null</b> if the operation was cancelled.</returns>
 		/// <remarks>
 		/// <para>
 		/// This copies all the file and directory information from one file system, into the <see cref="FileSystem"/> linked to this writer. 
@@ -183,7 +183,7 @@ namespace Gorgon.IO
 		/// This method also allows for cancellation of the copy operation by passing a <see cref="CancellationToken"/> to the <paramref name="cancelToken"/> parameter.
 		/// </para>
 		/// </remarks>
-		Task<Tuple<int, int>> CopyFromAsync(IGorgonFileSystem sourceFileSystem, CancellationToken cancelToken, Func<GorgonWriterCopyProgress, bool> copyProgress = null, bool allowOverwrite = true);
+		Task<(int DirectoryCount, int FileCount)?> CopyFromAsync(IGorgonFileSystem sourceFileSystem, CancellationToken cancelToken, Func<GorgonWriterCopyProgress, bool> copyProgress = null, bool allowOverwrite = true);
 
 		/// <summary>
 		/// Function to create a new directory in the writable area on the physical file system.

@@ -67,10 +67,10 @@ namespace Gorgon.Graphics.Core
 		// A processor used to parse shader source code for include statements.
 		private static readonly ShaderProcessor _processor = new ShaderProcessor();
 		// A list of available shader types.
-		private static readonly Tuple<Type, ShaderType>[] _shaderTypes =
+		private static readonly (Type, ShaderType)[] _shaderTypes =
 		{
-			new Tuple<Type, ShaderType>(typeof(GorgonVertexShader), ShaderType.Vertex),
-			new Tuple<Type, ShaderType>(typeof(GorgonPixelShader), ShaderType.Pixel),
+			(typeof(GorgonVertexShader), ShaderType.Vertex),
+			(typeof(GorgonPixelShader), ShaderType.Pixel)
 		};
 		#endregion
 
@@ -454,7 +454,7 @@ namespace Gorgon.Graphics.Core
 				throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(entryPoint));
 			}
 
-			Tuple<Type, ShaderType> shaderType = _shaderTypes.FirstOrDefault(item => item.Item1 == typeof(T));
+			(Type, ShaderType)? shaderType = _shaderTypes.FirstOrDefault(item => item.Item1 == typeof(T));
 
 			if (shaderType == null)
 			{
@@ -477,7 +477,7 @@ namespace Gorgon.Graphics.Core
 				actualMacros = macros.Select(item => item.D3DShaderMacro).ToArray();
 			}
 
-			string profile = GetProfile(videoDevice.RequestedFeatureLevel, shaderType.Item2);
+			string profile = GetProfile(videoDevice.RequestedFeatureLevel, shaderType.Value.Item2);
 			string processedSource = _processor.Process(sourceCode);
 
 			try
@@ -496,7 +496,7 @@ namespace Gorgon.Graphics.Core
 					throw new GorgonException(GorgonResult.CannotCompile, string.Format(Resources.GORGFX_ERR_CANNOT_COMPILE_SHADER, byteCode.Message));
 				}
 
-				return GetShader<T>(videoDevice, shaderType.Item2, entryPoint, debug, byteCode);
+				return GetShader<T>(videoDevice, shaderType.Value.Item2, entryPoint, debug, byteCode);
 			}
 			catch (DX.CompilationException cEx)
 			{

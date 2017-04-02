@@ -52,19 +52,26 @@ namespace Gorgon.Graphics.Core
 		#endregion
 
 		#region Variables.
-		// The flags to indicate whether the first bank of shader resource views are dirty or not.
-		private int _dirty;
 		// The binding wrappers.
 		private GorgonVertexBufferBinding[] _bindings;
 		// The native resource bindings.
-		private NativeBinding<D3D11.VertexBufferBinding> _nativeBinding;
+		private D3D11.VertexBufferBinding[] _nativeBindings;
 		#endregion
 
 		#region Properties.
 		/// <summary>
 		/// Property to return whether the list is in a dirty state or not.
 		/// </summary>
-		internal bool IsDirty => _dirty != 0;
+		internal bool IsDirty
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the native bindings.
+		/// </summary>
+		internal D3D11.VertexBufferBinding[] NativeBindings => _nativeBindings;
 
 		/// <summary>
 		/// Property to return the maximum number of bindings that can be held in this list.
@@ -101,7 +108,8 @@ namespace Gorgon.Graphics.Core
 				}
 
 				_bindings[index] = value;
-				_dirty |= 1 << index;
+				_nativeBindings[index] = value.ToVertexBufferBinding();
+				IsDirty = true;
 			}
 		}
 		#endregion
@@ -168,13 +176,9 @@ namespace Gorgon.Graphics.Core
 		/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only. </exception>
 		public void Clear()
 		{
-			Array.Clear(_nativeBinding.Bindings, 0, MaximumVertexBufferCount);
-			_nativeBinding.StartSlot = _nativeBinding.Count = 0;
-
-			unchecked
-			{
-				_dirty = (int)(System.Math.Pow(2, Count));
-			}
+			Array.Clear(_bindings, 0, Count);
+			Array.Clear(_nativeBindings, 0, Count);
+			IsDirty = true;
 		}
 
 		/// <summary>Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.</summary>
@@ -208,104 +212,33 @@ namespace Gorgon.Graphics.Core
 		}
 
 		/// <summary>
-		/// Function to retrieve the native bindings.
-		/// </summary>
-		/// <returns>A native bindings item.</returns>
-		internal ref NativeBinding<D3D11.VertexBufferBinding> GetNativeBindings()
-		{
-			// Nothing's been changed, so send back our array.
-			if (_dirty == 0)
-			{
-				return ref _nativeBinding;
-			}
-
-			int firstSlot = -1;
-			int slotCount = 0;
-			D3D11.VertexBufferBinding[] buffers = _nativeBinding.Bindings;
-
-			for (int i = 0; i < MaximumVertexBufferCount; ++i)
-			{
-				int dirtyMask = 1 << i;
-
-				// Skip this index if we don't have a slot assigned.
-				if ((_dirty & dirtyMask) != dirtyMask)
-				{
-					continue;
-				}
-
-				// Record our first slot used.
-				if (firstSlot == -1)
-				{
-					firstSlot = i;
-				}
-
-				buffers[i] = this[i].ToVertexBufferBinding();
-
-				// Remove this bit.
-				_dirty &= ~dirtyMask;
-
-				++slotCount;
-
-				if (_dirty == 0)
-				{
-					break;
-				}
-			}
-
-			_nativeBinding = new NativeBinding<D3D11.VertexBufferBinding>
-			{
-				Bindings = buffers,
-				Count = slotCount,
-				StartSlot = firstSlot
-			};
-
-			return ref _nativeBinding;
-		}
-
-		/// <summary>
 		/// Function to copy the elements from a resource binding list to this list.
 		/// </summary>
 		/// <param name="source">The source list to copy.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="source"/> parameter is <b>null</b>.</exception>
 		public void CopyFrom(GorgonVertexBufferBindings source)
 		{
-			int dirty = 0;
-
 			if (source == null)
 			{
 				throw new ArgumentNullException(nameof(source));
 			}
 
-			ref NativeBinding<D3D11.VertexBufferBinding> bindings = ref source.GetNativeBindings();
-
 			// Resize the arrays if they differ.
-			if ((bindings.Count > Count)
-				|| (bindings.Count < Count))
+			if ((source.Count > Count)
+				|| (source.Count < Count))
 			{
-				Array.Resize(ref _bindings, bindings.Count);
-				Array.Resize(ref _nativeBinding.Bindings, bindings.Count);
+				Array.Resize(ref _bindings, source.Count);
+				Array.Resize(ref _nativeBindings, source.Count);
 			}
-
-			for (int i = bindings.StartSlot; i < bindings.StartSlot + bindings.Count; ++i)
+			
+			for (int i = 0; i < Count; ++i)
 			{
-				int mask = 1 << i;
-
-				if (this[i].Equals(source[i]))
-				{
-					// If this index was already dirty, then we need to ensure it stays that way.
-					if ((_dirty & mask) == mask)
-					{
-						dirty |= mask;
-					}
-					continue;
-				}
-
-				this[i] = source[i];
-				dirty |= mask;
+				_bindings[i] = source._bindings[i];
+				_nativeBindings[i] = source._nativeBindings[i];
 			}
 
 			// Update dirty flags.
-			_dirty = dirty;
+			IsDirty = true;
 		}
 		#endregion
 
@@ -332,7 +265,7 @@ namespace Gorgon.Graphics.Core
 
 			InputLayout = inputLayout ?? throw new ArgumentNullException(nameof(inputLayout));
 			_bindings = new GorgonVertexBufferBinding[size];
-			_nativeBinding.Bindings = new D3D11.VertexBufferBinding[size];
+			_nativeBindings = new D3D11.VertexBufferBinding[size];
 		}
 		#endregion
 	}

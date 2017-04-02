@@ -198,10 +198,10 @@ namespace Gorgon.IO
 		/// <param name="token">The cancellation token for asynchronous copy.</param>
 		/// <param name="allowOverwrite">Flag to indicate whether to allow overwriting files or not.</param>
 		/// <returns>A tuple containing the count of the directories and files copied.</returns>
-		private Tuple<int, int> CopyInternal(IGorgonFileSystem sourceFileSystem,
-		                                     Func<GorgonWriterCopyProgress, bool> progress,
-		                                     CancellationToken token,
-		                                     bool allowOverwrite)
+		private (int DirectoryCount, int FileCount)? CopyInternal(IGorgonFileSystem sourceFileSystem,
+		                                                          Func<GorgonWriterCopyProgress, bool> progress,
+		                                                          CancellationToken token,
+		                                                          bool allowOverwrite)
 		{
 			int directoryCount = 0;
 			int fileCount = 0;
@@ -212,7 +212,7 @@ namespace Gorgon.IO
 
 			if ((files.Length == 0) && (directories.Length == 0))
 			{
-				return new Tuple<int, int>(0, 0);
+				return (0, 0);
 			}
 
 			// Create all the directories.
@@ -264,7 +264,7 @@ namespace Gorgon.IO
 				}
 			}
 
-			return new Tuple<int, int>(directoryCount, fileCount);
+			return (directoryCount, fileCount);
 		}
 
 		/// <summary>
@@ -273,7 +273,7 @@ namespace Gorgon.IO
 		/// <param name="sourceFileSystem">The <see cref="IGorgonFileSystem"/> to copy.</param>
 		/// <param name="copyProgress">A method callback used to track the progress of the copy operation.</param>
 		/// <param name="allowOverwrite">[Optional] <b>true</b> to allow overwriting of files that already exist in the file system with the same path, <b>false</b> to throw an exception when a file with the same path is encountered.</param>
-		/// <returns>A <see cref="Tuple{T1,T2}"/> containing the number of directories (<c>item1</c>) and the number of files (<c>item2</c>) copied, or <b>null</b> if the operation was cancelled.</returns>
+		/// <returns>A <see cref="ValueTuple{T1,T2}"/> containing the number of directories (<c>item1</c>) and the number of files (<c>item2</c>) copied, or <b>null</b> if the operation was cancelled.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="sourceFileSystem"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="IOException">Thrown when the a file exists in <see cref="IGorgonFileSystemWriter{T}.FileSystem"/>, and the <paramref name="allowOverwrite"/> parameter is set to <b>false</b>.</exception>
 		/// <remarks>
@@ -285,7 +285,7 @@ namespace Gorgon.IO
 		/// <paramref name="sourceFileSystem"/>, then an exception will be raised.
 		/// </para>
 		/// </remarks>
-		public Tuple<int, int> CopyFrom(IGorgonFileSystem sourceFileSystem, Func<GorgonWriterCopyProgress, bool> copyProgress = null, bool allowOverwrite = true)
+		public (int DirectoryCount, int FileCount)? CopyFrom(IGorgonFileSystem sourceFileSystem, Func<GorgonWriterCopyProgress, bool> copyProgress = null, bool allowOverwrite = true)
 		{
 			if (sourceFileSystem == null)
 			{
@@ -332,7 +332,7 @@ namespace Gorgon.IO
 		/// This method also allows for cancellation of the copy operation by passing a <see cref="CancellationToken"/> to the <paramref name="cancelToken"/> parameter.
 		/// </para>
 		/// </remarks>
-		public Task<Tuple<int, int>> CopyFromAsync(IGorgonFileSystem sourceFileSystem, CancellationToken cancelToken, Func<GorgonWriterCopyProgress, bool> copyProgress = null, bool allowOverwrite = true)
+		public Task<(int DirectoryCount, int FileCount)?> CopyFromAsync(IGorgonFileSystem sourceFileSystem, CancellationToken cancelToken, Func<GorgonWriterCopyProgress, bool> copyProgress = null, bool allowOverwrite = true)
 		{
 			if (sourceFileSystem == null)
 			{

@@ -656,15 +656,10 @@ namespace Gorgon.Graphics.Example
 			          };
 
 			// Add resources that are common throughout the application to the draw call.
-			_drawCall.Resources.VertexShaderConstantBuffers = new GorgonConstantBuffers(new[]
-			                                                                            {
-				                                                                            _wvpBuffer
-			                                                                            });
-			_drawCall.Resources.RenderTargets = new GorgonRenderTargetViews(new[]
-			                                                                {
-				                                                                _swap.RenderTargetView
-			                                                                },
-			                                                                _depthStencilTexture.DefaultDepthStencilView);
+			_drawCall.Resources.VertexShaderConstantBuffers[0] = _wvpBuffer;
+
+			_drawCall.Resources.RenderTargets[0] = _swap.RenderTargetView;
+			_drawCall.Resources.RenderTargets.DepthStencilView = _depthStencilTexture.DefaultDepthStencilView;
 
 			// Initialize a pipeline state so that the graphics can be rendered using the correct shaders, depth buffer, and blending.
 			_pipelineState = _graphics.GetPipelineState(new GorgonPipelineStateInfo
@@ -698,9 +693,6 @@ namespace Gorgon.Graphics.Example
 		/// <exception cref="System.NotImplementedException"></exception>
 		private static void Swap_BeforeResized(object sender, EventArgs e)
 		{
-			// Reset currently active states.
-			_graphics.ClearState();
-
 			// Destroy the depth/stencil that we're using so we can update it.
 			_depthStencilTexture?.Dispose();
 			_depthStencilTexture = null;
@@ -756,17 +748,14 @@ namespace Gorgon.Graphics.Example
 				                                         TextureType = TextureType.Texture2D
 			                                         });
 
-			_drawCall.Resources.RenderTargets = new GorgonRenderTargetViews
-			                                    {
-				                                    [0] = _swap.RenderTargetView,
-				                                    DepthStencilView = _depthStencilTexture.DefaultDepthStencilView
-			                                    };
+			_drawCall.Resources.RenderTargets[0] = _swap.RenderTargetView;
+			_drawCall.Resources.RenderTargets.DepthStencilView = _depthStencilTexture.DefaultDepthStencilView;
 
 			// Update the viewport to reflect the new window size.
 			_drawCall.Viewports = new[]
-						{
-							new DX.ViewportF(0, 0, _mainForm.ClientSize.Width, _mainForm.ClientSize.Height, 0.0f, 1.0f)
-						};
+			                      {
+				                      new DX.ViewportF(0, 0, _mainForm.ClientSize.Width, _mainForm.ClientSize.Height, 0.0f, 1.0f)
+			                      };
 		}
 		#endregion
 

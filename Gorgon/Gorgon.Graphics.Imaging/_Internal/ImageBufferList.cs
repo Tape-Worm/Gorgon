@@ -60,7 +60,7 @@ namespace Gorgon.Graphics.Imaging
 		/// <summary>
 		/// Property to return the offsets of the mip map levels.
 		/// </summary>
-		internal Tuple<int, int>[] MipOffsetSize
+		internal (int BufferIndex, int MipDepth)[] MipOffsetSize
 		{
 			get;
 			private set;
@@ -96,7 +96,7 @@ namespace Gorgon.Graphics.Imaging
 		{
 			get
 			{
-				Tuple<int, int> offsetSize;
+				(int, int) offsetSize;
 
 				mipLevel.ValidateRange("mipLevel", 0, _image.Info.MipCount);
 
@@ -128,7 +128,7 @@ namespace Gorgon.Graphics.Imaging
 			_buffers = new IGorgonImageBuffer[GorgonImage.CalculateDepthSliceCount(_image.Info.Depth, _image.Info.MipCount) * _image.Info.ArrayCount];
 
 			// Offsets for the mip maps.
-			MipOffsetSize = new Tuple<int, int>[_image.Info.MipCount * _image.Info.ArrayCount];
+			MipOffsetSize = new (int BufferIndex, int MipDepth)[_image.Info.MipCount * _image.Info.ArrayCount];
 			// Create the data boxes for images.
 			DataBoxes = new DX.DataBox[_image.Info.ArrayCount * _image.Info.MipCount];
 
@@ -145,13 +145,13 @@ namespace Gorgon.Graphics.Imaging
 				for (int mip = 0; mip < _image.Info.MipCount; mip++)
 				{
 					int arrayIndex = mip + (array * _image.Info.MipCount);
-					var pitchInformation = formatInfo.GetPitchForFormat(mipWidth, mipHeight, PitchFlags.None);
+					var pitchInformation = formatInfo.GetPitchForFormat(mipWidth, mipHeight);
 
 					// Get data box for texture upload.
 					DataBoxes[arrayIndex] = new DX.DataBox(dataAddress, pitchInformation.RowPitch, pitchInformation.SlicePitch);
 
 					// Calculate buffer offset by mip.
-					MipOffsetSize[arrayIndex] = new Tuple<int, int>(bufferIndex, mipDepth);
+					MipOffsetSize[arrayIndex] = (bufferIndex, mipDepth);
 
 					// Enumerate depth slices.
 					for (int depth = 0; depth < mipDepth; depth++)
@@ -236,7 +236,7 @@ namespace Gorgon.Graphics.Imaging
 		/// <returns>The index of the buffer within the list, or -1 if not found.</returns>
 		public int IndexOf(int mipLevel, int depthSliceOrArrayIndex = 0)
 		{
-			Tuple<int, int> offsetSize;
+			(int, int) offsetSize;
 
 			mipLevel = mipLevel.Max(0).Min(_image.Info.MipCount - 1);
 

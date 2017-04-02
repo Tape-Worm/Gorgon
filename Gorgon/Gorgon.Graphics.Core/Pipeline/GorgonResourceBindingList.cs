@@ -27,7 +27,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Math;
@@ -52,22 +51,10 @@ namespace Gorgon.Graphics.Core
 	{
 		#region Variables.
 		// The items to bind.
-		private T[] _bindingItems;
+		private readonly T[] _bindingItems;
 		#endregion
 
 		#region Properties.
-		/// <summary>
-		/// Property to return whether or not this list of views is locked for writing.
-		/// </summary>
-		/// <remarks>
-		/// This property will return <b>true</b> when the list is bound to a <see cref="GorgonPipelineResources"/> object. It will return <b>false</b> when it is unbound.
-		/// </remarks>
-		public bool IsLocked
-		{
-			get;
-			internal set;
-		}
-
 		/// <summary>Gets or sets the element at the specified index.</summary>
 		/// <exception cref="GorgonException">Thrown when the list is locked for writing.</exception>
 		/// <remarks>
@@ -93,7 +80,7 @@ namespace Gorgon.Graphics.Core
 #endif
 
 				_bindingItems[index] = value;
-				OnSetNativeItem(index, value);
+				OnSetItem(index, value);
 			}
 		}
 
@@ -103,45 +90,10 @@ namespace Gorgon.Graphics.Core
 
 		/// <summary>Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</summary>
 		/// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only; otherwise, false.</returns>
-		bool ICollection<T>.IsReadOnly => IsLocked;
+		bool ICollection<T>.IsReadOnly => false;
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Function to resize the list if needed.
-		/// </summary>
-		/// <param name="newSize">The new size for the list.</param>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="newSize"/> parameter is less than 0.</exception>
-		/// <remarks>
-		/// <para>
-		/// This method should be called to resize the internal backing array for the binding list. A native item list must be manually resized after calling this to match the new size of the list.
-		/// </para>
-		/// <para>
-		/// When this method is called, the <see cref="OnResizeNativeList"/> method is called to allow the implementing class an opportunity to resize the native binding list.
-		/// </para>
-		/// </remarks>
-		protected void Resize(int newSize)
-		{
-			if (newSize < 0)
-			{
-				throw new ArgumentOutOfRangeException(nameof(newSize));
-			}
-
-			Array.Resize(ref _bindingItems, newSize);
-			OnResizeNativeList(newSize);
-		}
-
-		/// <summary>
-		/// Function to resize the native binding object list if needed.
-		/// </summary>
-		/// <param name="newSize">The new size for the list.</param>
-		/// <remarks>
-		/// <para>
-		/// This method must be overridden by the implementing class so that the native list is resized along with this list after calling <see cref="Resize"/>.
-		/// </para>
-		/// </remarks>
-		protected abstract void OnResizeNativeList(int newSize);
-
 		/// <summary>
 		/// Function to validate an item being assigned to a slot.
 		/// </summary>
@@ -166,17 +118,17 @@ namespace Gorgon.Graphics.Core
 		/// Implementors must override this method to assign the native version of the object to bind. 
 		/// </para>
 		/// </remarks>
-		protected abstract void OnSetNativeItem(int index, T item);
+		protected abstract void OnSetItem(int index, T item);
 
 		/// <summary>
-		/// Function to clear the list of native binding objects.
+		/// Function to clear the list of binding objects.
 		/// </summary>
 		/// <remarks>
 		/// <para>
 		/// The implementing class must implement this in order to unassign items from the native binding object list when the <see cref="Clear"/> method is called.
 		/// </para>
 		/// </remarks>
-		protected abstract void OnClearNativeItems();
+		protected abstract void OnClearItems();
 
 		/// <summary>
 		/// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.
@@ -230,18 +182,6 @@ namespace Gorgon.Graphics.Core
 		}
 
 		/// <summary>
-		/// Function to retrieve the native object at the specified index.
-		/// </summary>
-		/// <typeparam name="K">The type of native object.</typeparam>
-		/// <param name="index">The index of the native object.</param>
-		/// <returns>The native object at the specified index.</returns>
-		protected internal virtual K GetNativeObject<K>(int index)
-			where K : DX.ComObject
-		{
-			return null;
-		}
-
-		/// <summary>
 		/// Function to unbind all the render target views and depth/stencil views.
 		/// </summary>
 		/// <exception cref="GorgonException">Thrown when the list is locked for writing.</exception>
@@ -251,13 +191,13 @@ namespace Gorgon.Graphics.Core
 		/// list.
 		/// </para>
 		/// <para>
-		/// When the method is called, the <see cref="OnClearNativeItems"/> is called to allow the implementing class an opportunity to remove the native binding objects from the native list.
+		/// When the method is called, the <see cref="OnClearItems"/> is called to allow the implementing class an opportunity to remove the native binding objects from the native list.
 		/// </para>
 		/// </remarks>
 		public void Clear()
 		{
 			Array.Clear(_bindingItems, 0, _bindingItems.Length);
-			OnClearNativeItems();
+			OnClearItems();
 		}
 
 		/// <summary>Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.</summary>
