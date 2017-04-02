@@ -71,7 +71,7 @@ namespace Gorgon.Graphics.Core
 		/// Implementors must override this method to assign the native version of the object to bind. 
 		/// </para>
 		/// </remarks>
-		protected override void OnSetNativeItem(int index, GorgonSamplerState item)
+		protected override void OnSetItem(int index, GorgonSamplerState item)
 		{
 			_dirty |= 1 << index;			
 		}
@@ -84,7 +84,7 @@ namespace Gorgon.Graphics.Core
 		/// The implementing class must implement this in order to unassign items from the native binding object list when the <see cref="GorgonResourceBindingList{T}.Clear"/> method is called.
 		/// </para>
 		/// </remarks>
-		protected override void OnClearNativeItems()
+		protected override void OnClearItems()
 		{
 			Array.Clear(_nativeBinding.Bindings, 0, _nativeBinding.Bindings.Length);
 			_nativeBinding.StartSlot = 0;
@@ -92,20 +92,6 @@ namespace Gorgon.Graphics.Core
 
 			// When clearing all slots are marked as dirty.
 			_dirty = 0xffff;
-		}
-
-		/// <summary>
-		/// Function to resize the native binding object list if needed.
-		/// </summary>
-		/// <param name="newSize">The new size for the list.</param>
-		/// <remarks>
-		/// <para>
-		/// This method must be overridden by the implementing class so that the native list is resized along with this list after calling <see cref="GorgonResourceBindingList{T}.Resize"/>.
-		/// </para>
-		/// </remarks>
-		protected override void OnResizeNativeList(int newSize)
-		{
-			
 		}
 
 		/// <summary>
@@ -154,11 +140,11 @@ namespace Gorgon.Graphics.Core
 			}
 
 			_nativeBinding = new NativeBinding<D3D11.SamplerState>
-			{
-				Bindings = samplers,
-				Count = slotCount,
-				StartSlot = firstSlot
-			};
+			                 {
+				                 Bindings = samplers,
+				                 Count = slotCount,
+				                 StartSlot = firstSlot == -1 ? 0 : firstSlot
+			                 };
 
 			return ref _nativeBinding;
 		}

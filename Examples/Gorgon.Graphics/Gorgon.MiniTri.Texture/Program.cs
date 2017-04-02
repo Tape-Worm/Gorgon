@@ -339,13 +339,11 @@ namespace Gorgon.Graphics.Example
 						                            [0] = new GorgonVertexBufferBinding(_vertexBuffer, MiniTriVertex.SizeInBytes)
 					                            },
 								// This defines where to send the pixel data when rendering. For now, this goes to our swap chain.
-								RenderTargets = new GorgonRenderTargetViews
-								                {
+								RenderTargets = {
 									                [0] = _swap.RenderTargetView
 								                },
 								// Bind the constant buffer with our projection matrix to the GPU.
-								VertexShaderConstantBuffers = new GorgonConstantBuffers
-								                              {
+								VertexShaderConstantBuffers = {
 									                              [0] = _constantBuffer
 								                              },
 								// Bind the texture to this draw call.

@@ -240,7 +240,7 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="type">The type to evaluate.</param>
 		/// <returns>The list of field info values for the members of the type.</returns>
-		internal static List<Tuple<FieldInfo, InputElementAttribute>> GetFieldInfoList(Type type)
+		internal static List<(FieldInfo Field, InputElementAttribute InputElement)> GetFieldInfoList(Type type)
 		{
 			FieldInfo[] members = type.GetFields();
 
@@ -249,7 +249,7 @@ namespace Gorgon.Graphics.Core
 				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_VERTEX_NO_FIELDS, type.FullName));
 			}
 
-			var result = new List<Tuple<FieldInfo, InputElementAttribute>>();
+			var result = new List<(FieldInfo, InputElementAttribute)>();
 
 			// ReSharper disable once ForCanBeConvertedToForeach
 			for (int i = 0; i < members.Length; ++i)
@@ -275,7 +275,7 @@ namespace Gorgon.Graphics.Core
 					throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_LAYOUT_INVALID_ELEMENT_TYPE, returnType.FullName));
 				}
 
-				result.Add(new Tuple<FieldInfo, InputElementAttribute>(member, attribute));
+				result.Add((member, attribute));
 			}
 
 			return result;
@@ -365,7 +365,7 @@ namespace Gorgon.Graphics.Core
 		{
 			Type type = typeof(T);
 			int byteOffset = 0;
-			List<Tuple<FieldInfo, InputElementAttribute>> members = GetFieldInfoList(type);
+			List<(FieldInfo Field, InputElementAttribute InputElement)> members = GetFieldInfoList(type);
 
 			if (members.Count == 0)
 			{
@@ -376,21 +376,21 @@ namespace Gorgon.Graphics.Core
 
 			for (int i = 0; i < elements.Length; i++)
 			{
-				Tuple<FieldInfo, InputElementAttribute> item = members[i];
+				(FieldInfo Field, InputElementAttribute InputElement) item = members[i];
 
-				DXGI.Format format = item.Item2.Format;
-				string contextName = item.Item2.Context;
+				DXGI.Format format = item.InputElement.Format;
+				string contextName = item.InputElement.Context;
 
 				// Try to determine the format from the type.
-				if ((format == DXGI.Format.Unknown) && (!_typeMapping.TryGetValue(item.Item1.FieldType, out format)))
+				if ((format == DXGI.Format.Unknown) && (!_typeMapping.TryGetValue(item.Field.FieldType, out format)))
 				{
 					throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_LAYOUT_INVALID_ELEMENT_TYPE, item.Item1.FieldType.FullName));
 				}
 
 				var element = new GorgonInputElement(contextName, format,
 													 (item.Item2.AutoOffset ? byteOffset : item.Item2.Offset),
-													 item.Item2.Index, item.Item2.Slot, item.Item2.Instanced,
-													 item.Item2.Instanced ? item.Item2.InstanceCount : 0);
+													 item.Item2.Index, item.InputElement.Slot, item.InputElement.Instanced,
+													 item.Item2.Instanced ? item.InputElement.InstanceCount : 0);
 
 				FindDuplicateElements(elements, element, i, nameof(element));
 

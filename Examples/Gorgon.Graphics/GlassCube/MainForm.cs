@@ -120,10 +120,7 @@ namespace GorgonLibrary.Example
 		{
 			DX.Matrix.PerspectiveFovLH(60.0f.ToRadians(), (float)ClientSize.Width / ClientSize.Height, 0.1f, 1000.0f, out _projectionMatrix);
 			
-			_drawCall.Resources.RenderTargets = new GorgonRenderTargetViews
-			                                    {
-				                                    [0] = _swap.RenderTargetView
-			                                    };
+			_drawCall.Resources.RenderTargets[0] = _swap.RenderTargetView;
 
 			_drawCall.Viewports = new[]
 			                      {
@@ -257,8 +254,7 @@ namespace GorgonLibrary.Example
 							PrimitiveTopology = PrimitiveTopology.TriangleList,
 		                    Resources =
 		                    {
-			                    RenderTargets = new GorgonRenderTargetViews
-			                                    {
+			                    RenderTargets = {
 				                                    [0] = _swap.RenderTargetView
 			                                    },
 			                    IndexBuffer = _cube.IndexBuffer,
@@ -273,8 +269,7 @@ namespace GorgonLibrary.Example
 														  // from our view.
 				                                          [0] = _bilinearSampler
 			                                          },
-			                    VertexShaderConstantBuffers = new GorgonConstantBuffers
-			                                                  {
+			                    VertexShaderConstantBuffers = {
 				                                                  [0] = _wvpBuffer
 			                                                  }
 		                    },

@@ -25,10 +25,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using Gorgon.Core;
-using Gorgon.Graphics.Core.Properties;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
@@ -53,32 +49,23 @@ namespace Gorgon.Graphics.Core
 		#endregion
 
 		#region Variables.
-		// The native Direct3D 11 constant buffer list.
-		private D3D11.Buffer[] _nativeBuffers;
+		// The native binding.
+		private NativeBinding<D3D11.Buffer> _native = new NativeBinding<D3D11.Buffer>
+		                                              {
+			                                              Bindings = new D3D11.Buffer[MaximumConstantBufferCount]
+		                                              };
+		// Flag to indicate which indices are changed.
+		private int _dirty;
 		#endregion
 
 		#region Properties.
 		/// <summary>
-		/// Property to return the D3D11 constant buffers.
+		/// Property to return whether the list is in a dirty state or not.
 		/// </summary>
-		internal D3D11.Buffer[] NativeBuffers => _nativeBuffers;
+		internal bool IsDirty => _dirty != 0;
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Function to resize the native binding object list if needed.
-		/// </summary>
-		/// <param name="newSize">The new size for the list.</param>
-		/// <remarks>
-		/// <para>
-		/// This method must be overridden by the implementing class so that the native list is resized along with this list after calling <see cref="GorgonResourceBindingList{T}.Resize"/>.
-		/// </para>
-		/// </remarks>
-		protected override void OnResizeNativeList(int newSize)
-		{
-			Array.Resize(ref _nativeBuffers, newSize);
-		}
-
 		/// <summary>
 		/// Function to clear the list of native binding objects.
 		/// </summary>
@@ -87,9 +74,16 @@ namespace Gorgon.Graphics.Core
 		/// The implementing class must implement this in order to unassign items from the native binding object list when the <see cref="GorgonResourceBindingList{T}.Clear"/> method is called.
 		/// </para>
 		/// </remarks>
-		protected override void OnClearNativeItems()
+		protected override void OnClearItems()
 		{
-			Array.Clear(_nativeBuffers, 0, _nativeBuffers.Length);
+			Array.Clear(_native.Bindings, 0, MaximumConstantBufferCount);
+			_native.StartSlot = _native.Count = 0;
+
+			unchecked
+			{
+				// Max of 14 slots = 2^14.
+				_dirty = 0x3fff;
+			}
 		}
 
 		/// <summary>
@@ -97,69 +91,102 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="index">The index of the slot being assigned.</param>
 		/// <param name="item">The item being assigned.</param>
-		protected override void OnSetNativeItem(int index, GorgonConstantBuffer item)
+		protected override void OnSetItem(int index, GorgonConstantBuffer item)
 		{
-			_nativeBuffers[index] = item.D3DBuffer;
+			_dirty |= 1 << index;
 		}
 
 		/// <summary>
-		/// Function to set multiple <see cref="GorgonConstantBuffer"/> objects at once.
+		/// Function to retrieve the native bindings.
 		/// </summary>
-		/// <param name="buffers">The buffers to assign.</param>
-		/// <param name="count">[Optional] The number of items to copy from <paramref name="buffers"/>.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="buffers"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the number of <paramref name="buffers"/> exceeds the size of this list.</exception>
-		/// <exception cref="GorgonException">Thrown when the list is locked for writing.</exception>
-		/// <remarks>
-		/// <para>
-		/// Use this method to set a series of objects of type <see cref="GorgonConstantBuffer"/> at once. This will yield better performance than attempting to assign a single item 
-		/// at a time via the indexer.
-		/// </para>
-		/// <para>
-		/// <note type="warning">
-		/// Any exceptions thrown by this method will only be thrown when Gorgon is compiled as <b>DEBUG</b>.
-		/// </note>
-		/// </para>
-		/// </remarks>
-		public void SetRange(IReadOnlyList<GorgonConstantBuffer> buffers, int? count = null)
+		/// <returns>A native bindings item.</returns>
+		internal ref NativeBinding<D3D11.Buffer> GetNativeBindings()
 		{
-			if (count == null)
+			// Nothing's been changed, so send back our array.
+			if (_dirty == 0)
 			{
-				count = buffers?.Count ?? 0;
+				return ref _native;
 			}
 
-#if DEBUG
-			if (IsLocked)
+			int firstSlot = -1;
+			int slotCount = 0;
+			D3D11.Buffer[] buffers = _native.Bindings;
+
+			for (int i = 0; i < MaximumConstantBufferCount; ++i)
 			{
-				throw new GorgonException(GorgonResult.AccessDenied, Resources.GORGFX_ERR_BINDING_LIST_LOCKED);
+				int dirtyMask = 1 << i;
+
+				// Skip this index if we don't have a slot assigned.
+				if ((_dirty & dirtyMask) != dirtyMask)
+				{
+					continue;
+				}
+
+				// Record our first slot used.
+				if (firstSlot == -1)
+				{
+					firstSlot = i;
+				}
+
+				buffers[i] = this[i]?.D3DBuffer;
+
+				// Remove this bit.
+				_dirty &= ~dirtyMask;
+
+				++slotCount;
+
+				if (_dirty == 0)
+				{
+					break;
+				}
 			}
 
-			if (count > (buffers?.Count ?? 0))
+			_native = new NativeBinding<D3D11.Buffer>
+			                 {
+				                 Bindings = buffers,
+				                 Count = slotCount,
+				                 StartSlot = firstSlot == -1 ? 0 : firstSlot
+			                 };
+
+			return ref _native;
+		}
+
+		/// <summary>
+		/// Function to copy the elements from a resource binding list to this list.
+		/// </summary>
+		/// <param name="source">The source list to copy.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="source"/> parameter is <b>null</b>.</exception>
+		public void CopyFrom(GorgonConstantBuffers source)
+		{
+			int dirty = 0;
+
+			if (source == null)
 			{
-				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TOO_MANY_ITEMS, 0, count.Value, buffers?.Count));
+				throw new ArgumentNullException(nameof(source));
 			}
 
-			if (count > MaximumConstantBufferCount)
+			ref NativeBinding<D3D11.Buffer> bindings = ref source.GetNativeBindings();
+
+			for (int i = bindings.StartSlot; i < bindings.StartSlot + bindings.Count; ++i)
 			{
-				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TOO_MANY_ITEMS, 0, count.Value, MaximumConstantBufferCount));
-			}
-#endif
-			if (count != Count)
-			{
-				Resize(count.Value);
-				Array.Resize(ref _nativeBuffers, count.Value);
+				int mask = 1 << i;
+
+				if (this[i] == source[i])
+				{
+					// If this index was already dirty, then we need to ensure it stays that way.
+					if ((_dirty & mask) == mask)
+					{
+						dirty |= mask;
+					}
+					continue;
+				}
+
+				this[i] = source[i];
+				dirty |= mask;
 			}
 
-			if ((buffers == null) || (count == 0))
-			{
-				Clear();
-				return;
-			}
-
-			for (int i = 0; i < count.Value; ++i)
-			{
-				this[i] = buffers[i];
-			}
+			// Update dirty flags.
+			_dirty = dirty;
 		}
 		#endregion
 
@@ -167,39 +194,9 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonConstantBuffers"/> class.
 		/// </summary>
-		/// <param name="buffers">The list of <see cref="GorgonConstantBuffer"/> objects to copy into this list.</param>
-		/// <exception cref="GorgonException">Thrown when the same <see cref="GorgonConstantBuffer"/> is bound to more than one slot in the <paramref name="buffers"/> list.</exception>
-		public GorgonConstantBuffers(IEnumerable<GorgonConstantBuffer> buffers)
-			: this()
+		public GorgonConstantBuffers()
+			: base(MaximumConstantBufferCount, MaximumConstantBufferCount)
 		{
-			SetRange(buffers?.ToArray());
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonConstantBuffers"/> class.
-		/// </summary>
-		/// <param name="size">[Optional] The number of constant buffers for this list.</param>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> parameter is less than 0.</exception>
-		/// <remarks>
-		/// <para>
-		/// If the <paramref name="size"/> parameter is larger than the maximum allowed number of constant buffers, then the size will be adjusted to that maximum instead of the amount requested. See the 
-		/// <seealso cref="MaximumConstantBufferCount"/> constant to determine what the maximum is.
-		/// </para>
-		/// <para>
-		/// If the size is omitted, then room is made for 1 constant buffer.
-		/// </para>
-		/// <para>
-		/// <note type="warning">
-		/// <para>
-		/// For the sake of performance, Exceptions thrown by this constructor will only be thrown when Gorgon is compiled as DEBUG.
-		/// </para>
-		/// </note>
-		/// </para>
-		/// </remarks>
-		public GorgonConstantBuffers(int size = 1)
-			: base(size, MaximumConstantBufferCount)
-		{
-			_nativeBuffers = new D3D11.Buffer[size];
 		}
 		#endregion
 	}

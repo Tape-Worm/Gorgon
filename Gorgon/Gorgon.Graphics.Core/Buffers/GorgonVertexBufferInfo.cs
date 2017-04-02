@@ -107,7 +107,7 @@ namespace Gorgon.Graphics.Core
 				throw new ArgumentOutOfRangeException(nameof(count));
 			}
 
-			List<Tuple<FieldInfo, InputElementAttribute>> fields = GorgonInputLayout.GetFieldInfoList(typeof(T));
+			List<(FieldInfo, InputElementAttribute)> fields = GorgonInputLayout.GetFieldInfoList(typeof(T));
 
 			if (fields.Count == 0)
 			{

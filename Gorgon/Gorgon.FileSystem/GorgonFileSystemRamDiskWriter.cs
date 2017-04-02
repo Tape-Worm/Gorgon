@@ -141,11 +141,11 @@ namespace Gorgon.IO
 		/// <param name="files">The files in the source file system to copy.</param>
 		/// <param name="directories">The directories in the source file system to copy.</param>
 		/// <returns>A tuple containing the count of the directories and files copied.</returns>
-		private Tuple<int, int> CopyInternal(Func<GorgonWriterCopyProgress, bool> progress,
-											 CancellationToken token,
-											 bool allowOverwrite,
-											 IGorgonVirtualFile[] files,
-											 IGorgonVirtualDirectory[] directories)
+		private (int DirectoryCount, int FileCount)? CopyInternal(Func<GorgonWriterCopyProgress, bool> progress,
+		                                                          CancellationToken token,
+		                                                          bool allowOverwrite,
+		                                                          IGorgonVirtualFile[] files,
+		                                                          IGorgonVirtualDirectory[] directories)
 		{
 			int directoryCount = 0;
 			int fileCount = 0;
@@ -155,7 +155,7 @@ namespace Gorgon.IO
 			{
 				if (token.IsCancellationRequested)
 				{
-					return new Tuple<int, int>(directoryCount, fileCount);
+					return (directoryCount, fileCount);
 				}
 
 				CreateDirectory(directory.FullPath);
@@ -168,7 +168,7 @@ namespace Gorgon.IO
 
 				if (token.IsCancellationRequested)
 				{
-					return new Tuple<int, int>(directoryCount, fileCount);
+					return null;
 				}
 
 				// Do not allow overwrite if the user requested it.
@@ -195,11 +195,11 @@ namespace Gorgon.IO
 
 				if (!progress(new GorgonWriterCopyProgress(file, fileCount, files.Length, directories.Length)))
 				{
-					return new Tuple<int, int>(directoryCount, fileCount);
+					return (directoryCount, fileCount);
 				}
 			}
 
-			return new Tuple<int, int>(directoryCount, fileCount);
+			return (directoryCount, fileCount);
 		}
 
 		/// <summary>
@@ -208,7 +208,7 @@ namespace Gorgon.IO
 		/// <param name="sourceFileSystem">The <see cref="IGorgonFileSystem"/> to copy.</param>
 		/// <param name="copyProgress">A method callback used to track the progress of the copy operation.</param>
 		/// <param name="allowOverwrite">[Optional] <b>true</b> to allow overwriting of files that already exist in the file system with the same path, <b>false</b> to throw an exception when a file with the same path is encountered.</param>
-		/// <returns>A <see cref="Tuple{T1,T2}"/> containing the number of directories (<c>item1</c>) and the number of files (<c>item2</c>) copied, or <b>null</b> if the operation was cancelled.</returns>
+		/// <returns>A <see cref="ValueTuple{T1,T2}"/> containing the number of directories (<c>item1</c>) and the number of files (<c>item2</c>) copied, or <b>null</b> if the operation was cancelled.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="sourceFileSystem"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="IOException">Thrown when the a file exists in <see cref="IGorgonFileSystemWriter{T}.FileSystem"/>, and the <paramref name="allowOverwrite"/> parameter is set to <b>false</b>.</exception>
 		/// <remarks>
@@ -220,7 +220,7 @@ namespace Gorgon.IO
 		/// <paramref name="sourceFileSystem"/>, then an exception will be raised.
 		/// </para>
 		/// </remarks>
-		public Tuple<int, int> CopyFrom(IGorgonFileSystem sourceFileSystem, Func<GorgonWriterCopyProgress, bool> copyProgress = null, bool allowOverwrite = true)
+		public (int DirectoryCount, int FileCount)? CopyFrom(IGorgonFileSystem sourceFileSystem, Func<GorgonWriterCopyProgress, bool> copyProgress = null, bool allowOverwrite = true)
 		{
 			if (sourceFileSystem == null)
 			{
@@ -232,7 +232,7 @@ namespace Gorgon.IO
 
 			if ((files.Length == 0) && (directories.Length == 0))
 			{
-				return new Tuple<int, int>(0, 0);
+				return (0, 0);
 			}
 
 			return CopyInternal(copyProgress, new CancellationToken(false), allowOverwrite, files, directories);
@@ -245,7 +245,7 @@ namespace Gorgon.IO
 		/// <param name="cancelToken">The <see cref="CancellationToken"/> used to cancel an in progress copy.</param>
 		/// <param name="copyProgress">A method callback used to track the progress of the copy operation.</param>
 		/// <param name="allowOverwrite">[Optional] <b>true</b> to allow overwriting of files that already exist in the file system with the same path, <b>false</b> to throw an exception when a file with the same path is encountered.</param>
-		/// <returns>A <see cref="Tuple{T1,T2}"/> containing the number of directories (<c>item1</c>) and the number of files (<c>item2</c>) copied, or <b>null</b> if the operation was cancelled.</returns>
+		/// <returns>A <see cref="ValueTuple{T1,T2}"/> containing the number of directories (<c>item1</c>) and the number of files (<c>item2</c>) copied, or <b>null</b> if the operation was cancelled.</returns>
 		/// <remarks>
 		/// <para>
 		/// This copies all the file and directory information from one file system, into the <see cref="IGorgonFileSystemWriter{T}.FileSystem"/> linked to this writer. 
@@ -275,7 +275,7 @@ namespace Gorgon.IO
 		/// This method also allows for cancellation of the copy operation by passing a <see cref="CancellationToken"/> to the <paramref name="cancelToken"/> parameter.
 		/// </para>
 		/// </remarks>
-		public async Task<Tuple<int, int>> CopyFromAsync(IGorgonFileSystem sourceFileSystem, CancellationToken cancelToken, Func<GorgonWriterCopyProgress, bool> copyProgress = null, bool allowOverwrite = true)
+		public async Task<(int DirectoryCount, int FileCount)?> CopyFromAsync(IGorgonFileSystem sourceFileSystem, CancellationToken cancelToken, Func<GorgonWriterCopyProgress, bool> copyProgress = null, bool allowOverwrite = true)
 		{
 			if (sourceFileSystem == null)
 			{
@@ -288,12 +288,12 @@ namespace Gorgon.IO
 				IGorgonVirtualFile[] files = sourceFileSystem.FindFiles("/", "*").ToArray();
 				IGorgonVirtualDirectory[] directories = sourceFileSystem.FindDirectories("/", "*").ToArray();
 
-				return new Tuple<IGorgonVirtualFile[], IGorgonVirtualDirectory[]>(files, directories);
+				return (Files: files, Directories: directories);
 			});
 
-			if ((data.Item1.Length == 0) && (data.Item2.Length == 0))
+			if ((data.Files.Length == 0) && (data.Directories.Length == 0))
 			{
-				return new Tuple<int, int>(0, 0);
+				return (0, 0);
 			}
 
 			return await Task.Run(() => CopyInternal(copyProgress, cancelToken, allowOverwrite, data.Item1, data.Item2));

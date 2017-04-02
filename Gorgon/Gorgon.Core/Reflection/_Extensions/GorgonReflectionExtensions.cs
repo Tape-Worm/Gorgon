@@ -74,7 +74,7 @@ namespace Gorgon.Reflection
 		/// <param name="objectType">The type of object to evaluate.</param>
 		/// <param name="paramTypes">The parameter types on the constructor to find.</param>
 		/// <returns>The constructor info for the constructor that matches the parameter types, or <b>null</b> if no matching constructor is found.</returns>
-		private static Tuple<ConstructorInfo, ParameterInfo[]> GetConstructor(Type objectType, Type[] paramTypes)
+		private static (ConstructorInfo Ctor, ParameterInfo[] Params) GetConstructor(Type objectType, Type[] paramTypes)
 		{
 			if (paramTypes == null)
 			{
@@ -85,15 +85,14 @@ namespace Gorgon.Reflection
 			var constructors = (from constructorInfo in objectType.GetConstructors()
 			                   let parameters = constructorInfo.GetParameters()
 			                   where (paramTypes.Length == parameters.Length)
-			                   select new Tuple<ConstructorInfo, ParameterInfo[]>
-			                          (
+			                   select (
 				                          constructorInfo,
 				                          parameters
 			                          )).ToArray();
 
 			if (constructors.Length == 0)
 			{
-				return null;
+				return (null, null);
 			}
 
 			if ((paramTypes.Length == 0) && (constructors.Length == 1))
@@ -339,9 +338,9 @@ namespace Gorgon.Reflection
 				paramTypes = new Type[0];
 			}
 
-			Tuple<ConstructorInfo, ParameterInfo[]> constructor = GetConstructor(type, paramTypes);
+			(ConstructorInfo Ctor, ParameterInfo[] Params) constructor = GetConstructor(type, paramTypes);
 
-			if (constructor == null)
+			if (constructor.Ctor == null)
 			{
 				throw new TypeLoadException(string.Format(Resources.GOR_ERR_ACTIVATOR_CANNOT_FIND_CONSTRUCTOR, type.FullName));
 			}

@@ -24,14 +24,13 @@
 // 
 #endregion
 
-using DX = SharpDX;
-
 namespace Gorgon.Graphics.Core
 {
 	/// <summary>
 	/// A binding for a native Direct 3D object.
 	/// </summary>
 	struct NativeBinding<T>
+		where T : class
 	{
 		/// <summary>
 		/// The shader resource views to bind.

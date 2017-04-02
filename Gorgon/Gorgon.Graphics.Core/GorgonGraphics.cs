@@ -359,50 +359,6 @@ namespace Gorgon.Graphics.Core
 			D3DDeviceContext.InputAssembler.SetIndexBuffer(buffer, format, 0);
 		}
 
-		/// <summary>
-		/// Function to bind render targets to the pipeline.
-		/// </summary>
-		/// <param name="renderTargetViews">The render targets to bind to the pipeline.</param>
-		private void SetRenderTargets(GorgonRenderTargetViews renderTargetViews)
-	    {
-			// We've no render targets, so unbind all.
-			if (renderTargetViews == null)
-		    {
-			    D3DDeviceContext.OutputMerger.SetTargets(null, 0, (D3D11.RenderTargetView[])null);
-			    return;
-		    }
-
-			// Otherwise, copy into our target list.
-			D3DDeviceContext.OutputMerger.SetTargets(renderTargetViews.DepthStencilView?.D3DView, renderTargetViews.Count, renderTargetViews.NativeViews);
-	    }
-
-		/// <summary>
-		/// Function to set the constant buffers for a given shader type.
-		/// </summary>
-		/// <param name="shaderType">The type of shader to apply the constant buffers towards.</param>
-		/// <param name="constantBuffers">The constant buffers to set.</param>
-		private void SetConstantBuffers(ShaderType shaderType, GorgonConstantBuffers constantBuffers)
-	    {
-		    D3D11.Buffer[] buffers = null;
-		    int bindCount = 0;
-
-		    if (constantBuffers != null)
-		    {
-			    buffers = constantBuffers.NativeBuffers;
-			    bindCount = constantBuffers.NativeBuffers.Length;
-		    }
-
-		    switch (shaderType)
-		    {
-				case ShaderType.Vertex:
-					D3DDeviceContext.VertexShader.SetConstantBuffers(0, bindCount, buffers);
-				    break;
-				case ShaderType.Pixel:
-					D3DDeviceContext.PixelShader.SetConstantBuffers(0, bindCount, buffers);
-				    break;
-		    }
-	    }
-
 	    /// <summary>
 		/// Function to apply resource bindings to the GPU pipeline.
 		/// </summary>
@@ -420,7 +376,7 @@ namespace Gorgon.Graphics.Core
 
 			if ((changes & PipelineResourceChangeFlags.RenderTargets) == PipelineResourceChangeFlags.RenderTargets)
 			{
-				SetRenderTargets(resources.RenderTargets);
+				resources.SetRenderTargets(D3DDeviceContext);
 			}
 
 			if ((changes & PipelineResourceChangeFlags.VertexBuffer) == PipelineResourceChangeFlags.VertexBuffer)
@@ -430,12 +386,12 @@ namespace Gorgon.Graphics.Core
 
 			if ((changes & PipelineResourceChangeFlags.PixelShaderConstantBuffer) == PipelineResourceChangeFlags.PixelShaderConstantBuffer)
 			{
-				SetConstantBuffers(ShaderType.Pixel, resources.PixelShaderConstantBuffers);
+				resources.SetShaderConstantBuffers(D3DDeviceContext, ShaderType.Pixel);
 			}
 
 			if ((changes & PipelineResourceChangeFlags.VertexShaderConstantBuffer) == PipelineResourceChangeFlags.VertexShaderConstantBuffer)
 			{
-				SetConstantBuffers(ShaderType.Vertex, resources.VertexShaderConstantBuffers);
+				resources.SetShaderConstantBuffers(D3DDeviceContext, ShaderType.Vertex);
 			}
 
 			if ((changes & PipelineResourceChangeFlags.PixelShaderResource) == PipelineResourceChangeFlags.PixelShaderResource)
