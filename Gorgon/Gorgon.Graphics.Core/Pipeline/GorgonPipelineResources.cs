@@ -398,12 +398,10 @@ namespace Gorgon.Graphics.Core
 			}
 
 			// Ensure that we assign an input layout.
-			if (device.InputAssembler.InputLayout != VertexBuffers.InputLayout.D3DInputLayout)
-			{
-				device.InputAssembler.InputLayout = VertexBuffers.InputLayout.D3DInputLayout;
-			}
+			device.InputAssembler.InputLayout = VertexBuffers.InputLayout.D3DInputLayout;
 			
 			device.InputAssembler.SetVertexBuffers(0, VertexBuffers.NativeBindings);
+			VertexBuffers.IsDirty = false;
 		}
 
 		/// <summary>

@@ -84,6 +84,8 @@ namespace Gorgon.Graphics.Core
 		private readonly object _stateCacheLock = new object();
 		// The currently set pipeline resources.
 	    private GorgonPipelineResources _currentPipelineResources;
+		// Cached scissor rectangles to reduce allocations.
+		private DX.Rectangle[] _scissorRects = new DX.Rectangle[1];
 		#endregion
 
 		#region Properties.
@@ -497,14 +499,15 @@ namespace Gorgon.Graphics.Core
 			    return;
 		    }
 
-			RawViewportF* rawViewports = stackalloc RawViewportF[viewports.Count];
+		    int count = viewports.Count.Min(16);
+			RawViewportF* rawViewports = stackalloc RawViewportF[count];
 
-			for (int i = 0; i < viewports.Count.Min(16); ++i)
+			for (int i = 0; i < count; ++i)
 			{
 				rawViewports[i] = viewports[i];
 			}
-
-			D3DDeviceContext.Rasterizer.SetViewports(rawViewports, viewports.Count.Min(16));
+		    
+			D3DDeviceContext.Rasterizer.SetViewports(rawViewports, count);
 	    }
 
 		/// <summary>
@@ -518,17 +521,20 @@ namespace Gorgon.Graphics.Core
 				D3DDeviceContext.Rasterizer.SetScissorRectangles(new RawRectangle[1]);
 				return;
 			}
-
+			
 			// I wish we could allocate this on the stack.
 			// If we only had SetScissorRectangles using a pointer instead of an array.  It's kind of dumb how disjointed the interfaces are.
-			var rects = new RawRectangle[scissors.Count.Min(16)];
-
-			for (int i = 0; i < rects.Length; ++i)
+			if (_scissorRects.Length != scissors.Count)
 			{
-				rects[i] = scissors[i];
+				_scissorRects = new DX.Rectangle[scissors.Count.Min(16)];
+			}
+
+			for (int i = 0; i < _scissorRects.Length; ++i)
+			{
+				_scissorRects[i] = scissors[i];
 			}
 			
-			D3DDeviceContext.Rasterizer.SetScissorRectangles(rects);
+			D3DDeviceContext.Rasterizer.SetScissorRectangles(_scissorRects);
 		}
 
 		/// <summary>
