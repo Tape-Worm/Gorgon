@@ -65,7 +65,7 @@ namespace Gorgon.Graphics.Core
 		internal bool IsDirty
 		{
 			get;
-			private set;
+			set;
 		}
 
 		/// <summary>
