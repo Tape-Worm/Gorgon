@@ -247,8 +247,8 @@ namespace Gorgon.Graphics
 			UpdateWorldViewProjection();
 
 			// Apply the correct sampler.
-			_drawCall.Resources.PixelShaderSamplers[0] = _samplerState ?? _defaultSampler;
-			_drawCall.Resources.PixelShaderResourceViews[0] = texture.DefaultShaderResourceView;
+			_drawCall.PixelShaderSamplers[0] = _samplerState ?? _defaultSampler;
+			_drawCall.PixelShaderResourceViews[0] = texture.DefaultShaderResourceView;
 
 			// Calculate position on the texture.
 			DX.Vector2 topLeft = texture.ToTexel(new DX.Point(srcX, srcY));
@@ -311,15 +311,15 @@ namespace Gorgon.Graphics
 
 			_defaultSampler = new GorgonSamplerState(_graphics, GorgonSamplerStateInfo.Default);
 			_drawCall = new GorgonDrawCall
-			{
-				PrimitiveTopology = D3D.PrimitiveTopology.TriangleList,
-				VertexCount = _vertices.Length,
-				Resources = {
-								PixelShaderSamplers = {
-									[0] = _samplerState
-								}
-							}
-			};
+			            {
+				            PrimitiveTopology = D3D.PrimitiveTopology.TriangleList,
+				            VertexCount = _vertices.Length,
+				            PixelShaderSamplers =
+				            {
+					            [0] = _samplerState
+				            }
+
+			            };
 
 			RenderTarget = renderTarget;
 		}

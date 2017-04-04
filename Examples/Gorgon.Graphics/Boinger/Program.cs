@@ -266,8 +266,8 @@ namespace Gorgon.Graphics.Example
 			_drawCall.IndexCount = model.IndexBuffer.Info.IndexCount;
 			_drawCall.IndexBuffer = model.IndexBuffer;
 			_drawCall.VertexBuffers = model.VertexBufferBindings;
-			_drawCall.Resources.PixelShaderResourceViews[0] = model.Material.Texture;
-			_drawCall.Resources.PixelShaderSamplers[0] = model.Material.TextureSampler;
+			_drawCall.PixelShaderResourceViews[0] = model.Material.Texture;
+			_drawCall.PixelShaderSamplers[0] = model.Material.TextureSampler;
 			_drawCall.State = currentState;
 
 			// Finally, send the draw call to the GPU.

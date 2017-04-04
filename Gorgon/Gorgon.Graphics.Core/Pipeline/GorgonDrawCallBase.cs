@@ -77,6 +77,27 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		PixelShaderConstantBuffers = 0x100,
 		/// <summary>
+		/// Vertex shader resources have changed.
+		/// </summary>
+		VertexShaderResources = 0x200,
+		/// <summary>
+		/// Pixel shader resources have changed.
+		/// </summary>
+		PixelShaderResources = 0x400,
+		/// <summary>
+		/// <para>
+		/// Vertex shader samplers have changed.
+		/// </para>
+		/// <para>
+		/// Only supported on devices that are feature level 11.0 or better.
+		/// </para>
+		/// </summary>
+		VertexShaderSamplers = 0x800,
+		/// <summary>
+		/// Pixel shader samplers have changed.
+		/// </summary>
+		PixelShaderSamplers = 0x1000,
+		/// <summary>
 		/// Pipeline state has changed.
 		/// </summary>
 		PipelineState = 0x40000000,
@@ -204,6 +225,47 @@ namespace Gorgon.Graphics.Core
 		}
 
 		/// <summary>
+		/// Property to return the vertex shader resources to bind to the pipeline.
+		/// </summary>
+		public GorgonShaderResourceViews VertexShaderResourceViews
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Property to set or return the list of pixel shader resource views.
+		/// </summary>
+		public GorgonShaderResourceViews PixelShaderResourceViews
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Property to return the pixel shader samplers to bind to the pipeline.
+		/// </summary>
+		public GorgonSamplerStates PixelShaderSamplers
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Property to return the vertex shader samplers to bind to the pipeline.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// <note type="important">
+		/// <para>
+		/// This only applies to an <see cref="IGorgonVideoDevice"/> that has a <see cref="IGorgonVideoDevice.RequestedFeatureLevel"/> of <c>Level_11_0</c> or better.
+		/// </para>
+		/// </note>
+		/// </para>
+		/// </remarks>
+		public GorgonSamplerStates VertexShaderSamplers
+		{
+			get;
+		}
+
+		/// <summary>
 		/// Property to return the type of primitives to draw.
 		/// </summary>
 		public D3D.PrimitiveTopology PrimitiveTopology
@@ -211,14 +273,6 @@ namespace Gorgon.Graphics.Core
 			get;
 			set;
 		} = D3D.PrimitiveTopology.TriangleStrip;
-
-		/// <summary>
-		/// Property to return resources to use in the draw call.
-		/// </summary>
-		public GorgonPipelineResources Resources
-		{
-			get;
-		} = new GorgonPipelineResources();
 
 		/// <summary>
 		/// Property to set or return the current pipeline state.
@@ -233,6 +287,33 @@ namespace Gorgon.Graphics.Core
 		}
 		#endregion
 
+		#region Methods.
+		/// <summary>
+		/// Function to reset the states on this draw call back to an initialized state.
+		/// </summary>
+		public void Reset()
+		{
+			PrimitiveTopology = D3D.PrimitiveTopology.TriangleStrip;
+			VertexBuffers = null;
+			IndexBuffer = null;
+			State = null;
+
+			Viewports.Clear();
+			ScissorRectangles.Clear();
+
+			VertexShaderResourceViews.Clear();
+			VertexShaderConstantBuffers.Clear();
+			VertexShaderSamplers.Clear();
+
+			PixelShaderResourceViews.Clear();
+			PixelShaderConstantBuffers.Clear();
+			PixelShaderSamplers.Clear();
+			
+			RenderTargets.DepthStencilView = null;
+			RenderTargets.Clear();
+		}
+		#endregion
+
 		#region Constructor.
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonDrawCallBase"/> class.
@@ -244,6 +325,10 @@ namespace Gorgon.Graphics.Core
 			RenderTargets = new GorgonRenderTargetViews();
 			VertexShaderConstantBuffers = new GorgonConstantBuffers();
 			PixelShaderConstantBuffers = new GorgonConstantBuffers();
+			PixelShaderResourceViews = new GorgonShaderResourceViews();
+			VertexShaderResourceViews = new GorgonShaderResourceViews();
+			PixelShaderSamplers = new GorgonSamplerStates();
+			VertexShaderSamplers = new GorgonSamplerStates();
 		}
 		#endregion
 	}
