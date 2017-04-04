@@ -121,17 +121,14 @@
     <Compile Include="Pipeline\GorgonDrawCallBase.cs" />
     <Compile Include="Pipeline\GorgonDrawIndexedInstancedCall.cs" />
     <Compile Include="Pipeline\GorgonMonitoredArray.cs" />
-    <Compile Include="Pipeline\GorgonPipelineResources.cs" />
     <Compile Include="Pipeline\GorgonPipelineState.cs" />
     <Compile Include="Pipeline\GorgonPipelineStateInfo.cs" />
-    <Compile Include="Pipeline\GorgonResourceBindingList.cs" />
     <Compile Include="Pipeline\GorgonSamplerStates.cs" />
     <Compile Include="Pipeline\GorgonVertexBufferBinding.cs" />
     <Compile Include="Pipeline\GorgonRenderTargetViews.cs" />
     <Compile Include="Pipeline\GorgonVertexBufferBindings.cs" />
     <Compile Include="Pipeline\GorgonMonitoredValueTypeArray.cs" />
     <Compile Include="Pipeline\_Interfaces\IGorgonPipelineStateInfo.cs" />
-    <Compile Include="Pipeline\_Internal\NativeBinding.cs" />
     <Compile Include="Shaders\GorgonShaderResourceView.cs" />
     <Compile Include="Pipeline\GorgonShaderResourceViews.cs" />
     <Compile Include="Pipeline\GorgonDrawIndexedCall.cs" />

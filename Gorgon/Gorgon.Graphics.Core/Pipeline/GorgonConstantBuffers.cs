@@ -66,7 +66,7 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// The implementing class must implement this in order to unassign items from the native binding object list when the <see cref="GorgonResourceBindingList{T}.Clear"/> method is called.
+		/// The implementing class must implement this in order to unassign items from the native binding object list when the <see cref="GorgonMonitoredArray{T}.Clear"/> method is called.
 		/// </para>
 		/// </remarks>
 		protected override void OnClear()

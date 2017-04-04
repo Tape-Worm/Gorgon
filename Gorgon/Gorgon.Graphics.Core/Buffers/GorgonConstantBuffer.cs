@@ -31,6 +31,7 @@ using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Native;
+using Gorgon.Reflection;
 using DX = SharpDX;
 
 namespace Gorgon.Graphics.Core

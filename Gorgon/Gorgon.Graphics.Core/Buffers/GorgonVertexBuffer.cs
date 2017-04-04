@@ -28,7 +28,9 @@ using System;
 using System.Runtime.InteropServices;
 using D3D11 = SharpDX.Direct3D11;
 using Gorgon.Diagnostics;
+using Gorgon.Graphics.Core.Properties;
 using Gorgon.Native;
+using Gorgon.Reflection;
 using DX = SharpDX;
 
 namespace Gorgon.Graphics.Core
