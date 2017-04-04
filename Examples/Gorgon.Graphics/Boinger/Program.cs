@@ -264,8 +264,8 @@ namespace Gorgon.Graphics.Example
 			// Set up the draw call to render this models Index and Vertex buffers along with the current pipeline state.
 			_drawCall.IndexStart = 0;
 			_drawCall.IndexCount = model.IndexBuffer.Info.IndexCount;
-			_drawCall.Resources.IndexBuffer = model.IndexBuffer;
-			_drawCall.Resources.VertexBuffers = model.VertexBufferBindings;
+			_drawCall.IndexBuffer = model.IndexBuffer;
+			_drawCall.VertexBuffers = model.VertexBufferBindings;
 			_drawCall.Resources.PixelShaderResourceViews[0] = model.Material.Texture;
 			_drawCall.Resources.PixelShaderSamplers[0] = model.Material.TextureSampler;
 			_drawCall.State = currentState;
@@ -309,7 +309,7 @@ namespace Gorgon.Graphics.Example
 			_sphere.Position = new DX.Vector3(spherePosition.X + 0.25f, spherePosition.Y - 0.125f, spherePosition.Z + 0.5f);
 			// Scale on the z-axis so the ball "shadow" has no real depth, and on the x & y to make it look slightly bigger.
 			_sphere.Scale = new DX.Vector3(1.155f, 1.155f, 0.001f);
-			// Reset the rotation so we don't rotate our flattend ball "shadow" (it'd look real weird if it rotated).
+			// Reset the rotation so we don't rotate our flattened ball "shadow" (it'd look real weird if it rotated).
 			_sphere.Rotation = DX.Vector3.Zero;
 
 			// Render the shadow.
@@ -326,7 +326,7 @@ namespace Gorgon.Graphics.Example
 			// TODO: This updates the caption of the window with the FPS every second.  We have to limit the rate of updates because it really hits our FPS hard.
 			if (_tempTimer.Milliseconds > 999)
 			{
-				_mainForm.Text = $"FPS: {GorgonTiming.FPS:0.00}";
+				_mainForm.Text = $"FPS: {GorgonTiming.FPS:0.00}, DT: {GorgonTiming.Delta:0.000}";
 				_tempTimer.Reset();
 			}
 
@@ -361,7 +361,7 @@ namespace Gorgon.Graphics.Example
 			// Now we flip our buffers.
 			// We need to this or we won't see anything.
 			_swap.Present();
-			
+
 			return true;
 		}
 
@@ -482,14 +482,16 @@ namespace Gorgon.Graphics.Example
 			
 			// Create a 1280x800 window with a depth buffer.
 			// We can modify the resolution in the config file for the application, but like other Gorgon examples, the default is 1280x800.
-			_swap = new GorgonSwapChain("Main", _graphics, _mainForm, 
-			                                        new GorgonSwapChainInfo
-			                                        {
-														// Set up for 32 bit RGBA normalized display.
-														Format = DXGI.Format.R8G8B8A8_UNorm, 
-														Width = Settings.Default.Resolution.Width,
-														Height = Settings.Default.Resolution.Height
-			                                        });
+			_swap = new GorgonSwapChain("Main",
+			                            _graphics,
+			                            _mainForm,
+			                            new GorgonSwapChainInfo
+			                            {
+				                            // Set up for 32 bit RGBA normalized display.
+				                            Format = DXGI.Format.R8G8B8A8_UNorm,
+				                            Width = Settings.Default.Resolution.Width,
+				                            Height = Settings.Default.Resolution.Height
+			                            });
 
 			// Center on the primary monitor.
 			// This is necessary because we already created the window, so it'll be off center at this point.
@@ -546,10 +548,7 @@ namespace Gorgon.Graphics.Example
 
 			// Create the view port.
 			// This just tells the renderer how big our display is.
-			_drawCall.Viewports = new[]
-			                      {
-				                      new DX.ViewportF(0, 0, _mainForm.ClientSize.Width, _mainForm.ClientSize.Height, 0.0f, 1.0f)
-			                      };
+			_drawCall.Viewports[0] = new DX.ViewportF(0, 0, _mainForm.ClientSize.Width, _mainForm.ClientSize.Height, 0.0f, 1.0f);
 
 			// Resources are stored as System.Drawing.Bitmap files, so we need to convert into an IGorgonImage so we can upload it to a texture.
 			// We also will generate mip-map levels for this image so that scaling the texture will look better. 
@@ -656,10 +655,10 @@ namespace Gorgon.Graphics.Example
 			          };
 
 			// Add resources that are common throughout the application to the draw call.
-			_drawCall.Resources.VertexShaderConstantBuffers[0] = _wvpBuffer;
+			_drawCall.VertexShaderConstantBuffers[0] = _wvpBuffer;
 
-			_drawCall.Resources.RenderTargets[0] = _swap.RenderTargetView;
-			_drawCall.Resources.RenderTargets.DepthStencilView = _depthStencilTexture.DefaultDepthStencilView;
+			_drawCall.RenderTargets[0] = _swap.RenderTargetView;
+			_drawCall.RenderTargets.DepthStencilView = _depthStencilTexture.DefaultDepthStencilView;
 
 			// Initialize a pipeline state so that the graphics can be rendered using the correct shaders, depth buffer, and blending.
 			_pipelineState = _graphics.GetPipelineState(new GorgonPipelineStateInfo
@@ -748,14 +747,11 @@ namespace Gorgon.Graphics.Example
 				                                         TextureType = TextureType.Texture2D
 			                                         });
 
-			_drawCall.Resources.RenderTargets[0] = _swap.RenderTargetView;
-			_drawCall.Resources.RenderTargets.DepthStencilView = _depthStencilTexture.DefaultDepthStencilView;
+			_drawCall.RenderTargets[0] = _swap.RenderTargetView;
+			_drawCall.RenderTargets.DepthStencilView = _depthStencilTexture.DefaultDepthStencilView;
 
 			// Update the viewport to reflect the new window size.
-			_drawCall.Viewports = new[]
-			                      {
-				                      new DX.ViewportF(0, 0, _mainForm.ClientSize.Width, _mainForm.ClientSize.Height, 0.0f, 1.0f)
-			                      };
+			_drawCall.Viewports[0] =new DX.ViewportF(0, 0, _mainForm.ClientSize.Width, _mainForm.ClientSize.Height, 0.0f, 1.0f);
 		}
 		#endregion
 
