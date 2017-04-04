@@ -77,16 +77,16 @@ namespace Gorgon.Graphics
 		/// </summary>
 		public GorgonRenderTargetView RenderTarget
 		{
-			get => _drawCall.Resources.RenderTargets[0];
+			get => _drawCall.RenderTargets[0];
 			set
 			{
-				if (_drawCall.Resources.RenderTargets[0] == value)
+				if (_drawCall.RenderTargets[0] == value)
 				{
 					return;
 				}
 
 				// Assign the new one.
-				_drawCall.Resources.RenderTargets[0] = value;
+				_drawCall.RenderTargets[0] = value;
 				_targetSize = new DX.Size2(value?.Texture.Info.Width ?? 0, value?.Texture.Info.Height ?? 0);
 				_needsWvpUpdate = true;
 			}
@@ -133,10 +133,12 @@ namespace Gorgon.Graphics
 
 			_wvpBuffer.Update(ref projectionMatrix);
 
-			_drawCall.Viewports = new[]
-			                      {
-				                      new DX.ViewportF(0, 0, _targetSize.Width, _targetSize.Height, 0, 1.0f)
-			                      };
+			if ((_drawCall.Viewports[0].Width != _targetSize.Width)
+			    || (_drawCall.Viewports[0].Height != _targetSize.Height))
+			{
+				_drawCall.Viewports[0] = new DX.ViewportF(0, 0, _targetSize.Width, _targetSize.Height, 0, 1.0f);
+			}
+
 			_needsWvpUpdate = false;
 		}
 
@@ -191,8 +193,8 @@ namespace Gorgon.Graphics
 				                                                                              });
 
 				// Finish initalizing the draw call.
-				_drawCall.Resources.VertexBuffers = _vertexBufferBindings;
-				_drawCall.Resources.VertexShaderConstantBuffers[0] = _wvpBuffer;
+				_drawCall.VertexBuffers = _vertexBufferBindings;
+				_drawCall.VertexShaderConstantBuffers[0] = _wvpBuffer;
 				
 				_drawCall.State = _graphics.GetPipelineState(new GorgonPipelineStateInfo
 				                                             {
@@ -237,7 +239,7 @@ namespace Gorgon.Graphics
 			// We need to update the projection/view if the size of the target changes.
 			if ((RenderTarget.Texture.Info.Width != _targetSize.Width)
 				|| (RenderTarget.Texture.Info.Height != _targetSize.Height)
-				|| (RenderTarget != _drawCall.Resources.RenderTargets[0]))
+				|| (RenderTarget != _drawCall.RenderTargets[0]))
 			{
 				_needsWvpUpdate = true;
 			}

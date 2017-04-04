@@ -24,12 +24,77 @@
 // 
 #endregion
 
-using System.Collections.Generic;
+using System;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D;
 
 namespace Gorgon.Graphics.Core
 {
+	/// <summary>
+	/// Flags to indicate which part of the pipeline needs updating.
+	/// </summary>
+	[Flags]
+	internal enum PipelineStateChange
+	{
+		/// <summary>
+		/// Nothing has changed, just draw the item.
+		/// </summary>
+		None = 0,
+		/// <summary>
+		/// The primitive topology has changed.
+		/// </summary>
+		PrimitiveTopology = 0x1,
+		/// <summary>
+		/// Viewports have changed.
+		/// </summary>
+		Viewports = 0x2,
+		/// <summary>
+		/// Scissor rectangles have changed.
+		/// </summary>
+		ScissorRectangles = 0x4,
+		/// <summary>
+		/// Vertex buffers have changed.
+		/// </summary>
+		VertexBuffers = 0x8,
+		/// <summary>
+		/// Index buffer has changed.
+		/// </summary>
+		IndexBuffer = 0x10,
+		/// <summary>
+		/// Input layout has changed.
+		/// </summary>
+		InputLayout = 0x20,
+		/// <summary>
+		/// Render targets and/or depth stencil have changed.
+		/// </summary>
+		RenderTargets = 0x40,
+		/// <summary>
+		/// Vertex shader constant buffers have changed.
+		/// </summary>
+		VertexShaderConstantBuffers = 0x80,
+		/// <summary>
+		/// Pixel shader constant buffers have changed.
+		/// </summary>
+		PixelShaderConstantBuffers = 0x100,
+		/// <summary>
+		/// Pipeline state has changed.
+		/// </summary>
+		PipelineState = 0x40000000,
+		/// <summary>
+		/// All states have changed.
+		/// </summary>
+		All = PrimitiveTopology 
+			| Viewports 
+			| ScissorRectangles 
+			| VertexBuffers 
+			| IndexBuffer 
+			| InputLayout 
+			| RenderTargets 
+			| VertexShaderConstantBuffers 
+			| PixelShaderConstantBuffers
+			| PipelineState
+	}
+
 	/// <summary>
 	/// A common class for draw calls.
 	/// </summary>
@@ -39,8 +104,105 @@ namespace Gorgon.Graphics.Core
 	/// pipeline prior to rendering any data.
 	/// </para>
 	/// </remarks>
-	public abstract class GorgonDrawCallBase
+	public class GorgonDrawCallBase
 	{
+		#region Constants.
+		/// <summary>
+		/// The maximum number of allowed viewports.
+		/// </summary>
+		public const int MaximumViewportCount = 16;
+		/// <summary>
+		/// The maximum number of allowed scissor rectangles.
+		/// </summary>
+		public const int MaximumScissorCount = 16;
+		#endregion
+
+		#region Variables.
+		// The viewports for rendering to the output.
+		private GorgonMonitoredValueTypeArray<DX.ViewportF> _viewports;
+		// The scissor rectangles for clipping the output.
+		private GorgonMonitoredValueTypeArray<DX.Rectangle> _scissorRectangles;
+		#endregion
+
+		#region Properties.
+		/// <summary>
+		/// Property to return the viewports to apply during this draw call.
+		/// </summary>
+		public GorgonMonitoredValueTypeArray<DX.ViewportF> Viewports
+		{
+			get => _viewports;
+			set
+			{
+				if (value == null)
+				{
+					_viewports.Clear();
+					return;
+				}
+
+				_viewports = value;
+			}
+		}
+
+		/// <summary>
+		/// Property to return the scissor rectangles to apply during this draw call.
+		/// </summary>
+		public GorgonMonitoredValueTypeArray<DX.Rectangle> ScissorRectangles
+		{
+			get => _scissorRectangles;
+			set
+			{
+				if (value == null)
+				{
+					_scissorRectangles.Clear();
+					return;
+				}
+
+				_scissorRectangles = value;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the vertex buffers to bind to the pipeline.
+		/// </summary>
+		public GorgonVertexBufferBindings VertexBuffers
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the index buffer to bind to the pipeline.
+		/// </summary>
+		public GorgonIndexBuffer IndexBuffer
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to return the render targets to bind to the pipeline.
+		/// </summary>
+		public GorgonRenderTargetViews RenderTargets
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Property to return the constant buffers for the vertex shader.
+		/// </summary>
+		public GorgonConstantBuffers VertexShaderConstantBuffers
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Property to return the constant buffers for the pixel shader.
+		/// </summary>
+		public GorgonConstantBuffers PixelShaderConstantBuffers
+		{
+			get;
+		}
+
 		/// <summary>
 		/// Property to return the type of primitives to draw.
 		/// </summary>
@@ -48,25 +210,7 @@ namespace Gorgon.Graphics.Core
 		{
 			get;
 			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the scissor rectangles to apply during this draw call.
-		/// </summary>
-		public IReadOnlyList<DX.Rectangle> ScissorRectangles
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the viewports to apply during this draw call.
-		/// </summary>
-		public IReadOnlyList<DX.ViewportF> Viewports
-		{
-			get;
-			set;
-		}
+		} = D3D.PrimitiveTopology.TriangleStrip;
 
 		/// <summary>
 		/// Property to return resources to use in the draw call.
@@ -87,47 +231,20 @@ namespace Gorgon.Graphics.Core
 			get;
 			set;
 		}
+		#endregion
 
-		/// <summary>
-		/// Property to set or return the factor used to modulate the pixel shader, render target or both.
-		/// </summary>
-		/// <remarks>
-		/// To use this value, ensure that the blend state was creating using <c>Factor</c> operation.
-		/// </remarks>
-		public GorgonColor BlendFactor
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the mask used to define which samples get updated in the active render targets.
-		/// </summary>
-		public int BlendSampleMask
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the depth/stencil reference value used when performing a depth/stencil test.
-		/// </summary>
-		public int DepthStencilReference
-		{
-			get;
-			set;
-		}
-
+		#region Constructor.
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonDrawCallBase"/> class.
 		/// </summary>
-		protected GorgonDrawCallBase()
+		protected internal GorgonDrawCallBase()
 		{
-			unchecked
-			{
-				BlendSampleMask = (int)(0xffffffff);
-				BlendFactor = new GorgonColor(1, 1, 1, 1);
-			}
+			_viewports = new GorgonMonitoredValueTypeArray<DX.ViewportF>(MaximumViewportCount);
+			_scissorRectangles = new GorgonMonitoredValueTypeArray<DX.Rectangle>(MaximumScissorCount);
+			RenderTargets = new GorgonRenderTargetViews();
+			VertexShaderConstantBuffers = new GorgonConstantBuffers();
+			PixelShaderConstantBuffers = new GorgonConstantBuffers();
 		}
+		#endregion
 	}
 }

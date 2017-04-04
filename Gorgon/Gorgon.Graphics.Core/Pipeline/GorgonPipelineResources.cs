@@ -26,7 +26,6 @@
 
 using System;
 using D3D11 = SharpDX.Direct3D11;
-using Gorgon.Diagnostics;
 
 namespace Gorgon.Graphics.Core
 {
@@ -41,26 +40,6 @@ namespace Gorgon.Graphics.Core
 		/// No changes.
 		/// </summary>
 		None = 0,
-		/// <summary>
-		/// Vertex buffer bindings changed.
-		/// </summary>
-		VertexBuffer = 0x1,
-		/// <summary>
-		/// Index buffer changes.
-		/// </summary>
-		IndexBuffer = 0x2,
-		/// <summary>
-		/// Render target views changed.
-		/// </summary>
-		RenderTargets = 0x4,
-		/// <summary>
-		/// Constant buffers for the pixel shader changed.
-		/// </summary>
-		PixelShaderConstantBuffer = 0x8,
-		/// <summary>
-		/// Constant buffers for the vertex shader changed.
-		/// </summary>
-		VertexShaderConstantBuffer = 0x10,
 		/// <summary>
 		/// Shader resources for the pixel shader changed.
 		/// </summary>
@@ -89,12 +68,7 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// All states have changed.
 		/// </summary>
-		All = VertexBuffer 
-			| IndexBuffer 
-			| RenderTargets 
-			| PixelShaderConstantBuffer 
-			| VertexShaderConstantBuffer 
-			| PixelShaderResource 
+		All = PixelShaderResource 
 			| VertexShaderResource
 			| PixelShaderSampler
 			| VertexShaderSampler
@@ -113,76 +87,11 @@ namespace Gorgon.Graphics.Core
 		#endregion
 
 		#region Variables.
-		// The index buffer.
-		private GorgonIndexBuffer _indexBuffer;
-		// The list of vertex buffers.
-		private GorgonVertexBufferBindings _vertexBuffers;
 		// The available changes on this resource list.
 		private PipelineResourceChangeFlags _changes;
 		#endregion
 
 		#region Properties.
-
-		/// <summary>
-		/// Property to set or return the vertex buffers to bind to the pipeline.
-		/// </summary>
-		public GorgonVertexBufferBindings VertexBuffers
-		{
-			get => _vertexBuffers;
-			set
-			{
-				if (_vertexBuffers == value)
-				{
-					return;
-				}
-
-				_vertexBuffers = value;
-				_changes |= PipelineResourceChangeFlags.VertexBuffer;
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the index buffer to bind to the pipeline.
-		/// </summary>
-		public GorgonIndexBuffer IndexBuffer
-		{
-			get => _indexBuffer;
-			set
-			{
-				if (_indexBuffer == value)
-				{
-					return;
-				}
-
-				_indexBuffer = value;
-				_changes |= PipelineResourceChangeFlags.IndexBuffer;
-			}
-		}
-
-		/// <summary>
-		/// Property to return the render targets to bind to the pipeline.
-		/// </summary>
-		public GorgonRenderTargetViews RenderTargets
-		{
-			get;
-		} = new GorgonRenderTargetViews();
-
-		/// <summary>
-		/// Property to return the pixel shader constant buffers to bind to the pipeline.
-		/// </summary>
-		public GorgonConstantBuffers PixelShaderConstantBuffers
-		{
-			get;
-		} = new GorgonConstantBuffers();
-
-		/// <summary>
-		/// Property to return the vertex shader constant buffers to bind to the pipeline.
-		/// </summary>
-		public GorgonConstantBuffers VertexShaderConstantBuffers
-		{
-			get;
-		} = new GorgonConstantBuffers();
-
 		/// <summary>
 		/// Property to return the vertex shader resources to bind to the pipeline.
 		/// </summary>
@@ -276,26 +185,6 @@ namespace Gorgon.Graphics.Core
 		}
 
 		/// <summary>
-		/// Function to determine if the constant buffers on this resource list are the same as another.
-		/// </summary>
-		/// <param name="theseResources">The resources to compare from this resource list.</param>
-		/// <param name="otherResources">The resources to compare from the other resource list.</param>
-		/// <returns><b>true</b> if there's a change, or <b>false</b> if not.</returns>
-		private static bool ConstantBuffersChanged(GorgonConstantBuffers theseResources, GorgonConstantBuffers otherResources)
-		{
-			// If the resources are the same, then just check the dirty flag.
-			if (theseResources == otherResources)
-			{
-				return theseResources.IsDirty;
-			}
-
-			ref NativeBinding<D3D11.Buffer> sourceViews = ref theseResources.GetNativeBindings();
-			ref NativeBinding<D3D11.Buffer> destViews = ref otherResources.GetNativeBindings();
-
-			return CompareNativeBinding(ref sourceViews, ref destViews);
-		}
-
-		/// <summary>
 		/// Function to determine if the shader samplers on this resource list are the same as another.
 		/// </summary>
 		/// <param name="theseResources">The resources to compare from this resource list.</param>
@@ -313,126 +202,6 @@ namespace Gorgon.Graphics.Core
 			ref NativeBinding<D3D11.SamplerState> destViews = ref otherResources.GetNativeBindings();
 
 			return CompareNativeBinding(ref sourceViews, ref destViews);
-		}
-
-		/// <summary>
-		/// Function to determine if the render targets on this resource list are the same as another.
-		/// </summary>
-		/// <param name="theseResources">The resources to compare from this resource list.</param>
-		/// <param name="otherResources">The resources to compare from the other resource list.</param>
-		/// <returns><b>true</b> if there's a change, or <b>false</b> if not.</returns>
-		private static bool RenderTargetsChanged(GorgonRenderTargetViews theseResources, GorgonRenderTargetViews otherResources)
-		{
-			// If the resources are the same, then just check the dirty flag.
-			if (theseResources == otherResources)
-			{
-				return theseResources.IsDirty;
-			}
-
-			if (theseResources.DepthStencilView != otherResources.DepthStencilView)
-			{
-				return true;
-			}
-
-			ref NativeBinding<D3D11.RenderTargetView> sourceViews = ref theseResources.GetNativeBindings();
-			ref NativeBinding<D3D11.RenderTargetView> destViews = ref otherResources.GetNativeBindings();
-
-			return CompareNativeBinding(ref sourceViews, ref destViews);
-		}
-
-		/// <summary>
-		/// Function to determine if the vertex buffers on this resource list are the same as another.
-		/// </summary>
-		/// <param name="theseResources">The resources to compare from this resource list.</param>
-		/// <param name="otherResources">The resources to compare from the other resource list.</param>
-		/// <returns></returns>
-		private static bool VertexBuffersChanged(GorgonVertexBufferBindings theseResources, GorgonVertexBufferBindings otherResources)
-		{
-			// If the resources are the same, then just check the dirty flag.
-			if ((theseResources == otherResources)
-			    || ((theseResources == null) && (otherResources == null)))
-			{
-				return theseResources?.IsDirty ?? false;
-			}
-
-			if (((theseResources != null) && (otherResources == null))
-			    || (theseResources == null))
-			{
-				return true;
-			}
-
-			if (theseResources.InputLayout != otherResources.InputLayout)
-			{
-				return true;
-			}
-
-			// If there's a change in slots and counts, then we have a change.
-			if (theseResources.Count != otherResources.Count)
-			{
-				return true;
-			}
-
-			// Otherwise, we'll have to go through and compare each element.
-			for (int i = 0; i < theseResources.Count; ++i)
-			{
-				if (theseResources[i] != otherResources[i])
-				{
-					return true;
-				}
-			}
-
-			return false;
-		}
-
-		/// <summary>
-		/// Function to assign the vertex buffer bindings to the resource list.
-		/// </summary>
-		/// <param name="device">The Direct 3D 11 device context to use.</param>
-		internal void SetVertexBuffers(D3D11.DeviceContext device)
-		{
-			if (VertexBuffers == null)
-			{
-				device.InputAssembler.InputLayout = null;
-				device.InputAssembler.SetVertexBuffers(0);
-				return;
-			}
-
-			// Ensure that we assign an input layout.
-			device.InputAssembler.InputLayout = VertexBuffers.InputLayout.D3DInputLayout;
-			
-			device.InputAssembler.SetVertexBuffers(0, VertexBuffers.NativeBindings);
-			VertexBuffers.IsDirty = false;
-		}
-
-		/// <summary>
-		/// Function to assign the render target views to the resource list.
-		/// </summary>
-		/// <param name="device">The Direct 3D 11 device context to use.</param>
-		internal void SetRenderTargets(D3D11.DeviceContext1 device)
-		{
-			ref NativeBinding<D3D11.RenderTargetView> bindings = ref RenderTargets.GetNativeBindings();
-			D3D11.DepthStencilView depthStencilView = RenderTargets.DepthStencilView?.D3DView;
-			device.OutputMerger.SetTargets(depthStencilView, bindings.Count, bindings.Bindings);
-		}
-
-		/// <summary>
-		/// Function to assign the constant buffers to the resource list.
-		/// </summary>
-		/// <param name="device">The Direct 3D 11 device context to use.</param>
-		/// <param name="shaderType">The type of shader to set the resources on.</param>
-		internal void SetShaderConstantBuffers(D3D11.DeviceContext1 device, ShaderType shaderType)
-		{
-			switch (shaderType)
-			{
-				case ShaderType.Pixel:
-					ref NativeBinding<D3D11.Buffer> psBindings = ref PixelShaderConstantBuffers.GetNativeBindings();
-					device.PixelShader.SetConstantBuffers(psBindings.StartSlot, psBindings.Count, psBindings.Bindings);
-					break;
-				case ShaderType.Vertex:
-					ref NativeBinding<D3D11.Buffer> vsBindings = ref VertexShaderConstantBuffers.GetNativeBindings();
-					device.VertexShader.SetConstantBuffers(vsBindings.StartSlot, vsBindings.Bindings.Length, vsBindings.Bindings);
-					break;
-			}
 		}
 
 		/// <summary>
@@ -493,26 +262,6 @@ namespace Gorgon.Graphics.Core
 
 			var result = PipelineResourceChangeFlags.None;
 
-			if (IndexBuffer != resources.IndexBuffer)
-			{
-				result |= PipelineResourceChangeFlags.IndexBuffer;
-			}
-
-			if (RenderTargetsChanged(RenderTargets, resources.RenderTargets))
-			{
-				result |= PipelineResourceChangeFlags.RenderTargets;
-			}
-
-			if (VertexBuffersChanged(VertexBuffers, resources.VertexBuffers))
-			{
-				result |= PipelineResourceChangeFlags.VertexBuffer;
-			}
-
-			if (ConstantBuffersChanged(VertexShaderConstantBuffers, resources.VertexShaderConstantBuffers))
-			{
-				result |= PipelineResourceChangeFlags.VertexShaderConstantBuffer;
-			}
-
 			if (ShaderResourcesChanged(VertexShaderResourceViews, resources.VertexShaderResourceViews))
 			{
 				result |= PipelineResourceChangeFlags.VertexShaderResource;
@@ -521,11 +270,6 @@ namespace Gorgon.Graphics.Core
 			if (SamplersChanged(VertexShaderSamplers, resources.VertexShaderSamplers))
 			{
 				result |= PipelineResourceChangeFlags.VertexShaderSampler;
-			}
-
-			if (ConstantBuffersChanged(PixelShaderConstantBuffers, resources.PixelShaderConstantBuffers))
-			{
-				result |= PipelineResourceChangeFlags.PixelShaderConstantBuffer;
 			}
 
 			if (SamplersChanged(PixelShaderSamplers, resources.PixelShaderSamplers))
@@ -542,53 +286,6 @@ namespace Gorgon.Graphics.Core
 		}
 
 		/// <summary>
-		/// Function to copy the pipeline resources from another instance.
-		/// </summary>
-		/// <param name="resources">The resources to copy.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="resources"/> parameter is <b>null</b>.</exception>
-		/// <remarks>
-		/// <para>
-		/// This will copy the items from another <see cref="GorgonPipelineResources"/> state into this state. This is a shallow copy, and the items hold the same references as the original 
-		/// <paramref name="resources"/>.
-		/// </para>
-		/// <para>
-		/// <note type="important">
-		/// <para>
-		/// Exceptions are only thrown from this method when Gorgon is compiled as <b>DEBUG</b>.
-		/// </para>
-		/// </note>
-		/// </para>
-		/// </remarks>
-		public void CopyResourceState(GorgonPipelineResources resources)
-		{
-			resources.ValidateObject(nameof(resources));
-
-			if (resources.VertexBuffers == null)
-			{
-				VertexBuffers = null;
-			}
-			else
-			{
-				if (VertexBuffers == null)
-				{
-					VertexBuffers = new GorgonVertexBufferBindings(resources.VertexBuffers.InputLayout, resources.VertexBuffers.Count);					
-				}
-
-				VertexBuffers.CopyFrom(resources.VertexBuffers);
-			}
-			
-			RenderTargets.CopyFrom(resources.RenderTargets);
-			PixelShaderSamplers.CopyFrom(resources.PixelShaderSamplers);
-			VertexShaderSamplers.CopyFrom(resources.VertexShaderSamplers);
-			PixelShaderConstantBuffers.CopyFrom(resources.PixelShaderConstantBuffers);
-			VertexShaderConstantBuffers.CopyFrom(resources.VertexShaderConstantBuffers);
-			PixelShaderResourceViews.CopyFrom(resources.PixelShaderResourceViews);
-			VertexShaderResourceViews.CopyFrom(resources.VertexShaderResourceViews);
-
-			IndexBuffer = resources.IndexBuffer;
-		}
-
-		/// <summary>
 		/// Function to reset to an empty resources object.
 		/// </summary>
 		/// <remarks>
@@ -598,14 +295,9 @@ namespace Gorgon.Graphics.Core
 		/// </remarks>
 		public void Reset()
 		{
-			VertexBuffers = null;
-			IndexBuffer = null;
 			PixelShaderResourceViews.Clear();
 			VertexShaderResourceViews.Clear();
-			PixelShaderConstantBuffers.Clear();
-			VertexShaderConstantBuffers.Clear();
 			PixelShaderSamplers.Clear();
-			RenderTargets.Clear();
 
 			_changes = PipelineResourceChangeFlags.None;
 		}

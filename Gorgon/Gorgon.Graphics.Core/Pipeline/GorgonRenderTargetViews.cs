@@ -25,9 +25,7 @@
 #endregion
 
 using System;
-using System.Linq;
 using Gorgon.Core;
-using Gorgon.Graphics.Core.Properties;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
@@ -66,7 +64,7 @@ namespace Gorgon.Graphics.Core
 	/// </para>
 	/// </remarks>
 	public sealed class GorgonRenderTargetViews
-		: GorgonResourceBindingList<GorgonRenderTargetView>
+		: GorgonMonitoredArray<GorgonRenderTargetView>
 	{
 		#region Constants.
 		/// <summary>
@@ -76,22 +74,17 @@ namespace Gorgon.Graphics.Core
 		#endregion
 
 		#region Variables.
-		// The flags to indicate whether the first bank of shader resource views are dirty or not.
-		private int _dirty;
 		// The native bindings.
-		private NativeBinding<D3D11.RenderTargetView> _native = new NativeBinding<D3D11.RenderTargetView>
-		                                                        {
-			                                                        Bindings = new D3D11.RenderTargetView[MaximumRenderTargetCount]
-		                                                        };
+		private readonly D3D11.RenderTargetView[] _native = new D3D11.RenderTargetView[MaximumRenderTargetCount];
 		// The currently active depth stencil view.
 		private GorgonDepthStencilView _depthStencilView;
 		#endregion
 
 		#region Properties.
 		/// <summary>
-		/// Property to return whether the list is in a dirty state or not.
+		/// Property to return the native render target views.
 		/// </summary>
-		internal bool IsDirty => _dirty != 0;
+		internal D3D11.RenderTargetView[] Native => _native;
 
 		/// <summary>
 		/// Property to set or return the currently active depth/stencil view.
@@ -206,7 +199,7 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="item">The item to validate.</param>
 		/// <param name="index">The index of the slot being assigned.</param>
-		protected override void OnValidate(GorgonRenderTargetView item, int index)
+		protected override void OnValidate(int index, GorgonRenderTargetView item)
 		{
 			if (item == null)
 			{
@@ -272,15 +265,10 @@ namespace Gorgon.Graphics.Core
 		/// The implementing class must implement this in order to unassign items from the native binding object list when the <see cref="GorgonResourceBindingList{T}.Clear"/> method is called.
 		/// </para>
 		/// </remarks>
-		protected override void OnClearItems()
+		protected override void OnClear()
 		{
-			Array.Clear(_native.Bindings, 0, _native.Count);
+			Array.Clear(_native, 0, _native.Length);
 			DepthStencilView = null;
-
-			unchecked
-			{
-				_dirty = 0xff;
-			}
 		}
 
 		/// <summary>
@@ -288,106 +276,9 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="index">The index of the slot being assigned.</param>
 		/// <param name="item">The item being assigned.</param>
-		protected override void OnSetItem(int index, GorgonRenderTargetView item)
+		protected override void OnItemSet(int index, GorgonRenderTargetView item)
 		{
-			_dirty |= 1 << index;
-		}
-
-		/// <summary>
-		/// Function to retrieve the native bindings.
-		/// </summary>
-		/// <returns>A native bindings item.</returns>
-		internal ref NativeBinding<D3D11.RenderTargetView> GetNativeBindings()
-		{
-			// Nothing's been changed, so send back our array.
-			if (_dirty == 0)
-			{
-				return ref _native;
-			}
-
-			int firstSlot = -1;
-			int slotCount = 0;
-
-			D3D11.RenderTargetView[] rtvs = _native.Bindings;
-
-			for (int i = 0; i < MaximumRenderTargetCount; ++i)
-			{
-				int dirtyMask = 1 << i;
-
-				// Skip this index if we don't have a slot assigned.
-				if ((_dirty & dirtyMask) != dirtyMask)
-				{
-					continue;
-				}
-
-				// Record our first slot used.
-				if (firstSlot == -1)
-				{
-					firstSlot = i;
-				}
-
-				rtvs[i] = this[i]?.D3DRenderTargetView;
-
-				// Remove this bit.
-				_dirty &= ~dirtyMask;
-
-				++slotCount;
-
-				if (_dirty == 0)
-				{
-					break;
-				}
-			}
-
-			_native = new NativeBinding<D3D11.RenderTargetView>
-			          {
-				          Bindings = rtvs,
-				          Count = slotCount,
-				          StartSlot = firstSlot == -1 ? 0 : firstSlot
-			          };
-
-			return ref _native;
-		}
-
-
-		/// <summary>
-		/// Function to copy the elements from a resource binding list to this list.
-		/// </summary>
-		/// <param name="source">The source list to copy.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="source"/> parameter is <b>null</b>.</exception>
-		public void CopyFrom(GorgonRenderTargetViews source)
-		{
-			int dirty = 0;
-
-			if (source == null)
-			{
-				throw new ArgumentNullException(nameof(source));
-			}
-
-			ref NativeBinding<D3D11.RenderTargetView> bindings = ref source.GetNativeBindings();
-
-			for (int i = bindings.StartSlot; i < bindings.StartSlot + bindings.Count; ++i)
-			{
-				int mask = 1 << i;
-
-				if (this[i] == source[i])
-				{
-					// If this index was already dirty, then we need to ensure it stays that way.
-					if ((_dirty & mask) == mask)
-					{
-						dirty |= mask;
-					}
-					continue;
-				}
-
-				this[i] = source[i];
-				dirty |= mask;
-			}
-
-			DepthStencilView = source.DepthStencilView;
-
-			// Update dirty flags.
-			_dirty = dirty;
+			_native[index] = item.D3DRenderTargetView;
 		}
 		#endregion
 
@@ -396,7 +287,7 @@ namespace Gorgon.Graphics.Core
 		/// Initializes a new instance of the <see cref="GorgonRenderTargetViews"/> class.
 		/// </summary>
 		public GorgonRenderTargetViews()
-			: base(MaximumRenderTargetCount, MaximumRenderTargetCount)
+			: base(MaximumRenderTargetCount)
 		{
 		}
 		#endregion

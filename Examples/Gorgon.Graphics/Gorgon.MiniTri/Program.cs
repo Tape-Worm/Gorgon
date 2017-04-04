@@ -255,44 +255,42 @@ namespace Gorgon.Graphics.Example
 			// This will pass all the necessary information to the GPU to render the triangle
 			_drawCall = new GorgonDrawCall
 			            {
-							// This defines what type of primitive data to render. 
-							// For this, and most other examples, this will be a list of individual triangles. However, this could also be a strip of joined triangles, 
-							//lines, points, etc...
-							PrimitiveTopology = PrimitiveTopology.TriangleList,
+				            // This defines what type of primitive data to render. 
+				            // For this, and most other examples, this will be a list of individual triangles. However, this could also be a strip of joined triangles, 
+				            //lines, points, etc...
+				            PrimitiveTopology = PrimitiveTopology.TriangleList,
 				            // Our triangle has 3 points, obviously.
 				            VertexCount = 3,
 				            // This defines the view port dimensions to render. 
-				            Viewports = new[]
-				                        {
-					                        new DX.ViewportF(0, 0, _mainForm.ClientSize.Width, _mainForm.ClientSize.Height, 0, 1.0f),
-				                        },
-				            // Define what resources we need to render the triangle.
-				            Resources =
+				            Viewports =
 				            {
-					            // This will bind the vertex buffer to the GPU so it can be read from when rendering.
-					            VertexBuffers = new GorgonVertexBufferBindings(_inputLayout, 1)
-					                            {
-						                            [0] = new GorgonVertexBufferBinding(_vertexBuffer, MiniTriVertex.SizeInBytes)
-					                            },
-								// This defines where to send the pixel data when rendering. For now, this goes to our swap chain.
-								RenderTargets = {
-									                [0] = _swap.RenderTargetView
-								                },
-								// Bind the constant buffer with our projection matrix to the GPU.
-								VertexShaderConstantBuffers = {
-									                              [0] = _constantBuffer
-								                              }
+					            [0] = new DX.ViewportF(0, 0, _mainForm.ClientSize.Width, _mainForm.ClientSize.Height, 0, 1.0f)
 				            },
-							// Define the current state of the rendering pipeline.
-							// This will tell the GPU how to render the data. Here we assign the shaders we created, but we could assign things like 
-							// blending information, depth information, etc...
-							State = _graphics.GetPipelineState(new GorgonPipelineStateInfo
-							                                   {
-								                                   PixelShader = _pixelShader,
-																   VertexShader = _vertexShader,
-																   // For items facing away from us, don't render.
-																   RasterState = GorgonRasterStateInfo.NoCulling
-							                                   })
+				            // This will bind the vertex buffer to the GPU so it can be read from when rendering.
+				            VertexBuffers = new GorgonVertexBufferBindings(_inputLayout, 1)
+				                            {
+					                            [0] = new GorgonVertexBufferBinding(_vertexBuffer, MiniTriVertex.SizeInBytes)
+				                            },
+				            // This defines where to send the pixel data when rendering. For now, this goes to our swap chain.
+				            RenderTargets =
+				            {
+					            [0] = _swap.RenderTargetView
+				            },
+				            // Bind the constant buffer with our projection matrix to the GPU.
+				            VertexShaderConstantBuffers =
+				            {
+					            [0] = _constantBuffer
+				            },
+				            // Define the current state of the rendering pipeline.
+				            // This will tell the GPU how to render the data. Here we assign the shaders we created, but we could assign things like 
+				            // blending information, depth information, etc...
+				            State = _graphics.GetPipelineState(new GorgonPipelineStateInfo
+				                                               {
+					                                               PixelShader = _pixelShader,
+					                                               VertexShader = _vertexShader,
+					                                               // For items facing away from us, don't render.
+					                                               RasterState = GorgonRasterStateInfo.NoCulling
+				                                               })
 			            };
 		}
 		#endregion

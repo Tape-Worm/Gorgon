@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26228.10
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Core", "Gorgon\Gorgon.Core\Gorgon.Core.csproj", "{933569ED-52A9-4232-A929-1D4C4489B5A1}"
 EndProject
@@ -57,8 +57,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GamingDeviceDrivers", "Exam
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Input.DirectInput", "PlugIns\Gorgon.Input.DirectInput\Gorgon.Input.DirectInput.csproj", "{FDC64B93-133D-4875-A31E-A60FD58EE1D8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestRewrite", "Test\TestRewrite\TestRewrite.csproj", "{CAA0F296-B252-45CD-B734-A88CF69200FE}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Graphics.Imaging", "Gorgon\Gorgon.Graphics.Imaging\Gorgon.Graphics.Imaging.csproj", "{9DD1EC99-5D74-4B0A-AD93-14746939F6BE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Graphics.Core", "Gorgon\Gorgon.Graphics.Core\Gorgon.Graphics.Core.csproj", "{EA4B0A1A-586A-47A4-89C1-3E6A4E821C31}"
@@ -67,19 +65,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Graphics.Fonts", "Go
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Gorgon.Graphics", "Gorgon.Graphics", "{C421D2F1-B2C4-4136-A33E-52A17B0E907C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Boinger", "Examples\Gorgon.Graphics\Boinger\Boinger.csproj", "{256CC806-B7DC-4125-A350-F78F520D9742}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Initialization", "Examples\Gorgon.Graphics\Initialization\Initialization.csproj", "{A2C5074D-6A13-483B-8F1B-F36487B3815C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.MiniTri", "Examples\Gorgon.Graphics\Gorgon.MiniTri\Gorgon.MiniTri.csproj", "{31061BD5-E5C2-4578-93BE-8ED2FF95086F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.MiniTri.Texture", "Examples\Gorgon.Graphics\Gorgon.MiniTri.Texture\Gorgon.MiniTri.Texture.csproj", "{FD481DA1-5A0F-4678-98A3-B9986422233B}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GlassCube", "Examples\Gorgon.Graphics\GlassCube\GlassCube.csproj", "{EDC602B0-403D-4A3D-8A60-13992B351C95}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TvImageCodec", "Examples\Gorgon.Graphics\TvImageCodec\TvImageCodec.csproj", "{58398BDA-7076-410A-B73C-928E79EAE8A9}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodecPlugIn", "Examples\Gorgon.Graphics\CodecPlugIn\CodecPlugIn.csproj", "{9524F1F2-8260-4203-AF0A-5457053F6BEE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Boinger", "Examples\Gorgon.Graphics\Boinger\Boinger.csproj", "{256CC806-B7DC-4125-A350-F78F520D9742}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -214,12 +204,6 @@ Global
 		{FDC64B93-133D-4875-A31E-A60FD58EE1D8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FDC64B93-133D-4875-A31E-A60FD58EE1D8}.ReleaseAndDeploy|Any CPU.ActiveCfg = Release|Any CPU
 		{FDC64B93-133D-4875-A31E-A60FD58EE1D8}.ReleaseAndDeploy|Any CPU.Build.0 = Release|Any CPU
-		{CAA0F296-B252-45CD-B734-A88CF69200FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CAA0F296-B252-45CD-B734-A88CF69200FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CAA0F296-B252-45CD-B734-A88CF69200FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CAA0F296-B252-45CD-B734-A88CF69200FE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CAA0F296-B252-45CD-B734-A88CF69200FE}.ReleaseAndDeploy|Any CPU.ActiveCfg = Release|Any CPU
-		{CAA0F296-B252-45CD-B734-A88CF69200FE}.ReleaseAndDeploy|Any CPU.Build.0 = Release|Any CPU
 		{9DD1EC99-5D74-4B0A-AD93-14746939F6BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9DD1EC99-5D74-4B0A-AD93-14746939F6BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9DD1EC99-5D74-4B0A-AD93-14746939F6BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -238,12 +222,6 @@ Global
 		{1DFB5973-950A-4B6E-84AF-953DE57C9213}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1DFB5973-950A-4B6E-84AF-953DE57C9213}.ReleaseAndDeploy|Any CPU.ActiveCfg = Release|Any CPU
 		{1DFB5973-950A-4B6E-84AF-953DE57C9213}.ReleaseAndDeploy|Any CPU.Build.0 = Release|Any CPU
-		{256CC806-B7DC-4125-A350-F78F520D9742}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{256CC806-B7DC-4125-A350-F78F520D9742}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{256CC806-B7DC-4125-A350-F78F520D9742}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{256CC806-B7DC-4125-A350-F78F520D9742}.Release|Any CPU.Build.0 = Release|Any CPU
-		{256CC806-B7DC-4125-A350-F78F520D9742}.ReleaseAndDeploy|Any CPU.ActiveCfg = Release|Any CPU
-		{256CC806-B7DC-4125-A350-F78F520D9742}.ReleaseAndDeploy|Any CPU.Build.0 = Release|Any CPU
 		{A2C5074D-6A13-483B-8F1B-F36487B3815C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A2C5074D-6A13-483B-8F1B-F36487B3815C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A2C5074D-6A13-483B-8F1B-F36487B3815C}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -256,30 +234,12 @@ Global
 		{31061BD5-E5C2-4578-93BE-8ED2FF95086F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{31061BD5-E5C2-4578-93BE-8ED2FF95086F}.ReleaseAndDeploy|Any CPU.ActiveCfg = ReleaseAndDeploy|Any CPU
 		{31061BD5-E5C2-4578-93BE-8ED2FF95086F}.ReleaseAndDeploy|Any CPU.Build.0 = ReleaseAndDeploy|Any CPU
-		{FD481DA1-5A0F-4678-98A3-B9986422233B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FD481DA1-5A0F-4678-98A3-B9986422233B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FD481DA1-5A0F-4678-98A3-B9986422233B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FD481DA1-5A0F-4678-98A3-B9986422233B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FD481DA1-5A0F-4678-98A3-B9986422233B}.ReleaseAndDeploy|Any CPU.ActiveCfg = ReleaseAndDeploy|Any CPU
-		{FD481DA1-5A0F-4678-98A3-B9986422233B}.ReleaseAndDeploy|Any CPU.Build.0 = ReleaseAndDeploy|Any CPU
-		{EDC602B0-403D-4A3D-8A60-13992B351C95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EDC602B0-403D-4A3D-8A60-13992B351C95}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EDC602B0-403D-4A3D-8A60-13992B351C95}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EDC602B0-403D-4A3D-8A60-13992B351C95}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EDC602B0-403D-4A3D-8A60-13992B351C95}.ReleaseAndDeploy|Any CPU.ActiveCfg = Release|Any CPU
-		{EDC602B0-403D-4A3D-8A60-13992B351C95}.ReleaseAndDeploy|Any CPU.Build.0 = Release|Any CPU
-		{58398BDA-7076-410A-B73C-928E79EAE8A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{58398BDA-7076-410A-B73C-928E79EAE8A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{58398BDA-7076-410A-B73C-928E79EAE8A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{58398BDA-7076-410A-B73C-928E79EAE8A9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{58398BDA-7076-410A-B73C-928E79EAE8A9}.ReleaseAndDeploy|Any CPU.ActiveCfg = ReleaseAndDeploy|Any CPU
-		{58398BDA-7076-410A-B73C-928E79EAE8A9}.ReleaseAndDeploy|Any CPU.Build.0 = ReleaseAndDeploy|Any CPU
-		{9524F1F2-8260-4203-AF0A-5457053F6BEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9524F1F2-8260-4203-AF0A-5457053F6BEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9524F1F2-8260-4203-AF0A-5457053F6BEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9524F1F2-8260-4203-AF0A-5457053F6BEE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9524F1F2-8260-4203-AF0A-5457053F6BEE}.ReleaseAndDeploy|Any CPU.ActiveCfg = ReleaseAndDeploy|Any CPU
-		{9524F1F2-8260-4203-AF0A-5457053F6BEE}.ReleaseAndDeploy|Any CPU.Build.0 = ReleaseAndDeploy|Any CPU
+		{256CC806-B7DC-4125-A350-F78F520D9742}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{256CC806-B7DC-4125-A350-F78F520D9742}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{256CC806-B7DC-4125-A350-F78F520D9742}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{256CC806-B7DC-4125-A350-F78F520D9742}.Release|Any CPU.Build.0 = Release|Any CPU
+		{256CC806-B7DC-4125-A350-F78F520D9742}.ReleaseAndDeploy|Any CPU.ActiveCfg = Release|Any CPU
+		{256CC806-B7DC-4125-A350-F78F520D9742}.ReleaseAndDeploy|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -303,12 +263,8 @@ Global
 		{DF5B8F28-1A1B-45CF-91B1-BE53E6B3C063} = {D4582ECC-614C-484F-9CF9-2D88C4B57EE0}
 		{26B09EBD-0140-4274-92EF-6E674FBDBB22} = {E110A495-36C7-44AB-9748-A8C29EFA276C}
 		{C421D2F1-B2C4-4136-A33E-52A17B0E907C} = {E656298C-C1C6-4274-87B5-A19C6BA689CB}
-		{256CC806-B7DC-4125-A350-F78F520D9742} = {C421D2F1-B2C4-4136-A33E-52A17B0E907C}
 		{A2C5074D-6A13-483B-8F1B-F36487B3815C} = {C421D2F1-B2C4-4136-A33E-52A17B0E907C}
 		{31061BD5-E5C2-4578-93BE-8ED2FF95086F} = {C421D2F1-B2C4-4136-A33E-52A17B0E907C}
-		{FD481DA1-5A0F-4678-98A3-B9986422233B} = {C421D2F1-B2C4-4136-A33E-52A17B0E907C}
-		{EDC602B0-403D-4A3D-8A60-13992B351C95} = {C421D2F1-B2C4-4136-A33E-52A17B0E907C}
-		{58398BDA-7076-410A-B73C-928E79EAE8A9} = {C421D2F1-B2C4-4136-A33E-52A17B0E907C}
-		{9524F1F2-8260-4203-AF0A-5457053F6BEE} = {C421D2F1-B2C4-4136-A33E-52A17B0E907C}
+		{256CC806-B7DC-4125-A350-F78F520D9742} = {C421D2F1-B2C4-4136-A33E-52A17B0E907C}
 	EndGlobalSection
 EndGlobal
