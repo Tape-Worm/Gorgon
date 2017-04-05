@@ -278,8 +278,8 @@ namespace Gorgon.Graphics.Core
 	    /// <returns>A <see cref="PipelineStateChange"/> indicating whether or not the state has changed.</returns>
 	    private PipelineStateChange MergeRenderTargets(GorgonRenderTargetViews renderTargets, PipelineStateChange currentChanges)
 	    {
-		    // If the depth buffers differ, then we have to set the same targets again.
-		    if (_lastDrawCall.RenderTargets.DepthStencilView != renderTargets.DepthStencilView)
+			// If the depth buffers differ, then we have to set the same targets again.
+			if (_lastDrawCall.RenderTargets.DepthStencilView != renderTargets.DepthStencilView)
 		    {
 			    _lastDrawCall.RenderTargets.DepthStencilView = renderTargets.DepthStencilView;
 			    currentChanges |= PipelineStateChange.RenderTargets;
@@ -296,7 +296,12 @@ namespace Gorgon.Graphics.Core
 			    _lastDrawCall.RenderTargets[i] = newItems.Bindings[i];
 		    }
 
-		    if (_lastDrawCall.RenderTargets.IsDirty)
+#if DEBUG
+			// Validate the render targets here so that we can warn the user if they're using invalid targets.
+			_lastDrawCall.RenderTargets.Validate();
+#endif
+
+			if (_lastDrawCall.RenderTargets.IsDirty)
 		    {
 			    currentChanges |= PipelineStateChange.RenderTargets;
 		    }

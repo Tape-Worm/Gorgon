@@ -37,7 +37,7 @@ namespace Gorgon.Graphics.Core
 	/// </summary>
 	/// <remarks>
 	/// <para>
-	/// This is used to pass a set of <see cref="GorgonRenderTargetView"/> objects to a <see cref="GorgonPipelineResources"/> object. This allows an application to set a single or multiple render target views 
+	/// This is used to pass a set of <see cref="GorgonRenderTargetView"/> objects to a <see cref="GorgonDrawCallBase"/> object. This allows an application to set a single or multiple render target views 
 	/// at the same time and thus provides a performance boost over setting them individually. 
 	/// </para>
 	/// <para>
@@ -78,8 +78,6 @@ namespace Gorgon.Graphics.Core
 		#region Variables.
 		// The native bindings.
 		private readonly D3D11.RenderTargetView[] _native = new D3D11.RenderTargetView[MaximumRenderTargetCount];
-		// The currently active depth stencil view.
-		private GorgonDepthStencilView _depthStencilView;
 		#endregion
 
 		#region Properties.
@@ -128,24 +126,8 @@ namespace Gorgon.Graphics.Core
 		/// </remarks>
 		public GorgonDepthStencilView DepthStencilView
 		{
-			get
-			{
-				return _depthStencilView;
-			}
-			set
-			{
-				if (_depthStencilView == value)
-				{
-					return;
-				}
-
-#if DEBUG
-				GorgonRenderTargetView firstTarget = this.FirstOrDefault(item => item != null);
-				ValidateDepthStencilView(value, firstTarget);
-#endif
-
-				_depthStencilView = value;
-			}
+			get;
+			set;
 		}
 		#endregion
 
@@ -199,24 +181,20 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Function to validate an item being assigned to a slot.
 		/// </summary>
-		/// <param name="item">The item to validate.</param>
-		/// <param name="index">The index of the slot being assigned.</param>
-		protected override void OnValidate(int index, GorgonRenderTargetView item)
+		protected override void OnValidate()
 		{
-			if (item == null)
-			{
-				return;
-			}
-
 			GorgonRenderTargetView startView = this.FirstOrDefault(target => target != null);
 
 			// If no other targets are assigned, then check the depth stencil and leave.
 			if (startView == null)
 			{
-				if (DepthStencilView != null)
-				{
-					ValidateDepthStencilView(DepthStencilView, item);
-				}
+				return;
+			}
+
+			int startViewIndex = IndexOf(startView);
+
+			if (startViewIndex == -1)
+			{
 				return;
 			}
 
@@ -230,12 +208,12 @@ namespace Gorgon.Graphics.Core
 					continue;
 				}
 
-				if ((other == item) && (i != index))
+				if ((other == startView) && (startViewIndex != i))
 				{
 					throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_RTV_ALREADY_BOUND, other.Texture.Name));
 				}
 
-				if (other.Texture.ResourceType != item.Texture.ResourceType)
+				if (other.Texture.ResourceType != startView.Texture.ResourceType)
 				{
 					throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_RTV_NOT_SAME_TYPE, other.Texture.Name));
 				}
@@ -248,14 +226,17 @@ namespace Gorgon.Graphics.Core
 															other.Texture.Info.MultisampleInfo.Count));
 				}
 
-				if ((other.Texture.Info.TextureType != TextureType.Texture3D && startView.Texture.Info.ArrayCount != other.Texture.Info.ArrayCount)
-					|| ((other.Texture.Info.TextureType == TextureType.Texture3D && startView.Texture.Info.Depth != other.Texture.Info.Depth))
+				if (((other.Texture.Info.TextureType != TextureType.Texture3D) && (startView.Texture.Info.ArrayCount != other.Texture.Info.ArrayCount))
+					|| ((other.Texture.Info.TextureType == TextureType.Texture3D) && (startView.Texture.Info.Depth != other.Texture.Info.Depth))
 					|| (other.Texture.Info.Width != startView.Texture.Info.Width)
 					|| (other.Texture.Info.Height != startView.Texture.Info.Height))
 				{
 					throw new GorgonException(GorgonResult.CannotBind, Resources.GORGFX_ERR_RTV_RESOURCE_MISMATCH);
 				}
 			}
+
+			// Validate depth/stencil against our render target.
+			ValidateDepthStencilView(DepthStencilView, startView);
 		}
 #endif
 
