@@ -25,9 +25,6 @@
 #endregion
 
 using System;
-using System.Linq;
-using Gorgon.Core;
-using Gorgon.Graphics.Core.Properties;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
@@ -35,6 +32,15 @@ namespace Gorgon.Graphics.Core
 	/// <summary>
 	/// A list of shader resource views to apply to the pipeline.
 	/// </summary>
+	/// <remarks>
+	/// <para>
+	/// The shader resource view list is used to bind resources like textures and structured buffers to the GPU pipeline so that shaders can make use of them.
+	/// </para>
+	/// <para>
+	/// If a resource being bound is bound to a <see cref="GorgonRenderTargetViews"/> list, then the render target view will be unbound from the pipeline and rebound as a shader resource. This is because the 
+	/// render target cannot be used as a shader resource and a render target at the same time.
+	/// </para>
+	/// </remarks>
 	public sealed class GorgonShaderResourceViews
 		: GorgonMonitoredArray<GorgonShaderResourceView>
 	{
@@ -58,45 +64,6 @@ namespace Gorgon.Graphics.Core
 		#endregion
 
 		#region Methods.
-#if DEBUG
-		/// <summary>
-		/// Function to validate an item being assigned to a slot.
-		/// </summary>
-		/// <param name="index">The index of the slot being assigned.</param>
-		/// <param name="view">The view to validate.</param>
-		protected override void OnValidate(int index, GorgonShaderResourceView view)
-		{
-			if (view == null)
-			{
-				return;
-			}
-
-			GorgonShaderResourceView startView = this.FirstOrDefault(item => item != null);
-
-			// If no other views are assigned, then leave.
-			if (startView == null)
-			{
-				return;
-			}
-
-			// Only check if we have more than 1 shader resource view being applied.
-			for (int i = 0; i < Count; i++)
-			{
-				var other = this[i] as GorgonTextureShaderView;
-
-				if (other == null)
-				{
-					continue;
-				}
-
-				if ((other == view) && (i != index))
-				{
-					throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_VIEW_ALREADY_BOUND, other.Texture.Name));
-				}
-			}
-		}
-#endif
-
 		/// <summary>
 		/// Function to clear the list of native binding objects.
 		/// </summary>

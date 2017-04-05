@@ -49,9 +49,14 @@ namespace GorgonLibrary.Example
     /// </summary>
     public partial class formMain : Form
     {
-        #region Variables.
+		#region Constants.
+	    // The target delta time.
+	    private const float TargetDelta = 1 / 60.0f;
+		#endregion
+
+		#region Variables.
 		// The primary graphics interface.
-	    private GorgonGraphics _graphics;
+		private GorgonGraphics _graphics;
 		// The swap chain for displaying the graphics.
 	    private GorgonSwapChain _swap;
 		// The layout for a cube vertex.
@@ -80,6 +85,8 @@ namespace GorgonLibrary.Example
 	    private DX.Vector3 _rotation;
 		// The speed of rotation.
 	    private DX.Vector3 _rotationSpeed = new DX.Vector3(1, 1, 1);
+		// The current time.
+	    private float _accumulator;
 		#endregion
 
 		#region Methods.
@@ -120,12 +127,8 @@ namespace GorgonLibrary.Example
 		{
 			DX.Matrix.PerspectiveFovLH(60.0f.ToRadians(), (float)ClientSize.Width / ClientSize.Height, 0.1f, 1000.0f, out _projectionMatrix);
 			
-			_drawCall.Resources.RenderTargets[0] = _swap.RenderTargetView;
-
-			_drawCall.Viewports = new[]
-			                      {
-				                      new DX.ViewportF(0, 0, ClientSize.Width, ClientSize.Height, 0.0f, 1.0f),
-			                      };
+			_drawCall.RenderTargets[0] = _swap.RenderTargetView;
+			_drawCall.Viewports[0] = new DX.ViewportF(0, 0, ClientSize.Width, ClientSize.Height, 0.0f, 1.0f);
 		}
 
 		/// <summary>
@@ -139,57 +142,55 @@ namespace GorgonLibrary.Example
 
 	        DX.Matrix worldMatrix;
 
-			// When we move the window, or resize it, the delta timing may increase because the main loop is paused.
-			// To counter this, if the frame delta is more than 100 msec, then we'll just skip processing.
-			//
-			// This is NOT an ideal way of doing this, but for our example it will suffice.
-			// A better way to is to implement something to control the time stepping as detailed here: http://gafferongames.com/game-physics/fix-your-timestep/
-			if (GorgonTiming.Delta > 0.1)
+			// Use a fixed step timing to animate the cube.
+		    _accumulator += GorgonTiming.Delta;
+
+	        while (_accumulator >= TargetDelta)
 	        {
-		        return true;
+		        // Spin the cube.
+		        _rotation.X += GorgonRandom.RandomSingle(45, 90) * TargetDelta * (_rotationSpeed.X.FastSin());
+		        _rotation.Y += GorgonRandom.RandomSingle(45, 90) * TargetDelta * (_rotationSpeed.Y.FastSin());
+		        _rotation.Z += GorgonRandom.RandomSingle(45, 90) * TargetDelta * (_rotationSpeed.Z.FastSin());
+
+		        if (_rotation.X >= 360.0f)
+		        {
+			        _rotation.X -= 360.0f;
+		        }
+
+		        if (_rotation.Y >= 360.0f)
+		        {
+			        _rotation.Y -= 360.0f;
+		        }
+
+		        if (_rotation.Z >= 360.0f)
+		        {
+			        _rotation.Z -= 360.0f;
+		        }
+
+		        _rotationSpeed.X += TargetDelta / 6f;
+		        _rotationSpeed.Y += TargetDelta / 6f;
+		        _rotationSpeed.Z += TargetDelta / 6f;
+
+		        if (_rotationSpeed.X > 6.28319f)
+		        {
+			        _rotationSpeed.X = 0;
+		        }
+
+		        if (_rotationSpeed.Y > 6.28319f)
+		        {
+			        _rotationSpeed.Y = 0;
+		        }
+
+		        if (_rotationSpeed.Z > 6.28319f)
+		        {
+			        _rotationSpeed.Z = 0;
+		        }
+
+				_cube.RotateXYZ(_rotation.X, _rotation.Y, _rotation.Z);
+		        _accumulator -= TargetDelta;
 	        }
-			
-			// Spin the cube.
-			_rotation.X += GorgonRandom.RandomSingle(45, 90) * GorgonTiming.Delta * (_rotationSpeed.X.FastSin() * 1.5f);
-			_rotation.Y += GorgonRandom.RandomSingle(45, 90) * GorgonTiming.Delta * (_rotationSpeed.Y.FastSin() * 1.5f);
-			_rotation.Z += GorgonRandom.RandomSingle(45, 90) * GorgonTiming.Delta * (_rotationSpeed.Z.FastSin() * 1.5f);
 
-	        if (_rotation.X >= 360.0f)
-	        {
-		        _rotation.X -= 360.0f;
-	        }
-
-	        if (_rotation.Y >= 360.0f)
-			{
-				_rotation.Y -= 360.0f;
-			}
-
-			if (_rotation.Z >= 360.0f)
-			{
-				_rotation.Z -= 360.0f;
-			}
-
-			_rotationSpeed.X += GorgonTiming.Delta / 1.25f;
-			_rotationSpeed.Y += GorgonTiming.Delta / 1.25f;
-			_rotationSpeed.Z += GorgonTiming.Delta / 1.25f;
-
-			if (_rotationSpeed.X > 2.0f)
-			{
-				_rotationSpeed.X = 0.0f;
-			}
-
-			if (_rotationSpeed.Y > 2.0f)
-			{
-				_rotationSpeed.Y = 0.0f;
-			}
-
-			if (_rotationSpeed.Z > 2.0f)
-			{
-				_rotationSpeed.Z = 0.0f;
-			}
-
-			_cube.RotateXYZ(_rotation.X, _rotation.Y, _rotation.Z);
-			_cube.GetWorldMatrix(out worldMatrix);
+	        _cube.GetWorldMatrix(out worldMatrix);
 			// Send our world matrix to the constant buffer so the vertex shader can update the vertices.
 			UpdateWVP(ref worldMatrix);
 
@@ -251,50 +252,51 @@ namespace GorgonLibrary.Example
 			// Set up the pipeline to draw the cube.
 	        _drawCall = new GorgonDrawIndexedCall
 	                    {
-							PrimitiveTopology = PrimitiveTopology.TriangleList,
-		                    Resources =
+		                    PrimitiveTopology = PrimitiveTopology.TriangleList,
+		                    RenderTargets =
 		                    {
-			                    RenderTargets = {
-				                                    [0] = _swap.RenderTargetView
-			                                    },
-			                    IndexBuffer = _cube.IndexBuffer,
-			                    VertexBuffers = _cube.VertexBuffer,
-								PixelShaderResourceViews =
-								{
-									[0] = _texture.DefaultShaderResourceView
-								},
-			                    PixelShaderSamplers = {
-														  // Start with bilinear filtering on the cube texture.
-														  // This will smooth out the appearance of the texture as it is scaled closer or further away 
-														  // from our view.
-				                                          [0] = _bilinearSampler
-			                                          },
-			                    VertexShaderConstantBuffers = {
-				                                                  [0] = _wvpBuffer
-			                                                  }
+			                    [0] = _swap.RenderTargetView
 		                    },
+		                    IndexBuffer = _cube.IndexBuffer,
+		                    VertexBuffers = _cube.VertexBuffer,
+		                    PixelShaderResourceViews =
+		                    {
+			                    [0] = _texture.DefaultShaderResourceView
+		                    },
+		                    PixelShaderSamplers =
+		                    {
+			                    // Start with bilinear filtering on the cube texture.
+			                    // This will smooth out the appearance of the texture as it is scaled closer or further away 
+			                    // from our view.
+			                    [0] = _bilinearSampler
+		                    },
+		                    VertexShaderConstantBuffers =
+		                    {
+			                    [0] = _wvpBuffer
+		                    },
+
 		                    IndexStart = 0,
 		                    IndexCount = _cube.IndexBuffer.Info.IndexCount,
-		                    Viewports = new[]
-		                                {
-			                                new DX.ViewportF(0, 0, ClientSize.Width, ClientSize.Height, 0, 1.0f)
-		                                },
+		                    Viewports =
+		                    {
+			                    [0] = new DX.ViewportF(0, 0, ClientSize.Width, ClientSize.Height, 0, 1.0f)
+		                    },
 		                    State = _graphics.GetPipelineState(new GorgonPipelineStateInfo
 		                                                       {
 			                                                       PixelShader = _pixelShader,
 			                                                       VertexShader = _vertexShader,
 			                                                       DepthStencilState = GorgonDepthStencilStateInfo.Default,
-																   // We turn off culling so we can see through the cube.
+			                                                       // We turn off culling so we can see through the cube.
 			                                                       RasterState = GorgonRasterStateInfo.NoCulling,
-																   // We turn on blending so that the alpha in the texture can allow a 
-																   // translucency effect and we can see the other faces through the cube.
+			                                                       // We turn on blending so that the alpha in the texture can allow a 
+			                                                       // translucency effect and we can see the other faces through the cube.
 			                                                       RenderTargetBlendState =
 			                                                       {
 				                                                       [0] = GorgonRenderTargetBlendStateInfo.Modulated
 			                                                       },
 		                                                       })
 	                    };
-		}
+        }
 
         /// <summary>
         /// Raises the <see cref="E:System.Windows.Forms.Control.KeyDown"></see> event.
@@ -318,13 +320,13 @@ namespace GorgonLibrary.Example
 			// When we assign a new sampler state, we have to use the GorgonSamplerStates object to pass in 1 or more samplers. Assigning a sampler to a 
 			// slot on an existing sampler state list will not be picked up. This is done to keep from having to check each sampler slot every time a state 
 			// is changed and will slightly improve performance.
-			if (_drawCall.Resources.PixelShaderSamplers[0] == _bilinearSampler)
+			if (_drawCall.PixelShaderSamplers[0] == _bilinearSampler)
 	        {
-		        _drawCall.Resources.PixelShaderSamplers[0] = _pointSampler;
+		        _drawCall.PixelShaderSamplers[0] = _pointSampler;
 	        }
 	        else
 	        {
-		        _drawCall.Resources.PixelShaderSamplers[0] = _bilinearSampler;
+		        _drawCall.PixelShaderSamplers[0] = _bilinearSampler;
 	        }
         }
 

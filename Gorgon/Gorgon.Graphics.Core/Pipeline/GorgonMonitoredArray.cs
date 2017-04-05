@@ -27,6 +27,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Gorgon.Graphics.Core
 {
@@ -82,9 +83,6 @@ namespace Gorgon.Graphics.Core
 					return;
 				}
 
-#if DEBUG
-				OnValidate(index, value);
-#endif
 				_backingStore[index] = value;
 				_dirtyIndices |= 1 << index;
 
@@ -113,11 +111,20 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Function to validate an item being assigned to a slot.
 		/// </summary>
-		/// <param name="item">The item to validate.</param>
-		/// <param name="index">The index of the slot being assigned.</param>
-		protected virtual void OnValidate(int index, T item)
+		protected virtual void OnValidate()
 		{
 			
+		}
+
+		/// <summary>
+		/// Function to perform validation on this list prior to applying it.
+		/// </summary>
+		[Conditional("DEBUG")]
+		internal void Validate()
+		{
+#if DEBUG
+			OnValidate();
+#endif
 		}
 
 		/// <summary>
