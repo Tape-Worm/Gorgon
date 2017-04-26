@@ -166,9 +166,6 @@
   <data name="GORGFX_DEVICE_ERR_CANNOT_FIND_DEVICES" xml:space="preserve">
     <value>Could not find any supported video devices.  Gorgon requires a device that can support a minimum of pixel shader model 4.</value>
   </data>
-  <data name="GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY" xml:space="preserve">
-    <value>The parameter must not be empty.</value>
-  </data>
   <data name="GORGFX_TOSTR_SHADER_INCLUDE" xml:space="preserve">
     <value>Gorgon Shader Include '{0}'</value>
   </data>

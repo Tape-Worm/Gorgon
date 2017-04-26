@@ -146,14 +146,13 @@ namespace Gorgon.Graphics.Core
         public void Unlock(GorgonTextureLockData lockData)
         {
             var key = new LockCacheKey(lockData.MipLevel, lockData.ArrayIndex);
-            GorgonTextureLockData result;
 
-            if (!_locks.TryRemove(key, out result))
-            {
-                return;
-            }
+			if (!_locks.TryRemove(key, out GorgonTextureLockData result))
+			{
+				return;
+			}
 
-	        Texture.Graphics.D3DDeviceContext
+			Texture.Graphics.D3DDeviceContext
 	               .UnmapSubresource(Texture.D3DResource,
 	                                 D3D11.Resource.CalculateSubResourceIndex(lockData.MipLevel, lockData.ArrayIndex, Texture.Info.MipLevels));
         }
@@ -168,14 +167,13 @@ namespace Gorgon.Graphics.Core
 	    public GorgonTextureLockData Lock(D3D11.MapMode lockFlags, int mipLevel, int arrayIndex)
 	    {
 		    var key = new LockCacheKey(mipLevel, arrayIndex);
-		    GorgonTextureLockData result;
 
-		    if (_locks.TryGetValue(key, out result))
-		    {
-			    return result;
-		    }
+			if (_locks.TryGetValue(key, out GorgonTextureLockData result))
+			{
+				return result;
+			}
 
-		    switch (Texture.ResourceType)
+			switch (Texture.ResourceType)
 		    {
 			    case ResourceType.Texture1D:
 			    case ResourceType.Texture2D:

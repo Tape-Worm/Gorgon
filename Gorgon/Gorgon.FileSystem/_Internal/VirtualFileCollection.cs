@@ -110,9 +110,8 @@ namespace Gorgon.IO
 		/// <returns><b>true</b> if the item was found, <b>false</b> if not.</returns>
 		bool IGorgonNamedObjectReadOnlyDictionary<IGorgonVirtualFile>.TryGetValue(string name, out IGorgonVirtualFile value)
 		{
-			VirtualFile file;
 
-			if (!TryGetValue(name, out file))
+			if (!TryGetValue(name, out VirtualFile file))
 			{
 				value = null;
 				return false;
@@ -182,9 +181,8 @@ namespace Gorgon.IO
 				return false;
 			}
 
-			VirtualFile file;
 
-			if (!_files.TryGetValue(item.Name, out file))
+			if (!_files.TryGetValue(item.Name, out VirtualFile file))
 			{
 				return false;
 			}

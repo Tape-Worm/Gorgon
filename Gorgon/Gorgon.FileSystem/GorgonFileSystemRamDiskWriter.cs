@@ -29,6 +29,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Gorgon.Core;
 using Gorgon.IO.Properties;
 using Gorgon.IO.Providers;
 using Gorgon.Plugins;
@@ -340,7 +341,7 @@ namespace Gorgon.IO
 
 			if (string.IsNullOrWhiteSpace(path))
 			{
-				throw new ArgumentException(Resources.GORFS_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(path));
+				throw new ArgumentEmptyException(nameof(path));
 			}
 
 			VirtualDirectory result = _fileSystem.InternalRootDirectory.Directories.Add(_mountPoint, path);
@@ -360,7 +361,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="path">Path to the directory to delete.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="path"/> is empty.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> is empty.</exception>
 		/// <exception cref="DirectoryNotFoundException">Thrown when the directory specified by the <paramref name="path"/> could not be found.</exception>
 		/// <remarks>
 		/// <para>
@@ -389,7 +390,7 @@ namespace Gorgon.IO
 
 			if (string.IsNullOrWhiteSpace(path))
 			{
-				throw new ArgumentException(Resources.GORFS_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(path));
+				throw new ArgumentEmptyException(nameof(path));
 			}
 
 			// If we're not "deleting" the root, then just kill the subdirectory.
@@ -418,7 +419,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="path">The path to the file to delete.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="path"/> is empty.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> is empty.</exception>
 		/// <exception cref="FileNotFoundException">Thrown when the file referenced by the <paramref name="path"/> was not found.</exception>
 		/// <remarks>
 		/// <para>
@@ -445,7 +446,7 @@ namespace Gorgon.IO
 
 			if (string.IsNullOrWhiteSpace(path))
 			{
-				throw new ArgumentException(Resources.GORFS_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(path));
+				throw new ArgumentEmptyException(nameof(path));
 			}
 
 			VirtualFile file = _fileSystem.InternalGetFile(path);
@@ -489,7 +490,7 @@ namespace Gorgon.IO
 		/// <param name="mode">The mode to determine how to read/write the file.</param>
 		/// <returns>An open <see cref="FileStream"/> to the file.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="path"/> is empty.
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> is empty.
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="path"/> does not contain a file name.</para>
 		/// </exception>
@@ -518,7 +519,7 @@ namespace Gorgon.IO
 
 			if (string.IsNullOrWhiteSpace(path))
 			{
-				throw new ArgumentException(Resources.GORFS_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(path));
+				throw new ArgumentEmptyException(nameof(path));
 			}
 
 			string directoryPart = Path.GetDirectoryName(path);
@@ -603,7 +604,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="fileSystem">A file system used to track the updates when writing.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileSystem" /> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="fileSystem"/> does not contain a <see cref="GorgonFileSystemRamDiskProvider"/>.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="fileSystem"/> does not contain a <see cref="GorgonFileSystemRamDiskProvider"/>.</exception>
 		public GorgonFileSystemRamDiskWriter(GorgonFileSystem fileSystem)
 			: base(Resources.GORFS_RAMDISK_WRITER_FS_DESC)
 		{

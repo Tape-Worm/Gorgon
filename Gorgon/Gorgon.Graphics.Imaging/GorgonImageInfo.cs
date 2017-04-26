@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using Gorgon.Core;
 using DXGI = SharpDX.DXGI;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.Math;
@@ -177,7 +178,7 @@ namespace Gorgon.Graphics.Imaging
 		/// </summary>
 		/// <param name="imageType">The type of the image to create.</param>
 		/// <param name="format">The format describing how a pixel is laid out in memory.</param>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="format"/> parameter is set to <c>Format.Unknown</c>.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="format"/> parameter is set to <c>Format.Unknown</c>.</exception>
 		public GorgonImageInfo(ImageType imageType, DXGI.Format format)
 		{
 			if (format == DXGI.Format.Unknown)

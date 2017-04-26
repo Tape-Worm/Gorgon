@@ -302,7 +302,7 @@ namespace Gorgon.Collections
 		/// </summary>
 		/// <param name="name">The name of the object to remove.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
 		/// <exception cref="KeyNotFoundException">Thrown when no item with the name specified could be found in the dictionary.</exception>
 		void IGorgonNamedObjectDictionary<T>.Remove(string name)
 		{
@@ -313,7 +313,7 @@ namespace Gorgon.Collections
 
 			if (string.IsNullOrWhiteSpace(name))
 			{
-				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
+				throw new ArgumentEmptyException(nameof(name));
 			}
 
 			if (!Contains(name))

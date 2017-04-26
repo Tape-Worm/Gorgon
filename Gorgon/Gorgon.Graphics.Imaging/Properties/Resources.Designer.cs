@@ -233,15 +233,6 @@ namespace Gorgon.Graphics.Imaging.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The parameter must not be empty..
-        /// </summary>
-        internal static string GORIMG_ERR_PARAMETER_MUST_NOT_BE_EMPTY {
-            get {
-                return ResourceManager.GetString("GORIMG_ERR_PARAMETER_MUST_NOT_BE_EMPTY", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The steam is not seekable..
         /// </summary>
         internal static string GORIMG_ERR_STREAM_CANNOT_SEEK {

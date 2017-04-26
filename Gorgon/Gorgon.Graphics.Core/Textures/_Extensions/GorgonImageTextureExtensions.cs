@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Imaging;
 
@@ -45,7 +46,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="log">[Optional] The log interface used for debugging.</param>
 		/// <returns>A new <see cref="GorgonTexture"/> containing the data from the <paramref name="image"/>.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="image"/>, <paramref name="graphics"/> or the <paramref name="name"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
 		/// <remarks>
 		/// <para>
 		/// A <see cref="GorgonImage"/> is useful to holding image data in memory, but it cannot be sent to the GPU for use as a texture. This method allows an application to convert the 

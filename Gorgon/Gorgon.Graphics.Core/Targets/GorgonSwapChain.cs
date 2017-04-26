@@ -523,7 +523,7 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="newWidth">The new width of the swap chain back buffers.</param>
 		/// <param name="newHeight">The new height of the swap chain back buffers.</param>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="newWidth"/>, or the <paramref name="newHeight"/> parameter is less than 1.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="newWidth"/>, or the <paramref name="newHeight"/> parameter is less than 1.</exception>
 		/// <remarks>
 		/// <para>
 		/// This method will only resize the back buffers associated with the swap chain, and not the swap chain <see cref="Window"/> that it is bound with. 
@@ -666,10 +666,9 @@ namespace Gorgon.Graphics.Core
 				dxgiOutput = Graphics.VideoDevice.DXGIAdapter().GetOutput(output.Index);
 				dxgiOutput1 = dxgiOutput.QueryInterface<DXGI.Output1>();
 
-				DXGI.ModeDescription1 actualMode;
 
 				// Try to find something resembling the video mode we asked for.
-				dxgiOutput1.FindClosestMatchingMode1(ref desiredMode, out actualMode, Graphics.VideoDevice.D3DDevice());
+				dxgiOutput1.FindClosestMatchingMode1(ref desiredMode, out DXGI.ModeDescription1 actualMode, Graphics.VideoDevice.D3DDevice());
 
 				DXGI.ModeDescription resizeMode = actualMode.ToModeDesc();
 
@@ -798,7 +797,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="info">Settings for the swap chain.</param>
 		/// <param name="log">[Optional] The log used for debug output.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/>, <paramref name="graphics"/>, <paramref name="window"/>, or the <paramref name="info"/> parameters are <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
 		/// <exception cref="GorgonException">Thrown when the <see cref="IGorgonSwapChainInfo.Width"/>, or <see cref="IGorgonSwapChainInfo.Height"/> values of the <see cref="IGorgonSwapChainInfo"/> passed to the <paramref name="info"/> parameter 
 		/// are less than 1.
 		/// <para>-or-</para>

@@ -319,7 +319,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="device">The video device used to create the shader.</param>
 		/// <param name="path">The path to the file containing the Gorgon binary shader data.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="device"/>, or the <paramref name="path"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
 		/// <returns>A new <see cref="GorgonShader"/>. The type of shader depends on the data that was written to the file and the <typeparamref name="T"/> type parameter.</returns>
 		/// <remarks>
 		/// <para>
@@ -365,7 +365,7 @@ namespace Gorgon.Graphics.Core
 
 			if (string.IsNullOrWhiteSpace(path))
 			{
-				throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(path));
+				throw new ArgumentEmptyException(nameof(path));
 			}
 
 			using (FileStream stream = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read))
@@ -386,7 +386,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="sourceFileName">[Optional] The name of the file where the source code came from.</param>
 		/// <returns>A byte array containing the compiled shader.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="sourceCode"/>, <paramref name="entryPoint"/> or the <paramref name="videoDevice"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="sourceCode"/>, <paramref name="entryPoint"/> parameter is empty.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="sourceCode"/>, <paramref name="entryPoint"/> parameter is empty.</exception>
 		/// <exception cref="GorgonException">Thrown when the type specified by <typeparamref name="T"/> is not a valid shader type.
 		/// <para>-or-</para>
 		/// <para>Thrown when there was an error during compilation of the shader.</para>
@@ -446,12 +446,12 @@ namespace Gorgon.Graphics.Core
 
 			if (string.IsNullOrWhiteSpace(sourceCode))
 			{
-				throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(sourceCode));
+				throw new ArgumentEmptyException(nameof(sourceCode));
 			}
 
 			if (string.IsNullOrWhiteSpace(entryPoint))
 			{
-				throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(entryPoint));
+				throw new ArgumentEmptyException(nameof(entryPoint));
 			}
 
 			(Type, ShaderType)? shaderType = _shaderTypes.FirstOrDefault(item => item.Item1 == typeof(T));

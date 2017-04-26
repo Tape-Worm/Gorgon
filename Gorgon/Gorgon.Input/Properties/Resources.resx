@@ -126,9 +126,6 @@
   <data name="GORINP_ERR_JOYSTICK_MOTOR_NOT_FOUND" xml:space="preserve">
     <value>There is no motor at index [{0}].</value>
   </data>
-  <data name="GORINP_ERR_PARAMETER_MUST_NOT_BE_EMPTY" xml:space="preserve">
-    <value>The parameter must not be empty.</value>
-  </data>
   <data name="GORINP_ERR_WIN32_CURSOR_INFO" xml:space="preserve">
     <value>There was an error retrieving the cursor information.
 

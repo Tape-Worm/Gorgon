@@ -65,7 +65,7 @@ namespace Gorgon.IO
 		/// <param name="bufferSize">[Optional] The size of the temporary buffer used to buffer the data between streams.</param>
 		/// <returns>The number of bytes copied, or 0 if no data was copied or at the end of a stream.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="destination"/>, or the <paramref name="stream"/> parameters are <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="stream"/> is write-only.
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="stream"/> is write-only.
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="destination"/> is read-only.</para>
 		/// </exception>

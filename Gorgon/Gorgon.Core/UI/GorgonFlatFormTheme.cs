@@ -913,9 +913,8 @@ namespace Gorgon.UI
 
 			while (reader.MoveToContent() == XmlNodeType.Element)
 			{
-				PropertyInfo property;
 
-				if (!properties.TryGetValue(reader.LocalName, out property))
+				if (!properties.TryGetValue(reader.LocalName, out PropertyInfo property))
 				{
 					reader.Read();
 					continue;

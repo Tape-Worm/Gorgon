@@ -168,7 +168,7 @@ namespace Gorgon.Graphics.Fonts
 		/// <param name="outlineCoordinates">The coordinates of the glyph outline on the texture, in pixels.</param>
 		/// <param name="textureArrayIndex">The array index on the 2D texture array to use for this glyph.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="texture"/> is not a 2D texture.
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="texture"/> is not a 2D texture.
 		/// <para>-or-</para>
 		/// <para>Thrown if the <paramref name="texture"/> format is not <c>R8G8B8A8_UNorm</c>, <c>R8G8B8A8_UNorm_SRgb</c>, <c>Format.B8G8R8A8_UNorm</c> or <c>B8G8R8A8_UNorm_SRgb</c>.</para>
 		/// </exception>

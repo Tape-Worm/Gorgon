@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.Plugins;
 
@@ -96,7 +97,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <param name="codec">The name of the codec to which the options will apply.</param>
 		/// <returns>A new instance of a <see cref="IGorgonImageCodecEncodingOptions"/> object.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="codec"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="codec"/> parameter is empty.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="codec"/> parameter is empty.</exception>
 		/// <exception cref="KeyNotFoundException">Thrown when the <paramref name="codec"/> was not found in this plug in.</exception>
 		/// <remarks>
 		/// <para>
@@ -112,7 +113,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 
 			if (string.IsNullOrWhiteSpace(codec))
 			{
-				throw new ArgumentException(Resources.GORIMG_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(codec));
+				throw new ArgumentEmptyException(nameof(codec));
 			}
 
 			if (!Codecs.Any(item => string.Equals(codec, item.Name, StringComparison.OrdinalIgnoreCase)))
@@ -129,7 +130,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <param name="codec">The name of the codec to which the options will apply.</param>
 		/// <returns>A new instance of a <see cref="IGorgonImageCodecDecodingOptions"/> object.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="codec"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="codec"/> parameter is empty.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="codec"/> parameter is empty.</exception>
 		/// <exception cref="KeyNotFoundException">Thrown when the <paramref name="codec"/> was not found in this plug in.</exception>
 		/// <remarks>
 		/// <para>
@@ -145,7 +146,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 
 			if (string.IsNullOrWhiteSpace(codec))
 			{
-				throw new ArgumentException(Resources.GORIMG_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(codec));
+				throw new ArgumentEmptyException(nameof(codec));
 			}
 
 			if (!Codecs.Any(item => string.Equals(codec, item.Name, StringComparison.OrdinalIgnoreCase)))
@@ -162,7 +163,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <param name="codec">The name of the codec to look up within the plug in.</param>
 		/// <returns>A new instance of a <see cref="IGorgonImageCodec"/>.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="codec"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="codec"/> parameter is empty.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="codec"/> parameter is empty.</exception>
 		/// <exception cref="KeyNotFoundException">Thrown when the <paramref name="codec"/> was not found in this plug in.</exception>
 		/// <remarks>
 		/// <para>
@@ -179,7 +180,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 
 			if (string.IsNullOrWhiteSpace(codec))
 			{
-				throw new ArgumentException(Resources.GORIMG_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(codec));
+				throw new ArgumentEmptyException(nameof(codec));
 			}
 
 			if (!Codecs.Any(item => string.Equals(codec, item.Name, StringComparison.OrdinalIgnoreCase)))

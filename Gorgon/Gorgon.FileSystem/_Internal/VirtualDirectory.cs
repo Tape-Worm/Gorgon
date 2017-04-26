@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Gorgon.Collections;
+using Gorgon.Core;
 using Gorgon.IO.Properties;
 using Gorgon.IO.Providers;
 
@@ -217,7 +218,7 @@ namespace Gorgon.IO
 		/// <param name="fileName">The name of the file to search for.</param>
 		/// <returns><b>true</b> if found, <b>false</b> if not.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileName"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="fileName"/> parameter is empty.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="fileName"/> parameter is empty.</exception>
 		/// <remarks>
 		/// Use this to determine if a <see cref="IGorgonVirtualFile"/> exists under this directory or any of its sub directories. This search includes all sub directories for this and child directories. 
 		/// To determine if a file exists in the immediate directory, use the <see cref="IGorgonNamedObjectReadOnlyDictionary{T}.Contains"/> method.
@@ -231,7 +232,7 @@ namespace Gorgon.IO
 
 			if (string.IsNullOrWhiteSpace(fileName))
 			{
-				throw new ArgumentException(Resources.GORFS_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(fileName));
+				throw new ArgumentEmptyException(nameof(fileName));
 			}
 
 			if (Files.Contains(fileName))

@@ -1250,7 +1250,6 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// </remarks>
 		protected override IGorgonImage OnDecodeFromStream(Stream stream, long size, IGorgonImageCodecDecodingOptions options)
 		{
-			DdsConversionFlags flags;
 			uint[] palette = null;
 			GorgonDdsDecodingOptions ddsOptions = (GorgonDdsDecodingOptions)options;
 
@@ -1262,7 +1261,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 			var reader = new GorgonBinaryReader(stream, true);
 
 			// Read the header information.
-			IGorgonImageInfo settings = ReadHeader(reader, size, ddsOptions?.LegacyFormatConversionFlags ?? DdsLegacyFlags.None, out flags);
+			IGorgonImageInfo settings = ReadHeader(reader, size, ddsOptions?.LegacyFormatConversionFlags ?? DdsLegacyFlags.None, out DdsConversionFlags flags);
 
 			var imageData = new GorgonImage(settings);
 
@@ -1425,7 +1424,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <param name="stream">The stream that will receive the image data.</param>
 		/// <param name="encodingOptions">[Optional] Options used to encode the image data when it is persisted to the stream.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/>, or the <paramref name="imageData"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="stream"/> is read only.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="stream"/> is read only.</exception>
 		/// <exception cref="NotSupportedException">Thrown when the image data in the stream has a pixel format that is unsupported by the codec.</exception>
 		/// <remarks>
 		/// <para>

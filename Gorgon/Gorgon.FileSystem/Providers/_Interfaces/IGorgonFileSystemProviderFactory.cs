@@ -82,7 +82,7 @@ namespace Gorgon.IO.Providers
 		/// <param name="providerPluginName">The fully qualified type name of the plugin that contains the file system provider.</param>
 		/// <returns>The new file system provider object, or if it was previously created, the previously created instance.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="providerPluginName"/> is <b>null</b></exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="providerPluginName"/> is empty.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="providerPluginName"/> is empty.</exception>
 		/// <exception cref="GorgonException">Thrown when the plugin specified by the <paramref name="providerPluginName"/> parameter was not found.</exception>
 		GorgonFileSystemProvider CreateProvider(string providerPluginName);
 

@@ -234,9 +234,8 @@ namespace Gorgon.Native
 		public T Read<T>(long offset)
 			where T : struct
 		{
-			T value;
 
-			Read(offset, out value);
+			Read(offset, out T value);
 
 			return value;
 		}
@@ -353,9 +352,8 @@ namespace Gorgon.Native
 #endif
 			unsafe
 			{
-				T value;
 
-				DirectAccess.ReadValue(DataPointer, out value);
+				DirectAccess.ReadValue(DataPointer, out T value);
 
 				return value;
 			}

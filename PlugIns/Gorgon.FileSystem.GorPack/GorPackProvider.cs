@@ -30,6 +30,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Xml.Linq;
+using Gorgon.Core;
 using Gorgon.IO.GorPack.Properties;
 using Gorgon.IO.Providers;
 using ICSharpCode.SharpZipLib.BZip2;
@@ -134,31 +135,27 @@ namespace Gorgon.IO.GorPack
 				parentDirectoryPath = (mountPoint.FullPath + parentDirectoryPath).FormatDirectory('/');
 
 				string fileName = fileNameNode.Value;
-				long fileOffset;
-				long fileSize;
-				DateTime fileDate;
-				DateTime lastModDate;
 				long? compressedSize = null;
 
 				// If we don't have a creation date, then don't allow the file to be processed.
-				if (!DateTime.TryParse(fileDateNode.Value, CultureInfo.InvariantCulture, DateTimeStyles.None, out fileDate))
+				if (!DateTime.TryParse(fileDateNode.Value, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime fileDate))
 				{
 					throw new FileLoadException(Resources.GORFS_GORPACK_ERR_FILEINDEX_CORRUPT);
 				}
 
-				if ((fileLastModNode == null) || (!DateTime.TryParse(fileLastModNode.Value, CultureInfo.InvariantCulture, DateTimeStyles.None, out lastModDate)))
+				if ((fileLastModNode == null) || (!DateTime.TryParse(fileLastModNode.Value, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime lastModDate)))
 				{
 					lastModDate = fileDate;
 				}
 
-				if (!long.TryParse(fileOffsetNode.Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out fileOffset))
+				if (!long.TryParse(fileOffsetNode.Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out long fileOffset))
 				{
 					throw new FileLoadException(Resources.GORFS_GORPACK_ERR_FILEINDEX_CORRUPT);
 				}
 
 				fileOffset += offset;
 
-				if (!long.TryParse(fileSizeNode.Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out fileSize))
+				if (!long.TryParse(fileSizeNode.Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out long fileSize))
 				{
 					throw new FileLoadException(Resources.GORFS_GORPACK_ERR_FILEINDEX_CORRUPT);
 				}
@@ -173,9 +170,8 @@ namespace Gorgon.IO.GorPack
 				// If the file is compressed, then add it to a special list.
 				if (fileCompressedSizeNode != null)
 				{
-					long compressed;
 
-					if (!long.TryParse(fileCompressedSizeNode.Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out compressed))
+					if (!long.TryParse(fileCompressedSizeNode.Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out long compressed))
 					{
 						throw new FileLoadException(Resources.GORFS_GORPACK_ERR_FILEINDEX_CORRUPT);
 					}
@@ -206,7 +202,7 @@ namespace Gorgon.IO.GorPack
 		/// <param name="mountPoint">A <see cref="IGorgonVirtualDirectory"/> that the directories and files from the physical file system will be mounted into.</param>		
 		/// <returns>A <see cref="GorgonPhysicalFileSystemData"/> object containing information about the directories and files contained within the physical file system.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="physicalLocation"/>, or the <paramref name="mountPoint"/> parameters are <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="physicalLocation"/> parameter is empty.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="physicalLocation"/> parameter is empty.</exception>
 		/// <remarks>
 		/// <para>
 		/// This will return a <see cref="GorgonPhysicalFileSystemData"/> representing the paths to directories and <see cref="IGorgonPhysicalFileInfo"/> objects under the virtual file system. Each file 
@@ -272,7 +268,7 @@ namespace Gorgon.IO.GorPack
 		/// <param name="physicalPath">Path to the packed file containing the file system.</param>
 		/// <returns><b>true</b> if the provider can read the packed file, <b>false</b> if not.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="physicalPath"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="physicalPath"/> parameter is an empty string.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="physicalPath"/> parameter is an empty string.</exception>
 		/// <remarks>
 		/// <para>
 		/// This will test a physical file system (e.g. a Zip file) to see if the provider can open it or not. If used with a directory on an operating system file system, this method should always return 

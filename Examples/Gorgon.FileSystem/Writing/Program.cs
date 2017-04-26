@@ -45,7 +45,7 @@ namespace Gorgon.Examples
 		/// Property to return the path to the resources for the example.
 		/// </summary>
 		/// <param name="resourceItem">The directory or file to use as a resource.</param>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="resourceItem"/> parameter is <b>null</b> or empty.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="resourceItem"/> parameter is <b>null</b> or empty.</exception>
 		public static string GetResourcePath(string resourceItem)
 		{
 			string path = Settings.Default.ResourceLocation;

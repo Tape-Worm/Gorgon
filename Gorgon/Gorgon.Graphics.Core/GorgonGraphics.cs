@@ -32,7 +32,6 @@ using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
 using Gorgon.Native;
-using SharpDX.Direct3D;
 using SharpDX.Mathematics.Interop;
 using DX = SharpDX;
 using D3D11 = SharpDX.Direct3D11;
@@ -79,8 +78,6 @@ namespace Gorgon.Graphics.Core
 		private D3D11.DeviceContext1 _deviceContext;
 		// The last used draw call.
 		private GorgonDrawCallBase _lastDrawCall;
-		// The last used pipeline state.
-	    private GorgonPipelineState _lastState;
 		// Pipeline state cache.
 	    private readonly List<GorgonPipelineState> _stateCache = new List<GorgonPipelineState>();
 		// Synchronization lock for creating new pipeline cache entries.
@@ -203,19 +200,9 @@ namespace Gorgon.Graphics.Core
 	    /// </summary>
 	    /// <param name="newViewports">The new viewports to assign.</param>
 	    /// <param name="currentChanges">The current changes on the pipeline.</param>
-	    /// <returns>A <see cref="PipelineStateChange"/> indicating whether or not the state has changed.</returns>
-	    private PipelineStateChange MergeViewPorts(GorgonMonitoredValueTypeArray<DX.ViewportF> newViewports, PipelineStateChange currentChanges)
+	    /// <returns>A <see cref="PipelineResourceChange"/> indicating whether or not the state has changed.</returns>
+	    private PipelineResourceChange MergeViewPorts(GorgonMonitoredValueTypeArray<DX.ViewportF> newViewports, PipelineResourceChange currentChanges)
 	    {
-		    if (newViewports == _lastDrawCall.Viewports)
-		    {
-			    if (!_lastDrawCall.Viewports.IsDirty)
-			    {
-				    return currentChanges;
-			    }
-
-			    return currentChanges | PipelineStateChange.Viewports;
-		    }
-
 		    ref (int, int Count, DX.ViewportF[]) current = ref _lastDrawCall.Viewports.GetDirtyItems();
 		    ref (int, int Count, DX.ViewportF[] Viewports) newItems = ref newViewports.GetDirtyItems();
 
@@ -228,7 +215,7 @@ namespace Gorgon.Graphics.Core
 
 		    if (_lastDrawCall.Viewports.IsDirty)
 		    {
-			    currentChanges |= PipelineStateChange.Viewports;
+			    currentChanges |= PipelineResourceChange.Viewports;
 		    }
 
 		    return currentChanges;
@@ -239,19 +226,9 @@ namespace Gorgon.Graphics.Core
 	    /// </summary>
 	    /// <param name="newScissorRects">The new scissor rectangles to assign.</param>
 	    /// <param name="currentChanges">The current changes on the pipeline.</param>
-	    /// <returns>A <see cref="PipelineStateChange"/> indicating whether or not the state has changed.</returns>
-	    private PipelineStateChange MergeScissorRects(GorgonMonitoredValueTypeArray<DX.Rectangle> newScissorRects, PipelineStateChange currentChanges)
+	    /// <returns>A <see cref="PipelineResourceChange"/> indicating whether or not the state has changed.</returns>
+	    private PipelineResourceChange MergeScissorRects(GorgonMonitoredValueTypeArray<DX.Rectangle> newScissorRects, PipelineResourceChange currentChanges)
 	    {
-		    if (newScissorRects == _lastDrawCall.ScissorRectangles)
-		    {
-			    if (!_lastDrawCall.ScissorRectangles.IsDirty)
-			    {
-				    return currentChanges;
-			    }
-
-			    return currentChanges | PipelineStateChange.ScissorRectangles;
-		    }
-
 		    ref (int, int Count, DX.Rectangle[]) current = ref _lastDrawCall.ScissorRectangles.GetDirtyItems();
 		    ref (int, int Count, DX.Rectangle[] Scissors) newItems = ref newScissorRects.GetDirtyItems();
 
@@ -264,7 +241,7 @@ namespace Gorgon.Graphics.Core
 
 		    if (_lastDrawCall.ScissorRectangles.IsDirty)
 		    {
-			    currentChanges |= PipelineStateChange.ScissorRectangles;
+			    currentChanges |= PipelineResourceChange.ScissorRectangles;
 		    }
 
 		    return currentChanges;
@@ -275,14 +252,14 @@ namespace Gorgon.Graphics.Core
 	    /// </summary>
 	    /// <param name="renderTargets">The render targets to merge in.</param>
 	    /// <param name="currentChanges">The current changes on the pipeline.</param>
-	    /// <returns>A <see cref="PipelineStateChange"/> indicating whether or not the state has changed.</returns>
-	    private PipelineStateChange MergeRenderTargets(GorgonRenderTargetViews renderTargets, PipelineStateChange currentChanges)
+	    /// <returns>A <see cref="PipelineResourceChange"/> indicating whether or not the state has changed.</returns>
+	    private PipelineResourceChange MergeRenderTargets(GorgonRenderTargetViews renderTargets, PipelineResourceChange currentChanges)
 	    {
 			// If the depth buffers differ, then we have to set the same targets again.
 			if (_lastDrawCall.RenderTargets.DepthStencilView != renderTargets.DepthStencilView)
 		    {
 			    _lastDrawCall.RenderTargets.DepthStencilView = renderTargets.DepthStencilView;
-			    currentChanges |= PipelineStateChange.RenderTargets;
+			    currentChanges |= PipelineResourceChange.RenderTargets;
 		    }
 
 		    ref (int StartSlot, int Count, GorgonRenderTargetView[] Bindings) current = ref _lastDrawCall.RenderTargets.GetDirtyItems();
@@ -303,7 +280,7 @@ namespace Gorgon.Graphics.Core
 
 			if (_lastDrawCall.RenderTargets.IsDirty)
 		    {
-			    currentChanges |= PipelineStateChange.RenderTargets;
+			    currentChanges |= PipelineResourceChange.RenderTargets;
 		    }
 
 		    return currentChanges;
@@ -314,12 +291,12 @@ namespace Gorgon.Graphics.Core
 	    /// </summary>
 	    /// <param name="vertexBuffers">The vertex buffers to merge in.</param>
 	    /// <param name="currentChanges">The current changes on the pipeline.</param>
-	    /// <returns>A <see cref="PipelineStateChange"/> indicating whether or not the state has changed.</returns>
-	    private PipelineStateChange MergeVertexBuffers(GorgonVertexBufferBindings vertexBuffers, PipelineStateChange currentChanges)
+	    /// <returns>A <see cref="PipelineResourceChange"/> indicating whether or not the state has changed.</returns>
+	    private PipelineResourceChange MergeVertexBuffers(GorgonVertexBufferBindings vertexBuffers, PipelineResourceChange currentChanges)
 	    {
 		    if (_lastDrawCall.VertexBuffers?.InputLayout != vertexBuffers?.InputLayout)
 		    {
-			    currentChanges |= PipelineStateChange.InputLayout;
+			    currentChanges |= PipelineResourceChange.InputLayout;
 		    }
 
 		    if (_lastDrawCall.VertexBuffers == vertexBuffers)
@@ -330,7 +307,7 @@ namespace Gorgon.Graphics.Core
 				    return currentChanges;
 			    }
 
-			    return currentChanges | PipelineStateChange.VertexBuffers;
+			    return currentChanges | PipelineResourceChange.VertexBuffers;
 		    }
 
 		    // If we're tranferring into an uninitialized vertex buffer list, then allocate new vertex buffers and copy.
@@ -339,14 +316,14 @@ namespace Gorgon.Graphics.Core
 		    {
 			    _lastDrawCall.VertexBuffers = new GorgonVertexBufferBindings(vertexBuffers.InputLayout, vertexBuffers.Count);
 			    vertexBuffers.CopyTo(_lastDrawCall.VertexBuffers);
-			    return currentChanges | PipelineStateChange.VertexBuffers;
+			    return currentChanges | PipelineResourceChange.VertexBuffers;
 		    }
 
 		    // If we're removing a set of vertex buffers, then get rid of our current set as well.
 		    if (vertexBuffers == null)
 		    {
 			    _lastDrawCall.VertexBuffers = null;
-			    return currentChanges | PipelineStateChange.VertexBuffers;
+			    return currentChanges | PipelineResourceChange.VertexBuffers;
 		    }
 
 		    ref (int StartSlot, int Count, GorgonVertexBufferBinding[] Bindings) current = ref _lastDrawCall.VertexBuffers.GetDirtyItems();
@@ -362,7 +339,7 @@ namespace Gorgon.Graphics.Core
 
 		    if (_lastDrawCall.VertexBuffers.IsDirty)
 		    {
-			    currentChanges |= PipelineStateChange.VertexBuffers;
+			    currentChanges |= PipelineResourceChange.VertexBuffers;
 		    }
 
 		    return currentChanges;
@@ -374,25 +351,25 @@ namespace Gorgon.Graphics.Core
 	    /// <param name="shaderType">The type of shader to work with.</param>
 	    /// <param name="buffers">The constant buffers to merge in.</param>
 	    /// <param name="currentChanges">The current changes on the pipeline.</param>
-	    /// <returns>A <see cref="PipelineStateChange"/> indicating whether or not the state has changed.</returns>
-	    private PipelineStateChange MergeConstantBuffers(ShaderType shaderType, GorgonConstantBuffers buffers, PipelineStateChange currentChanges)
+	    /// <returns>A <see cref="PipelineResourceChange"/> indicating whether or not the state has changed.</returns>
+	    private PipelineResourceChange MergeConstantBuffers(ShaderType shaderType, GorgonConstantBuffers buffers, PipelineResourceChange currentChanges)
 	    {
 		    ref (int StartSlot, int Count, GorgonConstantBuffer[] Bindings) current = ref buffers.GetDirtyItems();
 		    ref (int StartSlot, int Count, GorgonConstantBuffer[] Bindings) newItems = ref buffers.GetDirtyItems();
 
 		    int startSlot = current.StartSlot.Min(newItems.StartSlot);
 		    int lastSlot = startSlot + current.Count.Max(newItems.Count);
-		    PipelineStateChange desiredStateBit;
+		    PipelineResourceChange desiredStateBit;
 		    GorgonConstantBuffers destBuffers;
 
 		    switch (shaderType)
 		    {
 			    case ShaderType.Vertex:
-				    desiredStateBit = PipelineStateChange.VertexShaderConstantBuffers;
+				    desiredStateBit = PipelineResourceChange.VertexShaderConstantBuffers;
 				    destBuffers = _lastDrawCall.VertexShaderConstantBuffers;
 				    break;
 			    case ShaderType.Pixel:
-				    desiredStateBit = PipelineStateChange.PixelShaderConstantBuffers;
+				    desiredStateBit = PipelineResourceChange.PixelShaderConstantBuffers;
 				    destBuffers = _lastDrawCall.PixelShaderConstantBuffers;
 				    break;
 			    default:
@@ -407,7 +384,7 @@ namespace Gorgon.Graphics.Core
 		                              desiredStateBit);
 
 		    // Local functions are neat.
-		    PipelineStateChange CopyToLastDrawCall(int start, int end, GorgonConstantBuffers lastDrawConstants, GorgonConstantBuffer[] newBuffers, PipelineStateChange changes, PipelineStateChange desiredBit)
+		    PipelineResourceChange CopyToLastDrawCall(int start, int end, GorgonConstantBuffers lastDrawConstants, GorgonConstantBuffer[] newBuffers, PipelineResourceChange changes, PipelineResourceChange desiredBit)
 		    {
 			    for (int i = start; i < end; ++i)
 			    {
@@ -429,25 +406,25 @@ namespace Gorgon.Graphics.Core
 	    /// <param name="shaderType">The type of shader to work with.</param>
 	    /// <param name="srvs">The shader resource views to merge in.</param>
 	    /// <param name="currentChanges">The current changes on the pipeline.</param>
-	    /// <returns>A <see cref="PipelineStateChange"/> indicating whether or not the state has changed.</returns>
-	    private PipelineStateChange MergeShaderResources(ShaderType shaderType, GorgonShaderResourceViews srvs, PipelineStateChange currentChanges)
+	    /// <returns>A <see cref="PipelineResourceChange"/> indicating whether or not the state has changed.</returns>
+	    private PipelineResourceChange MergeShaderResources(ShaderType shaderType, GorgonShaderResourceViews srvs, PipelineResourceChange currentChanges)
 	    {
 		    ref (int StartSlot, int Count, GorgonShaderResourceView[] Bindings) current = ref srvs.GetDirtyItems();
 		    ref (int StartSlot, int Count, GorgonShaderResourceView[] Bindings) newItems = ref srvs.GetDirtyItems();
 
 		    int startSlot = current.StartSlot.Min(newItems.StartSlot);
 		    int lastSlot = startSlot + current.Count.Max(newItems.Count);
-		    PipelineStateChange desiredStateBit;
+		    PipelineResourceChange desiredStateBit;
 		    GorgonShaderResourceViews destSrvs;
 
 		    switch (shaderType)
 		    {
 			    case ShaderType.Vertex:
-				    desiredStateBit = PipelineStateChange.VertexShaderResources;
+				    desiredStateBit = PipelineResourceChange.VertexShaderResources;
 				    destSrvs = _lastDrawCall.VertexShaderResourceViews;
 				    break;
 			    case ShaderType.Pixel:
-				    desiredStateBit = PipelineStateChange.PixelShaderResources;
+				    desiredStateBit = PipelineResourceChange.PixelShaderResources;
 				    destSrvs = _lastDrawCall.PixelShaderResourceViews;
 				    break;
 			    default:
@@ -462,7 +439,7 @@ namespace Gorgon.Graphics.Core
 		                              desiredStateBit);
 
 		    // Local functions are neat.
-		    PipelineStateChange CopyToLastDrawCall(int start, int end, GorgonShaderResourceViews lastDrawSrvs, GorgonShaderResourceView[] newSrvs, PipelineStateChange changes, PipelineStateChange desiredBit)
+		    PipelineResourceChange CopyToLastDrawCall(int start, int end, GorgonShaderResourceViews lastDrawSrvs, GorgonShaderResourceView[] newSrvs, PipelineResourceChange changes, PipelineResourceChange desiredBit)
 		    {
 			    for (int i = start; i < end; ++i)
 			    {
@@ -484,15 +461,15 @@ namespace Gorgon.Graphics.Core
 	    /// <param name="shaderType">The type of shader to work with.</param>
 	    /// <param name="samplers">The shader samplers to merge in.</param>
 	    /// <param name="currentChanges">The current changes on the pipeline.</param>
-	    /// <returns>A <see cref="PipelineStateChange"/> indicating whether or not the state has changed.</returns>
-	    private PipelineStateChange MergeShaderSamplers(ShaderType shaderType, GorgonSamplerStates samplers, PipelineStateChange currentChanges)
+	    /// <returns>A <see cref="PipelineResourceChange"/> indicating whether or not the state has changed.</returns>
+	    private PipelineResourceChange MergeShaderSamplers(ShaderType shaderType, GorgonSamplerStates samplers, PipelineResourceChange currentChanges)
 	    {
 		    ref (int StartSlot, int Count, GorgonSamplerState[] Bindings) current = ref samplers.GetDirtyItems();
 		    ref (int StartSlot, int Count, GorgonSamplerState[] Bindings) newItems = ref samplers.GetDirtyItems();
 
 		    int startSlot = current.StartSlot.Min(newItems.StartSlot);
 		    int lastSlot = startSlot + current.Count.Max(newItems.Count);
-		    PipelineStateChange desiredStateBit;
+		    PipelineResourceChange desiredStateBit;
 		    GorgonSamplerStates destSamplers;
 
 		    switch (shaderType)
@@ -507,11 +484,11 @@ namespace Gorgon.Graphics.Core
 				    }
 #endif
 
-					desiredStateBit = PipelineStateChange.VertexShaderResources;
+					desiredStateBit = PipelineResourceChange.VertexShaderResources;
 				    destSamplers = _lastDrawCall.VertexShaderSamplers;
 				    break;
 			    case ShaderType.Pixel:
-				    desiredStateBit = PipelineStateChange.PixelShaderResources;
+				    desiredStateBit = PipelineResourceChange.PixelShaderResources;
 				    destSamplers = _lastDrawCall.PixelShaderSamplers;
 				    break;
 			    default:
@@ -526,7 +503,7 @@ namespace Gorgon.Graphics.Core
 		                              desiredStateBit);
 
 		    // Local functions are neat.
-		    PipelineStateChange CopyToLastDrawCall(int start, int end, GorgonSamplerStates lastDrawSamplers, GorgonSamplerState[] newSamplers, PipelineStateChange changes, PipelineStateChange desiredBit)
+		    PipelineResourceChange CopyToLastDrawCall(int start, int end, GorgonSamplerStates lastDrawSamplers, GorgonSamplerState[] newSamplers, PipelineResourceChange changes, PipelineResourceChange desiredBit)
 		    {
 			    for (int i = start; i < end; ++i)
 			    {
@@ -542,38 +519,119 @@ namespace Gorgon.Graphics.Core
 		    }
 	    }
 
+	    /// <summary>
+	    /// Function to compare this pipeline state with another pipeline state.
+	    /// </summary>
+	    /// <param name="state">The state to compare.</param>
+	    /// <returns>The states that have been changed between this state and the other <paramref name="state"/>.</returns>
+	    private PipelineStateChange GetPipelineStateChange(GorgonPipelineState state)
+	    {
+		    var pipelineFlags = PipelineStateChange.None;
+
+		    if ((_lastDrawCall.State == null) && (state == null))
+		    {
+			    return pipelineFlags;
+		    }
+
+		    if (((_lastDrawCall.State == null) && (state != null))
+		        || (state == null))
+		    {
+			    pipelineFlags |= PipelineStateChange.BlendState
+			                     | PipelineStateChange.DepthStencilState
+			                     | PipelineStateChange.RasterState
+			                     | PipelineStateChange.PixelShader
+			                     | PipelineStateChange.VertexShader
+			                     | PipelineStateChange.GeometryShader;
+
+			    if (VideoDevice.RequestedFeatureLevel >= FeatureLevelSupport.Level_11_0)
+			    {
+				    pipelineFlags |= PipelineStateChange.HullShader
+				                     | PipelineStateChange.DomainShader
+				                     | PipelineStateChange.ComputeShader;
+			    }
+
+			    _lastDrawCall.State = state;
+			    return pipelineFlags;
+		    }
+
+			if (_lastDrawCall.State.Info.PixelShader != state.Info.PixelShader)
+			{
+			    pipelineFlags |= PipelineStateChange.PixelShader;
+		    }
+
+		    if (_lastDrawCall.State.Info.VertexShader != state.Info.VertexShader)
+		    {
+			    pipelineFlags |= PipelineStateChange.VertexShader;
+		    }
+
+		    if (_lastDrawCall.State.D3DRasterState != state.D3DRasterState)
+		    {
+			    pipelineFlags |= PipelineStateChange.RasterState;
+		    }
+
+		    if (_lastDrawCall.State.D3DDepthStencilState != state.D3DDepthStencilState)
+		    {
+			    pipelineFlags |= PipelineStateChange.DepthStencilState;
+		    }
+
+		    if (_lastDrawCall.State.D3DBlendState != state.D3DBlendState)
+		    {
+			    pipelineFlags |= PipelineStateChange.BlendState;
+		    }
+
+		    if (pipelineFlags != PipelineStateChange.None)
+		    {
+			    _lastDrawCall.State = state;
+		    }
+
+		    return pipelineFlags;
+	    }
+
 		/// <summary>
 		/// Function to merge the current and previous draw call in order to reduce state change.
 		/// </summary>
 		/// <param name="sourceDrawCall">The draw call that is currently being executed.</param>
-		private PipelineStateChange MergeDrawCall(GorgonDrawCallBase sourceDrawCall)
+		/// <returns>The changes to the resources and the state for the pipeline.</returns>
+		private (PipelineResourceChange, PipelineStateChange) MergeDrawCall(GorgonDrawCallBase sourceDrawCall)
 	    {
 		    if (_lastDrawCall == null)
 		    {
 			    _lastDrawCall = new GorgonDrawCallBase();
 		    }
 
-		    PipelineStateChange stateChanges = PipelineStateChange.None;
-
+		    PipelineResourceChange stateChanges = PipelineResourceChange.None;
+			
 		    if (_lastDrawCall.PrimitiveTopology != sourceDrawCall.PrimitiveTopology)
 		    {
 			    _lastDrawCall.PrimitiveTopology = sourceDrawCall.PrimitiveTopology;
-			    stateChanges |= PipelineStateChange.PrimitiveTopology;
+			    stateChanges |= PipelineResourceChange.PrimitiveTopology;
 		    }
 
 		    if (_lastDrawCall.IndexBuffer != sourceDrawCall.IndexBuffer)
 		    {
 			    _lastDrawCall.IndexBuffer = sourceDrawCall.IndexBuffer;
-			    stateChanges |= PipelineStateChange.IndexBuffer;
+			    stateChanges |= PipelineResourceChange.IndexBuffer;
 		    }
 
-		    if (_lastDrawCall.State != sourceDrawCall.State)
+		    if (_lastDrawCall.BlendSampleMask != sourceDrawCall.BlendSampleMask)
 		    {
-			    _lastDrawCall.State = sourceDrawCall.State;
-				stateChanges |= PipelineStateChange.PipelineState;
+			    _lastDrawCall.BlendSampleMask = sourceDrawCall.BlendSampleMask;
+				stateChanges |= PipelineResourceChange.BlendSampleMask;
 		    }
 
-		    stateChanges |= MergeViewPorts(sourceDrawCall.Viewports, stateChanges);
+		    if (_lastDrawCall.DepthStencilReference != sourceDrawCall.DepthStencilReference)
+		    {
+			    _lastDrawCall.DepthStencilReference = sourceDrawCall.DepthStencilReference;
+				stateChanges |= PipelineResourceChange.DepthStencilReference;
+		    }
+
+		    if (!_lastDrawCall.BlendFactor.Equals(sourceDrawCall.BlendFactor))
+		    {
+			    _lastDrawCall.BlendFactor = sourceDrawCall.BlendFactor;
+			    stateChanges |= PipelineResourceChange.BlendFactor;
+			}
+
+			stateChanges |= MergeViewPorts(sourceDrawCall.Viewports, stateChanges);
 		    stateChanges |= MergeScissorRects(sourceDrawCall.ScissorRectangles, stateChanges);
 		    stateChanges |= MergeVertexBuffers(sourceDrawCall.VertexBuffers, stateChanges);
 		    stateChanges |= MergeRenderTargets(sourceDrawCall.RenderTargets, stateChanges);
@@ -584,7 +642,7 @@ namespace Gorgon.Graphics.Core
 		    stateChanges |= MergeShaderSamplers(ShaderType.Vertex, sourceDrawCall.VertexShaderSamplers, stateChanges);
 		    stateChanges |= MergeShaderSamplers(ShaderType.Pixel, sourceDrawCall.PixelShaderSamplers, stateChanges);
 
-			return stateChanges;
+			return (stateChanges, GetPipelineStateChange(sourceDrawCall.State));
 	    }
 
 		/// <summary>
@@ -654,8 +712,6 @@ namespace Gorgon.Graphics.Core
 	    /// <returns>An existing pipeline state if no changes are found, or a new pipeline state otherwise.</returns>
 	    private GorgonPipelineState SetupPipelineState(IGorgonPipelineStateInfo newState)
 	    {
-		    const PipelineStateChangeFlags allStates = PipelineStateChangeFlags.All;
-
 		    // Existing states.
 		    D3D11.DepthStencilState depthStencilState = null;
 		    D3D11.BlendState1 blendState = null;
@@ -667,36 +723,36 @@ namespace Gorgon.Graphics.Core
 		    for (int i = 0; i < _stateCache.Count; ++i)
 		    {
 				int blendStateEqualCount = 0;
-				PipelineStateChangeFlags inheritedState = PipelineStateChangeFlags.None;
+				PipelineStateChange inheritedState = PipelineStateChange.None;
 				GorgonPipelineState cachedState = _stateCache[i];
 			    IGorgonPipelineStateInfo cachedStateInfo = _stateCache[i].Info;
 
 			    if (cachedStateInfo.PixelShader == newStateInfo.PixelShader) 
 			    {
-				    inheritedState |= PipelineStateChangeFlags.PixelShader;
+				    inheritedState |= PipelineStateChange.PixelShader;
 			    }
 
 			    if (cachedStateInfo.VertexShader == newStateInfo.VertexShader)
 			    {
-				    inheritedState |= PipelineStateChangeFlags.VertexShader;
+				    inheritedState |= PipelineStateChange.VertexShader;
 			    }
 
 			    if (cachedStateInfo.RasterState.Equals(newStateInfo.RasterState))
 			    {
 				    rasterState = cachedState.D3DRasterState;
-				    inheritedState |= PipelineStateChangeFlags.RasterState;
+				    inheritedState |= PipelineStateChange.RasterState;
 			    }
 
 			    if (cachedStateInfo.DepthStencilState.Equals(newStateInfo.DepthStencilState))
 			    {
 				    depthStencilState = cachedState.D3DDepthStencilState;
-				    inheritedState |= PipelineStateChangeFlags.DepthStencilState;
+				    inheritedState |= PipelineStateChange.DepthStencilState;
 			    }
 
 			    if (ReferenceEquals(newStateInfo.RenderTargetBlendState, cachedStateInfo.RenderTargetBlendState))
 			    {
 				    blendState = cachedState.D3DBlendState;
-				    inheritedState |= PipelineStateChangeFlags.BlendState;
+				    inheritedState |= PipelineStateChange.BlendState;
 			    }
 			    else
 			    {
@@ -713,13 +769,13 @@ namespace Gorgon.Graphics.Core
 					    if (blendStateEqualCount == newStateInfo.RenderTargetBlendState.Count)
 					    {
 						    blendState = cachedState.D3DBlendState;
-						    inheritedState |= PipelineStateChangeFlags.BlendState;
+						    inheritedState |= PipelineStateChange.BlendState;
 					    }
 				    }
 			    }
 
 			    // We've copied all the states, so just return the existing pipeline state.
-			    if (inheritedState == allStates)
+			    if (inheritedState == PipelineStateChange.All)
 			    {
 				    return _stateCache[i];
 			    }
@@ -751,72 +807,43 @@ namespace Gorgon.Graphics.Core
 		/// Function to apply a pipeline state to the pipeline.
 		/// </summary>
 		/// <param name="state">A <see cref="GorgonPipelineState"/> to apply to the pipeline.</param>
+		/// <param name="changes">The changes to the pipeline state to apply.</param>
 		/// <remarks>
 		/// <para>
 		/// This is responsible for setting all the states for a pipeline at once. This has the advantage of ensuring that duplicate states do not get set so that performance is not impacted. 
 		/// </para>
 		/// </remarks>
-		private void ApplyPipelineState(GorgonPipelineState state)
+		private void ApplyPipelineState(GorgonPipelineState state, PipelineStateChange changes)
 		{
-			if (state == null)
+			if (changes == PipelineStateChange.None)
 			{
 				return;
 			}
 
-			// This state has not changed at all, so do nothing.
-			if (state == _lastState)
+			if ((changes & PipelineStateChange.RasterState) == PipelineStateChange.RasterState)
 			{
-				return;
+				D3DDeviceContext.Rasterizer.State = state?.D3DRasterState;
 			}
 
-			PipelineStateChangeFlags changes = state.GetChanges(_lastState);
-
-			if (changes == PipelineStateChangeFlags.None)
+			if ((changes & PipelineStateChange.DepthStencilState) == PipelineStateChange.DepthStencilState)
 			{
-				return;
+				D3DDeviceContext.OutputMerger.DepthStencilState = state?.D3DDepthStencilState;
 			}
 
-			if ((changes & PipelineStateChangeFlags.BlendFactor) == PipelineStateChangeFlags.BlendFactor)
+			if ((changes & PipelineStateChange.BlendState) == PipelineStateChange.BlendState)
 			{
-				D3DDeviceContext.OutputMerger.BlendFactor = state.BlendFactor.ToRawColor4();
+				D3DDeviceContext.OutputMerger.BlendState = state?.D3DBlendState;
 			}
 
-			if ((changes & PipelineStateChangeFlags.BlendSampleMask) == PipelineStateChangeFlags.BlendSampleMask)
+			if ((changes & PipelineStateChange.VertexShader) == PipelineStateChange.VertexShader)
 			{
-				D3DDeviceContext.OutputMerger.BlendSampleMask = state.BlendSampleMask;
+				D3DDeviceContext.VertexShader.Set(state?.Info.VertexShader?.D3DShader);
 			}
 
-			if ((changes & PipelineStateChangeFlags.DepthStencilReference) == PipelineStateChangeFlags.DepthStencilReference)
+			if ((changes & PipelineStateChange.PixelShader) == PipelineStateChange.PixelShader)
 			{
-				D3DDeviceContext.OutputMerger.DepthStencilReference = state.DepthStencilReference;
+				D3DDeviceContext.PixelShader.Set(state?.Info.PixelShader?.D3DShader);
 			}
-
-			if ((changes & PipelineStateChangeFlags.RasterState) == PipelineStateChangeFlags.RasterState)
-			{
-				D3DDeviceContext.Rasterizer.State = state.D3DRasterState;
-			}
-
-			if ((changes & PipelineStateChangeFlags.DepthStencilState) == PipelineStateChangeFlags.DepthStencilState)
-			{
-				D3DDeviceContext.OutputMerger.DepthStencilState = state.D3DDepthStencilState;
-			}
-
-			if ((changes & PipelineStateChangeFlags.BlendState) == PipelineStateChangeFlags.BlendState)
-			{
-				D3DDeviceContext.OutputMerger.BlendState = state.D3DBlendState;
-			}
-
-			if ((changes & PipelineStateChangeFlags.VertexShader) == PipelineStateChangeFlags.VertexShader)
-			{
-				D3DDeviceContext.VertexShader.Set(state.Info.VertexShader?.D3DShader);
-			}
-
-			if ((changes & PipelineStateChangeFlags.PixelShader) == PipelineStateChangeFlags.PixelShader)
-			{
-				D3DDeviceContext.PixelShader.Set(state.Info.PixelShader?.D3DShader);
-			}
-
-			_lastState = _lastDrawCall.State;
 		}
 
 		/// <summary>
@@ -958,82 +985,93 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="drawCall">The draw call containing the direct states to change.</param>
 		/// <param name="newState">The current pipeline state settings for the new draw call.</param>
-		/// <param name="changes">The changes to apply.</param>
-		private void ApplyPerDrawStates(GorgonDrawCallBase drawCall, GorgonPipelineState newState, PipelineStateChange changes)
+		/// <param name="resourceChanges">The resource changes to apply.</param>
+		/// <param name="stateChanges">The pipeline state changes to apply.</param>
+		private void ApplyPerDrawStates(GorgonDrawCallBase drawCall, GorgonPipelineState newState, PipelineResourceChange resourceChanges, PipelineStateChange stateChanges)
 		{
-			if (changes == PipelineStateChange.None)
-			{
-				return;
-			}
-
-			if ((changes & PipelineStateChange.PrimitiveTopology) == PipelineStateChange.PrimitiveTopology)
+			if ((resourceChanges & PipelineResourceChange.PrimitiveTopology) == PipelineResourceChange.PrimitiveTopology)
 			{
 				D3DDeviceContext.InputAssembler.PrimitiveTopology = drawCall.PrimitiveTopology;
 			}
 
-			if ((changes & PipelineStateChange.Viewports) == PipelineStateChange.Viewports)
+			if ((resourceChanges & PipelineResourceChange.Viewports) == PipelineResourceChange.Viewports)
 			{
 				SetViewports(drawCall.Viewports);
 			}
 
-			if ((changes & PipelineStateChange.ScissorRectangles) == PipelineStateChange.ScissorRectangles)
+			if ((resourceChanges & PipelineResourceChange.ScissorRectangles) == PipelineResourceChange.ScissorRectangles)
 			{
 				SetScissorRects(drawCall.ScissorRectangles);
 			}
 
-			if ((changes & PipelineStateChange.InputLayout) == PipelineStateChange.InputLayout)
+			if ((resourceChanges & PipelineResourceChange.InputLayout) == PipelineResourceChange.InputLayout)
 			{
 				D3DDeviceContext.InputAssembler.InputLayout = drawCall.VertexBuffers?.InputLayout.D3DInputLayout;
 			}
 
-			if ((changes & PipelineStateChange.VertexBuffers) == PipelineStateChange.VertexBuffers)
+			if ((resourceChanges & PipelineResourceChange.VertexBuffers) == PipelineResourceChange.VertexBuffers)
 			{
 				SetVertexBuffers(drawCall.VertexBuffers);
 			}
 
-			if ((changes & PipelineStateChange.IndexBuffer) == PipelineStateChange.IndexBuffer)
+			if ((resourceChanges & PipelineResourceChange.IndexBuffer) == PipelineResourceChange.IndexBuffer)
 			{
 				SetIndexbuffer(drawCall.IndexBuffer);
 			}
 			
-			if ((changes & PipelineStateChange.RenderTargets) == PipelineStateChange.RenderTargets)
+			if ((resourceChanges & PipelineResourceChange.RenderTargets) == PipelineResourceChange.RenderTargets)
 			{
 				SetRenderTargets(drawCall.RenderTargets);
 			}
 
-			if ((changes & PipelineStateChange.VertexShaderConstantBuffers) == PipelineStateChange.VertexShaderConstantBuffers)
+			if ((resourceChanges & PipelineResourceChange.VertexShaderConstantBuffers) == PipelineResourceChange.VertexShaderConstantBuffers)
 			{
 				SetShaderConstantBuffers(ShaderType.Vertex, drawCall.VertexShaderConstantBuffers);
 			}
 
-			if ((changes & PipelineStateChange.PixelShaderConstantBuffers) == PipelineStateChange.PixelShaderConstantBuffers)
+			if ((resourceChanges & PipelineResourceChange.PixelShaderConstantBuffers) == PipelineResourceChange.PixelShaderConstantBuffers)
 			{
 				SetShaderConstantBuffers(ShaderType.Pixel, drawCall.PixelShaderConstantBuffers);
 			}
 
-			if ((changes & PipelineStateChange.VertexShaderResources) == PipelineStateChange.VertexShaderResources)
+			if ((resourceChanges & PipelineResourceChange.VertexShaderResources) == PipelineResourceChange.VertexShaderResources)
 			{
 				SetShaderResourceViews(ShaderType.Vertex, drawCall.VertexShaderResourceViews);
 			}
 
-			if ((changes & PipelineStateChange.PixelShaderResources) == PipelineStateChange.PixelShaderResources)
+			if ((resourceChanges & PipelineResourceChange.PixelShaderResources) == PipelineResourceChange.PixelShaderResources)
 			{
 				SetShaderResourceViews(ShaderType.Pixel, drawCall.PixelShaderResourceViews);
 			}
 
-			if ((changes & PipelineStateChange.VertexShaderResources) == PipelineStateChange.VertexShaderResources)
+			if ((resourceChanges & PipelineResourceChange.VertexShaderResources) == PipelineResourceChange.VertexShaderResources)
 			{
 				SetShaderSamplers(ShaderType.Vertex, drawCall.VertexShaderSamplers);
 			}
 
-			if ((changes & PipelineStateChange.PixelShaderResources) == PipelineStateChange.PixelShaderResources)
+			if ((resourceChanges & PipelineResourceChange.PixelShaderResources) == PipelineResourceChange.PixelShaderResources)
 			{
 				SetShaderSamplers(ShaderType.Pixel, drawCall.PixelShaderSamplers);
 			}
 
-			if ((changes & PipelineStateChange.PipelineState) == PipelineStateChange.PipelineState)
+			if ((resourceChanges & PipelineResourceChange.BlendFactor) == PipelineResourceChange.BlendFactor)
 			{
-				ApplyPipelineState(newState);
+				D3DDeviceContext.OutputMerger.BlendFactor = drawCall.BlendFactor.ToRawColor4();
+			}
+
+			if ((resourceChanges & PipelineResourceChange.BlendSampleMask) == PipelineResourceChange.BlendSampleMask)
+			{
+				D3DDeviceContext.OutputMerger.BlendSampleMask = drawCall.BlendSampleMask;
+			}
+
+			if ((resourceChanges & PipelineResourceChange.DepthStencilReference) == PipelineResourceChange.DepthStencilReference)
+			{
+				D3DDeviceContext.OutputMerger.DepthStencilReference = drawCall.DepthStencilReference;
+			}
+
+			if (stateChanges != PipelineStateChange.None)
+			{
+				ApplyPipelineState(newState, stateChanges);
 			}
 		}
 		
@@ -1092,9 +1130,9 @@ namespace Gorgon.Graphics.Core
 			drawCall.ValidateObject(nameof(drawCall));
 
 			// Merge this draw call with our previous one (if available).
-			PipelineStateChange stateChange = MergeDrawCall(drawCall);
+			(PipelineResourceChange ChangedResources, PipelineStateChange ChangedStates) stateChange = MergeDrawCall(drawCall);
 
-			ApplyPerDrawStates(_lastDrawCall, drawCall.State, stateChange);
+			ApplyPerDrawStates(_lastDrawCall, drawCall.State, stateChange.ChangedResources, stateChange.ChangedStates);
 
 			D3DDeviceContext.DrawIndexed(drawCall.IndexCount, drawCall.IndexStart, drawCall.BaseVertexIndex);
 		}
@@ -1124,9 +1162,9 @@ namespace Gorgon.Graphics.Core
 			drawCall.ValidateObject(nameof(drawCall));
 
 			// Merge this draw call with our previous one (if available).
-			PipelineStateChange stateChange = MergeDrawCall(drawCall);
+			(PipelineResourceChange ChangedResources, PipelineStateChange ChangedStates) stateChange = MergeDrawCall(drawCall);
 
-			ApplyPerDrawStates(_lastDrawCall, drawCall.State, stateChange);
+			ApplyPerDrawStates(_lastDrawCall, drawCall.State, stateChange.ChangedResources, stateChange.ChangedStates);
 
 			D3DDeviceContext.Draw(drawCall.VertexCount, drawCall.VertexStartIndex);
 		}
@@ -1156,9 +1194,9 @@ namespace Gorgon.Graphics.Core
 			drawCall.ValidateObject(nameof(drawCall));
 
 			// Merge this draw call with our previous one (if available).
-			PipelineStateChange stateChange = MergeDrawCall(drawCall);
+			(PipelineResourceChange ChangedResources, PipelineStateChange ChangedStates) stateChange = MergeDrawCall(drawCall);
 
-			ApplyPerDrawStates(_lastDrawCall, drawCall.State, stateChange);
+			ApplyPerDrawStates(_lastDrawCall, drawCall.State, stateChange.ChangedResources, stateChange.ChangedStates);
 
 			D3DDeviceContext.DrawInstanced(drawCall.VertexCountPerInstance, drawCall.InstanceCount, drawCall.VertexStartIndex, drawCall.StartInstanceIndex);
 		}
@@ -1188,9 +1226,9 @@ namespace Gorgon.Graphics.Core
 			drawCall.ValidateObject(nameof(drawCall));
 
 			// Merge this draw call with our previous one (if available).
-			PipelineStateChange stateChange = MergeDrawCall(drawCall);
+			(PipelineResourceChange ChangedResources, PipelineStateChange ChangedStates) stateChange = MergeDrawCall(drawCall);
 
-			ApplyPerDrawStates(_lastDrawCall, drawCall.State, stateChange);
+			ApplyPerDrawStates(_lastDrawCall, drawCall.State, stateChange.ChangedResources, stateChange.ChangedStates);
 
 			D3DDeviceContext.DrawIndexedInstanced(drawCall.IndexCountPerInstance, drawCall.InstanceCount, drawCall.IndexStart, drawCall.BaseVertexIndex, drawCall.StartInstanceIndex);
 		}
@@ -1201,7 +1239,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="info">Information used to define the pipeline state.</param>
 		/// <returns>A new <see cref="GorgonPipelineState"/>, or an existing one if one was already created.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="info"/> has no <see cref="IGorgonPipelineStateInfo.VertexShader"/>.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="info"/> has no <see cref="IGorgonPipelineStateInfo.VertexShader"/>.</exception>
 		/// <remarks>
 		/// <para>
 		/// This method will create a new pipeline state, or retrieve an existing state if a cached state already exists that exactly matches the information passed to the <paramref name="info"/> parameter. 

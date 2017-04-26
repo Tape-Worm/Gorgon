@@ -459,9 +459,8 @@ namespace Gorgon.Graphics
 		/// </remarks>
 		public static GorgonColor operator +(GorgonColor left, GorgonColor right)
 		{
-			GorgonColor result;
 
-			Add(ref left, ref right, out result);
+			Add(ref left, ref right, out GorgonColor result);
 
 			return result;
 		}
@@ -477,9 +476,8 @@ namespace Gorgon.Graphics
 		/// </remarks>
 		public static GorgonColor operator -(GorgonColor left, GorgonColor right)
 		{
-			GorgonColor result;
 
-			Subtract(ref left, ref right, out result);
+			Subtract(ref left, ref right, out GorgonColor result);
 
 			return result;
 		}
@@ -492,9 +490,8 @@ namespace Gorgon.Graphics
 		/// <returns>The result of the operator.</returns>
 		public static GorgonColor operator *(GorgonColor left, GorgonColor right)
 		{
-			GorgonColor result;
 
-			Multiply(ref left, ref right, out result);
+			Multiply(ref left, ref right, out GorgonColor result);
 
 			return result;
 		}
@@ -507,9 +504,8 @@ namespace Gorgon.Graphics
 		/// <returns>The result of the operator.</returns>
 		public static GorgonColor operator *(GorgonColor color, float value)
 		{
-			GorgonColor result;
 
-			Multiply(ref color, value, out result);
+			Multiply(ref color, value, out GorgonColor result);
 
 			return result;
 		}

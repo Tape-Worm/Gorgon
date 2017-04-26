@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using Gorgon.Core;
 using Gorgon.Core.Properties;
 
 namespace Gorgon.Configuration
@@ -118,7 +119,7 @@ namespace Gorgon.Configuration
 		/// </summary>
 		/// <param name="section">Section for the setting.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="section"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="section"/> is empty.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="section"/> is empty.</exception>
 		public GorgonApplicationSettingAttribute(string section)
 		{
 			if (section == null)
@@ -128,7 +129,7 @@ namespace Gorgon.Configuration
 
 			if (string.IsNullOrWhiteSpace(section))
 			{
-				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(section));
+				throw new ArgumentEmptyException(nameof(section));
 			}
 
 			Section = section;

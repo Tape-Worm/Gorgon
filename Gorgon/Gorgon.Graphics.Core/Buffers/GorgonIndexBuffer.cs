@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using Gorgon.Core;
 using D3D11 = SharpDX.Direct3D11;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
@@ -297,9 +298,8 @@ namespace Gorgon.Graphics.Core
 #endif
 
 			mode = D3D11.MapMode.WriteDiscard;
-			DX.DataStream stream;
 
-			Graphics.D3DDeviceContext.MapSubresource(D3DBuffer, mode, D3D11.MapFlags.None, out stream);
+			Graphics.D3DDeviceContext.MapSubresource(D3DBuffer, mode, D3D11.MapFlags.None, out DX.DataStream stream);
 
 			if (_lockAddress == null)
 			{
@@ -659,7 +659,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="initialData">[Optional] The initial data used to populate the buffer.</param>
 		/// <param name="log">[Optional] The log interface used for debug logging.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, <paramref name="name"/>, or <paramref name="info"/> parameters are <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> is empty.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> is empty.</exception>
 		public GorgonIndexBuffer(string name, GorgonGraphics graphics, IGorgonIndexBufferInfo info, GorgonPointerBase initialData = null, IGorgonLog log = null)
 			: base(graphics, name, log)
 		{

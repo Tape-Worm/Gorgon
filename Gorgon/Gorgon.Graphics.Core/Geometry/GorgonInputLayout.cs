@@ -217,10 +217,9 @@ namespace Gorgon.Graphics.Core
 				GorgonInputElement element = _elements[i];
 				size += element.SizeInBytes;
 
-				int slotSize;
 
 				// Calculate the individual slot sizes.
-				if (_slotSizes.TryGetValue(element.Slot, out slotSize))
+				if (_slotSizes.TryGetValue(element.Slot, out int slotSize))
 				{
 					slotSize += element.SizeInBytes;
 				}
@@ -384,13 +383,13 @@ namespace Gorgon.Graphics.Core
 				// Try to determine the format from the type.
 				if ((format == DXGI.Format.Unknown) && (!_typeMapping.TryGetValue(item.Field.FieldType, out format)))
 				{
-					throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_LAYOUT_INVALID_ELEMENT_TYPE, item.Item1.FieldType.FullName));
+					throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_LAYOUT_INVALID_ELEMENT_TYPE, item.Field.FieldType.FullName));
 				}
 
 				var element = new GorgonInputElement(contextName, format,
-													 (item.Item2.AutoOffset ? byteOffset : item.Item2.Offset),
-													 item.Item2.Index, item.InputElement.Slot, item.InputElement.Instanced,
-													 item.Item2.Instanced ? item.InputElement.InstanceCount : 0);
+													 (item.InputElement.AutoOffset ? byteOffset : item.InputElement.Offset),
+													 item.InputElement.Index, item.InputElement.Slot, item.InputElement.Instanced,
+													 item.InputElement.Instanced ? item.InputElement.InstanceCount : 0);
 
 				FindDuplicateElements(elements, element, i, nameof(element));
 
@@ -495,10 +494,8 @@ namespace Gorgon.Graphics.Core
 		/// <param name="shader">Vertex shader to bind the layout with.</param>
 		/// <param name="elements">The input elements to assign to this layout.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/>, <paramref name="videoDevice"/>, <paramref name="shader"/>, or the <paramref name="elements"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/>, or the <paramref name="elements"/> parameter is empty.
-		/// <para>-or-</para>
-		/// <para>Thrown when an element with the same context, slot and index appears more than once in the <paramref name="elements"/> parameter.</para>
-		/// </exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/>, or the <paramref name="elements"/> parameter is empty.</exception>
+		/// <exception cref="ArgumentException">Thrown when an element with the same context, slot and index appears more than once in the <paramref name="elements"/> parameter.</exception>
 		public GorgonInputLayout(string name, IGorgonVideoDevice videoDevice, GorgonVertexShader shader, IEnumerable<GorgonInputElement> elements)
 		{
 			if (name == null)
@@ -508,7 +505,7 @@ namespace Gorgon.Graphics.Core
 
 			if (string.IsNullOrWhiteSpace(name))
 			{
-				throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
+				throw new ArgumentEmptyException(nameof(name));
 			}
 
 			Name = name;
@@ -518,7 +515,7 @@ namespace Gorgon.Graphics.Core
 
 			if (_elements.Length == 0)
 			{
-				throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(elements));
+				throw new ArgumentEmptyException(nameof(elements));
 			}
 
 			_slotSizes = new Dictionary<int, int>();

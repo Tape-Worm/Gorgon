@@ -149,7 +149,7 @@ namespace Gorgon.IO
 		/// <param name="mountLocation">[Optional] The mount location.</param>
 		/// <param name="isFakeMountPoint">[Optional] <b>true</b> if the mount point doesn't use a real physical location, or <b>false</b> if it does.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="physicalPath"/>, <paramref name="provider"/>, or <paramref name="mountLocation"/> parameters are <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="physicalPath"/>, or the <paramref name="mountLocation"/> parameter is empty.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="physicalPath"/>, or the <paramref name="mountLocation"/> parameter is empty.</exception>
 		internal GorgonFileSystemMountPoint(IGorgonFileSystemProvider provider, string physicalPath, string mountLocation, bool isFakeMountPoint = false)
 		{
 			if (physicalPath == null)
@@ -164,12 +164,12 @@ namespace Gorgon.IO
 
 			if (string.IsNullOrWhiteSpace(physicalPath))
 			{
-				throw new ArgumentException(Resources.GORFS_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(physicalPath));
+				throw new ArgumentEmptyException(nameof(physicalPath));
 			}
 
 			if (string.IsNullOrWhiteSpace(mountLocation))
 			{
-				throw new ArgumentException(Resources.GORFS_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(mountLocation));
+				throw new ArgumentEmptyException(nameof(mountLocation));
 			}
 
 			Provider = provider ?? throw new ArgumentNullException(nameof(provider));

@@ -269,9 +269,28 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonRenderTargetViews"/> class.
 		/// </summary>
-		public GorgonRenderTargetViews()
-			: base(MaximumRenderTargetCount)
+		internal GorgonRenderTargetViews()
+			: this(MaximumRenderTargetCount)
 		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonRenderTargetViews"/> class.
+		/// </summary>
+		/// <param name="size">The number of render targets to place within this list.</param>
+		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> parameter is less than 1, or greater than the <see cref="MaximumRenderTargetCount"/>.</exception>
+		public GorgonRenderTargetViews(int size)
+			: base(size)
+		{
+			if (size < 1)
+			{
+				throw new ArgumentOutOfRangeException(nameof(size));
+			}
+
+			if (size > MaximumRenderTargetCount)
+			{
+				throw new ArgumentOutOfRangeException(nameof(size));
+			}
 		}
 		#endregion
 	}

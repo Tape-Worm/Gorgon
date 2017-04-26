@@ -87,13 +87,12 @@ namespace GorgonLibrary.Example
         public void RotateXYZ(float xAngle, float yAngle, float zAngle)
         {
 			// Quaternion for rotation.
-			DX.Quaternion quatRotation;
 
 			// Convert degrees to radians.
 			var rotRads = new DX.Vector3(xAngle.ToRadians(), yAngle.ToRadians(), zAngle.ToRadians());
 
 			// Rotate and build a new rotation matrix.
-			DX.Quaternion.RotationYawPitchRoll(rotRads.Y, rotRads.X, rotRads.Z, out quatRotation);
+			DX.Quaternion.RotationYawPitchRoll(rotRads.Y, rotRads.X, rotRads.Z, out DX.Quaternion quatRotation);
 			DX.Matrix.RotationQuaternion(ref quatRotation, out _rotation);
         }
 

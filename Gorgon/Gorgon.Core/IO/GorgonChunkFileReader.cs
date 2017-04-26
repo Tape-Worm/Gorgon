@@ -349,7 +349,7 @@ namespace Gorgon.IO
 		/// <remarks>
 		/// </remarks>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/>, or the <paramref name="appSpecificIds"/> parameters are <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="appSpecificIds"/> contains no values.
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="appSpecificIds"/> contains no values.
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="stream"/> is write-only</para>
 		/// </exception>
@@ -385,7 +385,7 @@ namespace Gorgon.IO
 
 			if (_appSpecificIds.Count == 0)
 			{
-				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(appSpecificIds));
+				throw new ArgumentEmptyException(nameof(appSpecificIds));
 			}
 
 			Mode = ChunkFileMode.Read;

@@ -442,7 +442,7 @@ namespace Gorgon.UI
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private static void Application_Idle(object sender, EventArgs e)
 		{
-			MSG message;	// Windows message to retrieve.
+			// Windows message to retrieve.
 
 			// We have nothing to execute, so just leave.
 			if ((IdleMethod == null) || (!IsRunning))
@@ -454,7 +454,7 @@ namespace Gorgon.UI
 			// run regardless since we have an idle method to execute.
 			bool appShouldProcess = MainForm == null || AllowBackground || IsForeground;
 
-			while ((appShouldProcess) && (!UserApi.PeekMessage(out message, IntPtr.Zero, 0, 0, PeekMessageNoRemove)))
+			while ((appShouldProcess) && (!UserApi.PeekMessage(out MSG message, IntPtr.Zero, 0, 0, PeekMessageNoRemove)))
 			{
                 // Reset the timer so that frame rate timing can start with the first iteration of the loop.
 			    if (!_applicationTimer.IsValueCreated)

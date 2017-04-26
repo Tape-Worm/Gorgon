@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.10
+VisualStudioVersion = 15.0.26403.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Core", "Gorgon\Gorgon.Core\Gorgon.Core.csproj", "{933569ED-52A9-4232-A929-1D4C4489B5A1}"
 EndProject
@@ -78,6 +78,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TvImageCodec", "Examples\Gorgon.Graphics\TvImageCodec\TvImageCodec.csproj", "{58398BDA-7076-410A-B73C-928E79EAE8A9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GlassCube", "Examples\Gorgon.Graphics\GlassCube\GlassCube.csproj", "{EDC602B0-403D-4A3D-8A60-13992B351C95}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestRewrite", "Test\TestRewrite\TestRewrite.csproj", "{CAA0F296-B252-45CD-B734-A88CF69200FE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -272,6 +274,12 @@ Global
 		{EDC602B0-403D-4A3D-8A60-13992B351C95}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EDC602B0-403D-4A3D-8A60-13992B351C95}.ReleaseAndDeploy|Any CPU.ActiveCfg = Release|Any CPU
 		{EDC602B0-403D-4A3D-8A60-13992B351C95}.ReleaseAndDeploy|Any CPU.Build.0 = Release|Any CPU
+		{CAA0F296-B252-45CD-B734-A88CF69200FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CAA0F296-B252-45CD-B734-A88CF69200FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CAA0F296-B252-45CD-B734-A88CF69200FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CAA0F296-B252-45CD-B734-A88CF69200FE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CAA0F296-B252-45CD-B734-A88CF69200FE}.ReleaseAndDeploy|Any CPU.ActiveCfg = Release|Any CPU
+		{CAA0F296-B252-45CD-B734-A88CF69200FE}.ReleaseAndDeploy|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

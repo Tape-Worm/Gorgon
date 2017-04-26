@@ -136,14 +136,12 @@
     <Compile Include="Shaders\GorgonShaderFactory.cs" />
     <Compile Include="Shaders\GorgonShaderMacro.cs" />
     <Compile Include="Shaders\_Internal\ShaderProcessor.cs" />
-    <Compile Include="States\GorgonBlendStateInfo.cs" />
     <Compile Include="States\GorgonRenderTargetBlendStateInfo.cs" />
     <Compile Include="States\GorgonRasterStateInfo.cs" />
     <Compile Include="States\GorgonDepthStencilStateInfo.cs" />
     <Compile Include="Pipeline\GorgonSamplerState.cs" />
     <Compile Include="States\GorgonSamplerStateInfo.cs" />
     <Compile Include="States\GorgonStencilOperationInfo.cs" />
-    <Compile Include="States\_Interfaces\IGorgonBlendStateInfo.cs" />
     <Compile Include="States\_Interfaces\IGorgonRenderTargetBlendStateInfo.cs" />
     <Compile Include="States\_Interfaces\IGorgonDepthStencilStateInfo.cs" />
     <Compile Include="States\_Interfaces\IGorgonStencilOperationInfo.cs" />

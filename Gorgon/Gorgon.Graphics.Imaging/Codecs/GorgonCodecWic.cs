@@ -217,7 +217,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <param name="stream">The stream that will receive the image data.</param>
 		/// <param name="encodingOptions">[Optional] Options used to encode the image data when it is persisted to the stream.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/>, or the <paramref name="imageData"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="stream"/> is read only.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="stream"/> is read only.</exception>
 		/// <exception cref="NotSupportedException">Thrown when the image data in the stream has a pixel format that is unsupported by the codec.</exception>
 		/// <remarks>
 		/// <para>
@@ -345,7 +345,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <param name="fileName">The path to the file to retrieve the offsets from.</param>
 		/// <returns>A list of <c>Point</c> values that indicate the offset within the image for each frame.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileName"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="fileName"/> parameter is empty.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="fileName"/> parameter is empty.</exception>
 		/// <exception cref="EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
 		/// <remarks>
 		/// <para>
@@ -362,7 +362,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 
 			if (string.IsNullOrWhiteSpace(fileName))
 			{
-				throw new ArgumentException(Resources.GORIMG_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(fileName));
+				throw new ArgumentEmptyException(nameof(fileName));
 			}
 
 			using (FileStream stream = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.Read))
@@ -487,7 +487,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <param name="extensions">Common extension(s) for the codec.</param>
 		/// <param name="containerGUID">GUID for the container format.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="codec"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="codec"/> parameter is empty.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="codec"/> parameter is empty.</exception>
 		protected GorgonCodecWic(string codec, string description, IReadOnlyList<string> extensions, Guid containerGUID)
 		{
 			if (codec == null)
@@ -497,7 +497,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 
 			if (string.IsNullOrWhiteSpace(codec))
 			{
-				throw new ArgumentException(Resources.GORIMG_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(codec));
+				throw new ArgumentEmptyException(nameof(codec));
 			}
 
 			Codec = codec;

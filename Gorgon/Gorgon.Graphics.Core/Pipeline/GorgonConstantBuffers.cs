@@ -34,7 +34,7 @@ namespace Gorgon.Graphics.Core
 	/// </summary>
 	/// <remarks>
 	/// <para>
-	/// This is used to pass a set of <see cref="GorgonConstantBuffer"/> objects to a <see cref="GorgonPipelineResources"/> object. This allows an application to set a single or multiple constant buffers at 
+	/// This is used to pass a set of <see cref="GorgonConstantBuffer"/> objects to a <see cref="GorgonDrawCallBase"/> object. This allows an application to set a single or multiple constant buffers at 
 	/// the same time and thus provides a performance boost over setting them individually. 
 	/// </para>
 	/// </remarks>
@@ -89,9 +89,28 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonConstantBuffers"/> class.
 		/// </summary>
-		public GorgonConstantBuffers()
-			: base(MaximumConstantBufferCount)
+		internal GorgonConstantBuffers()
+			: this(MaximumConstantBufferCount)
 		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonConstantBuffers"/> class.
+		/// </summary>
+		/// <param name="size">The number of constant buffers to place within this list.</param>
+		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> parameter is less than 1, or greater than the <see cref="MaximumConstantBufferCount"/>.</exception>
+		public GorgonConstantBuffers(int size)
+			: base(size)
+		{
+			if (size < 1)
+			{
+				throw new ArgumentOutOfRangeException(nameof(size));
+			}
+
+			if (size > MaximumConstantBufferCount)
+			{
+				throw new ArgumentOutOfRangeException(nameof(size));
+			}
 		}
 		#endregion
 	}

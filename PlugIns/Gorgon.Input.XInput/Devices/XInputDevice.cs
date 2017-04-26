@@ -117,15 +117,13 @@ namespace Gorgon.Input.XInput
 		/// <param name="state">The current state of the controller.</param>
 		private void UpdateAxisValues(XI.Gamepad state)
 		{
-			GorgonGamingDeviceAxis xAxis;
-			GorgonGamingDeviceAxis yAxis;
 
-			if (Axis.TryGetValue(GamingDeviceAxis.LeftStickX, out xAxis))
+			if (Axis.TryGetValue(GamingDeviceAxis.LeftStickX, out GorgonGamingDeviceAxis xAxis))
 			{
 				xAxis.Value = state.LeftThumbX;
 			}
 
-			if (Axis.TryGetValue(GamingDeviceAxis.LeftStickY, out yAxis))
+			if (Axis.TryGetValue(GamingDeviceAxis.LeftStickY, out GorgonGamingDeviceAxis yAxis))
 			{
 				yAxis.Value = state.LeftThumbY;
 			}
@@ -217,9 +215,8 @@ namespace Gorgon.Input.XInput
 		/// </remarks>
 		protected override void OnGetData()
 		{
-			XI.State state;
 
-			if ((!_controller.GetState(out state)) || (_lastPacket == state.PacketNumber))
+			if ((!_controller.GetState(out XI.State state)) || (_lastPacket == state.PacketNumber))
 			{
 				return;
 			}
@@ -265,15 +262,13 @@ namespace Gorgon.Input.XInput
 			_info = deviceInfo;
 			_controller = new XI.Controller(deviceInfo.ID);
 
-			GorgonGamingDeviceAxis xAxis;
-			GorgonGamingDeviceAxis yAxis;
 
-			if (Axis.TryGetValue(GamingDeviceAxis.XAxis, out xAxis))
+			if (Axis.TryGetValue(GamingDeviceAxis.XAxis, out GorgonGamingDeviceAxis xAxis))
 			{
 				Axis[GamingDeviceAxis.XAxis].DeadZone = new GorgonRange(-XI.Gamepad.LeftThumbDeadZone, XI.Gamepad.LeftThumbDeadZone);
 			}
 
-			if (Axis.TryGetValue(GamingDeviceAxis.YAxis, out yAxis))
+			if (Axis.TryGetValue(GamingDeviceAxis.YAxis, out GorgonGamingDeviceAxis yAxis))
 			{
 				Axis[GamingDeviceAxis.YAxis].DeadZone = new GorgonRange(-XI.Gamepad.LeftThumbDeadZone, XI.Gamepad.LeftThumbDeadZone);
 			}

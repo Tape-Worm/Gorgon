@@ -147,9 +147,6 @@
   <data name="GORFS_ERR_NO_RAMDISK_PROVIDER" xml:space="preserve">
     <value>The ram disk writer needs a file system that contains a ram disk provider.</value>
   </data>
-  <data name="GORFS_ERR_PARAMETER_MUST_NOT_BE_EMPTY" xml:space="preserve">
-    <value>The parameter must not be empty.</value>
-  </data>
   <data name="GORFS_ERR_PATH_INVALID" xml:space="preserve">
     <value>The path '{0}' is not valid.</value>
   </data>

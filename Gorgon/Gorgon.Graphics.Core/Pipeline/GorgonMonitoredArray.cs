@@ -28,6 +28,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Gorgon.Math;
 
 namespace Gorgon.Graphics.Core
 {
@@ -237,19 +238,40 @@ namespace Gorgon.Graphics.Core
 		
 		/// <summary>Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1" /> to an <see cref="T:System.Array" />, starting at a particular <see cref="T:System.Array" /> index.</summary>
 		/// <param name="array">The one-dimensional <see cref="T:System.Array" /> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1" />. The <see cref="T:System.Array" /> must have zero-based indexing.</param>
-		/// <exception cref="T:System.ArgumentNullException">
-		/// <paramref name="array" /> is null.</exception>
-		/// <exception cref="T:System.ArgumentException">The number of elements in the source <see cref="T:System.Collections.Generic.ICollection`1" /> is greater than the available space from 0 to the end of the destination <paramref name="array" />.</exception>
-		public void CopyTo(GorgonMonitoredArray<T> array)
+		/// <param name="destIndex">[Optional] The destination index in this array to start writing into.</param>
+		/// <exception cref="T:System.ArgumentNullException"><paramref name="array" /> is null.</exception>
+		public void CopyTo(GorgonMonitoredArray<T> array, int destIndex = 0)
 		{
+			if (array == null)
+			{
+				throw new ArgumentNullException(nameof(array));
+			}
+
 			if (array == this)
 			{
 				return;
 			}
 
-			for (int i = 0; i < array.Count; ++i)
+			if (destIndex < 0)
 			{
-				array[i] = this[i];
+				destIndex = 0;
+			}
+
+			if (destIndex >= array.Count)
+			{
+				destIndex = array.Count - 1;
+			}
+
+			for (int i = 0; i < Count; ++i)
+			{
+				int index = i + destIndex;
+
+				if (index >= array.Count)
+				{
+					break;
+				}
+
+				array[destIndex] = this[i];
 			}
 		}
 

@@ -784,10 +784,9 @@ namespace Gorgon.IO
 			{
 				return -1;
 			}
-			
-			byte value;
 
-			_pointer.Read(_position, out value);
+
+			_pointer.Read(_position, out byte value);
 			_position += size;
 
 			return value;
@@ -1093,8 +1092,7 @@ namespace Gorgon.IO
 			}
 #endif
 
-			T result;
-			_pointer.Read(_position, out result);
+			_pointer.Read(_position, out T result);
 			_position += typeSize;
 
 			return result;

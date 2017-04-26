@@ -185,7 +185,6 @@ namespace Gorgon.Native
 			}
 
 			RAWINPUT data = RawInputApi.GetRawInputData(m.LParam);
-			IGorgonRawInputDevice device;
 			DeviceKey key = new DeviceKey
 			{
 				DeviceType = data.Header.Type,
@@ -193,7 +192,7 @@ namespace Gorgon.Native
 			};
 
 			// Try the system device first. If that fails, then try for the actual device that was registered.
-			if (!_devices.TryGetValue(key, out device))
+			if (!_devices.TryGetValue(key, out IGorgonRawInputDevice device))
 			{
 				key.DeviceHandle = data.Header.Device;
 

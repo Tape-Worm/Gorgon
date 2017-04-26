@@ -215,7 +215,7 @@ namespace Gorgon.IO
 
 			if (string.IsNullOrWhiteSpace(extension))
 			{
-				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(extension));
+				throw new ArgumentEmptyException(nameof(extension));
 			}
 
 			Extension = extension;

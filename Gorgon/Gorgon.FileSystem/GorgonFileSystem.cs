@@ -358,10 +358,9 @@ namespace Gorgon.IO
 					throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, directoryName));
 				}
 
-				VirtualFile virtualFile;
 
 				// Update the file information to the most recent provider.
-				if (!directory.Files.TryGetValue(file.Name, out virtualFile))
+				if (!directory.Files.TryGetValue(file.Name, out VirtualFile virtualFile))
 				{
 					directory.Files.Add(mountPoint, file);
 				}
@@ -474,7 +473,7 @@ namespace Gorgon.IO
 
 			if (string.IsNullOrWhiteSpace(path))
 			{
-				throw new ArgumentException(Resources.GORFS_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(path));
+				throw new ArgumentEmptyException(nameof(path));
 			}
 
 			VirtualDirectory startDirectory = InternalGetDirectory(path);
@@ -507,7 +506,7 @@ namespace Gorgon.IO
 
             if (string.IsNullOrWhiteSpace(path))
             {
-                throw new ArgumentException(Resources.GORFS_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(path));
+                throw new ArgumentEmptyException(nameof(path));
             }
 
 			VirtualDirectory start = InternalGetDirectory(path);
@@ -538,7 +537,7 @@ namespace Gorgon.IO
 
 			if (string.IsNullOrWhiteSpace(path))
 			{
-				throw new ArgumentException(Resources.GORFS_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(path));
+				throw new ArgumentEmptyException(nameof(path));
 			}
 
 			if (!path.StartsWith("/", StringComparison.OrdinalIgnoreCase))
@@ -584,7 +583,7 @@ namespace Gorgon.IO
 
 			if (string.IsNullOrWhiteSpace(path))
 			{
-				throw new ArgumentException(Resources.GORFS_ERR_PARAMETER_MUST_NOT_BE_EMPTY, path);
+				throw new ArgumentEmptyException(path);
 			}
 
 			path = path.FormatDirectory('/');
@@ -638,7 +637,7 @@ namespace Gorgon.IO
 		/// <param name="recursive">[Optional] <b>true</b> to search all child directories, <b>false</b> to search only the immediate directory.</param>
 		/// <returns>An enumerable object containing <see cref="IGorgonVirtualDirectory"/> objects that match the <paramref name="directoryMask"/>.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="directoryMask"/> or the <paramref name="path"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="directoryMask"/> or the <paramref name="path"/> parameter are empty.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="directoryMask"/> or the <paramref name="path"/> parameter are empty.</exception>
 		/// <exception cref="DirectoryNotFoundException">Thrown when the directory in specified by the <paramref name="path"/> parameter was not found.</exception>
 		/// <remarks>
 		/// <para>
@@ -667,7 +666,7 @@ namespace Gorgon.IO
 		/// <param name="recursive">[Optional] <b>true</b> to search all child directories, <b>false</b> to search only the immediate directory.</param>
 		/// <returns>An enumerable object containing <see cref="IGorgonVirtualDirectory"/> objects that match the <paramref name="directoryMask"/>.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="directoryMask"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="directoryMask"/> parameter is empty.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="directoryMask"/> parameter is empty.</exception>
 		/// <remarks> 
 		/// <para>
 		/// This will look for all the directories specified by the <paramref name="directoryMask"/> parameter. This parameter will accept wild card characters like * and ?. This allows pattern matching 
@@ -696,7 +695,7 @@ namespace Gorgon.IO
 		/// <param name="recursive">[Optional] <b>true</b> to search all directories, <b>false</b> to search only the immediate directory.</param>
 		/// <returns>An enumerable object containing <see cref="IGorgonVirtualFile"/> objects that match the <paramref name="fileMask"/>.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileMask"/> or the <paramref name="path"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="fileMask"/> or the <paramref name="path"/> are empty.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="fileMask"/> or the <paramref name="path"/> are empty.</exception>
 		/// <exception cref="DirectoryNotFoundException">Thrown when the directory in specified by the <paramref name="path"/> parameter was not found.</exception>
 		/// <remarks>
 		/// <para>
@@ -725,7 +724,7 @@ namespace Gorgon.IO
 		/// <param name="recursive">[Optional] <b>true</b> to search all directories, <b>false</b> to search only the immediate directory.</param>
 		/// <returns>An enumerable object containing <see cref="IGorgonVirtualFile"/> objects that match the <paramref name="fileMask"/>.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileMask"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="fileMask"/> is empty.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="fileMask"/> is empty.</exception>
 		/// <remarks>
 		/// <para>
 		/// This will look for all the files specified by the <paramref name="fileMask"/> parameter. This parameter will accept wild card characters like * and ?. This allows pattern matching which can be 
@@ -751,7 +750,7 @@ namespace Gorgon.IO
 		/// <param name="path">Path to the file to retrieve.</param>
 		/// <returns>The <see cref="IGorgonVirtualFile"/> requested or <b>null</b> if the file was not found.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="path"/> parameter is empty.
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.
 		/// <para>-or-</para>
 		/// <para>Thrown when there is no file name in the <paramref name="path"/>.</para>
 		/// </exception>
@@ -789,7 +788,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="path">Path to the directory to retrieve.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <b>null</b></exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="path"/> parameter is an empty string.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is an empty string.</exception>
 		/// <returns>A <see cref="IGorgonVirtualDirectory"/> if found, <b>null</b> if not.</returns>
 		/// <remarks>
 		/// <para>
@@ -878,7 +877,7 @@ namespace Gorgon.IO
 		/// Function to unmount the mounted virtual file system directories and files specified by the mount point.
 		/// </summary>
 		/// <param name="mountPoint">The mount point to unmount.</param>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="mountPoint"/> was not found in the file system.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="mountPoint"/> was not found in the file system.</exception>
 		/// <remarks>
 		/// <para>
 		/// This will unmount a physical file system from the virtual file system by removing all directories and files associated with that <paramref name="mountPoint"/>. 
@@ -980,7 +979,7 @@ namespace Gorgon.IO
 		/// <param name="physicalPath">The physical file system path.</param>
 		/// <param name="mountLocation">The virtual sub directory that the physical location is mounted under.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="physicalPath"/> or the <paramref name="mountLocation"/> parameters are <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="physicalPath"/> or the <paramref name="mountLocation"/> parameters are empty.
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="physicalPath"/> or the <paramref name="mountLocation"/> parameters are empty.
 		/// <para>-or-</para>
 		/// <para>Thrown when the mount point with the <paramref name="physicalPath"/> and <paramref name="mountLocation"/> was not found in the file system.</para>
 		/// </exception>
@@ -1021,7 +1020,7 @@ namespace Gorgon.IO
 		/// <param name="physicalPath">The physical path to unmount.</param>
 		/// <remarks>This overload will unmount all the mounted virtual files/directories for every mount point with the specified <paramref name="physicalPath"/>.</remarks>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="physicalPath"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="physicalPath"/> parameter is empty.
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="physicalPath"/> parameter is empty.
 		/// <para>-or-</para>
 		/// <para>Thrown when the mount point with the <paramref name="physicalPath"/> was not found in the file system.</para>
 		/// </exception>
@@ -1057,7 +1056,7 @@ namespace Gorgon.IO
 		/// <param name="physicalPath">Path to the physical file system directory or file that contains the files/directories to enumerate.</param>
 		/// <param name="mountPath">[Optional] Virtual directory path to mount into.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="physicalPath"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="physicalPath"/> parameter is an empty string.
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="physicalPath"/> parameter is an empty string.
 		/// <para>-or-</para>
 		/// <para>Thrown if mounting a directory and there is no directory in the path.</para>
 		/// </exception>
@@ -1128,7 +1127,7 @@ namespace Gorgon.IO
 
             if (string.IsNullOrWhiteSpace(physicalPath))
             {
-                throw new ArgumentException(Resources.GORFS_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(physicalPath));
+                throw new ArgumentEmptyException(nameof(physicalPath));
             }
 
 			if (string.IsNullOrWhiteSpace(mountPath))
@@ -1184,7 +1183,12 @@ namespace Gorgon.IO
 		public GorgonFileSystem(IGorgonFileSystemProvider provider, IGorgonLog log = null)
 			: this(log)
 		{
-			_providers[provider.GetType().FullName] = provider ?? throw new ArgumentNullException(nameof(provider));
+			if (provider == null)
+			{
+				throw new ArgumentNullException(nameof(provider));
+			}
+
+			_providers[provider.GetType().FullName] = provider;
 		}
 
 		/// <summary>

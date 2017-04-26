@@ -27,6 +27,7 @@
 using System;
 using System.Collections;
 using System.Diagnostics;
+using Gorgon.Core;
 using Gorgon.Core.Properties;
 
 namespace Gorgon.Diagnostics
@@ -63,7 +64,7 @@ namespace Gorgon.Diagnostics
 		    if (((!keepWhitespace) && (string.IsNullOrWhiteSpace(value))) 
 				|| ((keepWhitespace) && (string.IsNullOrEmpty(value))))
 		    {
-		        throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, paramName);
+		        throw new ArgumentEmptyException(paramName);
 		    }
 		}
 

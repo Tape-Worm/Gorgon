@@ -338,8 +338,7 @@ namespace Gorgon.Graphics.Fonts
 					{
 						float delta = ((float)(i - 1) / (_fontInfo.OutlineSize - 1));
 
-						GorgonColor penColor;
-						GorgonColor.Lerp(ref start, ref end, delta, out penColor);
+						GorgonColor.Lerp(ref start, ref end, delta, out GorgonColor penColor);
 
 						using (var outlinePen = new Drawing.Pen(penColor, i))
 						{

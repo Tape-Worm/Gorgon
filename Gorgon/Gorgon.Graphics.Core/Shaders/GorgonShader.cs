@@ -233,7 +233,7 @@ namespace Gorgon.Graphics.Core
 
 			if (string.IsNullOrWhiteSpace(path))
 			{
-				throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(path));
+				throw new ArgumentEmptyException(nameof(path));
 			}
 
 			using (FileStream stream = File.Open(path, FileMode.Create, FileAccess.Write, FileShare.None))

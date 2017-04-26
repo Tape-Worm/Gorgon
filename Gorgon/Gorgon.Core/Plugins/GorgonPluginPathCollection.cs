@@ -31,6 +31,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Gorgon.Core;
 using Gorgon.Core.Properties;
 using Gorgon.IO;
 
@@ -79,7 +80,7 @@ namespace Gorgon.Plugins
 
             if (string.IsNullOrWhiteSpace(path))
             {
-                throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(path));
+                throw new ArgumentEmptyException(nameof(path));
             }
 			
 			return Path.GetFullPath(path).FormatDirectory(Path.DirectorySeparatorChar);
@@ -90,7 +91,7 @@ namespace Gorgon.Plugins
 		/// </summary>
 		/// <param name="path">The path to remove from the list.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
 		/// <exception cref="DirectoryNotFoundException">Thrown when the <paramref name="path"/> specified is not in the collection.</exception>
 		public void Remove(string path)
 		{
@@ -251,7 +252,7 @@ namespace Gorgon.Plugins
 		/// <param name="index">The zero-based index at which <paramref name="path" /> should be inserted.</param>
 		/// <param name="path">The object to insert into the <see cref="T:System.Collections.Generic.IList`1" />.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
 		public void Insert(int index, string path)
 		{
 			path = ValidatePath(path);
@@ -328,7 +329,7 @@ namespace Gorgon.Plugins
 		/// <param name="path">The path to add to the collection.</param>
 		/// <remarks>If the path is already in the collection, it will not be added again.</remarks>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="path"/> is empty.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> is empty.</exception>
 		public void Add(string path)
 		{
 			path = ValidatePath(path);

@@ -115,15 +115,14 @@ namespace Gorgon.Graphics.Core
 			}
 
 			Type dataType = typeof(T);
-			IReadOnlyList<FieldInfo> badFields;
 
-			if (dataType.IsSafeForNative(out badFields))
+			if (dataType.IsSafeForNative(out IReadOnlyList<FieldInfo> badFields))
 			{
 				return new GorgonConstantBufferInfo
-				       {
-					       Usage = usage,
-					       SizeInBytes = ((count * DirectAccess.SizeOf<T>()) + 15) & ~15
-				       };
+				{
+					Usage = usage,
+					SizeInBytes = ((count * DirectAccess.SizeOf<T>()) + 15) & ~15
+				};
 			}
 
 			if (badFields.Count == 0)

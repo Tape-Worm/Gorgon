@@ -200,11 +200,10 @@ namespace Gorgon.Graphics
         /// <returns>The intersected box.</returns>
         public static GorgonBox Intersect(GorgonBox box1, GorgonBox box2)
         {
-            GorgonBox result;
 
-            Intersect(ref box1, ref box2, out result);
+			Intersect(ref box1, ref box2, out GorgonBox result);
 
-            return result;
+			return result;
         }
 
         /// <summary>
@@ -214,11 +213,10 @@ namespace Gorgon.Graphics
         /// <returns>The intersection between this box and the other box.</returns>
 	    public GorgonBox Intersect(GorgonBox box)
         {
-            GorgonBox result;
 
-            Intersect(ref this, ref box, out result);
+			Intersect(ref this, ref box, out GorgonBox result);
 
-            return result;
+			return result;
         }
 
         /// <summary>

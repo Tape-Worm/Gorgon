@@ -154,13 +154,12 @@ namespace Gorgon.Graphics.Example
 		private static void CreateConstantBuffer()
 		{
 			// Our projection matrix.
-			DX.Matrix projectionMatrix;
 
 			// Build our projection matrix using a 65 degree field of view and an aspect ratio that matches our current window aspect ratio.
 			// Note that we depth a depth range from 0.001f up to 1000.0f.  This provides a near and far plane for clipping.  
 			// These clipping values must have the world transformed vertex data inside of it or else it will not render. Note that the near/far plane is not a 
 			// linear range and Z accuracy can get worse the further from the near plane that you get (particularly with depth buffers).
-			DX.Matrix.PerspectiveFovLH(65.0f.ToRadians(), _mainForm.ClientSize.Width / (float)_mainForm.ClientSize.Height, 0.125f, 1000f, out projectionMatrix);
+			DX.Matrix.PerspectiveFovLH(65.0f.ToRadians(), _mainForm.ClientSize.Width / (float)_mainForm.ClientSize.Height, 0.125f, 1000f, out DX.Matrix projectionMatrix);
 
 			// Create our constant buffer.
 			//
