@@ -278,7 +278,7 @@ namespace Gorgon.Graphics.Core
 		/// </para>
 		/// </remarks>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception> 
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
 		protected GorgonResource(GorgonGraphics graphics, string name)
 		{
 			if (name == null)
@@ -288,7 +288,7 @@ namespace Gorgon.Graphics.Core
 
 			if (string.IsNullOrWhiteSpace(name))
 			{
-				throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
+				throw new ArgumentEmptyException(nameof(name));
 			}
 
 			Name = name;

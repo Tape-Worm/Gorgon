@@ -51,9 +51,8 @@ namespace Gorgon.Input
 		{
 			get
 			{
-				KeyState result;
 
-				if (!_keys.TryGetValue(key, out result))
+				if (!_keys.TryGetValue(key, out KeyState result))
 				{
 					_keys.Add(key, KeyState.Up);
 				}

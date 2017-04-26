@@ -209,9 +209,8 @@ namespace Gorgon.Input
 
 			lock (_registeredHooks)
 			{
-				MessageFilterHook hook;
 
-				if (!_registeredHooks.TryGetValue(hwnd, out hook))
+				if (!_registeredHooks.TryGetValue(hwnd, out MessageFilterHook hook))
 				{
 					hook = new MessageFilterHook(hwnd);
 					_registeredHooks[hwnd] = hook;
@@ -237,9 +236,8 @@ namespace Gorgon.Input
 
 			lock (_registeredHooks)
 			{
-				MessageFilterHook hook;
 
-				if (!_registeredHooks.TryGetValue(hwnd, out hook))
+				if (!_registeredHooks.TryGetValue(hwnd, out MessageFilterHook hook))
 				{
 					return;
 				}

@@ -140,7 +140,7 @@ namespace Gorgon.IO
 		/// Function to perform validation against the requested chunk ID and the list of reserved values.
 		/// </summary>
 		/// <param name="chunkId">Chunk ID to evaluate.</param>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="chunkId"/> is the same as one of the reserved chunk IDs.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="chunkId"/> is the same as one of the reserved chunk IDs.</exception>
 		protected void ValidateChunkID(ulong chunkId)
 		{
 			switch (chunkId)
@@ -266,7 +266,7 @@ namespace Gorgon.IO
 		/// <param name="chunkName">The name of the chunk.</param>
 		/// <returns>A <see cref="GorgonBinaryReader"/>, or <see cref="GorgonBinaryWriter"/> that will allow reading or writing within the chunk.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="chunkName"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="chunkName"/> parameter is empty.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="chunkName"/> parameter is empty.</exception>
 		/// <remarks>
 		/// See the <see cref="GorgonChunkFileReader.OpenChunk(ulong)"/>, or the <see cref="GorgonChunkFileWriter.OpenChunk(ulong)"/> method for more information.
 		/// </remarks>
@@ -281,7 +281,7 @@ namespace Gorgon.IO
 
 			if (string.IsNullOrEmpty(chunkName))
 			{
-				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(chunkName));
+				throw new ArgumentEmptyException(nameof(chunkName));
 			}
 
 			return OpenChunk(chunkName.ChunkID());
@@ -297,7 +297,7 @@ namespace Gorgon.IO
 		/// The <paramref name="stream"/> passed to this method requires that the <see cref="System.IO.Stream.CanSeek"/> property returns a value of <b>true</b>.
 		/// </remarks>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream" /> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="stream"/> is has its <see cref="System.IO.Stream.CanSeek"/> property set to <b>false</b>.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="stream"/> is has its <see cref="System.IO.Stream.CanSeek"/> property set to <b>false</b>.</exception>
 		protected GorgonChunkFile(Stream stream)
 		{
 			if (stream == null)

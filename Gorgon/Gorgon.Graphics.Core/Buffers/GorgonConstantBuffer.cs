@@ -247,7 +247,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="data">The <see cref="GorgonPointerBase"/> to the native memory holding the data to copy into the buffer.</param>
 		/// <param name="offset">The offset, in bytes, to start copying from.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="data"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="offset"/> plus the size of the data in <paramref name="data"/> exceed the size of this buffer.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="offset"/> plus the size of the data in <paramref name="data"/> exceed the size of this buffer.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when the size, in bytes, of the <paramref name="data"/> parameter is larger than the total <see cref="IGorgonConstantBufferInfo.SizeInBytes"/> of the buffer.
 		/// <exception cref="NotSupportedException">Thrown when the <see cref="IGorgonConstantBufferInfo.Usage"/> is either <c>Immutable</c> or <c>Dynamic</c>.</exception>
 		/// <para>-or-</para>
@@ -288,7 +288,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="offset">The offset, in bytes, to start copying from.</param>
 		/// <param name="size">The size, in bytes, to copy.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="data"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="offset"/> plus the size of the data in <paramref name="data"/> exceed the size of this buffer.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="offset"/> plus the size of the data in <paramref name="data"/> exceed the size of this buffer.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when the size, in bytes, of the <paramref name="data"/> parameter is larger than the total <see cref="IGorgonConstantBufferInfo.SizeInBytes"/> of the buffer.
 		/// <exception cref="NotSupportedException">Thrown when the <see cref="IGorgonConstantBufferInfo.Usage"/> is either <c>Immutable</c> or <c>Dynamic</c>.</exception>
 		/// <para>-or-</para>
@@ -481,7 +481,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="initialData">[Optional] The initial data used to populate the buffer.</param>
 		/// <param name="log">[Optional] The log interface used for debug logging.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, <paramref name="name"/>, or <paramref name="info"/> parameters are <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> is empty.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> is empty.</exception>
 		/// <exception cref="GorgonException">
 		/// Thrown when the size of the constant buffer exceeds the maximum constant buffer size. See <see cref="IGorgonVideoDevice.MaxConstantBufferSize"/> to determine the maximum size of a constant buffer.
 		/// </exception>

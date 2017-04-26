@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts.Properties;
 using Gorgon.Math;
@@ -163,9 +164,8 @@ namespace Gorgon.Graphics.Fonts
 
 			lock (_syncLock)
 			{
-				GorgonFont existing;
 
-				if (_fontCache.TryGetValue(font.Name, out existing))
+				if (_fontCache.TryGetValue(font.Name, out GorgonFont existing))
 				{
 					// This is the exact same reference, so do nothing.
 					if (existing == font)
@@ -206,9 +206,8 @@ namespace Gorgon.Graphics.Fonts
 
 			lock (_syncLock)
 			{
-				GorgonFont existing;
 
-				if (!_fontCache.TryGetValue(font.Name, out existing))
+				if (!_fontCache.TryGetValue(font.Name, out GorgonFont existing))
 				{
 					return;
 				}
@@ -246,7 +245,7 @@ namespace Gorgon.Graphics.Fonts
 		/// <param name="fontInfo">The information about the font to find.</param>
 		/// <returns><b>true</b> if found, <b>false</b> if not.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/>, or the <paramref name="fontInfo"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
 		/// <remarks>
 		/// <para>
 		/// The <paramref name="name"/> parameter is used in caching, and is user defined. It is not necessary to have it share the same name as the font family name in the <paramref name="fontInfo"/> parameter, 
@@ -276,10 +275,9 @@ namespace Gorgon.Graphics.Fonts
 
 			lock (_syncLock)
 			{
-				GorgonFont result;
 
-				return ((_fontCache.TryGetValue(name, out result))
-				        && (!IsFontDifferent(fontInfo, result.Info)));
+				return ((_fontCache.TryGetValue(name, out GorgonFont result))
+						&& (!IsFontDifferent(fontInfo, result.Info)));
 			}
 		}
 
@@ -290,7 +288,7 @@ namespace Gorgon.Graphics.Fonts
 		/// <param name="fontInfo">The information used to create the font.</param>
 		/// <returns>A new or existing <see cref="GorgonFont"/>.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/>, or the <paramref name="fontInfo"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.
 		/// <para>-or-</para>
 		/// <para>Thrown when the <see cref="IGorgonFontInfo.TextureWidth"/> or <see cref="IGorgonFontInfo.TextureHeight"/> parameters exceed the <see cref="IGorgonVideoDevice.MaxTextureWidth"/> or 
 		/// <see cref="IGorgonVideoDevice.MaxTextureHeight"/> available for the current <see cref="FeatureLevelSupport"/>.</para>
@@ -330,10 +328,9 @@ namespace Gorgon.Graphics.Fonts
 
 			lock (_syncLock)
 			{
-				GorgonFont result;
 
 				// Check the cache for a font with the same name.
-				if ((_fontCache.TryGetValue(name, out result))
+				if ((_fontCache.TryGetValue(name, out GorgonFont result))
 					&& (!IsFontDifferent(fontInfo, result.Info)))
 				{
 					return result;

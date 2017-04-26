@@ -189,7 +189,7 @@ namespace Gorgon.Graphics.Core
 
 			if (string.IsNullOrWhiteSpace(includeName))
 			{
-				throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(includeName));
+				throw new ArgumentEmptyException(nameof(includeName));
 			}
 
 			if (includeSourceFile == null)

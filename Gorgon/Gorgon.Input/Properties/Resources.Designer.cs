@@ -88,15 +88,6 @@ namespace Gorgon.Input.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The parameter must not be empty..
-        /// </summary>
-        internal static string GORINP_ERR_PARAMETER_MUST_NOT_BE_EMPTY {
-            get {
-                return ResourceManager.GetString("GORINP_ERR_PARAMETER_MUST_NOT_BE_EMPTY", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to There was an error retrieving the cursor information.
         ///
         ///Win32 Error Code: {0}.

@@ -114,7 +114,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
 		/// <param name="stream">The stream containing the font data to read.</param>
 		/// <returns>A <see cref="GorgonFont"/> containing the font data from the stream.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/>, or the <paramref name="name"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="stream"/> is write only.
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="stream"/> is write only.
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="name"/> parameter is empty.</para>
 		/// </exception>
@@ -128,7 +128,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
 		/// <param name="filePath">Path to the file to load.</param>
 		/// <returns>A <see cref="GorgonFont"/> containing the font data from the stream.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath"/>, or the <paramref name="name"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
 		GorgonFont LoadFromFile(string name, string filePath);
 
 		/// <summary>
@@ -138,7 +138,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
 		/// <param name="stream">The stream that will receive the font data.</param>
 
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/>, or the <paramref name="fontData"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="stream"/> is read only.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="stream"/> is read only.</exception>
 		/// <exception cref="GorgonException">Thrown when the font data in the stream has a pixel format that is unsupported.</exception>
 		void SaveToStream(GorgonFont fontData, Stream stream);
 
@@ -148,7 +148,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
 		/// <param name="fontData">A <see cref="GorgonFont"/> to persist to the stream.</param>
 		/// <param name="filePath">The path to the file that will hold the font data.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath"/>, or the <paramref name="fontData"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="filePath"/> is empty..</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="filePath"/> is empty..</exception>
 		/// <exception cref="GorgonException">Thrown when the font data in the stream has a pixel format that is unsupported.</exception>
 		void SaveToFile(GorgonFont fontData, string filePath);
 

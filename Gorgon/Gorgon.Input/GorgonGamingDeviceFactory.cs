@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Input.Properties;
 using Gorgon.Plugins;
@@ -61,10 +62,8 @@ namespace Gorgon.Input
 		/// <param name="driverType">The fully qualified type name of the driver to load.</param>
 		/// <returns>The gaming device driver plug in.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="driverType"/> parameter is <b>null</b></exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="driverType"/> parameter is empty
-		/// <para>-or-</para>
-		/// <para>Thrown when the driver type name specified by <paramref name="driverType"/> was not found in any of the loaded plug in assemblies.</para>
-		/// </exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="driverType"/> parameter is empty.</exception>
+		/// <exception cref="ArgumentException">Thrown when the driver type name specified by <paramref name="driverType"/> was not found in any of the loaded plug in assemblies.</exception>
 		public IGorgonGamingDeviceDriver LoadDriver(string driverType)
 		{
 			if (driverType == null)
@@ -74,7 +73,7 @@ namespace Gorgon.Input
 
 			if (string.IsNullOrWhiteSpace(driverType))
 			{
-				throw new ArgumentException(Resources.GORINP_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(driverType));
+				throw new ArgumentEmptyException(nameof(driverType));
 			}
 
 			GorgonGamingDeviceDriver result = _plugInService.GetPlugin<GorgonGamingDeviceDriver>(driverType);

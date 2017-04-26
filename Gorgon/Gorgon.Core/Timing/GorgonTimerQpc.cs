@@ -143,9 +143,8 @@ namespace Gorgon.Timing
 
 		    unchecked
 			{
-			    long currentTime;
 
-			    KernelApi.QueryPerformanceCounter(out currentTime);
+				KernelApi.QueryPerformanceCounter(out long currentTime);
 				_currentTicks =  currentTime - _startTime;
 				_microSeconds = (_currentTicks * 1000000.0) / _frequency;
 			}
@@ -157,9 +156,8 @@ namespace Gorgon.Timing
 		/// <returns><b>true</b> if the system supports the timer, <b>false</b> if it does not.</returns>
 		public static bool SupportsQpc()
 		{
-			long throwAway;
 
-			return KernelApi.QueryPerformanceFrequency(out throwAway);
+			return KernelApi.QueryPerformanceFrequency(out long throwAway);
 		}
 
 		/// <summary>

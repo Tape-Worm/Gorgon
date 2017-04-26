@@ -71,7 +71,7 @@ namespace Gorgon.Core
 		/// </summary>
 		/// <param name="name">The name of this object.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
 		protected GorgonNamedObject(string name)
 		{
 			if (name == null)
@@ -81,7 +81,7 @@ namespace Gorgon.Core
 
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
+                throw new ArgumentEmptyException(nameof(name));
             }
 
 			_name = name;

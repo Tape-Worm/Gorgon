@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.Math;
 using WIC = SharpDX.WIC;
@@ -151,7 +152,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 
             if (string.IsNullOrWhiteSpace(filePath))
             {
-                throw new ArgumentException(Resources.GORIMG_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(filePath));
+                throw new ArgumentEmptyException(nameof(filePath));
             }
 
             using (var fileStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))

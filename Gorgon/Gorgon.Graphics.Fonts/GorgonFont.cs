@@ -371,10 +371,9 @@ namespace Gorgon.Graphics.Fonts
 		{
 			foreach (KeyValuePair<char, GlyphInfo> glyph in glyphData)
 			{
-				ABC kernData;
 				int advance = 0;
 
-				if (kerningData.TryGetValue(glyph.Key, out kernData))
+				if (kerningData.TryGetValue(glyph.Key, out ABC kernData))
 				{
 					advance = kernData.A + (int)kernData.B + kernData.C;
 				}
@@ -413,9 +412,8 @@ namespace Gorgon.Graphics.Fonts
 		{
 			float size = 0;
 			bool firstChar = true;
-			GorgonGlyph defaultGlyph;
 
-			if (!Glyphs.TryGetValue(Info.DefaultCharacter, out defaultGlyph))
+			if (!Glyphs.TryGetValue(Info.DefaultCharacter, out GorgonGlyph defaultGlyph))
 			{
 				throw new GorgonException(GorgonResult.CannotEnumerate, string.Format(Resources.GORGFX_ERR_FONT_DEFAULT_CHAR_NOT_VALID, Info.DefaultCharacter));
 			}
@@ -423,9 +421,8 @@ namespace Gorgon.Graphics.Fonts
 			for (int i = 0; i < line.Length; i++)
 			{
 				char character = line[i];
-				GorgonGlyph glyph;
 
-				if (!Glyphs.TryGetValue(character, out glyph))
+				if (!Glyphs.TryGetValue(character, out GorgonGlyph glyph))
 				{
 					glyph = defaultGlyph;
 				}
@@ -465,9 +462,8 @@ namespace Gorgon.Graphics.Fonts
 				}
 
 				var kerning = new GorgonKerningPair(character, line[i + 1]);
-				int kernAmount;
 
-				if (KerningPairs.TryGetValue(kerning, out kernAmount))
+				if (KerningPairs.TryGetValue(kerning, out int kernAmount))
 				{
 					size += kernAmount;
 				}
@@ -489,9 +485,8 @@ namespace Gorgon.Graphics.Fonts
 		/// <seealso cref="IGorgonFontInfo"/>
 		public GorgonGlyph GetDefaultGlyph()
 		{
-			GorgonGlyph glyph;
 
-			if (!TryGetDefaultGlyph(out glyph))
+			if (!TryGetDefaultGlyph(out GorgonGlyph glyph))
 			{
 				throw new KeyNotFoundException(string.Format(Resources.GORGFX_ERR_FONT_DEFAULT_CHAR_NOT_VALID, Info.DefaultCharacter));
 			}
@@ -533,10 +528,9 @@ namespace Gorgon.Graphics.Fonts
 				return text;
 			}
 
-			GorgonGlyph defaultGlyph;
 			var wordText = new StringBuilder(text);
 
-			if (!Glyphs.TryGetValue(Info.DefaultCharacter, out defaultGlyph))
+			if (!Glyphs.TryGetValue(Info.DefaultCharacter, out GorgonGlyph defaultGlyph))
 			{
 				throw new GorgonException(GorgonResult.CannotEnumerate, string.Format(Resources.GORGFX_ERR_FONT_DEFAULT_CHAR_NOT_VALID, Info.DefaultCharacter));
 			}
@@ -560,9 +554,8 @@ namespace Gorgon.Graphics.Fonts
 					continue;
 				}
 
-				GorgonGlyph glyph;
 
-				if (!Glyphs.TryGetValue(character, out glyph))
+				if (!Glyphs.TryGetValue(character, out GorgonGlyph glyph))
 				{
 					glyph = defaultGlyph;
 				}
@@ -579,9 +572,8 @@ namespace Gorgon.Graphics.Fonts
 				if ((Info.UseKerningPairs)
 					&& (index < maxLength - 1))
 				{
-					int kernValue;
-					
-					if (KerningPairs.TryGetValue(new GorgonKerningPair(character, wordText[index + 1]), out kernValue))
+
+					if (KerningPairs.TryGetValue(new GorgonKerningPair(character, wordText[index + 1]), out int kernValue))
 					{
 						glyphCellWidth += kernValue;
 					}

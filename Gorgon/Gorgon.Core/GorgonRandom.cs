@@ -519,8 +519,7 @@ namespace Gorgon.Core
 			var unskew = new DX.Vector4(i - t, j - t, k - t, l - t);
 
 			// The x,y,z,w distances from the cell origin
-			DX.Vector4 distance;
-			DX.Vector4.Subtract(ref value, ref unskew, out distance);
+			DX.Vector4.Subtract(ref value, ref unskew, out DX.Vector4 distance);
 
 			// For the 4D case, the simplex is a 4D shape I won't even try to describe.
 			// To find out which of the 24 possible simplices we're in, we need to

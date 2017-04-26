@@ -192,8 +192,7 @@ namespace Gorgon.Graphics.Core
 				GorgonShaderInclude includeFile = ParseIncludeLine(includeLine, false);
 
 				// If we have no file name, then assume we've already included it in the collection.
-				GorgonShaderInclude cached;
-				if (CachedIncludes.TryGetValue(includeFile.Name, out cached))
+				if (CachedIncludes.TryGetValue(includeFile.Name, out GorgonShaderInclude cached))
 				{
 					result.Append($"// ------------------ Begin #include of '{includeFile.Name}' ------------------ \r\n");
 					result.Append($"{Process(cached.SourceCodeFile)}\r\n");

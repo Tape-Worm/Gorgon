@@ -426,8 +426,7 @@ namespace Gorgon.Core
 		/// <returns>The result of the operator.</returns>
 		public static GorgonRangeD operator +(GorgonRangeD left, GorgonRangeD right)
 		{
-			GorgonRangeD result;
-			Add(ref left, ref right, out result);
+			Add(ref left, ref right, out GorgonRangeD result);
 			return result;
 		}
 
@@ -439,8 +438,7 @@ namespace Gorgon.Core
 		/// <returns>The result of the operator.</returns>
 		public static GorgonRangeD operator -(GorgonRangeD left, GorgonRangeD right)
 		{
-			GorgonRangeD result;
-			Subtract(ref left, ref right, out result);
+			Subtract(ref left, ref right, out GorgonRangeD result);
 			return result;
 		}
 
@@ -452,8 +450,7 @@ namespace Gorgon.Core
 		/// <returns>The result of the operator.</returns>
 		public static GorgonRangeD operator *(GorgonRangeD left, GorgonRangeD right)
 		{
-			GorgonRangeD result;
-			Multiply(ref left, ref right, out result);
+			Multiply(ref left, ref right, out GorgonRangeD result);
 			return result;
 		}
 
@@ -465,8 +462,7 @@ namespace Gorgon.Core
 		/// <returns>The result of the operator.</returns>
 		public static GorgonRangeD operator *(GorgonRangeD left, double scalar)
 		{
-			GorgonRangeD result;
-			Multiply(ref left, scalar, out result);
+			Multiply(ref left, scalar, out GorgonRangeD result);
 			return result;
 		}
 
@@ -478,8 +474,7 @@ namespace Gorgon.Core
 		/// <returns>The result of the operator.</returns>
 		public static GorgonRangeD operator *(double scalar, GorgonRangeD right)
 		{
-			GorgonRangeD result;
-			Multiply(ref right, scalar, out result);
+			Multiply(ref right, scalar, out GorgonRangeD result);
 			return result;
 		}
 
@@ -491,8 +486,7 @@ namespace Gorgon.Core
 		/// <returns>The result of the operator.</returns>
 		public static GorgonRangeD operator /(GorgonRangeD left, double scalar)
 		{
-			GorgonRangeD result;
-			Divide(ref left, scalar, out result);
+			Divide(ref left, scalar, out GorgonRangeD result);
 			return result;
 		}
 
@@ -963,8 +957,7 @@ namespace Gorgon.Core
 		/// <returns>The result of the operator.</returns>
 		public static GorgonRangeM operator +(GorgonRangeM left, GorgonRangeM right)
 		{
-			GorgonRangeM result;
-			Add(ref left, ref right, out result);
+			Add(ref left, ref right, out GorgonRangeM result);
 			return result;
 		}
 
@@ -976,8 +969,7 @@ namespace Gorgon.Core
 		/// <returns>The result of the operator.</returns>
 		public static GorgonRangeM operator -(GorgonRangeM left, GorgonRangeM right)
 		{
-			GorgonRangeM result;
-			Subtract(ref left, ref right, out result);
+			Subtract(ref left, ref right, out GorgonRangeM result);
 			return result;
 		}
 
@@ -989,8 +981,7 @@ namespace Gorgon.Core
 		/// <returns>The result of the operator.</returns>
 		public static GorgonRangeM operator *(GorgonRangeM left, GorgonRangeM right)
 		{
-			GorgonRangeM result;
-			Multiply(ref left, ref right, out result);
+			Multiply(ref left, ref right, out GorgonRangeM result);
 			return result;
 		}
 
@@ -1002,8 +993,7 @@ namespace Gorgon.Core
 		/// <returns>The result of the operator.</returns>
 		public static GorgonRangeM operator *(GorgonRangeM left, decimal scalar)
 		{
-			GorgonRangeM result;
-			Multiply(ref left, scalar, out result);
+			Multiply(ref left, scalar, out GorgonRangeM result);
 			return result;
 		}
 
@@ -1015,8 +1005,7 @@ namespace Gorgon.Core
 		/// <returns>The result of the operator.</returns>
 		public static GorgonRangeM operator *(decimal scalar, GorgonRangeM right)
 		{
-			GorgonRangeM result;
-			Multiply(ref right, scalar, out result);
+			Multiply(ref right, scalar, out GorgonRangeM result);
 			return result;
 		}
 
@@ -1028,8 +1017,7 @@ namespace Gorgon.Core
 		/// <returns>The result of the operator.</returns>
 		public static GorgonRangeM operator /(GorgonRangeM left, decimal scalar)
 		{
-			GorgonRangeM result;
-			Divide(ref left, scalar, out result);
+			Divide(ref left, scalar, out GorgonRangeM result);
 			return result;
 		}
 
@@ -1500,8 +1488,7 @@ namespace Gorgon.Core
 		/// <returns>The result of the operator.</returns>
 		public static GorgonRangeF operator +(GorgonRangeF left, GorgonRangeF right)
 		{
-			GorgonRangeF result;
-			Add(ref left, ref right, out result);
+			Add(ref left, ref right, out GorgonRangeF result);
 			return result;
 		}
 
@@ -1513,8 +1500,7 @@ namespace Gorgon.Core
 		/// <returns>The result of the operator.</returns>
 		public static GorgonRangeF operator -(GorgonRangeF left, GorgonRangeF right)
 		{
-			GorgonRangeF result;
-			Subtract(ref left, ref right, out result);
+			Subtract(ref left, ref right, out GorgonRangeF result);
 			return result;
 		}
 
@@ -1526,8 +1512,7 @@ namespace Gorgon.Core
 		/// <returns>The result of the operator.</returns>
 		public static GorgonRangeF operator *(GorgonRangeF left, GorgonRangeF right)
 		{
-			GorgonRangeF result;
-			Multiply(ref left, ref right, out result);
+			Multiply(ref left, ref right, out GorgonRangeF result);
 			return result;
 		}
 
@@ -1539,8 +1524,7 @@ namespace Gorgon.Core
 		/// <returns>The result of the operator.</returns>
 		public static GorgonRangeF operator *(GorgonRangeF left, float scalar)
 		{
-			GorgonRangeF result;
-			Multiply(ref left, scalar, out result);
+			Multiply(ref left, scalar, out GorgonRangeF result);
 			return result;
 		}
 
@@ -1552,8 +1536,7 @@ namespace Gorgon.Core
 		/// <returns>The result of the operator.</returns>
 		public static GorgonRangeF operator *(float scalar, GorgonRangeF right)
 		{
-			GorgonRangeF result;
-			Multiply(ref right, scalar, out result);
+			Multiply(ref right, scalar, out GorgonRangeF result);
 			return result;
 		}
 
@@ -1565,8 +1548,7 @@ namespace Gorgon.Core
 		/// <returns>The result of the operator.</returns>
 		public static GorgonRangeF operator /(GorgonRangeF left, float scalar)
 		{
-			GorgonRangeF result;
-			Divide(ref left, scalar, out result);
+			Divide(ref left, scalar, out GorgonRangeF result);
 			return result;
 		}
 
@@ -2039,8 +2021,7 @@ namespace Gorgon.Core
 		/// <returns>The result of the operator.</returns>
 		public static GorgonRange operator +(GorgonRange left, GorgonRange right)
 		{
-			GorgonRange result;
-			Add(ref left, ref right, out result);
+			Add(ref left, ref right, out GorgonRange result);
 			return result;
 		}
 
@@ -2052,8 +2033,7 @@ namespace Gorgon.Core
 		/// <returns>The result of the operator.</returns>
 		public static GorgonRange operator -(GorgonRange left, GorgonRange right)
 		{
-			GorgonRange result;
-			Subtract(ref left, ref right, out result);
+			Subtract(ref left, ref right, out GorgonRange result);
 			return result;
 		}
 
@@ -2065,8 +2045,7 @@ namespace Gorgon.Core
 		/// <returns>The result of the operator.</returns>
 		public static GorgonRange operator *(GorgonRange left, GorgonRange right)
 		{
-			GorgonRange result;
-			Multiply(ref left, ref right, out result);
+			Multiply(ref left, ref right, out GorgonRange result);
 			return result;
 		}
 
@@ -2078,8 +2057,7 @@ namespace Gorgon.Core
 		/// <returns>The result of the operator.</returns>
 		public static GorgonRange operator *(GorgonRange left, int scalar)
 		{
-			GorgonRange result;
-			Multiply(ref left, scalar, out result);
+			Multiply(ref left, scalar, out GorgonRange result);
 			return result;
 		}
 
@@ -2091,8 +2069,7 @@ namespace Gorgon.Core
 		/// <returns>The result of the operator.</returns>
 		public static GorgonRange operator *(int scalar, GorgonRange right)
 		{
-			GorgonRange result;
-			Multiply(ref right, scalar, out result);
+			Multiply(ref right, scalar, out GorgonRange result);
 			return result;
 		}
 
@@ -2104,8 +2081,7 @@ namespace Gorgon.Core
 		/// <returns>The result of the operator.</returns>
 		public static GorgonRange operator /(GorgonRange left, int scalar)
 		{
-			GorgonRange result;
-			Divide(ref left, scalar, out result);
+			Divide(ref left, scalar, out GorgonRange result);
 			return result;
 		}
 

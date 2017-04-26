@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using Gorgon.Core;
 using Gorgon.Diagnostics;
 using D3D11 = SharpDX.Direct3D11;
 
@@ -103,7 +104,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="name">Name of this buffer.</param>
 		/// <param name="log">[Optional] The log interface used for debug logging.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, or the <paramref name="name"/> parameters are <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
 		protected GorgonBuffer(GorgonGraphics graphics, string name, IGorgonLog log)
 			: base(graphics, name)
 		{

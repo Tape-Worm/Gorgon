@@ -92,9 +92,28 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonShaderResourceViews"/> class.
 		/// </summary>
-		public GorgonShaderResourceViews()
-			: base(MaximumShaderResourceViewCount)
+		internal GorgonShaderResourceViews()
+			: this(MaximumShaderResourceViewCount)
 		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonShaderResourceViews"/> class.
+		/// </summary>
+		/// <param name="size">The number of shader resource views to place within this list.</param>
+		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> parameter is less than 1, or greater than the <see cref="MaximumShaderResourceViewCount"/>.</exception>
+		public GorgonShaderResourceViews(int size)
+			: base(size)
+		{
+			if (size < 1)
+			{
+				throw new ArgumentOutOfRangeException(nameof(size));
+			}
+
+			if (size > MaximumShaderResourceViewCount)
+			{
+				throw new ArgumentOutOfRangeException(nameof(size));
+			}
 		}
 		#endregion
 	}

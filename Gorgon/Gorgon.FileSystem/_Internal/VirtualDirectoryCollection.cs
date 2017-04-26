@@ -57,9 +57,8 @@ namespace Gorgon.IO
 			{
 				name = name.FormatPathPart();
 
-				VirtualDirectory directory;
 
-				if (!_directories.TryGetValue(name, out directory))
+				if (!_directories.TryGetValue(name, out VirtualDirectory directory))
 				{
 					throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, name));
 				}
@@ -281,9 +280,8 @@ namespace Gorgon.IO
 		/// <returns><b>true</b> if the item was found, <b>false</b> if not.</returns>
 		bool IGorgonNamedObjectReadOnlyDictionary<IGorgonVirtualDirectory>.TryGetValue(string name, out IGorgonVirtualDirectory value)
 		{
-			VirtualDirectory directory;
 
-			if (!TryGetValue(name, out directory))
+			if (!TryGetValue(name, out VirtualDirectory directory))
 			{
 				value = null;
 				return false;

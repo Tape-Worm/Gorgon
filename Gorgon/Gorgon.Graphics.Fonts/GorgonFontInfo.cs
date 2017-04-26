@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Gorgon.Core;
 using DX = SharpDX;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts.Properties;
@@ -168,7 +169,7 @@ namespace Gorgon.Graphics.Fonts
 		/// colors, and is accomplished by multiplying the RGB values by the Alpha component of a pixel.
 		/// </para>
 		/// <para>
-		/// If this value is <b>true</b>, then applications should use the <see cref="GorgonBlendStateInfo.Premultiplied"/> blending state when rendering text.
+		/// If this value is <b>true</b>, then applications should use the <see cref="GorgonRenderTargetBlendStateInfo.Premultiplied"/> blending state when rendering text.
 		/// </para>
 		/// <para>
 		/// The default value is <b>false</b>.
@@ -448,12 +449,8 @@ namespace Gorgon.Graphics.Fonts
 		/// <param name="size">The height of the font.</param>
 		/// <param name="heightMode">[Optional] The type of units to express the font height in.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="fontFamily"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="fontFamily"/> parameter is empty.
-		/// <para>-or-</para>
-		/// <para>
-		/// The <paramref name="size"/> parameter is less than or equal to 0.
-		/// </para> 
-		/// </exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="fontFamily"/> parameter is empty.</exception>
+		/// <exception cref="ArgumentException">The <paramref name="size"/> parameter is less than or equal to 0.</exception>
 		public GorgonFontInfo(string fontFamily, float size, FontHeightMode heightMode = FontHeightMode.Pixels)
 		{
 			if (fontFamily == null)

@@ -253,12 +253,11 @@ namespace Gorgon.Graphics.Example
 		/// <param name="currentState">The pipeline state to apply.</param>
 		private static void RenderModel(Model model, GorgonPipelineState currentState)
 		{
-			DX.Matrix worldMatrix;
 
 			// Send the transform for the model to the GPU so we can update its position and rotation.
 			// We're using an "out" and "ref" here because a matrix is a large struct, which loses its performance after 16 bytes.
 			// By making a reference to the struct, we can keep the performance high.
-			model.GetWorldMatrix(out worldMatrix);
+			model.GetWorldMatrix(out DX.Matrix worldMatrix);
 			UpdateWVP(ref worldMatrix);
 
 			// Set up the draw call to render this models Index and Vertex buffers along with the current pipeline state.
@@ -377,13 +376,11 @@ namespace Gorgon.Graphics.Example
 		/// </remarks>
 		private static void UpdateWVP(ref DX.Matrix world)
 		{
-			DX.Matrix temp;
-			DX.Matrix wvp;
 
 			// Build our world/view/projection matrix to send to
 			// the shader.
-			DX.Matrix.Multiply(ref world, ref _viewMatrix, out temp);
-			DX.Matrix.Multiply(ref temp, ref _projMatrix, out wvp);
+			DX.Matrix.Multiply(ref world, ref _viewMatrix, out DX.Matrix temp);
+			DX.Matrix.Multiply(ref temp, ref _projMatrix, out DX.Matrix wvp);
 
 			// Direct 3D 11 requires that we transpose our matrix 
 			// before sending it to the shader.

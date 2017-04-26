@@ -175,9 +175,6 @@ This could lead to a buffer overrun.</value>
   <data name="GORIMG_ERR_MISSING_BLOCK_COUNT" xml:space="preserve">
     <value>The block count must be larger than 0.</value>
   </data>
-  <data name="GORIMG_ERR_PARAMETER_MUST_NOT_BE_EMPTY" xml:space="preserve">
-    <value>The parameter must not be empty.</value>
-  </data>
   <data name="GORIMG_ERR_STREAM_CANNOT_SEEK" xml:space="preserve">
     <value>The steam is not seekable.</value>
   </data>

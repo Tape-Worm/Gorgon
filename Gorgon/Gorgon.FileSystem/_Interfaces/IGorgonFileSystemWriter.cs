@@ -28,6 +28,7 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Gorgon.Core;
 
 namespace Gorgon.IO
 {
@@ -223,7 +224,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="path">Path to the directory to delete.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="path"/> is empty.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> is empty.</exception>
 		/// <exception cref="DirectoryNotFoundException">Thrown when the directory specified by the <paramref name="path"/> could not be found.</exception>
 		/// <remarks>
 		/// <para>
@@ -252,7 +253,7 @@ namespace Gorgon.IO
 		/// <param name="mode">The mode to determine how to read/write the file.</param>
 		/// <returns>An open <see cref="FileStream"/> to the file.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="path"/> is empty.
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> is empty.
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="path"/> does not contain a file name.</para>
 		/// </exception>
@@ -279,7 +280,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="path">The path to the file to delete.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="path"/> is empty.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> is empty.</exception>
 		/// <exception cref="FileNotFoundException">Thrown when the file referenced by the <paramref name="path"/> was not found.</exception>
 		/// <remarks>
 		/// <para>

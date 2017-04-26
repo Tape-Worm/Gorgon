@@ -135,6 +135,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ArgumentEmptyException.cs" />
     <Compile Include="Collections\_Extensions\GorgonIReadOnlyListExtensions.cs" />
     <Compile Include="Configuration\GorgonOption.cs" />
     <Compile Include="Configuration\GorgonOptionBag.cs" />

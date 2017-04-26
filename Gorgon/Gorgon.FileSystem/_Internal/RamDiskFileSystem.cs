@@ -138,9 +138,8 @@ namespace Gorgon.IO
 		/// <returns>The file information.</returns>
 		public RamDiskFileInfo GetFileInfo(string path)
 		{
-			RamDiskFileInfo fileInfo;
-			
-			if (!_fileInfos.TryGetValue(path, out fileInfo))
+
+			if (!_fileInfos.TryGetValue(path, out RamDiskFileInfo fileInfo))
 			{
 				throw new FileNotFoundException(Resources.GORFS_ERR_FILE_NOT_FOUND, path);
 			}
@@ -157,9 +156,8 @@ namespace Gorgon.IO
 		{
 			RamDiskFileInfo fileInfo = GetFileInfo(path);
 
-			MemoryStream stream;
 
-			if (!_fileData.TryGetValue(fileInfo, out stream))
+			if (!_fileData.TryGetValue(fileInfo, out MemoryStream stream))
 			{
 				throw new FileNotFoundException(string.Format(Resources.GORFS_ERR_FILE_NOT_FOUND, path));
 			}
@@ -202,9 +200,8 @@ namespace Gorgon.IO
 			{
 				_fileInfos.Remove(fileInfo.FullPath);
 
-				MemoryStream stream;
 
-				if (!_fileData.TryGetValue(fileInfo, out stream))
+				if (!_fileData.TryGetValue(fileInfo, out MemoryStream stream))
 				{
 					continue;
 				}
@@ -275,18 +272,16 @@ namespace Gorgon.IO
 				return;
 			}
 
-			RamDiskFileInfo fileInfo;
 
-			if (!_fileInfos.TryGetValue(path, out fileInfo))
+			if (!_fileInfos.TryGetValue(path, out RamDiskFileInfo fileInfo))
 			{
 				return;
 			}
 
 			_fileInfos.Remove(path);
 
-			MemoryStream stream;
 
-			if (!_fileData.TryGetValue(fileInfo, out stream))
+			if (!_fileData.TryGetValue(fileInfo, out MemoryStream stream))
 			{
 				return;
 			}
@@ -302,10 +297,8 @@ namespace Gorgon.IO
 		/// <param name="fileInfo">File information to replace.</param>
 		public void UpdateFile(string path, ref RamDiskFileInfo fileInfo)
 		{
-			RamDiskFileInfo old;
-			MemoryStream oldStream;
 
-			if (_fileInfos.TryGetValue(path, out old))
+			if (_fileInfos.TryGetValue(path, out RamDiskFileInfo old))
 			{
 				_fileInfos.Remove(old.FullPath);
 				_fileInfos[path] = fileInfo;
@@ -315,7 +308,7 @@ namespace Gorgon.IO
 				old = fileInfo;
 			}
 
-			if (!_fileData.TryGetValue(old, out oldStream))
+			if (!_fileData.TryGetValue(old, out MemoryStream oldStream))
 			{
 				throw new FileNotFoundException(string.Format(Resources.GORFS_ERR_FILE_NOT_FOUND, path));
 			}

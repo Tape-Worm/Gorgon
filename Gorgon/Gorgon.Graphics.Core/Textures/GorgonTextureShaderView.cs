@@ -372,7 +372,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="arrayCount">[Optional] For a 1D or 2D <see cref="GorgonTexture"/>, this will be the number of array indices to view.</param>
 		/// <param name="log">[Optional] The log used for debugging.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="texture"/> is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="texture"/> does not have a <see cref="TextureBinding"/> of <see cref="TextureBinding.ShaderResource"/>.
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="texture"/> does not have a <see cref="TextureBinding"/> of <see cref="TextureBinding.ShaderResource"/>.
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="texture"/> has a usage of <c>Staging</c>.</para>
 		/// <para>-or-</para>

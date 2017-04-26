@@ -102,13 +102,11 @@ namespace GorgonLibrary.Example
 		/// </remarks>
 		private void UpdateWVP(ref DX.Matrix world)
 		{
-			DX.Matrix temp;
-			DX.Matrix wvp;
 
 			// Build our world/view/projection matrix to send to
 			// the shader.
-			DX.Matrix.Multiply(ref world, ref _viewMatrix, out temp);
-			DX.Matrix.Multiply(ref temp, ref _projectionMatrix, out wvp);
+			DX.Matrix.Multiply(ref world, ref _viewMatrix, out DX.Matrix temp);
+			DX.Matrix.Multiply(ref temp, ref _projectionMatrix, out DX.Matrix wvp);
 
 			// Direct 3D 11 requires that we transpose our matrix 
 			// before sending it to the shader.
@@ -140,12 +138,11 @@ namespace GorgonLibrary.Example
             // Do nothing here.  When we need to update, we will.
 			_swap.RenderTargetView.Clear(GorgonColor.White);
 
-	        DX.Matrix worldMatrix;
 
 			// Use a fixed step timing to animate the cube.
-		    _accumulator += GorgonTiming.Delta;
+			_accumulator += GorgonTiming.Delta;
 
-	        while (_accumulator >= TargetDelta)
+			while (_accumulator >= TargetDelta)
 	        {
 		        // Spin the cube.
 		        _rotation.X += GorgonRandom.RandomSingle(45, 90) * TargetDelta * (_rotationSpeed.X.FastSin());
@@ -190,7 +187,7 @@ namespace GorgonLibrary.Example
 		        _accumulator -= TargetDelta;
 	        }
 
-	        _cube.GetWorldMatrix(out worldMatrix);
+	        _cube.GetWorldMatrix(out DX.Matrix worldMatrix);
 			// Send our world matrix to the constant buffer so the vertex shader can update the vertices.
 			UpdateWVP(ref worldMatrix);
 

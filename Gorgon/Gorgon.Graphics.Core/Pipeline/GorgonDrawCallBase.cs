@@ -25,16 +25,17 @@
 #endregion
 
 using System;
+using Gorgon.Math;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D;
 
 namespace Gorgon.Graphics.Core
 {
 	/// <summary>
-	/// Flags to indicate which part of the pipeline needs updating.
+	/// Flags to indicate which part of the pipeline resources need updating.
 	/// </summary>
 	[Flags]
-	internal enum PipelineStateChange
+	internal enum PipelineResourceChange
 	{
 		/// <summary>
 		/// Nothing has changed, just draw the item.
@@ -77,43 +78,112 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		PixelShaderConstantBuffers = 0x100,
 		/// <summary>
+		/// Geometry shader constant buffers have changed.
+		/// </summary>
+		GeometryShaderConstantBuffers = 0x200,
+		/// <summary>
+		/// Hull shader constant buffers have changed.
+		/// </summary>
+		HullShaderConstantBuffers = 0x400,
+		/// <summary>
+		/// Domain shader constant buffers have changed.
+		/// </summary>
+		DomainShaderConstantBuffers = 0x800,
+		/// <summary>
+		/// Compute shader constant buffers have changed.
+		/// </summary>
+		ComputeShaderConstantBuffers = 0x1_000,
+		/// <summary>
 		/// Vertex shader resources have changed.
 		/// </summary>
-		VertexShaderResources = 0x200,
+		VertexShaderResources = 0x2_000,
 		/// <summary>
 		/// Pixel shader resources have changed.
 		/// </summary>
-		PixelShaderResources = 0x400,
+		PixelShaderResources = 0x4_000,
 		/// <summary>
-		/// <para>
-		/// Vertex shader samplers have changed.
-		/// </para>
-		/// <para>
-		/// Only supported on devices that are feature level 11.0 or better.
-		/// </para>
+		/// Geometry shader resources have changed.
 		/// </summary>
-		VertexShaderSamplers = 0x800,
+		GeometryShaderResources = 0x4_000,
+		/// <summary>
+		/// Hull shader resources have changed.
+		/// </summary>
+		HullShaderResources = 0x8_000,
+		/// <summary>
+		/// Domain shader resources have changed.
+		/// </summary>
+		DomainShaderResources = 0x10_000,
+		/// <summary>
+		/// Compute shader resources have changed.
+		/// </summary>
+		ComputeShaderResources = 0x20_000,
+		/// <summary>
+		/// Vertex shader samplers have changed.
+		/// </summary>
+		VertexShaderSamplers = 0x40_000,
 		/// <summary>
 		/// Pixel shader samplers have changed.
 		/// </summary>
-		PixelShaderSamplers = 0x1000,
+		PixelShaderSamplers = 0x80_000,
 		/// <summary>
-		/// Pipeline state has changed.
+		/// Geometry shader samplers have changed.
 		/// </summary>
-		PipelineState = 0x40000000,
+		GeometryShaderSamplers = 0x100_000,
 		/// <summary>
-		/// All states have changed.
+		/// Hull shader samplers have changed.
 		/// </summary>
-		All = PrimitiveTopology 
-			| Viewports 
-			| ScissorRectangles 
-			| VertexBuffers 
-			| IndexBuffer 
-			| InputLayout 
-			| RenderTargets 
-			| VertexShaderConstantBuffers 
+		HullShaderSamplers = 0x200_000,
+		/// <summary>
+		/// Domain shader samplers have changed.
+		/// </summary>
+		DomainShaderSamplers = 0x400_000,
+		/// <summary>
+		/// Compute shader samplers have changed.
+		/// </summary>
+		ComputeShaderSamplers = 0x800_000,
+		/// <summary>
+		/// The blending factor has been updated.
+		/// </summary>
+		BlendFactor = 0x1_000_000,
+		/// <summary>
+		/// The blending sample mask has been updated.
+		/// </summary>
+		BlendSampleMask = 0x2_000_000,
+		/// <summary>
+		/// The depth/stencil reference value has been updated.
+		/// </summary>
+		DepthStencilReference = 0x4_000_000,
+		/// <summary>
+		/// All states changed.
+		/// </summary>
+		All = BlendFactor
+			| BlendSampleMask
+			| ComputeShaderConstantBuffers
+			| ComputeShaderResources
+			| ComputeShaderSamplers
+			| DepthStencilReference
+			| DomainShaderResources
+			| DomainShaderConstantBuffers
+			| DomainShaderResources
+			| GeometryShaderConstantBuffers
+			| GeometryShaderResources
+			| GeometryShaderSamplers
+			| HullShaderResources
+			| HullShaderConstantBuffers
+			| HullShaderSamplers
 			| PixelShaderConstantBuffers
-			| PipelineState
+			| PixelShaderResources
+			| PixelShaderSamplers
+			| VertexShaderConstantBuffers
+			| VertexShaderResources
+			| VertexShaderSamplers
+			| IndexBuffer
+			| InputLayout
+			| VertexBuffers
+			| RenderTargets
+			| PrimitiveTopology
+			| Viewports
+			| ScissorRectangles
 	}
 
 	/// <summary>
@@ -140,9 +210,9 @@ namespace Gorgon.Graphics.Core
 
 		#region Variables.
 		// The viewports for rendering to the output.
-		private GorgonMonitoredValueTypeArray<DX.ViewportF> _viewports;
+		private readonly GorgonMonitoredValueTypeArray<DX.ViewportF> _viewports;
 		// The scissor rectangles for clipping the output.
-		private GorgonMonitoredValueTypeArray<DX.Rectangle> _scissorRectangles;
+		private readonly GorgonMonitoredValueTypeArray<DX.Rectangle> _scissorRectangles;
 		#endregion
 
 		#region Properties.
@@ -160,7 +230,10 @@ namespace Gorgon.Graphics.Core
 					return;
 				}
 
-				_viewports = value;
+				for (int i = 0; i < value.Count.Min(MaximumViewportCount); ++i)
+				{
+					_viewports[i] = value[i];
+				}
 			}
 		}
 
@@ -178,7 +251,10 @@ namespace Gorgon.Graphics.Core
 					return;
 				}
 
-				_scissorRectangles = value;
+				for (int i = 0; i < value.Count.Min(MaximumScissorCount); ++i)
+				{
+					_scissorRectangles[i] = value[i];
+				}
 			}
 		}
 
@@ -285,6 +361,36 @@ namespace Gorgon.Graphics.Core
 			get;
 			set;
 		}
+
+		/// <summary>
+		/// Property to set or return the factor used to modulate the pixel shader, render target or both.
+		/// </summary>
+		/// <remarks>
+		/// To use this value, ensure that the blend state was creating using <c>Factor</c> operation.
+		/// </remarks>
+		public GorgonColor BlendFactor
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the mask used to define which samples get updated in the active render targets.
+		/// </summary>
+		public int BlendSampleMask
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the depth/stencil reference value used when performing a depth/stencil test.
+		/// </summary>
+		public int DepthStencilReference
+		{
+			get;
+			set;
+		}
 		#endregion
 
 		#region Methods.
@@ -297,6 +403,13 @@ namespace Gorgon.Graphics.Core
 			VertexBuffers = null;
 			IndexBuffer = null;
 			State = null;
+
+			unchecked
+			{
+				BlendSampleMask = (int)(0xffffffff);
+			}
+			BlendFactor = GorgonColor.White;
+			DepthStencilReference = 0;
 
 			Viewports.Clear();
 			ScissorRectangles.Clear();
@@ -320,6 +433,13 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		protected internal GorgonDrawCallBase()
 		{
+			unchecked
+			{
+				BlendSampleMask = (int)(0xffffffff);
+				BlendFactor = new GorgonColor(1, 1, 1, 1);
+				DepthStencilReference = 0;
+			}
+
 			_viewports = new GorgonMonitoredValueTypeArray<DX.ViewportF>(MaximumViewportCount);
 			_scissorRectangles = new GorgonMonitoredValueTypeArray<DX.Rectangle>(MaximumScissorCount);
 			RenderTargets = new GorgonRenderTargetViews();

@@ -191,7 +191,7 @@ namespace Gorgon.Graphics.Imaging
 		/// <param name="slicePitch">The number of bytes between each slice in a depth (3D) image, or, for other image types, this indicates the total size of the image in bytes.</param>
 		/// <param name="horizontalBlockCount">[Optional] The number of horizontal blocks in a block compressed format.</param>
 		/// <param name="verticalBlockCount">[Optional] The number of vertical blocks in a block compressed format.</param>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="horizontalBlockCount"/> is greater than 0, and the <paramref name="verticalBlockCount"/> is 0, or the <paramref name="verticalBlockCount"/> is greater than 0, and the <paramref name="horizontalBlockCount"/> is 0.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="horizontalBlockCount"/> is greater than 0, and the <paramref name="verticalBlockCount"/> is 0, or the <paramref name="verticalBlockCount"/> is greater than 0, and the <paramref name="horizontalBlockCount"/> is 0.</exception>
 		/// <remarks>
 		/// <para>
 		/// For a 2D image, the <paramref name="slicePitch"/> indicates the total size of the image, in bytes (typically <paramref name="rowPitch"/> * height). In a depth image (3D), this indicates the size, in 

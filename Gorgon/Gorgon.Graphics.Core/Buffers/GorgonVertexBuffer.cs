@@ -300,9 +300,8 @@ namespace Gorgon.Graphics.Core
 #endif
 
 			mode = D3D11.MapMode.WriteDiscard;
-			DX.DataStream stream;
 
-			Graphics.D3DDeviceContext.MapSubresource(D3DBuffer, mode, D3D11.MapFlags.None, out stream);
+			Graphics.D3DDeviceContext.MapSubresource(D3DBuffer, mode, D3D11.MapFlags.None, out DX.DataStream stream);
 
 			if (_lockAddress == null)
 			{

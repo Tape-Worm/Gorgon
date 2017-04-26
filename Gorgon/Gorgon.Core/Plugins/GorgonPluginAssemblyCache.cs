@@ -239,9 +239,8 @@ namespace Gorgon.Plugins
 			// load the same assembly multiple times - which is a waste. We only want the assembly to load once, and only once.
 			while (true)
 			{
-				Assembly result;
 
-				if (_assemblies.Value.TryGetValue(assemblyName.FullName, out result))
+				if (_assemblies.Value.TryGetValue(assemblyName.FullName, out Assembly result))
 				{
 					return !HasPluginTypes(result) ? null : result;
 				}
@@ -360,7 +359,7 @@ namespace Gorgon.Plugins
 			
 			if (string.IsNullOrWhiteSpace(pluginPath))
 			{
-				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(pluginPath));
+				throw new ArgumentEmptyException(nameof(pluginPath));
 			}
 
 			pluginPath = Path.GetFullPath(pluginPath);
@@ -461,9 +460,8 @@ namespace Gorgon.Plugins
 			Guid clrStrongNameriid = new Guid("9FD93CCF-3280-4391-B3A9-96E1CDE77C8D");
 
 			var strongName = (IClrStrongName)RuntimeEnvironment.GetRuntimeInterfaceAsObject(clrStrongNameClsId, clrStrongNameriid);
-			bool wasVerified;
 
-			int result = strongName.StrongNameSignatureVerificationEx(assemblyPath, true, out wasVerified);
+			int result = strongName.StrongNameSignatureVerificationEx(assemblyPath, true, out bool wasVerified);
 
 			if ((result != 0) || (!wasVerified))
 			{
@@ -554,7 +552,7 @@ namespace Gorgon.Plugins
 
 			if (string.IsNullOrWhiteSpace(assemblyFile))
 			{
-				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(assemblyFile));
+				throw new ArgumentEmptyException(nameof(assemblyFile));
 			}
 
 			return EnumeratePlugins(FindPluginAssembly(assemblyFile));
@@ -644,7 +642,7 @@ namespace Gorgon.Plugins
 
 			if (string.IsNullOrEmpty(assemblyPath))
 			{
-				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(assemblyPath));
+				throw new ArgumentEmptyException(nameof(assemblyPath));
 			}
 
 			AssemblyName assemblyName;
@@ -693,8 +691,7 @@ namespace Gorgon.Plugins
 				GetLoadedAssemblies();
 			}
 
-			bool newAssembly;
-			Assembly assembly = GetOrAddAssembly(assemblyName, out newAssembly);
+			Assembly assembly = GetOrAddAssembly(assemblyName, out bool newAssembly);
 
 			if (assembly == null)
 			{
@@ -721,7 +718,7 @@ namespace Gorgon.Plugins
 		/// </summary>
 		/// <param name="assemblyPath">Name of the assembly to load.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="assemblyPath"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="assemblyPath"/> is empty.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="assemblyPath"/> is empty.</exception>
 		/// <exception cref="GorgonException">Thrown when the assembly does not contain any types that inherit from <see cref="GorgonPlugin"/>.</exception>
 		/// <exception cref="BadImageFormatException">Thrown when the assembly pointed to by <paramref name="assemblyPath"/> is not a valid .NET assembly.</exception>
 		/// <exception cref="FileNotFoundException">Thrown when the assembly file could not be found.</exception>
@@ -745,7 +742,7 @@ namespace Gorgon.Plugins
 
 			if (string.IsNullOrWhiteSpace(assemblyPath))
 			{
-				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(assemblyPath));
+				throw new ArgumentEmptyException(nameof(assemblyPath));
 			}
 
 			AssemblyName assemblyName = FindPluginAssembly(assemblyPath);

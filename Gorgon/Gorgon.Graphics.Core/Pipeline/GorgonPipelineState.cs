@@ -33,7 +33,7 @@ namespace Gorgon.Graphics.Core
 	/// Flags to indicate what part of the pipeline has been modified within a <see cref="GorgonPipelineState"/>.
 	/// </summary>
 	[Flags]
-	public enum PipelineStateChangeFlags
+	internal enum PipelineStateChange
 		: ulong
 	{
 		/// <summary>
@@ -49,33 +49,37 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		PixelShader = 0x2,
 		/// <summary>
+		/// The geometry shader state has been modified.
+		/// </summary>
+		GeometryShader = 0x4,
+		/// <summary>
+		/// The hull shader state has been modified.
+		/// </summary>
+		HullShader = 0x8,
+		/// <summary>
+		/// The domain shader state has been modified.
+		/// </summary>
+		DomainShader = 0x10,
+		/// <summary>
+		/// The compute shader state has been modified.
+		/// </summary>
+		ComputeShader = 0x20,
+		/// <summary>
 		/// The rasterizer state was modified.
 		/// </summary>
-		RasterState = 0x4,
+		RasterState = 0x40,
 		/// <summary>
 		/// The depth/stencil state has been updated.
 		/// </summary>
-		DepthStencilState = 0x8,
+		DepthStencilState = 0x80,
 		/// <summary>
 		/// The blending state has been updated.
 		/// </summary>
-		BlendState = 0x10,
-		/// <summary>
-		/// The blending factor has been updated.
-		/// </summary>
-		BlendFactor = 0x20,
-		/// <summary>
-		/// The blending sample mask has been updated.
-		/// </summary>
-		BlendSampleMask = 0x40,
-		/// <summary>
-		/// The depth/stencil reference value has been updated.
-		/// </summary>
-		DepthStencilReference = 0x80,
+		BlendState = 0x100,
 		/// <summary>
 		/// All states have changed.
 		/// </summary>
-		All = VertexShader | PixelShader | RasterState | DepthStencilState | BlendState | BlendFactor | BlendSampleMask | DepthStencilReference
+		All = VertexShader | PixelShader | GeometryShader | HullShader | DomainShader | ComputeShader | RasterState | BlendState | DepthStencilState
 	}
 
 	/// <summary>
@@ -86,14 +90,6 @@ namespace Gorgon.Graphics.Core
 		#region Variables.
 		// Information used to create the pipeline state.
 		private readonly GorgonPipelineStateInfo _info;
-		// The current blending factor.
-		private GorgonColor _blendFactor;
-		// The blending sample mask.
-		private int _blendSampleMask;
-		// The depth/stencil reference value.
-		private int _depthStencilReference;
-		// Flags for state changes that are mutable on the state object.
-		private PipelineStateChangeFlags _mutableStateChanges;
 		#endregion
 
 		#region Properties.
@@ -136,127 +132,9 @@ namespace Gorgon.Graphics.Core
 		}
 
 		/// <summary>
-		/// Property to set or return the factor used to modulate the pixel shader, render target or both.
-		/// </summary>
-		/// <remarks>
-		/// To use this value, ensure that the blend state was creating using <c>Factor</c> operation.
-		/// </remarks>
-		public GorgonColor BlendFactor
-		{
-			get => _blendFactor;
-			set
-			{
-				if (GorgonColor.Equals(ref _blendFactor, ref value))
-				{
-					return;
-				}
-
-				_blendFactor = value;
-				_mutableStateChanges |=  PipelineStateChangeFlags.BlendFactor;
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the mask used to define which samples get updated in the active render targets.
-		/// </summary>
-		public int BlendSampleMask
-		{
-			get => _blendSampleMask;
-			set
-			{
-				if (_blendSampleMask == value)
-				{
-					return;
-				}
-
-				_blendSampleMask = value;
-				_mutableStateChanges |= PipelineStateChangeFlags.BlendSampleMask;
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the depth/stencil reference value used when performing a depth/stencil test.
-		/// </summary>
-		public int DepthStencilReference
-		{
-			get => _depthStencilReference;
-			set
-			{
-				if (_depthStencilReference == value)
-				{
-					return;
-				}
-
-				_depthStencilReference = value;
-				_mutableStateChanges |= PipelineStateChangeFlags.DepthStencilReference;
-			}
-		}
-
-		/// <summary>
 		/// Property to return the <see cref="IGorgonPipelineStateInfo"/> used to create this object.
 		/// </summary>
 		public IGorgonPipelineStateInfo Info => _info;
-		#endregion
-
-		#region Methods.
-		/// <summary>
-		/// Function to compare this pipeline state with another pipeline state.
-		/// </summary>
-		/// <param name="state">The state to compare.</param>
-		/// <returns>The states that have been changed between this state and the other <paramref name="state"/>.</returns>
-		public PipelineStateChangeFlags GetChanges(GorgonPipelineState state)
-		{
-			if (state == null)
-			{
-				return PipelineStateChangeFlags.All;
-			}
-
-			PipelineStateChangeFlags mutableFlags = _mutableStateChanges;
-			var pipelineFlags = PipelineStateChangeFlags.None;
-			_mutableStateChanges = PipelineStateChangeFlags.None;
-
-			if (_info.PixelShader != state._info.PixelShader)
-			{
-				pipelineFlags |= PipelineStateChangeFlags.PixelShader;
-			}
-
-			if (_info.VertexShader != state._info.VertexShader)
-			{
-				pipelineFlags |= PipelineStateChangeFlags.VertexShader;
-			}
-
-			if (D3DRasterState != state.D3DRasterState)
-			{
-				pipelineFlags |= PipelineStateChangeFlags.RasterState;
-			}
-
-			if (D3DDepthStencilState != state.D3DDepthStencilState)
-			{
-				pipelineFlags |= PipelineStateChangeFlags.DepthStencilState;
-			}
-
-			if (D3DBlendState != state.D3DBlendState)
-			{
-				pipelineFlags |= PipelineStateChangeFlags.BlendState;
-			}
-
-			if (!GorgonColor.Equals(ref state._blendFactor, ref _blendFactor))
-			{
-				pipelineFlags |= PipelineStateChangeFlags.BlendFactor;
-			}
-
-			if (state.BlendSampleMask != _blendSampleMask)
-			{
-				pipelineFlags |= PipelineStateChangeFlags.BlendSampleMask;
-			}
-
-			if (state.DepthStencilReference != _depthStencilReference)
-			{
-				pipelineFlags |= PipelineStateChangeFlags.DepthStencilReference;
-			}
-
-			return pipelineFlags | mutableFlags;
-		}
 		#endregion
 
 		#region Constructor.
@@ -267,12 +145,6 @@ namespace Gorgon.Graphics.Core
 		/// <param name="id">The ID of the cache entry for this pipeline state.</param>
 		internal GorgonPipelineState(IGorgonPipelineStateInfo stateInfo, int id)
 		{
-			unchecked
-			{
-				BlendSampleMask = (int)(0xffffffff);
-				BlendFactor = new GorgonColor(1, 1, 1, 1);
-				DepthStencilReference = 0;
-			}
 
 			_info = new GorgonPipelineStateInfo(stateInfo);
 			ID = id;

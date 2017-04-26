@@ -184,7 +184,6 @@ namespace Gorgon.IO
 		public unsafe T ReadValue<T>()
 			where T : struct
 		{
-			T returnVal;
 			int size = DirectAccess.SizeOf<T>();
 			byte* pointer = stackalloc byte[size];
 			byte* bytes = pointer;
@@ -217,7 +216,7 @@ namespace Gorgon.IO
 				}
 			}
 
-			DirectAccess.ReadValue(pointer, out returnVal);
+			DirectAccess.ReadValue(pointer, out T returnVal);
 
 			return returnVal;
 		}

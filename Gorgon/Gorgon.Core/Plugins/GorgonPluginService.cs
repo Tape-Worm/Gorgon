@@ -287,11 +287,10 @@ namespace Gorgon.Plugins
 				return GetAllPlugins<T>();
 			}
 
-			Lazy<ConcurrentDictionary<Type, ObjectActivator<GorgonPlugin>>> pluginConstructors;
 
-			return !_assemblyConstructors.Value.TryGetValue(assemblyName.FullName, out pluginConstructors)
-				       ? new T[0]
-				       : GetPluginsFromConstructors<T>(pluginConstructors.Value);
+			return !_assemblyConstructors.Value.TryGetValue(assemblyName.FullName, out Lazy<ConcurrentDictionary<Type, ObjectActivator<GorgonPlugin>>> pluginConstructors)
+					   ? new T[0]
+					   : GetPluginsFromConstructors<T>(pluginConstructors.Value);
 		}
 
 		/// <summary>
@@ -301,7 +300,7 @@ namespace Gorgon.Plugins
 		/// <param name="pluginName">Fully qualified type name of the plugin to find.</param>
 		/// <returns>The plugin, if found, or <b>null</b> if not.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginName"/> is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="pluginName"/> is empty.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="pluginName"/> is empty.</exception>
 		public T GetPlugin<T>(string pluginName)
 			where T : GorgonPlugin
 		{
@@ -312,7 +311,7 @@ namespace Gorgon.Plugins
 
 			if (string.IsNullOrWhiteSpace(pluginName))
 			{
-				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(pluginName));
+				throw new ArgumentEmptyException(nameof(pluginName));
 			}
 
 			if (!_constructors.IsValueCreated)
@@ -322,10 +321,9 @@ namespace Gorgon.Plugins
 			
 			while (true)
 			{
-				GorgonPlugin plugin;
 
 				// We haven't created this plugin yet, so create it.
-				if (_loadedPlugins.Value.TryGetValue(pluginName, out plugin))
+				if (_loadedPlugins.Value.TryGetValue(pluginName, out GorgonPlugin plugin))
 				{
 					_log.Print("Found existing plugin '{0}'.", LoggingLevel.Simple, pluginName);
 					return (T)plugin;
@@ -340,14 +338,13 @@ namespace Gorgon.Plugins
 
 					_log.Print("Creating plugin '{0}'.", LoggingLevel.Simple, pluginName);
 
-					ObjectActivator<GorgonPlugin> constructor;
 
-					if (!_constructors.Value.TryGetValue(pluginName, out constructor))
+					if (!_constructors.Value.TryGetValue(pluginName, out ObjectActivator<GorgonPlugin> constructor))
 					{
 						_log.Print("Plugin '{0}' does not exist.", LoggingLevel.Simple, pluginName);
 						return null;
 					}
-					
+
 					T typedPlugin = (T)constructor();
 					
 					_loadedPlugins.Value.Add(typedPlugin);
@@ -389,9 +386,8 @@ namespace Gorgon.Plugins
 				return _constructors.Value.Keys.ToArray();
 			}
 
-			Lazy<ConcurrentDictionary<Type, ObjectActivator<GorgonPlugin>>> pluginConstructors;
 
-			if (!_assemblyConstructors.Value.TryGetValue(assemblyName.FullName, out pluginConstructors))
+			if (!_assemblyConstructors.Value.TryGetValue(assemblyName.FullName, out Lazy<ConcurrentDictionary<Type, ObjectActivator<GorgonPlugin>>> pluginConstructors))
 			{
 				throw new KeyNotFoundException(string.Format(Resources.GOR_ERR_PLUGIN_ASSEMBLY_NOT_FOUND, assemblyName.FullName));
 			}
@@ -518,14 +514,13 @@ namespace Gorgon.Plugins
 
 			if (string.IsNullOrWhiteSpace(name))
 			{
-				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
+				throw new ArgumentEmptyException(nameof(name));
 			}
 
 			while (true)
 			{
-				GorgonPlugin plugin;
 
-				if (!_loadedPlugins.Value.TryGetValue(name, out plugin))
+				if (!_loadedPlugins.Value.TryGetValue(name, out GorgonPlugin plugin))
 				{
 					_log.Print("Plugin '{0}' was not found, it may not have been created yet.", LoggingLevel.Simple, name);
 					return false;

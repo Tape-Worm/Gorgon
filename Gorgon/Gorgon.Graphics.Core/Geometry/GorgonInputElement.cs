@@ -247,7 +247,7 @@ namespace Gorgon.Graphics.Core
 		/// The <paramref name="slot"/> parameter must be between 0 and 15 (inclusive).  A value outside of this range will cause an exception to be thrown.
 		/// </para>
 		/// </remarks>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="format"/> parameter is not supported.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="format"/> parameter is not supported.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="slot"/> parameter is less than 0 or greater than 15.</exception>
 		public GorgonInputElement(string context, DXGI.Format format, int offset, int index = 0, int slot = 0, bool instanced = false, int instanceCount = 0)
 		{

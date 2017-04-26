@@ -196,19 +196,18 @@ namespace Gorgon.Graphics.Example
 
 			if (_isRotationChanged)
 			{
-				DX.Quaternion quatRotation;		// Quaternion for rotation.
+				// Quaternion for rotation.
 
 				// Convert degrees to radians.
 				var rotRads = new DX.Vector3(_rotation.X.ToRadians(), _rotation.Y.ToRadians(), _rotation.Z.ToRadians());
-				    
-				DX.Quaternion.RotationYawPitchRoll(rotRads.Y, rotRads.X, rotRads.Z, out quatRotation);
+
+				DX.Quaternion.RotationYawPitchRoll(rotRads.Y, rotRads.X, rotRads.Z, out DX.Quaternion quatRotation);
 				DX.Matrix.RotationQuaternion(ref quatRotation, out _rotationMatrix);
 			}
 
-			DX.Matrix temp;
 
 			// Build our world matrix.
-			DX.Matrix.Multiply(ref _scaleMatrix, ref _rotationMatrix, out temp);
+			DX.Matrix.Multiply(ref _scaleMatrix, ref _rotationMatrix, out DX.Matrix temp);
 			DX.Matrix.Multiply(ref temp, ref _positionMatrix, out _worldMatrix);
 		}
 

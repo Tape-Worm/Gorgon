@@ -240,10 +240,9 @@ namespace Gorgon.Math
                         next = Points[i - 1];
                     }
                 }
-                                
-                DX.Vector4 diff;
-				DX.Vector4.Subtract(ref prev, ref next, out diff);
-	            DX.Vector4.Multiply(ref diff, 0.5f, out diff);
+
+				DX.Vector4.Subtract(ref prev, ref next, out DX.Vector4 diff);
+				DX.Vector4.Multiply(ref diff, 0.5f, out diff);
                 _tangents[i] = diff;
             }
         }

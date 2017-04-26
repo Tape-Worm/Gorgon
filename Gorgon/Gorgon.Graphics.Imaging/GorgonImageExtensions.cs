@@ -454,7 +454,7 @@ namespace Gorgon.Graphics.Imaging
 		/// <param name="dithering">[Optional] Flag to indicate the type of dithering to perform when the bit depth for the <paramref name="format"/> is lower than the original bit depth.</param>
 		/// <returns>A <see cref="IGorgonImage"/> containing the image data with the converted pixel format.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="baseImage"/> is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="format"/> is set to <c>Format.Unknown</c>.
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="format"/> is set to <c>Format.Unknown</c>.
 		/// <para>-or-</para>
 		/// <para>Thrown when the original format could not be converted into the desired <paramref name="format"/>.</para>
 		/// </exception>

@@ -929,11 +929,9 @@ namespace Gorgon.Graphics.Imaging
 		{
 			using (WIC.MetadataQueryReader reader = frame.MetadataQueryReader)
 			{
-				object xValue;
-				object yValue;
 
-				reader.TryGetMetadataByName(metadataNames[0], out xValue);
-				reader.TryGetMetadataByName(metadataNames[1], out yValue);
+				reader.TryGetMetadataByName(metadataNames[0], out object xValue);
+				reader.TryGetMetadataByName(metadataNames[1], out object yValue);
 
 				if (xValue == null)
 				{
@@ -1022,15 +1020,14 @@ namespace Gorgon.Graphics.Imaging
 			try
 			{
 				// We don't be needing this.
-				Guid dummy;
 
 				return GetImageMetaData(wrapper,
-				                        fileFormat,
-										options as IGorgonWicDecodingOptions, 
-				                        out frame,
-				                        out decoder,
-				                        out wicStream,
-				                        out dummy);
+										fileFormat,
+										options as IGorgonWicDecodingOptions,
+										out frame,
+										out decoder,
+										out wicStream,
+										out Guid dummy);
 			}
 			finally
 			{
@@ -1060,8 +1057,7 @@ namespace Gorgon.Graphics.Imaging
 
 			try
 			{
-				Guid pixelFormat;
-				GorgonImageInfo info = GetImageMetaData(stream, imageFileFormat, decodingOptions, out frame, out decoder, out decoderStream, out pixelFormat);
+				GorgonImageInfo info = GetImageMetaData(stream, imageFileFormat, decodingOptions, out frame, out decoder, out decoderStream, out Guid pixelFormat);
 
 				if (info == null)
 				{
@@ -1357,9 +1353,8 @@ namespace Gorgon.Graphics.Imaging
 					frame?.Dispose();
 					frame = decoder.GetFrame(i);
 
-					object value;
 
-					frame.MetadataQueryReader.TryGetMetadataByName(delayMetaDataName, out value);
+					frame.MetadataQueryReader.TryGetMetadataByName(delayMetaDataName, out object value);
 
 					if (value == null)
 					{

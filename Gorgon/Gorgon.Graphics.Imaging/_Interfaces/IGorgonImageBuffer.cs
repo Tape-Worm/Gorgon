@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using Gorgon.Core;
 using Gorgon.Native;
 using DX = SharpDX;
 using DXGI = SharpDX.DXGI;
@@ -120,7 +121,7 @@ namespace Gorgon.Graphics.Imaging
 		/// <param name="destX">[Optional] Horizontal offset in the destination buffer.</param>
 		/// <param name="destY">[Optional] Vertical offset in the destination buffer.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="buffer" /> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="buffer" /> is not the same format as this buffer.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="buffer" /> is not the same format as this buffer.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when the source region does not fit within the bounds of this buffer.</exception>
 		/// <remarks>
 		/// <para>

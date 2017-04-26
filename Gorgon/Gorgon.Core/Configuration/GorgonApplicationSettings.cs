@@ -391,14 +391,13 @@ namespace Gorgon.Configuration
 				return value.ToString();
 			}
 
-			ObjectActivator<TypeConverter> ctor;
 
-			if (!_typeConverterCtors.TryGetValue(converterType.FullName, out ctor))
+			if (!_typeConverterCtors.TryGetValue(converterType.FullName, out ObjectActivator<TypeConverter> ctor))
 			{
 				ctor = converterType.CreateActivator<TypeConverter>();
 				_typeConverterCtors.Add(converterType.FullName, ctor);
 			}
-			
+
 			var converter = ctor();
 
 			if ((converter != null) && (converter.CanConvertTo(typeof(string))))
@@ -466,9 +465,8 @@ namespace Gorgon.Configuration
 				return Convert.ChangeType(value, type, CultureInfo.InvariantCulture);
 			}
 
-			ObjectActivator<TypeConverter> ctor;
 
-			if (!_typeConverterCtors.TryGetValue(converterType.FullName, out ctor))
+			if (!_typeConverterCtors.TryGetValue(converterType.FullName, out ObjectActivator<TypeConverter> ctor))
 			{
 				ctor = converterType.CreateActivator<TypeConverter>();
 				_typeConverterCtors.Add(converterType.FullName, ctor);
@@ -670,10 +668,9 @@ namespace Gorgon.Configuration
 					continue;
 				}
 
-				PropertyItem property;
 
 				// No property with this name?  Ok, move on. 
-				if (!_properties.TryGetValue(nameAttr.Name.LocalName, out property))
+				if (!_properties.TryGetValue(nameAttr.Name.LocalName, out PropertyItem property))
 				{
 					Log.Print("XML contains property name '{0}', but no such property exists on this object.", LoggingLevel.Intermediate, nameAttr.Name.LocalName);
 					continue;
@@ -792,13 +789,12 @@ namespace Gorgon.Configuration
 		/// <returns><b>true</b> if the versions match, <b>false</b> if not.</returns>
 		private bool CheckVersion()
 		{
-			Version compareVersion;
 
-		    if (Version == null)
-		    {
+			if (Version == null)
+			{
 				Log.Print("Log at '{0}' is unversioned.", LoggingLevel.Verbose, _path);
-		        return true;
-		    }
+				return true;
+			}
 
 			// If we don't have a version attribute, then we're not versioning this file.
 			_versionAttr = _rootNode?.Attribute(VersionAttrName) ?? throw new GorgonException(GorgonResult.InvalidFileFormat, 
@@ -808,7 +804,7 @@ namespace Gorgon.Configuration
 		        return true;
 		    }
 
-		    if (!Version.TryParse(_versionAttr.Value, out compareVersion))
+		    if (!Version.TryParse(_versionAttr.Value, out Version compareVersion))
 		    {
                 throw new GorgonException(GorgonResult.InvalidFileFormat,
                                             string.Format(Resources.GOR_ERR_SETTING_INVALID_FILE, _path),
@@ -1061,7 +1057,7 @@ namespace Gorgon.Configuration
 		/// <param name="settingsVersion">The version of the settings file.</param>
 		/// <param name="log">The application logging interface.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="applicationName"/> parameter was <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="applicationName"/> parameter is empty.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="applicationName"/> parameter is empty.</exception>
 		/// <remarks>
 		/// <para>
 		/// Upon creation, this object will set its default values to the properties that have the <see cref="GorgonApplicationSettingAttribute"/>. These defaults can easily be overridden in the object 
@@ -1096,7 +1092,7 @@ namespace Gorgon.Configuration
 
 			if (string.IsNullOrWhiteSpace(applicationName))
 			{
-				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(applicationName));
+				throw new ArgumentEmptyException(nameof(applicationName));
 			}
 			
 			// Get the properties for this interface.

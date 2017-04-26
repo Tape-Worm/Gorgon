@@ -151,15 +151,6 @@ namespace Gorgon.IO.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The parameter must not be empty..
-        /// </summary>
-        internal static string GORFS_ERR_PARAMETER_MUST_NOT_BE_EMPTY {
-            get {
-                return ResourceManager.GetString("GORFS_ERR_PARAMETER_MUST_NOT_BE_EMPTY", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The path &apos;{0}&apos; is not valid..
         /// </summary>
         internal static string GORFS_ERR_PATH_INVALID {

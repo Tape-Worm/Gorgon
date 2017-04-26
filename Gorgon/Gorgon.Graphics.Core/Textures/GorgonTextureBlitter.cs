@@ -122,14 +122,13 @@ namespace Gorgon.Graphics
 				return;
 			}
 
-			DX.Matrix projectionMatrix;
 			DX.Matrix.OrthoOffCenterLH(0,
-									   _targetSize.Width,
-									   _targetSize.Height,
-									   0,
-									   0,
-									   1.0f,
-									   out projectionMatrix);
+						   _targetSize.Width,
+						   _targetSize.Height,
+						   0,
+						   0,
+						   1.0f,
+						   out DX.Matrix projectionMatrix);
 
 			_wvpBuffer.Update(ref projectionMatrix);
 

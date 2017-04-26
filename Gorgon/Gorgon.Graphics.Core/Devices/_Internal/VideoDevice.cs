@@ -326,7 +326,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="format">A <c>Format</c> to evaluate.</param>
 		/// <param name="count">The number of samples.</param>
 		/// <returns>A <see cref="GorgonMultisampleInfo"/> containing the quality count and sample count for multisampling.</returns>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="count"/> is not supported by this video device.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="count"/> is not supported by this video device.</exception>
 		/// <remarks>
 		/// <para>
 		/// Use this to return a <see cref="GorgonMultisampleInfo"/> containing the best quality level for a given <paramref name="count"/> and <paramref name="format"/>.
@@ -457,10 +457,9 @@ namespace Gorgon.Graphics.Core
 			{
 				using (DXGI.Output1 giOutput1 = giOutput.QueryInterface<DXGI.Output1>())
 				{
-					DXGI.ModeDescription mode;
 					DXGI.ModeDescription matchMode = videoMode.ToModeDesc();
-					
-					giOutput1.GetClosestMatchingMode(_device, matchMode, out mode);
+
+					giOutput1.GetClosestMatchingMode(_device, matchMode, out DXGI.ModeDescription mode);
 
 					return new DXGI.ModeDescription1
 					       {

@@ -136,9 +136,8 @@ namespace Gorgon.Input.XInput
 		{
 			Capabilities = GamingDeviceCapabilityFlags.None;
 
-			XI.Capabilities capabilities;
 
-			controller.GetCapabilities(XI.DeviceQueryType.Any, out capabilities);
+			controller.GetCapabilities(XI.DeviceQueryType.Any, out XI.Capabilities capabilities);
 
 			// Get vibration caps.
 			var vibrationRanges = new List<GorgonRange>();

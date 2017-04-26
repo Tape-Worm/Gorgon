@@ -1498,7 +1498,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="textureInfo">A <see cref="IGorgonTextureInfo"/> object describing the properties of this texture.</param>
 		/// <param name="log">[Optional] The logging interface used for debugging.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/>, <paramref name="graphics"/>, or the <paramref name="textureInfo"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.
 		/// <para>-or-</para>
 		/// <para>Thrown when the <see cref="IGorgonTextureInfo.Usage"/> is set to <c>Immutable</c>.</para>
 		/// </exception>
