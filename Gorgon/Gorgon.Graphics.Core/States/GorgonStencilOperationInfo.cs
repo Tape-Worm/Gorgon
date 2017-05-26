@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
@@ -88,21 +89,29 @@ namespace Gorgon.Graphics.Core
 			get;
 			set;
 		}
-		#endregion
+        #endregion
 
-		#region Constructor/Finalizer.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonStencilOperationInfo"/> class.
-		/// </summary>
-		/// <param name="info">The <see cref="IGorgonStencilOperationInfo"/> to copy settings from.</param>
-		internal GorgonStencilOperationInfo(IGorgonStencilOperationInfo info)
-		{
-			Comparison = info.Comparison;
-			DepthFailOperation = info.DepthFailOperation;
-			FailOperation = info.FailOperation;
-			PassOperation = info.PassOperation;
-		}
+        #region Methods.
+	    /// <summary>
+	    /// Function to copy another <see cref="IGorgonStencilOperationInfo"/> into this one.
+	    /// </summary>
+	    /// <param name="info">The info to copy from.</param>
+	    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
+	    internal void CopyFrom(IGorgonStencilOperationInfo info)
+	    {
+	        if (info == null)
+	        {
+	            throw new ArgumentNullException(nameof(info));
+	        }
 
+	        Comparison = info.Comparison;
+	        DepthFailOperation = info.DepthFailOperation;
+	        FailOperation = info.FailOperation;
+	        PassOperation = info.PassOperation;
+	    }
+        #endregion
+
+        #region Constructor/Finalizer.
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonStencilOperationInfo"/> class.
 		/// </summary>

@@ -92,17 +92,19 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		internal D3D11.DeviceContext1 D3DDeviceContext => _deviceContext;
 
+        /// <summary>
+        /// Property to return the list of cached pipeline states.
+        /// </summary>
+        public IReadOnlyList<GorgonPipelineState> CachedPipelineStates => _stateCache;
+
 		/// <summary>
 		/// Property to set or return whether DWM composition is enabled or not.
 		/// </summary>
 		/// <remarks>This property will have no effect on systems that initially have the desktop window manager compositor disabled.</remarks>
 		public static bool IsDWMCompositionEnabled
         {
-            get
-            {
-                return _isDWMEnabled;
-            }
-            set
+            get => _isDWMEnabled;
+		    set
             {
                 if (!value)
                 {
@@ -737,13 +739,15 @@ namespace Gorgon.Graphics.Core
 				    inheritedState |= PipelineStateChange.VertexShader;
 			    }
 
-			    if (cachedStateInfo.RasterState.Equals(newStateInfo.RasterState))
+			    if ((cachedStateInfo.RasterState != null) &&
+                    (cachedStateInfo.RasterState.Equals(newStateInfo.RasterState)))
 			    {
 				    rasterState = cachedState.D3DRasterState;
 				    inheritedState |= PipelineStateChange.RasterState;
 			    }
 
-			    if (cachedStateInfo.DepthStencilState.Equals(newStateInfo.DepthStencilState))
+			    if ((cachedStateInfo.DepthStencilState != null) &&
+                    (cachedStateInfo.DepthStencilState.Equals(newStateInfo.DepthStencilState)))
 			    {
 				    depthStencilState = cachedState.D3DDepthStencilState;
 				    inheritedState |= PipelineStateChange.DepthStencilState;
@@ -756,29 +760,35 @@ namespace Gorgon.Graphics.Core
 			    }
 			    else
 			    {
-				    if (newStateInfo.RenderTargetBlendState.Count == cachedStateInfo.RenderTargetBlendState.Count)
-				    {
-					    for (int j = 0; j < newStateInfo.RenderTargetBlendState.Count; ++j)
-					    {
-						    if (cachedStateInfo.RenderTargetBlendState[j].Equals(newStateInfo.RenderTargetBlendState[j]))
-						    {
-							    blendStateEqualCount++;
-						    }
-					    }
+			        if ((newStateInfo.RenderTargetBlendState != null)
+			            && (cachedStateInfo.RenderTargetBlendState != null)
+			            && (newStateInfo.RenderTargetBlendState.Count == cachedStateInfo.RenderTargetBlendState.Count))
+			        {
+			            for (int j = 0; j < newStateInfo.RenderTargetBlendState.Count; ++j)
+			            {
+			                if (cachedStateInfo.RenderTargetBlendState[j].Equals(newStateInfo.RenderTargetBlendState[j]))
+			                {
+			                    blendStateEqualCount++;
+			                }
+			            }
 
-					    if (blendStateEqualCount == newStateInfo.RenderTargetBlendState.Count)
-					    {
-						    blendState = cachedState.D3DBlendState;
-						    inheritedState |= PipelineStateChange.BlendState;
-					    }
-				    }
+			            if (blendStateEqualCount == newStateInfo.RenderTargetBlendState.Count)
+			            {
+			                blendState = cachedState.D3DBlendState;
+			                inheritedState |= PipelineStateChange.BlendState;
+			            }
+			        }
 			    }
 
 			    // We've copied all the states, so just return the existing pipeline state.
-			    if (inheritedState == PipelineStateChange.All)
-			    {
-				    return _stateCache[i];
-			    }
+		        if (inheritedState == (PipelineStateChange.VertexShader
+		                               | PipelineStateChange.PixelShader
+		                               | PipelineStateChange.BlendState
+		                               | PipelineStateChange.RasterState
+		                               | PipelineStateChange.DepthStencilState))
+		        {
+		            return _stateCache[i];
+		        }
 		    }
 
 		    // Setup any uninitialized states.
@@ -1255,11 +1265,6 @@ namespace Gorgon.Graphics.Core
 		    {
 			    throw new ArgumentNullException(nameof(info));
 		    }
-
-			if (info.VertexShader == null)
-			{
-				throw new ArgumentException(Resources.GORGFX_ERR_INPUT_LAYOUT_NEEDS_SHADER, nameof(info));
-			}
 
 		    GorgonPipelineState result;
 

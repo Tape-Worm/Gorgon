@@ -248,31 +248,41 @@ namespace Gorgon.Graphics.Core
 				   && SourceAlphaBlend == info.SourceAlphaBlend
 				   && SourceColorBlend == info.SourceColorBlend;
 		}
-		#endregion
 
-		#region Constructor/Finalizer.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonRenderTargetBlendStateInfo"/> class.
-		/// </summary>
-		/// <param name="info">A <see cref="IGorgonRenderTargetBlendStateInfo"/> to copy settings from.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
-		public GorgonRenderTargetBlendStateInfo(IGorgonRenderTargetBlendStateInfo info)
+	    /// <summary>
+	    /// Function to copy another <see cref="IGorgonRenderTargetBlendStateInfo"/> into this one.
+	    /// </summary>
+	    /// <param name="info">The info to copy from.</param>
+	    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
+	    public void CopyFrom(IGorgonRenderTargetBlendStateInfo info)
+	    {
+	        if (info == null)
+	        {
+	            throw new ArgumentNullException(nameof(info));
+	        }
+
+	        WriteMask = info.WriteMask;
+	        AlphaBlendOperation = info.AlphaBlendOperation;
+	        ColorBlendOperation = info.ColorBlendOperation;
+	        DestinationAlphaBlend = info.DestinationAlphaBlend;
+	        DestinationColorBlend = info.DestinationColorBlend;
+	        IsBlendingEnabled = info.IsBlendingEnabled;
+	        IsLogicalOperationEnabled = info.IsLogicalOperationEnabled;
+	        LogicOperation = info.LogicOperation;
+	        SourceAlphaBlend = info.SourceAlphaBlend;
+	        SourceColorBlend = info.SourceColorBlend;
+	    }
+        #endregion
+
+        #region Constructor/Finalizer.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonRenderTargetBlendStateInfo"/> class.
+        /// </summary>
+        /// <param name="info">A <see cref="IGorgonRenderTargetBlendStateInfo"/> to copy settings from.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
+        public GorgonRenderTargetBlendStateInfo(IGorgonRenderTargetBlendStateInfo info)
 		{
-			if (info == null)
-			{
-				throw new ArgumentNullException(nameof(info));
-			}
-
-			WriteMask = info.WriteMask;
-			AlphaBlendOperation = info.AlphaBlendOperation;
-			ColorBlendOperation = info.ColorBlendOperation;
-			DestinationAlphaBlend = info.DestinationAlphaBlend;
-			DestinationColorBlend = info.DestinationColorBlend;
-			IsBlendingEnabled = info.IsBlendingEnabled;
-			IsLogicalOperationEnabled = info.IsLogicalOperationEnabled;
-			LogicOperation = info.LogicOperation;
-			SourceAlphaBlend = info.SourceAlphaBlend;
-			SourceColorBlend = info.SourceColorBlend;
+            CopyFrom(info);
 		}
 
 		/// <summary>

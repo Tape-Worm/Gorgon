@@ -84,7 +84,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="item">The item being assigned.</param>
 		protected override void OnItemSet(int index, GorgonShaderResourceView item)
 		{
-			_native[index] = item.D3DView;
+			_native[index] = item?.D3DView;
 		}
 		#endregion
 

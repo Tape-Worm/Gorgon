@@ -261,7 +261,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="item">The item being assigned.</param>
 		protected override void OnItemSet(int index, GorgonRenderTargetView item)
 		{
-			_native[index] = item.D3DRenderTargetView;
+			_native[index] = item?.D3DRenderTargetView;
 		}
 		#endregion
 

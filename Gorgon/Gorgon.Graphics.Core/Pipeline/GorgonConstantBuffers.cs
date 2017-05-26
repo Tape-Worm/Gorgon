@@ -81,7 +81,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="item">The item being assigned.</param>
 		protected override void OnItemSet(int index, GorgonConstantBuffer item)
 		{
-			_native[index] = item.D3DBuffer;
+			_native[index] = item?.D3DBuffer;
 		}
 		#endregion
 

@@ -68,7 +68,7 @@ namespace Gorgon.Graphics.Core
 		/// </remarks>
 		protected override void OnItemSet(int index, GorgonSamplerState item)
 		{
-			_native[index] = item.D3DState;
+			_native[index] = item?.D3DState;
 		}
 
 		/// <summary>
