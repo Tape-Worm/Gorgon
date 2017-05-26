@@ -217,7 +217,7 @@ namespace Gorgon.Graphics.Core
 
 		#region Properties.
 		/// <summary>
-		/// Property to return the viewports to apply during this draw call.
+		/// Property to set or return the viewports to apply during this draw call.
 		/// </summary>
 		public GorgonMonitoredValueTypeArray<DX.ViewportF> Viewports
 		{
@@ -238,7 +238,7 @@ namespace Gorgon.Graphics.Core
 		}
 
 		/// <summary>
-		/// Property to return the scissor rectangles to apply during this draw call.
+		/// Property to set or return the scissor rectangles to apply during this draw call.
 		/// </summary>
 		public GorgonMonitoredValueTypeArray<DX.Rectangle> ScissorRectangles
 		{
@@ -399,7 +399,7 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		public void Reset()
 		{
-			PrimitiveTopology = D3D.PrimitiveTopology.TriangleStrip;
+			PrimitiveTopology = D3D.PrimitiveTopology.TriangleList;
 			VertexBuffers = null;
 			IndexBuffer = null;
 			State = null;
@@ -436,7 +436,7 @@ namespace Gorgon.Graphics.Core
 			unchecked
 			{
 				BlendSampleMask = (int)(0xffffffff);
-				BlendFactor = new GorgonColor(1, 1, 1, 1);
+				BlendFactor = GorgonColor.White;
 				DepthStencilReference = 0;
 			}
 

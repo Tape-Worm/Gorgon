@@ -322,32 +322,42 @@ namespace Gorgon.Graphics.Core
 				   && IsScissorClippingEnabled == info.IsScissorClippingEnabled
 				   && SlopeScaledDepthBias.EqualsEpsilon(info.SlopeScaledDepthBias);
 		}
-		#endregion
 
-		#region Constructor/Finalizer.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonRasterStateInfo"/> class.
-		/// </summary>
-		/// <param name="info">The <see cref="IGorgonRasterStateInfo"/> to copy settings from.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
-		public GorgonRasterStateInfo(IGorgonRasterStateInfo info)
+        /// <summary>
+        /// Function to copy another <see cref="IGorgonRasterStateInfo"/> into this one.
+        /// </summary>
+        /// <param name="info">The info to copy from.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
+	    public void CopyFrom(IGorgonRasterStateInfo info)
+	    {
+	        if (info == null)
+	        {
+	            throw new ArgumentNullException(nameof(info));
+	        }
+
+	        IsAntialiasedLineEnabled = info.IsAntialiasedLineEnabled;
+	        CullMode = info.CullMode;
+	        DepthBias = info.DepthBias;
+	        DepthBiasClamp = info.DepthBiasClamp;
+	        IsDepthClippingEnabled = info.IsDepthClippingEnabled;
+	        FillMode = info.FillMode;
+	        ForcedUavSampleCount = info.ForcedUavSampleCount;
+	        IsFrontCounterClockwise = info.IsFrontCounterClockwise;
+	        IsMultisamplingEnabled = info.IsMultisamplingEnabled;
+	        IsScissorClippingEnabled = info.IsScissorClippingEnabled;
+	        SlopeScaledDepthBias = info.SlopeScaledDepthBias;
+	    }
+        #endregion
+
+        #region Constructor/Finalizer.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonRasterStateInfo"/> class.
+        /// </summary>
+        /// <param name="info">The <see cref="IGorgonRasterStateInfo"/> to copy settings from.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
+        public GorgonRasterStateInfo(IGorgonRasterStateInfo info)
 		{
-			if (info == null)
-			{
-				throw new ArgumentNullException(nameof(info));
-			}
-
-			IsAntialiasedLineEnabled = info.IsAntialiasedLineEnabled;
-			CullMode = info.CullMode;
-			DepthBias = info.DepthBias;
-			DepthBiasClamp = info.DepthBiasClamp;
-			IsDepthClippingEnabled = info.IsDepthClippingEnabled;
-			FillMode = info.FillMode;
-			ForcedUavSampleCount = info.ForcedUavSampleCount;
-			IsFrontCounterClockwise = info.IsFrontCounterClockwise;
-			IsMultisamplingEnabled = info.IsMultisamplingEnabled;
-			IsScissorClippingEnabled = info.IsScissorClippingEnabled;
-			SlopeScaledDepthBias = info.SlopeScaledDepthBias;
+            CopyFrom(info);
 		}
 
 		/// <summary>

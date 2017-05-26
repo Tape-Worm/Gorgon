@@ -42,16 +42,11 @@ namespace Gorgon.Graphics.Core
 	public class GorgonPipelineStateInfo 
 		: IGorgonPipelineStateInfo
 	{
-		// Cached copy of the default render target blend state list.
-		private static readonly IGorgonRenderTargetBlendStateInfo[] _defaultRtBlendState =
-		{
-			GorgonRenderTargetBlendStateInfo.Default
-		};
-
-		/// <summary>
-		/// Property to set or return the current pixel shader 
-		/// </summary>
-		public GorgonPixelShader PixelShader
+        #region Properties.
+        /// <summary>
+        /// Property to set or return the current pixel shader 
+        /// </summary>
+        public GorgonPixelShader PixelShader
 		{
 			get;
 			set;
@@ -69,20 +64,30 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Property to set or return the current <see cref="IGorgonRasterStateInfo"/>.
 		/// </summary>
-		public IGorgonRasterStateInfo RasterState
+		public GorgonRasterStateInfo RasterState
 		{
 			get;
 			set;
 		}
 
+	    /// <summary>
+	    /// Property to return the current <see cref="IGorgonRasterStateInfo"/>.
+	    /// </summary>
+	    IGorgonRasterStateInfo IGorgonPipelineStateInfo.RasterState => RasterState;
+
 		/// <summary>
 		/// Property to set or return the current <see cref="IGorgonDepthStencilStateInfo"/>.
 		/// </summary>
-		public IGorgonDepthStencilStateInfo DepthStencilState
+		public GorgonDepthStencilStateInfo DepthStencilState
 		{
 			get;
 			set;
 		}
+
+	    /// <summary>
+	    /// Property to return the current <see cref="IGorgonDepthStencilStateInfo"/>.
+	    /// </summary>
+	    IGorgonDepthStencilStateInfo IGorgonPipelineStateInfo.DepthStencilState => DepthStencilState;
 
 		/// <summary>
 		/// Property to set or return whether alpha to coverage is enabled or not for blending.
@@ -126,7 +131,7 @@ namespace Gorgon.Graphics.Core
 		/// <remarks>
 		/// This will only support up to 8 state items. If the array is larger than 8 items, then only the first 8 items will be used.
 		/// </remarks>
-		public IGorgonRenderTargetBlendStateInfo[] RenderTargetBlendState
+		public GorgonRenderTargetBlendStateInfo[] RenderTargetBlendState
 		{
 			get;
 			set;
@@ -136,13 +141,15 @@ namespace Gorgon.Graphics.Core
 		/// Property to return the current blending state for an individual render target.
 		/// </summary>
 		IReadOnlyList<IGorgonRenderTargetBlendStateInfo> IGorgonPipelineStateInfo.RenderTargetBlendState => RenderTargetBlendState;
+        #endregion
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonPipelineStateInfo"/> class.
-		/// </summary>
-		/// <param name="info">The <see cref="IGorgonPipelineStateInfo"/> to copy from.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
-		public GorgonPipelineStateInfo(IGorgonPipelineStateInfo info)
+        #region Constructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonPipelineStateInfo"/> class.
+        /// </summary>
+        /// <param name="info">The <see cref="IGorgonPipelineStateInfo"/> to copy from.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
+        public GorgonPipelineStateInfo(IGorgonPipelineStateInfo info)
 		{
 			if (info == null)
 			{
@@ -154,19 +161,29 @@ namespace Gorgon.Graphics.Core
 			PixelShader = info.PixelShader;
 			VertexShader = info.VertexShader;
 
-			DepthStencilState = info.DepthStencilState;
-			RasterState = info.RasterState;
+		    if (info.DepthStencilState != null)
+		    {
+		        DepthStencilState = new GorgonDepthStencilStateInfo(info.DepthStencilState);
+		    }
 
-			if (info.RenderTargetBlendState == null)
+		    if (info.RasterState != null)
+		    {
+		        RasterState = new GorgonRasterStateInfo(info.RasterState);
+		    }
+
+		    if (info.RenderTargetBlendState == null)
 			{
 				return;
 			}
 
-			RenderTargetBlendState = new IGorgonRenderTargetBlendStateInfo[info.RenderTargetBlendState.Count.Min(D3D11.OutputMergerStage.SimultaneousRenderTargetCount)];
+			RenderTargetBlendState = new GorgonRenderTargetBlendStateInfo[info.RenderTargetBlendState.Count.Min(D3D11.OutputMergerStage.SimultaneousRenderTargetCount)];
 
 			for (int i = 0; i < RenderTargetBlendState.Length; ++i)
 			{
-				RenderTargetBlendState[i] = new GorgonRenderTargetBlendStateInfo(info.RenderTargetBlendState[i]);
+			    if (info.RenderTargetBlendState[i] != null)
+			    {
+			        RenderTargetBlendState[i] = new GorgonRenderTargetBlendStateInfo(info.RenderTargetBlendState[i]);
+			    }
 			}
 		}
 
@@ -175,9 +192,7 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		public GorgonPipelineStateInfo()
 		{
-			RasterState = GorgonRasterStateInfo.Default;
-			DepthStencilState = GorgonDepthStencilStateInfo.Default;
-			RenderTargetBlendState = _defaultRtBlendState;
 		}
-	}
+        #endregion
+    }
 }

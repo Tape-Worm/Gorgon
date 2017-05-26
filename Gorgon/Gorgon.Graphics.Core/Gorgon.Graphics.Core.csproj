@@ -123,6 +123,7 @@
     <Compile Include="Pipeline\GorgonMonitoredArray.cs" />
     <Compile Include="Pipeline\GorgonPipelineState.cs" />
     <Compile Include="Pipeline\GorgonPipelineStateInfo.cs" />
+    <Compile Include="Pipeline\GorgonPipelineStateInfoAllocator.cs" />
     <Compile Include="Pipeline\GorgonSamplerStates.cs" />
     <Compile Include="Pipeline\GorgonVertexBufferBinding.cs" />
     <Compile Include="Pipeline\GorgonRenderTargetViews.cs" />

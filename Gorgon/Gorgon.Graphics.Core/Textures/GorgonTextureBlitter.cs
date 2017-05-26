@@ -199,11 +199,11 @@ namespace Gorgon.Graphics
 				                                             {
 					                                             PixelShader = _pixelShader,
 					                                             VertexShader = _vertexShader,
-					                                             DepthStencilState = GorgonDepthStencilStateInfo.Default,
+					                                             DepthStencilState = new GorgonDepthStencilStateInfo(GorgonDepthStencilStateInfo.Default),
 					                                             RasterState = GorgonRasterStateInfo.CullBackFace,
 					                                             RenderTargetBlendState = new[]
 					                                                                      {
-						                                                                      GorgonRenderTargetBlendStateInfo.Modulated
+						                                                                      new GorgonRenderTargetBlendStateInfo(GorgonRenderTargetBlendStateInfo.Modulated)
 					                                                                      }
 				                                             });
 

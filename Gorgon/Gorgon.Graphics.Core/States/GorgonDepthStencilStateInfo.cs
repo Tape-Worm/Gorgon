@@ -226,29 +226,46 @@ namespace Gorgon.Graphics.Core
 				   && StencilReadMask == info.StencilReadMask
 				   && StencilWriteMask == info.StencilWriteMask;
 		}
-		#endregion
 
-		#region Constructor/Finalizer.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonDepthStencilStateInfo"/> class.
-		/// </summary>
-		/// <param name="info">A <see cref="IGorgonDepthStencilStateInfo"/> to copy the settings from.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
-		public GorgonDepthStencilStateInfo(IGorgonDepthStencilStateInfo info)
+        /// <summary>
+        /// Function to copy another <see cref="IGorgonDepthStencilStateInfo"/> into this one.
+        /// </summary>
+        /// <param name="info">The info to copy from.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
+        public void CopyFrom(IGorgonDepthStencilStateInfo info)
+	    {
+	        if (info == null)
+	        {
+	            throw new ArgumentNullException(nameof(info));
+	        }
+
+	        BackFaceStencilOp.CopyFrom(info.BackFaceStencilOp);
+	        FrontFaceStencilOp.CopyFrom(info.FrontFaceStencilOp);
+	        DepthComparison = info.DepthComparison;
+	        IsDepthWriteEnabled = info.IsDepthWriteEnabled;
+	        IsDepthEnabled = info.IsDepthEnabled;
+	        IsStencilEnabled = info.IsStencilEnabled;
+	        StencilReadMask = info.StencilReadMask;
+	        StencilWriteMask = info.StencilWriteMask;
+	    }
+        #endregion
+
+        #region Constructor/Finalizer.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonDepthStencilStateInfo"/> class.
+        /// </summary>
+        /// <param name="info">A <see cref="IGorgonDepthStencilStateInfo"/> to copy the settings from.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
+        public GorgonDepthStencilStateInfo(IGorgonDepthStencilStateInfo info)
 		{
 			if (info == null)
 			{
 				throw new ArgumentNullException(nameof(info));
 			}
 
-			BackFaceStencilOp = new GorgonStencilOperationInfo(info.BackFaceStencilOp);
-			FrontFaceStencilOp = new GorgonStencilOperationInfo(info.FrontFaceStencilOp);
-			DepthComparison = info.DepthComparison;
-			IsDepthWriteEnabled = info.IsDepthWriteEnabled;
-			IsDepthEnabled = info.IsDepthEnabled;
-			IsStencilEnabled = info.IsStencilEnabled;
-			StencilReadMask = info.StencilReadMask;
-			StencilWriteMask = info.StencilWriteMask;
+			BackFaceStencilOp = new GorgonStencilOperationInfo();
+			FrontFaceStencilOp = new GorgonStencilOperationInfo();
+            CopyFrom(info);
 		}
 
 		/// <summary>

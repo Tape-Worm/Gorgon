@@ -660,19 +660,19 @@ namespace Gorgon.Graphics.Example
 			// Initialize a pipeline state so that the graphics can be rendered using the correct shaders, depth buffer, and blending.
 			_pipelineState = _graphics.GetPipelineState(new GorgonPipelineStateInfo
 			                                           {
-				                                           DepthStencilState = GorgonDepthStencilStateInfo.DepthStencilEnabled,
+				                                           DepthStencilState = new GorgonDepthStencilStateInfo(GorgonDepthStencilStateInfo.DepthStencilEnabled),
 				                                           PixelShader = _pixelShader,
 				                                           VertexShader = _vertexShader,
 				                                           RasterState = GorgonRasterStateInfo.CullBackFace,
 				                                           RenderTargetBlendState = new[]
 				                                                                    {
-					                                                                    GorgonRenderTargetBlendStateInfo.Modulated
+					                                                                    new GorgonRenderTargetBlendStateInfo(GorgonRenderTargetBlendStateInfo.Modulated)
 				                                                                    }
 			                                           });
 			// This state is slightly different in that it uses a new shader to draw a "shadow" just behind the ball.
 			_shadowState = _graphics.GetPipelineState(new GorgonPipelineStateInfo(_pipelineState.Info)
 			                                         {
-				                                         DepthStencilState = GorgonDepthStencilStateInfo.DepthStencilEnabledNoWrite,
+				                                         DepthStencilState = new GorgonDepthStencilStateInfo(GorgonDepthStencilStateInfo.DepthStencilEnabledNoWrite),
 				                                         PixelShader = _pixelShaderShadow
 			                                         });
 
