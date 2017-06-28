@@ -267,7 +267,7 @@ namespace Gorgon.Graphics.Example
 			_drawCall.VertexBuffers = model.VertexBufferBindings;
 			_drawCall.PixelShaderResourceViews[0] = model.Material.Texture;
 			_drawCall.PixelShaderSamplers[0] = model.Material.TextureSampler;
-			_drawCall.State = currentState;
+			_drawCall.PipelineState = currentState;
 
 			// Finally, send the draw call to the GPU.
 			_graphics.Submit(_drawCall);

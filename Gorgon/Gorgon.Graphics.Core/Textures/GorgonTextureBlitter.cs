@@ -195,7 +195,7 @@ namespace Gorgon.Graphics
 				_drawCall.VertexBuffers = _vertexBufferBindings;
 				_drawCall.VertexShaderConstantBuffers[0] = _wvpBuffer;
 				
-				_drawCall.State = _graphics.GetPipelineState(new GorgonPipelineStateInfo
+				_drawCall.PipelineState = _graphics.GetPipelineState(new GorgonPipelineStateInfo
 				                                             {
 					                                             PixelShader = _pixelShader,
 					                                             VertexShader = _vertexShader,

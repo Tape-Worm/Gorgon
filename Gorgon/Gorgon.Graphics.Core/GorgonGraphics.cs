@@ -530,12 +530,12 @@ namespace Gorgon.Graphics.Core
 	    {
 		    var pipelineFlags = PipelineStateChange.None;
 
-		    if ((_lastDrawCall.State == null) && (state == null))
+		    if ((_lastDrawCall.PipelineState == null) && (state == null))
 		    {
 			    return pipelineFlags;
 		    }
 
-		    if (((_lastDrawCall.State == null) && (state != null))
+		    if (((_lastDrawCall.PipelineState == null) && (state != null))
 		        || (state == null))
 		    {
 			    pipelineFlags |= PipelineStateChange.BlendState
@@ -552,38 +552,38 @@ namespace Gorgon.Graphics.Core
 				                     | PipelineStateChange.ComputeShader;
 			    }
 
-			    _lastDrawCall.State = state;
+			    _lastDrawCall.PipelineState = state;
 			    return pipelineFlags;
 		    }
 
-			if (_lastDrawCall.State.Info.PixelShader != state.Info.PixelShader)
+			if (_lastDrawCall.PipelineState.Info.PixelShader != state.Info.PixelShader)
 			{
 			    pipelineFlags |= PipelineStateChange.PixelShader;
 		    }
 
-		    if (_lastDrawCall.State.Info.VertexShader != state.Info.VertexShader)
+		    if (_lastDrawCall.PipelineState.Info.VertexShader != state.Info.VertexShader)
 		    {
 			    pipelineFlags |= PipelineStateChange.VertexShader;
 		    }
 
-		    if (_lastDrawCall.State.D3DRasterState != state.D3DRasterState)
+		    if (_lastDrawCall.PipelineState.D3DRasterState != state.D3DRasterState)
 		    {
 			    pipelineFlags |= PipelineStateChange.RasterState;
 		    }
 
-		    if (_lastDrawCall.State.D3DDepthStencilState != state.D3DDepthStencilState)
+		    if (_lastDrawCall.PipelineState.D3DDepthStencilState != state.D3DDepthStencilState)
 		    {
 			    pipelineFlags |= PipelineStateChange.DepthStencilState;
 		    }
 
-		    if (_lastDrawCall.State.D3DBlendState != state.D3DBlendState)
+		    if (_lastDrawCall.PipelineState.D3DBlendState != state.D3DBlendState)
 		    {
 			    pipelineFlags |= PipelineStateChange.BlendState;
 		    }
 
 		    if (pipelineFlags != PipelineStateChange.None)
 		    {
-			    _lastDrawCall.State = state;
+			    _lastDrawCall.PipelineState = state;
 		    }
 
 		    return pipelineFlags;
@@ -644,7 +644,7 @@ namespace Gorgon.Graphics.Core
 		    stateChanges |= MergeShaderSamplers(ShaderType.Vertex, sourceDrawCall.VertexShaderSamplers, stateChanges);
 		    stateChanges |= MergeShaderSamplers(ShaderType.Pixel, sourceDrawCall.PixelShaderSamplers, stateChanges);
 
-			return (stateChanges, GetPipelineStateChange(sourceDrawCall.State));
+			return (stateChanges, GetPipelineStateChange(sourceDrawCall.PipelineState));
 	    }
 
 		/// <summary>
@@ -712,12 +712,13 @@ namespace Gorgon.Graphics.Core
 	    /// </summary>
 	    /// <param name="newState">The new state to initialize.</param>
 	    /// <returns>An existing pipeline state if no changes are found, or a new pipeline state otherwise.</returns>
-	    private GorgonPipelineState SetupPipelineState(IGorgonPipelineStateInfo newState)
+	    private (GorgonPipelineState state, bool isNew) SetupPipelineState(IGorgonPipelineStateInfo newState)
 	    {
 		    // Existing states.
 		    D3D11.DepthStencilState depthStencilState = null;
 		    D3D11.BlendState1 blendState = null;
 		    D3D11.RasterizerState1 rasterState = null;
+	        (GorgonPipelineState State, bool IsNew) result;
 
 		    IGorgonPipelineStateInfo newStateInfo = newState;
 
@@ -787,12 +788,16 @@ namespace Gorgon.Graphics.Core
 		                               | PipelineStateChange.RasterState
 		                               | PipelineStateChange.DepthStencilState))
 		        {
-		            return _stateCache[i];
+		            result.State = _stateCache[i];
+		            result.IsNew = false;
+		            return result;
 		        }
 		    }
 
 		    // Setup any uninitialized states.
-		    return InitializePipelineState(newState, blendState, depthStencilState, rasterState);
+		    result.State = InitializePipelineState(newState, blendState, depthStencilState, rasterState);
+	        result.IsNew = true;
+	        return result;
 	    }
 
 		/// <summary>
@@ -1115,34 +1120,34 @@ namespace Gorgon.Graphics.Core
 			}
 		}
 
-		/// <summary>
-		/// Function to submit a <see cref="GorgonDrawIndexedCall"/> to the GPU.
-		/// </summary>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawCall"/> parameter is <b>null</b>.</exception>
-		/// <remarks>
-		/// <para>
-		/// This method sends a series of state changes and resource bindings to the GPU along with a command to render primitive data.
-		/// </para>
-		/// <para>
-		/// For performance, Gorgon keeps track of the previous draw call, and if they're the same reference, then nothing is done. A new <see cref="GorgonDrawIndexedCall"/> must be sent to this method in 
-		/// order for changes to be seen.
-		/// </para>
-		/// <para>
-		/// <note type="caution">
-		/// <para>
-		/// For performance reasons, any exceptions thrown from this method will only be thrown when Gorgon is compiled as DEBUG.
-		/// </para>
-		/// </note>
-		/// </para>
-		/// </remarks>
-		public void Submit(GorgonDrawIndexedCall drawCall)
+        /// <summary>
+        /// Function to submit a <see cref="GorgonDrawIndexedCall"/> to the GPU.
+        /// </summary>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawCall"/> parameter is <b>null</b>.</exception>
+        /// <remarks>
+        /// <para>
+        /// This method sends a series of state changes and resource bindings to the GPU along with a command to render primitive data.
+        /// </para>
+        /// <para>
+        /// For performance, Gorgon keeps track of the previous draw call, and if they're the same reference, then nothing is done. A new <see cref="GorgonDrawIndexedCall"/> must be sent to this method in 
+        /// order for changes to be seen.
+        /// </para>
+        /// <para>
+        /// <note type="caution">
+        /// <para>
+        /// For performance reasons, any exceptions thrown from this method will only be thrown when Gorgon is compiled as DEBUG.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        public void Submit(GorgonDrawIndexedCall drawCall)
 		{
 			drawCall.ValidateObject(nameof(drawCall));
 
 			// Merge this draw call with our previous one (if available).
 			(PipelineResourceChange ChangedResources, PipelineStateChange ChangedStates) stateChange = MergeDrawCall(drawCall);
 
-			ApplyPerDrawStates(_lastDrawCall, drawCall.State, stateChange.ChangedResources, stateChange.ChangedStates);
+			ApplyPerDrawStates(_lastDrawCall, drawCall.PipelineState, stateChange.ChangedResources, stateChange.ChangedStates);
 
 			D3DDeviceContext.DrawIndexed(drawCall.IndexCount, drawCall.IndexStart, drawCall.BaseVertexIndex);
 		}
@@ -1174,7 +1179,7 @@ namespace Gorgon.Graphics.Core
 			// Merge this draw call with our previous one (if available).
 			(PipelineResourceChange ChangedResources, PipelineStateChange ChangedStates) stateChange = MergeDrawCall(drawCall);
 
-			ApplyPerDrawStates(_lastDrawCall, drawCall.State, stateChange.ChangedResources, stateChange.ChangedStates);
+			ApplyPerDrawStates(_lastDrawCall, drawCall.PipelineState, stateChange.ChangedResources, stateChange.ChangedStates);
 
 			D3DDeviceContext.Draw(drawCall.VertexCount, drawCall.VertexStartIndex);
 		}
@@ -1206,7 +1211,7 @@ namespace Gorgon.Graphics.Core
 			// Merge this draw call with our previous one (if available).
 			(PipelineResourceChange ChangedResources, PipelineStateChange ChangedStates) stateChange = MergeDrawCall(drawCall);
 
-			ApplyPerDrawStates(_lastDrawCall, drawCall.State, stateChange.ChangedResources, stateChange.ChangedStates);
+			ApplyPerDrawStates(_lastDrawCall, drawCall.PipelineState, stateChange.ChangedResources, stateChange.ChangedStates);
 
 			D3DDeviceContext.DrawInstanced(drawCall.VertexCountPerInstance, drawCall.InstanceCount, drawCall.VertexStartIndex, drawCall.StartInstanceIndex);
 		}
@@ -1238,7 +1243,7 @@ namespace Gorgon.Graphics.Core
 			// Merge this draw call with our previous one (if available).
 			(PipelineResourceChange ChangedResources, PipelineStateChange ChangedStates) stateChange = MergeDrawCall(drawCall);
 
-			ApplyPerDrawStates(_lastDrawCall, drawCall.State, stateChange.ChangedResources, stateChange.ChangedStates);
+			ApplyPerDrawStates(_lastDrawCall, drawCall.PipelineState, stateChange.ChangedResources, stateChange.ChangedStates);
 
 			D3DDeviceContext.DrawIndexedInstanced(drawCall.IndexCountPerInstance, drawCall.InstanceCount, drawCall.IndexStart, drawCall.BaseVertexIndex, drawCall.StartInstanceIndex);
 		}
@@ -1266,16 +1271,20 @@ namespace Gorgon.Graphics.Core
 			    throw new ArgumentNullException(nameof(info));
 		    }
 
-		    GorgonPipelineState result;
+		    (GorgonPipelineState State, bool IsNew) result;
 
 			// Threads have to wait their turn.
 			lock(_stateCacheLock)
 			{
 				result = SetupPipelineState(info);
-			    _stateCache.Add(result);
-		    }
 
-		    return result;
+			    if (result.IsNew)
+			    {
+			        _stateCache.Add(result.State);
+			    }
+			}
+
+		    return result.State;
 	    }
 
 		/// <summary>
