@@ -278,18 +278,18 @@ namespace GorgonLibrary.Example
 		                    {
 			                    [0] = new DX.ViewportF(0, 0, ClientSize.Width, ClientSize.Height, 0, 1.0f)
 		                    },
-		                    State = _graphics.GetPipelineState(new GorgonPipelineStateInfo
+		                    PipelineState = _graphics.GetPipelineState(new GorgonPipelineStateInfo
 		                                                       {
 			                                                       PixelShader = _pixelShader,
 			                                                       VertexShader = _vertexShader,
-			                                                       DepthStencilState = GorgonDepthStencilStateInfo.Default,
+			                                                       DepthStencilState = new GorgonDepthStencilStateInfo(GorgonDepthStencilStateInfo.Default),
 			                                                       // We turn off culling so we can see through the cube.
 			                                                       RasterState = GorgonRasterStateInfo.NoCulling,
 			                                                       // We turn on blending so that the alpha in the texture can allow a 
 			                                                       // translucency effect and we can see the other faces through the cube.
 			                                                       RenderTargetBlendState =
 			                                                       {
-				                                                       [0] = GorgonRenderTargetBlendStateInfo.Modulated
+				                                                       [0] = new GorgonRenderTargetBlendStateInfo(GorgonRenderTargetBlendStateInfo.Modulated)
 			                                                       },
 		                                                       })
 	                    };

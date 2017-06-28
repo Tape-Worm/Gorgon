@@ -283,7 +283,7 @@ namespace Gorgon.Graphics.Example
 				            // Define the current state of the rendering pipeline.
 				            // This will tell the GPU how to render the data. Here we assign the shaders we created, but we could assign things like 
 				            // blending information, depth information, etc...
-				            State = _graphics.GetPipelineState(new GorgonPipelineStateInfo
+				            PipelineState = _graphics.GetPipelineState(new GorgonPipelineStateInfo
 				                                               {
 					                                               PixelShader = _pixelShader,
 					                                               VertexShader = _vertexShader,

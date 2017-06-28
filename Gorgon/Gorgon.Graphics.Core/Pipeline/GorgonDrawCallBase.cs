@@ -195,7 +195,8 @@ namespace Gorgon.Graphics.Core
 	/// pipeline prior to rendering any data.
 	/// </para>
 	/// </remarks>
-	public class GorgonDrawCallBase
+	public class GorgonDrawCallBase 
+        : IGorgonShaderStates
 	{
 		#region Constants.
 		/// <summary>
@@ -356,7 +357,7 @@ namespace Gorgon.Graphics.Core
 		/// <remarks>
 		/// If this value is <b>null</b>, then the previous state will remain set.
 		/// </remarks>
-		public GorgonPipelineState State
+		public GorgonPipelineState PipelineState
 		{
 			get;
 			set;
@@ -402,7 +403,7 @@ namespace Gorgon.Graphics.Core
 			PrimitiveTopology = D3D.PrimitiveTopology.TriangleList;
 			VertexBuffers = null;
 			IndexBuffer = null;
-			State = null;
+			PipelineState = null;
 
 			unchecked
 			{

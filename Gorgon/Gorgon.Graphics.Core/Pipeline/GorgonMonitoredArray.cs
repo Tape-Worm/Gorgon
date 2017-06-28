@@ -28,7 +28,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Gorgon.Math;
 
 namespace Gorgon.Graphics.Core
 {
@@ -131,42 +130,59 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Function to retrieve the dirty items in this list.
 		/// </summary>
-		internal ref (int Start, int Count, T[] Items) GetDirtyItems()
+		/// <param name="peek">[Optional] <b>true</b> if the dirty state should not be modified by calling this method, or <b>false</b> if it should be.</param>
+		/// <remarks>
+		/// <para>
+		/// This will return a tuple that contains the start index, and count of the items that have been changed in this collection.  
+		/// </para>
+		/// <para>
+		/// If the <paramref name="peek"/> parameter is set to <b>true</b>, then the state of this collection is not changed when retrieving the modified objects. Otherwise, the state will be reset and a 
+		/// subsequent call to this method will result in a tuple that does not contain any changed values (i.e. the start and count will be 0) until the collection is modified again.
+		/// </para>
+		/// </remarks>
+		public ref (int Start, int Count, T[] Items) GetDirtyItems(bool peek = false)
 		{
-			int startSlot = -1;
-			int count = 0;
+		    int startSlot = -1;
+		    int count = 0;
 
-			if (_dirtyIndices == 0)
-			{
-				if (_dirtyItems.Items == null)
-				{
-					_dirtyItems = (0, 0, _backingStore);
-				}
-				return ref _dirtyItems;
-			}
+		    if (_dirtyIndices == 0)
+		    {
+		        if (_dirtyItems.Items == null)
+		        {
+		            _dirtyItems = (0, 0, _backingStore);
+		        }
+		        return ref _dirtyItems;
+		    }
 
-			for (int i = 0; _dirtyIndices != 0 && i < _backingStore.Length; ++i)
-			{
-				int dirtyMask = 1 << i;
+		    int dirtyState = _dirtyIndices;
 
-				if ((_dirtyIndices & dirtyMask) != dirtyMask)
-				{
-					continue;
-				}
+		    for (int i = 0; dirtyState != 0 && i < _backingStore.Length; ++i)
+		    {
+		        int dirtyMask = 1 << i;
 
-				if (startSlot == -1)
-				{
-					startSlot = i;
-				}
+		        if ((dirtyState & dirtyMask) != dirtyMask)
+		        {
+		            continue;
+		        }
 
-				++count;
+		        if (startSlot == -1)
+		        {
+		            startSlot = i;
+		        }
 
-				// Remove this bit.
-				_dirtyIndices &= ~dirtyMask;
-			}
+		        ++count;
 
-			_dirtyItems = (startSlot == -1 ? 0 : startSlot, count, BackingArray);
-			return ref _dirtyItems;
+		        // Remove this bit.
+		        dirtyState &= ~dirtyMask;
+		    }
+
+		    if (!peek)
+		    {
+		        _dirtyIndices = dirtyState;
+		    }
+
+		    _dirtyItems = (startSlot == -1 ? 0 : startSlot, count, BackingArray);
+		    return ref _dirtyItems;
 		}
 
 		/// <summary>Removes the <see cref="T:System.Collections.Generic.IList`1" /> item at the specified index.</summary>
