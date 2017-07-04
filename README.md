@@ -56,7 +56,7 @@ Gorgon provides a set of libraries that are capable of handling pretty much any 
 
    In additon to the support above, applications can extend the support for file formats by adding their own custom codec plug in to read/write in their desired format(s).
   
-  - [x] __[Gorgon.Graphics.Fonts](Gorgon/Gorgon.Graphics.Fonts)__ 
+  - [x] __[Gorgon.Graphics.Fonts](Gorgon/Gorgon/Gorgon.Graphics.Fonts)__ 
   
   An extensive bitmap font creation interface (within the graphics module) that supports kerning, outlining of font glyphs, and other customizations to help generate impressive looking text.
   
