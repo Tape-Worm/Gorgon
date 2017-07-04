@@ -25,8 +25,8 @@ Gorgon provides a set of libraries that are capable of handling pretty much any 
   A virtual file system that can mount a directory as a file system root, or using various file system providers, can mount a packed file as a virtual file system root.  This code is based on the popular [PhysFS library](http://icculus.org/physfs/).
   
   By default, Gorgon's basic virtual file system is based on the folder/files on the Windows file system, but using filesystem providers via plug ins, applications can read any type of file storage container can be used if the appropriate plug in is available for it. Gorgon comes with two plug ins for file system providers:
-   * __[Gorgon.FileSystem.GorPack](Gorgon/PlugIns/Gorgon.FileSystem.GorPack):__ Gorgon's proprietary packed file system format, using BZip2 compression.
-   * __[Gorgon.FileSystem.Zip](Gorgon/PlugIns/Gorgon.FileSystem.Zip):__ Mounts standard .zip files as virtual file systems.
+   * __[Gorgon.FileSystem.GorPack](PlugIns/Gorgon.FileSystem.GorPack):__ Gorgon's proprietary packed file system format, using BZip2 compression.
+   * __[Gorgon.FileSystem.Zip](PlugIns/Gorgon.FileSystem.Zip):__ Mounts standard .zip files as virtual file systems.
   
   By default, the file system provider
   
@@ -35,8 +35,8 @@ Gorgon provides a set of libraries that are capable of handling pretty much any 
   A flexible input library to handle joysticks/gamepads, keyboard and mouse input. The input library can use events or polling to retrieve data from the various input sources. 
  
  Keyboard and mouse input is provided using the Windows Raw Input API, and joystick/gamepad support is driven by the following plug ins:
- * __[Gorgon.Input.XInput](Gorgon/PlugIns/Gorgon.Input.XInput):__ Support for the XBox 360 controller (and potentially XBox One controller - not tested)
- * __[Gorgon.Input.DirectInput](Gorgon/PlugIns/Gorgon.Input.DirectInput):__ Support for gaming devices that are not covered by the XInput API.
+ * __[Gorgon.Input.XInput](PlugIns/Gorgon.Input.XInput):__ Support for the XBox 360 controller (and potentially XBox One controller - not tested)
+ * __[Gorgon.Input.DirectInput](PlugIns/Gorgon.Input.DirectInput):__ Support for gaming devices that are not covered by the XInput API.
       
   - [x] __[Gorgon.Graphics.Core](Gorgon/Gorgon.Graphics.Core)__ 
   
@@ -64,7 +64,7 @@ Gorgon provides a set of libraries that are capable of handling pretty much any 
    * __GorFont:__ A proprietary binary format for Gorgon.
    * __[BmFont](http://www.angelcode.com/products/bmfont/):__ A popular font file type created by Andreas Jönsson (Note: this support is limited to the text based file format at this time). 
 
-  In addition to the support above, applications can introduce their own codecs to read/write whatever font types they wish by extending the [GorgonFontCodec](Gorgon/Gorgon/Gorgon.Graphics.Fonts/Codecs) type. (Plug in support is pending at this time)
+  In addition to the support above, applications can introduce their own codecs to read/write whatever font types they wish by extending the [GorgonFontCodec](Gorgon/Gorgon.Graphics.Fonts/Codecs/GorgonFontCodec.cs) type. (Plug in support is pending at this time)
   
   - [ ] __[TBD]__ 
   
@@ -81,19 +81,19 @@ Gorgon provides a set of libraries that are capable of handling pretty much any 
 What's required?
 ----------------
 
-  * [.NET 4.6.1](https://www.microsoft.com/en-ca/download/details.aspx?id=49981)
-  * Windows Windows 7, Windows 8, Windows 8.1, Windows 10 or later.
+  * [.NET 4.7](https://www.microsoft.com/en-us/download/details.aspx?id=55170)
+  * Windows 10 (Build 15063 or later).
   * Microsoft DirectX 11.1
 
 To compile the library
 ----------------------
 
-  * [Visual C# 2015](http://msdn.microsoft.com/en-gb/vstudio/) or later. 
+  * [Visual C# 2017](https://www.microsoft.com/en-us/store/b/visualstudio) or later. 
 
 To use the library
 ------------------
 
-  * You may use any .NET 4.6.1 enabled language (e.g. Visual Basic .NET) to write an application with Gorgon.
+  * You may use any .NET 4.7 enabled language (e.g. Visual Basic .NET) to write an application with Gorgon.
 
 Source code
 -----------
