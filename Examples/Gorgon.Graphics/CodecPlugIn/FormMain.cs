@@ -61,17 +61,6 @@ namespace CodecPlugIn
 
 		#region Methods.
 		/// <summary>
-		/// Function called after the swap chain is resized.
-		/// </summary>
-		/// <param name="sender">The sender.</param>
-		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-		/// <exception cref="System.NotImplementedException"></exception>
-		private void AfterSwapChainResized(object sender, EventArgs e)
-		{
-			_blitter.RenderTarget = _swap.RenderTargetView;
-		}
-
-		/// <summary>
 		/// Function called during idle time.
 		/// </summary>
 		/// <returns><b>true</b> to continue execution, <b>false</b> to stop.</returns>
@@ -244,7 +233,8 @@ namespace CodecPlugIn
 		                                        Height = ClientSize.Height,
 		                                        Format = DXGI.Format.R8G8B8A8_UNorm
 	                                        });
-				_swap.AfterSwapChainResized += AfterSwapChainResized;
+
+                _graphics.SetRenderTarget(_swap.RenderTargetView);
 
 				// Load the image to use as a texture.
 	            IGorgonImageCodec png = new GorgonCodecPng();
@@ -252,7 +242,7 @@ namespace CodecPlugIn
 
 				ConvertImage();
 
-				_blitter = new GorgonTextureBlitter(_graphics, _swap.RenderTargetView);
+				_blitter = new GorgonTextureBlitter(_graphics);
 
 				GorgonApplication.IdleMethod = Idle;
 

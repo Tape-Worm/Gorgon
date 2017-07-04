@@ -30,6 +30,7 @@ using Gorgon.Diagnostics;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
+using DX = SharpDX;
 using DXGI = SharpDX.DXGI;
 using D3D = SharpDX.Direct3D11;
 
@@ -65,53 +66,13 @@ namespace Gorgon.Graphics.Core
 			set;
 		}
 
-		/// <summary>
-		/// Property to return the key for the resource view.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// This key can be used to sort, or define a unique resource view for use in caching. Users may set this key however they see fit to meet their caching/sorting needs. However, it is recommended 
-		/// that this key be left alone, and never altered after it's been applied to a cache since it should be a unique value.
-		/// </para>
-		/// <para>
-		/// By default, Gorgon will set the view parameters as a 64 bit unsigned integer value when the view is created. This key is composed of the following bits:
-		/// <para>
-		/// <list type="table">
-		///		<listheader>
-		///			<term>Bits</term>
-		///			<term>Value</term>		
-		///		</listheader>
-		///		<item>
-		///			<term>0 - 3 (4 bits)</term>
-		///			<term><see cref="MipSlice">Mip slice.</see></term>
-		///		</item>
-		///		<item>
-		///			<term>4 - 14 (11 bits)</term>
-		///			<term><see cref="FirstArrayOrDepthIndex">Array/Depth Index.</see></term>
-		///		</item>
-		///		<item>
-		///			<term>15 - 25 (11 bits)</term>
-		///			<term><see cref="ArrayOrDepthCount">Array/Depth Count.</see></term>
-		///		</item>
-		///		<item>
-		///			<term>25 - 33 (8 bits)</term>
-		///			<term><see cref="Format"/></term>
-		///		</item>
-		/// </list>
-		/// </para>
-		/// </para>
-		/// <para>
-		/// For example, a <see cref="MipSlice"/> of 2, and a <see cref="FirstArrayOrDepthIndex"/> of 4, with an <see cref="ArrayOrDepthCount"/> of 2 and a <see cref="Format"/> 
-		/// of <c>R8G8B8A8_UNorm</c> (28) would yield a key of: <c>1879113794</c>. 
-		/// <br/>
-		/// Or, a <see cref="MipSlice"/> of 0, with a <see cref="FirstArrayOrDepthIndex"/> of 0, and a <see cref="ArrayOrDepthCount"/> of 1, and the same buffer format would yield a key of: <c>1879048208</c>.
-		/// </para>
-		/// </remarks>
-		public ulong Key
-	    {
-		    get;
-		    set;
-	    }
+        /// <summary>
+        /// Property to return the depth/stencil view associated with this view.
+        /// </summary>
+        public GorgonDepthStencilView DepthStencilView
+        {
+            get;
+        }
 
 	    /// <summary>
 	    /// Property to return the texture that is bound to this view.
@@ -161,6 +122,71 @@ namespace Gorgon.Graphics.Core
         public int FirstArrayOrDepthIndex
         {
             get;
+        }
+
+        /// <summary>
+        /// Property to return the width of the render target in pixels.
+        /// </summary>
+        /// <remarks>
+        /// This value is the full width of the first mip map level for the texture associated with the render target.
+        /// </remarks>
+        public int Width
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Property to return the height of the render target in pixels.
+        /// </summary>
+        /// <remarks>
+        /// This value is the full width of the first mip map level for the texture associated with the render target.
+        /// </remarks>
+        public int Height
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Property to return the width of the render target at the current <see cref="MipSlice"/> in pixels.
+        /// </summary>
+        /// <remarks>
+        /// This value is the width of the mip map level assigned to <see cref="MipSlice"/> for the texture associated with the render target.
+        /// </remarks>
+        public int MipWidth
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Property to return the height of the render target at the current <see cref="MipSlice"/> in pixels.
+        /// </summary>
+        /// <remarks>
+        /// This value is the height of the mip map level assigned to <see cref="MipSlice"/> for the texture associated with the render target.
+        /// </remarks>
+        public int MipHeight
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Property to return the number of mip map levels for the render target.
+        /// </summary>
+        public int MipLevels => Texture.Info.MipLevels;
+
+        /// <summary>
+        /// Property to return the bounding rectangle for the render target view.
+        /// </summary>
+        /// <remarks>
+        /// This value is the full bounding rectangle of the first mip map level for the texture associated with the render target.
+        /// </remarks>
+        public DX.Rectangle Bounds
+        {
+            get;
+            private set;
         }
         #endregion
 
@@ -285,6 +311,13 @@ namespace Gorgon.Graphics.Core
                 throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_VIEW_CANNOT_BIND_UNKNOWN_RESOURCE);
             }
 
+            Width = Texture.Info.Width;
+            Height = Texture.Info.Height;
+            MipWidth = (Width >> MipSlice).Max(1);
+            MipHeight = (Height >> MipSlice).Max(1);
+            
+            Bounds = new DX.Rectangle(0, 0, Width, Height);
+
 	        _log.Print($"Render Target View '{Texture.Name}': {Texture.ResourceType} -> Mip slice: {MipSlice}, Array/Depth Index: {FirstArrayOrDepthIndex}, Array/Depth Count: {ArrayOrDepthCount}",
 	                   LoggingLevel.Verbose);
 
@@ -322,6 +355,17 @@ namespace Gorgon.Graphics.Core
         /// Initializes a new instance of the <see cref="GorgonRenderTargetView"/> class.
         /// </summary>
         /// <param name="texture">The render target texture to bind.</param>
+        /// <param name="log">[Optional] Logging interface for debugging.</param>
+        internal GorgonRenderTargetView(GorgonTexture texture, IGorgonLog log = null)
+            : this(texture, DXGI.Format.Unknown, 0, 0, texture.Info.TextureType == TextureType.Texture3D ? texture.Info.Depth : texture.Info.ArrayCount, log)
+        {
+            DepthStencilView = texture.AssociatedDepthStencil?.DefaultDepthStencilView;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonRenderTargetView"/> class.
+        /// </summary>
+        /// <param name="texture">The render target texture to bind.</param>
         /// <param name="format">[Optional] The format of the render target view.</param>
         /// <param name="mipSlice">[Optional] The mip slice to use in the view.</param>
         /// <param name="arrayOrDepthIndex">[Optional] The first array index to use in the view.</param>
@@ -355,7 +399,7 @@ namespace Gorgon.Graphics.Core
 				throw new ArgumentException(Resources.GORGFX_ERR_VIEW_NO_TYPELESS, nameof(format));
 			}
 
-	        Format = format;
+            Format = format;
 			MipSlice = texture.Info.MipLevels <= 0 ? 0 : mipSlice.Max(0).Min(texture.Info.MipLevels - 1);
             FirstArrayOrDepthIndex = arrayOrDepthIndex.Max(0).Min(texture.Info.ArrayCount - 1);
 
@@ -367,15 +411,6 @@ namespace Gorgon.Graphics.Core
             ArrayOrDepthCount = arrayOrDepthCount.Min(arrayOrDepthCount - FirstArrayOrDepthIndex).Max(1);
 
 			Initialize(!texture.Info.MultisampleInfo.Equals(GorgonMultisampleInfo.NoMultiSampling));
-
-			// The key for a render target view is broken up into the following layout.
-			// Bits: [33 - 26]   [25 - 15]     [14 - 4]      [3 - 0]
-			//       Format      Array/Depth   Array/Depth   Mip slice
-			//                   Count         Index
-	        Key = (((uint)Format) & 0xff) << 26
-	              | (((uint)ArrayOrDepthCount) & 0x7ff) << 15
-	              | (((uint)FirstArrayOrDepthIndex) & 0x7ff) << 4
-	              | (uint)MipSlice;
         }
         #endregion
     }

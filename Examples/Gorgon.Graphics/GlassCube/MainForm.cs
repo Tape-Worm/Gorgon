@@ -124,8 +124,6 @@ namespace GorgonLibrary.Example
 		private void AfterSwapChainResized(object sender, EventArgs eventArgs)
 		{
 			DX.Matrix.PerspectiveFovLH(60.0f.ToRadians(), (float)ClientSize.Width / ClientSize.Height, 0.1f, 1000.0f, out _projectionMatrix);
-			
-			_drawCall.RenderTargets[0] = _swap.RenderTargetView;
 			_drawCall.Viewports[0] = new DX.ViewportF(0, 0, ClientSize.Width, ClientSize.Height, 0.0f, 1.0f);
 		}
 
@@ -194,7 +192,7 @@ namespace GorgonLibrary.Example
 			// And, as always, send the cube to the GPU for rendering.
 			_graphics.Submit(_drawCall);
 
-			_swap.Present();
+			_swap.Present(1);
 
 	        return true;
         }
@@ -204,7 +202,11 @@ namespace GorgonLibrary.Example
         /// </summary>
         private void Initialize()
         {
-			IGorgonImageCodec pngCodec = new GorgonCodecPng();
+#if DEBUG
+            GorgonGraphics.IsDebugEnabled = true;
+            GorgonGraphics.IsObjectTrackingEnabled = true;
+#endif
+            IGorgonImageCodec pngCodec = new GorgonCodecPng();
 
 			// Load the texture.
 	        using (IGorgonImage image = pngCodec.LoadFromFile(Program.GetResourcePath(@"Textures\GlassCube\Glass.png")))
@@ -246,53 +248,55 @@ namespace GorgonLibrary.Example
 
 	        _cube = new Cube(_graphics, _inputLayout);
 
-			// Set up the pipeline to draw the cube.
-	        _drawCall = new GorgonDrawIndexedCall
-	                    {
-		                    PrimitiveTopology = PrimitiveTopology.TriangleList,
-		                    RenderTargets =
-		                    {
-			                    [0] = _swap.RenderTargetView
-		                    },
-		                    IndexBuffer = _cube.IndexBuffer,
-		                    VertexBuffers = _cube.VertexBuffer,
-		                    PixelShaderResourceViews =
-		                    {
-			                    [0] = _texture.DefaultShaderResourceView
-		                    },
-		                    PixelShaderSamplers =
-		                    {
-			                    // Start with bilinear filtering on the cube texture.
-			                    // This will smooth out the appearance of the texture as it is scaled closer or further away 
-			                    // from our view.
-			                    [0] = _bilinearSampler
-		                    },
-		                    VertexShaderConstantBuffers =
-		                    {
-			                    [0] = _wvpBuffer
-		                    },
+            // Assign our swap chain as the primary render target.
+            _graphics.SetRenderTarget(_swap.RenderTargetView);
 
-		                    IndexStart = 0,
-		                    IndexCount = _cube.IndexBuffer.Info.IndexCount,
-		                    Viewports =
-		                    {
-			                    [0] = new DX.ViewportF(0, 0, ClientSize.Width, ClientSize.Height, 0, 1.0f)
-		                    },
-		                    PipelineState = _graphics.GetPipelineState(new GorgonPipelineStateInfo
-		                                                       {
-			                                                       PixelShader = _pixelShader,
-			                                                       VertexShader = _vertexShader,
-			                                                       DepthStencilState = new GorgonDepthStencilStateInfo(GorgonDepthStencilStateInfo.Default),
-			                                                       // We turn off culling so we can see through the cube.
-			                                                       RasterState = GorgonRasterStateInfo.NoCulling,
-			                                                       // We turn on blending so that the alpha in the texture can allow a 
-			                                                       // translucency effect and we can see the other faces through the cube.
-			                                                       RenderTargetBlendState =
-			                                                       {
-				                                                       [0] = new GorgonRenderTargetBlendStateInfo(GorgonRenderTargetBlendStateInfo.Modulated)
-			                                                       },
-		                                                       })
-	                    };
+			// Set up the pipeline to draw the cube.
+            _drawCall = new GorgonDrawIndexedCall
+                        {
+                            PrimitiveTopology = PrimitiveTopology.TriangleList,
+                            IndexBuffer = _cube.IndexBuffer,
+                            VertexBuffers = _cube.VertexBuffer,
+                            PixelShaderResourceViews =
+                            {
+                                [0] = _texture.DefaultShaderResourceView
+                            },
+                            PixelShaderSamplers =
+                            {
+                                // Start with bilinear filtering on the cube texture.
+                                // This will smooth out the appearance of the texture as it is scaled closer or further away 
+                                // from our view.
+                                [0] = _bilinearSampler
+                            },
+                            VertexShaderConstantBuffers =
+                            {
+                                [0] = _wvpBuffer
+                            },
+
+                            IndexStart = 0,
+                            IndexCount = _cube.IndexBuffer.Info.IndexCount,
+                            Viewports =
+                            {
+                                [0] = new DX.ViewportF(0, 0, ClientSize.Width, ClientSize.Height, 0, 1.0f)
+                            },
+                            PipelineState = _graphics.GetPipelineState(new GorgonPipelineStateInfo
+                                                                       {
+                                                                           PixelShader = _pixelShader,
+                                                                           VertexShader = _vertexShader,
+                                                                           DepthStencilState =
+                                                                               new GorgonDepthStencilStateInfo(GorgonDepthStencilStateInfo.Default),
+                                                                           // We turn off culling so we can see through the cube.
+                                                                           RasterState = GorgonRasterStateInfo.NoCulling,
+                                                                           // We turn on blending so that the alpha in the texture can allow a 
+                                                                           // translucency effect and we can see the other faces through the cube.
+                                                                           RenderTargetBlendState = new[]
+                                                                                                    {
+                                                                                                        new
+                                                                                                            GorgonRenderTargetBlendStateInfo(GorgonRenderTargetBlendStateInfo
+                                                                                                                                                 .Modulated)
+                                                                                                    },
+                                                                       })
+                        };
         }
 
         /// <summary>

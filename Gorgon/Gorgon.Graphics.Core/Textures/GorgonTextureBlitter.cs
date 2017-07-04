@@ -35,7 +35,7 @@ using Gorgon.Graphics.Core.Properties;
 namespace Gorgon.Graphics
 {
 	/// <summary>
-	/// Provides functionality for blitting a texture to the current render target.
+	/// Provides functionality for blitting a texture to the currently active <see cref="GorgonGraphics.RenderTargets">render target</see>.
 	/// </summary>
 	public class GorgonTextureBlitter
 		: IDisposable
@@ -65,33 +65,13 @@ namespace Gorgon.Graphics
 		private bool _initializedFlag;
 		// The draw call used to blit the texture.
 		private readonly GorgonDrawCall _drawCall;
-		// The size of the target.
-		private DX.Size2 _targetSize;
 		// Flag to indicate that the world/view/projection needs updating.
 		private bool _needsWvpUpdate = true;
+        // The bounds of the most recent target.
+	    private DX.Rectangle? _targetBounds;
 		#endregion
 
 		#region Properties.
-		/// <summary>
-		/// Property to set or return the render target that will receive the blitted texture.
-		/// </summary>
-		public GorgonRenderTargetView RenderTarget
-		{
-			get => _drawCall.RenderTargets[0];
-			set
-			{
-				if (_drawCall.RenderTargets[0] == value)
-				{
-					return;
-				}
-
-				// Assign the new one.
-				_drawCall.RenderTargets[0] = value;
-				_targetSize = new DX.Size2(value?.Texture.Info.Width ?? 0, value?.Texture.Info.Height ?? 0);
-				_needsWvpUpdate = true;
-			}
-		}
-
 		/// <summary>
 		/// Property to set or return the custom sampler state to use.
 		/// </summary>
@@ -117,14 +97,17 @@ namespace Gorgon.Graphics
 		/// </summary>
 		private void UpdateWorldViewProjection()
 		{
-			if (!_needsWvpUpdate)
+			if ((!_needsWvpUpdate)
+                || (_graphics.RenderTargets[0] == null))
 			{
 				return;
 			}
 
+		    GorgonRenderTargetView target = _graphics.RenderTargets[0];
+            
 			DX.Matrix.OrthoOffCenterLH(0,
-						   _targetSize.Width,
-						   _targetSize.Height,
+						   target.Width,
+						   target.Height,
 						   0,
 						   0,
 						   1.0f,
@@ -132,13 +115,14 @@ namespace Gorgon.Graphics
 
 			_wvpBuffer.Update(ref projectionMatrix);
 
-			if ((_drawCall.Viewports[0].Width != _targetSize.Width)
-			    || (_drawCall.Viewports[0].Height != _targetSize.Height))
+			if ((_drawCall.Viewports[0].Width != target.Width)
+			    || (_drawCall.Viewports[0].Height != target.Height))
 			{
-				_drawCall.Viewports[0] = new DX.ViewportF(0, 0, _targetSize.Width, _targetSize.Height, 0, 1.0f);
-			}
+				_drawCall.Viewports[0] = new DX.ViewportF(0, 0, target.Width, target.Height, 0, 1.0f);
+            }
 
-			_needsWvpUpdate = false;
+		    _targetBounds = target.Bounds;
+            _needsWvpUpdate = false;
 		}
 
 		/// <summary>
@@ -203,7 +187,7 @@ namespace Gorgon.Graphics
 					                                             RasterState = GorgonRasterStateInfo.CullBackFace,
 					                                             RenderTargetBlendState = new[]
 					                                                                      {
-						                                                                      new GorgonRenderTargetBlendStateInfo(GorgonRenderTargetBlendStateInfo.Modulated)
+						                                                                      new GorgonRenderTargetBlendStateInfo(GorgonRenderTargetBlendStateInfo.NoBlending)
 					                                                                      }
 				                                             });
 
@@ -227,18 +211,20 @@ namespace Gorgon.Graphics
 		/// <param name="srcY">[Optional] The vertical coordinate on the texture to blit.</param>
 		public void Blit(GorgonTexture texture, int x, int y, int width, int height, int srcX = 0, int srcY = 0)
 		{
-			if ((RenderTarget == null)
-				|| (texture == null))
+			if ((texture == null)
+                || (_graphics.RenderTargets[0] == null))
 			{
 				return;
 			}
 
 			Initialize();
 
+		    GorgonRenderTargetView currentView = _graphics.RenderTargets[0];
+
 			// We need to update the projection/view if the size of the target changes.
-			if ((RenderTarget.Texture.Info.Width != _targetSize.Width)
-				|| (RenderTarget.Texture.Info.Height != _targetSize.Height)
-				|| (RenderTarget != _drawCall.RenderTargets[0]))
+			if ((_targetBounds == null)
+                || (currentView.Width != _targetBounds.Value.Width)
+				|| (currentView.Height != _targetBounds.Value.Height))
 			{
 				_needsWvpUpdate = true;
 			}
@@ -302,9 +288,8 @@ namespace Gorgon.Graphics
 		/// Initializes a new instance of the <see cref="GorgonTextureBlitter"/> class.
 		/// </summary>
 		/// <param name="graphics">The graphics interface used to create the required objects for blitting.</param>
-		/// <param name="renderTarget">The render target that will initially receive the blitted texture.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
-		public GorgonTextureBlitter(GorgonGraphics graphics, GorgonRenderTargetView renderTarget)
+		public GorgonTextureBlitter(GorgonGraphics graphics)
 		{
 			_graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
 
@@ -317,10 +302,7 @@ namespace Gorgon.Graphics
 				            {
 					            [0] = _samplerState
 				            }
-
 			            };
-
-			RenderTarget = renderTarget;
 		}
 		#endregion
 	}

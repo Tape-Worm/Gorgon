@@ -28,6 +28,7 @@ using System;
 using System.Linq;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
+using DXGI = SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
@@ -85,50 +86,6 @@ namespace Gorgon.Graphics.Core
 		/// Property to return the native render target views.
 		/// </summary>
 		internal D3D11.RenderTargetView[] Native => _native;
-
-		/// <summary>
-		/// Property to set or return the currently active depth/stencil view.
-		/// </summary>
-		/// <exception cref="GorgonException">Thrown when the resource type for the resource bound to the <see cref="GorgonDepthStencilView"/> being assigned does not match the resource type for resources 
-		/// attached to other views in this list.
-		/// <para>-or-</para>
-		/// <para>Thrown when the array (or depth) index, or the array (or depth) count does not match the other views in this list.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when the resource <see cref="GorgonMultisampleInfo"/> does not match the <see cref="GorgonMultisampleInfo"/> for other resources bound to other views on this list.</para>
-		/// </exception>
-		/// <remarks>
-		/// <para>
-		/// When binding a <see cref="GorgonDepthStencilView"/>, the resource must be of the same type as other resources for other views in this list. If they do not match, an exception will be thrown.
-		/// </para>
-		/// <para>
-		/// All <see cref="GorgonDepthStencilView"/> parameters, such as array (or depth) index and array (or depth) count must be the same as the other views in this list. If they are not, an exception 
-		/// will be thrown. Mip slices may be different. An exception will also be raised if the resources attached to <see cref="GorgonRenderTargetView">GorgonRenderTargetViews</see> in this list do not 
-		/// have the same array/depth count.
-		/// </para>
-		/// <para>
-		/// If the <see cref="GorgonRenderTargetView">GorgonRenderTargetViews</see> are attached to resources with multisampling enabled through <see cref="GorgonMultisampleInfo"/>, then the 
-		/// <see cref="GorgonMultisampleInfo"/> of the resource attached to the <see cref="GorgonDepthStencilView"/> being assigned must match, or an exception will be thrown.
-		/// </para>
-		/// <para>
-		/// These limitations also apply to the <see cref="DepthStencilView"/> property. All views must match the mip slice, array (or depth) index, and array (or depth) count, and the <see cref="ResourceType"/> 
-		/// for the resources attached to the <see cref="GorgonRenderTargetView">GorgonRenderTargetViews</see> must be the same.
-		/// </para>
-		/// <para>
-		/// The format for the view may differ from the formats of other views in this list.
-		/// </para>
-		/// <para>
-		/// <note type="information">
-		/// <para>
-		/// The exceptions raised when validating a view against other views in this list are only thrown when Gorgon is compiled as DEBUG.
-		/// </para>
-		/// </note>
-		/// </para>
-		/// </remarks>
-		public GorgonDepthStencilView DepthStencilView
-		{
-			get;
-			set;
-		}
 		#endregion
 
 		#region Methods.
@@ -138,7 +95,7 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="view">The depth/stencil view to evaluate.</param>
 		/// <param name="firstTarget">The first non-null target.</param>
-		private static void ValidateDepthStencilView(GorgonDepthStencilView view, GorgonRenderTargetView firstTarget)
+		internal static void ValidateDepthStencilView(GorgonDepthStencilView view, GorgonRenderTargetView firstTarget)
 		{
 			if ((firstTarget == null)
 			    || (view == null))
@@ -236,7 +193,7 @@ namespace Gorgon.Graphics.Core
 			}
 
 			// Validate depth/stencil against our render target.
-			ValidateDepthStencilView(DepthStencilView, startView);
+			ValidateDepthStencilView(startView.Texture.Graphics.DepthStencilView, startView);
 		}
 #endif
 
@@ -251,7 +208,6 @@ namespace Gorgon.Graphics.Core
 		protected override void OnClear()
 		{
 			Array.Clear(_native, 0, _native.Length);
-			DepthStencilView = null;
 		}
 
 		/// <summary>
@@ -261,7 +217,8 @@ namespace Gorgon.Graphics.Core
 		/// <param name="item">The item being assigned.</param>
 		protected override void OnItemSet(int index, GorgonRenderTargetView item)
 		{
-			_native[index] = item?.D3DRenderTargetView;
+
+            _native[index] = item?.D3DRenderTargetView;
 		}
 		#endregion
 
@@ -270,27 +227,8 @@ namespace Gorgon.Graphics.Core
 		/// Initializes a new instance of the <see cref="GorgonRenderTargetViews"/> class.
 		/// </summary>
 		internal GorgonRenderTargetViews()
-			: this(MaximumRenderTargetCount)
+			: base(MaximumRenderTargetCount)
 		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonRenderTargetViews"/> class.
-		/// </summary>
-		/// <param name="size">The number of render targets to place within this list.</param>
-		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> parameter is less than 1, or greater than the <see cref="MaximumRenderTargetCount"/>.</exception>
-		public GorgonRenderTargetViews(int size)
-			: base(size)
-		{
-			if (size < 1)
-			{
-				throw new ArgumentOutOfRangeException(nameof(size));
-			}
-
-			if (size > MaximumRenderTargetCount)
-			{
-				throw new ArgumentOutOfRangeException(nameof(size));
-			}
 		}
 		#endregion
 	}

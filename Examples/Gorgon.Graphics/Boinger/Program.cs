@@ -143,8 +143,6 @@ namespace Gorgon.Graphics.Example
 		private static GorgonInputLayout _inputLayout;
 		// Our texture.    
 		private static GorgonTexture _texture;
-		// Our depth/stencil texture.
-		private static GorgonTexture _depthStencilTexture;
 		// Our world/view/project matrix buffer.
 		private static GorgonConstantBuffer _wvpBuffer;
 		// TODO: 2D interface. 
@@ -288,7 +286,7 @@ namespace Gorgon.Graphics.Example
 
 			// Clear to our gray color and clear out the depth buffer.
 			_swap.RenderTargetView.Clear(Color.FromArgb(173, 173, 173));
-			_depthStencilTexture.DefaultDepthStencilView.Clear(1.0f, 0);
+            _swap.DepthStencilView.Clear(1.0f, 0);
 
 			// Render the back and floor planes.
 			// ReSharper disable once ForCanBeConvertedToForeach
@@ -359,7 +357,7 @@ namespace Gorgon.Graphics.Example
 
 			// Now we flip our buffers.
 			// We need to this or we won't see anything.
-			_swap.Present();
+			_swap.Present(1);
 
 			return true;
 		}
@@ -487,7 +485,8 @@ namespace Gorgon.Graphics.Example
 				                            // Set up for 32 bit RGBA normalized display.
 				                            Format = DXGI.Format.R8G8B8A8_UNorm,
 				                            Width = Settings.Default.Resolution.Width,
-				                            Height = Settings.Default.Resolution.Height
+				                            Height = Settings.Default.Resolution.Height,
+                                            DepthStencilFormat = _depthFormat
 			                            });
 
 			// Center on the primary monitor.
@@ -515,8 +514,7 @@ namespace Gorgon.Graphics.Example
 			// This is here because the base graphics library will NOT handle state loss due to resizing.
 			// This is up to the developer to handle.
 			_swap.AfterSwapChainResized += Swap_AfterResized;
-			_swap.BeforeSwapChainResized += Swap_BeforeResized;
-
+			
 			// Initialize our draw call so we can render the objects.
 			// All objects are using triangle lists, so we must tell the draw call that's what we need to render.
 			_drawCall = new GorgonDrawIndexedCall
@@ -565,17 +563,6 @@ namespace Gorgon.Graphics.Example
 					                           Binding = TextureBinding.ShaderResource
 				                           });
 			}
-
-			// Create a surface for our depth buffer.
-			_depthStencilTexture = new GorgonTexture("Boinger Depth Stencil Texture", _graphics, new GorgonTextureInfo
-			                                                                                    {
-				                                                                                    Usage = D3D11.ResourceUsage.Default,
-																									Format = _depthFormat,
-																									Width = _mainForm.ClientSize.Width,
-																									Height = _mainForm.ClientSize.Height,
-																									Binding = TextureBinding.DepthStencil,
-																									TextureType = TextureType.Texture2D
-			                                                                                    });
 
 			// Create a sampler state for sampling our texture data.
 			_samplerState = new GorgonSamplerState(_graphics, new GorgonSamplerStateInfo(GorgonSamplerStateInfo.PointFiltering)
@@ -654,8 +641,8 @@ namespace Gorgon.Graphics.Example
 			// Add resources that are common throughout the application to the draw call.
 			_drawCall.VertexShaderConstantBuffers[0] = _wvpBuffer;
 
-			_drawCall.RenderTargets[0] = _swap.RenderTargetView;
-			_drawCall.RenderTargets.DepthStencilView = _depthStencilTexture.DefaultDepthStencilView;
+            // Set the current render target output so we can see something.
+            _graphics.SetRenderTarget(_swap.RenderTargetView);
 
 			// Initialize a pipeline state so that the graphics can be rendered using the correct shaders, depth buffer, and blending.
 			_pipelineState = _graphics.GetPipelineState(new GorgonPipelineStateInfo
@@ -679,19 +666,6 @@ namespace Gorgon.Graphics.Example
 
 			// I know, there's a lot in here.  Thing is, if this were Direct 3D 11 code, it'd probably MUCH 
 			// more code and that's even before creating our planes and sphere.
-		}
-
-		/// <summary>
-		/// Handles the BeforeResized event of the Swap control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-		/// <exception cref="System.NotImplementedException"></exception>
-		private static void Swap_BeforeResized(object sender, EventArgs e)
-		{
-			// Destroy the depth/stencil that we're using so we can update it.
-			_depthStencilTexture?.Dispose();
-			_depthStencilTexture = null;
 		}
 
 		/// <summary>
@@ -731,24 +705,8 @@ namespace Gorgon.Graphics.Example
 			// Reset our projection matrix to match our new size.
 			_projMatrix = DX.Matrix.PerspectiveFovLH((75.0f).ToRadians(), _mainForm.ClientSize.Width / (float)_mainForm.ClientSize.Height, 0.125f, 500.0f);
 
-			// Recreate our depth/stencil buffer and reassign our render targets since they'll be discarded on resize.
-			_depthStencilTexture = new GorgonTexture("Boinger Depth Stencil Texture",
-			                                         _graphics,
-			                                         new GorgonTextureInfo
-			                                         {
-				                                         Usage = D3D11.ResourceUsage.Default,
-				                                         Format = _depthFormat,
-				                                         Width = _mainForm.ClientSize.Width,
-				                                         Height = _mainForm.ClientSize.Height,
-				                                         Binding = TextureBinding.DepthStencil,
-				                                         TextureType = TextureType.Texture2D
-			                                         });
-
-			_drawCall.RenderTargets[0] = _swap.RenderTargetView;
-			_drawCall.RenderTargets.DepthStencilView = _depthStencilTexture.DefaultDepthStencilView;
-
 			// Update the viewport to reflect the new window size.
-			_drawCall.Viewports[0] =new DX.ViewportF(0, 0, _mainForm.ClientSize.Width, _mainForm.ClientSize.Height, 0.0f, 1.0f);
+			_drawCall.Viewports[0] = new DX.ViewportF(0, 0, _mainForm.ClientSize.Width, _mainForm.ClientSize.Height, 0.0f, 1.0f);
 		}
 		#endregion
 
@@ -785,7 +743,6 @@ namespace Gorgon.Graphics.Example
 
 				_samplerState?.Dispose();
 				_texture?.Dispose();
-				_depthStencilTexture?.Dispose();
 				_wvpBuffer?.Dispose();
 				_vertexShader?.Dispose();
 				_pixelShader?.Dispose();

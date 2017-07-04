@@ -88,6 +88,27 @@ namespace Gorgon.Graphics.Core
 			get;
 			set;
 		}
+
+        /// <summary>
+        /// Property to set or return the format for a depth buffer that will be associated with the swap chain.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This value must be set to one of the depth formats (<c>D16_UNorm</c>, <c>D24_UNorm_S8_UInt</c>, <c>D32_Float</c>, or <c>D32_Float_S8X24_UInt</c>), or <c>Unknown</c>. Any other value will cause 
+        /// an exception when the swap chain is created. 
+        /// </para>
+        /// <para>
+        /// If this value is set to <c>Unknown</c>, then no depth buffer will be created for this swap chain.
+        /// </para>
+        /// <para>
+        /// The default value <c>Unknown</c>.
+        /// </para>
+        /// </remarks>
+	    public DXGI.Format DepthStencilFormat
+	    {
+	        get;
+	        set;
+	    }
 	
 		/// <summary>
 		/// Property to set or return the width of the swap chain back buffer.
@@ -127,6 +148,7 @@ namespace Gorgon.Graphics.Core
 			StretchBackBuffer = info.StretchBackBuffer;
 			UseFlipMode = info.UseFlipMode;
 			Width = info.Width;
+		    DepthStencilFormat = info.DepthStencilFormat;
 		}
 
 		/// <summary>
@@ -136,6 +158,7 @@ namespace Gorgon.Graphics.Core
 		{
 			StretchBackBuffer = true;
 			Format = DXGI.Format.R8G8B8A8_UNorm;
+		    DepthStencilFormat = DXGI.Format.Unknown;
 		}
 		#endregion
 	}

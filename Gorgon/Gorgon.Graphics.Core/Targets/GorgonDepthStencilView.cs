@@ -30,6 +30,7 @@ using Gorgon.Diagnostics;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
+using DX = SharpDX;
 using D3D11 = SharpDX.Direct3D11;
 using DXGI = SharpDX.DXGI;
 
@@ -59,7 +60,7 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Property to return the Direct3D depth/stencil view.
 		/// </summary>
-		internal D3D11.DepthStencilView D3DView
+		internal D3D11.DepthStencilView Native
 		{
 			get;
 			set;
@@ -184,14 +185,80 @@ namespace Gorgon.Graphics.Core
 		{
 			get;
 		}
-		#endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to retrieve the description for a 1D depth/stencil view.
-		/// </summary>
-		/// <returns>The direct 3D 1D depth/stencil view description.</returns>
-		private D3D11.DepthStencilViewDescription GetDesc1D()
+
+        /// <summary>
+        /// Property to return the width of the render target in pixels.
+        /// </summary>
+        /// <remarks>
+        /// This value is the full width of the first mip map level for the texture associated with the render target.
+        /// </remarks>
+        public int Width
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Property to return the height of the render target in pixels.
+        /// </summary>
+        /// <remarks>
+        /// This value is the full width of the first mip map level for the texture associated with the render target.
+        /// </remarks>
+        public int Height
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Property to return the width of the render target at the current <see cref="MipSlice"/> in pixels.
+        /// </summary>
+        /// <remarks>
+        /// This value is the width of the mip map level assigned to <see cref="MipSlice"/> for the texture associated with the render target.
+        /// </remarks>
+        public int MipWidth
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Property to return the height of the render target at the current <see cref="MipSlice"/> in pixels.
+        /// </summary>
+        /// <remarks>
+        /// This value is the height of the mip map level assigned to <see cref="MipSlice"/> for the texture associated with the render target.
+        /// </remarks>
+        public int MipHeight
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Property to return the number of mip map levels for the render target.
+        /// </summary>
+        public int MipLevels => Texture.Info.MipLevels;
+
+        /// <summary>
+        /// Property to return the bounding rectangle for the render target view.
+        /// </summary>
+        /// <remarks>
+        /// This value is the full bounding rectangle of the first mip map level for the texture associated with the render target.
+        /// </remarks>
+        public DX.Rectangle Bounds
+        {
+            get;
+            private set;
+        }
+        #endregion
+
+        #region Methods.
+        /// <summary>
+        /// Function to retrieve the description for a 1D depth/stencil view.
+        /// </summary>
+        /// <returns>The direct 3D 1D depth/stencil view description.</returns>
+        private D3D11.DepthStencilViewDescription GetDesc1D()
 		{
 			// Set up for arrayed and multisampled texture.
 			if (Texture.Info.ArrayCount > 1)
@@ -285,10 +352,17 @@ namespace Gorgon.Graphics.Core
 				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_VIEW_CANNOT_BIND_UNKNOWN_RESOURCE);
 			}
 
-			_log.Print($"Depth/Stencil View '{Texture.Name}': {Texture.ResourceType} -> Mip slice: {MipSlice}, Array Index: {ArrayIndex}, Array Count: {ArrayCount}",
+		    Width = Texture.Info.Width;
+		    Height = Texture.Info.Height;
+		    MipWidth = (Width >> MipSlice).Max(1);
+		    MipHeight = (Height >> MipSlice).Max(1);
+
+		    Bounds = new DX.Rectangle(0, 0, Width, Height);
+
+            _log.Print($"Depth/Stencil View '{Texture.Name}': {Texture.ResourceType} -> Mip slice: {MipSlice}, Array Index: {ArrayIndex}, Array Count: {ArrayCount}",
 					   LoggingLevel.Verbose);
 
-			D3DView = new D3D11.DepthStencilView(Texture.Graphics.VideoDevice.D3DDevice(), Texture.D3DResource, desc)
+			Native = new D3D11.DepthStencilView(Texture.Graphics.VideoDevice.D3DDevice(), Texture.D3DResource, desc)
 			          {
 				          DebugName = $"'{Texture.Name}': D3D11 depth/stencil view"
 			          };
@@ -319,7 +393,7 @@ namespace Gorgon.Graphics.Core
 				clearFlags |= D3D11.DepthStencilClearFlags.Stencil;
 			}
 
-			Texture.Graphics.D3DDeviceContext.ClearDepthStencilView(D3DView, clearFlags, depthValue, stencilValue);
+			Texture.Graphics.D3DDeviceContext.ClearDepthStencilView(Native, clearFlags, depthValue, stencilValue);
 		}
 
 		/// <summary>
@@ -338,7 +412,7 @@ namespace Gorgon.Graphics.Core
 				return;
 			}
 
-			Texture.Graphics.D3DDeviceContext.ClearDepthStencilView(D3DView, D3D11.DepthStencilClearFlags.Depth, depthValue, 0);
+			Texture.Graphics.D3DDeviceContext.ClearDepthStencilView(Native, D3D11.DepthStencilClearFlags.Depth, depthValue, 0);
 		}
 
 		/// <summary>
@@ -357,7 +431,7 @@ namespace Gorgon.Graphics.Core
 				return;
 			}
 
-			Texture.Graphics.D3DDeviceContext.ClearDepthStencilView(D3DView, D3D11.DepthStencilClearFlags.Stencil, 1.0f, stencilValue);
+			Texture.Graphics.D3DDeviceContext.ClearDepthStencilView(Native, D3D11.DepthStencilClearFlags.Stencil, 1.0f, stencilValue);
 		}
 
 		/// <summary>
@@ -365,12 +439,12 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		public void Dispose()
 		{
-			if (D3DView != null)
+			if (Native != null)
 			{
 				_log.Print($"Destroying depth/stencil view for {Texture.Name}.", LoggingLevel.Verbose);
 			}
 
-			D3DView?.Dispose();
+			Native?.Dispose();
 		}
 		#endregion
 

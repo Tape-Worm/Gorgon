@@ -233,6 +233,30 @@ namespace Gorgon.Graphics.Core
 			get;
 		}
 
+	    /// <summary>
+	    /// Property to set or return the format for a depth buffer that will be associated with this render target texture.
+	    /// </summary>
+	    /// <remarks>
+	    /// <para>
+	    /// If the <see cref="Binding"/> is not set to <see cref="TextureBinding.RenderTarget"/> or the <see cref="TextureType"/> is set to <see cref="Gorgon.Graphics.Core.TextureType.Texture3D"/>, then this 
+	    /// property will be ignored because only render targets and 1D/2D textures can have depth buffers.
+	    /// </para>
+	    /// <para>
+	    /// This value must be set to one of the depth formats (<c>D16_UNorm</c>, <c>D24_UNorm_S8_UInt</c>, <c>D32_Float</c>, or <c>D32_Float_S8X24_UInt</c>), or <c>Unknown</c>. Any other value will cause 
+	    /// an exception when the swap chain is created. 
+	    /// </para>
+	    /// <para>
+	    /// If this value is set to <c>Unknown</c>, then no depth buffer will be created for the render target.
+	    /// </para>
+	    /// <para>
+	    /// The default value <c>Unknown</c>.
+	    /// </para>
+	    /// </remarks>
+	    DXGI.Format DepthStencilFormat
+	    {
+	        get;
+	    }
+
 		/// <summary>
 		/// Property to return the number of mip-map levels for the texture.
 		/// </summary>

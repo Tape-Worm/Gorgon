@@ -403,6 +403,7 @@ namespace Gorgon.Graphics.Core
 		                               int arrayIndex = 0,
 		                               int arrayCount = 0,
 									   IGorgonLog log = null)
+            : base(texture)
 		{
 			_log = log ?? GorgonLogDummy.DefaultInstance;
 			Texture = texture ?? throw new ArgumentNullException(nameof(texture));
