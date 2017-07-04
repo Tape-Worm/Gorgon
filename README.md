@@ -81,19 +81,19 @@ Gorgon provides a set of libraries that are capable of handling pretty much any 
 What's required?
 ----------------
 
-  * [.NET 4.6.1](https://www.microsoft.com/en-ca/download/details.aspx?id=49981)
-  * Windows Windows 7, Windows 8, Windows 8.1, Windows 10 or later.
+  * [.NET 4.7](https://www.microsoft.com/en-us/download/details.aspx?id=55170)
+  * Windows 10 (Build 15063 or later).
   * Microsoft DirectX 11.1
 
 To compile the library
 ----------------------
 
-  * [Visual C# 2015](http://msdn.microsoft.com/en-gb/vstudio/) or later. 
+  * [Visual C# 2017](http://msdn.microsoft.com/en-gb/vstudio/) or later. 
 
 To use the library
 ------------------
 
-  * You may use any .NET 4.6.1 enabled language (e.g. Visual Basic .NET) to write an application with Gorgon.
+  * You may use any .NET 4.7 enabled language (e.g. Visual Basic .NET) to write an application with Gorgon.
 
 Source code
 -----------
