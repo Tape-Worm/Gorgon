@@ -25,8 +25,8 @@ Gorgon provides a set of libraries that are capable of handling pretty much any 
   A virtual file system that can mount a directory as a file system root, or using various file system providers, can mount a packed file as a virtual file system root.  This code is based on the popular [PhysFS library](http://icculus.org/physfs/).
   
   By default, Gorgon's basic virtual file system is based on the folder/files on the Windows file system, but using filesystem providers via plug ins, applications can read any type of file storage container can be used if the appropriate plug in is available for it. Gorgon comes with two plug ins for file system providers:
-   * __[Gorgon.FileSystem.GorPack](Gorgon/PlugIns/Gorgon.FileSystem.GorPack):__ Gorgon's proprietary packed file system format, using BZip2 compression.
-   * __[Gorgon.FileSystem.Zip](Gorgon/PlugIns/Gorgon.FileSystem.Zip):__ Mounts standard .zip files as virtual file systems.
+   * __[Gorgon.FileSystem.GorPack](PlugIns/Gorgon.FileSystem.GorPack):__ Gorgon's proprietary packed file system format, using BZip2 compression.
+   * __[Gorgon.FileSystem.Zip](PlugIns/Gorgon.FileSystem.Zip):__ Mounts standard .zip files as virtual file systems.
   
   By default, the file system provider
   
@@ -35,8 +35,8 @@ Gorgon provides a set of libraries that are capable of handling pretty much any 
   A flexible input library to handle joysticks/gamepads, keyboard and mouse input. The input library can use events or polling to retrieve data from the various input sources. 
  
  Keyboard and mouse input is provided using the Windows Raw Input API, and joystick/gamepad support is driven by the following plug ins:
- * __[Gorgon.Input.XInput](Gorgon/PlugIns/Gorgon.Input.XInput):__ Support for the XBox 360 controller (and potentially XBox One controller - not tested)
- * __[Gorgon.Input.DirectInput](Gorgon/PlugIns/Gorgon.Input.DirectInput):__ Support for gaming devices that are not covered by the XInput API.
+ * __[Gorgon.Input.XInput](PlugIns/Gorgon.Input.XInput):__ Support for the XBox 360 controller (and potentially XBox One controller - not tested)
+ * __[Gorgon.Input.DirectInput](PlugIns/Gorgon.Input.DirectInput):__ Support for gaming devices that are not covered by the XInput API.
       
   - [x] __[Gorgon.Graphics.Core](Gorgon/Gorgon.Graphics.Core)__ 
   
@@ -56,7 +56,7 @@ Gorgon provides a set of libraries that are capable of handling pretty much any 
 
    In additon to the support above, applications can extend the support for file formats by adding their own custom codec plug in to read/write in their desired format(s).
   
-  - [x] __[Gorgon.Graphics.Fonts](Gorgon/Gorgon/Gorgon.Graphics.Fonts)__ 
+  - [x] __[Gorgon.Graphics.Fonts](Gorgon/Gorgon.Graphics.Fonts)__ 
   
   An extensive bitmap font creation interface (within the graphics module) that supports kerning, outlining of font glyphs, and other customizations to help generate impressive looking text.
   
