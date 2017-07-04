@@ -64,7 +64,7 @@ Gorgon provides a set of libraries that are capable of handling pretty much any 
    * __GorFont:__ A proprietary binary format for Gorgon.
    * __[BmFont](http://www.angelcode.com/products/bmfont/):__ A popular font file type created by Andreas Jönsson (Note: this support is limited to the text based file format at this time). 
 
-  In addition to the support above, applications can introduce their own codecs to read/write whatever font types they wish by extending the [GorgonFontCodec](Gorgon/Gorgon/Gorgon.Graphics.Fonts/Codecs) type. (Plug in support is pending at this time)
+  In addition to the support above, applications can introduce their own codecs to read/write whatever font types they wish by extending the [GorgonFontCodec](Gorgon/Gorgon.Graphics.Fonts/Codecs/GorgonFontCodec.cs) type. (Plug in support is pending at this time)
   
   - [ ] __[TBD]__ 
   
