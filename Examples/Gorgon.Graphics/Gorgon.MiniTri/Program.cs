@@ -249,6 +249,9 @@ namespace Gorgon.Graphics.Example
 			// This is used (but could be used for more) to transform the vertex data from 3D space into 2D space.
 			CreateConstantBuffer();
 
+		    // This defines where to send the pixel data when rendering. For now, this goes to our swap chain.
+            _graphics.SetRenderTarget(_swap.RenderTargetView);
+
 			// Create our draw call.
 			//
 			// This will pass all the necessary information to the GPU to render the triangle
@@ -270,11 +273,6 @@ namespace Gorgon.Graphics.Example
 				                            {
 					                            [0] = new GorgonVertexBufferBinding(_vertexBuffer, MiniTriVertex.SizeInBytes)
 				                            },
-				            // This defines where to send the pixel data when rendering. For now, this goes to our swap chain.
-				            RenderTargets =
-				            {
-					            [0] = _swap.RenderTargetView
-				            },
 				            // Bind the constant buffer with our projection matrix to the GPU.
 				            VertexShaderConstantBuffers =
 				            {

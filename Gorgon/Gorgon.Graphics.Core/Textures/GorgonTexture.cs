@@ -54,6 +54,8 @@ namespace Gorgon.Graphics.Core
 		private readonly GorgonTextureInfo _info;
 		// The texture lock cache.
 		private readonly TextureLockCache _lockCache;
+        // Flag to indicate that this texture owns the associated depth/stencil view.
+	    private bool _ownsDepthStencil = true;
 		// List of typeless formats that are compatible with a depth view format.
 		private static readonly HashSet<DXGI.Format> _typelessDepthFormats = new HashSet<DXGI.Format>
 		                                                                     {
@@ -62,9 +64,18 @@ namespace Gorgon.Graphics.Core
 			                                                                     DXGI.Format.R24G8_Typeless,
 			                                                                     DXGI.Format.R32G8X24_Typeless
 		                                                                     };
-		#endregion
+        #endregion
 
 		#region Properties.
+        /// <summary>
+        /// Property to return the associated depth/stencil view.
+        /// </summary>
+	    internal GorgonTexture AssociatedDepthStencil
+	    {
+	        get;
+            private set;
+        }
+
 		/// <summary>
 		/// Property to return the ID for this texture.
 		/// </summary>
@@ -633,15 +644,45 @@ namespace Gorgon.Graphics.Core
 			
 			if ((Info.Binding & TextureBinding.UnorderedAccess) == TextureBinding.UnorderedAccess)
 			{
-								
+				// TODO:
 			}
 
 			if ((Info.Binding & TextureBinding.RenderTarget) != TextureBinding.RenderTarget)
 			{
+                _info.DepthStencilFormat = DXGI.Format.Unknown;
 				return;
 			}
 
-			DefaultRenderTargetView = new GorgonRenderTargetView(this, Info.Format, 0, 0, 0, _log);
+		    if ((Info.DepthStencilFormat != DXGI.Format.Unknown) && (Info.TextureType != TextureType.Texture3D))
+		    {
+		        _log.Print($"Creating associated [{Info.DepthStencilFormat}] format depth buffer for the render target '{Name}'.", LoggingLevel.Verbose);
+
+		        if ((Info.DepthStencilFormat != DXGI.Format.D16_UNorm)
+		            && (Info.DepthStencilFormat != DXGI.Format.D24_UNorm_S8_UInt)
+		            && (Info.DepthStencilFormat != DXGI.Format.D32_Float)
+		            && (Info.DepthStencilFormat != DXGI.Format.D32_Float_S8X24_UInt))
+		        {
+		            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_DEPTHSTENCIL_FORMAT_INVALID, Info.DepthStencilFormat));
+		        }
+
+		        _ownsDepthStencil = true;
+		        AssociatedDepthStencil = new GorgonTexture($"{Name}_RenderTarget_DepthStencil_{Guid.NewGuid():N}",
+		                                                   Graphics,
+		                                                   new GorgonTextureInfo(Info)
+		                                                   {
+		                                                       Format = Info.DepthStencilFormat,
+		                                                       Binding = TextureBinding.DepthStencil,
+		                                                       Usage = D3D11.ResourceUsage.Default,
+		                                                       DepthStencilFormat = DXGI.Format.Unknown
+		                                                   });
+            }
+            else if (Info.TextureType == TextureType.Texture3D)
+		    {
+		        _log.Print($"An associated depth buffer could not be created for the render target '{Name}' because it is a 3D texture.", LoggingLevel.Verbose);
+                _info.DepthStencilFormat = DXGI.Format.Unknown;
+            }
+
+		    DefaultRenderTargetView = new GorgonRenderTargetView(this, _log);
 		}
 
 		/// <summary>
@@ -1381,8 +1422,14 @@ namespace Gorgon.Graphics.Core
 		public override void Dispose()
 		{
 			DefaultShaderResourceView?.Dispose();
-			DefaultDepthStencilView?.Dispose();
-			DefaultRenderTargetView?.Dispose();
+		    DefaultDepthStencilView?.Dispose();
+		    DefaultRenderTargetView?.Dispose();
+
+            // Swap chains own this view, so we can't destroy it without explicit permission.
+		    if (_ownsDepthStencil)
+		    {
+		        AssociatedDepthStencil?.Dispose();
+		    }
 
 			_log.Print($"'{Name}': Destroying D3D11 Texture.", LoggingLevel.Simple);
 
@@ -1428,11 +1475,14 @@ namespace Gorgon.Graphics.Core
 				        Depth = 0,
 				        IsCubeMap = false,
 				        MultisampleInfo = GorgonMultisampleInfo.NoMultiSampling,
-				        Binding = (TextureBinding)texture.Description.BindFlags
+				        Binding = (TextureBinding)texture.Description.BindFlags,
+                        DepthStencilFormat = swapChain.Info.DepthStencilFormat
 			        };
 
 			FormatInformation = new GorgonFormatInfo(Info.Format);
 			TextureID = Interlocked.Increment(ref _textureID);
+		    _ownsDepthStencil = false;
+		    AssociatedDepthStencil = swapChain.DepthStencilTexture;
 		}
 
 		/// <summary>

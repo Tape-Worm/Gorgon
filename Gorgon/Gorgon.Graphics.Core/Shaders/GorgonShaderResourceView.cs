@@ -50,6 +50,14 @@ namespace Gorgon.Graphics.Core
 			protected set;
 		}
 
+        /// <summary>
+        /// Property to return the resource bound to the view.
+        /// </summary>
+	    public GorgonResource Resource
+	    {
+	        get;
+	    }
+
 		/// <summary>
 		/// Property to return the key for the resource view.
 		/// </summary>
@@ -86,8 +94,10 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonShaderResourceView"/> class.
 		/// </summary>
-		protected GorgonShaderResourceView()
+		/// <param name="resource">The resource to bind to the view.</param>
+		protected GorgonShaderResourceView(GorgonResource resource)
 		{
+		    Resource = resource;
 		}
 		#endregion
 	}

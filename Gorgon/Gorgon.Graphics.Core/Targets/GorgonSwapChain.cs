@@ -26,8 +26,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 using Gorgon.Core;
+using Gorgon.Core.Collections;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.UI;
@@ -140,6 +142,26 @@ namespace Gorgon.Graphics.Core
 			get;
 			private set;
 		}
+
+	    /// <summary>
+	    /// Property to return the depth/stencil view for a depth/stencil buffer associated with this swap chain.
+	    /// </summary>
+	    /// <remarks>
+	    /// To associate a depth/stencil buffer to this swap chain, set the <see cref="GorgonSwapChainInfo.DepthStencilFormat"/> to a supported depth/stencil format.
+	    /// </remarks>
+	    public GorgonDepthStencilView DepthStencilView => DepthStencilTexture?.DefaultDepthStencilView;
+
+        /// <summary>
+        /// Property to return the depth/stencil texture for a depth/stencil buffer associated with this swap chain.
+        /// </summary>
+        /// <remarks>
+        /// To associate a depth/stencil buffer to this swap chain, set the <see cref="GorgonSwapChainInfo.DepthStencilFormat"/> to a supported depth/stencil format.
+        /// </remarks>
+	    public GorgonTexture DepthStencilTexture
+	    {
+	        get;
+	        private set;
+	    }
 
 		/// <summary>
 		/// Property to set or return whether the application should automatically resize the swap chain back buffers to match the <see cref="Window"/> client area size.
@@ -261,27 +283,97 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Function to create any resources bound to the swap chain.
 		/// </summary>
-		private void CreateResources()
+		/// <param name="targetIndices">The list of render target indices occupied by the backing texture(s) for this swap chain.</param>
+		private void CreateResources((int TargetIndex, bool UsedDepthStencil) targetIndices)
 		{
 			_backBufferTextures = !Info.UseFlipMode ? new GorgonTexture[1] : new GorgonTexture[3];
 
-			_log.Print($"SwapChain '{Name}': Creating {_backBufferTextures.Length} D3D11 textures for back buffers...", LoggingLevel.Verbose);
+		    if (Info.DepthStencilFormat != DXGI.Format.Unknown)
+		    {
+		        if ((Info.DepthStencilFormat != DXGI.Format.D16_UNorm)
+		            && (Info.DepthStencilFormat != DXGI.Format.D24_UNorm_S8_UInt)
+		            && (Info.DepthStencilFormat != DXGI.Format.D32_Float)
+		            && (Info.DepthStencilFormat != DXGI.Format.D32_Float_S8X24_UInt))
+		        {
+		            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_DEPTHSTENCIL_FORMAT_INVALID, Info.DepthStencilFormat));
+		        }
 
-			for (int i = 0; i < _backBufferTextures.Length; ++i)
-			{
-				_backBufferTextures[i] = new GorgonTexture(this, i, _log);
-			}
+		        _log.Print($"SwapChain '{Name}': Creating associated depth/stencil texture...", LoggingLevel.Verbose);
+                // Build out the associated depth/stencil buffer.
+                DepthStencilTexture = new GorgonTexture($"{Name}_DepthStencil_{Guid.NewGuid():N}",
+		                                                Graphics,
+		                                                new GorgonTextureInfo
+		                                                {
+		                                                    Width = Info.Width,
+		                                                    Height = Info.Height,
+		                                                    ArrayCount = 1,
+		                                                    Format = Info.DepthStencilFormat,
+		                                                    Binding = TextureBinding.DepthStencil,
+		                                                    MultisampleInfo = GorgonMultisampleInfo.NoMultiSampling,
+		                                                    MipLevels = 1,
+		                                                    TextureType = TextureType.Texture2D,
+		                                                    Usage = D3D11.ResourceUsage.Default
+		                                                });
 
-			_log.Print($"SwapChain '{Name}': Creating D3D11 render target view...", LoggingLevel.Verbose);
-			RenderTargetView = new GorgonRenderTargetView(_backBufferTextures[0], DXGI.Format.Unknown, 0, 0, -1, _log);
+		        _log.Print($"SwapChain '{Name}': Creating associated depth/stencil view...", LoggingLevel.Verbose);
+		    }
+
+		    _log.Print($"SwapChain '{Name}': Creating {_backBufferTextures.Length} D3D11 textures for back buffers...", LoggingLevel.Verbose);
+
+		    for (int i = 0; i < _backBufferTextures.Length; ++i)
+		    {
+		        _backBufferTextures[i] = new GorgonTexture(this, i, _log);
+		    }
+
+            _log.Print($"SwapChain '{Name}': Creating D3D11 render target view...", LoggingLevel.Verbose);
+		    RenderTargetView = new GorgonRenderTargetView(_backBufferTextures[0], _log);
+
+            // Restore the depth/stencil view.
+            if ((targetIndices.TargetIndex == -1) && (!targetIndices.UsedDepthStencil))
+		    {
+		        return;
+		    }
+            
+            GorgonRenderTargetView[] views = Graphics.RenderTargets.ToArray();
+
+		    if (targetIndices.TargetIndex != -1)
+		    {
+		        views[targetIndices.TargetIndex] = RenderTargetView;
+		    }
+
+		    Graphics.SetRenderTargets(views, targetIndices.UsedDepthStencil ? DepthStencilView : Graphics.DepthStencilView);
 		}
 
 		/// <summary>
 		/// Function to release resources associated with the swap chain before performing a state change.
 		/// </summary>
-		private void ReleaseResources()
+		/// <returns>The list of render target indices occupied by the swap chain backing textures.</returns>
+		private (int TargetIndex, bool UsedDepthStencil) ReleaseResources()
 		{
-			_log.Print($"SwapChain '{Name}': Releasing D3D11 render target view.", LoggingLevel.Verbose);
+            // If this swap chain is assigned to the current render target list, then record which indices it's occupying.
+		    bool usedDepthStencil = Graphics.DepthStencilView == DepthStencilView;
+		    int renderTargetViewIndex = Graphics.RenderTargets.IndexOf(RenderTargetView);
+
+            // Gather all targets except this one.
+		    if ((renderTargetViewIndex != -1) || (usedDepthStencil))
+		    {
+		        GorgonRenderTargetView[] currentViews = Graphics.RenderTargets.Select(item => item == RenderTargetView ? null : item).ToArray();
+                Graphics.SetRenderTargets(currentViews, usedDepthStencil ? null : Graphics.DepthStencilView);
+		    }
+            
+		    if (DepthStencilView != null)
+		    {
+		        _log.Print($"SwapChain '{Name}': Releasing depth/stencil view.", LoggingLevel.Verbose);
+		        DepthStencilView.Dispose();
+		    }
+
+		    if (DepthStencilTexture != null)
+		    {
+		        _log.Print($"SwapChain '{Name}': Releasing depth/stencil texture.", LoggingLevel.Verbose);
+		        DepthStencilTexture.Dispose();
+		    }
+
+		    _log.Print($"SwapChain '{Name}': Releasing D3D11 render target view.", LoggingLevel.Verbose);
 			RenderTargetView?.Dispose();
 
 			_log.Print($"SwapChain '{Name}': Releasing {_backBufferTextures.Length} D3D11 textures.", LoggingLevel.Verbose);
@@ -289,6 +381,8 @@ namespace Gorgon.Graphics.Core
 			{
 				texture?.Dispose();
 			}
+
+		    return (renderTargetViewIndex, usedDepthStencil);
 		}
 
 		/// <summary>
@@ -319,7 +413,7 @@ namespace Gorgon.Graphics.Core
 				// Due to an issue with winforms and DXGI, we have to manually handle transitions ourselves.
 				factory.MakeWindowAssociation(Window.Handle, DXGI.WindowAssociationFlags.IgnoreAll);
 
-				CreateResources();
+				CreateResources((-1, false));
 				
 				Window.Resize += Window_Resize;
 				
@@ -549,14 +643,14 @@ namespace Gorgon.Graphics.Core
 			// Tell the application that this swap chain is going to be resized.
 			BeforeSwapChainResized?.Invoke(this, EventArgs.Empty);
 
-			ReleaseResources();
+			(int, bool) indices = ReleaseResources();
 
 			GISwapChain.ResizeBuffers(IsWindowed ? 2 : 3, newWidth, newHeight, Info.Format, DXGI.SwapChainFlags.AllowModeSwitch);
 
 			_info.Width = newWidth;
 			_info.Height = newHeight;
 
-			CreateResources();
+			CreateResources(indices);
 
 			AfterSwapChainResized?.Invoke(this, EventArgs.Empty);
 

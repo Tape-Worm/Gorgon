@@ -46,10 +46,34 @@ namespace Gorgon.Graphics.Core
 			set;
 		}
 
-		/// <summary>
-		/// Property to set or return the width of the texture, in pixels.
-		/// </summary>
-		public int Width
+	    /// <summary>
+	    /// Property to set or return the format for a depth buffer that will be associated with this render target texture.
+	    /// </summary>
+	    /// <remarks>
+	    /// <para>
+	    /// If the <see cref="Binding"/> is not set to <see cref="TextureBinding.RenderTarget"/>, then this property will be ignored.
+	    /// </para>
+	    /// <para>
+	    /// This value must be set to one of the depth formats (<c>D16_UNorm</c>, <c>D24_UNorm_S8_UInt</c>, <c>D32_Float</c>, or <c>D32_Float_S8X24_UInt</c>), or <c>Unknown</c>. Any other value will cause 
+	    /// an exception when the swap chain is created. 
+	    /// </para>
+	    /// <para>
+	    /// If this value is set to <c>Unknown</c>, then no depth buffer will be created for the render target.
+	    /// </para>
+	    /// <para>
+	    /// The default value <c>Unknown</c>.
+	    /// </para>
+	    /// </remarks>
+	    public DXGI.Format DepthStencilFormat
+	    {
+	        get;
+	        set;
+	    }
+
+        /// <summary>
+        /// Property to set or return the width of the texture, in pixels.
+        /// </summary>
+        public int Width
 		{
 			get;
 			set;
@@ -220,6 +244,7 @@ namespace Gorgon.Graphics.Core
 			TextureType = info.TextureType;
 			Usage = info.Usage;
 			Width = info.Width;
+		    DepthStencilFormat = info.DepthStencilFormat;
 		}
 
 		/// <summary>
@@ -230,6 +255,7 @@ namespace Gorgon.Graphics.Core
 			Binding = TextureBinding.ShaderResource;
 			Usage = D3D11.ResourceUsage.Default;
 			MultisampleInfo = GorgonMultisampleInfo.NoMultiSampling;
+            DepthStencilFormat = DXGI.Format.Unknown;
 			MipLevels = 1;
 			ArrayCount = 1;
 		}

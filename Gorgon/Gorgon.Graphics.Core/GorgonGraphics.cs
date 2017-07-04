@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -65,9 +66,16 @@ namespace Gorgon.Graphics.Core
 	public sealed class GorgonGraphics
         : IDisposable
     {
-		#region Variables.
-		// Flag to indicate that the desktop window manager compositor is enabled.
-		private static bool _isDWMEnabled;                                                  
+        #region Constants.
+        /// <summary>
+        /// The maximum number of render targets allow to be assigned at the same time.
+        /// </summary>
+        public const int MaximumRenderTargetCount = D3D11.OutputMergerStage.SimultaneousRenderTargetCount;
+        #endregion
+
+        #region Variables.
+        // Flag to indicate that the desktop window manager compositor is enabled.
+        private static bool _isDWMEnabled;                                                  
 		// Flag to indicate that we should not enable the DWM.
 		private static readonly bool _dontEnableDWM;                                        
 		// The log interface used to log debug messages.
@@ -84,7 +92,15 @@ namespace Gorgon.Graphics.Core
 		private readonly object _stateCacheLock = new object();
 		// The list of cached scissor rectangles to keep allocates sane.
 	    private DX.Rectangle[] _cachedScissors = new DX.Rectangle[1];
-		#endregion
+        // The currently assigned render target views.
+        private D3D11.RenderTargetView[] _nativeRenderTargetViews = new D3D11.RenderTargetView[MaximumRenderTargetCount];
+        // The current depth/stencil view.
+        private GorgonDepthStencilView _depthStencilView;
+        // Flag to indicate that the depth/stencil view has been changed.
+        private bool _depthStencilChanged;
+        // The list of render targets currently assigned.
+        private readonly GorgonRenderTargetViews _renderTargets;
+        #endregion
 
 		#region Properties.
 		/// <summary>
@@ -194,7 +210,81 @@ namespace Gorgon.Graphics.Core
 			get;
 			set;
 		}
-		#endregion
+
+        /// <summary>
+        /// Property to set or return the currently active depth/stencil view.
+        /// </summary>
+        /// <exception cref="GorgonException">Thrown when the resource type for the resource bound to the <see cref="GorgonDepthStencilView"/> being assigned does not match the resource type for resources 
+        /// attached to other views in this list.
+        /// <para>-or-</para>
+        /// <para>Thrown when the array (or depth) index, or the array (or depth) count does not match the other views in this list.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the resource <see cref="GorgonMultisampleInfo"/> does not match the <see cref="GorgonMultisampleInfo"/> for other resources bound to other views on this list.</para>
+        /// </exception>
+        /// <remarks>
+        /// <para>
+        /// When binding a <see cref="GorgonDepthStencilView"/>, the resource must be of the same type as other resources for other views in this list. If they do not match, an exception will be thrown.
+        /// </para>
+        /// <para>
+        /// All <see cref="GorgonDepthStencilView"/> parameters, such as array (or depth) index and array (or depth) count must be the same as the other views in this list. If they are not, an exception 
+        /// will be thrown. Mip slices may be different. An exception will also be raised if the resources attached to <see cref="GorgonRenderTargetView">GorgonRenderTargetViews</see> in this list do not 
+        /// have the same array/depth count.
+        /// </para>
+        /// <para>
+        /// If the <see cref="GorgonRenderTargetView">GorgonRenderTargetViews</see> are attached to resources with multisampling enabled through <see cref="GorgonMultisampleInfo"/>, then the 
+        /// <see cref="GorgonMultisampleInfo"/> of the resource attached to the <see cref="GorgonDepthStencilView"/> being assigned must match, or an exception will be thrown.
+        /// </para>
+        /// <para>
+        /// These limitations also apply to the <see cref="DepthStencilView"/> property. All views must match the mip slice, array (or depth) index, and array (or depth) count, and the <see cref="ResourceType"/> 
+        /// for the resources attached to the <see cref="GorgonRenderTargetView">GorgonRenderTargetViews</see> must be the same.
+        /// </para>
+        /// <para>
+        /// The format for the view may differ from the formats of other views in this list.
+        /// </para>
+        /// <para>
+        /// <note type="information">
+        /// <para>
+        /// The exceptions raised when validating a view against other views in this list are only thrown when Gorgon is compiled as <b>DEBUG</b>.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        public GorgonDepthStencilView DepthStencilView
+        {
+            get
+            {
+                return _depthStencilView;
+            }
+            private set
+            {
+                if (_depthStencilView == value)
+                {
+                    return;
+                }
+
+                _depthStencilView = value;
+#if DEBUG
+                GorgonRenderTargetViews.ValidateDepthStencilView(value, RenderTargets.FirstOrDefault(item => item != null));
+#endif
+                _depthStencilChanged = true;
+            }
+        }
+
+        /// <summary>
+        /// Property to return the current list of render targets assigned to the renderer.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// When a render target is assigned to this list, the depth/stencil buffer will be replaced with the associated depth/stencil for the assigned <see cref="GorgonRenderTargetView"/>. If the 
+        /// <see cref="GorgonRenderTargetView"/> does not have an associated depth/stencil buffer, then the current <see cref="DepthStencilView"/> buffer will be set to <b>null</b>. 
+        /// If a user wishes to assign their own depth/stencil buffer, then they must assign the <see cref="DepthStencilView"/> after assigning a <see cref="GorgonRenderTargetView"/>.
+        /// </para>
+        /// <para>
+        /// Unlike most states/resources, this property is stateful, that is, it will retain its state until changed by the user and will not be overwritten by a draw call.
+        /// </para>
+        /// </remarks>
+        public IReadOnlyList<GorgonRenderTargetView> RenderTargets => _renderTargets;
+        #endregion
 
 		#region Methods.
 	    /// <summary>
@@ -244,45 +334,6 @@ namespace Gorgon.Graphics.Core
 		    if (_lastDrawCall.ScissorRectangles.IsDirty)
 		    {
 			    currentChanges |= PipelineResourceChange.ScissorRectangles;
-		    }
-
-		    return currentChanges;
-	    }
-
-	    /// <summary>
-	    /// Function to merge the previous draw call render targets with new ones.
-	    /// </summary>
-	    /// <param name="renderTargets">The render targets to merge in.</param>
-	    /// <param name="currentChanges">The current changes on the pipeline.</param>
-	    /// <returns>A <see cref="PipelineResourceChange"/> indicating whether or not the state has changed.</returns>
-	    private PipelineResourceChange MergeRenderTargets(GorgonRenderTargetViews renderTargets, PipelineResourceChange currentChanges)
-	    {
-			// If the depth buffers differ, then we have to set the same targets again.
-			if (_lastDrawCall.RenderTargets.DepthStencilView != renderTargets.DepthStencilView)
-		    {
-			    _lastDrawCall.RenderTargets.DepthStencilView = renderTargets.DepthStencilView;
-			    currentChanges |= PipelineResourceChange.RenderTargets;
-		    }
-
-		    ref (int StartSlot, int Count, GorgonRenderTargetView[] Bindings) current = ref _lastDrawCall.RenderTargets.GetDirtyItems();
-		    ref (int StartSlot, int Count, GorgonRenderTargetView[] Bindings) newItems = ref renderTargets.GetDirtyItems();
-
-		    int maxItems = current.Count.Max(newItems.Count);
-		    int start = current.StartSlot.Min(newItems.StartSlot);
-
-		    for (int i = start; i < start + maxItems; ++i)
-		    {
-			    _lastDrawCall.RenderTargets[i] = newItems.Bindings[i];
-		    }
-
-#if DEBUG
-			// Validate the render targets here so that we can warn the user if they're using invalid targets.
-			_lastDrawCall.RenderTargets.Validate();
-#endif
-
-			if (_lastDrawCall.RenderTargets.IsDirty)
-		    {
-			    currentChanges |= PipelineResourceChange.RenderTargets;
 		    }
 
 		    return currentChanges;
@@ -636,7 +687,6 @@ namespace Gorgon.Graphics.Core
 			stateChanges |= MergeViewPorts(sourceDrawCall.Viewports, stateChanges);
 		    stateChanges |= MergeScissorRects(sourceDrawCall.ScissorRectangles, stateChanges);
 		    stateChanges |= MergeVertexBuffers(sourceDrawCall.VertexBuffers, stateChanges);
-		    stateChanges |= MergeRenderTargets(sourceDrawCall.RenderTargets, stateChanges);
 		    stateChanges |= MergeConstantBuffers(ShaderType.Vertex, sourceDrawCall.VertexShaderConstantBuffers, stateChanges);
 		    stateChanges |= MergeConstantBuffers(ShaderType.Pixel, sourceDrawCall.PixelShaderConstantBuffers, stateChanges);
 		    stateChanges |= MergeShaderResources(ShaderType.Vertex, sourceDrawCall.VertexShaderResourceViews, stateChanges);
@@ -925,14 +975,67 @@ namespace Gorgon.Graphics.Core
 		    D3DDeviceContext.InputAssembler.SetVertexBuffers(bindings.StartSlot, vertexBuffers.Native);
 		}
 
-		/// <summary>
-		/// Function to assign the render targets.
-		/// </summary>
-		/// <param name="renderTargets">The render target views to assign.</param>
-	    private void SetRenderTargets(GorgonRenderTargetViews renderTargets)
+
+        /// <summary>
+        /// Function to unbind a render target that is bound as a shader input.
+        /// </summary>
+        private void UnbindShaderInputs()
+        {
+            if (_lastDrawCall == null)
+            {
+                return;
+            }
+
+            // This can happen quite easily due to how we're handling draw calls (i.e. stateless).  So we won't log anything here and we'll just unbind for the time being.
+            // This may have a small performance penalty.
+            ref (int Start, int Count, GorgonRenderTargetView[] Bindings) rtBindings = ref _renderTargets.GetDirtyItems();
+
+            for (int i = 0; i < rtBindings.Start + rtBindings.Count; ++i)
+            {
+                GorgonRenderTargetView view = rtBindings.Bindings[i];
+
+                if ((view == null) || (view.Texture.Info.Binding & TextureBinding.ShaderResource) != TextureBinding.ShaderResource)
+                {
+                    continue;
+                }
+
+                UnbindFromShader(view.Texture, ref _lastDrawCall.VertexShaderResourceViews.GetDirtyItems());
+                UnbindFromShader(view.Texture, ref _lastDrawCall.PixelShaderResourceViews.GetDirtyItems());
+            }
+
+            void UnbindFromShader(GorgonTexture renderTarget, ref (int Start, int Count, GorgonShaderResourceView[] Bindings) bindings)
+            {
+                for (int i = bindings.Start; i < bindings.Start + bindings.Count; ++i)
+                {
+                    GorgonShaderResourceView srv = bindings.Bindings[i];
+                    
+                    if ((srv == null) || (renderTarget != srv.Resource))
+                    {
+                        continue;
+                    }
+                    
+                    _lastDrawCall.PixelShaderResourceViews[i] = null;
+                    SetShaderResourceViews(ShaderType.Pixel, _lastDrawCall.PixelShaderResourceViews);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Function to assign the render targets.
+        /// </summary>
+        private void SetRenderTargets()
 	    {
-		    ref (int StartSlot, int Count, GorgonRenderTargetView[]) bindings = ref renderTargets.GetDirtyItems();
-			D3DDeviceContext.OutputMerger.SetTargets(renderTargets.DepthStencilView?.D3DView, bindings.Count, renderTargets.Native);
+	        if ((!_renderTargets.IsDirty) && (!_depthStencilChanged))
+	        {
+	            return;
+	        }
+
+            UnbindShaderInputs();
+
+            ref (int StartSlot, int Count, GorgonRenderTargetView[] Bindings) bindings = ref _renderTargets.GetDirtyItems();
+
+	        _nativeRenderTargetViews = _renderTargets.Native;
+			D3DDeviceContext.OutputMerger.SetTargets(DepthStencilView?.Native, bindings.Count, _nativeRenderTargetViews);
 	    }
 		
 	    /// <summary>
@@ -961,8 +1064,43 @@ namespace Gorgon.Graphics.Core
 		/// <param name="shaderType">The type of shader to set the resources on.</param>
 		/// <param name="srvs">The shader resource views to assign.</param>
 		private void SetShaderResourceViews(ShaderType shaderType, GorgonShaderResourceViews srvs)
-	    {
+		{
+		    bool invalidSlotsDetected = false;
 		    ref (int StartSlot, int Count, GorgonShaderResourceView[] Bindings) bindings = ref srvs.GetDirtyItems();
+	        ref (int StartSlot, int Count, GorgonRenderTargetView[] Bindings) rtBindings = ref _renderTargets.GetDirtyItems();
+
+	        for (int i = bindings.StartSlot; i < bindings.StartSlot + bindings.Count; ++i)
+	        {
+	            GorgonShaderResourceView srv = bindings.Bindings[i];
+
+	            if (srv == null)
+	            {
+	                continue;
+	            }
+
+	            for (int j = rtBindings.StartSlot; j < rtBindings.StartSlot + rtBindings.Count; ++j)
+	            {
+	                GorgonRenderTargetView rtv = rtBindings.Bindings[j];
+
+                    // If we're trying to bind a shader resource while it's held as a render target, then reset the render target to null.
+	                if ((rtv == null) || (rtv.Texture != srv.Resource))
+	                {
+	                    continue;
+	                }
+
+	                _log.Print($"[ERROR] {srv.Resource.Name} is already bound as a render target in slot {j}. Please unbind the render target before assigning it to a {shaderType}. This resource will not be assigned.", LoggingLevel.Verbose);
+
+                    // Do not allow this item to be bound as a shader resource.
+	                srvs[i] = null;
+	                invalidSlotsDetected = true;
+	            }
+	        }
+            
+		    if (invalidSlotsDetected)
+		    {
+		        // Update the resource bindings again.
+		        bindings = srvs.GetDirtyItems();
+		    }
 
 		    switch (shaderType)
 		    {
@@ -1004,7 +1142,9 @@ namespace Gorgon.Graphics.Core
 		/// <param name="stateChanges">The pipeline state changes to apply.</param>
 		private void ApplyPerDrawStates(GorgonDrawCallBase drawCall, GorgonPipelineState newState, PipelineResourceChange resourceChanges, PipelineStateChange stateChanges)
 		{
-			if ((resourceChanges & PipelineResourceChange.PrimitiveTopology) == PipelineResourceChange.PrimitiveTopology)
+		    //SetRenderTargets();
+
+            if ((resourceChanges & PipelineResourceChange.PrimitiveTopology) == PipelineResourceChange.PrimitiveTopology)
 			{
 				D3DDeviceContext.InputAssembler.PrimitiveTopology = drawCall.PrimitiveTopology;
 			}
@@ -1032,11 +1172,6 @@ namespace Gorgon.Graphics.Core
 			if ((resourceChanges & PipelineResourceChange.IndexBuffer) == PipelineResourceChange.IndexBuffer)
 			{
 				SetIndexbuffer(drawCall.IndexBuffer);
-			}
-			
-			if ((resourceChanges & PipelineResourceChange.RenderTargets) == PipelineResourceChange.RenderTargets)
-			{
-				SetRenderTargets(drawCall.RenderTargets);
 			}
 
 			if ((resourceChanges & PipelineResourceChange.VertexShaderConstantBuffers) == PipelineResourceChange.VertexShaderConstantBuffers)
@@ -1084,21 +1219,119 @@ namespace Gorgon.Graphics.Core
 				D3DDeviceContext.OutputMerger.DepthStencilReference = drawCall.DepthStencilReference;
 			}
 
-			if (stateChanges != PipelineStateChange.None)
+		    if (stateChanges != PipelineStateChange.None)
 			{
 				ApplyPipelineState(newState, stateChanges);
 			}
-		}
-		
+        }
+
+        /// <summary>
+        /// Function to assign a single render target to the first slot.
+        /// </summary>
+        /// <param name="renderTarget">The render target view to assign.</param>
+        /// <remarks>
+        /// <para>
+        /// This will assign a render target in slot 0 of the <see cref="RenderTargets"/> list. If the <paramref name="renderTarget"/> has an associated depth/stencil buffer, then that will be assigned to the 
+        /// <see cref="DepthStencilView"/>. If it does not, the <see cref="DepthStencilView"/> will be set to <b>null</b>.
+        /// </para>
+        /// <para>
+        /// If a user wishes to assign their own <see cref="GorgonDepthStencilView"/>, then use the <see cref="SetRenderTarget(GorgonRenderTargetView, GorgonDepthStencilView)"/> overload.
+        /// </para>
+        /// <para>
+        /// If multiple render targets need to be assigned at the same time, use the <see cref="SetRenderTargets(GorgonRenderTargetView[], GorgonDepthStencilView)"/> overload.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="SetRenderTarget(GorgonRenderTargetView, GorgonDepthStencilView)"/>
+        /// <seealso cref="SetRenderTargets(GorgonRenderTargetView[], GorgonDepthStencilView)"/>
+        public void SetRenderTarget(GorgonRenderTargetView renderTarget)
+        {
+            SetRenderTarget(renderTarget, renderTarget?.DepthStencilView);
+        }
+
+        /// <summary>
+        /// Function to assign a render target to the first slot and a custom depth/stencil view.
+        /// </summary>
+        /// <param name="renderTarget">The render target view to assign.</param>
+        /// <param name="depthStencil">The depth/stencil view to assign.</param>
+        /// <remarks>
+        /// <para>
+        /// This will assign a render target in slot 0 of the <see cref="RenderTargets"/> list. Any associated depth/stencil buffer for the render target will be ignored and the value assigned to 
+        /// <paramref name="depthStencil"/> will be used instead.
+        /// </para>
+        /// <para>
+        /// If a user wishes to use the associated <see cref="GorgonDepthStencilView"/> for the <paramref name="renderTarget"/>, then use the <see cref="SetRenderTarget(GorgonRenderTargetView)"/> overload.
+        /// </para>
+        /// <para>
+        /// If multiple render targets need to be assigned at the same time, use the <see cref="SetRenderTargets(GorgonRenderTargetView[], GorgonDepthStencilView)"/> overload.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="SetRenderTarget(GorgonRenderTargetView)"/>
+        /// <seealso cref="SetRenderTargets(GorgonRenderTargetView[], GorgonDepthStencilView)"/>
+        public void SetRenderTarget(GorgonRenderTargetView renderTarget, GorgonDepthStencilView depthStencil)
+        {
+            _renderTargets.Clear();
+
+            if ((_renderTargets[0] == renderTarget) && (depthStencil == DepthStencilView))
+            {
+                return;
+            }
+
+            _renderTargets[0] = renderTarget;
+
+            DepthStencilView = depthStencil;
+            SetRenderTargets();
+        }
+
+        /// <summary>
+        /// Function to assign multiple render targets to the first slot and a custom depth/stencil view.
+        /// </summary>
+        /// <param name="renderTargets">The list of render target views to assign.</param>
+        /// <param name="depthStencil">The depth/stencil view to assign.</param>
+        /// <remarks>
+        /// <para>
+        /// This will assign multiple render targets to the corresponding slots in the <see cref="RenderTargets"/> list. Any associated depth/stencil buffer for the render target will be ignored and the value 
+        /// assigned to <paramref name="depthStencil"/> will be used instead.
+        /// </para>
+        /// <para>
+        /// If a user wishes to use the associated <see cref="GorgonDepthStencilView"/> for the <paramref name="renderTargets"/>, then use the <see cref="SetRenderTarget(GorgonRenderTargetView)"/> overload.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="SetRenderTarget(GorgonRenderTargetView)"/>
+        /// <seealso cref="SetRenderTarget(GorgonRenderTargetView, GorgonDepthStencilView)"/>
+        public void SetRenderTargets(GorgonRenderTargetView[] renderTargets, GorgonDepthStencilView depthStencil = null)
+        {
+            _renderTargets.Clear();
+
+            if (renderTargets == null)
+            {
+                DepthStencilView = depthStencil;
+                SetRenderTargets();
+                return;
+            }
+
+            for (int i = 0; i < renderTargets.Length.Min(_renderTargets.Count); ++i)
+            {
+                _renderTargets[i] = renderTargets[i];
+            }
+
+            if ((!_renderTargets.IsDirty) && (DepthStencilView == depthStencil))
+            {
+                return;
+            }
+
+            DepthStencilView = depthStencil;
+            SetRenderTargets();
+        }
+
 		/// <summary>
-		/// Function to clear the cached pipeline states.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// This will destroy any previously cached pipeline states. Because of this, any states that were previously created must be re-created using the <seealso cref="GetPipelineState"/> method.
-		/// </para>
-		/// </remarks>
-		public void ClearStateCache()
+        /// Function to clear the cached pipeline states.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This will destroy any previously cached pipeline states. Because of this, any states that were previously created must be re-created using the <seealso cref="GetPipelineState"/> method.
+        /// </para>
+        /// </remarks>
+        public void ClearStateCache()
 		{
 			if (D3DDeviceContext != null)
 			{
@@ -1316,6 +1549,7 @@ namespace Gorgon.Graphics.Core
 				D3DDeviceContext.Flush();
             }
 
+            _renderTargets.Clear();
 	        _lastDrawCall.Reset();
         }
 
@@ -1429,6 +1663,7 @@ namespace Gorgon.Graphics.Core
 
 			_videoDevice = new VideoDevice(videoDeviceInfo, featureLevel.Value, _log);
 			_deviceContext = _videoDevice.D3DDevice.ImmediateContext1;
+            _renderTargets = new GorgonRenderTargetViews();
 			
 			_log.Print("Gorgon Graphics initialized.", LoggingLevel.Simple);
 		}

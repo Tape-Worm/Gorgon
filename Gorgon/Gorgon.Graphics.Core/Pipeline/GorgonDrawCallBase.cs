@@ -66,10 +66,6 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		InputLayout = 0x20,
 		/// <summary>
-		/// Render targets and/or depth stencil have changed.
-		/// </summary>
-		RenderTargets = 0x40,
-		/// <summary>
 		/// Vertex shader constant buffers have changed.
 		/// </summary>
 		VertexShaderConstantBuffers = 0x80,
@@ -104,55 +100,55 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Geometry shader resources have changed.
 		/// </summary>
-		GeometryShaderResources = 0x4_000,
+		GeometryShaderResources = 0x8_000,
 		/// <summary>
 		/// Hull shader resources have changed.
 		/// </summary>
-		HullShaderResources = 0x8_000,
+		HullShaderResources = 0x10_000,
 		/// <summary>
 		/// Domain shader resources have changed.
 		/// </summary>
-		DomainShaderResources = 0x10_000,
+		DomainShaderResources = 0x20_000,
 		/// <summary>
 		/// Compute shader resources have changed.
 		/// </summary>
-		ComputeShaderResources = 0x20_000,
+		ComputeShaderResources = 0x40_000,
 		/// <summary>
 		/// Vertex shader samplers have changed.
 		/// </summary>
-		VertexShaderSamplers = 0x40_000,
+		VertexShaderSamplers = 0x80_000,
 		/// <summary>
 		/// Pixel shader samplers have changed.
 		/// </summary>
-		PixelShaderSamplers = 0x80_000,
+		PixelShaderSamplers = 0x100_000,
 		/// <summary>
 		/// Geometry shader samplers have changed.
 		/// </summary>
-		GeometryShaderSamplers = 0x100_000,
+		GeometryShaderSamplers = 0x200_000,
 		/// <summary>
 		/// Hull shader samplers have changed.
 		/// </summary>
-		HullShaderSamplers = 0x200_000,
+		HullShaderSamplers = 0x400_000,
 		/// <summary>
 		/// Domain shader samplers have changed.
 		/// </summary>
-		DomainShaderSamplers = 0x400_000,
+		DomainShaderSamplers = 0x800_000,
 		/// <summary>
 		/// Compute shader samplers have changed.
 		/// </summary>
-		ComputeShaderSamplers = 0x800_000,
+		ComputeShaderSamplers = 0x1_000_000,
 		/// <summary>
 		/// The blending factor has been updated.
 		/// </summary>
-		BlendFactor = 0x1_000_000,
+		BlendFactor = 0x2_000_000,
 		/// <summary>
 		/// The blending sample mask has been updated.
 		/// </summary>
-		BlendSampleMask = 0x2_000_000,
+		BlendSampleMask = 0x4_000_000,
 		/// <summary>
 		/// The depth/stencil reference value has been updated.
 		/// </summary>
-		DepthStencilReference = 0x4_000_000,
+		DepthStencilReference = 0x8_000_000,
 		/// <summary>
 		/// All states changed.
 		/// </summary>
@@ -180,7 +176,6 @@ namespace Gorgon.Graphics.Core
 			| IndexBuffer
 			| InputLayout
 			| VertexBuffers
-			| RenderTargets
 			| PrimitiveTopology
 			| Viewports
 			| ScissorRectangles
@@ -275,14 +270,6 @@ namespace Gorgon.Graphics.Core
 		{
 			get;
 			set;
-		}
-
-		/// <summary>
-		/// Property to return the render targets to bind to the pipeline.
-		/// </summary>
-		public GorgonRenderTargetViews RenderTargets
-		{
-			get;
 		}
 
 		/// <summary>
@@ -422,9 +409,6 @@ namespace Gorgon.Graphics.Core
 			PixelShaderResourceViews.Clear();
 			PixelShaderConstantBuffers.Clear();
 			PixelShaderSamplers.Clear();
-			
-			RenderTargets.DepthStencilView = null;
-			RenderTargets.Clear();
 		}
 		#endregion
 
@@ -443,7 +427,6 @@ namespace Gorgon.Graphics.Core
 
 			_viewports = new GorgonMonitoredValueTypeArray<DX.ViewportF>(MaximumViewportCount);
 			_scissorRectangles = new GorgonMonitoredValueTypeArray<DX.Rectangle>(MaximumScissorCount);
-			RenderTargets = new GorgonRenderTargetViews();
 			VertexShaderConstantBuffers = new GorgonConstantBuffers();
 			PixelShaderConstantBuffers = new GorgonConstantBuffers();
 			PixelShaderResourceViews = new GorgonShaderResourceViews();
