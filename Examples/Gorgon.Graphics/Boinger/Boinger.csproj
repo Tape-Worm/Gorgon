@@ -41,6 +41,9 @@
   <PropertyGroup>
     <StartupObject>Gorgon.Graphics.Example.Program</StartupObject>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>D:\Mike\Code\GitHubRepos\Gorgon\WIP\Examples\Gorgon.Graphics\app.manifest</ApplicationManifest>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Gorgon.Native">
       <HintPath>..\..\..\Gorgon\Gorgon.Native\Gorgon.Native.dll</HintPath>
@@ -91,6 +94,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="..\app.manifest">
+      <Link>app.manifest</Link>
+    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

@@ -162,14 +162,6 @@ namespace Gorgon.Graphics.Core
 		/// <returns>A DXGI swap chain description.</returns>
 		public static DXGI.SwapChainDescription1 ToSwapChainDesc(this GorgonSwapChainInfo swapChainInfo)
 		{
-			var swapEffect = DXGI.SwapEffect.Discard;
-
-			// Flip sequential is not supported on Window 7, so ignore it if we're on windows 7.
-			if ((swapChainInfo.UseFlipMode) && (Win32API.IsWindows8OrGreater()))
-			{
-				swapEffect = DXGI.SwapEffect.FlipSequential;
-			}
-
 			return new DXGI.SwapChainDescription1
 			       {
 				       BufferCount = 2,
@@ -180,7 +172,7 @@ namespace Gorgon.Graphics.Core
 				       Height = swapChainInfo.Height,
 				       Scaling = swapChainInfo.StretchBackBuffer ? DXGI.Scaling.Stretch : DXGI.Scaling.None,
 					   SampleDescription = ToSampleDesc(GorgonMultisampleInfo.NoMultiSampling),
-					   SwapEffect = swapEffect,
+					   SwapEffect = DXGI.SwapEffect.FlipSequential,
 					   Usage = DXGI.Usage.RenderTargetOutput
 			       };
 		}
