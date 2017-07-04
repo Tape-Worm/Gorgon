@@ -88,7 +88,7 @@ What's required?
 To compile the library
 ----------------------
 
-  * [Visual C# 2017](http://msdn.microsoft.com/en-gb/vstudio/) or later. 
+  * [Visual C# 2017](https://www.microsoft.com/en-us/store/b/visualstudio) or later. 
 
 To use the library
 ------------------
