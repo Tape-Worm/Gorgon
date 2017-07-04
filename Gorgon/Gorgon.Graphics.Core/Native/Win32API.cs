@@ -40,7 +40,8 @@ namespace Gorgon.Native
 		#region Constants.
 		private const uint VER_MINORVERSION = 0x0000001;
 		private const uint VER_MAJORVERSION = 0x0000002;
-		private const uint VER_SERVICEPACKMAJOR = 0x0000020;
+	    private const uint VER_BUILDNUMBER = 0x0000004;
+        private const uint VER_SERVICEPACKMAJOR = 0x0000020;
 		private const byte VER_GREATER_EQUAL = 3;
 		#endregion
 
@@ -70,28 +71,38 @@ namespace Gorgon.Native
 		/// </summary>
 		/// <param name="majorVersion">Major version number to look up.</param>
 		/// <param name="minorVersion">Minor version number to look up.</param>
+		/// <param name="buildNumber">The build number to look up.</param>
 		/// <param name="servicePackMajorVersion">Major service pack version number to look up.</param>
 		/// <returns><b>true</b> if the version is the same or better, <b>false</b> if not.</returns>
-		private static bool IsWindowsVersionOrGreater(uint majorVersion, uint minorVersion, ushort servicePackMajorVersion)
+		private static bool IsWindowsVersionOrGreater(uint majorVersion, uint minorVersion, uint? buildNumber, ushort? servicePackMajorVersion)
 		{
 			var osInfoEx = new OSVERSIONINFOEX
 			{
 				dwOSVersionInfoSize = (uint)Marshal.SizeOf<OSVERSIONINFOEX>(),
 				dwMajorVersion = majorVersion,
 				dwMinorVersion = minorVersion,
-				wServicePackMajor = servicePackMajorVersion
+                dwBuildNumber = buildNumber ?? 0,
+				wServicePackMajor = servicePackMajorVersion ?? 0
 			};
 
+		    uint typeMask = VER_MAJORVERSION | VER_MINORVERSION;
+            ulong versionMask = VerSetConditionMask(VerSetConditionMask(0, VER_MAJORVERSION, VER_GREATER_EQUAL),
+                                                                              VER_MINORVERSION,
+                                                                              VER_GREATER_EQUAL);
 
-			ulong versionMask = VerSetConditionMask(
-													VerSetConditionMask(
-																		VerSetConditionMask(0, VER_MAJORVERSION, VER_GREATER_EQUAL),
-																		VER_MINORVERSION,
-																		VER_GREATER_EQUAL),
-													VER_SERVICEPACKMAJOR,
-													VER_GREATER_EQUAL);
+		    if (buildNumber != null)
+		    {
+		        versionMask = VerSetConditionMask(versionMask, VER_BUILDNUMBER, VER_GREATER_EQUAL);
+		        typeMask |= VER_BUILDNUMBER;
+		    }
 
-			return VerifyVersionInfo(ref osInfoEx, VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR, versionMask) != 0;
+		    if (servicePackMajorVersion != null)
+		    {
+		        versionMask = VerSetConditionMask(versionMask, VER_SERVICEPACKMAJOR, VER_GREATER_EQUAL);
+		        typeMask |= VER_SERVICEPACKMAJOR;
+		    }
+            
+		    return VerifyVersionInfo(ref osInfoEx, typeMask, versionMask) != 0;
 		}
 
 		/// <summary>
@@ -100,7 +111,7 @@ namespace Gorgon.Native
 		/// <returns><b>true</b> if the current OS version matches, or is greater than Windows 7 with SP1; otherwise <b>false</b>.</returns>
 		public static bool IsWindows7SP1OrGreater()
 		{
-			return IsWindowsVersionOrGreater(6, 1, 1);
+			return IsWindowsVersionOrGreater(6, 1, null, 1);
 		}
 
 		/// <summary>
@@ -109,8 +120,17 @@ namespace Gorgon.Native
 		/// <returns><b>true</b> if the current OS version matches, or is greater than Windows 8; otherwise <b>false</b>.</returns>
 		public static bool IsWindows8OrGreater()
 		{
-			return IsWindowsVersionOrGreater(6, 2, 0);
+			return IsWindowsVersionOrGreater(6, 2, null, null);
 		}
+
+        /// <summary>
+        /// Indicates if the current OS version matches, or is greater than, Windows 10 with the specified build number.
+        /// </summary>
+        /// <returns><b>true</b> if the current OS version matches, or is greater than Windows 10 with the specified build number; otherwise <b>false</b>.</returns>
+	    public static bool IsWindows10OrGreater(int build)
+	    {
+	        return IsWindowsVersionOrGreater(10, 0, (uint)build, null);
+	    }
 
 		/// <summary>
 		/// Function to retrieve the nearest monitor to the window.

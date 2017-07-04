@@ -38,10 +38,6 @@ namespace Gorgon.Graphics.Imaging
 	public class GorgonImageInfo
 		: IGorgonImageInfo
 	{
-		#region Variables.
-
-		#endregion
-
 		#region Properties.
 		/// <summary>
 		/// Property to set or return the total number of images there are in an image array.

@@ -542,7 +542,7 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The Gorgon Graphics interface requires Windows 7 or greater..
+        ///   Looks up a localized string similar to The Gorgon Graphics interface requires Windows 10 (Build 15063) or greater..
         /// </summary>
         internal static string GORGFX_ERR_INVALID_OS {
             get {
@@ -898,6 +898,17 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_STREAM_WRITE_ONLY {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_STREAM_WRITE_ONLY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The requested width and/or height ({0}x{1}) for the swap chain backer buffer is too large. 
+        ///
+        ///The width must be a value between 1-{2}, and the height must be a value between 1-{3}..
+        /// </summary>
+        internal static string GORGFX_ERR_SWAP_BACKBUFFER_TOO_LARGE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_SWAP_BACKBUFFER_TOO_LARGE", resourceCulture);
             }
         }
         
@@ -2209,6 +2220,25 @@ namespace Gorgon.Graphics.Core.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to // Texture and sampler for blitting a texture.
+        ///Texture2D _bltTexture : register(t0);
+        ///SamplerState _bltSampler : register(s0);
+        ///
+        ///// Our default blitting vertex.
+        ///struct GorgonBltVertex
+        ///{
+        ///   float4 position : SV_POSITION;
+        ///   float2 uv : TEXCOORD;
+        ///};
+        ///
+        ///// The transformation matrices (for vertex shader).
+        ///cbuffer GorgonBltWorldViewProjection : register(b0)
+        ///{
+        ///	float4x4 WorldViewProjection;
+        ///}
+        ///
+        ///// Our vertex shader for blitting textures.
+        ///GorgonBltVertex GorgonBltVertexShader(GorgonBltVertex vertex)
+        /// [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string GraphicsShaders {
             get {

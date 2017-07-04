@@ -1638,7 +1638,7 @@ namespace Gorgon.Graphics.Core
 		/// <seealso cref="VideoDeviceInfo"/>
 		public GorgonGraphics(IGorgonVideoDeviceInfo videoDeviceInfo, FeatureLevelSupport? featureLevel = null, IGorgonLog log = null)
 		{
-			if (!Win32API.IsWindows7SP1OrGreater())
+			if (!Win32API.IsWindows10OrGreater(15063))
 			{
 				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_INVALID_OS);
 			}

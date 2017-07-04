@@ -58,22 +58,19 @@ namespace Gorgon.Graphics.Core
 	/// the monitor attached to that video output.  Failure to do so will keep the mode from switching.
 	/// </para>	
 	/// <para>
-	/// <note type="note">
-	/// <para>
-	/// Note that due to a known limitation on Windows 7, it is not currently possible to switch to full screen on multiple outputs on multiple GPUs. One possible workaround is to create a full screen 
-	/// borderless window on the secondary device and use that as a "fake" full screen mode.  If this workaround is applied, then it is suggested to disable the Desktop Windows Compositor. To disable the 
-	/// compositor, set the <see cref="GorgonGraphics.IsDWMCompositionEnabled"/> property to <b>false</b> or see this link: 
-	/// <a href="http://msdn.microsoft.com/en-us/library/aa969510.aspx">http://msdn.microsoft.com/en-us/library/aa969510.aspx</a> for instructions on doing this manually.
+	/// If the swap chain is currently assigned to the <see cref="GorgonGraphics.RenderTargets"/> property, and it is resized, it will do its best to ensure it stays bound to the active render target list 
+	/// (this also includes its <see cref="DepthStencilView"/> if it was assigned to the <see cref="GorgonGraphics.DepthStencilView"/> property). This only applies to the default <see cref="RenderTargetView"/> 
+	/// associated with the swap chain. If a user has created a custom <see cref="GorgonRenderTargetView"/> object for the swap chain, and assigned that view to the <see cref="GorgonGraphics.RenderTargets"/> 
+	/// list, then it is their responsibility to ensure that the view is rebuilt and reassigned. Users may intercept a swap chain back buffer resize by hooking the <see cref="BeforeSwapChainResized"/> and 
+	/// the <see cref="AfterSwapChainResized"/> events.
 	/// </para>
-	/// <para>
-	/// This does not apply to full screen modes on multiple outputs for the same video device.
-	/// </para>
-	/// </note>
-	/// </para>	
 	/// </remarks>
 	/// <seealso cref="EnterFullScreen"/>
 	/// <seealso cref="ExitFullScreenModeOnFocusLoss"/>
 	/// <seealso cref="GorgonGraphics.IsDWMCompositionEnabled"/>
+	/// <seealso cref="GorgonGraphics.RenderTargets"/>
+	/// <seealso cref="GorgonGraphics.DepthStencilView"/>
+	/// <seealso cref="GorgonRenderTargetView"/>
 	public sealed class GorgonSwapChain
 		: GorgonNamedObject, IDisposable
 	{
@@ -400,6 +397,16 @@ namespace Gorgon.Graphics.Core
 			{
 				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_SWAP_BACKBUFFER_TOO_SMALL, Info.Width, Info.Height));
 			}
+
+		    if ((Info.Width > Graphics.VideoDevice.MaxTextureWidth) || (Info.Height > Graphics.VideoDevice.MaxTextureHeight))
+		    {
+		        throw new GorgonException(GorgonResult.CannotCreate,
+		                                  string.Format(Resources.GORGFX_ERR_SWAP_BACKBUFFER_TOO_LARGE,
+		                                                Info.Width,
+		                                                Info.Height,
+		                                                Graphics.VideoDevice.MaxTextureWidth,
+		                                                Graphics.VideoDevice.MaxTextureHeight));
+		    }
 
 			using (DXGI.Factory2 factory = Graphics.VideoDevice.DXGIAdapter().GetParent<DXGI.Factory2>())
 			{
