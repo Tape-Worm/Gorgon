@@ -40,44 +40,96 @@ using GI = SharpDX.DXGI;
 
 namespace Gorgon.Graphics.Core
 {
-	/// <summary>
-	/// The primary object for the graphics sub system.
-	/// </summary>
-	/// <remarks>This interface is used to create all objects (buffers, shaders, etc...) that are to be used for graphics.  An interface is tied to a single physical video device, to use 
-	/// multiple video devices, create additional graphics interfaces and assign the device to the <see cref="VideoDevice"/> property.
-	/// <para>The constructor for this object can take a value known as a device feature level to specify the base line video device capabilities to use.  This feature level value specifies 
-	/// what capabilities we have available. To have Gorgon use the best available feature level for your video device, you may call the GorgonGraphics constructor 
-	/// without any parameters and it will use the best available feature level for your device.</para>
-	/// <para>Along with the feature level, the graphics object can also take a <see cref="IGorgonVideoDevice"/> object as a parameter.  Specifying a 
-	/// video device will force Gorgon to use that video device for rendering. If a video device is not specified, then the first detected video device will be used.</para>
-	/// <para>Please note that graphics objects cannot be shared between devices and must be duplicated.</para>
-	/// <para>Objects created by this interface will be automatically tracked and disposed when this interface is disposed.  This is meant to help handle memory leak problems.  However, 
-	/// it is important to note that this is not a good practice and the developer is responsible for calling Dispose on all objects that they create, graphics or otherwise.</para>
-	/// <para>This object will enumerate video devices, monitor outputs (for multi-head adapters), and video modes for each of the video devices in the system upon creation.  These
-	/// items are accessible from the <see cref="GorgonVideoDeviceList"/> class.</para>
-	/// <para>These objects can also be used in a deferred context.  This means that when a graphics object is deferred, it can be used in a multi threaded environment to allow set up of 
-	/// a scene by recording commands sent to the video device for execution later on the rendering process.  This is handy where multiple passes for the same scene are required (e.g. a deferred renderer).</para>
-	/// <para>Please note that this object requires Direct3D 11 (but not necessarily a Direct3D 11 video card) and at least Windows Vista Service Pack 2 or higher.  
-	/// Windows XP and operating systems before it will not work, and an exception will be thrown if this object is created on those platforms.</para>
-	/// <para>Deferred graphics contexts require a video device with a feature level of SM5 or better.</para>
-	/// </remarks>
-	/// <seealso cref="IGorgonVideoDevice"/>
-	/// <seealso cref="GorgonVideoDeviceList"/>
-	public sealed class GorgonGraphics
+    /// <summary>
+    /// The primary object for the Gorgon Graphics system.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This is used to initialize the functionality available for rendering hardware accelerated graphics for applications. It is also used in the initialization of other objects used to create graphics. 
+    /// </para>
+    /// <para>
+    /// Typically, a graphics object is assigned to a single <see cref="IGorgonVideoDeviceInfo"/> to provide access to the functionality of that video device. If the system has more than once video device 
+    /// installed then access to subsequent devices can be given by creating a new instance of this object with the appropriate <see cref="IGorgonVideoDeviceInfo"/>.
+    /// </para>
+    /// <para>
+    /// <note type="tip">
+    /// <para>
+    /// To determine what devices are attached to the system, use a <see cref="IGorgonVideoDeviceList"/> to retreive a list of applicable video devices. This will contain a list of 
+    /// <see cref="IGorgonVideoDeviceInfo"/> objects suitable for construction of the graphics object.
+    /// </para>
+    /// </note>
+    /// </para>
+	/// <para>
+    /// When creating a graphics object, the user can choose which feature level they will support for a given <see cref="IGorgonVideoDevice"/> so that older devices may be used. The actual feature level 
+    /// support is provided by the <see cref="IGorgonVideoDeviceInfo.SupportedFeatureLevel"/> on the <see cref="IGorgonVideoDeviceInfo"/> interface.
+    /// </para>
+    /// <para>
+    /// This object is quite simple in its functionality. It provides some state assignment, and a means to submit a <see cref="GorgonDrawCallBase">draw call</see> so that graphics information can be 
+    /// rendered.
+    /// </para>
+    /// <para><h3>Rendering</h3></para>
+    /// <para>
+    /// Through the use of <see cref="GorgonDrawCallBase">draw call types</see>, this object will send data in a stateless fashion. This differs from Direct 3D and other traditional APIs where states are 
+    /// set until they're changed (stateful). The approach provided by this object avoids a common problem called state-leakage where a state may have been set prior to drawing, but was forgotten about. 
+    /// This can lead to artifacts or can disable rendering entirely and consequently can be quite difficult to track. 
+    /// </para>
+    /// <para>
+    /// When a draw call is sent, it carries all of the required state information (with the exception of a view resource types). This ensures that if a draw call doesn't need a state at a specific time, 
+    /// it will be reset to a sensible default (as defined by the developer). 
+    /// </para>
+    /// <para>
+    /// When drawing, Gorgon will determine the minimum required state to send with the final draw call, ensuring no redundant states are set. This type of rendering provides a performance gain since it will 
+    /// only set the absolute minimum unique state it needs when the draw call is actually sent to the GPU. This means the user can set the state for a draw call as much as they want without that state being 
+    /// sent to the GPU.
+    /// </para>
+    /// <para>
+    /// <h3>Debugging Support</h3>
+    /// </para>
+    /// <para>
+    /// Applications can enable Direct 3D debugging by setting to the <see cref="IsDebugEnabled"/> property to <b>true</b>. This will allow developers to examine underlying failures when rendering using 
+    /// Direct 3D. Gorgon also provides memory tracking for any underlying Direct 3D objects when the <see cref="IsObjectTrackingEnabled"/> is set to <b>true</b>. This is useful if a 
+    /// <see cref="IDisposable.Dispose"/> call was forgotten by the developer.
+    /// </para>
+    /// <para>
+    /// However, it is not enough to just set these flags to <b>true</b> to enable debugging. Users must also use the DirectX control panel (<c>Debug -> Graphics -> DirectX Control Panel</c>) provided by 
+    /// Visual Studio in order to turn on debugging. Finally, the user must then turn on Native debugging in the Project properties of their application (under the <b>Debug</b> tab) so that any debug 
+    /// output can be seen in the Output window while running the application.
+    /// </para>
+    /// <para>
+    /// If using a <b>DEBUG</b> compiled version of Gorgon (recommended for development), then the <see cref="IsDebugEnabled"/> property will automatically be set to <b>true</b>.
+    /// </para>
+    /// <para>
+    /// <h3>Requirements</h3>
+    /// </para>
+    /// <para>
+    /// This object enforces a minimum of <b>Windows 10, Build 15063 (aka Creators Update)</b>. If this object is instanced on a lower version of operating system, an exception will be thrown. It also 
+    /// requires a minimum Direct 3D version of 11.1 (this may be pushed up to 11.2/11.3 or <i>maybe</i> 12 in the future).
+    /// </para>
+    /// <para>
+    /// <h3>Some rationale for Windows 10 is warranted here.</h3>
+    /// </para>
+    /// Since this requirement may prove somewhat unpopular, here's some reasoning behind it:
+    /// <para>
+    /// <list type="bullet">
+    ///     <item>The author feels that Windows 10 adoption is significant enough to warrant its use as a baseline version.</item>
+    ///     <item>Direct 3D 12 support is only available on Windows 10. While Gorgon only uses Direct 3D 11.1, moving to 12 may happen in the future and this will help facilitate that.</item>
+    ///     <item>Windows 10 (specifically the Creators Update, build 15063 in conjunction with .NET 4.7) provides new WinForms DPI-aware functionality. This one is kind of a big deal.</item>
+    ///     <item>The author actually likes Windows 10. Your opinion may vary.</item>
+    /// </list>
+    /// So that's the reasoning for now. Users who don't wish to use Windows 10 are free to use other, potentially better, libraries/engines such as 
+    /// <a target="_blank" href="http://www.monogame.net/">MonoGame</a> or <a target="_blank" href="https://unity3d.com/">Unity</a> which should work fine on older versions.
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="IGorgonVideoDeviceInfo"/>
+    /// <seealso cref="IGorgonVideoDeviceList"/>
+    /// <seealso cref="GorgonDrawCall"/>
+    /// <seealso cref="GorgonDrawIndexedCall"/>
+    /// <seealso cref="GorgonDrawCallInstanced"/>
+    /// <seealso cref="GorgonDrawIndexedInstancedCall"/>
+    public sealed class GorgonGraphics
         : IDisposable
     {
-        #region Constants.
-        /// <summary>
-        /// The maximum number of render targets allow to be assigned at the same time.
-        /// </summary>
-        public const int MaximumRenderTargetCount = D3D11.OutputMergerStage.SimultaneousRenderTargetCount;
-        #endregion
-
         #region Variables.
-        // Flag to indicate that the desktop window manager compositor is enabled.
-        private static bool _isDWMEnabled;                                                  
-		// Flag to indicate that we should not enable the DWM.
-		private static readonly bool _dontEnableDWM;                                        
 		// The log interface used to log debug messages.
 		private readonly IGorgonLog _log;
 		// The video device to use for this graphics object.
@@ -93,7 +145,7 @@ namespace Gorgon.Graphics.Core
 		// The list of cached scissor rectangles to keep allocates sane.
 	    private DX.Rectangle[] _cachedScissors = new DX.Rectangle[1];
         // The currently assigned render target views.
-        private D3D11.RenderTargetView[] _nativeRenderTargetViews = new D3D11.RenderTargetView[MaximumRenderTargetCount];
+        private D3D11.RenderTargetView[] _nativeRenderTargetViews;
         // The current depth/stencil view.
         private GorgonDepthStencilView _depthStencilView;
         // Flag to indicate that the depth/stencil view has been changed.
@@ -112,46 +164,6 @@ namespace Gorgon.Graphics.Core
         /// Property to return the list of cached pipeline states.
         /// </summary>
         public IReadOnlyList<GorgonPipelineState> CachedPipelineStates => _stateCache;
-
-		/// <summary>
-		/// Property to set or return whether DWM composition is enabled or not.
-		/// </summary>
-		/// <remarks>This property will have no effect on systems that initially have the desktop window manager compositor disabled.</remarks>
-		public static bool IsDWMCompositionEnabled
-        {
-            get => _isDWMEnabled;
-		    set
-            {
-                if (!value)
-                {
-	                if (!_isDWMEnabled)
-	                {
-		                return;
-	                }
-
-	                if (Win32API.DwmEnableComposition(0) != 0)
-	                {
-		                return;
-	                }
-
-	                _isDWMEnabled = false;
-                }
-                else
-                {
-	                if ((_isDWMEnabled) || (_dontEnableDWM))
-	                {
-		                return;
-	                }
-
-	                if (Win32API.DwmEnableComposition(1) != 0)
-	                {
-		                return;
-	                }
-
-	                _isDWMEnabled = true;
-                }
-            }
-        }
 
 		/// <summary>
 		/// Property to set or return the video device to use for this graphics interface.
@@ -214,47 +226,21 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to set or return the currently active depth/stencil view.
         /// </summary>
-        /// <exception cref="GorgonException">Thrown when the resource type for the resource bound to the <see cref="GorgonDepthStencilView"/> being assigned does not match the resource type for resources 
-        /// attached to other views in this list.
-        /// <para>-or-</para>
-        /// <para>Thrown when the array (or depth) index, or the array (or depth) count does not match the other views in this list.</para>
-        /// <para>-or-</para>
-        /// <para>Thrown when the resource <see cref="GorgonMultisampleInfo"/> does not match the <see cref="GorgonMultisampleInfo"/> for other resources bound to other views on this list.</para>
-        /// </exception>
         /// <remarks>
         /// <para>
-        /// When binding a <see cref="GorgonDepthStencilView"/>, the resource must be of the same type as other resources for other views in this list. If they do not match, an exception will be thrown.
+        /// This property is read only, but can be assigned via one of the <see cref="O:Gorgon.Graphics.Core.GorgonGraphics.SetRenderTarget"/> or 
+        /// <see cref="SetRenderTargets(GorgonRenderTargetView[], GorgonDepthStencilView)"/> methods.
         /// </para>
         /// <para>
-        /// All <see cref="GorgonDepthStencilView"/> parameters, such as array (or depth) index and array (or depth) count must be the same as the other views in this list. If they are not, an exception 
-        /// will be thrown. Mip slices may be different. An exception will also be raised if the resources attached to <see cref="GorgonRenderTargetView">GorgonRenderTargetViews</see> in this list do not 
-        /// have the same array/depth count.
-        /// </para>
-        /// <para>
-        /// If the <see cref="GorgonRenderTargetView">GorgonRenderTargetViews</see> are attached to resources with multisampling enabled through <see cref="GorgonMultisampleInfo"/>, then the 
-        /// <see cref="GorgonMultisampleInfo"/> of the resource attached to the <see cref="GorgonDepthStencilView"/> being assigned must match, or an exception will be thrown.
-        /// </para>
-        /// <para>
-        /// These limitations also apply to the <see cref="DepthStencilView"/> property. All views must match the mip slice, array (or depth) index, and array (or depth) count, and the <see cref="ResourceType"/> 
-        /// for the resources attached to the <see cref="GorgonRenderTargetView">GorgonRenderTargetViews</see> must be the same.
-        /// </para>
-        /// <para>
-        /// The format for the view may differ from the formats of other views in this list.
-        /// </para>
-        /// <para>
-        /// <note type="information">
-        /// <para>
-        /// The exceptions raised when validating a view against other views in this list are only thrown when Gorgon is compiled as <b>DEBUG</b>.
-        /// </para>
-        /// </note>
+        /// If a render target is bound using <see cref="SetRenderTarget(GorgonRenderTargetView)"/> and it has an attached depth/stencil view, then that view will automatically be assigned to this value.
         /// </para>
         /// </remarks>
+        /// <seealso cref="O:Gorgon.Graphics.Core.GorgonGraphics.SetRenderTarget"/>
+        /// <seealso cref="SetRenderTargets"/>
+        /// <seealso cref="GorgonDepthStencilView"/>
         public GorgonDepthStencilView DepthStencilView
         {
-            get
-            {
-                return _depthStencilView;
-            }
+            get => _depthStencilView;
             private set
             {
                 if (_depthStencilView == value)
@@ -263,9 +249,6 @@ namespace Gorgon.Graphics.Core
                 }
 
                 _depthStencilView = value;
-#if DEBUG
-                GorgonRenderTargetViews.ValidateDepthStencilView(value, RenderTargets.FirstOrDefault(item => item != null));
-#endif
                 _depthStencilChanged = true;
             }
         }
@@ -282,7 +265,14 @@ namespace Gorgon.Graphics.Core
         /// <para>
         /// Unlike most states/resources, this property is stateful, that is, it will retain its state until changed by the user and will not be overwritten by a draw call.
         /// </para>
+        /// <para>
+        /// This list is read only. To assign a render target, use the <see cref="O:Gorgon.Graphics.Core.GorgonGraphics.SetRenderTarget"/> or the 
+        /// <see cref="SetRenderTargets(GorgonRenderTargetView[], GorgonDepthStencilView)"/> methods.
+        /// </para>
         /// </remarks>
+        /// <seealso cref="SetRenderTargets(GorgonRenderTargetView[], GorgonDepthStencilView)"/>
+        /// <seealso cref="O:Gorgon.Graphics.Core.GorgonGraphics.SetRenderTarget"/>
+        /// <seealso cref="GorgonRenderTargetView"/>
         public IReadOnlyList<GorgonRenderTargetView> RenderTargets => _renderTargets;
         #endregion
 
@@ -1023,12 +1013,16 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Function to assign the render targets.
         /// </summary>
-        private void SetRenderTargets()
+        private void SetRenderTargetAndDepthViews()
 	    {
 	        if ((!_renderTargets.IsDirty) && (!_depthStencilChanged))
 	        {
 	            return;
 	        }
+
+#if DEBUG
+	        GorgonRenderTargetViews.ValidateDepthStencilView(DepthStencilView, RenderTargets.FirstOrDefault(item => item != null));
+#endif
 
             UnbindShaderInputs();
 
@@ -1142,8 +1136,6 @@ namespace Gorgon.Graphics.Core
 		/// <param name="stateChanges">The pipeline state changes to apply.</param>
 		private void ApplyPerDrawStates(GorgonDrawCallBase drawCall, GorgonPipelineState newState, PipelineResourceChange resourceChanges, PipelineStateChange stateChanges)
 		{
-		    //SetRenderTargets();
-
             if ((resourceChanges & PipelineResourceChange.PrimitiveTopology) == PipelineResourceChange.PrimitiveTopology)
 			{
 				D3DDeviceContext.InputAssembler.PrimitiveTopology = drawCall.PrimitiveTopology;
@@ -1235,6 +1227,13 @@ namespace Gorgon.Graphics.Core
         /// <see cref="DepthStencilView"/>. If it does not, the <see cref="DepthStencilView"/> will be set to <b>null</b>.
         /// </para>
         /// <para>
+        /// <note type="information">
+        /// <para>
+        /// If the <see cref="RenderTargets"/> list contains other render target views at different slots, they will be unbound.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// <para>
         /// If a user wishes to assign their own <see cref="GorgonDepthStencilView"/>, then use the <see cref="SetRenderTarget(GorgonRenderTargetView, GorgonDepthStencilView)"/> overload.
         /// </para>
         /// <para>
@@ -1243,6 +1242,8 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         /// <seealso cref="SetRenderTarget(GorgonRenderTargetView, GorgonDepthStencilView)"/>
         /// <seealso cref="SetRenderTargets(GorgonRenderTargetView[], GorgonDepthStencilView)"/>
+        /// <seealso cref="RenderTargets"/>
+        /// <seealso cref="DepthStencilView"/>
         public void SetRenderTarget(GorgonRenderTargetView renderTarget)
         {
             SetRenderTarget(renderTarget, renderTarget?.DepthStencilView);
@@ -1259,14 +1260,42 @@ namespace Gorgon.Graphics.Core
         /// <paramref name="depthStencil"/> will be used instead.
         /// </para>
         /// <para>
+        /// <note type="information">
+        /// <para>
+        /// If the <see cref="RenderTargets"/> list contains other render target views at different slots, they will be unbound.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// <para>
         /// If a user wishes to use the associated <see cref="GorgonDepthStencilView"/> for the <paramref name="renderTarget"/>, then use the <see cref="SetRenderTarget(GorgonRenderTargetView)"/> overload.
         /// </para>
         /// <para>
         /// If multiple render targets need to be assigned at the same time, use the <see cref="SetRenderTargets(GorgonRenderTargetView[], GorgonDepthStencilView)"/> overload.
         /// </para>
+        /// <para>
+        /// When binding a <see cref="GorgonDepthStencilView"/>, the resource must be of the same type as other resources for other views in this list. If they do not match, an exception will be thrown.
+        /// </para>
+        /// <para>
+        /// The <see cref="GorgonDepthStencilView"/> values for the <paramref name="depthStencil"/> (such as array (or depth) index and array (or depth) count) must be the same as the other views in this list. 
+        /// If they are not, an exception will be thrown. Mip slices may be different. An exception will also be raised if the resources assigned to the <paramref name="renderTarget"/> do not have the same 
+        /// array/depth count.
+        /// </para>
+        /// <para>
+        /// If the <see cref="GorgonRenderTargetView">GorgonRenderTargetViews</see> are attached to resources with multisampling enabled through <see cref="GorgonMultisampleInfo"/>, then the 
+        /// <see cref="GorgonMultisampleInfo"/> of the resource attached to the <see cref="GorgonDepthStencilView"/> being assigned must match, or an exception will be thrown.
+        /// </para>
+        /// <para>
+        /// <note type="information">
+        /// <para>
+        /// The exceptions raised when validating a view against other views in this list are only thrown when Gorgon is compiled as <b>DEBUG</b>.
+        /// </para>
+        /// </note>
+        /// </para>
         /// </remarks>
         /// <seealso cref="SetRenderTarget(GorgonRenderTargetView)"/>
         /// <seealso cref="SetRenderTargets(GorgonRenderTargetView[], GorgonDepthStencilView)"/>
+        /// <seealso cref="RenderTargets"/>
+        /// <seealso cref="DepthStencilView"/>
         public void SetRenderTarget(GorgonRenderTargetView renderTarget, GorgonDepthStencilView depthStencil)
         {
             _renderTargets.Clear();
@@ -1279,7 +1308,7 @@ namespace Gorgon.Graphics.Core
             _renderTargets[0] = renderTarget;
 
             DepthStencilView = depthStencil;
-            SetRenderTargets();
+            SetRenderTargetAndDepthViews();
         }
 
         /// <summary>
@@ -1295,9 +1324,33 @@ namespace Gorgon.Graphics.Core
         /// <para>
         /// If a user wishes to use the associated <see cref="GorgonDepthStencilView"/> for the <paramref name="renderTargets"/>, then use the <see cref="SetRenderTarget(GorgonRenderTargetView)"/> overload.
         /// </para>
+        /// <para>
+        /// When binding a <see cref="GorgonDepthStencilView"/>, the resource must be of the same type as other resources for other views in this list. If they do not match, an exception will be thrown.
+        /// </para>
+        /// <para>
+        /// The <see cref="GorgonDepthStencilView"/> values for the <paramref name="depthStencil"/> (such as array (or depth) index and array (or depth) count) must be the same as the other views in this list. 
+        /// If they are not, an exception will be thrown. Mip slices may be different. An exception will also be raised if the resources assigned to the <paramref name="renderTargets"/> do not have the same 
+        /// array/depth count.
+        /// </para>
+        /// <para>
+        /// If the <see cref="GorgonRenderTargetView">GorgonRenderTargetViews</see> are attached to resources with multisampling enabled through <see cref="GorgonMultisampleInfo"/>, then the 
+        /// <see cref="GorgonMultisampleInfo"/> of the resource attached to the <see cref="GorgonDepthStencilView"/> being assigned must match, or an exception will be thrown.
+        /// </para>
+        /// <para>
+        /// The format for the <paramref name="renderTargets"/> and <paramref name="depthStencil"/> may differ from the formats of other views passed in.
+        /// </para>
+        /// <para>
+        /// <note type="information">
+        /// <para>
+        /// The exceptions raised when validating a view against other views in this list are only thrown when Gorgon is compiled as <b>DEBUG</b>.
+        /// </para>
+        /// </note>
+        /// </para>
         /// </remarks>
         /// <seealso cref="SetRenderTarget(GorgonRenderTargetView)"/>
         /// <seealso cref="SetRenderTarget(GorgonRenderTargetView, GorgonDepthStencilView)"/>
+        /// <seealso cref="RenderTargets"/>
+        /// <seealso cref="DepthStencilView"/>
         public void SetRenderTargets(GorgonRenderTargetView[] renderTargets, GorgonDepthStencilView depthStencil = null)
         {
             _renderTargets.Clear();
@@ -1305,7 +1358,7 @@ namespace Gorgon.Graphics.Core
             if (renderTargets == null)
             {
                 DepthStencilView = depthStencil;
-                SetRenderTargets();
+                SetRenderTargetAndDepthViews();
                 return;
             }
 
@@ -1320,7 +1373,7 @@ namespace Gorgon.Graphics.Core
             }
 
             DepthStencilView = depthStencil;
-            SetRenderTargets();
+            SetRenderTargetAndDepthViews();
         }
 
 		/// <summary>
@@ -1660,8 +1713,9 @@ namespace Gorgon.Graphics.Core
 			
 			_log.Print("Gorgon Graphics initializing...", LoggingLevel.Simple);
 			_log.Print($"Using video device '{videoDeviceInfo.Name}' at feature level [{featureLevel.Value}] for Direct 3D 11.1.", LoggingLevel.Simple);
-
+            
 			_videoDevice = new VideoDevice(videoDeviceInfo, featureLevel.Value, _log);
+            _nativeRenderTargetViews = new D3D11.RenderTargetView[_videoDevice.MaximumRenderTargetCount];
 			_deviceContext = _videoDevice.D3DDevice.ImmediateContext1;
             _renderTargets = new GorgonRenderTargetViews();
 			
@@ -1674,21 +1728,6 @@ namespace Gorgon.Graphics.Core
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "Gorgon.Native.Win32API.DwmIsCompositionEnabled(System.Boolean@)")]
 		static GorgonGraphics()
 		{
-			// Only do this on Windows 7.  On Windows 8 this value could be wrong and is not needed.
-			if ((GorgonComputerInfo.OperatingSystemVersion.Major == 6)
-			    || (GorgonComputerInfo.OperatingSystemVersion.Minor == 1))
-			{
-				if (Win32API.DwmIsCompositionEnabled(out _isDWMEnabled) != 0) // S_OK
-				{
-					_isDWMEnabled = false;
-				}
-			}
-
-			if (!_isDWMEnabled)
-			{
-				_dontEnableDWM = true;
-			}
-
 			DX.Configuration.ThrowOnShaderCompileError = false;
 
 #if DEBUG

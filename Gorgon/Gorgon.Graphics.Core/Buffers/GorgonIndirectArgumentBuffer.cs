@@ -35,9 +35,9 @@ using D3D11 = SharpDX.Direct3D11;
 namespace Gorgon.Graphics.Core
 {
     /// <summary>
-    /// A generic buffer for holding unstructured data to pass to the GPU.
+    /// A buffer for holding indirect argument data to pass to the GPU.
     /// </summary>
-    public class GorgonBuffer
+    public class GorgonIndirectArgumentBuffer
         : GorgonBufferCommon
     {
         #region Variables.
@@ -74,6 +74,7 @@ namespace Gorgon.Graphics.Core
                 throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_BUFFER_IMMUTABLE_REQUIRES_DATA);
             }
 
+            // If the buffer is not aligned to 16 bytes, then increase its size.
             SizeInBytes = _info.SizeInBytes;
 
             D3D11.CpuAccessFlags cpuFlags = D3D11.CpuAccessFlags.None;
@@ -93,7 +94,7 @@ namespace Gorgon.Graphics.Core
                     break;
             }
 
-            Log.Print($"{Name} Generic Buffer: Creating D3D11 buffer. Size: {SizeInBytes} bytes", LoggingLevel.Simple);
+            Log.Print($"{Name} Indirect Argument Buffer: Creating D3D11 buffer. Size: {SizeInBytes} bytes", LoggingLevel.Simple);
 
             var bindFlags = D3D11.BindFlags.None;
 
@@ -122,7 +123,7 @@ namespace Gorgon.Graphics.Core
                            SizeInBytes = SizeInBytes,
                            Usage = _info.Usage,
                            BindFlags = bindFlags,
-                           OptionFlags = D3D11.ResourceOptionFlags.None,
+                           OptionFlags = D3D11.ResourceOptionFlags.DrawIndirectArguments,
                            CpuAccessFlags = cpuFlags,
                            StructureByteStride = 0
                        };
@@ -140,7 +141,7 @@ namespace Gorgon.Graphics.Core
 
         #region Constructor.
         /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonBuffer" /> class.
+        /// Initializes a new instance of the <see cref="GorgonIndirectArgumentBuffer" /> class.
         /// </summary>
         /// <param name="name">Name of this buffer.</param>
         /// <param name="graphics">The <see cref="GorgonGraphics"/> object used to create and manipulate the buffer.</param>
@@ -153,7 +154,7 @@ namespace Gorgon.Graphics.Core
         /// <para>Thrown if the size of the buffer is less than 16 bytes.</para>
         /// </exception>
         /// <exception cref="GorgonException">Thrown if the buffer is created with a usage of <c>Immutable</c>, but the <paramref name="initialData"/> parameter is <b>null</b>.</exception>
-        public GorgonBuffer(GorgonGraphics graphics, string name, IGorgonBufferInfo info, IGorgonPointer initialData = null, IGorgonLog log = null)
+        public GorgonIndirectArgumentBuffer(GorgonGraphics graphics, string name, IGorgonBufferInfo info, IGorgonPointer initialData = null, IGorgonLog log = null)
             : base(graphics, name, log)
         {
             if (info == null)

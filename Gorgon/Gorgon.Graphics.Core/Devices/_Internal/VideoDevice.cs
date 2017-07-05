@@ -61,10 +61,15 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		public DXGI.Adapter2 Adapter => _adapter;
 
-		/// <summary>
-		/// Property to return the maximum number of array indices for 1D and 2D textures.
-		/// </summary>
-		public int MaxTextureArrayCount => 2048;
+	    /// <summary>
+	    /// Property to return the maximum number of render targets allow to be assigned at the same time.
+	    /// </summary>
+	    public int MaximumRenderTargetCount => D3D11.OutputMergerStage.SimultaneousRenderTargetCount;
+        
+        /// <summary>
+        /// Property to return the maximum number of array indices for 1D and 2D textures.
+        /// </summary>
+        public int MaxTextureArrayCount => 2048;
 
 		/// <summary>
 		/// Property to return the maximum width of a 1D or 2D texture.
@@ -116,11 +121,6 @@ namespace Gorgon.Graphics.Core
 		/// Property to return the maximum depth of a 3D texture.
 		/// </summary>
 		public int MaxTexture3DDepth => 2048;
-
-		/// <summary>
-		/// Property to return the maximum number of render target view slots available.
-		/// </summary>
-		public int MaxRenderTargetViewSlots => 8;
 
 		/// <summary>
 		/// Property to return the maximum size, in bytes, for a constant buffer.

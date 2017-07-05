@@ -28,7 +28,6 @@ using System;
 using System.Linq;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
-using DXGI = SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
@@ -60,7 +59,7 @@ namespace Gorgon.Graphics.Core
 	/// being assigned must match, or an exception will be thrown.
 	/// </item>
 	/// <item>
-	/// These limitations also apply to the <see cref="DepthStencilView"/> property. All views must match the mip slice, array (or depth) index, and array (or depth) count, and the <see cref="ResourceType"/> 
+	/// These limitations also apply to a <see cref="GorgonDepthStencilView"/>. All views must match the mip slice, array (or depth) index, and array (or depth) count, and the <see cref="ResourceType"/> 
 	/// for the resources attached to the views must be the same.
 	/// </item>
 	/// </list> 

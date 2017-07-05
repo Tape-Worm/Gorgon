@@ -120,18 +120,18 @@ namespace Gorgon.Graphics.Core
 			get;
 		}
 
-		/// <summary>
-		/// Property to return the maximum number of render target view slots available.
-		/// </summary>
-		int MaxRenderTargetViewSlots
-		{
-			get;
-		}
+	    /// <summary>
+	    /// Property to return the maximum number of render targets allow to be assigned at the same time.
+	    /// </summary>
+	    int MaximumRenderTargetCount
+	    {
+	        get;
+	    }
 
-		/// <summary>
-		/// Property to return the maximum size, in bytes, for a constant buffer.
-		/// </summary>
-		int MaxConstantBufferSize
+        /// <summary>
+        /// Property to return the maximum size, in bytes, for a constant buffer.
+        /// </summary>
+        int MaxConstantBufferSize
 		{
 			get;
 		}

@@ -97,15 +97,6 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot create an immutable buffer without initial data to populate it..
-        /// </summary>
-        internal static string GORGFX_BUFFER_IMMUTABLE_REQUIRES_DATA {
-            get {
-                return ResourceManager.GetString("GORGFX_BUFFER_IMMUTABLE_REQUIRES_DATA", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Buffers that allow unordered access views, render target views, or can be used for output cannot have a usage of [Dynamic]..
         /// </summary>
         internal static string GORGFX_BUFFER_NO_DYNAMIC_INVALID_FLAGS {
@@ -358,11 +349,30 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Staging buffers cannot be bound to the GPU.
+        ///The buffer type is set as a staging buffer, but also has a binding flag set of [{0}]..
+        /// </summary>
+        internal static string GORGFX_ERR_BUFFER_CANNOT_BE_BOUND_TO_GPU {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_BUFFER_CANNOT_BE_BOUND_TO_GPU", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot update buffers with a usage of [Immutable] or [Dynamic]..
         /// </summary>
         internal static string GORGFX_ERR_BUFFER_IMMUTABLE_OR_DYNAMIC {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_BUFFER_IMMUTABLE_OR_DYNAMIC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot create an immutable buffer without initial data to populate it..
+        /// </summary>
+        internal static string GORGFX_ERR_BUFFER_IMMUTABLE_REQUIRES_DATA {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_BUFFER_IMMUTABLE_REQUIRES_DATA", resourceCulture);
             }
         }
         
@@ -381,6 +391,15 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_BUFFER_LOCK_NOT_VALID {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_BUFFER_LOCK_NOT_VALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A [{0}] buffer cannot use a binding of [None]..
+        /// </summary>
+        internal static string GORGFX_ERR_BUFFER_NON_STAGING_NEEDS_BINDING {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_BUFFER_NON_STAGING_NEEDS_BINDING", resourceCulture);
             }
         }
         

@@ -83,13 +83,22 @@
     <Compile Include="..\Gorgon.Core\SharedAssemblyInfo.cs">
       <Link>SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Buffers\GorgonStructuredBuffer.cs" />
+    <Compile Include="Buffers\GorgonIndirectArgumentBuffer.cs" />
+    <Compile Include="Buffers\GorgonRawBuffer.cs" />
     <Compile Include="Buffers\GorgonBuffer.cs" />
+    <Compile Include="Buffers\GorgonBufferBase.cs" />
+    <Compile Include="Buffers\GorgonBufferCommon.cs" />
+    <Compile Include="Buffers\GorgonBufferInfo.cs" />
     <Compile Include="Buffers\GorgonIndexBuffer.cs" />
+    <Compile Include="Buffers\GorgonStructuredBufferInfo.cs" />
     <Compile Include="Buffers\GorgonVertexBuffer.cs" />
     <Compile Include="Buffers\GorgonConstantBuffer.cs" />
     <Compile Include="Buffers\GorgonConstantBufferInfo.cs" />
     <Compile Include="Buffers\GorgonIndexBufferInfo.cs" />
     <Compile Include="Buffers\GorgonVertexBufferInfo.cs" />
+    <Compile Include="Buffers\_Interfaces\IGorgonStructuredBufferInfo.cs" />
+    <Compile Include="Buffers\_Interfaces\IGorgonBufferInfo.cs" />
     <Compile Include="Buffers\_Interfaces\IGorgonIndexBufferInfo.cs" />
     <Compile Include="Buffers\_Interfaces\IGorgonVertexBufferInfo.cs" />
     <Compile Include="Buffers\_Interfaces\IGorgonConstantBufferInfo.cs" />
