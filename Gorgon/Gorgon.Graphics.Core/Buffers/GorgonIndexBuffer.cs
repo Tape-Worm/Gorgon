@@ -78,11 +78,9 @@ namespace Gorgon.Graphics.Core
 	/// </para>
 	/// </remarks>
 	public sealed class GorgonIndexBuffer
-		: GorgonBuffer
+		: GorgonBufferBase
 	{
 		#region Variables.
-		// The log interface used for debug logging.
-		private readonly IGorgonLog _log;
 		// The information used to create the buffer.
 		private readonly GorgonIndexBufferInfo _info;
 		// The address returned by the lock on the buffer.
@@ -122,7 +120,7 @@ namespace Gorgon.Graphics.Core
 		/// Function to initialize the buffer data.
 		/// </summary>
 		/// <param name="initialData">The initial data used to populate the buffer.</param>
-		private void Initialize(GorgonPointerBase initialData)
+		private void Initialize(IGorgonPointer initialData)
 		{
 			D3D11.CpuAccessFlags cpuFlags = D3D11.CpuAccessFlags.None;
 
@@ -136,7 +134,7 @@ namespace Gorgon.Graphics.Core
 					break;
 			}
 
-			_log.Print($"{Name} Index Buffer: Creating D3D11 buffer. Size: {SizeInBytes} bytes", LoggingLevel.Simple);
+			Log.Print($"{Name} Index Buffer: Creating D3D11 buffer. Size: {SizeInBytes} bytes", LoggingLevel.Simple);
 
 			var desc  = new D3D11.BufferDescription
 			{
@@ -369,124 +367,55 @@ namespace Gorgon.Graphics.Core
 			                                            });
 		}
 
-		/// <summary>
-		/// Function to update the buffer with data.
-		/// </summary>
-		/// <param name="data">A <see cref="GorgonPointerBase"/> that points at a region of memory that holds the data to copy to the buffer.</param>
-		/// <param name="bufferOffset">[Optional] The number of bytes within this buffer to start writing at.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="data"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="bufferOffset"/> plus the size of the <paramref name="data"/> is larger than the buffer size.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when the size, in bytes, of the <paramref name="data"/> parameter is larger than the total <see cref="GorgonResource.SizeInBytes"/> of the buffer.
-		/// <para>-or-</para>
-		/// <para>Thrown if the <paramref name="bufferOffset"/> is less than 0.</para>
-		/// </exception>
-		/// <exception cref="NotSupportedException">Thrown when the <see cref="IGorgonIndexBufferInfo.Usage"/> is either <c>Immutable</c> or <c>Dynamic</c>.</exception>
-		/// <remarks>
-		/// <para>
-		/// Use this method to send a blob of byte data to the buffer. This allows for fine grained control over what gets sent to the buffer. 
-		/// </para>
-		/// <para>
-		/// Because this is using native, unmanaged, memory, special care must be taken to ensure that the application does not attempt to read/write out of bounds of that memory region.
-		/// </para>
-		/// <para>
-		/// This method will throw an exception when the buffer is created with a <see cref="IGorgonIndexBufferInfo.Usage"/> of <c>Immutable</c> or <c>Dynamic</c>.
-		/// </para>
-		/// <para>
-		/// <note type="warning">
-		/// <para>
-		/// For performance reasons, exceptions raised by this method will only be done so when Gorgon is compiled as DEBUG.
-		/// </para>
-		/// </note>
-		/// </para>
-		/// </remarks>
-		public void Update(GorgonPointerBase data, int bufferOffset = 0)
-		{
-			data.ValidateObject(nameof(data));
-			Update(data, 0, (int)data.Size);
-		}
-
-		/// <summary>
-		/// Function to update the constant buffer data with data from native memory.
-		/// </summary>
-		/// <param name="data">The <see cref="GorgonPointerBase"/> to the native memory holding the data to copy into the buffer.</param>
-		/// <param name="offset">The offset, in bytes, to start copying from.</param>
-		/// <param name="bufferOffset">[Optional] The number of bytes within this buffer to start writing at.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="data"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="offset"/>, of the <paramref name="bufferOffset"/> plus the size of the data in <paramref name="data"/> exceed the size of this buffer.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when the size, in bytes, of the <paramref name="data"/> parameter is larger than the total <see cref="GorgonResource.SizeInBytes"/> of the buffer.
-		/// <exception cref="NotSupportedException">Thrown when the <see cref="IGorgonIndexBufferInfo.Usage"/> is either <c>Immutable</c> or <c>Dynamic</c>.</exception>
-		/// <para>-or-</para>
-		/// <para>The <paramref name="offset"/>, or the <paramref name="bufferOffset"/> parameter is less than 0.</para>
-		/// </exception>
-		/// <remarks>
-		/// <para>
-		/// Use this method to send a blob of byte data to the buffer. This allows for fine grained control over what gets sent to the buffer. 
-		/// </para>
-		/// <para>
-		/// Because this is using native, unmanaged, memory, special care must be taken to ensure that the application does not attempt to read/write out of bounds of that memory region. Particular care must be 
-		/// taken to ensure that <paramref name="offset"/> does not exceed the bounds of the memory region.
-		/// </para>
-		/// <para>
-		/// This method will throw an exception when the buffer is created with a <see cref="IGorgonIndexBufferInfo.Usage"/> of <c>Immutable</c> or <c>Dynamic</c>.
-		/// </para>
-		/// <para>
-		/// <note type="warning">
-		/// <para>
-		/// For performance reasons, exceptions raised by this method will only be done so when Gorgon is compiled as DEBUG.
-		/// </para>
-		/// </note>
-		/// </para>
-		/// </remarks>
-		public void Update(GorgonPointer data, int offset, int bufferOffset = 0)
+        /// <summary>
+        /// Function to update the constant buffer data with data from native memory.
+        /// </summary>
+        /// <param name="data">The <see cref="GorgonPointer"/> to the native memory holding the data to copy into the buffer.</param>
+        /// <param name="bufferOffset">[Optional] The number of bytes within this buffer to start writing at.</param>
+		/// <param name="offset">[Optional] The offset, in bytes, to start copying from.</param>
+        /// <param name="size">[Optional] The size, in bytes, to copy.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="data"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="offset"/>, or the <paramref name="bufferOffset"/> plus the size of the data in <paramref name="data"/> exceed the size of this buffer.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the size, in bytes, of the <paramref name="data"/> parameter is larger than the total <see cref="GorgonResource.SizeInBytes"/> of the buffer.
+        /// <para>-or-</para>
+        /// <para>The <paramref name="size"/> parameter is less than 1, or larger than the buffer size.</para>
+        /// <para>-or-</para>
+        /// <para>The <paramref name="offset"/> or the <paramref name="bufferOffset"/> parameter is less than 0.</para>
+        /// </exception>
+        /// <exception cref="NotSupportedException">Thrown when the <see cref="IGorgonIndexBufferInfo.Usage"/> is either <c>Immutable</c> or <c>Dynamic</c>.</exception>
+        /// <remarks>
+        /// <para>
+        /// Use this method to send a blob of byte data to the buffer. This allows for fine grained control over what gets sent to the buffer. 
+        /// </para>
+        /// <para>
+        /// Because this is using native, unmanaged, memory, special care must be taken to ensure that the application does not attempt to read/write out of bounds of that memory region. Particular care must be 
+        /// taken to ensure that <paramref name="offset"/>, <paramref name="bufferOffset"/> and <paramref name="size"/> do not exceed the bounds of the memory region.
+        /// </para>
+        /// <para>
+        /// If the <paramref name="size"/> parameter is omitted (<b>null</b>), then the entire buffer size is used minus the <paramref name="offset"/>.
+        /// </para>
+        /// <para>
+        /// This method will throw an exception when the buffer is created with a <see cref="IGorgonIndexBufferInfo.Usage"/> of <c>Immutable</c> or <c>Dynamic</c>.
+        /// </para>
+        /// <para>
+        /// <note type="warning">
+        /// <para>
+        /// For performance reasons, exceptions raised by this method will only be done so when Gorgon is compiled as DEBUG.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        public void Update(IGorgonPointer data, int bufferOffset = 0, int offset = 0, int? size = null)
 		{
 			data.ValidateObject(nameof(data));
 
-			int size = (int)data.Size - offset;
-
-			Update(data, offset, size, bufferOffset);
-		}
-
-		/// <summary>
-		/// Function to update the constant buffer data with data from native memory.
-		/// </summary>
-		/// <param name="data">The <see cref="GorgonPointer"/> to the native memory holding the data to copy into the buffer.</param>
-		/// <param name="offset">The offset, in bytes, to start copying from.</param>
-		/// <param name="size">The size, in bytes, to copy.</param>
-		/// <param name="bufferOffset">[Optional] The number of bytes within this buffer to start writing at.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="data"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="offset"/>, or the <paramref name="bufferOffset"/> plus the size of the data in <paramref name="data"/> exceed the size of this buffer.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when the size, in bytes, of the <paramref name="data"/> parameter is larger than the total <see cref="GorgonResource.SizeInBytes"/> of the buffer.
-		/// <para>-or-</para>
-		/// <para>The <paramref name="size"/> parameter is less than 1, or larger than the buffer size.</para>
-		/// <para>-or-</para>
-		/// <para>The <paramref name="offset"/> or the <paramref name="bufferOffset"/> parameter is less than 0.</para>
-		/// </exception>
-		/// <exception cref="NotSupportedException">Thrown when the <see cref="IGorgonIndexBufferInfo.Usage"/> is either <c>Immutable</c> or <c>Dynamic</c>.</exception>
-		/// <remarks>
-		/// <para>
-		/// Use this method to send a blob of byte data to the buffer. This allows for fine grained control over what gets sent to the buffer. 
-		/// </para>
-		/// <para>
-		/// Because this is using native, unmanaged, memory, special care must be taken to ensure that the application does not attempt to read/write out of bounds of that memory region. Particular care must be 
-		/// taken to ensure that <paramref name="offset"/>, <paramref name="bufferOffset"/> and <paramref name="size"/> do not exceed the bounds of the memory region.
-		/// </para>
-		/// <para>
-		/// This method will throw an exception when the buffer is created with a <see cref="IGorgonIndexBufferInfo.Usage"/> of <c>Immutable</c> or <c>Dynamic</c>.
-		/// </para>
-		/// <para>
-		/// <note type="warning">
-		/// <para>
-		/// For performance reasons, exceptions raised by this method will only be done so when Gorgon is compiled as DEBUG.
-		/// </para>
-		/// </note>
-		/// </para>
-		/// </remarks>
-		public void Update(GorgonPointerBase data, int offset, int size, int bufferOffset = 0)
-		{
-			data.ValidateObject(nameof(data));
+		    if (size == null)
+		    {
+		        size = ((int)data.Size) - offset;
+		    }
 
 #if DEBUG
-			if ((Info.Usage == D3D11.ResourceUsage.Dynamic) || (Info.Usage == D3D11.ResourceUsage.Immutable))
+            if ((Info.Usage == D3D11.ResourceUsage.Dynamic) || (Info.Usage == D3D11.ResourceUsage.Immutable))
 			{
 				throw new NotSupportedException(Resources.GORGFX_ERR_BUFFER_IMMUTABLE_OR_DYNAMIC);
 			}
@@ -521,14 +450,14 @@ namespace Gorgon.Graphics.Core
 			                                            {
 				                                            DataPointer = new IntPtr(data.Address + offset),
 				                                            SlicePitch = 0,
-				                                            RowPitch = size
+				                                            RowPitch = size.Value
 			                                            },
 			                                            D3DResource, 
 														0,
 														new D3D11.ResourceRegion
 														{
 															Left = bufferOffset,
-															Right = bufferOffset + size,
+															Right = bufferOffset + size.Value,
 															Top = 0,
 															Front = 0,
 															Back = 1,
@@ -536,70 +465,45 @@ namespace Gorgon.Graphics.Core
 														});
 		}
 
-		/// <summary>
-		/// Function to update the buffer with data.
-		/// </summary>
-		/// <param name="data">The array of index data to populate the buffer with.</param>
-		/// <param name="bufferOffset">[Optional] The number of bytes within this buffer to start writing at.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="data"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="bufferOffset"/> plus the size of the data exceeds the size of the buffer.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when the size, in bytes, of the <paramref name="data"/> parameter, multiplied by the number of items to copy is larger than the total <see cref="GorgonResource.SizeInBytes"/> of the buffer.
-		/// <para>-or-</para>
-		/// <para>Thrown when the size of an index multiplied by the number of elements in <paramref name="data"/> is larger than the buffer size.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when the <paramref name="bufferOffset"/> is less than 0.</para>
-		/// </exception>
-		/// <exception cref="NotSupportedException">Thrown when the <see cref="IGorgonIndexBufferInfo.Usage"/> is either <c>Immutable</c> or <c>Dynamic</c>.</exception>
-		/// <remarks>
-		/// <para>
-		/// This method will throw an exception when the buffer is created with a <see cref="IGorgonIndexBufferInfo.Usage"/> of <c>Immutable</c> or <c>Dynamic</c>.
-		/// </para>
-		/// <para>
-		/// <note type="warning">
-		/// <para>
-		/// For performance reasons, exceptions raised by this method will only be done so when Gorgon is compiled as DEBUG.
-		/// </para>
-		/// </note>
-		/// </para>
-		/// </remarks>
-		public void Update(int[] data, int bufferOffset = 0)
+        /// <summary>
+        /// Function to update the buffer with data.
+        /// </summary>
+        /// <param name="data">The array of index data to populate the buffer with.</param>
+        /// <param name="bufferOffset">[Optional] The number of bytes within this buffer to start writing at.</param>
+		/// <param name="startIndex">[Optional] The offset within the array to start copying from.</param>
+        /// <param name="count">[Optional] The number of elements to copy.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="data"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="startIndex"/>, or the <paramref name="bufferOffset"/> plus the <paramref name="count"/> exceeds the number of elements in the <paramref name="data"/> parameter.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the size, in bytes, of the <paramref name="data"/> parameter, multiplied by the number of items to copy is larger than the total <see cref="GorgonResource.SizeInBytes"/> of the buffer.
+        /// <para>-or-</para>
+        /// <para>Thrown when the <paramref name="startIndex"/>, or the <paramref name="bufferOffset"/> is less than 0, or the <paramref name="count"/> is less than 1.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the size of an index multiplied by the count (minus the offset) is larger than the buffer size.</para>
+        /// </exception>
+        /// <exception cref="NotSupportedException">Thrown when the <see cref="IGorgonIndexBufferInfo.Usage"/> is either <c>Immutable</c> or <c>Dynamic</c>.</exception>
+        /// <remarks>
+        /// <para>
+        /// If the <paramref name="count"/> parameter is omitted (<b>null</b>), then the length of the <paramref name="data"/> parameter is used minus the <paramref name="startIndex"/>.
+        /// </para>
+        /// <para>
+        /// This method will throw an exception when the buffer is created with a <see cref="IGorgonIndexBufferInfo.Usage"/> of <c>Immutable</c> or <c>Dynamic</c>.
+        /// </para>
+        /// <para>
+        /// <note type="warning">
+        /// <para>
+        /// For performance reasons, exceptions raised by this method will only be done so when Gorgon is compiled as DEBUG.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        public void Update(int[] data, int bufferOffset = 0, int startIndex = 0, int? count = null)
 		{
 			data.ValidateObject(nameof(data));
 
-			Update(data, 0, data.Length, bufferOffset);
-		}
-
-		/// <summary>
-		/// Function to update the buffer with data.
-		/// </summary>
-		/// <param name="data">The array of index data to populate the buffer with.</param>
-		/// <param name="offset">The offset within the array to start copying from.</param>
-		/// <param name="count">The number of elements to copy.</param>
-		/// <param name="bufferOffset">[Optional] The number of bytes within this buffer to start writing at.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="data"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="offset"/>, or the <paramref name="bufferOffset"/> plus the <paramref name="count"/> exceeds the number of elements in the <paramref name="data"/> parameter.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when the size, in bytes, of the <paramref name="data"/> parameter, multiplied by the number of items to copy is larger than the total <see cref="GorgonResource.SizeInBytes"/> of the buffer.
-		/// <para>-or-</para>
-		/// <para>Thrown when the <paramref name="offset"/>, or the <paramref name="bufferOffset"/> is less than 0, or the <paramref name="count"/> is less than 1.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when the size of an index multiplied by the count (minus the offset) is larger than the buffer size.</para>
-		/// </exception>
-		/// <exception cref="NotSupportedException">Thrown when the <see cref="IGorgonIndexBufferInfo.Usage"/> is either <c>Immutable</c> or <c>Dynamic</c>.</exception>
-		/// <remarks>
-		/// <para>
-		/// This method will throw an exception when the buffer is created with a <see cref="IGorgonIndexBufferInfo.Usage"/> of <c>Immutable</c> or <c>Dynamic</c>.
-		/// </para>
-		/// <para>
-		/// <note type="warning">
-		/// <para>
-		/// For performance reasons, exceptions raised by this method will only be done so when Gorgon is compiled as DEBUG.
-		/// </para>
-		/// </note>
-		/// </para>
-		/// </remarks>
-		public void Update(int[] data, int offset, int count, int bufferOffset = 0)
-		{
-			data.ValidateObject(nameof(data));
+		    if (count == null)
+		    {
+		        count = data.Length - startIndex;
+		    }
 
 #if DEBUG
 			if ((Info.Usage == D3D11.ResourceUsage.Dynamic) || (Info.Usage == D3D11.ResourceUsage.Immutable))
@@ -607,9 +511,9 @@ namespace Gorgon.Graphics.Core
 				throw new NotSupportedException(Resources.GORGFX_ERR_BUFFER_IMMUTABLE_OR_DYNAMIC);
 			}
 
-			if (offset < 0)
+			if (startIndex < 0)
 			{
-				throw new ArgumentOutOfRangeException(nameof(offset));
+				throw new ArgumentOutOfRangeException(nameof(startIndex));
 			}
 
 			if (bufferOffset < 0)
@@ -622,14 +526,14 @@ namespace Gorgon.Graphics.Core
 				throw new ArgumentOutOfRangeException(nameof(count));
 			}
 
-			if ((offset + count) > data.Length)
+			if ((startIndex + count) > data.Length)
 			{
-				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_DATA_OFFSET_COUNT_IS_TOO_LARGE, offset, count));
+				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_DATA_OFFSET_COUNT_IS_TOO_LARGE, startIndex, count));
 			}
 
 			if ((bufferOffset + count * _indexSize) > SizeInBytes)
 			{
-				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_DATA_OFFSET_COUNT_IS_TOO_LARGE, offset, count));
+				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_DATA_OFFSET_COUNT_IS_TOO_LARGE, startIndex, count));
 			}
 #endif
 			Graphics.D3DDeviceContext.UpdateSubresource(data,
@@ -640,7 +544,7 @@ namespace Gorgon.Graphics.Core
 			                                            new D3D11.ResourceRegion
 			                                            {
 				                                            Left = bufferOffset,
-				                                            Right = bufferOffset + (count * _indexSize),
+				                                            Right = bufferOffset + (count.Value * _indexSize),
 				                                            Top = 0,
 				                                            Front = 0,
 				                                            Bottom = 1,
@@ -660,7 +564,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="log">[Optional] The log interface used for debug logging.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, <paramref name="name"/>, or <paramref name="info"/> parameters are <b>null</b>.</exception>
 		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> is empty.</exception>
-		public GorgonIndexBuffer(string name, GorgonGraphics graphics, IGorgonIndexBufferInfo info, GorgonPointerBase initialData = null, IGorgonLog log = null)
+		public GorgonIndexBuffer(string name, GorgonGraphics graphics, IGorgonIndexBufferInfo info, IGorgonPointer initialData = null, IGorgonLog log = null)
 			: base(graphics, name, log)
 		{
 			if (info == null)
@@ -668,7 +572,6 @@ namespace Gorgon.Graphics.Core
 				throw new ArgumentNullException(nameof(info));
 			}
 
-			_log = log ?? GorgonLogDummy.DefaultInstance;
 			_info = new GorgonIndexBufferInfo(info);
 			_indexSize = _info.Use16BitIndices ? sizeof(ushort) : sizeof(uint);
 

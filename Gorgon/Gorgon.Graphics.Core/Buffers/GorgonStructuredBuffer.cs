@@ -35,14 +35,14 @@ using D3D11 = SharpDX.Direct3D11;
 namespace Gorgon.Graphics.Core
 {
     /// <summary>
-    /// A generic buffer for holding unstructured data to pass to the GPU.
+    /// A buffer for holding structured data to pass to the GPU.
     /// </summary>
-    public class GorgonBuffer
+    public class GorgonStructuredBuffer
         : GorgonBufferCommon
     {
         #region Variables.
         // The information used to create the buffer.
-        private readonly GorgonBufferInfo _info;
+        private readonly GorgonStructuredBufferInfo _info;
         #endregion
 
         #region Properties.
@@ -59,7 +59,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the settings for the buffer.
         /// </summary>
-        public IGorgonBufferInfo Info => _info;
+        public IGorgonStructuredBufferInfo Info => _info;
         #endregion
 
         #region Methods.
@@ -83,7 +83,7 @@ namespace Gorgon.Graphics.Core
                 case D3D11.ResourceUsage.Staging:
                     cpuFlags = D3D11.CpuAccessFlags.Read | D3D11.CpuAccessFlags.Write;
 
-                    if (_info.Binding != BufferBinding.None)
+                    if (_info.Binding != StructuredBufferBinding.None)
                     {
                         throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_CANNOT_BE_BOUND_TO_GPU, _info.Binding));
                     }
@@ -93,28 +93,23 @@ namespace Gorgon.Graphics.Core
                     break;
             }
 
-            Log.Print($"{Name} Generic Buffer: Creating D3D11 buffer. Size: {SizeInBytes} bytes", LoggingLevel.Simple);
+            Log.Print($"{Name} Structured Buffer: Creating D3D11 buffer. Size: {SizeInBytes} bytes", LoggingLevel.Simple);
 
             var bindFlags = D3D11.BindFlags.None;
 
-            if ((_info.Binding == BufferBinding.None) && (_info.Usage == D3D11.ResourceUsage.Staging))
+            if ((_info.Binding == StructuredBufferBinding.None) && (_info.Usage == D3D11.ResourceUsage.Staging))
             {
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_NON_STAGING_NEEDS_BINDING, _info.Usage));
             }
 
-            if ((_info.Binding & BufferBinding.Shader) == BufferBinding.Shader)
+            if ((_info.Binding & StructuredBufferBinding.Shader) == StructuredBufferBinding.Shader)
             {
                 bindFlags |= D3D11.BindFlags.ShaderResource;
             }
 
-            if ((_info.Binding & BufferBinding.UnorderedAccess) == BufferBinding.UnorderedAccess)
+            if ((_info.Binding & StructuredBufferBinding.UnorderedAccess) == StructuredBufferBinding.UnorderedAccess)
             {
                 bindFlags |= D3D11.BindFlags.UnorderedAccess;
-            }
-
-            if ((_info.Binding & BufferBinding.StreamOut) == BufferBinding.StreamOut)
-            {
-                bindFlags |= D3D11.BindFlags.StreamOutput;
             }
             
             var desc = new D3D11.BufferDescription
@@ -122,7 +117,7 @@ namespace Gorgon.Graphics.Core
                            SizeInBytes = SizeInBytes,
                            Usage = _info.Usage,
                            BindFlags = bindFlags,
-                           OptionFlags = D3D11.ResourceOptionFlags.None,
+                           OptionFlags = D3D11.ResourceOptionFlags.BufferStructured,
                            CpuAccessFlags = cpuFlags,
                            StructureByteStride = 0
                        };
@@ -140,7 +135,7 @@ namespace Gorgon.Graphics.Core
 
         #region Constructor.
         /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonBuffer" /> class.
+        /// Initializes a new instance of the <see cref="GorgonStructuredBuffer" /> class.
         /// </summary>
         /// <param name="name">Name of this buffer.</param>
         /// <param name="graphics">The <see cref="GorgonGraphics"/> object used to create and manipulate the buffer.</param>
@@ -153,7 +148,7 @@ namespace Gorgon.Graphics.Core
         /// <para>Thrown if the size of the buffer is less than 16 bytes.</para>
         /// </exception>
         /// <exception cref="GorgonException">Thrown if the buffer is created with a usage of <c>Immutable</c>, but the <paramref name="initialData"/> parameter is <b>null</b>.</exception>
-        public GorgonBuffer(GorgonGraphics graphics, string name, IGorgonBufferInfo info, IGorgonPointer initialData = null, IGorgonLog log = null)
+        public GorgonStructuredBuffer(GorgonGraphics graphics, string name, IGorgonStructuredBufferInfo info, IGorgonPointer initialData = null, IGorgonLog log = null)
             : base(graphics, name, log)
         {
             if (info == null)
@@ -166,7 +161,7 @@ namespace Gorgon.Graphics.Core
                 throw new ArgumentException(string.Format(Resources.GORGFX_BUFFER_SIZE_TOO_SMALL, 16));
             }
 
-            _info = new GorgonBufferInfo(info);
+            _info = new GorgonStructuredBufferInfo(info);
             Initialize(initialData);
         }
         #endregion

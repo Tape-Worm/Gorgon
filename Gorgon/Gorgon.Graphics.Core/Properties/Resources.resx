@@ -172,7 +172,7 @@
   <data name="GORGFX_VALUE_OUT_OF_RANGE" xml:space="preserve">
     <value>The value is out of range.  The value [{0}] must be be 0 or less than {1}.</value>
   </data>
-  <data name="GORGFX_BUFFER_IMMUTABLE_REQUIRES_DATA" xml:space="preserve">
+  <data name="GORGFX_ERR_BUFFER_IMMUTABLE_REQUIRES_DATA" xml:space="preserve">
     <value>Cannot create an immutable buffer without initial data to populate it.</value>
   </data>
   <data name="GORGFX_SHADER_VIEW_TOSTR" xml:space="preserve">
@@ -845,5 +845,12 @@ Errors:
     <value>The requested width and/or height ({0}x{1}) for the swap chain backer buffer is too large. 
 
 The width must be a value between 1-{2}, and the height must be a value between 1-{3}.</value>
+  </data>
+  <data name="GORGFX_ERR_BUFFER_CANNOT_BE_BOUND_TO_GPU" xml:space="preserve">
+    <value>Staging buffers cannot be bound to the GPU.
+The buffer type is set as a staging buffer, but also has a binding flag set of [{0}].</value>
+  </data>
+  <data name="GORGFX_ERR_BUFFER_NON_STAGING_NEEDS_BINDING" xml:space="preserve">
+    <value>A [{0}] buffer cannot use a binding of [None].</value>
   </data>
 </root>
