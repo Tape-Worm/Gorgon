@@ -90,13 +90,46 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <remarks>
         /// <para>
-        /// This value must be between 1 and 2048 and be a multiple of 4 or else an exception will be raised when the buffer is created.
+        /// This value must be between 1 and 2048 or else an exception will be raised when the buffer is created.
+        /// </para>
+        /// <para>
+        /// This value should also be aligned to a 4 byte padding. If it is not, then Gorgon will resize to the nearest 4 byte boundary automatically. This may cause confusion when writing to the buffer, 
+        /// so it is best practice to ensure a 4 byte alignment.
         /// </para>
         /// <para>
         /// The default value is 0.
         /// </para>
         /// </remarks>
         public int StructureSize
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return whether a default shader resource view for this buffer should be created.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Use this to define a default <see cref="GorgonStructuredBufferView"/> for the buffer. This default view will allow shaders to access the buffer without needing to create an additional 
+        /// view. If this value is set to <b>false</b>, then no default shader view will be created.
+        /// </para>
+        /// <para>
+        /// The default shader view will expose the entire buffer to the shader. To limit view to only a portion of the buffer, call the <see cref="GorgonStructuredBuffer.GetShaderResourceView"/> with the 
+        /// appropriate element constraints.
+        /// </para>
+        /// <para>
+        /// <note type="important">
+        /// <para>
+        /// This property is only used if the <see cref="Binding"/> property has a <see cref="BufferBinding.Shader"/> flag.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// <para>
+        /// The default value for this property is <b>false</b>.
+        /// </para>
+        /// </remarks>
+        public bool UseDefaultShaderView
         {
             get;
             set;
@@ -120,6 +153,7 @@ namespace Gorgon.Graphics.Core
             Binding = info.Binding;
             SizeInBytes = info.SizeInBytes;
             StructureSize = info.StructureSize;
+            UseDefaultShaderView = info.UseDefaultShaderView;
         }
 
         /// <summary>

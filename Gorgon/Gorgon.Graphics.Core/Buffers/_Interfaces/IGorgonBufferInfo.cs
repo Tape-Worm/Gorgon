@@ -25,10 +25,7 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using DXGI = SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
@@ -116,6 +113,37 @@ namespace Gorgon.Graphics.Core
         /// </para>
         /// </remarks>
         BufferBinding Binding
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the format for the default shader view.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Use this to define a default <see cref="GorgonBufferView"/> for the buffer. This default view will allow shaders to access the buffer without needing to create an additional view. If this 
+        /// value is set to <c>Unknown</c>, then no default shader view will be created.
+        /// </para>
+        /// <para>
+        /// The default shader view will expose the entire buffer to the shader. To limit view to only a portion of the buffer, call the <see cref="GorgonBuffer.GetShaderResourceView"/> with the appropriate 
+        /// element constraints.
+        /// </para>
+        /// <para>
+        /// The format must not be typeless, if it is, an exception will be thrown on buffer creation.
+        /// </para>
+        /// <para>
+        /// <note type="important">
+        /// <para>
+        /// This property is only used if the <see cref="Binding"/> property has a <see cref="BufferBinding.Shader"/> flag.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// <para>
+        /// The default value for this property is <c>Unknown</c>.
+        /// </para>
+        /// </remarks>
+        DXGI.Format DefaultShaderViewFormat
         {
             get;
         }
