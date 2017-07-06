@@ -42,9 +42,9 @@ namespace Gorgon.Graphics.Core
 	{
 		#region Properties.
 		/// <summary>
-		/// Property to return the Direct 3D 11 view.
+		/// Property to return the native Direct 3D 11 view.
 		/// </summary>
-		protected internal D3D11.ShaderResourceView D3DView
+		protected internal D3D11.ShaderResourceView NativeView
 		{
 			get;
 			protected set;
@@ -57,26 +57,6 @@ namespace Gorgon.Graphics.Core
 	    {
 	        get;
 	    }
-
-		/// <summary>
-		/// Property to return the key for the resource view.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// This key can be used to sort, or define a unique resource view for use in caching. Users may set this key however they see fit to meet their caching/sorting needs. However, it is recommended 
-		/// that this key be left alone, and never altered after it's been applied to a cache since it should be a unique value.
-		/// </para>
-		/// <para>
-		/// See the concrete versions of this type to see how the key is formatted.
-		/// </para>
-		/// </remarks>
-		/// <seealso cref="GorgonTextureShaderView"/>
-		/// <seealso cref="GorgonBufferShaderView"/>
-		public ulong Key
-		{
-			get;
-			set;
-		}
 		#endregion
 
 		#region Methods.
@@ -86,7 +66,7 @@ namespace Gorgon.Graphics.Core
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1816:CallGCSuppressFinalizeCorrectly", Justification = "I have no finalizer. This is completely overridable. Idiot.")]
 		public virtual void Dispose()
 		{
-			D3DView?.Dispose();
+			NativeView?.Dispose();
 		}
 		#endregion
 

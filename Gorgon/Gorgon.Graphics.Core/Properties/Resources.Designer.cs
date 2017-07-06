@@ -232,15 +232,6 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The structure size must be greater than 0 and no greater than 2048 bytes..
-        /// </summary>
-        internal static string GORGFX_BUFFER_STRUCTURE_SIZE_INVALID {
-            get {
-                return ResourceManager.GetString("GORGFX_BUFFER_STRUCTURE_SIZE_INVALID", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Cannot use a deferred context to create another deferred context.  Only an immediate context may created a deferred context..
         /// </summary>
         internal static string GORGFX_CANNOT_CREATE_CONTEXT_FROM_CONTEXT {
@@ -349,8 +340,7 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Staging buffers cannot be bound to the GPU.
-        ///The buffer type is set as a staging buffer, but also has a binding flag set of [{0}]..
+        ///   Looks up a localized string similar to The buffer view could not be created. Ensure that the buffer is not a staging buffer, and has a binding flag for shaders..
         /// </summary>
         internal static string GORGFX_ERR_BUFFER_CANNOT_BE_BOUND_TO_GPU {
             get {
@@ -373,6 +363,15 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_BUFFER_IMMUTABLE_REQUIRES_DATA {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_BUFFER_IMMUTABLE_REQUIRES_DATA", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot update an immutable buffer..
+        /// </summary>
+        internal static string GORGFX_ERR_BUFFER_IS_IMMUTABLE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_BUFFER_IS_IMMUTABLE", resourceCulture);
             }
         }
         
@@ -400,6 +399,25 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_BUFFER_NON_STAGING_NEEDS_BINDING {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_BUFFER_NON_STAGING_NEEDS_BINDING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The current aligned structure size of {0} is not valid.
+        ///The structure size must be greater than 0 and no greater than 2048 bytes..
+        /// </summary>
+        internal static string GORGFX_ERR_BUFFER_STRUCTURE_SIZE_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_BUFFER_STRUCTURE_SIZE_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The starting element {0} plus the count {1} is larger than the buffer element size of {2}..
+        /// </summary>
+        internal static string GORGFX_ERR_BUFFER_VIEW_START_COUNT_OUT_OF_RANGE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_BUFFER_VIEW_START_COUNT_OUT_OF_RANGE", resourceCulture);
             }
         }
         

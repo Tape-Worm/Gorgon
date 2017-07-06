@@ -25,7 +25,6 @@
 #endregion
 
 using Gorgon.Math;
-using Gorgon.Native;
 using SharpDX.Mathematics.Interop;
 using DXGI = SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;

@@ -83,6 +83,11 @@
     <Compile Include="..\Gorgon.Core\SharedAssemblyInfo.cs">
       <Link>SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Buffers\GorgonRawBufferInfo.cs" />
+    <Compile Include="Buffers\GorgonBufferView.cs" />
+    <Compile Include="Buffers\GorgonBufferViewBase.cs" />
+    <Compile Include="Buffers\GorgonStructuredBufferView.cs" />
+    <Compile Include="Buffers\GorgonRawBufferView.cs" />
     <Compile Include="Buffers\GorgonStructuredBuffer.cs" />
     <Compile Include="Buffers\GorgonIndirectArgumentBuffer.cs" />
     <Compile Include="Buffers\GorgonRawBuffer.cs" />
@@ -97,11 +102,13 @@
     <Compile Include="Buffers\GorgonConstantBufferInfo.cs" />
     <Compile Include="Buffers\GorgonIndexBufferInfo.cs" />
     <Compile Include="Buffers\GorgonVertexBufferInfo.cs" />
+    <Compile Include="Buffers\_Interfaces\IGorgonRawBufferInfo.cs" />
     <Compile Include="Buffers\_Interfaces\IGorgonStructuredBufferInfo.cs" />
     <Compile Include="Buffers\_Interfaces\IGorgonBufferInfo.cs" />
     <Compile Include="Buffers\_Interfaces\IGorgonIndexBufferInfo.cs" />
     <Compile Include="Buffers\_Interfaces\IGorgonVertexBufferInfo.cs" />
     <Compile Include="Buffers\_Interfaces\IGorgonConstantBufferInfo.cs" />
+    <Compile Include="Buffers\_Internal\ShaderViewKey.cs" />
     <Compile Include="Devices\_Interfaces\IGorgonVideoOutputInfo.cs" />
     <Compile Include="Devices\_Interfaces\IGorgonVideoDeviceInfo.cs" />
     <Compile Include="Devices\_Internal\VideoDeviceInfo.cs" />

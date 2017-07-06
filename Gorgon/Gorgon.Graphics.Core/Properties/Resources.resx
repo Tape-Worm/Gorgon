@@ -265,8 +265,9 @@
   <data name="GORGFX_VIEW_UNORDERED_RAW_INVALID_FORMAT" xml:space="preserve">
     <value>Raw unordered views require a format of [R32] (Typeless).</value>
   </data>
-  <data name="GORGFX_BUFFER_STRUCTURE_SIZE_INVALID" xml:space="preserve">
-    <value>The structure size must be greater than 0 and no greater than 2048 bytes.</value>
+  <data name="GORGFX_ERR_BUFFER_STRUCTURE_SIZE_INVALID" xml:space="preserve">
+    <value>The current aligned structure size of {0} is not valid.
+The structure size must be greater than 0 and no greater than 2048 bytes.</value>
   </data>
   <data name="GORGFX_BUFFER_DYNAMIC_NEEDS_SHADER_VIEW" xml:space="preserve">
     <value>A generic dynamic buffer must be accessible via a shader view.</value>
@@ -847,10 +848,15 @@ Errors:
 The width must be a value between 1-{2}, and the height must be a value between 1-{3}.</value>
   </data>
   <data name="GORGFX_ERR_BUFFER_CANNOT_BE_BOUND_TO_GPU" xml:space="preserve">
-    <value>Staging buffers cannot be bound to the GPU.
-The buffer type is set as a staging buffer, but also has a binding flag set of [{0}].</value>
+    <value>The buffer view could not be created. Ensure that the buffer is not a staging buffer, and has a binding flag for shaders.</value>
   </data>
   <data name="GORGFX_ERR_BUFFER_NON_STAGING_NEEDS_BINDING" xml:space="preserve">
     <value>A [{0}] buffer cannot use a binding of [None].</value>
+  </data>
+  <data name="GORGFX_ERR_BUFFER_VIEW_START_COUNT_OUT_OF_RANGE" xml:space="preserve">
+    <value>The starting element {0} plus the count {1} is larger than the buffer element size of {2}.</value>
+  </data>
+  <data name="GORGFX_ERR_BUFFER_IS_IMMUTABLE" xml:space="preserve">
+    <value>Cannot update an immutable buffer.</value>
   </data>
 </root>

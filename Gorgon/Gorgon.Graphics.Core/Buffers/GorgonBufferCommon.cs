@@ -25,9 +25,11 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
+using Gorgon.Graphics.Imaging;
 using Gorgon.Native;
 using Gorgon.Reflection;
 using DX = SharpDX;
@@ -44,6 +46,8 @@ namespace Gorgon.Graphics.Core
         #region Variables.
         // The address returned by the lock on the buffer.
         private GorgonPointerAlias _lockAddress;
+        // A cache of shader views for the buffer.
+        private readonly Dictionary<BufferShaderViewKey, GorgonShaderResourceView> _shaderViews = new Dictionary<BufferShaderViewKey, GorgonShaderResourceView>();
         #endregion
 
         #region Properties.
@@ -67,6 +71,43 @@ namespace Gorgon.Graphics.Core
 
         #region Methods.
         /// <summary>
+        /// Function to return a cached shader resource view.
+        /// </summary>
+        /// <param name="key">The key associated with the view.</param>
+        /// <returns>The shader resource view for the buffer, or <b>null</b> if no resource view is registered.</returns>
+        internal GorgonShaderResourceView GetView(BufferShaderViewKey key)
+        {
+            GorgonShaderResourceView view;
+
+            return _shaderViews.TryGetValue(key, out view) ? view : null;
+        }
+
+        /// <summary>
+        /// Function to register the shader resource view in the cache.
+        /// </summary>
+        /// <param name="key">The unique key for the shader view.</param>
+        /// <param name="view">The view to register.</param>
+        internal void RegisterView(BufferShaderViewKey key, GorgonShaderResourceView view)
+        {
+            _shaderViews[key] = view;
+        }
+
+        /// <summary>
+        /// Function to retrieve the total number of elements that can be placed in the buffer.
+        /// </summary>
+        /// <param name="info">Information about the element format.</param>
+        /// <returns>The number of elements in the buffer.</returns>
+        protected int GetTotalElementCount(GorgonFormatInfo info)
+        {
+            if (info.IsTypeless)
+            {
+                return 0;
+            }
+
+            return SizeInBytes / info.SizeInBytes;
+        }
+
+        /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         /// <remarks>
@@ -87,6 +128,14 @@ namespace Gorgon.Graphics.Core
                 // Because the pointer is an alias, we don't really NEED to call this, but just for consistency we'll do so anyway.
                 _lockAddress.Dispose();
             }
+
+            // Remove any cached views for this buffer.
+            foreach (KeyValuePair<BufferShaderViewKey, GorgonShaderResourceView> view in _shaderViews)
+            {
+                view.Value.Dispose();
+            }
+
+            _shaderViews.Clear();
 
             base.Dispose();
         }

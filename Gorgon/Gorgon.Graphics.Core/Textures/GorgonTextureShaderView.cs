@@ -48,42 +48,6 @@ namespace Gorgon.Graphics.Core
 	/// Use a resource view to allow a shader access to the contents of a resource (or sub resource).  When the resource is created with a typeless format, this will allow the resource to be cast to any 
 	/// format within the same group.	
 	/// </para>
-	/// <para>
-	/// The <see cref="GorgonShaderResourceView.Key"/> Gorgon will set the view parameters as a 64 bit unsigned integer value when the view is created. This key is composed of the following bits:
-	/// <list type="table">
-	///		<listheader>
-	///			<term>Bits (inclusive)</term>
-	///			<term>Value</term>		
-	///		</listheader>
-	///		<item>
-	///			<term>0 - 3 (4 bits)</term>
-	///			<term><see cref="MipSlice">Mip slice.</see></term>
-	///		</item>
-	///		<item>
-	///			<term>4 - 7 (4 bits)</term>
-	///			<term><see cref="MipCount">Mip count.</see></term>
-	///		</item>
-	///		<item>
-	///			<term>8 - 18 (11 bits)</term>
-	///			<term><see cref="ArrayIndex">Array Index.</see></term>
-	///		</item>
-	///		<item>
-	///			<term>19 - 29 (11 bits)</term>
-	///			<term><see cref="ArrayCount">Array Count.</see></term>
-	///		</item>
-	///		<item>
-	///			<term>30 - 37 (8 bits)</term>
-	///			<term><see cref="Format"/></term>
-	///		</item>
-	/// </list>
-	/// </para>
-	/// <para>
-	/// For example, a <see cref="MipSlice"/> of 2, a <see cref="MipCount"/> of 1 and a <see cref="ArrayIndex"/> of 4, with an <see cref="ArrayCount"/> of 2 and a <see cref="Format"/> 
-	/// of <c>R8G8B8A8_UNorm</c> (28) would yield a key of: <c>30065820690</c>. 
-	/// <br/>
-	/// Or, a <see cref="MipSlice"/> of 0, and <see cref="MipCount"/> of 1, with a <see cref="ArrayIndex"/> of 0, and a <see cref="ArrayCount"/> of 1, and the same buffer format would yield a key of: 
-	/// <c>30065295376</c>.
-	/// </para>
 	/// </remarks>
 	public sealed class GorgonTextureShaderView
 		: GorgonShaderResourceView
@@ -329,7 +293,7 @@ namespace Gorgon.Graphics.Core
 				_log.Print("Gorgon resource view: Creating D3D 11 shader resource view.", LoggingLevel.Verbose);
 
 				// Create our SRV.
-				D3DView = new D3D11.ShaderResourceView(Texture.Graphics.VideoDevice.D3DDevice(), Texture.D3DResource, desc)
+				NativeView = new D3D11.ShaderResourceView(Texture.Graphics.VideoDevice.D3DDevice(), Texture.D3DResource, desc)
 				          {
 					          DebugName = $"'{Texture.Name}': D3D 11 Shader resource view"
 				          };
@@ -351,7 +315,7 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		public override void Dispose()
 		{
-			if (D3DView != null)
+			if (NativeView != null)
 			{
 				_log.Print($"Shader Resource View '{Texture.Name}': Releasing D3D11 Shader resource view.", LoggingLevel.Simple);
 			}
@@ -458,16 +422,6 @@ namespace Gorgon.Graphics.Core
 			IsCube = Texture.Info.IsCubeMap;
 
 			Initialize();
-
-			// The key for a texture shader view is broken up into the following layout.
-			// Bits: [37 - 30]   [29 - 19]     [18 - 8]		[7 - 4]		[3 - 0]
-			//       Format      Array/Depth   Array/Depth  Mip Count	Mip slice
-			//                   Count         Index
-			Key = (((uint)Format) & 0xff) << 30
-			      | (((uint)ArrayCount) & 0x7ff) << 19
-			      | (((uint)ArrayIndex) & 0x7ff) << 8
-			      | (((uint)MipCount) & 0xf) << 4
-			      | (uint)MipSlice;
 		}
 		#endregion
 	}

@@ -27,6 +27,9 @@
 using System;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
+using Gorgon.Graphics.Core.Properties;
+using Gorgon.Math;
+using D3D = SharpDX.Direct3D;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
@@ -55,7 +58,15 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// A structured buffer used to hold structured data.
 		/// </summary>
-		Structured = 4
+		Structured = 4,
+        /// <summary>
+        /// A raw buffer used to hold raw byte data.
+        /// </summary>
+        Raw = 5,
+        /// <summary>
+        /// An indirect argument buffer.
+        /// </summary>
+        IndirectArgument = 6
 	}
 
 	/// <summary>
@@ -94,18 +105,88 @@ namespace Gorgon.Graphics.Core
 		{
 			get;
 		}
-		#endregion
+        #endregion
 
-		#region Constructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonBufferBase" /> class.
-		/// </summary>
-		/// <param name="graphics">The <see cref="GorgonGraphics"/> object used to create and manipulate the buffer.</param>
-		/// <param name="name">Name of this buffer.</param>
-		/// <param name="log">[Optional] The log interface used for debug logging.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, or the <paramref name="name"/> parameters are <b>null</b>.</exception>
-		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
-		protected GorgonBufferBase(GorgonGraphics graphics, string name, IGorgonLog log)
+        #region Methods.
+        /// <summary>
+        /// Function to copy the contents of this buffer into a destination buffer.
+        /// </summary>
+        /// <param name="buffer">The destination buffer that will receive the data.</param>
+        /// <param name="sourceOffset">[Optional] Starting byte index to start copying from.</param>
+        /// <param name="byteCount">[Optional] The number of bytes to copy.</param>
+        /// <param name="destOffset">[Optional] The offset within the destination buffer.</param>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="sourceOffset"/> plus the <paramref name="byteCount"/> is less than 0 or larger than the size of this buffer.
+        /// <para>-or-</para>
+        /// <para>Thrown when the <paramref name="destOffset"/> plus the <paramref name="byteCount"/> is less than 0 or larger than the size of the destination <paramref name="buffer"/>.</para>
+        /// </exception>
+        /// <exception cref="GorgonException">Thrown when <paramref name="buffer"/> has a resource usage of <c>Immutable</c>.</exception>
+        /// <remarks>
+        /// <para>
+        /// Use this method to copy the contents of this buffer into another.
+        /// </para> 
+        /// <para>
+        /// The source and destination buffer offsets must fit within their range of their allocated space, as must the <paramref name="byteCount"/>. Otherwise, an exception will be thrown. Also, the 
+        /// destination buffer must not be <c>Immutable</c>.
+        /// </para>
+        /// <para>
+        /// <note type="warning">
+        /// <para>
+        /// For performance reasons, this method will only throw exceptions when Gorgon is compiled as <b>DEBUG</b>.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        public void CopyTo(GorgonBufferBase buffer, int sourceOffset = 0, int byteCount = 0, int destOffset = 0)
+        {
+            buffer.ValidateObject(nameof(buffer));
+
+            sourceOffset = sourceOffset.Max(0);
+            destOffset = destOffset.Max(0);
+
+            if (byteCount < 1)
+            {
+                byteCount = SizeInBytes.Min(buffer.SizeInBytes);
+            }
+
+            int sourceByteIndex = sourceOffset + byteCount;
+            int destByteIndex = destOffset + byteCount;
+
+            sourceByteIndex.ValidateRange(nameof(sourceOffset), 0, buffer.SizeInBytes);
+            destByteIndex.ValidateRange(nameof(destOffset), 0, buffer.SizeInBytes);
+
+#if DEBUG
+            if (buffer.D3DBuffer.Description.Usage == D3D11.ResourceUsage.Immutable)
+            {
+                throw new GorgonException(GorgonResult.AccessDenied, Resources.GORGFX_ERR_BUFFER_IS_IMMUTABLE);
+            }
+#endif
+            Graphics.D3DDeviceContext.CopySubresourceRegion(buffer.D3DResource,
+                                                            0,
+                                                            new D3D11.ResourceRegion
+                                                            {
+                                                                Top = 0,
+                                                                Bottom = 1,
+                                                                Left = sourceOffset,
+                                                                Right = sourceByteIndex,
+                                                                Front = 0,
+                                                                Back = 1
+                                                            },
+                                                            D3DResource,
+                                                            0,
+                                                            destOffset);
+        }
+        #endregion
+
+        #region Constructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonBufferBase" /> class.
+        /// </summary>
+        /// <param name="graphics">The <see cref="GorgonGraphics"/> object used to create and manipulate the buffer.</param>
+        /// <param name="name">Name of this buffer.</param>
+        /// <param name="log">[Optional] The log interface used for debug logging.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, or the <paramref name="name"/> parameters are <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+        protected GorgonBufferBase(GorgonGraphics graphics, string name, IGorgonLog log)
 			: base(graphics, name)
 		{
 			Log = log ?? GorgonLogDummy.DefaultInstance;

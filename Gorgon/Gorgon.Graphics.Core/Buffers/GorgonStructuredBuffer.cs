@@ -28,6 +28,7 @@ using System;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
+using Gorgon.Math;
 using Gorgon.Native;
 using D3D11 = SharpDX.Direct3D11;
 
@@ -37,6 +38,15 @@ namespace Gorgon.Graphics.Core
     /// <summary>
     /// A buffer for holding structured data to pass to the GPU.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <note type="warning">
+    /// <para>
+    /// Structured buffers require a video device capable of a <see cref="IGorgonVideoDevice.RequestedFeatureLevel"/> of 11.0 or better.
+    /// </para>
+    /// </note>
+    /// </para>
+    /// </remarks>
     public class GorgonStructuredBuffer
         : GorgonBufferCommon
     {
@@ -54,12 +64,36 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the type of buffer.
         /// </summary>
-        public override BufferType BufferType => BufferType.Generic;
+        public override BufferType BufferType => BufferType.Structured;
 
         /// <summary>
         /// Property to return the settings for the buffer.
         /// </summary>
         public IGorgonStructuredBufferInfo Info => _info;
+
+        /// <summary>
+        /// Property to return the actual size of the structures in the buffer.
+        /// </summary>
+        /// <remarks>
+        /// This will return the proper aligned size of the structures, whereas the <see cref="IGorgonStructuredBufferInfo.StructureSize"/> does not.
+        /// </remarks>
+        public int StructureSize
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Property to return the default shader view.
+        /// </summary>
+        /// <remarks>
+        /// This property is provided for convenience so that applications can immediately use a buffer in a shader without having to build a specialized <see cref="GorgonStructuredBufferView"/>.
+        /// </remarks>
+        public GorgonStructuredBufferView DefaultShaderView
+        {
+            get;
+            private set;
+        }
         #endregion
 
         #region Methods.
@@ -74,7 +108,17 @@ namespace Gorgon.Graphics.Core
                 throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_BUFFER_IMMUTABLE_REQUIRES_DATA);
             }
 
-            SizeInBytes = _info.SizeInBytes;
+            // Align to 4 bytes.
+            StructureSize = (Info.StructureSize + 3) & ~3;
+
+            if ((StructureSize < 1) || (StructureSize > 2048))
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_STRUCTURE_SIZE_INVALID, StructureSize));
+            }
+
+            // Resize to fit at least one structure.
+            int structSizeAlign = StructureSize - 1;
+            SizeInBytes = (_info.SizeInBytes + structSizeAlign) & ~structSizeAlign;
 
             D3D11.CpuAccessFlags cpuFlags = D3D11.CpuAccessFlags.None;
 
@@ -97,11 +141,6 @@ namespace Gorgon.Graphics.Core
 
             var bindFlags = D3D11.BindFlags.None;
 
-            if ((_info.Binding == StructuredBufferBinding.None) && (_info.Usage == D3D11.ResourceUsage.Staging))
-            {
-                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_NON_STAGING_NEEDS_BINDING, _info.Usage));
-            }
-
             if ((_info.Binding & StructuredBufferBinding.Shader) == StructuredBufferBinding.Shader)
             {
                 bindFlags |= D3D11.BindFlags.ShaderResource;
@@ -119,7 +158,7 @@ namespace Gorgon.Graphics.Core
                            BindFlags = bindFlags,
                            OptionFlags = D3D11.ResourceOptionFlags.BufferStructured,
                            CpuAccessFlags = cpuFlags,
-                           StructureByteStride = 0
+                           StructureByteStride = StructureSize
                        };
 
             if ((initialData != null) && (initialData.Size > 0))
@@ -130,6 +169,66 @@ namespace Gorgon.Graphics.Core
             {
                 D3DResource = D3DBuffer = new D3D11.Buffer(Graphics.VideoDevice.D3DDevice(), desc);
             }
+
+            if ((!_info.UseDefaultShaderView)
+                || ((bindFlags & D3D11.BindFlags.ShaderResource) != D3D11.BindFlags.ShaderResource))
+            {
+                return;
+            }
+
+            DefaultShaderView = GetShaderResourceView();
+        }
+
+        /// <summary>
+        /// Function to retrieve the total number of elements in a buffer.
+        /// </summary>
+        /// <returns>The total number of elements.</returns>
+        /// <remarks>
+        /// <para>
+        /// Use this to retrieve the number of elements that will be passed to a shader resource view.
+        /// </para>
+        /// </remarks>
+        public int GetTotalElementCount() => SizeInBytes / StructureSize;
+
+        /// <summary>
+        /// Function to create or retrieve a <see cref="GorgonStructuredBufferView"/> for this buffer.
+        /// </summary>
+        /// <param name="startElement">[Optional] The starting element to begin viewing at.</param>
+        /// <param name="elementCount">[Optional] The number of elements to view.</param>
+        /// <returns>The <see cref="GorgonStructuredBufferView"/> requested for this buffer.</returns>
+        /// <exception cref="ArgumentException">Thrown if this buffer is a staging resource, or does not have a binding flag for shader access.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="startElement"/> and the <paramref name="elementCount"/> are larger than the total number of elements.</exception>
+        /// <remarks>
+        /// <para>
+        /// To determine how many elements are in a buffer, use the <see cref="GetTotalElementCount"/> method.
+        /// </para>
+        /// <para>
+        /// If the <paramref name="elementCount"/> is omitted (less than 1), then the entire buffer minus the <paramref name="startElement"/> will be available to the shader.
+        /// </para>
+        /// </remarks>
+        public GorgonStructuredBufferView GetShaderResourceView(int startElement = 0, int elementCount = 0)
+        {
+            int totalElementCount = GetTotalElementCount();
+            startElement = startElement.Max(0);
+
+            // If we didn't specify a count, then do so now.
+            if (elementCount < 1)
+            {
+                elementCount = totalElementCount - startElement;
+            }
+
+            var key = new BufferShaderViewKey(startElement, elementCount, 0);
+            var view = GetView(key) as GorgonStructuredBufferView;
+
+            if (view != null)
+            {
+                return view;
+            }
+
+            view = new GorgonStructuredBufferView(this, startElement, elementCount, totalElementCount, Log);
+            view.CreateNativeView();
+            RegisterView(key, view);
+            return view;
         }
         #endregion
 
@@ -145,7 +244,9 @@ namespace Gorgon.Graphics.Core
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, <paramref name="name"/>, or <paramref name="info"/> parameters are <b>null</b>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> is empty.
         /// <para>-or-</para>
-        /// <para>Thrown if the size of the buffer is less than 16 bytes.</para>
+        /// <para>Thrown if the size of the buffer is less than 1 byte.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown if this object is created with a device that does not have a feature level of 11.0 or better.</para>
         /// </exception>
         /// <exception cref="GorgonException">Thrown if the buffer is created with a usage of <c>Immutable</c>, but the <paramref name="initialData"/> parameter is <b>null</b>.</exception>
         public GorgonStructuredBuffer(GorgonGraphics graphics, string name, IGorgonStructuredBufferInfo info, IGorgonPointer initialData = null, IGorgonLog log = null)
@@ -156,9 +257,14 @@ namespace Gorgon.Graphics.Core
                 throw new ArgumentNullException(nameof(info));
             }
 
-            if (info.SizeInBytes < 16)
+            if (info.SizeInBytes < 1)
             {
-                throw new ArgumentException(string.Format(Resources.GORGFX_BUFFER_SIZE_TOO_SMALL, 16));
+                throw new ArgumentException(string.Format(Resources.GORGFX_BUFFER_SIZE_TOO_SMALL, 1));
+            }
+
+            if (graphics.VideoDevice.RequestedFeatureLevel < FeatureLevelSupport.Level_11_0)
+            {
+                throw new ArgumentException(string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureLevelSupport.Level_11_0), nameof(graphics));
             }
 
             _info = new GorgonStructuredBufferInfo(info);
