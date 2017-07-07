@@ -61,11 +61,6 @@ namespace Gorgon.Graphics.Core
         protected override D3D11.ResourceUsage Usage => _info.Usage;
 
         /// <summary>
-        /// Property to return the type of buffer.
-        /// </summary>
-        public override BufferType BufferType => BufferType.Raw;
-
-        /// <summary>
         /// Property to return the settings for the buffer.
         /// </summary>
         public IGorgonRawBufferInfo Info => _info;
@@ -256,6 +251,7 @@ namespace Gorgon.Graphics.Core
                 throw new ArgumentException(string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureLevelSupport.Level_11_0), nameof(graphics));
             }
 
+            BufferType = BufferType.Raw;
             _info = new GorgonRawBufferInfo(info);
             Initialize(initialData);
         }

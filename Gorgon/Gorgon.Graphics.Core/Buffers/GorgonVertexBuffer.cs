@@ -96,11 +96,6 @@ namespace Gorgon.Graphics.Core
 		public IGorgonVertexBufferInfo Info => _info;
 
 		/// <summary>
-		/// Property to return the type of buffer.
-		/// </summary>
-		public override BufferType BufferType => BufferType.Vertex;
-
-		/// <summary>
 		/// Property to return whether this vertex buffer is locked for reading/writing or not.
 		/// </summary>
 		public bool IsLocked
@@ -610,6 +605,7 @@ namespace Gorgon.Graphics.Core
 				throw new ArgumentNullException(nameof(info));
 			}
             
+            BufferType = BufferType.Vertex;
 			_info = new GorgonVertexBufferInfo(info);
 
 			Initialize(initialData);

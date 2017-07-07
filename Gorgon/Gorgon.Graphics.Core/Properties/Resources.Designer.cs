@@ -1193,6 +1193,33 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The array index ({0}), and the count ({1}) are larger than the total number of array indices ({2}) in the texture..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_VIEW_ARRAY_OUT_OF_RANGE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_VIEW_ARRAY_OUT_OF_RANGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The depth slice ({0}), and the slice count ({1}) are larger than the total depth ({2}) in the texture..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_VIEW_DEPTH_OUT_OF_RANGE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_VIEW_DEPTH_OUT_OF_RANGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The first mip index ({0}), and the count ({1}) are larger than the total number of mip levels ({2}) in the texture..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_VIEW_MIP_OUT_OF_RANGE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_VIEW_MIP_OUT_OF_RANGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot create the [{0}] texture.  The width must be between 1 and {1}..
         /// </summary>
         internal static string GORGFX_ERR_TEXTURE_WIDTH_INVALID {
@@ -1337,6 +1364,15 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Depth/stencil views cannot be created for 3D texture types..
+        /// </summary>
+        internal static string GORGFX_ERR_VIEW_DEPTH_STENCIL_NO_3D {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_VIEW_DEPTH_STENCIL_NO_3D", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The resource format [{0}] is not the same group as the view format [{1}]..
         /// </summary>
         internal static string GORGFX_ERR_VIEW_FORMAT_GROUP_INVALID {
@@ -1351,6 +1387,33 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_VIEW_NO_TYPELESS {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_VIEW_NO_TYPELESS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The resource attached to this view is not a {0} depth/stencil buffer..
+        /// </summary>
+        internal static string GORGFX_ERR_VIEW_RESOURCE_NOT_DEPTHSTENCIL {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_VIEW_RESOURCE_NOT_DEPTHSTENCIL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The resource attached to this view is not a {0} render target..
+        /// </summary>
+        internal static string GORGFX_ERR_VIEW_RESOURCE_NOT_TARGET {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_VIEW_RESOURCE_NOT_TARGET", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This resource attached to this view is not a {0} texture..
+        /// </summary>
+        internal static string GORGFX_ERR_VIEW_RESOURCE_NOT_TEXTURE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_VIEW_RESOURCE_NOT_TEXTURE", resourceCulture);
             }
         }
         
@@ -2165,33 +2228,6 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The resource attached to this view is not a {0} depth/stencil buffer..
-        /// </summary>
-        internal static string GORGFX_VIEW_RESOURCE_NOT_DEPTHSTENCIL {
-            get {
-                return ResourceManager.GetString("GORGFX_VIEW_RESOURCE_NOT_DEPTHSTENCIL", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The resource attached to this view is not a {0} render target..
-        /// </summary>
-        internal static string GORGFX_VIEW_RESOURCE_NOT_TARGET {
-            get {
-                return ResourceManager.GetString("GORGFX_VIEW_RESOURCE_NOT_TARGET", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to This resource attached to this view is not a {0} texture..
-        /// </summary>
-        internal static string GORGFX_VIEW_RESOURCE_NOT_TEXTURE {
-            get {
-                return ResourceManager.GetString("GORGFX_VIEW_RESOURCE_NOT_TEXTURE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The view at index [{0}] is not bound to a resource of type &apos;{1}&apos;..
         /// </summary>
         internal static string GORGFX_VIEW_RESOURCE_NOT_TYPE {
@@ -2257,25 +2293,6 @@ namespace Gorgon.Graphics.Core.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to // Texture and sampler for blitting a texture.
-        ///Texture2D _bltTexture : register(t0);
-        ///SamplerState _bltSampler : register(s0);
-        ///
-        ///// Our default blitting vertex.
-        ///struct GorgonBltVertex
-        ///{
-        ///   float4 position : SV_POSITION;
-        ///   float2 uv : TEXCOORD;
-        ///};
-        ///
-        ///// The transformation matrices (for vertex shader).
-        ///cbuffer GorgonBltWorldViewProjection : register(b0)
-        ///{
-        ///	float4x4 WorldViewProjection;
-        ///}
-        ///
-        ///// Our vertex shader for blitting textures.
-        ///GorgonBltVertex GorgonBltVertexShader(GorgonBltVertex vertex)
-        /// [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string GraphicsShaders {
             get {

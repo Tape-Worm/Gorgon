@@ -58,7 +58,7 @@ namespace Gorgon.Graphics.Fonts
 		/// <summary>
 		/// Property to return the texture that the glyph can be found on.
 		/// </summary>
-		public GorgonTextureShaderView TextureView
+		public GorgonTextureView TextureView
 		{
 			get;
 			private set;

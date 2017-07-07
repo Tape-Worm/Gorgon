@@ -101,9 +101,10 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Property to return the type of buffer.
 		/// </summary>
-		public abstract BufferType BufferType
+		public BufferType BufferType
 		{
 			get;
+		    protected set;
 		}
         #endregion
 

@@ -70,7 +70,7 @@ namespace GorgonLibrary.Example
         /// <summary>
         /// Property to set or return the texture image for the cube.
         /// </summary>
-        public GorgonTextureShaderView Texture
+        public GorgonTextureView Texture
         {
             get;
             set;

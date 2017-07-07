@@ -97,11 +97,6 @@ namespace Gorgon.Graphics.Core
 		/// Property used to return the information used to create this buffer.
 		/// </summary>
 		public IGorgonConstantBufferInfo Info => _info;
-
-		/// <summary>
-		/// Property to return the type of buffer.
-		/// </summary>
-		public override BufferType BufferType => BufferType.Constant;
 		#endregion
 
 		#region Methods.
@@ -400,6 +395,8 @@ namespace Gorgon.Graphics.Core
 			{
 				throw new ArgumentException(string.Format(Resources.GORGFX_BUFFER_SIZE_TOO_SMALL, 16));
 			}
+
+            BufferType = BufferType.Constant;
 
 			_info = new GorgonConstantBufferInfo(info);
 

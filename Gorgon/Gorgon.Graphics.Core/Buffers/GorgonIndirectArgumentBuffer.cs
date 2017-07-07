@@ -34,16 +34,9 @@ namespace Gorgon.Graphics.Core
     /// <summary>
     /// A buffer for holding indirect argument data to pass to the GPU.
     /// </summary>
-    public class GorgonIndirectArgumentBuffer
+    public sealed class GorgonIndirectArgumentBuffer
         : GorgonBuffer
     {
-        #region Properties.
-        /// <summary>
-        /// Property to return the type of buffer.
-        /// </summary>
-        public override BufferType BufferType => BufferType.IndirectArgument;
-        #endregion
-
         #region Constructor.
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonIndirectArgumentBuffer" /> class.
@@ -62,6 +55,7 @@ namespace Gorgon.Graphics.Core
         public GorgonIndirectArgumentBuffer(GorgonGraphics graphics, string name, IGorgonBufferInfo info, IGorgonPointer initialData = null, IGorgonLog log = null)
             : base(graphics, name, info, initialData, log)
         {
+            BufferType = BufferType.IndirectArgument;
         }
         #endregion
     }

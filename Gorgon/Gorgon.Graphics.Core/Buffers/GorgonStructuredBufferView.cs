@@ -33,7 +33,17 @@ namespace Gorgon.Graphics.Core
     /// <summary>
     /// A shader resource view for <see cref="GorgonStructuredBuffer"/>.
     /// </summary>
-    public class GorgonStructuredBufferView
+    /// <remarks>
+    /// <para>
+    /// This is a generic view to allow a <see cref="GorgonStructuredBuffer"/> to be bound to the GPU pipeline as a structured buffer resource.
+    /// </para>
+    /// <para>
+    /// This type of view will allow shaders to access the data in the buffer by treating each data item as an "element".  The size of these elements is depends on the size of an individual "structure" in 
+    /// the buffer (this structure size defined by the <see cref="IGorgonStructuredBufferInfo"/> type).  Each element can be between 1-2048 bytes and will be aligned to a 4-byte boundary. 
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="GorgonStructuredBuffer"/>
+    public sealed class GorgonStructuredBufferView
         : GorgonBufferViewBase<GorgonStructuredBuffer>
     {
         #region Properties.

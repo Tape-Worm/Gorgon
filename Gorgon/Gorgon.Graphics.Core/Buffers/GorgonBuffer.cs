@@ -54,11 +54,6 @@ namespace Gorgon.Graphics.Core
         protected override D3D11.ResourceUsage Usage => _info.Usage;
 
         /// <summary>
-        /// Property to return the type of buffer.
-        /// </summary>
-        public override BufferType BufferType => BufferType.Generic;
-
-        /// <summary>
         /// Property to return the settings for the buffer.
         /// </summary>
         public IGorgonBufferInfo Info => _info;
@@ -249,6 +244,7 @@ namespace Gorgon.Graphics.Core
                 throw new ArgumentException(string.Format(Resources.GORGFX_BUFFER_SIZE_TOO_SMALL, 1));
             }
 
+            BufferType = BufferType.Generic;
             _info = new GorgonBufferInfo(info);
             Initialize(initialData);
         }
