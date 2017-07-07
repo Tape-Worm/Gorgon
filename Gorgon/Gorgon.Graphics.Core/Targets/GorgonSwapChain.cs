@@ -67,7 +67,6 @@ namespace Gorgon.Graphics.Core
 	/// </remarks>
 	/// <seealso cref="EnterFullScreen"/>
 	/// <seealso cref="ExitFullScreenModeOnFocusLoss"/>
-	/// <seealso cref="GorgonGraphics.IsDWMCompositionEnabled"/>
 	/// <seealso cref="GorgonGraphics.RenderTargets"/>
 	/// <seealso cref="GorgonGraphics.DepthStencilView"/>
 	/// <seealso cref="GorgonRenderTargetView"/>

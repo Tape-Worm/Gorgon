@@ -37,7 +37,20 @@ namespace Gorgon.Graphics.Core
     /// <summary>
     /// A shader resource view for a <see cref="GorgonBuffer"/>.
     /// </summary>
-    public class GorgonBufferView
+    /// <remarks>
+    /// <para>
+    /// This is a generic view to allow a <see cref="GorgonBuffer"/> to be bound to the GPU pipeline as a buffer resource.
+    /// </para>
+    /// <para>
+    /// Use a resource view to allow a shader access to the contents of a resource (or sub resource).  When the resource is created with a typeless format, this will allow the resource to be cast to any 
+    /// format within the same group.	
+    /// </para>
+    /// <para>
+    /// This type of view will allow shaders to access the data in the buffer by treating each data item as an "element".  The size of these elements depend on the view <see cref="Format"/>.  
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="GorgonBuffer"/>
+    public sealed class GorgonBufferView
         : GorgonBufferViewBase<GorgonBuffer>
     {
        #region Properties.

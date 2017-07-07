@@ -576,13 +576,13 @@ Please report this error by pasting the details to the bug tracker in Gorgon's g
   <data name="GORGFX_VIEW_RESOURCE_NOT_BUFFER" xml:space="preserve">
     <value>The resource attached to this view is not a {0} buffer.</value>
   </data>
-  <data name="GORGFX_VIEW_RESOURCE_NOT_DEPTHSTENCIL" xml:space="preserve">
+  <data name="GORGFX_ERR_VIEW_RESOURCE_NOT_DEPTHSTENCIL" xml:space="preserve">
     <value>The resource attached to this view is not a {0} depth/stencil buffer.</value>
   </data>
-  <data name="GORGFX_VIEW_RESOURCE_NOT_TARGET" xml:space="preserve">
+  <data name="GORGFX_ERR_VIEW_RESOURCE_NOT_TARGET" xml:space="preserve">
     <value>The resource attached to this view is not a {0} render target.</value>
   </data>
-  <data name="GORGFX_VIEW_RESOURCE_NOT_TEXTURE" xml:space="preserve">
+  <data name="GORGFX_ERR_VIEW_RESOURCE_NOT_TEXTURE" xml:space="preserve">
     <value>This resource attached to this view is not a {0} texture.</value>
   </data>
   <data name="GORGFX_ARG_OUT_OF_RANGE" xml:space="preserve">
@@ -858,5 +858,17 @@ The width must be a value between 1-{2}, and the height must be a value between 
   </data>
   <data name="GORGFX_ERR_BUFFER_IS_IMMUTABLE" xml:space="preserve">
     <value>Cannot update an immutable buffer.</value>
+  </data>
+  <data name="GORGFX_ERR_TEXTURE_VIEW_ARRAY_OUT_OF_RANGE" xml:space="preserve">
+    <value>The array index ({0}), and the count ({1}) are larger than the total number of array indices ({2}) in the texture.</value>
+  </data>
+  <data name="GORGFX_ERR_TEXTURE_VIEW_DEPTH_OUT_OF_RANGE" xml:space="preserve">
+    <value>The depth slice ({0}), and the slice count ({1}) are larger than the total depth ({2}) in the texture.</value>
+  </data>
+  <data name="GORGFX_ERR_TEXTURE_VIEW_MIP_OUT_OF_RANGE" xml:space="preserve">
+    <value>The first mip index ({0}), and the count ({1}) are larger than the total number of mip levels ({2}) in the texture.</value>
+  </data>
+  <data name="GORGFX_ERR_VIEW_DEPTH_STENCIL_NO_3D" xml:space="preserve">
+    <value>Depth/stencil views cannot be created for 3D texture types.</value>
   </data>
 </root>

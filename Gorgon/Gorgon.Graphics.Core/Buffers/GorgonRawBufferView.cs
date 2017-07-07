@@ -55,7 +55,21 @@ namespace Gorgon.Graphics.Core
     /// <summary>
     /// A shader resource view for a <see cref="GorgonRawBuffer"/>.
     /// </summary>
-    public class GorgonRawBufferView
+    /// <remarks>
+    /// <para>
+    /// This is a generic view to allow a <see cref="GorgonRawBuffer"/> to be bound to the GPU pipeline as a raw byte buffer resource.
+    /// </para>
+    /// <para>
+    /// Use a resource view to allow a shader access to the contents of a resource (or sub resource).  When the resource is created with a typeless format, this will allow the resource to be cast to any 
+    /// format within the same group.	
+    /// </para>
+    /// <para>
+    /// This type of view will allow shaders to access the data in the buffer by treating each data item as an "element".  The size of these elements is always 4 bytes and can be interpreted as a specific 
+    /// type of data (signed integer, unsigned integer, and single floating point precision) which is defined via the <see cref="RawBufferElementType"/> enumeration. 
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="GorgonRawBuffer"/>
+    public sealed class GorgonRawBufferView
         : GorgonBufferViewBase<GorgonRawBuffer>
     {
         #region Properties.

@@ -27,8 +27,8 @@
 using System;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
-using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Core.Properties;
+using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D;
@@ -49,7 +49,7 @@ namespace Gorgon.Graphics.Core
 	/// format within the same group.	
 	/// </para>
 	/// </remarks>
-	public sealed class GorgonTextureShaderView
+	public sealed class GorgonTextureView
 		: GorgonShaderResourceView
     {
         #region Variables.
@@ -59,30 +59,6 @@ namespace Gorgon.Graphics.Core
 
         #region Properties.
 		/// <summary>
-		/// Property to return the texture bound with this view.
-		/// </summary>
-		public GorgonTexture Texture
-		{
-			get;
-		}
-
-		/// <summary>
-		/// Property to return the format for this view.
-		/// </summary>
-		public DXGI.Format Format
-		{
-			get;
-		}
-
-		/// <summary>
-		/// Property to return the format information for the <see cref="Format"/> of this view.
-		/// </summary>
-		public GorgonFormatInfo FormatInformation
-		{
-			get;
-		}
-
-		/// <summary>
 		/// Property to return the index of the first mip map in the resource to view.
 		/// </summary>
 		/// <remarks>
@@ -91,6 +67,7 @@ namespace Gorgon.Graphics.Core
 		public int MipSlice
 		{
 			get;
+		    private set;
 		}
 
 		/// <summary>
@@ -102,6 +79,7 @@ namespace Gorgon.Graphics.Core
 		public int MipCount
 		{
 			get;
+		    private set;
 		}
 
 		/// <summary>
@@ -113,6 +91,7 @@ namespace Gorgon.Graphics.Core
 		public int ArrayIndex
 		{
 			get;
+		    private set;
 		}
 
 		/// <summary>
@@ -129,26 +108,88 @@ namespace Gorgon.Graphics.Core
 		public int ArrayCount
 		{
 			get;
+            private set;
 		}
 
-		/// <summary>
-		/// Property to return whether the texture is a texture cube or not.
-		/// </summary>
-		/// <remarks>
-		/// This value is always <b>false</b> for a 1D or 3D <see cref="GorgonTexture"/>.
-		/// </remarks>
-		public bool IsCube
-	    {
-	        get;
-	    }
-		#endregion
+        /// <summary>
+        /// Property to return whether the texture is a texture cube or not.
+        /// </summary>
+        /// <remarks>
+        /// This value is always <b>false</b> for a 1D or 3D <see cref="GorgonTexture"/>.
+        /// </remarks>
+        public bool IsCubeMap => Texture.Info.IsCubeMap;
 
-		#region Methods.
-		/// <summary>
-		/// Function to retrieve the view description for a 1D texture.
-		/// </summary>
-		/// <returns>The shader view description.</returns>
-		private D3D11.ShaderResourceViewDescription GetDesc1D()
+        /// <summary>
+        /// Property to return the texture that is bound to this view.
+        /// </summary>
+        public GorgonTexture Texture
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the format used to interpret this view.
+        /// </summary>
+        public DXGI.Format Format
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return information about the <see cref="Format"/> used by this view.
+        /// </summary>
+        public GorgonFormatInfo FormatInformation
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the bounding rectangle for the view.
+        /// </summary>
+        /// <remarks>
+        /// This value is the full bounding rectangle of the first mip map level for the texture associated with the render target.
+        /// </remarks>
+        public DX.Rectangle Bounds
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the type of texture bound to this view.
+        /// </summary>
+        public TextureType TextureType => Texture.Info.TextureType;
+
+        /// <summary>
+        /// Property to return the width of the texture in pixels.
+        /// </summary>
+        /// <remarks>
+        /// This value is the full width of the first mip map level for the texture associated with the view.
+        /// </remarks>
+        public int Width => Texture.Info.Width;
+
+        /// <summary>
+        /// Property to return the height of the texture in pixels.
+        /// </summary>
+        /// <remarks>
+        /// This value is the full height of the first mip map level for the texture associated with the view.
+        /// </remarks>
+        public int Height => Texture.Info.Height;
+
+        /// <summary>
+        /// Property to return the depth of the texture in pixels.
+        /// </summary>
+        /// <remarks>
+        /// This value is the full depth of the first mip map level for the texture associated with the view.
+        /// </remarks>
+        public int Depth => Texture.Info.Depth;
+        #endregion
+
+        #region Methods.
+        /// <summary>
+        /// Function to retrieve the view description for a 1D texture.
+        /// </summary>
+        /// <returns>The shader view description.</returns>
+        private D3D11.ShaderResourceViewDescription GetDesc1D()
 		{
 			return new D3D11.ShaderResourceViewDescription
 			       {
@@ -192,6 +233,9 @@ namespace Gorgon.Graphics.Core
 					       }
 				       };
 			}
+
+		    MipSlice = 0;
+		    MipCount = 1;
 
 			return new D3D11.ShaderResourceViewDescription
 			       {
@@ -250,6 +294,8 @@ namespace Gorgon.Graphics.Core
 		/// <returns>The shader view description.</returns>
 		private D3D11.ShaderResourceViewDescription GetDesc3D()
 		{
+		    ArrayIndex = 0;
+		    ArrayCount = 1;
 			return new D3D11.ShaderResourceViewDescription
 			       {
 				       Format = Format,
@@ -265,7 +311,7 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Function to initialize the shader resource view.
 		/// </summary>
-		private void Initialize()
+		internal void CreateNativeView()
 		{
 			D3D11.ShaderResourceViewDescription desc;
 			
@@ -278,7 +324,7 @@ namespace Gorgon.Graphics.Core
 					desc = GetDesc1D();
 					break;
 				case ResourceType.Texture2D:
-					desc = IsCube ? GetDesc2DCube() : GetDesc2D();
+					desc = IsCubeMap ? GetDesc2DCube() : GetDesc2D();
 					break;
 				case ResourceType.Texture3D:
 					desc = GetDesc3D();
@@ -310,10 +356,46 @@ namespace Gorgon.Graphics.Core
 			}
 		}
 
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		public override void Dispose()
+
+        /// <summary>
+        /// Function to return the width of the render target at the current <see cref="MipSlice"/> in pixels.
+        /// </summary>
+        /// <param name="mipLevel">The mip level to evaluate.</param>
+        /// <returns>The width of the mip map level assigned to <see cref="MipSlice"/> for the texture associated with the render target.</returns>
+        public int GetMipWidth(int mipLevel)
+        {
+            mipLevel = mipLevel.Min(MipCount + MipSlice).Max(MipSlice);
+            return Width << mipLevel;
+        }
+
+        /// <summary>
+        /// Function to return the height of the render target at the current <see cref="MipSlice"/> in pixels.
+        /// </summary>
+        /// <param name="mipLevel">The mip level to evaluate.</param>
+        /// <returns>The height of the mip map level assigned to <see cref="MipSlice"/> for the texture associated with the render target.</returns>
+        public int GetMipHeight(int mipLevel)
+        {
+            mipLevel = mipLevel.Min(MipCount + MipSlice).Max(MipSlice);
+
+            return Height << mipLevel;
+        }
+
+        /// <summary>
+        /// Function to return the depth of the render target at the current <see cref="MipSlice"/> in pixels.
+        /// </summary>
+        /// <param name="mipLevel">The mip level to evaluate.</param>
+        /// <returns>The depth of the mip map level assigned to the <see cref="MipSlice"/> for the texture associated with the render target.</returns>
+        public int GetMipDepth(int mipLevel)
+        {
+            mipLevel = mipLevel.Min(MipCount + MipSlice).Max(MipSlice);
+
+            return Depth << mipLevel;
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public override void Dispose()
 		{
 			if (NativeView != null)
 			{
@@ -326,102 +408,67 @@ namespace Gorgon.Graphics.Core
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonTextureShaderView"/> class.
+		/// Initializes a new instance of the <see cref="GorgonTextureView"/> class.
 		/// </summary>
 		/// <param name="texture">The <see cref="GorgonTexture"/> being viewed.</param>
-		/// <param name="format">[Optional] The format for the view..</param>
-		/// <param name="firstMipLevel">[Optional] The first mip level to view.</param>
-		/// <param name="mipCount">[Optional] The number of mip levels to view.</param>
-		/// <param name="arrayIndex">[Optional] For a 1D or 2D <see cref="GorgonTexture"/>, this will be the first array index to view.</param>
-		/// <param name="arrayCount">[Optional] For a 1D or 2D <see cref="GorgonTexture"/>, this will be the number of array indices to view.</param>
-		/// <param name="log">[Optional] The log used for debugging.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="texture"/> is <b>null</b>.</exception>
-		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="texture"/> does not have a <see cref="TextureBinding"/> of <see cref="TextureBinding.ShaderResource"/>.
-		/// <para>-or-</para>
-		/// <para>Thrown when the <paramref name="texture"/> has a usage of <c>Staging</c>.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when the <paramref name="format"/> is typeless or cannot be determined from the <paramref name="texture"/>, or the <paramref name="format"/> is not in the same group as the <paramref name="texture"/> format.</para>
-		/// </exception>
-		/// <exception cref="GorgonException">Thrown when the <paramref name="texture"/> is a 2D cube texture, but is multiple sampled, or the <paramref name="arrayCount"/> is not a multiple of 6.</exception>
-		/// <remarks>
-		/// <para>
-		/// This will create a view that makes a texture accessible to shaders. This allows viewing of the texture data in a different format, or even a subsection of the texture from within the shader.
-		/// </para>
-		/// <para>
-		/// The <paramref name="format"/> parameter is used present the texture data as another format type to the shader. If this value is left at the default of <c>Unknown</c>, then the format from the 
-		/// <paramref name="texture"/> is used. The <paramref name="format"/> must be castable to the format supplied with <paramref name="texture"/>. If it is not, an exception will be thrown.
-		/// </para>
-		/// <para>
-		/// The <paramref name="firstMipLevel"/> and <paramref name="mipCount"/> parameters define the starting mip level and the number of mip levels to allow access to within the shader. If these values fall 
-		/// outside of the range of available mip levels, then they will be clipped to the upper and lower bounds of the mip chain. If these values are left at 0, then all mip levels will be accessible.
-		/// </para>
-		/// <para>
-		/// The <paramref name="arrayIndex"/> and <paramref name="arrayCount"/> parameters define the starting array index and the number of array indices to allow access to within the shader. If these values 
-		/// fall outside of the range of available array indices, then they will be clipped to the upper and lower bounds of the array. If these values are left at 0, then all array indices will be accessible.
-		/// </para>
-		/// </remarks>
-		public GorgonTextureShaderView(GorgonTexture texture,
-		                               DXGI.Format format = DXGI.Format.Unknown,
-		                               int firstMipLevel = 0,
-		                               int mipCount = 0,
-		                               int arrayIndex = 0,
-		                               int arrayCount = 0,
-									   IGorgonLog log = null)
+		/// <param name="format">The format for the view..</param>
+		/// <param name="firstMipLevel">The first mip level to view.</param>
+		/// <param name="mipCount">The number of mip levels to view.</param>
+		/// <param name="arrayIndex">For a 1D or 2D <see cref="GorgonTexture"/>, this will be the first array index to view.</param>
+		/// <param name="arrayCount">For a 1D or 2D <see cref="GorgonTexture"/>, this will be the number of array indices to view.</param>
+		/// <param name="log">The log used for debugging.</param>
+		internal GorgonTextureView(GorgonTexture texture,
+		                           DXGI.Format format,
+		                           int firstMipLevel,
+		                           int mipCount,
+		                           int arrayIndex,
+		                           int arrayCount,
+								   IGorgonLog log)
             : base(texture)
 		{
-			_log = log ?? GorgonLogDummy.DefaultInstance;
-			Texture = texture ?? throw new ArgumentNullException(nameof(texture));
+            _log = log ?? GorgonLogDummy.DefaultInstance;
+		    Texture = texture;
 
-			if ((Texture.Info.Usage == D3D11.ResourceUsage.Staging) 
-				|| ((Texture.Info.Binding & TextureBinding.ShaderResource) != TextureBinding.ShaderResource))
+		    if (format == DXGI.Format.Unknown)
+		    {
+		        format = texture.Info.Format;
+		    }
+
+            if ((texture.Info.Usage == D3D11.ResourceUsage.Staging) 
+				|| ((texture.Info.Binding & TextureBinding.ShaderResource) != TextureBinding.ShaderResource))
 			{
 				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TEXTURE_NOT_SHADER_RESOURCE, texture.Name), nameof(texture));
 			}
 
-			Format = format == DXGI.Format.Unknown ? Texture.Info.Format : format;
+		    if (format == DXGI.Format.Unknown)
+		    {
+		        throw new ArgumentException(string.Format(Resources.GORGFX_ERR_VIEW_UNKNOWN_FORMAT, DXGI.Format.Unknown), nameof(texture));
+		    }
 
-			if (Format == DXGI.Format.Unknown)
-			{
-				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_VIEW_UNKNOWN_FORMAT, Format), nameof(texture));
-			}
+		    if (firstMipLevel + mipCount > texture.Info.MipLevels)
+		    {
+		        throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TEXTURE_VIEW_MIP_OUT_OF_RANGE, firstMipLevel, mipCount, texture.Info.MipLevels));
+		    }
 
-			FormatInformation = new GorgonFormatInfo(Format);
+            // Arrays only apply to 1D/2D textures.
+		    if ((texture.Info.TextureType != TextureType.Texture3D) && (arrayIndex + arrayCount > texture.Info.ArrayCount))
+		    {
+		        throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TEXTURE_VIEW_ARRAY_OUT_OF_RANGE, arrayIndex, arrayCount, texture.Info.ArrayCount));
+            }
 
-			if (FormatInformation.IsTypeless)
-			{
-				throw new ArgumentException(Resources.GORGFX_ERR_VIEW_NO_TYPELESS, nameof(texture));
-			}
+		    FormatInformation = new GorgonFormatInfo(Format);
 
+		    if (FormatInformation.IsTypeless)
+		    {
+		        throw new ArgumentException(Resources.GORGFX_ERR_VIEW_NO_TYPELESS, nameof(format));
+		    }
 
-			if ((Texture.Info.Format != format) && (FormatInformation.Group != Texture.FormatInformation.Group))
-			{
-				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_VIEW_FORMAT_GROUP_INVALID,
-				                                          Texture.Info.Format,
-				                                          Format),
-				                            nameof(texture));
-			}
-
-			MipSlice = Texture.Info.MipLevels <= 0 ? 0 : firstMipLevel.Max(0).Min(Texture.Info.MipLevels - 1);
-
-			if (mipCount <= 0)
-			{
-				mipCount = Texture.Info.MipLevels;
-			}
-
-			MipCount = Texture.Info.MipLevels <= 0 ? 1 : mipCount.Max(1).Min(mipCount - MipSlice);
-
-			ArrayIndex = arrayIndex.Max(0).Min(Texture.Info.ArrayCount - 1);
-
-			if (arrayCount == 0)
-			{
-				arrayCount = Texture.Info.ArrayCount;
-			}
-
-			ArrayCount = arrayCount.Min(arrayCount - ArrayIndex).Max(1);
-
-			IsCube = Texture.Info.IsCubeMap;
-
-			Initialize();
+		    Format = format;
+		    Bounds = new DX.Rectangle(0, 0, Width, Height);
+            MipSlice = firstMipLevel;
+		    MipCount = mipCount;
+		    ArrayIndex = arrayIndex;
+		    ArrayCount = arrayCount;
 		}
 		#endregion
 	}

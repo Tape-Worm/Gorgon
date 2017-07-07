@@ -77,9 +77,8 @@ namespace Gorgon.Graphics.Core
         /// <returns>The shader resource view for the buffer, or <b>null</b> if no resource view is registered.</returns>
         internal GorgonShaderResourceView GetView(BufferShaderViewKey key)
         {
-            GorgonShaderResourceView view;
 
-            return _shaderViews.TryGetValue(key, out view) ? view : null;
+            return _shaderViews.TryGetValue(key, out GorgonShaderResourceView view) ? view : null;
         }
 
         /// <summary>

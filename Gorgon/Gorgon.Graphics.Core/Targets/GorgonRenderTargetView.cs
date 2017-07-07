@@ -32,7 +32,8 @@ using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
 using DX = SharpDX;
 using DXGI = SharpDX.DXGI;
-using D3D = SharpDX.Direct3D11;
+using D3D = SharpDX.Direct3D;
+using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
 {
@@ -41,13 +42,15 @@ namespace Gorgon.Graphics.Core
 	/// </summary>
 	/// <remarks>
 	/// <para>
-	/// A render target view allows a render target (such as a <see cref="GorgonSwapChain"/>) to be bound to the GPU pipeline as a render target resource.
+	/// A render target view allows a render target (such as a <see cref="GorgonSwapChain"/> or <see cref="GorgonTexture"/>) to be bound to the GPU pipeline as a render target resource.
 	/// </para>
 	/// <para>
 	/// The view can bind the entire resource, or a sub section of the resource as required. It will also allow for casting of the format to allow for reinterpreting the data stored within the the render 
 	/// target. 
 	/// </para>
 	/// </remarks>
+	/// <seealso cref="GorgonSwapChain"/>
+	/// <seealso cref="GorgonTexture"/>
 	public sealed class GorgonRenderTargetView
 		: IDisposable
     {
@@ -60,7 +63,7 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Property to return the render target view.
 		/// </summary>
-		internal D3D.RenderTargetView D3DRenderTargetView
+		internal D3D11.RenderTargetView D3DRenderTargetView
 		{
 			get;
 			set;
@@ -119,10 +122,15 @@ namespace Gorgon.Graphics.Core
         /// Property to return the first array index or depth slice to use in the view.
         /// </summary>
         /// <remarks>For a 1D/2D render target, this value indicates an array index.  For a 3D render target, this value indicates a depth slice.</remarks>
-        public int FirstArrayOrDepthIndex
+        public int ArrayOrDepthIndex
         {
             get;
         }
+
+        /// <summary>
+        /// Property to return the type of texture bound to this view.
+        /// </summary>
+        public TextureType TextureType => Texture.Info.TextureType;
 
         /// <summary>
         /// Property to return the width of the render target in pixels.
@@ -130,11 +138,7 @@ namespace Gorgon.Graphics.Core
         /// <remarks>
         /// This value is the full width of the first mip map level for the texture associated with the render target.
         /// </remarks>
-        public int Width
-        {
-            get;
-            private set;
-        }
+        public int Width => Texture.Info.Width;
 
         /// <summary>
         /// Property to return the height of the render target in pixels.
@@ -142,11 +146,12 @@ namespace Gorgon.Graphics.Core
         /// <remarks>
         /// This value is the full width of the first mip map level for the texture associated with the render target.
         /// </remarks>
-        public int Height
-        {
-            get;
-            private set;
-        }
+        public int Height => Texture.Info.Height;
+
+        /// <summary>
+        /// Property to return the depth for the render target.
+        /// </summary>
+        public int Depth => Texture.Info.Depth;
 
         /// <summary>
         /// Property to return the width of the render target at the current <see cref="MipSlice"/> in pixels.
@@ -173,9 +178,16 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Property to return the number of mip map levels for the render target.
+        /// Property to return the depth of the render target at the current <see cref="MipSlice"/> in pixels.
         /// </summary>
-        public int MipLevels => Texture.Info.MipLevels;
+        /// <remarks>
+        /// This value is the depth of the mip map level assigned to the <see cref="MipSlice"/> for the texture associated with the render target.
+        /// </remarks>
+        public int MipDepth
+        {
+            get;
+            private set;
+        }
 
         /// <summary>
         /// Property to return the bounding rectangle for the render target view.
@@ -195,28 +207,28 @@ namespace Gorgon.Graphics.Core
         /// Function to retrieve the view description.
         /// </summary>
         /// <returns>The view description.</returns>
-        private D3D.RenderTargetViewDescription GetDesc1D()
+        private D3D11.RenderTargetViewDescription GetDesc1D()
         {
             // Set up for arrayed and multisampled texture.
             if (ArrayOrDepthCount > 1)
             {
-                return new D3D.RenderTargetViewDescription
+                return new D3D11.RenderTargetViewDescription
                 {
                     Format = Format,
-                    Dimension = D3D.RenderTargetViewDimension.Texture1DArray,
+                    Dimension = D3D11.RenderTargetViewDimension.Texture1DArray,
                     Texture1DArray =
                     {
                         MipSlice = MipSlice,
-                        FirstArraySlice = FirstArrayOrDepthIndex,
+                        FirstArraySlice = ArrayOrDepthIndex,
                         ArraySize = ArrayOrDepthCount
                     }
                 };
             }
 
-            return new D3D.RenderTargetViewDescription
+            return new D3D11.RenderTargetViewDescription
             {
                 Format = Format,
-                Dimension = D3D.RenderTargetViewDimension.Texture1D,
+                Dimension = D3D11.RenderTargetViewDimension.Texture1D,
                 Texture1D =
                 {
                     MipSlice = MipSlice
@@ -229,32 +241,32 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="isMultisampled"><b>true</b> if the texture is multisampled, <b>false</b> if not.</param>
         /// <returns>The view description.</returns>
-        private D3D.RenderTargetViewDescription GetDesc2D(bool isMultisampled)
+        private D3D11.RenderTargetViewDescription GetDesc2D(bool isMultisampled)
         {
             // Set up for arrayed and multisampled texture.
             if (ArrayOrDepthCount > 1)
             {
-                return new D3D.RenderTargetViewDescription
+                return new D3D11.RenderTargetViewDescription
                 {
                     Format = Format,
                     Dimension = isMultisampled
-                        ? D3D.RenderTargetViewDimension.Texture2DMultisampledArray
-                        : D3D.RenderTargetViewDimension.Texture2DArray,
+                        ? D3D11.RenderTargetViewDimension.Texture2DMultisampledArray
+                        : D3D11.RenderTargetViewDimension.Texture2DArray,
                     Texture2DArray =
                     {
-                        MipSlice = isMultisampled ? FirstArrayOrDepthIndex : MipSlice,
-                        FirstArraySlice = isMultisampled ? ArrayOrDepthCount : FirstArrayOrDepthIndex,
+                        MipSlice = isMultisampled ? ArrayOrDepthIndex : MipSlice,
+                        FirstArraySlice = isMultisampled ? ArrayOrDepthCount : ArrayOrDepthIndex,
                         ArraySize = isMultisampled ? 0 : ArrayOrDepthCount
                     }
                 };
             }
 
-            return new D3D.RenderTargetViewDescription
+            return new D3D11.RenderTargetViewDescription
             {
                 Format = Format,
                 Dimension = isMultisampled
-                    ? D3D.RenderTargetViewDimension.Texture2DMultisampled
-                    : D3D.RenderTargetViewDimension.Texture2D,
+                    ? D3D11.RenderTargetViewDimension.Texture2DMultisampled
+                    : D3D11.RenderTargetViewDimension.Texture2D,
                 Texture2D =
                 {
                     MipSlice = isMultisampled ? 0 : MipSlice
@@ -266,16 +278,16 @@ namespace Gorgon.Graphics.Core
         /// Function to retrieve the view description.
         /// </summary>
         /// <returns>The view description.</returns>
-        private D3D.RenderTargetViewDescription GetDesc3D()
+        private D3D11.RenderTargetViewDescription GetDesc3D()
         {
-            return new D3D.RenderTargetViewDescription
+            return new D3D11.RenderTargetViewDescription
             {
                 Format = Format,
-                Dimension = D3D.RenderTargetViewDimension.Texture3D,
+                Dimension = D3D11.RenderTargetViewDimension.Texture3D,
                 Texture3D =
                 {
                     MipSlice = MipSlice,
-                    FirstDepthSlice = FirstArrayOrDepthIndex,
+                    FirstDepthSlice = ArrayOrDepthIndex,
                     DepthSliceCount = ArrayOrDepthCount
                 }
             };
@@ -284,14 +296,13 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Function to perform initialization of the view.
         /// </summary>
-        /// <param name="isMultisampled"><b>true</b> if the texture is multisampled, <b>false</b> if not.</param>
-        private void Initialize(bool isMultisampled)
+        internal void CreateNativeView()
         {
-            D3D.RenderTargetViewDescription desc = default(D3D.RenderTargetViewDescription);
+            D3D11.RenderTargetViewDescription desc = default(D3D11.RenderTargetViewDescription);
 
 			_log.Print($"Render Target View '{Texture.Name}': Creating D3D11 render target view.", LoggingLevel.Simple);
 
-			desc.Dimension = D3D.RenderTargetViewDimension.Unknown;
+			desc.Dimension = D3D11.RenderTargetViewDimension.Unknown;
 
             switch (Texture.ResourceType)
             {
@@ -299,29 +310,28 @@ namespace Gorgon.Graphics.Core
                     desc = GetDesc1D();
                     break;
                 case ResourceType.Texture2D:
-                    desc = GetDesc2D(isMultisampled);
+                    desc = GetDesc2D(!Texture.Info.MultisampleInfo.Equals(GorgonMultisampleInfo.NoMultiSampling));
                     break;
                 case ResourceType.Texture3D:
                     desc = GetDesc3D();
                     break;
             }
 
-			if (desc.Dimension == D3D.RenderTargetViewDimension.Unknown)
+			if (desc.Dimension == D3D11.RenderTargetViewDimension.Unknown)
             {
                 throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_VIEW_CANNOT_BIND_UNKNOWN_RESOURCE);
             }
-
-            Width = Texture.Info.Width;
-            Height = Texture.Info.Height;
+            
             MipWidth = (Width >> MipSlice).Max(1);
             MipHeight = (Height >> MipSlice).Max(1);
+            MipDepth = (Depth >> MipSlice).Max(1);
             
             Bounds = new DX.Rectangle(0, 0, Width, Height);
 
-	        _log.Print($"Render Target View '{Texture.Name}': {Texture.ResourceType} -> Mip slice: {MipSlice}, Array/Depth Index: {FirstArrayOrDepthIndex}, Array/Depth Count: {ArrayOrDepthCount}",
+	        _log.Print($"Render Target View '{Texture.Name}': {Texture.ResourceType} -> Mip slice: {MipSlice}, Array/Depth Index: {ArrayOrDepthIndex}, Array/Depth Count: {ArrayOrDepthCount}",
 	                   LoggingLevel.Verbose);
 
-	        D3DRenderTargetView = new D3D.RenderTargetView(Texture.Graphics.VideoDevice.D3DDevice(), Texture.D3DResource, desc)
+	        D3DRenderTargetView = new D3D11.RenderTargetView(Texture.Graphics.VideoDevice.D3DDevice(), Texture.D3DResource, desc)
 	                              {
 		                              DebugName = $"'{Texture.Name}': D3D 11 Render target view"
 	                              };
@@ -366,33 +376,50 @@ namespace Gorgon.Graphics.Core
         /// Initializes a new instance of the <see cref="GorgonRenderTargetView"/> class.
         /// </summary>
         /// <param name="texture">The render target texture to bind.</param>
-        /// <param name="format">[Optional] The format of the render target view.</param>
-        /// <param name="mipSlice">[Optional] The mip slice to use in the view.</param>
-        /// <param name="arrayOrDepthIndex">[Optional] The first array index to use in the view.</param>
-        /// <param name="arrayOrDepthCount">[Optional] The number of array indices to use in the view.</param>
-        /// <param name="log">[Optional] Logging interface for debugging.</param>
-        public GorgonRenderTargetView(GorgonTexture texture, DXGI.Format format = DXGI.Format.Unknown, int mipSlice = 0, int arrayOrDepthIndex = 0, int arrayOrDepthCount = 0, IGorgonLog log = null)
+        /// <param name="format">The format of the render target view.</param>
+        /// <param name="mipSlice">The mip slice to use in the view.</param>
+        /// <param name="arrayOrDepthIndex">The first array index to use in the view.</param>
+        /// <param name="arrayOrDepthCount">The number of array indices to use in the view.</param>
+        /// <param name="log">Logging interface for debugging.</param>
+        internal GorgonRenderTargetView(GorgonTexture texture, DXGI.Format format, int mipSlice, int arrayOrDepthIndex, int arrayOrDepthCount, IGorgonLog log)
         {
 	        _log = log ?? GorgonLogDummy.DefaultInstance;
+            Texture = texture;
 
-			if (texture == null)
-	        {
-		        throw new ArgumentNullException(nameof(texture));
-	        }
+            if (format == DXGI.Format.Unknown)
+            {
+                format = texture.Info.Format;
+            }
 
-	        if ((texture.Info.Binding & TextureBinding.RenderTarget) != TextureBinding.RenderTarget)
+            if ((texture.Info.Binding & TextureBinding.RenderTarget) != TextureBinding.RenderTarget)
 	        {
 		        throw new ArgumentException(string.Format(Resources.GORGFX_ERR_RESOURCE_IS_NOT_RENDERTARGET, texture.Name), nameof(texture));
 	        }
-			
-	        Texture = texture;
 
-	        if (format == DXGI.Format.Unknown)
-	        {
-		        format = texture.Info.Format;
-	        }
-			
-			FormatInformation = new GorgonFormatInfo(Format);
+            // Arrays only apply to 1D/2D textures.
+            if (texture.Info.TextureType != TextureType.Texture3D)
+            {
+                if (arrayOrDepthIndex + arrayOrDepthCount > texture.Info.ArrayCount)
+                {
+                    throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TEXTURE_VIEW_ARRAY_OUT_OF_RANGE,
+                                                              arrayOrDepthIndex,
+                                                              arrayOrDepthCount,
+                                                              texture.Info.ArrayCount));
+                }
+            }
+            else
+            {
+                if (arrayOrDepthIndex + arrayOrDepthCount > texture.Info.Depth)
+                {
+                    throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TEXTURE_VIEW_DEPTH_OUT_OF_RANGE,
+                                                              arrayOrDepthIndex,
+                                                              arrayOrDepthCount,
+                                                              texture.Info.Depth));
+                }
+            }
+           
+
+            FormatInformation = new GorgonFormatInfo(Format);
 
 	        if (FormatInformation.IsTypeless)
 	        {
@@ -400,17 +427,13 @@ namespace Gorgon.Graphics.Core
 			}
 
             Format = format;
-			MipSlice = texture.Info.MipLevels <= 0 ? 0 : mipSlice.Max(0).Min(texture.Info.MipLevels - 1);
-            FirstArrayOrDepthIndex = arrayOrDepthIndex.Max(0).Min(texture.Info.ArrayCount - 1);
-
-	        if (arrayOrDepthCount == 0)
-	        {
-		        arrayOrDepthCount = texture.Info.TextureType == TextureType.Texture3D ? texture.Info.Depth : texture.Info.ArrayCount;
-	        }
-			
-            ArrayOrDepthCount = arrayOrDepthCount.Min(arrayOrDepthCount - FirstArrayOrDepthIndex).Max(1);
-
-			Initialize(!texture.Info.MultisampleInfo.Equals(GorgonMultisampleInfo.NoMultiSampling));
+            MipSlice = mipSlice;
+            ArrayOrDepthIndex = arrayOrDepthIndex;
+            ArrayOrDepthCount = arrayOrDepthCount;
+            MipWidth = (Width << MipSlice).Max(1);
+            MipHeight = (Height << MipSlice).Max(1);
+            MipDepth = (Depth << MipSlice).Max(1);
+            Bounds = new DX.Rectangle(0, 0, Width, Height);
         }
         #endregion
     }

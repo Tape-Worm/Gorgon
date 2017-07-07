@@ -101,11 +101,6 @@ namespace Gorgon.Graphics.Core
 		public IGorgonIndexBufferInfo Info => _info;
 
 		/// <summary>
-		/// Property to return the type of buffer.
-		/// </summary>
-		public override BufferType BufferType => BufferType.Index;
-
-		/// <summary>
 		/// Property to return whether this index buffer is locked for reading/writing or not.
 		/// </summary>
 		public bool IsLocked
@@ -572,6 +567,8 @@ namespace Gorgon.Graphics.Core
 				throw new ArgumentNullException(nameof(info));
 			}
 
+            BufferType = BufferType.Index;
+		    
 			_info = new GorgonIndexBufferInfo(info);
 			_indexSize = _info.Use16BitIndices ? sizeof(ushort) : sizeof(uint);
 

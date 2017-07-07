@@ -48,8 +48,14 @@ namespace Gorgon.Graphics.Core
 		#region Variables.
 		// The ID number of the texture.
 		private static int _textureID;
+        // The list of cached texture shader resource views.
+	    private readonly Dictionary<TextureViewKey, GorgonTextureView> _cachedSrvs = new Dictionary<TextureViewKey, GorgonTextureView>();
+        // The list of cached render target resource views.
+        private readonly Dictionary<TextureViewKey, GorgonRenderTargetView> _cachedRtvs = new Dictionary<TextureViewKey, GorgonRenderTargetView>();
+	    // The list of cached depth/stencil resource views.
+	    private readonly Dictionary<TextureViewKey, GorgonDepthStencilView> _cachedDsvs = new Dictionary<TextureViewKey, GorgonDepthStencilView>();
 		// The logging interface used for debug logging.
-		private readonly IGorgonLog _log;
+        private readonly IGorgonLog _log;
 		// The information used to create the texture.
 		private readonly GorgonTextureInfo _info;
 		// The texture lock cache.
@@ -120,7 +126,7 @@ namespace Gorgon.Graphics.Core
 		/// <remarks>
 		/// If the <see cref="IGorgonTextureInfo.Binding"/> property does not have a flag of <see cref="TextureBinding.ShaderResource"/>, then this value will return <b>null</b>.
 		/// </remarks>
-		public GorgonTextureShaderView DefaultShaderResourceView
+		public GorgonTextureView DefaultShaderResourceView
 		{
 			get;
 			private set;
@@ -607,44 +613,40 @@ namespace Gorgon.Graphics.Core
 					{
 						case DXGI.Format.R32G8X24_Typeless:
 							// We'll only default to the depth portion of the view, we'd need to create a separate view to read the stencil component.
-							DefaultShaderResourceView = new GorgonTextureShaderView(this, DXGI.Format.R32_Float_X8X24_Typeless, 0, 0, 0, 0, _log);
-							DefaultDepthStencilView = new GorgonDepthStencilView(this, DXGI.Format.D32_Float_S8X24_UInt, 0, 0, 0, D3D11.DepthStencilViewFlags.ReadOnlyDepth, _log);
+							DefaultShaderResourceView = GetShaderResourceView(DXGI.Format.R32_Float_X8X24_Typeless);
+							DefaultDepthStencilView = GetDepthStencilView(DXGI.Format.D32_Float_S8X24_UInt, 0, 0, 0, D3D11.DepthStencilViewFlags.ReadOnlyDepth);
 							break;
 						case DXGI.Format.R24G8_Typeless:
 							// We'll only default to the depth portion of the view, we'd need to create a separate view to read the stencil component.
-							DefaultShaderResourceView = new GorgonTextureShaderView(this, DXGI.Format.R24_UNorm_X8_Typeless, 0, 0, 0, 0, _log);
-							DefaultDepthStencilView = new GorgonDepthStencilView(this, DXGI.Format.D24_UNorm_S8_UInt, 0, 0, 0, D3D11.DepthStencilViewFlags.ReadOnlyDepth, _log);
+							DefaultShaderResourceView = GetShaderResourceView(DXGI.Format.R24_UNorm_X8_Typeless);
+							DefaultDepthStencilView = GetDepthStencilView(DXGI.Format.D24_UNorm_S8_UInt, 0, 0, 0, D3D11.DepthStencilViewFlags.ReadOnlyDepth);
 							break;
 						case DXGI.Format.R16_Typeless:
-							DefaultShaderResourceView = new GorgonTextureShaderView(this, DXGI.Format.R16_Float, 0, 0, 0, 0, _log);
-							DefaultDepthStencilView = new GorgonDepthStencilView(this, DXGI.Format.D16_UNorm, 0, 0, 0, D3D11.DepthStencilViewFlags.ReadOnlyDepth, _log);
+							DefaultShaderResourceView = GetShaderResourceView(DXGI.Format.R16_Float);
+							DefaultDepthStencilView = GetDepthStencilView(DXGI.Format.D16_UNorm, 0, 0, 0, D3D11.DepthStencilViewFlags.ReadOnlyDepth);
 							break;
 						case DXGI.Format.R32_Typeless:
-							DefaultShaderResourceView = new GorgonTextureShaderView(this, DXGI.Format.R32_Float);
-							DefaultDepthStencilView = new GorgonDepthStencilView(this, DXGI.Format.D32_Float, 0, 0, 0, D3D11.DepthStencilViewFlags.ReadOnlyDepth, _log);
+							DefaultShaderResourceView = GetShaderResourceView(DXGI.Format.R32_Float);
+							DefaultDepthStencilView = GetDepthStencilView(DXGI.Format.D32_Float, 0, 0, 0, D3D11.DepthStencilViewFlags.ReadOnlyDepth);
 							break;
 					}
 					return;
 				}
 
-				DefaultShaderResourceView = new GorgonTextureShaderView(this, Info.Format, 0, 0, 0, 0, _log);
+				DefaultShaderResourceView = GetShaderResourceView(Info.Format);
 			}
 
 			// Create the default depth/stencil view.
 			if ((Info.Binding & TextureBinding.DepthStencil) == TextureBinding.DepthStencil)
 			{
-				DefaultDepthStencilView = new GorgonDepthStencilView(this,
-				                                                     Info.Format,
-				                                                     0,
-				                                                     0,
-				                                                     Info.ArrayCount,
-				                                                     D3D11.DepthStencilViewFlags.ReadOnlyDepth | D3D11.DepthStencilViewFlags.ReadOnlyStencil,
-				                                                     _log);
+				DefaultDepthStencilView = GetDepthStencilView();
+			    return;
 			}
 			
 			if ((Info.Binding & TextureBinding.UnorderedAccess) == TextureBinding.UnorderedAccess)
 			{
-				// TODO:
+                // TODO:
+				throw new NotSupportedException("Unordered access views are not supported at this time.");
 			}
 
 			if ((Info.Binding & TextureBinding.RenderTarget) != TextureBinding.RenderTarget)
@@ -682,7 +684,7 @@ namespace Gorgon.Graphics.Core
                 _info.DepthStencilFormat = DXGI.Format.Unknown;
             }
 
-		    DefaultRenderTargetView = new GorgonRenderTargetView(this, _log);
+		    DefaultRenderTargetView = GetRenderTargetView();
 		}
 
 		/// <summary>
@@ -1416,14 +1418,259 @@ namespace Gorgon.Graphics.Core
 			                         pixelCoordinates.Height / (float)Info.Height);
 		}
 
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		public override void Dispose()
+        /// <summary>
+        /// Function to create a new <see cref="GorgonTextureView"/> for this texture.
+        /// </summary>
+        /// <param name="format">[Optional] The format for the view.</param>
+        /// <param name="firstMipLevel">[Optional] The first mip map level (slice) to start viewing from.</param>
+        /// <param name="mipCount">[Optional] The number of mip map levels to view.</param>
+        /// <param name="arrayIndex">[Optional] The array index to start viewing from.</param>
+        /// <param name="arrayCount">[Optional] The number of array indices to view.</param>
+        /// <returns>A <see cref="GorgonTextureView"/> used to bind the texture to a shader.</returns>
+        /// <exception cref="ArgumentException">Thrown when this texture does not have a <see cref="TextureBinding"/> of <see cref="TextureBinding.ShaderResource"/>.
+        /// <para>-or-</para>
+        /// <para>Thrown when this texture has a usage of <c>Staging</c>.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the <paramref name="format"/> is typeless or cannot be determined from the this texture, or the <paramref name="format"/> is not in the same group as the texture format.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the <paramref name="firstMipLevel"/> plus the <paramref name="mipCount"/> is larger than the number of mip levels for this texture.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the <paramref name="arrayIndex"/> plus the <paramref name="arrayCount"/> is larger than the number of array indices for this texture.</para>
+        /// </exception>
+        /// <exception cref="GorgonException">Thrown when this texture is a 2D cube texture, but is multiple sampled, or the <paramref name="arrayCount"/> is not a multiple of 6.</exception>
+        /// <remarks>
+        /// <para>
+        /// This will create a view that makes a texture accessible to shaders. This allows viewing of the texture data in a different format, or even a subsection of the texture from within the shader.
+        /// </para>
+        /// <para>
+        /// The <paramref name="format"/> parameter is used present the texture data as another format type to the shader. If this value is left at the default of <c>Unknown</c>, then the format from the 
+        /// this texture is used. The <paramref name="format"/> must be castable to the format of this texture. If it is not, an exception will be thrown.
+        /// </para>
+        /// <para>
+        /// The <paramref name="firstMipLevel"/> and <paramref name="mipCount"/> parameters define the starting mip level and the number of mip levels to allow access to within the shader. If these values fall 
+        /// outside of the range of available mip levels, then they will be clipped to the upper and lower bounds of the mip chain. If these values are left at 0, then all mip levels will be accessible.
+        /// </para>
+        /// <para>
+        /// The <paramref name="arrayIndex"/> and <paramref name="arrayCount"/> parameters define the starting array index and the number of array indices to allow access to within the shader. If these values 
+        /// are left at 0, then all array indices will be accessible. If this texture is a <see cref="TextureType.Texture3D"/> type, then these parameters are ignored since 3D textures cannot have array indices.
+        /// </para>
+        /// </remarks>
+	    public GorgonTextureView GetShaderResourceView(DXGI.Format format = DXGI.Format.Unknown, int firstMipLevel = 0, int mipCount = 0, int arrayIndex = 0, int arrayCount = 0)
+	    {
+	        if (format == DXGI.Format.Unknown)
+	        {
+	            format = _info.Format;
+	        }
+
+	        firstMipLevel = firstMipLevel.Max(0);
+	        arrayIndex = arrayIndex.Max(0);
+
+	        if (mipCount <= 0)
+	        {
+	            mipCount = _info.MipLevels - firstMipLevel;
+	        }
+
+	        if (arrayCount <= 0)
+	        {
+	            if (_info.TextureType == TextureType.Texture3D)
+	            {
+	                arrayIndex = 0;
+	                arrayCount = 1;
+	            }
+	            else
+	            {
+	                arrayCount = _info.ArrayCount - arrayIndex;
+	            }
+	        }
+
+            var key = new TextureViewKey(format, firstMipLevel, mipCount, arrayIndex, arrayCount);
+
+            if (_cachedSrvs.TryGetValue(key, out GorgonTextureView view))
+            {
+                return view;
+            }
+
+            view = new GorgonTextureView(this, format, firstMipLevel, mipCount, arrayIndex, arrayCount, _log);
+	        view.CreateNativeView();
+	        _cachedSrvs[key] = view;
+            
+	        return view;
+	    }
+
+	    /// <summary>
+	    /// Function to create a new <see cref="GorgonDepthStencilView"/> for this texture.
+	    /// </summary>
+	    /// <param name="format">[Optional] The format for the view.</param>
+	    /// <param name="firstMipLevel">[Optional] The first mip map level (slice) to start viewing from.</param>
+	    /// <param name="arrayIndex">[Optional] The array or depth index to start viewing from.</param>
+	    /// <param name="arrayCount">[Optional] The number of array indices or depth slices to view.</param>
+	    /// <param name="flags">[Optional] Flags to define how this view should be accessed by the shader.</param>
+	    /// <returns>A <see cref="GorgonTextureView"/> used to bind the texture to a shader.</returns>
+	    /// <exception cref="ArgumentException">Thrown when this texture does not have a <see cref="TextureBinding"/> of <see cref="TextureBinding.DepthStencil"/>.
+	    /// <para>-or-</para>
+	    /// <para>Thrown when this texture has a usage of <c>Staging</c>.</para>
+	    /// <para>-or-</para>
+	    /// <para>Thrown when the <paramref name="format"/> is not supported as a depth/stencil format.</para>
+	    /// <para>-or-</para>
+	    /// <para>Thrown when the <paramref name="arrayIndex"/> plus the <paramref name="arrayCount"/> is larger than the number of array indices/depth slices for this texture.</para>
+	    /// <para>-or-</para>
+	    /// <para>Thrown if the <paramref name="flags"/> parameter was set to value other than <c>None</c>, and the current video device does not support feature level 11 or better.</para>
+	    /// </exception>
+	    /// <exception cref="GorgonException">Thrown if this texture type is <see cref="TextureType.Texture3D"/>.</exception>
+	    public GorgonDepthStencilView GetDepthStencilView(DXGI.Format format = DXGI.Format.Unknown, int firstMipLevel = 0, int arrayIndex = 0, int arrayCount = 0, D3D11.DepthStencilViewFlags flags = D3D11.DepthStencilViewFlags.None)
+	    {
+	        if (_info.TextureType == TextureType.Texture3D)
+	        {
+	            throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_VIEW_DEPTH_STENCIL_NO_3D);
+	        }
+
+	        if ((flags != D3D11.DepthStencilViewFlags.None) && (Graphics.VideoDevice.RequestedFeatureLevel < FeatureLevelSupport.Level_11_0))
+	        {
+	            throw new ArgumentException(string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureLevelSupport.Level_11_0), nameof(flags));
+	        }
+
+	        if (format == DXGI.Format.Unknown)
+	        {
+	            format = _info.Format;
+	        }
+
+            // Validate the format for the view.
+            // If we have a typeless format for the texture, then it's likely we want to read it using a shader resource view.
+	        switch (format)
+	        {
+	            case DXGI.Format.R32G8X24_Typeless:
+	            case DXGI.Format.D32_Float_S8X24_UInt:
+	                format = DXGI.Format.D32_Float_S8X24_UInt;
+	                break;
+	            case DXGI.Format.R24G8_Typeless:
+	            case DXGI.Format.D24_UNorm_S8_UInt:
+	                format = DXGI.Format.D24_UNorm_S8_UInt;
+	                break;
+	            case DXGI.Format.R16_Typeless:
+	            case DXGI.Format.D16_UNorm:
+	                format = DXGI.Format.D16_UNorm;
+	                break;
+	            case DXGI.Format.R32_Typeless:
+	            case DXGI.Format.D32_Float:
+	                format = DXGI.Format.D32_Float;
+	                break;
+	            default:
+	                throw new ArgumentException(string.Format(Resources.GORGFX_ERR_FORMAT_NOT_SUPPORTED, format));
+	        }
+
+            firstMipLevel = firstMipLevel.Max(0).Min(Info.MipLevels - 1);
+	        arrayIndex = arrayIndex.Max(0);
+
+	        if (arrayCount <= 0)
+	        {
+	            arrayCount = _info.ArrayCount - arrayIndex;
+	        }
+
+            // Since we don't use the mip count, we can repurpose it to store the flag settings.
+	        var key = new TextureViewKey(format, firstMipLevel, (int)flags, arrayIndex, arrayCount);
+
+            if (_cachedDsvs.TryGetValue(key, out GorgonDepthStencilView view))
+            {
+                return view;
+            }
+
+            view = new GorgonDepthStencilView(this, format, firstMipLevel, arrayIndex, arrayCount, flags, _log);
+	        view.CreateNativeView();
+	        _cachedDsvs[key] = view;
+
+	        return view;
+	    }
+
+        /// <summary>
+        /// Function to create a new <see cref="GorgonRenderTargetView"/> for this texture.
+        /// </summary>
+        /// <param name="format">[Optional] The format for the view.</param>
+        /// <param name="firstMipLevel">[Optional] The first mip map level (slice) to start viewing from.</param>
+        /// <param name="arrayOrDepthIndex">[Optional] The array or depth index to start viewing from.</param>
+        /// <param name="arrayOrDepthCount">[Optional] The number of array indices or depth slices to view.</param>
+        /// <returns>A <see cref="GorgonTextureView"/> used to bind the texture to a shader.</returns>
+        /// <exception cref="ArgumentException">Thrown when this texture does not have a <see cref="TextureBinding"/> of <see cref="TextureBinding.RenderTarget"/>.
+        /// <para>-or-</para>
+        /// <para>Thrown when this texture has a usage of <c>Staging</c>.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the <paramref name="format"/> is typeless or cannot be determined from the this texture, or the <paramref name="format"/> is not in the same group as the texture format.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the <paramref name="arrayOrDepthIndex"/> plus the <paramref name="arrayOrDepthCount"/> is larger than the number of array indices/depth slices for this texture.</para>
+        /// </exception>
+        /// <remarks>
+        /// <para>
+        /// This will create a view that allows a texture to become a render target. This allows rendering into texture data in a different format, or even a subsection of the texture.
+        /// </para>
+        /// <para>
+        /// The <paramref name="format"/> parameter is used present the texture data as another format type to the shader. If this value is left at the default of <c>Unknown</c>, then the format from the 
+        /// this texture is used. The <paramref name="format"/> must be castable to the format of this texture. If it is not, an exception will be thrown.
+        /// </para>
+        /// <para>
+        /// The <paramref name="firstMipLevel"/> parameter will be constrained to the number of mip levels for the texture should it be set to less than 0 or greater than the number of mip levels. If this 
+        /// value is left at 0, then only the top mip level is used.
+        /// </para>
+        /// <para>
+        /// The <paramref name="arrayOrDepthIndex"/> and <paramref name="arrayOrDepthCount"/> parameters will either indicate the array indices for a 1D/2D texture, or the depth slices for a 3D texture. These 
+        /// parameters define the starting array index/depth slice and the number of array indices/depth slices to render into. If these values are left at 0, then the entire array/depth is used to receive 
+        /// rendering data.
+        /// </para>
+        /// </remarks>
+        public GorgonRenderTargetView GetRenderTargetView(DXGI.Format format = DXGI.Format.Unknown, int firstMipLevel = 0, int arrayOrDepthIndex = 0, int arrayOrDepthCount = 0)
+	    {
+	        if (format == DXGI.Format.Unknown)
+	        {
+	            format = _info.Format;
+	        }
+
+	        firstMipLevel = firstMipLevel.Max(0).Min(Info.MipLevels - 1);
+	        arrayOrDepthIndex = arrayOrDepthIndex.Max(0);
+
+	        if (arrayOrDepthCount <= 0)
+	        {
+	            if (_info.TextureType == TextureType.Texture3D)
+	            {
+	                arrayOrDepthCount = _info.Depth - arrayOrDepthIndex;
+	            }
+	            else
+	            {
+	                arrayOrDepthCount = _info.ArrayCount - arrayOrDepthIndex;
+	            }
+	        }
+
+	        var key = new TextureViewKey(format, firstMipLevel, 1, arrayOrDepthIndex, arrayOrDepthCount);
+
+            if (_cachedRtvs.TryGetValue(key, out GorgonRenderTargetView view))
+            {
+                return view;
+            }
+
+            view = new GorgonRenderTargetView(this, format, firstMipLevel, arrayOrDepthIndex, arrayOrDepthCount, _log);
+	        view.CreateNativeView();
+	        _cachedRtvs[key] = view;
+
+	        return view;
+	    }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public override void Dispose()
 		{
-			DefaultShaderResourceView?.Dispose();
-		    DefaultDepthStencilView?.Dispose();
-		    DefaultRenderTargetView?.Dispose();
+            // Destroy all cached views.
+		    foreach (KeyValuePair<TextureViewKey, GorgonTextureView> view in _cachedSrvs)
+		    {
+		        view.Value.Dispose();
+		    }
+
+		    foreach (KeyValuePair<TextureViewKey, GorgonRenderTargetView> view in _cachedRtvs)
+		    {
+		        view.Value.Dispose();
+		    }
+
+		    foreach (KeyValuePair<TextureViewKey, GorgonDepthStencilView> view in _cachedDsvs)
+		    {
+		        view.Value.Dispose();
+		    }
 
             // Swap chains own this view, so we can't destroy it without explicit permission.
 		    if (_ownsDepthStencil)

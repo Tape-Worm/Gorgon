@@ -49,6 +49,7 @@ namespace Gorgon.Graphics.Core
 	/// format within the same group.	
 	/// </para>
 	/// </remarks>
+	/// <seealso cref="GorgonTexture"/>
 	public class GorgonDepthStencilView
     {
 		#region Variables.
@@ -61,58 +62,6 @@ namespace Gorgon.Graphics.Core
 		/// Property to return the Direct3D depth/stencil view.
 		/// </summary>
 		internal D3D11.DepthStencilView Native
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to return the key for the resource view.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// This key can be used to sort, or define a unique resource view for use in caching. Users may set this key however they see fit to meet their caching/sorting needs. However, it is recommended 
-		/// that this key be left alone, and never altered after it's been applied to a cache since it should be a unique value.
-		/// </para>
-		/// <para>
-		/// By default, Gorgon will set the view parameters as a 64 bit unsigned integer value when the view is created. This key is composed of the following bits:
-		/// <para>
-		/// <list type="table">
-		///		<listheader>
-		///			<term>Bits</term>
-		///			<term>Value</term>		
-		///		</listheader>
-		///		<item>
-		///			<term>0 - 3 (4 bits)</term>
-		///			<term><see cref="MipSlice">Mip slice.</see></term>
-		///		</item>
-		///		<item>
-		///			<term>4 - 14 (11 bits)</term>
-		///			<term><see cref="ArrayIndex">Array Index.</see></term>
-		///		</item>
-		///		<item>
-		///			<term>15 - 25 (11 bits)</term>
-		///			<term><see cref="ArrayIndex">Array Count.</see></term>
-		///		</item>
-		///		<item>
-		///			<term>26 - 33 (8 bits)</term>
-		///			<term><see cref="Format"/></term>
-		///		</item>
-		///		<item>
-		///			<term>34 - 35 (2 bits)</term>
-		///			<term><see cref="Flags"/></term>
-		///		</item>
-		/// </list>
-		/// </para>
-		/// </para>
-		/// <para>
-		/// For example, a <see cref="MipSlice"/> of 2, and a <see cref="ArrayIndex"/> of 4, with an <see cref="ArrayCount"/> of 2 and a <see cref="Format"/> 
-		/// of <c>R8G8B8A8_UNorm"</c> (28) with no depth <see cref="Flags"/> would yield a key of: <c>1879113794</c>. 
-		/// <br/>
-		/// Or, a <see cref="MipSlice"/> of 0, with a <see cref="ArrayIndex"/> of 0, and a <see cref="ArrayCount"/> of 1, and the same buffer format would yield a key of: <c>1879048193</c>.
-		/// </para>
-		/// </remarks>
-		public ulong Key
 		{
 			get;
 			set;
@@ -147,7 +96,7 @@ namespace Gorgon.Graphics.Core
 		/// This is only valid if the resource allows shader access.
 		/// </para>
 		/// <para>
-		/// This is only valid on video devices with a feature level of SM5 or better.
+		/// This is only valid on video devices with a feature level of 11.0 or better.
 		/// </para>
 		/// </remarks>
 		public D3D11.DepthStencilViewFlags Flags
@@ -186,6 +135,10 @@ namespace Gorgon.Graphics.Core
 			get;
 		}
 
+        /// <summary>
+        /// Property to return the type of texture bound to this view.
+        /// </summary>
+        public TextureType TextureType => Texture.Info.TextureType;
 
         /// <summary>
         /// Property to return the width of the render target in pixels.
@@ -193,11 +146,7 @@ namespace Gorgon.Graphics.Core
         /// <remarks>
         /// This value is the full width of the first mip map level for the texture associated with the render target.
         /// </remarks>
-        public int Width
-        {
-            get;
-            private set;
-        }
+        public int Width => Texture.Info.Width;
 
         /// <summary>
         /// Property to return the height of the render target in pixels.
@@ -205,11 +154,7 @@ namespace Gorgon.Graphics.Core
         /// <remarks>
         /// This value is the full width of the first mip map level for the texture associated with the render target.
         /// </remarks>
-        public int Height
-        {
-            get;
-            private set;
-        }
+        public int Height => Texture.Info.Height;
 
         /// <summary>
         /// Property to return the width of the render target at the current <see cref="MipSlice"/> in pixels.
@@ -220,7 +165,6 @@ namespace Gorgon.Graphics.Core
         public int MipWidth
         {
             get;
-            private set;
         }
 
         /// <summary>
@@ -232,13 +176,7 @@ namespace Gorgon.Graphics.Core
         public int MipHeight
         {
             get;
-            private set;
         }
-
-        /// <summary>
-        /// Property to return the number of mip map levels for the render target.
-        /// </summary>
-        public int MipLevels => Texture.Info.MipLevels;
 
         /// <summary>
         /// Property to return the bounding rectangle for the render target view.
@@ -249,7 +187,6 @@ namespace Gorgon.Graphics.Core
         public DX.Rectangle Bounds
         {
             get;
-            private set;
         }
         #endregion
 
@@ -329,7 +266,7 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Function to perform initialization of the view.
 		/// </summary>
-		private void Initialize()
+		internal void CreateNativeView()
 		{
 			D3D11.DepthStencilViewDescription desc = default(D3D11.DepthStencilViewDescription);
 
@@ -351,13 +288,6 @@ namespace Gorgon.Graphics.Core
 			{
 				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_VIEW_CANNOT_BIND_UNKNOWN_RESOURCE);
 			}
-
-		    Width = Texture.Info.Width;
-		    Height = Texture.Info.Height;
-		    MipWidth = (Width >> MipSlice).Max(1);
-		    MipHeight = (Height >> MipSlice).Max(1);
-
-		    Bounds = new DX.Rectangle(0, 0, Width, Height);
 
             _log.Print($"Depth/Stencil View '{Texture.Name}': {Texture.ResourceType} -> Mip slice: {MipSlice}, Array Index: {ArrayIndex}, Array Count: {ArrayCount}",
 					   LoggingLevel.Verbose);
@@ -455,71 +385,55 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="texture">The resource to bind to the view.</param>
 		/// <param name="format">The format of the view.</param>
-		/// <param name="firstMipLevel">The mip level to use for the view.</param>
+		/// <param name="mipSlice">The mip level to use for the view.</param>
 		/// <param name="firstArrayIndex">The first array index to use for the view.</param>
 		/// <param name="arrayCount">The number of array indices to use for the view.</param>
 		/// <param name="flags">Depth/stencil view flags.</param>
 		/// <param name="log">[Optional] The log used for debugging.</param>
-		public GorgonDepthStencilView(GorgonTexture texture,
+		internal GorgonDepthStencilView(GorgonTexture texture,
 		                              DXGI.Format format,
-		                              int firstMipLevel = 0,
-		                              int firstArrayIndex = 0,
-		                              int arrayCount = 0,
-		                              D3D11.DepthStencilViewFlags flags = D3D11.DepthStencilViewFlags.None,
-									  IGorgonLog log = null)
+		                              int mipSlice,
+		                              int firstArrayIndex,
+		                              int arrayCount,
+		                              D3D11.DepthStencilViewFlags flags,
+									  IGorgonLog log)
 		{
 			_log = log ?? GorgonLogDummy.DefaultInstance;
 			Texture = texture ?? throw new ArgumentNullException(nameof(texture));
 
-			format = format == DXGI.Format.Unknown ? Texture.Info.Format : format;
+		    if ((texture.Info.Binding & TextureBinding.DepthStencil) != TextureBinding.DepthStencil)
+		    {
+		        throw new ArgumentException(string.Format(Resources.GORGFX_ERR_VIEW_RESOURCE_NOT_DEPTHSTENCIL, texture.Name), nameof(texture));
+		    }
 
-			// Only allow the depth/stencil formats.
-			switch (format)
-			{
-				case DXGI.Format.D16_UNorm:
-				case DXGI.Format.D24_UNorm_S8_UInt:
-				case DXGI.Format.D32_Float:
-				case DXGI.Format.D32_Float_S8X24_UInt:
-					break;
-				default:
-					format = DXGI.Format.Unknown;
-					break;
-			}
+		    FormatInformation = new GorgonFormatInfo(format);
 
-			Format = format;
+		    if (FormatInformation.IsTypeless)
+		    {
+		        throw new ArgumentException(Resources.GORGFX_ERR_VIEW_NO_TYPELESS, nameof(format));
+		    }
 
-			if (Format == DXGI.Format.Unknown)
-			{
-				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_VIEW_UNKNOWN_FORMAT, Format), nameof(texture));
-			}
+		    // Arrays only apply to 1D/2D textures.
+		    if (firstArrayIndex + arrayCount > texture.Info.ArrayCount)
+		    {
+		        throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TEXTURE_VIEW_ARRAY_OUT_OF_RANGE,
+		                                                  firstArrayIndex,
+		                                                  arrayCount,
+		                                                  texture.Info.ArrayCount));
+		    }
 
-			FormatInformation = new GorgonFormatInfo(Format);
+		    Format = format;
 
-			MipSlice = Texture.Info.MipLevels <= 0 ? 0 : firstMipLevel.Max(0).Min(Texture.Info.MipLevels - 1);
 
-			ArrayIndex = firstArrayIndex.Max(0).Min(Texture.Info.ArrayCount - 1);
-
-			if (arrayCount == 0)
-			{
-				arrayCount = Texture.Info.ArrayCount;
-			}
-
-			ArrayCount = arrayCount.Min(arrayCount - ArrayIndex).Max(1);
-			
+		    MipSlice = texture.Info.MipLevels <= 0 ? 0 : mipSlice.Max(0).Min(texture.Info.MipLevels - 1);
+            ArrayIndex = firstArrayIndex;
+		    ArrayCount = arrayCount;
 			Flags = flags;
-			Initialize();
+		    MipWidth = (Width >> MipSlice).Max(1);
+		    MipHeight = (Height >> MipSlice).Max(1);
 
-			// The key for a texture shader view is broken up into the following layout.
-			// Bits: [35 - 34]   [33 - 26]   [25 - 15]     [14 - 4]		[3 - 0]
-			//       Flags       Format      Array/Depth   Array/Depth  Mip slice
-			//                               Count         Index
-			Key = (((uint)Flags) & 0x3) << 34
-				  | (((uint)Format) & 0xff) << 26
-				  | (((uint)ArrayCount) & 0x7ff) << 15
-				  | (((uint)ArrayIndex) & 0x7ff) << 4
-				  | (uint)MipSlice;
+		    Bounds = new DX.Rectangle(0, 0, Width, Height);
 		}
-
 		#endregion
 	}
 }

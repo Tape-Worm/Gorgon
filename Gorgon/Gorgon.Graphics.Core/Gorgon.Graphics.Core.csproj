@@ -171,9 +171,10 @@
     <Compile Include="Textures\_Interfaces\IGorgonTextureInfo.cs" />
     <Compile Include="Textures\_Interfaces\IGorgonImageToTextureInfo.cs" />
     <Compile Include="Textures\_Internal\BltVertex.cs" />
+    <Compile Include="Textures\_Internal\TextureViewKey.cs" />
     <Compile Include="Textures\_Internal\TextureLockCache.cs" />
     <Compile Include="Textures\GorgonTextureLockData.cs" />
-    <Compile Include="Textures\GorgonTextureShaderView.cs" />
+    <Compile Include="Textures\GorgonTextureView.cs" />
     <Compile Include="Shaders\GorgonPixelShader.cs" />
     <Compile Include="Shaders\GorgonShader.cs" />
     <Compile Include="Shaders\GorgonShaderInclude.cs" />
