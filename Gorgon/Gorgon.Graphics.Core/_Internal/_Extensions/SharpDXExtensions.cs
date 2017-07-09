@@ -171,7 +171,7 @@ namespace Gorgon.Graphics.Core
 				       Height = swapChainInfo.Height,
 				       Scaling = swapChainInfo.StretchBackBuffer ? DXGI.Scaling.Stretch : DXGI.Scaling.None,
 					   SampleDescription = ToSampleDesc(GorgonMultisampleInfo.NoMultiSampling),
-					   SwapEffect = DXGI.SwapEffect.Discard,
+					   SwapEffect = swapChainInfo.UseFlipMode ? DXGI.SwapEffect.FlipSequential : DXGI.SwapEffect.Discard,
 					   Usage = DXGI.Usage.RenderTargetOutput
 			       };
 		}

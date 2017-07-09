@@ -90,13 +90,15 @@ namespace Gorgon.Graphics.Core
 		private DXGI.ModeDescription1? _previousMode;
 		// The backing store for the information used to create this swap chain.
 		private readonly GorgonSwapChainInfo _info;
+	    // The previously assigned render target views captured when using flip mode.
+	    private readonly GorgonRenderTargetView[] _previousViews = new GorgonRenderTargetView[GorgonRenderTargetViews.MaximumRenderTargetCount];
 		#endregion
 
-		#region Events.
-		/// <summary>
-		/// Event called before the swap chain has been resized.
-		/// </summary>
-		public event EventHandler<EventArgs> BeforeSwapChainResized;
+        #region Events.
+        /// <summary>
+        /// Event called before the swap chain has been resized.
+        /// </summary>
+        public event EventHandler<EventArgs> BeforeSwapChainResized;
 		/// <summary>
 		/// Event called after the swap chain has been resized.
 		/// </summary>
@@ -278,7 +280,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="targetIndices">The list of render target indices occupied by the backing texture(s) for this swap chain.</param>
 		private void CreateResources((int TargetIndex, bool UsedDepthStencil) targetIndices)
 		{
-			_backBufferTextures = !Info.UseFlipMode ? new GorgonTexture[1] : new GorgonTexture[3];
+			_backBufferTextures = !Info.UseFlipMode ? new GorgonTexture[1] : new GorgonTexture[2];
 
 		    if (Info.DepthStencilFormat != DXGI.Format.Unknown)
 		    {
@@ -658,23 +660,62 @@ namespace Gorgon.Graphics.Core
 			_log.Print($"SwapChain '{Name}': Back buffers resized.", LoggingLevel.Verbose);
 		}
 
-		/// <summary>
-		/// Function to flip the buffers to the front buffer.
-		/// </summary>
-		/// <param name="interval">[Optional] The vertical blank interval.</param>
-		/// <remarks>
-		/// <para>
-		/// If <paramref name="interval"/> parameter is greater than 0, then this method will synchronize to the vertical blank count specified by interval  Passing 0 will display the contents of the 
-		/// back buffer as soon as possible.
-		/// </para>
-		/// <para>
-		/// If the window that the swap chain is bound with is occluded and/or the swap chain is in between a mode switch, then this method will place the swap chain into stand by mode, and will recover 
-		/// (i.e. turn off stand by) once the device is ready for rendering again.
-		/// </para>
-		/// </remarks>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when the interval parameter is less than 0 or greater than 4. This is only thrown when Gorgon is compiled in <b>DEBUG</b> mode.</exception>
-		/// <exception cref="GorgonException">Thrown when the method encounters an unrecoverable error.</exception>
-		public void Present(int interval = 0)
+        /// <summary>
+        /// Function to retrieve which targets are set when in flip mode.
+        /// </summary>
+        /// <returns>A tuple containing the first target index, and the total number of targets.</returns>
+	    private (int FirstIndex, int TargetCount) GetCurrentTargets()
+	    {
+	        // Record our current render targets so we can restore them -after- the present flip.
+	        bool thisTargetIsSet = false;
+	        int firstTarget = -1;
+	        int targetCount = 0;
+
+	        for (int i = 0; i < Graphics.RenderTargets.Count; ++i)
+	        {
+	            GorgonRenderTargetView view = Graphics.RenderTargets[i];
+	            _previousViews[i] = view;
+
+                // Skip null entries, we don't care about these.
+	            if (view == null)
+	            {
+	                continue;
+	            }
+
+	            if (view == RenderTargetView)
+	            {
+	                thisTargetIsSet = true;
+	            }
+
+                // Make note if which render target index was first used so we can be a little more efficent below.
+                if (firstTarget == -1)
+	            {
+	                firstTarget = i;
+	            }
+	            ++targetCount;
+	        }
+            
+	        // Unbind the render targets.
+	        return thisTargetIsSet ? (firstTarget == -1 ? 0 : firstTarget, targetCount) : (0, 0);
+	    }
+
+        /// <summary>
+        /// Function to flip the buffers to the front buffer.
+        /// </summary>
+        /// <param name="interval">[Optional] The vertical blank interval.</param>
+        /// <remarks>
+        /// <para>
+        /// If <paramref name="interval"/> parameter is greater than 0, then this method will synchronize to the vertical blank count specified by interval  Passing 0 will display the contents of the 
+        /// back buffer as soon as possible.
+        /// </para>
+        /// <para>
+        /// If the window that the swap chain is bound with is occluded and/or the swap chain is in between a mode switch, then this method will place the swap chain into stand by mode, and will recover 
+        /// (i.e. turn off stand by) once the device is ready for rendering again.
+        /// </para>
+        /// </remarks>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the interval parameter is less than 0 or greater than 4. This is only thrown when Gorgon is compiled in <b>DEBUG</b> mode.</exception>
+        /// <exception cref="GorgonException">Thrown when the method encounters an unrecoverable error.</exception>
+        public void Present(int interval = 0)
 		{
 			DXGI.PresentFlags flags = !IsInStandBy ? DXGI.PresentFlags.None : DXGI.PresentFlags.Test;
 
@@ -683,7 +724,44 @@ namespace Gorgon.Graphics.Core
 			try
 			{
 				IsInStandBy = false;
+			    (int FirstIndex, int TargetCount) prevTargetRange = (0, 0);
+
+			    GorgonDepthStencilView prevDepthStencil = null;
+
+                // In flip modes, we have to unbind the render targets before presenting.
+			    if (Info.UseFlipMode)
+			    {
+			        prevDepthStencil = Graphics.DepthStencilView;
+			        prevTargetRange = GetCurrentTargets();
+
+                    // If we had previous targets (and we are part of that list), then reset the targets before presenting (the runtime will do it for use anyway, but this will just 
+                    // get rid of that annoying warning in the debug spew).
+			        if (prevTargetRange.TargetCount != 0)
+			        {
+			            Graphics.SetRenderTarget(null);
+			        }
+			    }
+
 			    GISwapChain.Present(interval, flags);
+
+			    if (prevTargetRange.TargetCount == 0)
+			    {
+			        return;
+			    }
+
+                // The typical use case is that we have only a single rtv set when we present.  So, rather than restoring everything
+                // we should just restore the single rtv.
+			    if (prevTargetRange.TargetCount < 2)
+			    {
+			        Graphics.SetRenderTarget(_previousViews[prevTargetRange.FirstIndex], prevDepthStencil);
+                }
+			    else
+			    {
+			        Graphics.SetRenderTargets(_previousViews, prevDepthStencil);
+                }
+
+                // Remove all items from the list so we don't hang on to them.
+			    Array.Clear(_previousViews, prevTargetRange.FirstIndex, prevTargetRange.TargetCount);
 			}
 			catch (DX.SharpDXException sdex)
 			{

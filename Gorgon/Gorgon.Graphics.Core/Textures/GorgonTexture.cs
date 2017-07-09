@@ -1730,7 +1730,12 @@ namespace Gorgon.Graphics.Core
 			TextureID = Interlocked.Increment(ref _textureID);
 		    _ownsDepthStencil = false;
 		    AssociatedDepthStencil = swapChain.DepthStencilTexture;
-		    DefaultRenderTargetView = GetRenderTargetView();
+
+            // Only create an RTV on the first buffer.
+		    if (index == 0)
+		    {
+		        DefaultRenderTargetView = GetRenderTargetView();
+		    }
 		}
 
 		/// <summary>
