@@ -260,7 +260,7 @@ namespace Gorgon.Graphics.Core
 
             if ((slot < 0) || (slot > 15))
             {
-				throw new ArgumentOutOfRangeException(nameof(slot), string.Format(Resources.GORGFX_VALUE_OUT_OF_RANGE, slot, 16));
+				throw new ArgumentOutOfRangeException(nameof(slot), string.Format(Resources.GORGFX_ERR_VALUE_OUT_OF_RANGE, slot, 16));
             }
 
 			D3DInputElement = new D3D11.InputElement(context,

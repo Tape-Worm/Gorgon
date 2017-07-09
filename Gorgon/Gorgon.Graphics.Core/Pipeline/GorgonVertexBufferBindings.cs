@@ -27,7 +27,6 @@
 
 using System;
 using D3D11 = SharpDX.Direct3D11;
-using Gorgon.Graphics.Core.Properties;
 
 namespace Gorgon.Graphics.Core
 {
@@ -98,25 +97,12 @@ namespace Gorgon.Graphics.Core
 		/// Initializes a new instance of the <see cref="GorgonVertexBufferBindings"/> class.
 		/// </summary>
 		/// <param name="inputLayout">The input layout that describes the arrangement of the vertex data within the buffers being bound.</param>
-		/// <param name="size">The number of vertex buffers to store in this list.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="inputLayout"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> parameter is less than 0.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="size"/> is larger than the <see cref="MaximumVertexBufferCount"/>.</exception>
-		public GorgonVertexBufferBindings(GorgonInputLayout inputLayout, int size)
-			: base(size)
+		public GorgonVertexBufferBindings(GorgonInputLayout inputLayout)
+			: base(MaximumVertexBufferCount)
 		{
-			if (size < 0)
-			{
-				throw new ArgumentOutOfRangeException(nameof(size));
-			}
-
-			if (size > MaximumVertexBufferCount)
-			{
-				throw new ArgumentException(string.Format(Resources.GORGFX_ARG_OUT_OF_RANGE, MaximumVertexBufferCount, 0));
-			}
-			
 			InputLayout = inputLayout ?? throw new ArgumentNullException(nameof(inputLayout));
-			_nativeBindings = new D3D11.VertexBufferBinding[size];
+			_nativeBindings = new D3D11.VertexBufferBinding[MaximumVertexBufferCount];
 		}
 		#endregion
 	}

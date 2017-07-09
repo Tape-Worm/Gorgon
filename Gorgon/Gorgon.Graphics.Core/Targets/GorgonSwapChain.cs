@@ -933,7 +933,7 @@ namespace Gorgon.Graphics.Core
 		{
 			if (info == null)
 			{
-				throw new ArgumentNullException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_NULL, nameof(info));
+				throw new ArgumentNullException(nameof(info));
 			}
 
 			_log = log ?? GorgonLogDummy.DefaultInstance;
@@ -941,9 +941,9 @@ namespace Gorgon.Graphics.Core
 			_log.Print($"SwapChain '{name}': Creating D3D11 swap chain...", LoggingLevel.Simple);
 
 			ExitFullScreenModeOnFocusLoss = true;
-			Window = window ?? throw new ArgumentNullException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_NULL, nameof(window));
+			Window = window ?? throw new ArgumentNullException(nameof(window));
 			_parentForm = window as Form ?? window.FindForm();
-			Graphics = graphics ?? throw new ArgumentNullException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_NULL, nameof(graphics));
+			Graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
 			
 			// Clone the info so that changes to the source won't be reflected back here and cause us grief.
 			_info = new GorgonSwapChainInfo(info);

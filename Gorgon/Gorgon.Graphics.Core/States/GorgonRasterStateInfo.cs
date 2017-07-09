@@ -89,9 +89,23 @@ namespace Gorgon.Graphics.Core
 		    {
 			    IsScissorClippingEnabled = true
 		    };
-		#endregion
+        #endregion
 
-		#region Properties.
+        #region Variables.
+        // The current triangle culling mode.
+	    private D3D11.CullMode _cullMode;
+        #endregion
+
+        #region Properties.
+        /// <summary>
+        /// Property to set or return whether the sampler state is locked for writing.
+        /// </summary>
+        internal bool IsLocked
+	    {
+	        get;
+	        set;
+	    }
+
 		/// <summary>
 		/// Property to set or return the current culling mode.
 		/// </summary>

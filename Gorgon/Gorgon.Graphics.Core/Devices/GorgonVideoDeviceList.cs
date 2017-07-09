@@ -485,7 +485,7 @@ namespace Gorgon.Graphics.Core
 
 			if (devices.Count == 0)
 			{
-				throw new GorgonException(GorgonResult.CannotEnumerate, Resources.GORGFX_DEVICE_ERR_CANNOT_FIND_DEVICES);
+				throw new GorgonException(GorgonResult.CannotEnumerate, Resources.GORGFX_ERR_DEVICE_CANNOT_FIND_DEVICES);
 			}
 
 			Interlocked.Exchange(ref _devices, devices);

@@ -155,7 +155,6 @@
     <Compile Include="States\_Interfaces\IGorgonDepthStencilStateInfo.cs" />
     <Compile Include="States\_Interfaces\IGorgonStencilOperationInfo.cs" />
     <Compile Include="States\_Interfaces\IGorgonRasterStateInfo.cs" />
-    <Compile Include="States\_Interfaces\IGorgonSamplerStateInfo.cs" />
     <Compile Include="Targets\GorgonDepthStencilView.cs" />
     <Compile Include="Targets\GorgonRenderTargetView.cs" />
     <Compile Include="Targets\_Interfaces\IGorgonSwapChainInfo.cs" />

@@ -158,7 +158,7 @@ namespace Gorgon.Graphics
 
 				_inputLayout = GorgonInputLayout.CreateUsingType<BltVertex>(_graphics.VideoDevice, _vertexShader);
 
-				_vertexBufferBindings = new GorgonVertexBufferBindings(_inputLayout, 1)
+				_vertexBufferBindings = new GorgonVertexBufferBindings(_inputLayout)
 				                        {
 					                        [0] = new GorgonVertexBufferBinding(new GorgonVertexBuffer("Gorgon Blitter Vertex Buffer",
 					                                                                                   _graphics,

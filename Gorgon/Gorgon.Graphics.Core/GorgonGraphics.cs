@@ -359,7 +359,7 @@ namespace Gorgon.Graphics.Core
 		    if ((vertexBuffers != null)
 		        && (_lastDrawCall.VertexBuffers == null))
 		    {
-			    _lastDrawCall.VertexBuffers = new GorgonVertexBufferBindings(vertexBuffers.InputLayout, vertexBuffers.Count);
+			    _lastDrawCall.VertexBuffers = new GorgonVertexBufferBindings(vertexBuffers.InputLayout);
 			    vertexBuffers.CopyTo(_lastDrawCall.VertexBuffers);
 			    return currentChanges | PipelineResourceChange.VertexBuffers;
 		    }

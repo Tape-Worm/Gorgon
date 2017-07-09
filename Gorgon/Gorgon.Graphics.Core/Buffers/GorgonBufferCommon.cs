@@ -242,7 +242,7 @@ namespace Gorgon.Graphics.Core
 
             if ((Usage != D3D11.ResourceUsage.Staging) && ((mode == D3D11.MapMode.Read) || (mode == D3D11.MapMode.ReadWrite)))
             {
-                throw new NotSupportedException(string.Format(Resources.GORGFX_BUFFER_ERR_WRITE_ONLY, Name, Usage));
+                throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_BUFFER_ERR_WRITE_ONLY, Name, Usage));
             }
 
             if (IsLocked)

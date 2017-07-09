@@ -196,7 +196,7 @@ namespace Gorgon.Graphics.Core
 					textureLock = texture.Lock(flags, mipLevel);
 					break;
 				default:
-					throw new ArgumentException(string.Format(Resources.GORGFX_IMAGE_TYPE_INVALID, texture.Info.TextureType), nameof(texture));
+					throw new ArgumentException(string.Format(Resources.GORGFX_ERR_IMAGE_TYPE_INVALID, texture.Info.TextureType), nameof(texture));
 			}
 
 			var bufferPtr = (byte*)buffer.Data.Address;
@@ -383,7 +383,7 @@ namespace Gorgon.Graphics.Core
 			{
 				if ((Info.ArrayCount != 6) && (Graphics.VideoDevice.RequestedFeatureLevel == FeatureLevelSupport.Level_10_0))
 				{
-					throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_TEXTURE_CUBE_REQUIRES_6_ARRAY);
+					throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_TEXTURE_CUBE_REQUIRES_6_ARRAY);
 				}
 
 				if (!Info.MultisampleInfo.Equals(GorgonMultisampleInfo.NoMultiSampling))
@@ -1115,7 +1115,7 @@ namespace Gorgon.Graphics.Core
 				if ((FormatInformation.Group != destination.FormatInformation.Group) 
 					|| ((resolveFormatInfo.Group != FormatInformation.Group) && (resolveFormatInfo.Group != destination.FormatInformation.Group)))
 				{
-					throw new ArgumentException(string.Format(Resources.GORGFX_TEXTURE_RESOLVE_SRC_DEST_NOT_SAME_GROUP, Info.Format, destination.Info.Format),
+					throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TEXTURE_RESOLVE_SRC_DEST_NOT_SAME_GROUP, Info.Format, destination.Info.Format),
 					                            nameof(destination));
 				}
 			}

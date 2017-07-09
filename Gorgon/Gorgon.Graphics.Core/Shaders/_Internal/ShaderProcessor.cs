@@ -150,7 +150,7 @@ namespace Gorgon.Graphics.Core
 
 			if ((checkFileExists) && (!File.Exists(includePath)))
 			{
-				throw new IOException(string.Format(Resources.GORGFX_FILE_NOT_FOUND, includeName));
+				throw new IOException(string.Format(Resources.GORGFX_ERR_FILE_NOT_FOUND, includeName));
 			}
 
 			return new GorgonShaderInclude(includeName, includePath);

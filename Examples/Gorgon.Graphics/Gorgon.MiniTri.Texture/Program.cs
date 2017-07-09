@@ -327,7 +327,7 @@ namespace Gorgon.Graphics.Example
 					            [0] = new DX.ViewportF(0, 0, _mainForm.ClientSize.Width, _mainForm.ClientSize.Height, 0, 1.0f),
 				            },
 				            // This will bind the vertex buffer to the GPU so it can be read from when rendering.
-				            VertexBuffers = new GorgonVertexBufferBindings(_inputLayout, 1)
+				            VertexBuffers = new GorgonVertexBufferBindings(_inputLayout)
 				                            {
 					                            [0] = new GorgonVertexBufferBinding(_vertexBuffer, MiniTriVertex.SizeInBytes)
 				                            },

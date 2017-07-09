@@ -393,7 +393,7 @@ namespace Gorgon.Graphics.Core
 
 			if (info.SizeInBytes < 16)
 			{
-				throw new ArgumentException(string.Format(Resources.GORGFX_BUFFER_SIZE_TOO_SMALL, 16));
+				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_BUFFER_SIZE_TOO_SMALL, 16));
 			}
 
             BufferType = BufferType.Constant;

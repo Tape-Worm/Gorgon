@@ -349,7 +349,7 @@ namespace Gorgon.Graphics.Core
 				if ((uint)sDXEx.ResultCode.Code == 0x80070057)
 				{
 					throw new GorgonException(GorgonResult.CannotCreate,
-											  string.Format(Resources.GORGFX_VIEW_CANNOT_CAST_FORMAT,
+											  string.Format(Resources.GORGFX_ERR_VIEW_CANNOT_CAST_FORMAT,
 															Texture.Info.Format,
 															Format));
 				}
