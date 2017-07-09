@@ -1042,25 +1042,6 @@ namespace Gorgon.Graphics.Core.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to // Texture and sampler for blitting a texture.
-        ///Texture2D _bltTexture : register(t0);
-        ///SamplerState _bltSampler : register(s0);
-        ///
-        ///// Our default blitting vertex.
-        ///struct GorgonBltVertex
-        ///{
-        ///   float4 position : SV_POSITION;
-        ///   float2 uv : TEXCOORD;
-        ///};
-        ///
-        ///// The transformation matrices (for vertex shader).
-        ///cbuffer GorgonBltWorldViewProjection : register(b0)
-        ///{
-        ///	float4x4 WorldViewProjection;
-        ///}
-        ///
-        ///// Our vertex shader for blitting textures.
-        ///GorgonBltVertex GorgonBltVertexShader(GorgonBltVertex vertex)
-        /// [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string GraphicsShaders {
             get {

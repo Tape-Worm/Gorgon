@@ -42,7 +42,7 @@ namespace Gorgon.Graphics.Core
 	public class GorgonPipelineStateInfo 
 		: IGorgonPipelineStateInfo
 	{
-        #region Properties.
+	    #region Properties.
         /// <summary>
         /// Property to set or return the current pixel shader 
         /// </summary>
@@ -61,19 +61,19 @@ namespace Gorgon.Graphics.Core
 			set;
 		}
 
-		/// <summary>
-		/// Property to set or return the current <see cref="IGorgonRasterStateInfo"/>.
-		/// </summary>
-		public GorgonRasterStateInfo RasterState
-		{
-			get;
-			set;
-		}
+	    /// <summary>
+	    /// Property to set or return the current <see cref="IGorgonRasterStateInfo"/>.
+	    /// </summary>
+	    public GorgonRasterState RasterState
+	    {
+	        get;
+	        set;
+	    }
 
 	    /// <summary>
 	    /// Property to return the current <see cref="IGorgonRasterStateInfo"/>.
 	    /// </summary>
-	    IGorgonRasterStateInfo IGorgonPipelineStateInfo.RasterState => RasterState;
+	    GorgonRasterState IGorgonPipelineStateInfo.RasterState => RasterState;
 
 		/// <summary>
 		/// Property to set or return the current <see cref="IGorgonDepthStencilStateInfo"/>.
@@ -168,7 +168,7 @@ namespace Gorgon.Graphics.Core
 
 		    if (info.RasterState != null)
 		    {
-		        RasterState = new GorgonRasterStateInfo(info.RasterState);
+		        RasterState = new GorgonRasterState(info.RasterState);
 		    }
 
 		    if (info.RenderTargetBlendState == null)

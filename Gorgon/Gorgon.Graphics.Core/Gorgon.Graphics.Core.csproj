@@ -147,7 +147,7 @@
     <Compile Include="Shaders\GorgonShaderMacro.cs" />
     <Compile Include="Shaders\_Internal\ShaderProcessor.cs" />
     <Compile Include="States\GorgonRenderTargetBlendStateInfo.cs" />
-    <Compile Include="States\GorgonRasterStateInfo.cs" />
+    <Compile Include="States\GorgonRasterState.cs" />
     <Compile Include="States\GorgonDepthStencilStateInfo.cs" />
     <Compile Include="States\GorgonSamplerState.cs" />
     <Compile Include="States\GorgonStencilOperationInfo.cs" />
@@ -155,6 +155,7 @@
     <Compile Include="States\_Interfaces\IGorgonDepthStencilStateInfo.cs" />
     <Compile Include="States\_Interfaces\IGorgonStencilOperationInfo.cs" />
     <Compile Include="States\_Interfaces\IGorgonRasterStateInfo.cs" />
+    <Compile Include="Targets\GorgonBeforeSwapChainResizedEventArgs.cs" />
     <Compile Include="Targets\GorgonDepthStencilView.cs" />
     <Compile Include="Targets\GorgonRenderTargetView.cs" />
     <Compile Include="Targets\_Interfaces\IGorgonSwapChainInfo.cs" />

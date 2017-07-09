@@ -98,7 +98,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Event called before the swap chain has been resized.
         /// </summary>
-        public event EventHandler<EventArgs> BeforeSwapChainResized;
+        public event EventHandler<GorgonBeforeSwapChainResizedEventArgs> BeforeSwapChainResized;
 		/// <summary>
 		/// Event called after the swap chain has been resized.
 		/// </summary>
@@ -333,7 +333,7 @@ namespace Gorgon.Graphics.Core
 		    {
 		        views[targetIndices.TargetIndex] = RenderTargetView;
 		    }
-
+            
 		    Graphics.SetRenderTargets(views, targetIndices.UsedDepthStencil ? DepthStencilView : Graphics.DepthStencilView);
 		}
 
@@ -374,8 +374,8 @@ namespace Gorgon.Graphics.Core
 			{
 				texture?.Dispose();
 			}
-
-		    return (renderTargetViewIndex, usedDepthStencil);
+		    
+            return (renderTargetViewIndex, usedDepthStencil);
 		}
 
 		/// <summary>
@@ -644,7 +644,7 @@ namespace Gorgon.Graphics.Core
 
 			_log.Print($"SwapChain '{Name}': Resizing back buffers.", LoggingLevel.Verbose);
 			// Tell the application that this swap chain is going to be resized.
-			BeforeSwapChainResized?.Invoke(this, EventArgs.Empty);
+			BeforeSwapChainResized?.Invoke(this, new GorgonBeforeSwapChainResizedEventArgs(new DX.Size2(_info.Width, _info.Height), new DX.Size2(newWidth, newHeight)));
 
 			(int, bool) indices = ReleaseResources();
 

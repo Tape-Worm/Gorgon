@@ -93,10 +93,26 @@ namespace Gorgon.Graphics.Core
 			get;
 		}
 
-		/// <summary>
-		/// Property to return information about this video device.
-		/// </summary>
-		IGorgonVideoDeviceInfo Info
+	    /// <summary>
+	    /// Property to return the maximum number of allowed scissor rectangles.
+	    /// </summary>
+	    int MaxScissorCount
+	    {
+	        get;
+	    }
+
+        /// <summary>
+        /// Property to return the maximum number of allowed viewports.
+        /// </summary>
+	    int MaxViewportCount
+	    {
+	        get;
+	    }
+
+        /// <summary>
+        /// Property to return information about this video device.
+        /// </summary>
+        IGorgonVideoDeviceInfo Info
 		{
 			get;
 		}
@@ -123,7 +139,7 @@ namespace Gorgon.Graphics.Core
 	    /// <summary>
 	    /// Property to return the maximum number of render targets allow to be assigned at the same time.
 	    /// </summary>
-	    int MaximumRenderTargetCount
+	    int MaxRenderTargetCount
 	    {
 	        get;
 	    }

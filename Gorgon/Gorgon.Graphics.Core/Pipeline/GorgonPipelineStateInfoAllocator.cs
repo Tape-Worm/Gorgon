@@ -30,7 +30,7 @@ namespace Gorgon.Graphics.Core
             {
                 Items[index] = result = new GorgonPipelineStateInfo
                                         {
-                                            RasterState = new GorgonRasterStateInfo(),
+                                            RasterState = new GorgonRasterState(),
                                             RenderTargetBlendState = new []
                                                                      {
                                                                          new GorgonRenderTargetBlendStateInfo()
@@ -48,22 +48,7 @@ namespace Gorgon.Graphics.Core
             result.IsIndependentBlendingEnabled = existingState.IsIndependentBlendingEnabled;
             result.VertexShader = existingState.VertexShader;
             result.PixelShader = existingState.PixelShader;
-
-            if (existingState.RasterState == null)
-            {
-                result.RasterState = null;
-            }
-            else
-            {
-                if (result.RasterState == null)
-                {
-                    result.RasterState = new GorgonRasterStateInfo(existingState.RasterState);
-                }
-                else
-                {
-                    result.RasterState.CopyFrom(existingState.RasterState);
-                }
-            }
+            result.RasterState = existingState.RasterState;
 
             if (existingState.DepthStencilState == null)
             {

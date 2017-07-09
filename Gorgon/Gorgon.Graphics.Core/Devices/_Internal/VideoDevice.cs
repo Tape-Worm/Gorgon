@@ -64,14 +64,14 @@ namespace Gorgon.Graphics.Core
 	    /// <summary>
 	    /// Property to return the maximum number of render targets allow to be assigned at the same time.
 	    /// </summary>
-	    public int MaximumRenderTargetCount => D3D11.OutputMergerStage.SimultaneousRenderTargetCount;
+	    public int MaxRenderTargetCount => D3D11.OutputMergerStage.SimultaneousRenderTargetCount;
         
         /// <summary>
         /// Property to return the maximum number of array indices for 1D and 2D textures.
         /// </summary>
         public int MaxTextureArrayCount => 2048;
 
-		/// <summary>
+        /// <summary>
 		/// Property to return the maximum width of a 1D or 2D texture.
 		/// </summary>
 		public int MaxTextureWidth
@@ -121,7 +121,7 @@ namespace Gorgon.Graphics.Core
 		/// Property to return the maximum depth of a 3D texture.
 		/// </summary>
 		public int MaxTexture3DDepth => 2048;
-
+        
 		/// <summary>
 		/// Property to return the maximum size, in bytes, for a constant buffer.
 		/// </summary>
@@ -131,10 +131,20 @@ namespace Gorgon.Graphics.Core
 		/// </remarks>
 		public int MaxConstantBufferSize => RequestedFeatureLevel < FeatureLevelSupport.Level_11_1 ? int.MaxValue : 65536;
 
-		/// <summary>
-		/// Property to return the <see cref="VideoDeviceInfo"/> used to create this device.
-		/// </summary>
-		public IGorgonVideoDeviceInfo Info
+	    /// <summary>
+	    /// Property to return the maximum number of allowed scissor rectangles.
+	    /// </summary>
+	    public int MaxScissorCount => 16;
+        
+	    /// <summary>
+	    /// Property to return the maximum number of allowed viewports.
+	    /// </summary>
+	    public int MaxViewportCount => 16;
+
+        /// <summary>
+        /// Property to return the <see cref="VideoDeviceInfo"/> used to create this device.
+        /// </summary>
+        public IGorgonVideoDeviceInfo Info
 		{
 			get;
 		}

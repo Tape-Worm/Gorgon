@@ -52,7 +52,12 @@ namespace Gorgon.Graphics.Core
 	/// copy constructor and then modifying as needed.
 	/// </para>
 	/// </remarks>
+	/// <seealso cref="GorgonSamplerStates"/>
+	/// <seealso cref="Default"/>
+	/// <seealso cref="PointFiltering"/>
+	/// <seealso cref="AnisotropicFiltering"/>
 	public class GorgonSamplerState
+        : IEquatable<GorgonSamplerState>
 	{
 		#region Variables.
 	    /// <summary>

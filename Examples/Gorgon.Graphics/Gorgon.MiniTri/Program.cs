@@ -263,11 +263,6 @@ namespace Gorgon.Graphics.Example
 				            PrimitiveTopology = PrimitiveTopology.TriangleList,
 				            // Our triangle has 3 points, obviously.
 				            VertexCount = 3,
-				            // This defines the view port dimensions to render. 
-				            Viewports =
-				            {
-					            [0] = new DX.ViewportF(0, 0, _mainForm.ClientSize.Width, _mainForm.ClientSize.Height, 0, 1.0f)
-				            },
 				            // This will bind the vertex buffer to the GPU so it can be read from when rendering.
 				            VertexBuffers = new GorgonVertexBufferBindings(_inputLayout)
 				                            {
@@ -286,7 +281,7 @@ namespace Gorgon.Graphics.Example
 					                                               PixelShader = _pixelShader,
 					                                               VertexShader = _vertexShader,
 					                                               // For items facing away from us, don't render.
-					                                               RasterState = GorgonRasterStateInfo.NoCulling
+					                                               RasterState = GorgonRasterState.NoCulling
 				                                               })
 			            };
 		}

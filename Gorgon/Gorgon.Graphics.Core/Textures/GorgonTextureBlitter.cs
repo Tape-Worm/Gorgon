@@ -115,12 +115,6 @@ namespace Gorgon.Graphics
 
 			_wvpBuffer.Update(ref projectionMatrix);
 
-			if ((_drawCall.Viewports[0].Width != target.Width)
-			    || (_drawCall.Viewports[0].Height != target.Height))
-			{
-				_drawCall.Viewports[0] = new DX.ViewportF(0, 0, target.Width, target.Height, 0, 1.0f);
-            }
-
 		    _targetBounds = target.Bounds;
             _needsWvpUpdate = false;
 		}
@@ -184,7 +178,7 @@ namespace Gorgon.Graphics
 					                                             PixelShader = _pixelShader,
 					                                             VertexShader = _vertexShader,
 					                                             DepthStencilState = new GorgonDepthStencilStateInfo(GorgonDepthStencilStateInfo.Default),
-					                                             RasterState = GorgonRasterStateInfo.CullBackFace,
+					                                             RasterState = GorgonRasterState.CullFrontFace,
 					                                             RenderTargetBlendState = new[]
 					                                                                      {
 						                                                                      new GorgonRenderTargetBlendStateInfo(GorgonRenderTargetBlendStateInfo.NoBlending)

@@ -276,7 +276,7 @@ namespace Gorgon.Graphics.Example
 		// TODO: Its purpose right now is to ensure that updating the window caption doesn't hurt our framerate (which it really does unless we limit it).
 		private static IGorgonTimer _tempTimer = new GorgonTimerMultimedia();
 
-		/// <summary>
+        /// <summary>
 		/// Function to handle idle time for the application.
 		/// </summary>
 		/// <returns><b>true</b> to continue processing, <b>false</b> to stop.</returns>
@@ -296,7 +296,7 @@ namespace Gorgon.Graphics.Example
 				RenderModel(_planes[i], _pipelineState);
 			}
 
-            // Render the ball.
+		    // Render the ball.
 		    _sphere.Material.Diffuse = GorgonColor.White;
             RenderModel(_sphere, _pipelineState);
 			
@@ -519,7 +519,7 @@ namespace Gorgon.Graphics.Example
 			// This is up to the developer to handle.
 			_swap.AfterSwapChainResized += Swap_AfterResized;
 
-		    // Set the current render target output so we can see something.
+            // Set the current render target output so we can see something.
 		    _graphics.SetRenderTarget(_swap.RenderTargetView);
 
             // Initialize our draw call so we can render the objects.
@@ -544,10 +544,6 @@ namespace Gorgon.Graphics.Example
             // We need to create a layout for our vertex type because the shader won't know how to interpret the data we're sending it otherwise.  
             // This is why we need a vertex shader before we even create the layout.
 			_inputLayout = GorgonInputLayout.CreateUsingType<BoingerVertex>(_graphics.VideoDevice, _vertexShader);
-
-			// Create the view port.
-			// This just tells the renderer how big our display is.
-			_drawCall.Viewports[0] = new DX.ViewportF(0, 0, _mainForm.ClientSize.Width, _mainForm.ClientSize.Height, 0.0f, 1.0f);
 
 			// Resources are stored as System.Drawing.Bitmap files, so we need to convert into an IGorgonImage so we can upload it to a texture.
 			// We also will generate mip-map levels for this image so that scaling the texture will look better. 
@@ -650,13 +646,13 @@ namespace Gorgon.Graphics.Example
             _drawCall.VertexShaderConstantBuffers[0] = _wvpBuffer;
 		    _drawCall.PixelShaderConstantBuffers[0] = _materialBuffer;
 
-			// Initialize a pipeline state so that the graphics can be rendered using the correct shaders, depth buffer, and blending.
+            // Initialize a pipeline state so that the graphics can be rendered using the correct shaders, depth buffer, and blending.
 			_pipelineState = _graphics.GetPipelineState(new GorgonPipelineStateInfo
 			                                           {
 				                                           DepthStencilState = new GorgonDepthStencilStateInfo(GorgonDepthStencilStateInfo.DepthStencilEnabled),
 				                                           PixelShader = _pixelShader,
 				                                           VertexShader = _vertexShader,
-				                                           RasterState = GorgonRasterStateInfo.CullBackFace,
+				                                           RasterState = GorgonRasterState.Default,
 				                                           RenderTargetBlendState = new[]
 				                                                                    {
 					                                                                    new GorgonRenderTargetBlendStateInfo(GorgonRenderTargetBlendStateInfo.Modulated)
@@ -698,15 +694,14 @@ namespace Gorgon.Graphics.Example
 		/// <exception cref="System.NotSupportedException"></exception>
 		static void Swap_AfterResized(object sender, EventArgs e)
 		{
-			// This method allows us to restore the swap chain, viewport and depth buffer after it's been resized.  If we didn't do this, we'd lose 
-			// our image because it has to be unbound while the buffers are resized for the swap chain.
+			// This method allows us to restore projection matrix after the swap chain has been resized.  If we didn't do this, we'd have a weird looking (e.g. distorted)
+            // image because the old projection matrix would be in place for the previous swap chain size.
+            //
+            // This is also the place to re-apply any custom viewports, or scissor rectangles.
 
 			// Reset our projection matrix to match our new size.
 			_projMatrix = DX.Matrix.PerspectiveFovLH((75.0f).ToRadians(), _mainForm.ClientSize.Width / (float)_mainForm.ClientSize.Height, 0.125f, 500.0f);
-
-			// Update the viewport to reflect the new window size.
-			_drawCall.Viewports[0] = new DX.ViewportF(0, 0, _mainForm.ClientSize.Width, _mainForm.ClientSize.Height, 0.0f, 1.0f);
-		}
+        }
 		#endregion
 
 		/// <summary>

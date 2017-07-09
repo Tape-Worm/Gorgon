@@ -145,9 +145,14 @@ namespace Gorgon.Graphics.Core
 		/// <param name="id">The ID of the cache entry for this pipeline state.</param>
 		internal GorgonPipelineState(IGorgonPipelineStateInfo stateInfo, int id)
 		{
-
 			_info = new GorgonPipelineStateInfo(stateInfo);
 			ID = id;
+
+            // Lock all states that need locking at this point.
+		    if (_info.RasterState != null)
+		    {
+		        _info.RasterState.IsLocked = true;
+		    }
 		}
 		#endregion
 	}

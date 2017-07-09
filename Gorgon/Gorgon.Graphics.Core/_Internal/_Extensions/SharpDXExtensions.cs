@@ -191,7 +191,7 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="state">The state to convert.</param>
 		/// <returns>A new D3D 11 raster state desc.</returns>
-		public static D3D11.RasterizerStateDescription1 ToRasterStateDesc1(this IGorgonRasterStateInfo state)
+		public static D3D11.RasterizerStateDescription1 ToRasterStateDesc1(this GorgonRasterState state)
 		{
 			return new D3D11.RasterizerStateDescription1
 			       {

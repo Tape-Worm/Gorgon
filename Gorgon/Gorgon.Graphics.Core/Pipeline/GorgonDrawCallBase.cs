@@ -46,14 +46,6 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		PrimitiveTopology = 0x1,
 		/// <summary>
-		/// Viewports have changed.
-		/// </summary>
-		Viewports = 0x2,
-		/// <summary>
-		/// Scissor rectangles have changed.
-		/// </summary>
-		ScissorRectangles = 0x4,
-		/// <summary>
 		/// Vertex buffers have changed.
 		/// </summary>
 		VertexBuffers = 0x8,
@@ -177,8 +169,6 @@ namespace Gorgon.Graphics.Core
 			| InputLayout
 			| VertexBuffers
 			| PrimitiveTopology
-			| Viewports
-			| ScissorRectangles
 	}
 
 	/// <summary>
@@ -193,67 +183,7 @@ namespace Gorgon.Graphics.Core
 	public class GorgonDrawCallBase 
         : IGorgonShaderStates
 	{
-		#region Constants.
-		/// <summary>
-		/// The maximum number of allowed viewports.
-		/// </summary>
-		public const int MaximumViewportCount = 16;
-		/// <summary>
-		/// The maximum number of allowed scissor rectangles.
-		/// </summary>
-		public const int MaximumScissorCount = 16;
-		#endregion
-
-		#region Variables.
-		// The viewports for rendering to the output.
-		private readonly GorgonMonitoredValueTypeArray<DX.ViewportF> _viewports;
-		// The scissor rectangles for clipping the output.
-		private readonly GorgonMonitoredValueTypeArray<DX.Rectangle> _scissorRectangles;
-		#endregion
-
 		#region Properties.
-		/// <summary>
-		/// Property to set or return the viewports to apply during this draw call.
-		/// </summary>
-		public GorgonMonitoredValueTypeArray<DX.ViewportF> Viewports
-		{
-			get => _viewports;
-			set
-			{
-				if (value == null)
-				{
-					_viewports.Clear();
-					return;
-				}
-
-				for (int i = 0; i < value.Count.Min(MaximumViewportCount); ++i)
-				{
-					_viewports[i] = value[i];
-				}
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the scissor rectangles to apply during this draw call.
-		/// </summary>
-		public GorgonMonitoredValueTypeArray<DX.Rectangle> ScissorRectangles
-		{
-			get => _scissorRectangles;
-			set
-			{
-				if (value == null)
-				{
-					_scissorRectangles.Clear();
-					return;
-				}
-
-				for (int i = 0; i < value.Count.Min(MaximumScissorCount); ++i)
-				{
-					_scissorRectangles[i] = value[i];
-				}
-			}
-		}
-
 		/// <summary>
 		/// Property to set or return the vertex buffers to bind to the pipeline.
 		/// </summary>
@@ -398,10 +328,7 @@ namespace Gorgon.Graphics.Core
 			}
 			BlendFactor = GorgonColor.White;
 			DepthStencilReference = 0;
-
-			Viewports.Clear();
-			ScissorRectangles.Clear();
-
+			
 			VertexShaderResourceViews.Clear();
 			VertexShaderConstantBuffers.Clear();
 			VertexShaderSamplers.Clear();
@@ -425,8 +352,6 @@ namespace Gorgon.Graphics.Core
 				DepthStencilReference = 0;
 			}
 
-			_viewports = new GorgonMonitoredValueTypeArray<DX.ViewportF>(MaximumViewportCount);
-			_scissorRectangles = new GorgonMonitoredValueTypeArray<DX.Rectangle>(MaximumScissorCount);
 			VertexShaderConstantBuffers = new GorgonConstantBuffers();
 			PixelShaderConstantBuffers = new GorgonConstantBuffers();
 			PixelShaderResourceViews = new GorgonShaderResourceViews();

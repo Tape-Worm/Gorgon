@@ -154,13 +154,17 @@ namespace Gorgon.Graphics.Core
         private readonly GorgonRenderTargetViews _renderTargets;
         // The states used for texture samplers.  Used as a transitional buffer between D3D11 and Gorgon.
         private readonly D3D11.SamplerState[] _samplerStates = new D3D11.SamplerState[GorgonSamplerStates.MaximumSamplerStateCount];
+        // The scissor rectangles for clipping the output.
+        private readonly GorgonMonitoredValueTypeArray<DX.Rectangle> _scissorRectangles;
+        // The viewports used for rendering to the render target.
+        private readonly GorgonMonitoredValueTypeArray<DX.ViewportF> _viewports;
         #endregion
 
-		#region Properties.
-		/// <summary>
-		/// Property to return the Direct 3D 11.1 device context for this graphics instance.
-		/// </summary>
-		internal D3D11.DeviceContext1 D3DDeviceContext => _deviceContext;
+        #region Properties.
+        /// <summary>
+        /// Property to return the Direct 3D 11.1 device context for this graphics instance.
+        /// </summary>
+        internal D3D11.DeviceContext1 D3DDeviceContext => _deviceContext;
 
         /// <summary>
         /// Property to return the list of cached pipeline states.
@@ -276,61 +280,19 @@ namespace Gorgon.Graphics.Core
         /// <seealso cref="O:Gorgon.Graphics.Core.GorgonGraphics.SetRenderTarget"/>
         /// <seealso cref="GorgonRenderTargetView"/>
         public IReadOnlyList<GorgonRenderTargetView> RenderTargets => _renderTargets;
+
+        /// <summary>
+        /// Property to return the scissor rectangles currently active for rendering.
+        /// </summary>
+        public GorgonMonitoredValueTypeArray<DX.Rectangle> ScissorRectangles => _scissorRectangles;
+
+        /// <summary>
+        /// Property to return the viewports used to render to the <see cref="RenderTargets"/>.
+        /// </summary>
+        public GorgonMonitoredValueTypeArray<DX.ViewportF> Viewports => _viewports;
         #endregion
 
 		#region Methods.
-	    /// <summary>
-	    /// Function to merge the previous draw call viewports to this one.
-	    /// </summary>
-	    /// <param name="newViewports">The new viewports to assign.</param>
-	    /// <param name="currentChanges">The current changes on the pipeline.</param>
-	    /// <returns>A <see cref="PipelineResourceChange"/> indicating whether or not the state has changed.</returns>
-	    private PipelineResourceChange MergeViewPorts(GorgonMonitoredValueTypeArray<DX.ViewportF> newViewports, PipelineResourceChange currentChanges)
-	    {
-		    ref (int, int Count, DX.ViewportF[]) current = ref _lastDrawCall.Viewports.GetDirtyItems();
-		    ref (int, int Count, DX.ViewportF[] Viewports) newItems = ref newViewports.GetDirtyItems();
-
-		    int maxItems = current.Count.Max(newItems.Count);
-
-		    for (int i = 0; i < maxItems; ++i)
-		    {
-			    _lastDrawCall.Viewports[i] = newItems.Viewports[i];
-		    }
-
-		    if (_lastDrawCall.Viewports.IsDirty)
-		    {
-			    currentChanges |= PipelineResourceChange.Viewports;
-		    }
-
-		    return currentChanges;
-	    }
-
-	    /// <summary>
-	    /// Function to merge the previous draw call scissor rectangles to this one.
-	    /// </summary>
-	    /// <param name="newScissorRects">The new scissor rectangles to assign.</param>
-	    /// <param name="currentChanges">The current changes on the pipeline.</param>
-	    /// <returns>A <see cref="PipelineResourceChange"/> indicating whether or not the state has changed.</returns>
-	    private PipelineResourceChange MergeScissorRects(GorgonMonitoredValueTypeArray<DX.Rectangle> newScissorRects, PipelineResourceChange currentChanges)
-	    {
-		    ref (int, int Count, DX.Rectangle[]) current = ref _lastDrawCall.ScissorRectangles.GetDirtyItems();
-		    ref (int, int Count, DX.Rectangle[] Scissors) newItems = ref newScissorRects.GetDirtyItems();
-
-		    int maxItems = current.Count.Max(newItems.Count);
-
-		    for (int i = 0; i < maxItems; ++i)
-		    {
-			    _lastDrawCall.ScissorRectangles[i] = newItems.Scissors[i];
-		    }
-
-		    if (_lastDrawCall.ScissorRectangles.IsDirty)
-		    {
-			    currentChanges |= PipelineResourceChange.ScissorRectangles;
-		    }
-
-		    return currentChanges;
-	    }
-
 	    /// <summary>
 	    /// Function to merge the previous draw call vertex buffers with new ones.
 	    /// </summary>
@@ -676,8 +638,6 @@ namespace Gorgon.Graphics.Core
 			    stateChanges |= PipelineResourceChange.BlendFactor;
 			}
 
-			stateChanges |= MergeViewPorts(sourceDrawCall.Viewports, stateChanges);
-		    stateChanges |= MergeScissorRects(sourceDrawCall.ScissorRectangles, stateChanges);
 		    stateChanges |= MergeVertexBuffers(sourceDrawCall.VertexBuffers, stateChanges);
 		    stateChanges |= MergeConstantBuffers(ShaderType.Vertex, sourceDrawCall.VertexShaderConstantBuffers, stateChanges);
 		    stateChanges |= MergeConstantBuffers(ShaderType.Pixel, sourceDrawCall.PixelShaderConstantBuffers, stateChanges);
@@ -906,10 +866,14 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Function to assign viewports.
 		/// </summary>
-		/// <param name="viewPorts">The list of viewports to assign.</param>
-	    private unsafe void SetViewports(GorgonMonitoredValueTypeArray<DX.ViewportF> viewPorts)
+	    private unsafe void SetViewports()
 	    {
-		    ref (int Start, int Count, DX.ViewportF[] Viewports) viewports = ref viewPorts.GetDirtyItems();
+	        if (!_viewports.IsDirty)
+	        {
+	            return;
+	        }
+
+		    ref (int Start, int Count, DX.ViewportF[] Viewports) viewports = ref _viewports.GetDirtyItems();
 		    RawViewportF* rawViewports = stackalloc RawViewportF[viewports.Count];
 
 		    for (int i = 0; i < viewports.Count; ++i)
@@ -923,10 +887,15 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Function to assign scissor rectangles.
 		/// </summary>
-		/// <param name="scissorRects">The scissor rectangles to assign.</param>
-	    private void SetScissorRects(GorgonMonitoredValueTypeArray<DX.Rectangle> scissorRects)
+	    private void SetScissorRects()
 	    {
-		    ref (int Start, int Count, DX.Rectangle[] Scissors) scissors = ref scissorRects.GetDirtyItems();
+            // If there's been no change to the scissor rectangles, then we do nothing as the state should be the same as last time.
+	        if (!_scissorRectangles.IsDirty)
+	        {
+	            return;
+	        }
+                
+		    ref (int Start, int Count, DX.Rectangle[] Scissors) scissors = ref _scissorRectangles.GetDirtyItems();
 
 		    if (scissors.Count != _cachedScissors.Length)
 		    {
@@ -1155,15 +1124,10 @@ namespace Gorgon.Graphics.Core
 				D3DDeviceContext.InputAssembler.PrimitiveTopology = drawCall.PrimitiveTopology;
 			}
 
-			if ((resourceChanges & PipelineResourceChange.Viewports) == PipelineResourceChange.Viewports)
-			{
-				SetViewports(drawCall.Viewports);
-			}
-
-			if ((resourceChanges & PipelineResourceChange.ScissorRectangles) == PipelineResourceChange.ScissorRectangles)
-			{
-				SetScissorRects(drawCall.ScissorRectangles);
-			}
+            // Bind the scissor rectangles.
+            SetScissorRects();
+            // Bind the active viewports.
+			SetViewports();
 
 			if ((resourceChanges & PipelineResourceChange.InputLayout) == PipelineResourceChange.InputLayout)
 			{
@@ -1241,6 +1205,10 @@ namespace Gorgon.Graphics.Core
         /// <see cref="DepthStencilView"/>. If it does not, the <see cref="DepthStencilView"/> will be set to <b>null</b>.
         /// </para>
         /// <para>
+        /// When a render target is set, the first scissor rectangle in the <see cref="ScissorRectangles"/> list and the first viewport in the <see cref="Viewports"/> list will be reset to the size of the 
+        /// render target. The user is responsible for restoring these to their intended values after assigning the target.
+        /// </para>
+        /// <para>
         /// <note type="information">
         /// <para>
         /// If the <see cref="RenderTargets"/> list contains other render target views at different slots, they will be unbound.
@@ -1258,6 +1226,8 @@ namespace Gorgon.Graphics.Core
         /// <seealso cref="SetRenderTargets(GorgonRenderTargetView[], GorgonDepthStencilView)"/>
         /// <seealso cref="RenderTargets"/>
         /// <seealso cref="DepthStencilView"/>
+        /// <seealso cref="ScissorRectangles"/>
+        /// <seealso cref="Viewports"/>
         public void SetRenderTarget(GorgonRenderTargetView renderTarget)
         {
             SetRenderTarget(renderTarget, renderTarget?.DepthStencilView);
@@ -1299,6 +1269,10 @@ namespace Gorgon.Graphics.Core
         /// <see cref="GorgonMultisampleInfo"/> of the resource attached to the <see cref="GorgonDepthStencilView"/> being assigned must match, or an exception will be thrown.
         /// </para>
         /// <para>
+        /// When a render target is set, the first scissor rectangle in the <see cref="ScissorRectangles"/> list and the first viewport in the <see cref="Viewports"/> list will be reset to the size of the 
+        /// render target. The user is responsible for restoring these to their intended values after assigning the target.
+        /// </para>
+        /// <para>
         /// <note type="information">
         /// <para>
         /// The exceptions raised when validating a view against other views in this list are only thrown when Gorgon is compiled as <b>DEBUG</b>.
@@ -1310,6 +1284,8 @@ namespace Gorgon.Graphics.Core
         /// <seealso cref="SetRenderTargets(GorgonRenderTargetView[], GorgonDepthStencilView)"/>
         /// <seealso cref="RenderTargets"/>
         /// <seealso cref="DepthStencilView"/>
+        /// <seealso cref="ScissorRectangles"/>
+        /// <seealso cref="RenderTargets"/>
         public void SetRenderTarget(GorgonRenderTargetView renderTarget, GorgonDepthStencilView depthStencil)
         {
             _renderTargets.Clear();
@@ -1320,6 +1296,17 @@ namespace Gorgon.Graphics.Core
             }
 
             _renderTargets[0] = renderTarget;
+
+            if (_renderTargets[0] != null)
+            {
+                ScissorRectangles[0] = _renderTargets[0].Bounds;
+                Viewports[0] = new DX.ViewportF(0, 0, _renderTargets[0].Bounds.Width, _renderTargets[0].Bounds.Height);
+            }
+            else
+            {
+                ScissorRectangles[0] = DX.Rectangle.Empty;
+                Viewports[0] = default(DX.ViewportF);
+            }
 
             DepthStencilView = depthStencil;
             SetRenderTargetAndDepthViews();
@@ -1354,6 +1341,10 @@ namespace Gorgon.Graphics.Core
         /// The format for the <paramref name="renderTargets"/> and <paramref name="depthStencil"/> may differ from the formats of other views passed in.
         /// </para>
         /// <para>
+        /// When a render target is set, the first scissor rectangle in the <see cref="ScissorRectangles"/> list and the first viewport in the <see cref="Viewports"/> list will be reset to the size of the 
+        /// first render target. The user is responsible for restoring these to their intended values after assigning the targets.
+        /// </para>
+        /// <para>
         /// <note type="information">
         /// <para>
         /// The exceptions raised when validating a view against other views in this list are only thrown when Gorgon is compiled as <b>DEBUG</b>.
@@ -1365,12 +1356,16 @@ namespace Gorgon.Graphics.Core
         /// <seealso cref="SetRenderTarget(GorgonRenderTargetView, GorgonDepthStencilView)"/>
         /// <seealso cref="RenderTargets"/>
         /// <seealso cref="DepthStencilView"/>
+        /// <seealso cref="ScissorRectangles"/>
+        /// <seealso cref="Viewports"/>
         public void SetRenderTargets(GorgonRenderTargetView[] renderTargets, GorgonDepthStencilView depthStencil = null)
         {
             _renderTargets.Clear();
 
-            if (renderTargets == null)
+            if ((renderTargets == null)
+                || (renderTargets.Length == 0))
             {
+                ScissorRectangles[0] = DX.Rectangle.Empty;
                 DepthStencilView = depthStencil;
                 SetRenderTargetAndDepthViews();
                 return;
@@ -1379,6 +1374,17 @@ namespace Gorgon.Graphics.Core
             for (int i = 0; i < renderTargets.Length.Min(_renderTargets.Count); ++i)
             {
                 _renderTargets[i] = renderTargets[i];
+            }
+
+            if (_renderTargets[0] != null)
+            {
+                ScissorRectangles[0] = renderTargets[0].Bounds;
+                Viewports[0] = new DX.ViewportF(0, 0, renderTargets[0].Bounds.Width, renderTargets[0].Bounds.Height);
+            }
+            else
+            {
+                ScissorRectangles[0] = DX.Rectangle.Empty;
+                Viewports[0] = default(DX.ViewportF);
             }
 
             if ((!_renderTargets.IsDirty) && (DepthStencilView == depthStencil))
@@ -1731,7 +1737,11 @@ namespace Gorgon.Graphics.Core
 			_log.Print($"Using video device '{videoDeviceInfo.Name}' at feature level [{featureLevel.Value}] for Direct 3D 11.1.", LoggingLevel.Simple);
             
 			_videoDevice = new VideoDevice(videoDeviceInfo, featureLevel.Value, _log);
-            _nativeRenderTargetViews = new D3D11.RenderTargetView[_videoDevice.MaximumRenderTargetCount];
+
+            _scissorRectangles = new GorgonMonitoredValueTypeArray<DX.Rectangle>(_videoDevice.MaxScissorCount);
+            _viewports = new GorgonMonitoredValueTypeArray<DX.ViewportF>(_videoDevice.MaxViewportCount);
+
+            _nativeRenderTargetViews = new D3D11.RenderTargetView[_videoDevice.MaxRenderTargetCount];
 			_deviceContext = _videoDevice.D3DDevice.ImmediateContext1;
             _renderTargets = new GorgonRenderTargetViews();
 

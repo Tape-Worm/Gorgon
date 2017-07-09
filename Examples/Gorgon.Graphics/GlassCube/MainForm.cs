@@ -120,7 +120,6 @@ namespace GorgonLibrary.Example
 		private void AfterSwapChainResized(object sender, EventArgs eventArgs)
 		{
 			DX.Matrix.PerspectiveFovLH(60.0f.ToRadians(), (float)ClientSize.Width / ClientSize.Height, 0.1f, 1000.0f, out _projectionMatrix);
-			_drawCall.Viewports[0] = new DX.ViewportF(0, 0, ClientSize.Width, ClientSize.Height, 0.0f, 1.0f);
 		}
 
 		/// <summary>
@@ -267,10 +266,6 @@ namespace GorgonLibrary.Example
 
                             IndexStart = 0,
                             IndexCount = _cube.IndexBuffer.Info.IndexCount,
-                            Viewports =
-                            {
-                                [0] = new DX.ViewportF(0, 0, ClientSize.Width, ClientSize.Height, 0, 1.0f)
-                            },
                             PipelineState = _graphics.GetPipelineState(new GorgonPipelineStateInfo
                                                                        {
                                                                            PixelShader = _pixelShader,
@@ -278,7 +273,7 @@ namespace GorgonLibrary.Example
                                                                            DepthStencilState =
                                                                                new GorgonDepthStencilStateInfo(GorgonDepthStencilStateInfo.Default),
                                                                            // We turn off culling so we can see through the cube.
-                                                                           RasterState = GorgonRasterStateInfo.NoCulling,
+                                                                           RasterState = GorgonRasterState.NoCulling,
                                                                            // We turn on blending so that the alpha in the texture can allow a 
                                                                            // translucency effect and we can see the other faces through the cube.
                                                                            RenderTargetBlendState = new[]

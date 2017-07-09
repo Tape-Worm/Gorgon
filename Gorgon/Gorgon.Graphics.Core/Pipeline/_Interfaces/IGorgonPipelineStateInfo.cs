@@ -60,7 +60,7 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Property to return the current <see cref="IGorgonRasterStateInfo"/>.
 		/// </summary>
-		IGorgonRasterStateInfo RasterState
+		GorgonRasterState RasterState
 		{
 			get;
 		}
