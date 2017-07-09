@@ -130,14 +130,10 @@ namespace Gorgon.Graphics.Core
 		/// </remarks>
 		public IReadOnlyList<GorgonTexture> BackBufferTextures => _backBufferTextures;
 
-		/// <summary>
-		/// Property to return the render target view associated with this swap chain.
-		/// </summary>
-		public GorgonRenderTargetView RenderTargetView
-		{
-			get;
-			private set;
-		}
+	    /// <summary>
+	    /// Property to return the render target view associated with this swap chain.
+	    /// </summary>
+	    public GorgonRenderTargetView RenderTargetView => _backBufferTextures[0].DefaultRenderTargetView;
 
 	    /// <summary>
 	    /// Property to return the depth/stencil view for a depth/stencil buffer associated with this swap chain.
@@ -322,7 +318,6 @@ namespace Gorgon.Graphics.Core
 		    }
 
             _log.Print($"SwapChain '{Name}': Creating D3D11 render target view...", LoggingLevel.Verbose);
-		    RenderTargetView = new GorgonRenderTargetView(_backBufferTextures[0], _log);
 
             // Restore the depth/stencil view.
             if ((targetIndices.TargetIndex == -1) && (!targetIndices.UsedDepthStencil))
@@ -688,7 +683,7 @@ namespace Gorgon.Graphics.Core
 			try
 			{
 				IsInStandBy = false;
-				GISwapChain.Present(interval, flags);
+			    GISwapChain.Present(interval, flags);
 			}
 			catch (DX.SharpDXException sdex)
 			{

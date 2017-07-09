@@ -33,6 +33,15 @@ namespace Gorgon.Graphics.Example
 	/// </summary>
 	public class Material
 	{
+        /// <summary>
+        /// Property to set or return the diffuse color for the model.
+        /// </summary>
+	    public GorgonColor Diffuse
+	    {
+	        get;
+            set;
+	    }
+
 		/// <summary>
 		/// Property to set or return the texture for the model.
 		/// </summary>

@@ -69,10 +69,6 @@ namespace Gorgon.Graphics.Core
 
 		/// <summary>Gets or sets the element at the specified index.</summary>
 		/// <returns>The element at the specified index.</returns>
-		/// <param name="index">The zero-based index of the element to get or set.</param>
-		/// <exception cref="T:System.ArgumentOutOfRangeException">
-		/// <paramref name="index" /> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1" />.</exception>
-		/// <exception cref="T:System.NotSupportedException">The property is set and the <see cref="T:System.Collections.Generic.IList`1" /> is read-only.</exception>
 		public T this[int index]
 		{
 			get => _backingStore[index];
@@ -83,21 +79,23 @@ namespace Gorgon.Graphics.Core
 					return;
 				}
 
-				_backingStore[index] = value;
+			    T oldValue = _backingStore[index];
+                _backingStore[index] = value;
 				_dirtyIndices |= 1 << index;
 
-				OnItemSet(index, value);
+				OnItemSet(index, value, oldValue);
 			}
 		}
-		#endregion
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function called when an item is assigned to an index.
-		/// </summary>
-		/// <param name="index">The index of the item that was assigned.</param>
-		/// <param name="value">The value that was assigned.</param>
-		protected virtual void OnItemSet(int index, T value)
+        #region Methods.
+        /// <summary>
+        /// Function called when an item is assigned to an index.
+        /// </summary>
+        /// <param name="index">The index of the item that was assigned.</param>
+        /// <param name="value">The value that was assigned.</param>
+        /// <param name="oldItem">The previous item in the slot.</param>
+        protected virtual void OnItemSet(int index, T value, T oldItem)
 		{
 		}
 
@@ -295,12 +293,12 @@ namespace Gorgon.Graphics.Core
 		/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only. </exception>
 		public void Clear()
 		{
+		    OnClear();
+
 			Array.Clear(_backingStore, 0, _backingStore.Length);
-			// Mark all indices as dirty.
+			
 			_dirtyIndices = 0;
 			_dirtyItems = (0, 0, BackingArray);
-
-			OnClear();
 		}
 		
 		/// <summary>Returns an enumerator that iterates through the collection.</summary>

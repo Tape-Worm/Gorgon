@@ -275,7 +275,6 @@ namespace Gorgon.Graphics
 		public void Dispose()
 		{
 			_wvpBuffer?.Dispose();
-			_defaultSampler.Dispose();
 			_vertexBufferBindings?[0].VertexBuffer?.Dispose();
 			_inputLayout?.Dispose();
 			_vertexShader?.Dispose();
@@ -293,7 +292,7 @@ namespace Gorgon.Graphics
 		{
 			_graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
 
-			_defaultSampler = new GorgonSamplerState(_graphics, GorgonSamplerStateInfo.Default);
+			_defaultSampler = GorgonSamplerState.Default;
 			_drawCall = new GorgonDrawCall
 			            {
 				            PrimitiveTopology = D3D.PrimitiveTopology.TriangleList,

@@ -79,7 +79,8 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="index">The index of the slot being assigned.</param>
 		/// <param name="item">The item being assigned.</param>
-		protected override void OnItemSet(int index, GorgonConstantBuffer item)
+		/// <param name="oldItem">The previous item in the slot.</param>
+		protected override void OnItemSet(int index, GorgonConstantBuffer item, GorgonConstantBuffer oldItem)
 		{
 			_native[index] = item?.D3DBuffer;
 		}

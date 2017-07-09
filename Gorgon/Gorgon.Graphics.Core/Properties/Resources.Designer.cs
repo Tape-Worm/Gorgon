@@ -903,6 +903,15 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The {0} has been assigned and is now in a read only state..
+        /// </summary>
+        internal static string GORGFX_ERR_STATE_IMMUTABLE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_STATE_IMMUTABLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot read beyond the end of a stream..
         /// </summary>
         internal static string GORGFX_ERR_STREAM_EOF {
@@ -2293,6 +2302,25 @@ namespace Gorgon.Graphics.Core.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to // Texture and sampler for blitting a texture.
+        ///Texture2D _bltTexture : register(t0);
+        ///SamplerState _bltSampler : register(s0);
+        ///
+        ///// Our default blitting vertex.
+        ///struct GorgonBltVertex
+        ///{
+        ///   float4 position : SV_POSITION;
+        ///   float2 uv : TEXCOORD;
+        ///};
+        ///
+        ///// The transformation matrices (for vertex shader).
+        ///cbuffer GorgonBltWorldViewProjection : register(b0)
+        ///{
+        ///	float4x4 WorldViewProjection;
+        ///}
+        ///
+        ///// Our vertex shader for blitting textures.
+        ///GorgonBltVertex GorgonBltVertexShader(GorgonBltVertex vertex)
+        /// [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string GraphicsShaders {
             get {

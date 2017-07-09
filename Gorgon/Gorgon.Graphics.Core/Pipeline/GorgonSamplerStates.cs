@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
@@ -40,77 +39,31 @@ namespace Gorgon.Graphics.Core
 		/// The maximum number of allowed sampler states that can be bound at the same time.
 		/// </summary>
 		public const int MaximumSamplerStateCount = D3D11.CommonShaderStage.SamplerSlotCount;
-		#endregion
+        #endregion
 
-		#region Variables.
-		// The native resource bindings.
-		private readonly D3D11.SamplerState[] _native = new D3D11.SamplerState[MaximumSamplerStateCount];
-		#endregion
+        #region Methods.
+	    /// <summary>
+	    /// Function called when an item is assigned to an index.
+	    /// </summary>
+	    /// <param name="index">The index of the item that was assigned.</param>
+	    /// <param name="value">The value that was assigned.</param>
+	    /// <param name="oldItem">The previous item in the slot.</param>
+	    protected override void OnItemSet(int index, GorgonSamplerState value, GorgonSamplerState oldItem)
+	    {
+	        if (value != null)
+	        {
+	            value.IsLocked = true;
+	        }
+	    }
+	    #endregion
 
-
-		#region Properties.
-		/// <summary>
-		/// Propetry to return the native sampler states.
-		/// </summary>
-		internal D3D11.SamplerState[] Native => _native;
-		#endregion
-
-		#region Methods.
-		/// <summary>
-		/// Function called when an item is assigned to a slot in the binding list.
-		/// </summary>
-		/// <param name="index">The index of the slot being assigned.</param>
-		/// <param name="item">The item being assigned.</param>
-		/// <remarks>
-		/// <para>
-		/// Implementors must override this method to assign the native version of the object to bind. 
-		/// </para>
-		/// </remarks>
-		protected override void OnItemSet(int index, GorgonSamplerState item)
-		{
-			_native[index] = item?.D3DState;
-		}
-
-		/// <summary>
-		/// Function to clear the list of native binding objects.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// The implementing class must implement this in order to unassign items from the native binding object list when the <see cref="GorgonMonitoredArray{T}.Clear"/> method is called.
-		/// </para>
-		/// </remarks>
-		protected override void OnClear()
-		{
-			Array.Clear(_native, 0, MaximumSamplerStateCount);
-		}
-		#endregion
-
-		#region Constructor/Finalizer.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonSamplerStates"/> class.
-		/// </summary>
-		internal GorgonSamplerStates()
+        #region Constructor/Finalizer.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonSamplerStates"/> class.
+        /// </summary>
+        internal GorgonSamplerStates()
 			: base(MaximumSamplerStateCount)
 		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonSamplerStates"/> class.
-		/// </summary>
-		/// <param name="size">The number of sampler states to place within this list.</param>
-		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> parameter is less than 1, or greater than the <see cref="MaximumSamplerStateCount"/>.</exception>
-		public GorgonSamplerStates(int size)
-			: base(size)
-		{
-			if (size < 1)
-			{
-				throw new ArgumentOutOfRangeException(nameof(size));
-			}
-
-			if (size > MaximumSamplerStateCount)
-			{
-				throw new ArgumentOutOfRangeException(nameof(size));
-			}
 		}
 		#endregion
 	}

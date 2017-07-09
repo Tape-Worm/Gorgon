@@ -69,10 +69,6 @@ namespace GorgonLibrary.Example
 	    private GorgonVertexShader _vertexShader;
 		// The texture to apply to the cube.
 	    private GorgonTexture _texture;
-		// The bilinear filtering sampler to use when sampling texture data.
-	    private GorgonSamplerState _bilinearSampler;
-		// The point filtering sampler to use when sampling texture data.
-		private GorgonSamplerState _pointSampler;
 		// The draw call used to submit data to the GPU.
 		private GorgonDrawIndexedCall _drawCall;
 		// The cube to draw.
@@ -214,10 +210,6 @@ namespace GorgonLibrary.Example
 		        _texture = image.ToTexture("GlassCube Texture", _graphics);
 	        }
 
-			// Create the sampler states for the texture.
-			_bilinearSampler = new GorgonSamplerState(_graphics, GorgonSamplerStateInfo.Default);
-	        _pointSampler = new GorgonSamplerState(_graphics, GorgonSamplerStateInfo.PointFiltering);
-
 			// Create our shaders.
 	        _vertexShader = GorgonShaderFactory.Compile<GorgonVertexShader>(_graphics.VideoDevice, Resources.GlassCubeShaders, "GlassCubeVS");
 	        _pixelShader = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics.VideoDevice, Resources.GlassCubeShaders, "GlassCubePS");
@@ -266,7 +258,7 @@ namespace GorgonLibrary.Example
                                 // Start with bilinear filtering on the cube texture.
                                 // This will smooth out the appearance of the texture as it is scaled closer or further away 
                                 // from our view.
-                                [0] = _bilinearSampler
+                                [0] = GorgonSamplerState.Default
                             },
                             VertexShaderConstantBuffers =
                             {
@@ -318,16 +310,13 @@ namespace GorgonLibrary.Example
 		        return;
 	        }
 
-			// When we assign a new sampler state, we have to use the GorgonSamplerStates object to pass in 1 or more samplers. Assigning a sampler to a 
-			// slot on an existing sampler state list will not be picked up. This is done to keep from having to check each sampler slot every time a state 
-			// is changed and will slightly improve performance.
-			if (_drawCall.PixelShaderSamplers[0] == _bilinearSampler)
+			if (_drawCall.PixelShaderSamplers[0] == GorgonSamplerState.Default)
 	        {
-		        _drawCall.PixelShaderSamplers[0] = _pointSampler;
+		        _drawCall.PixelShaderSamplers[0] = GorgonSamplerState.PointFiltering;
 	        }
 	        else
 	        {
-		        _drawCall.PixelShaderSamplers[0] = _bilinearSampler;
+		        _drawCall.PixelShaderSamplers[0] = GorgonSamplerState.Default;
 	        }
         }
 
@@ -341,8 +330,6 @@ namespace GorgonLibrary.Example
 
 			// Always clean up after yourself.
 			_cube?.Dispose();
-			_pointSampler?.Dispose();
-			_bilinearSampler?.Dispose();
 			_texture?.Dispose();
 			_wvpBuffer?.Dispose();
 			_inputLayout?.Dispose();

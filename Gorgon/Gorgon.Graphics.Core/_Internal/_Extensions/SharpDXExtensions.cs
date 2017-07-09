@@ -171,7 +171,7 @@ namespace Gorgon.Graphics.Core
 				       Height = swapChainInfo.Height,
 				       Scaling = swapChainInfo.StretchBackBuffer ? DXGI.Scaling.Stretch : DXGI.Scaling.None,
 					   SampleDescription = ToSampleDesc(GorgonMultisampleInfo.NoMultiSampling),
-					   SwapEffect = DXGI.SwapEffect.FlipSequential,
+					   SwapEffect = DXGI.SwapEffect.Discard,
 					   Usage = DXGI.Usage.RenderTargetOutput
 			       };
 		}
@@ -214,7 +214,7 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="state">The state to convert.</param>
 		/// <returns>A new D3D 11 sampler state desc.</returns>
-		public static D3D11.SamplerStateDescription ToSamplerStateDesc(this IGorgonSamplerStateInfo state)
+		public static D3D11.SamplerStateDescription ToSamplerStateDesc(this GorgonSamplerState state)
 		{
 			return new D3D11.SamplerStateDescription
 			       {

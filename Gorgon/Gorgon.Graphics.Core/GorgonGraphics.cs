@@ -152,6 +152,8 @@ namespace Gorgon.Graphics.Core
         private bool _depthStencilChanged;
         // The list of render targets currently assigned.
         private readonly GorgonRenderTargetViews _renderTargets;
+        // The states used for texture samplers.  Used as a transitional buffer between D3D11 and Gorgon.
+        private readonly D3D11.SamplerState[] _samplerStates = new D3D11.SamplerState[GorgonSamplerStates.MaximumSamplerStateCount];
         #endregion
 
 		#region Properties.
@@ -1116,13 +1118,25 @@ namespace Gorgon.Graphics.Core
 	    {
 		    ref (int StartSlot, int Count, GorgonSamplerState[] Bindings) bindings = ref samplers.GetDirtyItems();
 
+	        for (int i = bindings.StartSlot; i < bindings.StartSlot + bindings.Count; ++i)
+	        {
+	            GorgonSamplerState state = bindings.Bindings[i];
+
+	            if (state.Native == null)
+	            {
+	                state.Native = SamplerStateFactory.GetSamplerState(this, bindings.Bindings[i], _log);
+	            }
+
+	            _samplerStates[i] = state.Native;
+            }
+
 		    switch (shaderType)
 		    {
 			    case ShaderType.Pixel:
-				    D3DDeviceContext.PixelShader.SetSamplers(bindings.StartSlot, bindings.Count, samplers.Native);
+				    D3DDeviceContext.PixelShader.SetSamplers(bindings.StartSlot, bindings.Count, _samplerStates);
 				    break;
 			    case ShaderType.Vertex:
-				    D3DDeviceContext.VertexShader.SetSamplers(bindings.StartSlot, bindings.Count, samplers.Native);
+				    D3DDeviceContext.VertexShader.SetSamplers(bindings.StartSlot, bindings.Count, _samplerStates);
 				    break;
 		    }
 	    }
@@ -1386,12 +1400,12 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public void ClearStateCache()
 		{
-			if (D3DDeviceContext != null)
-			{
-				ClearState();
-			}
+		    if (D3DDeviceContext != null)
+		    {
+		        ClearState();
+		    }
 
-			lock (_stateCacheLock)
+		    lock (_stateCacheLock)
 			{
 				// Wipe out the state cache.
 				// ReSharper disable once ForCanBeConvertedToForeach
@@ -1403,6 +1417,8 @@ namespace Gorgon.Graphics.Core
 				}
 
 				_stateCache.Clear();
+                
+                SamplerStateFactory.ClearCache();
 			}
 		}
 
@@ -1718,6 +1734,11 @@ namespace Gorgon.Graphics.Core
             _nativeRenderTargetViews = new D3D11.RenderTargetView[_videoDevice.MaximumRenderTargetCount];
 			_deviceContext = _videoDevice.D3DDevice.ImmediateContext1;
             _renderTargets = new GorgonRenderTargetViews();
+
+            // Assign common sampler states to the factory cache.
+		    SamplerStateFactory.GetSamplerState(this, GorgonSamplerState.Default, _log);
+		    SamplerStateFactory.GetSamplerState(this, GorgonSamplerState.AnisotropicFiltering, _log);
+		    SamplerStateFactory.GetSamplerState(this, GorgonSamplerState.PointFiltering, _log);
 			
 			_log.Print("Gorgon Graphics initialized.", LoggingLevel.Simple);
 		}

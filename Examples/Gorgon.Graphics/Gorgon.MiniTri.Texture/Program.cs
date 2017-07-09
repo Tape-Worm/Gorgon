@@ -83,8 +83,6 @@ namespace Gorgon.Graphics.Example
 		private static GorgonConstantBuffer _constantBuffer;
 		// The texture to apply to the triangle.
 		private static GorgonTexture _texture;
-		// The sampler used to define how to read the texture values in the pixel shader.
-		private static GorgonSamplerState _textureSampler;
 		// This defines the data to send to the GPU.  
 		// A draw call tells the GPU what to draw, and what special states to apply when rendering. This will be submitted to our GorgonGraphics object so that the 
 		// GPU can queue up the data for rendering.
@@ -139,7 +137,7 @@ namespace Gorgon.Graphics.Example
 			// We need to this or we won't see anything at all except the standard window background color. Clearly, we don't want that. 
 			// This method will take the current frame back buffer and flip it to the front buffer (the window). If we had more than one swap chain tied to multiple 
 			// windows, then we'd need to do this for every swap chain.
-			_swap.Present();
+			_swap.Present(1);
 			
 			return true;
 		}
@@ -226,10 +224,6 @@ namespace Gorgon.Graphics.Example
 				// Upload the image data into the texture.
 				_texture = image.ToTexture("Gorgon.MiniTri.Texture", _graphics);
 			}
-
-			// In order to sample the texel data in the shader, we need to provide a sampler to use. In our example, we'll be using the default sampler 
-			// information which provides bilinear filtering when sampling a texel.
-			_textureSampler = new GorgonSamplerState(_graphics, GorgonSamplerStateInfo.Default);
 		}
 
 		/// <summary>
@@ -355,7 +349,7 @@ namespace Gorgon.Graphics.Example
 				            {
 					            // Like a texture resource, we have to assign this to the slot referenced in the 
 					            // pixel shader.
-					            [0] = _textureSampler
+					            [0] = GorgonSamplerState.Default
 				            },
 
 				            // Define the current state of the rendering pipeline.
@@ -398,7 +392,6 @@ namespace Gorgon.Graphics.Example
 				// Always clean up when you're done.
 				// Since Gorgon uses Direct 3D 11.1, which allocate objects that use native memory and COM objects, we must be careful to dispose of any objects that implement 
 				// IDisposable. Failure to do so can lead to warnings from the Direct 3D runtime when running in DEBUG mode.
-				_textureSampler?.Dispose();
 				_texture?.Dispose();
 				_constantBuffer?.Dispose();
 				_vertexBuffer?.Dispose();

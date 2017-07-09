@@ -102,7 +102,7 @@ namespace Gorgon.Graphics.Example
 			// We need to this or we won't see anything at all except the standard window background color. Clearly, we don't want that. 
 			// This method will take the current frame back buffer and flip it to the front buffer (the window). If we had more than one swap chain tied to multiple 
 			// windows, then we'd need to do this for every swap chain.
-			_swap.Present();
+			_swap.Present(1);
 			
 			return true;
 		}

@@ -365,17 +365,6 @@ namespace Gorgon.Graphics.Core
         /// Initializes a new instance of the <see cref="GorgonRenderTargetView"/> class.
         /// </summary>
         /// <param name="texture">The render target texture to bind.</param>
-        /// <param name="log">[Optional] Logging interface for debugging.</param>
-        internal GorgonRenderTargetView(GorgonTexture texture, IGorgonLog log = null)
-            : this(texture, DXGI.Format.Unknown, 0, 0, texture.Info.TextureType == TextureType.Texture3D ? texture.Info.Depth : texture.Info.ArrayCount, log)
-        {
-            DepthStencilView = texture.AssociatedDepthStencil?.DefaultDepthStencilView;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonRenderTargetView"/> class.
-        /// </summary>
-        /// <param name="texture">The render target texture to bind.</param>
         /// <param name="format">The format of the render target view.</param>
         /// <param name="mipSlice">The mip slice to use in the view.</param>
         /// <param name="arrayOrDepthIndex">The first array index to use in the view.</param>
@@ -426,6 +415,7 @@ namespace Gorgon.Graphics.Core
 				throw new ArgumentException(Resources.GORGFX_ERR_VIEW_NO_TYPELESS, nameof(format));
 			}
 
+            DepthStencilView = texture.AssociatedDepthStencil?.DefaultDepthStencilView;
             Format = format;
             MipSlice = mipSlice;
             ArrayOrDepthIndex = arrayOrDepthIndex;

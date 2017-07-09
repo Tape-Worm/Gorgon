@@ -138,6 +138,7 @@
     <Compile Include="Pipeline\GorgonMonitoredValueTypeArray.cs" />
     <Compile Include="Pipeline\_Interfaces\IGorgonShaderStates.cs" />
     <Compile Include="Pipeline\_Interfaces\IGorgonPipelineStateInfo.cs" />
+    <Compile Include="Pipeline\_Internal\SamplerStateFactory.cs" />
     <Compile Include="Shaders\GorgonShaderResourceView.cs" />
     <Compile Include="Pipeline\GorgonShaderResourceViews.cs" />
     <Compile Include="Pipeline\GorgonDrawIndexedCall.cs" />
@@ -148,8 +149,7 @@
     <Compile Include="States\GorgonRenderTargetBlendStateInfo.cs" />
     <Compile Include="States\GorgonRasterStateInfo.cs" />
     <Compile Include="States\GorgonDepthStencilStateInfo.cs" />
-    <Compile Include="Pipeline\GorgonSamplerState.cs" />
-    <Compile Include="States\GorgonSamplerStateInfo.cs" />
+    <Compile Include="States\GorgonSamplerState.cs" />
     <Compile Include="States\GorgonStencilOperationInfo.cs" />
     <Compile Include="States\_Interfaces\IGorgonRenderTargetBlendStateInfo.cs" />
     <Compile Include="States\_Interfaces\IGorgonDepthStencilStateInfo.cs" />
@@ -167,7 +167,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Resource\GorgonResource.cs" />
+    <Compile Include="GorgonResource.cs" />
     <Compile Include="Textures\_Interfaces\IGorgonTextureInfo.cs" />
     <Compile Include="Textures\_Interfaces\IGorgonImageToTextureInfo.cs" />
     <Compile Include="Textures\_Internal\BltVertex.cs" />

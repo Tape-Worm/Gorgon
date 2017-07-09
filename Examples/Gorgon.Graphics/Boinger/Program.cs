@@ -137,18 +137,18 @@ namespace Gorgon.Graphics.Example
 		private static GorgonVertexShader _vertexShader;
 		// Our primary pixel shader.	
 		private static GorgonPixelShader _pixelShader;
-		// Our "shadow" pixel shader.	
-		private static GorgonPixelShader _pixelShaderShadow;
 		// Input layout.
 		private static GorgonInputLayout _inputLayout;
 		// Our texture.    
 		private static GorgonTexture _texture;
 		// Our world/view/project matrix buffer.
 		private static GorgonConstantBuffer _wvpBuffer;
+        // Buffer holding our material.
+	    private static GorgonConstantBuffer _materialBuffer;
 		// TODO: 2D interface. 
-		//private static Gorgon2D _2D;								
-		// Our view matrix.
-		private static DX.Matrix _viewMatrix = DX.Matrix.Identity;
+        //private static Gorgon2D _2D;								
+        // Our view matrix.
+        private static DX.Matrix _viewMatrix = DX.Matrix.Identity;
 		// Our projection matrix.
 		private static DX.Matrix _projMatrix = DX.Matrix.Identity;
 		// Our walls.
@@ -173,8 +173,6 @@ namespace Gorgon.Graphics.Example
 		private static GorgonSamplerState _samplerState;
 		// The default pipeline state.		
 		private static GorgonPipelineState _pipelineState;
-		// The default shadow state.
-		private static GorgonPipelineState _shadowState;
 		// The draw call used to send our data to the GPU.
 		private static GorgonDrawIndexedCall _drawCall;
 		#endregion
@@ -258,6 +256,9 @@ namespace Gorgon.Graphics.Example
 			model.GetWorldMatrix(out DX.Matrix worldMatrix);
 			UpdateWVP(ref worldMatrix);
 
+		    GorgonColor color = model.Material.Diffuse;
+            _materialBuffer.Update(ref color);
+            
 			// Set up the draw call to render this models Index and Vertex buffers along with the current pipeline state.
 			_drawCall.IndexStart = 0;
 			_drawCall.IndexCount = model.IndexBuffer.Info.IndexCount;
@@ -295,8 +296,9 @@ namespace Gorgon.Graphics.Example
 				RenderModel(_planes[i], _pipelineState);
 			}
 
-			// Render the ball.
-			RenderModel(_sphere, _pipelineState);
+            // Render the ball.
+		    _sphere.Material.Diffuse = GorgonColor.White;
+            RenderModel(_sphere, _pipelineState);
 			
 			// Remember the position and rotation so we can restore them later.
 			DX.Vector3 spherePosition = _sphere.Position;
@@ -308,9 +310,11 @@ namespace Gorgon.Graphics.Example
 			_sphere.Scale = new DX.Vector3(1.155f, 1.155f, 0.001f);
 			// Reset the rotation so we don't rotate our flattened ball "shadow" (it'd look real weird if it rotated).
 			_sphere.Rotation = DX.Vector3.Zero;
+            // Render as black with alpha of 0.5 to simulate a shadow.
+            _sphere.Material.Diffuse = new GorgonColor(0, 0, 0, 0.5f);
 
 			// Render the shadow.
-			RenderModel(_sphere, _shadowState);
+			RenderModel(_sphere, _pipelineState);
 			
 			// Restore our original positioning so we can render the ball in the correct place on the next frame.
 			_sphere.Position = spherePosition;
@@ -514,10 +518,13 @@ namespace Gorgon.Graphics.Example
 			// This is here because the base graphics library will NOT handle state loss due to resizing.
 			// This is up to the developer to handle.
 			_swap.AfterSwapChainResized += Swap_AfterResized;
-			
-			// Initialize our draw call so we can render the objects.
-			// All objects are using triangle lists, so we must tell the draw call that's what we need to render.
-			_drawCall = new GorgonDrawIndexedCall
+
+		    // Set the current render target output so we can see something.
+		    _graphics.SetRenderTarget(_swap.RenderTargetView);
+
+            // Initialize our draw call so we can render the objects.
+            // All objects are using triangle lists, so we must tell the draw call that's what we need to render.
+            _drawCall = new GorgonDrawIndexedCall
 			            {
 				            PrimitiveTopology = D3D.PrimitiveTopology.TriangleList
 			            };
@@ -532,13 +539,10 @@ namespace Gorgon.Graphics.Example
 			// Our main pixel shader.  This is a very simple shader, it just reads a texture and spits it back out.  Has no
 			// diffuse capability.
 			_pixelShader = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics.VideoDevice, Resources.Shader, "BoingerPS");
-			// Our shadow shader for our ball "shadow".  This is hard coded to send back black (R:0, G:0, B:0) at 50% opacity (A: 0.5).
-			_pixelShaderShadow = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics.VideoDevice, Resources.Shader, "BoingerShadowPS");
 
-			// Create the vertex input layout.
-			// We need to create a layout for our vertex type because the shader won't know
-			// how to interpret the data we're sending it otherwise.  This is why we need a 
-			// vertex shader before we even create the layout.
+            // Create the vertex input layout.
+            // We need to create a layout for our vertex type because the shader won't know how to interpret the data we're sending it otherwise.  
+            // This is why we need a vertex shader before we even create the layout.
 			_inputLayout = GorgonInputLayout.CreateUsingType<BoingerVertex>(_graphics.VideoDevice, _vertexShader);
 
 			// Create the view port.
@@ -547,29 +551,24 @@ namespace Gorgon.Graphics.Example
 
 			// Resources are stored as System.Drawing.Bitmap files, so we need to convert into an IGorgonImage so we can upload it to a texture.
 			// We also will generate mip-map levels for this image so that scaling the texture will look better. 
-			int mipCount = GorgonImage.CalculateMaxMipCount(new GorgonImageInfo(ImageType.Image2D, DXGI.Format.R8G8B8A8_UNorm)
-			                                                {
-				                                                Width = Resources.Texture.Width,
-				                                                Height = Resources.Texture.Height
-			                                                });
-			using (IGorgonImage image = Resources.Texture.ConvertToGorgonImage()
-			                                     .GenerateMipMaps(mipCount))
-			{
-				_texture = image.ToTexture("Texture",
-				                           _graphics,
-				                           new GorgonImageToTextureInfo
-				                           {
-					                           Usage = D3D11.ResourceUsage.Immutable,
-					                           Binding = TextureBinding.ShaderResource
-				                           });
-			}
+		    using (IGorgonImage image = Resources.Texture.ConvertToGorgonImage()
+		                                         .GenerateMipMaps(GorgonImage.CalculateMaxMipCount(Resources.Texture.Width, Resources.Texture.Height, 0)))
+		    {
+		        _texture = image.ToTexture("Texture",
+		                                   _graphics,
+		                                   new GorgonImageToTextureInfo
+		                                   {
+		                                       Usage = D3D11.ResourceUsage.Immutable,
+		                                       Binding = TextureBinding.ShaderResource
+		                                   });
+		    }
 
-			// Create a sampler state for sampling our texture data.
-			_samplerState = new GorgonSamplerState(_graphics, new GorgonSamplerStateInfo(GorgonSamplerStateInfo.PointFiltering)
-			                                                  {
-				                                                  AddressU = D3D11.TextureAddressMode.Wrap,
-																  AddressV = D3D11.TextureAddressMode.Wrap
-			                                                  });
+		    // Create a sampler state for sampling our texture data.
+		    _samplerState = new GorgonSamplerState(GorgonSamplerState.PointFiltering)
+		                    {
+		                        AddressU = D3D11.TextureAddressMode.Wrap,
+		                        AddressV = D3D11.TextureAddressMode.Wrap
+		                    };
 
 			// Set up our view matrix.
 			// Move the camera (view matrix) back 2.2 units.  This will give us enough room to see what's
@@ -582,15 +581,20 @@ namespace Gorgon.Graphics.Example
 			// distribute Z values across depth (tip: it's not linear).
 			_projMatrix = DX.Matrix.PerspectiveFovLH((75.0f).ToRadians(), _mainForm.ClientSize.Width / (float)_mainForm.ClientSize.Height, 0.125f, 500.0f);
 
-			// Create our constant buffer and backing store.			
+			// Create our constant buffer.			
 			// Our constant buffers are how we send data to our shaders.  This one in particular will be responsible for sending our world/view/projection matrix 
-			// to the vertex shader.  The stream we're creating after the constant buffer is our system memory store for the data.  Basically we write to the 
-			// system memory and then upload that data to the video card.  
+			// to the vertex shader.  
 			_wvpBuffer = new GorgonConstantBuffer("WVPBuffer", _graphics, new GorgonConstantBufferInfo
 			                                                             {
 				                                                             Usage = D3D11.ResourceUsage.Default,
 																			 SizeInBytes = DX.Matrix.SizeInBytes
 			                                                             });
+            // This one will hold our material information.
+            _materialBuffer = new GorgonConstantBuffer("MaterialBuffer", _graphics, new GorgonConstantBufferInfo
+                                                                                    {
+                                                                                        Usage = D3D11.ResourceUsage.Default,
+                                                                                        SizeInBytes = DirectAccess.SizeOf<GorgonColor>()
+                                                                                    });
 
 			// Create our planes.
 			// Here's where we create the 2 planes for our rear wall and floor.  We set the texture size to texel units because that's how the video card expects 
@@ -599,28 +603,30 @@ namespace Gorgon.Graphics.Example
 			var textureSize = _texture.ToTexel(new DX.Size2(511, 511));
 
 			// And here we set up the planes with a material, and initial positioning.
-			_planes = new[]
-			          {
-				          new Plane(_graphics, _inputLayout, new DX.Vector2(3.5f), new DX.RectangleF(0, 0, textureSize.Width, textureSize.Height))
-				          {
-					          Material = new Material
-					                     {
-						                     Texture = _texture.DefaultShaderResourceView,
-						                     TextureSampler = _samplerState
-					                     },
-					          Position = new DX.Vector3(0, 0, 3.0f)
-				          },
-				          new Plane(_graphics, _inputLayout, new DX.Vector2(3.5f), new DX.RectangleF(0, 0, textureSize.Width, textureSize.Height))
-				          {
-					          Material = new Material
-					                     {
-						                     Texture = _texture.DefaultShaderResourceView,
-						                     TextureSampler = _samplerState
-					                     },
-					          Position = new DX.Vector3(0, -3.5f, 3.5f),
-					          Rotation = new DX.Vector3(90.0f, 0, 0)
-				          }
-			          };
+		    _planes = new[]
+		              {
+		                  new Plane(_graphics, _inputLayout, new DX.Vector2(3.5f), new DX.RectangleF(0, 0, textureSize.Width, textureSize.Height))
+		                  {
+		                      Material = new Material
+		                                 {
+		                                     Diffuse = GorgonColor.White,
+		                                     Texture = _texture.DefaultShaderResourceView,
+		                                     TextureSampler = _samplerState
+		                                 },
+		                      Position = new DX.Vector3(0, 0, 3.0f)
+		                  },
+		                  new Plane(_graphics, _inputLayout, new DX.Vector2(3.5f), new DX.RectangleF(0, 0, textureSize.Width, textureSize.Height))
+		                  {
+		                      Material = new Material
+		                                 {
+		                                     Diffuse = GorgonColor.White,
+		                                     Texture = _texture.DefaultShaderResourceView,
+		                                     TextureSampler = _samplerState
+		                                 },
+		                      Position = new DX.Vector3(0, -3.5f, 3.5f),
+		                      Rotation = new DX.Vector3(90.0f, 0, 0)
+		                  }
+		              };
 
 			// Create our sphere.
 			// Again, here we're using texels to align the texture coordinates to the other image packed into the texture (atlasing).  
@@ -633,16 +639,16 @@ namespace Gorgon.Graphics.Example
 				          Position = new DX.Vector3(2.2f, 1.5f, 2.5f),
 				          Material = new Material
 				                     {
+                                         Diffuse = GorgonColor.White,
 					                     Texture = _texture.DefaultShaderResourceView,
 					                     TextureSampler = _samplerState
 				                     }
 			          };
 
-			// Add resources that are common throughout the application to the draw call.
-			_drawCall.VertexShaderConstantBuffers[0] = _wvpBuffer;
 
-            // Set the current render target output so we can see something.
-            _graphics.SetRenderTarget(_swap.RenderTargetView);
+            // Add resources that are common throughout the application to the draw call.
+            _drawCall.VertexShaderConstantBuffers[0] = _wvpBuffer;
+		    _drawCall.PixelShaderConstantBuffers[0] = _materialBuffer;
 
 			// Initialize a pipeline state so that the graphics can be rendered using the correct shaders, depth buffer, and blending.
 			_pipelineState = _graphics.GetPipelineState(new GorgonPipelineStateInfo
@@ -656,13 +662,6 @@ namespace Gorgon.Graphics.Example
 					                                                                    new GorgonRenderTargetBlendStateInfo(GorgonRenderTargetBlendStateInfo.Modulated)
 				                                                                    }
 			                                           });
-			// This state is slightly different in that it uses a new shader to draw a "shadow" just behind the ball.
-			_shadowState = _graphics.GetPipelineState(new GorgonPipelineStateInfo(_pipelineState.Info)
-			                                         {
-				                                         DepthStencilState = new GorgonDepthStencilStateInfo(GorgonDepthStencilStateInfo.DepthStencilEnabledNoWrite),
-				                                         PixelShader = _pixelShaderShadow
-			                                         });
-
 
 			// I know, there's a lot in here.  Thing is, if this were Direct 3D 11 code, it'd probably MUCH 
 			// more code and that's even before creating our planes and sphere.
@@ -741,12 +740,11 @@ namespace Gorgon.Graphics.Example
 					}
 				}
 
-				_samplerState?.Dispose();
 				_texture?.Dispose();
 				_wvpBuffer?.Dispose();
+                _materialBuffer?.Dispose();
 				_vertexShader?.Dispose();
 				_pixelShader?.Dispose();
-				_pixelShaderShadow?.Dispose();
 				_inputLayout?.Dispose();
 				_swap?.Dispose();
 				_graphics?.Dispose();

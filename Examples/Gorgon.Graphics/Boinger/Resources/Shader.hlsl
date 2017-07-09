@@ -8,6 +8,12 @@ cbuffer WorldViewProjection : register(b0)
 	float4x4 WVP;
 }
 
+// The diffuse color.
+cbuffer Material : register(b0)
+{
+	float4 Diffuse;
+}
+
 // Our vertex.
 struct BoingerVertex
 {
@@ -29,11 +35,5 @@ BoingerVertex BoingerVS(BoingerVertex vertex)
 // Our pixel shader that will render objects with textures.
 float4 BoingerPS(BoingerVertex vertex) : SV_Target
 {
-	return _texture.Sample(_sampler, vertex.uv);
-}
-
-// Our pixel shader that will render our "shadow".
-float4 BoingerShadowPS(BoingerVertex vertex) : SV_Target
-{
-	return float4(0, 0, 0, 0.5f);
+	return _texture.Sample(_sampler, vertex.uv) * Diffuse;
 }

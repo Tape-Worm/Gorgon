@@ -209,14 +209,14 @@ namespace Gorgon.Graphics.Core
 			Array.Clear(_native, 0, _native.Length);
 		}
 
-		/// <summary>
-		/// Function called when an item is assigned to a slot in the binding list.
-		/// </summary>
-		/// <param name="index">The index of the slot being assigned.</param>
-		/// <param name="item">The item being assigned.</param>
-		protected override void OnItemSet(int index, GorgonRenderTargetView item)
+        /// <summary>
+        /// Function called when an item is assigned to a slot in the binding list.
+        /// </summary>
+        /// <param name="index">The index of the slot being assigned.</param>
+        /// <param name="item">The item being assigned.</param>
+        /// <param name="oldItem">The previous item in the slot.</param>
+        protected override void OnItemSet(int index, GorgonRenderTargetView item, GorgonRenderTargetView oldItem)
 		{
-
             _native[index] = item?.D3DRenderTargetView;
 		}
 		#endregion

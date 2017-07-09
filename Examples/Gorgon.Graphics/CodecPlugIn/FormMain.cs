@@ -92,7 +92,7 @@ namespace CodecPlugIn
 
 			_blitter.Blit(_texture, location.X, location.Y, size.Width, size.Height);
 
-			_swap.Present();
+			_swap.Present(1);
 
 			return true;
 		}

@@ -871,4 +871,7 @@ The width must be a value between 1-{2}, and the height must be a value between 
   <data name="GORGFX_ERR_VIEW_DEPTH_STENCIL_NO_3D" xml:space="preserve">
     <value>Depth/stencil views cannot be created for 3D texture types.</value>
   </data>
+  <data name="GORGFX_ERR_STATE_IMMUTABLE" xml:space="preserve">
+    <value>The {0} has been assigned and is now in a read only state.</value>
+  </data>
 </root>

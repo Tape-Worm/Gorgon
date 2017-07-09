@@ -24,19 +24,21 @@
 // 
 #endregion
 
+using System;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
 {
-	/// <summary>
-	/// Information used to create a <see cref="GorgonSamplerState"/>.
-	/// </summary>
+    /// <summary>
+    /// Describes how texture sampling should be performed when a texture is sampled in a shader.
+    /// </summary>
 	/// <remarks>
-	/// <para>
-	/// This provides an immutable view of the rasterizer state information so that it cannot be modified after the state is created.
-	/// </para>
-	/// </remarks>
-	public interface IGorgonSamplerStateInfo
+    /// <para>
+    /// This provides an immutable view of the rasterizer state information so that it cannot be modified after the state is created.
+    /// </para>
+    /// </remarks>
+    public interface IGorgonSamplerStateInfo4000
+        : IEquatable<IGorgonSamplerStateInfo4000>
 	{
 		/// <summary>
 		/// Property to return the type of filtering to apply to the texture.
