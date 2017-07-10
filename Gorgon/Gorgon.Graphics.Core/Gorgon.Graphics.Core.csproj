@@ -146,15 +146,11 @@
     <Compile Include="Shaders\GorgonShaderFactory.cs" />
     <Compile Include="Shaders\GorgonShaderMacro.cs" />
     <Compile Include="Shaders\_Internal\ShaderProcessor.cs" />
-    <Compile Include="States\GorgonRenderTargetBlendStateInfo.cs" />
+    <Compile Include="States\GorgonBlendState.cs" />
     <Compile Include="States\GorgonRasterState.cs" />
-    <Compile Include="States\GorgonDepthStencilStateInfo.cs" />
+    <Compile Include="States\GorgonDepthStencilState.cs" />
     <Compile Include="States\GorgonSamplerState.cs" />
-    <Compile Include="States\GorgonStencilOperationInfo.cs" />
-    <Compile Include="States\_Interfaces\IGorgonRenderTargetBlendStateInfo.cs" />
-    <Compile Include="States\_Interfaces\IGorgonDepthStencilStateInfo.cs" />
-    <Compile Include="States\_Interfaces\IGorgonStencilOperationInfo.cs" />
-    <Compile Include="States\_Interfaces\IGorgonRasterStateInfo.cs" />
+    <Compile Include="States\GorgonStencilOperation.cs" />
     <Compile Include="Targets\GorgonBeforeSwapChainResizedEventArgs.cs" />
     <Compile Include="Targets\GorgonDepthStencilView.cs" />
     <Compile Include="Targets\GorgonRenderTargetView.cs" />
@@ -212,9 +208,7 @@
       <Name>Gorgon.Graphics.Imaging</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="States\__OBSOLETE__\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

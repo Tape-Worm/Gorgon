@@ -153,6 +153,26 @@ namespace Gorgon.Graphics.Core
 		    {
 		        _info.RasterState.IsLocked = true;
 		    }
+
+		    if (_info.DepthStencilState != null)
+		    {
+		        _info.DepthStencilState.IsLocked = true;
+		    }
+
+		    if (_info.BlendStates != null)
+		    {
+		        for (int i = 0; i < _info.BlendStates.Length; ++i)
+		        {
+		            GorgonBlendState state = _info.BlendStates[i];
+
+		            if (state == null)
+		            {
+		                continue;
+		            }
+
+		            state.IsLocked = true;
+		        }
+		    }
 		}
 		#endregion
 	}

@@ -683,12 +683,12 @@ namespace Gorgon.Graphics.Core
 				};
 			}
 
-			if ((blendState != null) || (info.RenderTargetBlendState == null) || (info.RenderTargetBlendState.Count == 0))
+			if ((blendState != null) || (info.BlendStates == null) || (info.BlendStates.Count == 0))
 			{
 				return result;
 			}
 
-			int maxStates = info.RenderTargetBlendState.Count.Min(D3D11.OutputMergerStage.SimultaneousRenderTargetCount);
+			int maxStates = info.BlendStates.Count.Min(D3D11.OutputMergerStage.SimultaneousRenderTargetCount);
 
 			var desc = new D3D11.BlendStateDescription1
 			{
@@ -698,7 +698,7 @@ namespace Gorgon.Graphics.Core
 
 			for (int i = 0; i < maxStates; ++i)
 			{
-				desc.RenderTarget[i] = info.RenderTargetBlendState[i].ToRenderTargetBlendStateDesc1();
+				desc.RenderTarget[i] = info.BlendStates[i].ToRenderTargetBlendStateDesc1();
 			}
 
 			result.D3DBlendState = new D3D11.BlendState1(videoDevice, desc)
@@ -756,26 +756,26 @@ namespace Gorgon.Graphics.Core
 				    inheritedState |= PipelineStateChange.DepthStencilState;
 			    }
 
-			    if (ReferenceEquals(newStateInfo.RenderTargetBlendState, cachedStateInfo.RenderTargetBlendState))
+			    if (ReferenceEquals(newStateInfo.BlendStates, cachedStateInfo.BlendStates))
 			    {
 				    blendState = cachedState.D3DBlendState;
 				    inheritedState |= PipelineStateChange.BlendState;
 			    }
 			    else
 			    {
-			        if ((newStateInfo.RenderTargetBlendState != null)
-			            && (cachedStateInfo.RenderTargetBlendState != null)
-			            && (newStateInfo.RenderTargetBlendState.Count == cachedStateInfo.RenderTargetBlendState.Count))
+			        if ((newStateInfo.BlendStates != null)
+			            && (cachedStateInfo.BlendStates != null)
+			            && (newStateInfo.BlendStates.Count == cachedStateInfo.BlendStates.Count))
 			        {
-			            for (int j = 0; j < newStateInfo.RenderTargetBlendState.Count; ++j)
+			            for (int j = 0; j < newStateInfo.BlendStates.Count; ++j)
 			            {
-			                if (cachedStateInfo.RenderTargetBlendState[j].Equals(newStateInfo.RenderTargetBlendState[j]))
+			                if (cachedStateInfo.BlendStates[j]?.Equals(newStateInfo.BlendStates[j]) ?? false)
 			                {
 			                    blendStateEqualCount++;
 			                }
 			            }
 
-			            if (blendStateEqualCount == newStateInfo.RenderTargetBlendState.Count)
+			            if (blendStateEqualCount == newStateInfo.BlendStates.Count)
 			            {
 			                blendState = cachedState.D3DBlendState;
 			                inheritedState |= PipelineStateChange.BlendState;

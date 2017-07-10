@@ -31,11 +31,11 @@ namespace Gorgon.Graphics.Core
                 Items[index] = result = new GorgonPipelineStateInfo
                                         {
                                             RasterState = new GorgonRasterState(),
-                                            RenderTargetBlendState = new []
+                                            BlendStates = new []
                                                                      {
-                                                                         new GorgonRenderTargetBlendStateInfo()
+                                                                         new GorgonBlendState()
                                                                      },
-                                            DepthStencilState = new GorgonDepthStencilStateInfo()
+                                            DepthStencilState = new GorgonDepthStencilState()
                                         };
             }
 
@@ -49,53 +49,30 @@ namespace Gorgon.Graphics.Core
             result.VertexShader = existingState.VertexShader;
             result.PixelShader = existingState.PixelShader;
             result.RasterState = existingState.RasterState;
-
-            if (existingState.DepthStencilState == null)
+            result.DepthStencilState = existingState.DepthStencilState;
+            
+            if (existingState.BlendStates == null)
             {
-                result.DepthStencilState = null;
-            }
-            else
-            {
-                if (result.DepthStencilState == null)
-                {
-                    result.DepthStencilState = new GorgonDepthStencilStateInfo(existingState.DepthStencilState);
-                }
-                else
-                {
-                    result.DepthStencilState.CopyFrom(existingState.DepthStencilState);
-                }
-            }
-
-            if (existingState.RenderTargetBlendState == null)
-            {
-                result.RenderTargetBlendState = null;
+                result.BlendStates = null;
                 return result;
             }
 
-            if ((result.RenderTargetBlendState == null) || (result.RenderTargetBlendState.Length != existingState.RenderTargetBlendState.Count))
+            if ((result.BlendStates == null) || (result.BlendStates.Length != existingState.BlendStates.Count))
             {
-                result.RenderTargetBlendState = new GorgonRenderTargetBlendStateInfo[existingState.RenderTargetBlendState.Count];
+                result.BlendStates = new GorgonBlendState[existingState.BlendStates.Count];
             }
 
-            for (int i = 0; i < result.RenderTargetBlendState.Length; ++i)
+            for (int i = 0; i < result.BlendStates.Length; ++i)
             {
-                IGorgonRenderTargetBlendStateInfo existingBlend = existingState.RenderTargetBlendState[i];
+                GorgonBlendState existingBlend = existingState.BlendStates[i];
 
                 if (existingBlend == null)
                 {
-                    result.RenderTargetBlendState[i] = null;
+                    result.BlendStates[i] = null;
                     continue;
                 }
                     
-                GorgonRenderTargetBlendStateInfo blendState = result.RenderTargetBlendState[i];
-
-                if (blendState == null)
-                {
-                    result.RenderTargetBlendState[i] = new GorgonRenderTargetBlendStateInfo(existingBlend);
-                    continue;
-                }
-
-                blendState.CopyFrom(existingBlend);
+                result.BlendStates[i] = existingBlend;
             }
 
             return result;

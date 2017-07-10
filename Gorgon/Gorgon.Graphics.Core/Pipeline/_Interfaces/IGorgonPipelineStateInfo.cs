@@ -58,7 +58,7 @@ namespace Gorgon.Graphics.Core
 		}
 
 		/// <summary>
-		/// Property to return the current <see cref="IGorgonRasterStateInfo"/>.
+		/// Property to return the current <see cref="GorgonRasterState"/>.
 		/// </summary>
 		GorgonRasterState RasterState
 		{
@@ -66,9 +66,9 @@ namespace Gorgon.Graphics.Core
 		}
 
 		/// <summary>
-		/// Property to return the current <see cref="IGorgonDepthStencilStateInfo"/>.
+		/// Property to return the current <see cref="GorgonDepthStencilState"/>.
 		/// </summary>
-		IGorgonDepthStencilStateInfo DepthStencilState
+		GorgonDepthStencilState DepthStencilState
 		{
 			get;
 		}
@@ -110,7 +110,7 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Property to return the current blending state for an individual render target.
 		/// </summary>
-		IReadOnlyList<IGorgonRenderTargetBlendStateInfo> RenderTargetBlendState
+		IReadOnlyList<GorgonBlendState> BlendStates
 		{
 			get;
 		}

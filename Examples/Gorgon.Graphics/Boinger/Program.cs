@@ -649,13 +649,13 @@ namespace Gorgon.Graphics.Example
             // Initialize a pipeline state so that the graphics can be rendered using the correct shaders, depth buffer, and blending.
 			_pipelineState = _graphics.GetPipelineState(new GorgonPipelineStateInfo
 			                                           {
-				                                           DepthStencilState = new GorgonDepthStencilStateInfo(GorgonDepthStencilStateInfo.DepthStencilEnabled),
+				                                           DepthStencilState = GorgonDepthStencilState.DepthStencilEnabled,
 				                                           PixelShader = _pixelShader,
 				                                           VertexShader = _vertexShader,
 				                                           RasterState = GorgonRasterState.Default,
-				                                           RenderTargetBlendState = new[]
+				                                           BlendStates = new[]
 				                                                                    {
-					                                                                    new GorgonRenderTargetBlendStateInfo(GorgonRenderTargetBlendStateInfo.Modulated)
+					                                                                    GorgonBlendState.Default
 				                                                                    }
 			                                           });
 

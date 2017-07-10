@@ -270,18 +270,15 @@ namespace GorgonLibrary.Example
                                                                        {
                                                                            PixelShader = _pixelShader,
                                                                            VertexShader = _vertexShader,
-                                                                           DepthStencilState =
-                                                                               new GorgonDepthStencilStateInfo(GorgonDepthStencilStateInfo.Default),
+                                                                           DepthStencilState = GorgonDepthStencilState.Default,
                                                                            // We turn off culling so we can see through the cube.
                                                                            RasterState = GorgonRasterState.NoCulling,
                                                                            // We turn on blending so that the alpha in the texture can allow a 
                                                                            // translucency effect and we can see the other faces through the cube.
-                                                                           RenderTargetBlendState = new[]
+                                                                           BlendStates = new[]
                                                                                                     {
-                                                                                                        new
-                                                                                                            GorgonRenderTargetBlendStateInfo(GorgonRenderTargetBlendStateInfo
-                                                                                                                                                 .Modulated)
-                                                                                                    },
+                                                                                                        GorgonBlendState.Default
+                                                                                                    }
                                                                        })
                         };
         }

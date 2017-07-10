@@ -236,7 +236,7 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="state">The state convert.</param>
 		/// <returns>A new D3D blend state 1 description. </returns>
-		public static D3D11.RenderTargetBlendDescription1 ToRenderTargetBlendStateDesc1(this IGorgonRenderTargetBlendStateInfo state)
+		public static D3D11.RenderTargetBlendDescription1 ToRenderTargetBlendStateDesc1(this GorgonBlendState state)
 		{
 			return new D3D11.RenderTargetBlendDescription1
 			       {
@@ -258,7 +258,7 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="state">The state to convert.</param>
 		/// <returns>A new D3D 11 depth/stencil state desc.</returns>
-		public static D3D11.DepthStencilStateDescription ToDepthStencilStateDesc(this IGorgonDepthStencilStateInfo state)
+		public static D3D11.DepthStencilStateDescription ToDepthStencilStateDesc(this GorgonDepthStencilState state)
 		{
 			return new D3D11.DepthStencilStateDescription
 			       {

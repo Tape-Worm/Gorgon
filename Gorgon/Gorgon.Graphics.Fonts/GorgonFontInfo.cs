@@ -169,7 +169,7 @@ namespace Gorgon.Graphics.Fonts
 		/// colors, and is accomplished by multiplying the RGB values by the Alpha component of a pixel.
 		/// </para>
 		/// <para>
-		/// If this value is <b>true</b>, then applications should use the <see cref="GorgonRenderTargetBlendStateInfo.Premultiplied"/> blending state when rendering text.
+		/// If this value is <b>true</b>, then applications should use the <see cref="GorgonBlendState.Premultiplied"/> blending state when rendering text.
 		/// </para>
 		/// <para>
 		/// The default value is <b>false</b>.

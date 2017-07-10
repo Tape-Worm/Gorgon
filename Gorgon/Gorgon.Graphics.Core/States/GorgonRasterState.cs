@@ -47,10 +47,10 @@ namespace Gorgon.Graphics.Core
     /// Because of the state locking and for performance, it is best practice to pre-create the required states ahead of time.
     /// </para>
     /// <para>
-    /// The rasterizer state contains 5 common samplers used by applications: <see cref="Default"/> (backface culling, solid fill, etc...), <see cref="WireFrameNoCulling"/> (no culling, wireframe fill, etc...), 
-    /// <see cref="CullFrontFace"/> (front face culling, solid fill, etc...), <see cref="NoCulling"/> (no culling, solid fill, etc...), and <see cref="ScissorTestEnabled"/> (scissor testing enabled, back 
-    /// face culling, solid fill, etc...). These states are always locked, and cannot be changed, but can be used as a base for a new state by using the <see cref="GorgonRasterState(GorgonRasterState)"/> 
-    /// copy constructor and then modifying as needed.
+    /// The rasterizer state contains 5 common raster states used by applications: <see cref="Default"/> (backface culling, solid fill, etc...), <see cref="WireFrameNoCulling"/> (no culling, wireframe fill, 
+    /// etc...), <see cref="CullFrontFace"/> (front face culling, solid fill, etc...), <see cref="NoCulling"/> (no culling, solid fill, etc...), and <see cref="ScissorTestEnabled"/> (scissor testing 
+    /// enabled, back face culling, solid fill, etc...). These states are always locked, and cannot be changed, but can be used as a base for a new state by using the 
+    /// <see cref="GorgonRasterState(GorgonRasterState)"/> copy constructor and then modifying as needed.
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonPipelineState"/>
@@ -461,7 +461,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonRasterState"/> class.
         /// </summary>
-        /// <param name="info">The <see cref="IGorgonRasterStateInfo"/> to copy settings from.</param>
+        /// <param name="info">The <see cref="GorgonRasterState"/> to copy settings from.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
         public GorgonRasterState(GorgonRasterState info)
         {

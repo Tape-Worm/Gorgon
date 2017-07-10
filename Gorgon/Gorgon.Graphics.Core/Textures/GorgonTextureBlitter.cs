@@ -172,18 +172,19 @@ namespace Gorgon.Graphics
 				// Finish initalizing the draw call.
 				_drawCall.VertexBuffers = _vertexBufferBindings;
 				_drawCall.VertexShaderConstantBuffers[0] = _wvpBuffer;
-				
-				_drawCall.PipelineState = _graphics.GetPipelineState(new GorgonPipelineStateInfo
-				                                             {
-					                                             PixelShader = _pixelShader,
-					                                             VertexShader = _vertexShader,
-					                                             DepthStencilState = new GorgonDepthStencilStateInfo(GorgonDepthStencilStateInfo.Default),
-					                                             RasterState = GorgonRasterState.CullFrontFace,
-					                                             RenderTargetBlendState = new[]
-					                                                                      {
-						                                                                      new GorgonRenderTargetBlendStateInfo(GorgonRenderTargetBlendStateInfo.NoBlending)
-					                                                                      }
-				                                             });
+
+			    _drawCall.PipelineState = _graphics.GetPipelineState(new GorgonPipelineStateInfo
+			                                                         {
+			                                                             PixelShader = _pixelShader,
+			                                                             VertexShader = _vertexShader,
+			                                                             DepthStencilState = GorgonDepthStencilState.Default,
+			                                                             RasterState = GorgonRasterState.CullFrontFace,
+			                                                             BlendStates = new[]
+			                                                                                      {
+			                                                                                          GorgonBlendState.NoBlending
+			                                                                                      }
+
+			                                                         });
 
 				_initializedFlag = true;
 			}
