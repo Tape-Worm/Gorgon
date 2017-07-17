@@ -220,8 +220,6 @@ namespace Gorgon.Graphics
 			                                                       {
 			                                                           PixelShader = _pixelShader,
 			                                                           VertexShader = _vertexShader,
-			                                                           DepthStencilState = GorgonDepthStencilState.Default,
-			                                                           RasterState = GorgonRasterState.Default,
 			                                                           BlendStates = new[]
 			                                                                         {
 			                                                                             GorgonBlendState.NoBlending

@@ -354,7 +354,7 @@ namespace Gorgon.Graphics.Example
 				                                               {
 					                                               PixelShader = _pixelShader,
 					                                               VertexShader = _vertexShader,
-					                                               // For items facing away from us, don't render.
+					                                               // For items facing away from us, always render.
 					                                               RasterState = GorgonRasterState.NoCulling
 				                                               })
 			            };

@@ -651,12 +651,7 @@ namespace Gorgon.Graphics.Example
 			                                           {
 				                                           DepthStencilState = GorgonDepthStencilState.DepthStencilEnabled,
 				                                           PixelShader = _pixelShader,
-				                                           VertexShader = _vertexShader,
-				                                           RasterState = GorgonRasterState.Default,
-				                                           BlendStates = new[]
-				                                                                    {
-					                                                                    GorgonBlendState.Default
-				                                                                    }
+				                                           VertexShader = _vertexShader
 			                                           });
 
 			// I know, there's a lot in here.  Thing is, if this were Direct 3D 11 code, it'd probably MUCH 
