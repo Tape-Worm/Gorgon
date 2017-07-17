@@ -144,8 +144,6 @@ namespace Gorgon.Graphics.Core
 		private readonly object _stateCacheLock = new object();
 		// The list of cached scissor rectangles to keep allocates sane.
 	    private DX.Rectangle[] _cachedScissors = new DX.Rectangle[1];
-        // The currently assigned render target views.
-        private D3D11.RenderTargetView[] _nativeRenderTargetViews;
         // The current depth/stencil view.
         private GorgonDepthStencilView _depthStencilView;
         // Flag to indicate that the depth/stencil view has been changed.
@@ -339,6 +337,11 @@ namespace Gorgon.Graphics.Core
 		    int maxItems = current.Count.Max(newItems.Count);
 		    int start = current.StartSlot.Min(newItems.StartSlot);
 
+	        if ((currentChanges & PipelineResourceChange.InputLayout) == PipelineResourceChange.InputLayout)
+	        {
+	            _lastDrawCall.VertexBuffers.InputLayout = vertexBuffers.InputLayout;
+	        }
+
 		    for (int i = start; i < start + maxItems; ++i)
 		    {
 			    _lastDrawCall.VertexBuffers[i] = newItems.Bindings[i];
@@ -491,11 +494,11 @@ namespace Gorgon.Graphics.Core
 				    }
 #endif
 
-					desiredStateBit = PipelineResourceChange.VertexShaderResources;
+					desiredStateBit = PipelineResourceChange.VertexShaderSamplers;
 				    destSamplers = _lastDrawCall.VertexShaderSamplers;
 				    break;
 			    case ShaderType.Pixel:
-				    desiredStateBit = PipelineResourceChange.PixelShaderResources;
+				    desiredStateBit = PipelineResourceChange.PixelShaderSamplers;
 				    destSamplers = _lastDrawCall.PixelShaderSamplers;
 				    break;
 			    default:
@@ -998,9 +1001,7 @@ namespace Gorgon.Graphics.Core
             UnbindShaderInputs();
 
             ref (int StartSlot, int Count, GorgonRenderTargetView[] Bindings) bindings = ref _renderTargets.GetDirtyItems();
-
-	        _nativeRenderTargetViews = _renderTargets.Native;
-			D3DDeviceContext.OutputMerger.SetTargets(DepthStencilView?.Native, bindings.Count, _nativeRenderTargetViews);
+			D3DDeviceContext.OutputMerger.SetTargets(DepthStencilView?.Native, bindings.Count, _renderTargets.Native);
 	    }
 		
 	    /// <summary>
@@ -1164,12 +1165,12 @@ namespace Gorgon.Graphics.Core
 				SetShaderResourceViews(ShaderType.Pixel, drawCall.PixelShaderResourceViews);
 			}
 
-			if ((resourceChanges & PipelineResourceChange.VertexShaderResources) == PipelineResourceChange.VertexShaderResources)
+			if ((resourceChanges & PipelineResourceChange.VertexShaderSamplers) == PipelineResourceChange.VertexShaderSamplers)
 			{
 				SetShaderSamplers(ShaderType.Vertex, drawCall.VertexShaderSamplers);
 			}
 
-			if ((resourceChanges & PipelineResourceChange.PixelShaderResources) == PipelineResourceChange.PixelShaderResources)
+			if ((resourceChanges & PipelineResourceChange.PixelShaderSamplers) == PipelineResourceChange.PixelShaderSamplers)
 			{
 				SetShaderSamplers(ShaderType.Pixel, drawCall.PixelShaderSamplers);
 			}
@@ -1288,13 +1289,12 @@ namespace Gorgon.Graphics.Core
         /// <seealso cref="RenderTargets"/>
         public void SetRenderTarget(GorgonRenderTargetView renderTarget, GorgonDepthStencilView depthStencil)
         {
-            _renderTargets.Clear();
-
             if ((_renderTargets[0] == renderTarget) && (depthStencil == DepthStencilView))
             {
                 return;
             }
 
+            _renderTargets.Clear();
             _renderTargets[0] = renderTarget;
 
             if (_renderTargets[0] != null)
@@ -1591,7 +1591,7 @@ namespace Gorgon.Graphics.Core
 			        _stateCache.Add(result.State);
 			    }
 			}
-
+            
 		    return result.State;
 	    }
 
@@ -1741,7 +1741,6 @@ namespace Gorgon.Graphics.Core
             _scissorRectangles = new GorgonMonitoredValueTypeArray<DX.Rectangle>(_videoDevice.MaxScissorCount);
             _viewports = new GorgonMonitoredValueTypeArray<DX.ViewportF>(_videoDevice.MaxViewportCount);
 
-            _nativeRenderTargetViews = new D3D11.RenderTargetView[_videoDevice.MaxRenderTargetCount];
 			_deviceContext = _videoDevice.D3DDevice.ImmediateContext1;
             _renderTargets = new GorgonRenderTargetViews();
 
@@ -1749,6 +1748,9 @@ namespace Gorgon.Graphics.Core
 		    SamplerStateFactory.GetSamplerState(this, GorgonSamplerState.Default, _log);
 		    SamplerStateFactory.GetSamplerState(this, GorgonSamplerState.AnisotropicFiltering, _log);
 		    SamplerStateFactory.GetSamplerState(this, GorgonSamplerState.PointFiltering, _log);
+
+            // Register texture blitter shader code to the shader factory so it can be used to include the blitter.
+		    GorgonShaderFactory.Includes[GorgonTextureBlitter.BlitterShaderIncludeFileName] = new GorgonShaderInclude(GorgonTextureBlitter.BlitterShaderIncludeFileName, Resources.GraphicsShaders);
 			
 			_log.Print("Gorgon Graphics initialized.", LoggingLevel.Simple);
 		}

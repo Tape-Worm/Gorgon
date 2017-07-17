@@ -136,11 +136,17 @@ namespace Gorgon.Graphics.Core
 
             if ((initialData != null) && (initialData.Size > 0))
             {
-                D3DResource = D3DBuffer = new D3D11.Buffer(Graphics.VideoDevice.D3DDevice(), new IntPtr(initialData.Address), desc);
+                D3DResource = D3DBuffer = new D3D11.Buffer(Graphics.VideoDevice.D3DDevice(), new IntPtr(initialData.Address), desc)
+                                          {
+                                              DebugName = Name
+                                          };
             }
             else
             {
-                D3DResource = D3DBuffer = new D3D11.Buffer(Graphics.VideoDevice.D3DDevice(), desc);
+                D3DResource = D3DBuffer = new D3D11.Buffer(Graphics.VideoDevice.D3DDevice(), desc)
+                                          {
+                                              DebugName = Name
+                                          };
             }
 
             if ((_info.DefaultShaderViewFormat == DXGI.Format.Unknown)

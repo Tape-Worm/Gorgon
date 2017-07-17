@@ -83,31 +83,25 @@ namespace Gorgon.Graphics.Core
 		#region Variables.
 		// The information used to create the buffer.
 		private readonly GorgonIndexBufferInfo _info;
-		// The address returned by the lock on the buffer.
-		private GorgonPointerAlias _lockAddress;
 		// The size of an individual index.
 		private readonly int _indexSize;
-		#endregion
+        #endregion
 
-		#region Properties.
-		/// <summary>
-		/// Property to return the format of the buffer data when binding.
-		/// </summary>
-		internal DXGI.Format IndexFormat => Info.Use16BitIndices ? DXGI.Format.R16_UInt : DXGI.Format.R32_UInt;
+        #region Properties.
+	    /// <summary>
+	    /// Property to return the usage flags for the buffer.
+	    /// </summary>
+	    protected override D3D11.ResourceUsage Usage => _info.Usage;
+
+        /// <summary>
+        /// Property to return the format of the buffer data when binding.
+        /// </summary>
+        internal DXGI.Format IndexFormat => Info.Use16BitIndices ? DXGI.Format.R16_UInt : DXGI.Format.R32_UInt;
 
 		/// <summary>
 		/// Property used to return the information used to create this buffer.
 		/// </summary>
 		public IGorgonIndexBufferInfo Info => _info;
-
-		/// <summary>
-		/// Property to return whether this index buffer is locked for reading/writing or not.
-		/// </summary>
-		public bool IsLocked
-		{
-			get;
-			private set;
-		}
 		#endregion
 
 		#region Methods.
@@ -143,170 +137,20 @@ namespace Gorgon.Graphics.Core
 
 			if ((initialData != null) && (initialData.Size > 0))
 			{
-				D3DResource = D3DBuffer = new D3D11.Buffer(Graphics.VideoDevice.D3DDevice(), new IntPtr(initialData.Address), desc);
+			    D3DResource = D3DBuffer = new D3D11.Buffer(Graphics.VideoDevice.D3DDevice(), new IntPtr(initialData.Address), desc)
+			                              {
+			                                  DebugName = Name
+			                              };
 			}
 			else
 			{
-				D3DResource = D3DBuffer = new D3D11.Buffer(Graphics.VideoDevice.D3DDevice(), desc);
+			    D3DResource = D3DBuffer = new D3D11.Buffer(Graphics.VideoDevice.D3DDevice(), desc)
+			                              {
+			                                  DebugName = Name
+			                              };
 			}
 
 			SizeInBytes = desc.SizeInBytes;
-		}
-
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// If the index buffer is locked when this method is called, it will automatically be unlocked and any lock pointer will be invalidated.
-		/// </para>
-		/// <para>
-		/// Objects that override this method should be sure to call this base method or else a memory leak may occur.
-		/// </para>
-		/// </remarks>
-		public override void Dispose()
-		{
-			// If we're locked, then unlock the buffer before destroying it.
-			if ((IsLocked) && (_lockAddress != null) && (!_lockAddress.IsDisposed))
-			{
-				Unlock(ref _lockAddress);
-
-				// Because the pointer is an alias, we don't really NEED to call this, but just for consistency we'll do so anyway.
-				_lockAddress.Dispose();
-			}
-
-			base.Dispose();
-		}
-
-		/// <summary>
-		/// Function to unlock a previously locked index buffer.
-		/// </summary>
-		/// <param name="lockPointer">The pointer returned by the <see cref="Lock"/> method.</param>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="lockPointer"/> was not created by the <see cref="Lock"/> method on this instance.</exception>
-		/// <remarks>
-		/// <para>
-		/// Use this to unlock this buffer when it was previously locked by the <see cref="Lock"/> method. Buffers that were previously locked must always call this method or else the data passed to the 
-		/// buffer will not be updated on the GPU. If the buffer was not locked, then this method does nothing. 
-		/// </para>
-		/// <para>
-		/// The <paramref name="lockPointer"/> passed to this method is passed by reference so that it will be invalidated back to the calling application to avoid issues with reuse of an invalid pointer. 
-		/// </para>
-		/// <para>
-		/// If the <paramref name="lockPointer"/> is was not created by this instance, then an exception will be thrown.
-		/// </para>
-		/// <para>
-		/// <note type="warning">
-		/// <para>
-		/// For performance reasons, exceptions raised by this method will only be done so when Gorgon is compiled as DEBUG.
-		/// </para>
-		/// </note>
-		/// </para>
-		/// </remarks>
-		/// <seealso cref="Lock"/>
-		public void Unlock(ref GorgonPointerAlias lockPointer)
-		{
-			if ((!IsLocked) || (lockPointer == null))
-			{
-				return;
-			}
-
-#if DEBUG
-			if (lockPointer != _lockAddress)
-			{
-				throw new ArgumentException(Resources.GORGFX_ERR_BUFFER_LOCK_NOT_VALID, nameof(lockPointer));
-			}
-#endif
-
-			Graphics.D3DDeviceContext.UnmapSubresource(D3DBuffer, 0);
-
-			// Reset the lock pointer back to null so applications can't reuse it.
-			lockPointer = null;
-			IsLocked = false;
-		}
-
-		/// <summary>
-		/// Function to lock a index buffer for reading or writing (depending on <see cref="IGorgonIndexBufferInfo.Usage"/>).
-		/// </summary>
-		/// <param name="mode">The type of access to the index buffer data.</param>
-		/// <returns>A <see cref="GorgonPointerAlias"/> used to read or write the data in the index buffer.</returns>
-		/// <exception cref="NotSupportedException">Thrown when if buffer does not have a <see cref="IGorgonIndexBufferInfo.Usage"/> of <c>Dynamic</c> or <c>Staging</c>.
-		/// <para>-or-</para>
-		/// <para>Thrown when if buffer does not have a <see cref="IGorgonIndexBufferInfo.Usage"/> of <c>Staging</c>, and the <paramref name="mode"/> is set to <c>Read</c> or <c>ReadWrite</c>.</para>
-		/// </exception>
-		/// <exception cref="InvalidOperationException">Thrown when the buffer is already locked.</exception>
-		/// <remarks>
-		/// <para>
-		/// This will lock the buffer so that the CPU can access the data within it. Because locks/unlocks can potentially be performance intensive, it is best practice to lock the buffer, do the work and 
-		/// <see cref="Unlock"/> immediately. Holding a lock for a long time may cause performance issues.
-		/// </para>
-		/// <para>
-		/// Unlike the <see cref="O:Gorgon.Graphics.GorgonIndexBuffer.Update{T}">Update&lt;T&gt;</see> methods, this allows the CPU to change portions of the buffer every frame with little performance 
-		/// penalty (this, of course, is dependent upon drivers, hardware, etc...). It also allows reading from the buffer if it was created with a <see cref="IGorgonIndexBufferInfo.Usage"/> of 
-		/// <c>Staging</c>.
-		/// </para>
-		/// <para>
-		/// When the lock method returns, it returns a <see cref="GorgonPointerAlias"/> containing a pointer to the CPU memory that contains the index buffer data. Applications can use this to access the 
-		/// index buffer data.
-		/// </para>
-		/// <para>
-		/// The lock access is affected by the <paramref name="mode"/> parameter. A value of <c>Read</c> or <c>ReadWrite</c> will allow read access to the buffer data but only if the buffer has a 
-		/// <see cref="IGorgonIndexBufferInfo.Usage"/> of <c>Staging</c>. Applications can use one of the <c>Write</c> flags to write to the buffer. For <c>Dynamic</c> index buffers, it is ideal to use 
-		/// <c>WriteNoOverwrite</c> to inform the GPU that you will not be overwriting parts of the buffer still being used for rendering by the GPU. If this cannot be guaranteed (for example, writing to 
-		/// the beginning of the buffer at the start of a frame), then applications should use the <c>WriteDiscard</c> to instruct the GPU that the contents of the buffer are now invalidated and it will be 
-		/// refreshed with new data entirely.
-		/// </para>
-		/// <para>
-		/// <note type="important">
-		/// <para>
-		/// When a index buffer is locked, it <b><u>must</u></b> be unlocked with a call to <see cref="Unlock"/>. Failure to do so will impair performance greatly, and will keep the contents of the buffer 
-		/// on the GPU from being updated.
-		/// </para>
-		/// </note>
-		/// </para>
-		/// <para>
-		/// <note type="warning">
-		/// <para>
-		/// For performance reasons, exceptions raised by this method will only be done so when Gorgon is compiled as DEBUG.
-		/// </para>
-		/// </note>
-		/// </para>
-		/// </remarks>
-		public GorgonPointerAlias Lock(D3D11.MapMode mode)
-		{
-#if DEBUG
-			if ((Info.Usage != D3D11.ResourceUsage.Dynamic) && (Info.Usage != D3D11.ResourceUsage.Staging))
-			{
-				throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_BUFFER_LOCK_NOT_DYNAMIC, Name, Info.Usage));	
-			}
-
-			if ((Info.Usage != D3D11.ResourceUsage.Staging) && ((mode == D3D11.MapMode.Read) || (mode == D3D11.MapMode.ReadWrite)))
-			{
-				throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_BUFFER_ERR_WRITE_ONLY, Name, Info.Usage));
-			}
-
-			if (IsLocked)
-			{
-				throw new InvalidOperationException(Resources.GORGFX_ERR_BUFFER_ALREADY_LOCKED);
-			}
-#endif
-
-			mode = D3D11.MapMode.WriteDiscard;
-
-			Graphics.D3DDeviceContext.MapSubresource(D3DBuffer, mode, D3D11.MapFlags.None, out DX.DataStream stream);
-
-			if (_lockAddress == null)
-			{
-				_lockAddress = new GorgonPointerAlias(stream.DataPointer, stream.Length);
-			}
-			else
-			{
-				_lockAddress.AliasPointer(stream.DataPointer, stream.Length);
-			}
-
-			stream.Dispose();
-
-			IsLocked = true;
-			return _lockAddress;
 		}
 
 		/// <summary>
@@ -400,7 +244,7 @@ namespace Gorgon.Graphics.Core
         /// </note>
         /// </para>
         /// </remarks>
-        public void Update(IGorgonPointer data, int bufferOffset = 0, int offset = 0, int? size = null)
+        public void UpdateFromPointer(IGorgonPointer data, int bufferOffset = 0, int offset = 0, int? size = null)
 		{
 			data.ValidateObject(nameof(data));
 

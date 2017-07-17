@@ -394,9 +394,9 @@ namespace Gorgon.Graphics.Core
         public GorgonBlendState()
 		{
 			_logicOperation = D3D11.LogicOperation.Noop;
-			_sourceAlphaBlend = SourceColorBlend = D3D11.BlendOption.One;
-			_destinationAlphaBlend = DestinationColorBlend = D3D11.BlendOption.Zero;
-			_alphaBlendOperation = ColorBlendOperation = D3D11.BlendOperation.Add;
+			_sourceAlphaBlend = _sourceColorBlend = D3D11.BlendOption.One;
+			_destinationAlphaBlend = _destinationColorBlend = D3D11.BlendOption.Zero;
+			_alphaBlendOperation = _colorBlendOperation = D3D11.BlendOperation.Add;
 			_writeMask = D3D11.ColorWriteMaskFlags.All;
 		}
 

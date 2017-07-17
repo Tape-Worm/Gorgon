@@ -53,5 +53,11 @@ namespace Gorgon.Graphics
 		/// </summary>
 		[InputElement(1, "TEXCOORD")]
 		public DX.Vector2 Uv;
+
+        /// <summary>
+        /// The color of the vertex.
+        /// </summary>
+        [InputElement(2, "COLOR")]
+	    public GorgonColor Color;
 	}
 }

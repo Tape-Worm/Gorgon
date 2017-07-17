@@ -452,4 +452,13 @@ The width must be a value between 1-{2}, and the height must be a value between 
   <data name="GORGFX_ERR_STATE_IMMUTABLE" xml:space="preserve">
     <value>The {0} has been assigned and is now in a read only state.</value>
   </data>
+  <data name="GORGFX_ERR_EFFECT_NOT_INITIALIZED" xml:space="preserve">
+    <value>The effect '{0}' has not been initialized.</value>
+  </data>
+  <data name="GORGFX_ERR_EFFECT_PASS_COUNT_INVALID" xml:space="preserve">
+    <value>There must be at least 1 pass for a shader effect.</value>
+  </data>
+  <data name="GORGFX_ERR_PASS_INDEX_OUT_OF_RANGE" xml:space="preserve">
+    <value>The effect pass index ({0}) must be 0 or less than {1}.</value>
+  </data>
 </root>

@@ -6,7 +6,8 @@ SamplerState _bltSampler : register(s0);
 struct GorgonBltVertex
 {
    float4 position : SV_POSITION;
-   float2 uv : TEXCOORD;
+   float2 uv : TEXCOORD0;
+   float4 color : COLOR;
 };
 
 // The transformation matrices (for vertex shader).
@@ -28,5 +29,5 @@ GorgonBltVertex GorgonBltVertexShader(GorgonBltVertex vertex)
 // Our pixel shader for blitting textures.
 float4 GorgonBltPixelShader(GorgonBltVertex vertex) : SV_Target
 {
-	return _bltTexture.Sample(_bltSampler, vertex.uv);
+	return _bltTexture.Sample(_bltSampler, vertex.uv) * vertex.color;
 }

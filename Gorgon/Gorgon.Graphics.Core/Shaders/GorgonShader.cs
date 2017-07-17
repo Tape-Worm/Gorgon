@@ -29,6 +29,7 @@ using System.IO;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.IO;
+using SharpDX.Direct2D1;
 using D3DCompiler = SharpDX.D3DCompiler;
 
 namespace Gorgon.Graphics.Core
@@ -241,7 +242,7 @@ namespace Gorgon.Graphics.Core
 				SaveToStream(stream);
 			}
 		}
-
+        
 		/// <summary>
 		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
 		/// </summary>

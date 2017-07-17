@@ -40,9 +40,16 @@ namespace Gorgon.Graphics
 	public class GorgonTextureBlitter
 		: IDisposable
 	{
-		#region Variables.
-		// The vertices used to blit the texture.
-		private readonly BltVertex[] _vertices = new BltVertex[6];
+        #region Constants.
+        /// <summary>
+        /// The name of the shader file data used for include files that wish to use the include shader.
+        /// </summary>
+	    public const string BlitterShaderIncludeFileName = "__Gorgon_TextureBlitter_Shader__";
+        #endregion
+
+        #region Variables.
+        // The vertices used to blit the texture.
+        private readonly BltVertex[] _vertices = new BltVertex[6];
 		// The graphics interface used to create the objects.
 		private readonly GorgonGraphics _graphics;
 		// The vertex shader for blitting the texture.
@@ -53,10 +60,6 @@ namespace Gorgon.Graphics
 		private GorgonInputLayout _inputLayout;
 		// The bindings for the vertex buffer.
 		private GorgonVertexBufferBindings _vertexBufferBindings;
-		// The sampler state to use for blitting the texture.
-		private GorgonSamplerState _samplerState;
-		// The default sampler to use.
-		private readonly GorgonSamplerState _defaultSampler;
 		// World/view/projection matrix.
 		private GorgonConstantBuffer _wvpBuffer;
 		// Flag used to indicate that we're in the middle of initialization.
@@ -69,17 +72,48 @@ namespace Gorgon.Graphics
 		private bool _needsWvpUpdate = true;
         // The bounds of the most recent target.
 	    private DX.Rectangle? _targetBounds;
+	    // The default pipeline state if no custom pipeline state was set by the user.
+	    private GorgonPipelineState _defaultPipelineState;
 		#endregion
 
 		#region Properties.
-		/// <summary>
-		/// Property to set or return the custom sampler state to use.
-		/// </summary>
-		public GorgonSamplerState SamplerState
-		{
-			get => _samplerState;
-			set => _samplerState = value;
-		}
+        /// <summary>
+        /// Property to set or return custom pipeline state for the blitter.
+        /// </summary>
+	    public GorgonPipelineState PipelineState
+        {
+            get;
+            set;
+	    }
+
+	    /// <summary>
+	    /// Property to return any custom vertex shader constants to apply.
+	    /// </summary>
+	    public GorgonConstantBuffers VertexShaderConstants => _drawCall.VertexShaderConstantBuffers;
+
+	    /// <summary>
+	    /// Property to return any custom pixel shader constants to apply.
+	    /// </summary>
+	    public GorgonConstantBuffers PixelShaderConstants => _drawCall.PixelShaderConstantBuffers;
+
+	    /// <summary>
+        /// Property to return the vertex shader for this blitter.
+        /// </summary>
+	    public GorgonVertexShader VertexShader => _vertexShader;
+        
+        /// <summary>
+        /// Property to return the pixel shader for the blitter.
+        /// </summary>
+	    public GorgonPixelShader PixelShader => _pixelShader;
+
+        /// <summary>
+        /// Property to set or return the sampler to use.
+        /// </summary>
+	    public GorgonSamplerState Sampler
+	    {
+	        get;
+	        set;
+	    }
 
 		/// <summary>
 		/// Property to set or return whether to perform scaling if the blitting width/height does not match the source texture width/height.
@@ -89,6 +123,15 @@ namespace Gorgon.Graphics
 			get;
 			set;
 		} = true;
+
+        /// <summary>
+        /// Property to set or return the diffuse color for the blit.
+        /// </summary>
+	    public GorgonColor Color
+	    {
+	        get;
+	        set;
+	    } = GorgonColor.White;
 		#endregion
 
 		#region Methods.
@@ -173,18 +216,19 @@ namespace Gorgon.Graphics
 				_drawCall.VertexBuffers = _vertexBufferBindings;
 				_drawCall.VertexShaderConstantBuffers[0] = _wvpBuffer;
 
-			    _drawCall.PipelineState = _graphics.GetPipelineState(new GorgonPipelineStateInfo
-			                                                         {
-			                                                             PixelShader = _pixelShader,
-			                                                             VertexShader = _vertexShader,
-			                                                             DepthStencilState = GorgonDepthStencilState.Default,
-			                                                             RasterState = GorgonRasterState.CullFrontFace,
-			                                                             BlendStates = new[]
-			                                                                                      {
-			                                                                                          GorgonBlendState.NoBlending
-			                                                                                      }
+			    _defaultPipelineState = _graphics.GetPipelineState(new GorgonPipelineStateInfo
+			                                                       {
+			                                                           PixelShader = _pixelShader,
+			                                                           VertexShader = _vertexShader,
+			                                                           DepthStencilState = GorgonDepthStencilState.Default,
+			                                                           RasterState = GorgonRasterState.Default,
+			                                                           BlendStates = new[]
+			                                                                         {
+			                                                                             GorgonBlendState.NoBlending
+			                                                                         }
 
-			                                                         });
+			                                                       });
+                _drawCall.PipelineState = _defaultPipelineState;
 
 				_initializedFlag = true;
 			}
@@ -212,9 +256,7 @@ namespace Gorgon.Graphics
 				return;
 			}
 
-			Initialize();
-
-		    GorgonRenderTargetView currentView = _graphics.RenderTargets[0];
+			GorgonRenderTargetView currentView = _graphics.RenderTargets[0];
 
 			// We need to update the projection/view if the size of the target changes.
 			if ((_targetBounds == null)
@@ -227,8 +269,19 @@ namespace Gorgon.Graphics
 			UpdateWorldViewProjection();
 
 			// Apply the correct sampler.
-			_drawCall.PixelShaderSamplers[0] = _samplerState ?? _defaultSampler;
+			_drawCall.PixelShaderSamplers[0] = GorgonSamplerState.Default;
 			_drawCall.PixelShaderResourceViews[0] = texture.DefaultShaderResourceView;
+		    _drawCall.PixelShaderSamplers[0] = Sampler ?? GorgonSamplerState.Default;
+
+            // Apply the correct pipeline state.
+		    if ((PipelineState != null) && (_drawCall.PipelineState != PipelineState))
+		    {
+		        _drawCall.PipelineState = PipelineState;
+		    }
+		    else if ((PipelineState == null) && (_drawCall.PipelineState != _defaultPipelineState))
+		    {
+		        _drawCall.PipelineState = _defaultPipelineState;
+		    }
 
 			// Calculate position on the texture.
 			DX.Vector2 topLeft = texture.ToTexel(new DX.Point(srcX, srcY));
@@ -238,25 +291,29 @@ namespace Gorgon.Graphics
 			_vertices[0] = new BltVertex
 			               {
 				               Position = new DX.Vector4(x, y, 0, 1.0f),
-				               Uv = topLeft
+				               Uv = topLeft,
+                               Color = Color
 			               };
-			_vertices[1] = new BltVertex
-			               {
-				               Position = new DX.Vector4(x + width, y, 0, 1.0f),
-				               Uv = new DX.Vector2(bottomRight.X, topLeft.Y)
-			               };
-			_vertices[2] = new BltVertex
-			               {
-				               Position = new DX.Vector4(x, y + height, 0, 1.0f),
-				               Uv = new DX.Vector2(topLeft.X, bottomRight.Y)
-			               };
+		    _vertices[1] = new BltVertex
+		                   {
+		                       Position = new DX.Vector4(x + width, y, 0, 1.0f),
+		                       Uv = new DX.Vector2(bottomRight.X, topLeft.Y),
+		                       Color = Color
+		                   };
+		    _vertices[2] = new BltVertex
+		                   {
+		                       Position = new DX.Vector4(x, y + height, 0, 1.0f),
+		                       Uv = new DX.Vector2(topLeft.X, bottomRight.Y),
+		                       Color = Color
+		                   };
 			_vertices[3] = _vertices[2];
 			_vertices[4] = _vertices[1];
-			_vertices[5] = new BltVertex
-			               {
-				               Position = new DX.Vector4(x + width, y + height, 0, 1.0f),
-				               Uv = new DX.Vector2(bottomRight.X, bottomRight.Y)
-			               };
+		    _vertices[5] = new BltVertex
+		                   {
+		                       Position = new DX.Vector4(x + width, y + height, 0, 1.0f),
+		                       Uv = new DX.Vector2(bottomRight.X, bottomRight.Y),
+		                       Color = Color
+		                   };
 
 			// Copy to the vertex buffer.
 			_vertexBufferBindings[0].VertexBuffer.Update(_vertices);
@@ -287,17 +344,18 @@ namespace Gorgon.Graphics
 		{
 			_graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
 
-			_defaultSampler = GorgonSamplerState.Default;
 			_drawCall = new GorgonDrawCall
 			            {
 				            PrimitiveTopology = D3D.PrimitiveTopology.TriangleList,
 				            VertexCount = _vertices.Length,
 				            PixelShaderSamplers =
 				            {
-					            [0] = _samplerState
+					            [0] = GorgonSamplerState.Default
 				            }
 			            };
-		}
+
+		    Initialize();
+        }
 		#endregion
 	}
 }

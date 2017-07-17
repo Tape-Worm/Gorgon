@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Drawing;
 using System.Windows.Forms;
 using DX = SharpDX;
 using DXGI = SharpDX.DXGI;
@@ -83,20 +84,29 @@ namespace GorgonLibrary.Example
 	    private DX.Vector3 _rotationSpeed = new DX.Vector3(1, 1, 1);
 		// The current time.
 	    private float _accumulator;
-		#endregion
+        
+        // TODO: For testing blur shader.
+        private GorgonTextureBlitter blt;
+        private GorgonTexture _renderTargetTexture;
+        private GorgonTexture _blurTexture;
+        private GaussBlurTest _blurTest;
+        private GorgonPipelineState _additive;
+        private GorgonPipelineState _modulated;
+        private float _maxSteps = 0.0f;
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to update the world/view/projection matrix.
-		/// </summary>
-		/// <param name="world">The world matrix to update.</param>
-		/// <remarks>
-		/// <para>
-		/// This is what sends the transformation information for the model plus any view space transforms (projection & view) to the GPU so the shader can transform the vertices in the 
-		/// model and project them into 2D space on your render target.
-		/// </para>
-		/// </remarks>
-		private void UpdateWVP(ref DX.Matrix world)
+        #region Methods.
+        /// <summary>
+        /// Function to update the world/view/projection matrix.
+        /// </summary>
+        /// <param name="world">The world matrix to update.</param>
+        /// <remarks>
+        /// <para>
+        /// This is what sends the transformation information for the model plus any view space transforms (projection & view) to the GPU so the shader can transform the vertices in the 
+        /// model and project them into 2D space on your render target.
+        /// </para>
+        /// </remarks>
+        private void UpdateWVP(ref DX.Matrix world)
 		{
 
 			// Build our world/view/projection matrix to send to
@@ -122,19 +132,19 @@ namespace GorgonLibrary.Example
 			DX.Matrix.PerspectiveFovLH(60.0f.ToRadians(), (float)ClientSize.Width / ClientSize.Height, 0.1f, 1000.0f, out _projectionMatrix);
 		}
 
-		/// <summary>
+        /// <summary>
 		/// Function to handle idle time for the application.
 		/// </summary>
 		/// <returns><b>true</b> to continue processing, <b>false</b> to stop.</returns>
 		private bool Idle()
         {
             // Do nothing here.  When we need to update, we will.
-			_swap.RenderTargetView.Clear(GorgonColor.White);
-
-
+            _graphics.SetRenderTarget(_renderTargetTexture.DefaultRenderTargetView);
+            _renderTargetTexture.DefaultRenderTargetView.Clear(new GorgonColor(Color.CornflowerBlue, 0));
+            
 			// Use a fixed step timing to animate the cube.
 			_accumulator += GorgonTiming.Delta;
-
+            
 			while (_accumulator >= TargetDelta)
 	        {
 		        // Spin the cube.
@@ -184,10 +194,62 @@ namespace GorgonLibrary.Example
 			// Send our world matrix to the constant buffer so the vertex shader can update the vertices.
 			UpdateWVP(ref worldMatrix);
 
-			// And, as always, send the cube to the GPU for rendering.
+            // And, as always, send the cube to the GPU for rendering.
 			_graphics.Submit(_drawCall);
 
-			_swap.Present(1);
+            _graphics.SetRenderTarget(_blurTexture.DefaultRenderTargetView);
+            blt.PipelineState = null;
+            blt.Blit(_renderTargetTexture, 0, 0, _renderTargetTexture.Info.Width, _renderTargetTexture.Info.Height);
+            _blurTest.Render();
+
+            _graphics.SetRenderTarget(_swap.RenderTargetView);
+            blt.Blit(_renderTargetTexture, 0, 0, _swap.Info.Width, _swap.Info.Height);
+            //_swap.RenderTargetView.Clear(Color.CornflowerBlue);
+            
+            blt.PipelineState = _additive;
+            
+            _maxSteps = ((((GorgonTiming.SecondsSinceStart) * 0.25f).FastCos() + 1.0f) / 2.0f) * 4.0f;//GorgonTiming.Delta * 0.5f;
+            
+            if (_maxSteps > 4.0f)
+            {
+                _maxSteps = 4.0f;
+            }
+
+            Text = $"{_maxSteps:0.00}";
+
+            float alphaStep = 1.0f / _maxSteps;
+            float newWidth = _swap.Info.Width;
+            float newHeight = _swap.Info.Height;
+            float widthStep = (newWidth / 16.0f);
+            float heightStep = (newHeight / 16.0f);
+            float alpha = 1.0f;
+            float newX = 0;
+            float newY = 0;
+            float start = 0;
+            float end = _maxSteps;
+
+            if ((end - start).EqualsEpsilon(0))
+            {
+                blt.Blit(_blurTexture, 0, 0, _swap.Info.Width, _swap.Info.Height);
+                _swap.Present(1);
+                return true;
+            }
+
+            while (start < end)
+            {
+                blt.Color = new GorgonColor(GorgonColor.White, alpha);
+                blt.Blit(_blurTexture, (int)newX, (int)newY, (int)newWidth, (int)newHeight);
+
+                float delta = (end - start);
+                newWidth += (widthStep / delta) * 2.0f;
+                newHeight += (heightStep / delta) * 2.0f;
+                newX -= widthStep / delta;
+                newY -= heightStep / delta;
+                alpha -= alphaStep / delta;
+                start += 0.25f;
+            }
+
+            _swap.Present(1);
 
 	        return true;
         }
@@ -210,7 +272,7 @@ namespace GorgonLibrary.Example
 	        }
 
 			// Create our shaders.
-	        _vertexShader = GorgonShaderFactory.Compile<GorgonVertexShader>(_graphics.VideoDevice, Resources.GlassCubeShaders, "GlassCubeVS");
+            _vertexShader = GorgonShaderFactory.Compile<GorgonVertexShader>(_graphics.VideoDevice, Resources.GlassCubeShaders, "GlassCubeVS");
 	        _pixelShader = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics.VideoDevice, Resources.GlassCubeShaders, "GlassCubePS");
 
 			// Create the input layout for a cube vertex.
@@ -240,7 +302,31 @@ namespace GorgonLibrary.Example
 	        _cube = new Cube(_graphics, _inputLayout);
 
             // Assign our swap chain as the primary render target.
-            _graphics.SetRenderTarget(_swap.RenderTargetView);
+            _renderTargetTexture = new GorgonTexture("RTVTexture",
+                                                     _graphics,
+                                                     new GorgonTextureInfo
+                                                     {
+                                                         Format = DXGI.Format.R8G8B8A8_UNorm,
+                                                         Width = _swap.Info.Width,
+                                                         Height = _swap.Info.Height,
+                                                         Usage = ResourceUsage.Default,
+                                                         TextureType = TextureType.Texture2D,
+                                                         Binding = TextureBinding.RenderTarget | TextureBinding.ShaderResource
+                                                     });
+
+            _blurTexture = new GorgonTexture("BlurTexture",
+                                             _graphics,
+                                             new GorgonTextureInfo
+                                             {
+                                                 Format = DXGI.Format.R8G8B8A8_UNorm,
+                                                 Width = _swap.Info.Width,
+                                                 Height = _swap.Info.Height,
+                                                 Usage = ResourceUsage.Default,
+                                                 TextureType = TextureType.Texture2D,
+                                                 Binding = TextureBinding.RenderTarget | TextureBinding.ShaderResource
+                                             });
+
+            _graphics.SetRenderTarget(_renderTargetTexture.DefaultRenderTargetView);
 
 			// Set up the pipeline to draw the cube.
             _drawCall = new GorgonDrawIndexedCall
@@ -263,24 +349,47 @@ namespace GorgonLibrary.Example
                             {
                                 [0] = _wvpBuffer
                             },
-
                             IndexStart = 0,
                             IndexCount = _cube.IndexBuffer.Info.IndexCount,
                             PipelineState = _graphics.GetPipelineState(new GorgonPipelineStateInfo
                                                                        {
                                                                            PixelShader = _pixelShader,
                                                                            VertexShader = _vertexShader,
-                                                                           DepthStencilState = GorgonDepthStencilState.Default,
                                                                            // We turn off culling so we can see through the cube.
-                                                                           RasterState = GorgonRasterState.NoCulling,
-                                                                           // We turn on blending so that the alpha in the texture can allow a 
-                                                                           // translucency effect and we can see the other faces through the cube.
-                                                                           BlendStates = new[]
-                                                                                                    {
-                                                                                                        GorgonBlendState.Default
-                                                                                                    }
+                                                                           RasterState = GorgonRasterState.NoCulling
                                                                        })
                         };
+
+            _blurTest = new GaussBlurTest(_graphics)
+                        {
+                            BlurRenderTargetsSize = new DX.Size2(128, 128),
+                            InputTexture = _renderTargetTexture,
+                            BlurRadius = 2,
+                            BlurredTarget = _blurTexture.DefaultRenderTargetView,
+                            PreserveAlpha = false
+                        };
+            blt = new GorgonTextureBlitter(_graphics)
+                  {
+                      ScaleBlitter = true
+                  };
+
+            _modulated = _graphics.GetPipelineState(new GorgonPipelineStateInfo
+                                                    {
+                                                        PixelShader = blt.PixelShader,
+                                                        VertexShader = blt.VertexShader
+                                                    });
+            
+            _additive = _graphics.GetPipelineState(new GorgonPipelineStateInfo
+                                                   {
+                                                       PixelShader = blt.PixelShader,
+                                                       VertexShader = blt.VertexShader,
+                                                       BlendStates = new[]
+                                                                     {
+                                                                         GorgonBlendState.Additive
+                                                                     }
+                                                   });
+
+            _blurTest.Initialize();
         }
 
         /// <summary>
@@ -296,7 +405,21 @@ namespace GorgonLibrary.Example
 		        Close();
 	        }
 
-			// Switch the sampler states when we hit the 'F' key (F - Filtering).
+            if (e.KeyCode == Keys.B)
+            {
+                if (e.Shift)
+                {
+                    _blurTest.BlurRadius -= 1;
+                }
+                else
+                {
+                    _blurTest.BlurRadius += 1;
+                }
+
+                Text = $"{_blurTest.BlurRadius:0.0}";
+            }
+
+            // Switch the sampler states when we hit the 'F' key (F - Filtering).
 	        if (e.KeyCode != Keys.F)
 	        {
 		        return;
@@ -324,6 +447,10 @@ namespace GorgonLibrary.Example
 			_cube?.Dispose();
 			_texture?.Dispose();
 			_wvpBuffer?.Dispose();
+            blt?.Dispose();
+            _renderTargetTexture?.Dispose();
+            _blurTexture?.Dispose();
+            _blurTest?.Dispose();
 			_inputLayout?.Dispose();
 			_pixelShader?.Dispose();
 			_vertexShader?.Dispose();

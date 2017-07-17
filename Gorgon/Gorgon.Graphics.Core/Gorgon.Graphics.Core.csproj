@@ -139,6 +139,8 @@
     <Compile Include="Pipeline\_Interfaces\IGorgonShaderStates.cs" />
     <Compile Include="Pipeline\_Interfaces\IGorgonPipelineStateInfo.cs" />
     <Compile Include="Pipeline\_Internal\SamplerStateFactory.cs" />
+    <Compile Include="Shaders\GorgonShaderEffect.cs" />
+    <Compile Include="Shaders\GorgonShaderEffectPass.cs" />
     <Compile Include="Shaders\GorgonShaderResourceView.cs" />
     <Compile Include="Pipeline\GorgonShaderResourceViews.cs" />
     <Compile Include="Pipeline\GorgonDrawIndexedCall.cs" />

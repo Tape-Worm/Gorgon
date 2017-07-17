@@ -192,6 +192,12 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		public GorgonPipelineStateInfo()
 		{
+            RasterState = GorgonRasterState.Default;
+            DepthStencilState = GorgonDepthStencilState.Default;
+		    BlendStates = new[]
+		                  {
+		                      GorgonBlendState.Default,
+		                  };
 		}
         #endregion
     }

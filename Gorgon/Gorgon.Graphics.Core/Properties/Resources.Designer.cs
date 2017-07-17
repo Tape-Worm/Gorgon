@@ -282,6 +282,24 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The effect &apos;{0}&apos; has not been initialized..
+        /// </summary>
+        internal static string GORGFX_ERR_EFFECT_NOT_INITIALIZED {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_EFFECT_NOT_INITIALIZED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There must be at least 1 pass for a shader effect..
+        /// </summary>
+        internal static string GORGFX_ERR_EFFECT_PASS_COUNT_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_EFFECT_PASS_COUNT_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The feature level [{0}] is not valid..
         /// </summary>
         internal static string GORGFX_ERR_FEATURE_LEVEL_INVALID {
@@ -413,6 +431,15 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_NOT_GORGON_SHADER {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_NOT_GORGON_SHADER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The effect pass index ({0}) must be 0 or less than {1}..
+        /// </summary>
+        internal static string GORGFX_ERR_PASS_INDEX_OUT_OF_RANGE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_PASS_INDEX_OUT_OF_RANGE", resourceCulture);
             }
         }
         
@@ -1042,6 +1069,24 @@ namespace Gorgon.Graphics.Core.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to // Texture and sampler for blitting a texture.
+        ///Texture2D _bltTexture : register(t0);
+        ///SamplerState _bltSampler : register(s0);
+        ///
+        ///// Our default blitting vertex.
+        ///struct GorgonBltVertex
+        ///{
+        ///   float4 position : SV_POSITION;
+        ///   float2 uv : TEXCOORD0;
+        ///};
+        ///
+        ///// The transformation matrices (for vertex shader).
+        ///cbuffer GorgonBltWorldViewProjection : register(b0)
+        ///{
+        ///	float4x4 WorldViewProjection;
+        ///}
+        ///
+        ///// Our vertex shader for blitting textures.
+        ///GorgonBltVertex GorgonBltVertexShader(GorgonBltVertex vertex)        /// [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string GraphicsShaders {
             get {

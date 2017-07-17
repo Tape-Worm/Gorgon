@@ -54,11 +54,15 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// A completely transparent color.
 		/// </summary>
-		public static readonly GorgonColor Transparent = new GorgonColor(0, 0, 0, 0);
+		public static readonly GorgonColor Transparent = new GorgonColor(1, 1, 1, 0);
+	    /// <summary>
+	    /// A completely transparent color.
+	    /// </summary>
+	    public static readonly GorgonColor BlackTransparent = new GorgonColor(0, 0, 0, 0);
 		/// <summary>
-		/// The color white.
-		/// </summary>
-		public static readonly GorgonColor White = new GorgonColor(1, 1, 1, 1);
+        /// The color white.
+        /// </summary>
+        public static readonly GorgonColor White = new GorgonColor(1, 1, 1, 1);
 		/// <summary>
 		/// The color black.
 		/// </summary>
