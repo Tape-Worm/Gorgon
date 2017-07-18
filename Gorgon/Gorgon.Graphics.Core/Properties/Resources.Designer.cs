@@ -282,6 +282,15 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The kernel size must be between 3 and 81 (inclusive)..
+        /// </summary>
+        internal static string GORGFX_ERR_EFFECT_GAUSS_BLUR_KERNEL_SIZE_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_EFFECT_GAUSS_BLUR_KERNEL_SIZE_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The effect &apos;{0}&apos; has not been initialized..
         /// </summary>
         internal static string GORGFX_ERR_EFFECT_NOT_INITIALIZED {
@@ -323,15 +332,6 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_FORMAT_NOT_SUPPORTED {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_FORMAT_NOT_SUPPORTED", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The kernel size must be between 1 and 64 (inclusive)..
-        /// </summary>
-        internal static string GORGFX_ERR_GAUSS_BLUR_KERNEL_SIZE_INVALID {
-            get {
-                return ResourceManager.GetString("GORGFX_ERR_GAUSS_BLUR_KERNEL_SIZE_INVALID", resourceCulture);
             }
         }
         
@@ -1086,11 +1086,7 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to // Adjust the weighting and offsets so we can pack our float values in tightly (much less bandwidth when updating the CB).
-        ///#define MAX_WEIGHT_SIZE (((MAX_KERNEL_SIZE * 4) + 15) &amp; (~15)) / 16
-        ///#define MAX_OFFSET_SIZE (((MAX_KERNEL_SIZE * 8) + 15) &amp; (~15)) / 16
-        ///
-        ///// Texture and sampler for blitting a texture.
+        ///   Looks up a localized string similar to // Texture and sampler for blitting a texture.
         ///Texture2D _bltTexture : register(t0);
         ///SamplerState _bltSampler : register(s0);
         ///
@@ -1098,7 +1094,18 @@ namespace Gorgon.Graphics.Core.Properties {
         ///struct GorgonBltVertex
         ///{
         ///   float4 position : SV_POSITION;
-        ///   float2 uv : TEXCOOR [rest of string was truncated]&quot;;.
+        ///   float2 uv : TEXCOORD0;
+        ///   float4 color : COLOR;
+        ///};
+        ///
+        ///// The transformation matrices (for vertex shader).
+        ///cbuffer GorgonBltWorldViewProjection : register(b0)
+        ///{
+        ///	float4x4 WorldViewProjection;
+        ///}
+        ///
+        ///// Our vertex shader for blitting textures.
+        ///GorgonBltVertex GorgonBltVertexShade [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string GraphicsShaders {
             get {

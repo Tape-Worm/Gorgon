@@ -311,7 +311,8 @@ namespace Gorgon.Graphics.Core
         /// <param name="recordStates">[Optional] Flags to record states on the owning <see cref="Graphics"/> interface prior to rendering.</param>
         /// <remarks>
         /// <para>
-        /// This will begin the process of rendering the effect. It will cycle through each registered pass and execute the code within. 
+        /// This will begin the process of rendering the effect. It will cycle through each registered pass and execute the code within. Developers implementing custom effects <b>must</b> call this 
+        /// method to ensure that the effect will be rendered. Typically this would be achieved through a public render method defined by the implementing effect.
         /// </para>
         /// <para>
         /// The optional <paramref name="recordStates"/> flags are a combination of flags to indicate which states on the owning <see cref="Graphics"/> interface to record and restore prior to and after 
@@ -321,14 +322,14 @@ namespace Gorgon.Graphics.Core
         /// <para>
         /// <note type="note">
         /// <para>
-        /// Recording the states will incur a slight penalty to performance.
+        /// Recording the states will incur a slight performance penalty.
         /// </para>
         /// </note>
         /// </para>
         /// </remarks>
         /// <seealso cref="RecordStates"/>
         /// <seealso cref="RestoreStates"/>
-        public void Render(RecordStates recordStates = Core.RecordStates.None)
+        protected void Render(RecordStates recordStates = Core.RecordStates.None)
         {
             if (!_initialized)
             {

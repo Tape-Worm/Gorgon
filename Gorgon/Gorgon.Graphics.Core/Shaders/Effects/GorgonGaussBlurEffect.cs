@@ -27,13 +27,14 @@
 using System;
 using System.Globalization;
 using Gorgon.Core;
+using Gorgon.Diagnostics;
 using DX = SharpDX;
 using DXGI = SharpDX.DXGI;
+using D3D11 = SharpDX.Direct3D11;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
 using Gorgon.Native;
-using SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Example
 {
@@ -42,14 +43,16 @@ namespace Gorgon.Graphics.Example
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This will take the image from a render target and blur it using gaussian blurring. The blur effect is done in two passes, one for horizontal and one for vertical and renders each pass to an internal 
-    /// set of render targets, which are then output to another shader at the end of the render (this, however, is optional).
+    /// This will take the image from a <see cref="GorgonTexture"/> and blur it using gaussian blurring. The blur effect is done in two passes, one for horizontal and one for vertical and renders each pass 
+    /// to an internal set of <see cref="GorgonRenderTargetView"/> objects, which are then output to a final <see cref="GorgonRenderTargetView"/> at the end of the render.
     /// </para>
     /// <para>
     /// Effects such as these are derived using the <see cref="GorgonShaderEffect"/> base class which can be extended by users to provide visual effects using familiar programming interfaces.
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonShaderEffect"/>
+    /// <seealso cref="GorgonRenderTargetView"/>
+    /// <seealso cref="GorgonTexture"/>
     public class GorgonGaussBlurEffect
         : GorgonShaderEffect
     {
@@ -90,6 +93,10 @@ namespace Gorgon.Graphics.Example
         private GorgonPipelineState _blurState;
         // The pipeline state for blurring each pass with alpha preservation.
         private GorgonPipelineState _blurStateNoAlpha;
+        // The texture to pass in to the effect to be blurred.
+        private GorgonTexture _inputTexture;
+        // The target that will receive the blurred image.
+        private GorgonRenderTargetView _blurredTarget;
         #endregion
 
         #region Properties.
@@ -104,6 +111,12 @@ namespace Gorgon.Graphics.Example
         /// <summary>
         /// Property to return the maximum size of the <see cref="BlurRadius"/> property.
         /// </summary>
+        /// <remarks>
+        /// This value is derived by using 1/2 of the <see cref="KernelSize"/> without the center texel.  For example, if the <see cref="KernelSize"/> is 7, then this value will be:
+        /// <c>(7 - 1) / 2 = 3</c>.  We see here that the kernel size is decremented by 1, which is the equivalent of removing the center texel, and then divided by 2 giving a result of 3 texels on either 
+        /// side of the center texel that can be sampled.
+        /// </remarks>
+        /// <seealso cref="KernelSize"/>
         public int MaximumBlurRadius
         {
             get;
@@ -132,7 +145,23 @@ namespace Gorgon.Graphics.Example
         /// </summary>
         /// <remarks>
         /// <para>
-        /// Higher values will increase the quality of the blur, but will cause the shader to run slower because more samples will need to be taken.
+        /// This property will adjust the amount of data for the blur kernel. Setting this value has the effect of increasing or lowering the amount of blur applied to the image. This value indicates how 
+        /// many texels will be sampled on either side of the center texel that is being blurred.
+        /// </para>
+        /// <para>
+        /// For example, setting the blur radius to 2 with a <see cref="KernelSize"/> of 7 will result in 2 texels being sampled on either side of the of the center texel, giving a maximum of a 5 tap 
+        /// sampling:
+        /// <pre>
+        /// T = Center texel
+        /// * = Samples
+        /// 
+        /// Max Kernel Size = 7, Max radius size = 3.
+        /// 
+        /// Radius = 3 -> ***T*** (7 taps)
+        /// Radius = 2 -> **T** (5 taps)
+        /// Radius = 1 -> *T* (3 taps)
+        /// Radius = 0 -> Blur disabled.
+        /// </pre>
         /// </para>
         /// <para>
         /// The valid range of values are within the range of 0 (no blurring) to <see cref="MaximumBlurRadius"/>.
@@ -140,8 +169,19 @@ namespace Gorgon.Graphics.Example
         /// <para>
         /// The default value is 1.
         /// </para>
+        /// <para>
+        /// <note type="warning">
+        /// <para>
+        /// Higher values will increase the quality of the blur, but will cause the shader to run slower because more samples will need to be taken. 
+        /// </para>
+        /// <para>
+        /// For optimal performance, it is <b>not</b> recommended to adjust this value in a real time scenario as it will recalculate the weights and offsets and upload them to the shader. 
+        /// </para>
+        /// </note> 
+        /// </para>
         /// </remarks>
         /// <seealso cref="MaximumBlurRadius"/>
+        /// <seealso cref="KernelSize"/>
         public int BlurRadius
         {
             get => _blurRadius;
@@ -203,6 +243,14 @@ namespace Gorgon.Graphics.Example
         /// <para>
         /// The default size is <c>256x256</c>.
         /// </para>
+        /// <para>
+        /// <note type="warning">
+        /// <para>
+        /// Increasing the render target size will have a performance impact due to the number of texels being processed. It is recommended to scale this size based on your target video device(s) 
+        /// capabilities.
+        /// </para>
+        /// </note>
+        /// </para>
         /// </remarks>
         public DX.Size2 BlurRenderTargetsSize
         {
@@ -223,26 +271,6 @@ namespace Gorgon.Graphics.Example
                 _offsetsNeedUpdate = true;
             }
         }
-
-        /// <summary>
-        /// Property to set or return the texture to pass in to the effect to be blurred.
-        /// </summary>
-        /// ??
-        public GorgonTexture InputTexture
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the target that will receive the blurred image.
-        /// </summary>
-        /// ??
-        public GorgonRenderTargetView BlurredTarget
-        {
-            get;
-            set;
-        }
         #endregion
 
         #region Methods.
@@ -260,7 +288,7 @@ namespace Gorgon.Graphics.Example
                                          new GorgonTextureInfo
                                          {
                                              Format = _blurTargetFormat,
-                                             Usage = ResourceUsage.Default,
+                                             Usage = D3D11.ResourceUsage.Default,
                                              Width = _blurTargetSize.Width,
                                              Height = _blurTargetSize.Height,
                                              Binding = TextureBinding.RenderTarget | TextureBinding.ShaderResource,
@@ -272,7 +300,7 @@ namespace Gorgon.Graphics.Example
                                          new GorgonTextureInfo
                                          {
                                              Format = _blurTargetFormat,
-                                             Usage = ResourceUsage.Default,
+                                             Usage = D3D11.ResourceUsage.Default,
                                              Width = _blurTargetSize.Width,
                                              Height = _blurTargetSize.Height,
                                              Binding = TextureBinding.RenderTarget | TextureBinding.ShaderResource,
@@ -370,13 +398,13 @@ namespace Gorgon.Graphics.Example
             switch (passIndex)
             {
                 case 0:
-                    _blitter.Blit(InputTexture, 0, 0, _hTarget.Info.Width, _hTarget.Info.Height);
+                    _blitter.Blit(_inputTexture, 0, 0, _hTarget.Info.Width, _hTarget.Info.Height);
                     break;
                 case 1:
                     _blitter.Blit(_hTarget, 0, 0, _hTarget.Info.Width, _hTarget.Info.Height);
                     break;
                 case 2:
-                    _blitter.Blit(_blurRadius != 0 ? _vTarget : InputTexture, 0, 0, BlurredTarget.Width, BlurredTarget.Height);
+                    _blitter.Blit(_blurRadius != 0 ? _vTarget : _inputTexture, 0, 0, _blurredTarget.Width, _blurredTarget.Height);
                     break;
             }
         }
@@ -391,7 +419,7 @@ namespace Gorgon.Graphics.Example
                                                          Graphics,
                                                          new GorgonConstantBufferInfo
                                                          {
-                                                             Usage = ResourceUsage.Default,
+                                                             Usage = D3D11.ResourceUsage.Default,
                                                              SizeInBytes = _kernelSizeBytes + _offsetSizeBytes + sizeof(int)
                                                          });
             _blurKernelData = new GorgonPointer(_blurBufferKernel.SizeInBytes);
@@ -401,7 +429,7 @@ namespace Gorgon.Graphics.Example
                                                        Graphics,
                                                        new GorgonConstantBufferInfo
                                                        {
-                                                           Usage = ResourceUsage.Dynamic,
+                                                           Usage = D3D11.ResourceUsage.Dynamic,
                                                            SizeInBytes = 16
                                                        });
 
@@ -475,16 +503,16 @@ namespace Gorgon.Graphics.Example
         protected override bool OnBeforeRender()
         {
 #if DEBUG
-            if ((_renderTargetUpdated) && ((Graphics.VideoDevice.GetBufferFormatSupport(BlurTargetFormat) & FormatSupport.RenderTarget) !=
-                                           FormatSupport.RenderTarget))
+            if ((_renderTargetUpdated) && ((Graphics.VideoDevice.GetBufferFormatSupport(BlurTargetFormat) & D3D11.FormatSupport.RenderTarget) !=
+                                           D3D11.FormatSupport.RenderTarget))
             {
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_FORMAT_NOT_SUPPORTED, BlurTargetFormat));
             }
 #endif
 
             // If we didn't supply an input, then we don't need to continue.
-            if ((InputTexture == null)
-                || (BlurredTarget == null))
+            if ((_inputTexture == null)
+                || (_blurredTarget == null))
             {
                 return false;
             }
@@ -526,7 +554,7 @@ namespace Gorgon.Graphics.Example
                         return false;
                     }
 
-                    data = _blurBufferPass.Lock(MapMode.WriteDiscard);
+                    data = _blurBufferPass.Lock(D3D11.MapMode.WriteDiscard);
                     data.Write(passIndex);
                     _blurBufferPass.Unlock(ref data);
 
@@ -542,7 +570,7 @@ namespace Gorgon.Graphics.Example
                         return false;
                     }
                     
-                    data = _blurBufferPass.Lock(MapMode.WriteDiscard);
+                    data = _blurBufferPass.Lock(D3D11.MapMode.WriteDiscard);
                     data.Write(passIndex);
                     _blurBufferPass.Unlock(ref data);
 
@@ -552,11 +580,66 @@ namespace Gorgon.Graphics.Example
                     _blitter.PipelineState = null;
                     _blitter.PixelShaderConstants[0] = null;
                     _blitter.PixelShaderConstants[1] = null;
-                    Graphics.SetRenderTarget(BlurredTarget);
+                    Graphics.SetRenderTarget(_blurredTarget);
                     break;
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Function to render this effect using the source <see cref="GorgonTexture"/> and the output <see cref="GorgonRenderTargetView"/>.
+        /// </summary>
+        /// <param name="sourceTexture">The texture containing the image data to blur.</param>
+        /// <param name="outputRenderTarget">The output render target that will receive the blurred image data.</param>
+        /// <param name="recordStates">[Optional] Flags to record states on the owning <see cref="Graphics"/> interface prior to rendering.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="sourceTexture"/> or the <paramref name="outputRenderTarget"/> parameter is <b>null</b>.</exception>
+        /// <remarks>
+        /// <para>
+        /// This will take the <paramref name="sourceTexture"/>, blur it, and then copy the blurred result into <paramref name="outputRenderTarget"/>. Applications can then take the 
+        /// <paramref name="outputRenderTarget"/> and use it in a post process chain, or however is appropriate for the application. 
+        /// </para>
+        /// <para>
+        /// The <paramref name="sourceTexture"/>, and the <paramref name="outputRenderTarget"/> values must <b>not</b> be disposed while this method is active. Doing so will cause undefined behavior 
+        /// as well as exceptions.
+        /// </para>
+        /// <para>
+        /// <para>
+        /// The optional <paramref name="recordStates"/> flags are a combination of flags to indicate which states on the owning <see cref="Graphics"/> interface to record and restore prior to and after 
+        /// rendering. If this parameter is omitted, then no state recording will occur. In some cases, users may desire more control over when the recording happens and when the restoration happens. 
+        /// This can be facilitated through the <see cref="GorgonShaderEffect.RecordStates"/> and <see cref="GorgonShaderEffect.RestoreStates"/> methods.
+        /// </para>
+        /// <para>
+        /// <note type="note">
+        /// <para>
+        /// Recording the states will incur a slight performance penalty.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// <note type="warning">
+        /// <para>
+        /// For performance reasons, any exceptions thrown from this method will only be thrown when Gorgon is compiled in <b>DEBUG</b> mode.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="GorgonRenderTargetView"/>
+        /// <seealso cref="GorgonTexture"/>
+        /// <seealso cref="GorgonShaderEffect.RecordedStates"/>
+        /// <seealso cref="GorgonShaderEffect.RecordStates"/>
+        /// <seealso cref="GorgonShaderEffect.RestoreStates"/>
+        public void Blur(GorgonTexture sourceTexture, GorgonRenderTargetView outputRenderTarget, RecordStates recordStates = Core.RecordStates.None)
+        {
+            sourceTexture.ValidateObject(nameof(sourceTexture));
+            outputRenderTarget.ValidateObject(nameof(outputRenderTarget));
+
+            _inputTexture = sourceTexture;
+            _blurredTarget = outputRenderTarget;
+
+            Render(recordStates);
+
+            _inputTexture = null;
+            _blurredTarget = null;
         }
 
         /// <summary>
@@ -580,27 +663,42 @@ namespace Gorgon.Graphics.Example
         /// </summary>
         /// <param name="graphics">The graphics interface that owns this effect.</param>
         /// <param name="kernelSize">[Optional] The size of the convolution kernel.</param>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="kernelSize"/> is less than 1 or greater than 64.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="kernelSize"/> is less than 3 or greater than 81.</exception>
         /// <remarks>
         /// <para>
-        /// If the <paramref name="kernelSize"/> is specified, it will define the number of taps used to sample around a texel for blurring. This value should be a multiple of 3 and will be adjusted 
-        /// accordingly to the nearest power of 3 if it is not. If this parameter is omitted, then a 9 tap blur will be created.
+        /// If the <paramref name="kernelSize"/> is specified, it will define the number of texels sampled (including the center) during a pass. The number of kernel taps should be an odd number for best 
+        /// results. For example:
+        /// <pre>
+        /// * = Sample
+        /// T = Center texel
+        /// 
+        /// 3 tap: *T*
+        /// 
+        /// 7 tap: ***T*** 
+        /// 
+        /// 9 tap: ****T****
+        /// </pre>
+        /// Keep in mind that the more taps requested, the more texel reads that are required and will have a negative performance impact.  
         /// </para>
         /// </remarks>
-        public GorgonGaussBlurEffect(GorgonGraphics graphics, int kernelSize = 9)
+        /// <seealso cref="KernelSize"/>
+        /// <seealso cref="MaximumBlurRadius"/>
+        public GorgonGaussBlurEffect(GorgonGraphics graphics, int kernelSize = 7)
             : base(graphics, Resources.GORGFX_NAME_GAUSS_BLUR_EFFECT, 3)
         {
-            if ((kernelSize < 1) 
-                || (kernelSize > 64))
+            if ((kernelSize < 3) 
+                || (kernelSize > 81))
             {
-                throw new ArgumentOutOfRangeException(nameof(kernelSize), Resources.GORGFX_ERR_GAUSS_BLUR_KERNEL_SIZE_INVALID);
+                throw new ArgumentOutOfRangeException(nameof(kernelSize), Resources.GORGFX_ERR_EFFECT_GAUSS_BLUR_KERNEL_SIZE_INVALID);
             }
 
-            KernelSize = (kernelSize + 2) & ~2;
+            KernelSize = kernelSize;
             MaximumBlurRadius = ((kernelSize - 1) / 2).Max(1);
+
+            // Adjust to the weights and offsets to the nearest 16 bytes.
             _offsetSizeBytes = (((sizeof(float) * 2) * KernelSize) + 15) & (~15); 
             _kernelSizeBytes = ((sizeof(float) * KernelSize) + 15) & (~15);
-            _blurRadius = 1;
+            _blurRadius = MaximumBlurRadius;
         }
         #endregion
     }
