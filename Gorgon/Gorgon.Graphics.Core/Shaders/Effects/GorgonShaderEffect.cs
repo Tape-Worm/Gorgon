@@ -81,8 +81,6 @@ namespace Gorgon.Graphics.Core
         #region Variables.
         // Flag to indicate whether or not the effect is in an initialized state.
         private bool _initialized;
-        // The list of passes for this effect.
-        private readonly Action[] _passes;
         // The active render targets when rendering begins.
         private readonly GorgonRenderTargetView[] _activeRenderTargets;
         // The active viewports when rendering begins.
@@ -105,7 +103,10 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the number of passes for the effect.
         /// </summary>
-        public int PassCount => _passes.Length;
+        public int PassCount
+        {
+            get;
+        }
 
         /// <summary>
         /// Property to return which states this effect has recorded prior to rendering.
@@ -159,25 +160,18 @@ namespace Gorgon.Graphics.Core
         /// <param name="passIndex">The current pass index.</param>
         protected virtual void OnAfterPass(int passIndex)
         {
-            
         }
 
         /// <summary>
-        /// Function to register a rendering pass with the shader.
+        /// Function called when a pass is rendered.
         /// </summary>
-        /// <param name="passIndex">The index of the pass to register.</param>
-        /// <param name="pass">The pass to the register.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pass"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="passIndex"/> is less than 0 or greater than or equal to <see cref="PassCount"/>.</exception>
-        protected void RegisterPass(int passIndex, Action pass)
-        {
-            if ((passIndex < 0) || (passIndex >= _passes.Length))
-            {
-                throw new ArgumentOutOfRangeException(nameof(passIndex), string.Format(Resources.GORGFX_ERR_PASS_INDEX_OUT_OF_RANGE, passIndex, _passes.Length));
-            }
-
-            _passes[passIndex] = pass ?? throw new ArgumentNullException(nameof(pass));
-        }
+        /// <param name="passIndex">The current index of the pass being rendered.</param>
+        /// <remarks>
+        /// <para>
+        /// Applications must override this method to provide data for rendering against the effect. 
+        /// </para>
+        /// </remarks>
+        protected abstract void OnRenderPass(int passIndex);
 
         /// <summary>
         /// Function to initialize the effect.
@@ -354,14 +348,14 @@ namespace Gorgon.Graphics.Core
                 hasRecordedStates = true;
             }
             
-            for (int i = 0; i < _passes.Length; ++i)
+            for (int i = 0; i < PassCount; ++i)
             {
                 if (!OnBeforePass(i))
                 {
                     continue;
                 }
 
-                _passes[i].Invoke();
+                OnRenderPass(i);
 
                 OnAfterPass(i);
             }
@@ -391,16 +385,16 @@ namespace Gorgon.Graphics.Core
         protected GorgonShaderEffect(GorgonGraphics graphics, string name, int passCount)
             : base(name)
         {
-            if (passCount < 0)
+            if (passCount < 1)
             {
                 throw new ArgumentOutOfRangeException(nameof(passCount), Resources.GORGFX_ERR_EFFECT_PASS_COUNT_INVALID);
             }
 
+            PassCount = passCount;
             Graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
             _activeRenderTargets = new GorgonRenderTargetView[graphics.VideoDevice.MaxRenderTargetCount];
             _activeViewports = new GorgonMonitoredValueTypeArray<DX.ViewportF>(graphics.VideoDevice.MaxViewportCount);
             _activeScissors = new GorgonMonitoredValueTypeArray<DX.Rectangle>(graphics.VideoDevice.MaxScissorCount);
-            _passes = new Action[passCount];
         }
         #endregion
     }

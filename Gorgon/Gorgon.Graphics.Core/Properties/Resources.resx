@@ -461,4 +461,10 @@ The width must be a value between 1-{2}, and the height must be a value between 
   <data name="GORGFX_ERR_PASS_INDEX_OUT_OF_RANGE" xml:space="preserve">
     <value>The effect pass index ({0}) must be 0 or less than {1}.</value>
   </data>
+  <data name="GORGFX_ERR_GAUSS_BLUR_KERNEL_SIZE_INVALID" xml:space="preserve">
+    <value>The kernel size must be between 1 and 64 (inclusive).</value>
+  </data>
+  <data name="GORGFX_NAME_GAUSS_BLUR_EFFECT" xml:space="preserve">
+    <value>Gaussian Blur Effect</value>
+  </data>
 </root>
