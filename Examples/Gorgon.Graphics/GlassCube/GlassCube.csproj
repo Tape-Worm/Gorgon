@@ -83,7 +83,6 @@
       <Link>SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Cube.cs" />
-    <Compile Include="GaussBlurTest.cs" />
     <Compile Include="GlassCubeVertex.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
@@ -125,7 +124,6 @@
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
     <Content Include="GorIcon.ico" />
-    <Content Include="TestGauss.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Gorgon\Gorgon.Core\Gorgon.Core.csproj">

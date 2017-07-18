@@ -78,34 +78,5 @@ namespace Gorgon.Graphics.Example.Properties {
                 return ResourceManager.GetString("GlassCubeShaders", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to #define MAX_KERNEL_SIZE 13
-        ///
-        ///// Pull in the blitter shader functions.
-        ///#GorgonInclude &quot;__Gorgon_TextureBlitter_Shader__&quot;
-        ///
-        ///// Gaussian blur kernal.
-        ///cbuffer GorgonGaussKernelData : register(b0)
-        ///{
-        ///	int _blurRadius = 6;
-        ///	float _weights[MAX_KERNEL_SIZE];
-        ///	float4 _offsets[MAX_KERNEL_SIZE];
-        ///}
-        ///
-        ///// Gaussian blur data.
-        ///cbuffer GorgonGaussPassSettings : register(b1)
-        ///{
-        ///	int _passIndex = 0;
-        ///}
-        ///
-        ///// Our pixel shader for blitting textures.
-        ///// Function to gather the a single pass of the separable gaussian b [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string TestGauss {
-            get {
-                return ResourceManager.GetString("TestGauss", resourceCulture);
-            }
-        }
     }
 }
