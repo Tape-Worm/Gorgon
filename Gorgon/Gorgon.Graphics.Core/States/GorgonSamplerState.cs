@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Threading;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
@@ -59,7 +60,7 @@ namespace Gorgon.Graphics.Core
 	public class GorgonSamplerState
         : IEquatable<GorgonSamplerState>
 	{
-		#region Variables.
+		#region Common sampler states.
 	    /// <summary>
 	    /// A default sampler state.
 	    /// </summary>
@@ -89,8 +90,10 @@ namespace Gorgon.Graphics.Core
         #endregion
 
         #region Variables.
+	    // The state ID.
+	    private static long _stateID;
         // The texture filter.
-	    private D3D11.Filter _filter;
+        private D3D11.Filter _filter;
         // The addressing mode for moving beyond texture horizontal extents.
 	    private D3D11.TextureAddressMode _addressU;
 	    // The addressing mode for moving beyond texture vertical extents.
@@ -131,22 +134,30 @@ namespace Gorgon.Graphics.Core
 	    }
 
 	    /// <summary>
-	    /// Property to set or return the type of filtering to apply to the texture.
+	    /// Property to return the state ID.
 	    /// </summary>
-	    /// <exception cref="GorgonException">Thrown if the state has been assigned to a sampler slot.</exception>
-	    /// <remarks>
-	    /// <para>
-	    /// This applies a filter when the texture is zoomed in, or out so that edges appear more smooth when magnified, and have less shimmer effect when minified. Filters can be applied to mip levels as well 
-	    /// as the overall texture.
-	    /// </para>
-	    /// <para>
-	    /// Click this <a target="_blank" href="https://msdn.microsoft.com/en-us/library/windows/desktop/ff476132(v=vs.85).aspx">link</a> for a full description of each filter type.
-	    /// </para>
-	    /// <para>
-	    /// The default value is <c>MinMagMipLinear</c>.
-	    /// </para>
-	    /// </remarks>
-	    public D3D11.Filter Filter
+	    public long ID
+	    {
+	        get;
+	    }
+
+        /// <summary>
+        /// Property to set or return the type of filtering to apply to the texture.
+        /// </summary>
+        /// <exception cref="GorgonException">Thrown if the state has been assigned to a sampler slot.</exception>
+        /// <remarks>
+        /// <para>
+        /// This applies a filter when the texture is zoomed in, or out so that edges appear more smooth when magnified, and have less shimmer effect when minified. Filters can be applied to mip levels as well 
+        /// as the overall texture.
+        /// </para>
+        /// <para>
+        /// Click this <a target="_blank" href="https://msdn.microsoft.com/en-us/library/windows/desktop/ff476132(v=vs.85).aspx">link</a> for a full description of each filter type.
+        /// </para>
+        /// <para>
+        /// The default value is <c>MinMagMipLinear</c>.
+        /// </para>
+        /// </remarks>
+        public D3D11.Filter Filter
 	    {
 	        get => _filter;
 	        set
@@ -402,7 +413,8 @@ namespace Gorgon.Graphics.Core
 
             // Copy the original native state reference, this will make any duplicated (i.e. no changes)
             // state a little faster to assign when rendering.
-		    Native = info.Native;
+		    ID = Interlocked.Increment(ref _stateID);
+            Native = info.Native;
 			Filter = info.Filter;
 			AddressU = info.AddressU;
 			AddressV = info.AddressV;
@@ -420,7 +432,8 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		public GorgonSamplerState()
 		{
-			Filter = D3D11.Filter.MinMagMipLinear;
+		    ID = Interlocked.Increment(ref _stateID);
+            Filter = D3D11.Filter.MinMagMipLinear;
 			AddressU = D3D11.TextureAddressMode.Clamp;
 			AddressV = D3D11.TextureAddressMode.Clamp;
 			AddressW = D3D11.TextureAddressMode.Clamp;

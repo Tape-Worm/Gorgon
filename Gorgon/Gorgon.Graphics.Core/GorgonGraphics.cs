@@ -130,8 +130,8 @@ namespace Gorgon.Graphics.Core
         : IDisposable
     {
         #region Variables.
-		// The log interface used to log debug messages.
-		private readonly IGorgonLog _log;
+        // The log interface used to log debug messages.
+        private readonly IGorgonLog _log;
 		// The video device to use for this graphics object.
 		private VideoDevice _videoDevice;
 		// The current device context.
@@ -140,6 +140,8 @@ namespace Gorgon.Graphics.Core
 		private GorgonDrawCallBase _lastDrawCall;
 		// Pipeline state cache.
 	    private readonly List<GorgonPipelineState> _stateCache = new List<GorgonPipelineState>();
+        // A group of pipeline state caches that applications can use for caching their own pipeline states.
+        private readonly Dictionary<string, GorgonPipelineStateGroup> _groupedCache = new Dictionary<string, GorgonPipelineStateGroup>(StringComparer.OrdinalIgnoreCase);
 		// Synchronization lock for creating new pipeline cache entries.
 		private readonly object _stateCacheLock = new object();
 		// The list of cached scissor rectangles to keep allocates sane.
@@ -1413,6 +1415,12 @@ namespace Gorgon.Graphics.Core
 
 		    lock (_stateCacheLock)
 			{
+                // Ensure that all groups lose their reference to the cached pipeline states first.
+			    foreach (KeyValuePair<string, GorgonPipelineStateGroup> cacheGroup in _groupedCache)
+			    {
+			        cacheGroup.Value.Invalidate();
+			    }
+
 				// Wipe out the state cache.
 				// ReSharper disable once ForCanBeConvertedToForeach
 				for (int i = 0; i < _stateCache.Count; ++i)
@@ -1556,6 +1564,45 @@ namespace Gorgon.Graphics.Core
 			D3DDeviceContext.DrawIndexedInstanced(drawCall.IndexCountPerInstance, drawCall.InstanceCount, drawCall.IndexStart, drawCall.BaseVertexIndex, drawCall.StartInstanceIndex);
 		}
 
+        /// <summary>
+        /// Function to retrieve cached states, segregated by group names.
+        /// </summary>
+        /// <param name="groupName">The name of the grouping.</param>
+        /// <returns>A dictionary containing the cached states for the specific group.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="groupName"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="groupName"/> parameter is empty.</exception>
+        /// <remarks>
+        /// <para>
+        /// While the <see cref="GetPipelineState"/> method is much quicker than creating a pipeline state over and over, it still has a fair bit of overhead when calculating which cached 
+        /// <see cref="GorgonPipelineState"/> to bring back (or whether to create a new one). 
+        /// </para>
+        /// <para>
+        /// To counter this, applications can use this functionality to create groups of <see cref="GorgonPipelineState"/> objects so they will not need to create them over and over (and thus impair 
+        /// performance) or hit the primary <see cref="CachedPipelineStates"/> list via the <see cref="GetPipelineState"/> method.  
+        /// </para>
+        /// <para>
+        /// Note that when the <see cref="ClearStateCache"/> method is called, this cache grouping will be preserved, but any pipeline states contained within it will be cleared.
+        /// </para>
+        /// <para>
+        /// <note type="warning">
+        /// <para>
+        /// Do <b>not</b> clear the 
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        public GorgonPipelineStateGroup GetPipelineStateGroup(string groupName)
+        {
+            GorgonPipelineStateGroup cacheGroup;
+
+            if (!_groupedCache.TryGetValue(groupName, out cacheGroup))
+            {
+                _groupedCache[groupName] = cacheGroup = new GorgonPipelineStateGroup(groupName);
+            }
+
+            return cacheGroup;
+        }
+
 		/// <summary>
 		/// Function to retrieve a pipeline state.
 		/// </summary>
@@ -1641,7 +1688,7 @@ namespace Gorgon.Graphics.Core
 			{
 				return;
 			}
-
+            
 			ClearStateCache();
 
 			// Disconnect from the context.

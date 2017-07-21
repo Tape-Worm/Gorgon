@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Threading;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
@@ -126,6 +127,9 @@ namespace Gorgon.Graphics.Core
         #endregion
 
         #region Variables.
+        // The state ID.
+        private static long _stateID;
+
         // The current triangle culling mode.
         private D3D11.CullMode _cullMode;
 
@@ -168,6 +172,14 @@ namespace Gorgon.Graphics.Core
         {
             get;
             set;
+        }
+
+        /// <summary>
+        /// Property to return the state ID.
+        /// </summary>
+        public long ID
+        {
+            get;
         }
 
         /// <summary>
@@ -437,6 +449,34 @@ namespace Gorgon.Graphics.Core
             }
         }
 
+        /// <summary>
+        /// Function to copy the contents of this <see cref="GorgonRasterState"/> into another one.
+        /// </summary>
+        /// <param name="destState">The state that will receive the contents of this state.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="destState"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="GorgonException">Thrown if the <paramref name="destState"/> is locked and used by a draw call.</exception>
+        public void CopyTo(GorgonRasterState destState)
+        {
+            if (destState == null)
+            {
+                throw new ArgumentNullException(nameof(destState));
+            }
+
+            destState.CheckLocked();
+
+            destState._isDepthClippingEnabled = _isDepthClippingEnabled;
+            destState._isAntialiasedLineEnabled = _isAntialiasedLineEnabled;
+            destState._cullMode = _cullMode;
+            destState._depthBias = _depthBias;
+            destState._depthBiasClamp = _depthBiasClamp;
+            destState._fillMode = _fillMode;
+            destState._forcedUavSampleCount = _forcedUavSampleCount;
+            destState._isFrontCounterClockwise = _isFrontCounterClockwise;
+            destState._isMultisamplingEnabled = _isMultisamplingEnabled;
+            destState._isScissorClippingEnabled = _isScissorClippingEnabled;
+            destState._slopeScaledDepthBias = _slopeScaledDepthBias;
+        }
+
         /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
         /// <returns>true if the current object is equal to the <paramref name="info" /> parameter; otherwise, false.</returns>
         /// <param name="info">An object to compare with this object.</param>
@@ -470,17 +510,9 @@ namespace Gorgon.Graphics.Core
                 throw new ArgumentNullException(nameof(info));
             }
 
-            _isAntialiasedLineEnabled = info.IsAntialiasedLineEnabled;
-            _cullMode = info.CullMode;
-            _depthBias = info.DepthBias;
-            _depthBiasClamp = info.DepthBiasClamp;
-            _isDepthClippingEnabled = info.IsDepthClippingEnabled;
-            _fillMode = info.FillMode;
-            _forcedUavSampleCount = info.ForcedUavSampleCount;
-            _isFrontCounterClockwise = info.IsFrontCounterClockwise;
-            _isMultisamplingEnabled = info.IsMultisamplingEnabled;
-            _isScissorClippingEnabled = info.IsScissorClippingEnabled;
-            _slopeScaledDepthBias = info.SlopeScaledDepthBias;
+            ID = Interlocked.Increment(ref _stateID);
+
+            info.CopyTo(this);
             IsLocked = false;
         }
 
@@ -489,6 +521,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         public GorgonRasterState()
         {
+            ID = Interlocked.Increment(ref _stateID);
             _isScissorClippingEnabled = true;
             _cullMode = D3D11.CullMode.Back;
             _fillMode = D3D11.FillMode.Solid;

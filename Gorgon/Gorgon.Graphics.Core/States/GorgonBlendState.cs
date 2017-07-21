@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Threading;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using D3D11 = SharpDX.Direct3D11;
@@ -97,6 +98,8 @@ namespace Gorgon.Graphics.Core
         #endregion
 
         #region Variables.
+        // The blend state ID.
+	    private static long _stateID;
         // Flag to indicate whether or not blending is enabled for this state.
 	    private bool _isBlendingEnabled;
         // Flag to indicate that a logical operator should be applied when blending.
@@ -127,6 +130,14 @@ namespace Gorgon.Graphics.Core
 	    {
 	        get;
 	        set;
+	    }
+
+        /// <summary>
+        /// Property to return the state ID.
+        /// </summary>
+	    public long ID
+	    {
+	        get;
 	    }
 
         /// <summary>
@@ -343,7 +354,34 @@ namespace Gorgon.Graphics.Core
 	        }
 	    }
 
-		/// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+        /// <summary>
+        /// Function to copy this <see cref="GorgonBlendState"/> into another <see cref="GorgonBlendState"/>.
+        /// </summary>
+        /// <param name="destState">The state that will receive the contents of this state.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="destState"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="GorgonException">Thrown if the <paramref name="destState"/> is locked and used by a draw call.</exception>
+        public void CopyTo(GorgonBlendState destState)
+	    {
+	        if (destState == null)
+	        {
+	            throw new ArgumentNullException(nameof(destState));
+	        }
+
+	        destState.CheckLocked();
+
+	        destState._writeMask = _writeMask;
+	        destState._alphaBlendOperation = _alphaBlendOperation;
+	        destState._colorBlendOperation = _colorBlendOperation;
+	        destState._destinationAlphaBlend = _destinationAlphaBlend;
+	        destState._destinationColorBlend = _destinationColorBlend;
+	        destState._isBlendingEnabled = _isBlendingEnabled;
+	        destState._isLogicalOperationEnabled = _isLogicalOperationEnabled;
+	        destState._logicOperation = _logicOperation;
+	        destState._sourceAlphaBlend = _sourceAlphaBlend;
+	        destState._sourceColorBlend = _sourceColorBlend;
+        }
+
+        /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
         /// <returns>true if the current object is equal to the <paramref name="info" /> parameter; otherwise, false.</returns>
         /// <param name="info">An object to compare with this object.</param>
         public bool Equals(GorgonBlendState info)
@@ -375,16 +413,8 @@ namespace Gorgon.Graphics.Core
 		        throw new ArgumentNullException(nameof(info));
 		    }
 
-		    _writeMask = info.WriteMask;
-		    _alphaBlendOperation = info.AlphaBlendOperation;
-		    _colorBlendOperation = info.ColorBlendOperation;
-		    _destinationAlphaBlend = info.DestinationAlphaBlend;
-		    _destinationColorBlend = info.DestinationColorBlend;
-		    _isBlendingEnabled = info.IsBlendingEnabled;
-		    _isLogicalOperationEnabled = info.IsLogicalOperationEnabled;
-		    _logicOperation = info.LogicOperation;
-		    _sourceAlphaBlend = info.SourceAlphaBlend;
-		    _sourceColorBlend = info.SourceColorBlend;
+		    ID = Interlocked.Increment(ref _stateID);
+            info.CopyTo(this);
 		    IsLocked = false;
 		}
 
@@ -392,7 +422,8 @@ namespace Gorgon.Graphics.Core
         /// Initializes a new instance of the <see cref="GorgonBlendState"/> class.
         /// </summary>
         public GorgonBlendState()
-		{
+        {
+            ID = Interlocked.Increment(ref _stateID);
 			_logicOperation = D3D11.LogicOperation.Noop;
 			_sourceAlphaBlend = _sourceColorBlend = D3D11.BlendOption.One;
 			_destinationAlphaBlend = _destinationColorBlend = D3D11.BlendOption.Zero;

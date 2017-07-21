@@ -26,6 +26,7 @@
 
 using System;
 using System.IO;
+using System.Threading;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.IO;
@@ -84,15 +85,27 @@ namespace Gorgon.Graphics.Core
 	public abstract class GorgonShader
 		: GorgonNamedObject, IDisposable
 	{
-		#region Properties.
-		/// <summary>
-		/// Property to return the shader byte code.
-		/// </summary>
-		protected internal D3DCompiler.ShaderBytecode D3DByteCode
+        #region Variables.
+        // The ID for the shaders.
+	    private static long _shaderID;
+        #endregion
+
+        #region Properties.
+        /// <summary>
+        /// Property to return the shader byte code.
+        /// </summary>
+        protected internal D3DCompiler.ShaderBytecode D3DByteCode
 		{
 			get;
 		}
 
+        /// <summary>
+        /// Property to return the ID for the shader.
+        /// </summary>
+	    public long ID
+	    {
+	        get;
+	    }
 
 		/// <summary>
 		/// Property to set or return whether to include debug information in the shader or not.
@@ -264,6 +277,7 @@ namespace Gorgon.Graphics.Core
 		protected GorgonShader(IGorgonVideoDevice videoDevice, string name, bool isDebug, D3DCompiler.ShaderBytecode byteCode)
 			: base(name)
 		{
+		    ID = Interlocked.Increment(ref _shaderID);
 			VideoDevice = videoDevice;
 			IsDebug = isDebug;
 			D3DByteCode = byteCode;

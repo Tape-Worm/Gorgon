@@ -336,15 +336,6 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The kernel size must be between 1 and 64 (inclusive)..
-        /// </summary>
-        internal static string GORGFX_ERR_GAUSS_BLUR_KERNEL_SIZE_INVALID {
-            get {
-                return ResourceManager.GetString("GORGFX_ERR_GAUSS_BLUR_KERNEL_SIZE_INVALID", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The image type &apos;{0}&apos; is not a valid image type..
         /// </summary>
         internal static string GORGFX_ERR_IMAGE_TYPE_INVALID {
@@ -1040,6 +1031,15 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Grayscale Effect.
+        /// </summary>
+        internal static string GORGFX_NAME_GRAYSCALE_EFFECT {
+            get {
+                return ResourceManager.GetString("GORGFX_NAME_GRAYSCALE_EFFECT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Gorgon Graphics Video Device: {0}.
         /// </summary>
         internal static string GORGFX_TOSTR_DEVICE {
@@ -1095,7 +1095,26 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to // Adjust the weighting and offsets so we can pack our float values in tightly (much less bandwidth when updating the CB).
+        ///   Looks up a localized string similar to // Texture and sampler for blitting a texture.
+        ///Texture2D _bltTexture : register(t0);
+        ///SamplerState _bltSampler : register(s0);
+        ///
+        ///// Our default blitting vertex.
+        ///struct GorgonBltVertex
+        ///{
+        ///   float4 position : SV_POSITION;
+        ///   float2 uv : TEXCOORD0;
+        ///   float4 color : COLOR;
+        ///};
+        ///
+        ///// The transformation matrices (for vertex shader).
+        ///cbuffer GorgonBltWorldViewProjection : register(b0)
+        ///{
+        ///	float4x4 WorldViewProjection;
+        ///}
+        ///
+        ///// Our vertex shader for blitting textures.
+        ///GorgonBltVertex GorgonBltVertexShade [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string GraphicsShaders {
             get {

@@ -89,10 +89,6 @@ namespace Gorgon.Graphics.Example
         private bool _kernelNeedUpdate = true;
         // The blitter used to pass data from one render target to another and apply the blur shader(s).
         private GorgonTextureBlitter _blitter;
-        // The pipeline state for blurring each pass.
-        private GorgonPipelineState _blurState;
-        // The pipeline state for blurring each pass with alpha preservation.
-        private GorgonPipelineState _blurStateNoAlpha;
         // The texture to pass in to the effect to be blurred.
         private GorgonTexture _inputTexture;
         // The target that will receive the blurred image.
@@ -465,26 +461,7 @@ namespace Gorgon.Graphics.Example
                                                                                 GorgonGraphics.IsDebugEnabled,
                                                                                 weightsMacro);
 
-            // Build up our pipeline state containing our pixel shader used to blur.
-            _blurState = Graphics.GetPipelineState(new GorgonPipelineStateInfo
-                                                       {
-                                                           PixelShader = _blurShader,
-                                                           VertexShader = _blitter.VertexShader,
-                                                           RasterState = GorgonRasterState.Default,
-                                                           DepthStencilState = GorgonDepthStencilState.Default,
-                                                           BlendStates = new[]
-                                                                         {
-                                                                             GorgonBlendState.NoBlending
-                                                                         }
-                                                       });
-
-            _blurStateNoAlpha = Graphics.GetPipelineState(new GorgonPipelineStateInfo(_blurState.Info)
-                                                          {
-                                                              PixelShader = _blurShaderNoAlpha
-                                                          });
-
-
-            _blitter.PipelineState = !PreserveAlpha ? _blurState : _blurStateNoAlpha;
+            _blitter.PixelShader = !PreserveAlpha ? _blurShader : _blurShaderNoAlpha;
 
             UpdateRenderTarget();
             UpdateKernelWeights();
@@ -558,7 +535,7 @@ namespace Gorgon.Graphics.Example
                     data.Write(passIndex);
                     _blurBufferPass.Unlock(ref data);
 
-                    _blitter.PipelineState = !PreserveAlpha ? _blurState : _blurStateNoAlpha;
+                    _blitter.PixelShader = !PreserveAlpha ? _blurShader : _blurShaderNoAlpha;
                     _blitter.PixelShaderConstants[0] = _blurBufferKernel;
                     _blitter.PixelShaderConstants[1] = _blurBufferPass;
 
@@ -577,7 +554,7 @@ namespace Gorgon.Graphics.Example
                     Graphics.SetRenderTarget(_vTarget.DefaultRenderTargetView);
                     break;
                 case 2:
-                    _blitter.PipelineState = null;
+                    _blitter.PixelShader = null;
                     _blitter.PixelShaderConstants[0] = null;
                     _blitter.PixelShaderConstants[1] = null;
                     Graphics.SetRenderTarget(_blurredTarget);

@@ -467,4 +467,7 @@ The width must be a value between 1-{2}, and the height must be a value between 
   <data name="GORGFX_NAME_GAUSS_BLUR_EFFECT" xml:space="preserve">
     <value>Gaussian Blur Effect</value>
   </data>
+  <data name="GORGFX_NAME_GRAYSCALE_EFFECT" xml:space="preserve">
+    <value>Grayscale Effect</value>
+  </data>
 </root>

@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System;
 using System.Collections.Generic;
 
 namespace Gorgon.Graphics.Core
@@ -40,6 +41,7 @@ namespace Gorgon.Graphics.Core
 	/// </para>
 	/// </remarks>
 	public interface IGorgonPipelineStateInfo
+        : IEquatable<IGorgonPipelineStateInfo>
 	{
 		/// <summary>
 		/// Property to return the current pixel shader 

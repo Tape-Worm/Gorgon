@@ -184,6 +184,8 @@
     <Compile Include="Targets\GorgonSwapChainInfo.cs" />
     <Compile Include="Textures\_Extensions\GorgonImageTextureExtensions.cs" />
     <Compile Include="Textures\GorgonImageToTextureInfo.cs" />
+    <Compile Include="GorgonBlendStateListExtensions.cs" />
+    <Compile Include="Pipeline\GorgonPipelineStateGroup.cs" />
     <Compile Include="_Internal\_Extensions\SharpDXExtensions.cs" />
   </ItemGroup>
   <ItemGroup>

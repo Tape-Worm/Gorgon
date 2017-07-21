@@ -138,11 +138,23 @@ namespace Gorgon.Graphics.Core
 	        }
 	    }
 
-	    /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
-	    /// <param name="other">An object to compare with this object.</param>
-	    /// <returns>
-	    /// <see langword="true" /> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <see langword="false" />.</returns>
-	    public bool Equals(GorgonStencilOperation other)
+        /// <summary>
+        /// Function to copy the constants of this <see cref="GorgonStencilOperation"/> to another one.
+        /// </summary>
+        /// <param name="destOp">The stencil operation that will recieve the contents of this stencil operation.</param>
+	    internal void CopyTo(GorgonStencilOperation destOp)
+	    {
+	        destOp._comparison = Comparison;
+	        destOp._depthFailOperation = DepthFailOperation;
+	        destOp._failOperation = FailOperation;
+	        destOp._passOperation = PassOperation;
+        }
+
+        /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// <see langword="true" /> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <see langword="false" />.</returns>
+        public bool Equals(GorgonStencilOperation other)
         {
             return (other == this) || (other != null
                                        && Comparison == other.Comparison
@@ -169,10 +181,7 @@ namespace Gorgon.Graphics.Core
 		        return;
 		    }
 
-		    _comparison = opInfo.Comparison;
-		    _depthFailOperation = opInfo.DepthFailOperation;
-		    _failOperation = opInfo.FailOperation;
-		    _passOperation = opInfo.PassOperation;
+            opInfo.CopyTo(this);
         }
         #endregion
     }

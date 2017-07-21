@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Threading;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using D3D11 = SharpDX.Direct3D11;
@@ -125,13 +126,19 @@ namespace Gorgon.Graphics.Core
         #endregion
 
         #region Variables.
+	    // The state ID.
+	    private static long _stateID;
         // The type of comparison to perform for depth testing.
-	    private D3D11.Comparison _depthComparison;
-
+        private D3D11.Comparison _depthComparison;
+        // Flag to indicate that depth writing is enabled.
 	    private bool _isDepthWriteEnabled;
+        // Flag to indicate that the depth buffer is enabled.
 	    private bool _isDepthEnabled;
+        // Flag to indicate that the stencil buffer is enabled.
 	    private bool _isStencilEnabled;
+        // The stencil reading mask.
 	    private byte _stencilReadMask;
+        // The stencil writing mask.
 	    private byte _stencilWriteMask;
 	    #endregion
 
@@ -144,19 +151,27 @@ namespace Gorgon.Graphics.Core
 	        get;
 	        set;
 	    }
+        
+	    /// <summary>
+	    /// Property to return the state ID.
+	    /// </summary>
+	    public long ID
+	    {
+	        get;
+	    }
 
-		/// <summary>
-		/// Property to set or return the depth comparison function.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// Use this property to determine whether a depth value will be written into the buffer if the function specified evaluates to true using the data being written and existing data.
-		/// </para>
-		/// <para>
-		/// The default value is <c>Less</c>.
-		/// </para>
-		/// </remarks>
-		public D3D11.Comparison DepthComparison
+        /// <summary>
+        /// Property to set or return the depth comparison function.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Use this property to determine whether a depth value will be written into the buffer if the function specified evaluates to true using the data being written and existing data.
+        /// </para>
+        /// <para>
+        /// The default value is <c>Less</c>.
+        /// </para>
+        /// </remarks>
+        public D3D11.Comparison DepthComparison
 		{
 		    get => _depthComparison;
 		    set
@@ -285,6 +300,31 @@ namespace Gorgon.Graphics.Core
 	        }
 	    }
 
+        /// <summary>
+        /// Function to copy this <see cref="GorgonDepthStencilState"/> into another <see cref="GorgonDepthStencilState"/>.
+        /// </summary>
+        /// <param name="destState">The state that will receive the contents of this state.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="destState"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="GorgonException">Thrown if the <paramref name="destState"/> is locked and used by a draw call.</exception>
+	    public void CopyTo(GorgonDepthStencilState destState)
+	    {
+	        if (destState == null)
+	        {
+	            throw new ArgumentNullException(nameof(destState));
+	        }
+
+            destState.CheckLocked();
+
+	        BackFaceStencilOp.CopyTo(destState.BackFaceStencilOp);
+	        FrontFaceStencilOp.CopyTo(destState.FrontFaceStencilOp);
+	        destState._depthComparison = DepthComparison;
+	        destState._isDepthWriteEnabled = IsDepthWriteEnabled;
+	        destState._isDepthEnabled = IsDepthEnabled;
+	        destState._isStencilEnabled = IsStencilEnabled;
+	        destState._stencilReadMask = StencilReadMask;
+	        destState._stencilWriteMask = StencilWriteMask;
+        }
+
         /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
         /// <returns>true if the current object is equal to the <paramref name="info" /> parameter; otherwise, false.</returns>
         /// <param name="info">An object to compare with this object.</param>
@@ -315,14 +355,11 @@ namespace Gorgon.Graphics.Core
 				throw new ArgumentNullException(nameof(info));
 			}
 
-			BackFaceStencilOp = new GorgonStencilOperation(this, info.BackFaceStencilOp);
-			FrontFaceStencilOp = new GorgonStencilOperation(this, info.FrontFaceStencilOp);
-		    _depthComparison = info.DepthComparison;
-		    _isDepthWriteEnabled = info.IsDepthWriteEnabled;
-		    _isDepthEnabled = info.IsDepthEnabled;
-		    _isStencilEnabled = info.IsStencilEnabled;
-		    _stencilReadMask = info.StencilReadMask;
-		    _stencilWriteMask = info.StencilWriteMask;
+		    ID = Interlocked.Increment(ref _stateID);
+		    BackFaceStencilOp = new GorgonStencilOperation(this);
+		    FrontFaceStencilOp = new GorgonStencilOperation(this);
+            
+            info.CopyTo(this);
 		    IsLocked = false;
 		}
 
@@ -330,7 +367,8 @@ namespace Gorgon.Graphics.Core
         /// Initializes a new instance of the <see cref="GorgonDepthStencilState"/> class.
         /// </summary>
         public GorgonDepthStencilState()
-		{
+        {
+            ID = Interlocked.Increment(ref _stateID);
 			_isDepthWriteEnabled = true;
 			_depthComparison = D3D11.Comparison.Less;
 			_stencilReadMask = 0xff;

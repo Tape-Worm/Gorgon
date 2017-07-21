@@ -27,6 +27,7 @@
 using System;
 using D3D11 = SharpDX.Direct3D11;
 using System.Collections.Generic;
+using System.Linq;
 using Gorgon.Math;
 
 namespace Gorgon.Graphics.Core
@@ -143,6 +144,129 @@ namespace Gorgon.Graphics.Core
 		IReadOnlyList<GorgonBlendState> IGorgonPipelineStateInfo.BlendStates => BlendStates;
         #endregion
 
+        #region Methods.
+        /// <summary>
+        /// Function to copy a <see cref="IGorgonPipelineStateInfo"/> into this one.
+        /// </summary>
+        /// <param name="other">The other pipeline state to copy.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="other"/> parameter is <b>null</b>.</exception>
+	    public void CopyFrom(IGorgonPipelineStateInfo other)
+	    {
+	        if (other == null)
+	        {
+	            throw new ArgumentNullException(nameof(other));
+	        }
+
+	        IsIndependentBlendingEnabled = other.IsIndependentBlendingEnabled;
+	        IsAlphaToCoverageEnabled = other.IsAlphaToCoverageEnabled;
+	        PixelShader = other.PixelShader;
+	        VertexShader = other.VertexShader;
+
+	        if (other.DepthStencilState != null)
+	        {
+	            if (DepthStencilState == null)
+	            {
+	                DepthStencilState = new GorgonDepthStencilState(other.DepthStencilState);
+	            }
+	            else
+	            {
+	                other.DepthStencilState.CopyTo(DepthStencilState);
+	                DepthStencilState.IsLocked = false;
+	            }
+	        }
+	        else
+	        {
+	            DepthStencilState = null;
+	        }
+
+	        if (other.RasterState != null)
+	        {
+	            if (RasterState == null)
+	            {
+	                RasterState = new GorgonRasterState(other.RasterState);
+	            }
+	            else
+	            {
+	                other.RasterState.CopyTo(RasterState);
+	                other.RasterState.IsLocked = false;
+	            }
+	        }
+	        else
+	        {
+	            RasterState = null;
+	        }
+
+	        if (other.BlendStates == null)
+	        {
+	            BlendStates = null;
+	            return;
+	        }
+
+	        if ((BlendStates == null) || (other.BlendStates.Count != BlendStates.Length))
+	        {
+	            BlendStates = new GorgonBlendState[other.BlendStates.Count.Min(D3D11.OutputMergerStage.SimultaneousRenderTargetCount)];
+	        }
+
+	        for (int i = 0; i < BlendStates.Length; ++i)
+	        {
+	            if (other.BlendStates[i] == null)
+	            {
+	                continue;
+	            }
+
+	            if (BlendStates[i] == null)
+	            {
+	                BlendStates[i] = new GorgonBlendState(other.BlendStates[i]);
+	            }
+	            else
+	            {
+	                other.BlendStates[i].CopyTo(BlendStates[i]);
+	                BlendStates[i].IsLocked = false;
+	            }
+	        }
+        }
+
+        /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// <see langword="true" /> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <see langword="false" />.</returns>
+        public bool Equals(IGorgonPipelineStateInfo other)
+	    {
+	        if (other == null)
+	        {
+	            return false;
+	        }
+
+	        if (other == this)
+	        {
+	            return true;
+	        }
+
+            if ((VertexShader != other.VertexShader)
+                || (PixelShader != other.PixelShader)
+                || (IsAlphaToCoverageEnabled != other.IsAlphaToCoverageEnabled)
+	            || (IsIndependentBlendingEnabled != other.IsIndependentBlendingEnabled))
+	        {
+	            return false;
+	        }
+
+	        if ((DepthStencilState != other.DepthStencilState) 
+                && ((DepthStencilState == null) || (!DepthStencilState.Equals(other.DepthStencilState))))
+	        {
+	            return false;
+	        }
+
+	        if ((RasterState != other.RasterState) 
+                && ((RasterState == null) || (!RasterState.Equals(other.RasterState))))
+	        {
+	            return false;
+	        }
+
+            // Check the blend states.
+	        return BlendStates.ListEquals(other.BlendStates);
+	    }
+        #endregion
+
         #region Constructor.
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonPipelineStateInfo"/> class.
@@ -156,35 +280,7 @@ namespace Gorgon.Graphics.Core
 				throw new ArgumentNullException(nameof(info));
 			}
 
-			IsIndependentBlendingEnabled = info.IsIndependentBlendingEnabled;
-			IsAlphaToCoverageEnabled = info.IsAlphaToCoverageEnabled;
-			PixelShader = info.PixelShader;
-			VertexShader = info.VertexShader;
-
-		    if (info.DepthStencilState != null)
-		    {
-		        DepthStencilState = new GorgonDepthStencilState(info.DepthStencilState);
-		    }
-
-		    if (info.RasterState != null)
-		    {
-		        RasterState = new GorgonRasterState(info.RasterState);
-		    }
-
-		    if (info.BlendStates == null)
-			{
-				return;
-			}
-
-			BlendStates = new GorgonBlendState[info.BlendStates.Count.Min(D3D11.OutputMergerStage.SimultaneousRenderTargetCount)];
-
-			for (int i = 0; i < BlendStates.Length; ++i)
-			{
-			    if (info.BlendStates[i] != null)
-			    {
-			        BlendStates[i] = new GorgonBlendState(info.BlendStates[i]);
-			    }
-			}
+            CopyFrom(info);
 		}
 
 		/// <summary>
