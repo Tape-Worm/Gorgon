@@ -1870,9 +1870,12 @@ namespace Gorgon.Graphics.Core
 			}
 
             // If we ever created a blitter on this interface, then we need to clean up the common data for all blitter instances.
-		    _textureBlitter.Value.Dispose();
-            
-			ClearStateCache();
+		    if (_textureBlitter.IsValueCreated)
+		    {
+		        _textureBlitter.Value.Dispose();
+		    }
+
+		    ClearStateCache();
 
 			// Disconnect from the context.
 			_log.Print($"Destroying GorgonGraphics interface for device '{device.Info.Name}'...", LoggingLevel.Simple);
