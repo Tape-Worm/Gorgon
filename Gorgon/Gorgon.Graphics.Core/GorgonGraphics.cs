@@ -376,11 +376,8 @@ namespace Gorgon.Graphics.Core
 	    /// <returns>A <see cref="PipelineResourceChange"/> indicating whether or not the state has changed.</returns>
 	    private PipelineResourceChange MergeConstantBuffers(ShaderType shaderType, GorgonConstantBuffers buffers, PipelineResourceChange currentChanges)
 	    {
-		    ref (int StartSlot, int Count, GorgonConstantBuffer[] Bindings) current = ref buffers.GetDirtyItems();
 		    ref (int StartSlot, int Count, GorgonConstantBuffer[] Bindings) newItems = ref buffers.GetDirtyItems();
 
-		    int startSlot = current.StartSlot.Min(newItems.StartSlot);
-		    int lastSlot = startSlot + current.Count.Max(newItems.Count);
 		    PipelineResourceChange desiredStateBit;
 		    GorgonConstantBuffers destBuffers;
 
@@ -398,7 +395,11 @@ namespace Gorgon.Graphics.Core
 				    return currentChanges;
 		    }
 
-		    return CopyToLastDrawCall(startSlot,
+	        ref (int StartSlot, int Count, GorgonConstantBuffer[] Bindings) current = ref destBuffers.GetDirtyItems();
+	        int startSlot = current.StartSlot.Min(newItems.StartSlot);
+	        int lastSlot = startSlot + current.Count.Max(newItems.Count);
+
+            return CopyToLastDrawCall(startSlot,
 		                              lastSlot,
 		                              destBuffers,
 		                              newItems.Bindings,
@@ -431,12 +432,9 @@ namespace Gorgon.Graphics.Core
 	    /// <returns>A <see cref="PipelineResourceChange"/> indicating whether or not the state has changed.</returns>
 	    private PipelineResourceChange MergeShaderResources(ShaderType shaderType, GorgonShaderResourceViews srvs, PipelineResourceChange currentChanges)
 	    {
-		    ref (int StartSlot, int Count, GorgonShaderResourceView[] Bindings) current = ref srvs.GetDirtyItems();
 		    ref (int StartSlot, int Count, GorgonShaderResourceView[] Bindings) newItems = ref srvs.GetDirtyItems();
 
-		    int startSlot = current.StartSlot.Min(newItems.StartSlot);
-		    int lastSlot = startSlot + current.Count.Max(newItems.Count);
-		    PipelineResourceChange desiredStateBit;
+	        PipelineResourceChange desiredStateBit;
 		    GorgonShaderResourceViews destSrvs;
 
 		    switch (shaderType)
@@ -453,7 +451,11 @@ namespace Gorgon.Graphics.Core
 				    return currentChanges;
 		    }
 
-		    return CopyToLastDrawCall(startSlot,
+	        ref (int StartSlot, int Count, GorgonShaderResourceView[] Bindings) current = ref destSrvs.GetDirtyItems();
+	        int startSlot = current.StartSlot.Min(newItems.StartSlot);
+	        int lastSlot = startSlot + current.Count.Max(newItems.Count);
+
+            return CopyToLastDrawCall(startSlot,
 		                              lastSlot,
 		                              destSrvs,
 		                              newItems.Bindings,
@@ -486,11 +488,8 @@ namespace Gorgon.Graphics.Core
 	    /// <returns>A <see cref="PipelineResourceChange"/> indicating whether or not the state has changed.</returns>
 	    private PipelineResourceChange MergeShaderSamplers(ShaderType shaderType, GorgonSamplerStates samplers, PipelineResourceChange currentChanges)
 	    {
-		    ref (int StartSlot, int Count, GorgonSamplerState[] Bindings) current = ref samplers.GetDirtyItems();
 		    ref (int StartSlot, int Count, GorgonSamplerState[] Bindings) newItems = ref samplers.GetDirtyItems();
 
-		    int startSlot = current.StartSlot.Min(newItems.StartSlot);
-		    int lastSlot = startSlot + current.Count.Max(newItems.Count);
 		    PipelineResourceChange desiredStateBit;
 		    GorgonSamplerStates destSamplers;
 
@@ -517,7 +516,11 @@ namespace Gorgon.Graphics.Core
 				    return currentChanges;
 		    }
 
-		    return CopyToLastDrawCall(startSlot,
+	        ref (int StartSlot, int Count, GorgonSamplerState[] Bindings) current = ref destSamplers.GetDirtyItems();
+	        int startSlot = current.StartSlot.Min(newItems.StartSlot);
+	        int lastSlot = startSlot + current.Count.Max(newItems.Count);
+
+            return CopyToLastDrawCall(startSlot,
 		                              lastSlot,
 		                              destSamplers,
 		                              newItems.Bindings,

@@ -212,24 +212,26 @@ namespace Gorgon.Graphics
             _drawCall.PixelShaderResourceViews[0] = texture.DefaultShaderResourceView;
 
             // Apply the correct pipeline state.
-		    if (pixelShader == null)
-		    {
-		        pixelShader = _pixelShader;
-		    }
-
 		    if (blendState == null)
 		    {
 		        blendState = GorgonBlendState.NoBlending;
 		    }
 
-		    if ((pixelShader != _pixelShader)
-		        || (blendState != GorgonBlendState.NoBlending))
+		    if (pixelShader == null)
 		    {
-		        UpdateState(pixelShader, blendState);
+		        pixelShader = _pixelShader;
+		    }
+
+		    if ((_pipelineStateInfo.PixelShader != pixelShader)
+		        || (_pipelineStateInfo.BlendStates[0] != blendState))
+		    {
+		        _pipelineStateInfo.PixelShader = pixelShader;
+		        _pipelineStateInfo.BlendStates[0] = blendState;
+		        UpdateState(_pipelineStateInfo.PixelShader, _pipelineStateInfo.BlendStates[0]);
 		    }
 
             // Apply pixel shader constants as needed.
-		    if ((pixelShaderConstants != null) && (_pixelShader != pixelShader))
+		    if ((pixelShaderConstants != null) && (_pixelShader != _pipelineStateInfo.PixelShader))
 		    {
 		        ref (int Start, int Count, GorgonConstantBuffer[]) buffers = ref pixelShaderConstants.GetDirtyItems();
 
@@ -237,7 +239,8 @@ namespace Gorgon.Graphics
 		        {
 		            _drawCall.PixelShaderConstantBuffers[i] = pixelShaderConstants[i];
 		        }
-		    } else if (_drawCall.PixelShaderConstantBuffers.IsDirty)
+		    }
+		    else
 		    {
 		        _drawCall.PixelShaderConstantBuffers.Clear();
 		    }

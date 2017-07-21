@@ -400,8 +400,8 @@ namespace Gorgon.Graphics.Example
                                          pixelShaderConstants: _blurConstants);
                     break;
                 case 1:
-                    Graphics.DrawTexture(_inputTexture,
-                                         _vTarget.DefaultRenderTargetView.Bounds,
+                    Graphics.DrawTexture(_hTarget,
+                                         _hTarget.DefaultRenderTargetView.Bounds,
                                          pixelShader: (PreserveAlpha ? _blurShaderNoAlpha : _blurShader),
                                          pixelShaderConstants: _blurConstants);
                     break;
