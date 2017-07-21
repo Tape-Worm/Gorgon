@@ -35,6 +35,7 @@ using Gorgon.Math;
 using Gorgon.Native;
 using SharpDX.Mathematics.Interop;
 using DX = SharpDX;
+using D3D = SharpDX.Direct3D;
 using D3D11 = SharpDX.Direct3D11;
 using GI = SharpDX.DXGI;
 
@@ -129,6 +130,13 @@ namespace Gorgon.Graphics.Core
     public sealed class GorgonGraphics
         : IDisposable
     {
+        #region Constants.
+        /// <summary>
+        /// The name of the shader file data used for include files that wish to use the include shader.
+        /// </summary>
+        public const string BlitterShaderIncludeFileName = "__Gorgon_TextureBlitter_Shader__";
+        #endregion
+
         #region Variables.
         // The log interface used to log debug messages.
         private readonly IGorgonLog _log;
@@ -141,7 +149,7 @@ namespace Gorgon.Graphics.Core
 		// Pipeline state cache.
 	    private readonly List<GorgonPipelineState> _stateCache = new List<GorgonPipelineState>();
         // A group of pipeline state caches that applications can use for caching their own pipeline states.
-        private readonly Dictionary<string, GorgonPipelineStateGroup> _groupedCache = new Dictionary<string, GorgonPipelineStateGroup>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, IPipelineStateGroup> _groupedCache = new Dictionary<string, IPipelineStateGroup>(StringComparer.OrdinalIgnoreCase);
 		// Synchronization lock for creating new pipeline cache entries.
 		private readonly object _stateCacheLock = new object();
 		// The list of cached scissor rectangles to keep allocates sane.
@@ -158,6 +166,8 @@ namespace Gorgon.Graphics.Core
         private readonly GorgonMonitoredValueTypeArray<DX.Rectangle> _scissorRectangles;
         // The viewports used for rendering to the render target.
         private readonly GorgonMonitoredValueTypeArray<DX.ViewportF> _viewports;
+        // The texture blitter used to render a single texture.
+        private Lazy<TextureBlitter> _textureBlitter;
         #endregion
 
         #region Properties.
@@ -608,7 +618,10 @@ namespace Gorgon.Graphics.Core
 	    {
 		    if (_lastDrawCall == null)
 		    {
-			    _lastDrawCall = new GorgonDrawCallBase();
+		        _lastDrawCall = new GorgonDrawCallBase
+		                        {
+		                            PrimitiveTopology = D3D.PrimitiveTopology.Undefined
+		                        };
 		    }
 
 		    PipelineResourceChange stateChanges = PipelineResourceChange.None;
@@ -1416,7 +1429,7 @@ namespace Gorgon.Graphics.Core
 		    lock (_stateCacheLock)
 			{
                 // Ensure that all groups lose their reference to the cached pipeline states first.
-			    foreach (KeyValuePair<string, GorgonPipelineStateGroup> cacheGroup in _groupedCache)
+			    foreach (KeyValuePair<string, IPipelineStateGroup> cacheGroup in _groupedCache)
 			    {
 			        cacheGroup.Value.Invalidate();
 			    }
@@ -1565,10 +1578,171 @@ namespace Gorgon.Graphics.Core
 		}
 
         /// <summary>
+        /// Function to render a texture to the current <see cref="GorgonRenderTargetView"/>.
+        /// </summary>
+        /// <param name="texture">The texture to render.</param>
+        /// <param name="x">The horizontal destination position to render into.</param>
+        /// <param name="y">The vertical destination position to render into.</param>
+        /// <param name="width">[Optional] The destination width to render.</param>
+        /// <param name="height">[Optional] The destination height to render.</param>
+        /// <param name="srcX">[Optional] The horizontal pixel position in the texture to start rendering from.</param>
+        /// <param name="srcY">[Optional] The vertical pixel position in the texture to start rendering from.</param>
+        /// <param name="color">[Optional] The color used to tint the diffuse of the texture.</param>
+        /// <param name="clip">[Optional] <b>true</b> to clip the texture if the destination width or height are larger or smaller than the original texture size, or <b>false</b> to scale the texture to meet the new size.</param>
+        /// <param name="blendState">[Optional] The blending state to apply when rendering.</param>
+        /// <param name="samplerState">[Optional] The sampler state to apply when rendering.</param>
+        /// <param name="pixelShader">[Optional] A pixel shader used to override the default pixel shader for the rendering.</param>
+        /// <param name="pixelShaderConstants">[Optional] Pixel shader constants to apply when rendering with a custom pixel shader.</param>
+        /// <remarks>
+        /// <para>
+        /// This will render a <see cref="GorgonTexture"/> to the current <see cref="GorgonRenderTargetView"/> in slot 0 of the <see cref="RenderTargets"/> list. This is used a quick means to send graphics 
+        /// data to the display without having to set up a <see cref="GorgonDrawCallBase">draw call</see> and submitting it.
+        /// </para>
+        /// <para>
+        /// There are many optional parameters for this method that can alter how the texture is rendered. If there are no extra parameters supplied beyond the <paramref name="texture"/> and position, then 
+        /// the texture will render as-is at the desired location. This is sufficient for most use cases. However, this method provides a lot of functionality to allow a user to quickly test out various 
+        /// effects when rendering a texture:
+        /// <list type="bullet">
+        ///     <item>
+        ///         Providing a width and height will render the texture at that width and height, or will clip to that width and height depending on the state of the <paramref name="clip"/> parameter.
+        ///     </item>
+        ///     <item>
+        ///         Providing the source offset parameters will make the texture start rendering from that pixel coordinate within the texture itself. Omitting these coordinates will mean 
+        ///         that rendering starts at (0, 0).
+        ///     </item>
+        ///     <item>
+        ///         Providing a <paramref name="color"/> will render the texture with a tint of the color specified to the diffuse channels of the texture. If omitted, then the 
+        ///         <see cref="GorgonColor.White"/> color will be used.
+        ///     </item>
+        ///     <item>
+        ///         Providing a <paramref name="clip"/> value of <b>true</b> will tell the renderer to clip to the width and height specified. If omitted, then the texture will scale to the width and 
+        ///         height provided.
+        ///     </item>
+        ///     <item>
+        ///         Providing a <paramref name="blendState"/> will define how the texture is rendered against the render target and can allow for transparency effects. If omitted, then the 
+        ///         <see cref="GorgonBlendState.NoBlending"/> state will be used and the texture will be rendered as opaque.
+        ///     </item>
+        ///     <item>
+        ///         Providing a <paramref name="samplerState"/> will define how to smooth a scaled texture. If omitted, then the <see cref="GorgonSamplerState.Default"/> will be used and the texture 
+        ///         will be rendered with bilinear filtering.
+        ///     </item>
+        ///     <item>
+        ///         If a <paramref name="pixelShader"/> is defined, then the texture will be rendered with the specified pixel shader instead of the default one. This will allow for a variety of effects 
+        ///         to be applied to the texture while rendering. The companion parameter <paramref name="pixelShaderConstants"/> will also be used to control how the pixel shader renders data based on 
+        ///         user input. If the <paramref name="pixelShader"/> parameter is omitted, then a default pixel shader is used and the <paramref name="pixelShaderConstants"/> parameter is ignored.
+        ///     </item>
+        /// </list>
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="GorgonTexture"/>
+        /// <seealso cref="GorgonRenderTargetView"/>
+        /// <seealso cref="RenderTargets"/>
+        public void DrawTexture(GorgonTexture texture,
+                                int x,
+                                int y,
+                                int width = -1,
+                                int height = -1,
+                                int srcX = 0,
+                                int srcY = 0,
+                                GorgonColor? color = null,
+                                bool clip = false,
+                                GorgonBlendState blendState = null,
+                                GorgonSamplerState samplerState = null,
+                                GorgonPixelShader pixelShader = null,
+                                GorgonConstantBuffers pixelShaderConstants = null)
+        {
+            DrawTexture(texture, new DX.Rectangle(x, y, width == -1 ? texture.Info.Width : width, height == -1 ? texture.Info.Height : height),
+                        new DX.Point(srcX, srcY),
+                        color,
+                        clip,
+                        blendState,
+                        samplerState,
+                        pixelShader,
+                        pixelShaderConstants);
+        }
+
+        /// <summary>
+        /// Function to render a texture to the current <see cref="GorgonRenderTargetView"/>.
+        /// </summary>
+        /// <param name="texture">The texture to render.</param>
+        /// <param name="destRect">The destination rectangle representing the coordinates to render into.</param>
+        /// <param name="sourceOffset">The source horizontal and vertical offset within the source texture to start rendering from.</param>
+        /// <param name="color">[Optional] The color used to tint the diffuse of the texture.</param>
+        /// <param name="clip">[Optional] <b>true</b> to clip the texture if the destination width or height are larger or smaller than the original texture size, or <b>false</b> to scale the texture to meet the new size.</param>
+        /// <param name="blendState">[Optional] The blending state to apply when rendering.</param>
+        /// <param name="samplerState">[Optional] The sampler state to apply when rendering.</param>
+        /// <param name="pixelShader">[Optional] A pixel shader used to override the default pixel shader for the rendering.</param>
+        /// <param name="pixelShaderConstants">[Optional] Pixel shader constants to apply when rendering with a custom pixel shader.</param>
+        /// <remarks>
+        /// <para>
+        /// This will render a <see cref="GorgonTexture"/> to the current <see cref="GorgonRenderTargetView"/> in slot 0 of the <see cref="RenderTargets"/> list. This is used a quick means to send graphics 
+        /// data to the display without having to set up a <see cref="GorgonDrawCallBase">draw call</see> and submitting it.
+        /// </para>
+        /// <para>
+        /// There are many optional parameters for this method that can alter how the texture is rendered. If there are no extra parameters supplied beyond the <paramref name="texture"/> and 
+        /// <paramref name="destRect"/>, then the texture will render, scaled, to the destination rectangle. This is sufficient for most use cases. However, this method provides a lot of functionality to 
+        /// allow a user to quickly test out various effects when rendering a texture:
+        /// <list type="bullet">
+        ///     <item>
+        ///         Providing the <paramref name="sourceOffset"/> parameters will make the texture start rendering from that pixel coordinate within the texture itself. Omitting these coordinates will 
+        ///         mean that rendering starts at (0, 0).
+        ///     </item>
+        ///     <item>
+        ///         Providing a <paramref name="color"/> will render the texture with a tint of the color specified to the diffuse channels of the texture. If omitted, then the 
+        ///         <see cref="GorgonColor.White"/> color will be used.
+        ///     </item>
+        ///     <item>
+        ///         Providing a <paramref name="clip"/> value of <b>true</b> will tell the renderer to clip to the width and height specified. If omitted, then the texture will scale to the width and 
+        ///         height provided.
+        ///     </item>
+        ///     <item>
+        ///         Providing a <paramref name="blendState"/> will define how the texture is rendered against the render target and can allow for transparency effects. If omitted, then the 
+        ///         <see cref="GorgonBlendState.NoBlending"/> state will be used and the texture will be rendered as opaque.
+        ///     </item>
+        ///     <item>
+        ///         Providing a <paramref name="samplerState"/> will define how to smooth a scaled texture. If omitted, then the <see cref="GorgonSamplerState.Default"/> will be used and the texture 
+        ///         will be rendered with bilinear filtering.
+        ///     </item>
+        ///     <item>
+        ///         If a <paramref name="pixelShader"/> is defined, then the texture will be rendered with the specified pixel shader instead of the default one. This will allow for a variety of effects 
+        ///         to be applied to the texture while rendering. The companion parameter <paramref name="pixelShaderConstants"/> will also be used to control how the pixel shader renders data based on 
+        ///         user input. If the <paramref name="pixelShader"/> parameter is omitted, then a default pixel shader is used and the <paramref name="pixelShaderConstants"/> parameter is ignored.
+        ///     </item>
+        /// </list>
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="GorgonTexture"/>
+        /// <seealso cref="GorgonRenderTargetView"/>
+        /// <seealso cref="RenderTargets"/>
+        public void DrawTexture(GorgonTexture texture,
+                                        DX.Rectangle destRect,
+                                        DX.Point? sourceOffset = null,
+                                        GorgonColor? color = null,
+                                        bool clip = false,
+                                        GorgonBlendState blendState = null,
+                                        GorgonSamplerState samplerState = null,
+                                        GorgonPixelShader pixelShader = null,
+                                        GorgonConstantBuffers pixelShaderConstants = null)
+        {
+            TextureBlitter blitter = _textureBlitter.Value;
+
+            blitter.Blit(texture,
+                         destRect,
+                         sourceOffset ?? DX.Point.Zero,
+                         color ?? GorgonColor.White,
+                         clip,
+                         blendState,
+                         samplerState,
+                         pixelShader,
+                         pixelShaderConstants);
+        }
+
+        /// <summary>
         /// Function to retrieve cached states, segregated by group names.
         /// </summary>
+        /// <typeparam name="TKey">The type of data used to represent a unique key for a <see cref="GorgonPipelineState"/>.</typeparam>
         /// <param name="groupName">The name of the grouping.</param>
-        /// <returns>A dictionary containing the cached states for the specific group.</returns>
+        /// <returns>A <see cref="GorgonPipelineStateGroup{TKey}"/> that will contain the cached <see cref="GorgonPipelineState"/> objects.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="groupName"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="groupName"/> parameter is empty.</exception>
         /// <remarks>
@@ -1577,27 +1751,30 @@ namespace Gorgon.Graphics.Core
         /// <see cref="GorgonPipelineState"/> to bring back (or whether to create a new one). 
         /// </para>
         /// <para>
-        /// To counter this, applications can use this functionality to create groups of <see cref="GorgonPipelineState"/> objects so they will not need to create them over and over (and thus impair 
+        /// To counter this, applications may use this functionality to create groups of <see cref="GorgonPipelineState"/> objects so they will not need to create them over and over (and thus impair 
         /// performance) or hit the primary <see cref="CachedPipelineStates"/> list via the <see cref="GetPipelineState"/> method.  
         /// </para>
         /// <para>
-        /// Note that when the <see cref="ClearStateCache"/> method is called, this cache grouping will be preserved, but any pipeline states contained within it will be cleared.
-        /// </para>
-        /// <para>
-        /// <note type="warning">
-        /// <para>
-        /// Do <b>not</b> clear the 
-        /// </para>
-        /// </note>
+        /// Note that when the <see cref="ClearStateCache"/> method is called, the cache groupings will be preserved, but any pipeline states contained within it will be cleared and must be recreated by 
+        /// the application if they're needed again.
         /// </para>
         /// </remarks>
-        public GorgonPipelineStateGroup GetPipelineStateGroup(string groupName)
+        /// <seealso cref="GorgonPipelineStateGroup{TKey}"/>
+        /// <seealso cref="GorgonPipelineState"/>
+        /// <seealso cref="CachedPipelineStates"/>
+        /// <seealso cref="GetPipelineState"/>
+        /// <seealso cref="ClearStateCache"/>
+        public GorgonPipelineStateGroup<TKey> GetPipelineStateGroup<TKey>(string groupName)
         {
-            GorgonPipelineStateGroup cacheGroup;
+            GorgonPipelineStateGroup<TKey> cacheGroup;
 
-            if (!_groupedCache.TryGetValue(groupName, out cacheGroup))
+            if (!_groupedCache.TryGetValue(groupName, out IPipelineStateGroup groupObject))
             {
-                _groupedCache[groupName] = cacheGroup = new GorgonPipelineStateGroup(groupName);
+                _groupedCache[groupName] = cacheGroup = new GorgonPipelineStateGroup<TKey>(groupName);
+            }
+            else
+            {
+                cacheGroup = (GorgonPipelineStateGroup<TKey>)groupObject;
             }
 
             return cacheGroup;
@@ -1682,12 +1859,15 @@ namespace Gorgon.Graphics.Core
 		{
 			IGorgonVideoDevice device = Interlocked.Exchange(ref _videoDevice, null);
 			D3D11.DeviceContext context = Interlocked.Exchange(ref _deviceContext, null);
-
+            
 			if ((device == null)
 				|| (context == null))
 			{
 				return;
 			}
+
+            // If we ever created a blitter on this interface, then we need to clean up the common data for all blitter instances.
+		    _textureBlitter.Value.Dispose();
             
 			ClearStateCache();
 
@@ -1797,7 +1977,9 @@ namespace Gorgon.Graphics.Core
 		    SamplerStateFactory.GetSamplerState(this, GorgonSamplerState.PointFiltering, _log);
 
             // Register texture blitter shader code to the shader factory so it can be used to include the blitter.
-		    GorgonShaderFactory.Includes[GorgonTextureBlitter.BlitterShaderIncludeFileName] = new GorgonShaderInclude(GorgonTextureBlitter.BlitterShaderIncludeFileName, Resources.GraphicsShaders);
+		    GorgonShaderFactory.Includes[BlitterShaderIncludeFileName] = new GorgonShaderInclude(BlitterShaderIncludeFileName, Resources.GraphicsShaders);
+
+            _textureBlitter = new Lazy<TextureBlitter>(() => new TextureBlitter(this), LazyThreadSafetyMode.ExecutionAndPublication);
 			
 			_log.Print("Gorgon Graphics initialized.", LoggingLevel.Simple);
 		}

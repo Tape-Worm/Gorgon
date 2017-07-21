@@ -138,6 +138,7 @@
     <Compile Include="Pipeline\GorgonMonitoredValueTypeArray.cs" />
     <Compile Include="Pipeline\_Interfaces\IGorgonShaderStates.cs" />
     <Compile Include="Pipeline\_Interfaces\IGorgonPipelineStateInfo.cs" />
+    <Compile Include="Pipeline\_Internal\IPipelineStateGroup.cs" />
     <Compile Include="Pipeline\_Internal\SamplerStateFactory.cs" />
     <Compile Include="Shaders\Effects\GorgonGaussBlurEffect.cs" />
     <Compile Include="Shaders\Effects\GorgonShaderEffect.cs" />
@@ -158,7 +159,7 @@
     <Compile Include="Targets\GorgonRenderTargetView.cs" />
     <Compile Include="Targets\_Interfaces\IGorgonSwapChainInfo.cs" />
     <Compile Include="Textures\GorgonTexture.cs" />
-    <Compile Include="Textures\GorgonTextureBlitter.cs" />
+    <Compile Include="Textures\_Internal\TextureBlitter.cs" />
     <Compile Include="Textures\GorgonTextureInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>

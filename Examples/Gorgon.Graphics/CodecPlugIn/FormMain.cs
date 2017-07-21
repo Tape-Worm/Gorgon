@@ -55,8 +55,6 @@ namespace CodecPlugIn
 	    private IGorgonImage _image;
 		// Our custom codec loaded from the plug-in.
 		private IGorgonImageCodec _customCodec;
-		// The blitter used to draw the texture.
-	    private GorgonTextureBlitter _blitter;
 		#endregion
 
 		#region Methods.
@@ -88,9 +86,9 @@ namespace CodecPlugIn
 			var size = new DX.Size2((int)(scale.Width * imageSize.Width), (int)(scale.Height * imageSize.Height));
 
 			// Find the position.
-			var location = new DX.Point((int)(windowSize.Width / 2 - size.Width / 2), (int)(windowSize.Height / 2 - size.Height / 2));
+			var bounds = new DX.Rectangle((int)(windowSize.Width / 2 - size.Width / 2), (int)(windowSize.Height / 2 - size.Height / 2), size.Width, size.Height);
 
-			_blitter.Blit(_texture, location.X, location.Y, size.Width, size.Height);
+			_graphics.DrawTexture(_texture, bounds);
 
 			_swap.Present(1);
 
@@ -189,7 +187,6 @@ namespace CodecPlugIn
 	    {
 		    base.OnFormClosing(e);
 			
-			_blitter?.Dispose();
 			_texture?.Dispose();
 			_swap?.Dispose();
 			_graphics?.Dispose();
@@ -241,8 +238,6 @@ namespace CodecPlugIn
 				_image = png.LoadFromFile(Program.GetResourcePath(@"Textures\CodecPlugIn\SourceTexture.png"));
 
 				ConvertImage();
-
-				_blitter = new GorgonTextureBlitter(_graphics);
 
 				GorgonApplication.IdleMethod = Idle;
 

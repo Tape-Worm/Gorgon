@@ -87,12 +87,12 @@ namespace Gorgon.Graphics.Example
         private bool _offsetsNeedUpdate = true;
         // Flag to indicate that the kernel data has been updated.
         private bool _kernelNeedUpdate = true;
-        // The blitter used to pass data from one render target to another and apply the blur shader(s).
-        private GorgonTextureBlitter _blitter;
         // The texture to pass in to the effect to be blurred.
         private GorgonTexture _inputTexture;
         // The target that will receive the blurred image.
         private GorgonRenderTargetView _blurredTarget;
+        // The number blur constant buffer parameters.
+        private GorgonConstantBuffers _blurConstants = new GorgonConstantBuffers(2);
         #endregion
 
         #region Properties.
@@ -394,13 +394,19 @@ namespace Gorgon.Graphics.Example
             switch (passIndex)
             {
                 case 0:
-                    _blitter.Blit(_inputTexture, 0, 0, _hTarget.Info.Width, _hTarget.Info.Height);
+                    Graphics.DrawTexture(_inputTexture,
+                                         _hTarget.DefaultRenderTargetView.Bounds,
+                                         pixelShader: (PreserveAlpha ? _blurShaderNoAlpha : _blurShader),
+                                         pixelShaderConstants: _blurConstants);
                     break;
                 case 1:
-                    _blitter.Blit(_hTarget, 0, 0, _hTarget.Info.Width, _hTarget.Info.Height);
+                    Graphics.DrawTexture(_inputTexture,
+                                         _vTarget.DefaultRenderTargetView.Bounds,
+                                         pixelShader: (PreserveAlpha ? _blurShaderNoAlpha : _blurShader),
+                                         pixelShaderConstants: _blurConstants);
                     break;
                 case 2:
-                    _blitter.Blit(_blurRadius != 0 ? _vTarget : _inputTexture, 0, 0, _blurredTarget.Width, _blurredTarget.Height);
+                    Graphics.DrawTexture(_blurRadius != 0 ? _vTarget : _inputTexture, _blurredTarget.Bounds);
                     break;
             }
         }
@@ -430,16 +436,9 @@ namespace Gorgon.Graphics.Example
                                                        });
 
 
-            // Set the appropriate pipeline state.
-            _blitter = new GorgonTextureBlitter(Graphics)
-                       {
-                           PixelShaderConstants =
-                           {
-                               [0] = _blurBufferKernel,
-                               [1] = _blurBufferPass
-                           },
-                           ScaleBlitter = true
-                       };
+            // Set up the constants used by our pixel shader.
+            _blurConstants[0] = _blurBufferKernel;
+            _blurConstants[1] = _blurBufferPass;
 
             // A macro used to define the size of the kernel weight data structure.
             var weightsMacro = new[]
@@ -460,9 +459,7 @@ namespace Gorgon.Graphics.Example
                                                                                 "GorgonPixelShaderGaussBlurNoAlpha",
                                                                                 GorgonGraphics.IsDebugEnabled,
                                                                                 weightsMacro);
-
-            _blitter.PixelShader = !PreserveAlpha ? _blurShader : _blurShaderNoAlpha;
-
+            
             UpdateRenderTarget();
             UpdateKernelWeights();
             UpdateOffsets();
@@ -535,10 +532,6 @@ namespace Gorgon.Graphics.Example
                     data.Write(passIndex);
                     _blurBufferPass.Unlock(ref data);
 
-                    _blitter.PixelShader = !PreserveAlpha ? _blurShader : _blurShaderNoAlpha;
-                    _blitter.PixelShaderConstants[0] = _blurBufferKernel;
-                    _blitter.PixelShaderConstants[1] = _blurBufferPass;
-
                     Graphics.SetRenderTarget(_hTarget.DefaultRenderTargetView);
                     break;
                 case 1:
@@ -554,9 +547,6 @@ namespace Gorgon.Graphics.Example
                     Graphics.SetRenderTarget(_vTarget.DefaultRenderTargetView);
                     break;
                 case 2:
-                    _blitter.PixelShader = null;
-                    _blitter.PixelShaderConstants[0] = null;
-                    _blitter.PixelShaderConstants[1] = null;
                     Graphics.SetRenderTarget(_blurredTarget);
                     break;
             }
@@ -630,7 +620,6 @@ namespace Gorgon.Graphics.Example
             _blurKernelData?.Dispose();
             _blurBufferKernel?.Dispose();
             _blurBufferPass?.Dispose();
-            _blitter?.Dispose();
         }
         #endregion
 

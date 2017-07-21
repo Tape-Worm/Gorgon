@@ -32,14 +32,37 @@ using Gorgon.Diagnostics;
 namespace Gorgon.Graphics.Core
 {
     /// <summary>
-    /// A group of pipeline states.
+    /// An application specific group of pipeline states.
     /// </summary>
-    public class GorgonPipelineStateGroup
-        : IReadOnlyCollection<GorgonPipelineState>
+    /// <typeparam name="TKey">The type used for the key describing a unique <see cref="GorgonPipelineState"/>.</typeparam>
+    /// <remarks>
+    /// <para>
+    /// This will contain a list of <see cref="GorgonPipelineState"/> objects that are being kept for reuse by an application, or other functionality. 
+    /// </para>
+    /// <para>
+    /// Gorgon stores each pipeline state created by an application in a main cache which is located on the <see cref="GorgonGraphics"/> interface, and is accessible using the 
+    /// <see cref="GorgonGraphics.GetPipelineState"/> method and the <see cref="GorgonGraphics.CachedPipelineStates"/> property. These pipeline states are a list of all states across the entire application 
+    /// and is not built for random access. Due to this, it is difficult to manage these states from another piece of code (this is by design). 
+    /// </para>
+    /// <para>
+    /// Applications will typically call <see cref="GorgonGraphics.GetPipelineState"/> to retrieve a new pipeline state, or, if it has been cached, an existing one. However, even retrieving the cached 
+    /// pipeline over and over in a tight loop (such as a render loop) is not considered best practice. To help keep cached states manageable by an application, Gorgon supports the concept of a cached 
+    /// pipeline state group. This is completely application specific and is meant to allow applications to quickly retrieve pipeline states for their own use (although group sharing is not disallowed). 
+    /// </para>
+    /// <para>
+    /// Typically, an application will register a cache group by using a unique name when calling the <see cref="GorgonGraphics.GetPipelineStateGroup"/> on the <see cref="GorgonGraphics"/> interface. That 
+    /// method will return a container of this type and then an application can store its own pipeline cache by using a key (defined by the <typeparamref name="TKey"/> type parameter) to quickly retrieve 
+    /// an existing pipeline state for use when rendering.
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="GorgonPipelineState"/>
+    /// <seealso cref="GorgonGraphics"/>
+    public class GorgonPipelineStateGroup<TKey>
+        : IPipelineStateGroup
     {
         #region Variables.
         // The list of states for this group.
-        private readonly Dictionary<long, GorgonPipelineState> _states = new Dictionary<long, GorgonPipelineState>();
+        private readonly Dictionary<TKey, GorgonPipelineState> _states = new Dictionary<TKey, GorgonPipelineState>();
         #endregion
 
         #region Properties.
@@ -61,7 +84,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Function to invalidate the cache.
         /// </summary>
-        internal void Invalidate()
+        void IPipelineStateGroup.Invalidate()
         {
             _states.Clear();
         }
@@ -81,7 +104,7 @@ namespace Gorgon.Graphics.Core
         /// </note>
         /// </para>
         /// </remarks>
-        public void Cache(long key, GorgonPipelineState state)
+        public void Cache(TKey key, GorgonPipelineState state)
         {
             state.ValidateObject(nameof(state));
 
@@ -94,7 +117,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="key">The key to look up.</param>
         /// <param name="state">The state associated with the key.</param>
         /// <returns><b>true</b> if found, <b>false</b> if not.</returns>
-        public bool TryGetValue(long key, out GorgonPipelineState state) => _states.TryGetValue(key, out state);
+        public bool TryGetValue(TKey key, out GorgonPipelineState state) => _states.TryGetValue(key, out state);
 
         /// <summary>
         /// Returns an enumerator that iterates through the collection.
@@ -102,7 +125,7 @@ namespace Gorgon.Graphics.Core
         /// <returns>An enumerator that can be used to iterate through the collection.</returns>
         public IEnumerator<GorgonPipelineState> GetEnumerator()
         {
-            foreach (KeyValuePair<long, GorgonPipelineState> state in _states)
+            foreach (KeyValuePair<TKey, GorgonPipelineState> state in _states)
             {
                 yield return state.Value;
             }
@@ -120,7 +143,7 @@ namespace Gorgon.Graphics.Core
 
         #region Constructor/Finalizer.
         /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonPipelineStateGroup"/> class.
+        /// Initializes a new instance of the <see cref="GorgonPipelineStateGroup{T}"/> class.
         /// </summary>
         /// <param name="groupName">Name of the group.</param>
         internal GorgonPipelineStateGroup(string groupName)
