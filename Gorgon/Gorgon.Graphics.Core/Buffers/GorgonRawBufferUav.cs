@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using Gorgon.Core;
 using D3D11 = SharpDX.Direct3D11;
 using DXGI = SharpDX.DXGI;
 using Gorgon.Diagnostics;
@@ -136,7 +137,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="elementCount">The number of elements in the view.</param>
         /// <param name="elementType">The type of element data in the buffer.</param>
         /// <param name="log">The log used for debug information.</param>
-        public GorgonRawBufferUav(GorgonRawBuffer buffer, int elementStart, int elementCount, RawBufferElementType elementType, IGorgonLog log)
+        internal GorgonRawBufferUav(GorgonRawBuffer buffer, int elementStart, int elementCount, RawBufferElementType elementType, IGorgonLog log)
             : base(buffer, elementStart, elementCount, log)
         {
             ElementType = elementType;
@@ -157,6 +158,11 @@ namespace Gorgon.Graphics.Core
             }
 
             FormatInformation = new GorgonFormatInfo(Format);
+
+            if ((buffer.Graphics.VideoDevice.GetBufferFormatSupport(Format) & D3D11.FormatSupport.TypedUnorderedAccessView) != D3D11.FormatSupport.TypedUnorderedAccessView)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_UAV_FORMAT_INVALID, Format));
+            }
         }
         #endregion
     }

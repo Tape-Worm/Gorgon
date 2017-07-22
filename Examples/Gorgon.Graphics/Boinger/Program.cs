@@ -550,13 +550,7 @@ namespace Gorgon.Graphics.Example
 		    using (IGorgonImage image = Resources.Texture.ConvertToGorgonImage()
 		                                         .GenerateMipMaps(GorgonImage.CalculateMaxMipCount(Resources.Texture.Width, Resources.Texture.Height, 0)))
 		    {
-		        _texture = image.ToTexture("Texture",
-		                                   _graphics,
-		                                   new GorgonImageToTextureInfo
-		                                   {
-		                                       Usage = D3D11.ResourceUsage.Immutable,
-		                                       Binding = TextureBinding.ShaderResource
-		                                   });
+		        _texture = image.ToTexture("Texture", _graphics, D3D11.ResourceUsage.Immutable);
 		    }
 
 		    // Create a sampler state for sampling our texture data.

@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using D3D11 = SharpDX.Direct3D11;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Imaging;
@@ -36,50 +37,54 @@ namespace Gorgon.Graphics.Core
 	/// </summary>
 	public static class GorgonImageTextureExtensions
 	{
-		/// <summary>
-		/// Function to create a <see cref="GorgonTexture"/> from a <see cref="GorgonImage"/>.
-		/// </summary>
-		/// <param name="image">The image used to create the texture.</param>
-		/// <param name="name">The name of the texture.</param>
-		/// <param name="graphics">The graphics interface used to create the texture.</param>
-		/// <param name="info">[Optional] Defines parameters for creating the <see cref="GorgonTexture"/>.</param>
-		/// <param name="log">[Optional] The log interface used for debugging.</param>
-		/// <returns>A new <see cref="GorgonTexture"/> containing the data from the <paramref name="image"/>.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="image"/>, <paramref name="graphics"/> or the <paramref name="name"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
-		/// <remarks>
-		/// <para>
-		/// A <see cref="GorgonImage"/> is useful to holding image data in memory, but it cannot be sent to the GPU for use as a texture. This method allows an application to convert the 
-		/// <see cref="GorgonImage"/> into a <see cref="GorgonTexture"/>. 
-		/// </para>
-		/// <para>
-		/// The resulting <see cref="GorgonTexture"/> will inherit the <see cref="ImageType"/> (converted to the appropriate <see cref="TextureType"/>), width, height (for 2D/3D images), depth (for 3D images), 
-		/// mip map count, array count (for 1D/2D images), and depth count (for 3D images). If the <see cref="GorgonImage"/> being converted has an <see cref="ImageType"/> of <see cref="ImageType.ImageCube"/> 
-		/// then the resulting texture will be set to a <see cref="TextureType.Texture2D"/>, and it will have its <see cref="IGorgonTextureInfo.IsCubeMap"/> flag set to <b>true</b>.
-		/// </para>
-		/// <para>
-		/// The <paramref name="info"/> parameter, when defined, will allow users to control how the texture is bound to the GPU pipeline, and what its intended usage is going to be, as well as any multisample 
-		/// information required to create the texture as a multisample texture. If this parameter is omitted, then the following defaults will be used:
-		/// <list type="bullet">
-		///		<item>
-		///			<term>Binding</term>
-		///			<description><see cref="TextureBinding.ShaderResource"/></description>
-		///		</item>
-		///		<item>
-		///			<term>Usage</term>
-		///			<description><c>Default</c></description>
-		///		</item>
-		///		<item>
-		///			<term>Multisample info</term>
-		///			<description><see cref="GorgonMultisampleInfo.NoMultiSampling"/></description>
-		///		</item>
-		/// </list>
-		/// </para>
-		/// </remarks>
-		public static GorgonTexture ToTexture(this IGorgonImage image,
+        /// <summary>
+        /// Function to create a <see cref="GorgonTexture"/> from a <see cref="GorgonImage"/>.
+        /// </summary>
+        /// <param name="image">The image used to create the texture.</param>
+        /// <param name="name">The name of the texture.</param>
+        /// <param name="graphics">The graphics interface used to create the texture.</param>
+        /// <param name="usage">[Optional] The intended usage for the texture.</param>
+        /// <param name="binding">[Optional] The allowed bindings for the texture.</param>
+        /// <param name="multiSampleInfo">[Optional] Multisampling information to apply to the texture.</param>
+        /// <param name="log">[Optional] The log interface used for debugging.</param>
+        /// <returns>A new <see cref="GorgonTexture"/> containing the data from the <paramref name="image"/>.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="image"/>, <paramref name="graphics"/> or the <paramref name="name"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+        /// <remarks>
+        /// <para>
+        /// A <see cref="GorgonImage"/> is useful to holding image data in memory, but it cannot be sent to the GPU for use as a texture. This method allows an application to convert the 
+        /// <see cref="GorgonImage"/> into a <see cref="GorgonTexture"/>. 
+        /// </para>
+        /// <para>
+        /// The resulting <see cref="GorgonTexture"/> will inherit the <see cref="ImageType"/> (converted to the appropriate <see cref="TextureType"/>), width, height (for 2D/3D images), depth (for 3D images), 
+        /// mip map count, array count (for 1D/2D images), and depth count (for 3D images). If the <see cref="GorgonImage"/> being converted has an <see cref="ImageType"/> of <see cref="ImageType.ImageCube"/> 
+        /// then the resulting texture will be set to a <see cref="TextureType.Texture2D"/>, and it will have its <see cref="IGorgonTextureInfo.IsCubeMap"/> flag set to <b>true</b>.
+        /// </para>
+        /// <para>
+        /// The optional parameters define how Gorgon and shaders should handle the texture:
+        /// <list type="bullet">
+        ///		<item>
+        ///			<term>Binding</term>
+        ///			<description>When defined, will indicate the <see cref="TextureBinding"/> that defines how the texture will be bound to the graphics pipeline. If it is omitted, then the binding will be 
+        ///         <see cref="TextureBinding.ShaderResource"/>.</description>
+        ///		</item>
+        ///		<item>
+        ///			<term>Usage</term>
+        ///			<description>When defined, will indicate the preferred usage for the texture. If it is omitted, then the usage will be set to <c>Default</c>.</description>
+        ///		</item>
+        ///		<item>
+        ///			<term>Multisample info</term>
+        ///			<description>When defined (i.e. not <b>null</b>), defines the multisampling to apply to the texture. If omitted, then the default is <see cref="GorgonMultisampleInfo.NoMultiSampling"/>.</description>
+        ///		</item>
+        /// </list>
+        /// </para>
+        /// </remarks>
+        public static GorgonTexture ToTexture(this IGorgonImage image,
 		                                      string name,
 											  GorgonGraphics graphics,
-		                                      GorgonImageToTextureInfo info = null,
+                                              D3D11.ResourceUsage usage = D3D11.ResourceUsage.Default,
+                                              TextureBinding binding = TextureBinding.ShaderResource,
+                                              GorgonMultisampleInfo? multiSampleInfo = null,
 											  IGorgonLog log = null)
 		{
 			if (image == null)
@@ -92,12 +97,12 @@ namespace Gorgon.Graphics.Core
 				throw new ArgumentNullException(nameof(name));
 			}
 
-			if (graphics == null)
-			{
-				throw new ArgumentNullException(nameof(graphics));
-			}
+		    if (graphics == null)
+		    {
+		        throw new ArgumentNullException(nameof(graphics));
+		    }
 
-			return new GorgonTexture(name, graphics, image, info ?? new GorgonImageToTextureInfo(), log);
+		    return new GorgonTexture(name, graphics, image, usage, binding, multiSampleInfo ?? GorgonMultisampleInfo.NoMultiSampling, log);
 		}
 	}
 }

@@ -174,7 +174,6 @@
     </Compile>
     <Compile Include="GorgonResource.cs" />
     <Compile Include="Textures\_Interfaces\IGorgonTextureInfo.cs" />
-    <Compile Include="Textures\_Interfaces\IGorgonImageToTextureInfo.cs" />
     <Compile Include="Textures\_Internal\BltVertex.cs" />
     <Compile Include="Textures\_Internal\TextureViewKey.cs" />
     <Compile Include="Textures\_Internal\TextureLockCache.cs" />
@@ -190,7 +189,6 @@
     <Compile Include="Targets\GorgonSwapChain.cs" />
     <Compile Include="Targets\GorgonSwapChainInfo.cs" />
     <Compile Include="Textures\_Extensions\GorgonImageTextureExtensions.cs" />
-    <Compile Include="Textures\GorgonImageToTextureInfo.cs" />
     <Compile Include="GorgonBlendStateListExtensions.cs" />
     <Compile Include="Pipeline\GorgonPipelineStateGroup.cs" />
     <Compile Include="_Internal\_Extensions\SharpDXExtensions.cs" />

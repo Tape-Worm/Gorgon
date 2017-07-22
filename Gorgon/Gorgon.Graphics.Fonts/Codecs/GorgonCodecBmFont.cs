@@ -527,14 +527,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
 
 				using (IGorgonImage image = codec.LoadFromFile(fileInfo.FullName))
 				{
-					textures[i] = image.ToTexture("BmFont_Texture_" + Guid.NewGuid().ToString("N"),
-					                              Factory.Graphics,
-					                              new GorgonImageToTextureInfo
-					                              {
-						                              Binding = TextureBinding.ShaderResource,
-						                              MultisampleInfo = GorgonMultisampleInfo.NoMultiSampling,
-						                              Usage = ResourceUsage.Default
-					                              });
+					textures[i] = image.ToTexture("BmFont_Texture_" + Guid.NewGuid().ToString("N"), Factory.Graphics);
 				}
 			}
 

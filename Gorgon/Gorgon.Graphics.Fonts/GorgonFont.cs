@@ -330,14 +330,7 @@ namespace Gorgon.Graphics.Fonts
 						image?.Dispose();
 						image = new GorgonImage(imageSettings);
 
-						texture = image.ToTexture($"GorgonFont_Internal_Texture_{Guid.NewGuid():N}",
-												  Graphics,
-												  new GorgonImageToTextureInfo
-												  {
-													  Binding = TextureBinding.ShaderResource,
-													  Usage = D3D11.ResourceUsage.Default,
-													  MultisampleInfo = GorgonMultisampleInfo.NoMultiSampling
-												  });
+						texture = image.ToTexture($"GorgonFont_Internal_Texture_{Guid.NewGuid():N}", Graphics);
 						_internalTextures.Add(texture);
 					}
 

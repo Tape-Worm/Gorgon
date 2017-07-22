@@ -24,12 +24,33 @@
 // 
 #endregion
 
+using System;
 using D3D11 = SharpDX.Direct3D11;
 using DXGI = SharpDX.DXGI;
 using Gorgon.Diagnostics;
 
 namespace Gorgon.Graphics.Core
 {
+    /// <summary>
+    /// The type of unordered access view for a <see cref="GorgonStructuredBufferUav"/>.
+    /// </summary>
+    [Flags]
+    public enum StructuredBufferUavType
+    {
+        /// <summary>
+        /// A regular unordered access view for structured buffers.
+        /// </summary>
+        None = D3D11.UnorderedAccessViewBufferFlags.None,
+        /// <summary>
+        /// An append/consume unordered access view.
+        /// </summary>
+        Append = D3D11.UnorderedAccessViewBufferFlags.Append,
+        /// <summary>
+        /// A counter unordered access view.
+        /// </summary>
+        Counter = D3D11.UnorderedAccessViewBufferFlags.Counter
+    }
+
     /// <summary>
     /// Provides an unordered access view for a <see cref="GorgonStructuredBuffer"/>.
     /// </summary>
@@ -64,9 +85,9 @@ namespace Gorgon.Graphics.Core
     {
         #region Properties.
         /// <summary>
-        /// Property to return flags to indicate the purpose of this view.
+        /// Property to return the type of view.
         /// </summary>
-        public D3D11.UnorderedAccessViewBufferFlags Flags
+        public StructuredBufferUavType UavType
         {
             get;
         }
@@ -92,7 +113,7 @@ namespace Gorgon.Graphics.Core
                            {
                                FirstElement = ElementStart,
                                ElementCount = ElementCount,
-                               Flags = Flags
+                               Flags = (D3D11.UnorderedAccessViewBufferFlags)UavType
                            },
                            Format = DXGI.Format.Unknown
                        };
@@ -111,16 +132,16 @@ namespace Gorgon.Graphics.Core
         /// <param name="buffer">The buffer to assign to the view.</param>
         /// <param name="elementStart">The first element in the buffer to view.</param>
         /// <param name="elementCount">The number of elements in the view.</param>
-        /// <param name="flags">Flags used to indicate the purpose of this view.</param>
+        /// <param name="uavType">Flags used to indicate the purpose of this view.</param>
         /// <param name="log">The log used for debug information.</param>
         internal GorgonStructuredBufferUav(GorgonStructuredBuffer buffer,
                                                      int elementStart,
                                                      int elementCount,
-                                                     D3D11.UnorderedAccessViewBufferFlags flags,
+                                                     StructuredBufferUavType uavType,
                                                      IGorgonLog log)
             : base(buffer, elementStart, elementCount, log)
         {
-            Flags = flags;
+            UavType = uavType;
         }
         #endregion
     }

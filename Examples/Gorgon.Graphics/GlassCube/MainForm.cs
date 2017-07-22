@@ -202,12 +202,11 @@ namespace GorgonLibrary.Example
             IGorgonImageCodec pngCodec = new GorgonCodecPng();
 
 			// Load the texture.
-	        using (IGorgonImage image = pngCodec.LoadFromFile(Program.GetResourcePath(@"Textures\GlassCube\Glass.png")))
+	        using (IGorgonImage image = pngCodec.LoadFromFile(Program.GetResourcePath(@"Textures\GlassCube\Glass.png")).ConvertToFormat(DXGI.Format.R8G8B8A8_UNorm))
 	        {
 		        _texture = image.ToTexture("GlassCube Texture", _graphics);
 	        }
-
-			// Create our shaders.
+            // Create our shaders.
             _vertexShader = GorgonShaderFactory.Compile<GorgonVertexShader>(_graphics.VideoDevice, Resources.GlassCubeShaders, "GlassCubeVS");
 	        _pixelShader = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics.VideoDevice, Resources.GlassCubeShaders, "GlassCubePS");
 

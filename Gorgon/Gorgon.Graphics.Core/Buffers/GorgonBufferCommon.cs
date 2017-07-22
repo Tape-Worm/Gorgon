@@ -46,6 +46,8 @@ namespace Gorgon.Graphics.Core
         #region Variables.
         // A cache of shader views for the buffer.
         private readonly Dictionary<BufferShaderViewKey, GorgonShaderResourceView> _shaderViews = new Dictionary<BufferShaderViewKey, GorgonShaderResourceView>();
+        // A cache of unordered access views for the buffer.
+        private readonly Dictionary<BufferShaderViewKey, GorgonUnorderedAccessView> _uavs = new Dictionary<BufferShaderViewKey, GorgonUnorderedAccessView>();
         #endregion
 
         #region Methods.
@@ -56,8 +58,17 @@ namespace Gorgon.Graphics.Core
         /// <returns>The shader resource view for the buffer, or <b>null</b> if no resource view is registered.</returns>
         internal GorgonShaderResourceView GetView(BufferShaderViewKey key)
         {
-
             return _shaderViews.TryGetValue(key, out GorgonShaderResourceView view) ? view : null;
+        }
+
+        /// <summary>
+        /// Function to return a cached shader resource view.
+        /// </summary>
+        /// <param name="key">The key associated with the view.</param>
+        /// <returns>The shader resource view for the buffer, or <b>null</b> if no resource view is registered.</returns>
+        internal GorgonUnorderedAccessView GetUav(BufferShaderViewKey key)
+        {
+            return _uavs.TryGetValue(key, out GorgonUnorderedAccessView view) ? view : null;
         }
 
         /// <summary>
@@ -68,6 +79,16 @@ namespace Gorgon.Graphics.Core
         internal void RegisterView(BufferShaderViewKey key, GorgonShaderResourceView view)
         {
             _shaderViews[key] = view;
+        }
+
+        /// <summary>
+        /// Function to register an unordered access view in the cache.
+        /// </summary>
+        /// <param name="key">The unique key for the shader view.</param>
+        /// <param name="view">The view to register.</param>
+        internal void RegisterUav(BufferShaderViewKey key, GorgonUnorderedAccessView view)
+        {
+            _uavs[key] = view;
         }
 
         /// <summary>
@@ -104,7 +125,13 @@ namespace Gorgon.Graphics.Core
                 view.Value.Dispose();
             }
 
+            foreach (KeyValuePair<BufferShaderViewKey, GorgonUnorderedAccessView> view in _uavs)
+            {
+                view.Value.Dispose();
+            }
+
             _shaderViews.Clear();
+            _uavs.Clear();
 
             base.Dispose();
         }

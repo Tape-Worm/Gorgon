@@ -199,7 +199,7 @@ namespace Gorgon.Graphics.Core
 
             var formatInfo = new GorgonFormatInfo(format);
             int totalElementCount = GetTotalElementCount(formatInfo);
-            startElement = startElement.Max(0);
+            startElement = startElement.Min(totalElementCount - 1).Max(0);
 
             // If we didn't specify a count, then do so now.
             if (elementCount < 1)
@@ -219,6 +219,96 @@ namespace Gorgon.Graphics.Core
             view.CreateNativeView();
             RegisterView(key, view);
             return view;
+        }
+
+        /// <summary>
+        /// Function to create a new <see cref="GorgonBufferUav"/> for this buffer.
+        /// </summary>
+        /// <param name="format">The format for the view.</param>
+        /// <param name="startElement">[Optional] The first element to start viewing from.</param>
+        /// <param name="elementCount">[Optional] The number of elements to view.</param>
+        /// <returns>A <see cref="GorgonBufferUav"/> used to bind the buffer to a shader.</returns>
+        /// <exception cref="GorgonException">Thrown if the video device does not support feature level 11 or better.
+        /// <para>-or-</para>
+        /// <para>Thrown when this buffer does not have a <see cref="BufferBinding"/> of <see cref="BufferBinding.UnorderedAccess"/>.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when this buffer has a usage of <c>Staging</c>.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the <paramref name="format"/> is typeless or is not a supported format for unordered access views.</para>
+        /// </exception>
+        /// <remarks>
+        /// <para>
+        /// This will create a unordered access view that makes a buffer accessible to compute shaders (or pixel shaders) using unordered access to the data. This allows viewing of the buffer data in a 
+        /// different format, or even a subsection of the buffer from within the shader.
+        /// </para>
+        /// <para>
+        /// The <paramref name="format"/> parameter is used present the buffer data as another format type to the shader. 
+        /// </para>
+        /// <para>
+        /// The <paramref name="startElement"/> parameter defines the starting data element to allow access to within the shader. If this value falls outside of the range of available elements, then it 
+        /// will be clipped to the upper and lower bounds of the element range. If this value is left at 0, then first element is viewed.
+        /// </para>
+        /// <para>
+        /// To determine how many elements are in a buffer, use the <see cref="GetTotalElementCount"/> method.
+        /// </para>
+        /// <para>
+        /// The <paramref name="elementCount"/> parameter defines how many elements to allow access to inside of the view. If this value falls outside of the range of available elements, then it will be 
+        /// clipped to the upper or lower bounds of the element range. If this value is left at 0, then the entire buffer is viewed.
+        /// </para>
+        /// <para>
+        /// <note type="important">
+        /// <para>
+        /// This method requires a video device capable of supporting feature level 11 or better. If the current video device does not support feature level 11, an exception will be thrown.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        public GorgonBufferUav GetUnorderedAccessView(DXGI.Format format, int startElement = 0, int elementCount = 0)
+        {
+            if (Graphics.VideoDevice.RequestedFeatureLevel < FeatureLevelSupport.Level_11_0)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_UAV_REQUIRES_SM5);
+            }
+
+            if ((Info.Usage == D3D11.ResourceUsage.Staging)
+                || ((Info.Binding & BufferBinding.UnorderedAccess) != BufferBinding.UnorderedAccess))
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_UAV_RESOURCE_NOT_VALID, Name));
+            }
+
+            if ((Graphics.VideoDevice.GetBufferFormatSupport(format) & D3D11.FormatSupport.TypedUnorderedAccessView) !=
+                D3D11.FormatSupport.TypedUnorderedAccessView)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_UAV_FORMAT_INVALID, format));
+            }
+
+            // Ensure the size of the data type fits the requested format.
+            var info = new GorgonFormatInfo(format);
+            int totalElementCount = GetTotalElementCount(format);
+
+            startElement = startElement.Min(totalElementCount - 1).Max(0);
+
+            if (elementCount <= 0)
+            {
+                elementCount = totalElementCount - startElement;
+            }
+
+            elementCount = elementCount.Min(totalElementCount - startElement).Max(1);
+
+            var key = new BufferShaderViewKey(startElement, elementCount, format);
+
+            var result = GetUav(key) as GorgonBufferUav;
+
+            if (result != null)
+            {
+                return result;
+            }
+
+            result = new GorgonBufferUav(this, startElement, elementCount, format, info, Log);
+            result.CreateNativeView();
+            RegisterUav(key, result);
+
+            return result;
         }
         #endregion
 

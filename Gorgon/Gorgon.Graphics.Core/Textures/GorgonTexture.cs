@@ -1468,6 +1468,8 @@ namespace Gorgon.Graphics.Core
 	            mipCount = _info.MipLevels - firstMipLevel;
 	        }
 
+	        mipCount = mipCount.Min(_info.MipLevels - firstMipLevel).Max(1);
+
 	        if (arrayCount <= 0)
 	        {
 	            if (_info.TextureType == TextureType.Texture3D)
@@ -1480,6 +1482,8 @@ namespace Gorgon.Graphics.Core
 	                arrayCount = _info.ArrayCount - arrayIndex;
 	            }
 	        }
+
+	        arrayCount = (arrayCount.Min(Info.ArrayCount - arrayIndex)).Max(1);
 
             var key = new TextureViewKey(format, firstMipLevel, mipCount, arrayIndex, arrayCount);
 
@@ -1502,7 +1506,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="firstMipLevel">[Optional] The first mip map level (slice) to start viewing from.</param>
         /// <param name="arrayOrDepthIndex">[Optional] The array index or depth slice to start viewing from.</param>
         /// <param name="arrayOrDepthCount">[Optional] The number of array indices or depth slices to view.</param>
-        /// <returns>A <see cref="GorgonTextureView"/> used to bind the texture to a shader.</returns>
+        /// <returns>A <see cref="GorgonTextureUav"/> used to bind the texture to a shader.</returns>
         /// <exception cref="GorgonException">Thrown if the video device does not support feature level 11 or better.
         /// <para>-or-</para>
         /// <para>Thrown when this texture does not have a <see cref="TextureBinding"/> of <see cref="TextureBinding.UnorderedAccess"/>.</para>
@@ -1579,20 +1583,15 @@ namespace Gorgon.Graphics.Core
 	                                                    format));
 	        }
 
-
+	        firstMipLevel = firstMipLevel.Max(0).Min(Info.MipLevels - 1);
             arrayOrDepthIndex = arrayOrDepthIndex.Max(0).Min(Info.TextureType == TextureType.Texture3D ? (Info.Depth - 1) : (Info.ArrayCount - 1));
+	        
+            if (arrayOrDepthCount <= 0)
+            {
+                arrayOrDepthCount = (_info.TextureType == TextureType.Texture3D ? _info.Depth : _info.ArrayCount) - arrayOrDepthIndex;
+            }
 
-	        if (arrayOrDepthCount <= 0)
-	        {
-	            if (_info.TextureType == TextureType.Texture3D)
-	            {
-	                arrayOrDepthCount = _info.Depth - arrayOrDepthIndex;
-	            }
-	            else
-	            {
-	                arrayOrDepthCount = _info.ArrayCount - arrayOrDepthIndex;
-	            }
-	        }
+	        arrayOrDepthCount = arrayOrDepthCount.Min((Info.TextureType == TextureType.Texture3D ? (Info.Depth) : (Info.ArrayCount)) - arrayOrDepthIndex).Max(1);
 
 	        var key = new TextureViewKey(format, firstMipLevel, _info.MipLevels, arrayOrDepthIndex, arrayOrDepthCount);
 
@@ -1670,12 +1669,14 @@ namespace Gorgon.Graphics.Core
 	        }
 
             firstMipLevel = firstMipLevel.Max(0).Min(Info.MipLevels - 1);
-	        arrayIndex = arrayIndex.Max(0);
+	        arrayIndex = arrayIndex.Max(0).Min(Info.ArrayCount - 1);
 
 	        if (arrayCount <= 0)
 	        {
 	            arrayCount = _info.ArrayCount - arrayIndex;
 	        }
+
+	        arrayCount = arrayCount.Min(_info.ArrayCount - arrayIndex).Max(1);
 
             // Since we don't use the mip count, we can repurpose it to store the flag settings.
 	        var key = new TextureViewKey(format, firstMipLevel, (int)flags, arrayIndex, arrayCount);
@@ -1748,6 +1749,8 @@ namespace Gorgon.Graphics.Core
 	            }
 	        }
 
+	        arrayOrDepthCount = arrayOrDepthCount.Min((_info.TextureType == TextureType.Texture3D ? _info.Depth : _info.ArrayCount) - arrayOrDepthIndex).Max(1);
+
 	        var key = new TextureViewKey(format, firstMipLevel, 1, arrayOrDepthIndex, arrayOrDepthCount);
 
             if (_cachedRtvs.TryGetValue(key, out GorgonRenderTargetView view))
@@ -1779,6 +1782,11 @@ namespace Gorgon.Graphics.Core
 		    }
 
 		    foreach (KeyValuePair<TextureViewKey, GorgonDepthStencilView> view in _cachedDsvs)
+		    {
+		        view.Value.Dispose();
+		    }
+
+		    foreach (KeyValuePair<TextureViewKey, GorgonTextureUav> view in _cachedUavs)
 		    {
 		        view.Value.Dispose();
 		    }
@@ -1849,20 +1857,22 @@ namespace Gorgon.Graphics.Core
 		    }
 		}
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonTexture"/> class.
-		/// </summary>
-		/// <param name="name">The name of the texture.</param>
-		/// <param name="graphics">The graphics interface used to create this texture.</param>
-		/// <param name="image">The image to copy into the texture.</param>
-		/// <param name="info">The information used to define how the texture should be created.</param>
-		/// <param name="log">The log interface used for debugging.</param>
-		/// <remarks>
-		/// <para>
-		/// This constructor is used when converting an image to a texture.
-		/// </para>
-		/// </remarks>
-		internal GorgonTexture(string name, GorgonGraphics graphics, IGorgonImage image, IGorgonImageToTextureInfo info, IGorgonLog log)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonTexture"/> class.
+        /// </summary>
+        /// <param name="name">The name of the texture.</param>
+        /// <param name="graphics">The graphics interface used to create this texture.</param>
+        /// <param name="image">The image to copy into the texture.</param>
+        /// <param name="usage">The defined usage for the texture.</param>
+        /// <param name="binding">The allowed bindings for the texture.</param>
+        /// <param name="multiSampleInfo">The multisample level to apply.</param>
+        /// <param name="log">The log interface used for debugging.</param>
+        /// <remarks>
+        /// <para>
+        /// This constructor is used when converting an image to a texture.
+        /// </para>
+        /// </remarks>
+        internal GorgonTexture(string name, GorgonGraphics graphics, IGorgonImage image, D3D11.ResourceUsage usage, TextureBinding binding, GorgonMultisampleInfo multiSampleInfo, IGorgonLog log)
 			: base(graphics, name)
 		{
 			_log = log ?? GorgonLogDummy.DefaultInstance;
@@ -1891,13 +1901,13 @@ namespace Gorgon.Graphics.Core
 				        Width = image.Info.Width,
 				        Height = image.Info.Height,
 				        TextureType = type,
-				        Usage = info.Usage,
+				        Usage = usage,
 				        ArrayCount = image.Info.ArrayCount,
-				        Binding = info.Binding,
+				        Binding = binding,
 				        Depth = image.Info.Depth,
 				        IsCubeMap = image.Info.ImageType == ImageType.ImageCube,
 				        MipLevels = image.Info.MipCount,
-				        MultisampleInfo = info.MultisampleInfo
+				        MultisampleInfo = multiSampleInfo
 			        };
 
 			Initialize(image);

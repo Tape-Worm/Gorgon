@@ -285,14 +285,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
 					textureStream.CopyTo(memoryStream, 80000);
 
 					// Convert to a texture and add that texture to our internal list.
-					result.Add(image.ToTexture(textureName,
-					                           Factory.Graphics,
-					                           new GorgonImageToTextureInfo
-					                           {
-						                           MultisampleInfo = GorgonMultisampleInfo.NoMultiSampling,
-						                           Usage = D3D11.ResourceUsage.Default,
-						                           Binding = TextureBinding.ShaderResource
-					                           }));
+					result.Add(image.ToTexture(textureName, Factory.Graphics));
 					image.Dispose();
 					image = null;
 				}
