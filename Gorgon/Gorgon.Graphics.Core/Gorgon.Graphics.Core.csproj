@@ -97,6 +97,10 @@
     <Compile Include="Buffers\GorgonBufferInfo.cs" />
     <Compile Include="Buffers\GorgonIndexBuffer.cs" />
     <Compile Include="Buffers\GorgonStructuredBufferInfo.cs" />
+    <Compile Include="Buffers\GorgonStructuredBufferUav.cs" />
+    <Compile Include="Buffers\GorgonRawBufferUav.cs" />
+    <Compile Include="Buffers\GorgonBufferUavBase.cs" />
+    <Compile Include="Buffers\GorgonBufferUav.cs" />
     <Compile Include="Buffers\GorgonVertexBuffer.cs" />
     <Compile Include="Buffers\GorgonConstantBuffer.cs" />
     <Compile Include="Buffers\GorgonConstantBufferInfo.cs" />
@@ -148,6 +152,7 @@
     <Compile Include="Pipeline\GorgonConstantBuffers.cs" />
     <Compile Include="Shaders\GorgonShaderFactory.cs" />
     <Compile Include="Shaders\GorgonShaderMacro.cs" />
+    <Compile Include="Shaders\GorgonUnorderedAccessView.cs" />
     <Compile Include="Shaders\_Internal\ShaderProcessor.cs" />
     <Compile Include="States\GorgonBlendState.cs" />
     <Compile Include="States\GorgonRasterState.cs" />
@@ -159,6 +164,7 @@
     <Compile Include="Targets\GorgonRenderTargetView.cs" />
     <Compile Include="Targets\_Interfaces\IGorgonSwapChainInfo.cs" />
     <Compile Include="Textures\GorgonTexture.cs" />
+    <Compile Include="Textures\GorgonTextureUav.cs" />
     <Compile Include="Textures\_Internal\TextureBlitter.cs" />
     <Compile Include="Textures\GorgonTextureInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">

@@ -914,11 +914,20 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unordered access views for textures requires a SM5 or better video device..
+        ///   Looks up a localized string similar to Unordered access views for textures requires a feature level 11 or better video device..
         /// </summary>
         internal static string GORGFX_ERR_UAV_REQUIRES_SM5 {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_UAV_REQUIRES_SM5", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The resource &apos;{0}&apos; does not have an [UnorderedAccess] binding..
+        /// </summary>
+        internal static string GORGFX_ERR_UAV_RESOURCE_NOT_VALID {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_UAV_RESOURCE_NOT_VALID", resourceCulture);
             }
         }
         
@@ -1103,7 +1112,7 @@ namespace Gorgon.Graphics.Core.Properties {
         ///struct GorgonBltVertex
         ///{
         ///   float4 position : SV_POSITION;
-        ///   float2 uv : TEXCOORD0;
+        ///   float2 uv : TEXCOORD;
         ///   float4 color : COLOR;
         ///};
         ///
@@ -1114,7 +1123,7 @@ namespace Gorgon.Graphics.Core.Properties {
         ///}
         ///
         ///// Our vertex shader for blitting textures.
-        ///GorgonBltVertex GorgonBltVertexShade [rest of string was truncated]&quot;;.
+        ///GorgonBltVertex GorgonBltVertexShader [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string GraphicsShaders {
             get {

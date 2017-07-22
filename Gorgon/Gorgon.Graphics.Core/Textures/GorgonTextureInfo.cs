@@ -25,7 +25,7 @@
 #endregion
 
 using System;
-using DXGI = SharpDX.DXGI;
+using SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
@@ -64,7 +64,7 @@ namespace Gorgon.Graphics.Core
 	    /// The default value <c>Unknown</c>.
 	    /// </para>
 	    /// </remarks>
-	    public DXGI.Format DepthStencilFormat
+	    public Format DepthStencilFormat
 	    {
 	        get;
 	        set;
@@ -154,7 +154,7 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Property to set or return the format of the texture.
 		/// </summary>
-		public DXGI.Format Format
+		public Format Format
 		{
 			get;
 			set;
@@ -255,7 +255,7 @@ namespace Gorgon.Graphics.Core
 			Binding = TextureBinding.ShaderResource;
 			Usage = D3D11.ResourceUsage.Default;
 			MultisampleInfo = GorgonMultisampleInfo.NoMultiSampling;
-            DepthStencilFormat = DXGI.Format.Unknown;
+            DepthStencilFormat = Format.Unknown;
 			MipLevels = 1;
 			ArrayCount = 1;
 		}

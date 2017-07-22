@@ -26,7 +26,7 @@
 
 using System;
 using Gorgon.Core;
-using DXGI = SharpDX.DXGI;
+using SharpDX.DXGI;
 
 namespace Gorgon.Graphics.Core
 {
@@ -39,7 +39,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// The starting element.
         /// </summary>
-        public readonly DXGI.Format Format;
+        public readonly Format Format;
         /// <summary>
         /// The encoded range of mip maps to view.
         /// </summary>
@@ -80,7 +80,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="mipCount">The number of mip maps to view.</param>
         /// <param name="arrayStart">The starting array index to view.</param>
         /// <param name="arrayCount">The number of array indices to view.</param>
-        public TextureViewKey(DXGI.Format format, int mipStart, int mipCount, int arrayStart, int arrayCount)
+        public TextureViewKey(Format format, int mipStart, int mipCount, int arrayStart, int arrayCount)
         {
             Format = format;
             MipRange = (((uint)mipCount & 0xffff) << 16) | ((uint)mipStart & 0xffff);

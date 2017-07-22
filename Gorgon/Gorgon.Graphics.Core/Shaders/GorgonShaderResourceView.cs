@@ -37,7 +37,7 @@ namespace Gorgon.Graphics.Core
 	/// This base class is used to define shader resource views for strongly typed resources like textures and buffers.
 	/// </para>
 	/// </remarks>
-	public class GorgonShaderResourceView
+	public abstract class GorgonShaderResourceView
 		: IDisposable
 	{
 		#region Properties.
@@ -57,13 +57,18 @@ namespace Gorgon.Graphics.Core
 	    {
 	        get;
 	    }
-		#endregion
+        #endregion
 
-		#region Methods.
+        #region Methods.
+	    /// <summary>
+	    /// Function to initialize the buffer view.
+	    /// </summary>
+	    protected internal abstract void CreateNativeView();
+
 		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1816:CallGCSuppressFinalizeCorrectly", Justification = "I have no finalizer. This is completely overridable. Idiot.")]
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1816:CallGCSuppressFinalizeCorrectly", Justification = "I have no finalizer. This is completely overridable. Idiot.")]
 		public virtual void Dispose()
 		{
 			NativeView?.Dispose();

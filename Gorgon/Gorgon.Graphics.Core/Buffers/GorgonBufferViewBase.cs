@@ -94,13 +94,6 @@ namespace Gorgon.Graphics.Core
         }
         #endregion
 
-        #region Methods.
-        /// <summary>
-        /// Function to initialize the buffer view.
-        /// </summary>
-        protected internal abstract void CreateNativeView();
-        #endregion
-
         #region Constructor/Finalizer.
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonBufferViewBase{T}"/> class.

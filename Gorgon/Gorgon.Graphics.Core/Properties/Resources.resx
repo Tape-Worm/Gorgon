@@ -284,7 +284,7 @@ Please report this error by pasting the details to the bug tracker in Gorgon's g
     <value>The format [{0}] is not supported for a [{1}] texture.</value>
   </data>
   <data name="GORGFX_ERR_UAV_REQUIRES_SM5" xml:space="preserve">
-    <value>Unordered access views for textures requires a SM5 or better video device.</value>
+    <value>Unordered access views for textures requires a feature level 11 or better video device.</value>
   </data>
   <data name="GORGFX_ERR_TEXTURE_NO_MIP_SUPPORT" xml:space="preserve">
     <value>The texture format [{0}] must be used with a mip map count of 1.</value>
@@ -469,5 +469,8 @@ The width must be a value between 1-{2}, and the height must be a value between 
   </data>
   <data name="GORGFX_NAME_GRAYSCALE_EFFECT" xml:space="preserve">
     <value>Grayscale Effect</value>
+  </data>
+  <data name="GORGFX_ERR_UAV_RESOURCE_NOT_VALID" xml:space="preserve">
+    <value>The resource '{0}' does not have an [UnorderedAccess] binding.</value>
   </data>
 </root>

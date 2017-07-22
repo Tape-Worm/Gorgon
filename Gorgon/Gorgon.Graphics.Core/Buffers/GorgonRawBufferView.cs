@@ -110,13 +110,6 @@ namespace Gorgon.Graphics.Core
 
         #region Methods.
         /// <summary>
-        /// Function to initialize the view.
-        /// </summary>
-        private void Initialize()
-        {
-        }
-
-        /// <summary>
         /// Function to initialize the buffer view.
         /// </summary>
         protected internal override void CreateNativeView()

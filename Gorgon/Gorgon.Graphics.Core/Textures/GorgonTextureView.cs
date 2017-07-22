@@ -30,9 +30,9 @@ using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
+using SharpDX.DXGI;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D;
-using DXGI = SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
@@ -130,7 +130,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the format used to interpret this view.
         /// </summary>
-        public DXGI.Format Format
+        public Format Format
         {
             get;
         }
@@ -311,7 +311,7 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Function to initialize the shader resource view.
 		/// </summary>
-		internal void CreateNativeView()
+		protected internal override void CreateNativeView()
 		{
 			D3D11.ShaderResourceViewDescription desc;
 			
@@ -418,7 +418,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="arrayCount">For a 1D or 2D <see cref="GorgonTexture"/>, this will be the number of array indices to view.</param>
 		/// <param name="log">The log used for debugging.</param>
 		internal GorgonTextureView(GorgonTexture texture,
-		                           DXGI.Format format,
+		                           Format format,
 		                           int firstMipLevel,
 		                           int mipCount,
 		                           int arrayIndex,
@@ -429,7 +429,7 @@ namespace Gorgon.Graphics.Core
             _log = log ?? GorgonLogDummy.DefaultInstance;
 		    Texture = texture;
 
-		    if (format == DXGI.Format.Unknown)
+		    if (format == Format.Unknown)
 		    {
 		        format = texture.Info.Format;
 		    }
@@ -440,9 +440,9 @@ namespace Gorgon.Graphics.Core
 				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TEXTURE_NOT_SHADER_RESOURCE, texture.Name), nameof(texture));
 			}
 
-		    if (format == DXGI.Format.Unknown)
+		    if (format == Format.Unknown)
 		    {
-		        throw new ArgumentException(string.Format(Resources.GORGFX_ERR_VIEW_UNKNOWN_FORMAT, DXGI.Format.Unknown), nameof(texture));
+		        throw new ArgumentException(string.Format(Resources.GORGFX_ERR_VIEW_UNKNOWN_FORMAT, Format.Unknown), nameof(texture));
 		    }
 
 		    if (firstMipLevel + mipCount > texture.Info.MipLevels)
