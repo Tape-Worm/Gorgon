@@ -473,4 +473,7 @@ The width must be a value between 1-{2}, and the height must be a value between 
   <data name="GORGFX_ERR_UAV_RESOURCE_NOT_VALID" xml:space="preserve">
     <value>The resource '{0}' does not have an [UnorderedAccess] binding.</value>
   </data>
+  <data name="GORGFX_TOSTR_UAV_BINDING" xml:space="preserve">
+    <value>Unordered access view binding.  Offset: {0}, Uav Resource: {1}</value>
+  </data>
 </root>

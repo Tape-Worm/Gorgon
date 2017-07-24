@@ -77,16 +77,15 @@ namespace Gorgon.Graphics.Core
 			Array.Clear(_native, 0, MaximumShaderResourceViewCount);
 		}
 
-        /// <summary>
-        /// Function called when an item is assigned to a slot in the binding list.
-        /// </summary>
-        /// <param name="index">The index of the slot being assigned.</param>
-        /// <param name="item">The item being assigned.</param>
-        /// <param name="oldItem">The previous item in the slot.</param>
-        protected override void OnItemSet(int index, GorgonShaderResourceView item, GorgonShaderResourceView oldItem)
-		{
-			_native[index] = item?.NativeView;
-		}
+	    /// <summary>
+	    /// Function to store the native item at the given index.
+	    /// </summary>
+	    /// <param name="nativeItemIndex">The index of the item in the native array.</param>
+	    /// <param name="value">The value containing the native item.</param>
+	    protected override void OnStoreNativeItem(int nativeItemIndex, GorgonShaderResourceView value)
+	    {
+	        _native[nativeItemIndex] = value?.NativeView;
+	    }
 		#endregion
 
 		#region Constructor/Finalizer.

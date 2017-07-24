@@ -136,8 +136,10 @@
     <Compile Include="Pipeline\GorgonPipelineStateInfo.cs" />
     <Compile Include="Pipeline\GorgonPipelineStateInfoAllocator.cs" />
     <Compile Include="Pipeline\GorgonSamplerStates.cs" />
+    <Compile Include="Pipeline\GorgonUavBinding.cs" />
     <Compile Include="Pipeline\GorgonVertexBufferBinding.cs" />
     <Compile Include="Pipeline\GorgonRenderTargetViews.cs" />
+    <Compile Include="Pipeline\GorgonUavBindings.cs" />
     <Compile Include="Pipeline\GorgonVertexBufferBindings.cs" />
     <Compile Include="Pipeline\GorgonMonitoredValueTypeArray.cs" />
     <Compile Include="Pipeline\_Interfaces\IGorgonShaderStates.cs" />

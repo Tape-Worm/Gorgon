@@ -278,6 +278,7 @@
     <Compile Include="UI\_Controls\GorgonSelectablePanel.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="_Internal\Noise.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">

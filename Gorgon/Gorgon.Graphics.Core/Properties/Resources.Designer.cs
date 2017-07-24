@@ -1085,6 +1085,15 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unordered access view binding.  Offset: {0}, Uav Resource: {1}.
+        /// </summary>
+        internal static string GORGFX_TOSTR_UAV_BINDING {
+            get {
+                return ResourceManager.GetString("GORGFX_TOSTR_UAV_BINDING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Vertex buffer binding.  Stride: {0}, Offset: {1}, VertexBuffer: {2}.
         /// </summary>
         internal static string GORGFX_TOSTR_VERTEXBUFFER_BINDING {

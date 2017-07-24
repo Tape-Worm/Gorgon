@@ -47,13 +47,13 @@
 						<para>
 							<list class="bullet">
 								<listItem>
-									<para><externalLink><linkText>.NET 4.5</linkText><linkUri>http://www.microsoft.com/en-ca/download/details.aspx?id=30653</linkUri></externalLink></para>
+									<para><externalLink><linkText>.NET 4.7</linkText><linkUri>https://www.microsoft.com/en-us/download/details.aspx?id=55170</linkUri></externalLink></para>
 								</listItem>
 								<listItem>
-									<para>Microsoft Windows Vista SP2 at minimum. Windows 7 - 8.1 are supported and future versions may work as well.</para>
+									<para>Microsoft Windows 10 (build 15063).</para>
 								</listItem>
 								<listItem>
-									<para>Microsoft DirectX 11.</para>
+									<para>Microsoft DirectX 11.1</para>
 								</listItem>
 							</list>
 						</para>						
@@ -62,13 +62,13 @@
 				<section>
 					<title>To compile the Gorgon solution file</title>
 					<content>
-						<para><externalLink><linkText>Microsoft Visual Studio 2012 or better</linkText><linkUri>https://msdn.microsoft.com/en-gb/vstudio/</linkUri></externalLink></para>
+						<para><externalLink><linkText>Microsoft Visual Studio 2017 or better</linkText><linkUri>https://msdn.microsoft.com/en-gb/vstudio/</linkUri></externalLink></para>
 					</content>
 				</section>
 				<section>
 					<title>To use the Gorgon libraries</title>
 					<content>
-						<para>Any .NET 4.5 enabled language (e.g. Visual Basic .NET) can be used to write an application with Gorgon.</para>
+						<para>Any .NET 4.7 enabled language (e.g. Visual Basic .NET) can be used to write an application with Gorgon.</para>
 					</content>
 				</section>
 			</sections>						
@@ -104,10 +104,9 @@
 				<markup><br/></markup>
 				<externalLink><linkText>https://github.com/sharpdx/SharpDX</linkText><linkUri>https://github.com/sharpdx/SharpDX/</linkUri></externalLink>
 				</para>
-				<para>SlimMath by Mike Popoloski and the <externalLink><linkText>SlimDX Group</linkText><linkUri>http://www.slimdx.org/download.php</linkUri></externalLink>.
+				<para>Simplex Noise functionality by Benjamin Ward</para>
 				<markup><br/></markup>
-				<externalLink><linkText>https://code.google.com/p/slimmath/</linkText><linkUri>https://code.google.com/p/slimmath/</linkUri></externalLink> (Note: Google code is shutting down, this link may not be valid in the future)
-				</para>
+				<externalLink><linkText>https://github.com/WardBenjamin/SimplexNoise/</linkText><linkUri>https://github.com/WardBenjamin/SimplexNoise</linkUri></externalLink>
 				<para>SharpZipLib by Mike Krueger, and currently maintained by David Pierson.
 				<markup><br/></markup>
 				<externalLink><linkText>http://icsharpcode.github.io/SharpZipLib/</linkText><linkUri>http://icsharpcode.github.io/SharpZipLib/</linkUri></externalLink>

@@ -141,6 +141,10 @@ namespace Gorgon.Graphics.Core
 		/// The depth/stencil reference value has been updated.
 		/// </summary>
 		DepthStencilReference = 0x8_000_000,
+        /// <summary>
+        /// The pixel shader unordered access views have been updated.
+        /// </summary>
+        PixelShaderUavs = 0x10_000_000,
 		/// <summary>
 		/// All states changed.
 		/// </summary>
@@ -162,6 +166,7 @@ namespace Gorgon.Graphics.Core
 			| PixelShaderConstantBuffers
 			| PixelShaderResources
 			| PixelShaderSamplers
+            | PixelShaderUavs
 			| VertexShaderConstantBuffers
 			| VertexShaderResources
 			| VertexShaderSamplers
@@ -241,6 +246,24 @@ namespace Gorgon.Graphics.Core
 		{
 			get;
 		}
+
+        /// <summary>
+        /// Property to return the pixel shader unordered access views to bind to the pipeline.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This will make <see cref="GorgonUnorderedAccessView"/> objects visible to a <see cref="GorgonPixelShader"/>.  
+        /// </para>
+        /// <para>
+        /// An unordered access view uses the same slots as <see cref="GorgonRenderTargetView"/> objects. Thus, if there is a render target already occupying the same slot, it will be unbound and replaced 
+        /// by the <see cref="GorgonUnorderedAccessView"/> at that slot. Conversely, if there is an unordered access view bound to a specific slot, and a render target is assigned to that slot, then the 
+        /// unordered access view will be unbound.
+        /// </para>
+        /// </remarks>
+	    public GorgonUavBindings PixelShaderUavs
+	    {
+	        get;
+	    }
 
 		/// <summary>
 		/// Property to return the vertex shader samplers to bind to the pipeline.
@@ -326,6 +349,7 @@ namespace Gorgon.Graphics.Core
 			{
 				BlendSampleMask = (int)(0xffffffff);
 			}
+
 			BlendFactor = GorgonColor.White;
 			DepthStencilReference = 0;
 			
@@ -336,6 +360,7 @@ namespace Gorgon.Graphics.Core
 			PixelShaderResourceViews.Clear();
 			PixelShaderConstantBuffers.Clear();
 			PixelShaderSamplers.Clear();
+            PixelShaderUavs.Clear();
 		}
 		#endregion
 
@@ -358,6 +383,7 @@ namespace Gorgon.Graphics.Core
 			VertexShaderResourceViews = new GorgonShaderResourceViews();
 			PixelShaderSamplers = new GorgonSamplerStates();
 			VertexShaderSamplers = new GorgonSamplerStates();
+            PixelShaderUavs = new GorgonUavBindings();
 		}
 		#endregion
 	}

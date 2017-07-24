@@ -707,45 +707,109 @@ namespace Gorgon.Graphics.Core
 			InitializeDefaultViews();
 		}
 
-		/// <summary>
-		/// Function to lock a CPU accessible texture sub resource for reading/writing.
-		/// </summary>
-		/// <param name="lockFlags">Flags used to lock.</param>
-		/// <param name="arrayIndex">Array index of the sub resource to lock.</param>
-		/// <param name="mipLevel">The mip-map level of the sub resource to lock.</param>
-		/// <returns>A <see cref="GorgonTextureLockData"/> object representing the lock on the texture.</returns>
-		/// <exception cref="ArgumentException">Thrown when the texture is not a dynamic or staging texture.</exception>
-		/// <exception cref="NotSupportedException">Thrown when this texture is a depth/stencil texture.
-		/// <para>-or-</para>
-		/// <para>Thrown when the texture is not a staging texture and the Read flag has been specified.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when the texture is not a dynamic texture and the discard flag has been specified.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when the texture has a <see cref="TextureBinding"/> of <see cref="TextureBinding.DepthStencil"/>.</para>
-		/// </exception>
-		/// <remarks>
-		/// <para>
-		/// This method is used to lock down a sub resource in the texture for reading/writing (depending on <see cref="IGorgonTextureInfo.Usage"/>). When locking a texture, the entire texture sub resource 
-		/// is locked and returned.  There is no setting to return a portion of the texture subresource.
-		/// </para>
-		/// <para>
-		/// This method is only works for textures with a <see cref="IGorgonTextureInfo.Usage"/> of <c>Dynamic</c> or <c>Staging</c>. If the usage is not either of those values, then an exception will be thrown. 
-		/// If the texture has a <see cref="TextureBinding"/> of <see cref="TextureBinding.DepthStencil"/>, then this method will throw an exception.
-		/// </para>
-		/// <para>
-		/// When the texture usage is set to <c>Dynamic</c>, the lock will be write-only, but when the usage is set to <c>Staging</c>, then the lock will allow reading and writing of the texture data. This is 
-		/// specified by the <paramref name="lockFlags"/> parameter. If the <c>WriteNoOverwrite</c> flag is supplied, it will be ignored and treated as a <c>Write</c> flag.
-		/// </para> 
-		/// <para>
-		/// <note type="warning">
-		/// <para>
-		/// All exceptions raised by this method will only be done so when Gorgon is compiled in DEBUG mode.
-		/// </para>
-		/// </note>
-		/// </para>
-		/// </remarks>
-		/// <returns>This method will return a <see cref="GorgonTextureLockData"/> containing information about the locked sub resource and a pointer to the texture data in memory.</returns>
-		public GorgonTextureLockData Lock(D3D11.MapMode lockFlags, int mipLevel = 0, int arrayIndex = 0)
+	    /// <summary>
+	    /// Function to calculate the size of a texture, in bytes with the given parameters.
+	    /// </summary>
+	    /// <param name="textureType">The type of texture.</param>
+	    /// <param name="width">The width of the texture.</param>
+	    /// <param name="height">The height of the texture.</param>
+	    /// <param name="depthOrArrayCount">The number of depth slices if using a 3D texture, or the number of array indices.</param>
+	    /// <param name="format">The format for the texture.</param>
+	    /// <param name="mipCount">The number of mip map levels.</param>
+	    /// <param name="isCubeMap"><b>true</b> if the texture is meant to be used as a cube map, or <b>false</b> if not.</param>
+	    /// <returns>The number of bytes for the texture.</returns>
+	    public static int CalculateSizeInBytes(TextureType textureType, int width, int height, int depthOrArrayCount, Format format, int mipCount, bool isCubeMap)
+	    {
+	        ImageType imageType = ImageType.Unknown;
+	        switch (textureType)
+	        {
+	            case TextureType.Texture1D:
+	                imageType = ImageType.Image1D;
+	                break;
+	            case TextureType.Texture3D:
+	                imageType = ImageType.Image3D;
+	                break;
+	            case TextureType.Texture2D:
+	                if (isCubeMap)
+	                {
+	                    imageType = ImageType.ImageCube;
+	                }
+	                else
+	                {
+	                    imageType = ImageType.Image2D;
+	                }
+	                break;
+	        }
+
+	        return GorgonImage.CalculateSizeInBytes(imageType,
+	                                                width,
+	                                                height,
+	                                                depthOrArrayCount,
+	                                                format,
+	                                                mipCount);
+	    }
+
+	    /// <summary>
+	    /// Function to calculate the size of a texture, in bytes with the given parameters.
+	    /// </summary>
+	    /// <param name="info">The <see cref="IGorgonTextureInfo"/> used to define a texture.</param>
+	    /// <returns>The number of bytes for the texture.</returns>
+	    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
+	    public static int CalculateSizeInBytes(IGorgonTextureInfo info)
+	    {
+	        if (info == null)
+	        {
+	            throw new ArgumentNullException(nameof(info));
+	        }
+
+	        return CalculateSizeInBytes(info.TextureType,
+	                                    info.Width,
+	                                    info.Height,
+	                                    info.TextureType == TextureType.Texture3D ? info.Depth : info.ArrayCount,
+	                                    info.Format,
+	                                    info.MipLevels,
+	                                    info.IsCubeMap);
+	    }
+
+        /// <summary>
+        /// Function to lock a CPU accessible texture sub resource for reading/writing.
+        /// </summary>
+        /// <param name="lockFlags">Flags used to lock.</param>
+        /// <param name="arrayIndex">Array index of the sub resource to lock.</param>
+        /// <param name="mipLevel">The mip-map level of the sub resource to lock.</param>
+        /// <returns>A <see cref="GorgonTextureLockData"/> object representing the lock on the texture.</returns>
+        /// <exception cref="ArgumentException">Thrown when the texture is not a dynamic or staging texture.</exception>
+        /// <exception cref="NotSupportedException">Thrown when this texture is a depth/stencil texture.
+        /// <para>-or-</para>
+        /// <para>Thrown when the texture is not a staging texture and the Read flag has been specified.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the texture is not a dynamic texture and the discard flag has been specified.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the texture has a <see cref="TextureBinding"/> of <see cref="TextureBinding.DepthStencil"/>.</para>
+        /// </exception>
+        /// <remarks>
+        /// <para>
+        /// This method is used to lock down a sub resource in the texture for reading/writing (depending on <see cref="IGorgonTextureInfo.Usage"/>). When locking a texture, the entire texture sub resource 
+        /// is locked and returned.  There is no setting to return a portion of the texture subresource.
+        /// </para>
+        /// <para>
+        /// This method is only works for textures with a <see cref="IGorgonTextureInfo.Usage"/> of <c>Dynamic</c> or <c>Staging</c>. If the usage is not either of those values, then an exception will be thrown. 
+        /// If the texture has a <see cref="TextureBinding"/> of <see cref="TextureBinding.DepthStencil"/>, then this method will throw an exception.
+        /// </para>
+        /// <para>
+        /// When the texture usage is set to <c>Dynamic</c>, the lock will be write-only, but when the usage is set to <c>Staging</c>, then the lock will allow reading and writing of the texture data. This is 
+        /// specified by the <paramref name="lockFlags"/> parameter. If the <c>WriteNoOverwrite</c> flag is supplied, it will be ignored and treated as a <c>Write</c> flag.
+        /// </para> 
+        /// <para>
+        /// <note type="warning">
+        /// <para>
+        /// All exceptions raised by this method will only be done so when Gorgon is compiled in DEBUG mode.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        /// <returns>This method will return a <see cref="GorgonTextureLockData"/> containing information about the locked sub resource and a pointer to the texture data in memory.</returns>
+        public GorgonTextureLockData Lock(D3D11.MapMode lockFlags, int mipLevel = 0, int arrayIndex = 0)
 		{
 #if DEBUG
 			if ((Info.Usage != D3D11.ResourceUsage.Staging) && (Info.Usage != D3D11.ResourceUsage.Dynamic))
@@ -1855,6 +1919,8 @@ namespace Gorgon.Graphics.Core
 		    {
 		        DefaultRenderTargetView = GetRenderTargetView();
 		    }
+
+		    SizeInBytes = CalculateSizeInBytes(_info);
 		}
 
         /// <summary>
@@ -1912,7 +1978,8 @@ namespace Gorgon.Graphics.Core
 
 			Initialize(image);
 			TextureID = Interlocked.Increment(ref _textureID);
-		}
+		    SizeInBytes = CalculateSizeInBytes(_info);
+        }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonTexture"/> class.
@@ -1951,7 +2018,9 @@ namespace Gorgon.Graphics.Core
 			_lockCache = new TextureLockCache(this);
 
 			TextureID = Interlocked.Increment(ref _textureID);
+
+		    SizeInBytes = CalculateSizeInBytes(textureInfo);
 		}
-		#endregion
-	}
+        #endregion
+    }
 }

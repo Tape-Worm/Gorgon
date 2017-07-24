@@ -99,7 +99,10 @@ namespace Gorgon.Graphics.Core
 
                 // Grab the native descriptor.
                 D3D11.SamplerStateDescription desc = info.ToSamplerStateDesc();
-                info.Native = new D3D11.SamplerState(graphics.VideoDevice.D3DDevice(), desc);
+                info.Native = new D3D11.SamplerState(graphics.VideoDevice.D3DDevice(), desc)
+                              {
+                                  DebugName = $"GorgonSamplerState #{_cachedSamplerStates.Count}: D3D11 Sampler State"
+                              };
                 _cachedSamplerStates.Add((info, _cachedSamplerStates.Count));
 
                 return info.Native;

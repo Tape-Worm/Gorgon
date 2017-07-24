@@ -208,9 +208,7 @@ namespace Gorgon.Graphics.Core
             }
 
             var key = new BufferShaderViewKey(startElement, elementCount, format);
-            var view = GetView(key) as GorgonBufferView;
-
-            if (view != null)
+            if (GetView(key) is GorgonBufferView view)
             {
                 return view;
             }
@@ -297,9 +295,7 @@ namespace Gorgon.Graphics.Core
 
             var key = new BufferShaderViewKey(startElement, elementCount, format);
 
-            var result = GetUav(key) as GorgonBufferUav;
-
-            if (result != null)
+            if (GetUav(key) is GorgonBufferUav result)
             {
                 return result;
             }

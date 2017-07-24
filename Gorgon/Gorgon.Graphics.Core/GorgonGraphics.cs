@@ -167,7 +167,11 @@ namespace Gorgon.Graphics.Core
         // The viewports used for rendering to the render target.
         private readonly GorgonMonitoredValueTypeArray<DX.ViewportF> _viewports;
         // The texture blitter used to render a single texture.
-        private Lazy<TextureBlitter> _textureBlitter;
+        private readonly Lazy<TextureBlitter> _textureBlitter;
+        // An unordered access view buffer.
+        private D3D11.UnorderedAccessView[] _uavBuffer;
+        // A buffer for uav counters.
+        private int[] _uavCounters;
         #endregion
 
         #region Properties.
@@ -346,17 +350,25 @@ namespace Gorgon.Graphics.Core
 		    ref (int StartSlot, int Count, GorgonVertexBufferBinding[] Bindings) current = ref _lastDrawCall.VertexBuffers.GetDirtyItems();
 		    ref (int StartSlot, int Count, GorgonVertexBufferBinding[] Bindings) newItems = ref vertexBuffers.GetDirtyItems();
 
-		    int maxItems = current.Count.Max(newItems.Count);
-		    int start = current.StartSlot.Min(newItems.StartSlot);
+	        int newEnd = newItems.StartSlot + newItems.Count;
+            int startSlot = current.Count > 0 ? current.StartSlot.Min(newItems.StartSlot) : newItems.StartSlot;
+            int endSlot = current.Count > 0 ? (current.Count + current.StartSlot).Max(newEnd) : newEnd;
 
 	        if ((currentChanges & PipelineResourceChange.InputLayout) == PipelineResourceChange.InputLayout)
 	        {
 	            _lastDrawCall.VertexBuffers.InputLayout = vertexBuffers.InputLayout;
 	        }
 
-		    for (int i = start; i < start + maxItems; ++i)
+		    for (int i = startSlot; i < endSlot; ++i)
 		    {
-			    _lastDrawCall.VertexBuffers[i] = newItems.Bindings[i];
+		        if ((i >= newItems.StartSlot) && (i < newEnd))
+		        {
+		            _lastDrawCall.VertexBuffers[i] = newItems.Bindings[i];
+                }
+		        else
+		        {
+		            _lastDrawCall.VertexBuffers[i] = GorgonVertexBufferBinding.Empty;
+		        }
 		    }
 
 		    if (_lastDrawCall.VertexBuffers.IsDirty)
@@ -396,22 +408,32 @@ namespace Gorgon.Graphics.Core
 		    }
 
 	        ref (int StartSlot, int Count, GorgonConstantBuffer[] Bindings) current = ref destBuffers.GetDirtyItems();
-	        int startSlot = current.StartSlot.Min(newItems.StartSlot);
-	        int lastSlot = startSlot + current.Count.Max(newItems.Count);
+	        int buffersEnd = newItems.StartSlot + newItems.Count;
+            int startSlot = current.Count > 0 ? current.StartSlot.Min(newItems.StartSlot) : newItems.StartSlot;
+	        int lastSlot = current.Count > 0 ? (current.Count + current.StartSlot).Max(buffersEnd) : buffersEnd;
 
-            return CopyToLastDrawCall(startSlot,
-		                              lastSlot,
-		                              destBuffers,
-		                              newItems.Bindings,
-		                              currentChanges,
-		                              desiredStateBit);
+	        return CopyToLastDrawCall(newItems.StartSlot,
+	                                  buffersEnd,
+	                                  startSlot,
+	                                  lastSlot,
+	                                  destBuffers,
+	                                  newItems.Bindings,
+	                                  currentChanges,
+	                                  desiredStateBit);
 
 		    // Local functions are neat.
-		    PipelineResourceChange CopyToLastDrawCall(int start, int end, GorgonConstantBuffers lastDrawConstants, GorgonConstantBuffer[] newBuffers, PipelineResourceChange changes, PipelineResourceChange desiredBit)
+		    PipelineResourceChange CopyToLastDrawCall(int newStart, int newEnd, int start, int end, GorgonConstantBuffers lastDrawConstants, GorgonConstantBuffer[] newBuffers, PipelineResourceChange changes, PipelineResourceChange desiredBit)
 		    {
 			    for (int i = start; i < end; ++i)
 			    {
-				    lastDrawConstants[i] = newBuffers[i];
+			        if ((i >= newStart) && (i < newEnd))
+			        {
+			            lastDrawConstants[i] = newBuffers[i];
+			        }
+			        else
+			        {
+			            lastDrawConstants[i] = null;
+			        }
 			    }
 
 			    if (lastDrawConstants.IsDirty)
@@ -452,22 +474,32 @@ namespace Gorgon.Graphics.Core
 		    }
 
 	        ref (int StartSlot, int Count, GorgonShaderResourceView[] Bindings) current = ref destSrvs.GetDirtyItems();
-	        int startSlot = current.StartSlot.Min(newItems.StartSlot);
-	        int lastSlot = startSlot + current.Count.Max(newItems.Count);
+	        int resEnd = newItems.Count + newItems.StartSlot;
+	        int startSlot = current.Count > 0 ? current.StartSlot.Min(newItems.StartSlot) : newItems.StartSlot;
+	        int lastSlot = current.Count > 0 ? (current.Count + current.StartSlot).Max(resEnd) : resEnd;
 
-            return CopyToLastDrawCall(startSlot,
-		                              lastSlot,
-		                              destSrvs,
-		                              newItems.Bindings,
-		                              currentChanges,
-		                              desiredStateBit);
+	        return CopyToLastDrawCall(newItems.StartSlot,
+	                                  resEnd,
+	                                  startSlot,
+	                                  lastSlot,
+	                                  destSrvs,
+	                                  newItems.Bindings,
+	                                  currentChanges,
+	                                  desiredStateBit);
 
 		    // Local functions are neat.
-		    PipelineResourceChange CopyToLastDrawCall(int start, int end, GorgonShaderResourceViews lastDrawSrvs, GorgonShaderResourceView[] newSrvs, PipelineResourceChange changes, PipelineResourceChange desiredBit)
+		    PipelineResourceChange CopyToLastDrawCall(int newStart, int newEnd, int start, int end, GorgonShaderResourceViews lastDrawSrvs, GorgonShaderResourceView[] newSrvs, PipelineResourceChange changes, PipelineResourceChange desiredBit)
 		    {
 			    for (int i = start; i < end; ++i)
 			    {
-				    lastDrawSrvs[i] = newSrvs[i];
+			        if ((i >= newStart) && (i < newEnd))
+			        {
+			            lastDrawSrvs[i] = newSrvs[i];
+			        }
+			        else
+			        {
+			            lastDrawSrvs[i] = null;
+			        }
 			    }
 
 			    if (lastDrawSrvs.IsDirty)
@@ -478,6 +510,43 @@ namespace Gorgon.Graphics.Core
 			    return changes;
 		    }
 	    }
+
+        /// <summary>
+        /// Function to merge the pixel shader unordered access views.
+        /// </summary>
+        /// <param name="uavs">The unordered access views to merge.</param>
+        /// <param name="currentChanges">The current changes on the pipeline.</param>
+        /// <returns>A <see cref="PipelineResourceChange"/> indicating whether or not the state has changed and a flag indicating that render targets were unbound.</returns>
+        private PipelineResourceChange MergePixelShaderUavs(GorgonUavBindings uavs, PipelineResourceChange currentChanges)
+        {
+            ref (int StartSlot, int Count, GorgonUavBinding[] Bindings) newItems = ref uavs.GetDirtyItems();
+            ref (int StartSlot, int Count, GorgonUavBinding[] Bindings) oldItems = ref _lastDrawCall.PixelShaderUavs.GetDirtyItems();
+
+            // Unbind any render targets at this point.
+            int newEnd = newItems.Count + newItems.StartSlot;
+            int minSlot = oldItems.Count > 0 ? oldItems.StartSlot.Min(newItems.StartSlot) : newItems.StartSlot;
+            int maxSlot = oldItems.Count > 0 ? (oldItems.Count + minSlot).Max(newEnd) : newEnd;
+            
+            for (int i = minSlot; i < maxSlot; ++i)
+            {
+                if ((i >= newItems.StartSlot) && (i < newEnd))
+                {
+                    _renderTargets[i] = null;
+                    _lastDrawCall.PixelShaderUavs[i] = newItems.Bindings[i];
+                }
+                else
+                {
+                    _lastDrawCall.PixelShaderUavs[i] = GorgonUavBinding.Empty;
+                }
+            }
+
+            if (!_lastDrawCall.PixelShaderUavs.IsDirty)
+            {
+                return currentChanges;
+            }
+
+            return currentChanges | PipelineResourceChange.PixelShaderUavs;
+        }
 
 	    /// <summary>
 	    /// Function to merge the previous shader samplers with new ones.
@@ -517,10 +586,13 @@ namespace Gorgon.Graphics.Core
 		    }
 
 	        ref (int StartSlot, int Count, GorgonSamplerState[] Bindings) current = ref destSamplers.GetDirtyItems();
-	        int startSlot = current.StartSlot.Min(newItems.StartSlot);
-	        int lastSlot = startSlot + current.Count.Max(newItems.Count);
-
-            return CopyToLastDrawCall(startSlot,
+	        int samplerEnd = newItems.Count + newItems.StartSlot;
+	        int startSlot = current.Count > 0 ? current.StartSlot.Min(newItems.StartSlot) : newItems.StartSlot;
+	        int lastSlot = current.Count > 0 ? (current.Count + current.StartSlot).Max(samplerEnd) : samplerEnd;
+            
+            return CopyToLastDrawCall(newItems.StartSlot,
+                                      samplerEnd,
+                                      startSlot,
 		                              lastSlot,
 		                              destSamplers,
 		                              newItems.Bindings,
@@ -528,11 +600,18 @@ namespace Gorgon.Graphics.Core
 		                              desiredStateBit);
 
 		    // Local functions are neat.
-		    PipelineResourceChange CopyToLastDrawCall(int start, int end, GorgonSamplerStates lastDrawSamplers, GorgonSamplerState[] newSamplers, PipelineResourceChange changes, PipelineResourceChange desiredBit)
+		    PipelineResourceChange CopyToLastDrawCall(int newStart, int newEnd, int start, int end, GorgonSamplerStates lastDrawSamplers, GorgonSamplerState[] newSamplers, PipelineResourceChange changes, PipelineResourceChange desiredBit)
 		    {
 			    for (int i = start; i < end; ++i)
 			    {
-				    lastDrawSamplers[i] = newSamplers[i];
+			        if ((i >= newStart) && (i < newEnd))
+			        {
+			            lastDrawSamplers[i] = newSamplers[i];
+			        }
+			        else
+			        {
+			            lastDrawSamplers[i] = null;
+			        }
 			    }
 
 			    if (lastDrawSamplers.IsDirty)
@@ -666,8 +745,12 @@ namespace Gorgon.Graphics.Core
 		    stateChanges |= MergeShaderResources(ShaderType.Pixel, sourceDrawCall.PixelShaderResourceViews, stateChanges);
 		    stateChanges |= MergeShaderSamplers(ShaderType.Vertex, sourceDrawCall.VertexShaderSamplers, stateChanges);
 		    stateChanges |= MergeShaderSamplers(ShaderType.Pixel, sourceDrawCall.PixelShaderSamplers, stateChanges);
+	        if (VideoDevice.RequestedFeatureLevel >= FeatureLevelSupport.Level_11_0)
+	        {
+	            stateChanges |= MergePixelShaderUavs(sourceDrawCall.PixelShaderUavs, stateChanges);
+	        }
 
-			return (stateChanges, GetPipelineStateChange(sourceDrawCall.PipelineState));
+	        return (stateChanges, GetPipelineStateChange(sourceDrawCall.PipelineState));
 	    }
 
 		/// <summary>
@@ -1042,6 +1125,29 @@ namespace Gorgon.Graphics.Core
 		    }
 	    }
 
+        /// <summary>
+        /// Function to bind unordered access views to the resource list.
+        /// </summary>
+        /// <param name="uavs">The unordered access views to bind.</param>
+        private void SetPixelShaderUavs(GorgonUavBindings uavs)
+        {
+            ref (int StartSlot, int Count, GorgonUavBinding[] Bindings) bindings = ref uavs.GetDirtyItems();
+
+            if ((_uavBuffer == null) || (_uavBuffer.Length != bindings.Count))
+            {
+                _uavBuffer = new D3D11.UnorderedAccessView[bindings.Count];
+                _uavCounters = new int[_uavBuffer.Length];
+            }
+
+            for (int i = 0; i < _uavBuffer.Length; ++i)
+            {
+                _uavBuffer[i] = uavs.Native[i];
+                _uavCounters[i] = uavs.Offsets[i];
+            }
+
+            D3DDeviceContext.OutputMerger.SetUnorderedAccessViews(bindings.StartSlot, _uavBuffer, _uavCounters);
+        }
+
 		/// <summary>
 		/// Function to assign the shader resource views to the resource list.
 		/// </summary>
@@ -1115,7 +1221,7 @@ namespace Gorgon.Graphics.Core
 	                state.Native = SamplerStateFactory.GetSamplerState(this, bindings.Bindings[i], _log);
 	            }
 
-	            _samplerStates[i] = state.Native;
+	            _samplerStates[i - bindings.StartSlot] = state.Native;
             }
 
 		    switch (shaderType)
@@ -1182,6 +1288,11 @@ namespace Gorgon.Graphics.Core
 			{
 				SetShaderResourceViews(ShaderType.Pixel, drawCall.PixelShaderResourceViews);
 			}
+
+		    if ((resourceChanges & PipelineResourceChange.PixelShaderUavs) == PipelineResourceChange.PixelShaderUavs)
+		    {
+		        SetPixelShaderUavs(drawCall.PixelShaderUavs);
+		    }
 
 			if ((resourceChanges & PipelineResourceChange.VertexShaderSamplers) == PipelineResourceChange.VertexShaderSamplers)
 			{

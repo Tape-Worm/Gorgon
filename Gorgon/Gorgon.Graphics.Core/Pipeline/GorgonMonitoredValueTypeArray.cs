@@ -89,15 +89,24 @@ namespace Gorgon.Graphics.Core
 				OnItemSet(index, value);
 			}
 		}
-		#endregion
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function called when an item is assigned to an index.
-		/// </summary>
-		/// <param name="index">The index of the item that was assigned.</param>
-		/// <param name="value">The value that was assigned.</param>
-		protected virtual void OnItemSet(int index, T value)
+        #region Methods.
+	    /// <summary>
+	    /// Function to store the native item at the given index.
+	    /// </summary>
+	    /// <param name="nativeItemIndex">The index of the item in the native array.</param>
+	    /// <param name="value">The value containing the native item.</param>
+	    protected virtual void OnStoreNativeItem(int nativeItemIndex, T value)
+	    {
+	    }
+
+        /// <summary>
+        /// Function called when an item is assigned to an index.
+        /// </summary>
+        /// <param name="index">The index of the item that was assigned.</param>
+        /// <param name="value">The value that was assigned.</param>
+        protected virtual void OnItemSet(int index, T value)
 		{
 		}
 
@@ -155,6 +164,7 @@ namespace Gorgon.Graphics.Core
 			}
 
 		    int dirtyState = _dirtyIndices;
+		    int nativeIndex = 0;
 
 			for (int i = 0; dirtyState != 0 && i < _backingStore.Length; ++i)
 			{
@@ -162,6 +172,10 @@ namespace Gorgon.Graphics.Core
 
 				if ((dirtyState & dirtyMask) != dirtyMask)
 				{
+				    if (startSlot > -1)
+				    {
+				        OnStoreNativeItem(nativeIndex++, default(T));
+				    }
 					continue;
 				}
 
@@ -170,7 +184,9 @@ namespace Gorgon.Graphics.Core
 					startSlot = i;
 				}
 
-				++count;
+			    OnStoreNativeItem(nativeIndex++, _backingStore[i]);
+
+                ++count;
 
 				// Remove this bit.
 				dirtyState &= ~dirtyMask;
@@ -274,18 +290,19 @@ namespace Gorgon.Graphics.Core
 		/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only. </exception>
 		public void Clear()
 		{
-			Array.Clear(_backingStore, 0, _backingStore.Length);
-			// Mark all indices as dirty.
-			_dirtyIndices = 0;
-			_dirtyItems = (0, 0, BackingArray);
+		    OnClear();
 
-			OnClear();
-		}
-		
-		/// <summary>Returns an enumerator that iterates through the collection.</summary>
-		/// <returns>An enumerator that can be used to iterate through the collection.</returns>
-		/// <filterpriority>1</filterpriority>
-		public IEnumerator<T> GetEnumerator()
+            Array.Clear(_backingStore, 0, _backingStore.Length);
+
+		    // Mark all indices as dirty.
+		    _dirtyIndices = 0;
+		    _dirtyItems = (0, 0, BackingArray);
+        }
+
+        /// <summary>Returns an enumerator that iterates through the collection.</summary>
+        /// <returns>An enumerator that can be used to iterate through the collection.</returns>
+        /// <filterpriority>1</filterpriority>
+        public IEnumerator<T> GetEnumerator()
 		{
 			// ReSharper disable once ForCanBeConvertedToForeach
 			for (int i = 0; i < _backingStore.Length; ++i)

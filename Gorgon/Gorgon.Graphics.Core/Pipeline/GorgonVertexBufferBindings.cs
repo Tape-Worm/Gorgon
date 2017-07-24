@@ -73,15 +73,15 @@ namespace Gorgon.Graphics.Core
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Function called when an item is assigned to an index.
-		/// </summary>
-		/// <param name="index">The index of the item that was assigned.</param>
-		/// <param name="value">The value that was assigned.</param>
-		protected override void OnItemSet(int index, GorgonVertexBufferBinding value)
-		{
-			_nativeBindings[index] = value.ToVertexBufferBinding();
-		}
+	    /// <summary>
+	    /// Function to store the native item at the given index.
+	    /// </summary>
+	    /// <param name="nativeItemIndex">The index of the item in the native array.</param>
+	    /// <param name="value">The value containing the native item.</param>
+	    protected override void OnStoreNativeItem(int nativeItemIndex, GorgonVertexBufferBinding value)
+	    {
+	        _nativeBindings[nativeItemIndex] = value.ToVertexBufferBinding();
+	    }
 
 		/// <summary>
 		/// Function called when the array is cleared.

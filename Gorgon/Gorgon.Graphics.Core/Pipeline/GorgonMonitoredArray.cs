@@ -90,6 +90,15 @@ namespace Gorgon.Graphics.Core
 
         #region Methods.
         /// <summary>
+        /// Function to store the native item at the given index.
+        /// </summary>
+        /// <param name="nativeItemIndex">The index of the item in the native array.</param>
+        /// <param name="value">The value containing the native item.</param>
+	    protected virtual void OnStoreNativeItem(int nativeItemIndex, T value)
+	    {
+	    }
+
+        /// <summary>
         /// Function called when an item is assigned to an index.
         /// </summary>
         /// <param name="index">The index of the item that was assigned.</param>
@@ -153,6 +162,7 @@ namespace Gorgon.Graphics.Core
 		    }
 
 		    int dirtyState = _dirtyIndices;
+		    int nativeIndex = 0;
 
 		    for (int i = 0; dirtyState != 0 && i < _backingStore.Length; ++i)
 		    {
@@ -160,6 +170,10 @@ namespace Gorgon.Graphics.Core
 
 		        if ((dirtyState & dirtyMask) != dirtyMask)
 		        {
+		            if (startSlot > -1)
+		            {
+		                OnStoreNativeItem(nativeIndex++, null);
+                    }
 		            continue;
 		        }
 
@@ -167,6 +181,8 @@ namespace Gorgon.Graphics.Core
 		        {
 		            startSlot = i;
 		        }
+
+                OnStoreNativeItem(nativeIndex++, _backingStore[i]);
 
 		        ++count;
 

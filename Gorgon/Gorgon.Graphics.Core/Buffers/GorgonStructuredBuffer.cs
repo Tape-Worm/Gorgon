@@ -219,9 +219,8 @@ namespace Gorgon.Graphics.Core
             }
 
             var key = new BufferShaderViewKey(startElement, elementCount, 0);
-            var view = GetView(key) as GorgonStructuredBufferView;
 
-            if (view != null)
+            if (GetView(key) is GorgonStructuredBufferView view)
             {
                 return view;
             }
@@ -300,9 +299,7 @@ namespace Gorgon.Graphics.Core
 
             var key = new BufferShaderViewKey(startElement, elementCount, (int)uavType);
 
-            var result = GetUav(key) as GorgonStructuredBufferUav;
-
-            if (result != null)
+            if (GetUav(key) is GorgonStructuredBufferUav result)
             {
                 return result;
             }
