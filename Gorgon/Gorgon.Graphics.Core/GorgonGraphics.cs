@@ -435,8 +435,8 @@ namespace Gorgon.Graphics.Core
                     destBuffers = null;//_currentDrawCall.DomainShaderConstantBuffers;
 		            break;
 			    default:
-				    return currentChanges;
-		    }
+			        throw new NotSupportedException();
+            }
 
 	        return CopyToLastDrawCall(newItems.StartSlot,
 	                                  newItems.StartSlot + newItems.Count,
@@ -521,8 +521,8 @@ namespace Gorgon.Graphics.Core
                 //                    destSrvs = _currentDrawCall.DomainShaderResourceViews;
                 //                    break;
                 default:
-				    return currentChanges;
-		    }
+                    throw new NotSupportedException();
+            }
 
 	        return CopyToLastDrawCall(newItems.StartSlot,
 	                                  newItems.Count + newItems.StartSlot,
@@ -654,7 +654,7 @@ namespace Gorgon.Graphics.Core
 //                    destSamplers = _currentDrawCall.DomainShaderSamplers;
 //                    break;
                 default:
-				    return currentChanges;
+				    throw new NotSupportedException();
 		    }
             
             return CopyToLastDrawCall(newItems.StartSlot,
