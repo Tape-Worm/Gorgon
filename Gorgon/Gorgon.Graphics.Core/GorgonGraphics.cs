@@ -145,7 +145,7 @@ namespace Gorgon.Graphics.Core
 		// The current device context.
 		private D3D11.DeviceContext1 _deviceContext;
 		// The last used draw call.
-		private GorgonDrawCallBase _lastDrawCall;
+		private GorgonDrawCallBase _currentDrawCall;
 		// Pipeline state cache.
 	    private readonly List<GorgonPipelineState> _stateCache = new List<GorgonPipelineState>();
         // A group of pipeline state caches that applications can use for caching their own pipeline states.
@@ -315,15 +315,15 @@ namespace Gorgon.Graphics.Core
 	    /// <returns>A <see cref="PipelineResourceChange"/> indicating whether or not the state has changed.</returns>
 	    private PipelineResourceChange MergeVertexBuffers(GorgonVertexBufferBindings vertexBuffers, PipelineResourceChange currentChanges)
 	    {
-		    if (_lastDrawCall.VertexBuffers?.InputLayout != vertexBuffers?.InputLayout)
+		    if (_currentDrawCall.VertexBuffers?.InputLayout != vertexBuffers?.InputLayout)
 		    {
 			    currentChanges |= PipelineResourceChange.InputLayout;
 		    }
 
-		    if (_lastDrawCall.VertexBuffers == vertexBuffers)
+		    if (_currentDrawCall.VertexBuffers == vertexBuffers)
 		    {
-			    if ((_lastDrawCall.VertexBuffers == null)
-			        || (!_lastDrawCall.VertexBuffers.IsDirty))
+			    if ((_currentDrawCall.VertexBuffers == null)
+			        || (!_currentDrawCall.VertexBuffers.IsDirty))
 			    {
 				    return currentChanges;
 			    }
@@ -333,45 +333,41 @@ namespace Gorgon.Graphics.Core
 
 		    // If we're tranferring into an uninitialized vertex buffer list, then allocate new vertex buffers and copy.
 		    if ((vertexBuffers != null)
-		        && (_lastDrawCall.VertexBuffers == null))
+		        && (_currentDrawCall.VertexBuffers == null))
 		    {
-			    _lastDrawCall.VertexBuffers = new GorgonVertexBufferBindings(vertexBuffers.InputLayout);
-			    vertexBuffers.CopyTo(_lastDrawCall.VertexBuffers);
+			    _currentDrawCall.VertexBuffers = new GorgonVertexBufferBindings(vertexBuffers.InputLayout);
+			    vertexBuffers.CopyTo(_currentDrawCall.VertexBuffers);
 			    return currentChanges | PipelineResourceChange.VertexBuffers;
 		    }
 
 		    // If we're removing a set of vertex buffers, then get rid of our current set as well.
 		    if (vertexBuffers == null)
 		    {
-			    _lastDrawCall.VertexBuffers = null;
+			    _currentDrawCall.VertexBuffers = null;
 			    return currentChanges | PipelineResourceChange.VertexBuffers;
 		    }
 
-		    ref (int StartSlot, int Count, GorgonVertexBufferBinding[] Bindings) current = ref _lastDrawCall.VertexBuffers.GetDirtyItems();
-		    ref (int StartSlot, int Count, GorgonVertexBufferBinding[] Bindings) newItems = ref vertexBuffers.GetDirtyItems();
+		    ref (int StartSlot, int Count) newItems = ref vertexBuffers.GetDirtyItems();
 
-	        int newEnd = newItems.StartSlot + newItems.Count;
-            int startSlot = current.Count > 0 ? current.StartSlot.Min(newItems.StartSlot) : newItems.StartSlot;
-            int endSlot = current.Count > 0 ? (current.Count + current.StartSlot).Max(newEnd) : newEnd;
-
-	        if ((currentChanges & PipelineResourceChange.InputLayout) == PipelineResourceChange.InputLayout)
+            // There's nothing going on in this list, so we can just leave now.
+	        if (newItems.Count == 0)
 	        {
-	            _lastDrawCall.VertexBuffers.InputLayout = vertexBuffers.InputLayout;
+	            return currentChanges;
 	        }
 
-		    for (int i = startSlot; i < endSlot; ++i)
+            int endSlot = newItems.StartSlot + newItems.Count;
+
+            if ((currentChanges & PipelineResourceChange.InputLayout) == PipelineResourceChange.InputLayout)
+	        {
+	            _currentDrawCall.VertexBuffers.InputLayout = vertexBuffers.InputLayout;
+	        }
+
+		    for (int i = newItems.StartSlot; i < endSlot; ++i)
 		    {
-		        if ((i >= newItems.StartSlot) && (i < newEnd))
-		        {
-		            _lastDrawCall.VertexBuffers[i] = newItems.Bindings[i];
-                }
-		        else
-		        {
-		            _lastDrawCall.VertexBuffers[i] = GorgonVertexBufferBinding.Empty;
-		        }
+		        _currentDrawCall.VertexBuffers[i] = vertexBuffers[i];
 		    }
 
-		    if (_lastDrawCall.VertexBuffers.IsDirty)
+		    if (_currentDrawCall.VertexBuffers.IsDirty)
 		    {
 			    currentChanges |= PipelineResourceChange.VertexBuffers;
 		    }
@@ -388,7 +384,12 @@ namespace Gorgon.Graphics.Core
 	    /// <returns>A <see cref="PipelineResourceChange"/> indicating whether or not the state has changed.</returns>
 	    private PipelineResourceChange MergeConstantBuffers(ShaderType shaderType, GorgonConstantBuffers buffers, PipelineResourceChange currentChanges)
 	    {
-		    ref (int StartSlot, int Count, GorgonConstantBuffer[] Bindings) newItems = ref buffers.GetDirtyItems();
+		    ref (int StartSlot, int Count) newItems = ref buffers.GetDirtyItems();
+
+	        if (newItems.Count == 0)
+	        {
+	            return currentChanges;
+	        }
 
 		    PipelineResourceChange desiredStateBit;
 		    GorgonConstantBuffers destBuffers;
@@ -397,43 +398,59 @@ namespace Gorgon.Graphics.Core
 		    {
 			    case ShaderType.Vertex:
 				    desiredStateBit = PipelineResourceChange.VertexShaderConstantBuffers;
-				    destBuffers = _lastDrawCall.VertexShaderConstantBuffers;
+				    destBuffers = _currentDrawCall.VertexShaderConstantBuffers;
 				    break;
 			    case ShaderType.Pixel:
 				    desiredStateBit = PipelineResourceChange.PixelShaderConstantBuffers;
-				    destBuffers = _lastDrawCall.PixelShaderConstantBuffers;
+				    destBuffers = _currentDrawCall.PixelShaderConstantBuffers;
 				    break;
+                case ShaderType.Geometry:
+                    desiredStateBit = PipelineResourceChange.GeometryShaderConstantBuffers;
+                    // TODO:
+                    destBuffers = null;//_currentDrawCall.GeometryShaderConstantBuffers;
+                    break;
+                case ShaderType.Hull:
+#if DEBUG
+                    if (VideoDevice.RequestedFeatureLevel < FeatureLevelSupport.Level_11_0)
+                    {
+                        _log.Print($"Error: Assigning a constant buffer to a hull shader requires feature level {FeatureLevelSupport.Level_11_0} or better.  The device '{VideoDevice.Info.Name}' only supports feature level {VideoDevice.RequestedFeatureLevel}", LoggingLevel.All);
+                        throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureLevelSupport.Level_11_0));
+                    }
+#endif
+
+                    desiredStateBit = PipelineResourceChange.HullShaderConstantBuffers;
+		            // TODO:
+                    destBuffers = null;//_currentDrawCall.HullShaderConstantBuffers;
+		            break;
+                case ShaderType.Domain:
+#if DEBUG
+                    if (VideoDevice.RequestedFeatureLevel < FeatureLevelSupport.Level_11_0)
+                    {
+                        _log.Print($"Error: Assigning a constant buffer to a domain shader requires feature level {FeatureLevelSupport.Level_11_0} or better.  The device '{VideoDevice.Info.Name}' only supports feature level {VideoDevice.RequestedFeatureLevel}", LoggingLevel.All);
+                        throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureLevelSupport.Level_11_0));
+                    }
+#endif
+		            desiredStateBit = PipelineResourceChange.DomainShaderConstantBuffers;
+		            // TODO:
+                    destBuffers = null;//_currentDrawCall.DomainShaderConstantBuffers;
+		            break;
 			    default:
 				    return currentChanges;
 		    }
 
-	        ref (int StartSlot, int Count, GorgonConstantBuffer[] Bindings) current = ref destBuffers.GetDirtyItems();
-	        int buffersEnd = newItems.StartSlot + newItems.Count;
-            int startSlot = current.Count > 0 ? current.StartSlot.Min(newItems.StartSlot) : newItems.StartSlot;
-	        int lastSlot = current.Count > 0 ? (current.Count + current.StartSlot).Max(buffersEnd) : buffersEnd;
-
 	        return CopyToLastDrawCall(newItems.StartSlot,
-	                                  buffersEnd,
-	                                  startSlot,
-	                                  lastSlot,
+	                                  newItems.StartSlot + newItems.Count,
 	                                  destBuffers,
-	                                  newItems.Bindings,
+	                                  buffers,
 	                                  currentChanges,
 	                                  desiredStateBit);
 
 		    // Local functions are neat.
-		    PipelineResourceChange CopyToLastDrawCall(int newStart, int newEnd, int start, int end, GorgonConstantBuffers lastDrawConstants, GorgonConstantBuffer[] newBuffers, PipelineResourceChange changes, PipelineResourceChange desiredBit)
+		    PipelineResourceChange CopyToLastDrawCall(int newStart, int newEnd, GorgonConstantBuffers lastDrawConstants, GorgonConstantBuffers newBuffers, PipelineResourceChange changes, PipelineResourceChange desiredBit)
 		    {
-			    for (int i = start; i < end; ++i)
+			    for (int i = newStart; i < newEnd; ++i)
 			    {
-			        if ((i >= newStart) && (i < newEnd))
-			        {
-			            lastDrawConstants[i] = newBuffers[i];
-			        }
-			        else
-			        {
-			            lastDrawConstants[i] = null;
-			        }
+			        lastDrawConstants[i] = newBuffers[i];
 			    }
 
 			    if (lastDrawConstants.IsDirty)
@@ -454,7 +471,12 @@ namespace Gorgon.Graphics.Core
 	    /// <returns>A <see cref="PipelineResourceChange"/> indicating whether or not the state has changed.</returns>
 	    private PipelineResourceChange MergeShaderResources(ShaderType shaderType, GorgonShaderResourceViews srvs, PipelineResourceChange currentChanges)
 	    {
-		    ref (int StartSlot, int Count, GorgonShaderResourceView[] Bindings) newItems = ref srvs.GetDirtyItems();
+		    ref (int StartSlot, int Count) newItems = ref srvs.GetDirtyItems();
+
+	        if (newItems.Count == 0)
+	        {
+	            return currentChanges;
+	        }
 
 	        PipelineResourceChange desiredStateBit;
 		    GorgonShaderResourceViews destSrvs;
@@ -463,43 +485,58 @@ namespace Gorgon.Graphics.Core
 		    {
 			    case ShaderType.Vertex:
 				    desiredStateBit = PipelineResourceChange.VertexShaderResources;
-				    destSrvs = _lastDrawCall.VertexShaderResourceViews;
+				    destSrvs = _currentDrawCall.VertexShaderResourceViews;
 				    break;
 			    case ShaderType.Pixel:
 				    desiredStateBit = PipelineResourceChange.PixelShaderResources;
-				    destSrvs = _lastDrawCall.PixelShaderResourceViews;
+				    destSrvs = _currentDrawCall.PixelShaderResourceViews;
 				    break;
-			    default:
+                //                case ShaderType.Geometry:
+                //                    // TODO:
+                //                    desiredStateBit = PipelineResourceChange.GeometryShaderResources;
+                //                    destSrvs = _currentDrawCall.GeometryShaderResourceViews;
+                //                    break;
+                //                case ShaderType.Hull:
+                //#if DEBUG
+                //                    if (VideoDevice.RequestedFeatureLevel < FeatureLevelSupport.Level_11_0)
+                //                    {
+                //                        _log.Print($"Error: Assigning a resource to a hull shader requires feature level {FeatureLevelSupport.Level_11_0} or better.  The device '{VideoDevice.Info.Name}' only supports feature level {VideoDevice.RequestedFeatureLevel}", LoggingLevel.All);
+                //                        throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureLevelSupport.Level_11_0));
+                //                    }
+                //#endif
+                //                    // TODO:
+                //                    desiredStateBit = PipelineResourceChange.HullShaderResources;
+                //                    destSrvs = _currentDrawCall.HullShaderResourceViews;
+                //                    break;
+                //                case ShaderType.Domain:
+                //#if DEBUG
+                //                    if (VideoDevice.RequestedFeatureLevel < FeatureLevelSupport.Level_11_0)
+                //                    {
+		        //                        _log.Print($"Error: Assigning a resource to a domain shader requires feature level {FeatureLevelSupport.Level_11_0} or better.  The device '{VideoDevice.Info.Name}' only supports feature level {VideoDevice.RequestedFeatureLevel}", LoggingLevel.All);
+                //                        throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureLevelSupport.Level_11_0));
+                //                    }
+                //#endif
+                //                    // TODO:
+                //                    desiredStateBit = PipelineResourceChange.DomainShaderResources;
+                //                    destSrvs = _currentDrawCall.DomainShaderResourceViews;
+                //                    break;
+                default:
 				    return currentChanges;
 		    }
 
-	        ref (int StartSlot, int Count, GorgonShaderResourceView[] Bindings) current = ref destSrvs.GetDirtyItems();
-	        int resEnd = newItems.Count + newItems.StartSlot;
-	        int startSlot = current.Count > 0 ? current.StartSlot.Min(newItems.StartSlot) : newItems.StartSlot;
-	        int lastSlot = current.Count > 0 ? (current.Count + current.StartSlot).Max(resEnd) : resEnd;
-
 	        return CopyToLastDrawCall(newItems.StartSlot,
-	                                  resEnd,
-	                                  startSlot,
-	                                  lastSlot,
+	                                  newItems.Count + newItems.StartSlot,
 	                                  destSrvs,
-	                                  newItems.Bindings,
+	                                  srvs,
 	                                  currentChanges,
 	                                  desiredStateBit);
 
 		    // Local functions are neat.
-		    PipelineResourceChange CopyToLastDrawCall(int newStart, int newEnd, int start, int end, GorgonShaderResourceViews lastDrawSrvs, GorgonShaderResourceView[] newSrvs, PipelineResourceChange changes, PipelineResourceChange desiredBit)
+		    PipelineResourceChange CopyToLastDrawCall(int newStart, int newEnd, GorgonShaderResourceViews lastDrawSrvs, GorgonShaderResourceViews newSrvs, PipelineResourceChange changes, PipelineResourceChange desiredBit)
 		    {
-			    for (int i = start; i < end; ++i)
+			    for (int i = newStart; i < newEnd; ++i)
 			    {
-			        if ((i >= newStart) && (i < newEnd))
-			        {
-			            lastDrawSrvs[i] = newSrvs[i];
-			        }
-			        else
-			        {
-			            lastDrawSrvs[i] = null;
-			        }
+			        lastDrawSrvs[i] = newSrvs[i];
 			    }
 
 			    if (lastDrawSrvs.IsDirty)
@@ -519,33 +556,34 @@ namespace Gorgon.Graphics.Core
         /// <returns>A <see cref="PipelineResourceChange"/> indicating whether or not the state has changed and a flag indicating that render targets were unbound.</returns>
         private PipelineResourceChange MergePixelShaderUavs(GorgonUavBindings uavs, PipelineResourceChange currentChanges)
         {
-            ref (int StartSlot, int Count, GorgonUavBinding[] Bindings) newItems = ref uavs.GetDirtyItems();
-            ref (int StartSlot, int Count, GorgonUavBinding[] Bindings) oldItems = ref _lastDrawCall.PixelShaderUavs.GetDirtyItems();
-
-            // Unbind any render targets at this point.
-            int newEnd = newItems.Count + newItems.StartSlot;
-            int minSlot = oldItems.Count > 0 ? oldItems.StartSlot.Min(newItems.StartSlot) : newItems.StartSlot;
-            int maxSlot = oldItems.Count > 0 ? (oldItems.Count + minSlot).Max(newEnd) : newEnd;
-            
-            for (int i = minSlot; i < maxSlot; ++i)
+#if DEBUG
+            if (VideoDevice.RequestedFeatureLevel < FeatureLevelSupport.Level_11_0)
             {
-                if ((i >= newItems.StartSlot) && (i < newEnd))
-                {
-                    _renderTargets[i] = null;
-                    _lastDrawCall.PixelShaderUavs[i] = newItems.Bindings[i];
-                }
-                else
-                {
-                    _lastDrawCall.PixelShaderUavs[i] = GorgonUavBinding.Empty;
-                }
+                throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureLevelSupport.Level_11_0));
             }
+#endif
+            ref (int StartSlot, int Count) newItems = ref uavs.GetDirtyItems();
 
-            if (!_lastDrawCall.PixelShaderUavs.IsDirty)
+            if (newItems.Count == 0)
             {
                 return currentChanges;
             }
 
-            return currentChanges | PipelineResourceChange.PixelShaderUavs;
+            // Unbind any render targets at this point.
+            int newEnd = newItems.Count + newItems.StartSlot;
+            
+            for (int i = newItems.StartSlot; i < newEnd; ++i)
+            {
+                _renderTargets[i] = null;
+                _currentDrawCall.PixelShaderUavs[i] = uavs[i];
+            }
+
+            if (_currentDrawCall.PixelShaderUavs.IsDirty)
+            {
+                currentChanges |= PipelineResourceChange.PixelShaderUavs;
+            }
+
+            return currentChanges;
         }
 
 	    /// <summary>
@@ -557,7 +595,12 @@ namespace Gorgon.Graphics.Core
 	    /// <returns>A <see cref="PipelineResourceChange"/> indicating whether or not the state has changed.</returns>
 	    private PipelineResourceChange MergeShaderSamplers(ShaderType shaderType, GorgonSamplerStates samplers, PipelineResourceChange currentChanges)
 	    {
-		    ref (int StartSlot, int Count, GorgonSamplerState[] Bindings) newItems = ref samplers.GetDirtyItems();
+		    ref (int StartSlot, int Count) newItems = ref samplers.GetDirtyItems();
+
+	        if (newItems.Count == 0)
+	        {
+	            return currentChanges;
+	        }
 
 		    PipelineResourceChange desiredStateBit;
 		    GorgonSamplerStates destSamplers;
@@ -575,43 +618,58 @@ namespace Gorgon.Graphics.Core
 #endif
 
 					desiredStateBit = PipelineResourceChange.VertexShaderSamplers;
-				    destSamplers = _lastDrawCall.VertexShaderSamplers;
+				    destSamplers = _currentDrawCall.VertexShaderSamplers;
 				    break;
 			    case ShaderType.Pixel:
 				    desiredStateBit = PipelineResourceChange.PixelShaderSamplers;
-				    destSamplers = _lastDrawCall.PixelShaderSamplers;
+				    destSamplers = _currentDrawCall.PixelShaderSamplers;
 				    break;
-			    default:
+//                case ShaderType.Geometry:
+//                    // TODO:
+//                    desiredStateBit = PipelineResourceChange.GeometryShaderSamplers;
+//                    destSamplers = _currentDrawCall.GeometryShaderSamplers;
+//                    break;
+//                case ShaderType.Hull:
+//#if DEBUG
+//                    _log.Print($"Error: Assigning a sampler to a hull shader requires feature level {FeatureLevelSupport.Level_11_0} or better.  The device '{VideoDevice.Info.Name}' only supports feature level {VideoDevice.RequestedFeatureLevel}", LoggingLevel.All);
+//                    if (VideoDevice.RequestedFeatureLevel < FeatureLevelSupport.Level_11_0)
+//                    {
+//                        throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureLevelSupport.Level_11_0));
+//                    }
+//#endif
+//                    // TODO:
+//                    desiredStateBit = PipelineResourceChange.HullShaderSamplers;
+//                    destSamplers = _currentDrawCall.HullShaderSamplers;
+//                    break;
+//                case ShaderType.Domain:
+//#if DEBUG
+//                    _log.Print($"Error: Assigning a sampler to a domain shader requires feature level {FeatureLevelSupport.Level_11_0} or better.  The device '{VideoDevice.Info.Name}' only supports feature level {VideoDevice.RequestedFeatureLevel}", LoggingLevel.All);
+//                    if (VideoDevice.RequestedFeatureLevel < FeatureLevelSupport.Level_11_0)
+//                    {
+//                        throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureLevelSupport.Level_11_0));
+//                    }
+//#endif
+//                    // TODO:
+//                    desiredStateBit = PipelineResourceChange.DomainShaderSamplers;
+//                    destSamplers = _currentDrawCall.DomainShaderSamplers;
+//                    break;
+                default:
 				    return currentChanges;
 		    }
-
-	        ref (int StartSlot, int Count, GorgonSamplerState[] Bindings) current = ref destSamplers.GetDirtyItems();
-	        int samplerEnd = newItems.Count + newItems.StartSlot;
-	        int startSlot = current.Count > 0 ? current.StartSlot.Min(newItems.StartSlot) : newItems.StartSlot;
-	        int lastSlot = current.Count > 0 ? (current.Count + current.StartSlot).Max(samplerEnd) : samplerEnd;
             
             return CopyToLastDrawCall(newItems.StartSlot,
-                                      samplerEnd,
-                                      startSlot,
-		                              lastSlot,
+                                      newItems.Count + newItems.StartSlot,
 		                              destSamplers,
-		                              newItems.Bindings,
+		                              samplers,
 		                              currentChanges,
 		                              desiredStateBit);
 
 		    // Local functions are neat.
-		    PipelineResourceChange CopyToLastDrawCall(int newStart, int newEnd, int start, int end, GorgonSamplerStates lastDrawSamplers, GorgonSamplerState[] newSamplers, PipelineResourceChange changes, PipelineResourceChange desiredBit)
+		    PipelineResourceChange CopyToLastDrawCall(int newStart, int newEnd, GorgonSamplerStates lastDrawSamplers, GorgonSamplerStates newSamplers, PipelineResourceChange changes, PipelineResourceChange desiredBit)
 		    {
-			    for (int i = start; i < end; ++i)
+			    for (int i = newStart; i < newEnd; ++i)
 			    {
-			        if ((i >= newStart) && (i < newEnd))
-			        {
-			            lastDrawSamplers[i] = newSamplers[i];
-			        }
-			        else
-			        {
-			            lastDrawSamplers[i] = null;
-			        }
+			        lastDrawSamplers[i] = newSamplers[i];
 			    }
 
 			    if (lastDrawSamplers.IsDirty)
@@ -632,12 +690,12 @@ namespace Gorgon.Graphics.Core
 	    {
 		    var pipelineFlags = PipelineStateChange.None;
 
-		    if ((_lastDrawCall.PipelineState == null) && (state == null))
+		    if ((_currentDrawCall.PipelineState == null) && (state == null))
 		    {
 			    return pipelineFlags;
 		    }
 
-		    if (((_lastDrawCall.PipelineState == null) && (state != null))
+		    if (((_currentDrawCall.PipelineState == null) && (state != null))
 		        || (state == null))
 		    {
 			    pipelineFlags |= PipelineStateChange.BlendState
@@ -650,42 +708,72 @@ namespace Gorgon.Graphics.Core
 			    if (VideoDevice.RequestedFeatureLevel >= FeatureLevelSupport.Level_11_0)
 			    {
 				    pipelineFlags |= PipelineStateChange.HullShader
-				                     | PipelineStateChange.DomainShader
-				                     | PipelineStateChange.ComputeShader;
+				                     | PipelineStateChange.DomainShader;
 			    }
 
-			    _lastDrawCall.PipelineState = state;
+			    _currentDrawCall.PipelineState = state;
 			    return pipelineFlags;
 		    }
 
-			if (_lastDrawCall.PipelineState.Info.PixelShader != state.Info.PixelShader)
+			if (_currentDrawCall.PipelineState.Info.PixelShader != state.Info.PixelShader)
 			{
 			    pipelineFlags |= PipelineStateChange.PixelShader;
 		    }
 
-		    if (_lastDrawCall.PipelineState.Info.VertexShader != state.Info.VertexShader)
+		    if (_currentDrawCall.PipelineState.Info.VertexShader != state.Info.VertexShader)
 		    {
 			    pipelineFlags |= PipelineStateChange.VertexShader;
 		    }
 
-		    if (_lastDrawCall.PipelineState.D3DRasterState != state.D3DRasterState)
+            // TODO:
+            //if (_currentDrawCall.PipelineState.Info.GeometryShader != state.Info.GeometryShader)
+            //{
+            //    pipelineFlags |= PipelineStateChange.GeometryShader;
+            //}
+
+//            if (_currentDrawCall.PipelineState.Info.HullShader != state.Info.HullShader)
+//            {
+//#if DEBUG
+//                _log.Print($"Error: Assigning a hull shader requires feature level {FeatureLevelSupport.Level_11_0} or better.  The device '{VideoDevice.Info.Name}' only supports feature level {VideoDevice.RequestedFeatureLevel}", LoggingLevel.All);
+//                if (VideoDevice.RequestedFeatureLevel < FeatureLevelSupport.Level_11_0)
+//                {
+//                    throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureLevelSupport.Level_11_0));
+//                }
+//#endif
+
+//                pipelineFlags |= PipelineStateChange.HullShader;
+//            }
+
+//            if (_currentDrawCall.PipelineState.Info.DomainShader != state.Info.DomainShader)
+//            {
+//#if DEBUG
+//                _log.Print($"Error: Assigning a domain shader requires feature level {FeatureLevelSupport.Level_11_0} or better.  The device '{VideoDevice.Info.Name}' only supports feature level {VideoDevice.RequestedFeatureLevel}", LoggingLevel.All);
+//                if (VideoDevice.RequestedFeatureLevel < FeatureLevelSupport.Level_11_0)
+//                {
+//                    throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureLevelSupport.Level_11_0));
+//                }
+//#endif
+//                pipelineFlags |= PipelineStateChange.DomainShader;
+//            }
+
+            if (_currentDrawCall.PipelineState.D3DRasterState != state.D3DRasterState)
 		    {
 			    pipelineFlags |= PipelineStateChange.RasterState;
 		    }
 
-		    if (_lastDrawCall.PipelineState.D3DDepthStencilState != state.D3DDepthStencilState)
+		    if (_currentDrawCall.PipelineState.D3DDepthStencilState != state.D3DDepthStencilState)
 		    {
 			    pipelineFlags |= PipelineStateChange.DepthStencilState;
 		    }
 
-		    if (_lastDrawCall.PipelineState.D3DBlendState != state.D3DBlendState)
+		    if (_currentDrawCall.PipelineState.D3DBlendState != state.D3DBlendState)
 		    {
 			    pipelineFlags |= PipelineStateChange.BlendState;
 		    }
 
 		    if (pipelineFlags != PipelineStateChange.None)
 		    {
-			    _lastDrawCall.PipelineState = state;
+			    _currentDrawCall.PipelineState = state;
 		    }
 
 		    return pipelineFlags;
@@ -698,9 +786,9 @@ namespace Gorgon.Graphics.Core
 		/// <returns>The changes to the resources and the state for the pipeline.</returns>
 		private (PipelineResourceChange, PipelineStateChange) MergeDrawCall(GorgonDrawCallBase sourceDrawCall)
 	    {
-		    if (_lastDrawCall == null)
+		    if (_currentDrawCall == null)
 		    {
-		        _lastDrawCall = new GorgonDrawCallBase
+		        _currentDrawCall = new GorgonDrawCallBase
 		                        {
 		                            PrimitiveTopology = D3D.PrimitiveTopology.Undefined
 		                        };
@@ -708,33 +796,33 @@ namespace Gorgon.Graphics.Core
 
 		    PipelineResourceChange stateChanges = PipelineResourceChange.None;
 			
-		    if (_lastDrawCall.PrimitiveTopology != sourceDrawCall.PrimitiveTopology)
+		    if (_currentDrawCall.PrimitiveTopology != sourceDrawCall.PrimitiveTopology)
 		    {
-			    _lastDrawCall.PrimitiveTopology = sourceDrawCall.PrimitiveTopology;
+			    _currentDrawCall.PrimitiveTopology = sourceDrawCall.PrimitiveTopology;
 			    stateChanges |= PipelineResourceChange.PrimitiveTopology;
 		    }
 
-		    if (_lastDrawCall.IndexBuffer != sourceDrawCall.IndexBuffer)
+		    if (_currentDrawCall.IndexBuffer != sourceDrawCall.IndexBuffer)
 		    {
-			    _lastDrawCall.IndexBuffer = sourceDrawCall.IndexBuffer;
+			    _currentDrawCall.IndexBuffer = sourceDrawCall.IndexBuffer;
 			    stateChanges |= PipelineResourceChange.IndexBuffer;
 		    }
 
-		    if (_lastDrawCall.BlendSampleMask != sourceDrawCall.BlendSampleMask)
+		    if (_currentDrawCall.BlendSampleMask != sourceDrawCall.BlendSampleMask)
 		    {
-			    _lastDrawCall.BlendSampleMask = sourceDrawCall.BlendSampleMask;
+			    _currentDrawCall.BlendSampleMask = sourceDrawCall.BlendSampleMask;
 				stateChanges |= PipelineResourceChange.BlendSampleMask;
 		    }
 
-		    if (_lastDrawCall.DepthStencilReference != sourceDrawCall.DepthStencilReference)
+		    if (_currentDrawCall.DepthStencilReference != sourceDrawCall.DepthStencilReference)
 		    {
-			    _lastDrawCall.DepthStencilReference = sourceDrawCall.DepthStencilReference;
+			    _currentDrawCall.DepthStencilReference = sourceDrawCall.DepthStencilReference;
 				stateChanges |= PipelineResourceChange.DepthStencilReference;
 		    }
 
-		    if (!_lastDrawCall.BlendFactor.Equals(sourceDrawCall.BlendFactor))
+		    if (!_currentDrawCall.BlendFactor.Equals(sourceDrawCall.BlendFactor))
 		    {
-			    _lastDrawCall.BlendFactor = sourceDrawCall.BlendFactor;
+			    _currentDrawCall.BlendFactor = sourceDrawCall.BlendFactor;
 			    stateChanges |= PipelineResourceChange.BlendFactor;
 			}
 
@@ -745,12 +833,20 @@ namespace Gorgon.Graphics.Core
 		    stateChanges |= MergeShaderResources(ShaderType.Pixel, sourceDrawCall.PixelShaderResourceViews, stateChanges);
 		    stateChanges |= MergeShaderSamplers(ShaderType.Vertex, sourceDrawCall.VertexShaderSamplers, stateChanges);
 		    stateChanges |= MergeShaderSamplers(ShaderType.Pixel, sourceDrawCall.PixelShaderSamplers, stateChanges);
-	        if (VideoDevice.RequestedFeatureLevel >= FeatureLevelSupport.Level_11_0)
-	        {
-	            stateChanges |= MergePixelShaderUavs(sourceDrawCall.PixelShaderUavs, stateChanges);
-	        }
+	        // TODO:
+	        //stateChanges |= MergeConstantBuffers(ShaderType.Geometry, sourceDrawCall.GeometryShaderConstantBuffers, stateChanges);
+	        stateChanges |= MergePixelShaderUavs(sourceDrawCall.PixelShaderUavs, stateChanges);
+            // TODO:
+	        //stateChanges |= MergeConstantBuffers(ShaderType.Hull, sourceDrawCall.HullShaderConstantBuffers, stateChanges);
+	        //stateChanges |= MergeConstantBuffers(ShaderType.Domain, sourceDrawCall.DomainShaderConstantBuffers, stateChanges);
+            //stateChanges |= MergeShaderResources(ShaderType.Geometry, sourceDrawCall.GeometryShaderResourceViews, stateChanges);
+	        //stateChanges |= MergeShaderResources(ShaderType.Hull, sourceDrawCall.HullShaderResourceViews, stateChanges);
+	        //stateChanges |= MergeShaderResources(ShaderType.Domain, sourceDrawCall.DomainShaderResourceViews, stateChanges);
+            //stateChanges |= MergeShaderSamplers(ShaderType.Geometry, sourceDrawCall.GeometryShaderSamplers, stateChanges);
+	        //stateChanges |= MergeShaderSamplers(ShaderType.Hull, sourceDrawCall.HullShaderSamplers, stateChanges);
+	        //stateChanges |= MergeShaderSamplers(ShaderType.Domain, sourceDrawCall.DomainShaderSamplers, stateChanges);
 
-	        return (stateChanges, GetPipelineStateChange(sourceDrawCall.PipelineState));
+            return (stateChanges, GetPipelineStateChange(sourceDrawCall.PipelineState));
 	    }
 
 		/// <summary>
@@ -888,9 +984,13 @@ namespace Gorgon.Graphics.Core
 			    }
 
 			    // We've copied all the states, so just return the existing pipeline state.
+		        // ReSharper disable once InvertIf
 		        if (inheritedState == (PipelineStateChange.VertexShader
 		                               | PipelineStateChange.PixelShader
-		                               | PipelineStateChange.BlendState
+                                       | PipelineStateChange.GeometryShader
+		                               | PipelineStateChange.HullShader
+		                               | PipelineStateChange.DomainShader
+                                       | PipelineStateChange.BlendState
 		                               | PipelineStateChange.RasterState
 		                               | PipelineStateChange.DepthStencilState))
 		        {
@@ -977,12 +1077,12 @@ namespace Gorgon.Graphics.Core
 	            return;
 	        }
 
-		    ref (int Start, int Count, DX.ViewportF[] Viewports) viewports = ref _viewports.GetDirtyItems();
+		    ref (int Start, int Count) viewports = ref _viewports.GetDirtyItems();
 		    RawViewportF* rawViewports = stackalloc RawViewportF[viewports.Count];
 
 		    for (int i = 0; i < viewports.Count; ++i)
 		    {
-			    rawViewports[i] = viewports.Viewports[i];
+			    rawViewports[i] = _viewports[i];
 		    }
 
 		    D3DDeviceContext.Rasterizer.SetViewports(rawViewports, viewports.Count);
@@ -999,7 +1099,7 @@ namespace Gorgon.Graphics.Core
 	            return;
 	        }
                 
-		    ref (int Start, int Count, DX.Rectangle[] Scissors) scissors = ref _scissorRectangles.GetDirtyItems();
+		    ref (int Start, int Count) scissors = ref _scissorRectangles.GetDirtyItems();
 
 		    if (scissors.Count != _cachedScissors.Length)
 		    {
@@ -1018,7 +1118,7 @@ namespace Gorgon.Graphics.Core
 
 		    for (int i = 0; i < _cachedScissors.Length; ++i)
 		    {
-			    _cachedScissors[i] = scissors.Scissors[i];
+			    _cachedScissors[i] = _scissorRectangles[i];
 		    }
 
 		    D3DDeviceContext.Rasterizer.SetScissorRectangles(_cachedScissors);
@@ -1036,7 +1136,7 @@ namespace Gorgon.Graphics.Core
 				return;
 		    }
 
-		    ref (int StartSlot, int Count, GorgonVertexBufferBinding[] Bindings) bindings = ref vertexBuffers.GetDirtyItems();
+		    ref (int StartSlot, int Count) bindings = ref vertexBuffers.GetDirtyItems();
 		    D3DDeviceContext.InputAssembler.SetVertexBuffers(bindings.StartSlot, vertexBuffers.Native);
 		}
 
@@ -1046,41 +1146,48 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         private void UnbindShaderInputs()
         {
-            if (_lastDrawCall == null)
+            if (_currentDrawCall == null)
             {
                 return;
             }
 
             // This can happen quite easily due to how we're handling draw calls (i.e. stateless).  So we won't log anything here and we'll just unbind for the time being.
             // This may have a small performance penalty.
-            ref (int Start, int Count, GorgonRenderTargetView[] Bindings) rtBindings = ref _renderTargets.GetDirtyItems();
+            ref (int Start, int Count) rtBindings = ref _renderTargets.GetDirtyItems();
 
             for (int i = 0; i < rtBindings.Start + rtBindings.Count; ++i)
             {
-                GorgonRenderTargetView view = rtBindings.Bindings[i];
+                GorgonRenderTargetView view = _renderTargets[i];
 
                 if ((view == null) || (view.Texture.Info.Binding & TextureBinding.ShaderResource) != TextureBinding.ShaderResource)
                 {
                     continue;
                 }
 
-                UnbindFromShader(view.Texture, ref _lastDrawCall.VertexShaderResourceViews.GetDirtyItems());
-                UnbindFromShader(view.Texture, ref _lastDrawCall.PixelShaderResourceViews.GetDirtyItems());
+                if (VideoDevice.RequestedFeatureLevel >= FeatureLevelSupport.Level_11_0)
+                {
+                    UnbindFromShader(view.Texture, ref _currentDrawCall.VertexShaderResourceViews.GetDirtyItems(), _currentDrawCall.VertexShaderResourceViews);
+                }
+                UnbindFromShader(view.Texture, ref _currentDrawCall.PixelShaderResourceViews.GetDirtyItems(), _currentDrawCall.PixelShaderResourceViews);
+                // TODO:
+                //UnbindFromShader(view.Texture, ref _currentDrawCall.GeometryShaderResourceViews.GetDirtyItems(), _currentDrawCall.GeometryShaderResourceViews);
+                //UnbindFromShader(view.Texture, ref _currentDrawCall.HullShaderResourceViews.GetDirtyItems(), _currentDrawCall.HullShaderResourceViews);
+                //UnbindFromShader(view.Texture, ref _currentDrawCall.DomainShaderResourceViews.GetDirtyItems(), _currentDrawCall.DomainShaderResourceViews);
             }
 
-            void UnbindFromShader(GorgonTexture renderTarget, ref (int Start, int Count, GorgonShaderResourceView[] Bindings) bindings)
+            void UnbindFromShader(GorgonTexture renderTarget, ref (int Start, int Count) bindings, GorgonShaderResourceViews srvs)
             {
                 for (int i = bindings.Start; i < bindings.Start + bindings.Count; ++i)
                 {
-                    GorgonShaderResourceView srv = bindings.Bindings[i];
+                    GorgonShaderResourceView srv = srvs[i];
                     
                     if ((srv == null) || (renderTarget != srv.Resource))
                     {
                         continue;
                     }
                     
-                    _lastDrawCall.PixelShaderResourceViews[i] = null;
-                    SetShaderResourceViews(ShaderType.Pixel, _lastDrawCall.PixelShaderResourceViews);
+                    _currentDrawCall.PixelShaderResourceViews[i] = null;
+                    SetShaderResourceViews(ShaderType.Pixel, _currentDrawCall.PixelShaderResourceViews);
                 }
             }
         }
@@ -1101,7 +1208,7 @@ namespace Gorgon.Graphics.Core
 
             UnbindShaderInputs();
 
-            ref (int StartSlot, int Count, GorgonRenderTargetView[] Bindings) bindings = ref _renderTargets.GetDirtyItems();
+            ref (int StartSlot, int Count) bindings = ref _renderTargets.GetDirtyItems();
 			D3DDeviceContext.OutputMerger.SetTargets(DepthStencilView?.Native, bindings.Count, _renderTargets.Native);
 	    }
 		
@@ -1112,7 +1219,7 @@ namespace Gorgon.Graphics.Core
 	    /// <param name="buffers">The constant buffers to assign.</param>
 	    private void SetShaderConstantBuffers(ShaderType shaderType, GorgonConstantBuffers buffers)
 	    {
-		    ref (int StartSlot, int Count, GorgonConstantBuffer[] Bindings) bindings = ref buffers.GetDirtyItems();
+		    ref (int StartSlot, int Count) bindings = ref buffers.GetDirtyItems();
 			
 		    switch (shaderType)
 		    {
@@ -1122,6 +1229,15 @@ namespace Gorgon.Graphics.Core
 			    case ShaderType.Vertex:
 				    D3DDeviceContext.VertexShader.SetConstantBuffers(bindings.StartSlot, bindings.Count, buffers.Native);
 				    break;
+                case ShaderType.Geometry:
+                    D3DDeviceContext.GeometryShader.SetConstantBuffers(bindings.StartSlot, bindings.Count, buffers.Native);
+                    break;
+                case ShaderType.Hull:
+                    D3DDeviceContext.HullShader.SetConstantBuffers(bindings.StartSlot, bindings.Count, buffers.Native);
+                    break;
+                case ShaderType.Domain:
+                    D3DDeviceContext.DomainShader.SetConstantBuffers(bindings.StartSlot, bindings.Count, buffers.Native);
+                    break;
 		    }
 	    }
 
@@ -1131,7 +1247,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="uavs">The unordered access views to bind.</param>
         private void SetPixelShaderUavs(GorgonUavBindings uavs)
         {
-            ref (int StartSlot, int Count, GorgonUavBinding[] Bindings) bindings = ref uavs.GetDirtyItems();
+            ref (int StartSlot, int Count) bindings = ref uavs.GetDirtyItems();
 
             if ((_uavBuffer == null) || (_uavBuffer.Length != bindings.Count))
             {
@@ -1156,12 +1272,12 @@ namespace Gorgon.Graphics.Core
 		private void SetShaderResourceViews(ShaderType shaderType, GorgonShaderResourceViews srvs)
 		{
 		    bool invalidSlotsDetected = false;
-		    ref (int StartSlot, int Count, GorgonShaderResourceView[] Bindings) bindings = ref srvs.GetDirtyItems();
-	        ref (int StartSlot, int Count, GorgonRenderTargetView[] Bindings) rtBindings = ref _renderTargets.GetDirtyItems();
+		    ref (int StartSlot, int Count) bindings = ref srvs.GetDirtyItems();
+	        ref (int StartSlot, int Count) rtBindings = ref _renderTargets.GetDirtyItems();
 
 	        for (int i = bindings.StartSlot; i < bindings.StartSlot + bindings.Count; ++i)
 	        {
-	            GorgonShaderResourceView srv = bindings.Bindings[i];
+	            GorgonShaderResourceView srv = srvs[i];
 
 	            if (srv == null)
 	            {
@@ -1170,7 +1286,7 @@ namespace Gorgon.Graphics.Core
 
 	            for (int j = rtBindings.StartSlot; j < rtBindings.StartSlot + rtBindings.Count; ++j)
 	            {
-	                GorgonRenderTargetView rtv = rtBindings.Bindings[j];
+	                GorgonRenderTargetView rtv = _renderTargets[j];
 
                     // If we're trying to bind a shader resource while it's held as a render target, then reset the render target to null.
 	                if ((rtv == null) || (rtv.Texture != srv.Resource))
@@ -1200,6 +1316,15 @@ namespace Gorgon.Graphics.Core
 			    case ShaderType.Vertex:
 				    D3DDeviceContext.VertexShader.SetShaderResources(bindings.StartSlot, bindings.Count, srvs.Native);
 				    break;
+                case ShaderType.Geometry:
+                    D3DDeviceContext.GeometryShader.SetShaderResources(bindings.StartSlot, bindings.Count, srvs.Native);
+                    break;
+                case ShaderType.Hull:
+                    D3DDeviceContext.HullShader.SetShaderResources(bindings.StartSlot, bindings.Count, srvs.Native);
+                    break;
+                case ShaderType.Domain:
+                    D3DDeviceContext.DomainShader.SetShaderResources(bindings.StartSlot, bindings.Count, srvs.Native);
+                    break;
 		    }
 	    }
 
@@ -1210,15 +1335,20 @@ namespace Gorgon.Graphics.Core
 		/// <param name="samplers">The samplers to assign.</param>
 	    private void SetShaderSamplers(ShaderType shaderType, GorgonSamplerStates samplers)
 	    {
-		    ref (int StartSlot, int Count, GorgonSamplerState[] Bindings) bindings = ref samplers.GetDirtyItems();
+		    ref (int StartSlot, int Count) bindings = ref samplers.GetDirtyItems();
 
 	        for (int i = bindings.StartSlot; i < bindings.StartSlot + bindings.Count; ++i)
 	        {
-	            GorgonSamplerState state = bindings.Bindings[i];
+	            GorgonSamplerState state = samplers[i];
+
+	            if (state == null)
+	            {
+	                continue;
+	            }
 
 	            if (state.Native == null)
 	            {
-	                state.Native = SamplerStateFactory.GetSamplerState(this, bindings.Bindings[i], _log);
+	                state.Native = SamplerStateFactory.GetSamplerState(this, state, _log);
 	            }
 
 	            _samplerStates[i - bindings.StartSlot] = state.Native;
@@ -1232,6 +1362,15 @@ namespace Gorgon.Graphics.Core
 			    case ShaderType.Vertex:
 				    D3DDeviceContext.VertexShader.SetSamplers(bindings.StartSlot, bindings.Count, _samplerStates);
 				    break;
+                case ShaderType.Geometry:
+                    D3DDeviceContext.GeometryShader.SetSamplers(bindings.StartSlot, bindings.Count, _samplerStates);
+                    break;
+                case ShaderType.Hull:
+                    D3DDeviceContext.HullShader.SetSamplers(bindings.StartSlot, bindings.Count, _samplerStates);
+                    break;
+                case ShaderType.Domain:
+                    D3DDeviceContext.DomainShader.SetSamplers(bindings.StartSlot, bindings.Count, _samplerStates);
+                    break;
 		    }
 	    }
 
@@ -1590,7 +1729,7 @@ namespace Gorgon.Graphics.Core
 			// Merge this draw call with our previous one (if available).
 			(PipelineResourceChange ChangedResources, PipelineStateChange ChangedStates) stateChange = MergeDrawCall(drawCall);
 
-			ApplyPerDrawStates(_lastDrawCall, drawCall.PipelineState, stateChange.ChangedResources, stateChange.ChangedStates);
+			ApplyPerDrawStates(_currentDrawCall, drawCall.PipelineState, stateChange.ChangedResources, stateChange.ChangedStates);
 
 			D3DDeviceContext.DrawIndexed(drawCall.IndexCount, drawCall.IndexStart, drawCall.BaseVertexIndex);
 		}
@@ -1622,7 +1761,7 @@ namespace Gorgon.Graphics.Core
 			// Merge this draw call with our previous one (if available).
 			(PipelineResourceChange ChangedResources, PipelineStateChange ChangedStates) stateChange = MergeDrawCall(drawCall);
 
-			ApplyPerDrawStates(_lastDrawCall, drawCall.PipelineState, stateChange.ChangedResources, stateChange.ChangedStates);
+			ApplyPerDrawStates(_currentDrawCall, drawCall.PipelineState, stateChange.ChangedResources, stateChange.ChangedStates);
 
 			D3DDeviceContext.Draw(drawCall.VertexCount, drawCall.VertexStartIndex);
 		}
@@ -1654,7 +1793,7 @@ namespace Gorgon.Graphics.Core
 			// Merge this draw call with our previous one (if available).
 			(PipelineResourceChange ChangedResources, PipelineStateChange ChangedStates) stateChange = MergeDrawCall(drawCall);
 
-			ApplyPerDrawStates(_lastDrawCall, drawCall.PipelineState, stateChange.ChangedResources, stateChange.ChangedStates);
+			ApplyPerDrawStates(_currentDrawCall, drawCall.PipelineState, stateChange.ChangedResources, stateChange.ChangedStates);
 
 			D3DDeviceContext.DrawInstanced(drawCall.VertexCountPerInstance, drawCall.InstanceCount, drawCall.VertexStartIndex, drawCall.StartInstanceIndex);
 		}
@@ -1686,7 +1825,7 @@ namespace Gorgon.Graphics.Core
 			// Merge this draw call with our previous one (if available).
 			(PipelineResourceChange ChangedResources, PipelineStateChange ChangedStates) stateChange = MergeDrawCall(drawCall);
 
-			ApplyPerDrawStates(_lastDrawCall, drawCall.PipelineState, stateChange.ChangedResources, stateChange.ChangedStates);
+			ApplyPerDrawStates(_currentDrawCall, drawCall.PipelineState, stateChange.ChangedResources, stateChange.ChangedStates);
 
 			D3DDeviceContext.DrawIndexedInstanced(drawCall.IndexCountPerInstance, drawCall.InstanceCount, drawCall.IndexStart, drawCall.BaseVertexIndex, drawCall.StartInstanceIndex);
 		}
@@ -1963,7 +2102,7 @@ namespace Gorgon.Graphics.Core
             }
 
             _renderTargets.Clear();
-	        _lastDrawCall.Reset();
+	        _currentDrawCall.Reset();
         }
 
 		/// <summary>

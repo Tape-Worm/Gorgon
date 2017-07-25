@@ -28,6 +28,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Gorgon.Math;
 
 namespace Gorgon.Graphics.Core
 {
@@ -45,7 +46,7 @@ namespace Gorgon.Graphics.Core
 		// The indices that are dirty.
 		private int _dirtyIndices;
 		// The last set of dirty items.
-		private (int Start, int Count, T[] Items) _dirtyItems;
+		private (int Start, int Count) _dirtyItems;
 		#endregion
 
 		#region Properties.
@@ -147,17 +148,13 @@ namespace Gorgon.Graphics.Core
 		/// subsequent call to this method will result in a tuple that does not contain any changed values (i.e. the start and count will be 0) until the collection is modified again.
 		/// </para>
 		/// </remarks>
-		public ref (int Start, int Count, T[] Items) GetDirtyItems(bool peek = false)
+		public ref (int Start, int Count) GetDirtyItems(bool peek = false)
 		{
 		    int startSlot = -1;
 		    int count = 0;
 
 		    if (_dirtyIndices == 0)
 		    {
-		        if (_dirtyItems.Items == null)
-		        {
-		            _dirtyItems = (0, 0, _backingStore);
-		        }
 		        return ref _dirtyItems;
 		    }
 
@@ -195,7 +192,7 @@ namespace Gorgon.Graphics.Core
 		        _dirtyIndices = dirtyState;
 		    }
 
-		    _dirtyItems = (startSlot == -1 ? 0 : startSlot, count, BackingArray);
+		    _dirtyItems = (startSlot == -1 ? 0 : startSlot, count);
 		    return ref _dirtyItems;
 		}
 
@@ -314,7 +311,7 @@ namespace Gorgon.Graphics.Core
 			Array.Clear(_backingStore, 0, _backingStore.Length);
 			
 			_dirtyIndices = 0;
-			_dirtyItems = (0, 0, BackingArray);
+			_dirtyItems = (0, 0);
 		}
 		
 		/// <summary>Returns an enumerator that iterates through the collection.</summary>
@@ -336,17 +333,22 @@ namespace Gorgon.Graphics.Core
 		{
 			return _backingStore.GetEnumerator();
 		}
-		#endregion
+        #endregion
 
-		#region Constructor/Finalizer.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonMonitoredValueTypeArray{T}"/> class.
-		/// </summary>
-		/// <param name="maxSize">The maximum size.</param>
-		/// <exception cref="System.ArgumentOutOfRangeException">maxSize</exception>
-		public GorgonMonitoredArray(int maxSize)
+        #region Constructor/Finalizer.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonMonitoredValueTypeArray{T}"/> class.
+        /// </summary>
+        /// <param name="maxSize">The maximum size.</param>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="maxSize"/> is less than 1.</exception>
+        public GorgonMonitoredArray(int maxSize)
 		{
+		    if (maxSize < 1)
+		    {
+		        throw new ArgumentOutOfRangeException(nameof(maxSize));
+		    }
 			_backingStore = new T[maxSize];
+		    _dirtyItems = (0, maxSize - 1);
 		}
 		#endregion
 	}

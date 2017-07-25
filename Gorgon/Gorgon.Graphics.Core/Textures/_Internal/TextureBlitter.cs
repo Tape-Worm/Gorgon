@@ -233,7 +233,7 @@ namespace Gorgon.Graphics
             // Apply pixel shader constants as needed.
 		    if ((pixelShaderConstants != null) && (_pixelShader != _pipelineStateInfo.PixelShader))
 		    {
-		        ref (int Start, int Count, GorgonConstantBuffer[]) buffers = ref pixelShaderConstants.GetDirtyItems();
+		        ref (int Start, int Count) buffers = ref pixelShaderConstants.GetDirtyItems();
 
 		        for (int i = buffers.Start; i < buffers.Start + buffers.Count; ++i)
 		        {

@@ -214,11 +214,11 @@ namespace Gorgon.Graphics.Core
 
             if ((RecordedStates & Core.RecordStates.Viewports) == Core.RecordStates.Viewports)
             {
-                ref (int Start, int Count, DX.ViewportF[] Viewports) viewports = ref _activeViewports.GetDirtyItems(true);
+                ref (int Start, int Count) viewports = ref _activeViewports.GetDirtyItems(true);
 
                 for (int i = viewports.Start; i < viewports.Count + viewports.Start; ++i)
                 {
-                    viewports.Viewports[i] = _activeViewports[i];
+                    Graphics.Viewports[i] = _activeViewports[i];
                 }
             }
 
@@ -228,11 +228,11 @@ namespace Gorgon.Graphics.Core
                 return;
             }
 
-            ref (int Start, int Count, DX.Rectangle[] Scissors) scissors = ref _activeScissors.GetDirtyItems(true);
+            ref (int Start, int Count) scissors = ref _activeScissors.GetDirtyItems(true);
 
             for (int i = scissors.Start; i < scissors.Count + scissors.Start; ++i)
             {
-                scissors.Scissors[i] = _activeScissors[i];
+                Graphics.ScissorRectangles[i] = _activeScissors[i];
             }
 
             RecordedStates = Core.RecordStates.None;
@@ -284,11 +284,11 @@ namespace Gorgon.Graphics.Core
 
             if ((recordStates & Core.RecordStates.Viewports) == Core.RecordStates.Viewports)
             {
-                ref (int Start, int Count, DX.ViewportF[] Viewports) viewports = ref Graphics.Viewports.GetDirtyItems(true);
+                ref (int Start, int Count) viewports = ref Graphics.Viewports.GetDirtyItems(true);
 
                 for (int i = viewports.Start; i < viewports.Count + viewports.Start; ++i)
                 {
-                    _activeViewports[i] = viewports.Viewports[i];
+                    _activeViewports[i] = Graphics.Viewports[i];
                 }
             }
 
@@ -297,11 +297,11 @@ namespace Gorgon.Graphics.Core
                 return;
             }
 
-            ref (int Start, int Count, DX.Rectangle[] Scissors) scissors = ref Graphics.ScissorRectangles.GetDirtyItems(true);
+            ref (int Start, int Count) scissors = ref Graphics.ScissorRectangles.GetDirtyItems(true);
 
             for (int i = scissors.Start; i < scissors.Count + scissors.Start; ++i)
             {
-                _activeScissors[i] = scissors.Scissors[i];
+                _activeScissors[i] = Graphics.ScissorRectangles[i];
             }
         }
 
