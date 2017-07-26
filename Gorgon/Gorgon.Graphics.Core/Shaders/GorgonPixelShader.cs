@@ -49,7 +49,7 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Property to return the Direct3D pixel shader.
 		/// </summary>
-		internal D3D.PixelShader D3DShader
+		internal D3D.PixelShader NativeShader
 		{
 			get;
 		}
@@ -66,7 +66,7 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		public override void Dispose()
 		{
-			D3DShader?.Dispose();
+			NativeShader?.Dispose();
 			base.Dispose();
 		}
 		#endregion
@@ -82,7 +82,7 @@ namespace Gorgon.Graphics.Core
 		internal GorgonPixelShader(IGorgonVideoDevice videoDevice, string name, bool isDebug, D3DCompiler.ShaderBytecode byteCode)
 			: base(videoDevice, name, isDebug, byteCode)
 		{
-			D3DShader = new D3D.PixelShader(videoDevice.D3DDevice(), byteCode)
+			NativeShader = new D3D.PixelShader(videoDevice.D3DDevice(), byteCode)
 			            {
 				            DebugName = name + " D3D11PixelShader"
 			            };

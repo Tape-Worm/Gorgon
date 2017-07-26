@@ -41,11 +41,11 @@ namespace Gorgon.Graphics.Core
 	public class GorgonVertexBufferInfo
 		: IGorgonVertexBufferInfo
 	{
-		#region Properties.
-		/// <summary>
-		/// Property to set or return the intended usage for binding to the GPU.
-		/// </summary>
-		public D3D11.ResourceUsage Usage
+        #region Properties.
+        /// <summary>
+        /// Property to set or return the intended usage for binding to the GPU.
+        /// </summary>
+        public D3D11.ResourceUsage Usage
 		{
 			get;
 			set;

@@ -88,6 +88,15 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Constant buffers cannot be used as stream out buffers..
+        /// </summary>
+        internal static string GORGFX_ERR_BUFFER_CONSTANT_NO_SO {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_BUFFER_CONSTANT_NO_SO", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Only buffers with a usage of [Staging] can be read by the CPU. The buffer &apos;{0}&apos; has a usage of [{1}]..
         /// </summary>
         internal static string GORGFX_ERR_BUFFER_ERR_WRITE_ONLY {
@@ -166,6 +175,15 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_BUFFER_STRUCTURE_SIZE_INVALID {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_BUFFER_STRUCTURE_SIZE_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The buffer &apos;{0}&apos; was not configured for stream out..
+        /// </summary>
+        internal static string GORGFX_ERR_BUFFER_TYPE_MISSING_SO {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_BUFFER_TYPE_MISSING_SO", resourceCulture);
             }
         }
         
@@ -950,6 +968,15 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The value is out of range.  The value [{0}] must be be 1 or less than or equal to {1}..
+        /// </summary>
+        internal static string GORGFX_ERR_VALUE_OUT_OF_RANGE_COUNT {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_VALUE_OUT_OF_RANGE_COUNT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There are no public fields in the &apos;{0}&apos; vertex type ..
         /// </summary>
         internal static string GORGFX_ERR_VERTEX_NO_FIELDS {
@@ -1081,6 +1108,15 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_TOSTR_SHADER_MACRO {
             get {
                 return ResourceManager.GetString("GORGFX_TOSTR_SHADER_MACRO", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stream-out bninding. Offset: {0}, Buffer: {1}.
+        /// </summary>
+        internal static string GORGFX_TOSTR_SO_BINDING {
+            get {
+                return ResourceManager.GetString("GORGFX_TOSTR_SO_BINDING", resourceCulture);
             }
         }
         

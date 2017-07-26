@@ -37,7 +37,7 @@ namespace Gorgon.Graphics.Core
     {
         #region Properties.
         /// <summary>
-        /// Property to return the intended usage for binding to the GPU.
+        /// Property to set or return the intended usage for binding to the GPU.
         /// </summary>
         public D3D11.ResourceUsage Usage
         {
@@ -46,7 +46,7 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Property to return the size of the buffer, in bytes.
+        /// Property to set or return the size of the buffer, in bytes.
         /// </summary>
         /// <remarks>
         /// <para>
@@ -63,7 +63,7 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Property to return the type of binding for the GPU.
+        /// Property to set or return the type of binding for the GPU.
         /// </summary>
         /// <remarks>
         /// The type of binding should be used to determine what type of view to apply to the buffer when accessing it from shaders. This will also help determine how data will be interpreted.
@@ -75,7 +75,7 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Property to return the element type for the default shader view.
+        /// Property to set or return the element type for the default shader view.
         /// </summary>
         /// <remarks>
         /// <para>

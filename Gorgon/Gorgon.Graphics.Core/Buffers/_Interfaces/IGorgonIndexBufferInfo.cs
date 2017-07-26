@@ -38,10 +38,18 @@ namespace Gorgon.Graphics.Core
 	/// </remarks>
 	public interface IGorgonIndexBufferInfo 
 	{
-		/// <summary>
-		/// Property to return the intended usage for binding to the GPU.
-		/// </summary>
-		D3D11.ResourceUsage Usage
+	    /// <summary>
+	    /// Property to return whether to allow data to be streamed out into this buffer.
+	    /// </summary>
+	    bool IsStreamOut
+	    {
+	        get;
+	    }
+
+        /// <summary>
+        /// Property to return the intended usage for binding to the GPU.
+        /// </summary>
+        D3D11.ResourceUsage Usage
 		{
 			get;
 		}

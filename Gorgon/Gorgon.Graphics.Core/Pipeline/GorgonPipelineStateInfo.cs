@@ -27,7 +27,6 @@
 using System;
 using D3D11 = SharpDX.Direct3D11;
 using System.Collections.Generic;
-using System.Linq;
 using Gorgon.Math;
 
 namespace Gorgon.Graphics.Core
@@ -63,9 +62,18 @@ namespace Gorgon.Graphics.Core
 		}
 
 	    /// <summary>
-	    /// Property to set or return the current <see cref="GorgonRasterState"/>.
+	    /// Property to return the current geometry shader.
 	    /// </summary>
-	    public GorgonRasterState RasterState
+	    public GorgonGeometryShader GeometryShader
+	    {
+	        get;
+	        set;
+	    }
+
+        /// <summary>
+        /// Property to set or return the current <see cref="GorgonRasterState"/>.
+        /// </summary>
+        public GorgonRasterState RasterState
 	    {
 	        get;
 	        set;
@@ -161,6 +169,7 @@ namespace Gorgon.Graphics.Core
 	        IsAlphaToCoverageEnabled = other.IsAlphaToCoverageEnabled;
 	        PixelShader = other.PixelShader;
 	        VertexShader = other.VertexShader;
+	        GeometryShader = other.GeometryShader;
 
 	        if (other.DepthStencilState != null)
 	        {
@@ -244,6 +253,7 @@ namespace Gorgon.Graphics.Core
 
             if ((VertexShader != other.VertexShader)
                 || (PixelShader != other.PixelShader)
+                || (GeometryShader != other.GeometryShader)
                 || (IsAlphaToCoverageEnabled != other.IsAlphaToCoverageEnabled)
 	            || (IsIndependentBlendingEnabled != other.IsIndependentBlendingEnabled))
 	        {

@@ -125,11 +125,18 @@ namespace Gorgon.Graphics.Core
 
 			Log.Print($"{Name} Index Buffer: Creating D3D11 buffer. Size: {SizeInBytes} bytes", LoggingLevel.Simple);
 
-			var desc  = new D3D11.BufferDescription
+		    D3D11.BindFlags bindFlags = D3D11.BindFlags.IndexBuffer;
+
+		    if (_info.IsStreamOut)
+		    {
+		        bindFlags |= D3D11.BindFlags.StreamOutput;
+		    }
+
+            var desc  = new D3D11.BufferDescription
 			{
 				SizeInBytes = Info.IndexCount * _indexSize,
 				Usage = _info.Usage,
-				BindFlags = D3D11.BindFlags.IndexBuffer,
+				BindFlags = bindFlags,
 				OptionFlags = D3D11.ResourceOptionFlags.None,
 				CpuAccessFlags = cpuFlags,
 				StructureByteStride = 0

@@ -50,12 +50,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         Shader = 1,
         /// <summary>
-        /// <para>
         /// The GPU will have access via the shaders using unordered access.
-        /// </para>
-        /// <para>
-        /// <b>TODO: Unordered access views are not implemented yet.</b>
-        /// </para>
         /// </summary>
         UnorderedAccess = 2,
         /// <summary>
@@ -106,7 +101,7 @@ namespace Gorgon.Graphics.Core
         /// Different bindings may be applied at the same time by OR'ing the <see cref="BufferBinding"/> flags together.
         /// </para>
         /// <para>
-        /// If the <see cref="Usage"/> is set to <c>Staging</c>, then this value must be set to <see cref="StructuredBufferBinding.None"/>, otherwise an exception will be raised when the buffer is created.
+        /// If the <see cref="Usage"/> is set to <c>Staging</c>, then this value must be set to <see cref="BufferBinding.None"/>, otherwise an exception will be raised when the buffer is created.
         /// </para>
         /// <para>
         /// The default value is <see cref="BufferBinding.Shader"/>

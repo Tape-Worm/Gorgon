@@ -121,7 +121,9 @@
     <Compile Include="Devices\_Internal\VideoOutputInfo.cs" />
     <Compile Include="Devices\_Interfaces\IGorgonVideoDevice.cs" />
     <Compile Include="Devices\_Interfaces\IGorgonVideoDeviceList.cs" />
+    <Compile Include="Geometry\GorgonStreamOutElement.cs" />
     <Compile Include="Geometry\GorgonInputElement.cs" />
+    <Compile Include="Geometry\GorgonStreamOutLayout.cs" />
     <Compile Include="Geometry\GorgonInputLayout.cs" />
     <Compile Include="Geometry\_Attributes\InputElementAttribute.cs" />
     <Compile Include="GorgonGraphics.cs" />
@@ -136,10 +138,12 @@
     <Compile Include="Pipeline\GorgonPipelineStateInfo.cs" />
     <Compile Include="Pipeline\GorgonPipelineStateInfoAllocator.cs" />
     <Compile Include="Pipeline\GorgonSamplerStates.cs" />
+    <Compile Include="Pipeline\GorgonStreamOutBinding.cs" />
     <Compile Include="Pipeline\GorgonUavBinding.cs" />
     <Compile Include="Pipeline\GorgonVertexBufferBinding.cs" />
     <Compile Include="Pipeline\GorgonRenderTargetViews.cs" />
     <Compile Include="Pipeline\GorgonUavBindings.cs" />
+    <Compile Include="Pipeline\GorgonStreamOutBindings.cs" />
     <Compile Include="Pipeline\GorgonVertexBufferBindings.cs" />
     <Compile Include="Pipeline\GorgonMonitoredValueTypeArray.cs" />
     <Compile Include="Pipeline\_Interfaces\IGorgonShaderStates.cs" />
@@ -148,6 +152,7 @@
     <Compile Include="Pipeline\_Internal\SamplerStateFactory.cs" />
     <Compile Include="Shaders\Effects\GorgonGaussBlurEffect.cs" />
     <Compile Include="Shaders\Effects\GorgonShaderEffect.cs" />
+    <Compile Include="Shaders\GorgonGeometryShader.cs" />
     <Compile Include="Shaders\GorgonShaderResourceView.cs" />
     <Compile Include="Pipeline\GorgonShaderResourceViews.cs" />
     <Compile Include="Pipeline\GorgonDrawIndexedCall.cs" />

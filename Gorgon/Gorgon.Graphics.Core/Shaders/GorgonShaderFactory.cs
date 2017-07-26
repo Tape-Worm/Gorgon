@@ -165,8 +165,9 @@ namespace Gorgon.Graphics.Core
 				case ShaderType.Compute:
 				case ShaderType.Hull:
 				case ShaderType.Domain:
+                    throw new NotSupportedException();
 				case ShaderType.Geometry:
-					throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_SHADER_UNKNOWN_TYPE, shaderType));
+					return new GorgonGeometryShader(device, entryPoint, isDebug, byteCode) as T;
 				case ShaderType.Pixel:
 					return new GorgonPixelShader(device, entryPoint, isDebug, byteCode) as T;
 				case ShaderType.Vertex:

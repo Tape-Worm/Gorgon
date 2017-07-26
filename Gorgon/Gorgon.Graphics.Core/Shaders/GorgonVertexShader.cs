@@ -49,7 +49,7 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Property to return the Direct 3D vertex shader.
 		/// </summary>
-		internal D3D.VertexShader D3DShader
+		internal D3D.VertexShader NativeShader
 		{
 			get;
 		}
@@ -66,7 +66,7 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		public override void Dispose()
 		{
-			D3DShader?.Dispose();
+			NativeShader?.Dispose();
 			base.Dispose();
 		}
 		#endregion
@@ -82,7 +82,7 @@ namespace Gorgon.Graphics.Core
 		internal GorgonVertexShader(IGorgonVideoDevice videoDevice, string name, bool isDebug, D3DCompiler.ShaderBytecode byteCode)
 			: base(videoDevice, name, isDebug, byteCode)
 		{
-			D3DShader = new D3D.VertexShader(videoDevice.D3DDevice(), byteCode)
+			NativeShader = new D3D.VertexShader(videoDevice.D3DDevice(), byteCode)
 			            {
 				            DebugName = name + " D3D11VertexShader"
 			            };

@@ -122,7 +122,7 @@ namespace Gorgon.Graphics.Core
                 case D3D11.ResourceUsage.Staging:
                     cpuFlags = D3D11.CpuAccessFlags.Read | D3D11.CpuAccessFlags.Write;
 
-                    if (_info.Binding != StructuredBufferBinding.None)
+                    if (_info.Binding != BufferBinding.None)
                     {
                         throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_CANNOT_BE_BOUND_TO_GPU, _info.Binding));
                     }
@@ -136,14 +136,19 @@ namespace Gorgon.Graphics.Core
 
             var bindFlags = D3D11.BindFlags.None;
 
-            if ((_info.Binding & StructuredBufferBinding.Shader) == StructuredBufferBinding.Shader)
+            if ((_info.Binding & BufferBinding.Shader) == BufferBinding.Shader)
             {
                 bindFlags |= D3D11.BindFlags.ShaderResource;
             }
 
-            if ((_info.Binding & StructuredBufferBinding.UnorderedAccess) == StructuredBufferBinding.UnorderedAccess)
+            if ((_info.Binding & BufferBinding.UnorderedAccess) == BufferBinding.UnorderedAccess)
             {
                 bindFlags |= D3D11.BindFlags.UnorderedAccess;
+            }
+
+            if ((_info.Binding & BufferBinding.StreamOut) == BufferBinding.StreamOut)
+            {
+                bindFlags |= D3D11.BindFlags.StreamOutput;
             }
             
             var desc = new D3D11.BufferDescription
@@ -280,7 +285,7 @@ namespace Gorgon.Graphics.Core
             }
 
             if ((Info.Usage == D3D11.ResourceUsage.Staging)
-                || ((Info.Binding & StructuredBufferBinding.UnorderedAccess) != StructuredBufferBinding.UnorderedAccess))
+                || ((Info.Binding & BufferBinding.UnorderedAccess) != BufferBinding.UnorderedAccess))
             {
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_UAV_RESOURCE_NOT_VALID, Name));
             }

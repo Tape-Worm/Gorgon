@@ -70,7 +70,7 @@ namespace Gorgon.Graphics.Core
         /// Different bindings may be applied at the same time by OR'ing the <see cref="BufferBinding"/> flags together.
         /// </para>
         /// <para>
-        /// If the <see cref="Usage"/> is set to <c>Staging</c>, then this value must be set to <see cref="StructuredBufferBinding.None"/>, otherwise an exception will be raised when the buffer is created.
+        /// If the <see cref="Usage"/> is set to <c>Staging</c>, then this value must be set to <see cref="BufferBinding.None"/>, otherwise an exception will be raised when the buffer is created.
         /// </para>
         /// <para>
         /// The default value is <see cref="BufferBinding.Shader"/>

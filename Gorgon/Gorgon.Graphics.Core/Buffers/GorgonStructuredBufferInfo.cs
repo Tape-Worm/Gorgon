@@ -37,7 +37,7 @@ namespace Gorgon.Graphics.Core
     {
         #region Properties.
         /// <summary>
-        /// Property to return the intended usage for binding to the GPU.
+        /// Property to set or return the intended usage for binding to the GPU.
         /// </summary>
         /// <remarks>
         /// The default value is <c>Default</c>.
@@ -49,7 +49,7 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Property to return the size of the buffer, in bytes.
+        /// Property to set or return the size of the buffer, in bytes.
         /// </summary>
         /// <remarks>
         /// <para>
@@ -63,23 +63,23 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Property to return the type of binding for the GPU.
+        /// Property to set or return the type of binding for the GPU.
         /// </summary>
         /// <remarks>
         /// <para>
         /// The type of binding should be used to determine what type of view to apply to the buffer when accessing it from shaders. This will also help determine how data will be interpreted.
         /// </para>
         /// <para>
-        /// Different bindings may be applied at the same time by OR'ing the <see cref="StructuredBufferBinding"/> flags together.
+        /// Different bindings may be applied at the same time by OR'ing the <see cref="BufferBinding"/> flags together.
         /// </para>
         /// <para>
-        /// If the <see cref="IGorgonStructuredBufferInfo.Usage"/> is set to <c>Staging</c>, then this value must be set to <see cref="StructuredBufferBinding.None"/>, otherwise an exception will be raised when the buffer is created.
+        /// If the <see cref="IGorgonStructuredBufferInfo.Usage"/> is set to <c>Staging</c>, then this value must be set to <see cref="BufferBinding.None"/>, otherwise an exception will be raised when the buffer is created.
         /// </para>
         /// <para>
-        /// The default value is <see cref="StructuredBufferBinding.Shader"/>
+        /// The default value is <see cref="BufferBinding.Shader"/>
         /// </para>
         /// </remarks>
-        public StructuredBufferBinding Binding
+        public BufferBinding Binding
         {
             get;
             set;
@@ -162,7 +162,7 @@ namespace Gorgon.Graphics.Core
         public GorgonStructuredBufferInfo()
         {
             Usage = D3D11.ResourceUsage.Default;
-            Binding = StructuredBufferBinding.Shader;
+            Binding = BufferBinding.Shader;
         }
         #endregion
     }

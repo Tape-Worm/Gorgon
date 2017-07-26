@@ -24,41 +24,10 @@
 // 
 #endregion
 
-using System;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
 {
-    /// <summary>
-    /// The type of binding to use when binding to the GPU.
-    /// </summary>
-    [Flags]
-    public enum StructuredBufferBinding
-    {
-        /// <summary>
-        /// <para>
-        /// No GPU access. This buffer will only be used on the CPU.
-        /// </para>
-        /// <para>
-        /// This flag is mutally exclusive.
-        /// </para>
-        /// </summary>
-        None = 0,
-        /// <summary>
-        /// The GPU will have access via the shaders as a shader resource.
-        /// </summary>
-        Shader = 1,
-        /// <summary>
-        /// <para>
-        /// The GPU will have access via the shaders using unordered access.
-        /// </para>
-        /// <para>
-        /// <b>TODO: Unordered access views are not implemented yet.</b>
-        /// </para>
-        /// </summary>
-        UnorderedAccess = 2
-    }
-
     /// <summary>
     /// Provides the necessary information required to set up a structured buffer.
     /// </summary>
@@ -101,16 +70,16 @@ namespace Gorgon.Graphics.Core
         /// The type of binding should be used to determine what type of view to apply to the buffer when accessing it from shaders. This will also help determine how data will be interpreted.
         /// </para>
         /// <para>
-        /// Different bindings may be applied at the same time by OR'ing the <see cref="StructuredBufferBinding"/> flags together.
+        /// Different bindings may be applied at the same time by OR'ing the <see cref="BufferBinding"/> flags together.
         /// </para>
         /// <para>
-        /// If the <see cref="Usage"/> is set to <c>Staging</c>, then this value must be set to <see cref="StructuredBufferBinding.None"/>, otherwise an exception will be raised when the buffer is created.
+        /// If the <see cref="Usage"/> is set to <c>Staging</c>, then this value must be set to <see cref="BufferBinding.None"/>, otherwise an exception will be raised when the buffer is created.
         /// </para>
         /// <para>
-        /// The default value is <see cref="StructuredBufferBinding.Shader"/>
+        /// The default value is <see cref="BufferBinding.Shader"/>
         /// </para>
         /// </remarks>
-        StructuredBufferBinding Binding
+        BufferBinding Binding
         {
             get;
         }

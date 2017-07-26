@@ -159,19 +159,19 @@ namespace Gorgon.Graphics.Core
 		        _info.DepthStencilState.IsLocked = true;
 		    }
 
-		    if (_info.BlendStates != null)
+		    if (_info.BlendStates == null)
 		    {
-		        for (int i = 0; i < _info.BlendStates.Length; ++i)
+		        return;
+		    }
+
+		    foreach (GorgonBlendState state in _info.BlendStates)
+		    {
+		        if (state == null)
 		        {
-		            GorgonBlendState state = _info.BlendStates[i];
-
-		            if (state == null)
-		            {
-		                continue;
-		            }
-
-		            state.IsLocked = true;
+		            continue;
 		        }
+
+		        state.IsLocked = true;
 		    }
 		}
 		#endregion

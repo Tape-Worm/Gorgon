@@ -476,4 +476,16 @@ The width must be a value between 1-{2}, and the height must be a value between 
   <data name="GORGFX_TOSTR_UAV_BINDING" xml:space="preserve">
     <value>Unordered access view binding.  Offset: {0}, Uav Resource: {1}</value>
   </data>
+  <data name="GORGFX_ERR_BUFFER_CONSTANT_NO_SO" xml:space="preserve">
+    <value>Constant buffers cannot be used as stream out buffers.</value>
+  </data>
+  <data name="GORGFX_ERR_BUFFER_TYPE_MISSING_SO" xml:space="preserve">
+    <value>The buffer '{0}' was not configured for stream out.</value>
+  </data>
+  <data name="GORGFX_ERR_VALUE_OUT_OF_RANGE_COUNT" xml:space="preserve">
+    <value>The value is out of range.  The value [{0}] must be be 1 or less than or equal to {1}.</value>
+  </data>
+  <data name="GORGFX_TOSTR_SO_BINDING" xml:space="preserve">
+    <value>Stream-out bninding. Offset: {0}, Buffer: {1}</value>
+  </data>
 </root>

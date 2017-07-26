@@ -406,8 +406,7 @@ namespace Gorgon.Graphics.Core
 				    break;
                 case ShaderType.Geometry:
                     desiredStateBit = PipelineResourceChange.GeometryShaderConstantBuffers;
-                    // TODO:
-                    destBuffers = null;//_currentDrawCall.GeometryShaderConstantBuffers;
+                    destBuffers = _currentDrawCall.GeometryShaderConstantBuffers;
                     break;
                 case ShaderType.Hull:
 #if DEBUG
@@ -491,11 +490,10 @@ namespace Gorgon.Graphics.Core
 				    desiredStateBit = PipelineResourceChange.PixelShaderResources;
 				    destSrvs = _currentDrawCall.PixelShaderResourceViews;
 				    break;
-                //                case ShaderType.Geometry:
-                //                    // TODO:
-                //                    desiredStateBit = PipelineResourceChange.GeometryShaderResources;
-                //                    destSrvs = _currentDrawCall.GeometryShaderResourceViews;
-                //                    break;
+                case ShaderType.Geometry:
+                    desiredStateBit = PipelineResourceChange.GeometryShaderResources;
+                    destSrvs = _currentDrawCall.GeometryShaderResourceViews;
+                    break;
                 //                case ShaderType.Hull:
                 //#if DEBUG
                 //                    if (VideoDevice.RequestedFeatureLevel < FeatureLevelSupport.Level_11_0)
@@ -512,7 +510,7 @@ namespace Gorgon.Graphics.Core
                 //#if DEBUG
                 //                    if (VideoDevice.RequestedFeatureLevel < FeatureLevelSupport.Level_11_0)
                 //                    {
-		        //                        _log.Print($"Error: Assigning a resource to a domain shader requires feature level {FeatureLevelSupport.Level_11_0} or better.  The device '{VideoDevice.Info.Name}' only supports feature level {VideoDevice.RequestedFeatureLevel}", LoggingLevel.All);
+                //                        _log.Print($"Error: Assigning a resource to a domain shader requires feature level {FeatureLevelSupport.Level_11_0} or better.  The device '{VideoDevice.Info.Name}' only supports feature level {VideoDevice.RequestedFeatureLevel}", LoggingLevel.All);
                 //                        throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureLevelSupport.Level_11_0));
                 //                    }
                 //#endif
@@ -624,35 +622,34 @@ namespace Gorgon.Graphics.Core
 				    desiredStateBit = PipelineResourceChange.PixelShaderSamplers;
 				    destSamplers = _currentDrawCall.PixelShaderSamplers;
 				    break;
-//                case ShaderType.Geometry:
-//                    // TODO:
-//                    desiredStateBit = PipelineResourceChange.GeometryShaderSamplers;
-//                    destSamplers = _currentDrawCall.GeometryShaderSamplers;
-//                    break;
-//                case ShaderType.Hull:
-//#if DEBUG
-//                    _log.Print($"Error: Assigning a sampler to a hull shader requires feature level {FeatureLevelSupport.Level_11_0} or better.  The device '{VideoDevice.Info.Name}' only supports feature level {VideoDevice.RequestedFeatureLevel}", LoggingLevel.All);
-//                    if (VideoDevice.RequestedFeatureLevel < FeatureLevelSupport.Level_11_0)
-//                    {
-//                        throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureLevelSupport.Level_11_0));
-//                    }
-//#endif
-//                    // TODO:
-//                    desiredStateBit = PipelineResourceChange.HullShaderSamplers;
-//                    destSamplers = _currentDrawCall.HullShaderSamplers;
-//                    break;
-//                case ShaderType.Domain:
-//#if DEBUG
-//                    _log.Print($"Error: Assigning a sampler to a domain shader requires feature level {FeatureLevelSupport.Level_11_0} or better.  The device '{VideoDevice.Info.Name}' only supports feature level {VideoDevice.RequestedFeatureLevel}", LoggingLevel.All);
-//                    if (VideoDevice.RequestedFeatureLevel < FeatureLevelSupport.Level_11_0)
-//                    {
-//                        throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureLevelSupport.Level_11_0));
-//                    }
-//#endif
-//                    // TODO:
-//                    desiredStateBit = PipelineResourceChange.DomainShaderSamplers;
-//                    destSamplers = _currentDrawCall.DomainShaderSamplers;
-//                    break;
+                case ShaderType.Geometry:
+                    desiredStateBit = PipelineResourceChange.GeometryShaderSamplers;
+                    destSamplers = _currentDrawCall.GeometryShaderSamplers;
+                    break;
+                //                case ShaderType.Hull:
+                //#if DEBUG
+                //                    _log.Print($"Error: Assigning a sampler to a hull shader requires feature level {FeatureLevelSupport.Level_11_0} or better.  The device '{VideoDevice.Info.Name}' only supports feature level {VideoDevice.RequestedFeatureLevel}", LoggingLevel.All);
+                //                    if (VideoDevice.RequestedFeatureLevel < FeatureLevelSupport.Level_11_0)
+                //                    {
+                //                        throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureLevelSupport.Level_11_0));
+                //                    }
+                //#endif
+                //                    // TODO:
+                //                    desiredStateBit = PipelineResourceChange.HullShaderSamplers;
+                //                    destSamplers = _currentDrawCall.HullShaderSamplers;
+                //                    break;
+                //                case ShaderType.Domain:
+                //#if DEBUG
+                //                    _log.Print($"Error: Assigning a sampler to a domain shader requires feature level {FeatureLevelSupport.Level_11_0} or better.  The device '{VideoDevice.Info.Name}' only supports feature level {VideoDevice.RequestedFeatureLevel}", LoggingLevel.All);
+                //                    if (VideoDevice.RequestedFeatureLevel < FeatureLevelSupport.Level_11_0)
+                //                    {
+                //                        throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureLevelSupport.Level_11_0));
+                //                    }
+                //#endif
+                //                    // TODO:
+                //                    desiredStateBit = PipelineResourceChange.DomainShaderSamplers;
+                //                    destSamplers = _currentDrawCall.DomainShaderSamplers;
+                //                    break;
                 default:
 				    throw new NotSupportedException();
 		    }
@@ -725,36 +722,36 @@ namespace Gorgon.Graphics.Core
 			    pipelineFlags |= PipelineStateChange.VertexShader;
 		    }
 
+
+            if (_currentDrawCall.PipelineState.Info.GeometryShader != state.Info.GeometryShader)
+            {
+                pipelineFlags |= PipelineStateChange.GeometryShader;
+            }
             // TODO:
-            //if (_currentDrawCall.PipelineState.Info.GeometryShader != state.Info.GeometryShader)
-            //{
-            //    pipelineFlags |= PipelineStateChange.GeometryShader;
-            //}
+            //            if (_currentDrawCall.PipelineState.Info.HullShader != state.Info.HullShader)
+            //            {
+            //#if DEBUG
+            //                _log.Print($"Error: Assigning a hull shader requires feature level {FeatureLevelSupport.Level_11_0} or better.  The device '{VideoDevice.Info.Name}' only supports feature level {VideoDevice.RequestedFeatureLevel}", LoggingLevel.All);
+            //                if (VideoDevice.RequestedFeatureLevel < FeatureLevelSupport.Level_11_0)
+            //                {
+            //                    throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureLevelSupport.Level_11_0));
+            //                }
+            //#endif
 
-//            if (_currentDrawCall.PipelineState.Info.HullShader != state.Info.HullShader)
-//            {
-//#if DEBUG
-//                _log.Print($"Error: Assigning a hull shader requires feature level {FeatureLevelSupport.Level_11_0} or better.  The device '{VideoDevice.Info.Name}' only supports feature level {VideoDevice.RequestedFeatureLevel}", LoggingLevel.All);
-//                if (VideoDevice.RequestedFeatureLevel < FeatureLevelSupport.Level_11_0)
-//                {
-//                    throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureLevelSupport.Level_11_0));
-//                }
-//#endif
+            //                pipelineFlags |= PipelineStateChange.HullShader;
+            //            }
 
-//                pipelineFlags |= PipelineStateChange.HullShader;
-//            }
-
-//            if (_currentDrawCall.PipelineState.Info.DomainShader != state.Info.DomainShader)
-//            {
-//#if DEBUG
-//                _log.Print($"Error: Assigning a domain shader requires feature level {FeatureLevelSupport.Level_11_0} or better.  The device '{VideoDevice.Info.Name}' only supports feature level {VideoDevice.RequestedFeatureLevel}", LoggingLevel.All);
-//                if (VideoDevice.RequestedFeatureLevel < FeatureLevelSupport.Level_11_0)
-//                {
-//                    throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureLevelSupport.Level_11_0));
-//                }
-//#endif
-//                pipelineFlags |= PipelineStateChange.DomainShader;
-//            }
+            //            if (_currentDrawCall.PipelineState.Info.DomainShader != state.Info.DomainShader)
+            //            {
+            //#if DEBUG
+            //                _log.Print($"Error: Assigning a domain shader requires feature level {FeatureLevelSupport.Level_11_0} or better.  The device '{VideoDevice.Info.Name}' only supports feature level {VideoDevice.RequestedFeatureLevel}", LoggingLevel.All);
+            //                if (VideoDevice.RequestedFeatureLevel < FeatureLevelSupport.Level_11_0)
+            //                {
+            //                    throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureLevelSupport.Level_11_0));
+            //                }
+            //#endif
+            //                pipelineFlags |= PipelineStateChange.DomainShader;
+            //            }
 
             if (_currentDrawCall.PipelineState.D3DRasterState != state.D3DRasterState)
 		    {
@@ -827,24 +824,24 @@ namespace Gorgon.Graphics.Core
 			}
 
 		    stateChanges |= MergeVertexBuffers(sourceDrawCall.VertexBuffers, stateChanges);
-		    stateChanges |= MergeConstantBuffers(ShaderType.Vertex, sourceDrawCall.VertexShaderConstantBuffers, stateChanges);
-		    stateChanges |= MergeConstantBuffers(ShaderType.Pixel, sourceDrawCall.PixelShaderConstantBuffers, stateChanges);
-		    stateChanges |= MergeShaderResources(ShaderType.Vertex, sourceDrawCall.VertexShaderResourceViews, stateChanges);
-		    stateChanges |= MergeShaderResources(ShaderType.Pixel, sourceDrawCall.PixelShaderResourceViews, stateChanges);
-		    stateChanges |= MergeShaderSamplers(ShaderType.Vertex, sourceDrawCall.VertexShaderSamplers, stateChanges);
-		    stateChanges |= MergeShaderSamplers(ShaderType.Pixel, sourceDrawCall.PixelShaderSamplers, stateChanges);
-	        // TODO:
-	        //stateChanges |= MergeConstantBuffers(ShaderType.Geometry, sourceDrawCall.GeometryShaderConstantBuffers, stateChanges);
+	        stateChanges |= MergeConstantBuffers(ShaderType.Pixel, sourceDrawCall.PixelShaderConstantBuffers, stateChanges);
+	        stateChanges |= MergeShaderResources(ShaderType.Pixel, sourceDrawCall.PixelShaderResourceViews, stateChanges);
+	        stateChanges |= MergeShaderSamplers(ShaderType.Pixel, sourceDrawCall.PixelShaderSamplers, stateChanges);
 	        stateChanges |= MergePixelShaderUavs(sourceDrawCall.PixelShaderUavs, stateChanges);
+		    stateChanges |= MergeConstantBuffers(ShaderType.Vertex, sourceDrawCall.VertexShaderConstantBuffers, stateChanges);
+	        stateChanges |= MergeShaderSamplers(ShaderType.Vertex, sourceDrawCall.VertexShaderSamplers, stateChanges);
+	        stateChanges |= MergeShaderResources(ShaderType.Vertex, sourceDrawCall.VertexShaderResourceViews, stateChanges);
+	        stateChanges |= MergeConstantBuffers(ShaderType.Geometry, sourceDrawCall.GeometryShaderConstantBuffers, stateChanges);
+	        stateChanges |= MergeShaderResources(ShaderType.Geometry, sourceDrawCall.GeometryShaderResourceViews, stateChanges);
+	        stateChanges |= MergeShaderSamplers(ShaderType.Geometry, sourceDrawCall.GeometryShaderSamplers, stateChanges);
             // TODO:
-	        //stateChanges |= MergeConstantBuffers(ShaderType.Hull, sourceDrawCall.HullShaderConstantBuffers, stateChanges);
-	        //stateChanges |= MergeConstantBuffers(ShaderType.Domain, sourceDrawCall.DomainShaderConstantBuffers, stateChanges);
-            //stateChanges |= MergeShaderResources(ShaderType.Geometry, sourceDrawCall.GeometryShaderResourceViews, stateChanges);
-	        //stateChanges |= MergeShaderResources(ShaderType.Hull, sourceDrawCall.HullShaderResourceViews, stateChanges);
-	        //stateChanges |= MergeShaderResources(ShaderType.Domain, sourceDrawCall.DomainShaderResourceViews, stateChanges);
-            //stateChanges |= MergeShaderSamplers(ShaderType.Geometry, sourceDrawCall.GeometryShaderSamplers, stateChanges);
-	        //stateChanges |= MergeShaderSamplers(ShaderType.Hull, sourceDrawCall.HullShaderSamplers, stateChanges);
-	        //stateChanges |= MergeShaderSamplers(ShaderType.Domain, sourceDrawCall.DomainShaderSamplers, stateChanges);
+            //stateChanges |= MergeConstantBuffers(ShaderType.Hull, sourceDrawCall.HullShaderConstantBuffers, stateChanges);
+            //stateChanges |= MergeConstantBuffers(ShaderType.Domain, sourceDrawCall.DomainShaderConstantBuffers, stateChanges);
+            //stateChanges |= MergeShaderResources(ShaderType.Hull, sourceDrawCall.HullShaderResourceViews, stateChanges);
+            //stateChanges |= MergeShaderResources(ShaderType.Domain, sourceDrawCall.DomainShaderResourceViews, stateChanges);
+
+            //stateChanges |= MergeShaderSamplers(ShaderType.Hull, sourceDrawCall.HullShaderSamplers, stateChanges);
+            //stateChanges |= MergeShaderSamplers(ShaderType.Domain, sourceDrawCall.DomainShaderSamplers, stateChanges);
 
             return (stateChanges, GetPipelineStateChange(sourceDrawCall.PipelineState));
 	    }
@@ -1058,12 +1055,12 @@ namespace Gorgon.Graphics.Core
 
 			if ((changes & PipelineStateChange.VertexShader) == PipelineStateChange.VertexShader)
 			{
-				D3DDeviceContext.VertexShader.Set(state?.Info.VertexShader?.D3DShader);
+				D3DDeviceContext.VertexShader.Set(state?.Info.VertexShader?.NativeShader);
 			}
 
 			if ((changes & PipelineStateChange.PixelShader) == PipelineStateChange.PixelShader)
 			{
-				D3DDeviceContext.PixelShader.Set(state?.Info.PixelShader?.D3DShader);
+				D3DDeviceContext.PixelShader.Set(state?.Info.PixelShader?.NativeShader);
 			}
 		}
 
@@ -1169,8 +1166,8 @@ namespace Gorgon.Graphics.Core
                     UnbindFromShader(view.Texture, ref _currentDrawCall.VertexShaderResourceViews.GetDirtyItems(), _currentDrawCall.VertexShaderResourceViews);
                 }
                 UnbindFromShader(view.Texture, ref _currentDrawCall.PixelShaderResourceViews.GetDirtyItems(), _currentDrawCall.PixelShaderResourceViews);
+                UnbindFromShader(view.Texture, ref _currentDrawCall.GeometryShaderResourceViews.GetDirtyItems(), _currentDrawCall.GeometryShaderResourceViews);
                 // TODO:
-                //UnbindFromShader(view.Texture, ref _currentDrawCall.GeometryShaderResourceViews.GetDirtyItems(), _currentDrawCall.GeometryShaderResourceViews);
                 //UnbindFromShader(view.Texture, ref _currentDrawCall.HullShaderResourceViews.GetDirtyItems(), _currentDrawCall.HullShaderResourceViews);
                 //UnbindFromShader(view.Texture, ref _currentDrawCall.DomainShaderResourceViews.GetDirtyItems(), _currentDrawCall.DomainShaderResourceViews);
             }
@@ -1187,8 +1184,9 @@ namespace Gorgon.Graphics.Core
                     }
                     
                     _currentDrawCall.PixelShaderResourceViews[i] = null;
-                    SetShaderResourceViews(ShaderType.Pixel, _currentDrawCall.PixelShaderResourceViews);
                 }
+
+                SetShaderResourceViews(ShaderType.Pixel, _currentDrawCall.PixelShaderResourceViews);
             }
         }
 

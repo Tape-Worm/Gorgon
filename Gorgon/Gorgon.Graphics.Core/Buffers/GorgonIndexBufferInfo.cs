@@ -73,15 +73,24 @@ namespace Gorgon.Graphics.Core
 			get;
 			set;
 		}
-		#endregion
 
-		#region Constructor/Finalizer.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonIndexBufferInfo"/> class.
-		/// </summary>
-		/// <param name="info">A <see cref="IGorgonIndexBufferInfo"/> to copy settings from.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
-		public GorgonIndexBufferInfo(IGorgonIndexBufferInfo info)
+	    /// <summary>
+	    /// Property to return whether to allow data to be streamed out into this buffer.
+	    /// </summary>
+	    public bool IsStreamOut
+	    {
+	        get;
+	        set;
+	    }
+        #endregion
+
+        #region Constructor/Finalizer.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonIndexBufferInfo"/> class.
+        /// </summary>
+        /// <param name="info">A <see cref="IGorgonIndexBufferInfo"/> to copy settings from.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
+        public GorgonIndexBufferInfo(IGorgonIndexBufferInfo info)
 		{
 			if (info == null)
 			{

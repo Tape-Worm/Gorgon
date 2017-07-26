@@ -25,8 +25,6 @@
 #endregion
 
 using System;
-using Gorgon.Math;
-using DX = SharpDX;
 using D3D = SharpDX.Direct3D;
 
 namespace Gorgon.Graphics.Core
@@ -282,10 +280,34 @@ namespace Gorgon.Graphics.Core
 			get;
 		}
 
-		/// <summary>
-		/// Property to return the type of primitives to draw.
-		/// </summary>
-		public D3D.PrimitiveTopology PrimitiveTopology
+        /// <summary>
+        /// Property to return the geometry shader resources to bind to the pipeline.
+        /// </summary>
+	    public GorgonShaderResourceViews GeometryShaderResourceViews
+	    {
+	        get;
+	    }
+
+	    /// <summary>
+	    /// Property to return the geometry shader samplers to bind to the pipeline.
+	    /// </summary>
+	    public GorgonSamplerStates GeometryShaderSamplers
+	    {
+	        get;
+	    }
+
+        /// <summary>
+        /// Property to return the geometry shader constant buffers to bind to the pipeline.
+        /// </summary>
+	    public GorgonConstantBuffers GeometryShaderConstantBuffers
+	    {
+	        get;
+	    }
+
+        /// <summary>
+        /// Property to return the type of primitives to draw.
+        /// </summary>
+        public D3D.PrimitiveTopology PrimitiveTopology
 		{
 			get;
 			set;
@@ -361,6 +383,10 @@ namespace Gorgon.Graphics.Core
 			PixelShaderConstantBuffers.Clear();
 			PixelShaderSamplers.Clear();
             PixelShaderUavs.Clear();
+
+            GeometryShaderResourceViews.Clear();
+            GeometryShaderSamplers.Clear();
+            GeometryShaderConstantBuffers.Clear();
 		}
 		#endregion
 
@@ -384,6 +410,10 @@ namespace Gorgon.Graphics.Core
 			PixelShaderSamplers = new GorgonSamplerStates();
 			VertexShaderSamplers = new GorgonSamplerStates();
             PixelShaderUavs = new GorgonUavBindings();
+
+            GeometryShaderResourceViews = new GorgonShaderResourceViews();
+            GeometryShaderSamplers = new GorgonSamplerStates();
+            GeometryShaderConstantBuffers = new GorgonConstantBuffers();
 		}
 		#endregion
 	}

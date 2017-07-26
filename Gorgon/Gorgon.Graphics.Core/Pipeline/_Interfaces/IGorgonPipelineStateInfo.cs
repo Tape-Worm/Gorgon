@@ -59,6 +59,14 @@ namespace Gorgon.Graphics.Core
 			get;
 		}
 
+        /// <summary>
+        /// Property to return the current geometry shader.
+        /// </summary>
+	    GorgonGeometryShader GeometryShader
+	    {
+	        get;
+	    }
+
 		/// <summary>
 		/// Property to return the current <see cref="GorgonRasterState"/>.
 		/// </summary>
