@@ -49,21 +49,14 @@ namespace Gorgon.Graphics.Core
 
 		#region Variables.
 		// The native bindings.
-		private readonly D3D11.Buffer[] _nativeBindings;
-        // The native offsets.
-	    private readonly int[] _offsets;
+		private readonly D3D11.StreamOutputBufferBinding[] _nativeBindings;
 		#endregion
 
 		#region Properties.
 		/// <summary>
 		/// Property to return the native items wrapped by this list.
 		/// </summary>
-		internal D3D11.Buffer[] Native => _nativeBindings;
-
-        /// <summary>
-        /// Property to return the native offets for the buffers.
-        /// </summary>
-	    internal int[] Offsets => _offsets;
+		internal D3D11.StreamOutputBufferBinding[] Native => _nativeBindings;
 		#endregion
 
 		#region Methods.
@@ -74,37 +67,7 @@ namespace Gorgon.Graphics.Core
 	    /// <param name="value">The value containing the native item.</param>
 	    protected override void OnStoreNativeItem(int nativeItemIndex, GorgonStreamOutBinding value)
 	    {
-	        if (value.Buffer == null)
-	        {
-	            _nativeBindings[nativeItemIndex] = null;
-	            _offsets[nativeItemIndex] = 0;
-	            return;
-	        }
-
-	        D3D11.Buffer nativeBuffer = null;
-
-	        switch (value.Buffer.BufferType)
-	        {
-	            case BufferType.Generic:
-                case BufferType.IndirectArgument:
-	                nativeBuffer = ((GorgonBuffer)value.Buffer).D3DBuffer;
-	                break;
-                case BufferType.Raw:
-                    nativeBuffer = ((GorgonRawBuffer)value.Buffer).D3DBuffer;
-                    break;
-                case BufferType.Structured:
-                    nativeBuffer = ((GorgonStructuredBuffer)value.Buffer).D3DBuffer;
-                    break;
-                case BufferType.Vertex:
-                    nativeBuffer = ((GorgonVertexBuffer)value.Buffer).D3DBuffer;
-                    break;
-                case BufferType.Index:
-                    nativeBuffer = ((GorgonIndexBuffer)value.Buffer).D3DBuffer;
-                    break;
-	        }
-
-	        _nativeBindings[nativeItemIndex] = nativeBuffer;
-	        _offsets[nativeItemIndex] = value.Offset;
+            _nativeBindings[nativeItemIndex] = new D3D11.StreamOutputBufferBinding(value.Buffer?.NativeBuffer, value.Offset);
 	    }
 
 		/// <summary>
@@ -113,7 +76,6 @@ namespace Gorgon.Graphics.Core
 		protected override void OnClear()
 		{
 			Array.Clear(_nativeBindings, 0, _nativeBindings.Length);
-            Array.Clear(_offsets, 0, _offsets.Length);
 		}
 		#endregion
 
@@ -124,8 +86,7 @@ namespace Gorgon.Graphics.Core
 		public GorgonStreamOutBindings()
 			: base(MaximumStreamOutCount)
 		{
-			_nativeBindings = new D3D11.Buffer[MaximumStreamOutCount];
-            _offsets = new int[MaximumStreamOutCount];
+			_nativeBindings = new D3D11.StreamOutputBufferBinding[MaximumStreamOutCount];
 		}
 		#endregion
 	}

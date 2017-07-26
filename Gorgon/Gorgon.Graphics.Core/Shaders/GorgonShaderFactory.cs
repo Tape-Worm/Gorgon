@@ -70,8 +70,12 @@ namespace Gorgon.Graphics.Core
 		private static readonly (Type, ShaderType)[] _shaderTypes =
 		{
 			(typeof(GorgonVertexShader), ShaderType.Vertex),
-			(typeof(GorgonPixelShader), ShaderType.Pixel)
-		};
+			(typeof(GorgonPixelShader), ShaderType.Pixel),
+            (typeof(GorgonGeometryShader), ShaderType.Geometry),
+//		    (typeof(GorgonHullShader), ShaderType.Hull),
+//		    (typeof(GorgonDomainShader), ShaderType.Domain),
+//		    (typeof(GorgonComputeShader), ShaderType.Compute),
+        };
 		#endregion
 
 		#region Properties.

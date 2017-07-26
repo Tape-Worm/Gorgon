@@ -89,7 +89,7 @@ namespace Gorgon.Graphics.Core
 		/// </returns>
 		public override string ToString()
 		{
-			return string.Format(Resources.GORGFX_TOSTR_VERTEXBUFFER_BINDING, Stride, Offset, (VertexBuffer?.D3DBuffer == null) ? "(NULL)" : VertexBuffer.Name);
+			return string.Format(Resources.GORGFX_TOSTR_VERTEXBUFFER_BINDING, Stride, Offset, (VertexBuffer?.NativeBuffer == null) ? "(NULL)" : VertexBuffer.Name);
 		}
 
 		/// <summary>

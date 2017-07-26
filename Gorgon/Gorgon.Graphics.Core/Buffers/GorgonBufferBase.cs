@@ -107,7 +107,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the D3D 11 buffer.
         /// </summary>
-        protected internal D3D11.Buffer D3DBuffer
+        protected internal D3D11.Buffer NativeBuffer
         {
             get;
             protected set;
@@ -200,7 +200,7 @@ namespace Gorgon.Graphics.Core
             }
 #endif
 
-            Graphics.D3DDeviceContext.UnmapSubresource(D3DBuffer, 0);
+            Graphics.D3DDeviceContext.UnmapSubresource(NativeBuffer, 0);
 
             // Reset the lock pointer back to null so applications can't reuse it.
             lockPointer = null;
@@ -272,7 +272,7 @@ namespace Gorgon.Graphics.Core
             }
 #endif
 
-            Graphics.D3DDeviceContext.MapSubresource(D3DBuffer, mode, D3D11.MapFlags.None, out DX.DataStream stream);
+            Graphics.D3DDeviceContext.MapSubresource(NativeBuffer, mode, D3D11.MapFlags.None, out DX.DataStream stream);
 
             if (_lockAddress == null)
             {
@@ -336,7 +336,7 @@ namespace Gorgon.Graphics.Core
             destByteIndex.ValidateRange(nameof(destOffset), 0, buffer.SizeInBytes);
 
 #if DEBUG
-            if (buffer.D3DBuffer.Description.Usage == D3D11.ResourceUsage.Immutable)
+            if (buffer.NativeBuffer.Description.Usage == D3D11.ResourceUsage.Immutable)
             {
                 throw new GorgonException(GorgonResult.AccessDenied, Resources.GORGFX_ERR_BUFFER_IS_IMMUTABLE);
             }

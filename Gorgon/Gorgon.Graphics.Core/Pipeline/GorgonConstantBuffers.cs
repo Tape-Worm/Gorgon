@@ -81,7 +81,7 @@ namespace Gorgon.Graphics.Core
 	    /// <param name="value">The value containing the native item.</param>
 	    protected override void OnStoreNativeItem(int nativeItemIndex, GorgonConstantBuffer value)
 	    {
-	        _native[nativeItemIndex] = value?.D3DBuffer;
+	        _native[nativeItemIndex] = value?.NativeBuffer;
 	    }
 		#endregion
 

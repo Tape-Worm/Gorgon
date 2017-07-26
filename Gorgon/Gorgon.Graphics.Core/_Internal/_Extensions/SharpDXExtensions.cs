@@ -183,7 +183,7 @@ namespace Gorgon.Graphics.Core
 		/// <returns>A new D3D 11 vertex buffer binding.</returns>
 		public static D3D11.VertexBufferBinding ToVertexBufferBinding(this GorgonVertexBufferBinding binding)
 		{
-			return new D3D11.VertexBufferBinding(binding.VertexBuffer?.D3DBuffer, binding.Stride, binding.Offset);
+			return new D3D11.VertexBufferBinding(binding.VertexBuffer?.NativeBuffer, binding.Stride, binding.Offset);
 		}
 
 		/// <summary>

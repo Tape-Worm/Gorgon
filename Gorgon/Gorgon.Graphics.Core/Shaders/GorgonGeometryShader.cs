@@ -99,10 +99,15 @@ namespace Gorgon.Graphics.Core
 	            throw new ArgumentNullException(nameof(streamOutLayout));
 	        }
 
-	        int[] strideList = strides?.Take(4).ToArray();
-            
-            var shader = new D3D.GeometryShader(VideoDevice.D3DDevice(), D3DByteCode, streamOutLayout.Native, strideList, 0);
-	        return new GorgonGeometryShader(VideoDevice, Name + " (SO)", IsDebug, D3DByteCode)
+	        int[] strideList = strides?.Take(4).ToArray() ?? new int[0];
+            // Clone the byte code just in case we decide to destroy the original.
+	        var byteCode = new D3DCompiler.ShaderBytecode(D3DByteCode.Data);
+
+	        var shader = new D3D.GeometryShader(VideoDevice.D3DDevice(), byteCode, streamOutLayout.Native, strideList, 0)
+	                     {
+	                         DebugName = $"{Name} (SO) D3D11GeometryShader"
+	                     };
+	        return new GorgonGeometryShader(VideoDevice, Name + " (SO)", IsDebug, byteCode)
 	               {
 	                   NativeShader = shader,
 	                   StreamOutLayout = streamOutLayout

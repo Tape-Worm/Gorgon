@@ -100,6 +100,7 @@ namespace Gorgon.Graphics.Core
 			Usage = info.Usage;
 			Use16BitIndices = info.Use16BitIndices;
 			IndexCount = info.IndexCount;
+		    IsStreamOut = info.IsStreamOut;
 		}
 
 		/// <summary>

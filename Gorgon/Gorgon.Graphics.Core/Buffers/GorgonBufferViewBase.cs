@@ -112,8 +112,8 @@ namespace Gorgon.Graphics.Core
             Log = log ?? GorgonLogDummy.DefaultInstance;
             Buffer = buffer ?? throw new ArgumentNullException(nameof(buffer));
 
-            if ((buffer.D3DBuffer.Description.Usage == D3D11.ResourceUsage.Staging)
-                || ((buffer.D3DBuffer.Description.BindFlags & D3D11.BindFlags.ShaderResource) != D3D11.BindFlags.ShaderResource))
+            if ((buffer.NativeBuffer.Description.Usage == D3D11.ResourceUsage.Staging)
+                || ((buffer.NativeBuffer.Description.BindFlags & D3D11.BindFlags.ShaderResource) != D3D11.BindFlags.ShaderResource))
             {
                 throw new ArgumentException(Resources.GORGFX_ERR_BUFFER_CANNOT_BE_BOUND_TO_GPU, nameof(buffer));
             }

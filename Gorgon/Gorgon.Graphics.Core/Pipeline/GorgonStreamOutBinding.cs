@@ -88,13 +88,13 @@ namespace Gorgon.Graphics.Core
 
             var indexBuffer = buffer as GorgonIndexBuffer;
 
-            if ((indexBuffer != null) && (indexBuffer.Info.IsStreamOut))
+            if ((indexBuffer != null) && (!indexBuffer.Info.IsStreamOut))
             {
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_TYPE_MISSING_SO, buffer.Name));
             }
 
             var vertexBuffer = buffer as GorgonVertexBuffer;
-            if ((vertexBuffer != null) && (vertexBuffer.Info.IsStreamOut))
+            if ((vertexBuffer != null) && (!vertexBuffer.Info.IsStreamOut))
             {
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_TYPE_MISSING_SO, buffer.Name));
             }
@@ -147,7 +147,7 @@ namespace Gorgon.Graphics.Core
         /// </returns>
         public override string ToString()
         {
-            return string.Format(Resources.GORGFX_TOSTR_SO_BINDING, Offset, (Buffer?.D3DBuffer == null) ? "(NULL)" : Buffer.Name);
+            return string.Format(Resources.GORGFX_TOSTR_SO_BINDING, Offset, (Buffer?.NativeBuffer == null) ? "(NULL)" : Buffer.Name);
         }
 
         /// <summary>

@@ -198,12 +198,12 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonStreamOutElement"/> class.
         /// </summary>
-        /// <param name="stream">The stream number to use.</param>
         /// <param name="context">The context for the element. This is used to indicate the HLSL semantic for the element.</param>
         /// <param name="start">The component to start writing out to.</param>
         /// <param name="count">The number of components to write out.</param>
         /// <param name="slot">The input assembler slot for the element. This is used to accomodate a vertex buffer bound at a specific slot (e.g. a vertex buffer at slot 3 would use this input element also assigned at slot 3).</param>
         /// <param name="index">[Optional] The index of the element. This is used when there are multiple elements with the same context. It allows the HLSL shader to differentiate between the elements.</param>
+        /// <param name="stream">[Optional] The stream number to use.</param>
         /// <remarks>
         /// <para>
         /// The <paramref name="start"/> and <paramref name="slot"/> values must be between 0 - 3, and the <paramref name="count"/> parameter must be between 1 - 4. If they are not, then an exception will be 
@@ -216,7 +216,7 @@ namespace Gorgon.Graphics.Core
         /// <para>-or-</para>
         /// <para>Thrown when the <paramref name="count"/> parameter is less than 1 or greater than 4.</para>
         /// </exception>
-        public GorgonStreamOutElement(int stream, string context, byte start, byte count, byte slot, int index = 0)
+        public GorgonStreamOutElement(string context, byte start, byte count, byte slot, int index = 0, int stream = 0)
 		{
 		    if (context == null)
 		    {
@@ -230,12 +230,12 @@ namespace Gorgon.Graphics.Core
 
 		    if (start > 3)
 		    {
-		        throw new ArgumentOutOfRangeException(nameof(slot), string.Format(Resources.GORGFX_ERR_VALUE_OUT_OF_RANGE, slot, 4));
+		        throw new ArgumentOutOfRangeException(nameof(slot), string.Format(Resources.GORGFX_ERR_VALUE_OUT_OF_RANGE, start, 4));
 		    }
 
-		    if (count > 4)
+		    if ((count > 4) || (count < 1))
 		    {
-		        throw new ArgumentOutOfRangeException(nameof(slot), string.Format(Resources.GORGFX_ERR_VALUE_OUT_OF_RANGE_COUNT, slot, 4));
+		        throw new ArgumentOutOfRangeException(nameof(slot), string.Format(Resources.GORGFX_ERR_VALUE_OUT_OF_RANGE_COUNT, count, 4));
             }
 
             if (slot > 3)

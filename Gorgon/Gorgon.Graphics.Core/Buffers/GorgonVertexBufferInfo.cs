@@ -182,6 +182,7 @@ namespace Gorgon.Graphics.Core
 
 			SizeInBytes = info.SizeInBytes;
 			Usage = info.Usage;
+		    IsStreamOut = info.IsStreamOut;
 		}
 
 		/// <summary>

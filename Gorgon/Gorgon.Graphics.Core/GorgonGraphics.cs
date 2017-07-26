@@ -172,6 +172,8 @@ namespace Gorgon.Graphics.Core
         private D3D11.UnorderedAccessView[] _uavBuffer;
         // A buffer for uav counters.
         private int[] _uavCounters;
+        // A buffer used to apply stream out buffers.
+        private D3D11.StreamOutputBufferBinding[] _streamOutBuffer;
         #endregion
 
         #region Properties.
@@ -375,14 +377,72 @@ namespace Gorgon.Graphics.Core
 		    return currentChanges;
 	    }
 
-	    /// <summary>
-	    /// Function to merge the previous shader constant buffers with new ones.
-	    /// </summary>
-	    /// <param name="shaderType">The type of shader to work with.</param>
-	    /// <param name="buffers">The constant buffers to merge in.</param>
-	    /// <param name="currentChanges">The current changes on the pipeline.</param>
-	    /// <returns>A <see cref="PipelineResourceChange"/> indicating whether or not the state has changed.</returns>
-	    private PipelineResourceChange MergeConstantBuffers(ShaderType shaderType, GorgonConstantBuffers buffers, PipelineResourceChange currentChanges)
+        /// <summary>
+        /// Function to merge the previous draw call stream output buffers with new ones.
+        /// </summary>
+        /// <param name="streamOutBuffers">The stream output buffers to merge in.</param>
+        /// <param name="currentChanges">The current changes on the pipeline.</param>
+        /// <returns>A <see cref="PipelineResourceChange"/> indicating whether or not the state has changed.</returns>
+        private PipelineResourceChange MergeStreamOutBuffers(GorgonStreamOutBindings streamOutBuffers, PipelineResourceChange currentChanges)
+        {
+            if (_currentDrawCall.StreamOutBuffers == streamOutBuffers)
+            {
+                if ((_currentDrawCall.StreamOutBuffers == null)
+                    || (!_currentDrawCall.StreamOutBuffers.IsDirty))
+                {
+                    return currentChanges;
+                }
+
+                return currentChanges | PipelineResourceChange.StreamOut;
+            }
+
+            // If we're tranferring into an uninitialized stream output buffer list, then allocate new stream output buffers and copy.
+            if ((streamOutBuffers != null)
+                && (_currentDrawCall.StreamOutBuffers == null))
+            {
+                _currentDrawCall.StreamOutBuffers = new GorgonStreamOutBindings();
+                streamOutBuffers.CopyTo(_currentDrawCall.StreamOutBuffers);
+                return currentChanges | PipelineResourceChange.StreamOut;
+            }
+
+            // If we're removing a set of stream output buffers, then get rid of our current set as well.
+            if (streamOutBuffers == null)
+            {
+                _currentDrawCall.StreamOutBuffers = null;
+                return currentChanges | PipelineResourceChange.StreamOut;
+            }
+
+            ref (int StartSlot, int Count) newItems = ref streamOutBuffers.GetDirtyItems();
+
+            // There's nothing going on in this list, so we can just leave now.
+            if (newItems.Count == 0)
+            {
+                return currentChanges;
+            }
+
+            int endSlot = newItems.StartSlot + newItems.Count;
+
+            for (int i = newItems.StartSlot; i < endSlot; ++i)
+            {
+                _currentDrawCall.StreamOutBuffers[i] = streamOutBuffers[i];
+            }
+
+            if (_currentDrawCall.StreamOutBuffers.IsDirty)
+            {
+                currentChanges |= PipelineResourceChange.StreamOut;
+            }
+
+            return currentChanges;
+        }
+
+        /// <summary>
+        /// Function to merge the previous shader constant buffers with new ones.
+        /// </summary>
+        /// <param name="shaderType">The type of shader to work with.</param>
+        /// <param name="buffers">The constant buffers to merge in.</param>
+        /// <param name="currentChanges">The current changes on the pipeline.</param>
+        /// <returns>A <see cref="PipelineResourceChange"/> indicating whether or not the state has changed.</returns>
+        private PipelineResourceChange MergeConstantBuffers(ShaderType shaderType, GorgonConstantBuffers buffers, PipelineResourceChange currentChanges)
 	    {
 		    ref (int StartSlot, int Count) newItems = ref buffers.GetDirtyItems();
 
@@ -824,6 +884,7 @@ namespace Gorgon.Graphics.Core
 			}
 
 		    stateChanges |= MergeVertexBuffers(sourceDrawCall.VertexBuffers, stateChanges);
+	        stateChanges |= MergeStreamOutBuffers(sourceDrawCall.StreamOutBuffers, stateChanges);
 	        stateChanges |= MergeConstantBuffers(ShaderType.Pixel, sourceDrawCall.PixelShaderConstantBuffers, stateChanges);
 	        stateChanges |= MergeShaderResources(ShaderType.Pixel, sourceDrawCall.PixelShaderResourceViews, stateChanges);
 	        stateChanges |= MergeShaderSamplers(ShaderType.Pixel, sourceDrawCall.PixelShaderSamplers, stateChanges);
@@ -1014,7 +1075,7 @@ namespace Gorgon.Graphics.Core
 
 			if (indexBuffer != null)
 			{
-				buffer = indexBuffer.D3DBuffer;
+				buffer = indexBuffer.NativeBuffer;
 				format = indexBuffer.IndexFormat;
 			}
 
@@ -1062,12 +1123,29 @@ namespace Gorgon.Graphics.Core
 			{
 				D3DDeviceContext.PixelShader.Set(state?.Info.PixelShader?.NativeShader);
 			}
-		}
 
-		/// <summary>
-		/// Function to assign viewports.
-		/// </summary>
-	    private unsafe void SetViewports()
+		    if ((changes & PipelineStateChange.GeometryShader) == PipelineStateChange.GeometryShader)
+		    {
+		        D3DDeviceContext.GeometryShader.Set(state?.Info.GeometryShader?.NativeShader);
+		    }
+
+		    if ((changes & PipelineStateChange.HullShader) == PipelineStateChange.HullShader)
+		    {
+                // TODO:
+		        //D3DDeviceContext.HullShader.Set(state?.Info.HullShader?.NativeShader);
+		    }
+
+		    if ((changes & PipelineStateChange.DomainShader) == PipelineStateChange.DomainShader)
+		    {
+		        // TODO:
+                //D3DDeviceContext.DomainShader.Set(state?.Info.DomainShader?.NativeShader);
+		    }
+        }
+
+        /// <summary>
+        /// Function to assign viewports.
+        /// </summary>
+        private unsafe void SetViewports()
 	    {
 	        if (!_viewports.IsDirty)
 	        {
@@ -1137,6 +1215,36 @@ namespace Gorgon.Graphics.Core
 		    D3DDeviceContext.InputAssembler.SetVertexBuffers(bindings.StartSlot, vertexBuffers.Native);
 		}
 
+        /// <summary>
+        /// Function to assign the stream output buffers.
+        /// </summary>
+        /// <param name="streamOutBuffers">The stream output buffers to assign.</param>
+        private void SetStreamOutBuffers(GorgonStreamOutBindings streamOutBuffers)
+        {
+            if (streamOutBuffers == null)
+            {
+                if (_streamOutBuffer != null)
+                {
+                    Array.Clear(_streamOutBuffer, 0, _streamOutBuffer.Length);
+                }
+                D3DDeviceContext.StreamOutput.SetTargets(null);
+                return;
+            }
+
+            (int, int Count) bindings = streamOutBuffers.GetDirtyItems();
+
+            if ((_streamOutBuffer == null) || (_streamOutBuffer.Length != bindings.Count))
+            {
+                _streamOutBuffer = new D3D11.StreamOutputBufferBinding[bindings.Count];
+            }
+
+            for (int i = 0; i < bindings.Count; ++i)
+            {
+                _streamOutBuffer[i] = streamOutBuffers.Native[i];
+            }
+
+            D3DDeviceContext.StreamOutput.SetTargets(_streamOutBuffer);
+        }
 
         /// <summary>
         /// Function to unbind a render target that is bound as a shader input.
@@ -1396,7 +1504,12 @@ namespace Gorgon.Graphics.Core
 				D3DDeviceContext.InputAssembler.InputLayout = drawCall.VertexBuffers?.InputLayout.D3DInputLayout;
 			}
 
-			if ((resourceChanges & PipelineResourceChange.VertexBuffers) == PipelineResourceChange.VertexBuffers)
+		    if ((resourceChanges & PipelineResourceChange.StreamOut) == PipelineResourceChange.StreamOut)
+		    {
+		        SetStreamOutBuffers(drawCall.StreamOutBuffers);
+		    }
+
+            if ((resourceChanges & PipelineResourceChange.VertexBuffers) == PipelineResourceChange.VertexBuffers)
 			{
 				SetVertexBuffers(drawCall.VertexBuffers);
 			}
@@ -1416,7 +1529,24 @@ namespace Gorgon.Graphics.Core
 				SetShaderConstantBuffers(ShaderType.Pixel, drawCall.PixelShaderConstantBuffers);
 			}
 
-			if ((resourceChanges & PipelineResourceChange.VertexShaderResources) == PipelineResourceChange.VertexShaderResources)
+		    if ((resourceChanges & PipelineResourceChange.GeometryShaderConstantBuffers) == PipelineResourceChange.GeometryShaderConstantBuffers)
+		    {
+		        SetShaderConstantBuffers(ShaderType.Geometry, drawCall.GeometryShaderConstantBuffers);
+		    }
+
+		    if ((resourceChanges & PipelineResourceChange.HullShaderConstantBuffers) == PipelineResourceChange.HullShaderConstantBuffers)
+		    {
+		        // TODO:
+                //SetShaderConstantBuffers(ShaderType.Hull, drawCall.HullShaderConstantBuffers);
+		    }
+
+		    if ((resourceChanges & PipelineResourceChange.DomainShaderConstantBuffers) == PipelineResourceChange.DomainShaderConstantBuffers)
+		    {
+		        // TODO:
+                //SetShaderConstantBuffers(ShaderType.Domain, drawCall.DomainShaderConstantBuffers);
+		    }
+
+            if ((resourceChanges & PipelineResourceChange.VertexShaderResources) == PipelineResourceChange.VertexShaderResources)
 			{
 				SetShaderResourceViews(ShaderType.Vertex, drawCall.VertexShaderResourceViews);
 			}
@@ -1431,7 +1561,24 @@ namespace Gorgon.Graphics.Core
 		        SetPixelShaderUavs(drawCall.PixelShaderUavs);
 		    }
 
-			if ((resourceChanges & PipelineResourceChange.VertexShaderSamplers) == PipelineResourceChange.VertexShaderSamplers)
+		    if ((resourceChanges & PipelineResourceChange.GeometryShaderResources) == PipelineResourceChange.GeometryShaderResources)
+		    {
+		        SetShaderResourceViews(ShaderType.Geometry, drawCall.GeometryShaderResourceViews);
+		    }
+
+		    if ((resourceChanges & PipelineResourceChange.HullShaderResources) == PipelineResourceChange.HullShaderResources)
+		    {
+		        // TODO:
+                //SetShaderResourceViews(ShaderType.Hull, drawCall.HullShaderResourceViews);
+		    }
+
+		    if ((resourceChanges & PipelineResourceChange.DomainShaderResources) == PipelineResourceChange.DomainShaderResources)
+		    {
+		        // TODO:
+                //SetShaderResourceViews(ShaderType.Domain, drawCall.DomainShaderResourceViews);
+		    }
+
+            if ((resourceChanges & PipelineResourceChange.VertexShaderSamplers) == PipelineResourceChange.VertexShaderSamplers)
 			{
 				SetShaderSamplers(ShaderType.Vertex, drawCall.VertexShaderSamplers);
 			}
@@ -1441,7 +1588,24 @@ namespace Gorgon.Graphics.Core
 				SetShaderSamplers(ShaderType.Pixel, drawCall.PixelShaderSamplers);
 			}
 
-			if ((resourceChanges & PipelineResourceChange.BlendFactor) == PipelineResourceChange.BlendFactor)
+		    if ((resourceChanges & PipelineResourceChange.GeometryShaderSamplers) == PipelineResourceChange.GeometryShaderSamplers)
+		    {
+		        SetShaderSamplers(ShaderType.Geometry, drawCall.GeometryShaderSamplers);
+		    }
+
+		    if ((resourceChanges & PipelineResourceChange.HullShaderSamplers) == PipelineResourceChange.HullShaderSamplers)
+		    {
+		        // TODO:
+                //SetShaderSamplers((ShaderType.Hull, drawCall.HullShaderSamplers);
+            }
+
+            if ((resourceChanges & PipelineResourceChange.DomainShaderSamplers) == PipelineResourceChange.DomainShaderSamplers)
+		    {
+		        // TODO:
+                //SetShaderSamplers((ShaderType.Domain, drawCall.DomainShaderSamplers);
+            }
+
+            if ((resourceChanges & PipelineResourceChange.BlendFactor) == PipelineResourceChange.BlendFactor)
 			{
 				D3DDeviceContext.OutputMerger.BlendFactor = drawCall.BlendFactor.ToRawColor4();
 			}
@@ -1699,6 +1863,16 @@ namespace Gorgon.Graphics.Core
                 SamplerStateFactory.ClearCache();
 			}
 		}
+
+        public void SubmitAuto(GorgonDrawCallBase drawCall)
+        {
+            // Merge this draw call with our previous one (if available).
+            (PipelineResourceChange ChangedResources, PipelineStateChange ChangedStates) stateChange = MergeDrawCall(drawCall);
+
+            ApplyPerDrawStates(_currentDrawCall, drawCall.PipelineState, stateChange.ChangedResources, stateChange.ChangedStates);
+
+            D3DDeviceContext.DrawAuto();
+        }
 
         /// <summary>
         /// Function to submit a <see cref="GorgonDrawIndexedCall"/> to the GPU.

@@ -143,6 +143,10 @@ namespace Gorgon.Graphics.Core
         /// The pixel shader unordered access views have been updated.
         /// </summary>
         PixelShaderUavs = 0x10_000_000,
+        /// <summary>
+        /// The stream out bindings have changed.
+        /// </summary>
+        StreamOut = 0x20_000_000,
 		/// <summary>
 		/// All states changed.
 		/// </summary>
@@ -172,6 +176,7 @@ namespace Gorgon.Graphics.Core
 			| InputLayout
 			| VertexBuffers
 			| PrimitiveTopology
+            | StreamOut
 	}
 
 	/// <summary>
@@ -205,7 +210,7 @@ namespace Gorgon.Graphics.Core
 			set;
 		}
 
-		/// <summary>
+        /// <summary>
 		/// Property to return the constant buffers for the vertex shader.
 		/// </summary>
 		public GorgonConstantBuffers VertexShaderConstantBuffers
@@ -311,7 +316,7 @@ namespace Gorgon.Graphics.Core
 		{
 			get;
 			set;
-		} = D3D.PrimitiveTopology.TriangleStrip;
+		} = D3D.PrimitiveTopology.TriangleList;
 
 		/// <summary>
 		/// Property to set or return the current pipeline state.
@@ -354,6 +359,15 @@ namespace Gorgon.Graphics.Core
 			get;
 			set;
 		}
+
+        /// <summary>
+        /// Property to set or return the bindings used for stream output.
+        /// </summary>
+	    public GorgonStreamOutBindings StreamOutBuffers
+	    {
+	        get;
+	        set;
+	    }
 		#endregion
 
 		#region Methods.
@@ -366,6 +380,7 @@ namespace Gorgon.Graphics.Core
 			VertexBuffers = null;
 			IndexBuffer = null;
 			PipelineState = null;
+		    StreamOutBuffers = null;
 
 			unchecked
 			{
