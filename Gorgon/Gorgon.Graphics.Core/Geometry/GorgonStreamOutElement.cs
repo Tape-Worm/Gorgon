@@ -201,7 +201,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="context">The context for the element. This is used to indicate the HLSL semantic for the element.</param>
         /// <param name="start">The component to start writing out to.</param>
         /// <param name="count">The number of components to write out.</param>
-        /// <param name="slot">The input assembler slot for the element. This is used to accomodate a vertex buffer bound at a specific slot (e.g. a vertex buffer at slot 3 would use this input element also assigned at slot 3).</param>
+        /// <param name="slot">The associated stream output buffer that is bound to the pipeline.</param>
         /// <param name="index">[Optional] The index of the element. This is used when there are multiple elements with the same context. It allows the HLSL shader to differentiate between the elements.</param>
         /// <param name="stream">[Optional] The stream number to use.</param>
         /// <remarks>

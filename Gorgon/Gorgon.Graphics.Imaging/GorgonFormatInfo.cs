@@ -132,6 +132,15 @@ namespace Gorgon.Graphics.Imaging
 			get;
 		}
 
+        /// <summary>
+        /// Property to return the number of components for the format.
+        /// </summary>
+	    public int ComponentCount
+	    {
+	        get;
+            private set;
+        }
+
 		/// <summary>
 		/// Property to return whether the format is typeless or not.
 		/// </summary>
@@ -454,6 +463,146 @@ namespace Gorgon.Graphics.Imaging
 					break;
 			}
 		}
+
+        /// <summary>
+        /// Function to retrieve the number of components that make up a format.
+        /// </summary>
+        /// <param name="format">The format to evaulate.</param>
+	    private void GetComponentCount(DXGI.Format format)
+	    {
+	        switch (format)
+	        {
+	            case DXGI.Format.R32G32B32A32_Typeless:
+	            case DXGI.Format.R32G32B32A32_Float:
+	            case DXGI.Format.R32G32B32A32_UInt:
+	            case DXGI.Format.R32G32B32A32_SInt:
+	            case DXGI.Format.R16G16B16A16_Typeless:
+	            case DXGI.Format.R16G16B16A16_Float:
+	            case DXGI.Format.R16G16B16A16_UNorm:
+	            case DXGI.Format.R16G16B16A16_UInt:
+	            case DXGI.Format.R16G16B16A16_SNorm:
+	            case DXGI.Format.R16G16B16A16_SInt:
+	            case DXGI.Format.R10G10B10A2_Typeless:
+	            case DXGI.Format.R10G10B10A2_UNorm:
+	            case DXGI.Format.R10G10B10A2_UInt:
+	            case DXGI.Format.R8G8B8A8_Typeless:
+	            case DXGI.Format.R8G8B8A8_UNorm:
+	            case DXGI.Format.R8G8B8A8_UNorm_SRgb:
+	            case DXGI.Format.R8G8B8A8_UInt:
+	            case DXGI.Format.R8G8B8A8_SNorm:
+	            case DXGI.Format.R8G8B8A8_SInt:
+	            case DXGI.Format.R8G8_B8G8_UNorm:
+	            case DXGI.Format.G8R8_G8B8_UNorm:
+	            case DXGI.Format.BC1_Typeless:
+	            case DXGI.Format.BC1_UNorm:
+	            case DXGI.Format.BC1_UNorm_SRgb:
+	            case DXGI.Format.BC2_Typeless:
+	            case DXGI.Format.BC2_UNorm:
+	            case DXGI.Format.BC2_UNorm_SRgb:
+	            case DXGI.Format.BC3_Typeless:
+	            case DXGI.Format.BC3_UNorm:
+	            case DXGI.Format.BC3_UNorm_SRgb:
+	            case DXGI.Format.BC4_Typeless:
+	            case DXGI.Format.BC4_UNorm:
+	            case DXGI.Format.BC4_SNorm:
+	            case DXGI.Format.BC5_Typeless:
+	            case DXGI.Format.BC5_UNorm:
+	            case DXGI.Format.BC5_SNorm:
+	            case DXGI.Format.B5G5R5A1_UNorm:
+	            case DXGI.Format.B8G8R8A8_UNorm:
+	            case DXGI.Format.B8G8R8X8_UNorm:
+	            case DXGI.Format.R10G10B10_Xr_Bias_A2_UNorm:
+	            case DXGI.Format.B8G8R8A8_Typeless:
+	            case DXGI.Format.B8G8R8A8_UNorm_SRgb:
+	            case DXGI.Format.B8G8R8X8_Typeless:
+	            case DXGI.Format.B8G8R8X8_UNorm_SRgb:
+	            case DXGI.Format.BC6H_Typeless:
+	            case DXGI.Format.BC6H_Uf16:
+	            case DXGI.Format.BC6H_Sf16:
+	            case DXGI.Format.BC7_Typeless:
+	            case DXGI.Format.BC7_UNorm:
+	            case DXGI.Format.BC7_UNorm_SRgb:
+	            case DXGI.Format.B4G4R4A4_UNorm:
+	                ComponentCount = 4;
+	                break;
+	            case DXGI.Format.R11G11B10_Float:
+	            case DXGI.Format.R32G32B32_Typeless:
+	            case DXGI.Format.R32G32B32_Float:
+	            case DXGI.Format.R32G32B32_UInt:
+	            case DXGI.Format.R32G32B32_SInt:
+	            case DXGI.Format.B5G6R5_UNorm:
+	            case DXGI.Format.R9G9B9E5_Sharedexp:
+	                ComponentCount = 3;
+                    break;
+	            case DXGI.Format.R32G32_Typeless:
+	            case DXGI.Format.R32G32_Float:
+	            case DXGI.Format.R32G32_UInt:
+	            case DXGI.Format.R32G32_SInt:
+	            case DXGI.Format.R32G8X24_Typeless:
+	            case DXGI.Format.R16G16_Typeless:
+	            case DXGI.Format.R16G16_Float:
+	            case DXGI.Format.R16G16_UNorm:
+	            case DXGI.Format.R16G16_UInt:
+	            case DXGI.Format.R16G16_SNorm:
+	            case DXGI.Format.R16G16_SInt:
+	            case DXGI.Format.R24G8_Typeless:
+	            case DXGI.Format.R8G8_Typeless:
+	            case DXGI.Format.R8G8_UNorm:
+	            case DXGI.Format.R8G8_UInt:
+	            case DXGI.Format.R8G8_SNorm:
+	            case DXGI.Format.R8G8_SInt:
+	            case DXGI.Format.AYUV:
+	            case DXGI.Format.YUY2:
+	            case DXGI.Format.NV11:
+	            case DXGI.Format.AI44:
+	            case DXGI.Format.IA44:
+	            case DXGI.Format.A8P8:
+	                ComponentCount = 2;
+	                break;
+	            case DXGI.Format.R8_Typeless:
+	            case DXGI.Format.R8_UNorm:
+	            case DXGI.Format.R8_UInt:
+	            case DXGI.Format.R8_SNorm:
+	            case DXGI.Format.R8_SInt:
+	            case DXGI.Format.A8_UNorm:
+	            case DXGI.Format.R1_UNorm:
+	            case DXGI.Format.Y410:
+	            case DXGI.Format.Y416:
+	            case DXGI.Format.NV12:
+	            case DXGI.Format.P010:
+	            case DXGI.Format.P016:
+	            case DXGI.Format.Opaque420:
+	            case DXGI.Format.Y210:
+	            case DXGI.Format.Y216:
+	            case DXGI.Format.P8:
+	            case DXGI.Format.P208:
+	            case DXGI.Format.V208:
+	            case DXGI.Format.V408:
+	            case DXGI.Format.X32_Typeless_G8X24_UInt:
+	            case DXGI.Format.R32_Float_X8X24_Typeless:
+	            case DXGI.Format.R32_Typeless:
+	            case DXGI.Format.D32_Float:
+	            case DXGI.Format.R32_Float:
+	            case DXGI.Format.R32_UInt:
+	            case DXGI.Format.R32_SInt:
+	            case DXGI.Format.R16_Typeless:
+	            case DXGI.Format.R16_Float:
+	            case DXGI.Format.D16_UNorm:
+	            case DXGI.Format.R16_UNorm:
+	            case DXGI.Format.R16_UInt:
+	            case DXGI.Format.R16_SNorm:
+	            case DXGI.Format.R16_SInt:
+	            case DXGI.Format.D24_UNorm_S8_UInt:
+	            case DXGI.Format.R24_UNorm_X8_Typeless:
+	            case DXGI.Format.X24_Typeless_G8_UInt:
+	            case DXGI.Format.D32_Float_S8X24_UInt:
+	                ComponentCount = 1;
+	                break;
+                default:
+                    ComponentCount = 0;
+                    break;
+	        }
+        }
 
 		/// <summary>
 		/// Function to retrieve whether a buffer is compressed or not.
@@ -915,6 +1064,7 @@ namespace Gorgon.Graphics.Imaging
 			GetSRgbState(format);
 			GetDepthState(format);
 			GetBitDepth(format);
+            GetComponentCount(format);
 		}
 		#endregion
 	}

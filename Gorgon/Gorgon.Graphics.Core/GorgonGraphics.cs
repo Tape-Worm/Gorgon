@@ -1864,27 +1864,27 @@ namespace Gorgon.Graphics.Core
 			}
 		}
 
-        public void SubmitAuto(GorgonDrawCallBase drawCall)
-        {
-            // Merge this draw call with our previous one (if available).
-            (PipelineResourceChange ChangedResources, PipelineStateChange ChangedStates) stateChange = MergeDrawCall(drawCall);
-
-            ApplyPerDrawStates(_currentDrawCall, drawCall.PipelineState, stateChange.ChangedResources, stateChange.ChangedStates);
-
-            D3DDeviceContext.DrawAuto();
-        }
-
         /// <summary>
-        /// Function to submit a <see cref="GorgonDrawIndexedCall"/> to the GPU.
+        /// Function to submit a <see cref="GorgonDrawCallBase"/> to the GPU.
         /// </summary>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawCall"/> parameter is <b>null</b>.</exception>
+        /// <param name="drawCall">The draw call to submit.</param>
         /// <remarks>
         /// <para>
-        /// This method sends a series of state changes and resource bindings to the GPU along with a command to render primitive data.
+        /// This method sends a series of state changes and resource bindings to the GPU. However, unlike the <see cref="O:Gorgon.Graphics.Core.GorgonGraphics.Submit"/> commands, this command uses 
+        /// pre-processed data from the vertex and stream out stages. This means that the <see cref="GorgonVertexBuffer"/> attached to the draw call must have been assigned to the 
+        /// <see cref="GorgonDrawCallBase.StreamOutBuffers"/> and had data deposited into it from the stream out stage. After that, it should be removed from the 
+        /// <see cref="GorgonDrawCallBase.StreamOutBuffers"/> and assigned to the <see cref="GorgonDrawCallBase.VertexBuffers"/> on the <paramref name="drawCall"/> passed to this method.
         /// </para>
         /// <para>
-        /// For performance, Gorgon keeps track of the previous draw call, and if they're the same reference, then nothing is done. A new <see cref="GorgonDrawIndexedCall"/> must be sent to this method in 
-        /// order for changes to be seen.
+        /// To render data with this method, the <see cref="GorgonVertexBuffer"/> being rendered must be at slot 0 in the <see cref="GorgonDrawCallBase.VertexBuffers"/> list on the 
+        /// <paramref name="drawCall"/> passed to the method. This buffer must be created with the <see cref="IGorgonVertexBufferInfo.IsStreamOut"/> flag set to <b>true</b>.
+        /// </para>
+        /// <para>
+        /// Draw calls with a start and count property (for indices, vertices, etc...) will work with this method, but those properties are ignored because the actual size of the data being sent is unknown 
+        /// at the application level. The GPU will track the size of the buffer being rendered.
+        /// </para>
+        /// <para>
+        /// This method does not support the use of a <see cref="GorgonIndexBuffer"/>, if one is bound to the draw call, it will be unbound and a warning will go to the log.
         /// </para>
         /// <para>
         /// <note type="caution">
@@ -1894,6 +1894,42 @@ namespace Gorgon.Graphics.Core
         /// </note>
         /// </para>
         /// </remarks>
+        public void SubmitStreamOut(GorgonDrawCallBase drawCall)
+        {
+            // Merge this draw call with our previous one (if available).
+            (PipelineResourceChange ChangedResources, PipelineStateChange ChangedStates) stateChange = MergeDrawCall(drawCall);
+
+            // Unbind the index buffer if one is present.
+            if (_currentDrawCall.IndexBuffer != null)
+            {
+                _log.Print("The SubmitStreamOut method does not support the use of index buffers. The current index buffer will be reset to NULL.", LoggingLevel.Verbose);
+                _currentDrawCall.IndexBuffer = null;
+                stateChange.ChangedResources |= PipelineResourceChange.IndexBuffer;
+            }
+
+            ApplyPerDrawStates(_currentDrawCall, drawCall.PipelineState, stateChange.ChangedResources, stateChange.ChangedStates);
+
+            D3DDeviceContext.DrawAuto();
+        }
+
+        /// <summary>
+        /// Function to submit a <see cref="GorgonDrawIndexedCall"/> to the GPU.
+        /// </summary>
+        /// <param name="drawCall">The draw call to submit.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawCall"/> parameter is <b>null</b>.</exception>
+        /// <remarks>
+        /// <para>
+        /// This method sends a series of state changes and resource bindings to the GPU along with a command to render primitive data with a <see cref="GorgonIndexBuffer"/>.
+        /// </para>
+        /// <para>
+        /// <note type="caution">
+        /// <para>
+        /// For performance reasons, any exceptions thrown from this method will only be thrown when Gorgon is compiled as DEBUG.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="GorgonIndexBuffer"/>
         public void Submit(GorgonDrawIndexedCall drawCall)
 		{
 			drawCall.ValidateObject(nameof(drawCall));
@@ -1906,27 +1942,24 @@ namespace Gorgon.Graphics.Core
 			D3DDeviceContext.DrawIndexed(drawCall.IndexCount, drawCall.IndexStart, drawCall.BaseVertexIndex);
 		}
 
-		/// <summary>
-		/// Function to submit a <see cref="GorgonDrawCall"/> to the GPU.
-		/// </summary>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawCall"/> parameter is <b>null</b>.</exception>
-		/// <remarks>
-		/// <para>
-		/// This method sends a series of state changes and resource bindings to the GPU along with a command to render primitive data.
-		/// </para>
-		/// <para>
-		/// For performance, Gorgon keeps track of the previous draw call, and if they're the same reference, then nothing is done. A new <see cref="GorgonDrawCall"/> must be sent to this method in 
-		/// order for changes to be seen.
-		/// </para>
-		/// <para>
-		/// <note type="caution">
-		/// <para>
-		/// For performance reasons, any exceptions thrown from this method will only be thrown when Gorgon is compiled as DEBUG.
-		/// </para>
-		/// </note>
-		/// </para>
-		/// </remarks>
-		public void Submit(GorgonDrawCall drawCall)
+        /// <summary>
+        /// Function to submit a <see cref="GorgonDrawCall"/> to the GPU.
+        /// </summary>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawCall"/> parameter is <b>null</b>.</exception>
+        /// <param name="drawCall">The draw call to submit.</param>
+        /// <remarks>
+        /// <para>
+        /// This method sends a series of state changes and resource bindings to the GPU along with a command to render primitive data.
+        /// </para>
+        /// <para>
+        /// <note type="caution">
+        /// <para>
+        /// For performance reasons, any exceptions thrown from this method will only be thrown when Gorgon is compiled as DEBUG.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        public void Submit(GorgonDrawCall drawCall)
 		{
 			drawCall.ValidateObject(nameof(drawCall));
 
@@ -1938,27 +1971,24 @@ namespace Gorgon.Graphics.Core
 			D3DDeviceContext.Draw(drawCall.VertexCount, drawCall.VertexStartIndex);
 		}
 
-		/// <summary>
-		/// Function to submit a <see cref="GorgonDrawCallInstanced"/> to the GPU.
-		/// </summary>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawCall"/> parameter is <b>null</b>.</exception>
-		/// <remarks>
-		/// <para>
-		/// This method sends a series of state changes and resource bindings to the GPU along with a command to render primitive data.
-		/// </para>
-		/// <para>
-		/// For performance, Gorgon keeps track of the previous draw call, and if they're the same reference, then nothing is done. A new <see cref="GorgonDrawCall"/> must be sent to this method in 
-		/// order for changes to be seen.
-		/// </para>
-		/// <para>
-		/// <note type="caution">
-		/// <para>
-		/// For performance reasons, any exceptions thrown from this method will only be thrown when Gorgon is compiled as DEBUG.
-		/// </para>
-		/// </note>
-		/// </para>
-		/// </remarks>
-		public void Submit(GorgonDrawCallInstanced drawCall)
+        /// <summary>
+        /// Function to submit a <see cref="GorgonDrawCallInstanced"/> to the GPU.
+        /// </summary>
+        /// <param name="drawCall">The draw call to submit.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawCall"/> parameter is <b>null</b>.</exception>
+        /// <remarks>
+        /// <para>
+        /// This method sends a series of state changes and resource bindings to the GPU along with a command to render instanced primitive data.
+        /// </para>
+        /// <para>
+        /// <note type="caution">
+        /// <para>
+        /// For performance reasons, any exceptions thrown from this method will only be thrown when Gorgon is compiled as DEBUG.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        public void Submit(GorgonDrawCallInstanced drawCall)
 		{
 			drawCall.ValidateObject(nameof(drawCall));
 
@@ -1970,27 +2000,25 @@ namespace Gorgon.Graphics.Core
 			D3DDeviceContext.DrawInstanced(drawCall.VertexCountPerInstance, drawCall.InstanceCount, drawCall.VertexStartIndex, drawCall.StartInstanceIndex);
 		}
 
-		/// <summary>
-		/// Function to submit a <see cref="GorgonDrawIndexedInstancedCall"/> to the GPU.
-		/// </summary>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawCall"/> parameter is <b>null</b>.</exception>
-		/// <remarks>
-		/// <para>
-		/// This method sends a series of state changes and resource bindings to the GPU along with a command to render primitive data.
-		/// </para>
-		/// <para>
-		/// For performance, Gorgon keeps track of the previous draw call, and if they're the same reference, then nothing is done. A new <see cref="GorgonDrawCall"/> must be sent to this method in 
-		/// order for changes to be seen.
-		/// </para>
-		/// <para>
-		/// <note type="caution">
-		/// <para>
-		/// For performance reasons, any exceptions thrown from this method will only be thrown when Gorgon is compiled as DEBUG.
-		/// </para>
-		/// </note>
-		/// </para>
-		/// </remarks>
-		public void Submit(GorgonDrawIndexedInstancedCall drawCall)
+        /// <summary>
+        /// Function to submit a <see cref="GorgonDrawIndexedInstancedCall"/> to the GPU.
+        /// </summary>
+        /// <param name="drawCall">The draw call to submit.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawCall"/> parameter is <b>null</b>.</exception>
+        /// <remarks>
+        /// <para>
+        /// This method sends a series of state changes and resource bindings to the GPU along with a command to render instanced primitive data with a <see cref="GorgonIndexBuffer"/>.
+        /// </para>
+        /// <para>
+        /// <note type="caution">
+        /// <para>
+        /// For performance reasons, any exceptions thrown from this method will only be thrown when Gorgon is compiled as DEBUG.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="GorgonIndexBuffer"/>
+        public void Submit(GorgonDrawIndexedInstancedCall drawCall)
 		{
 			drawCall.ValidateObject(nameof(drawCall));
 

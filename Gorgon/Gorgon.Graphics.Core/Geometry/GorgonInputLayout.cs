@@ -36,6 +36,7 @@ using DXGI = SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
+using Gorgon.Graphics.Imaging;
 using Gorgon.Reflection;
 
 namespace Gorgon.Graphics.Core
@@ -399,6 +400,41 @@ namespace Gorgon.Graphics.Core
 
 			return new GorgonInputLayout(type.Name, videoDevice, shader, elements);
 		}
+
+        /// <summary>
+        /// Function to convert this input layout into a <see cref="GorgonStreamOutLayout"/>
+        /// </summary>
+        /// <param name="stream">[Optional] The output stream to use.</param>
+        /// <param name="slot">[Optional] The associated stream output buffer that is bound to the pipeline.</param>
+        /// <returns>A new <see cref="GorgonStreamOutLayout"/> derived from this input layout.</returns>
+        /// <remarks>
+        /// <para>
+        /// When streaming data out from the GPU, the layout of that data must be defined as a <see cref="GorgonStreamOutLayout"/>, which is quite similar to an input layout. For convenience, this method 
+        /// will create a new <see cref="GorgonStreamOutLayout"/> that uses the same semantics as the input layout.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="GorgonStreamOutLayout"/>
+	    public GorgonStreamOutLayout ToStreamOutLayout(int stream = 0, byte slot = 0)
+	    {
+	        var elements = new GorgonStreamOutElement[_elements.Length];
+
+	        for (int i = 0; i < _elements.Length; ++i)
+	        {
+                // Only allow 64 elements.
+	            if (i > 64)
+	            {
+	                break;
+	            }
+
+	            GorgonInputElement inputElement = _elements[i];
+
+	            var info = new GorgonFormatInfo(inputElement.Format);
+
+                elements[i] = new GorgonStreamOutElement(inputElement.Context, 0, (byte)info.ComponentCount, slot, inputElement.Index, stream);
+	        }
+
+            return new GorgonStreamOutLayout(Name + " (SO)", elements);
+	    }
         
 		/// <summary>
 		/// Function to normalize the offsets in the element list.
