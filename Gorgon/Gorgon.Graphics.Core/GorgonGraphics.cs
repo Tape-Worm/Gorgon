@@ -607,12 +607,12 @@ namespace Gorgon.Graphics.Core
 	    }
 
         /// <summary>
-        /// Function to merge the pixel shader unordered access views.
+        /// Function to merge the unordered access views.
         /// </summary>
         /// <param name="uavs">The unordered access views to merge.</param>
         /// <param name="currentChanges">The current changes on the pipeline.</param>
         /// <returns>A <see cref="PipelineResourceChange"/> indicating whether or not the state has changed and a flag indicating that render targets were unbound.</returns>
-        private PipelineResourceChange MergePixelShaderUavs(GorgonUavBindings uavs, PipelineResourceChange currentChanges)
+        private PipelineResourceChange MergeUavs(GorgonUavBindings uavs, PipelineResourceChange currentChanges)
         {
 #if DEBUG
             if (VideoDevice.RequestedFeatureLevel < FeatureLevelSupport.Level_11_0)
@@ -633,12 +633,12 @@ namespace Gorgon.Graphics.Core
             for (int i = newItems.StartSlot; i < newEnd; ++i)
             {
                 _renderTargets[i] = null;
-                _currentDrawCall.PixelShaderUavs[i] = uavs[i];
+                _currentDrawCall.UnorderedAccessViews[i] = uavs[i];
             }
 
-            if (_currentDrawCall.PixelShaderUavs.IsDirty)
+            if (_currentDrawCall.UnorderedAccessViews.IsDirty)
             {
-                currentChanges |= PipelineResourceChange.PixelShaderUavs;
+                currentChanges |= PipelineResourceChange.Uavs;
             }
 
             return currentChanges;
@@ -888,7 +888,7 @@ namespace Gorgon.Graphics.Core
 	        stateChanges |= MergeConstantBuffers(ShaderType.Pixel, sourceDrawCall.PixelShaderConstantBuffers, stateChanges);
 	        stateChanges |= MergeShaderResources(ShaderType.Pixel, sourceDrawCall.PixelShaderResourceViews, stateChanges);
 	        stateChanges |= MergeShaderSamplers(ShaderType.Pixel, sourceDrawCall.PixelShaderSamplers, stateChanges);
-	        stateChanges |= MergePixelShaderUavs(sourceDrawCall.PixelShaderUavs, stateChanges);
+	        stateChanges |= MergeUavs(sourceDrawCall.UnorderedAccessViews, stateChanges);
 		    stateChanges |= MergeConstantBuffers(ShaderType.Vertex, sourceDrawCall.VertexShaderConstantBuffers, stateChanges);
 	        stateChanges |= MergeShaderSamplers(ShaderType.Vertex, sourceDrawCall.VertexShaderSamplers, stateChanges);
 	        stateChanges |= MergeShaderResources(ShaderType.Vertex, sourceDrawCall.VertexShaderResourceViews, stateChanges);
@@ -1351,7 +1351,7 @@ namespace Gorgon.Graphics.Core
         /// Function to bind unordered access views to the resource list.
         /// </summary>
         /// <param name="uavs">The unordered access views to bind.</param>
-        private void SetPixelShaderUavs(GorgonUavBindings uavs)
+        private void SetUavs(GorgonUavBindings uavs)
         {
             ref (int StartSlot, int Count) bindings = ref uavs.GetDirtyItems();
 
@@ -1556,9 +1556,9 @@ namespace Gorgon.Graphics.Core
 				SetShaderResourceViews(ShaderType.Pixel, drawCall.PixelShaderResourceViews);
 			}
 
-		    if ((resourceChanges & PipelineResourceChange.PixelShaderUavs) == PipelineResourceChange.PixelShaderUavs)
+		    if ((resourceChanges & PipelineResourceChange.Uavs) == PipelineResourceChange.Uavs)
 		    {
-		        SetPixelShaderUavs(drawCall.PixelShaderUavs);
+		        SetUavs(drawCall.UnorderedAccessViews);
 		    }
 
 		    if ((resourceChanges & PipelineResourceChange.GeometryShaderResources) == PipelineResourceChange.GeometryShaderResources)
@@ -1881,7 +1881,8 @@ namespace Gorgon.Graphics.Core
         /// </para>
         /// <para>
         /// Draw calls with a start and count property (for indices, vertices, etc...) will work with this method, but those properties are ignored because the actual size of the data being sent is unknown 
-        /// at the application level. The GPU will track the size of the buffer being rendered.
+        /// at the application level. The GPU will track the size of the buffer being rendered. The <see cref="IGorgonPipelineStateInfo.VertexShader"/> of the <see cref="GorgonDrawCallBase.PipelineState"/> 
+        /// will be ignored as well as the vertex data being passed is already processed by a vertex shader.
         /// </para>
         /// <para>
         /// This method does not support the use of a <see cref="GorgonIndexBuffer"/>, if one is bound to the draw call, it will be unbound and a warning will go to the log.
@@ -1906,6 +1907,13 @@ namespace Gorgon.Graphics.Core
                 _currentDrawCall.IndexBuffer = null;
                 stateChange.ChangedResources |= PipelineResourceChange.IndexBuffer;
             }
+
+#if DEBUG
+            if (_currentDrawCall.PipelineState.Info.VertexShader != null)
+            {
+                _log.Print("The SubmitStreamOut method has a vertex shader bound to its pipeline state. This may have unintended effects on the rendered geometry.", LoggingLevel.Verbose);
+            }
+#endif
 
             ApplyPerDrawStates(_currentDrawCall, drawCall.PipelineState, stateChange.ChangedResources, stateChange.ChangedStates);
 

@@ -140,9 +140,9 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		DepthStencilReference = 0x8_000_000,
         /// <summary>
-        /// The pixel shader unordered access views have been updated.
+        /// The unordered access views have been updated.
         /// </summary>
-        PixelShaderUavs = 0x10_000_000,
+        Uavs = 0x10_000_000,
         /// <summary>
         /// The stream out bindings have changed.
         /// </summary>
@@ -168,7 +168,7 @@ namespace Gorgon.Graphics.Core
 			| PixelShaderConstantBuffers
 			| PixelShaderResources
 			| PixelShaderSamplers
-            | PixelShaderUavs
+            | Uavs
 			| VertexShaderConstantBuffers
 			| VertexShaderResources
 			| VertexShaderSamplers
@@ -251,7 +251,7 @@ namespace Gorgon.Graphics.Core
 		}
 
         /// <summary>
-        /// Property to return the pixel shader unordered access views to bind to the pipeline.
+        /// Property to return the unordered access views to bind to the pipeline.
         /// </summary>
         /// <remarks>
         /// <para>
@@ -262,8 +262,16 @@ namespace Gorgon.Graphics.Core
         /// by the <see cref="GorgonUnorderedAccessView"/> at that slot. Conversely, if there is an unordered access view bound to a specific slot, and a render target is assigned to that slot, then the 
         /// unordered access view will be unbound.
         /// </para>
+        /// <para>
+        /// <note type="information">
+        /// <para>
+        /// These views require a feature level of <c>Level_11_0</c> or better. For devices that support a feature level of <c>Level_11_1</c>, these views can be accessed from any shader stage. However, on 
+        /// devices with only <c>Level_11_0</c> support, only the pixel and compute shaders can access unordered access views.
+        /// </para>
+        /// </note>
+        /// </para>
         /// </remarks>
-	    public GorgonUavBindings PixelShaderUavs
+	    public GorgonUavBindings UnorderedAccessViews
 	    {
 	        get;
 	    }
@@ -397,7 +405,7 @@ namespace Gorgon.Graphics.Core
 			PixelShaderResourceViews.Clear();
 			PixelShaderConstantBuffers.Clear();
 			PixelShaderSamplers.Clear();
-            PixelShaderUavs.Clear();
+            UnorderedAccessViews.Clear();
 
             GeometryShaderResourceViews.Clear();
             GeometryShaderSamplers.Clear();
@@ -424,7 +432,7 @@ namespace Gorgon.Graphics.Core
 			VertexShaderResourceViews = new GorgonShaderResourceViews();
 			PixelShaderSamplers = new GorgonSamplerStates();
 			VertexShaderSamplers = new GorgonSamplerStates();
-            PixelShaderUavs = new GorgonUavBindings();
+            UnorderedAccessViews = new GorgonUavBindings();
 
             GeometryShaderResourceViews = new GorgonShaderResourceViews();
             GeometryShaderSamplers = new GorgonSamplerStates();
