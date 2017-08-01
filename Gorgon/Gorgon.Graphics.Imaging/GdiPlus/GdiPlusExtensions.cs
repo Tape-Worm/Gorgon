@@ -110,6 +110,7 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
 	            }
 	        }
 	    }
+
         /// <summary>
         /// Function to convert a <see cref="Drawing.Bitmap"/> into a <seealso cref="IGorgonImage"/>.
         /// </summary>
@@ -123,9 +124,23 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
         /// and no mip map levels.
         /// </para>
         /// <para>
-        /// No format conversion is performed on the <paramref name="bitmap"/>, and as such, the only supported format is <see cref="PixelFormat.Format32bppArgb"/> and the only format that will be output into 
-        /// the resulting <seealso cref="IGorgonImage"/> is <c>Format.R8G8B8A8_UNorm</c>. If the source <paramref name="bitmap"/> is 
-        /// in a different format, then an exception will be thrown.
+        /// Some format conversion is performed on the <paramref name="bitmap"/> when it is imported. The format conversion will always convert to the image format of <c>R8G8B8A8_UNorm</c>. Only the 
+        /// following GDI+ pixel formats are supported for conversion:
+        /// <list type="bullet">
+        ///     <item>
+        ///         <term><see cref="PixelFormat.Format32bppArgb"/></term>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="PixelFormat.Format32bppPArgb"/></term>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="PixelFormat.Format32bppRgb"/></term>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="PixelFormat.Format24bppRgb"/></term>
+        ///     </item>
+        /// </list>
+        /// If the source <paramref name="bitmap"/> does not support any of the formats on the list, then an exception will be thrown.
         /// </para>
         /// </remarks>
         public static IGorgonImage ConvertToGorgonImage(this Drawing.Bitmap bitmap)
@@ -136,6 +151,8 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
 			}
 
 			if ((bitmap.PixelFormat != PixelFormat.Format32bppArgb)
+                && (bitmap.PixelFormat != PixelFormat.Format32bppPArgb)
+                && (bitmap.PixelFormat != PixelFormat.Format32bppRgb)
                 && (bitmap.PixelFormat != PixelFormat.Format24bppRgb))
 			{
 				throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, bitmap.PixelFormat));
@@ -154,11 +171,13 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
 			{
 				bitmapLock = bitmap.LockBits(new Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
 
-			    if (bitmap.PixelFormat == PixelFormat.Format32bppArgb)
+			    if ((bitmap.PixelFormat == PixelFormat.Format32bppArgb)
+                    || (bitmap.PixelFormat == PixelFormat.Format32bppPArgb)
+                    || (bitmap.PixelFormat == PixelFormat.Format32bppRgb))
 			    {
 			        Transfer32Argb(bitmapLock, result.Buffers[0], result.FormatInfo.SizeInBytes);
 			    }
-			    else
+			    else 
 			    {
 			        Transfer24Rgb(bitmapLock, result.Buffers[0], result.FormatInfo.SizeInBytes);
                 }
