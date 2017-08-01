@@ -25,8 +25,9 @@
 #endregion
 
 using System.Runtime.InteropServices;
+using Gorgon.Graphics.Core;
 using Gorgon.Native;
-using SlimMath;
+using DX = SharpDX;
 
 namespace Gorgon.Graphics.Example
 {
@@ -46,25 +47,25 @@ namespace Gorgon.Graphics.Example
 		/// The position of the vertex.
 		/// </summary>
 		[InputElement(0, "SV_POSITION")]
-		public Vector4 Position;
+		public DX.Vector4 Position;
 
 		/// <summary>
 		/// The position of the vertex normal.
 		/// </summary>
 		[InputElement(1, "NORMAL")]
-		public Vector3 Normal;
+		public DX.Vector3 Normal;
 
 		/// <summary>
 		/// The texture coordinates.
 		/// </summary>
 		[InputElement(2, "TEXCOORD")]
-		public Vector2 UV;
+		public DX.Vector2 UV;
 		
         /// <summary>
         /// The tangent vector.
         /// </summary>
         [InputElement(3, "TANGENT")]
-	    public Vector4 Tangent;
+	    public DX.Vector4 Tangent;
 	    #endregion
 	}
 }

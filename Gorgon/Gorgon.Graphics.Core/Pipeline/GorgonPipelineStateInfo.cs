@@ -70,6 +70,24 @@ namespace Gorgon.Graphics.Core
 	        set;
 	    }
 
+	    /// <summary>
+	    /// Property to set or return the current hull shader.
+	    /// </summary>
+	    public GorgonHullShader HullShader
+	    {
+	        get;
+	        set;
+	    }
+
+	    /// <summary>
+	    /// Property to set or return the current domain shader.
+	    /// </summary>
+	    public GorgonDomainShader DomainShader
+	    {
+	        get;
+	        set;
+	    }
+
         /// <summary>
         /// Property to set or return the current <see cref="GorgonRasterState"/>.
         /// </summary>
@@ -158,7 +176,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="other">The other pipeline state to copy.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="other"/> parameter is <b>null</b>.</exception>
-	    public void CopyFrom(IGorgonPipelineStateInfo other)
+        public void CopyFrom(IGorgonPipelineStateInfo other)
 	    {
 	        if (other == null)
 	        {

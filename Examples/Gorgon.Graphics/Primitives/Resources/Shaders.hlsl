@@ -115,7 +115,7 @@ float4 blinn(VertexOut vertex, float3 normal, float3 spec)
 
 		if ((specularPower > 0) && (light.SpecularPower >= 1.0f))
 		{
-			// Using Blinn half angle modification for perofrmance over correctness
+			// Using Blinn half angle modification for performance over correctness
 			float3 h = normalize(normalize(CameraPosition - vertex.worldPos) - lightDirection);
 			float specLighting = pow(saturate(dot(h, normal)), light.SpecularPower);
 			output = output + (light.SpecularColor * specLighting * 0.5 * spec.r * specularPower);
@@ -128,18 +128,19 @@ float4 blinn(VertexOut vertex, float3 normal, float3 spec)
 // Our bump mapped pixel shader that will render the bump mapped texture.
 float4 PrimPSWaterBump(VertexOut vertex) : SV_Target
 {
-	float3 bumpAmount = 1.0f * (_normalTexture.Sample(_normalSampler, vertex.uv + uvOffset).xyz * 2.0f - 1.0f);
-	bumpAmount += saturate(0.5f * (_normalTexture.Sample(_normalSampler, vertex.uv + uvOffset * 2.0f).xyz * 2.0f - 1.0f));
-	bumpAmount += saturate(0.25f * (_normalTexture.Sample(_normalSampler, vertex.uv + uvOffset * 4.0f).xyz * 2.0f - 1.0f));
+	float2 scaledUv = vertex.uv * 2.0f;
+	float3 bumpAmount = 1.0f * (_normalTexture.Sample(_normalSampler, scaledUv + uvOffset).xyz * 2.0f - 1.0f);
+	bumpAmount += saturate(0.5f * (_normalTexture.Sample(_normalSampler, scaledUv + uvOffset * 2.0f).xyz * 2.0f - 1.0f));
+	bumpAmount += saturate(0.25f * (_normalTexture.Sample(_normalSampler, scaledUv + uvOffset * 4.0f).xyz * 2.0f - 1.0f));
 	float3 normal = normalize(vertex.normal + (bumpAmount.x * vertex.tangent + bumpAmount.y * vertex.bitangent));
 		
 	float3 spec = 0; 
 	
 	if (specularPower > 0)
 	{
-		spec = _specTexture.Sample(_specSampler, vertex.uv + uvOffset).xyz;
-		spec += 2.0f * _specTexture.Sample(_specSampler, vertex.uv + uvOffset * 0.5f).xyz;
-		spec += 4.0 * _specTexture.Sample(_specSampler, vertex.uv + uvOffset * 0.25f).xyz;
+		spec = _specTexture.Sample(_specSampler, scaledUv + uvOffset).xyz;
+		spec += 2.0f * _specTexture.Sample(_specSampler, scaledUv + uvOffset * 0.5f).xyz;
+		spec += 4.0 * _specTexture.Sample(_specSampler, scaledUv + uvOffset * 0.25f).xyz;
 	}
 
 	return blinn(vertex, normal, spec);

@@ -73,7 +73,7 @@ namespace Gorgon.Graphics.Core
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonShader" /> class.
+		/// Initializes a new instance of the <see cref="GorgonPixelShader" /> class.
 		/// </summary>
 		/// <param name="videoDevice">The video device used to create the shader.</param>
 		/// <param name="name">The name for this shader.</param>

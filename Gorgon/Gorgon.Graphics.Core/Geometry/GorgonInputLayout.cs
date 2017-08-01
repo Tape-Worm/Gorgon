@@ -173,7 +173,10 @@ namespace Gorgon.Graphics.Core
 				d3dElements[i] = _elements[i].D3DInputElement;
 			}
 
-			_d3DInputLayout = new D3D11.InputLayout(VideoDevice.D3DDevice(), Shader.D3DByteCode.Data, d3dElements);
+		    _d3DInputLayout = new D3D11.InputLayout(VideoDevice.D3DDevice(), Shader.D3DByteCode.Data, d3dElements)
+		                      {
+		                          DebugName = $"{Name} Direct 3D 11 Input Layout"
+		                      };
 		}
 
 		/// <summary>
@@ -363,43 +366,141 @@ namespace Gorgon.Graphics.Core
 		public static GorgonInputLayout CreateUsingType<T>(IGorgonVideoDevice videoDevice, GorgonVertexShader shader)
 			where T : struct
 		{
-			Type type = typeof(T);
-			int byteOffset = 0;
-			List<(FieldInfo Field, InputElementAttribute InputElement)> members = GetFieldInfoList(type);
-
-			if (members.Count == 0)
-			{
-				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_VERTEX_NO_FIELDS, type.FullName));
-			}
-
-			var elements = new GorgonInputElement[members.Count];
-
-			for (int i = 0; i < elements.Length; i++)
-			{
-				(FieldInfo Field, InputElementAttribute InputElement) item = members[i];
-
-				DXGI.Format format = item.InputElement.Format;
-				string contextName = item.InputElement.Context;
-
-				// Try to determine the format from the type.
-				if ((format == DXGI.Format.Unknown) && (!_typeMapping.TryGetValue(item.Field.FieldType, out format)))
-				{
-					throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_LAYOUT_INVALID_ELEMENT_TYPE, item.Field.FieldType.FullName));
-				}
-
-				var element = new GorgonInputElement(contextName, format,
-													 (item.InputElement.AutoOffset ? byteOffset : item.InputElement.Offset),
-													 item.InputElement.Index, item.InputElement.Slot, item.InputElement.Instanced,
-													 item.InputElement.Instanced ? item.InputElement.InstanceCount : 0);
-
-				FindDuplicateElements(elements, element, i, nameof(element));
-
-				elements[i] = element;
-				byteOffset += element.SizeInBytes;
-			}
-
-			return new GorgonInputLayout(type.Name, videoDevice, shader, elements);
+		    return CreateUsingType(videoDevice, typeof(T), shader);
 		}
+
+        /// <summary>
+        /// Function to build an input layout using the fields from a value type.
+        /// </summary>
+        /// <param name="videoDevice">The video device used to create the input layout.</param>
+        /// <param name="type">The type to evaluate.</param>
+        /// <param name="shader">Vertex shader to bind the layout with.</param>
+        /// <returns>A new <see cref="GorgonInputLayout"/> for the type passed to <paramref name="type"/>.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="videoDevice"/>, <paramref name="type"/> or the <paramref name="shader"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentException">Thrown when an element with the same context, slot and index appears more than once in the members of the <paramref name="type"/>.</exception>
+        /// <exception cref="GorgonException">Thrown when the type specified by <paramref name="type"/> is not safe for use with native functions (see <see cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>).
+        /// <para>-or-</para>
+        /// <para>Thrown when the type specified by <paramref name="type"/> does not contain any public members.</para>
+        /// </exception>
+        /// <remarks>
+        /// <para>
+        /// This will build a new <see cref="GorgonInputLayout"/> using the fields within a value type (<c>struct</c>). Each of the members that are to be included in the layout must be decorated with a 
+        /// <see cref="InputElementAttribute"/>. If a member is not decorated with this attribute, then it will be ignored.
+        /// </para>
+        /// <para>
+        /// The <paramref name="type"/> parameter must be a value type (<c>struct</c>), reference types are not supported. The members of the type must also be public fields. Properties are not 
+        /// supported. Futhermore, the struct must be decorated with a <see cref="StructLayoutAttribute"/> that defines a <see cref="LayoutKind"/> of <see cref="LayoutKind.Sequential"/> or 
+        /// <see cref="LayoutKind.Explicit"/>. This is necessary to ensure that the member of the value type are in the correct order when writing to a <see cref="GorgonVertexBuffer"/> or when 
+        /// generating a <see cref="GorgonInputLayout"/> from a type.
+        /// </para>
+        /// <para>
+        /// If the type specified by <paramref name="type"/> has members that are not primitive types or value types with a <see cref="StructLayoutAttribute"/>, or the member has a 
+        /// <see cref="MarshalAsAttribute"/>, then an exception is thrown.  Gorgon does not support marshalling of complex types for vertices.
+        /// </para>
+        /// <para>
+        /// The types of the fields must be one of the following types:
+        /// <para>
+        /// <list type="bullet">
+        ///		<item>
+        ///			<description><see cref="byte"/></description>
+        ///		</item>
+        ///		<item>
+        ///			<description><see cref="sbyte"/></description>
+        ///		</item>
+        ///		<item>
+        ///			<description><see cref="short"/></description>
+        ///		</item>
+        ///		<item>
+        ///			<description><see cref="ushort"/></description>
+        ///		</item>
+        ///		<item>
+        ///			<description><see cref="int"/></description>
+        ///		</item>
+        ///		<item>
+        ///			<description><see cref="uint"/></description>
+        ///		</item>
+        ///		<item>
+        ///			<description><see cref="long"/></description>
+        ///		</item>
+        ///		<item>
+        ///			<description><see cref="ulong"/></description>
+        ///		</item>
+        ///		<item>
+        ///			<description><see cref="float"/></description>
+        ///		</item>
+        ///		<item>
+        ///			<description><c>Vector2</c></description>
+        ///		</item>
+        ///		<item>
+        ///			<description><c>Vector3</c></description>
+        ///		</item>
+        ///		<item>
+        ///			<description><c>Vector4</c></description>
+        ///		</item>
+        ///		<item>
+        ///			<description><see cref="GorgonColor"/></description>
+        ///		</item>
+        /// </list>
+        /// </para>
+        /// If the type of the member does not match, an exception will be thrown.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>
+        /// <seealso cref="GorgonReflectionExtensions.IsSafeForNative(Type)"/>
+        /// <seealso cref="GorgonReflectionExtensions.IsSafeForNative(Type,out IReadOnlyList{FieldInfo})"/>
+        public static GorgonInputLayout CreateUsingType(IGorgonVideoDevice videoDevice, Type type, GorgonVertexShader shader)
+	    {
+	        if (videoDevice == null)
+	        {
+	            throw new ArgumentNullException(nameof(videoDevice));
+	        }
+
+	        if (type == null)
+	        {
+	            throw new ArgumentNullException(nameof(type));
+	        }
+
+	        if (shader == null)
+	        {
+	            throw new ArgumentNullException(nameof(shader));
+	        }
+
+	        int byteOffset = 0;
+	        List<(FieldInfo Field, InputElementAttribute InputElement)> members = GetFieldInfoList(type);
+
+	        if (members.Count == 0)
+	        {
+	            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_VERTEX_NO_FIELDS, type.FullName));
+	        }
+
+	        var elements = new GorgonInputElement[members.Count];
+
+	        for (int i = 0; i < elements.Length; i++)
+	        {
+	            (FieldInfo Field, InputElementAttribute InputElement) item = members[i];
+
+	            DXGI.Format format = item.InputElement.Format;
+	            string contextName = item.InputElement.Context;
+
+	            // Try to determine the format from the type.
+	            if ((format == DXGI.Format.Unknown) && (!_typeMapping.TryGetValue(item.Field.FieldType, out format)))
+	            {
+	                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_LAYOUT_INVALID_ELEMENT_TYPE, item.Field.FieldType.FullName));
+	            }
+
+	            var element = new GorgonInputElement(contextName, format,
+	                                                 (item.InputElement.AutoOffset ? byteOffset : item.InputElement.Offset),
+	                                                 item.InputElement.Index, item.InputElement.Slot, item.InputElement.Instanced,
+	                                                 item.InputElement.Instanced ? item.InputElement.InstanceCount : 0);
+
+	            FindDuplicateElements(elements, element, i, nameof(element));
+
+	            elements[i] = element;
+	            byteOffset += element.SizeInBytes;
+	        }
+
+	        return new GorgonInputLayout(type.Name, videoDevice, shader, elements);
+	    }
 
         /// <summary>
         /// Function to convert this input layout into a <see cref="GorgonStreamOutLayout"/>

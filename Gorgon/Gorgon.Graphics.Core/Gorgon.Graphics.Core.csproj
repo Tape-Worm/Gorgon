@@ -153,6 +153,8 @@
     <Compile Include="Shaders\Effects\GorgonGaussBlurEffect.cs" />
     <Compile Include="Shaders\Effects\GorgonShaderEffect.cs" />
     <Compile Include="Shaders\GorgonGeometryShader.cs" />
+    <Compile Include="Shaders\GorgonDomainShader.cs" />
+    <Compile Include="Shaders\GorgonHullShader.cs" />
     <Compile Include="Shaders\GorgonShaderResourceView.cs" />
     <Compile Include="Pipeline\GorgonShaderResourceViews.cs" />
     <Compile Include="Pipeline\GorgonDrawIndexedCall.cs" />

@@ -25,202 +25,168 @@
 #endregion
 
 using System.Drawing;
+using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Native;
-using SlimMath;
+using DX = SharpDX;
+using D3D = SharpDX.Direct3D;
+using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Example
 {
-	/// <summary>
-	/// A sphere object.
-	/// </summary>
-	class Sphere
-		: MoveableMesh
-	{
-		#region Variables.
-		// Flag to indicate that the object was disposed.
-		private bool _disposed;
-		// Initial orientation.
-		private Matrix _orientation;
-		#endregion
+    /// <summary>
+    /// A sphere object.
+    /// </summary>
+    class Sphere
+        : MoveableMesh
+    {
+        #region Variables.
+        // Initial orientation.
+        private DX.Matrix _orientation;
+        #endregion
 
-		#region Properties.
-		/// <summary>
-		/// Property to return the radius of the sphere.
-		/// </summary>
-		public float Radius
-		{
-			get;
-			private set;
-		}
+        #region Properties.
+        /// <summary>
+        /// Property to return the radius of the sphere.
+        /// </summary>
+        public float Radius
+        {
+            get;
+            private set;
+        }
+        #endregion
 
-		public GorgonVertexBuffer Normals
-		{
-			get;
-		}
-		#endregion
+        #region Methods.
+        /// <summary>
+        /// Function to create the vertex data for the sphere.
+        /// </summary>
+        /// <param name="vertexData">Pointer to the buffer that will hold the vertex data.</param>
+        /// <param name="indexData">Pointer to the buffer that will hold the index data.</param>
+        /// <param name="radius">Radius of the sphere.</param>
+        /// <param name="textureCoordinates">Texture coordinates for the sphere.</param>
+        /// <param name="ringCount">Number of rings in the sphere.</param>
+        /// <param name="segmentCount">Number of segments in the sphere.</param>
+        private unsafe void GetVertices(Vertex3D* vertexData,
+                                        int* indexData,
+                                        float radius,
+                                        RectangleF textureCoordinates,
+                                        int ringCount,
+                                        int segmentCount)
+        {
+            int index = 0; // Current index.
+            float deltaRingAngle = ((float)System.Math.PI) / ringCount;
+            float deltaSegAngle = (((float)System.Math.PI) * 2.0f) / segmentCount;
 
-		#region Methods.
+            Radius = radius;
 
-		/// <summary>
-		/// Function to create the vertex data for the sphere.
-		/// </summary>
-		/// <param name="vertexData">Pointer to the buffer that will hold the vertex data.</param>
-		/// <param name="indexData">Pointer to the buffer that will hold the index data.</param>
-		/// <param name="radius">Radius of the sphere.</param>
-		/// <param name="textureCoordinates">Texture coordinates for the sphere.</param>
-		/// <param name="ringCount">Number of rings in the sphere.</param>
-		/// <param name="segmentCount">Number of segments in the sphere.</param>
-		private unsafe void GetVertices(Vertex3D* vertexData,
-		                                int* indexData,
-			void *normalData,
-		                                float radius,
-		                                RectangleF textureCoordinates,
-		                                int ringCount,
-		                                int segmentCount)
-		{
-			int index = 0;						// Current index.
-			float deltaRingAngle = ((float)System.Math.PI) / ringCount;
-			float deltaSegAngle = (((float)System.Math.PI) * 2.0f) / segmentCount;
-			var linePtStart = (Vector4*)normalData;
+            // Build our sphere.
+            for (int ring = 0; ring <= ringCount; ring++)
+            {
+                float ringAngle = ring * deltaRingAngle;
+                radius = ringAngle.Sin() * 0.5f * Radius;
+                float radiusY = ringAngle.Cos() * Radius * 0.5f;
 
-			Radius = radius;
+                for (int segment = 0; segment <= segmentCount; segment++)
+                {
+                    var textureDelta = new DX.Vector2(1.0f - segment / (float)segmentCount, ring / (float)ringCount);
+                    float segmentAngle = deltaSegAngle * segment;
 
-			// Build our sphere.
-			for (int ring = 0; ring <= ringCount; ring++)
-			{
-				float ringAngle = ring * deltaRingAngle;
-				radius = ringAngle.Sin() * 0.5f * Radius;
-				float radiusY = ringAngle.Cos() * Radius * 0.5f;
+                    var position = new DX.Vector3(radius * segmentAngle.Sin(), radiusY, radius * segmentAngle.Cos());
 
-				for (int segment = 0; segment <= segmentCount; segment++)
-				{
-					var textureDelta = new Vector2(1.0f - segment / (float)segmentCount, ring / (float)ringCount);
-					float segmentAngle = deltaSegAngle * segment;
 
-					var position = new Vector3(radius * segmentAngle.Sin(), radiusY, radius * segmentAngle.Cos());
+                    DX.Vector3.Multiply(ref position, 2.0f, out DX.Vector3 normal);
+                    DX.Vector3.TransformCoordinate(ref position, ref _orientation, out position);
+                    DX.Vector3.TransformCoordinate(ref normal, ref _orientation, out normal);
+                    normal.Normalize();
 
-					Vector3 normal;
+                    // Create the vertex.
+                    textureDelta.X *= textureCoordinates.Width;
+                    textureDelta.Y *= textureCoordinates.Height;
+                    textureDelta.X += textureCoordinates.X;
+                    textureDelta.Y += textureCoordinates.Y;
 
-					Vector3.Multiply(ref position, 2.0f, out normal);
-					Vector3.TransformCoordinate(ref position, ref _orientation, out position);
-					Vector3.TransformCoordinate(ref normal, ref _orientation, out normal);
-					normal.Normalize();
+                    *(vertexData++) = new Vertex3D
+                                      {
+                                          Position = new DX.Vector4(position, 1.0f),
+                                          UV = textureDelta,
+                                          Normal = normal
+                                      };
 
-					*(linePtStart++) = new Vector4(position, 1.0f);
-					*(linePtStart++) = new Vector4(position + (normal * 0.05f), 1.0f);				
+                    // Add the indices and skip the last ring.
+                    if (ring == ringCount)
+                    {
+                        continue;
+                    }
 
-					// Create the vertex.
-					textureDelta.X *= textureCoordinates.Width;
-					textureDelta.Y *= textureCoordinates.Height;
-					textureDelta.X += textureCoordinates.X;
-					textureDelta.Y += textureCoordinates.Y;
+                    *(indexData++) = (index + segmentCount + 1);
+                    *(indexData++) = index;
+                    *(indexData++) = (index + segmentCount);
 
-					*(vertexData++) = new Vertex3D
-					              {
-						              Position = new Vector4(position, 1.0f),
-						              UV = textureDelta,
-									  Normal = normal
-					              };
+                    *(indexData++) = (index + segmentCount + 1);
+                    *(indexData++) = (index + 1);
+                    *(indexData++) = index;
+                    index++;
+                }
+            }
+        }
+        #endregion
 
-					// Add the indices and skip the last ring.
-					if (ring == ringCount)
-					{
-						continue;
-					}
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Sphere" /> class.
+        /// </summary>
+        /// <param name="graphics">Graphics interface to use.</param>
+        /// <param name="radius">Radius of the sphere</param>
+        /// <param name="textureCoordinates">The texture coordinates to apply to the sphere.</param>
+        /// <param name="angle">The angle of rotation, in degrees.</param>
+        /// <param name="ringCount">Number of rings in the sphere.</param>
+        /// <param name="segmentCount">Number of segments in the sphere.</param>
+        public Sphere(GorgonGraphics graphics, float radius, RectangleF textureCoordinates, DX.Vector3 angle, int ringCount = 8, int segmentCount = 16)
+            : base(graphics)
+        {
 
-					*(indexData++) = (index + segmentCount + 1);
-					*(indexData++) = index;
-					*(indexData++) = (index + segmentCount);
-					
-					*(indexData++) = (index + segmentCount + 1);
-					*(indexData++) = (index + 1);
-					*(indexData++) = index;
-					index++;
-				}
-			}
-		}
-		#endregion
+            // Calculate number of vertices and indices required for our sphere.
+            PrimitiveType = D3D.PrimitiveTopology.TriangleList;
+            VertexCount = (ringCount + 1) * (segmentCount + 1);
+            IndexCount = 6 * ringCount * (segmentCount + 1);
+            TriangleCount = IndexCount / 3;
 
-		#region Constructor/Destructor.
-	    /// <summary>
-	    /// Initializes a new instance of the <see cref="Sphere" /> class.
-	    /// </summary>
-	    /// <param name="graphics">Graphics interface to use.</param>
-	    /// <param name="radius">Radius of the sphere</param>
-	    /// <param name="textureCoordinates">The texture coordinates to apply to the sphere.</param>
-	    /// <param name="angle">The angle of rotation, in degrees.</param>
-	    /// <param name="ringCount">Number of rings in the sphere.</param> 
-	    /// <param name="segmentCount">Number of segments in the sphere.</param>
-	    public Sphere(GorgonGraphics graphics, float radius, RectangleF textureCoordinates, Vector3 angle, int ringCount = 8, int segmentCount = 16)
-	    {
-		    Quaternion orientation;
+            DX.Quaternion.RotationYawPitchRoll(angle.Y.ToRadians(), angle.X.ToRadians(), angle.Z.ToRadians(), out DX.Quaternion orientation);
+            DX.Matrix.RotationQuaternion(ref orientation, out _orientation);
 
-			// Calculate number of vertices and indices required for our sphere.
-		    PrimitiveType = PrimitiveType.TriangleList;
-			VertexCount = (ringCount + 1) * (segmentCount + 1);
-			IndexCount = 6 * ringCount * (segmentCount + 1);
-		    TriangleCount = IndexCount / 3;
+            unsafe
+            {
+                using (IGorgonPointer vertexData = new GorgonPointerTyped<Vertex3D>(VertexCount),
+                                      indexData = new GorgonPointerTyped<int>(IndexCount))
+                {
+                    GetVertices((Vertex3D*)vertexData.Address,
+                                (int*)indexData.Address,
+                                radius,
+                                textureCoordinates,
+                                ringCount,
+                                segmentCount);
 
-			Quaternion.RotationYawPitchRoll(angle.Y.ToRadians(), angle.X.ToRadians(), angle.Z.ToRadians(), out orientation);
-		    Matrix.RotationQuaternion(ref orientation, out _orientation);
+                    VertexBuffer = new GorgonVertexBuffer("SphereVertexBuffer",
+                                                          graphics,
+                                                          new GorgonVertexBufferInfo
+                                                          {
+                                                              Usage = D3D11.ResourceUsage.Immutable,
+                                                              SizeInBytes = (int)vertexData.Size
+                                                          },
+                                                          vertexData);
 
-		    unsafe
-		    {
-			    using (IGorgonPointer vertexData = new GorgonPointerTyped<Vertex3D>(VertexCount),
-			                          normalData = new GorgonPointerTyped<Vector4>(VertexCount * 2),
-			                          indexData = new GorgonPointerTyped<int>(IndexCount))
-			    {
-				    GetVertices((Vertex3D*)vertexData.Address, (int*)indexData.Address, (void*)normalData.Address, radius, textureCoordinates, ringCount, segmentCount);
-
-				    VertexBuffer = graphics.Buffers.CreateVertexBuffer("SphereVertexBuffer",
-				                                                       new GorgonBufferSettings
-				                                                       {
-					                                                       Usage = BufferUsage.Immutable,
-					                                                       SizeInBytes = (int)vertexData.Size
-				                                                       },
-				                                                       vertexData);
-
-				    IndexBuffer = graphics.Buffers.CreateIndexBuffer("SphereIndexBuffer",
-				                                                     new GorgonIndexBufferSettings
-				                                                     {
-					                                                     Usage = BufferUsage.Immutable,
-					                                                     Use32BitIndices = true,
-					                                                     SizeInBytes = (int)indexData.Size
-				                                                     },
-				                                                     indexData);
-
-				    Normals = graphics.Buffers.CreateVertexBuffer("NormalsBuffer",
-				                                                  new GorgonBufferSettings
-				                                                  {
-					                                                  Usage = BufferUsage.Immutable,
-					                                                  SizeInBytes = (int)normalData.Size
-				                                                  },
-				                                                  normalData);
-			    }
-		    }
-	    }
-		#endregion
-
-		#region IDisposable Members
-		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources.
-		/// </summary>
-		/// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
-		protected override void Dispose(bool disposing)
-		{
-			if (_disposed)
-			{
-				return;
-			}
-
-			if (disposing)
-			{
-				Normals?.Dispose();
-			}
-
-			_disposed = true;
-		}
-		#endregion
-	}
+                    IndexBuffer = new GorgonIndexBuffer("SphereIndexBuffer",
+                                                        graphics,
+                                                        new GorgonIndexBufferInfo
+                                                        {
+                                                            Usage = D3D11.ResourceUsage.Immutable,
+                                                            Use16BitIndices = false,
+                                                            IndexCount = IndexCount
+                                                        },
+                                                        indexData);
+                }
+            }
+        }
+        #endregion
+    }
 }

@@ -317,6 +317,54 @@ namespace Gorgon.Graphics.Core
 	        get;
 	    }
 
+	    /// <summary>
+	    /// Property to return the hull shader resources to bind to the pipeline.
+	    /// </summary>
+	    public GorgonShaderResourceViews HullShaderResourceViews
+	    {
+	        get;
+	    }
+
+	    /// <summary>
+	    /// Property to return the hull shader samplers to bind to the pipeline.
+	    /// </summary>
+	    public GorgonSamplerStates HullShaderSamplers
+	    {
+	        get;
+	    }
+
+	    /// <summary>
+	    /// Property to return the hull shader constant buffers to bind to the pipeline.
+	    /// </summary>
+	    public GorgonConstantBuffers HullShaderConstantBuffers
+	    {
+	        get;
+	    }
+
+	    /// <summary>
+	    /// Property to return the domain shader resources to bind to the pipeline.
+	    /// </summary>
+	    public GorgonShaderResourceViews DomainShaderResourceViews
+	    {
+	        get;
+	    }
+
+	    /// <summary>
+	    /// Property to return the domain shader samplers to bind to the pipeline.
+	    /// </summary>
+	    public GorgonSamplerStates DomainShaderSamplers
+	    {
+	        get;
+	    }
+
+	    /// <summary>
+	    /// Property to return the domain shader constant buffers to bind to the pipeline.
+	    /// </summary>
+	    public GorgonConstantBuffers DomainShaderConstantBuffers
+	    {
+	        get;
+	    }
+
         /// <summary>
         /// Property to return the type of primitives to draw.
         /// </summary>
@@ -410,14 +458,20 @@ namespace Gorgon.Graphics.Core
             GeometryShaderResourceViews.Clear();
             GeometryShaderSamplers.Clear();
             GeometryShaderConstantBuffers.Clear();
+		    HullShaderResourceViews.Clear();
+		    HullShaderSamplers.Clear();
+		    HullShaderConstantBuffers.Clear();
+		    DomainShaderResourceViews.Clear();
+		    DomainShaderSamplers.Clear();
+		    DomainShaderConstantBuffers.Clear();
 		}
-		#endregion
+        #endregion
 
-		#region Constructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonDrawCallBase"/> class.
-		/// </summary>
-		protected internal GorgonDrawCallBase()
+        #region Constructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonDrawCallBase"/> class.
+        /// </summary>
+        protected internal GorgonDrawCallBase()
 		{
 			unchecked
 			{
@@ -437,7 +491,13 @@ namespace Gorgon.Graphics.Core
             GeometryShaderResourceViews = new GorgonShaderResourceViews();
             GeometryShaderSamplers = new GorgonSamplerStates();
             GeometryShaderConstantBuffers = new GorgonConstantBuffers();
+		    HullShaderResourceViews = new GorgonShaderResourceViews();
+		    HullShaderSamplers = new GorgonSamplerStates();
+		    HullShaderConstantBuffers = new GorgonConstantBuffers();
+		    DomainShaderResourceViews = new GorgonShaderResourceViews();
+		    DomainShaderSamplers = new GorgonSamplerStates();
+		    DomainShaderConstantBuffers = new GorgonConstantBuffers();
 		}
-		#endregion
-	}
+        #endregion
+    }
 }

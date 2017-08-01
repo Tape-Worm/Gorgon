@@ -25,10 +25,12 @@
 #endregion
 
 using System;
+using Drawing = System.Drawing;
 using D3D11 = SharpDX.Direct3D11;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Imaging;
+using Gorgon.Graphics.Imaging.GdiPlus;
 
 namespace Gorgon.Graphics.Core
 {
@@ -37,6 +39,76 @@ namespace Gorgon.Graphics.Core
 	/// </summary>
 	public static class GorgonImageTextureExtensions
 	{
+	    /// <summary>
+	    /// Function to create a <see cref="GorgonTexture"/> from a GDI+ bitmap.
+	    /// </summary>
+	    /// <param name="gdiBitmap">The GDI+ bitmap used to create the texture.</param>
+	    /// <param name="name">The name of the texture.</param>
+	    /// <param name="graphics">The graphics interface used to create the texture.</param>
+	    /// <param name="usage">[Optional] The intended usage for the texture.</param>
+	    /// <param name="binding">[Optional] The allowed bindings for the texture.</param>
+	    /// <param name="multiSampleInfo">[Optional] Multisampling information to apply to the texture.</param>
+	    /// <param name="log">[Optional] The log interface used for debugging.</param>
+	    /// <returns>A new <see cref="GorgonTexture"/> containing the data from the <paramref name="gdiBitmap"/>.</returns>
+	    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="gdiBitmap"/>, <paramref name="graphics"/> or the <paramref name="name"/> parameter is <b>null</b>.</exception>
+	    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+	    /// <remarks>
+	    /// <para>
+	    /// A GDI+ bitmap is useful to holding image data in memory, but it cannot be sent to the GPU for use as a texture. This method allows an application to convert the GDI+ bitmap into a 
+	    /// <see cref="GorgonTexture"/>. 
+	    /// </para>
+	    /// <para>
+	    /// The resulting <see cref="GorgonTexture"/> will only contain a single mip level, and single array level. The only image type available will be 2D (i.e. image with a width and height). The GDI+ 
+	    /// bitmap should have a 32bpp rgba format, or a 24bpp rgb format or else an exception will be thrown.
+	    /// </para>
+	    /// <para>
+	    /// The optional parameters define how Gorgon and shaders should handle the texture:
+	    /// <list type="bullet">
+	    ///		<item>
+	    ///			<term>Binding</term>
+	    ///			<description>When defined, will indicate the <see cref="TextureBinding"/> that defines how the texture will be bound to the graphics pipeline. If it is omitted, then the binding will be 
+	    ///         <see cref="TextureBinding.ShaderResource"/>.</description>
+	    ///		</item>
+	    ///		<item>
+	    ///			<term>Usage</term>
+	    ///			<description>When defined, will indicate the preferred usage for the texture. If it is omitted, then the usage will be set to <c>Default</c>.</description>
+	    ///		</item>
+	    ///		<item>
+	    ///			<term>Multisample info</term>
+	    ///			<description>When defined (i.e. not <b>null</b>), defines the multisampling to apply to the texture. If omitted, then the default is <see cref="GorgonMultisampleInfo.NoMultiSampling"/>.</description>
+	    ///		</item>
+	    /// </list>
+	    /// </para>
+	    /// </remarks>
+	    public static GorgonTexture ToTexture(this Drawing.Bitmap gdiBitmap,
+	                                          string name,
+	                                          GorgonGraphics graphics,
+	                                          D3D11.ResourceUsage usage = D3D11.ResourceUsage.Default,
+	                                          TextureBinding binding = TextureBinding.ShaderResource,
+	                                          GorgonMultisampleInfo? multiSampleInfo = null,
+	                                          IGorgonLog log = null)
+	    {
+	        if (gdiBitmap == null)
+	        {
+	            throw new ArgumentNullException(nameof(gdiBitmap));
+	        }
+
+	        if (name == null)
+	        {
+	            throw new ArgumentNullException(nameof(name));
+	        }
+
+	        if (graphics == null)
+	        {
+	            throw new ArgumentNullException(nameof(graphics));
+	        }
+
+	        using (IGorgonImage image = gdiBitmap.ConvertToGorgonImage())
+	        {
+	            return new GorgonTexture(name, graphics, image, usage, binding, multiSampleInfo ?? GorgonMultisampleInfo.NoMultiSampling, log);
+	        }
+	    }
+
         /// <summary>
         /// Function to create a <see cref="GorgonTexture"/> from a <see cref="GorgonImage"/>.
         /// </summary>

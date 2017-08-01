@@ -157,11 +157,8 @@ namespace Gorgon.Examples
 		/// </summary>
 		public float Amount
 		{
-			get
-			{
-				return _sprayAmount;
-			}
-			set
+			get => _sprayAmount;
+		    set
 			{
 				if (value <= 0.0f)
 				{

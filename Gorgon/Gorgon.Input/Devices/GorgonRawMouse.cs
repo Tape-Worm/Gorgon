@@ -212,11 +212,8 @@ namespace Gorgon.Input
 		/// </remarks>
 		public static bool CursorVisible
 		{
-			get
-			{
-				return UserApi.IsCursorVisible() == CursorInfoFlags.CursorShowing;
-			}
-			set
+			get => UserApi.IsCursorVisible() == CursorInfoFlags.CursorShowing;
+		    set
 			{
 				lock (_syncLock)
 				{

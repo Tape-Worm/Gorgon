@@ -25,8 +25,10 @@
 #endregion
 
 using System;
+using Gorgon.Graphics.Core;
 using Gorgon.Math;
-using SlimMath;
+using D3D = SharpDX.Direct3D;
+using DX = SharpDX;
 
 namespace Gorgon.Graphics.Example
 {
@@ -36,29 +38,40 @@ namespace Gorgon.Graphics.Example
     abstract class Mesh
         : IDisposable
     {
-        #region Variables.
-        // Flag to indicate that the object was disposed.
-        private bool _disposed;
-        #endregion
-
         #region Properties.
+        /// <summary>
+        /// Property to return the material for this mesh.
+        /// </summary>
+        public MeshMaterial Material
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the graphics interface that owns this object.
+        /// </summary>
+        public GorgonGraphics Graphics
+        {
+            get;
+        }
+
         /// <summary>
         /// Property to return the type of primitive used to draw the object.
         /// </summary>
-        public PrimitiveType PrimitiveType
+        public D3D.PrimitiveTopology PrimitiveType
         {
             get;
             protected set;
         }
 
-		/// <summary>
-		/// Property to return the number of triangles.
-		/// </summary>
-	    public int TriangleCount
-	    {
-		    get;
-		    protected set;
-	    }
+        /// <summary>
+        /// Property to return the number of triangles.
+        /// </summary>
+        public int TriangleCount
+        {
+            get;
+            protected set;
+        }
 
         /// <summary>
         /// Property to return the number of vertices.
@@ -96,10 +109,11 @@ namespace Gorgon.Graphics.Example
             protected set;
         }
 
+
         /// <summary>
-        /// Property to set or return the texture to use.
+        /// Property to set or return whether writing to the depth buffer is enabled or not.
         /// </summary>
-        public GorgonTexture2D Texture
+        public bool IsDepthWriteEnabled
         {
             get;
             set;
@@ -114,15 +128,15 @@ namespace Gorgon.Graphics.Example
         /// <param name="indexData">Buffer holding the indices.</param>
         protected unsafe void CalculateTangents(Vertex3D* vertexData, int* indexData)
         {
-			var biTanData = new Vector3[VertexCount];
-			var tanData = new Vector3[VertexCount];
+			var biTanData = new DX.Vector3[VertexCount];
+			var tanData = new DX.Vector3[VertexCount];
 
             for (int i = 0; i < TriangleCount; ++i)
             {
                 int index1 = *(indexData++);
 
 				// If we hit a strip-restart index, then skip to the next index.
-	            if ((PrimitiveType == PrimitiveType.TriangleStrip) 
+	            if ((PrimitiveType == D3D.PrimitiveTopology.TriangleStrip) 
 					&& (index1 < 0))
 	            {
 		            index1 = *(indexData++);
@@ -135,18 +149,14 @@ namespace Gorgon.Graphics.Example
                 Vertex3D vertex2 = vertexData[index2];
                 Vertex3D vertex3 = vertexData[index3];
 
-                Vector4 deltaPos1;
-                Vector4.Subtract(ref vertex2.Position, ref vertex1.Position, out deltaPos1);
+                DX.Vector4.Subtract(ref vertex2.Position, ref vertex1.Position, out DX.Vector4 deltaPos1);
 
-                Vector4 deltaPos2;
-                Vector4.Subtract(ref vertex3.Position, ref vertex1.Position, out deltaPos2);
+                DX.Vector4.Subtract(ref vertex3.Position, ref vertex1.Position, out DX.Vector4 deltaPos2);
 
-                Vector2 deltaUV1;
-                Vector2.Subtract(ref vertex2.UV, ref vertex1.UV, out deltaUV1);
-                Vector2 deltaUV2;
-                Vector2.Subtract(ref vertex3.UV, ref vertex1.UV, out deltaUV2);
+                DX.Vector2.Subtract(ref vertex2.UV, ref vertex1.UV, out DX.Vector2 deltaUV1);
+                DX.Vector2.Subtract(ref vertex3.UV, ref vertex1.UV, out DX.Vector2 deltaUV2);
 
-	            float denom = (deltaUV1.X * deltaUV2.Y - deltaUV1.Y * deltaUV2.X);
+                float denom = (deltaUV1.X * deltaUV2.Y - deltaUV1.Y * deltaUV2.X);
 	            float r = 0.0f;
 
 	            if (!denom.EqualsEpsilon(0))
@@ -154,70 +164,44 @@ namespace Gorgon.Graphics.Example
 		            r = 1.0f / denom;
 	            }
 				
-	            var tangent = new Vector3((deltaUV2.Y * deltaPos1.X - deltaUV1.Y * deltaPos2.X) * r,
+	            var tangent = new DX.Vector3((deltaUV2.Y * deltaPos1.X - deltaUV1.Y * deltaPos2.X) * r,
 	                                      (deltaUV2.Y * deltaPos1.Y - deltaUV1.Y * deltaPos2.Y) * r,
 	                                      (deltaUV2.Y * deltaPos1.Z - deltaUV1.Y * deltaPos2.Z) * r);
 
-				var biTangent = new Vector3((deltaUV1.X * deltaPos2.X - deltaUV2.X * deltaPos1.X) * r,
+				var biTangent = new DX.Vector3((deltaUV1.X * deltaPos2.X - deltaUV2.X * deltaPos1.X) * r,
 	                                        (deltaUV1.X * deltaPos2.Y - deltaUV2.X * deltaPos1.Y) * r,
 	                                        (deltaUV1.X * deltaPos2.Z - deltaUV2.X * deltaPos1.Z) * r);
 
-                Vector3.Add(ref tanData[index1], ref tangent, out tanData[index1]);
-                Vector3.Add(ref tanData[index2], ref tangent, out tanData[index2]);
-                Vector3.Add(ref tanData[index3], ref tangent, out tanData[index3]);
+                DX.Vector3.Add(ref tanData[index1], ref tangent, out tanData[index1]);
+                DX.Vector3.Add(ref tanData[index2], ref tangent, out tanData[index2]);
+                DX.Vector3.Add(ref tanData[index3], ref tangent, out tanData[index3]);
 
-                Vector3.Add(ref biTanData[index1], ref biTangent, out biTanData[index1]);
-                Vector3.Add(ref biTanData[index2], ref biTangent, out biTanData[index2]);
-                Vector3.Add(ref biTanData[index3], ref biTangent, out biTanData[index3]);
+                DX.Vector3.Add(ref biTanData[index1], ref biTangent, out biTanData[index1]);
+                DX.Vector3.Add(ref biTanData[index2], ref biTangent, out biTanData[index2]);
+                DX.Vector3.Add(ref biTanData[index3], ref biTangent, out biTanData[index3]);
             }
 
             for (int i = 0; i < VertexCount; ++i)
             {
                 Vertex3D vertex = vertexData[i];
 
-                Vector3 tangent;
-                Vector3 cross;
-                float dot;
 
-				Vector3.Dot(ref vertex.Normal, ref tanData[i], out dot);
-				Vector3.Multiply(ref vertex.Normal, dot, out tangent);
-				Vector3.Subtract(ref tanData[i], ref tangent, out tangent);
-                Vector3.Normalize(ref tangent, out tangent);
+                DX.Vector3.Dot(ref vertex.Normal, ref tanData[i], out float dot);
+                DX.Vector3.Multiply(ref vertex.Normal, dot, out DX.Vector3 tangent);
+				DX.Vector3.Subtract(ref tanData[i], ref tangent, out tangent);
+                DX.Vector3.Normalize(ref tangent, out tangent);
 
-                Vector3.Cross(ref vertex.Normal, ref tanData[i], out cross);
-                Vector3.Dot(ref cross, ref biTanData[i], out dot);
+                DX.Vector3.Cross(ref vertex.Normal, ref tanData[i], out DX.Vector3 cross);
+                DX.Vector3.Dot(ref cross, ref biTanData[i], out dot);
 
                 vertexData[i] = new Vertex3D
                 {
                     Position = vertex.Position,
                     Normal = vertex.Normal,
                     UV = vertex.UV,
-                    Tangent = new Vector4(tangent, dot < 0.0f ? -1.0f : 1.0f)
+                    Tangent = new DX.Vector4(tangent, dot < 0.0f ? -1.0f : 1.0f)
                 };
             }
-        }
-        #endregion
-
-        #region IDisposable Members
-        /// <summary>
-        /// Releases unmanaged and - optionally - managed resources.
-        /// </summary>
-        /// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_disposed)
-            {
-                return;
-            }
-
-            if (disposing)
-            {
-	            VertexBuffer?.Dispose();
-
-	            IndexBuffer?.Dispose();
-            }
-
-            _disposed = true;
         }
 
         /// <summary>
@@ -225,8 +209,21 @@ namespace Gorgon.Graphics.Example
         /// </summary>
         public void Dispose()
         {
-            Dispose(true);   
-            GC.SuppressFinalize(this);
+            VertexBuffer?.Dispose();
+            IndexBuffer?.Dispose();
+        }
+        #endregion
+
+        #region Constructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Mesh"/> class.
+        /// </summary>
+        /// <param name="graphics">The graphics interface that owns this object.</param>
+        protected Mesh(GorgonGraphics graphics)
+        {
+            Material = new MeshMaterial();
+            IsDepthWriteEnabled = true;
+            Graphics = graphics;
         }
         #endregion
     }

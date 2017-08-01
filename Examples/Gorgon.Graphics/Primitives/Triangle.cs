@@ -24,7 +24,11 @@
 // 
 #endregion
 
-using SlimMath;
+using DX = SharpDX;
+using D3D = SharpDX.Direct3D;
+using D3D11 = SharpDX.Direct3D11;
+using Gorgon.Graphics.Core;
+using Gorgon.Native;
 
 namespace Gorgon.Graphics.Example
 {
@@ -33,39 +37,56 @@ namespace Gorgon.Graphics.Example
 	{
         #region Constructor/Destructor.
         /// <summary>
-		/// Initializes a new instance of the <see cref="Triangle"/> class.
-		/// </summary>
-		/// <param name="graphics">The graphics interface.</param>
-		/// <param name="point1">The 1st point in the triangle.</param>
-		/// <param name="point2">The 2nd point in the triangle.</param>
-		/// <param name="point3">The 3rd point in the triangle.</param>
-		public Triangle(GorgonGraphics graphics, Vertex3D point1, Vertex3D point2, Vertex3D point3)
-		{
-			PrimitiveType = PrimitiveType.TriangleList;
+        /// Initializes a new instance of the <see cref="Triangle" /> class.
+        /// </summary>
+        /// <param name="graphics">The graphics interface.</param>
+        /// <param name="point1">The 1st point in the triangle.</param>
+        /// <param name="point2">The 2nd point in the triangle.</param>
+        /// <param name="point3">The 3rd point in the triangle.</param>
+        public Triangle(GorgonGraphics graphics, Vertex3D point1, Vertex3D point2, Vertex3D point3)
+            : base(graphics)
+	    {
+	        PrimitiveType = D3D.PrimitiveTopology.TriangleList;
 	        VertexCount = 3;
 	        IndexCount = 3;
 	        TriangleCount = 1;
-			
-			point1.Tangent = new Vector4(1.0f, 0, 0, 1.0f);
-			point2.Tangent = new Vector4(1.0f, 0, 0, 1.0f);
-			point3.Tangent = new Vector4(1.0f, 0, 0, 1.0f);
 
-			VertexBuffer = graphics.Buffers.CreateVertexBuffer("TriVB",
-			                                                   new[]
-			                                                   {
-				                                                   point1,
-				                                                   point2,
-				                                                   point3
-			                                                   }, BufferUsage.Immutable);
+	        point1.Tangent = new DX.Vector4(1.0f, 0, 0, 1.0f);
+	        point2.Tangent = new DX.Vector4(1.0f, 0, 0, 1.0f);
+	        point3.Tangent = new DX.Vector4(1.0f, 0, 0, 1.0f);
 
-			IndexBuffer = graphics.Buffers.CreateIndexBuffer("TriIB",
-			                                                  new[]
-			                                                  {
-				                                                  0,
-				                                                  1,
-				                                                  2
-			                                                  }, BufferUsage.Immutable);
-		}
-		#endregion
+	        unsafe
+	        {
+	            Vertex3D* points = stackalloc Vertex3D[3];
+	            int* indices = stackalloc int[3];
+
+	            points[0] = point1;
+	            points[1] = point2;
+	            points[2] = point3;
+	            indices[0] = 0;
+	            indices[1] = 1;
+	            indices[2] = 2;
+
+	            VertexBuffer = new GorgonVertexBuffer("TriVB",
+	                                                  graphics,
+	                                                  new GorgonVertexBufferInfo
+	                                                  {
+	                                                      Usage = D3D11.ResourceUsage.Immutable,
+	                                                      SizeInBytes = DirectAccess.SizeOf<Vertex3D>() * 3
+	                                                  },
+	                                                  new GorgonPointerAlias(points, DirectAccess.SizeOf<Vertex3D>() * 3));
+
+	            IndexBuffer = new GorgonIndexBuffer("TriIB",
+	                                                graphics,
+	                                                new GorgonIndexBufferInfo
+	                                                {
+	                                                    Usage = D3D11.ResourceUsage.Dynamic,
+	                                                    Use16BitIndices = false,
+	                                                    IndexCount = 3
+	                                                },
+	                                                new GorgonPointerAlias(indices, sizeof(int) * 3));
+	        }
+	    }
+	    #endregion
 	}
 }

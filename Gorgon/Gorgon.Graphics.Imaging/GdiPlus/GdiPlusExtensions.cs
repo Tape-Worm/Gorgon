@@ -38,32 +38,105 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
 	/// </summary>
 	public static class GdiPlusExtensions
 	{
-		/// <summary>
-		/// Function to convert a <see cref="Drawing.Bitmap"/> into a <seealso cref="IGorgonImage"/>.
-		/// </summary>
-		/// <param name="bitmap">The <seealso cref="Drawing.Bitmap"/> to convert.</param>
-		/// <returns>A new <seealso cref="IGorgonImage"/> containing the data from the <seealso cref="Drawing.Bitmap"/>.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="bitmap"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="GorgonException">Thrown if the <paramref name="bitmap"/> is not <see cref="PixelFormat.Format32bppArgb"/>.</exception>
-		/// <remarks>
-		/// <para>
-		/// This method will take a 2D <see cref="Drawing.Bitmap"/> and copy its data into a new 2D <seealso cref="IGorgonImage"/>. The resulting <seealso cref="IGorgonImage"/> will only contain 1 array level, 
-		/// and no mip map levels.
-		/// </para>
-		/// <para>
-		/// No format conversion is performed on the <paramref name="bitmap"/>, and as such, the only supported format is <see cref="PixelFormat.Format32bppArgb"/> and the only format that will be output into 
-		/// the resulting <seealso cref="IGorgonImage"/> is <c>Format.R8G8B8A8_UNorm</c>. If the source <paramref name="bitmap"/> is 
-		/// in a different format, then an exception will be thrown.
-		/// </para>
-		/// </remarks>
-		public static IGorgonImage ConvertToGorgonImage(this Drawing.Bitmap bitmap)
+        /// <summary>
+        /// Function to transfer a 32 bit rgba image into a <see cref="IGorgonImageBuffer"/>.
+        /// </summary>
+        /// <param name="bitmapLock">The lock on the bitmap to transfer from.</param>
+        /// <param name="buffer">The buffer to transfer into.</param>
+        /// <param name="destBufferSize">The size of a pixel, in bytes, in the destination.</param>
+	    private static void Transfer32Argb(BitmapData bitmapLock, IGorgonImageBuffer buffer, int destBufferSize)
+	    {
+	        unsafe
+	        {
+	            var pixels = (int*)bitmapLock.Scan0.ToPointer();
+
+	            for (int y = 0; y < bitmapLock.Height; y++)
+	            {
+	                // We only need the width here, as our pointer will handle the stride by virtue of being an int.
+	                int* offset = pixels + (y * bitmapLock.Width);
+
+	                int destOffset = y * buffer.PitchInformation.RowPitch;
+	                for (int x = 0; x < bitmapLock.Width; x++)
+	                {
+	                    // The DXGI format nomenclature is a little confusing as we tend to think of the layout as being highest to 
+	                    // lowest, but in fact, it is lowest to highest.
+	                    // So, we must convert to ABGR even though the DXGI format is RGBA. The memory layout is from lowest 
+	                    // (R at byte 0) to the highest byte (A at byte 3).
+	                    // Thus, R is the lowest byte, and A is the highest: A(24), B(16), G(8), R(0).
+	                    var color = new GorgonColor(*offset);
+	                    buffer.Data.Write(destOffset, color.ToABGR());
+	                    offset++;
+
+	                    destOffset += destBufferSize;
+                    }
+	            }
+	        }
+        }
+
+	    /// <summary>
+	    /// Function to transfer a 24 bit rgb image into a <see cref="IGorgonImageBuffer"/>.
+	    /// </summary>
+	    /// <param name="bitmapLock">The lock on the bitmap to transfer from.</param>
+	    /// <param name="buffer">The buffer to transfer into.</param>
+	    /// <param name="destBufferSize">The size of a pixel, in bytes, in the destination.</param>
+	    private static void Transfer24Rgb(BitmapData bitmapLock, IGorgonImageBuffer buffer, int destBufferSize)
+	    {
+	        unsafe
+	        {
+	            var pixels = (byte*)bitmapLock.Scan0.ToPointer();
+
+	            for (int y = 0; y < bitmapLock.Height; y++)
+	            {
+	                // We only need the width here, as our pointer will handle the stride by virtue of being an int.
+	                byte* offset = pixels + (y * bitmapLock.Stride);
+
+	                int destOffset = y * buffer.PitchInformation.RowPitch;
+	                for (int x = 0; x < bitmapLock.Width; x++)
+	                {
+	                    // The DXGI format nomenclature is a little confusing as we tend to think of the layout as being highest to 
+	                    // lowest, but in fact, it is lowest to highest.
+	                    // So, we must convert to ABGR even though the DXGI format is RGBA. The memory layout is from lowest 
+	                    // (R at byte 0) to the highest byte (A at byte 3).
+	                    // Thus, R is the lowest byte, and A is the highest: A(24), B(16), G(8), R(0).
+	                    byte b = *offset++;
+	                    byte g = *offset++;
+	                    byte r = *offset++;
+
+	                    var color = new GorgonColor(r / 255.0f, g / 255.0f, b / 255.0f, 1.0f);
+	                    buffer.Data.Write(destOffset, color.ToABGR());
+
+	                    destOffset += destBufferSize;
+	                }
+	            }
+	        }
+	    }
+        /// <summary>
+        /// Function to convert a <see cref="Drawing.Bitmap"/> into a <seealso cref="IGorgonImage"/>.
+        /// </summary>
+        /// <param name="bitmap">The <seealso cref="Drawing.Bitmap"/> to convert.</param>
+        /// <returns>A new <seealso cref="IGorgonImage"/> containing the data from the <seealso cref="Drawing.Bitmap"/>.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="bitmap"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="GorgonException">Thrown if the <paramref name="bitmap"/> is not <see cref="PixelFormat.Format32bppArgb"/>.</exception>
+        /// <remarks>
+        /// <para>
+        /// This method will take a 2D <see cref="Drawing.Bitmap"/> and copy its data into a new 2D <seealso cref="IGorgonImage"/>. The resulting <seealso cref="IGorgonImage"/> will only contain 1 array level, 
+        /// and no mip map levels.
+        /// </para>
+        /// <para>
+        /// No format conversion is performed on the <paramref name="bitmap"/>, and as such, the only supported format is <see cref="PixelFormat.Format32bppArgb"/> and the only format that will be output into 
+        /// the resulting <seealso cref="IGorgonImage"/> is <c>Format.R8G8B8A8_UNorm</c>. If the source <paramref name="bitmap"/> is 
+        /// in a different format, then an exception will be thrown.
+        /// </para>
+        /// </remarks>
+        public static IGorgonImage ConvertToGorgonImage(this Drawing.Bitmap bitmap)
 		{
 			if (bitmap == null)
 			{
 				throw new ArgumentNullException(nameof(bitmap));
 			}
 
-			if (bitmap.PixelFormat != PixelFormat.Format32bppArgb)
+			if ((bitmap.PixelFormat != PixelFormat.Format32bppArgb)
+                && (bitmap.PixelFormat != PixelFormat.Format24bppRgb))
 			{
 				throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, bitmap.PixelFormat));
 			}
@@ -79,32 +152,16 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
 
 			try
 			{
-				bitmapLock = bitmap.LockBits(new Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+				bitmapLock = bitmap.LockBits(new Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
 
-				unsafe
-				{
-					var pixels = (int*)bitmapLock.Scan0.ToPointer();
-
-					for (int y = 0; y < bitmap.Height; y++)
-					{
-						// We only need the width here, as our pointer will handle the stride by virtue of being an int.
-						int* offset = pixels + (y * bitmap.Width);
-
-						int destOffset = y * result.Buffers[0].PitchInformation.RowPitch;
-						for (int x = 0; x < bitmap.Width; x++)
-						{
-							// The DXGI format nomenclature is a little confusing as we tend to think of the layout as being highest to 
-							// lowest, but in fact, it is lowest to highest.
-							// So, we must convert to ABGR even though the DXGI format is RGBA. The memory layout is from lowest 
-							// (R at byte 0) to the highest byte (A at byte 3).
-							// Thus, R is the lowest byte, and A is the highest: A(24), B(16), G(8), R(0).
-							var color = new GorgonColor(*offset);
-							result.Buffers[0].Data.Write(destOffset, color.ToABGR());
-							offset++;
-							destOffset += result.FormatInfo.SizeInBytes;
-						}
-					}
-				}
+			    if (bitmap.PixelFormat == PixelFormat.Format32bppArgb)
+			    {
+			        Transfer32Argb(bitmapLock, result.Buffers[0], result.FormatInfo.SizeInBytes);
+			    }
+			    else
+			    {
+			        Transfer24Rgb(bitmapLock, result.Buffers[0], result.FormatInfo.SizeInBytes);
+                }
 			}
 			catch
 			{

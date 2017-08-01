@@ -34,7 +34,7 @@ using D3D = SharpDX.Direct3D11;
 namespace Gorgon.Graphics.Core
 {
 	/// <summary>
-	/// A shader that produces new geometry.
+	/// A shader that can be used to produce new geometry.
 	/// </summary>
 	/// <remarks>
 	/// <para>
@@ -126,7 +126,7 @@ namespace Gorgon.Graphics.Core
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonShader" /> class.
+		/// Initializes a new instance of the <see cref="GorgonGeometryShader" /> class.
 		/// </summary>
 		/// <param name="videoDevice">The video device used to create the shader.</param>
 		/// <param name="name">The name for this shader.</param>

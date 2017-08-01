@@ -526,7 +526,10 @@ namespace Gorgon.Graphics.Core
 
 					if (image == null)
 					{
-						D3DResource = new D3D11.Texture1D(Graphics.VideoDevice.D3DDevice(), tex1DDesc);
+					    D3DResource = new D3D11.Texture1D(Graphics.VideoDevice.D3DDevice(), tex1DDesc)
+					                  {
+					                      DebugName = $"{Name}: Direct 3D 11 {Info.TextureType} texture"
+					                  };
 						return;
 					}
 					break;
@@ -547,7 +550,10 @@ namespace Gorgon.Graphics.Core
 
 					if (image == null)
 					{
-						D3DResource = new D3D11.Texture2D(Graphics.VideoDevice.D3DDevice(), tex2DDesc);
+					    D3DResource = new D3D11.Texture2D(Graphics.VideoDevice.D3DDevice(), tex2DDesc)
+					                  {
+					                      DebugName = $"{Name}: Direct 3D 11 {Info.TextureType} texture"
+					                  };
 						return;
 					}
 					break;
@@ -567,7 +573,10 @@ namespace Gorgon.Graphics.Core
 
 					if (image == null)
 					{
-						D3DResource = new D3D11.Texture3D(Graphics.VideoDevice.D3DDevice(), tex3DDesc);
+					    D3DResource = new D3D11.Texture3D(Graphics.VideoDevice.D3DDevice(), tex3DDesc)
+					                  {
+					                      DebugName = $"{Name}: Direct 3D 11 {Info.TextureType} texture"
+					                  };
 						return;
 					}
 					break;
@@ -591,13 +600,22 @@ namespace Gorgon.Graphics.Core
 			switch (Info.TextureType)
 			{
 				case TextureType.Texture1D:
-					D3DResource = new D3D11.Texture1D(Graphics.VideoDevice.D3DDevice(), tex1DDesc, dataBoxes);
+				    D3DResource = new D3D11.Texture1D(Graphics.VideoDevice.D3DDevice(), tex1DDesc, dataBoxes)
+				                  {
+				                      DebugName = $"{Name}: Direct 3D 11 {Info.TextureType} texture"
+				                  };
 					break;
 				case TextureType.Texture2D:
-					D3DResource = new D3D11.Texture2D(Graphics.VideoDevice.D3DDevice(), tex2DDesc, dataBoxes);
+				    D3DResource = new D3D11.Texture2D(Graphics.VideoDevice.D3DDevice(), tex2DDesc, dataBoxes)
+				                  {
+				                      DebugName = $"{Name}: Direct 3D 11 {Info.TextureType} texture"
+				                  };
 					break;
 				case TextureType.Texture3D:
-					D3DResource = new D3D11.Texture3D(Graphics.VideoDevice.D3DDevice(), tex3DDesc, dataBoxes);
+				    D3DResource = new D3D11.Texture3D(Graphics.VideoDevice.D3DDevice(), tex3DDesc, dataBoxes)
+				                  {
+				                      DebugName = $"{Name}: Direct 3D 11 {Info.TextureType} texture"
+				                  };
 					break;
 			}
 		}
@@ -1998,7 +2016,7 @@ namespace Gorgon.Graphics.Core
 		/// <para>
 		/// This constructor creates an empty texture. Data may be uploaded to the texture at a later time if its <see cref="IGorgonTextureInfo.Usage"/> is not set to <c>Immutable</c>. If the 
 		/// <see cref="IGorgonTextureInfo.Usage"/> is set to <c>immutable</c> with this constructor, then an exception will be thrown. To use an immutable texture, use the 
-		/// <see cref="GorgonImageTextureExtensions.ToTexture"/> extension method on the <see cref="IGorgonImage"/> type.
+		/// <see cref="O:Gorgon.Graphics.Core.GorgonImageTextureExtensions.ToTexture"/> extension method on the <see cref="IGorgonImage"/> type.
 		/// </para>
 		/// </remarks>
 		public GorgonTexture(string name, GorgonGraphics graphics, IGorgonTextureInfo textureInfo, IGorgonLog log = null)

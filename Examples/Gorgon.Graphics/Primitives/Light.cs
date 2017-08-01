@@ -24,11 +24,10 @@
 // 
 #endregion
 
-using System;
-using System.Runtime.InteropServices;
-using Gorgon.IO;
-using Gorgon.Native;
-using SlimMath;
+using Gorgon.Graphics.Core;
+using Gorgon.Math;
+using DX = SharpDX;
+using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Example
 {
@@ -36,172 +35,132 @@ namespace Gorgon.Graphics.Example
 	/// A light to shine on our sad primitives
 	/// </summary>
 	class Light
-		: IDisposable
     {
-        #region Value Types.
-        /// <summary>
-        /// Data for a light to pass to the GPU.
-        /// </summary>
-        [StructLayout(LayoutKind.Sequential, Size = 64, Pack = 4)]
-	    private struct LightData
-        {
-			/// <summary>
-			/// Size of the data structure, in bytes.
-			/// </summary>
-	        public static readonly int Size = DirectAccess.SizeOf<LightData>();
+        #region Variables.
+        // The diffuse color of the light.
+        private GorgonColor _lightColor;
+        // The specular hilight color of the light.
+        private GorgonColor _specularColor;
+        // The specular power of the light.
+        private float _specularPower;
+        // The attentuation falloff for the light.
+        private float _attenuation;
+        // The position of the light.
+        private DX.Vector3 _position;
+        #endregion
 
-            /// <summary>
-            /// Color of the light.
-            /// </summary>
-            public Vector4 LightColor;
-            /// <summary>
-            /// Specular color for the light.
-            /// </summary>
-            public Vector4 SpecularColor;
-            /// <summary>
-            /// Position of the light in world space.
-            /// </summary>
-            public Vector3 LightPosition;
-            /// <summary>
-            /// Specular highlight power.
-            /// </summary>
-            public float SpecularPower;
-            /// <summary>
-            /// Attenuation falloff.
-            /// </summary>
-            public float Attenuation;
+        #region Properties.
+        /// <summary>
+        /// Property to set or return whether the state of the light has changed.
+        /// </summary>
+        public bool IsDirty
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return the position of the light.
+        /// </summary>
+        public DX.Vector3 LightPosition
+        {
+            get => _position;
+            set
+            {
+                if (_position.Equals(ref value))
+                {
+                    return;
+                }
+
+                _position = value;
+                IsDirty = true;
+            }
+        }
+        
+        /// <summary>
+        /// Property to set or return the diffuse color of the light.
+        /// </summary>
+        public GorgonColor LightColor
+        {
+            get => _lightColor;
+            set
+            {
+                if (GorgonColor.Equals(ref value, ref _lightColor))
+                {
+                    return;
+                }
+
+                _lightColor = value;
+                IsDirty = true;
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the specular color of the light.
+        /// </summary>
+        public GorgonColor SpecularColor
+        {
+            get => _specularColor;
+            set
+            {
+                if (GorgonColor.Equals(ref value, ref _specularColor))
+                {
+                    return;
+                }
+
+                _specularColor = value;
+                IsDirty = true;
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the attenuation falloff for the light.
+        /// </summary>
+        public float Attenuation
+        {
+            get => _attenuation;
+            set
+            {
+                if (_attenuation.EqualsEpsilon(value))
+                {
+                    return;
+                }
+
+                _attenuation = value;
+                IsDirty = true;
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the specular power for the light.
+        /// </summary>
+        public float SpecularPower
+        {
+            get => _specularPower;
+            set
+            {
+                if (_specularPower.EqualsEpsilon(value))
+                {
+                    return;
+                }
+
+                _specularPower = value;
+                IsDirty = true;
+            }
         }
         #endregion
 
-        #region Variables.
-        // Flag to indicate that the object was disposed.
-		private bool _disposed;
-		// The constant buffer to update.
-		private readonly GorgonConstantBuffer _buffer;
-        // Data to send to the GPU.
-	    private LightData[] _lightData = new LightData[8];
-		// Backing store for lights.
-		private GorgonPointer _lightStore;
-		#endregion
-
-        #region Methods.
-		/// <summary>
-		/// Function to update the correct light buffer data to the constant buffer.
-		/// </summary>
-		/// <param name="index">Index of the light to update.</param>
-		private unsafe void UpdateIndex(int index)
-		{
-			var data = (LightData*)_lightStore.Address;
-
-			foreach (LightData light in _lightData)
-			{
-				*(data++) = light;
-			}
-
-			_buffer.Update(_lightData);
-		}
-
-		/// <summary>
-		/// Function to update the attenuation falloff for the light.
-		/// </summary>
-		public void UpdateAttenuation(float value, int index)
-		{
-			_lightData[index].Attenuation = value;
-			UpdateIndex(index);
-		}
-
-		/// <summary>
-        /// Function to update the color for the light.
-        /// </summary>
-        /// <param name="color">Color to use.</param>
-	    public void UpdateColor(ref GorgonColor color, int index)
-        {
-            _lightData[index].LightColor = new Vector4(color.Red, color.Green, color.Blue, color.Alpha);
-            UpdateIndex(index);
-        }
-
-        /// <summary>
-        /// Function to update the specular power and color of the light.
-        /// </summary>
-        /// <param name="specColor">Specular color.</param>
-        /// <param name="power">Specular power.</param>
-	    public void UpdateSpecular(ref GorgonColor specColor, float power, int index)
-        {
-            _lightData[index].SpecularColor = new Vector4(specColor.Red, specColor.Green, specColor.Blue, specColor.Alpha);
-            _lightData[index].SpecularPower = power;
-	        UpdateIndex(index);
-        }
-
-		/// <summary>
-		/// Function to update the world matrix.
-		/// </summary>
-		/// <param name="position">The new position of the light.</param>
-		public void UpdateLightPosition(ref Vector3 position, int index)
-		{
-		    _lightData[index].LightPosition = position;
-            UpdateIndex(index);
-		}
-		#endregion
-
 		#region Constructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="WorldViewProjection"/> class.
+		/// Initializes a new instance of the <see cref="Camera"/> class.
 		/// </summary>
-		/// <param name="graphics">The graphics interface to use.</param>
-		public Light(GorgonGraphics graphics)
+		public Light()
 		{
-			_lightData[0].Attenuation = 6.0f;
-			_lightData[0].LightColor = new Vector4(GorgonColor.White.Red, GorgonColor.White.Green, GorgonColor.White.Blue, GorgonColor.White.Alpha);
-			_lightData[0].LightPosition = Vector3.Zero;
-			_lightData[0].SpecularColor = new Vector4(GorgonColor.White.Red, GorgonColor.White.Green, GorgonColor.White.Blue, GorgonColor.White.Alpha);
-			_lightData[0].SpecularPower = 512.0f;
-
-			_buffer = graphics.Buffers.CreateConstantBuffer("LightBuffer",
-			                                                new GorgonConstantBufferSettings
-			                                                {
-				                                                SizeInBytes = LightData.Size * _lightData.Length,
-				                                                Usage = BufferUsage.Default
-			                                                });
-			
-			_lightStore = new GorgonPointer(_buffer.SizeInBytes);
-			_lightStore.Zero();
-			_lightStore.Write(_lightData[0]);
-
-            _buffer.Update(_lightStore);
-
-			graphics.Shaders.PixelShader.ConstantBuffers[1] = _buffer;
-		}
-		#endregion
-
-		#region IDisposable Members
-		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources.
-		/// </summary>
-		/// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
-		private void Dispose(bool disposing)
-		{
-			if (_disposed)
-			{
-				return;
-			}
-
-			if (disposing)
-			{
-				_lightStore?.Dispose();
-
-				_buffer?.Dispose();
-			}
-
-			_disposed = true;
-		}
-
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		public void Dispose()
-		{
-			Dispose(false);
-			GC.SuppressFinalize(this);
+		    _position = DX.Vector3.Zero;
+		    _attenuation = 6.0f;
+		    _lightColor = GorgonColor.White;
+		    _specularColor = GorgonColor.White;
+		    _specularPower = 512.0f;
 		}
 		#endregion
 	}

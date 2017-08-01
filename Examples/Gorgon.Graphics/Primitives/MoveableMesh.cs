@@ -24,129 +24,140 @@
 // 
 #endregion
 
+using Gorgon.Graphics.Core;
 using Gorgon.Math;
-using SlimMath;
+using DX = SharpDX;
 
 namespace Gorgon.Graphics.Example
 {
-	/// <summary>
-	/// Defines a mesh that can be transformed.
-	/// </summary>
-	abstract class MoveableMesh
+    /// <summary>
+    /// Defines a mesh that can be transformed.
+    /// </summary>
+    abstract class MoveableMesh
         : Mesh
-	{
-		#region Variables.
-		// Position of the triangle.
-		private Vector3 _position = Vector3.Zero;
-		// Angle of the triangle.
-		private Vector3 _rotation = Vector3.Zero;
-		// Scale of the triangle.
-		private Vector3 _scale = new Vector3(1);
-		// Cached position matrix.
-		private Matrix _posMatrix = Matrix.Identity;
-		// Cached rotation matrix.
-		private Matrix _rotMatrix = Matrix.Identity;
-		// Cached scale matrix.
-		private Matrix _scaleMatrix = Matrix.Identity;
-		// Cached world matrix.
-		private Matrix _world = Matrix.Identity;
-		// Flags to indicate that the object needs to update its transform.
-		private bool _needsPosTransform;
-		private bool _needsSclTransform;
-		private bool _needsRotTransform;
-		private bool _needsWorldUpdate;
-		#endregion
+    {
+        #region Variables.
+        // Position of the triangle.
+        private DX.Vector3 _position = DX.Vector3.Zero;
 
-		#region Properties.
-		/// <summary>
-		/// Property to set or return the current position of the triangle.
-		/// </summary>
-		public Vector3 Position
-		{
-			get
-			{
-				return _position;
-			}
-			set
-			{
-				_position = value;
-				_needsPosTransform = true;
-				_needsWorldUpdate = true;
-			}
-		}
+        // Angle of the triangle.
+        private DX.Vector3 _rotation = DX.Vector3.Zero;
 
-		/// <summary>
-		/// Property to set or return the angle of rotation for the triangle (in degrees).
-		/// </summary>
-		public Vector3 Rotation
-		{
-			get
-			{
-				return _rotation;
-			}
-			set
-			{
-				_rotation = value;
-				_needsRotTransform = true;
-				_needsWorldUpdate = true;
-			}
-		}
+        // Scale of the triangle.
+        private DX.Vector3 _scale = new DX.Vector3(1);
 
-		/// <summary>
-		/// Property to set or return the scale of the transform.
-		/// </summary>
-		public Vector3 Scale
-		{
-			get
-			{
-				return _scale;
-			}
-			set
-			{
-				_scale = value;
-				_needsSclTransform = true;
-				_needsWorldUpdate = true;
-			}
-		}
+        // Cached position matrix.
+        private DX.Matrix _posMatrix = DX.Matrix.Identity;
 
-		/// <summary>
-		/// Property to return the world matrix for this triangle.
-		/// </summary>
-		public Matrix World
-		{
-			get
-			{
-				if (!_needsWorldUpdate)
-				{
-					return _world;
-				}
+        // Cached rotation matrix.
+        private DX.Matrix _rotMatrix = DX.Matrix.Identity;
 
-				if (_needsPosTransform)
-				{
-					Matrix.Translation(ref _position, out _posMatrix);
-					_needsPosTransform = false;
-				}
+        // Cached scale matrix.
+        private DX.Matrix _scaleMatrix = DX.Matrix.Identity;
 
-				if (_needsRotTransform)
-				{
-					var rads = new Vector3(_rotation.X.ToRadians(), _rotation.Y.ToRadians(), _rotation.Z.ToRadians());
-					Matrix.RotationYawPitchRoll(rads.Y, rads.X, rads.Z, out _rotMatrix);
-					_needsRotTransform = false;
-				}
+        // Cached world matrix.
+        private DX.Matrix _world = DX.Matrix.Identity;
 
-				if (_needsSclTransform)
-				{
-					Matrix.Scaling(ref _scale, out _scaleMatrix);
-					_needsSclTransform = false;
-				}
+        // Flags to indicate that the object needs to update its transform.
+        private bool _needsPosTransform;
+
+        private bool _needsSclTransform;
+        private bool _needsRotTransform;
+        private bool _needsWorldUpdate;
+        #endregion
+
+        #region Properties.
+        /// <summary>
+        /// Property to set or return the current position of the triangle.
+        /// </summary>
+        public DX.Vector3 Position
+        {
+            get => _position;
+            set
+            {
+                _position = value;
+                _needsPosTransform = true;
+                _needsWorldUpdate = true;
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the angle of rotation for the triangle (in degrees).
+        /// </summary>
+        public DX.Vector3 Rotation
+        {
+            get => _rotation;
+            set
+            {
+                _rotation = value;
+                _needsRotTransform = true;
+                _needsWorldUpdate = true;
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the scale of the transform.
+        /// </summary>
+        public DX.Vector3 Scale
+        {
+            get => _scale;
+            set
+            {
+                _scale = value;
+                _needsSclTransform = true;
+                _needsWorldUpdate = true;
+            }
+        }
+
+        /// <summary>
+        /// Property to return the world matrix for this triangle.
+        /// </summary>
+        public ref DX.Matrix WorldMatrix
+        {
+            get
+            {
+                if (!_needsWorldUpdate)
+                {
+                    return ref _world;
+                }
+
+                if (_needsPosTransform)
+                {
+                    DX.Matrix.Translation(ref _position, out _posMatrix);
+                    _needsPosTransform = false;
+                }
+
+                if (_needsRotTransform)
+                {
+                    var rads = new DX.Vector3(_rotation.X.ToRadians(), _rotation.Y.ToRadians(), _rotation.Z.ToRadians());
+                    DX.Matrix.RotationYawPitchRoll(rads.Y, rads.X, rads.Z, out _rotMatrix);
+                    _needsRotTransform = false;
+                }
+
+                if (_needsSclTransform)
+                {
+                    DX.Matrix.Scaling(ref _scale, out _scaleMatrix);
+                    _needsSclTransform = false;
+                }
 
 
-				Matrix.Multiply(ref _rotMatrix, ref _scaleMatrix, out _world);
-				Matrix.Multiply(ref _world, ref _posMatrix, out _world);
+                DX.Matrix.Multiply(ref _rotMatrix, ref _scaleMatrix, out _world);
+                DX.Matrix.Multiply(ref _world, ref _posMatrix, out _world);
 
-				return _world;
-			}
-		}
-		#endregion
-	}
+                return ref _world;
+            }
+        }
+        #endregion
+
+        #region Constructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MoveableMesh" /> class.
+        /// </summary>
+        /// <param name="graphics">The graphics interface that owns this object.</param>
+        protected MoveableMesh(GorgonGraphics graphics)
+            : base(graphics)
+        {
+        }
+        #endregion
+    }
 }

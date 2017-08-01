@@ -25,9 +25,12 @@
 #endregion
 
 using System.Drawing;
+using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Native;
-using SlimMath;
+using DX = SharpDX;
+using D3D = SharpDX.Direct3D;
+using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Example
 {
@@ -36,7 +39,7 @@ namespace Gorgon.Graphics.Example
 	{
 		#region Variables.
 		// Initial orientation.
-		private Matrix _orientation;
+		private DX.Matrix _orientation;
 		#endregion
 
 		#region Methods.
@@ -50,44 +53,41 @@ namespace Gorgon.Graphics.Example
 		/// <param name="textureCoordinates">The texture coordinates to apply to the plane.</param>
 		/// <param name="columns">The number of columns to subdivide by.</param>
 		/// <param name="rows">The number of rows to subdivide by.</param>
-		private unsafe void GetVertices(Vertex3D* buffer, Vector3 up, Vector3 normal, Vector3 size, RectangleF textureCoordinates, int columns, int rows)
+		private unsafe void GetVertices(Vertex3D* buffer, DX.Vector3 up, DX.Vector3 normal, DX.Vector3 size, RectangleF textureCoordinates, int columns, int rows)
 		{
 			float columnWidth = 1.0f / columns;
 			float columnHeight = 1.0f / rows;
-			Matrix rotation = Matrix.Identity;
-			Vector3 translate;
-			Vector3 transformNormal;
+			DX.Matrix rotation = DX.Matrix.Identity;
 
-			Vector3 orientVector;
-			Vector3.Cross(ref normal, ref up, out orientVector);
-			Vector3.Multiply(ref normal, 0.5f, out translate);
+            DX.Vector3.Cross(ref normal, ref up, out DX.Vector3 orientVector);
+            DX.Vector3.Multiply(ref normal, 0.5f, out DX.Vector3 translate);
 
-			rotation.Row1 = orientVector;
-			rotation.Row2 = up;
-			rotation.Row3 = normal;
-			rotation.Row4 = new Vector4(translate, 1);
+			rotation.Row1 = (DX.Vector4)orientVector;
+			rotation.Row2 = (DX.Vector4)up;
+			rotation.Row3 = (DX.Vector4)normal;
+			rotation.Row4 = new DX.Vector4(translate, 1);
 
-			Vector3.TransformCoordinate(ref normal, ref _orientation, out transformNormal);
-			Vector3.Normalize(ref transformNormal, out transformNormal);
+			DX.Vector3.TransformCoordinate(ref normal, ref _orientation, out DX.Vector3 transformNormal);
+			DX.Vector3.Normalize(ref transformNormal, out transformNormal);
 
 			for (int y = 0; y <= rows; ++y)
 			{
 				for (int x = 0; x <= columns; ++x)
 				{
-					var vertexPos = new Vector3(((x * columnWidth) - 0.5f) * size.X,
+					var vertexPos = new DX.Vector3(((x * columnWidth) - 0.5f) * size.X,
 					                            ((y * columnHeight) - 0.5f) * size.Y,
 					                            0);
 
-					Vector3.TransformCoordinate(ref vertexPos, ref rotation, out vertexPos);
-					Vector3.TransformCoordinate(ref vertexPos, ref _orientation, out vertexPos);
+					DX.Vector3.TransformCoordinate(ref vertexPos, ref rotation, out vertexPos);
+					DX.Vector3.TransformCoordinate(ref vertexPos, ref _orientation, out vertexPos);
 
 					*(buffer++) = new Vertex3D
 					{
 						Position =
-							new Vector4(vertexPos,
+							new DX.Vector4(vertexPos,
 										1.0f),
 						Normal = transformNormal,
-						UV = new Vector2((x * (textureCoordinates.Width / columns)) + textureCoordinates.X,
+						UV = new DX.Vector2((x * (textureCoordinates.Width / columns)) + textureCoordinates.X,
 										 (1.0f - (y * (textureCoordinates.Height / rows))) + textureCoordinates.Y)
 					};
 				}
@@ -119,30 +119,30 @@ namespace Gorgon.Graphics.Example
 				}
 			}
 		}
-		#endregion
+        #endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Cube"/> class.
-		/// </summary>
-		/// <param name="graphics">The graphics interface.</param>
-		/// <param name="size">The width, height and depth of the cube.</param>
-		/// <param name="textureCoordinates">The texture coordinates for the faces of the cube.</param>
-		/// <param name="angle">The initial orientation of the cube, in degrees.</param>
-		/// <param name="columnsPerFace">The number of columns per face.</param>
-		/// <param name="rowsPerFace">The number of rows per face.</param>
-		public Cube(GorgonGraphics graphics, Vector3 size, RectangleF textureCoordinates, Vector3 angle, int columnsPerFace = 1, int rowsPerFace = 1)
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Cube" /> class.
+        /// </summary>
+        /// <param name="graphics">The graphics interface.</param>
+        /// <param name="size">The width, height and depth of the cube.</param>
+        /// <param name="textureCoordinates">The texture coordinates for the faces of the cube.</param>
+        /// <param name="angle">The initial orientation of the cube, in degrees.</param>
+        /// <param name="columnsPerFace">The number of columns per face.</param>
+        /// <param name="rowsPerFace">The number of rows per face.</param>
+        public Cube(GorgonGraphics graphics, DX.Vector3 size, RectangleF textureCoordinates, DX.Vector3 angle, int columnsPerFace = 1, int rowsPerFace = 1)
+            : base(graphics)
 		{
-			PrimitiveType = PrimitiveType.TriangleList;
-			Quaternion orientation;
-			int faceVertexCount = (columnsPerFace + 1) * (rowsPerFace + 1);
-			int faceIndexCount = (columnsPerFace * rowsPerFace) * 6;
+			PrimitiveType = D3D.PrimitiveTopology.TriangleList;
+            int faceVertexCount = (columnsPerFace + 1) * (rowsPerFace + 1);
+            int faceIndexCount = (columnsPerFace * rowsPerFace) * 6;
 			VertexCount = faceVertexCount * 6;
 			IndexCount = faceIndexCount * 6;
 			TriangleCount = IndexCount / 3;
 
-			Quaternion.RotationYawPitchRoll(angle.Y.ToRadians(), angle.X.ToRadians(), angle.Z.ToRadians(), out orientation);
-			Matrix.RotationQuaternion(ref orientation, out _orientation);
+			DX.Quaternion.RotationYawPitchRoll(angle.Y.ToRadians(), angle.X.ToRadians(), angle.Z.ToRadians(), out DX.Quaternion orientation);
+			DX.Matrix.RotationQuaternion(ref orientation, out _orientation);
 
 			unsafe
 			{
@@ -152,17 +152,17 @@ namespace Gorgon.Graphics.Example
 				{
 					var vertices = (Vertex3D*)vertexData.Address;
 					// Front.
-					GetVertices(vertices, Vector3.UnitY, -Vector3.UnitZ, size, textureCoordinates, columnsPerFace, rowsPerFace);
+					GetVertices(vertices, DX.Vector3.UnitY, -DX.Vector3.UnitZ, size, textureCoordinates, columnsPerFace, rowsPerFace);
 					// Bottom.
-					GetVertices(vertices + faceVertexCount, -Vector3.UnitZ, -Vector3.UnitY, size, textureCoordinates, columnsPerFace, rowsPerFace);
+					GetVertices(vertices + faceVertexCount, -DX.Vector3.UnitZ, -DX.Vector3.UnitY, size, textureCoordinates, columnsPerFace, rowsPerFace);
 					// Back.
-					GetVertices(vertices + (faceVertexCount * 2), Vector3.UnitY, Vector3.UnitZ, size, textureCoordinates, columnsPerFace, rowsPerFace);
+					GetVertices(vertices + (faceVertexCount * 2), DX.Vector3.UnitY, DX.Vector3.UnitZ, size, textureCoordinates, columnsPerFace, rowsPerFace);
 					// Top.
-					GetVertices(vertices + (faceVertexCount * 3), Vector3.UnitZ, Vector3.UnitY, size, textureCoordinates, columnsPerFace, rowsPerFace);
+					GetVertices(vertices + (faceVertexCount * 3), DX.Vector3.UnitZ, DX.Vector3.UnitY, size, textureCoordinates, columnsPerFace, rowsPerFace);
 					// Left.
-					GetVertices(vertices + (faceVertexCount * 4), Vector3.UnitY, -Vector3.UnitX, size, textureCoordinates, columnsPerFace, rowsPerFace);
+					GetVertices(vertices + (faceVertexCount * 4), DX.Vector3.UnitY, -DX.Vector3.UnitX, size, textureCoordinates, columnsPerFace, rowsPerFace);
 					// Right
-					GetVertices(vertices + (faceVertexCount * 5), Vector3.UnitY, Vector3.UnitX, size, textureCoordinates, columnsPerFace, rowsPerFace);
+					GetVertices(vertices + (faceVertexCount * 5), DX.Vector3.UnitY, DX.Vector3.UnitX, size, textureCoordinates, columnsPerFace, rowsPerFace);
 
 					var indices = (int*)indexData.Address;
 					GetIndices(indices, 0, columnsPerFace, rowsPerFace);
@@ -174,23 +174,25 @@ namespace Gorgon.Graphics.Example
 
 					CalculateTangents(vertices, indices);
 
-					VertexBuffer = graphics.Buffers.CreateVertexBuffer("CubeVB",
-					                                                   new GorgonBufferSettings
-					                                                   {
-						                                                   Usage = BufferUsage.Immutable,
-						                                                   SizeInBytes = (int)vertexData.Size
-					                                                   },
-					                                                   vertexData);
+				    VertexBuffer = new GorgonVertexBuffer("CubeVB",
+				                                          graphics,
+				                                          new GorgonVertexBufferInfo
+				                                          {
+				                                              Usage = D3D11.ResourceUsage.Immutable,
+				                                              SizeInBytes = (int)vertexData.Size
+				                                          },
+				                                          vertexData);
 
 
-					IndexBuffer = graphics.Buffers.CreateIndexBuffer("CubeIB",
-					                                                 new GorgonIndexBufferSettings
-					                                                 {
-						                                                 Usage = BufferUsage.Immutable,
-						                                                 Use32BitIndices = true,
-						                                                 SizeInBytes = (int)indexData.Size
-					                                                 },
-					                                                 indexData);
+				    IndexBuffer = new GorgonIndexBuffer("CubeIB",
+				                                        graphics,
+				                                        new GorgonIndexBufferInfo
+				                                        {
+				                                            Usage = D3D11.ResourceUsage.Immutable,
+				                                            Use16BitIndices = false,
+				                                            IndexCount = IndexCount
+				                                        },
+				                                        indexData);
 				}
 			}
 		}

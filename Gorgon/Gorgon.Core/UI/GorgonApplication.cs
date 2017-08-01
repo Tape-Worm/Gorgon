@@ -409,11 +409,8 @@ namespace Gorgon.UI
 		/// </remarks>
 		public static IGorgonLog Log
 		{
-			get
-			{
-				return _log;
-			}
-			set
+			get => _log;
+		    set
 			{
 				lock (_syncLock)
 				{
@@ -454,6 +451,7 @@ namespace Gorgon.UI
 			// run regardless since we have an idle method to execute.
 			bool appShouldProcess = MainForm == null || AllowBackground || IsForeground;
 
+		    // ReSharper disable once UnusedVariable
 			while ((appShouldProcess) && (!UserApi.PeekMessage(out MSG message, IntPtr.Zero, 0, 0, PeekMessageNoRemove)))
 			{
                 // Reset the timer so that frame rate timing can start with the first iteration of the loop.

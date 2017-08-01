@@ -67,6 +67,22 @@ namespace Gorgon.Graphics.Core
 	        get;
 	    }
 
+        /// <summary>
+        /// Property to return the current hull shader.
+        /// </summary>
+	    GorgonHullShader HullShader
+	    {
+	        get;
+	    }
+
+        /// <summary>
+        /// Property to return the current domain shader.
+        /// </summary>
+	    GorgonDomainShader DomainShader
+	    {
+	        get;
+	    }
+
 		/// <summary>
 		/// Property to return the current <see cref="GorgonRasterState"/>.
 		/// </summary>
