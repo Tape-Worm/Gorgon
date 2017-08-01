@@ -547,7 +547,7 @@ namespace Gorgon.Graphics.Example
 
 			// Resources are stored as System.Drawing.Bitmap files, so we need to convert into an IGorgonImage so we can upload it to a texture.
 			// We also will generate mip-map levels for this image so that scaling the texture will look better. 
-		    using (IGorgonImage image = Resources.Texture.ConvertToGorgonImage()
+		    using (IGorgonImage image = Resources.Texture.ToGorgonImage()
 		                                         .GenerateMipMaps(GorgonImage.CalculateMaxMipCount(Resources.Texture.Width, Resources.Texture.Height, 0)))
 		    {
 		        _texture = image.ToTexture("Texture", _graphics, D3D11.ResourceUsage.Immutable);

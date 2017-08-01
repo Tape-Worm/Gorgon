@@ -103,7 +103,7 @@ namespace Gorgon.Graphics.Core
 	            throw new ArgumentNullException(nameof(graphics));
 	        }
 
-	        using (IGorgonImage image = gdiBitmap.ConvertToGorgonImage())
+	        using (IGorgonImage image = gdiBitmap.ToGorgonImage())
 	        {
 	            return new GorgonTexture(name, graphics, image, usage, binding, multiSampleInfo ?? GorgonMultisampleInfo.NoMultiSampling, log);
 	        }

@@ -143,7 +143,7 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
         /// If the source <paramref name="bitmap"/> does not support any of the formats on the list, then an exception will be thrown.
         /// </para>
         /// </remarks>
-        public static IGorgonImage ConvertToGorgonImage(this Drawing.Bitmap bitmap)
+        public static IGorgonImage ToGorgonImage(this Drawing.Bitmap bitmap)
 		{
 			if (bitmap == null)
 			{
