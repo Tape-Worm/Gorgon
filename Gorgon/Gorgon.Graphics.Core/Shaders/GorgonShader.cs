@@ -30,7 +30,6 @@ using System.Threading;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.IO;
-using SharpDX.Direct2D1;
 using D3DCompiler = SharpDX.D3DCompiler;
 
 namespace Gorgon.Graphics.Core

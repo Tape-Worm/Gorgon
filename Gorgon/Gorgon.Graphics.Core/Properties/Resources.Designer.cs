@@ -588,6 +588,15 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The shader is stored as a [{0}] type and cannot be converted to a &apos;{1}&apos;..
+        /// </summary>
+        internal static string GORGFX_ERR_SHADER_TYPE_MISMATCH {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_SHADER_TYPE_MISMATCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The shader type &apos;{0}&apos; is not a valid type..
         /// </summary>
         internal static string GORGFX_ERR_SHADER_UNKNOWN_TYPE {

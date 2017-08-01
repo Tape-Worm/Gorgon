@@ -488,4 +488,7 @@ The width must be a value between 1-{2}, and the height must be a value between 
   <data name="GORGFX_TOSTR_SO_BINDING" xml:space="preserve">
     <value>Stream-out bninding. Offset: {0}, Buffer: {1}</value>
   </data>
+  <data name="GORGFX_ERR_SHADER_TYPE_MISMATCH" xml:space="preserve">
+    <value>The shader is stored as a [{0}] type and cannot be converted to a '{1}'.</value>
+  </data>
 </root>

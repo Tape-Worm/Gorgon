@@ -161,23 +161,22 @@ namespace Gorgon.Graphics.Core
 		/// <param name="isDebug"><b>true</b> if the byte code has debug info, <b>false</b> if not.</param>
 		/// <param name="byteCode">The byte code for the shader.</param>
 		/// <returns>The shader based on the <paramref name="shaderType"/>.</returns>
-		private static T GetShader<T>(IGorgonVideoDevice device, ShaderType shaderType, string entryPoint, bool isDebug, D3DCompiler.ShaderBytecode byteCode)
-			where T : GorgonShader
+		private static GorgonShader GetShader(IGorgonVideoDevice device, ShaderType shaderType, string entryPoint, bool isDebug, D3DCompiler.ShaderBytecode byteCode)
 		{
 			switch (shaderType)
 			{
 				case ShaderType.Compute:
-				    return new GorgonComputeShader(device, entryPoint, isDebug, byteCode) as T;
+				    return new GorgonComputeShader(device, entryPoint, isDebug, byteCode);
                 case ShaderType.Hull:
-				    return new GorgonHullShader(device, entryPoint, isDebug, byteCode) as T;
+				    return new GorgonHullShader(device, entryPoint, isDebug, byteCode);
                 case ShaderType.Domain:
-                    return new GorgonDomainShader(device, entryPoint, isDebug, byteCode) as T;
+                    return new GorgonDomainShader(device, entryPoint, isDebug, byteCode);
 				case ShaderType.Geometry:
-					return new GorgonGeometryShader(device, entryPoint, isDebug, byteCode) as T;
+					return new GorgonGeometryShader(device, entryPoint, isDebug, byteCode);
 				case ShaderType.Pixel:
-					return new GorgonPixelShader(device, entryPoint, isDebug, byteCode) as T;
+					return new GorgonPixelShader(device, entryPoint, isDebug, byteCode);
 				case ShaderType.Vertex:
-					return new GorgonVertexShader(device, entryPoint, isDebug, byteCode) as T;
+					return new GorgonVertexShader(device, entryPoint, isDebug, byteCode);
 			}
 
 			throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_SHADER_UNKNOWN_TYPE, shaderType));
@@ -194,6 +193,7 @@ namespace Gorgon.Graphics.Core
 		/// <exception cref="IOException">Thrown if the <paramref name="stream"/> is write only.</exception>
 		/// <exception cref="EndOfStreamException">Thrown if an attempt to read beyond the end of the stream is made.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> parameter is less than 1 byte.</exception>
+		/// <exception cref="InvalidCastException">Thrown if the application tries to load a specific shader type as <typeparamref name="T"/>, but it is stored as another type.</exception>
 		/// <returns>A new <see cref="GorgonShader"/>. The type of shader depends on the data that was written to the stream and the <typeparamref name="T"/> type parameter.</returns>
 		/// <remarks>
 		/// <para>
@@ -298,6 +298,28 @@ namespace Gorgon.Graphics.Core
 
 				chunkReader.CloseChunk();
 
+			    Type requestedType = typeof(T);
+
+                // Validate the type for the shader.
+                // Just in case we try to cast a pixel shader to a compute shader or some such nonsense.
+			    for (int i = 0; i < _shaderTypes.Length; ++i)
+			    {
+			        (Type ShaderObjectType, ShaderType Type) shaderTypeXref = _shaderTypes[i];
+
+			        if (shaderTypeXref.Type != shaderType)
+			        {
+			            continue;
+			        }
+
+			        if ((requestedType != shaderTypeXref.ShaderObjectType)
+			            && (!shaderTypeXref.ShaderObjectType.IsSubclassOf(requestedType)))
+			        {
+			            throw new InvalidCastException(string.Format(Resources.GORGFX_ERR_SHADER_TYPE_MISMATCH, shaderType, requestedType.FullName));
+			        }
+
+			        break;
+			    }
+
 				reader = chunkReader.OpenChunk(byteCodeChunk.ID);
 
 				byte[] data = new byte[byteCodeChunk.Size];
@@ -306,7 +328,7 @@ namespace Gorgon.Graphics.Core
 
 				byteCode = new D3DCompiler.ShaderBytecode(data);
 
-				return GetShader<T>(device, shaderType, entryPoint, debug, byteCode);
+				return (T)GetShader(device, shaderType, entryPoint, debug, byteCode);
 			}
 			catch (DX.CompilationException cEx)
 			{
@@ -319,45 +341,46 @@ namespace Gorgon.Graphics.Core
 			}
 		}
 
-		/// <summary>
-		/// Function to load a shader from a file containing a Gorgon binary shader in chunked format.
-		/// </summary>
-		/// <typeparam name="T">The type of shader to return. Must inherit from <see cref="GorgonShader"/>.</typeparam>
-		/// <param name="device">The video device used to create the shader.</param>
-		/// <param name="path">The path to the file containing the Gorgon binary shader data.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="device"/>, or the <paramref name="path"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
-		/// <returns>A new <see cref="GorgonShader"/>. The type of shader depends on the data that was written to the file and the <typeparamref name="T"/> type parameter.</returns>
-		/// <remarks>
-		/// <para>
-		/// Use this to load precompiled shaders from a file. This has the advantage of not needing a lengthy recompile of the shader when initializing.
-		/// </para>
-		/// <para>
-		/// This makes use of the Gorgon <see cref="GorgonChunkFile{T}"/> format to allow flexible storage of data. The Gorgon shader format is broken into 2 chunks, both of which are available in the 
-		/// <see cref="BinaryShaderMetaData"/>, and <see cref="BinaryShaderByteCode"/> constants. The file header for the format is stored in the <see cref="BinaryShaderFileHeader"/> constant.  
-		/// </para>
-		/// <para>
-		/// The file format is as follows:
-		/// <list type="bullet">
-		///		<item>
-		///			<term><see cref="BinaryShaderFileHeader"/></term>
-		///			<description>This describes the type of file, and the version.</description>
-		///		</item>
-		///		<item>
-		///			<term><see cref="BinaryShaderMetaData"/></term>
-		///			<description>Shader metadata, such as the <see cref="ShaderType"/> (<see cref="int"/>), debug flag (<see cref="bool"/>), and the entry point name (<see cref="string"/>) is stored here.</description>
-		///		</item>
-		///		<item>
-		///			<term><see cref="BinaryShaderByteCode"/></term>
-		///			<description>The compiled shader byte code is stored here and is loaded as a <see cref="byte"/> array.</description>
-		///		</item>
-		/// </list>
-		/// </para>
-		/// </remarks>
-		/// <seealso cref="GorgonChunkFile{T}"/>
-		/// <seealso cref="GorgonChunkFileReader"/>
-		/// <seealso cref="GorgonChunkFileWriter"/>
-		public static T FromFile<T>(IGorgonVideoDevice device, string path)
+        /// <summary>
+        /// Function to load a shader from a file containing a Gorgon binary shader in chunked format.
+        /// </summary>
+        /// <typeparam name="T">The type of shader to return. Must inherit from <see cref="GorgonShader"/>.</typeparam>
+        /// <param name="device">The video device used to create the shader.</param>
+        /// <param name="path">The path to the file containing the Gorgon binary shader data.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="device"/>, or the <paramref name="path"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
+        /// <exception cref="InvalidCastException">Thrown if the application tries to load a specific shader type as <typeparamref name="T"/>, but it is stored as another type.</exception>
+        /// <returns>A new <see cref="GorgonShader"/>. The type of shader depends on the data that was written to the file and the <typeparamref name="T"/> type parameter.</returns>
+        /// <remarks>
+        /// <para>
+        /// Use this to load precompiled shaders from a file. This has the advantage of not needing a lengthy recompile of the shader when initializing.
+        /// </para>
+        /// <para>
+        /// This makes use of the Gorgon <see cref="GorgonChunkFile{T}"/> format to allow flexible storage of data. The Gorgon shader format is broken into 2 chunks, both of which are available in the 
+        /// <see cref="BinaryShaderMetaData"/>, and <see cref="BinaryShaderByteCode"/> constants. The file header for the format is stored in the <see cref="BinaryShaderFileHeader"/> constant.  
+        /// </para>
+        /// <para>
+        /// The file format is as follows:
+        /// <list type="bullet">
+        ///		<item>
+        ///			<term><see cref="BinaryShaderFileHeader"/></term>
+        ///			<description>This describes the type of file, and the version.</description>
+        ///		</item>
+        ///		<item>
+        ///			<term><see cref="BinaryShaderMetaData"/></term>
+        ///			<description>Shader metadata, such as the <see cref="ShaderType"/> (<see cref="int"/>), debug flag (<see cref="bool"/>), and the entry point name (<see cref="string"/>) is stored here.</description>
+        ///		</item>
+        ///		<item>
+        ///			<term><see cref="BinaryShaderByteCode"/></term>
+        ///			<description>The compiled shader byte code is stored here and is loaded as a <see cref="byte"/> array.</description>
+        ///		</item>
+        /// </list>
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="GorgonChunkFile{T}"/>
+        /// <seealso cref="GorgonChunkFileReader"/>
+        /// <seealso cref="GorgonChunkFileWriter"/>
+        public static T FromFile<T>(IGorgonVideoDevice device, string path)
 			where T : GorgonShader
 		{
 			if (device == null)
@@ -503,7 +526,7 @@ namespace Gorgon.Graphics.Core
 					throw new GorgonException(GorgonResult.CannotCompile, string.Format(Resources.GORGFX_ERR_CANNOT_COMPILE_SHADER, byteCode.Message));
 				}
 
-				return GetShader<T>(videoDevice, shaderType.Value.Item2, entryPoint, debug, byteCode);
+				return (T)GetShader(videoDevice, shaderType.Value.Item2, entryPoint, debug, byteCode);
 			}
 			catch (DX.CompilationException cEx)
 			{
