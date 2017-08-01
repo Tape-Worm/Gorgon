@@ -72,9 +72,9 @@ namespace Gorgon.Graphics.Core
 			(typeof(GorgonVertexShader), ShaderType.Vertex),
 			(typeof(GorgonPixelShader), ShaderType.Pixel),
             (typeof(GorgonGeometryShader), ShaderType.Geometry),
-//		    (typeof(GorgonHullShader), ShaderType.Hull),
-//		    (typeof(GorgonDomainShader), ShaderType.Domain),
-//		    (typeof(GorgonComputeShader), ShaderType.Compute),
+		    (typeof(GorgonHullShader), ShaderType.Hull),
+		    (typeof(GorgonDomainShader), ShaderType.Domain),
+		    (typeof(GorgonComputeShader), ShaderType.Compute),
         };
 		#endregion
 
@@ -167,9 +167,11 @@ namespace Gorgon.Graphics.Core
 			switch (shaderType)
 			{
 				case ShaderType.Compute:
-				case ShaderType.Hull:
-				case ShaderType.Domain:
-                    throw new NotSupportedException();
+				    return new GorgonComputeShader(device, entryPoint, isDebug, byteCode) as T;
+                case ShaderType.Hull:
+				    return new GorgonHullShader(device, entryPoint, isDebug, byteCode) as T;
+                case ShaderType.Domain:
+                    return new GorgonDomainShader(device, entryPoint, isDebug, byteCode) as T;
 				case ShaderType.Geometry:
 					return new GorgonGeometryShader(device, entryPoint, isDebug, byteCode) as T;
 				case ShaderType.Pixel:

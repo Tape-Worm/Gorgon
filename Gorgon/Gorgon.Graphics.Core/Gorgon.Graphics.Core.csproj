@@ -162,6 +162,7 @@
     <Compile Include="Shaders\GorgonShaderFactory.cs" />
     <Compile Include="Shaders\GorgonShaderMacro.cs" />
     <Compile Include="Shaders\GorgonUnorderedAccessView.cs" />
+    <Compile Include="Shaders\GorgonComputeShader.cs" />
     <Compile Include="Shaders\_Internal\ShaderProcessor.cs" />
     <Compile Include="States\GorgonBlendState.cs" />
     <Compile Include="States\GorgonRasterState.cs" />
