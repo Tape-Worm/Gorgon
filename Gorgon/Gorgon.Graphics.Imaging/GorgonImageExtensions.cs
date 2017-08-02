@@ -157,7 +157,7 @@ namespace Gorgon.Graphics.Imaging
 				}
 
 				// Update the base image with our worker image.
-				baseImage.CopyFrom(destImage);
+				destImage.CopyTo(baseImage);
 
 				return baseImage;
 			}
@@ -218,7 +218,7 @@ namespace Gorgon.Graphics.Imaging
 					}
 				}
 
-				baseImage.CopyFrom(destImage);
+				destImage.CopyTo(baseImage);
 
 				return baseImage;
 			}
@@ -279,19 +279,19 @@ namespace Gorgon.Graphics.Imaging
 				// Copy the top mip level from the source image to the dest image.
 				for (int array = 0; array < baseImage.Info.ArrayCount; ++array)
 				{
-					newImage.Buffers[0, array].Data.CopyFrom(baseImage.Buffers[0, array].Data, 
+					newImage.Buffers[0, array].Data.CopyTo(baseImage.Buffers[0, array].Data, 
 						(int)baseImage.Buffers[0, array].Data.Size * baseImage.Info.Depth);
 				}
 
 				if (mipCount < 2)
 				{
-					baseImage.CopyFrom(newImage);
+					newImage.CopyTo(baseImage);
 					return baseImage;
 				}
 
 				wic.GenerateMipImages(newImage, filter);
 
-				baseImage.CopyFrom(newImage);
+				newImage.CopyTo(baseImage);
 				return baseImage;
 			}
 			finally
@@ -359,7 +359,7 @@ namespace Gorgon.Graphics.Imaging
 				newImage = wic.Resize(baseImage, cropRect.X, cropRect.Y, cropRect.Width, cropRect.Height, newDepth, calcMipLevels, ImageFilter.Point, true);
 
 				// Send the data over to the new image.
-				baseImage.CopyFrom(newImage);
+				newImage.CopyTo(baseImage);
 
 				return baseImage;
 			}
@@ -435,7 +435,7 @@ namespace Gorgon.Graphics.Imaging
 				int calcMipLevels = GorgonImage.CalculateMaxMipCount(newWidth, newHeight, newDepth).Min(baseImage.Info.MipCount);
 				newImage = wic.Resize(baseImage, 0, 0, newWidth, newHeight, newDepth, calcMipLevels, filter, false);
 
-				baseImage.CopyFrom(newImage);
+				newImage.CopyTo(baseImage);
 
 				return baseImage;
 			}
@@ -509,7 +509,7 @@ namespace Gorgon.Graphics.Imaging
 				wic = new WicUtilities();
 				newImage = wic.ConvertToFormat(baseImage, format, dithering, baseImage.FormatInfo.IsSRgb, destInfo.IsSRgb);
 
-				baseImage.CopyFrom(newImage);
+				newImage.CopyTo(baseImage);
 
 				return baseImage;
 			}
@@ -553,7 +553,7 @@ namespace Gorgon.Graphics.Imaging
 					                     HasPremultipliedAlpha = true
 				                     };
 				newImage = new GorgonImage(cloneImageInfo);
-				newImage.CopyFrom(baseImage);			
+				baseImage.CopyTo(newImage);			
 
 				if (newImage.Info.Format != DXGI.Format.R8G8B8A8_UNorm)
 				{
@@ -583,7 +583,7 @@ namespace Gorgon.Graphics.Imaging
 					newImage.ConvertToFormat(baseImage.Info.Format);
 				}
 				
-				baseImage.CopyFrom(newImage);
+				newImage.CopyTo(baseImage);
 
 				return baseImage;
 			}

@@ -56,8 +56,8 @@ namespace Gorgon.Graphics.Core
 		#region Variables.
 		// The native bindings.
 		private readonly D3D11.UnorderedAccessView[] _nativeBindings;
-        // The list of offsets to apply.
-        private readonly int[] _offsets;
+        // The list of counts to apply.
+        private readonly int[] _counts;
 		#endregion
 
 		#region Properties.
@@ -67,9 +67,9 @@ namespace Gorgon.Graphics.Core
 		internal D3D11.UnorderedAccessView[] Native => _nativeBindings;
 
         /// <summary>
-        /// Property to return the native offsets for append/consume buffers.
+        /// Property to return the native initial counts for append/consume buffers.
         /// </summary>
-	    internal int[] Offsets => _offsets;
+	    internal int[] Counts => _counts;
 		#endregion
 
 		#region Methods.
@@ -81,7 +81,7 @@ namespace Gorgon.Graphics.Core
 	    protected override void OnStoreNativeItem(int nativeItemIndex, GorgonUavBinding value)
 	    {
 	        _nativeBindings[nativeItemIndex] = value.Uav?.NativeView;
-	        _offsets[nativeItemIndex] = value.InitialCount;
+	        _counts[nativeItemIndex] = value.InitialCount;
 	    }
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace Gorgon.Graphics.Core
 		    }
 
 			Array.Clear(_nativeBindings, 0, _nativeBindings.Length);
-		    Array.Clear(_offsets, 0, _offsets.Length);
+		    Array.Clear(_counts, 0, _counts.Length);
 		}
 		#endregion
 
@@ -107,7 +107,7 @@ namespace Gorgon.Graphics.Core
 			: base(MaximumUavCount)
 		{
 			_nativeBindings = new D3D11.UnorderedAccessView[MaximumUavCount];
-            _offsets = new int[MaximumUavCount];
+            _counts = new int[MaximumUavCount];
 
             // Force us to clear to the empty views instead of the default for the type.
             Clear();

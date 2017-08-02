@@ -123,6 +123,38 @@ namespace Gorgon.Graphics.Core
                              DebugName = $"'{Buffer.Name}': D3D 11 Unordered access view"
                          };
         }
+
+        /// <summary>
+        /// Function to copy the structure count from this view into a buffer.
+        /// </summary>
+        /// <param name="buffer">The buffer that will receive the data.</param>
+        /// <param name="offset">[Optional] The offset, in bytes, within the buffer attached to this view to start reading from.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="buffer"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="offset"/> is less than 0, or not less than the size of the buffer minus 4 bytes.</exception>
+        /// <remarks>
+        /// <para>
+        /// When the structure unordered access view is set up with a <see cref="StructuredBufferUavType.Append"/>, or <see cref="StructuredBufferUavType.Counter"/>, the values updated by these flags are 
+        /// not readily accessible from the CPU. To retrieve these values, this method must be called to retrieve the values. These values are copied into the <paramref name="buffer"/> provided to the 
+        /// method so that applications can make use of data generated on the GPU. Note that this value will be written out as a 32 bit unsigned integer.
+        /// </para>
+        /// <para>
+        /// If the unordered access view does not specify the appropriate values on the <see cref="UavType"/>, then this method will do nothing.
+        /// </para>
+        /// <para> 
+        /// <note type="important">
+        /// <para>
+        /// For performance reasons, exceptions will only be thrown from this method when Gorgon is compiled as <b>DEBUG</b>.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        public void CopyStructureCount(GorgonBufferCommon buffer, int offset = 0)
+        {
+            buffer.ValidateObject(nameof(buffer));
+            offset.ValidateRange(nameof(offset), 0, Buffer.SizeInBytes - 4);
+
+            buffer.Graphics.D3DDeviceContext.CopyStructureCount(buffer.NativeBuffer, offset, NativeView);
+        }
         #endregion
 
         #region Constructor/Finalizer.

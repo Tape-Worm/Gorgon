@@ -115,6 +115,7 @@
     <Compile Include="Buffers\_Interfaces\IGorgonVertexBufferInfo.cs" />
     <Compile Include="Buffers\_Interfaces\IGorgonConstantBufferInfo.cs" />
     <Compile Include="Buffers\_Internal\ShaderViewKey.cs" />
+    <Compile Include="Compute\GorgonComputeEngine.cs" />
     <Compile Include="Devices\_Interfaces\IGorgonVideoOutputInfo.cs" />
     <Compile Include="Devices\_Interfaces\IGorgonVideoDeviceInfo.cs" />
     <Compile Include="Devices\_Internal\VideoDeviceInfo.cs" />

@@ -748,14 +748,7 @@ namespace Gorgon.Graphics.Core
 	                imageType = ImageType.Image3D;
 	                break;
 	            case TextureType.Texture2D:
-	                if (isCubeMap)
-	                {
-	                    imageType = ImageType.ImageCube;
-	                }
-	                else
-	                {
-	                    imageType = ImageType.Image2D;
-	                }
+	                imageType = isCubeMap ? ImageType.ImageCube : ImageType.Image2D;
 	                break;
 	        }
 
@@ -860,13 +853,13 @@ namespace Gorgon.Graphics.Core
 		}
 
 		/// <summary>
-		/// Function to copy another <see cref="GorgonTexture"/>, in its entirty, to this texture.
+		/// Function to copy this texture into another <see cref="GorgonTexture"/>.
 		/// </summary>
-		/// <param name="sourceTexture">The <see cref="GorgonTexture"/> to copy.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="sourceTexture"/> parameter is <b>null</b>.</exception>
+		/// <param name="destTexture">The <see cref="GorgonTexture"/> that will receive a copy of this texture.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="destTexture"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the formats cannot be converted because they're not of the same group or the current video device has a feature level of <see cref="FeatureLevelSupport.Level_10_0"/>.
 		/// <para>-or-</para>
-		/// <para>Thrown when the <see cref="IGorgonTextureInfo.MultisampleInfo"/>.<see cref="GorgonMultisampleInfo.Count"/> is not the same for the source <paramref name="sourceTexture"/> and this texture.</para>
+		/// <para>Thrown when the <see cref="IGorgonTextureInfo.MultisampleInfo"/>.<see cref="GorgonMultisampleInfo.Count"/> is not the same for the source <paramref name="destTexture"/> and this texture.</para>
 		/// <para>-or-</para>
 		/// <para>Thrown when the texture sizes are not the same.</para>
 		/// <para>-or-</para>
@@ -875,14 +868,14 @@ namespace Gorgon.Graphics.Core
 		/// <exception cref="NotSupportedException">Thrown when this texture has a <see cref="IGorgonTextureInfo.Usage"/> setting of <c>Immutable</c>.</exception>
 		/// <remarks>
 		/// <para>
-		/// This method copies the contents of the <paramref name="sourceTexture"/> parameter into this texture. If a sub resource for the <paramref name="sourceTexture"/> must be copied, use the <see cref="CopySubResource"/> 
-		/// method.
+		/// This method copies the contents of this texture into the texture specified by the <paramref name="destTexture"/> parameter. If a sub resource for the <paramref name="destTexture"/> must be 
+		/// copied, use the <see cref="CopySubResource"/> method.
 		/// </para>
 		/// <para>
 		/// This method does not perform stretching, filtering or clipping.
 		/// </para>
 		/// <para>
-		/// The source <paramref name="sourceTexture"/> dimensions must be have the same dimensions, and <see cref="IGorgonTextureInfo.MultisampleInfo"/> as this texture. As well, the destination texture must not 
+		/// The <paramref name="destTexture"/> dimensions must be have the same dimensions, and <see cref="IGorgonTextureInfo.MultisampleInfo"/> as this texture. As well, the destination texture must not 
 		/// have a <see cref="IGorgonTextureInfo.Usage"/> of <c>Immutable.</c>. If these contraints are violated, then an exception will be thrown.
 		/// </para>
 		/// <para>
@@ -891,7 +884,7 @@ namespace Gorgon.Graphics.Core
 		/// does not match, then an exception will be thrown.
 		/// </para>
 		/// <para>
-		/// <note type="caution">
+		/// <note type="important">
 		/// <para>
 		/// For performance reasons, any exceptions thrown from this method will only be thrown when Gorgon is compiled as DEBUG.
 		/// </para>
@@ -899,14 +892,14 @@ namespace Gorgon.Graphics.Core
 		/// </para>
 		/// </remarks>
 		/// <seealso cref="CopySubResource"/>
-		public void CopyFrom(GorgonTexture sourceTexture)
+		public void CopyTo(GorgonTexture destTexture)
 		{
-			sourceTexture.ValidateObject(nameof(sourceTexture));
+			destTexture.ValidateObject(nameof(destTexture));
 
 #if DEBUG
-			if (sourceTexture.ResourceType != ResourceType)
+			if (destTexture.ResourceType != ResourceType)
 			{
-				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TEXTURE_NOT_SAME_TYPE, sourceTexture.Name, sourceTexture.ResourceType, ResourceType), nameof(sourceTexture));
+				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TEXTURE_NOT_SAME_TYPE, destTexture.Name, destTexture.ResourceType, ResourceType), nameof(destTexture));
 			}
 
 			if (Info.Usage == D3D11.ResourceUsage.Immutable)
@@ -914,25 +907,25 @@ namespace Gorgon.Graphics.Core
 				throw new NotSupportedException(Resources.GORGFX_ERR_TEXTURE_IMMUTABLE);
 			}
 
-			if ((Info.MultisampleInfo.Count != sourceTexture.Info.MultisampleInfo.Count) || (Info.MultisampleInfo.Quality != sourceTexture.Info.MultisampleInfo.Quality))
+			if ((Info.MultisampleInfo.Count != destTexture.Info.MultisampleInfo.Count) || (Info.MultisampleInfo.Quality != destTexture.Info.MultisampleInfo.Quality))
 			{
 				throw new InvalidOperationException(Resources.GORGFX_ERR_TEXTURE_MULTISAMPLE_PARAMS_MISMATCH);
 			}
 
 			// If the format is different, then check to see if the format group is the same.
-			if ((sourceTexture.Info.Format != Info.Format) && ((sourceTexture.FormatInformation.Group != FormatInformation.Group) 
+			if ((destTexture.Info.Format != Info.Format) && ((destTexture.FormatInformation.Group != FormatInformation.Group) 
 				|| (Graphics.VideoDevice.RequestedFeatureLevel == FeatureLevelSupport.Level_10_0)))
 			{
-				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TEXTURE_COPY_CANNOT_CONVERT, sourceTexture.Info.Format, Info.Format), nameof(sourceTexture));
+				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TEXTURE_COPY_CANNOT_CONVERT, destTexture.Info.Format, Info.Format), nameof(destTexture));
 			}
 
-			if ((sourceTexture.Info.Width != Info.Width) || (sourceTexture.Info.Height != Info.Height) || (sourceTexture.Info.Depth != Info.Depth))
+			if ((destTexture.Info.Width != Info.Width) || (destTexture.Info.Height != Info.Height) || (destTexture.Info.Depth != Info.Depth))
 			{
-				throw new ArgumentException(Resources.GORGFX_ERR_TEXTURE_MUST_BE_SAME_SIZE, nameof(sourceTexture));
+				throw new ArgumentException(Resources.GORGFX_ERR_TEXTURE_MUST_BE_SAME_SIZE, nameof(destTexture));
 			}
 #endif
 
-			Graphics.D3DDeviceContext.CopyResource(sourceTexture.D3DResource, D3DResource);
+			Graphics.D3DDeviceContext.CopyResource(D3DResource, destTexture.D3DResource);
 		}
 
 		/// <summary>
@@ -960,7 +953,7 @@ namespace Gorgon.Graphics.Core
 		/// <para>
 		/// Use this method to copy a specific sub resource of a <see cref="GorgonTexture"/> to another sub resource of this <see cref="GorgonTexture"/>, or to a different sub resource of the same texture.  
 		/// The <paramref name="sourceBox"/> coordinates must be inside of the destination, if it is not, then the source data will be clipped against the destination region. No stretching or filtering is 
-		/// supported by this method. If the entire texture needs to be copied, then use the <see cref="CopyFrom"/> method.
+		/// supported by this method. If the entire texture needs to be copied, then use the <see cref="CopyTo"/> method.
 		/// </para>
 		/// <para>
 		/// If the current video device has a feature level better than <see cref="FeatureLevelSupport.Level_10_0"/>, then limited format conversion will be performed if the two textures are within the same bit 
@@ -981,7 +974,7 @@ namespace Gorgon.Graphics.Core
 		/// </note>
 		/// </para>
 		/// </remarks>
-		/// <seealso cref="CopyFrom"/>
+		/// <seealso cref="CopyTo"/>
 		public void CopySubResource(GorgonTexture sourceTexture, GorgonBox? sourceBox = null, int sourceArrayIndex = 0, int sourceMipLevel = 0, int destX = 0, int destY = 0, int destZ = 0, int destArrayIndex = 0, int destMipLevel = 0)
 		{
 			sourceTexture.ValidateObject(nameof(sourceTexture));
@@ -1240,7 +1233,7 @@ namespace Gorgon.Graphics.Core
 			var staging = new GorgonTexture(Name + " [Staging]", Graphics, info);
 
 			// Copy the data from this texture into the new staging texture.
-			staging.CopyFrom(this);
+			staging.CopyTo(this);
 
 			return staging;
 		}

@@ -41,7 +41,7 @@ namespace Gorgon.Graphics.Core
 	/// This type does not support index buffers.
 	/// </para>
 	/// </remarks>
-	public class GorgonDrawCallInstanced
+	public class GorgonDrawInstancedCall
 		: GorgonDrawCallBase
 	{
 		/// <summary>

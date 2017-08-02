@@ -249,7 +249,7 @@ namespace Gorgon.Graphics.Imaging
 				&& (srcRegion.Right == dstRegion.Right)
 				&& (srcRegion.Bottom == dstRegion.Bottom))
 		    {
-				buffer.Data.CopyFrom(Data, (int)Data.Size);
+				buffer.Data.CopyTo(Data, (int)Data.Size);
 		        return;
 		    }
 

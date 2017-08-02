@@ -234,7 +234,7 @@ namespace Gorgon.Diagnostics
 
 		    if (((maxInclusive) && (value > max)) || ((!maxInclusive) && (value >= max)))
 		    {
-                throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_ERR_VALUE_IS_GREATER_THAN, value, min));
+                throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_ERR_VALUE_IS_GREATER_THAN, value, max));
             }
 		}
 

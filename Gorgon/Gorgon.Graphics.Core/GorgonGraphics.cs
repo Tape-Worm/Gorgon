@@ -125,7 +125,7 @@ namespace Gorgon.Graphics.Core
     /// <seealso cref="IGorgonVideoDeviceList"/>
     /// <seealso cref="GorgonDrawCall"/>
     /// <seealso cref="GorgonDrawIndexedCall"/>
-    /// <seealso cref="GorgonDrawCallInstanced"/>
+    /// <seealso cref="GorgonDrawInstancedCall"/>
     /// <seealso cref="GorgonDrawIndexedInstancedCall"/>
     public sealed class GorgonGraphics
         : IDisposable
@@ -1380,7 +1380,7 @@ namespace Gorgon.Graphics.Core
             for (int i = 0; i < _uavBuffer.Length; ++i)
             {
                 _uavBuffer[i] = uavs.Native[i];
-                _uavCounters[i] = uavs.Offsets[i];
+                _uavCounters[i] = uavs.Counts[i];
             }
 
             D3DDeviceContext.OutputMerger.SetUnorderedAccessViews(bindings.StartSlot, _uavBuffer, _uavCounters);
@@ -1465,7 +1465,8 @@ namespace Gorgon.Graphics.Core
 
 	            if (state == null)
 	            {
-	                continue;
+	                _samplerStates[i - bindings.StartSlot] = null;
+                    continue;
 	            }
 
 	            if (state.Native == null)
@@ -1875,9 +1876,88 @@ namespace Gorgon.Graphics.Core
 		}
 
         /// <summary>
+        /// Function to submit a <see cref="GorgonDrawIndexedInstancedCall"/> to the GPU using a <see cref="GorgonIndirectArgumentBuffer"/> to pass in variable sized arguments.
+        /// </summary>
+        /// <param name="drawCall">The draw call to submit.</param>
+        /// <param name="indirectArgs">The buffer containing the draw call arguments to pass.</param>
+        /// <param name="argumentOffset">[Optional] The offset, in bytes, within the buffer to start reading the arguments from.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawCall"/>, or the <paramref name="indirectArgs"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="argumentOffset"/> parameter is less than 0.</exception>
+        /// <remarks>
+        /// <para>
+        /// This allows submitting a <see cref="GorgonDrawIndexedInstancedCall"/> with variable arguments without having to perform a read back of that data from the GPU and therefore avoid a stall. 
+        /// </para>
+        /// <para>
+        /// Like the <see cref="SubmitStreamOut"/> method, this is useful when a shader generates an arbitrary amount of data within a buffer. To get the size, or the data itself out of the buffer will 
+        /// cause a stall when swtiching back to the CPU. This is obviously not good for performance. So, to counter this, this method will pass the buffer with the arguments for the draw call straight 
+        /// through without having to get the CPU to read the data back, thus avoiding the stall.
+        /// </para>
+        /// <para>
+        /// <note type="caution">
+        /// <para>
+        /// For performance reasons, any exceptions thrown from this method will only be thrown when Gorgon is compiled as DEBUG.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="GorgonDrawIndexedInstancedCall"/>
+        public void SubmitIndirect(GorgonDrawIndexedInstancedCall drawCall, GorgonIndirectArgumentBuffer indirectArgs, int argumentOffset = 0)
+        {
+            drawCall.ValidateObject(nameof(drawCall));
+            indirectArgs.ValidateObject(nameof(indirectArgs));
+            
+            // Merge this draw call with our previous one (if available).
+            (PipelineResourceChange ChangedResources, PipelineStateChange ChangedStates) stateChange = MergeDrawCall(drawCall);
+
+            ApplyPerDrawStates(_currentDrawCall, drawCall.PipelineState, stateChange.ChangedResources, stateChange.ChangedStates);
+
+            D3DDeviceContext.DrawIndexedInstancedIndirect(indirectArgs.NativeBuffer, argumentOffset);
+        }
+
+        /// <summary>
+        /// Function to submit a <see cref="GorgonDrawInstancedCall"/> to the GPU using a <see cref="GorgonIndirectArgumentBuffer"/> to pass in variable sized arguments.
+        /// </summary>
+        /// <param name="drawCall">The draw call to submit.</param>
+        /// <param name="indirectArgs">The buffer containing the draw call arguments to pass.</param>
+        /// <param name="argumentOffset">[Optional] The offset, in bytes, within the buffer to start reading the arguments from.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawCall"/>, or the <paramref name="indirectArgs"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="argumentOffset"/> parameter is less than 0.</exception>
+        /// <remarks>
+        /// <para>
+        /// This allows submitting a <see cref="GorgonDrawInstancedCall"/> with variable arguments without having to perform a read back of that data from the GPU and therefore avoid a stall. 
+        /// </para>
+        /// <para>
+        /// Like the <see cref="SubmitStreamOut"/> method, this is useful when a shader generates an arbitrary amount of data within a buffer. To get the size, or the data itself out of the buffer will 
+        /// cause a stall when swtiching back to the CPU. This is obviously not good for performance. So, to counter this, this method will pass the buffer with the arguments for the draw call straight 
+        /// through without having to get the CPU to read the data back, thus avoiding the stall.
+        /// </para>
+        /// <para>
+        /// <note type="caution">
+        /// <para>
+        /// For performance reasons, any exceptions thrown from this method will only be thrown when Gorgon is compiled as DEBUG.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="GorgonDrawIndexedInstancedCall"/>
+        public void SubmitIndirect(GorgonDrawInstancedCall drawCall, GorgonIndirectArgumentBuffer indirectArgs, int argumentOffset = 0)
+        {
+            drawCall.ValidateObject(nameof(drawCall));
+            indirectArgs.ValidateObject(nameof(indirectArgs));
+
+            // Merge this draw call with our previous one (if available).
+            (PipelineResourceChange ChangedResources, PipelineStateChange ChangedStates) stateChange = MergeDrawCall(drawCall);
+
+            ApplyPerDrawStates(_currentDrawCall, drawCall.PipelineState, stateChange.ChangedResources, stateChange.ChangedStates);
+
+            D3DDeviceContext.DrawInstancedIndirect(indirectArgs.NativeBuffer, argumentOffset);
+        }
+
+        /// <summary>
         /// Function to submit a <see cref="GorgonDrawCallBase"/> to the GPU.
         /// </summary>
         /// <param name="drawCall">The draw call to submit.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawCall"/> parameter is <b>null</b>.</exception>
         /// <remarks>
         /// <para>
         /// This method sends a series of state changes and resource bindings to the GPU. However, unlike the <see cref="O:Gorgon.Graphics.Core.GorgonGraphics.Submit"/> commands, this command uses 
@@ -1887,7 +1967,7 @@ namespace Gorgon.Graphics.Core
         /// </para>
         /// <para>
         /// To render data with this method, the <see cref="GorgonVertexBuffer"/> being rendered must be at slot 0 in the <see cref="GorgonDrawCallBase.VertexBuffers"/> list on the 
-        /// <paramref name="drawCall"/> passed to the method. This buffer must be created with the <see cref="IGorgonVertexBufferInfo.IsStreamOut"/> flag set to <b>true</b>.
+        /// <paramref name="drawCall"/> passed to the method. This buffer must be created with the <see cref="VertexIndexBufferBinding.StreamOut"/> flag set.
         /// </para>
         /// <para>
         /// Draw calls with a start and count property (for indices, vertices, etc...) will work with this method, but those properties are ignored because the actual size of the data being sent is unknown 
@@ -1907,6 +1987,8 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public void SubmitStreamOut(GorgonDrawCallBase drawCall)
         {
+            drawCall.ValidateObject(nameof(drawCall));
+
             // Merge this draw call with our previous one (if available).
             (PipelineResourceChange ChangedResources, PipelineStateChange ChangedStates) stateChange = MergeDrawCall(drawCall);
 
@@ -1990,7 +2072,7 @@ namespace Gorgon.Graphics.Core
 		}
 
         /// <summary>
-        /// Function to submit a <see cref="GorgonDrawCallInstanced"/> to the GPU.
+        /// Function to submit a <see cref="GorgonDrawInstancedCall"/> to the GPU.
         /// </summary>
         /// <param name="drawCall">The draw call to submit.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawCall"/> parameter is <b>null</b>.</exception>
@@ -2006,7 +2088,7 @@ namespace Gorgon.Graphics.Core
         /// </note>
         /// </para>
         /// </remarks>
-        public void Submit(GorgonDrawCallInstanced drawCall)
+        public void Submit(GorgonDrawInstancedCall drawCall)
 		{
 			drawCall.ValidateObject(nameof(drawCall));
 

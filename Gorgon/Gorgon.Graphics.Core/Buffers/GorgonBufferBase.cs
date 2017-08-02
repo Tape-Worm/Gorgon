@@ -411,8 +411,10 @@ namespace Gorgon.Graphics.Core
             int sourceByteIndex = sourceOffset + byteCount;
             int destByteIndex = destOffset + byteCount;
 
-            sourceByteIndex.ValidateRange(nameof(sourceOffset), 0, buffer.SizeInBytes);
-            destByteIndex.ValidateRange(nameof(destOffset), 0, buffer.SizeInBytes);
+            sourceOffset.ValidateRange(nameof(sourceOffset), 0, SizeInBytes);
+            destOffset.ValidateRange(nameof(destOffset), 0, buffer.SizeInBytes);
+            sourceByteIndex.ValidateRange(nameof(byteCount), 0, SizeInBytes, maxInclusive:true);
+            destByteIndex.ValidateRange(nameof(byteCount), 0, buffer.SizeInBytes, maxInclusive:true);
 
 #if DEBUG
             if (buffer.NativeBuffer.Description.Usage == D3D11.ResourceUsage.Immutable)
@@ -420,7 +422,7 @@ namespace Gorgon.Graphics.Core
                 throw new GorgonException(GorgonResult.AccessDenied, Resources.GORGFX_ERR_BUFFER_IS_IMMUTABLE);
             }
 #endif
-            Graphics.D3DDeviceContext.CopySubresourceRegion(buffer.D3DResource,
+            Graphics.D3DDeviceContext.CopySubresourceRegion(D3DResource,
                                                             0,
                                                             new D3D11.ResourceRegion
                                                             {
@@ -431,7 +433,7 @@ namespace Gorgon.Graphics.Core
                                                                 Front = 0,
                                                                 Back = 1
                                                             },
-                                                            D3DResource,
+                                                            buffer.D3DResource,
                                                             0,
                                                             destOffset);
         }

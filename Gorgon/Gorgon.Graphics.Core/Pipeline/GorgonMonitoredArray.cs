@@ -348,7 +348,7 @@ namespace Gorgon.Graphics.Core
 		        throw new ArgumentOutOfRangeException(nameof(maxSize));
 		    }
 			_backingStore = new T[maxSize];
-		    _dirtyItems = (0, maxSize - 1);
+		    _dirtyItems = (0, 0);
 		}
 		#endregion
 	}

@@ -1129,51 +1129,51 @@ namespace Gorgon.Native
 			}
 		}
 
-		/// <summary>
-		/// Function to copy data from the specified <see cref="IGorgonPointer"/> into this <see cref="IGorgonPointer"/> 
-		/// </summary>
-		/// <param name="source">The <see cref="IGorgonPointer"/> to copy data from.</param>
-		/// <param name="sourceOffset">The offset, in bytes, within the source to start copying from.</param>
-		/// <param name="sourceSize">The number of bytes to copy from the source.</param>
-		/// <param name="destinationOffset">[Optional] The offset, in bytes, within this <see cref="IGorgonPointer"/> to start copying to.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="source"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="sourceOffset"/>, <paramref name="sourceSize"/>, or the <paramref name="destinationOffset"/> parameters are less than zero.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="sourceOffset"/> plus the <paramref name="sourceSize"/> exceeds the size of the source <paramref name="source"/>.
-		/// <para>-or-</para>
-		/// <para>Thrown when the <paramref name="destinationOffset"/> plus the <paramref name="sourceSize"/> exceeds the size of the destination pointer.</para>
-		/// </exception>
-		/// <remarks>
-		/// <para>
-		/// This performs a straight memory block transfer from one <see cref="IGorgonPointer"/> into this <see cref="IGorgonPointer"/>. 
-		/// </para>
-		/// <para>
-		/// <note type="important">
-		/// <para>
-		/// The <paramref name="sourceSize"/> is an <see cref="int"/> and not a <see cref="long"/> value (which this object typically supports). This is because the <c>cpblk</c> instruction used to transfer the data is 
-		/// limited to an (unsigned) int value, which is about 2GB. In most cases, this should not be an issue. 
-		/// </para>
-		/// <para>
-		/// To mitigate this problem when dealing with blocks of memory larger than 2GB, try copying the data in batches of 2GB within a loop while incrementing the <paramref name="sourceOffset"/> and <paramref name="destinationOffset"/>.
-		/// </para>
-		/// </note>
-		/// </para>
-		/// </remarks>
-		public void CopyFrom(IGorgonPointer source, long sourceOffset, int sourceSize, long destinationOffset = 0)
+	    /// <summary>
+	    /// Function to copy data to the specified <see cref="IGorgonPointer"/> from this <see cref="IGorgonPointer"/> 
+	    /// </summary>
+	    /// <param name="destination">The <see cref="IGorgonPointer"/> to copy data into.</param>
+	    /// <param name="sourceOffset">The offset, in bytes, within the source to start copying from.</param>
+	    /// <param name="size">The number of bytes to copy.</param>
+	    /// <param name="destinationOffset">[Optional] The offset, in bytes, to start writing at.</param>
+	    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="destination"/> parameter is <b>null</b>.</exception>
+	    /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="sourceOffset"/>, <paramref name="size"/>, or the <paramref name="destinationOffset"/> parameters are less than zero.</exception>
+	    /// <exception cref="ArgumentException">Thrown when the <paramref name="sourceOffset"/> plus the <paramref name="size"/> exceeds the size of the source <paramref name="destination"/>.
+	    /// <para>-or-</para>
+	    /// <para>Thrown when the <paramref name="destinationOffset"/> plus the <paramref name="size"/> exceeds the size of the destination pointer.</para>
+	    /// </exception>
+	    /// <remarks>
+	    /// <para>
+	    /// This performs a straight memory block transfer from one <see cref="IGorgonPointer"/> into this <see cref="IGorgonPointer"/>. 
+	    /// </para>
+	    /// <para>
+	    /// <note type="important">
+	    /// <para>
+	    /// The <paramref name="size"/> is an <see cref="int"/> and not a <see cref="long"/> value (which this object typically supports). This is because the <c>cpblk</c> instruction used to transfer the data is 
+	    /// limited to an (unsigned) int value, which is about 2GB. In most cases, this should not be an issue. 
+	    /// </para>
+	    /// <para>
+	    /// To mitigate this problem when dealing with blocks of memory larger than 2GB, try copying the data in batches of 2GB within a loop while incrementing the <paramref name="sourceOffset"/> and <paramref name="destinationOffset"/>.
+	    /// </para>
+	    /// </note>
+	    /// </para>
+	    /// </remarks>
+	    public void CopyTo(IGorgonPointer destination, long sourceOffset, int size, long destinationOffset = 0)
 		{
 #if DEBUG
-			if (source == null)
+			if (destination == null)
 			{
-				throw new ArgumentNullException(nameof(source));
+				throw new ArgumentNullException(nameof(destination));
 			}
 
-			if ((IsDisposed) || (source.IsDisposed))
+			if ((IsDisposed) || (destination.IsDisposed))
 			{
 				throw new ObjectDisposedException(Resources.GOR_ERR_DATABUFF_PTR_DISPOSED);
 			}
 
-			if (sourceSize < 0)
+			if (size < 0)
 			{
-				throw new ArgumentOutOfRangeException(nameof(sourceSize), string.Format(Resources.GOR_ERR_DATABUFF_COUNT_TOO_SMALL, 0));				
+				throw new ArgumentOutOfRangeException(nameof(size), string.Format(Resources.GOR_ERR_DATABUFF_COUNT_TOO_SMALL, 0));				
 			}
 
 			if (sourceOffset < 0)
@@ -1186,85 +1186,85 @@ namespace Gorgon.Native
 				throw new ArgumentOutOfRangeException(nameof(destinationOffset), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
 			}
 
-			if (sourceOffset + sourceSize > source.Size)
+			if (sourceOffset + size > Size)
 			{
-				throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, sourceOffset, sourceSize), nameof(sourceOffset));
+				throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, sourceOffset, size), nameof(sourceOffset));
 			}
 
-			if (destinationOffset + sourceSize > Size)
+			if (destinationOffset + size > destination.Size)
 			{
-				throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, destinationOffset, sourceSize), nameof(destinationOffset));
+				throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, destinationOffset, size), nameof(destinationOffset));
 			}
 #endif
 			unsafe
 			{
-				if (sourceSize == 0)
+				if (size == 0)
 				{
 					return;
 				}
 
-				byte* srcPtr = (byte *)(source.Address + sourceOffset);
+				byte* srcPtr = (byte *)(destination.Address + sourceOffset);
 				byte* destPtr = DataPointer + destinationOffset;
 
-				DirectAccess.MemoryCopy(destPtr, srcPtr, sourceSize);
+				DirectAccess.MemoryCopy(destPtr, srcPtr, size);
 			}
 		}
 
 		/// <summary>
-		/// Function to copy data from the specified <see cref="IGorgonPointer"/> into this <see cref="IGorgonPointer"/> 
+		/// Function to copy data to the specified <see cref="IGorgonPointer"/> from this <see cref="IGorgonPointer"/> 
 		/// </summary>
-		/// <param name="source">The <see cref="IGorgonPointer"/> to copy data from.</param>
-		/// <param name="sourceSize">The number of bytes to copy from the source.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="source"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="sourceSize"/> parameter is less than zero.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="sourceSize"/> will exceeds the size of the source <paramref name="source"/> or the destination pointer.</exception>
+		/// <param name="destination">The <see cref="IGorgonPointer"/> to copy data into.</param>
+		/// <param name="size">The number of bytes to copy.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="destination"/> parameter is <b>null</b>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> parameter is less than zero.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="size"/> will exceeds the size of the source <paramref name="destination"/> or the destination pointer.</exception>
 		/// <remarks>
 		/// <para>
-		/// This performs a straight memory block transfer from one <see cref="IGorgonPointer"/> into this <see cref="IGorgonPointer"/>. 
+		/// This performs a straight memory block transfer from this <see cref="IGorgonPointer"/> into another <see cref="IGorgonPointer"/>. 
 		/// </para>
 		/// <para>
 		/// <note type="important">
 		/// <para>
-		/// The <paramref name="sourceSize"/> is an <see cref="int"/> and not a <see cref="long"/> value (which this object typically supports). This is because the <c>cpblk</c> instruction used to transfer the data is 
+		/// The <paramref name="size"/> is an <see cref="int"/> and not a <see cref="long"/> value (which this object typically supports). This is because the <c>cpblk</c> instruction used to transfer the data is 
 		/// limited to an (unsigned) int value, which is about 2GB. In most cases, this should not be an issue. 
 		/// </para>
 		/// <para>
-		/// To mitigate this problem when dealing with blocks of memory larger than 2GB, see the <see cref="IGorgonPointer.CopyFrom(Gorgon.Native.IGorgonPointer,long,int,long)"/> overload.
+		/// To mitigate this problem when dealing with blocks of memory larger than 2GB, see the <see cref="IGorgonPointer.CopyTo(Gorgon.Native.IGorgonPointer,long,int,long)"/> overload.
 		/// </para>
 		/// </note>
 		/// </para>
 		/// </remarks>
-		public void CopyFrom(IGorgonPointer source, int sourceSize)
+		public void CopyTo(IGorgonPointer destination, int size)
 		{
 #if DEBUG
-			if (source == null)
+			if (destination == null)
 			{
-				throw new ArgumentNullException(nameof(source));
+				throw new ArgumentNullException(nameof(destination));
 			}
 
-			if ((IsDisposed) || (source.IsDisposed))
+			if ((IsDisposed) || (destination.IsDisposed))
 			{
 				throw new ObjectDisposedException(Resources.GOR_ERR_DATABUFF_PTR_DISPOSED);
 			}
 
-			if (sourceSize < 0)
+			if (size < 0)
 			{
-				throw new ArgumentOutOfRangeException(nameof(sourceSize), string.Format(Resources.GOR_ERR_DATABUFF_COUNT_TOO_SMALL, 0));
+				throw new ArgumentOutOfRangeException(nameof(size), string.Format(Resources.GOR_ERR_DATABUFF_COUNT_TOO_SMALL, 0));
 			}
 
-			if ((sourceSize > source.Size) || (sourceSize > Size))
+			if ((size > destination.Size) || (size > Size))
 			{
-				throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, 0, sourceSize), nameof(sourceSize));
+				throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, 0, size), nameof(size));
 			}
 #endif
 			unsafe
 			{
-				if (sourceSize == 0)
+				if (size == 0)
 				{
 					return;
 				}
 
-				DirectAccess.MemoryCopy(DataPointer, (byte *)source.Address, sourceSize);
+				DirectAccess.MemoryCopy((byte*)destination.Address, DataPointer, size);
 			}
 		}
 

@@ -161,7 +161,7 @@ namespace Gorgon.Graphics.Fonts
 				{
 					for (int y = 0; y < image.Info.Height; ++y)
 					{
-						destPtr.CopyFrom(srcPtr, srcOffset, srcPitch.Min(destPitch), destOffset);
+						srcPtr.CopyTo(destPtr, srcOffset, srcPitch.Min(destPitch), destOffset);
 						srcOffset += srcPitch;
 						destOffset += destPitch;
 					}
@@ -169,7 +169,7 @@ namespace Gorgon.Graphics.Fonts
 				else
 				{
 					// Otherwise, just copy everything in one shot.
-					destPtr.CopyFrom(srcPtr, (int)srcPtr.Size);
+					destPtr.CopyTo(srcPtr, (int)srcPtr.Size);
 				}
 
 				return result;

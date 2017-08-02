@@ -569,17 +569,17 @@ namespace Gorgon.Native
 			where T : struct;
 
 		/// <summary>
-		/// Function to copy data from the specified <see cref="IGorgonPointer"/> into this <see cref="IGorgonPointer"/> 
+		/// Function to copy data to the specified <see cref="IGorgonPointer"/> from this <see cref="IGorgonPointer"/> 
 		/// </summary>
-		/// <param name="source">The <see cref="IGorgonPointer"/> to copy data from.</param>
+		/// <param name="destination">The <see cref="IGorgonPointer"/> to copy data into.</param>
 		/// <param name="sourceOffset">The offset, in bytes, within the source to start copying from.</param>
-		/// <param name="sourceSize">The number of bytes to copy from the source.</param>
-		/// <param name="destinationOffset">[Optional] The offset, in bytes, within this <see cref="IGorgonPointer"/> to start copying to.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="source"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="sourceOffset"/>, <paramref name="sourceSize"/>, or the <paramref name="destinationOffset"/> parameters are less than zero.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="sourceOffset"/> plus the <paramref name="sourceSize"/> exceeds the size of the source <paramref name="source"/>.
+		/// <param name="size">The number of bytes to copy.</param>
+		/// <param name="destinationOffset">[Optional] The offset, in bytes, to start writing at.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="destination"/> parameter is <b>null</b>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="sourceOffset"/>, <paramref name="size"/>, or the <paramref name="destinationOffset"/> parameters are less than zero.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="sourceOffset"/> plus the <paramref name="size"/> exceeds the size of the source <paramref name="destination"/>.
 		/// <para>-or-</para>
-		/// <para>Thrown when the <paramref name="destinationOffset"/> plus the <paramref name="sourceSize"/> exceeds the size of the destination pointer.</para>
+		/// <para>Thrown when the <paramref name="destinationOffset"/> plus the <paramref name="size"/> exceeds the size of the destination pointer.</para>
 		/// </exception>
 		/// <remarks>
 		/// <para>
@@ -588,7 +588,7 @@ namespace Gorgon.Native
 		/// <para>
 		/// <note type="important">
 		/// <para>
-		/// The <paramref name="sourceSize"/> is an <see cref="int"/> and not a <see cref="long"/> value (which this object typically supports). This is because the <c>cpblk</c> instruction used to transfer the data is 
+		/// The <paramref name="size"/> is an <see cref="int"/> and not a <see cref="long"/> value (which this object typically supports). This is because the <c>cpblk</c> instruction used to transfer the data is 
 		/// limited to an (unsigned) int value, which is about 2GB. In most cases, this should not be an issue. 
 		/// </para>
 		/// <para>
@@ -597,33 +597,33 @@ namespace Gorgon.Native
 		/// </note>
 		/// </para>
 		/// </remarks>
-		void CopyFrom(IGorgonPointer source, long sourceOffset, int sourceSize, long destinationOffset = 0);
+		void CopyTo(IGorgonPointer destination, long sourceOffset, int size, long destinationOffset = 0);
 
-		/// <summary>
-		/// Function to copy data from the specified <see cref="IGorgonPointer"/> into this <see cref="IGorgonPointer"/> 
-		/// </summary>
-		/// <param name="source">The <see cref="IGorgonPointer"/> to copy data from.</param>
-		/// <param name="sourceSize">The number of bytes to copy from the source.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="source"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="sourceSize"/> parameter is less than zero.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="sourceSize"/> will exceeds the size of the source <paramref name="source"/> or the destination pointer.</exception>
-		/// <remarks>
-		/// <para>
-		/// This performs a straight memory block transfer from one <see cref="IGorgonPointer"/> into this <see cref="IGorgonPointer"/>. 
-		/// </para>
-		/// <para>
-		/// <note type="important">
-		/// <para>
-		/// The <paramref name="sourceSize"/> is an <see cref="int"/> and not a <see cref="long"/> value (which this object typically supports). This is because the <c>cpblk</c> instruction used to transfer the data is 
-		/// limited to an (unsigned) int value, which is about 2GB. In most cases, this should not be an issue. 
-		/// </para>
-		/// <para>
-		/// To mitigate this problem when dealing with blocks of memory larger than 2GB, see the <see cref="CopyFrom(Gorgon.Native.IGorgonPointer,long,int,long)"/> overload.
-		/// </para>
-		/// </note>
-		/// </para>
-		/// </remarks>
-		void CopyFrom(IGorgonPointer source, int sourceSize);
+	    /// <summary>
+	    /// Function to copy data to the specified <see cref="IGorgonPointer"/> from this <see cref="IGorgonPointer"/> 
+	    /// </summary>
+	    /// <param name="destination">The <see cref="IGorgonPointer"/> to copy data into.</param>
+	    /// <param name="size">The number of bytes to copy.</param>
+	    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="destination"/> parameter is <b>null</b>.</exception>
+	    /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> parameter is less than zero.</exception>
+	    /// <exception cref="ArgumentException">Thrown when the <paramref name="size"/> will exceeds the size of the source <paramref name="destination"/> or the destination pointer.</exception>
+	    /// <remarks>
+	    /// <para>
+	    /// This performs a straight memory block transfer from this <see cref="IGorgonPointer"/> into another <see cref="IGorgonPointer"/>. 
+	    /// </para>
+	    /// <para>
+	    /// <note type="important">
+	    /// <para>
+	    /// The <paramref name="size"/> is an <see cref="int"/> and not a <see cref="long"/> value (which this object typically supports). This is because the <c>cpblk</c> instruction used to transfer the data is 
+	    /// limited to an (unsigned) int value, which is about 2GB. In most cases, this should not be an issue. 
+	    /// </para>
+	    /// <para>
+	    /// To mitigate this problem when dealing with blocks of memory larger than 2GB, see the <see cref="IGorgonPointer.CopyTo(Gorgon.Native.IGorgonPointer,long,int,long)"/> overload.
+	    /// </para>
+	    /// </note>
+	    /// </para>
+	    /// </remarks>
+        void CopyTo(IGorgonPointer destination, int size);
 
 		/// <summary>
 		/// Function to copy data from unmanaged memory pointed at by a <see cref="IntPtr"/> into the unmanaged memory represented by this <see cref="IGorgonPointer"/>.

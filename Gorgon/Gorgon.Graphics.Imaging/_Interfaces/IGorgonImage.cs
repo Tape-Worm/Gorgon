@@ -154,17 +154,28 @@ namespace Gorgon.Graphics.Imaging
 		/// <returns>A list of formats that the source format can be converted into, or an empty array if no conversion is possible.</returns>
 		IReadOnlyList<SharpDX.DXGI.Format> CanConvertToFormats(SharpDX.DXGI.Format[] destFormats);
 
-		/// <summary>
-		/// Function to copy an image into this image object.
-		/// </summary>
-		/// <param name="source">The image that will be copied into this image.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="source"/> parameter is <b>null</b>.</exception>
-		/// <remarks>
-		/// <para>
-		/// This will clone the <paramref name="source"/> image into the this image. All information in this image will be replaced with the image data present in <paramref name="source"/>. If copying parts of 
-		/// an image into a new image is required, then see the <see cref="IGorgonImageBuffer"/>.<see cref="IGorgonImageBuffer.CopyTo"/> method.
-		/// </para>
-		/// </remarks>
-		void CopyFrom(IGorgonImage source);
+	    /// <summary>
+	    /// Function to copy another <see cref="IGorgonImage"/> into this image object.
+	    /// </summary>
+	    /// <param name="source">The image that will be copied into this image.</param>
+	    /// <remarks>
+	    /// <para>
+	    /// This will clone the <paramref name="source"/> image into this one . All information in this image will be replaced with the image data present in <paramref name="source"/>. If copying parts of 
+	    /// an image into a new image is required, then see the <see cref="IGorgonImageBuffer"/>.<see cref="IGorgonImageBuffer.CopyTo"/> method.
+	    /// </para>
+	    /// </remarks>
+	    void CopyFrom(IGorgonImage source);
+
+        /// <summary>
+	    /// Function to copy this image into another image object.
+	    /// </summary>
+	    /// <param name="destination">The image that will receive the contents of this image.</param>
+	    /// <remarks>
+	    /// <para>
+	    /// This will clone this image into the <paramref name="destination"/> . All information in the destination image will be replaced with the image data present in this image. If copying parts of an 
+	    /// image into a new image is required, then see the <see cref="IGorgonImageBuffer"/>.<see cref="IGorgonImageBuffer.CopyTo"/> method.
+	    /// </para>
+	    /// </remarks>
+		void CopyTo(IGorgonImage destination);
 	}
 }
