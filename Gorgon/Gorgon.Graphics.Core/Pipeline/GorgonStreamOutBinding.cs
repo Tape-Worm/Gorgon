@@ -86,12 +86,12 @@ namespace Gorgon.Graphics.Core
                 throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_BUFFER_CONSTANT_NO_SO);
             }
 
-            if ((buffer is GorgonIndexBuffer indexBuffer) && (!indexBuffer.Info.IsStreamOut))
+            if ((buffer is GorgonIndexBuffer indexBuffer) && ((indexBuffer.Info.Binding & VertexIndexBufferBinding.StreamOut) != VertexIndexBufferBinding.StreamOut))
             {
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_TYPE_MISSING_SO, buffer.Name));
             }
 
-            if ((buffer is GorgonVertexBuffer vertexBuffer) && (!vertexBuffer.Info.IsStreamOut))
+            if ((buffer is GorgonVertexBuffer vertexBuffer) && ((vertexBuffer.Info.Binding & VertexIndexBufferBinding.StreamOut) != VertexIndexBufferBinding.StreamOut))
             {
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_TYPE_MISSING_SO, buffer.Name));
             }
