@@ -121,11 +121,6 @@ namespace Gorgon.Graphics.Core
             {
                 case D3D11.ResourceUsage.Staging:
                     cpuFlags = D3D11.CpuAccessFlags.Read | D3D11.CpuAccessFlags.Write;
-
-                    if (_info.Binding != BufferBinding.None)
-                    {
-                        throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_CANNOT_BE_BOUND_TO_GPU, _info.Binding));
-                    }
                     break;
                 case D3D11.ResourceUsage.Dynamic:
                     cpuFlags = D3D11.CpuAccessFlags.Write;
@@ -150,6 +145,8 @@ namespace Gorgon.Graphics.Core
             {
                 bindFlags |= D3D11.BindFlags.StreamOutput;
             }
+
+            ValidateBufferBindings(_info.Usage, bindFlags);
             
             var desc = new D3D11.BufferDescription
                        {

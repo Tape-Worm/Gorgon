@@ -39,9 +39,9 @@ namespace Gorgon.Graphics.Core
 	public interface IGorgonIndexBufferInfo 
 	{
 	    /// <summary>
-	    /// Property to return whether to allow data to be streamed out into this buffer.
+	    /// Property to return the binding used to bind this buffer to the GPU.
 	    /// </summary>
-	    bool IsStreamOut
+	    VertexIndexBufferBinding Binding
 	    {
 	        get;
 	    }

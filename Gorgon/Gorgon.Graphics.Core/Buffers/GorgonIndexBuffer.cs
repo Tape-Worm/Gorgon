@@ -29,6 +29,8 @@ using Gorgon.Core;
 using D3D11 = SharpDX.Direct3D11;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
+using Gorgon.Graphics.Imaging;
+using Gorgon.Math;
 using Gorgon.Native;
 using DX = SharpDX;
 using DXGI = SharpDX.DXGI;
@@ -78,7 +80,7 @@ namespace Gorgon.Graphics.Core
 	/// </para>
 	/// </remarks>
 	public sealed class GorgonIndexBuffer
-		: GorgonBufferBase
+        : GorgonBufferBase
 	{
 		#region Variables.
 		// The information used to create the buffer.
@@ -127,10 +129,17 @@ namespace Gorgon.Graphics.Core
 
 		    D3D11.BindFlags bindFlags = D3D11.BindFlags.IndexBuffer;
 
-		    if (_info.IsStreamOut)
+		    if ((_info.Binding & VertexIndexBufferBinding.StreamOut) == VertexIndexBufferBinding.StreamOut)
 		    {
 		        bindFlags |= D3D11.BindFlags.StreamOutput;
 		    }
+
+		    if ((_info.Binding & VertexIndexBufferBinding.UnorderedAccess) == VertexIndexBufferBinding.UnorderedAccess)
+		    {
+		        bindFlags |= D3D11.BindFlags.UnorderedAccess;
+		    }
+
+            ValidateBufferBindings(_info.Usage, bindFlags);
 
             var desc  = new D3D11.BufferDescription
 			{
@@ -160,58 +169,89 @@ namespace Gorgon.Graphics.Core
 			SizeInBytes = desc.SizeInBytes;
 		}
 
-		/// <summary>
-		/// Function to update the buffer with data.
-		/// </summary>
-		/// <param name="data">An index value used to populate the buffer.</param>
-		/// <param name="bufferOffset">[Optional] The number of bytes within this buffer to start writing at.</param>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="bufferOffset"/> plus the size of the data exceeds the size of the buffer.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when the size, in bytes, of the <paramref name="data"/> parameter is larger than the total <see cref="GorgonResource.SizeInBytes"/> of the buffer.
-		/// <para>-or-</para>
-		/// <para>Thrown when the <paramref name="bufferOffset"/> is less than 0.</para>
-		/// </exception>
-		/// <exception cref="NotSupportedException">Thrown when the <see cref="IGorgonIndexBufferInfo.Usage"/> is either <c>Immutable</c> or <c>Dynamic</c>.</exception>
-		/// <remarks>
-		/// <para>
-		/// This method will throw an exception when the buffer is created with a <see cref="IGorgonIndexBufferInfo.Usage"/> of <c>Immutable</c> or <c>Dynamic</c>.
-		/// </para>
-		/// <para>
-		/// <note type="warning">
-		/// <para>
-		/// For performance reasons, exceptions raised by this method will only be done so when Gorgon is compiled as DEBUG.
-		/// </para>
-		/// </note>
-		/// </para>
-		/// </remarks>
-		public void Update(ref int data, int bufferOffset = 0)
-		{
-#if DEBUG
-			if ((Info.Usage == D3D11.ResourceUsage.Dynamic) || (Info.Usage == D3D11.ResourceUsage.Immutable))
-			{
-				throw new NotSupportedException(Resources.GORGFX_ERR_BUFFER_IMMUTABLE_OR_DYNAMIC);
-			}
+	    /// <summary>
+	    /// Function to create a new <see cref="GorgonIndexBufferUav"/> for this buffer.
+	    /// </summary>
+	    /// <param name="startElement">[Optional] The first element to start viewing from.</param>
+	    /// <param name="elementCount">[Optional] The number of elements to view.</param>
+	    /// <returns>A <see cref="GorgonIndexBufferUav"/> used to bind the buffer to a shader.</returns>
+	    /// <exception cref="GorgonException">Thrown if the video device does not support feature level 11 or better.
+	    /// <para>-or-</para>
+	    /// <para>Thrown when this buffer does not have a <see cref="VertexIndexBufferBinding"/> of <see cref="VertexIndexBufferBinding.UnorderedAccess"/>.</para>
+	    /// <para>-or-</para>
+	    /// <para>Thrown when this buffer has a usage of <c>Staging</c>.</para>
+	    /// </exception>
+	    /// <remarks>
+	    /// <para>
+	    /// This will create a unordered access view that makes a buffer accessible to compute shaders (or pixel shaders) using unordered access to the data. This allows viewing of the buffer data in a 
+	    /// different format, or even a subsection of the buffer from within the shader.
+	    /// </para>
+	    /// <para>
+	    /// The format of the view is based on whether the buffer uses 16 bit indices or 32 bit indices.
+	    /// </para>
+	    /// <para>
+	    /// The <paramref name="startElement"/> parameter defines the starting data element to allow access to within the shader. If this value falls outside of the range of available elements, then it 
+	    /// will be clipped to the upper and lower bounds of the element range. If this value is left at 0, then first element is viewed.
+	    /// </para>
+	    /// <para>
+	    /// To determine how many elements are in a buffer, use the <see cref="IGorgonIndexBufferInfo.IndexCount"/> property on the <see cref="Info"/> property for this buffer.
+	    /// </para>
+	    /// <para>
+	    /// The <paramref name="elementCount"/> parameter defines how many elements to allow access to inside of the view. If this value falls outside of the range of available elements, then it will be 
+	    /// clipped to the upper or lower bounds of the element range. If this value is left at 0, then the entire buffer is viewed.
+	    /// </para>
+	    /// <para>
+	    /// <note type="important">
+	    /// <para>
+	    /// This method requires a video device capable of supporting feature level 11 or better. If the current video device does not support feature level 11, an exception will be thrown.
+	    /// </para>
+	    /// </note>
+	    /// </para>
+	    /// </remarks>
+	    public GorgonIndexBufferUav GetUnorderedAccessView(int startElement = 0, int elementCount = 0)
+	    {
+	        if (Graphics.VideoDevice.RequestedFeatureLevel < FeatureLevelSupport.Level_11_0)
+	        {
+	            throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_UAV_REQUIRES_SM5);
+	        }
 
-			if (_indexSize > SizeInBytes)
-			{
-				throw new ArgumentOutOfRangeException(nameof(data));
-			}
-#endif
+	        if ((Info.Usage == D3D11.ResourceUsage.Staging)
+	            || ((Info.Binding & VertexIndexBufferBinding.UnorderedAccess) != VertexIndexBufferBinding.UnorderedAccess))
+	        {
+	            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_UAV_RESOURCE_NOT_VALID, Name));
+	        }
 
-			Graphics.D3DDeviceContext.UpdateSubresource(ref data,
-			                                            D3DResource,
-			                                            0,
-			                                            0,
-			                                            0,
-			                                            new D3D11.ResourceRegion
-			                                            {
-				                                            Left = bufferOffset,
-				                                            Right = bufferOffset + _indexSize,
-				                                            Top = 0,
-				                                            Front = 0,
-				                                            Bottom = 1,
-				                                            Back = 1
-			                                            });
-		}
+            if ((Graphics.VideoDevice.GetBufferFormatSupport(IndexFormat) & D3D11.FormatSupport.TypedUnorderedAccessView) !=
+	            D3D11.FormatSupport.TypedUnorderedAccessView)
+	        {
+	            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_UAV_FORMAT_INVALID, IndexFormat));
+	        }
+
+	        // Ensure the size of the data type fits the requested format.
+	        var info = new GorgonFormatInfo(IndexFormat);
+
+	        startElement = startElement.Min(_info.IndexCount - 1).Max(0);
+
+	        if (elementCount <= 0)
+	        {
+	            elementCount = _info.IndexCount - startElement;
+	        }
+
+	        elementCount = elementCount.Min(_info.IndexCount - startElement).Max(1);
+
+	        var key = new BufferShaderViewKey(startElement, elementCount, IndexFormat);
+
+	        if (GetUav(key) is GorgonIndexBufferUav result)
+	        {
+	            return result;
+	        }
+
+	        result = new GorgonIndexBufferUav(this, startElement, elementCount, IndexFormat, info, Log);
+	        result.CreateNativeView();
+	        RegisterUav(key, result);
+
+	        return result;
+	    }
 
         /// <summary>
         /// Function to update the constant buffer data with data from native memory.
@@ -263,7 +303,7 @@ namespace Gorgon.Graphics.Core
 #if DEBUG
             if ((Info.Usage == D3D11.ResourceUsage.Dynamic) || (Info.Usage == D3D11.ResourceUsage.Immutable))
 			{
-				throw new NotSupportedException(Resources.GORGFX_ERR_BUFFER_IMMUTABLE_OR_DYNAMIC);
+				throw new NotSupportedException(Resources.GORGFX_ERR_BUFFER_CANT_UPDATE_IMMUTABLE_OR_DYNAMIC);
 			}
 
 			if (offset < 0)
@@ -312,7 +352,106 @@ namespace Gorgon.Graphics.Core
 		}
 
         /// <summary>
-        /// Function to update the buffer with data.
+        /// Function to update the buffer with 16 bit index data.
+        /// </summary>
+        /// <param name="data">The array of index data to populate the buffer with.</param>
+        /// <param name="bufferOffset">[Optional] The number of bytes within this buffer to start writing at.</param>
+        /// <param name="startIndex">[Optional] The offset within the array to start copying from.</param>
+        /// <param name="count">[Optional] The number of elements to copy.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="data"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="startIndex"/>, or the <paramref name="bufferOffset"/> plus the <paramref name="count"/> exceeds the number of elements in the <paramref name="data"/> parameter.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the size, in bytes, of the <paramref name="data"/> parameter, multiplied by the number of items to copy is larger than the total <see cref="GorgonResource.SizeInBytes"/> of the buffer.
+        /// <para>-or-</para>
+        /// <para>Thrown when the <paramref name="startIndex"/>, or the <paramref name="bufferOffset"/> is less than 0, or the <paramref name="count"/> is less than 1.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the size of an index multiplied by the count (minus the offset) is larger than the buffer size.</para>
+        /// </exception> 
+        /// <exception cref="NotSupportedException">Thrown when the <see cref="IGorgonIndexBufferInfo.Usage"/> is either <c>Immutable</c> or <c>Dynamic</c>.
+        /// <para>-or-</para>
+        /// <para>The buffer was created as a 16 bit index buffer, use the <see cref="Update(int[],int,int,int?)"/> method instead.</para>
+        /// </exception>
+        /// <remarks>
+        /// <para>
+        /// This will send 32 bit indices to the index buffer. If the <see cref="IGorgonIndexBufferInfo.Use16BitIndices"/> is <b>true</b>, then this method will throw an exception.
+        /// </para>
+        /// <para>
+        /// If the <paramref name="count"/> parameter is omitted (<b>null</b>), then the length of the <paramref name="data"/> parameter is used minus the <paramref name="startIndex"/>.
+        /// </para>
+        /// <para>
+        /// This method will throw an exception when the buffer is created with a <see cref="IGorgonIndexBufferInfo.Usage"/> of <c>Immutable</c> or <c>Dynamic</c>.
+        /// </para>
+        /// <para>
+        /// <note type="warning">
+        /// <para>
+        /// For performance reasons, exceptions raised by this method will only be done so when Gorgon is compiled as DEBUG.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        public void Update(short[] data, int bufferOffset = 0, int startIndex = 0, int? count = null)
+        {
+            data.ValidateObject(nameof(data));
+
+            if (count == null)
+            {
+                count = data.Length - startIndex;
+            }
+
+#if DEBUG
+            if (!Info.Use16BitIndices)
+            {
+                throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_INDEX_BUFFER_TYPE_MISMATCH, 32, 16));
+            }
+
+            if ((Info.Usage == D3D11.ResourceUsage.Dynamic) || (Info.Usage == D3D11.ResourceUsage.Immutable))
+            {
+                throw new NotSupportedException(Resources.GORGFX_ERR_BUFFER_CANT_UPDATE_IMMUTABLE_OR_DYNAMIC);
+            }
+
+            if (startIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            }
+
+            if (bufferOffset < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(bufferOffset));
+            }
+
+            if (count < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(count));
+            }
+
+            if ((startIndex + count) > data.Length)
+            {
+                throw new ArgumentException(string.Format(Resources.GORGFX_ERR_DATA_OFFSET_COUNT_IS_TOO_LARGE, startIndex, count));
+            }
+
+            if ((bufferOffset + count * _indexSize) > SizeInBytes)
+            {
+                throw new ArgumentException(string.Format(Resources.GORGFX_ERR_DATA_OFFSET_COUNT_IS_TOO_LARGE, startIndex, count));
+            }
+#endif
+
+            Graphics.D3DDeviceContext.UpdateSubresource(data,
+                                                        D3DResource,
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        new D3D11.ResourceRegion
+                                                        {
+                                                            Left = bufferOffset,
+                                                            Right = bufferOffset + (count.Value * _indexSize),
+                                                            Top = 0,
+                                                            Front = 0,
+                                                            Bottom = 1,
+                                                            Back = 1
+                                                        });
+        }
+
+        /// <summary>
+        /// Function to update the buffer with 32 bit index data.
         /// </summary>
         /// <param name="data">The array of index data to populate the buffer with.</param>
         /// <param name="bufferOffset">[Optional] The number of bytes within this buffer to start writing at.</param>
@@ -325,9 +464,15 @@ namespace Gorgon.Graphics.Core
         /// <para>Thrown when the <paramref name="startIndex"/>, or the <paramref name="bufferOffset"/> is less than 0, or the <paramref name="count"/> is less than 1.</para>
         /// <para>-or-</para>
         /// <para>Thrown when the size of an index multiplied by the count (minus the offset) is larger than the buffer size.</para>
+        /// </exception> 
+        /// <exception cref="NotSupportedException">Thrown when the <see cref="IGorgonIndexBufferInfo.Usage"/> is either <c>Immutable</c> or <c>Dynamic</c>.
+        /// <para>-or-</para>
+        /// <para>The buffer was created as a 16 bit index buffer, use the <see cref="Update(short[],int,int,int?)"/> method instead.</para>
         /// </exception>
-        /// <exception cref="NotSupportedException">Thrown when the <see cref="IGorgonIndexBufferInfo.Usage"/> is either <c>Immutable</c> or <c>Dynamic</c>.</exception>
         /// <remarks>
+        /// <para>
+        /// This will send 32 bit indices to the index buffer. If the <see cref="IGorgonIndexBufferInfo.Use16BitIndices"/> is <b>true</b>, then this method will throw an exception.
+        /// </para>
         /// <para>
         /// If the <paramref name="count"/> parameter is omitted (<b>null</b>), then the length of the <paramref name="data"/> parameter is used minus the <paramref name="startIndex"/>.
         /// </para>
@@ -352,9 +497,14 @@ namespace Gorgon.Graphics.Core
 		    }
 
 #if DEBUG
+		    if (Info.Use16BitIndices)
+		    {
+		        throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_INDEX_BUFFER_TYPE_MISMATCH, 16, 32));
+		    }
+
 			if ((Info.Usage == D3D11.ResourceUsage.Dynamic) || (Info.Usage == D3D11.ResourceUsage.Immutable))
 			{
-				throw new NotSupportedException(Resources.GORGFX_ERR_BUFFER_IMMUTABLE_OR_DYNAMIC);
+				throw new NotSupportedException(Resources.GORGFX_ERR_BUFFER_CANT_UPDATE_IMMUTABLE_OR_DYNAMIC);
 			}
 
 			if (startIndex < 0)
@@ -382,6 +532,7 @@ namespace Gorgon.Graphics.Core
 				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_DATA_OFFSET_COUNT_IS_TOO_LARGE, startIndex, count));
 			}
 #endif
+
 			Graphics.D3DDeviceContext.UpdateSubresource(data,
 			                                            D3DResource,
 			                                            0,

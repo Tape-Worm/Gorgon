@@ -74,10 +74,14 @@ namespace Gorgon.Graphics.Core
 			set;
 		}
 
+
 	    /// <summary>
-	    /// Property to return whether to allow data to be streamed out into this buffer.
+	    /// Property to return the binding used to bind this buffer to the GPU.
 	    /// </summary>
-	    public bool IsStreamOut
+	    /// <remarks>
+	    /// The default value is <see cref="VertexIndexBufferBinding.None"/>.
+	    /// </remarks>
+	    public VertexIndexBufferBinding Binding
 	    {
 	        get;
 	        set;
@@ -100,7 +104,7 @@ namespace Gorgon.Graphics.Core
 			Usage = info.Usage;
 			Use16BitIndices = info.Use16BitIndices;
 			IndexCount = info.IndexCount;
-		    IsStreamOut = info.IsStreamOut;
+		    Binding = info.Binding;
 		}
 
 		/// <summary>

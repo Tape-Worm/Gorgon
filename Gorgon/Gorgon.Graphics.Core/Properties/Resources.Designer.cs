@@ -79,11 +79,20 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The buffer view could not be created. Ensure that the buffer is not a staging buffer, and has a binding flag for shaders..
+        ///   Looks up a localized string similar to A staging buffer cannot be bound to the GPU as a shader resource, stream out resource, or as an unordered access resource..
         /// </summary>
         internal static string GORGFX_ERR_BUFFER_CANNOT_BE_BOUND_TO_GPU {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_BUFFER_CANNOT_BE_BOUND_TO_GPU", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot update buffers with a usage of [Immutable] or [Dynamic]..
+        /// </summary>
+        internal static string GORGFX_ERR_BUFFER_CANT_UPDATE_IMMUTABLE_OR_DYNAMIC {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_BUFFER_CANT_UPDATE_IMMUTABLE_OR_DYNAMIC", resourceCulture);
             }
         }
         
@@ -97,6 +106,24 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot bind a dynamic buffer as a stream out buffer..
+        /// </summary>
+        internal static string GORGFX_ERR_BUFFER_DYNAMIC_SO {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_BUFFER_DYNAMIC_SO", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot use unordered access views with dynamic buffers..
+        /// </summary>
+        internal static string GORGFX_ERR_BUFFER_DYNAMIC_UAV {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_BUFFER_DYNAMIC_UAV", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Only buffers with a usage of [Staging] can be read by the CPU. The buffer &apos;{0}&apos; has a usage of [{1}]..
         /// </summary>
         internal static string GORGFX_ERR_BUFFER_ERR_WRITE_ONLY {
@@ -106,20 +133,29 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot update buffers with a usage of [Immutable] or [Dynamic]..
-        /// </summary>
-        internal static string GORGFX_ERR_BUFFER_IMMUTABLE_OR_DYNAMIC {
-            get {
-                return ResourceManager.GetString("GORGFX_ERR_BUFFER_IMMUTABLE_OR_DYNAMIC", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Cannot create an immutable buffer without initial data to populate it..
         /// </summary>
         internal static string GORGFX_ERR_BUFFER_IMMUTABLE_REQUIRES_DATA {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_BUFFER_IMMUTABLE_REQUIRES_DATA", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Immutable or staging buffers cannot be used for stream out..
+        /// </summary>
+        internal static string GORGFX_ERR_BUFFER_IMMUTABLE_STAGING_SO {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_BUFFER_IMMUTABLE_STAGING_SO", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Immutable or staging buffers cannot use unordered access views..
+        /// </summary>
+        internal static string GORGFX_ERR_BUFFER_IMMUTABLE_STAGING_UAV {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_BUFFER_IMMUTABLE_STAGING_UAV", resourceCulture);
             }
         }
         
@@ -368,6 +404,15 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_IMAGE_TYPE_UNSUPPORTED {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_IMAGE_TYPE_UNSUPPORTED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This buffer uses {0} bit indices. {1} bit indices cannot be written to it..
+        /// </summary>
+        internal static string GORGFX_ERR_INDEX_BUFFER_TYPE_MISMATCH {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_INDEX_BUFFER_TYPE_MISMATCH", resourceCulture);
             }
         }
         

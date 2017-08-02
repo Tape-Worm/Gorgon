@@ -42,6 +42,18 @@ namespace Gorgon.Graphics.Core
 		: IGorgonVertexBufferInfo
 	{
         #region Properties.
+	    /// <summary>
+	    /// Property to set or return the binding used to bind this buffer to the GPU.
+	    /// </summary>
+	    /// <remarks>
+	    /// The default value is <see cref="VertexIndexBufferBinding.None"/>.
+	    /// </remarks>
+	    public VertexIndexBufferBinding Binding
+	    {
+	        get;
+	        set;
+	    }
+
         /// <summary>
         /// Property to set or return the intended usage for binding to the GPU.
         /// </summary>
@@ -58,15 +70,6 @@ namespace Gorgon.Graphics.Core
 		/// This value should be larger than 0, or else an exception will be thrown when the buffer is created.
 		/// </remarks>
 		public int SizeInBytes
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return whether or not a buffer can be used to receive a stream of data from the GPU.
-		/// </summary>
-		public bool IsStreamOut
 		{
 			get;
 			set;
@@ -182,8 +185,8 @@ namespace Gorgon.Graphics.Core
 
 			SizeInBytes = info.SizeInBytes;
 			Usage = info.Usage;
-		    IsStreamOut = info.IsStreamOut;
-		}
+		    Binding = info.Binding;
+        }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonVertexBufferInfo"/> class.

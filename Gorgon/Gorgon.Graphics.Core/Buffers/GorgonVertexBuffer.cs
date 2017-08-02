@@ -25,10 +25,15 @@
 #endregion
 
 using System;
+using Gorgon.Core;
 using D3D11 = SharpDX.Direct3D11;
 using Gorgon.Diagnostics;
+using Gorgon.Graphics.Core.Properties;
+using Gorgon.Graphics.Imaging;
+using Gorgon.Math;
 using Gorgon.Native;
 using DX = SharpDX;
+using DXGI = SharpDX.DXGI;
 
 namespace Gorgon.Graphics.Core
 {
@@ -110,7 +115,7 @@ namespace Gorgon.Graphics.Core
 			switch (_info.Usage)
 			{
 				case D3D11.ResourceUsage.Staging:
-					cpuFlags = D3D11.CpuAccessFlags.Read | D3D11.CpuAccessFlags.Write;
+                    cpuFlags = D3D11.CpuAccessFlags.Read | D3D11.CpuAccessFlags.Write;
 					break;
 				case D3D11.ResourceUsage.Dynamic:
 					cpuFlags = D3D11.CpuAccessFlags.Write;
@@ -121,10 +126,17 @@ namespace Gorgon.Graphics.Core
 
 			D3D11.BindFlags bindFlags = D3D11.BindFlags.VertexBuffer;
 
-			if (_info.IsStreamOut)
+			if ((_info.Binding & VertexIndexBufferBinding.StreamOut) == VertexIndexBufferBinding.StreamOut)
 			{
 				bindFlags |= D3D11.BindFlags.StreamOutput;
 			}
+
+		    if ((_info.Binding & VertexIndexBufferBinding.UnorderedAccess) == VertexIndexBufferBinding.UnorderedAccess)
+		    {
+		        bindFlags |= D3D11.BindFlags.UnorderedAccess;
+		    }
+
+            ValidateBufferBindings(_info.Usage, bindFlags);
 
 			var desc  = new D3D11.BufferDescription
 			{
@@ -154,18 +166,118 @@ namespace Gorgon.Graphics.Core
 			SizeInBytes = Info.SizeInBytes;
 		}
 
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// If the vertex buffer is locked when this method is called, it will automatically be unlocked and any lock pointer will be invalidated.
-		/// </para>
-		/// <para>
-		/// Objects that override this method should be sure to call this base method or else a memory leak may occur.
-		/// </para>
-		/// </remarks>
-		public override void Dispose()
+	    /// <summary>
+	    /// Function to retrieve the total number of elements in a buffer.
+	    /// </summary>
+	    /// <param name="format">The desired format for the view.</param>
+	    /// <returns>The total number of elements.</returns>
+	    /// <remarks>
+	    /// <para>
+	    /// Use this to retrieve the number of elements based on the <paramref name="format"/> that will be passed to a shader resource view.
+	    /// </para>
+	    /// </remarks>
+	    public int GetTotalElementCount(DXGI.Format format) => format == DXGI.Format.Unknown ? 0 : GetTotalElementCount(new GorgonFormatInfo(format));
+
+        /// <summary>
+        /// Function to create a new <see cref="GorgonVertexBufferUav"/> for this buffer.
+        /// </summary>
+        /// <param name="format">The format for the view.</param>
+        /// <param name="startElement">[Optional] The first element to start viewing from.</param>
+        /// <param name="elementCount">[Optional] The number of elements to view.</param>
+        /// <returns>A <see cref="GorgonVertexBufferUav"/> used to bind the buffer to a shader.</returns>
+        /// <exception cref="GorgonException">Thrown if the video device does not support feature level 11 or better.
+        /// <para>-or-</para>
+        /// <para>Thrown when this buffer does not have a <see cref="VertexIndexBufferBinding"/> of <see cref="VertexIndexBufferBinding.UnorderedAccess"/>.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when this buffer has a usage of <c>Staging</c>.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the <paramref name="format"/> is typeless or is not a supported format for unordered access views.</para>
+        /// </exception>
+        /// <remarks>
+        /// <para>
+        /// This will create a unordered access view that makes a buffer accessible to compute shaders (or pixel shaders) using unordered access to the data. This allows viewing of the buffer data in a 
+        /// different format, or even a subsection of the buffer from within the shader.
+        /// </para>
+        /// <para>
+        /// The <paramref name="format"/> parameter is used present the buffer data as another format type to the shader. 
+        /// </para>
+        /// <para>
+        /// The <paramref name="startElement"/> parameter defines the starting data element to allow access to within the shader. If this value falls outside of the range of available elements, then it 
+        /// will be clipped to the upper and lower bounds of the element range. If this value is left at 0, then first element is viewed.
+        /// </para>
+        /// <para>
+        /// To determine how many elements are in a buffer, use the <see cref="GetTotalElementCount"/> method.
+        /// </para>
+        /// <para>
+        /// The <paramref name="elementCount"/> parameter defines how many elements to allow access to inside of the view. If this value falls outside of the range of available elements, then it will be 
+        /// clipped to the upper or lower bounds of the element range. If this value is left at 0, then the entire buffer is viewed.
+        /// </para>
+        /// <para>
+        /// <note type="important">
+        /// <para>
+        /// This method requires a video device capable of supporting feature level 11 or better. If the current video device does not support feature level 11, an exception will be thrown.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        public GorgonVertexBufferUav GetUnorderedAccessView(DXGI.Format format, int startElement = 0, int elementCount = 0)
+	    {
+	        if (Graphics.VideoDevice.RequestedFeatureLevel < FeatureLevelSupport.Level_11_0)
+	        {
+	            throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_UAV_REQUIRES_SM5);
+	        }
+
+	        if ((Info.Usage == D3D11.ResourceUsage.Staging)
+	            || ((Info.Binding & VertexIndexBufferBinding.UnorderedAccess) != VertexIndexBufferBinding.UnorderedAccess))
+	        {
+	            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_UAV_RESOURCE_NOT_VALID, Name));
+	        }
+
+	        if ((Graphics.VideoDevice.GetBufferFormatSupport(format) & D3D11.FormatSupport.TypedUnorderedAccessView) !=
+	            D3D11.FormatSupport.TypedUnorderedAccessView)
+	        {
+	            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_UAV_FORMAT_INVALID, format));
+	        }
+
+	        // Ensure the size of the data type fits the requested format.
+	        var info = new GorgonFormatInfo(format);
+	        int totalElementCount = GetTotalElementCount(info);
+
+	        startElement = startElement.Min(totalElementCount - 1).Max(0);
+
+	        if (elementCount <= 0)
+	        {
+	            elementCount = totalElementCount - startElement;
+	        }
+
+	        elementCount = elementCount.Min(totalElementCount - startElement).Max(1);
+
+	        var key = new BufferShaderViewKey(startElement, elementCount, format);
+
+	        if (GetUav(key) is GorgonVertexBufferUav result)
+	        {
+	            return result;
+	        }
+
+	        result = new GorgonVertexBufferUav(this, startElement, elementCount, format, info, Log);
+	        result.CreateNativeView();
+	        RegisterUav(key, result);
+
+	        return result;
+	    }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// If the vertex buffer is locked when this method is called, it will automatically be unlocked and any lock pointer will be invalidated.
+        /// </para>
+        /// <para>
+        /// Objects that override this method should be sure to call this base method or else a memory leak may occur.
+        /// </para>
+        /// </remarks>
+        public override void Dispose()
 		{
 			// If we're locked, then unlock the buffer before destroying it.
 			if ((IsLocked) && (_lockAddress != null) && (!_lockAddress.IsDisposed))

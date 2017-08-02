@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
@@ -85,6 +86,8 @@ namespace Gorgon.Graphics.Core
         #region Variables.
         // The address returned by the lock on the buffer.
         private GorgonPointerAlias _lockAddress;
+        // A cache of unordered access views for the buffer.
+        private readonly Dictionary<BufferShaderViewKey, GorgonUnorderedAccessView> _uavs = new Dictionary<BufferShaderViewKey, GorgonUnorderedAccessView>();
         #endregion
 
         #region Properties.
@@ -140,6 +143,75 @@ namespace Gorgon.Graphics.Core
 
         #region Methods.
         /// <summary>
+        /// Function to validate the bindings for a given buffer.
+        /// </summary>
+        /// <param name="usage">The usage flags for the buffer.</param>
+        /// <param name="bindings">The bindings to apply to the buffer.</param>
+        protected void ValidateBufferBindings(D3D11.ResourceUsage usage, D3D11.BindFlags bindings)
+        {
+            if ((usage != D3D11.ResourceUsage.Staging) && (bindings == D3D11.BindFlags.None))
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_NON_STAGING_NEEDS_BINDING, usage));
+            }
+
+            if (usage == D3D11.ResourceUsage.Immutable)
+            {
+                if ((bindings & D3D11.BindFlags.StreamOutput) == D3D11.BindFlags.StreamOutput)
+                {
+                    throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_BUFFER_IMMUTABLE_STAGING_SO);
+                }
+
+                if ((bindings & D3D11.BindFlags.UnorderedAccess) == D3D11.BindFlags.UnorderedAccess)
+                {
+                    throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_BUFFER_IMMUTABLE_STAGING_UAV);
+                }
+            }
+
+            if (usage == D3D11.ResourceUsage.Staging)
+            {
+                if (bindings != D3D11.BindFlags.None)
+                {
+                    throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_CANNOT_BE_BOUND_TO_GPU, bindings));
+                }
+            }
+
+            if (usage != D3D11.ResourceUsage.Dynamic)
+            {
+                return;
+            }
+
+            if ((bindings & D3D11.BindFlags.StreamOutput) == D3D11.BindFlags.StreamOutput)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_BUFFER_IMMUTABLE_STAGING_SO);
+            }
+
+            if ((bindings & D3D11.BindFlags.UnorderedAccess) == D3D11.BindFlags.UnorderedAccess)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_BUFFER_IMMUTABLE_STAGING_UAV);
+            }
+        }
+
+        /// <summary>
+        /// Function to return a cached shader resource view.
+        /// </summary>
+        /// <param name="key">The key associated with the view.</param>
+        /// <returns>The shader resource view for the buffer, or <b>null</b> if no resource view is registered.</returns>
+        internal GorgonUnorderedAccessView GetUav(BufferShaderViewKey key)
+        {
+            return _uavs.TryGetValue(key, out GorgonUnorderedAccessView view) ? view : null;
+        }
+
+        /// <summary>
+        /// Function to register an unordered access view in the cache.
+        /// </summary>
+        /// <param name="key">The unique key for the shader view.</param>
+        /// <param name="view">The view to register.</param>
+        internal void RegisterUav(BufferShaderViewKey key, GorgonUnorderedAccessView view)
+        {
+            _uavs[key] = view;
+        }
+
+        /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         /// <remarks>
@@ -149,6 +221,13 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public override void Dispose()
         {
+            foreach (KeyValuePair<BufferShaderViewKey, GorgonUnorderedAccessView> view in _uavs)
+            {
+                view.Value.Dispose();
+            }
+
+            _uavs.Clear();
+
             // If we're locked, then unlock the buffer before destroying it.
             if ((IsLocked) && (_lockAddress != null) && (!_lockAddress.IsDisposed))
             {

@@ -24,10 +24,31 @@
 // 
 #endregion
 
+using System;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
 {
+    /// <summary>
+    /// A vertex or index buffer binding.
+    /// </summary>
+    [Flags]
+    public enum VertexIndexBufferBinding
+    {
+        /// <summary>
+        /// No binding to the GPU is used.
+        /// </summary>
+        None = 0,
+        /// <summary>
+        /// The buffer can be used for stream output.
+        /// </summary>
+        StreamOut = 1,
+        /// <summary>
+        /// The buffer can have unordered access views.
+        /// </summary>
+        UnorderedAccess = 2
+    }
+
 	/// <summary>
 	/// Provides the necessary information required to set up a vertex buffer.
 	/// </summary>
@@ -57,12 +78,12 @@ namespace Gorgon.Graphics.Core
 			get;
 		}
 
-		/// <summary>
-		/// Property to return whether or not a buffer can be used to receive a stream of data from the GPU.
-		/// </summary>
-		bool IsStreamOut
-		{
-			get;
-		}
+        /// <summary>
+        /// Property to return the binding used to bind this buffer to the GPU.
+        /// </summary>
+	    VertexIndexBufferBinding Binding
+	    {
+	        get;
+	    }
 	}
 }
