@@ -176,114 +176,123 @@ namespace Gorgon.Graphics
 			_initializedFlag = true;
 		}
 
-		/// <summary>
-		/// Function to blit the texture to the specified render target.
-		/// </summary>
-		/// <param name="texture">The texture that will be blitted to the render target.</param>
-		/// <param name="destRect">The layout area to blit the texture into.</param>
-		/// <param name="sourceOffset">The offset within the source texture to start blitting from.</param>
-		/// <param name="color">The color used to tint the diffuse value of the texture.</param>
-		/// <param name="clip"><b>true</b> to clip the contents of the texture if the destination is larger/small than the size of the texture.</param>
-		/// <param name="blendState">The blending state to apply.</param>
-		/// <param name="samplerState">The sampler state to apply.</param>
-		/// <param name="pixelShader">The pixel shader used to override the default pixel shader.</param>
-		/// <param name="pixelShaderConstants">The pixel shader constant buffers to use.</param>
-		public void Blit(GorgonTexture texture, DX.Rectangle destRect, DX.Point sourceOffset, GorgonColor color, bool clip, GorgonBlendState blendState, GorgonSamplerState samplerState, GorgonPixelShader pixelShader, GorgonConstantBuffers pixelShaderConstants)
-		{
-			if ((texture == null)
-                || (_graphics.RenderTargets[0] == null))
-			{
-				return;
-			}
+	    /// <summary>
+	    /// Function to blit the texture to the specified render target.
+	    /// </summary>
+	    /// <param name="texture">The texture that will be blitted to the render target.</param>
+	    /// <param name="destRect">The layout area to blit the texture into.</param>
+	    /// <param name="sourceOffset">The offset within the source texture to start blitting from.</param>
+	    /// <param name="color">The color used to tint the diffuse value of the texture.</param>
+	    /// <param name="clip"><b>true</b> to clip the contents of the texture if the destination is larger/small than the size of the texture.</param>
+	    /// <param name="blendState">The blending state to apply.</param>
+	    /// <param name="samplerState">The sampler state to apply.</param>
+	    /// <param name="pixelShader">The pixel shader used to override the default pixel shader.</param>
+	    /// <param name="pixelShaderConstants">The pixel shader constant buffers to use.</param>
+	    public void Blit(GorgonTextureView texture,
+	                     DX.Rectangle destRect,
+	                     DX.Point sourceOffset,
+	                     GorgonColor color,
+	                     bool clip,
+	                     GorgonBlendState blendState,
+	                     GorgonSamplerState samplerState,
+	                     GorgonPixelShader pixelShader,
+	                     GorgonConstantBuffers pixelShaderConstants)
+	    {
+	        if ((texture == null)
+	            || (_graphics.RenderTargets[0] == null))
+	        {
+	            return;
+	        }
 
-			GorgonRenderTargetView currentView = _graphics.RenderTargets[0];
+	        GorgonRenderTargetView currentView = _graphics.RenderTargets[0];
 
-			// We need to update the projection/view if the size of the target changes.
-			if ((_targetBounds == null)
-                || (currentView.Width != _targetBounds.Value.Width)
-				|| (currentView.Height != _targetBounds.Value.Height))
-			{
-				_needsWvpUpdate = true;
-			}
+	        // We need to update the projection/view if the size of the target changes.
+	        if ((_targetBounds == null)
+	            || (currentView.Width != _targetBounds.Value.Width)
+	            || (currentView.Height != _targetBounds.Value.Height))
+	        {
+	            _needsWvpUpdate = true;
+	        }
 
-			UpdateProjection();
+	        UpdateProjection();
 
-			// Apply the states.
-            _drawCall.PixelShaderResourceViews[0] = texture.DefaultShaderResourceView;
+	        // Apply the states.
+	        _drawCall.PixelShaderResourceViews[0] = texture;
+	        _drawCall.PixelShaderSamplers[0] = samplerState ?? GorgonSamplerState.Default;
 
-            // Apply the correct pipeline state.
-		    if (blendState == null)
-		    {
-		        blendState = GorgonBlendState.NoBlending;
-		    }
+	        // Apply the correct pipeline state.
+	        if (blendState == null)
+	        {
+	            blendState = GorgonBlendState.NoBlending;
+	        }
 
-		    if (pixelShader == null)
-		    {
-		        pixelShader = _pixelShader;
-		    }
+	        if (pixelShader == null)
+	        {
+	            pixelShader = _pixelShader;
+	        }
 
-		    if ((_pipelineStateInfo.PixelShader != pixelShader)
-		        || (_pipelineStateInfo.BlendStates[0] != blendState))
-		    {
-		        _pipelineStateInfo.PixelShader = pixelShader;
-		        _pipelineStateInfo.BlendStates[0] = blendState;
-		        UpdateState(_pipelineStateInfo.PixelShader, _pipelineStateInfo.BlendStates[0]);
-		    }
+	        if ((_pipelineStateInfo.PixelShader != pixelShader)
+	            || (_pipelineStateInfo.BlendStates[0] != blendState))
+	        {
+	            _pipelineStateInfo.PixelShader = pixelShader;
+	            _pipelineStateInfo.BlendStates[0] = blendState;
+	            UpdateState(_pipelineStateInfo.PixelShader, _pipelineStateInfo.BlendStates[0]);
+	        }
 
-            // Apply pixel shader constants as needed.
-		    if ((pixelShaderConstants != null) && (_pixelShader != _pipelineStateInfo.PixelShader))
-		    {
-		        ref (int Start, int Count) buffers = ref pixelShaderConstants.GetDirtyItems();
+	        // Apply pixel shader constants as needed.
+	        if ((pixelShaderConstants != null) && (_pixelShader != _pipelineStateInfo.PixelShader))
+	        {
+	            ref (int Start, int Count) buffers = ref pixelShaderConstants.GetDirtyItems();
 
-		        for (int i = buffers.Start; i < buffers.Start + buffers.Count; ++i)
-		        {
-		            _drawCall.PixelShaderConstantBuffers[i] = pixelShaderConstants[i];
-		        }
-		    }
-		    else
-		    {
-		        _drawCall.PixelShaderConstantBuffers.Clear();
-		    }
+	            for (int i = buffers.Start; i < buffers.Start + buffers.Count; ++i)
+	            {
+	                _drawCall.PixelShaderConstantBuffers[i] = pixelShaderConstants[i];
+	            }
+	        }
+	        else
+	        {
+	            _drawCall.PixelShaderConstantBuffers.Clear();
+	        }
 
-		    // Calculate position on the texture.
-			DX.Vector2 topLeft = texture.ToTexel(sourceOffset);
-			DX.Vector2 bottomRight = texture.ToTexel(clip ? new DX.Point(destRect.Width, destRect.Height) : new DX.Point(texture.Info.Width, texture.Info.Height));
+	        // Calculate position on the texture.
+	        DX.Vector2 topLeft = texture.Texture.ToTexel(sourceOffset);
+	        DX.Vector2 bottomRight = texture.Texture.ToTexel(clip ? new DX.Point(destRect.Width, destRect.Height) : new DX.Point(texture.Width, texture.Height));
 
-			// Update the vertices.
-			_vertices[0] = new BltVertex
-			               {
-				               Position = new DX.Vector4(destRect.X, destRect.Y, 0, 1.0f),
-				               Uv = topLeft,
-                               Color = color
-			               };
-		    _vertices[1] = new BltVertex
-		                   {
-		                       Position = new DX.Vector4(destRect.Right, destRect.Y, 0, 1.0f),
-		                       Uv = new DX.Vector2(bottomRight.X, topLeft.Y),
-		                       Color = color
-		                   };
-		    _vertices[2] = new BltVertex
-		                   {
-		                       Position = new DX.Vector4(destRect.X, destRect.Bottom, 0, 1.0f),
-		                       Uv = new DX.Vector2(topLeft.X, bottomRight.Y),
-		                       Color = color
-		                   };
-		    _vertices[3] = new BltVertex
-		                   {
-		                       Position = new DX.Vector4(destRect.Right, destRect.Bottom, 0, 1.0f),
-		                       Uv = new DX.Vector2(bottomRight.X, bottomRight.Y),
-		                       Color = color
-		                   };
+	        // Update the vertices.
+	        _vertices[0] = new BltVertex
+	                       {
+	                           Position = new DX.Vector4(destRect.X, destRect.Y, 0, 1.0f),
+	                           Uv = topLeft,
+	                           Color = color
+	                       };
+	        _vertices[1] = new BltVertex
+	                       {
+	                           Position = new DX.Vector4(destRect.Right, destRect.Y, 0, 1.0f),
+	                           Uv = new DX.Vector2(bottomRight.X, topLeft.Y),
+	                           Color = color
+	                       };
+	        _vertices[2] = new BltVertex
+	                       {
+	                           Position = new DX.Vector4(destRect.X, destRect.Bottom, 0, 1.0f),
+	                           Uv = new DX.Vector2(topLeft.X, bottomRight.Y),
+	                           Color = color
+	                       };
+	        _vertices[3] = new BltVertex
+	                       {
+	                           Position = new DX.Vector4(destRect.Right, destRect.Bottom, 0, 1.0f),
+	                           Uv = new DX.Vector2(bottomRight.X, bottomRight.Y),
+	                           Color = color
+	                       };
 
-            // Copy to the vertex buffer.
-		    GorgonPointerAlias data = _vertexBufferBindings[0].VertexBuffer.Lock(D3D11.MapMode.WriteDiscard);
-            data.WriteRange(_vertices);
-		    _vertexBufferBindings[0].VertexBuffer.Unlock(ref data);
+	        // Copy to the vertex buffer.
+	        GorgonPointerAlias data = _vertexBufferBindings[0].VertexBuffer.Lock(D3D11.MapMode.WriteDiscard);
+	        data.WriteRange(_vertices);
+	        _vertexBufferBindings[0].VertexBuffer.Unlock(ref data);
 
-            _graphics.Submit(_drawCall);
-		}
+	        _graphics.Submit(_drawCall);
+	    }
 
-		/// <summary>
+	    /// <summary>
 		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
 		/// </summary>
 		public void Dispose()

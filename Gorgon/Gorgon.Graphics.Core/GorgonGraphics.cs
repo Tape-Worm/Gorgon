@@ -2190,7 +2190,7 @@ namespace Gorgon.Graphics.Core
         /// <seealso cref="GorgonTexture"/>
         /// <seealso cref="GorgonRenderTargetView"/>
         /// <seealso cref="RenderTargets"/>
-        public void DrawTexture(GorgonTexture texture,
+        public void DrawTexture(GorgonTextureView texture,
                                 int x,
                                 int y,
                                 int width = -1,
@@ -2204,7 +2204,7 @@ namespace Gorgon.Graphics.Core
                                 GorgonPixelShader pixelShader = null,
                                 GorgonConstantBuffers pixelShaderConstants = null)
         {
-            DrawTexture(texture, new DX.Rectangle(x, y, width == -1 ? texture.Info.Width : width, height == -1 ? texture.Info.Height : height),
+            DrawTexture(texture, new DX.Rectangle(x, y, width == -1 ? texture.Width : width, height == -1 ? texture.Height : height),
                         new DX.Point(srcX, srcY),
                         color,
                         clip,
@@ -2267,15 +2267,15 @@ namespace Gorgon.Graphics.Core
         /// <seealso cref="GorgonTexture"/>
         /// <seealso cref="GorgonRenderTargetView"/>
         /// <seealso cref="RenderTargets"/>
-        public void DrawTexture(GorgonTexture texture,
-                                        DX.Rectangle destRect,
-                                        DX.Point? sourceOffset = null,
-                                        GorgonColor? color = null,
-                                        bool clip = false,
-                                        GorgonBlendState blendState = null,
-                                        GorgonSamplerState samplerState = null,
-                                        GorgonPixelShader pixelShader = null,
-                                        GorgonConstantBuffers pixelShaderConstants = null)
+        public void DrawTexture(GorgonTextureView texture,
+                                DX.Rectangle destRect,
+                                DX.Point? sourceOffset = null,
+                                GorgonColor? color = null,
+                                bool clip = false,
+                                GorgonBlendState blendState = null,
+                                GorgonSamplerState samplerState = null,
+                                GorgonPixelShader pixelShader = null,
+                                GorgonConstantBuffers pixelShaderConstants = null)
         {
             TextureBlitter blitter = _textureBlitter.Value;
 
@@ -2406,7 +2406,9 @@ namespace Gorgon.Graphics.Core
             }
 
             _renderTargets.Clear();
-	        _currentDrawCall.Reset();
+            _scissorRectangles.Clear();
+            _viewports.Clear();
+	        _currentDrawCall?.Reset();
         }
 
 		/// <summary>

@@ -59,5 +59,24 @@ namespace Gorgon.Graphics.Example.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string ComputeShader {
+            get {
+                return ResourceManager.GetString("ComputeShader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap loadimage_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("loadimage_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
     }
 }

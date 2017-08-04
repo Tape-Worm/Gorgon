@@ -356,7 +356,6 @@ namespace Gorgon.Graphics.Core
 			}
 		}
 
-
         /// <summary>
         /// Function to return the width of the render target at the current <see cref="MipSlice"/> in pixels.
         /// </summary>
