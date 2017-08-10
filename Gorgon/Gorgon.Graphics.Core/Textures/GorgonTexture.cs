@@ -43,7 +43,7 @@ namespace Gorgon.Graphics.Core
 	/// A texture used to project an image onto a graphic primitive such as a triangle.
 	/// </summary>
 	public sealed class GorgonTexture
-		: GorgonResource
+		: GorgonGraphicsResource
 	{
 		#region Variables.
 		// The ID number of the texture.
@@ -104,20 +104,20 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Property to return the type of data in the resource.
 		/// </summary>
-		public override ResourceType ResourceType 
+		public override GraphicsResourceType ResourceType 
 		{
 			get
 			{
 				switch (Info.TextureType)
 				{
 					case TextureType.Texture1D:
-						return ResourceType.Texture1D;
+						return GraphicsResourceType.Texture1D;
 					case TextureType.Texture2D:
-						return ResourceType.Texture2D;
+						return GraphicsResourceType.Texture2D;
 					case TextureType.Texture3D:
-						return ResourceType.Texture3D;
+						return GraphicsResourceType.Texture3D;
 					default:
-						return ResourceType.Unknown;
+						return GraphicsResourceType.Unknown;
 				}
 			}
 		}

@@ -45,7 +45,7 @@ namespace Gorgon.Graphics.Core
     /// <see cref="IGorgonTextureInfo.Binding"/> property.
     /// </para>
     /// <para>
-    /// The unordered access allows a shader to read/write any part of a <see cref="GorgonResource"/> by multiple threads without memory contention. This is done through the use of 
+    /// The unordered access allows a shader to read/write any part of a <see cref="GorgonGraphicsResource"/> by multiple threads without memory contention. This is done through the use of 
     /// <a target="_blank" href="https://msdn.microsoft.com/en-us/library/windows/desktop/ff476334(v=vs.85).aspx">atomic functions</a>.
     /// </para>
     /// <para>
@@ -60,7 +60,7 @@ namespace Gorgon.Graphics.Core
     /// </note>
     /// </para>
     /// </remarks>
-    /// <seealso cref="GorgonResource"/>
+    /// <seealso cref="GorgonGraphicsResource"/>
     /// <seealso cref="GorgonTexture"/>
     /// <seealso cref="GorgonComputeShader"/>
     /// <seealso cref="GorgonPixelShader"/>
@@ -270,13 +270,13 @@ namespace Gorgon.Graphics.Core
             // Build SRV description.
             switch (Resource.ResourceType)
             {
-                case ResourceType.Texture1D:
+                case GraphicsResourceType.Texture1D:
                     desc = GetDesc1D(texture);
                     break;
-                case ResourceType.Texture2D:
+                case GraphicsResourceType.Texture2D:
                     desc = GetDesc2D(texture);
                     break;
-                case ResourceType.Texture3D:
+                case GraphicsResourceType.Texture3D:
                     desc = GetDesc3D();
                     break;
                 default:

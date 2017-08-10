@@ -175,9 +175,9 @@ namespace Gorgon.Graphics.Core
 
 			switch (Texture.ResourceType)
 		    {
-			    case ResourceType.Texture1D:
-			    case ResourceType.Texture2D:
-			    case ResourceType.Texture3D:
+			    case GraphicsResourceType.Texture1D:
+			    case GraphicsResourceType.Texture2D:
+			    case GraphicsResourceType.Texture3D:
 				    DX.DataStream lockStream;
 
 				    DX.DataBox box = Texture.Graphics.D3DDeviceContext.MapSubresource(Texture.D3DResource,

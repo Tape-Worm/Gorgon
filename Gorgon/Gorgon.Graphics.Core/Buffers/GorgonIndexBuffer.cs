@@ -262,7 +262,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="size">[Optional] The size, in bytes, to copy.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="data"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="offset"/>, or the <paramref name="bufferOffset"/> plus the size of the data in <paramref name="data"/> exceed the size of this buffer.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when the size, in bytes, of the <paramref name="data"/> parameter is larger than the total <see cref="GorgonResource.SizeInBytes"/> of the buffer.
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the size, in bytes, of the <paramref name="data"/> parameter is larger than the total <see cref="GorgonGraphicsResource.SizeInBytes"/> of the buffer.
         /// <para>-or-</para>
         /// <para>The <paramref name="size"/> parameter is less than 1, or larger than the buffer size.</para>
         /// <para>-or-</para>
@@ -360,7 +360,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="count">[Optional] The number of elements to copy.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="data"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="startIndex"/>, or the <paramref name="bufferOffset"/> plus the <paramref name="count"/> exceeds the number of elements in the <paramref name="data"/> parameter.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when the size, in bytes, of the <paramref name="data"/> parameter, multiplied by the number of items to copy is larger than the total <see cref="GorgonResource.SizeInBytes"/> of the buffer.
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the size, in bytes, of the <paramref name="data"/> parameter, multiplied by the number of items to copy is larger than the total <see cref="GorgonGraphicsResource.SizeInBytes"/> of the buffer.
         /// <para>-or-</para>
         /// <para>Thrown when the <paramref name="startIndex"/>, or the <paramref name="bufferOffset"/> is less than 0, or the <paramref name="count"/> is less than 1.</para>
         /// <para>-or-</para>
@@ -459,7 +459,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="count">[Optional] The number of elements to copy.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="data"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="startIndex"/>, or the <paramref name="bufferOffset"/> plus the <paramref name="count"/> exceeds the number of elements in the <paramref name="data"/> parameter.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when the size, in bytes, of the <paramref name="data"/> parameter, multiplied by the number of items to copy is larger than the total <see cref="GorgonResource.SizeInBytes"/> of the buffer.
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the size, in bytes, of the <paramref name="data"/> parameter, multiplied by the number of items to copy is larger than the total <see cref="GorgonGraphicsResource.SizeInBytes"/> of the buffer.
         /// <para>-or-</para>
         /// <para>Thrown when the <paramref name="startIndex"/>, or the <paramref name="bufferOffset"/> is less than 0, or the <paramref name="count"/> is less than 1.</para>
         /// <para>-or-</para>

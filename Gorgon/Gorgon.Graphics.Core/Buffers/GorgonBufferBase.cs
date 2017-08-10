@@ -81,7 +81,7 @@ namespace Gorgon.Graphics.Core
     /// A base class for buffers.
     /// </summary>
     public abstract class GorgonBufferBase
-        : GorgonResource
+        : GorgonGraphicsResource
     {
         #region Variables.
         // The address returned by the lock on the buffer.
@@ -119,7 +119,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the type of data in the resource.
         /// </summary>
-        public override ResourceType ResourceType => ResourceType.Buffer;
+        public override GraphicsResourceType ResourceType => GraphicsResourceType.Buffer;
 
         /// <summary>
         /// Property to return the type of buffer.

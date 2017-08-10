@@ -31,15 +31,15 @@ using D3D11 = SharpDX.Direct3D11;
 namespace Gorgon.Graphics.Core
 {
     /// <summary>
-    /// An unordered access view for a <see cref="GorgonResource"/>.
+    /// An unordered access view for a <see cref="GorgonGraphicsResource"/>.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This type of view allows for unordered access to a <see cref="GorgonResource"/> like one of the <see cref="GorgonBuffer"/> types, a <see cref="GorgonTexture"/>, etc... Any resource that needs a 
+    /// This type of view allows for unordered access to a <see cref="GorgonGraphicsResource"/> like one of the <see cref="GorgonBuffer"/> types, a <see cref="GorgonTexture"/>, etc... Any resource that needs a 
     /// unordered access must be created with the <see cref="BufferBinding.UnorderedAccess"/> flag.
     /// </para>
     /// <para>
-    /// The unordered access allows a shader to read/write any part of a <see cref="GorgonResource"/> by multiple threads without memory contention. This is done through the use of 
+    /// The unordered access allows a shader to read/write any part of a <see cref="GorgonGraphicsResource"/> by multiple threads without memory contention. This is done through the use of 
     /// <a target="_blank" href="https://msdn.microsoft.com/en-us/library/windows/desktop/ff476334(v=vs.85).aspx">atomic functions</a>.
     /// </para>
     /// <para>
@@ -54,7 +54,7 @@ namespace Gorgon.Graphics.Core
     /// </note>
     /// </para>
     /// </remarks>
-    /// <seealso cref="GorgonResource"/>
+    /// <seealso cref="GorgonGraphicsResource"/>
     /// <seealso cref="GorgonBuffer"/>
     /// <seealso cref="GorgonTexture"/>
     /// <seealso cref="GorgonComputeShader"/>
@@ -76,7 +76,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the resource bound to the view.
         /// </summary>
-        public GorgonResource Resource
+        public GorgonGraphicsResource Resource
         {
             get;
         }
@@ -194,7 +194,7 @@ namespace Gorgon.Graphics.Core
         /// Initializes a new instance of the <see cref="GorgonShaderResourceView"/> class.
         /// </summary>
         /// <param name="resource">The resource to bind to the view.</param>
-        internal GorgonUnorderedAccessView(GorgonResource resource)
+        internal GorgonUnorderedAccessView(GorgonGraphicsResource resource)
         {
             Resource = resource;
         }

@@ -320,13 +320,13 @@ namespace Gorgon.Graphics.Core
 			// Build SRV description.
 			switch (Texture.ResourceType)
 			{
-				case ResourceType.Texture1D:
+				case GraphicsResourceType.Texture1D:
 					desc = GetDesc1D();
 					break;
-				case ResourceType.Texture2D:
+				case GraphicsResourceType.Texture2D:
 					desc = IsCubeMap ? GetDesc2DCube() : GetDesc2D();
 					break;
-				case ResourceType.Texture3D:
+				case GraphicsResourceType.Texture3D:
 					desc = GetDesc3D();
 					break;
 				default:
