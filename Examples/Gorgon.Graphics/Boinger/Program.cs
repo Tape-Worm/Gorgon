@@ -175,8 +175,6 @@ namespace Gorgon.Graphics.Example
 		private static GorgonPipelineState _pipelineState;
 		// The draw call used to send our data to the GPU.
 		private static GorgonDrawIndexedCall _drawCall;
-
-	    private static GorgonTexture _rtvTexture;
 		#endregion
 
 		#region Methods.
@@ -290,12 +288,8 @@ namespace Gorgon.Graphics.Example
 			UpdateBall();
 
 			// Clear to our gray color and clear out the depth buffer.
-			//_swap.RenderTargetView.Clear(Color.FromArgb(173, 173, 173));
-            //_swap.DepthStencilView.Clear(1.0f, 0);
-            _rtvTexture.DefaultRenderTargetView.Clear(Color.FromArgb(173, 173, 173));
-            _rtvTexture.DefaultRenderTargetView.DepthStencilView.Clear(1.0f, 0);
-
-            _graphics.SetRenderTarget(_rtvTexture.DefaultRenderTargetView);
+			_swap.RenderTargetView.Clear(Color.FromArgb(173, 173, 173));
+            _swap.DepthStencilView.Clear(1.0f, 0);
 
 			// Render the back and floor planes.
 			// ReSharper disable once ForCanBeConvertedToForeach
@@ -323,10 +317,6 @@ namespace Gorgon.Graphics.Example
 
 			// Render the shadow.
 			RenderModel(_sphere, _pipelineState);
-
-            _graphics.SetRenderTarget(_swap.RenderTargetView);
-            
-            _graphics.DrawTexture(_rtvTexture.DefaultShaderResourceView, _swap.RenderTargetView.Bounds, samplerState: GorgonSamplerState.PointFiltering);
 			
 			// Restore our original positioning so we can render the ball in the correct place on the next frame.
 			_sphere.Position = spherePosition;
@@ -373,7 +363,7 @@ namespace Gorgon.Graphics.Example
 
 			// Now we flip our buffers.
 			// We need to this or we won't see anything.
-			_swap.Present();
+			_swap.Present(1);
 
 			return true;
 		}
@@ -534,18 +524,7 @@ namespace Gorgon.Graphics.Example
 			_swap.AfterSwapChainResized += Swap_AfterResized;
 
             // Set the current render target output so we can see something.
-		    //_graphics.SetRenderTarget(_swap.RenderTargetView);
-            _rtvTexture = new GorgonTexture("TestRT", _graphics, new GorgonTextureInfo
-                                                                 {
-                                                                     Format = DXGI.Format.R8G8B8A8_UNorm,
-                                                                     Usage = D3D11.ResourceUsage.Default,
-                                                                     Width = 320,
-                                                                     Height = 200,
-                                                                     Binding = TextureBinding.RenderTarget | TextureBinding.ShaderResource,
-                                                                     TextureType = TextureType.Texture2D,
-                                                                     DepthStencilFormat = _swap.Info.DepthStencilFormat
-                                                                 });
-
+		    _graphics.SetRenderTarget(_swap.RenderTargetView);
 
             // Initialize our draw call so we can render the objects.
             // All objects are using triangle lists, so we must tell the draw call that's what we need to render.
