@@ -153,7 +153,6 @@ namespace SobelComputeEngine
                 // Unfortunately, because the two interfaces are disconnected, we need to ensure that we're not using a resource on the graphics side 
                 // when we want access to it on the compute side. This needs to be fixed as it can be a bit on the slow side to constantly do this 
                 // every frame.
-                _graphics.ClearState();
                 _sobel.Process(_sourceTexture.DefaultShaderResourceView, _outputUav, TrackThickness.Value, TrackThreshold.Value / 100.0f);
             }
             catch (Exception ex)

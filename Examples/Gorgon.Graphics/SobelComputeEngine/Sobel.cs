@@ -79,6 +79,7 @@ namespace Gorgon.Graphics.Example
             // Send 32 threads per group.
             _compute.Execute(_shader, (int)(texture.Width / 32.0f).FastCeiling(), (int)(texture.Height / 32.0f).FastCeiling(), 1);
 
+            // Always call unbind after we're done so that we can be sure the state won't conflict.
             _compute.Unbind();
         }
 

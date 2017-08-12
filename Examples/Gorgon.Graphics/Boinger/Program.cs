@@ -175,6 +175,8 @@ namespace Gorgon.Graphics.Example
 		private static GorgonPipelineState _pipelineState;
 		// The draw call used to send our data to the GPU.
 		private static GorgonDrawIndexedCall _drawCall;
+
+	    private static GorgonTexture _rtvTexture;
 		#endregion
 
 		#region Methods.
@@ -257,7 +259,9 @@ namespace Gorgon.Graphics.Example
 			UpdateWVP(ref worldMatrix);
 
 		    GorgonColor color = model.Material.Diffuse;
-            _materialBuffer.Update(ref color);
+		    GorgonPointerAlias data = _materialBuffer.Lock(D3D11.MapMode.WriteDiscard);
+            data.Write(ref color);
+            _materialBuffer.Unlock(ref data);
             
 			// Set up the draw call to render this models Index and Vertex buffers along with the current pipeline state.
 			_drawCall.IndexStart = 0;
@@ -286,8 +290,12 @@ namespace Gorgon.Graphics.Example
 			UpdateBall();
 
 			// Clear to our gray color and clear out the depth buffer.
-			_swap.RenderTargetView.Clear(Color.FromArgb(173, 173, 173));
-            _swap.DepthStencilView.Clear(1.0f, 0);
+			//_swap.RenderTargetView.Clear(Color.FromArgb(173, 173, 173));
+            //_swap.DepthStencilView.Clear(1.0f, 0);
+            _rtvTexture.DefaultRenderTargetView.Clear(Color.FromArgb(173, 173, 173));
+            _rtvTexture.DefaultRenderTargetView.DepthStencilView.Clear(1.0f, 0);
+
+            _graphics.SetRenderTarget(_rtvTexture.DefaultRenderTargetView);
 
 			// Render the back and floor planes.
 			// ReSharper disable once ForCanBeConvertedToForeach
@@ -315,6 +323,10 @@ namespace Gorgon.Graphics.Example
 
 			// Render the shadow.
 			RenderModel(_sphere, _pipelineState);
+
+            _graphics.SetRenderTarget(_swap.RenderTargetView);
+            
+            _graphics.DrawTexture(_rtvTexture.DefaultShaderResourceView, _swap.RenderTargetView.Bounds, samplerState: GorgonSamplerState.PointFiltering);
 			
 			// Restore our original positioning so we can render the ball in the correct place on the next frame.
 			_sphere.Position = spherePosition;
@@ -361,7 +373,7 @@ namespace Gorgon.Graphics.Example
 
 			// Now we flip our buffers.
 			// We need to this or we won't see anything.
-			_swap.Present(1);
+			_swap.Present();
 
 			return true;
 		}
@@ -389,7 +401,9 @@ namespace Gorgon.Graphics.Example
 			DX.Matrix.Transpose(ref wvp, out wvp);
 
 			// Update the constant buffer.
-			_wvpBuffer.Update(ref wvp);
+		    GorgonPointerAlias data = _wvpBuffer.Lock(D3D11.MapMode.WriteDiscard);
+            data.Write(ref wvp);
+            _wvpBuffer.Unlock(ref data);
 		}
 
 		/// <summary>
@@ -520,7 +534,18 @@ namespace Gorgon.Graphics.Example
 			_swap.AfterSwapChainResized += Swap_AfterResized;
 
             // Set the current render target output so we can see something.
-		    _graphics.SetRenderTarget(_swap.RenderTargetView);
+		    //_graphics.SetRenderTarget(_swap.RenderTargetView);
+            _rtvTexture = new GorgonTexture("TestRT", _graphics, new GorgonTextureInfo
+                                                                 {
+                                                                     Format = DXGI.Format.R8G8B8A8_UNorm,
+                                                                     Usage = D3D11.ResourceUsage.Default,
+                                                                     Width = 320,
+                                                                     Height = 200,
+                                                                     Binding = TextureBinding.RenderTarget | TextureBinding.ShaderResource,
+                                                                     TextureType = TextureType.Texture2D,
+                                                                     DepthStencilFormat = _swap.Info.DepthStencilFormat
+                                                                 });
+
 
             // Initialize our draw call so we can render the objects.
             // All objects are using triangle lists, so we must tell the draw call that's what we need to render.
@@ -576,13 +601,13 @@ namespace Gorgon.Graphics.Example
 			// to the vertex shader.  
 			_wvpBuffer = new GorgonConstantBuffer("WVPBuffer", _graphics, new GorgonConstantBufferInfo
 			                                                             {
-				                                                             Usage = D3D11.ResourceUsage.Default,
+				                                                             Usage = D3D11.ResourceUsage.Dynamic,
 																			 SizeInBytes = DX.Matrix.SizeInBytes
 			                                                             });
             // This one will hold our material information.
             _materialBuffer = new GorgonConstantBuffer("MaterialBuffer", _graphics, new GorgonConstantBufferInfo
                                                                                     {
-                                                                                        Usage = D3D11.ResourceUsage.Default,
+                                                                                        Usage = D3D11.ResourceUsage.Dynamic,
                                                                                         SizeInBytes = DirectAccess.SizeOf<GorgonColor>()
                                                                                     });
 

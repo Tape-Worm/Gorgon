@@ -145,6 +145,8 @@ namespace Gorgon.Graphics.Core
                 return;
             }
 
+            Graphics.ValidateComputeWork(UnorderedAccessViews, ref uavs);
+
             if (_uavBuffer.Length != uavs.Count)
             {
                 _uavBuffer = new D3D11.UnorderedAccessView[uavs.Count];
