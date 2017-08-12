@@ -74,7 +74,17 @@ namespace Gorgon.Graphics.Core
 		                                                                     };
         #endregion
 
-		#region Properties.
+        #region Properties.
+	    /// <summary>
+	    /// Property to return whether or not the resource can be bound as a shader resource.
+	    /// </summary>
+	    protected internal override bool IsShaderResource => (_info.Binding & TextureBinding.ShaderResource) == TextureBinding.ShaderResource;
+
+        /// <summary>
+        /// Property to return whether or not the resource can be used in an unordered access view.
+        /// </summary>
+        protected internal override bool IsUavResource => (_info.Binding & TextureBinding.UnorderedAccess) == TextureBinding.UnorderedAccess;
+
         /// <summary>
         /// Property to return the associated depth/stencil view.
         /// </summary>

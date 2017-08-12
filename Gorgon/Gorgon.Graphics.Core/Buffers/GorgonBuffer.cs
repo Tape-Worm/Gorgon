@@ -49,6 +49,16 @@ namespace Gorgon.Graphics.Core
 
         #region Properties.
         /// <summary>
+        /// Property to return whether or not the resource can be bound as a shader resource.
+        /// </summary>
+        protected internal override bool IsShaderResource => (_info.Binding & BufferBinding.Shader) == BufferBinding.Shader;
+
+        /// <summary>
+        /// Property to return whether or not the resource can be used in an unordered access view.
+        /// </summary>
+        protected internal override bool IsUavResource => (_info.Binding & BufferBinding.UnorderedAccess) == BufferBinding.UnorderedAccess;
+
+        /// <summary>
         /// Property to return the usage flags for the buffer.
         /// </summary>
         protected override D3D11.ResourceUsage Usage => _info.Usage;

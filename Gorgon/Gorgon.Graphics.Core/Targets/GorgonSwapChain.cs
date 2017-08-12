@@ -734,7 +734,7 @@ namespace Gorgon.Graphics.Core
 			        prevDepthStencil = Graphics.DepthStencilView;
 			        prevTargetRange = GetCurrentTargets();
 
-                    // If we had previous targets (and we are part of that list), then reset the targets before presenting (the runtime will do it for use anyway, but this will just 
+                    // If we had previous targets (and we are part of that list), then reset the targets before presenting (the runtime will do it for us anyway, but this will just 
                     // get rid of that annoying warning in the debug spew).
 			        if (prevTargetRange.TargetCount != 0)
 			        {

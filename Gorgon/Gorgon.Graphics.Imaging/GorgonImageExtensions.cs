@@ -279,8 +279,8 @@ namespace Gorgon.Graphics.Imaging
 				// Copy the top mip level from the source image to the dest image.
 				for (int array = 0; array < baseImage.Info.ArrayCount; ++array)
 				{
-					newImage.Buffers[0, array].Data.CopyTo(baseImage.Buffers[0, array].Data, 
-						(int)baseImage.Buffers[0, array].Data.Size * baseImage.Info.Depth);
+				    baseImage.Buffers[0, array].Data.CopyTo(newImage.Buffers[0, array].Data,
+				                                            (int)newImage.Buffers[0, array].Data.Size * newImage.Info.Depth);
 				}
 
 				if (mipCount < 2)

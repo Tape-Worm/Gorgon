@@ -264,6 +264,51 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot bind the &apos;{0}&apos; resource as a render target because it is already bound as an unordered access view at slot {1}..
+        /// </summary>
+        internal static string GORGFX_ERR_CONFLICT_RTV_UAV {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_CONFLICT_RTV_UAV", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The resource &apos;{0}&apos; is already bound as a depth/stencil. Please unbind the depth/stencil before assigning it to a {1}..
+        /// </summary>
+        internal static string GORGFX_ERR_CONFLICT_SRV_DSV {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_CONFLICT_SRV_DSV", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The resource &apos;{0}&apos; is already bound as a render target in slot {j}. Please unbind the render target before assigning it to a {1}..
+        /// </summary>
+        internal static string GORGFX_ERR_CONFLICT_SRV_RTV {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_CONFLICT_SRV_RTV", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The resource &apos;{0}&apos; is already bound as a unordered access view in slot {1}. Please unbind the unordered access view before assigning it to a {2}..
+        /// </summary>
+        internal static string GORGFX_ERR_CONFLICT_SRV_UAV {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_CONFLICT_SRV_UAV", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot bind the &apos;{0}&apos; resource as an unordered access view because it is already bound as a render target view at slot {1}..
+        /// </summary>
+        internal static string GORGFX_ERR_CONFLICT_UAV_RTV {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_CONFLICT_UAV_RTV", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The size requested ({0} bytes) for the constant buffer exceeds the maximum value of {1} bytes..
         /// </summary>
         internal static string GORGFX_ERR_CONSTANT_BUFFER_TOO_LARGE {
@@ -973,6 +1018,15 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_TYPE_NOT_VALID_FOR_NATIVE {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_TYPE_NOT_VALID_FOR_NATIVE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The unordered access view for resource &apos;{0}&apos; is already bound..
+        /// </summary>
+        internal static string GORGFX_ERR_UAV_ALREADY_BOUND {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_UAV_ALREADY_BOUND", resourceCulture);
             }
         }
         

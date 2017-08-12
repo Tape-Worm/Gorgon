@@ -506,4 +506,22 @@ The width must be a value between 1-{2}, and the height must be a value between 
   <data name="GORGFX_ERR_INDEX_BUFFER_TYPE_MISMATCH" xml:space="preserve">
     <value>This buffer uses {0} bit indices. {1} bit indices cannot be written to it.</value>
   </data>
+  <data name="GORGFX_ERR_UAV_ALREADY_BOUND" xml:space="preserve">
+    <value>The unordered access view for resource '{0}' is already bound.</value>
+  </data>
+  <data name="GORGFX_ERR_CONFLICT_RTV_UAV" xml:space="preserve">
+    <value>Cannot bind the '{0}' resource as a render target because it is already bound as an unordered access view at slot {1}.</value>
+  </data>
+  <data name="GORGFX_ERR_CONFLICT_SRV_DSV" xml:space="preserve">
+    <value>The resource '{0}' is already bound as a depth/stencil. Please unbind the depth/stencil before assigning it to a {1}.</value>
+  </data>
+  <data name="GORGFX_ERR_CONFLICT_SRV_RTV" xml:space="preserve">
+    <value>The resource '{0}' is already bound as a render target in slot {j}. Please unbind the render target before assigning it to a {1}.</value>
+  </data>
+  <data name="GORGFX_ERR_CONFLICT_SRV_UAV" xml:space="preserve">
+    <value>The resource '{0}' is already bound as a unordered access view in slot {1}. Please unbind the unordered access view before assigning it to a {2}.</value>
+  </data>
+  <data name="GORGFX_ERR_CONFLICT_UAV_RTV" xml:space="preserve">
+    <value>Cannot bind the '{0}' resource as an unordered access view because it is already bound as a render target view at slot {1}.</value>
+  </data>
 </root>
