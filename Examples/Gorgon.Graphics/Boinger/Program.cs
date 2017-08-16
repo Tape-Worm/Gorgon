@@ -518,9 +518,7 @@ namespace Gorgon.Graphics.Example
 				_swap.EnterFullScreen(ref mode, _output);
 			}
 
-			// Handle any resizing.
-			// This is here because the base graphics library will NOT handle state loss due to resizing.
-			// This is up to the developer to handle.
+			// Handle resizing because the projection matrix needs to be updated to reflect the new view size.
 			_swap.AfterSwapChainResized += Swap_AfterResized;
 
             // Set the current render target output so we can see something.
