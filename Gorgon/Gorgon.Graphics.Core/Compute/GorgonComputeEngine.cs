@@ -145,6 +145,8 @@ namespace Gorgon.Graphics.Core
                 return;
             }
 
+            Graphics.ValidateComputeWork(UnorderedAccessViews, ref uavs);
+
             if (_uavBuffer.Length != uavs.Count)
             {
                 _uavBuffer = new D3D11.UnorderedAccessView[uavs.Count];
@@ -172,7 +174,7 @@ namespace Gorgon.Graphics.Core
             {
                 return;
             }
-
+            
             Graphics.D3DDeviceContext.ComputeShader.SetShaderResources(views.Start, views.Count, ShaderResourceViews.Native);
         }
 
@@ -221,16 +223,37 @@ namespace Gorgon.Graphics.Core
                 _currentShader = null;
             }
 
-            ConstantBuffers.Clear();
-            UnorderedAccessViews.Clear();
-            ShaderResourceViews.Clear();
-            SamplerStates.Clear();
-
             // Unbind from the GPU.
-            Graphics.D3DDeviceContext.ComputeShader.SetConstantBuffers(0);
-            Graphics.D3DDeviceContext.ComputeShader.SetUnorderedAccessViews(0);
-            Graphics.D3DDeviceContext.ComputeShader.SetSamplers(0, 0);
-            Graphics.D3DDeviceContext.ComputeShader.SetShaderResources(0, 0);
+            (int Start, int Count) buffers = ConstantBuffers.GetDirtyItems();
+            if (buffers.Count > 0)
+            {
+                ConstantBuffers.Clear();
+                Graphics.D3DDeviceContext.ComputeShader.SetConstantBuffers(buffers.Start, buffers.Count, ConstantBuffers.Native);
+            }
+
+            (int Start, int Count) uavs = UnorderedAccessViews.GetDirtyItems();
+            if ((uavs.Count > 0) && (_uavBuffer.Length > 0))
+            {
+                UnorderedAccessViews.Clear();
+                Array.Clear(_uavBuffer, 0, _uavBuffer.Length);
+                Graphics.D3DDeviceContext.ComputeShader.SetUnorderedAccessViews(0, _uavBuffer);
+            }
+
+            (int Start, int Count) samplers = SamplerStates.GetDirtyItems();
+            if (samplers.Count > 0)
+            {
+                SamplerStates.Clear();
+                Graphics.D3DDeviceContext.ComputeShader.SetSamplers(samplers.Start, samplers.Count, _samplerStates);
+            }
+
+            (int Start, int Count) views = ShaderResourceViews.GetDirtyItems();
+            if (views.Count <= 0)
+            {
+                return;
+            }
+
+            ShaderResourceViews.Clear();
+            Graphics.D3DDeviceContext.ComputeShader.SetShaderResources(views.Start, views.Count, ShaderResourceViews.Native);
         }
 
         /// <summary>
@@ -334,10 +357,22 @@ namespace Gorgon.Graphics.Core
                 Graphics.D3DDeviceContext.ComputeShader.Set(_currentShader.NativeShader);
             }
 
-            ApplyConstantBuffers();
-            ApplyUavs();
-            ApplySrvs();
-            ApplySamplers();
+            if (ConstantBuffers.IsDirty)
+            {
+                ApplyConstantBuffers();
+            }
+            if (UnorderedAccessViews.IsDirty)
+            {
+                ApplyUavs();
+            }
+            if (ShaderResourceViews.IsDirty)
+            {
+                ApplySrvs();
+            }
+            if (SamplerStates.IsDirty)
+            {
+                ApplySamplers();
+            }
 
             Graphics.D3DDeviceContext.DispatchIndirect(indirectArgs.NativeBuffer, threadGroupOffset);
         }

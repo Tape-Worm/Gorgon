@@ -55,7 +55,7 @@ namespace CodecPlugIn
 	    private IGorgonImage _image;
 		// Our custom codec loaded from the plug-in.
 		private IGorgonImageCodec _customCodec;
-		#endregion
+        #endregion
 
 		#region Methods.
 		/// <summary>
@@ -88,7 +88,7 @@ namespace CodecPlugIn
 			// Find the position.
 			var bounds = new DX.Rectangle((int)(windowSize.Width / 2 - size.Width / 2), (int)(windowSize.Height / 2 - size.Height / 2), size.Width, size.Height);
 
-			_graphics.DrawTexture(_texture, bounds);
+			_graphics.DrawTexture(_texture.DefaultShaderResourceView, bounds);
 
 			_swap.Present(1);
 

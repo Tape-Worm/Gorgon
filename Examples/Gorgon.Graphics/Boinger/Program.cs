@@ -257,7 +257,9 @@ namespace Gorgon.Graphics.Example
 			UpdateWVP(ref worldMatrix);
 
 		    GorgonColor color = model.Material.Diffuse;
-            _materialBuffer.Update(ref color);
+		    GorgonPointerAlias data = _materialBuffer.Lock(D3D11.MapMode.WriteDiscard);
+            data.Write(ref color);
+            _materialBuffer.Unlock(ref data);
             
 			// Set up the draw call to render this models Index and Vertex buffers along with the current pipeline state.
 			_drawCall.IndexStart = 0;
@@ -389,7 +391,9 @@ namespace Gorgon.Graphics.Example
 			DX.Matrix.Transpose(ref wvp, out wvp);
 
 			// Update the constant buffer.
-			_wvpBuffer.Update(ref wvp);
+		    GorgonPointerAlias data = _wvpBuffer.Lock(D3D11.MapMode.WriteDiscard);
+            data.Write(ref wvp);
+            _wvpBuffer.Unlock(ref data);
 		}
 
 		/// <summary>
@@ -514,9 +518,7 @@ namespace Gorgon.Graphics.Example
 				_swap.EnterFullScreen(ref mode, _output);
 			}
 
-			// Handle any resizing.
-			// This is here because the base graphics library will NOT handle state loss due to resizing.
-			// This is up to the developer to handle.
+			// Handle resizing because the projection matrix needs to be updated to reflect the new view size.
 			_swap.AfterSwapChainResized += Swap_AfterResized;
 
             // Set the current render target output so we can see something.
@@ -576,13 +578,13 @@ namespace Gorgon.Graphics.Example
 			// to the vertex shader.  
 			_wvpBuffer = new GorgonConstantBuffer("WVPBuffer", _graphics, new GorgonConstantBufferInfo
 			                                                             {
-				                                                             Usage = D3D11.ResourceUsage.Default,
+				                                                             Usage = D3D11.ResourceUsage.Dynamic,
 																			 SizeInBytes = DX.Matrix.SizeInBytes
 			                                                             });
             // This one will hold our material information.
             _materialBuffer = new GorgonConstantBuffer("MaterialBuffer", _graphics, new GorgonConstantBufferInfo
                                                                                     {
-                                                                                        Usage = D3D11.ResourceUsage.Default,
+                                                                                        Usage = D3D11.ResourceUsage.Dynamic,
                                                                                         SizeInBytes = DirectAccess.SizeOf<GorgonColor>()
                                                                                     });
 

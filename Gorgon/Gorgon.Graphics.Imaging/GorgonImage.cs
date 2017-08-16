@@ -147,7 +147,7 @@ namespace Gorgon.Graphics.Imaging
 			else
 			{
 				// Otherwise, just make a simple copy.
-				_imageData.CopyTo(data, (int)data.Size);
+				data.CopyTo(_imageData, (int)data.Size);
 			}
 		}
 

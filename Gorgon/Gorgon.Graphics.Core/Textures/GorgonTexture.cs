@@ -43,7 +43,7 @@ namespace Gorgon.Graphics.Core
 	/// A texture used to project an image onto a graphic primitive such as a triangle.
 	/// </summary>
 	public sealed class GorgonTexture
-		: GorgonResource
+		: GorgonGraphicsResource
 	{
 		#region Variables.
 		// The ID number of the texture.
@@ -74,7 +74,17 @@ namespace Gorgon.Graphics.Core
 		                                                                     };
         #endregion
 
-		#region Properties.
+        #region Properties.
+	    /// <summary>
+	    /// Property to return whether or not the resource can be bound as a shader resource.
+	    /// </summary>
+	    protected internal override bool IsShaderResource => (_info.Binding & TextureBinding.ShaderResource) == TextureBinding.ShaderResource;
+
+        /// <summary>
+        /// Property to return whether or not the resource can be used in an unordered access view.
+        /// </summary>
+        protected internal override bool IsUavResource => (_info.Binding & TextureBinding.UnorderedAccess) == TextureBinding.UnorderedAccess;
+
         /// <summary>
         /// Property to return the associated depth/stencil view.
         /// </summary>
@@ -104,20 +114,20 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Property to return the type of data in the resource.
 		/// </summary>
-		public override ResourceType ResourceType 
+		public override GraphicsResourceType ResourceType 
 		{
 			get
 			{
 				switch (Info.TextureType)
 				{
 					case TextureType.Texture1D:
-						return ResourceType.Texture1D;
+						return GraphicsResourceType.Texture1D;
 					case TextureType.Texture2D:
-						return ResourceType.Texture2D;
+						return GraphicsResourceType.Texture2D;
 					case TextureType.Texture3D:
-						return ResourceType.Texture3D;
+						return GraphicsResourceType.Texture3D;
 					default:
-						return ResourceType.Unknown;
+						return GraphicsResourceType.Unknown;
 				}
 			}
 		}
@@ -252,7 +262,7 @@ namespace Gorgon.Graphics.Core
 				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_UAV_REQUIRES_SM5);
 			}
 
-			if ((support & D3D11.FormatSupport.TypedUnorderedAccessView) != D3D11.FormatSupport.TypedUnorderedAccessView)
+			if ((!FormatInformation.IsTypeless) && (support & D3D11.FormatSupport.TypedUnorderedAccessView) != D3D11.FormatSupport.TypedUnorderedAccessView)
 			{
 				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_UAV_FORMAT_INVALID, Info.Format));
 			}
@@ -659,7 +669,11 @@ namespace Gorgon.Graphics.Core
 					return;
 				}
 
-				DefaultShaderResourceView = GetShaderResourceView(Info.Format);
+                // If we don't have any format type, then we cannot retrieve a default view.
+			    if (!FormatInformation.IsTypeless)
+			    {
+			        DefaultShaderResourceView = GetShaderResourceView(Info.Format);
+			    }
 			}
 
 			// Create the default depth/stencil view.
@@ -703,6 +717,12 @@ namespace Gorgon.Graphics.Core
 		        _log.Print($"An associated depth buffer could not be created for the render target '{Name}' because it is a 3D texture.", LoggingLevel.Verbose);
                 _info.DepthStencilFormat = Format.Unknown;
             }
+
+            // We cannot define a default render target view if we have no type for our format.
+		    if (FormatInformation.IsTypeless)
+		    {
+		        return;
+		    }
 
 		    DefaultRenderTargetView = GetRenderTargetView();
 		}

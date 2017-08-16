@@ -185,7 +185,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="GorgonResource.cs" />
+    <Compile Include="GorgonGraphicsResource.cs" />
     <Compile Include="Textures\_Interfaces\IGorgonTextureInfo.cs" />
     <Compile Include="Textures\_Internal\BltVertex.cs" />
     <Compile Include="Textures\_Internal\TextureViewKey.cs" />

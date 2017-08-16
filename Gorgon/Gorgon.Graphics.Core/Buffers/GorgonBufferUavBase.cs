@@ -36,7 +36,7 @@ namespace Gorgon.Graphics.Core
     /// This type of view allows for unordered access to a buffer. The buffer must have been created with the <see cref="BufferBinding.UnorderedAccess"/> flag in its binding property.
     /// </para>
     /// <para>
-    /// The unordered access allows a shader to read/write any part of a <see cref="GorgonResource"/> by multiple threads without memory contention. This is done through the use of 
+    /// The unordered access allows a shader to read/write any part of a <see cref="GorgonGraphicsResource"/> by multiple threads without memory contention. This is done through the use of 
     /// <a target="_blank" href="https://msdn.microsoft.com/en-us/library/windows/desktop/ff476334(v=vs.85).aspx">atomic functions</a>.
     /// </para>
     /// <para>
@@ -51,7 +51,7 @@ namespace Gorgon.Graphics.Core
     /// </note>
     /// </para>
     /// </remarks>
-    /// <seealso cref="GorgonResource"/>
+    /// <seealso cref="GorgonGraphicsResource"/>
     /// <seealso cref="GorgonTexture"/>
     /// <seealso cref="GorgonComputeShader"/>
     /// <seealso cref="GorgonPixelShader"/>

@@ -59,7 +59,7 @@ namespace Gorgon.Graphics.Core
 	/// being assigned must match, or an exception will be thrown.
 	/// </item>
 	/// <item>
-	/// These limitations also apply to a <see cref="GorgonDepthStencilView"/>. All views must match the mip slice, array (or depth) index, and array (or depth) count, and the <see cref="ResourceType"/> 
+	/// These limitations also apply to a <see cref="GorgonDepthStencilView"/>. All views must match the mip slice, array (or depth) index, and array (or depth) count, and the <see cref="GraphicsResourceType"/> 
 	/// for the resources attached to the views must be the same.
 	/// </item>
 	/// </list> 

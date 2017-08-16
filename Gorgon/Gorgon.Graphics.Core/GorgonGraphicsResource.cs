@@ -34,7 +34,7 @@ namespace Gorgon.Graphics.Core
 	/// <summary>
 	/// The type of data in the resource.
 	/// </summary>
-	public enum ResourceType
+	public enum GraphicsResourceType
 	{
 		/// <summary>
 		/// Unknown data type.
@@ -98,7 +98,7 @@ namespace Gorgon.Graphics.Core
 	/// Objects that inherit from this class will be considered a resource object that may (depending on usage) be bound to the pipeline.
 	/// </para>
 	/// </remarks>
-	public abstract class GorgonResource
+	public abstract class GorgonGraphicsResource
 		: IGorgonNamedObject, IDisposable
 	{
 		#region Properties.
@@ -110,6 +110,22 @@ namespace Gorgon.Graphics.Core
 			get;
 			set;
 		}
+
+        /// <summary>
+        /// Property to return whether or not the resource can be used in an unordered access view.
+        /// </summary>
+	    protected internal abstract bool IsUavResource
+	    {
+	        get;
+	    }
+
+        /// <summary>
+        /// Property to return whether or not the resource can be bound as a shader resource.
+        /// </summary>
+	    protected internal abstract bool IsShaderResource
+	    {
+	        get;
+	    }
         
 		/// <summary>
 		/// Property to return the graphics interface used to create this object.
@@ -122,7 +138,7 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Property to return the type of data in the resource.
 		/// </summary>
-		public abstract ResourceType ResourceType
+		public abstract GraphicsResourceType ResourceType
 		{
 			get;
 		}
@@ -267,7 +283,7 @@ namespace Gorgon.Graphics.Core
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonResource" /> class.
+		/// Initializes a new instance of the <see cref="GorgonGraphicsResource" /> class.
 		/// </summary>
 		/// <param name="graphics">The graphics interface used to create this resource.</param>
 		/// <param name="name">Name of this resource.</param>
@@ -278,7 +294,7 @@ namespace Gorgon.Graphics.Core
 		/// </remarks>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception> 
 		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
-		protected GorgonResource(GorgonGraphics graphics, string name)
+		protected GorgonGraphicsResource(GorgonGraphics graphics, string name)
 		{
 			if (name == null)
 			{

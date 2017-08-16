@@ -306,13 +306,13 @@ namespace Gorgon.Graphics.Core
 
             switch (Texture.ResourceType)
             {
-                case ResourceType.Texture1D:
+                case GraphicsResourceType.Texture1D:
                     desc = GetDesc1D();
                     break;
-                case ResourceType.Texture2D:
+                case GraphicsResourceType.Texture2D:
                     desc = GetDesc2D(!Texture.Info.MultisampleInfo.Equals(GorgonMultisampleInfo.NoMultiSampling));
                     break;
-                case ResourceType.Texture3D:
+                case GraphicsResourceType.Texture3D:
                     desc = GetDesc3D();
                     break;
             }

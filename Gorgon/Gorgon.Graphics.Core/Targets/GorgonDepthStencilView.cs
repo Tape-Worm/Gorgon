@@ -276,10 +276,10 @@ namespace Gorgon.Graphics.Core
 
 			switch (Texture.ResourceType)
 			{
-				case ResourceType.Texture1D:
+				case GraphicsResourceType.Texture1D:
 					desc = GetDesc1D();
 					break;
-				case ResourceType.Texture2D:
+				case GraphicsResourceType.Texture2D:
 					desc = GetDesc2D();
 					break;
 			}

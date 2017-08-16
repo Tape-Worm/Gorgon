@@ -394,19 +394,19 @@ namespace Gorgon.Graphics.Example
             switch (passIndex)
             {
                 case 0:
-                    Graphics.DrawTexture(_inputTexture,
+                    Graphics.DrawTexture(_inputTexture.DefaultShaderResourceView,
                                          _hTarget.DefaultRenderTargetView.Bounds,
                                          pixelShader: (PreserveAlpha ? _blurShaderNoAlpha : _blurShader),
                                          pixelShaderConstants: _blurConstants);
                     break;
                 case 1:
-                    Graphics.DrawTexture(_hTarget,
+                    Graphics.DrawTexture(_hTarget.DefaultShaderResourceView,
                                          _hTarget.DefaultRenderTargetView.Bounds,
                                          pixelShader: (PreserveAlpha ? _blurShaderNoAlpha : _blurShader),
                                          pixelShaderConstants: _blurConstants);
                     break;
                 case 2:
-                    Graphics.DrawTexture(_blurRadius != 0 ? _vTarget : _inputTexture, _blurredTarget.Bounds);
+                    Graphics.DrawTexture(_blurRadius != 0 ? _vTarget.DefaultShaderResourceView : _inputTexture.DefaultShaderResourceView, _blurredTarget.Bounds);
                     break;
             }
         }

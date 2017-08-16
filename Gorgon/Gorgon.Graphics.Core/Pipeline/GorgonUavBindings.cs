@@ -26,6 +26,9 @@
 
 
 using System;
+using System.Linq;
+using Gorgon.Core;
+using Gorgon.Graphics.Core.Properties;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
@@ -74,11 +77,48 @@ namespace Gorgon.Graphics.Core
 
 		#region Methods.
 	    /// <summary>
-	    /// Function to store the native item at the given index.
+	    /// Function to validate an item being assigned to a slot.
 	    /// </summary>
-	    /// <param name="nativeItemIndex">The index of the item in the native array.</param>
-	    /// <param name="value">The value containing the native item.</param>
-	    protected override void OnStoreNativeItem(int nativeItemIndex, GorgonUavBinding value)
+	    protected override void OnValidate()
+	    {
+	        GorgonUavBinding startView = this.FirstOrDefault(target => target.Uav != null);
+
+	        // If no other uavs are assigned, then we're done here.
+	        if (startView.Uav == null)
+	        {
+	            return;
+	        }
+
+	        int startViewIndex = IndexOf(startView);
+
+	        if (startViewIndex == -1)
+	        {
+	            return;
+	        }
+
+	        // Only check if we have more than 1 unordered access view being applied.
+	        for (int i = 0; i < Count; i++)
+	        {
+	            GorgonUavBinding other = this[i];
+
+	            if (other.Uav == null)
+	            {
+	                continue;
+	            }
+
+	            if ((other.Equals(ref startView)) && (startViewIndex != i))
+	            {
+	                throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_UAV_ALREADY_BOUND, other.Uav.Resource.Name));
+	            }
+	        }
+        }
+
+        /// <summary>
+        /// Function to store the native item at the given index.
+        /// </summary>
+        /// <param name="nativeItemIndex">The index of the item in the native array.</param>
+        /// <param name="value">The value containing the native item.</param>
+        protected override void OnStoreNativeItem(int nativeItemIndex, GorgonUavBinding value)
 	    {
 	        _nativeBindings[nativeItemIndex] = value.Uav?.NativeView;
 	        _counts[nativeItemIndex] = value.InitialCount;
