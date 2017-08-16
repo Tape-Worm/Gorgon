@@ -10,7 +10,7 @@ Examples of behavior that contributes to creating a positive environment include
 
 * Using welcoming and inclusive language
 * Being respectful of differing viewpoints and experiences
-* Gracefully accepting constructive criticism
+* Gracefully accepting **constructive criticism**
 * Focusing on what is best for the community
 * Showing empathy towards other community members
 
@@ -21,6 +21,9 @@ Examples of unacceptable behavior by participants include:
 * Public or private harassment
 * Publishing others' private information, such as a physical or electronic address, without explicit permission
 * Other conduct which could reasonably be considered inappropriate in a professional setting
+* **Self righteous critique of others work**
+
+The last one gets special mention as it's been a common problem found on many other sites regarding programming. And no, "tough love" critiques from know-it-alls are not welcome. Being harsh with people does not constitute constructive criticism. Learn to people and be gracious.
 
 ## Our Responsibilities
 
