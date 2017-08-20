@@ -289,7 +289,7 @@ namespace Gorgon.Graphics.Example
 
 			// Clear to our gray color and clear out the depth buffer.
 			_swap.RenderTargetView.Clear(Color.FromArgb(173, 173, 173));
-            _swap.DepthStencilView.Clear(1.0f, 0);
+            _swap.DepthStencilView.Clear(0.0f, 0);
 
 			// Render the back and floor planes.
 			// ReSharper disable once ForCanBeConvertedToForeach
@@ -571,7 +571,7 @@ namespace Gorgon.Graphics.Example
 			// This matrix is probably the cause of almost EVERY problem you'll ever run into in 3D programming. Basically we're telling the renderer that we 
 			// want to have a vertical FOV of 75 degrees, with the aspect ratio based on our form width and height.  The final values indicate how to 
 			// distribute Z values across depth (tip: it's not linear).
-			_projMatrix = DX.Matrix.PerspectiveFovLH((75.0f).ToRadians(), _mainForm.ClientSize.Width / (float)_mainForm.ClientSize.Height, 0.125f, 500.0f);
+			_projMatrix = DX.Matrix.PerspectiveFovLH((75.0f).ToRadians(), _mainForm.ClientSize.Width / (float)_mainForm.ClientSize.Height, 500.0f, 0.125f);
 
 			// Create our constant buffer.			
 			// Our constant buffers are how we send data to our shaders.  This one in particular will be responsible for sending our world/view/projection matrix 
@@ -645,7 +645,7 @@ namespace Gorgon.Graphics.Example
             // Initialize a pipeline state so that the graphics can be rendered using the correct shaders, depth buffer, and blending.
 			_pipelineState = _graphics.GetPipelineState(new GorgonPipelineStateInfo
 			                                           {
-				                                           DepthStencilState = GorgonDepthStencilState.DepthStencilEnabled,
+				                                           DepthStencilState = GorgonDepthStencilState.DepthStencilEnabledGe,
 				                                           PixelShader = _pixelShader,
 				                                           VertexShader = _vertexShader
 			                                           });

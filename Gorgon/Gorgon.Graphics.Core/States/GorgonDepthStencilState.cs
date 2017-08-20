@@ -123,6 +123,24 @@ namespace Gorgon.Graphics.Core
 	                                                                        IsDepthWriteEnabled = true,
 	                                                                        IsLocked = true
 	                                                                    };
+
+        /// <summary>
+        /// Depth/stencil enabled, with a greater than or equal comparer.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This value is useful for reversing a depth distribution across the depth buffer to provide better accuracy. See 
+        /// <a href="https://developer.nvidia.com/content/depth-precision-visualized">https://developer.nvidia.com/content/depth-precision-visualized</a> for more information.
+        /// </para>
+        /// </remarks>
+        public static readonly GorgonDepthStencilState DepthStencilEnabledGe = new GorgonDepthStencilState
+                                                                               {
+                                                                                   IsDepthWriteEnabled = true,
+                                                                                   IsDepthEnabled = true,
+                                                                                   IsStencilEnabled = true,
+                                                                                   DepthComparison = D3D11.Comparison.GreaterEqual,
+                                                                                   IsLocked = true
+                                                                               };
         #endregion
 
         #region Variables.
