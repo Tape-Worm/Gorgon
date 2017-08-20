@@ -28,6 +28,7 @@ Resources/__OLDE__/
 
 # Roslyn cache directories
 *.ide/
+storage.ide
 
 # MSTest test Results
 [Tt]est[Rr]esult*/
