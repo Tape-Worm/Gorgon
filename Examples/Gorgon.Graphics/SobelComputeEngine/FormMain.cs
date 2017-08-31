@@ -41,6 +41,16 @@ namespace SobelComputeEngine
     /// <summary>
     /// The main application window.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This simple application will take an input PNG file and run an edge detection filter (sobel) against it and overlay that resulting image on the 
+    /// source image in another pane. 
+    /// 
+    /// This example uses an optimized Sobel edge detection algorithm found at http://homepages.inf.ed.ac.uk/rbf/HIPR2/sobel.htm. 
+    /// 
+    /// We begin this example by setting up 
+    /// </para>
+    /// </remarks>
     public partial class FormMain 
         : GorgonFlatForm
     {
@@ -74,7 +84,7 @@ namespace SobelComputeEngine
             Cursor.Current = Cursors.WaitCursor;
 
             IGorgonImage image = null;
-            var png = new GorgonCodecPng();
+            GorgonCodecPng png = new GorgonCodecPng();
 
             try
             {

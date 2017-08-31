@@ -148,7 +148,7 @@ namespace Gorgon.Graphics.Imaging
 		/// </remarks>
 		public void CopyTo(IGorgonImageBuffer buffer, DX.Rectangle? sourceRegion = null, int destX = 0, int destY = 0)
 		{
-			var sourceBufferDims = new DX.Rectangle
+			DX.Rectangle sourceBufferDims = new DX.Rectangle
 			                       {
 				                       Left = 0,
 				                       Top = 0,
@@ -226,7 +226,7 @@ namespace Gorgon.Graphics.Imaging
 			}
 
 			// Ensure that the regions actually fit within their respective buffers.
-			var dstRegion = new DX.Rectangle
+			DX.Rectangle dstRegion = new DX.Rectangle
 			                {
 				                Left = destX,
 				                Top = destY,
@@ -263,11 +263,11 @@ namespace Gorgon.Graphics.Imaging
 
 				// Number of source bytes/scanline.
 				int srcLineSize = dataSize * (srcRegion.Right - srcRegion.Left);
-				var srcData = source + (srcRegion.Top * PitchInformation.RowPitch) + (srcRegion.Left * dataSize);
+				byte* srcData = source + (srcRegion.Top * PitchInformation.RowPitch) + (srcRegion.Left * dataSize);
 
 				// Number of dest bytes/scanline.
 				int dstLineSize = dataSize * (dstRegion.Right - dstRegion.Left);
-				var dstData = dest + (dstRegion.Top * buffer.PitchInformation.RowPitch) + (dstRegion.Left * dataSize);
+				byte* dstData = dest + (dstRegion.Top * buffer.PitchInformation.RowPitch) + (dstRegion.Left * dataSize);
 
 				// Get the smallest line size.
 				int minLineSize = dstLineSize.Min(srcLineSize);

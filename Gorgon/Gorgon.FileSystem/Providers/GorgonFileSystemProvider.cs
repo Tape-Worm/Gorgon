@@ -154,7 +154,7 @@ namespace Gorgon.IO.Providers
 		/// <returns>A read only list of <see cref="IGorgonPhysicalFileInfo"/> entries.</returns>
 		private static IReadOnlyList<IGorgonPhysicalFileInfo> EnumerateFiles(string physicalLocation, IGorgonVirtualDirectory mountPoint)
 		{
-			var directoryInfo = new DirectoryInfo(physicalLocation);
+			DirectoryInfo directoryInfo = new DirectoryInfo(physicalLocation);
 
 			IEnumerable<FileInfo> files = directoryInfo.GetFiles("*", SearchOption.AllDirectories)
 			                                           .Where(item =>
@@ -181,7 +181,7 @@ namespace Gorgon.IO.Providers
 		/// <returns>A read only list of <see cref="string"/> values representing the mapped directory entries.</returns>
 		private static IReadOnlyList<string> EnumerateDirectories(string physicalLocation, IGorgonVirtualDirectory mountPoint)
 		{
-			var directoryInfo = new DirectoryInfo(physicalLocation);
+			DirectoryInfo directoryInfo = new DirectoryInfo(physicalLocation);
 
 			IEnumerable<DirectoryInfo> directories =
 				directoryInfo.GetDirectories("*", SearchOption.AllDirectories)

@@ -34,7 +34,7 @@ namespace Gorgon.IO
 	/// <summary>
 	/// A stream used to write data into the RAM disk.
 	/// </summary>
-	class RamDiskWriterStream
+	internal class RamDiskWriterStream
 		: Stream
 	{
 		#region Variables.
@@ -126,7 +126,7 @@ namespace Gorgon.IO
 					_virtualFile.MountPoint = _mountPoint;
 				}
 
-				var info = new RamDiskFileInfo(_virtualFile);
+				RamDiskFileInfo info = new RamDiskFileInfo(_virtualFile);
 				_provider.FileData.UpdateFile(_virtualFile.FullPath, ref info);
 			}
 
@@ -239,24 +239,23 @@ namespace Gorgon.IO
 
 			_blobStream = baseStream;
 
-			if ((fileMode == FileMode.Create) || ((fileMode == FileMode.OpenOrCreate) && (file.Size == 0)))
+			switch (fileMode)
 			{
-				_blobStream.SetLength(0);
-				file.PhysicalFile = new PhysicalFileInfo(file.PhysicalFile.FullPath, DateTime.Now, 0, file.Directory.FullPath);
+			    case FileMode.Create:
+			    case FileMode.OpenOrCreate when (file.Size == 0):
+			        _blobStream.SetLength(0);
+			        file.PhysicalFile = new PhysicalFileInfo(file.PhysicalFile.FullPath, DateTime.Now, 0, file.Directory.FullPath);
+			        break;
+			    case FileMode.Truncate:
+			        _blobStream.SetLength(0);
+			        file.PhysicalFile = new PhysicalFileInfo(file.PhysicalFile.FullPath, file.CreateDate, 0, file.Directory.FullPath, 0, DateTime.Now);
+			        break;
+			    case FileMode.Append:
+			        _blobStream.Position = _blobStream.Length;
+			        break;
 			}
 
-			if (fileMode == FileMode.Truncate)
-			{
-				_blobStream.SetLength(0);
-				file.PhysicalFile = new PhysicalFileInfo(file.PhysicalFile.FullPath, file.CreateDate, 0, file.Directory.FullPath, 0, DateTime.Now);
-			}
-
-			if (fileMode == FileMode.Append)
-			{
-				_blobStream.Position = _blobStream.Length;
-			}
-
-			_mountPoint = mountPoint;
+		    _mountPoint = mountPoint;
 			_virtualFile = file;
 			_fileMode = fileMode;
 		}

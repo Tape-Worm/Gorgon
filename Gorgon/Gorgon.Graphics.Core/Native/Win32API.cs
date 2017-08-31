@@ -35,7 +35,7 @@ namespace Gorgon.Native
 	/// Win 32 API function calls.
 	/// </summary>
 	[SuppressUnmanagedCodeSecurity]
-	static class Win32API
+	internal static class Win32API
 	{
 		#region Constants.
 		private const uint VER_MINORVERSION = 0x0000001;
@@ -76,7 +76,7 @@ namespace Gorgon.Native
 		/// <returns><b>true</b> if the version is the same or better, <b>false</b> if not.</returns>
 		private static bool IsWindowsVersionOrGreater(uint majorVersion, uint minorVersion, uint? buildNumber, ushort? servicePackMajorVersion)
 		{
-			var osInfoEx = new OSVERSIONINFOEX
+			OSVERSIONINFOEX osInfoEx = new OSVERSIONINFOEX
 			{
 				dwOSVersionInfoSize = (uint)Marshal.SizeOf<OSVERSIONINFOEX>(),
 				dwMajorVersion = majorVersion,
@@ -96,12 +96,14 @@ namespace Gorgon.Native
 		        typeMask |= VER_BUILDNUMBER;
 		    }
 
-		    if (servicePackMajorVersion != null)
+		    if (servicePackMajorVersion == null)
 		    {
-		        versionMask = VerSetConditionMask(versionMask, VER_SERVICEPACKMAJOR, VER_GREATER_EQUAL);
-		        typeMask |= VER_SERVICEPACKMAJOR;
+		        return VerifyVersionInfo(ref osInfoEx, typeMask, versionMask) != 0;
 		    }
-            
+
+		    versionMask = VerSetConditionMask(versionMask, VER_SERVICEPACKMAJOR, VER_GREATER_EQUAL);
+		    typeMask |= VER_SERVICEPACKMAJOR;
+
 		    return VerifyVersionInfo(ref osInfoEx, typeMask, versionMask) != 0;
 		}
 

@@ -37,7 +37,6 @@ using Gorgon.Graphics.Fonts.Properties;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
-using SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Fonts.Codecs
 {
@@ -180,7 +179,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
 		/// <returns>A new dictionary containing the key/value pairs.</returns>
 		private static Dictionary<string, string> GetLineKeyValuePairs(string[] lineItems)
 		{
-			var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+			Dictionary<string, string> result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
 			foreach (string line in lineItems)
 			{
@@ -250,7 +249,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
 			}
 
 			// Create with required settings.
-			var result = new BmFontInfo(face, Convert.ToSingle(size))
+			BmFontInfo result = new BmFontInfo(face, Convert.ToSingle(size))
 			             {
 				             PackingSpacing = spacing.Length > 0 ? Convert.ToInt32(spacing[0]) : 1,
 				             FontStyle = style,
@@ -343,7 +342,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
 		private static void ParseCharacters(BmFontInfo fontInfo, StreamReader reader)
 		{
 			string countLine = reader.ReadLine();
-			var characterList = new StringBuilder();
+			StringBuilder characterList = new StringBuilder();
 
 			if (string.IsNullOrWhiteSpace(countLine))
 			{
@@ -471,7 +470,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
 					throw new GorgonException(GorgonResult.CannotRead, Resources.GORGFX_ERR_FONT_FILE_FORMAT_INVALID);
 				}
 
-				var pair = new GorgonKerningPair(Convert.ToChar(Convert.ToInt32(keyValues[KernFirstTag])), Convert.ToChar(Convert.ToInt32(keyValues[KernSecondTag])));
+				GorgonKerningPair pair = new GorgonKerningPair(Convert.ToChar(Convert.ToInt32(keyValues[KernFirstTag])), Convert.ToChar(Convert.ToInt32(keyValues[KernSecondTag])));
 				fontInfo.KerningPairs[pair] = Convert.ToInt32(keyValues[KernAmountTag]);
 			}
 		}
@@ -509,14 +508,14 @@ namespace Gorgon.Graphics.Fonts.Codecs
 		/// <returns>A list of textures.</returns>
 		private IReadOnlyList<GorgonTexture> ReadTextures(string filePath, BmFontInfo fontInfo)
 		{
-			var textures = new GorgonTexture[fontInfo.FontTextures.Length];
-			var directory = new DirectoryInfo(Path.GetDirectoryName(filePath).FormatDirectory(Path.DirectorySeparatorChar));
+			GorgonTexture[] textures = new GorgonTexture[fontInfo.FontTextures.Length];
+			DirectoryInfo directory = new DirectoryInfo(Path.GetDirectoryName(filePath).FormatDirectory(Path.DirectorySeparatorChar));
 
 			Debug.Assert(directory.Exists, "Font directory should exist, but does not.");
 
 			for (int i = 0; i < fontInfo.FontTextures.Length; ++i)
 			{
-				var fileInfo = new FileInfo(directory.FullName.FormatDirectory(Path.DirectorySeparatorChar) + fontInfo.FontTextures[i].FormatFileName());
+				FileInfo fileInfo = new FileInfo(directory.FullName.FormatDirectory(Path.DirectorySeparatorChar) + fontInfo.FontTextures[i].FormatFileName());
 
 				if (!fileInfo.Exists)
 				{
@@ -542,7 +541,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
 		/// <returns>A new list of glyphs.</returns>
 		private IReadOnlyList<GorgonGlyph> GetGlyphs(IReadOnlyList<GorgonTexture> textures, BmFontInfo fontInfo)
 		{
-			var glyphs = new List<GorgonGlyph>();
+			List<GorgonGlyph> glyphs = new List<GorgonGlyph>();
 
 			foreach (char character in fontInfo.Characters)
 			{
@@ -611,14 +610,12 @@ namespace Gorgon.Graphics.Fonts.Codecs
 		/// <returns>A new <seealso cref="GorgonFont"/>, or, an existing font from the <seealso cref="GorgonFontFactory"/> cache.</returns>
 		protected override GorgonFont OnLoadFromStream(string name, Stream stream)
 		{
-			var fileStream = stream as FileStream;
-
-			if (fileStream == null)
+		    if (!(stream is FileStream fileStream))
 			{
 				throw new GorgonException(GorgonResult.CannotRead, Resources.GORGFX_ERR_FONT_BMFONT_NEEDS_FILE_STREAM);
 			}
 
-			var fontInfo = (BmFontInfo)OnGetMetaData(fileStream);
+			BmFontInfo fontInfo = (BmFontInfo)OnGetMetaData(fileStream);
 
 			// Read in textures.
 			IReadOnlyList<GorgonTexture> textures = ReadTextures(fileStream.Name, fontInfo);

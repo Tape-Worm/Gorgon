@@ -34,7 +34,7 @@ namespace Gorgon.Input.XInput
 	/// <summary>
 	/// XInput controller information.
 	/// </summary>
-	class XInputDeviceInfo
+	internal class XInputDeviceInfo
 		: IGorgonGamingDeviceInfo
 	{
 		#region Properties.
@@ -140,7 +140,7 @@ namespace Gorgon.Input.XInput
 			controller.GetCapabilities(XI.DeviceQueryType.Any, out XI.Capabilities capabilities);
 
 			// Get vibration caps.
-			var vibrationRanges = new List<GorgonRange>();
+			List<GorgonRange> vibrationRanges = new List<GorgonRange>();
 
 			if (capabilities.Vibration.LeftMotorSpeed != 0)
 			{
@@ -236,7 +236,7 @@ namespace Gorgon.Input.XInput
 			}
 
 			// Find out the ranges for each axis.
-			var axes = new Dictionary<GamingDeviceAxis, GorgonRange>(new GorgonGamingDeviceAxisEqualityComparer());
+			Dictionary<GamingDeviceAxis, GorgonRange> axes = new Dictionary<GamingDeviceAxis, GorgonRange>(new GorgonGamingDeviceAxisEqualityComparer());
 
 			if (capabilities.Gamepad.LeftThumbX != 0)
 			{

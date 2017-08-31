@@ -32,7 +32,7 @@ namespace Gorgon.IO
 	/// <summary>
 	/// A collection of chunks within a chunked file.
 	/// </summary>
-	class GorgonChunkCollection
+	internal class GorgonChunkCollection
 		: IList<GorgonChunk>, IGorgonReadOnlyChunkCollection
 	{
 		#region Variables.

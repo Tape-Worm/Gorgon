@@ -364,11 +364,12 @@ namespace Gorgon.Configuration
 		        return string.Empty;
 		    }
 
-		    var type = value.GetType();
-			var attrib = type.GetCustomAttribute<TypeConverterAttribute>(true);
-			var convertibleValue = value as IConvertible;
-			var formattableValue = value as IFormattable;
+		    Type type = value.GetType();
+			TypeConverterAttribute attrib = type.GetCustomAttribute<TypeConverterAttribute>(true);
+			IConvertible convertibleValue = value as IConvertible;
+			IFormattable formattableValue = value as IFormattable;
 
+		    // ReSharper disable once MergeCastWithTypeCheck
 			if (value is DateTime)
 			{
 				return ((DateTime)value).ToString(DateFormat, CultureInfo.InvariantCulture);
@@ -391,14 +392,17 @@ namespace Gorgon.Configuration
 				return value.ToString();
 			}
 
+		    string converterTypeName = converterType.FullName;
+            
+		    Debug.Assert(converterTypeName != null, nameof(converterTypeName) + " != null");
 
-			if (!_typeConverterCtors.TryGetValue(converterType.FullName, out ObjectActivator<TypeConverter> ctor))
+		    if (!_typeConverterCtors.TryGetValue(converterTypeName, out ObjectActivator<TypeConverter> ctor))
 			{
 				ctor = converterType.CreateActivator<TypeConverter>();
-				_typeConverterCtors.Add(converterType.FullName, ctor);
+				_typeConverterCtors.Add(converterTypeName, ctor);
 			}
 
-			var converter = ctor();
+			TypeConverter converter = ctor();
 
 			if ((converter != null) && (converter.CanConvertTo(typeof(string))))
 			{
@@ -451,7 +455,7 @@ namespace Gorgon.Configuration
 			    return Enum.Parse(type, enumValues[valueIndex]);
 		    }
 
-			var attrib = type.GetCustomAttribute<TypeConverterAttribute>(true);
+			TypeConverterAttribute attrib = type.GetCustomAttribute<TypeConverterAttribute>(true);
 
 			if (attrib == null)
 			{
@@ -465,14 +469,17 @@ namespace Gorgon.Configuration
 				return Convert.ChangeType(value, type, CultureInfo.InvariantCulture);
 			}
 
+		    string converterTypeName = converterType.FullName;
 
-			if (!_typeConverterCtors.TryGetValue(converterType.FullName, out ObjectActivator<TypeConverter> ctor))
+		    Debug.Assert(converterTypeName != null, nameof(converterTypeName) + " != null");
+
+		    if (!_typeConverterCtors.TryGetValue(converterTypeName, out ObjectActivator<TypeConverter> ctor))
 			{
 				ctor = converterType.CreateActivator<TypeConverter>();
-				_typeConverterCtors.Add(converterType.FullName, ctor);
+				_typeConverterCtors.Add(converterTypeName, ctor);
 			}
 
-			var converter = ctor();
+			TypeConverter converter = ctor();
 
 			if ((converter != null) && (converter.CanConvertFrom(typeof(string))))
 			{
@@ -548,12 +555,12 @@ namespace Gorgon.Configuration
 			_rootNode.RemoveAll();
 
 		    // Get the unique sections.
-			var sections = (from property in _properties
+			IEnumerable<string> sections = (from property in _properties
 							where !string.IsNullOrEmpty(property.Value.PropertySection)
 							select property.Value.PropertySection).Distinct();
 
 			// Create section elements.
-		    foreach (var section in sections)
+		    foreach (string section in sections)
 		    {
 				Log.Print("Creating setting section '{0}'.", LoggingLevel.Verbose, section);
 		        AddSection(string.Empty, section);
@@ -637,15 +644,18 @@ namespace Gorgon.Configuration
 		{
 			dynamic arrayValue = item.Getter(this);
 
-			if ((arrayValue == null) || (itemIndex < 0) || (itemIndex >= arrayValue.Length))
+		    // ReSharper disable PossibleNullReferenceException
+            // Resharper must have a bug here, because we're checking for null in the statement below and will exit accordingly.
+            if ((arrayValue == null) || (itemIndex < 0) || (itemIndex >= arrayValue.Length))
 			{
 				return;
 			}
 
 			Type elementType = item.PropertyInfo.PropertyType.GetElementType();
 			dynamic typedValue = UnconvertValue(value, elementType);
-
+		    
 			arrayValue[itemIndex] = typedValue;
+		    // ReSharper restore PossibleNullReferenceException
 		}
 
 		/// <summary>
@@ -739,9 +749,7 @@ namespace Gorgon.Configuration
 				{
 					Log.Print("Resetting array [{0}] to default values.", LoggingLevel.Verbose, item.PropertyInfo.Name);
 					// Reset the array.
-					Array arrayValue = item.Getter(this) as Array;
-
-					if (arrayValue != null)
+				    if (item.Getter(this) is Array arrayValue)
 					{
 						Array.Clear(arrayValue, 0, arrayValue.Length);
 					}
@@ -833,7 +841,7 @@ namespace Gorgon.Configuration
 
 			return _xmlSettings.Descendants(SectionNodeName)
 			                  .FirstOrDefault(
-				                  item => string.Equals(item.Attribute(SectionNameAttr).Value, sectionName, StringComparison.OrdinalIgnoreCase));
+				                  item => string.Equals(item.Attribute(SectionNameAttr)?.Value, sectionName, StringComparison.OrdinalIgnoreCase));
 		}
 
 		/// <summary>

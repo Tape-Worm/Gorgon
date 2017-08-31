@@ -40,7 +40,7 @@ namespace Gorgon.Native
 	/// Win 32 API function calls.
 	/// </summary>
 	[SuppressUnmanagedCodeSecurity]
-	static unsafe class Win32API
+	internal static unsafe class Win32API
 	{
 		#region Variables.
 		// Current device context.
@@ -180,7 +180,7 @@ namespace Gorgon.Native
 			try
 			{
 				// Get the number of pairs.
-				var size = (int)GetKerningPairsW(_hdc, 0, null);
+				int size = (int)GetKerningPairsW(_hdc, 0, null);
 
 				// If we have no pairs, then leave here.
 				if (size == 0)
@@ -220,7 +220,7 @@ namespace Gorgon.Native
 			uint firstCharIndex = Convert.ToUInt32(firstCharacter);
 			uint lastCharIndex = Convert.ToUInt32(lastCharacter);
 			int size = (int)(lastCharIndex - firstCharIndex) + 1;
-			var result = new Dictionary<char, ABC>();
+			Dictionary<char, ABC> result = new Dictionary<char, ABC>();
 
 			if (_hdc == IntPtr.Zero)
 			{

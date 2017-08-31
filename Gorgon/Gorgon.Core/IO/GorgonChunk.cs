@@ -106,9 +106,9 @@ namespace Gorgon.IO
 		/// <returns><b>true</b> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <b>false</b>.</returns>
 		public override bool Equals(object obj)
 		{
-			if (obj is GorgonChunk)
+			if (obj is GorgonChunk chunk)
 			{
-				return ((GorgonChunk)obj).Equals(this);
+				return chunk.Equals(this);
 			}
 			return base.Equals(obj);
 		}

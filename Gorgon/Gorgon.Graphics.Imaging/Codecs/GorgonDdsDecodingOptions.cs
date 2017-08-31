@@ -65,7 +65,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// Always use the 'DX10' header extension for DDS writer (i.e. don't try to write DX9 compatible DDS files)
 		/// </summary>
 		ForceDX10 = 0x10000
-	};
+	}
 
 	/// <summary>
 	/// Options used when decoding an image from a stream as a DDS file.

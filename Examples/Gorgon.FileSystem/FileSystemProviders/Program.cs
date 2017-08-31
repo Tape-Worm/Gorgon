@@ -60,7 +60,7 @@ namespace Gorgon.Examples
 	/// 
 	/// In this example, we'll show how to load some of these providers.
 	/// </remarks>
-	static class Program
+	internal static class Program
     {
         #region Variables.
 		// The providers that were loaded.
@@ -107,10 +107,10 @@ namespace Gorgon.Examples
         /// <returns>The number of file system provider plug-ins.</returns>
         private static int LoadFileSystemProviders()
         {
-            var files = Directory.GetFiles(PlugInPath, "*.dll", SearchOption.TopDirectoryOnly);
+            string[] files = Directory.GetFiles(PlugInPath, "*.dll", SearchOption.TopDirectoryOnly);
             
             // Load each assembly.
-	        foreach (var file in files)
+	        foreach (string file in files)
 	        {
 		        // Determine if this file is a plugin assembly.
 		        // We use this to ensure that the file is a valid .NET assembly and that it has plugins to load.
@@ -127,7 +127,7 @@ namespace Gorgon.Examples
 	        }
 			
 			// Get the file system provider factory so we can retrieve our newly loaded providers.
-			var providerFactory = new GorgonFileSystemProviderFactory(_pluginService, GorgonApplication.Log);
+			GorgonFileSystemProviderFactory providerFactory = new GorgonFileSystemProviderFactory(_pluginService, GorgonApplication.Log);
 
 			// Get all the providers.
 			// We could limit this to a single provider, or to a single plugin assembly if we choose.  But for 
@@ -140,7 +140,7 @@ namespace Gorgon.Examples
 	    /// <summary>
 	    /// The main entry point for the application.
 	    /// </summary>
-	    static void Main()
+	    private static void Main()
 		{
 			// Create a plugin assembly cache to hold our plugin assemblies.
 			_pluginAssemblies = new GorgonPluginAssemblyCache(GorgonApplication.Log);
@@ -182,7 +182,7 @@ namespace Gorgon.Examples
 				    // concatenate each preferred extension description into a single string.  
 				    //
 				    // Note that a provider may have multiple preferred extensions.
-					var extensionList = (from preferred in _providers[i].PreferredExtensions
+					string[] extensionList = (from preferred in _providers[i].PreferredExtensions
 				                         select $"*.{preferred.Extension}").ToArray();
 
 				    if (extensionList.Length > 0)

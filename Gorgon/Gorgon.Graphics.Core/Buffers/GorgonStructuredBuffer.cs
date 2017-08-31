@@ -139,7 +139,7 @@ namespace Gorgon.Graphics.Core
 
             Log.Print($"{Name} Structured Buffer: Creating D3D11 buffer. Size: {SizeInBytes} bytes", LoggingLevel.Simple);
 
-            var bindFlags = D3D11.BindFlags.None;
+            D3D11.BindFlags bindFlags = D3D11.BindFlags.None;
 
             if ((_info.Binding & BufferBinding.Shader) == BufferBinding.Shader)
             {
@@ -158,7 +158,7 @@ namespace Gorgon.Graphics.Core
 
             ValidateBufferBindings(_info.Usage, bindFlags);
             
-            var desc = new D3D11.BufferDescription
+            D3D11.BufferDescription desc = new D3D11.BufferDescription
                        {
                            SizeInBytes = SizeInBytes,
                            Usage = _info.Usage,
@@ -230,7 +230,7 @@ namespace Gorgon.Graphics.Core
                 elementCount = totalElementCount - startElement;
             }
 
-            var key = new BufferShaderViewKey(startElement, elementCount, 0);
+            BufferShaderViewKey key = new BufferShaderViewKey(startElement, elementCount, 0);
 
             if (GetView(key) is GorgonStructuredBufferView view)
             {
@@ -309,7 +309,7 @@ namespace Gorgon.Graphics.Core
 
             elementCount = elementCount.Min(totalElementCount - startElement).Max(1);
 
-            var key = new BufferShaderViewKey(startElement, elementCount, (int)uavType);
+            BufferShaderViewKey key = new BufferShaderViewKey(startElement, elementCount, (int)uavType);
 
             if (GetUav(key) is GorgonStructuredBufferUav result)
             {

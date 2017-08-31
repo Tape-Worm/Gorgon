@@ -26,6 +26,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Resources;
 using System.Threading;
 
@@ -47,7 +48,8 @@ namespace Gorgon.Design
 		/// <returns>The string value for the resource object.</returns>
 		private static string GetString(Type resourcesType, string resourceName)
 		{
-			var manager = new ResourceManager(resourcesType.FullName, resourcesType.Assembly);
+		    Debug.Assert(resourcesType.FullName != null, nameof(resourcesType) + ".FullName != null");
+            var manager = new ResourceManager(resourcesType.FullName, resourcesType.Assembly);
 			return manager.GetString(resourceName, Thread.CurrentThread.CurrentUICulture);
 		}
 		#endregion

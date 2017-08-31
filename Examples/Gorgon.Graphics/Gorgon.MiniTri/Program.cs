@@ -59,7 +59,7 @@ namespace Gorgon.Graphics.Example
 	/// has all of the information it needs (hence why a draw call has so many fields), and will set that state per call (of course, if a state has 
 	/// not changed, it will not set it because there's no need).
 	/// </summary>
-	static class Program
+	internal static class Program
 	{
 		#region Variables.
 		// Main application form.
@@ -127,11 +127,10 @@ namespace Gorgon.Graphics.Example
 		{
 			// Define the points that make up our triangle.
 			// We'll push it back half a unit along the Z-Axis so that we can see it.
-			var vertices = new[]
-						   {
+			MiniTriVertex[] vertices = {
 				               new MiniTriVertex(new DX.Vector3(0, 0.5f, 1.0f), new GorgonColor(1, 0, 0)),
 				               new MiniTriVertex(new DX.Vector3(0.5f, -0.5f, 1.0f), new GorgonColor(0, 1, 0)),
-				               new MiniTriVertex(new DX.Vector3(-0.5f, -0.5f, 1.0f), new GorgonColor(0, 0, 1)),
+				               new MiniTriVertex(new DX.Vector3(-0.5f, -0.5f, 1.0f), new GorgonColor(0, 0, 1))
 			               };
 
 			// Create the vertex buffer.
@@ -291,7 +290,7 @@ namespace Gorgon.Graphics.Example
 		/// The main entry point for the application.
 		/// </summary>
 		[STAThread]
-		static void Main()
+		private static void Main()
 		{
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);

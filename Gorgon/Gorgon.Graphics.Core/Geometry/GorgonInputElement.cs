@@ -152,9 +152,9 @@ namespace Gorgon.Graphics.Core
 		/// </returns>
 		public override bool Equals(object obj)
 		{
-			if (obj is GorgonInputElement)
+			if (obj is GorgonInputElement element)
 			{
-				return Equals((GorgonInputElement)obj);
+				return element.Equals(this);
 			}
 
 			return base.Equals(obj);
@@ -263,7 +263,7 @@ namespace Gorgon.Graphics.Core
 		        throw new ArgumentEmptyException(nameof(context));
 		    }
 
-			var formatInfo = new GorgonFormatInfo(format);
+			GorgonFormatInfo formatInfo = new GorgonFormatInfo(format);
 
             if (formatInfo.BitDepth == 0)
             {

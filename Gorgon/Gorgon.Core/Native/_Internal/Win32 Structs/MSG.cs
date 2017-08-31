@@ -41,7 +41,7 @@ namespace Gorgon.Native
 	/// </para>
 	/// </remarks>
 	[StructLayout(LayoutKind.Sequential)]
-	struct MSG
+	internal struct MSG
 	{
 		public IntPtr hwnd;
 		public uint Message;

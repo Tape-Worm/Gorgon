@@ -240,9 +240,9 @@ namespace Gorgon.Graphics
         /// </returns>
 	    public override bool Equals(object obj)
 	    {
-	        if (obj is GorgonBox)
+	        if (obj is GorgonBox box)
 	        {
-	            return ((GorgonBox)obj).Equals(ref this);
+	            return box.Equals(ref this);
 	        }
 
 	        return base.Equals(obj);

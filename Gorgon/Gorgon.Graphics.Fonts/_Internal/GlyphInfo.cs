@@ -32,7 +32,7 @@ namespace Gorgon.Graphics.Fonts
 	/// <summary>
 	/// Information about a glyph.
 	/// </summary>
-	class GlyphInfo
+	internal class GlyphInfo
 	{
 		#region Properties.
 		/// <summary>

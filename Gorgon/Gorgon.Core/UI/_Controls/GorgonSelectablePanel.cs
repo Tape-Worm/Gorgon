@@ -50,7 +50,7 @@ namespace Gorgon.UI
 			LeftButtonDown = 0x0201,
 			RightButtonDown = 0x0204,
 			MiddleButtonDown = 0x0207,
-			MouseWheel = 0x020A,
+			MouseWheel = 0x020A
 		}
 		#endregion
 		#region Variables.

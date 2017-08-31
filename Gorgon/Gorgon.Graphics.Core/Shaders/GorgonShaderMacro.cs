@@ -88,9 +88,9 @@ namespace Gorgon.Graphics.Core
 		/// </returns>
 		public override bool Equals(object obj)
 		{
-			if (obj is GorgonShaderMacro)
+			if (obj is GorgonShaderMacro macro)
 			{
-				return ((GorgonShaderMacro)obj).Equals(this);
+				return macro.Equals(this);
 			}
 			return base.Equals(obj);
 		}

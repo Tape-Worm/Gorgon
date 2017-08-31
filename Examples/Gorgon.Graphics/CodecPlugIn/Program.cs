@@ -44,7 +44,7 @@ namespace CodecPlugIn
 	/// This application will be the UI for the image codec plug-in and will do nothing more than load a DDS image, save it in our custom format 
 	/// and then load it as a texture for display in the window.
 	/// </summary>
-	static class Program
+	internal static class Program
     {
 		/// <summary>
 		/// Property to return the path to the resources for the example.
@@ -81,7 +81,7 @@ namespace CodecPlugIn
 		/// Defines the entry point of the application.
 		/// </summary>
 		[STAThread]
-        static void Main()
+		private static void Main()
         {
             try
             {

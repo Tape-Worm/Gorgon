@@ -38,14 +38,14 @@ namespace Gorgon.Graphics.Core
     /// <summary>
     /// A cache for locks on a resource or sub-resource.
     /// </summary>
-    class TextureLockCache
+    internal class TextureLockCache
         : IDisposable
     {
         #region Value Types.
         /// <summary>
         /// A key used to identify a lock.
         /// </summary>
-        struct LockCacheKey
+        private struct LockCacheKey
             : IEquatable<LockCacheKey>
         {
 			#region Variables.
@@ -87,9 +87,9 @@ namespace Gorgon.Graphics.Core
             /// </returns>
             public override bool Equals(object obj)
             {
-                if (obj is LockCacheKey)
+                if (obj is LockCacheKey key)
                 {
-                    return ((LockCacheKey)obj).Equals(this);
+                    return key.Equals(this);
                 }
 
                 return base.Equals(obj);
@@ -145,9 +145,9 @@ namespace Gorgon.Graphics.Core
         /// <param name="lockData">Lock data to remove.</param>
         public void Unlock(GorgonTextureLockData lockData)
         {
-            var key = new LockCacheKey(lockData.MipLevel, lockData.ArrayIndex);
+            LockCacheKey key = new LockCacheKey(lockData.MipLevel, lockData.ArrayIndex);
 
-			if (!_locks.TryRemove(key, out GorgonTextureLockData result))
+			if (!_locks.TryRemove(key, out GorgonTextureLockData _))
 			{
 				return;
 			}
@@ -166,7 +166,7 @@ namespace Gorgon.Graphics.Core
 	    /// <returns>A new <see cref="GorgonTextureLockData"/> containing the data from the lock.</returns>
 	    public GorgonTextureLockData Lock(D3D11.MapMode lockFlags, int mipLevel, int arrayIndex)
 	    {
-		    var key = new LockCacheKey(mipLevel, arrayIndex);
+		    LockCacheKey key = new LockCacheKey(mipLevel, arrayIndex);
 
 			if (_locks.TryGetValue(key, out GorgonTextureLockData result))
 			{
@@ -178,13 +178,12 @@ namespace Gorgon.Graphics.Core
 			    case GraphicsResourceType.Texture1D:
 			    case GraphicsResourceType.Texture2D:
 			    case GraphicsResourceType.Texture3D:
-				    DX.DataStream lockStream;
 
-				    DX.DataBox box = Texture.Graphics.D3DDeviceContext.MapSubresource(Texture.D3DResource,
+			        DX.DataBox box = Texture.Graphics.D3DDeviceContext.MapSubresource(Texture.D3DResource,
 				                                                                      D3D11.Resource.CalculateSubResourceIndex(mipLevel, arrayIndex, Texture.Info.MipLevels),
 				                                                                      lockFlags,
 				                                                                      D3D11.MapFlags.None,
-				                                                                      out lockStream);
+				                                                                      out _);
 
 				    result = new GorgonTextureLockData(this, box, mipLevel, arrayIndex);
 

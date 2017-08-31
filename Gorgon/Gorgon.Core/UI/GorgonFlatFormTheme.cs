@@ -531,8 +531,7 @@ namespace Gorgon.UI
 				}
 			}
 
-			var item = e.Item as ToolStripMenuItem;
-			if ((item != null) && (item.IsOnDropDown))
+		    if ((e.Item is ToolStripMenuItem item) && (item.IsOnDropDown))
 			{
 				e.TextRectangle = new Rectangle(e.TextRectangle.X - 12,
 												e.TextRectangle.Y,
@@ -566,7 +565,7 @@ namespace Gorgon.UI
 				return;
 			}
 
-			var item = (ToolStripMenuItem)e.Item;
+			ToolStripMenuItem item = (ToolStripMenuItem)e.Item;
 
 			if (item.Selected)
 			{
@@ -586,7 +585,7 @@ namespace Gorgon.UI
 				return;
 			}
 
-			using (var pen = new Pen(DropDownBorderColor, 1.0f))
+			using (Pen pen = new Pen(DropDownBorderColor, 1.0f))
 			{
 				e.Graphics.DrawLine(pen, new Point(0, 0), new Point(e.Item.Width - 1, 0));
 				e.Graphics.DrawLine(pen, new Point(0, 0), new Point(0, e.Item.Height));
@@ -600,7 +599,7 @@ namespace Gorgon.UI
 		/// <param name="e">A <see cref="T:System.Windows.Forms.ToolStripRenderEventArgs"/> that contains the event data.</param>
 		protected override void OnRenderButtonBackground(ToolStripItemRenderEventArgs e)
 		{
-			var button = e.Item as ToolStripButton;
+			ToolStripButton button = e.Item as ToolStripButton;
 
 			if (e.Item.Selected)
 			{
@@ -634,7 +633,7 @@ namespace Gorgon.UI
 		/// <param name="e">A <see cref="T:System.Windows.Forms.ToolStripItemImageRenderEventArgs"/> that contains the event data.</param>
 		protected override void OnRenderItemCheck(ToolStripItemImageRenderEventArgs e)
 		{
-			var newRect = new Rectangle(e.Item.Width - e.Image.Width - 5, e.ImageRectangle.Top, e.ImageRectangle.Width, e.ImageRectangle.Height);
+			Rectangle newRect = new Rectangle(e.Item.Width - e.Image.Width - 5, e.ImageRectangle.Top, e.ImageRectangle.Width, e.ImageRectangle.Height);
 			if ((e.Item.Enabled) && (!e.Item.Selected))
 			{
 				e.Graphics.DrawImage(_checkEnabledImage ?? Resources.Check_Enabled1, newRect);
@@ -660,7 +659,7 @@ namespace Gorgon.UI
 					return;
 				}
 
-				using (var borderPen = new Pen(DropDownBorderColor))
+				using (Pen borderPen = new Pen(DropDownBorderColor))
 				{
 					e.Graphics.DrawRectangle(borderPen,
 											 new Rectangle(e.AffectedBounds.Left,
@@ -679,7 +678,7 @@ namespace Gorgon.UI
 		/// <param name="e">A <see cref="T:System.Windows.Forms.ToolStripSeparatorRenderEventArgs"/> that contains the event data.</param>
 		protected override void OnRenderSeparator(ToolStripSeparatorRenderEventArgs e)
 		{
-			using (var pen = new Pen(DropDownBorderColor, 1.0f))
+			using (Pen pen = new Pen(DropDownBorderColor, 1.0f))
 			{
 				if (!e.Vertical)
 				{
@@ -702,7 +701,7 @@ namespace Gorgon.UI
 		/// <param name="e">A <see cref="T:System.Windows.Forms.ToolStripItemRenderEventArgs" /> that contains the event data.</param>
 		protected override void OnRenderSplitButtonBackground(ToolStripItemRenderEventArgs e)
 		{
-			var item = e.Item as ToolStripSplitButton;
+			ToolStripSplitButton item = e.Item as ToolStripSplitButton;
 
 			Debug.Assert(item != null, "Drop down button is <b>null</b>!");
 
@@ -723,9 +722,9 @@ namespace Gorgon.UI
 				}
 			}
 
-			using (var pen = new Pen(DropDownBorderColor, 1.0f))
+			using (Pen pen = new Pen(DropDownBorderColor, 1.0f))
 			{
-				var direction = ArrowDirection.Down;
+				ArrowDirection direction = ArrowDirection.Down;
 
 				switch (item.DropDownDirection)
 				{
@@ -764,7 +763,7 @@ namespace Gorgon.UI
 		/// <param name="e">A <see cref="T:System.Windows.Forms.ToolStripItemRenderEventArgs"/> that contains the event data.</param>
 		protected override void OnRenderDropDownButtonBackground(ToolStripItemRenderEventArgs e)
 		{
-			var item = e.Item as ToolStripDropDownButton;
+			ToolStripDropDownButton item = e.Item as ToolStripDropDownButton;
 
 			Debug.Assert(item != null, "Drop down button is <b>null</b>!");
 
@@ -781,7 +780,7 @@ namespace Gorgon.UI
 				return;
 			}
 
-			using (var pen = new Pen(DropDownBorderColor, 1.0f))
+			using (Pen pen = new Pen(DropDownBorderColor, 1.0f))
 			{
 				e.Graphics.DrawLine(pen, new Point(0, 0), new Point(e.Item.Width - 1, 0));
 				e.Graphics.DrawLine(pen, new Point(0, 0), new Point(0, e.Item.Height));
@@ -814,7 +813,7 @@ namespace Gorgon.UI
 				throw new EndOfStreamException(Resources.GOR_ERR_STREAM_EOS);
 			}
 
-			var serializer = new XmlSerializer(typeof(GorgonFlatFormTheme));
+			XmlSerializer serializer = new XmlSerializer(typeof(GorgonFlatFormTheme));
 			return (GorgonFlatFormTheme)serializer.Deserialize(stream);
 		}
 
@@ -836,7 +835,7 @@ namespace Gorgon.UI
 				throw new ArgumentException(Resources.GOR_ERR_STREAM_IS_READONLY, nameof(stream));
 			}
 
-			var serializer = new XmlSerializer(typeof(GorgonFlatFormTheme));
+			XmlSerializer serializer = new XmlSerializer(typeof(GorgonFlatFormTheme));
 			serializer.Serialize(stream, this);
 		}
 		#endregion
@@ -909,7 +908,7 @@ namespace Gorgon.UI
 				return;
 			}
 
-			var converter = new ColorConverter();
+			ColorConverter converter = new ColorConverter();
 
 			while (reader.MoveToContent() == XmlNodeType.Element)
 			{
@@ -932,7 +931,7 @@ namespace Gorgon.UI
 		/// <param name="writer">The <see cref="T:System.Xml.XmlWriter" /> stream to which the object is serialized.</param>
 		void IXmlSerializable.WriteXml(XmlWriter writer)
 		{
-			var converter = new ColorConverter();
+			ColorConverter converter = new ColorConverter();
 			IEnumerable<PropertyInfo> colorProperties = from property in GetType().GetProperties()
 			                                            where property.PropertyType == typeof(Color)
 			                                                  && property.GetCustomAttribute<BrowsableAttribute>() != null
@@ -940,7 +939,7 @@ namespace Gorgon.UI
 
 			foreach (PropertyInfo property in colorProperties)
 			{
-				var currentColor = (Color)property.GetValue(this);
+				Color currentColor = (Color)property.GetValue(this);
 
 				writer.WriteStartElement(property.Name);
 				// ReSharper disable PossibleNullReferenceException

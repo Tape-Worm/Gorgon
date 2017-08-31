@@ -51,17 +51,15 @@ namespace Gorgon.Graphics.Core
 		public const int MaximumShaderResourceViewCount = 32;
 		#endregion
 
-		#region Variables.
-		// The native resource bindings.
-		private readonly D3D11.ShaderResourceView[] _native = new D3D11.ShaderResourceView[MaximumShaderResourceViewCount];
-		#endregion
-
 		#region Properties.
 		/// <summary>
 		/// Property to return the native shader resource views.
 		/// </summary>
-		internal D3D11.ShaderResourceView[] Native => _native;
-		#endregion
+		internal D3D11.ShaderResourceView[] Native
+		{
+		    get;
+		} = new D3D11.ShaderResourceView[MaximumShaderResourceViewCount];
+	    #endregion
 
 		#region Methods.
 		/// <summary>
@@ -74,7 +72,7 @@ namespace Gorgon.Graphics.Core
 		/// </remarks>
 		protected override void OnClear()
 		{
-			Array.Clear(_native, 0, MaximumShaderResourceViewCount);
+			Array.Clear(Native, 0, MaximumShaderResourceViewCount);
 		}
 
 	    /// <summary>
@@ -84,7 +82,7 @@ namespace Gorgon.Graphics.Core
 	    /// <param name="value">The value containing the native item.</param>
 	    protected override void OnStoreNativeItem(int nativeItemIndex, GorgonShaderResourceView value)
 	    {
-	        _native[nativeItemIndex] = value?.NativeView;
+	        Native[nativeItemIndex] = value?.NativeView;
 	    }
 		#endregion
 

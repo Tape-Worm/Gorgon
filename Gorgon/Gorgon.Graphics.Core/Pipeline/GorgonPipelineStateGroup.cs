@@ -50,7 +50,7 @@ namespace Gorgon.Graphics.Core
     /// pipeline state group. This is completely application specific and is meant to allow applications to quickly retrieve pipeline states for their own use (although group sharing is not disallowed). 
     /// </para>
     /// <para>
-    /// Typically, an application will register a cache group by using a unique name when calling the <see cref="GorgonGraphics.GetPipelineStateGroup"/> on the <see cref="GorgonGraphics"/> interface. That 
+    /// Typically, an application will register a cache group by using a unique name when calling the <see cref="GorgonGraphics.GetPipelineStateGroup{T}"/> on the <see cref="GorgonGraphics"/> interface. That 
     /// method will return a container of this type and then an application can store its own pipeline cache by using a key (defined by the <typeparamref name="TKey"/> type parameter) to quickly retrieve 
     /// an existing pipeline state for use when rendering.
     /// </para>

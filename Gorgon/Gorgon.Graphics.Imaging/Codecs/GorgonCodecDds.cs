@@ -382,7 +382,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 				throw new IOException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, dx10Header.Format));
 			}
 
-			var settings = new GorgonImageInfo(dx10Header.ResourceDimension, format);
+			GorgonImageInfo settings = new GorgonImageInfo(dx10Header.ResourceDimension, format);
 
 			switch (settings.ImageType)
             {
@@ -433,7 +433,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
         {
 	        DdsLegacyConversion conversion = default(DdsLegacyConversion);
 
-			foreach (var ddsFormat in _legacyMapping)
+			foreach (DdsLegacyConversion ddsFormat in _legacyMapping)
 			{
 				if ((format.Flags & ddsFormat.PixelFormat.Flags) == 0)
 				{
@@ -530,7 +530,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
             }            
 
             // Read the header from the file.
-            var header = reader.ReadValue<DdsHeader>();
+            DdsHeader header = reader.ReadValue<DdsHeader>();
 
             if (header.PixelFormat.SizeInBytes != DirectAccess.SizeOf<DdsPixelFormat>())
             {
@@ -600,7 +600,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
                 }
             }
 
-			var formatInfo = new GorgonFormatInfo(settings.Format);
+			GorgonFormatInfo formatInfo = new GorgonFormatInfo(settings.Format);
 
 			if (formatInfo.IsCompressed)
 			{
@@ -699,8 +699,8 @@ namespace Gorgon.Graphics.Imaging.Codecs
 			{
 				case DdsConversionFlags.Palette:
 					{
-						var srcPtr = (byte *)src;
-						var destPtr = (uint *)dest;
+						byte* srcPtr = (byte *)src;
+						uint* destPtr = (uint *)dest;
 
 						// Copy indexed data.
 						for (int srcCount = 0, destCount = 0; ((srcCount < srcPitch) && (destCount < destPitch)); ++srcCount, destCount += 4)
@@ -711,8 +711,8 @@ namespace Gorgon.Graphics.Imaging.Codecs
 					break;
 				case DdsConversionFlags.A4L4:
 					{
-						var srcPtr = (byte*)src;
-						var destPtr = (uint*)dest;
+						byte* srcPtr = (byte*)src;
+						uint* destPtr = (uint*)dest;
 
 						// Copy alpha luminance.
 						for (int srcCount = 0, destCount = 0; ((srcCount < srcPitch) && (destCount < destPitch)); ++srcCount, destCount += 4)
@@ -720,7 +720,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 							byte pixel = *(srcPtr++);
 
 							uint alpha = ((bitFlags & ImageBitFlags.OpaqueAlpha) == ImageBitFlags.OpaqueAlpha) ? 0xFF000000 : (uint)(((pixel & 0xF0)  << 24) | ((pixel & 0xF0 << 20)));
-							var lum = (uint)((pixel & 0x0F << 4) | (pixel & 0x0F));
+							uint lum = (uint)((pixel & 0x0F << 4) | (pixel & 0x0F));
 
 							*(destPtr++) = lum | (lum << 8) | (lum << 16) | alpha;
 						}
@@ -728,22 +728,22 @@ namespace Gorgon.Graphics.Imaging.Codecs
 					break;
 				case DdsConversionFlags.RGB332:
 				{
-					var srcPtr = (byte*)src;
+					byte* srcPtr = (byte*)src;
 
 					switch (destFormat)
 					{
 						case DXGI.Format.R8G8B8A8_UNorm:
 							{
-								var destPtr = (uint*)dest;
+								uint* destPtr = (uint*)dest;
 
 								// Copy 8 bit RGB.
 								for (int srcCount = 0, destCount = 0; ((srcCount < srcPitch) && (destCount < destPitch)); ++srcCount, destCount += 4)
 								{
 									byte pixel = *(srcPtr++);
 
-									var r = (uint)((pixel & 0xE0) | ((pixel & 0xE0) >> 3) | ((pixel & 0xC0) >> 6));
-									var g = (uint)(((pixel & 0x1C) << 11) | ((pixel & 0x1C) << 8) | ((pixel & 0x18) << 5));
-									var b = (uint)(((pixel & 0x03) << 22) | ((pixel & 0x03) << 20) | ((pixel & 0x03) << 18) | ((pixel & 0x03) << 16));
+									uint r = (uint)((pixel & 0xE0) | ((pixel & 0xE0) >> 3) | ((pixel & 0xC0) >> 6));
+									uint g = (uint)(((pixel & 0x1C) << 11) | ((pixel & 0x1C) << 8) | ((pixel & 0x18) << 5));
+									uint b = (uint)(((pixel & 0x03) << 22) | ((pixel & 0x03) << 20) | ((pixel & 0x03) << 18) | ((pixel & 0x03) << 16));
 
 									*(destPtr++) = r | g | b | 0xFF000000;
 								}
@@ -751,16 +751,16 @@ namespace Gorgon.Graphics.Imaging.Codecs
 							break;
 						case DXGI.Format.B5G6R5_UNorm:
 							{
-								var destPtr = (ushort*)dest;
+								ushort* destPtr = (ushort*)dest;
 
 								// Copy 8 bit RGB.
 								for (int srcCount = 0, destCount = 0; ((srcCount < srcPitch) && (destCount < destPitch)); ++srcCount, destCount += 2)
 								{
 									byte pixel = *(srcPtr++);
 
-									var r = (uint)(((pixel & 0xE0) << 8) | ((pixel & 0xC0) << 5));
-									var g = (uint)(((pixel & 0x1C) << 6) | ((pixel & 0x1C) << 3));
-									var b = (uint)(((pixel & 0x03) << 3) | ((pixel & 0x03) << 1) | ((pixel & 0x02) >> 1));
+									uint r = (uint)(((pixel & 0xE0) << 8) | ((pixel & 0xC0) << 5));
+									uint g = (uint)(((pixel & 0x1C) << 6) | ((pixel & 0x1C) << 3));
+									uint b = (uint)(((pixel & 0x03) << 3) | ((pixel & 0x03) << 1) | ((pixel & 0x02) >> 1));
 
 									*(destPtr++) = (ushort)(r | g | b);
 								}
@@ -771,8 +771,8 @@ namespace Gorgon.Graphics.Imaging.Codecs
 					break;
 				case DdsConversionFlags.A8P8:
 					{
-						var srcPtr = (ushort*)src;
-						var destPtr = (uint*)dest;
+						ushort* srcPtr = (ushort*)src;
+						uint* destPtr = (uint*)dest;
 
 						// Copy indexed data with alpha.
 						for (int srcCount = 0, destCount = 0; ((srcCount < srcPitch) && (destCount < destPitch)); srcCount += 2, destCount += 4)
@@ -786,18 +786,18 @@ namespace Gorgon.Graphics.Imaging.Codecs
 					break;
 				case DdsConversionFlags.RGB8332:
 					{
-						var srcPtr = (ushort*)src;
-						var destPtr = (uint*)dest;
+						ushort* srcPtr = (ushort*)src;
+						uint* destPtr = (uint*)dest;
 
 						// Copy 8 bit RGB with alpha.
 						for (int srcCount = 0, destCount = 0; ((srcCount < srcPitch) && (destCount < destPitch)); srcCount += 2, destCount += 4)
 						{
-							var pixel = (ushort)(*(srcPtr++) & 0xFF);
+							ushort pixel = (ushort)(*(srcPtr++) & 0xFF);
 							uint alpha = ((bitFlags & ImageBitFlags.OpaqueAlpha) == ImageBitFlags.OpaqueAlpha) ? 0xFF000000 : (uint)((pixel & 0xFF00) << 16);
 
-							var r = (uint)((pixel & 0xE0) | ((pixel & 0xE0) >> 3) | ((pixel & 0xC0) >> 6));
-							var g = (uint)(((pixel & 0x1C) << 11) | ((pixel & 0x1C) << 8) | ((pixel & 0x18) << 5));
-							var b = (uint)(((pixel & 0x03) << 22) | ((pixel & 0x03) << 20) | ((pixel & 0x03) << 18) | ((pixel & 0x03) << 16));
+							uint r = (uint)((pixel & 0xE0) | ((pixel & 0xE0) >> 3) | ((pixel & 0xC0) >> 6));
+							uint g = (uint)(((pixel & 0x1C) << 11) | ((pixel & 0x1C) << 8) | ((pixel & 0x18) << 5));
+							uint b = (uint)(((pixel & 0x03) << 22) | ((pixel & 0x03) << 20) | ((pixel & 0x03) << 18) | ((pixel & 0x03) << 16));
 
 							*(destPtr++) = r | g | b | alpha;
 						}
@@ -805,8 +805,8 @@ namespace Gorgon.Graphics.Imaging.Codecs
 					break;
 				case DdsConversionFlags.RGB4444:
 					{
-						var srcPtr = (ushort*)src;
-						var destPtr = (uint*)dest;
+						ushort* srcPtr = (ushort*)src;
+						uint* destPtr = (uint*)dest;
 
 						// Copy 12 bit RGB with 4 bit alpha.
 						for (int srcCount = 0, destCount = 0; ((srcCount < srcPitch) && (destCount < destPitch)); srcCount += 2, destCount += 4)
@@ -814,9 +814,9 @@ namespace Gorgon.Graphics.Imaging.Codecs
 							ushort pixel = *(srcPtr++);
 							uint alpha = ((bitFlags & ImageBitFlags.OpaqueAlpha) == ImageBitFlags.OpaqueAlpha) ? 0xFF000000 : (uint)(((pixel & 0xF000) << 16) | ((pixel & 0xF000) << 12));
 
-							var r = (uint)(((pixel & 0x0F00) >> 4) | ((pixel & 0x0F00) >> 8));
-							var g = (uint)(((pixel & 0x00F0) << 4) | ((pixel & 0x00F0) << 8));
-							var b = (uint)(((pixel & 0x000F) << 16) | ((pixel & 0x000F) << 20));
+							uint r = (uint)(((pixel & 0x0F00) >> 4) | ((pixel & 0x0F00) >> 8));
+							uint g = (uint)(((pixel & 0x00F0) << 4) | ((pixel & 0x00F0) << 8));
+							uint b = (uint)(((pixel & 0x000F) << 16) | ((pixel & 0x000F) << 20));
 
 							*(destPtr++) = r | g | b | alpha;
 						}
@@ -824,16 +824,16 @@ namespace Gorgon.Graphics.Imaging.Codecs
 					break;
 				case DdsConversionFlags.RGB888:
 					{
-						var srcPtr = (byte*)src;
-						var destPtr = (uint*)dest;
+						byte* srcPtr = (byte*)src;
+						uint* destPtr = (uint*)dest;
 
 						// Copy 24 bit RGB.
 						for (int srcCount = 0, destCount = 0; ((srcCount < srcPitch) && (destCount < destPitch)); ++srcCount, destCount += 4)
 						{
 							// 24 bit DDS files are encoded as BGR, need to swizzle.
-							var b = (uint)(*(srcPtr++) << 16);
-							var g = (uint)(*(srcPtr++) << 8);
-							var r = *(srcPtr++);	
+							uint b = (uint)(*(srcPtr++) << 16);
+							uint g = (uint)(*(srcPtr++) << 8);
+							byte r = *(srcPtr++);	
 
 							*(destPtr++) = r | g | b | 0xFF000000;
 						}
@@ -850,9 +850,9 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <param name="flags">Legacy file format flags.</param>
 		private void WriteHeader(IGorgonImageInfo settings, GorgonBinaryWriter writer, DdsLegacyFlags flags)
 		{
-			var header = new DdsHeader();
+			DdsHeader header = new DdsHeader();
 			DdsPixelFormat? format = null;
-			var formatInfo = new GorgonFormatInfo(settings.Format);
+			GorgonFormatInfo formatInfo = new GorgonFormatInfo(settings.Format);
 
 			if ((settings.ArrayCount > 1) && ((settings.ArrayCount != 6) || (settings.ImageType != ImageType.Image2D) || (settings.ImageType != ImageType.ImageCube)))
 			{
@@ -998,7 +998,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 			}
 
 			// Get pitch information.
-			var pitchInfo = formatInfo.GetPitchForFormat(settings.Width, settings.Height);
+			GorgonPitchLayout pitchInfo = formatInfo.GetPitchForFormat(settings.Width, settings.Height);
 
 			if (formatInfo.IsCompressed)
 			{
@@ -1095,7 +1095,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <param name="palette">Palette used in indexed conversion.</param>
 		private void CopyImageData(GorgonBinaryReader reader, GorgonImage image, PitchFlags pitchFlags, DdsConversionFlags conversionFlags, uint[] palette)
 		{
-			var formatInfo = new GorgonFormatInfo(image.Info.Format);
+			GorgonFormatInfo formatInfo = new GorgonFormatInfo(image.Info.Format);
 
 			// Get copy flag bits per pixel if we have an expansion.
 			if ((conversionFlags & DdsConversionFlags.Expand) == DdsConversionFlags.Expand)
@@ -1138,7 +1138,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
                 return;
 			}
 
-			var expFlags = ImageBitFlags.None;
+			ImageBitFlags expFlags = ImageBitFlags.None;
 
 			if ((conversionFlags & DdsConversionFlags.NoAlpha) == DdsConversionFlags.NoAlpha)
 			{
@@ -1162,9 +1162,9 @@ namespace Gorgon.Graphics.Imaging.Codecs
 						for (int mipLevel = 0; mipLevel < image.Info.MipCount; mipLevel++)
 						{
 							// Get our destination buffer.
-							var destBuffer = image.Buffers[mipLevel, array];
-							var pitchInfo = formatInfo.GetPitchForFormat(destBuffer.Width, destBuffer.Height, pitchFlags);
-							var destPointer = (byte*)destBuffer.Data.Address;
+							IGorgonImageBuffer destBuffer = image.Buffers[mipLevel, array];
+							GorgonPitchLayout pitchInfo = formatInfo.GetPitchForFormat(destBuffer.Width, destBuffer.Height, pitchFlags);
+							byte* destPointer = (byte*)destBuffer.Data.Address;
 
 							for (int slice = 0; slice < depth; slice++)
 							{
@@ -1258,12 +1258,12 @@ namespace Gorgon.Graphics.Imaging.Codecs
 				throw new EndOfStreamException();
 			}
 
-			var reader = new GorgonBinaryReader(stream, true);
+			GorgonBinaryReader reader = new GorgonBinaryReader(stream, true);
 
 			// Read the header information.
 			IGorgonImageInfo settings = ReadHeader(reader, size, ddsOptions?.LegacyFormatConversionFlags ?? DdsLegacyFlags.None, out DdsConversionFlags flags);
 
-			var imageData = new GorgonImage(settings);
+			GorgonImage imageData = new GorgonImage(settings);
 
 			try
 			{
@@ -1279,7 +1279,6 @@ namespace Gorgon.Graphics.Imaging.Codecs
 
 					palette = new uint[256];
 
-					// TODO: Bring in from decoder options.
 					if ((ddsOptions?.Palette != null) && (ddsOptions.Palette.Count > 0))
 					{
 						int count = ddsOptions.Palette.Count.Min(256);
@@ -1455,10 +1454,9 @@ namespace Gorgon.Graphics.Imaging.Codecs
 			}
 
 			// Use a binary writer.
-			using (var writer = new GorgonBinaryWriter(stream, true))
+			using (GorgonBinaryWriter writer = new GorgonBinaryWriter(stream, true))
 			{
 				// Write the header for the file.
-				// TODO: Ensure the legacy flags get pulled from the encoding options.
 				WriteHeader(imageData.Info, writer, DdsLegacyFlags.None);
 
 				unsafe
@@ -1473,7 +1471,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 							{
 								for (int mipLevel = 0; mipLevel < imageData.Info.MipCount; mipLevel++)
 								{
-									var buffer = imageData.Buffers[mipLevel, array];
+									IGorgonImageBuffer buffer = imageData.Buffers[mipLevel, array];
 
 									writer.Write((byte*)buffer.Data.Address, buffer.PitchInformation.SlicePitch);
 								}
@@ -1485,7 +1483,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 							{
 								for (int slice = 0; slice < depth; slice++)
 								{
-									var buffer = imageData.Buffers[mipLevel, slice];
+									IGorgonImageBuffer buffer = imageData.Buffers[mipLevel, slice];
 									writer.Write((byte*)buffer.Data.Address, buffer.PitchInformation.SlicePitch);
 								}
 
@@ -1551,15 +1549,13 @@ namespace Gorgon.Graphics.Imaging.Codecs
 
 			try
 			{
-				DdsConversionFlags conversion;
-
-				position = stream.Position;
+			    position = stream.Position;
 				headerBuffer = stream as GorgonDataStream;
 
 				if (headerBuffer != null)
 				{
 					reader = new GorgonBinaryReader(headerBuffer);
-					return ReadHeader(reader, headerSize, DdsLegacyFlags.None, out conversion);
+					return ReadHeader(reader, headerSize, DdsLegacyFlags.None, out _);
 				}
 
 				headerBuffer = new GorgonDataStream(headerSize);
@@ -1567,7 +1563,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 				headerBuffer.Position = 0;
 				reader = new GorgonBinaryReader(headerBuffer);
 
-				return ReadHeader(reader, headerSize, DdsLegacyFlags.None, out conversion);
+				return ReadHeader(reader, headerSize, DdsLegacyFlags.None, out _);
 			}
 			finally
 			{

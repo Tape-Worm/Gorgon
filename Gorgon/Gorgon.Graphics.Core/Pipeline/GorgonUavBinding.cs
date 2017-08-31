@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 
@@ -110,9 +109,9 @@ namespace Gorgon.Graphics.Core
         /// <see langword="true" /> if <paramref name="obj" /> and this instance are the same type and represent the same value; otherwise, <see langword="false" />. </returns>
         public override bool Equals(object obj)
         {
-            if (obj is GorgonUavBinding)
+            if (obj is GorgonUavBinding uav)
             {
-                return ((GorgonUavBinding)obj).Equals(ref this);
+                return uav.Equals(ref this);
             }
             return base.Equals(obj);
         }

@@ -38,7 +38,7 @@ namespace Gorgon.Graphics.Example
 	/// environment of .NET into the unmanaged world of Direct 3D.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential, Pack = 1)]
-	struct MiniTriVertex
+	internal struct MiniTriVertex
 	{
 		/// <summary>
 		/// This is the size of the vertex, in bytes. 

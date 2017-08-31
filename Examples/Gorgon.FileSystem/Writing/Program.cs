@@ -38,7 +38,7 @@ namespace Gorgon.Examples
 	/// Example entry point.
 	/// </summary>
 	/// <remarks>To see a description of this example, look in formMain.cs</remarks>
-	static class Program
+	internal static class Program
 	{
 		#region Methods.
 		/// <summary>
@@ -76,7 +76,7 @@ namespace Gorgon.Examples
 		/// The main entry point for the application.
 		/// </summary>
 		[STAThread]
-		static void Main()
+		private static void Main()
 		{
 			try
 			{

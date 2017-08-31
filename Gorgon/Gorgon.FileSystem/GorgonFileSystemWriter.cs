@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Linq;
@@ -144,7 +145,7 @@ namespace Gorgon.IO
 			{
 				// If the area specified by the write directory does not exist yet, then 
 				// create it.
-				var writeDir = new DirectoryInfo(WriteLocation);
+				DirectoryInfo writeDir = new DirectoryInfo(WriteLocation);
 
 				if (!writeDir.Exists)
 				{
@@ -166,7 +167,7 @@ namespace Gorgon.IO
 				return WriteLocation;
 			}
 
-			var physicalPath = new StringBuilder(WriteLocation);
+			StringBuilder physicalPath = new StringBuilder(WriteLocation);
 
 			if (path.StartsWith("/", StringComparison.OrdinalIgnoreCase))
 			{
@@ -438,7 +439,7 @@ namespace Gorgon.IO
 
 			string writePath = GetWriteDirectoryPath(path);
 
-			var dirInfo = new DirectoryInfo(writePath);
+			DirectoryInfo dirInfo = new DirectoryInfo(writePath);
 
 			if (dirInfo.Exists)
 			{
@@ -479,7 +480,7 @@ namespace Gorgon.IO
 		{
 			// If the writable area does not exist at all, then we have nothing to 
 			// delete.
-			var dirInfo = new DirectoryInfo(WriteLocation);
+			DirectoryInfo dirInfo = new DirectoryInfo(WriteLocation);
 
 			// If we're not "deleting" the root, then just kill the subdirectory.
 			if (path != "/")
@@ -514,15 +515,15 @@ namespace Gorgon.IO
 
 			PrepareWriteArea();
 			dirInfo = new DirectoryInfo(WriteLocation);
-			var directories = dirInfo.EnumerateDirectories("*", SearchOption.TopDirectoryOnly);
-			var files = dirInfo.EnumerateFileSystemInfos("*", SearchOption.TopDirectoryOnly);
+			IEnumerable<DirectoryInfo> directories = dirInfo.EnumerateDirectories("*", SearchOption.TopDirectoryOnly);
+			IEnumerable<FileSystemInfo> files = dirInfo.EnumerateFileSystemInfos("*", SearchOption.TopDirectoryOnly);
 
-			foreach (var directoryPath in directories)
+			foreach (DirectoryInfo directoryPath in directories)
 			{
 				directoryPath.Delete(true);
 			}
 
-			foreach (var file in files)
+			foreach (FileSystemInfo file in files)
 			{
 				file.Delete();
 			}
@@ -667,7 +668,7 @@ namespace Gorgon.IO
 
 			// If the writable area does not exist at all, then we have nothing to 
 			// delete.
-			var dirInfo = new DirectoryInfo(WriteLocation);
+			DirectoryInfo dirInfo = new DirectoryInfo(WriteLocation);
 
 			if (!dirInfo.Exists)
 			{

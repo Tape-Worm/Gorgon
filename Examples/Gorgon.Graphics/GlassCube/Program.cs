@@ -54,7 +54,7 @@ namespace GorgonLibrary.Example
 	/// reassign the swap chain as the render target in the draw call. We also must resize the view port and the projection matrix to match our window (and assign it to the draw call), or 
 	/// else things will not render in the correct position or size within the window.
 	/// </summary>
-	static class Program
+	internal static class Program
     {
 		/// <summary>
 		/// Property to return the path to the resources for the example.
@@ -91,7 +91,7 @@ namespace GorgonLibrary.Example
 		/// The main entry point for the application.
 		/// </summary>
 		[STAThread]
-        static void Main()
+		private static void Main()
         {
 	        try
 	        {

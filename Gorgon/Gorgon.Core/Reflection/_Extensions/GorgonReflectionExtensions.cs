@@ -82,7 +82,7 @@ namespace Gorgon.Reflection
 			}
 
 			// Look for the constructor with the most parameters.
-			var constructors = (from constructorInfo in objectType.GetConstructors()
+			(ConstructorInfo, ParameterInfo[])[] constructors = (from constructorInfo in objectType.GetConstructors()
 			                   let parameters = constructorInfo.GetParameters()
 			                   where (paramTypes.Length == parameters.Length)
 			                   select (
@@ -528,7 +528,7 @@ namespace Gorgon.Reflection
 				throw new ArgumentNullException(nameof(type));
 			}
 
-			var result = new List<FieldInfo>();
+			List<FieldInfo> result = new List<FieldInfo>();
 			incompatibleFields = result;
 
 			if ((type.StructLayoutAttribute == null) || (type.IsAutoLayout))

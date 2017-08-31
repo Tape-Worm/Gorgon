@@ -34,7 +34,7 @@ namespace Gorgon.Examples
 	/// So now we can implement our blue text color writer by overloading its color method and
 	/// return the blue color.
 	/// </summary>
-	class BlueTextColorWriter
+	internal class BlueTextColorWriter
 		: TextColorWriter
 	{
 		/// <summary>

@@ -181,7 +181,7 @@ namespace Gorgon.Graphics.Core
 				throw new ArgumentException(Resources.GORGFX_ERR_STREAM_WRITE_ONLY, nameof(stream));
 			}
 
-			var chunkFile = new GorgonChunkFileWriter(stream, GorgonShaderFactory.BinaryShaderFileHeader.ChunkID());
+			GorgonChunkFileWriter chunkFile = new GorgonChunkFileWriter(stream, GorgonShaderFactory.BinaryShaderFileHeader.ChunkID());
 
 			try
 			{

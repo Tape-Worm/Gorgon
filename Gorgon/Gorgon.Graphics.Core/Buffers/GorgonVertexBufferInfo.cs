@@ -178,12 +178,7 @@ namespace Gorgon.Graphics.Core
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
 		public GorgonVertexBufferInfo(IGorgonVertexBufferInfo info)
 		{
-			if (info == null)
-			{
-				throw new ArgumentNullException(nameof(info));
-			}
-
-			SizeInBytes = info.SizeInBytes;
+		    SizeInBytes = info?.SizeInBytes ?? throw new ArgumentNullException(nameof(info));
 			Usage = info.Usage;
 		    Binding = info.Binding;
         }

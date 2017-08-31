@@ -116,7 +116,7 @@ namespace Gorgon.Graphics.Core
         {
             Log.Print($"Creating raw buffer shader view for {Buffer.Name}.", LoggingLevel.Verbose);
 
-            var desc = new D3D11.ShaderResourceViewDescription
+            D3D11.ShaderResourceViewDescription desc = new D3D11.ShaderResourceViewDescription
                        {
                            Format = Format,
                            Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.ExtendedBuffer,

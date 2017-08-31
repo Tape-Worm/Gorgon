@@ -96,9 +96,9 @@ namespace Gorgon.Graphics
 		/// </returns>
 		public override bool Equals(object obj)
 		{
-		    if (obj is GorgonColor)
+		    if (obj is GorgonColor color)
 		    {
-		        return ((GorgonColor)obj).Equals(this);
+		        return color.Equals(this);
 		    }
 
 		    return base.Equals(obj);
@@ -210,7 +210,7 @@ namespace Gorgon.Graphics
 		/// </remarks>
 		public static GorgonColor Lerp(GorgonColor start, GorgonColor end, float weight)
 		{
-		    var outColor = new GorgonColor(
+		    GorgonColor outColor = new GorgonColor(
 		        start.Red + ((end.Red - start.Red) * weight),
 		        start.Green + ((end.Green - start.Green) * weight),
 		        start.Blue + ((end.Blue - start.Blue) * weight),

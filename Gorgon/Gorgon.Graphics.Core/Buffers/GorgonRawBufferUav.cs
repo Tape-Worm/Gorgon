@@ -109,7 +109,7 @@ namespace Gorgon.Graphics.Core
         protected internal override void CreateNativeView()
         {
             Log.Print("Creating raw buffer unordered access view for {0}.", LoggingLevel.Verbose, Resource.Name);
-            var desc = new D3D11.UnorderedAccessViewDescription
+            D3D11.UnorderedAccessViewDescription desc = new D3D11.UnorderedAccessViewDescription
                        {
                            Dimension = D3D11.UnorderedAccessViewDimension.Buffer,
                            Buffer =

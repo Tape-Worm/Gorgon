@@ -66,13 +66,13 @@ namespace Gorgon.Examples
     /// While this is more complex than the previous version of Gorgon, it's also far more flexible when dealing with object composition 
     /// techniques like dependency injection.
 	/// </remarks>
-	static class Program
+	internal static class Program
 	{
 		#region Properties.
 		/// <summary>
 		/// Property to return the path to the input plugins.
 		/// </summary>
-		static string PlugInPath
+		private static string PlugInPath
 		{
 			get
 			{
@@ -103,7 +103,7 @@ namespace Gorgon.Examples
 		/// Function to load in the gaming device driver plug ins.
 		/// </summary>
 		/// <returns>A list of gaming device driver plug ins.</returns>
-		static IReadOnlyList<IGorgonGamingDeviceDriver> GetGamingDeviceDrivers()
+		private static IReadOnlyList<IGorgonGamingDeviceDriver> GetGamingDeviceDrivers()
 		{
 			// Access our plugin cache.
 			using (GorgonPluginAssemblyCache assemblies = new GorgonPluginAssemblyCache(GorgonApplication.Log))
@@ -113,7 +113,7 @@ namespace Gorgon.Examples
 				// to point at wherever you'd like.  If a {0} place holder is
 				// in the path, it will be replaced with whatever the build
 				// configuration is set to (i.e. DEBUG or RELEASE).
-				var files = Directory.GetFiles(PlugInPath, "*.dll");
+				string[] files = Directory.GetFiles(PlugInPath, "*.dll");
 
 				if (files.Length == 0)
 				{
@@ -121,7 +121,7 @@ namespace Gorgon.Examples
 				}
 
 				// Find our plugins in the DLLs.
-				foreach (var file in files)
+				foreach (string file in files)
 				{
 					// Ensure that the plugin assemblies have plugins, and 
 					// can be loaded as assemblies.
@@ -135,10 +135,10 @@ namespace Gorgon.Examples
 				}
 				
 				// Create our plugin service.
-				var pluginService = new GorgonPluginService(assemblies, GorgonApplication.Log);
+				GorgonPluginService pluginService = new GorgonPluginService(assemblies, GorgonApplication.Log);
 
 				// Create our input service factory.
-				var factory = new GorgonGamingDeviceDriverFactory(pluginService, GorgonApplication.Log);
+				GorgonGamingDeviceDriverFactory factory = new GorgonGamingDeviceDriverFactory(pluginService, GorgonApplication.Log);
 
 				// Retrieve the list of driver plug ins from the input service factory.
 				return factory.LoadAllDrivers();
@@ -149,7 +149,7 @@ namespace Gorgon.Examples
 		/// The main entry point for the application.
 		/// </summary>
 		[STAThread]
-		static void Main()
+		private static void Main()
 		{
 			try
 			{
@@ -185,7 +185,7 @@ namespace Gorgon.Examples
 			    // Display the plugin information.
 			    Console.WriteLine();
 			    Console.WriteLine("{0} gaming device driver plug ins found:", inputPlugIns.Count);					
-			    foreach (var plugIn in inputPlugIns)
+			    foreach (IGorgonGamingDeviceDriver plugIn in inputPlugIns)
 			    {
 			        Console.ForegroundColor = ConsoleColor.Cyan;
 

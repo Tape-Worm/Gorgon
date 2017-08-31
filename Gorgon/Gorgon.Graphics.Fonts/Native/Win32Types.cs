@@ -33,7 +33,7 @@ namespace Gorgon.Native
 	/// <summary>
 	/// Map modes for SetMapMode
 	/// </summary>
-	enum MapModes
+	internal enum MapModes
 	{
 		/// <summary>
 		/// Each logical unit is mapped to one device pixel. Positive x is to the right; positive y is down.
@@ -73,7 +73,7 @@ namespace Gorgon.Native
 	/// Structure for font kerning offsets.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	struct ABC
+	internal struct ABC
 	{
 		/// <summary>
 		/// The A spacing of the character. The A spacing is the distance to add to the current position before drawing the character glyph.
@@ -93,7 +93,7 @@ namespace Gorgon.Native
 	/// The KERNINGPAIR structure defines a kerning pair.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	struct KERNINGPAIR
+	internal struct KERNINGPAIR
 	{
 		/// <summary>
 		/// The character code for the first character in the kerning pair.

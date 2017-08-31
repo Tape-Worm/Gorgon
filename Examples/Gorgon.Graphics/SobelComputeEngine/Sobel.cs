@@ -25,10 +25,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Native;
@@ -39,7 +35,7 @@ namespace Gorgon.Graphics.Example
     /// <summary>
     /// The sobel edge detection shader.
     /// </summary>
-    class Sobel
+    internal class Sobel
         : IDisposable
     {
         #region Variables.

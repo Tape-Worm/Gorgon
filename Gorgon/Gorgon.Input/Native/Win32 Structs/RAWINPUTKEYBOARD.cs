@@ -34,7 +34,7 @@ namespace Gorgon.Native
 	/// <summary>
 	/// Enumeration for virtual keys.
 	/// </summary>
-	enum VirtualKeys
+	internal enum VirtualKeys
 		: ushort
 	{
 		/// <summary>Key: None</summary>
@@ -432,7 +432,7 @@ namespace Gorgon.Native
 	/// Enumeration containing flags for raw keyboard input.
 	/// </summary>
 	[Flags]
-	enum RawKeyboardFlags
+	internal enum RawKeyboardFlags
 		: ushort
 	{
 		/// <summary></summary>
@@ -453,7 +453,7 @@ namespace Gorgon.Native
 	/// Value type for raw input from a keyboard.
 	/// </summary>	
 	[StructLayout(LayoutKind.Explicit)]
-	struct RAWINPUTKEYBOARD
+	internal struct RAWINPUTKEYBOARD
 	{
 		/// <summary>Scan code for key depression.</summary>
 		[FieldOffset(0)]

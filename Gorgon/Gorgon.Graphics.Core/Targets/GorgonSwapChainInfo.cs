@@ -138,12 +138,7 @@ namespace Gorgon.Graphics.Core
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
 		public GorgonSwapChainInfo(IGorgonSwapChainInfo info)
 		{
-			if (info == null)
-			{
-				throw new ArgumentNullException(nameof(info));
-			}
-
-			Format = info.Format;
+		    Format = info?.Format ?? throw new ArgumentNullException(nameof(info));
 			Height = info.Height;
 			StretchBackBuffer = info.StretchBackBuffer;
 			UseFlipMode = info.UseFlipMode;

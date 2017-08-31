@@ -38,7 +38,7 @@ namespace Gorgon.IO
 	/// <summary>
 	/// A collection of file entries available from the file system.
 	/// </summary>
-	class VirtualFileCollection
+	internal class VirtualFileCollection
 		: IGorgonNamedObjectReadOnlyDictionary<IGorgonVirtualFile>
 	{
 		#region Variables.
@@ -182,7 +182,7 @@ namespace Gorgon.IO
 			}
 
 
-			if (!_files.TryGetValue(item.Name, out VirtualFile file))
+			if (!_files.TryGetValue(item.Name, out VirtualFile _))
 			{
 				return false;
 			}

@@ -34,7 +34,7 @@ namespace Gorgon.Input.XInput
 	/// <summary>
 	/// XInput XBOX 360 controller device.
 	/// </summary>
-	class XInputDevice
+	internal class XInputDevice
 		: GorgonGamingDevice
 	{
 		#region Variables.
@@ -184,27 +184,23 @@ namespace Gorgon.Input.XInput
 				pov = 45.0f;
 			}
 
-			if (state == XI.GamepadButtonFlags.DPadDown)
+			switch (state)
 			{
-				pov = 180.0f;
+			    case XI.GamepadButtonFlags.DPadDown:
+			        pov = 180.0f;
+			        break;
+			    case XI.GamepadButtonFlags.DPadUp:
+			        pov = 0;
+			        break;
+			    case XI.GamepadButtonFlags.DPadRight:
+			        pov = 90.0f;
+			        break;
+			    case XI.GamepadButtonFlags.DPadLeft:
+			        pov = 270.0f;
+			        break;
 			}
 
-			if (state == XI.GamepadButtonFlags.DPadUp)
-			{
-				pov = 0;
-			}
-
-			if (state == XI.GamepadButtonFlags.DPadRight)
-			{
-				pov = 90.0f;
-			}
-
-			if (state == XI.GamepadButtonFlags.DPadLeft)
-			{
-				pov = 270.0f;
-			}
-
-			return pov;
+		    return pov;
 		}
 
 		/// <summary>
@@ -263,12 +259,12 @@ namespace Gorgon.Input.XInput
 			_controller = new XI.Controller(deviceInfo.ID);
 
 
-			if (Axis.TryGetValue(GamingDeviceAxis.XAxis, out GorgonGamingDeviceAxis xAxis))
+			if (Axis.TryGetValue(GamingDeviceAxis.XAxis, out GorgonGamingDeviceAxis _))
 			{
 				Axis[GamingDeviceAxis.XAxis].DeadZone = new GorgonRange(-XI.Gamepad.LeftThumbDeadZone, XI.Gamepad.LeftThumbDeadZone);
 			}
 
-			if (Axis.TryGetValue(GamingDeviceAxis.YAxis, out GorgonGamingDeviceAxis yAxis))
+			if (Axis.TryGetValue(GamingDeviceAxis.YAxis, out GorgonGamingDeviceAxis _))
 			{
 				Axis[GamingDeviceAxis.YAxis].DeadZone = new GorgonRange(-XI.Gamepad.LeftThumbDeadZone, XI.Gamepad.LeftThumbDeadZone);
 			}

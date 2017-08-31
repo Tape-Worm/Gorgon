@@ -33,7 +33,7 @@ namespace Gorgon.Examples
 	/// 
 	/// In this plug-in assembly we have 2 plug-ins in the same assembly. 
 	/// </summary>
-	class GreenPlugIn
+	internal class GreenPlugIn
 		: TextColorPlugIn
 	{
 		#region Methods.

@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using DX = SharpDX;
 using D3D11 = SharpDX.Direct3D11;
@@ -34,7 +33,7 @@ namespace Gorgon.Graphics.Example
 	/// <summary>
 	/// A light to shine on our sad primitives
 	/// </summary>
-	class Light
+	internal class Light
     {
         #region Variables.
         // The diffuse color of the light.

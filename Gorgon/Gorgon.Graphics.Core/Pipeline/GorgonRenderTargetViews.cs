@@ -75,17 +75,15 @@ namespace Gorgon.Graphics.Core
 		public const int MaximumRenderTargetCount = D3D11.OutputMergerStage.SimultaneousRenderTargetCount;
 		#endregion
 
-		#region Variables.
-		// The native bindings.
-		private readonly D3D11.RenderTargetView[] _native = new D3D11.RenderTargetView[MaximumRenderTargetCount];
-		#endregion
-
 		#region Properties.
 		/// <summary>
 		/// Property to return the native render target views.
 		/// </summary>
-		internal D3D11.RenderTargetView[] Native => _native;
-		#endregion
+		internal D3D11.RenderTargetView[] Native
+		{
+		    get;
+		} = new D3D11.RenderTargetView[MaximumRenderTargetCount];
+	    #endregion
 
 		#region Methods.
 #if DEBUG
@@ -206,7 +204,7 @@ namespace Gorgon.Graphics.Core
 		/// </remarks>
 		protected override void OnClear()
 		{
-			Array.Clear(_native, 0, _native.Length);
+			Array.Clear(Native, 0, Native.Length);
 		}
 
 	    /// <summary>
@@ -216,7 +214,7 @@ namespace Gorgon.Graphics.Core
 	    /// <param name="value">The value containing the native item.</param>
 	    protected override void OnStoreNativeItem(int nativeItemIndex, GorgonRenderTargetView value)
 	    {
-	        _native[nativeItemIndex] = value?.D3DRenderTargetView;
+	        Native[nativeItemIndex] = value?.D3DRenderTargetView;
 	    }
 		#endregion
 

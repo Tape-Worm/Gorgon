@@ -148,7 +148,7 @@ namespace Gorgon.Graphics.Core
 
             ValidateBufferBindings(_info.Usage, bindFlags);
 
-			var desc  = new D3D11.BufferDescription
+			D3D11.BufferDescription desc  = new D3D11.BufferDescription
 			{
 				SizeInBytes = Info.SizeInBytes,
 				Usage = _info.Usage,
@@ -250,7 +250,7 @@ namespace Gorgon.Graphics.Core
 	        }
 
 	        // Ensure the size of the data type fits the requested format.
-	        var info = new GorgonFormatInfo(format);
+	        GorgonFormatInfo info = new GorgonFormatInfo(format);
 	        int totalElementCount = GetTotalElementCount(info);
 
 	        startElement = startElement.Min(totalElementCount - 1).Max(0);
@@ -262,7 +262,7 @@ namespace Gorgon.Graphics.Core
 
 	        elementCount = elementCount.Min(totalElementCount - startElement).Max(1);
 
-	        var key = new BufferShaderViewKey(startElement, elementCount, format);
+	        BufferShaderViewKey key = new BufferShaderViewKey(startElement, elementCount, format);
 
 	        if (GetUav(key) is GorgonVertexBufferUav result)
 	        {

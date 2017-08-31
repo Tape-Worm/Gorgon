@@ -33,6 +33,7 @@ using Gorgon.Input;
 using Gorgon.Math;
 using Gorgon.UI;
 using GorgonMouseButtons = Gorgon.Input.MouseButtons;
+// ReSharper disable All
 
 namespace Gorgon.Examples
 {
@@ -120,14 +121,12 @@ namespace Gorgon.Examples
 		/// <param name="e">The <see cref="PaintEventArgs" /> instance containing the event data.</param>
 		private void DevicePanelsPaint(object sender, PaintEventArgs e)
         {
-            var control = sender as Control;
-
-	        if (control == null)
+            if (!(sender is Control control))
 	        {
 		        return;
 	        }
 
-	        using(var pen = new Pen(Color.Black, SystemInformation.BorderSize.Height))
+	        using(Pen pen = new Pen(Color.Black, SystemInformation.BorderSize.Height))
 	        {
 		        e.Graphics.DrawLine(pen, new Point(0, 0), new Point(control.Width, 0));
 	        }
@@ -201,7 +200,7 @@ namespace Gorgon.Examples
 	    /// <param name="shift">Shifted keys.</param>
 	    private void UpdateKeyboard(Keys key, Keys shift)
 		{
-			var shiftKey = Keys.None;
+			Keys shiftKey = Keys.None;
 
 			if ((Keys.Alt & shift) == Keys.Alt)
 			{

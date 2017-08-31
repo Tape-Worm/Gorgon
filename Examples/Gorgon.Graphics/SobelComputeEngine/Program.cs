@@ -33,13 +33,13 @@ namespace SobelComputeEngine
     /// <summary>
     /// An example using the Gorgon Compute Engine to generate a sobel edge detected image.
     /// </summary>
-    static class Program
+    internal static class Program
     {
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        private static void Main()
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

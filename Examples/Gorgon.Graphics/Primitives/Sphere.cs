@@ -37,7 +37,7 @@ namespace Gorgon.Graphics.Example
     /// <summary>
     /// A sphere object.
     /// </summary>
-    class Sphere
+    internal class Sphere
         : MoveableMesh
     {
         #region Variables.
@@ -88,10 +88,10 @@ namespace Gorgon.Graphics.Example
 
                 for (int segment = 0; segment <= segmentCount; segment++)
                 {
-                    var textureDelta = new DX.Vector2(1.0f - segment / (float)segmentCount, ring / (float)ringCount);
+                    DX.Vector2 textureDelta = new DX.Vector2(1.0f - segment / (float)segmentCount, ring / (float)ringCount);
                     float segmentAngle = deltaSegAngle * segment;
 
-                    var position = new DX.Vector3(radius * segmentAngle.Sin(), radiusY, radius * segmentAngle.Cos());
+                    DX.Vector3 position = new DX.Vector3(radius * segmentAngle.Sin(), radiusY, radius * segmentAngle.Cos());
 
 
                     DX.Vector3.Multiply(ref position, 2.0f, out DX.Vector3 normal);

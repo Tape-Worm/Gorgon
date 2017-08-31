@@ -166,11 +166,11 @@ namespace Gorgon.Collections.Specialized
 		{
 			// Clone the object references so that we don't run into trouble if the 
 			// object removes itself in their dispose method.
-			var items = _objects.ToArray();
+			IDisposable[] items = _objects.ToArray();
 
 			_objects.Clear();
 
-			foreach (var item in items)
+			foreach (IDisposable item in items)
 			{
 				item.Dispose();
 			}

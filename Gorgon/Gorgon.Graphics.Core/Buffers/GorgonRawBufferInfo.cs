@@ -112,12 +112,7 @@ namespace Gorgon.Graphics.Core
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="bufferInfo"/> parameter is <b>null</b>.</exception>
         public GorgonRawBufferInfo(IGorgonRawBufferInfo bufferInfo)
         {
-            if (bufferInfo == null)
-            {
-                throw new ArgumentNullException(nameof(bufferInfo));
-            }
-
-            Usage = bufferInfo.Usage;
+            Usage = bufferInfo?.Usage ?? throw new ArgumentNullException(nameof(bufferInfo));
             SizeInBytes = bufferInfo.SizeInBytes;
             Binding = bufferInfo.Binding;
             DefaultShaderViewElementType = bufferInfo.DefaultShaderViewElementType;

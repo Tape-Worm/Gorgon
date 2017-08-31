@@ -34,7 +34,7 @@ namespace Gorgon.Native
 	/// Enumeration containing the flags for raw mouse data.
 	/// </summary>
 	[Flags]
-	enum RawMouseFlags
+	internal enum RawMouseFlags
 		: uint
 	{
 		/// <summary>Relative to the last position.</summary>
@@ -51,7 +51,7 @@ namespace Gorgon.Native
 	/// Enumeration containing the button data for raw mouse input.
 	/// </summary>
 	[Flags]
-	enum RawMouseButtons
+	internal enum RawMouseButtons
 		: ushort
 	{
 		/// <summary>No button.</summary>
@@ -84,7 +84,7 @@ namespace Gorgon.Native
 	/// Mouse device info.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	struct RID_DEVICE_INFO_MOUSE
+	internal struct RID_DEVICE_INFO_MOUSE
 	{
 		/// <summary>
 		/// Mouse ID.

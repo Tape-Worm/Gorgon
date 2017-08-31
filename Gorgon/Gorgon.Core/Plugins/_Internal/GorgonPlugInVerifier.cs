@@ -34,7 +34,7 @@ namespace Gorgon.Plugins
 	/// <summary>
 	/// Plugin verification.
 	/// </summary>
-	class GorgonPluginVerifier
+	internal class GorgonPluginVerifier
 		: MarshalByRefObject
 	{
 		#region Variables.
@@ -74,7 +74,7 @@ namespace Gorgon.Plugins
         /// <returns>The assembly if found, <b>null</b> if not.</returns>
         private Assembly GetFromRequestedDir(AssemblyName name, Assembly requesting)
         {
-            var locations = new string[requesting == null ? 1 : 2];
+            string[] locations = new string[requesting == null ? 1 : 2];
             Assembly result = null;
 
             // Check locally first.
@@ -123,7 +123,7 @@ namespace Gorgon.Plugins
 	    /// <returns></returns>
 	    private Assembly CurrentDomain_ReflectionOnlyAssemblyResolve(object sender, ResolveEventArgs args)
 	    {
-            var name = new AssemblyName(args.Name);
+            AssemblyName name = new AssemblyName(args.Name);
             Assembly result;
 
             // Try from the GAC first.
@@ -157,8 +157,8 @@ namespace Gorgon.Plugins
             {
 		        GetGorgonPlugInType();
 
-	            var assembly = Assembly.ReflectionOnlyLoadFrom(name.CodeBase);
-                var types = assembly.GetTypes();
+	            Assembly assembly = Assembly.ReflectionOnlyLoadFrom(name.CodeBase);
+                Type[] types = assembly.GetTypes();
 
 	            return (from type in types
 	                    where !type.IsPrimitive && !type.IsValueType && !type.IsAbstract && type.IsSubclassOf(_plugInType)

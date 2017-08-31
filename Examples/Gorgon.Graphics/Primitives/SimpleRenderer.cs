@@ -41,7 +41,7 @@ namespace Gorgon.Graphics.Example
     /// <summary>
     /// A simple renderer used to display and animate the scene data.
     /// </summary>
-    class SimpleRenderer
+    internal class SimpleRenderer
         : IDisposable
     {
         #region Constants.
@@ -226,7 +226,7 @@ namespace Gorgon.Graphics.Example
                 return;
             }
 
-            var vertexShader = (GorgonVertexShader)shader;
+            GorgonVertexShader vertexShader = (GorgonVertexShader)shader;
 
             if (!ShaderCache.TryGetValue(mesh.Material.PixelShader, out shader))
             {
@@ -242,7 +242,7 @@ namespace Gorgon.Graphics.Example
                 _vertexLayout = GorgonInputLayout.CreateUsingType<Vertex3D>(_graphics.VideoDevice, vertexShader);
             }
 
-            var pixelShader = (GorgonPixelShader)shader;
+            GorgonPixelShader pixelShader = (GorgonPixelShader)shader;
 
             GorgonPipelineState pipelineState = _graphics.GetPipelineState(new GorgonPipelineStateInfo
                                                                            {
@@ -257,7 +257,7 @@ namespace Gorgon.Graphics.Example
                                                                                }
                                                                            });
 
-            var drawCall = new GorgonDrawIndexedCall
+            GorgonDrawIndexedCall drawCall = new GorgonDrawIndexedCall
                            {
                                PipelineState = pipelineState,
                                IndexCount = mesh.IndexCount,
@@ -404,22 +404,22 @@ namespace Gorgon.Graphics.Example
                                                     });
 
             // Initialize the constant buffers.
-            var emptyViewProjection = new ViewProjectionData
+            ViewProjectionData emptyViewProjection = new ViewProjectionData
                                       {
                                           Projection = DX.Matrix.Identity,
                                           View = DX.Matrix.Identity,
                                           ViewProjection = DX.Matrix.Identity
                                       };
-            var emptyWorld = DX.Matrix.Identity;
+            DX.Matrix emptyWorld = DX.Matrix.Identity;
 
-            var emptyCamera = new CameraData
+            CameraData emptyCamera = new CameraData
                               {
                                   CameraLookAt = new DX.Vector3(0, 0, -1.0f),
                                   CameraUp = new DX.Vector3(0, 1, 0),
                                   CameraPosition = DX.Vector3.Zero
                               };
 
-            var emptyMaterial = new Material
+            Material emptyMaterial = new Material
                                 {
                                     SpecularPower = 1.0f,
                                     UVOffset = DX.Vector2.Zero
@@ -438,7 +438,7 @@ namespace Gorgon.Graphics.Example
         /// </summary>
         private void UpdateMaterials(MeshMaterial material)
         {
-            var materialData = new Material
+            Material materialData = new Material
                                {
                                    UVOffset = material.TextureOffset,
                                    SpecularPower = material.SpecularPower
@@ -463,7 +463,7 @@ namespace Gorgon.Graphics.Example
             {
                 if (Camera.IsViewDirty)
                 {
-                    var camData = new CameraData
+                    CameraData camData = new CameraData
                                   {
                                       CameraLookAt = Camera.LookAt,
                                       CameraPosition = Camera.EyePosition,
@@ -472,7 +472,7 @@ namespace Gorgon.Graphics.Example
                     UpdateDynamicConstantBuffer(_cameraBuffer, ref camData);
                 }
 
-                var viewProjData = new ViewProjectionData
+                ViewProjectionData viewProjData = new ViewProjectionData
                                    {
                                        Projection = Camera.GetProjectionMatrix(),
                                        View = Camera.GetViewMatrix(),

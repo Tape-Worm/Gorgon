@@ -121,7 +121,7 @@ namespace Gorgon.UI
 			// ReSharper disable once InconsistentNaming
 			NCLeftButtonDown = 0x00A1,
 			EnterSizeMove = 0x0231,
-			ExitSizeMove = 0x0232,
+			ExitSizeMove = 0x0232
 		}
 
 		/// <summary>
@@ -585,7 +585,7 @@ namespace Gorgon.UI
 				}
 
 				stream = dialog.OpenFile();
-				var currentTheme = (GorgonFlatFormTheme)_themeProperty.GetValue(this);
+				GorgonFlatFormTheme currentTheme = (GorgonFlatFormTheme)_themeProperty.GetValue(this);
 
 				if (currentTheme == null)
 				{
@@ -629,7 +629,7 @@ namespace Gorgon.UI
 					return;
 				}
 
-				var currentTheme = (GorgonFlatFormTheme)_themeProperty.GetValue(this);
+				GorgonFlatFormTheme currentTheme = (GorgonFlatFormTheme)_themeProperty.GetValue(this);
 
 				if (currentTheme == null)
 				{
@@ -641,7 +641,7 @@ namespace Gorgon.UI
 				Image checkDisabled = currentTheme.MenuCheckDisabledImage;
 
 				stream = dialog.OpenFile();
-				var newTheme = GorgonFlatFormTheme.Load(stream);
+				GorgonFlatFormTheme newTheme = GorgonFlatFormTheme.Load(stream);
 
 				// Restore the previous images.
 				newTheme.MenuCheckEnabledImage = checkEnabled;
@@ -675,11 +675,11 @@ namespace Gorgon.UI
 			                               .Cast<PropertyDescriptor>()
 			                               .First(item => string.Equals(item.Name, "Theme", StringComparison.OrdinalIgnoreCase));
 
-			var host = (IDesignerHost)Site.GetService(typeof(IDesignerHost));
-			var menuDesigner = (IMenuCommandService)host.GetService(typeof(IMenuCommandService));
+			IDesignerHost host = (IDesignerHost)Site.GetService(typeof(IDesignerHost));
+			IMenuCommandService menuDesigner = (IMenuCommandService)host.GetService(typeof(IMenuCommandService));
 
-			var loadVerb = new DesignerVerb(Resources.VERB_LOAD_THEME, OnLoadTheme);
-			var saveVerb = new DesignerVerb(Resources.VERB_SAVE_THEME, OnSaveTheme);
+			DesignerVerb loadVerb = new DesignerVerb(Resources.VERB_LOAD_THEME, OnLoadTheme);
+			DesignerVerb saveVerb = new DesignerVerb(Resources.VERB_SAVE_THEME, OnSaveTheme);
 
 			loadVerb.Properties.Add("Theme", _themeProperty);
 			saveVerb.Properties.Add("Theme", _themeProperty);
@@ -865,9 +865,7 @@ namespace Gorgon.UI
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void labelClose_MouseEnter(object sender, EventArgs e)
         {
-            var label = sender as Label;
-
-			if (label == null)
+            if (!(sender is Label label))
 			{
 				return;
 			}
@@ -883,9 +881,7 @@ namespace Gorgon.UI
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void labelClose_MouseLeave(object sender, EventArgs e)
         {
-            var label = sender as Label;
-
-	        if (label == null)
+            if (!(sender is Label label))
 	        {
 		        return;
 	        }
@@ -901,9 +897,7 @@ namespace Gorgon.UI
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void labelMinimize_MouseEnter(object sender, EventArgs e)
 		{
-			var label = sender as Label;
-
-			if (label == null)
+		    if (!(sender is Label label))
 			{
 				return;
 			}
@@ -919,9 +913,7 @@ namespace Gorgon.UI
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void labelMinimize_MouseLeave(object sender, EventArgs e)
 		{
-			var label = sender as Label;
-
-			if (label == null)
+		    if (!(sender is Label label))
 			{
 				return;
 			}
@@ -1153,7 +1145,7 @@ namespace Gorgon.UI
 
 			Theme_PropertyChangedEvent(this, EventArgs.Empty);
 
-			using (var graphics = CreateGraphics())
+			using (DrawingGraphics graphics = CreateGraphics())
 			{
 				DrawBorder(graphics);
 			}
@@ -1168,7 +1160,7 @@ namespace Gorgon.UI
 		{
 			Theme_PropertyChangedEvent(this, EventArgs.Empty);
 
-			using (var graphics = CreateGraphics())
+			using (DrawingGraphics graphics = CreateGraphics())
 			{
 				DrawBorder(graphics);
 			}
@@ -1386,7 +1378,7 @@ namespace Gorgon.UI
 				return;
 			}
 
-			using (var pen = new Pen(ActiveForm == this ? _theme.WindowBorderActive : _theme.WindowBorderInactive, _borderWidth))
+			using (Pen pen = new Pen(ActiveForm == this ? _theme.WindowBorderActive : _theme.WindowBorderInactive, _borderWidth))
 			{
 				float halfBorder = _borderWidth / 2.0f;
 				graphics.DrawRectangle(pen, halfBorder, halfBorder, ClientSize.Width - _borderWidth, ClientSize.Height - _borderWidth);

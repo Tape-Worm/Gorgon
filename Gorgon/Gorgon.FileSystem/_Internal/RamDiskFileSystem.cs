@@ -35,7 +35,7 @@ namespace Gorgon.IO
 	/// <summary>
 	/// File information for ram disk files.
 	/// </summary>
-	struct RamDiskFileInfo
+	internal struct RamDiskFileInfo
 		: IEquatable<RamDiskFileInfo>
 	{
 		/// <summary>
@@ -95,7 +95,7 @@ namespace Gorgon.IO
 	/// <summary>
 	/// A file system object for ram disks.
 	/// </summary>
-	class RamDiskFileSystem
+	internal class RamDiskFileSystem
 	{
 		#region Variables.
 		// The list of files and their data for the file system.
@@ -190,8 +190,8 @@ namespace Gorgon.IO
 				throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, path));
 			}
 
-			var directories = _directories.Where(item => item.StartsWith(path, StringComparison.OrdinalIgnoreCase)).ToArray();
-			var files = _fileInfos
+			string[] directories = _directories.Where(item => item.StartsWith(path, StringComparison.OrdinalIgnoreCase)).ToArray();
+			RamDiskFileInfo[] files = _fileInfos
 				.Where(item => item.Key.StartsWith(path, StringComparison.OrdinalIgnoreCase))
 				.Select(item => item.Value)
 				.ToArray();
@@ -242,7 +242,7 @@ namespace Gorgon.IO
 
 			if (_fileInfos.ContainsKey(path))
 			{
-				var fileInfo = GetFileInfo(path);
+				RamDiskFileInfo fileInfo = GetFileInfo(path);
 
 				if (!_fileData.TryGetValue(fileInfo, out stream))
 				{
@@ -253,7 +253,7 @@ namespace Gorgon.IO
 			}
 
 			// This is a new file, so open it as such.
-			var info = new RamDiskFileInfo(path, 0, DateTime.Now, DateTime.Now);
+			RamDiskFileInfo info = new RamDiskFileInfo(path, 0, DateTime.Now, DateTime.Now);
 			stream = new MemoryStream();
 			_fileInfos.Add(path, info);
 			_fileData.Add(info, stream);
@@ -281,7 +281,7 @@ namespace Gorgon.IO
 			_fileInfos.Remove(path);
 
 
-			if (!_fileData.TryGetValue(fileInfo, out MemoryStream stream))
+			if (!_fileData.TryGetValue(fileInfo, out MemoryStream _))
 			{
 				return;
 			}

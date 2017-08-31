@@ -33,7 +33,7 @@ namespace Gorgon.Native
 	/// HID device info.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	struct RID_DEVICE_INFO_HID
+	internal struct RID_DEVICE_INFO_HID
 	{
 		/// <summary>
 		/// Vendor

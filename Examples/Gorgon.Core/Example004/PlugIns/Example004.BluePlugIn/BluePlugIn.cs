@@ -29,7 +29,7 @@ namespace Gorgon.Examples
 	/// <summary>
 	/// Here's our main plug-in entry point.
 	/// </summary>
-	class BluePlugIn
+	internal class BluePlugIn
 		: TextColorPlugIn
 	{
 		#region Methods.

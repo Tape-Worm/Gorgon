@@ -172,7 +172,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <exception cref="GorgonException">Thrown when the image data in the stream has a pixel format that is unsupported.</exception>
 		protected override IGorgonImage OnDecodeFromStream(Stream stream, long size, IGorgonImageCodecDecodingOptions options)
 		{
-			var wic = new WicUtilities();
+			WicUtilities wic = new WicUtilities();
 			Stream streamAlias = stream;
 
 			try
@@ -242,9 +242,9 @@ namespace Gorgon.Graphics.Imaging.Codecs
 				throw new IOException(string.Format(Resources.GORIMG_ERR_STREAM_IS_READONLY));
 			}
 
-			var options = encodingOptions as IGorgonWicEncodingOptions;
+			IGorgonWicEncodingOptions options = encodingOptions as IGorgonWicEncodingOptions;
 
-			var wic = new WicUtilities();
+			WicUtilities wic = new WicUtilities();
 
 			try
 			{
@@ -315,7 +315,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
                 throw new IOException(Resources.GORIMG_ERR_STREAM_CANNOT_SEEK);
             }
 
-			var wic = new WicUtilities();
+			WicUtilities wic = new WicUtilities();
 
             try
             {
@@ -395,7 +395,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 				return new DX.Point[0];
 			}
 
-			var wic = new WicUtilities();
+			WicUtilities wic = new WicUtilities();
 
 			try
 			{
@@ -454,7 +454,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 				throw new IOException(Resources.GORIMG_ERR_STREAM_CANNOT_SEEK);
 			}
 
-			var wic = new WicUtilities();
+			WicUtilities wic = new WicUtilities();
 
 			try
 			{

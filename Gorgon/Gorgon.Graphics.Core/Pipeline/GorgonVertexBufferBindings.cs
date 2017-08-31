@@ -48,18 +48,16 @@ namespace Gorgon.Graphics.Core
 		public const int MaximumVertexBufferCount = D3D11.InputAssemblerStage.VertexInputResourceSlotCount;
 		#endregion
 
-		#region Variables.
-		// The native bindings.
-		private readonly D3D11.VertexBufferBinding[] _nativeBindings;
-		#endregion
-
 		#region Properties.
 		/// <summary>
 		/// Property to return the native items wrapped by this list.
 		/// </summary>
-		internal D3D11.VertexBufferBinding[] Native => _nativeBindings;
+		internal D3D11.VertexBufferBinding[] Native
+		{
+		    get;
+	    }
 
-		/// <summary>
+	    /// <summary>
 		/// Property to return the input layout assigned to the buffer bindings.
 		/// </summary>
 		/// <remarks>
@@ -80,7 +78,7 @@ namespace Gorgon.Graphics.Core
 	    /// <param name="value">The value containing the native item.</param>
 	    protected override void OnStoreNativeItem(int nativeItemIndex, GorgonVertexBufferBinding value)
 	    {
-	        _nativeBindings[nativeItemIndex] = value.ToVertexBufferBinding();
+	        Native[nativeItemIndex] = value.ToVertexBufferBinding();
 	    }
 
 		/// <summary>
@@ -88,7 +86,7 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		protected override void OnClear()
 		{
-			Array.Clear(_nativeBindings, 0, _nativeBindings.Length);
+			Array.Clear(Native, 0, Native.Length);
 		}
 		#endregion
 
@@ -102,7 +100,7 @@ namespace Gorgon.Graphics.Core
 			: base(MaximumVertexBufferCount)
 		{
 			InputLayout = inputLayout ?? throw new ArgumentNullException(nameof(inputLayout));
-			_nativeBindings = new D3D11.VertexBufferBinding[MaximumVertexBufferCount];
+			Native = new D3D11.VertexBufferBinding[MaximumVertexBufferCount];
 		}
 		#endregion
 	}

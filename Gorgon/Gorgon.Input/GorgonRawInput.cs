@@ -186,7 +186,7 @@ namespace Gorgon.Input
 					_filter = new RawInputMessageFilter(_devices, _applicationWindow, _useNativeHook);
 				}
 
-				var key = new DeviceKey
+				DeviceKey key = new DeviceKey
 				          {
 					          DeviceType = device.DeviceType,
 					          DeviceHandle = device.Handle
@@ -247,7 +247,7 @@ namespace Gorgon.Input
 
 			lock (_syncLock)
 			{
-				var key = new DeviceKey
+				DeviceKey key = new DeviceKey
 				          {
 					          DeviceType = device.DeviceType,
 					          DeviceHandle = device.Handle
@@ -285,7 +285,7 @@ namespace Gorgon.Input
 		public IReadOnlyList<IGorgonMouseInfo> EnumerateMice()
 		{
 			RAWINPUTDEVICELIST[] devices = RawInputApi.EnumerateRawInputDevices(RawInputType.Mouse);
-			var result = new List<RawMouseInfo>();
+			List<RawMouseInfo> result = new List<RawMouseInfo>();
 
 			for (int i = 0; i < devices.Length; i++)
 			{
@@ -312,7 +312,7 @@ namespace Gorgon.Input
 		public IReadOnlyList<IGorgonKeyboardInfo> EnumerateKeyboards()
 		{
 			RAWINPUTDEVICELIST[] devices = RawInputApi.EnumerateRawInputDevices(RawInputType.Keyboard);
-			var result = new List<RawKeyboardInfo>();
+			List<RawKeyboardInfo> result = new List<RawKeyboardInfo>();
 
 			for (int i = 0; i < devices.Length; i++)
 			{
@@ -339,7 +339,7 @@ namespace Gorgon.Input
 		public IReadOnlyList<GorgonRawHIDInfo> EnumerateHumanInterfaceDevices()
 		{
 			RAWINPUTDEVICELIST[] devices = RawInputApi.EnumerateRawInputDevices(RawInputType.HID);
-			var result = new List<GorgonRawHIDInfo>();
+			List<GorgonRawHIDInfo> result = new List<GorgonRawHIDInfo>();
 
 			for (int i = 0; i < devices.Length; i++)
 			{
@@ -396,13 +396,8 @@ namespace Gorgon.Input
 		/// </remarks>
 		public GorgonRawInput(Control applicationWindow, IGorgonLog log = null)
 		{
-			if (applicationWindow == null)
-			{
-				throw new ArgumentNullException(nameof(applicationWindow));
-			}
-
-			_log = log ?? GorgonLogDummy.DefaultInstance;
-			_applicationWindow = applicationWindow.Handle;
+		    _log = log ?? GorgonLogDummy.DefaultInstance;
+			_applicationWindow = applicationWindow?.Handle ?? throw new ArgumentNullException(nameof(applicationWindow));
 			_devices = new Dictionary<DeviceKey, IGorgonRawInputDevice>();
 		}
 

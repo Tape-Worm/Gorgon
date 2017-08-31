@@ -36,7 +36,7 @@ namespace Gorgon.Plugins
 	/// </summary>
 	[ComConversionLoss, Guid("9FD93CCF-3280-4391-B3A9-96E1CDE77C8D"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown), SecurityCritical]
 	[ComImport]
-	interface IClrStrongName
+	internal interface IClrStrongName
 	{
 		[MethodImpl(MethodImplOptions.PreserveSig | MethodImplOptions.InternalCall)]
 		int GetHashFromAssemblyFile([MarshalAs(UnmanagedType.LPStr)] [In] string pszFilePath, [MarshalAs(UnmanagedType.U4)] [In] [Out] ref int piHashAlg, [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 3)] [Out] byte[] pbHash, [MarshalAs(UnmanagedType.U4)] [In] int cchHash, [MarshalAs(UnmanagedType.U4)] out int pchHash);

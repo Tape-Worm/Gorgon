@@ -34,7 +34,7 @@ namespace Gorgon.Examples
 	/// So now we can implement our green/purple text color writer by passing in the color 
 	/// on the constructor from the plug-in interface.
 	/// </summary>
-	class TextMultiColorWriter
+	internal class TextMultiColorWriter
 		: TextColorWriter
 	{
 		/// <summary>

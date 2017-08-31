@@ -36,7 +36,7 @@ namespace Gorgon.Graphics.Core
 	/// <summary>
 	/// A processor used to analyze shader source code and inject any special #GorgonInclude directives.
 	/// </summary>
-	class ShaderProcessor
+	internal class ShaderProcessor
 	{
 		#region Properties.
 		/// <summary>
@@ -163,10 +163,10 @@ namespace Gorgon.Graphics.Core
 		/// <returns>The processed shader source.</returns>
 		public string Process(string sourceCode)
 		{
-			var result = new StringBuilder();
+			StringBuilder result = new StringBuilder();
 
 			// Replace carriage returns with new lines.
-			var code = new StringBuilder(sourceCode);
+			StringBuilder code = new StringBuilder(sourceCode);
 			code.Replace("\r\n", "\n");
 			code.Replace("\n\r", "\n");
 			code.Replace("\r", "\n");
@@ -174,7 +174,7 @@ namespace Gorgon.Graphics.Core
 			IList<string> lines = code.ToString().Split('\n');
 			int i = 0;
 
-			var includeLine = new StringBuilder();
+			StringBuilder includeLine = new StringBuilder();
 
 			while (i < lines.Count)
 			{

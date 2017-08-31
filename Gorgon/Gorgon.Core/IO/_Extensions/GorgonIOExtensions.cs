@@ -398,7 +398,7 @@ namespace Gorgon.IO
 		        return string.Empty;
 	        }
 
-			var output = new StringBuilder(path);
+			StringBuilder output = new StringBuilder(path);
 
 			output = _illegalPathChars.Aggregate(output, (current, illegalChar) => current.Replace(illegalChar, '_'));
 
@@ -437,7 +437,7 @@ namespace Gorgon.IO
         public static string FormatDirectory(this string path, char directorySeparator)
         {
             string directorySep = _directoryPathSeparator;
-            var doubleSeparator = new string(new [] { directorySeparator, directorySeparator});
+            string doubleSeparator = new string(new [] { directorySeparator, directorySeparator});
 
             if (string.IsNullOrWhiteSpace(path))
             {
@@ -449,7 +449,7 @@ namespace Gorgon.IO
                 directorySeparator = Path.DirectorySeparatorChar;
             }
 
-			var output = new StringBuilder(path);
+			StringBuilder output = new StringBuilder(path);
 			
 			output = _illegalPathChars.Aggregate(output, (current, illegalChar) => current.Replace(illegalChar, '_'));
 
@@ -496,7 +496,7 @@ namespace Gorgon.IO
 		    path = path.Replace(Path.DirectorySeparatorChar, '_');
 		    path = path.Replace(Path.AltDirectorySeparatorChar, '_');
 
-            var output = new StringBuilder(path);
+            StringBuilder output = new StringBuilder(path);
 
             output = _illegalPathChars.Aggregate(output, (current, illegalChar) => current.Replace(illegalChar, '_'));
 
@@ -566,10 +566,10 @@ namespace Gorgon.IO
             }
 
 			// Filter out bad characters.
-	        var output = new StringBuilder(path);
+	        StringBuilder output = new StringBuilder(path);
 			output = _illegalPathChars.Aggregate(output, (current, illegalChar) => current.Replace(illegalChar, '_'));
 
-            var filePath = new StringBuilder(FormatDirectory(Path.GetDirectoryName(output.ToString()), directorySeparator));
+            StringBuilder filePath = new StringBuilder(FormatDirectory(Path.GetDirectoryName(output.ToString()), directorySeparator));
 
 	        path = output.ToString();
 

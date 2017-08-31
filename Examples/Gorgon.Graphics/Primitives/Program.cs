@@ -43,7 +43,7 @@ using Gorgon.UI;
 
 namespace Gorgon.Graphics.Example
 {
-	static class Program
+    internal static class Program
 	{
 		// Main application form.
 		private static FormMain _form;
@@ -245,11 +245,13 @@ namespace Gorgon.Graphics.Example
 	    /// <param name="e">The <see cref="Gorgon.Input.GorgonKeyboardEventArgs" /> instance containing the event data.</param>
 	    private static void Keyboard_KeyDown(object sender, GI.GorgonKeyboardEventArgs e)
 	    {
-	        if (e.Key == Keys.L)
+	        if (e.Key != Keys.L)
 	        {
-	            _lock = !_lock;
-                _camera.Target(_lock ? (DX.Vector3?)_sphere.Position : null);
+	            return;
 	        }
+
+	        _lock = !_lock;
+	        _camera.Target(_lock ? (DX.Vector3?)_sphere.Position : null);
 	    }
 
         /// <summary>
@@ -284,7 +286,7 @@ namespace Gorgon.Graphics.Example
         /// <param name="e">The <see cref="GI.GorgonMouseEventArgs" /> instance containing the event data.</param>
         private static void RawMouse_MouseMove(object sender, GI.GorgonMouseEventArgs e)
         {
-            var delta = e.RelativePosition;
+            Point delta = e.RelativePosition;
             _cameraRotation.Y += delta.Y.Sign() * (_sensitivity);
             _cameraRotation.X += delta.X.Sign() * (_sensitivity);
         }
@@ -343,7 +345,7 @@ namespace Gorgon.Graphics.Example
             _renderer.TextureCache["GorgonNormalMap"] = Resources.normalmap.ToTexture("GorgonNormalMap", _graphics);
 
             // The following images are DDS encoded and require an encoder to read them from the resources.
-	        var dds = new GorgonCodecDds();
+	        GorgonCodecDds dds = new GorgonCodecDds();
 
 	        using (MemoryStream stream = new MemoryStream(Resources.Rain_Height_NRM))
 	        using (IGorgonImage image = dds.LoadFromStream(stream))
@@ -369,8 +371,8 @@ namespace Gorgon.Graphics.Example
         /// </summary>
 	    private static void BuildMeshes()
 	    {
-	        var fnU = new DX.Vector3(0.5f, 1.0f, 0);
-	        var fnV = new DX.Vector3(1.0f, 1.0f, 0);
+	        DX.Vector3 fnU = new DX.Vector3(0.5f, 1.0f, 0);
+	        DX.Vector3 fnV = new DX.Vector3(1.0f, 1.0f, 0);
 	        DX.Vector3.Cross(ref fnU, ref fnV, out DX.Vector3 faceNormal);
 	        faceNormal.Normalize();
 
@@ -402,7 +404,7 @@ namespace Gorgon.Graphics.Example
 	                            {
 	                                [0] = "UV",
 	                                [1] = "Water_Normal",
-	                                [2] = "Water_Specular",
+	                                [2] = "Water_Specular"
 	                            }
 	                        },
 	                        Position = new DX.Vector3(0, 0, 1.0f)
@@ -420,7 +422,7 @@ namespace Gorgon.Graphics.Example
 	                         {
 	                             [0] = "UV",
 	                             [1] = "Water_Normal",
-	                             [2] = "Water_Specular",
+	                             [2] = "Water_Specular"
 	                         }
                          }
 	                 };
@@ -531,7 +533,7 @@ namespace Gorgon.Graphics.Example
 		{
 			_form = new FormMain();
 
-		    var devices = new GorgonVideoDeviceList();
+		    GorgonVideoDeviceList devices = new GorgonVideoDeviceList();
             devices.Enumerate();
 
             _graphics = new GorgonGraphics(devices[0]);
@@ -588,7 +590,7 @@ namespace Gorgon.Graphics.Example
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-		static void Main()
+        private static void Main()
 		{
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);

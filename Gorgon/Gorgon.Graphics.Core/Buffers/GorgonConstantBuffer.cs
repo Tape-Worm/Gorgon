@@ -145,7 +145,7 @@ namespace Gorgon.Graphics.Core
 
 			Log.Print($"{Name} Constant Buffer: Creating D3D11 buffer. Size: {SizeInBytes} bytes", LoggingLevel.Simple);
 
-			var desc  = new D3D11.BufferDescription
+			D3D11.BufferDescription desc  = new D3D11.BufferDescription
 			{
 				SizeInBytes = SizeInBytes,
 				Usage = _info.Usage,

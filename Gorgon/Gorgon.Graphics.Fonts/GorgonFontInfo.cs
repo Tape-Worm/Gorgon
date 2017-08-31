@@ -419,12 +419,7 @@ namespace Gorgon.Graphics.Fonts
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="fontInfo"/> parameter is <b>null</b>.</exception>
 		public GorgonFontInfo(IGorgonFontInfo fontInfo)
 		{
-			if (fontInfo == null)
-			{
-				throw new ArgumentNullException(nameof(fontInfo));
-			}
-
-			FontHeightMode = fontInfo.FontHeightMode;
+		    FontHeightMode = fontInfo?.FontHeightMode ?? throw new ArgumentNullException(nameof(fontInfo));
 			AntiAliasingMode = fontInfo.AntiAliasingMode;
 			Brush = fontInfo.Brush;
 			DefaultCharacter = fontInfo.DefaultCharacter;

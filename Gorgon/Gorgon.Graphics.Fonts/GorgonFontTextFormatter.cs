@@ -56,7 +56,7 @@ namespace Gorgon.Graphics.Fonts
 			}
 
 			tabSpacing = tabSpacing.Min(1);
-			var newString = new StringBuilder(renderText);
+			StringBuilder newString = new StringBuilder(renderText);
 
 			// Strip all carriage returns.
 			newString.Replace("\r", string.Empty);

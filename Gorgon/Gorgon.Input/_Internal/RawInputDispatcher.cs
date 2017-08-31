@@ -33,7 +33,7 @@ namespace Gorgon.Input
 	/// <summary>
 	/// Dispatches Raw Input data to the appropriate device.
 	/// </summary>
-	static class RawInputDispatcher
+	internal static class RawInputDispatcher
 	{
 		/// <summary>
 		/// Function to dispatch the raw input data to a HID.
@@ -42,14 +42,12 @@ namespace Gorgon.Input
 		/// <param name="rawData">Raw input data to translate.</param>
 		public static void Dispatch(IGorgonRawInputDevice device, ref RAWINPUTHID rawData)
 		{
-			var deviceProcessor = device as IGorgonRawInputDeviceData<GorgonRawHIDData>;
-
-			if (deviceProcessor == null)
+		    if (!(device is IGorgonRawInputDeviceData<GorgonRawHIDData> deviceProcessor))
 			{
 				return;
 			}
 
-			var data = new GorgonRawHIDData
+			GorgonRawHIDData data = new GorgonRawHIDData
 			           {
 				           HidData = new GorgonPointerAlias(rawData.Data, rawData.Size * rawData.Count),
 				           ItemCount = rawData.Count,
@@ -69,9 +67,7 @@ namespace Gorgon.Input
 			short wheelDelta = 0;
 			MouseButtonState state = MouseButtonState.None;
 
-			var deviceProcessor = device as IGorgonRawInputDeviceData<GorgonRawMouseData>;
-
-			if (deviceProcessor == null)
+		    if (!(device is IGorgonRawInputDeviceData<GorgonRawMouseData> deviceProcessor))
 			{
 				return;
 			}
@@ -131,7 +127,7 @@ namespace Gorgon.Input
 				state = MouseButtonState.Button5Up;
 			}
 
-			var processedData = new GorgonRawMouseData
+			GorgonRawMouseData processedData = new GorgonRawMouseData
 			{
 				ButtonState = state,
 				MouseWheelDelta = wheelDelta,
@@ -151,9 +147,7 @@ namespace Gorgon.Input
 		{
 			KeyboardDataFlags flags = KeyboardDataFlags.KeyDown;
 
-			IGorgonRawInputDeviceData<GorgonRawKeyboardData> deviceProcessor = device as IGorgonRawInputDeviceData<GorgonRawKeyboardData>;
-
-			if (deviceProcessor == null)
+		    if (!(device is IGorgonRawInputDeviceData<GorgonRawKeyboardData> deviceProcessor))
 			{
 				return;
 			}
@@ -179,7 +173,7 @@ namespace Gorgon.Input
 				flags |= rawData.MakeCode == 0x36 ? KeyboardDataFlags.RightKey : KeyboardDataFlags.LeftKey;
 			}
 
-			var data = new GorgonRawKeyboardData
+			GorgonRawKeyboardData data = new GorgonRawKeyboardData
 			           {
 				           ScanCode = rawData.MakeCode,
 				           Key = (Keys)rawData.VirtualKey,

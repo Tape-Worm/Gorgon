@@ -89,9 +89,7 @@ namespace Gorgon.Input.XInput
 		/// </remarks>
 		public override IGorgonGamingDevice CreateGamingDevice(IGorgonGamingDeviceInfo gamingDeviceInfo)
 		{
-			XInputDeviceInfo xInputInfo = gamingDeviceInfo as XInputDeviceInfo;
-
-			if (xInputInfo == null)
+		    if (!(gamingDeviceInfo is XInputDeviceInfo xInputInfo))
 			{
 				throw new ArgumentException(Resources.GORINP_ERR_XINP_NOT_AN_XINPUT_DEVICE_INFO, nameof(gamingDeviceInfo));
 			}

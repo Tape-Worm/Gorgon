@@ -177,7 +177,7 @@ namespace Gorgon.Graphics.Fonts
 
 			try
 			{
-				var pixels = (int*)sourcePixels.Scan0.ToPointer();
+				int* pixels = (int*)sourcePixels.Scan0.ToPointer();
 
 				for (int y = 0; y < bitmap.Height; y++)
 				{
@@ -192,7 +192,7 @@ namespace Gorgon.Graphics.Fonts
 						// So, we must convert to ABGR even though the DXGI format is RGBA. The memory layout is from lowest 
 						// (R at byte 0) to the highest byte (A at byte 3).
 						// Thus, R is the lowest byte, and A is the highest: A(24), B(16), G(8), R(0).
-						var color = new GorgonColor(*offset);
+						GorgonColor color = new GorgonColor(*offset);
 
 						if (Info.UsePremultipliedTextures)
 						{
@@ -208,10 +208,7 @@ namespace Gorgon.Graphics.Fonts
 			}
 			finally
 			{
-			    if (sourcePixels != null)
-			    {
-			        bitmap.UnlockBits(sourcePixels);
-			    }
+			    bitmap.UnlockBits(sourcePixels);
 			}
 		}
 
@@ -239,9 +236,9 @@ namespace Gorgon.Graphics.Fonts
 
 				IList<KERNINGPAIR> kerningPairs = Win32API.GetKerningPairs();
 
-				foreach (var pair in kerningPairs.Where(item => item.KernAmount != 0))
+				foreach (KERNINGPAIR pair in kerningPairs.Where(item => item.KernAmount != 0))
 				{
-					var newPair = new GorgonKerningPair(Convert.ToChar(pair.First), Convert.ToChar(pair.Second));
+					GorgonKerningPair newPair = new GorgonKerningPair(Convert.ToChar(pair.First), Convert.ToChar(pair.Second));
 
 					if ((!allowedCharacters.Contains(newPair.LeftCharacter)) ||
 						(!allowedCharacters.Contains(newPair.RightCharacter)))
@@ -290,13 +287,13 @@ namespace Gorgon.Graphics.Fonts
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
 		private void GenerateTextures(Dictionary<Drawing.Bitmap, IEnumerable<GlyphInfo>> glyphData)
 		{
-			var imageSettings = new GorgonImageInfo(ImageType.Image2D, DXGI.Format.R8G8B8A8_UNorm)
+			GorgonImageInfo imageSettings = new GorgonImageInfo(ImageType.Image2D, DXGI.Format.R8G8B8A8_UNorm)
 			{
 				Width = Info.TextureWidth,
 				Height = Info.TextureHeight,
 				Depth = 1
 			};
-			var textureSettings = new GorgonTextureInfo
+			GorgonTextureInfo textureSettings = new GorgonTextureInfo
 			{
 				Format = DXGI.Format.R8G8B8A8_UNorm,
 				Width = Info.TextureWidth,
@@ -381,7 +378,7 @@ namespace Gorgon.Graphics.Fonts
 					continue;
 				}
 
-				var newGlyph = new GorgonGlyph(glyph.Key, advance)
+				GorgonGlyph newGlyph = new GorgonGlyph(glyph.Key, advance)
 				               {
 					               Offset = glyph.Value.Offset,
 					               OutlineOffset = HasOutline ? glyph.Value.OutlineOffset : DX.Point.Zero
@@ -454,7 +451,7 @@ namespace Gorgon.Graphics.Fonts
 					continue;
 				}
 
-				var kerning = new GorgonKerningPair(character, line[i + 1]);
+				GorgonKerningPair kerning = new GorgonKerningPair(character, line[i + 1]);
 
 				if (KerningPairs.TryGetValue(kerning, out int kernAmount))
 				{
@@ -521,7 +518,7 @@ namespace Gorgon.Graphics.Fonts
 				return text;
 			}
 
-			var wordText = new StringBuilder(text);
+			StringBuilder wordText = new StringBuilder(text);
 
 			if (!Glyphs.TryGetValue(Info.DefaultCharacter, out GorgonGlyph defaultGlyph))
 			{
@@ -814,7 +811,7 @@ namespace Gorgon.Graphics.Fonts
 				List<char> availableCharacters = GetAvailableCharacters();
 				
 				// Set up the code to draw glyphs to bitmaps.
-				var glyphDraw = new GlyphDraw(Info, fontData);
+				GlyphDraw glyphDraw = new GlyphDraw(Info, fontData);
 
 				// Gather the boundaries for each glyph character.
 				Dictionary<char, GlyphRegions> glyphBounds = glyphDraw.GetGlyphRegions(availableCharacters, HasOutline);

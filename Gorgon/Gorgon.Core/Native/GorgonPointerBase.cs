@@ -1578,10 +1578,10 @@ namespace Gorgon.Native
 			}
 
 			long size = Size;
-			var buffer = new byte[80000];
+			byte[] buffer = new byte[80000];
 			int bytesCopied = buffer.Length;
 			long offset = 0;
-			var result = new MemoryStream();
+			MemoryStream result = new MemoryStream();
 
 			while (size > 0)
 			{

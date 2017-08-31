@@ -32,7 +32,7 @@ namespace Gorgon.IO
 	/// <summary>
 	/// A file stream writer that will update the virtual file information when it closes.
 	/// </summary>
-	class FileSystemWriteStream
+	internal class FileSystemWriteStream
 		: FileStream
 	{
 		#region Variables.
@@ -51,7 +51,7 @@ namespace Gorgon.IO
 		{
 			if ((disposing) && (_virtualFile != null) && (CanWrite))
 			{
-				var info = new FileInfo(_virtualFile.PhysicalFile.FullPath);
+				FileInfo info = new FileInfo(_virtualFile.PhysicalFile.FullPath);
 				_virtualFile.PhysicalFile = new PhysicalFileInfo(info, _virtualFile.FullPath);
 
 				if (_virtualFile.MountPoint != _mountPoint)

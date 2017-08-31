@@ -117,9 +117,9 @@ namespace Gorgon.Graphics.Core
 		/// </returns>
 		public override bool Equals(object obj)
 		{
-			if (obj is GorgonStreamOutElement)
+			if (obj is GorgonStreamOutElement element)
 			{
-				return Equals((GorgonStreamOutElement)obj);
+				return element.Equals(obj);
 			}
 
 			return base.Equals(obj);

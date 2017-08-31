@@ -102,9 +102,9 @@ namespace Gorgon.Math
 		/// <filterpriority>2</filterpriority>
 		public override bool Equals(object obj)
 		{
-			if (obj is GorgonRationalNumber)
+			if (obj is GorgonRationalNumber rational)
 			{
-				return ((GorgonRationalNumber)obj).Equals(this);
+				return rational.Equals(this);
 			}
 			return base.Equals(obj);
 		}

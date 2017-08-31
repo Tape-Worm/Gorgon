@@ -63,14 +63,14 @@ namespace Gorgon.Examples
 	/// This will load the assembly with the plugins that we want. Then a GorgonPluginService object should be created 
 	/// to create an instance of the plugin interface by using the fully qualified type name of the plugin type.
 	/// </remarks>
-	static class Program
+	internal static class Program
 	{
 		#region Methods.
 		/// <summary>
 		/// Function to retrieve a list of our plugin assemblies.
 		/// </summary>
 		/// <returns>The list of plugin assemblies.</returns>
-		static IEnumerable<string> GetPluginAssemblies()
+		private static IEnumerable<string> GetPluginAssemblies()
 		{
 			return Directory.EnumerateFiles(GorgonApplication.StartupPath, "Example004.*Plugin.dll");
 		}
@@ -79,7 +79,7 @@ namespace Gorgon.Examples
 		/// The main entry point for the application.
 		/// </summary>
 		[STAThread]
-		static void Main()
+		private static void Main()
 		{
 			// Set up the assembly cache.
 			// We'll need the assemblies loaded into this object in order to load our plugin types.
@@ -100,7 +100,7 @@ namespace Gorgon.Examples
 
 				Console.ResetColor();
 
-				var pluginFiles = GetPluginAssemblies().ToArray();
+				string[] pluginFiles = GetPluginAssemblies().ToArray();
 
 				// Load the plugins into Gorgon.
 				foreach (string pluginPath in pluginFiles)
@@ -119,7 +119,7 @@ namespace Gorgon.Examples
 				IList<TextColorWriter> writers = new List<TextColorWriter>(); 
 
 				// Create our plugin instances, we'll limit to 9 entries just for giggles.
-				var plugins = (from pluginName in pluginService.GetPluginNames()
+				TextColorPlugIn[] plugins = (from pluginName in pluginService.GetPluginNames()
 							   let plugin = pluginService.GetPlugin<TextColorPlugIn>(pluginName)
 				               where plugin != null
 				               select plugin).Take(9).ToArray();
@@ -151,7 +151,7 @@ namespace Gorgon.Examples
 					int cursorX = Console.CursorLeft; // Cursor position.
 					int cursorY = Console.CursorTop;
 
-					var keyValue = Console.ReadKey(false);
+					ConsoleKeyInfo keyValue = Console.ReadKey(false);
 
 					if (char.IsNumber(keyValue.KeyChar))
 					{

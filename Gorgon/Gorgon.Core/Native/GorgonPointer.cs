@@ -148,6 +148,7 @@ namespace Gorgon.Native
 				long alignedAddr = (long)((byte*)pointer + sizeof(void*) + mask) & ~mask;
 
 				// Store the actual pointer to the memory block so we know how to free it.
+			    // ReSharper disable once PossibleNullReferenceException
 				((IntPtr*)alignedAddr)[-1] = pointer;
 
 				Size = size;

@@ -32,7 +32,7 @@ namespace Gorgon.Graphics.Example
 	/// <summary>
 	/// The world/view/projection matrix.
 	/// </summary>
-	class Camera
+	internal class Camera
     {
         #region Variables.
         // The eye position.

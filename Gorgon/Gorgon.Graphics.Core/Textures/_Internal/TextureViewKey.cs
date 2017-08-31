@@ -33,7 +33,7 @@ namespace Gorgon.Graphics.Core
     /// <summary>
     /// A key used to uniquely identify a shader view.
     /// </summary>
-    struct TextureViewKey
+    internal struct TextureViewKey
         : IEquatable<TextureViewKey>
     {
         /// <summary>
@@ -56,9 +56,9 @@ namespace Gorgon.Graphics.Core
         /// <returns><c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.</returns>
         public override bool Equals(object obj)
         {
-            if (obj is TextureViewKey)
+            if (obj is TextureViewKey key)
             {
-                return ((TextureViewKey)obj).Equals(this);
+                return key.Equals(this);
             }
             return base.Equals(obj);
         }

@@ -69,9 +69,9 @@ namespace Gorgon.Input
 		/// </summary>
 		public void Reset()
 		{
-			var keys = (Keys[])Enum.GetValues(typeof(Keys));
+			Keys[] keys = (Keys[])Enum.GetValues(typeof(Keys));
 
-			foreach (var key in keys)
+			foreach (Keys key in keys)
 			{
 				this[key] = KeyState.Up;
 			}

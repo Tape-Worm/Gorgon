@@ -34,7 +34,7 @@ using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Example
 {
-    class Plane
+    internal class Plane
         : MoveableMesh
     {
         #region Variables.
@@ -56,14 +56,14 @@ namespace Gorgon.Graphics.Example
             float columnWidth = 1.0f / columns;
             float columnHeight = 1.0f / rows;
 
-            var vertexNormal = -DX.Vector3.UnitZ;
+            DX.Vector3 vertexNormal = -DX.Vector3.UnitZ;
             DX.Vector3.TransformNormal(ref vertexNormal, ref _orientation, out vertexNormal);
 
             for (int y = 0; y <= rows; ++y)
             {
                 for (int x = 0; x <= columns; ++x)
                 {
-                    var vertexPos = new DX.Vector3(((x * columnWidth) - 0.5f) * size.X,
+                    DX.Vector3 vertexPos = new DX.Vector3(((x * columnWidth) - 0.5f) * size.X,
                                                    ((y * columnHeight) - 0.5f) * size.Y,
                                                    0);
 

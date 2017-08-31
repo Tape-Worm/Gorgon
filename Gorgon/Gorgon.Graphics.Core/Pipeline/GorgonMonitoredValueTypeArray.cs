@@ -28,7 +28,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Gorgon.Math;
 
 namespace Gorgon.Graphics.Core
 {
@@ -41,23 +40,24 @@ namespace Gorgon.Graphics.Core
 		where T : struct, IEquatable<T>
 	{
 		#region Variables.
-		// The backing store for the array.
-		private readonly T[] _backingStore;
-		// The indices that are dirty.
+	    // The indices that are dirty.
 		private int _dirtyIndices;
 		// The last set of dirty items.
-		private (int Start, int Count) _dirtyItems = (0, 0);
+		private (int Start, int Count) _dirtyItems;
 		#endregion
 
 		#region Properties.
 		/// <summary>
 		/// Property to return the backing store to objects that need it.
 		/// </summary>
-		protected T[] BackingArray => _backingStore;
-		
-		/// <summary>Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
+		protected T[] BackingArray
+		{
+		    get;
+	    }
+
+	    /// <summary>Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
 		/// <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
-		public int Count => _backingStore.Length;
+		public int Count => BackingArray.Length;
 
 		/// <summary>Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</summary>
 		/// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only; otherwise, false.</returns>
@@ -76,15 +76,15 @@ namespace Gorgon.Graphics.Core
 		/// <exception cref="T:System.NotSupportedException">The property is set and the <see cref="T:System.Collections.Generic.IList`1" /> is read-only.</exception>
 		public T this[int index]
 		{
-			get => _backingStore[index];
+			get => BackingArray[index];
 			set
 			{
-				if (_backingStore[index].Equals(value))
+				if (BackingArray[index].Equals(value))
 				{
 					return;
 				}
 
-				_backingStore[index] = value;
+				BackingArray[index] = value;
 				_dirtyIndices |= 1 << index;
 
 				OnItemSet(index, value);
@@ -163,7 +163,7 @@ namespace Gorgon.Graphics.Core
 		    int dirtyState = _dirtyIndices;
 		    int nativeIndex = 0;
 
-			for (int i = 0; dirtyState != 0 && i < _backingStore.Length; ++i)
+			for (int i = 0; dirtyState != 0 && i < BackingArray.Length; ++i)
 			{
 				int dirtyMask = 1 << i;
 
@@ -181,7 +181,7 @@ namespace Gorgon.Graphics.Core
 					startSlot = i;
 				}
 
-			    OnStoreNativeItem(nativeIndex++, _backingStore[i]);
+			    OnStoreNativeItem(nativeIndex++, BackingArray[i]);
 
                 ++count;
 
@@ -241,7 +241,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.IList`1" />.</param>
 		public int IndexOf(T item)
 		{
-			return Array.IndexOf(_backingStore, item);
+			return Array.IndexOf(BackingArray, item);
 		}
 
 		/// <summary>Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.</summary>
@@ -262,7 +262,7 @@ namespace Gorgon.Graphics.Core
 		/// <exception cref="T:System.ArgumentException">The number of elements in the source <see cref="T:System.Collections.Generic.ICollection`1" /> is greater than the available space from <paramref name="arrayIndex" /> to the end of the destination <paramref name="array" />.</exception>
 		public void CopyTo(T[] array, int arrayIndex)
 		{
-			_backingStore.CopyTo(array, arrayIndex);
+			BackingArray.CopyTo(array, arrayIndex);
 		}
 
 		/// <summary>Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1" /> to an <see cref="T:System.Array" />, starting at a particular <see cref="T:System.Array" /> index.</summary>
@@ -289,7 +289,7 @@ namespace Gorgon.Graphics.Core
 		{
 		    OnClear();
 
-            Array.Clear(_backingStore, 0, _backingStore.Length);
+            Array.Clear(BackingArray, 0, BackingArray.Length);
 
 		    // Mark all indices as dirty.
 		    _dirtyIndices = 0;
@@ -302,9 +302,9 @@ namespace Gorgon.Graphics.Core
         public IEnumerator<T> GetEnumerator()
 		{
 			// ReSharper disable once ForCanBeConvertedToForeach
-			for (int i = 0; i < _backingStore.Length; ++i)
+			for (int i = 0; i < BackingArray.Length; ++i)
 			{
-				yield return _backingStore[i];
+				yield return BackingArray[i];
 			}
 		}
 
@@ -313,7 +313,7 @@ namespace Gorgon.Graphics.Core
 		/// <filterpriority>2</filterpriority>
 		IEnumerator IEnumerable.GetEnumerator()
 		{
-			return _backingStore.GetEnumerator();
+			return BackingArray.GetEnumerator();
 		}
         #endregion
 
@@ -329,7 +329,7 @@ namespace Gorgon.Graphics.Core
 		    {
 		        throw new ArgumentOutOfRangeException(nameof(maxSize));
 		    }
-			_backingStore = new T[maxSize];
+			BackingArray = new T[maxSize];
 		    _dirtyItems = (0, 0);
 		}
 		#endregion

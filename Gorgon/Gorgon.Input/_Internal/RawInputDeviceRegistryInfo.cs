@@ -35,7 +35,7 @@ namespace Gorgon.Input
 	/// <summary>
 	/// Retrieves device information from the windows registry for a given device name.
 	/// </summary>
-	static class RawInputDeviceRegistryInfo
+	internal static class RawInputDeviceRegistryInfo
 	{
 		/// <summary>
 		/// Function to retrieve the description of the raw input device from the registry.

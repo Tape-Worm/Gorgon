@@ -29,7 +29,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Gorgon.Collections;
 using Gorgon.Core;
-using Gorgon.IO.Properties;
 using Gorgon.IO.Providers;
 
 namespace Gorgon.IO
@@ -46,7 +45,7 @@ namespace Gorgon.IO
 	/// a directory, call the <see cref="IGorgonFileSystemWriter{T}.DeleteDirectory"/> method on the <see cref="IGorgonFileSystemWriter{T}"/> object.
 	/// </para>
 	/// </remarks>
-	class VirtualDirectory
+	internal class VirtualDirectory
 		: IGorgonVirtualDirectory
 	{
 		#region Properties.

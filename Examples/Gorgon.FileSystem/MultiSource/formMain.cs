@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -103,7 +104,7 @@ namespace Gorgon.Examples
 
 				_picture.Image = null;
 				_textDisplay.Text = string.Empty;
-				var file = (IGorgonVirtualFile)e.Node.Tag;
+				IGorgonVirtualFile file = (IGorgonVirtualFile)e.Node.Tag;
 
 				// Here we load the image from the file system.
 				// Note that we don't care if it's from the zip file
@@ -133,7 +134,7 @@ namespace Gorgon.Examples
 							break;
 						default:
 							// Get data in the file stream.
-							var textData = new byte[fileStream.Length];
+							byte[] textData = new byte[fileStream.Length];
 							fileStream.Read(textData, 0, textData.Length);
 
 							// Convert to a string.
@@ -161,7 +162,7 @@ namespace Gorgon.Examples
 		/// <param name="e">The <see cref="TreeViewCancelEventArgs" /> instance containing the event data.</param>
 		private void treeFileSystem_BeforeExpand(object sender, TreeViewCancelEventArgs e)
 		{
-			var directory = e.Node.Tag as IGorgonVirtualDirectory;
+			IGorgonVirtualDirectory directory = e.Node.Tag as IGorgonVirtualDirectory;
 
 			try
 			{
@@ -186,7 +187,7 @@ namespace Gorgon.Examples
 		/// <param name="e">The <see cref="TreeViewCancelEventArgs" /> instance containing the event data.</param>
 		private void treeFileSystem_BeforeCollapse(object sender, TreeViewCancelEventArgs e)
 		{
-			var directory = e.Node.Tag as IGorgonVirtualDirectory;
+			IGorgonVirtualDirectory directory = e.Node.Tag as IGorgonVirtualDirectory;
 
 			try
 			{
@@ -219,7 +220,7 @@ namespace Gorgon.Examples
 			{
 				pluginAssemblies.Load(zipProviderDLL);
 
-				var providerFactory = new GorgonFileSystemProviderFactory(
+				GorgonFileSystemProviderFactory providerFactory = new GorgonFileSystemProviderFactory(
 					new GorgonPluginService(pluginAssemblies, GorgonApplication.Log),
 					GorgonApplication.Log);
 
@@ -248,7 +249,7 @@ namespace Gorgon.Examples
 			else
 			{
 				// Find the node with the directory.
-				var searchNodes = treeFileSystem.Nodes.Find(directory.FullPath, true);
+				TreeNode[] searchNodes = treeFileSystem.Nodes.Find(directory.FullPath, true);
 
 				if (searchNodes.Length > 0)
 				{					
@@ -280,13 +281,13 @@ namespace Gorgon.Examples
 				}
 
 				// Enumerate the data.  For the purposed of this example, we will filter out known binary files from our file system.				
-				var directories = directory.Directories.OrderBy(item => item.Name);
-				var files = directory.Files.OrderBy(item => item.Name).Where(item => item.Extension != ".gorSprite" && item.Extension != ".gal");
+				IOrderedEnumerable<IGorgonVirtualDirectory> directories = directory.Directories.OrderBy(item => item.Name);
+				IEnumerable<IGorgonVirtualFile> files = directory.Files.OrderBy(item => item.Name).Where(item => item.Extension != ".gorSprite" && item.Extension != ".gal");
 
 				// Get directories.
-				foreach (var subDirectory in directories)
+				foreach (IGorgonVirtualDirectory subDirectory in directories)
 				{
-					var directoryNode = new TreeNode(subDirectory.Name)
+					TreeNode directoryNode = new TreeNode(subDirectory.Name)
 					    {
 					        Name = subDirectory.FullPath, 
                             Tag = subDirectory
@@ -316,14 +317,14 @@ namespace Gorgon.Examples
 				}
 
 				// Get files.
-				foreach (var file in files)
+				foreach (IGorgonVirtualFile file in files)
 				{
 					if (file.Extension == ".gorSprite")
 					{
 						continue;
 					}
 
-					var fileNode = new TreeNode(file.Name)
+					TreeNode fileNode = new TreeNode(file.Name)
 					{
 						Name = file.FullPath, 
 						Tag = file

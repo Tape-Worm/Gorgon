@@ -114,9 +114,9 @@ namespace Gorgon.Graphics.Core
 		/// </returns>
 		public override bool Equals(object obj)
 		{
-		    if (obj is GorgonVertexBufferBinding)
+		    if (obj is GorgonVertexBufferBinding binding)
 		    {
-		        return Equals((GorgonVertexBufferBinding)obj);
+		        return binding.Equals(this);
 		    }
 
 		    return base.Equals(obj);

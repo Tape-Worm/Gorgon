@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -193,7 +194,7 @@ namespace Gorgon.Plugins
 		/// <returns>An array of plugins created or retrieved.</returns>
 		private T[] GetPluginsFromConstructors<T>(ConcurrentDictionary<Type, ObjectActivator<GorgonPlugin>> pluginConstructors)
 		{
-			var result = new ConcurrentBag<GorgonPlugin>();
+			ConcurrentBag<GorgonPlugin> result = new ConcurrentBag<GorgonPlugin>();
 			Type typeT = typeof(T);
 
 			// Match the types with our generic type. The type in the plugin must be an exact match with T, or a subclass of T.
@@ -256,7 +257,7 @@ namespace Gorgon.Plugins
 
 			List<T> result = new List<T>();
 
-			foreach (var item in _assemblyConstructors.Value)
+			foreach (KeyValuePair<string, Lazy<ConcurrentDictionary<Type, ObjectActivator<GorgonPlugin>>>> item in _assemblyConstructors.Value)
 			{
 				result.AddRange(GetPluginsFromConstructors<T>(item.Value.Value));
 			}
@@ -429,7 +430,7 @@ namespace Gorgon.Plugins
 					                          select type;
 
 					// Build another view of the constructor list that allows us to segregate by assembly.
-					var assemblyConstructors = _assemblyConstructors.Value.GetOrAdd(assemblyItem.Value.GetName().FullName,
+					Lazy<ConcurrentDictionary<Type, ObjectActivator<GorgonPlugin>>> assemblyConstructors = _assemblyConstructors.Value.GetOrAdd(assemblyItem.Value.GetName().FullName,
 					                                                                new Lazy<ConcurrentDictionary<Type, ObjectActivator<GorgonPlugin>>>(
 						                                                                () => new ConcurrentDictionary<Type, ObjectActivator<GorgonPlugin>>(), true));
 
@@ -444,13 +445,14 @@ namespace Gorgon.Plugins
 						}
 
 						_log.Print("Found plugin '{0}' in the assembly '{1}'.", LoggingLevel.Verbose, pluginType.FullName, assemblyItem.Value.FullName);
+                        Debug.Assert(pluginType.FullName != null, nameof(pluginType) + ".FullName != null");
 						_constructors.Value.TryAdd(pluginType.FullName, activator);
 						assemblyConstructors.Value.TryAdd(pluginType, activator);
 					}
 				}
 				catch (ReflectionTypeLoadException ex)
 				{
-					var errorMessage = new StringBuilder(512);
+					StringBuilder errorMessage = new StringBuilder(512);
 
 					foreach (Exception loadEx in ex.LoaderExceptions)
 					{
@@ -534,7 +536,7 @@ namespace Gorgon.Plugins
 					}
 
 					// ReSharper disable once SuspiciousTypeConversion.Global
-					var disposer = plugin as IDisposable;
+					IDisposable disposer = plugin as IDisposable;
 
 					disposer?.Dispose();
 

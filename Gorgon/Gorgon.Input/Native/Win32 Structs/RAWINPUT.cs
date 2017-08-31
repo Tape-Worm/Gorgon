@@ -33,7 +33,7 @@ namespace Gorgon.Native
 	/// Value type for raw input.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	struct RAWINPUT
+	internal struct RAWINPUT
 	{
 		/// <summary>Header for the data.</summary>
 		public RAWINPUTHEADER Header;
@@ -42,7 +42,7 @@ namespace Gorgon.Native
 	}
 
 	[StructLayout(LayoutKind.Explicit)]
-	struct RAWINPUT_UNION
+	internal struct RAWINPUT_UNION
 	{
 		/// <summary>Mouse raw input data.</summary>
 		[FieldOffset(0)]

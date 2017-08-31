@@ -31,7 +31,7 @@ namespace Gorgon.Native
 	/// <summary>
 	/// Get monitor from window flags.
 	/// </summary>
-	enum MonitorFlags
+	internal enum MonitorFlags
 	{
 		/// <summary>
 		/// Return <b>null</b>.

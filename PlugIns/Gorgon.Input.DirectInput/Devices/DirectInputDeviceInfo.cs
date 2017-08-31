@@ -36,7 +36,7 @@ namespace Gorgon.Input.DirectInput
 	/// <summary>
 	/// Device information for a DirectInput gaming device.
 	/// </summary>
-	class DirectInputDeviceInfo
+	internal class DirectInputDeviceInfo
 		: IGorgonGamingDeviceInfo
 	{
 		#region Properties.
@@ -154,8 +154,8 @@ namespace Gorgon.Input.DirectInput
 		/// <param name="joystick">The DirectInput joystick to evaluate.</param>
 		public void GetDeviceCaps(DI.Joystick joystick)
 		{
-			var defaults = new Dictionary<GamingDeviceAxis, int>(new GorgonGamingDeviceAxisEqualityComparer());
-			var axisRanges = new Dictionary<GamingDeviceAxis, GorgonRange>(new GorgonGamingDeviceAxisEqualityComparer());
+			Dictionary<GamingDeviceAxis, int> defaults = new Dictionary<GamingDeviceAxis, int>(new GorgonGamingDeviceAxisEqualityComparer());
+			Dictionary<GamingDeviceAxis, GorgonRange> axisRanges = new Dictionary<GamingDeviceAxis, GorgonRange>(new GorgonGamingDeviceAxisEqualityComparer());
 
 			ProductID = joystick.Properties.ProductId;
 			ManufacturerID = joystick.Properties.VendorId;

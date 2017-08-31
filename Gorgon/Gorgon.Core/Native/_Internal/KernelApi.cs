@@ -33,7 +33,7 @@ namespace Gorgon.Native
 	/// Native windows kernal API functionality.
 	/// </summary>
 	[SuppressUnmanagedCodeSecurity]
-	static class KernelApi
+	internal static class KernelApi
 	{
 		#region Properties.
 		/// <summary>
@@ -43,7 +43,7 @@ namespace Gorgon.Native
 		{
 			get
 			{
-				var memory = new MEMORYSTATUSEX
+				MEMORYSTATUSEX memory = new MEMORYSTATUSEX
 				{
 					dwLength = (uint)Marshal.SizeOf(typeof(MEMORYSTATUSEX))
 				};
@@ -64,7 +64,7 @@ namespace Gorgon.Native
 		{
 			get
 			{
-				var memory = new MEMORYSTATUSEX
+				MEMORYSTATUSEX memory = new MEMORYSTATUSEX
 				{
 					dwLength = (uint)Marshal.SizeOf(typeof(MEMORYSTATUSEX))
 				};

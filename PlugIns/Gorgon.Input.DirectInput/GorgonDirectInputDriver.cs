@@ -61,7 +61,7 @@ namespace Gorgon.Input.DirectInput
 		/// <returns>A string containing the PID and VID portions of the device ID.</returns>
 		private static string GetXInputDeviceID(string deviceName, int pidIndex, int vidIndex)
 		{
-			var buffer = new StringBuilder();
+			StringBuilder buffer = new StringBuilder();
 			string pidValue = deviceName.Substring(pidIndex + 4, 4);
 			string vidValue = deviceName.Substring(vidIndex + 4, 4);
 
@@ -80,7 +80,7 @@ namespace Gorgon.Input.DirectInput
 			// This monstrosity is based on the code at:
 			// https://msdn.microsoft.com/en-ca/library/windows/desktop/ee417014(v=vs.85).aspx
 			// 
-			using (var search = new ManagementObjectSearcher("SELECT DeviceID FROM Win32_PnPEntity"))
+			using (ManagementObjectSearcher search = new ManagementObjectSearcher("SELECT DeviceID FROM Win32_PnPEntity"))
 			{
 				IEnumerable<string> xinputDevices = (from pnpDevice in search.Get().Cast<ManagementBaseObject>()
 				                                     let deviceID = pnpDevice.GetPropertyValue("DeviceID")
@@ -105,7 +105,7 @@ namespace Gorgon.Input.DirectInput
 		/// <returns><b>true</b> if the device is an xinput controller, <b>false</b> if not.</returns>
 		private bool IsXInputController(DI.DeviceInstance device)
 		{
-			var buffer = new StringBuilder(device.ProductGuid.ToString()).Remove(0, 8);
+			StringBuilder buffer = new StringBuilder(device.ProductGuid.ToString()).Remove(0, 8);
 
 			foreach (string deviceID in _xinputDeviceIDs.Value)
 			{
@@ -163,7 +163,7 @@ namespace Gorgon.Input.DirectInput
 				       })
 				.Select(item =>
 				        {
-					        var info = new DirectInputDeviceInfo(item);
+					        DirectInputDeviceInfo info = new DirectInputDeviceInfo(item);
 
 					        using (DI.Joystick joystick = new DI.Joystick(_directInput.Value, info.InstanceGuid))
 					        {
@@ -196,9 +196,7 @@ namespace Gorgon.Input.DirectInput
 		/// </remarks>
 		public override IGorgonGamingDevice CreateGamingDevice(IGorgonGamingDeviceInfo gamingDeviceInfo)
 		{
-			DirectInputDeviceInfo deviceInfo = gamingDeviceInfo as DirectInputDeviceInfo;
-
-			if (deviceInfo == null)
+		    if (!(gamingDeviceInfo is DirectInputDeviceInfo deviceInfo))
 			{
 				throw new ArgumentException(Resources.GORINP_ERR_DI_NOT_A_DI_DEVICE_INFO, nameof(gamingDeviceInfo));
 			}

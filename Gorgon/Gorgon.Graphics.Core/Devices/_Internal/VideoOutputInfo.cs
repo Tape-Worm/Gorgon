@@ -37,7 +37,7 @@ namespace Gorgon.Graphics.Core
 	/// <remarks>
 	/// An output is typically a physical connection between the video device and another device.
 	/// </remarks>
-	class VideoOutputInfo 
+	internal class VideoOutputInfo 
 		: IGorgonVideoOutputInfo
 	{
 		#region Variables.

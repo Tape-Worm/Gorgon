@@ -37,7 +37,7 @@ namespace Gorgon.Graphics
 	/// <summary>
 	/// Provides functionality for blitting a texture to the currently active <see cref="GorgonGraphics.RenderTargets">render target</see>.
 	/// </summary>
-	class TextureBlitter
+	internal class TextureBlitter
 		: IDisposable
 	{
         #region Constants.

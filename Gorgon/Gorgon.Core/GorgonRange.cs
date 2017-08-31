@@ -304,9 +304,9 @@ namespace Gorgon.Core
 		/// </returns>
 		public override bool Equals(object obj)
 		{
-			if (obj is GorgonRangeD)
+			if (obj is GorgonRangeD range)
 			{
-				return ((GorgonRangeD)obj).Equals(this);
+				return range.Equals(this);
 			}
 
 			return base.Equals(obj);
@@ -835,9 +835,9 @@ namespace Gorgon.Core
 		/// </returns>
 		public override bool Equals(object obj)
 		{
-			if (obj is GorgonRangeM)
+			if (obj is GorgonRangeM range)
 			{
-				return ((GorgonRangeM)obj).Equals(this);
+				return range.Equals(this);
 			}
 
 			return base.Equals(obj);
@@ -1366,9 +1366,9 @@ namespace Gorgon.Core
 		/// </returns>
 		public override bool Equals(object obj)
 		{
-			if (obj is GorgonRangeF)
+			if (obj is GorgonRangeF range)
 			{
-				return ((GorgonRangeF)obj).Equals(this);
+				return range.Equals(this);
 			}
 
 			return base.Equals(obj);
@@ -1898,9 +1898,9 @@ namespace Gorgon.Core
 		/// </returns>
 		public override bool Equals(object obj)
 		{
-			if (obj is GorgonRange)
+			if (obj is GorgonRange range)
 			{
-				return ((GorgonRange)obj).Equals(this);
+				return range.Equals(this);
 			}
 
 			return base.Equals(obj);

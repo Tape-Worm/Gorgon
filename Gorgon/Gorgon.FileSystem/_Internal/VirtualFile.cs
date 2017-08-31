@@ -72,7 +72,7 @@ namespace Gorgon.IO
 	/// ]]>
 	/// </code>
 	/// </example>
-	class VirtualFile
+	internal class VirtualFile
 		: IGorgonVirtualFile
 	{
 		#region Properties.

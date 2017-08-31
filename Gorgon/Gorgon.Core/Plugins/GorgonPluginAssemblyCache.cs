@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -102,7 +103,7 @@ namespace Gorgon.Plugins
 		// Search paths for the plugin assemblies.
 		private readonly Lazy<GorgonPluginPathCollection> _paths = new Lazy<GorgonPluginPathCollection>(() =>
 		                                                                                                {
-			                                                                                                var result = new GorgonPluginPathCollection();
+			                                                                                                GorgonPluginPathCollection result = new GorgonPluginPathCollection();
 			                                                                                                result.GetDefaultPaths();
 
 			                                                                                                return result;
@@ -206,7 +207,8 @@ namespace Gorgon.Plugins
 		private GorgonPluginVerifier GetVerifier()
 		{
 			Type verifierType = typeof(GorgonPluginVerifier);
-			_log.Print("Creating plugin verifier...", LoggingLevel.Verbose);
+		    Debug.Assert(verifierType.FullName != null, nameof(verifierType) + ".FullName != null");
+            _log.Print("Creating plugin verifier...", LoggingLevel.Verbose);
 			return (GorgonPluginVerifier)(_discoveryDomain.Value.CreateInstanceFrom(verifierType.Assembly.Location, verifierType.FullName).Unwrap());
 		}
 
@@ -218,7 +220,7 @@ namespace Gorgon.Plugins
 		/// <returns>The assembly to use.</returns>
 		private Assembly CurrentDomain_AssemblyResolveEvent(object sender, ResolveEventArgs args)
 		{
-			var resolver = _resolver;
+			Func<AppDomain, ResolveEventArgs, Assembly> resolver = _resolver;
 
 			return resolver?.Invoke(AppDomain.CurrentDomain, args);
 		}
@@ -299,7 +301,7 @@ namespace Gorgon.Plugins
 																		StringComparison.OrdinalIgnoreCase))
 											   select assembly;
 
-			var checkedAssembly = new HashSet<string>(StringComparer.OrdinalIgnoreCase);  
+			HashSet<string> checkedAssembly = new HashSet<string>(StringComparer.OrdinalIgnoreCase);  
 
 			foreach (Assembly assembly in assemblies)
 			{
@@ -376,9 +378,9 @@ namespace Gorgon.Plugins
 			}
 
 			// We couldn't find the file, start looking through the paths.
-			var assemblyFile = Path.GetFileName(pluginPath);
+			string assemblyFile = Path.GetFileName(pluginPath);
 
-			var pathBuffer = new StringBuilder();
+			StringBuilder pathBuffer = new StringBuilder();
 
 			pluginPath = SearchPaths.FirstOrDefault(path =>
 			                                        {
@@ -459,7 +461,7 @@ namespace Gorgon.Plugins
 			Guid clrStrongNameClsId = new Guid("B79B0ACD-F5CD-409b-B5A5-A16244610B92");
 			Guid clrStrongNameriid = new Guid("9FD93CCF-3280-4391-B3A9-96E1CDE77C8D");
 
-			var strongName = (IClrStrongName)RuntimeEnvironment.GetRuntimeInterfaceAsObject(clrStrongNameClsId, clrStrongNameriid);
+			IClrStrongName strongName = (IClrStrongName)RuntimeEnvironment.GetRuntimeInterfaceAsObject(clrStrongNameClsId, clrStrongNameriid);
 
 			int result = strongName.StrongNameSignatureVerificationEx(assemblyPath, true, out bool wasVerified);
 

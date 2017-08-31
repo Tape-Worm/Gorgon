@@ -186,7 +186,7 @@ namespace Gorgon.Diagnostics
 
 			lock (_syncLock)
 			{
-				using (var stream = new StreamWriter(File.Open(LogPath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite)))
+				using (StreamWriter stream = new StreamWriter(File.Open(LogPath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite)))
 				{
 					SendToLog(stream, string.Empty);
 					SendToLog(stream, "================================================");
@@ -197,7 +197,7 @@ namespace Gorgon.Diagnostics
 
 					while (inner != null)
 					{
-						var gorgonException = inner as GorgonException;
+						GorgonException gorgonException = inner as GorgonException;
 
 						if ((inner == ex) || (LogFilterLevel == LoggingLevel.Verbose))
 						{
@@ -336,7 +336,7 @@ namespace Gorgon.Diagnostics
 
 			lock (_syncLock)
 			{
-				using (var stream = new StreamWriter(File.Open(LogPath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite), Encoding.UTF8))
+				using (StreamWriter stream = new StreamWriter(File.Open(LogPath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite), Encoding.UTF8))
 				{ 
 					SendToLog(stream, formatSpecifier, arguments);
 				}
@@ -351,7 +351,7 @@ namespace Gorgon.Diagnostics
 			// Clean up.
 			lock (_syncLock)
 			{
-				using (var writer = new StreamWriter(File.Open(LogPath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite), Encoding.UTF8))
+				using (StreamWriter writer = new StreamWriter(File.Open(LogPath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite), Encoding.UTF8))
 				{
 					SendToLog(writer,
 					              "**** {0} (Version {1}) logging ends on thread ID: 0x{2}. ****",

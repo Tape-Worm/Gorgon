@@ -37,7 +37,7 @@ namespace Gorgon.IO.Zip
 	/// <summary>
 	/// A file system provider for zip files.
 	/// </summary>
-	class ZipProvider
+	internal class ZipProvider
 		: GorgonFileSystemProvider
     {
 		#region Variables.
@@ -73,10 +73,10 @@ namespace Gorgon.IO.Zip
 		/// </remarks>
 		protected override GorgonPhysicalFileSystemData OnEnumerate(string physicalLocation, IGorgonVirtualDirectory mountPoint)
 		{
-            var directories = new List<string>();
-            var files = new List<IGorgonPhysicalFileInfo>();
+            List<string> directories = new List<string>();
+            List<IGorgonPhysicalFileInfo> files = new List<IGorgonPhysicalFileInfo>();
 
-			using (var zipStream = new ZipInputStream(File.Open(physicalLocation, FileMode.Open, FileAccess.Read, FileShare.Read)))
+			using (ZipInputStream zipStream = new ZipInputStream(File.Open(physicalLocation, FileMode.Open, FileAccess.Read, FileShare.Read)))
 			{
 				ZipEntry entry;
 
@@ -157,7 +157,7 @@ namespace Gorgon.IO.Zip
 		/// </remarks>
 		protected override bool OnCanReadFile(string physicalPath)
 		{
-		    var headerBytes = new byte[4];
+		    byte[] headerBytes = new byte[4];
 
 			using (FileStream stream = File.Open(physicalPath, FileMode.Open, FileAccess.Read, FileShare.Read))
 			{

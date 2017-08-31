@@ -33,7 +33,7 @@ namespace Gorgon.Native
 	/// Time capabilities.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	struct TIMECAPS
+	internal struct TIMECAPS
 	{
 		public uint MinPeriod;
 		public uint MaxPeriod;

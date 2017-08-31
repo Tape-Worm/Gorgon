@@ -406,15 +406,10 @@ namespace Gorgon.Graphics.Core
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
         public GorgonSamplerState(GorgonSamplerState info)
 		{
-			if (info == null)
-			{
-				throw new ArgumentNullException(nameof(info));
-			}
-
-            // Copy the original native state reference, this will make any duplicated (i.e. no changes)
+		    // Copy the original native state reference, this will make any duplicated (i.e. no changes)
             // state a little faster to assign when rendering.
 		    ID = Interlocked.Increment(ref _stateID);
-            Native = info.Native;
+            Native = info?.Native ?? throw new ArgumentNullException(nameof(info));
 			Filter = info.Filter;
 			AddressU = info.AddressU;
 			AddressV = info.AddressV;

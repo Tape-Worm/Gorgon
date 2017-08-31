@@ -165,7 +165,7 @@ namespace Gorgon.Plugins
 			// 4. x86 system directory.
 			Add(Environment.GetFolderPath(Environment.SpecialFolder.SystemX86));
 			// 5. PATH.
-			var variables = Environment.GetEnvironmentVariables(EnvironmentVariableTarget.Process);
+			IDictionary variables = Environment.GetEnvironmentVariables(EnvironmentVariableTarget.Process);
 
 		    if (!variables.Contains("Path"))
 		    {

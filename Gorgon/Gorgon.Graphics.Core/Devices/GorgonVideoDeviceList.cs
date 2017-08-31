@@ -144,13 +144,13 @@ namespace Gorgon.Graphics.Core
 				flags = D3D11.DeviceCreationFlags.Debug;
 			}
 
-			using (var D3DDevice = new D3D11.Device(D3D.DriverType.Warp, flags, featureLevels))
+			using (D3D11.Device D3DDevice = new D3D11.Device(D3D.DriverType.Warp, flags, featureLevels))
 			{
-				using (var D3DDevice1 = D3DDevice.QueryInterface<D3D11.Device1>())
+				using (D3D11.Device1 D3DDevice1 = D3DDevice.QueryInterface<D3D11.Device1>())
 				{
-					using (var giDevice = D3DDevice1.QueryInterface<DXGI.Device1>())
+					using (DXGI.Device1 giDevice = D3DDevice1.QueryInterface<DXGI.Device1>())
 					{
-						using (var adapter = giDevice.GetParent<DXGI.Adapter2>())
+						using (DXGI.Adapter2 adapter = giDevice.GetParent<DXGI.Adapter2>())
 						{
 							D3D.FeatureLevel? featureLevel = GetFeatureLevel(D3DDevice1);
 
@@ -159,7 +159,7 @@ namespace Gorgon.Graphics.Core
 								return null;
 							}
 
-							var result = new VideoDeviceInfo(index, adapter, featureLevel.Value, new GorgonNamedObjectList<IGorgonVideoOutputInfo>(), VideoDeviceType.Software);
+							VideoDeviceInfo result = new VideoDeviceInfo(index, adapter, featureLevel.Value, new GorgonNamedObjectList<IGorgonVideoOutputInfo>(), VideoDeviceType.Software);
 
 							PrintLog(result);
 
@@ -178,13 +178,13 @@ namespace Gorgon.Graphics.Core
         /// <returns>The video device used for reference software rendering.</returns>
 		private VideoDeviceInfo GetRefSoftwareDevice(int index)
 		{
-			using (var D3DDevice = new D3D11.Device(D3D.DriverType.Reference, D3D11.DeviceCreationFlags.Debug))
+			using (D3D11.Device D3DDevice = new D3D11.Device(D3D.DriverType.Reference, D3D11.DeviceCreationFlags.Debug))
 			{
-				using (var D3DDevice1 = D3DDevice.QueryInterface<D3D11.Device1>())
+				using (D3D11.Device1 D3DDevice1 = D3DDevice.QueryInterface<D3D11.Device1>())
 				{
-					using (var giDevice = D3DDevice.QueryInterface<DXGI.Device1>())
+					using (DXGI.Device1 giDevice = D3DDevice.QueryInterface<DXGI.Device1>())
 					{
-						using (var adapter = giDevice.GetParent<DXGI.Adapter2>())
+						using (DXGI.Adapter2 adapter = giDevice.GetParent<DXGI.Adapter2>())
 						{
 							D3D.FeatureLevel? featureLevel = GetFeatureLevel(D3DDevice1);
 
@@ -193,7 +193,7 @@ namespace Gorgon.Graphics.Core
 								return null;
 							}
 
-							var result = new VideoDeviceInfo(index,
+							VideoDeviceInfo result = new VideoDeviceInfo(index,
 							                                       adapter,
 							                                       featureLevel.Value,
 							                                       new GorgonNamedObjectList<IGorgonVideoOutputInfo>(),
@@ -261,7 +261,7 @@ namespace Gorgon.Graphics.Core
 		/// <returns>A list of display compatible full screen video modes.</returns>
 		private static IReadOnlyList<DXGI.ModeDescription1> GetVideoModes(D3D11.Device1 D3DDevice, DXGI.Output1 giOutput)
 		{
-			var result = new List<DXGI.ModeDescription1>();
+			List<DXGI.ModeDescription1> result = new List<DXGI.ModeDescription1>();
 			DXGI.Format[] formats = null;
 
 			if (Interlocked.Exchange(ref formats, _formats) == null)
@@ -275,7 +275,7 @@ namespace Gorgon.Graphics.Core
 			}
 
 			// Test each format for display compatibility.
-			foreach (var format in _formats)
+			foreach (DXGI.Format format in _formats)
 			{
 				DXGI.ModeDescription1[] modes = giOutput.GetDisplayModeList1(format, DXGI.DisplayModeEnumerationFlags.Scaling | DXGI.DisplayModeEnumerationFlags.Interlaced);
 
@@ -320,7 +320,7 @@ namespace Gorgon.Graphics.Core
 		/// <returns>A list if video output info values.</returns>
 		private IGorgonNamedObjectReadOnlyList<IGorgonVideoOutputInfo> GetOutputs(D3D11.Device1 device, DXGI.Adapter2 adapter, int outputCount)
 		{
-			var result = new GorgonNamedObjectList<IGorgonVideoOutputInfo>();
+			GorgonNamedObjectList<IGorgonVideoOutputInfo> result = new GorgonNamedObjectList<IGorgonVideoOutputInfo>();
 
 			// Devices created under RDP/TS do not support output selection.
 			if (SystemInformation.TerminalServerSession)
@@ -393,9 +393,9 @@ namespace Gorgon.Graphics.Core
 		/// </remarks>
 		public void Enumerate(bool enumerateWARPDevice = false, bool enumerateRefRasterizer = false)
 		{
-			var devices = new List<IGorgonVideoDeviceInfo>();
+			List<IGorgonVideoDeviceInfo> devices = new List<IGorgonVideoDeviceInfo>();
 
-			using (var factory = new DXGI.Factory1())
+			using (DXGI.Factory1 factory = new DXGI.Factory1())
 			{
 				int adapterCount = factory.GetAdapterCount1();
 
@@ -405,9 +405,9 @@ namespace Gorgon.Graphics.Core
 				for (int i = 0; i < adapterCount; i++)
 				{
 					// Get the video device information.
-					using (var adapter1 = factory.GetAdapter1(i))
+					using (DXGI.Adapter1 adapter1 = factory.GetAdapter1(i))
 					{
-						using (var adapter = adapter1.QueryInterface<DXGI.Adapter2>())
+						using (DXGI.Adapter2 adapter = adapter1.QueryInterface<DXGI.Adapter2>())
 						{ 
 							if (((adapter.Description1.Flags & DXGI.AdapterFlags.Remote) != 0)
 								|| ((adapter.Description1.Flags & DXGI.AdapterFlags.Software) != 0))
@@ -423,7 +423,7 @@ namespace Gorgon.Graphics.Core
 							}
 
 							// We create a D3D device here to filter out unsupported video modes from the format list.
-							using (var D3DDevice11 = new D3D11.Device(adapter,
+							using (D3D11.Device D3DDevice11 = new D3D11.Device(adapter,
 							                                          flags,
 							                                          D3D.FeatureLevel.Level_11_1,
 							                                          D3D.FeatureLevel.Level_11_0,
@@ -450,7 +450,7 @@ namespace Gorgon.Graphics.Core
 										           LoggingLevel.Verbose);
 									}
 
-									var videoDevice = new VideoDeviceInfo(i, adapter, featureLevel.Value, outputs, VideoDeviceType.Hardware);
+									VideoDeviceInfo videoDevice = new VideoDeviceInfo(i, adapter, featureLevel.Value, outputs, VideoDeviceType.Hardware);
 									devices.Add(videoDevice);
 									PrintLog(videoDevice);
 								}
@@ -462,7 +462,7 @@ namespace Gorgon.Graphics.Core
 				// Get software devices.
 				if (enumerateWARPDevice)
 				{
-					var device = GetWARPSoftwareDevice(devices.Count);
+					VideoDeviceInfo device = GetWARPSoftwareDevice(devices.Count);
 
 					if (device != null)
 					{
@@ -473,7 +473,7 @@ namespace Gorgon.Graphics.Core
 #if DEBUG
 				if (enumerateRefRasterizer)
 				{
-					var device = GetRefSoftwareDevice(devices.Count);
+					VideoDeviceInfo device = GetRefSoftwareDevice(devices.Count);
 
 					if (device != null)
 					{

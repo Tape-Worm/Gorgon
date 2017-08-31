@@ -178,12 +178,7 @@ namespace Gorgon.Graphics.Core
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="other"/> parameter is <b>null</b>.</exception>
         public void CopyFrom(IGorgonPipelineStateInfo other)
 	    {
-	        if (other == null)
-	        {
-	            throw new ArgumentNullException(nameof(other));
-	        }
-
-	        IsIndependentBlendingEnabled = other.IsIndependentBlendingEnabled;
+	        IsIndependentBlendingEnabled = other?.IsIndependentBlendingEnabled ?? throw new ArgumentNullException(nameof(other));
 	        IsAlphaToCoverageEnabled = other.IsAlphaToCoverageEnabled;
 	        PixelShader = other.PixelShader;
 	        VertexShader = other.VertexShader;
@@ -320,7 +315,7 @@ namespace Gorgon.Graphics.Core
             DepthStencilState = GorgonDepthStencilState.Default;
 		    BlendStates = new[]
 		                  {
-		                      GorgonBlendState.Default,
+		                      GorgonBlendState.Default
 		                  };
 		}
         #endregion

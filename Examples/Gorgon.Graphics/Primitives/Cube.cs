@@ -34,7 +34,7 @@ using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Example
 {
-	class Cube
+    internal class Cube
 		: MoveableMesh
 	{
 		#region Variables.
@@ -74,7 +74,7 @@ namespace Gorgon.Graphics.Example
 			{
 				for (int x = 0; x <= columns; ++x)
 				{
-					var vertexPos = new DX.Vector3(((x * columnWidth) - 0.5f) * size.X,
+					DX.Vector3 vertexPos = new DX.Vector3(((x * columnWidth) - 0.5f) * size.X,
 					                            ((y * columnHeight) - 0.5f) * size.Y,
 					                            0);
 
@@ -150,7 +150,7 @@ namespace Gorgon.Graphics.Example
 					IGorgonPointer vertexData = new GorgonPointerTyped<Vertex3D>(VertexCount),
 					                 indexData = new GorgonPointerTyped<int>(IndexCount))
 				{
-					var vertices = (Vertex3D*)vertexData.Address;
+					Vertex3D* vertices = (Vertex3D*)vertexData.Address;
 					// Front.
 					GetVertices(vertices, DX.Vector3.UnitY, -DX.Vector3.UnitZ, size, textureCoordinates, columnsPerFace, rowsPerFace);
 					// Bottom.
@@ -164,7 +164,7 @@ namespace Gorgon.Graphics.Example
 					// Right
 					GetVertices(vertices + (faceVertexCount * 5), DX.Vector3.UnitY, DX.Vector3.UnitX, size, textureCoordinates, columnsPerFace, rowsPerFace);
 
-					var indices = (int*)indexData.Address;
+					int* indices = (int*)indexData.Address;
 					GetIndices(indices, 0, columnsPerFace, rowsPerFace);
 					GetIndices(indices + faceIndexCount, faceVertexCount, columnsPerFace, rowsPerFace);
 					GetIndices(indices + (faceIndexCount * 2), faceVertexCount * 2, columnsPerFace, rowsPerFace);

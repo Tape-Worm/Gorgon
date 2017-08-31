@@ -38,7 +38,7 @@ namespace Gorgon.Examples
 	/// </summary>
 	/// <remarks>This example is tiny bit more advanced.  It'll show how to use an application context with Gorgon and how to 
 	/// dynamically switch idle loops on the fly.</remarks>
-	static class Program
+	internal static class Program
 	{
 		#region Variables.
 		private static readonly Random _rnd = new Random();	// Random number generator.
@@ -57,7 +57,7 @@ namespace Gorgon.Examples
 		/// <remarks>This is the secondary default idle loop.</remarks>
 		public static bool NewIdle()
 		{
-			var form = (formMain)GorgonApplication.ApplicationContext.MainForm;		// Get our main form from the context.
+			formMain form = (formMain)GorgonApplication.ApplicationContext.MainForm;		// Get our main form from the context.
 			
 			// Draw some bars every 16 ms.
 			if (GorgonTiming.MillisecondsSinceStart - _lastTime >= 16.6f)
@@ -112,7 +112,7 @@ namespace Gorgon.Examples
 		/// <remarks>This is the default idle loop.</remarks>
 		public static bool Idle()
 		{
-			var form = (formMain)GorgonApplication.ApplicationContext.MainForm;		// Get our main form from the context.
+			formMain form = (formMain)GorgonApplication.ApplicationContext.MainForm;		// Get our main form from the context.
 
 			int x = _rnd.Next(0, form.GraphicsSize.Width - 1);
 			int y = _rnd.Next(0, form.GraphicsSize.Height - 1);
@@ -141,7 +141,7 @@ namespace Gorgon.Examples
 		/// The main entry point for the application.
 		/// </summary>
 		[STAThread]
-		static void Main()
+		private static void Main()
 		{
 			try
 			{

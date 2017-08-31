@@ -56,24 +56,23 @@ namespace Gorgon.Graphics.Core
 		public const int MaximumUavCount = 64;
 		#endregion
 
-		#region Variables.
-		// The native bindings.
-		private readonly D3D11.UnorderedAccessView[] _nativeBindings;
-        // The list of counts to apply.
-        private readonly int[] _counts;
-		#endregion
-
 		#region Properties.
 		/// <summary>
 		/// Property to return the native items wrapped by this list.
 		/// </summary>
-		internal D3D11.UnorderedAccessView[] Native => _nativeBindings;
+		internal D3D11.UnorderedAccessView[] Native
+		{
+		    get;
+	    }
 
-        /// <summary>
+	    /// <summary>
         /// Property to return the native initial counts for append/consume buffers.
         /// </summary>
-	    internal int[] Counts => _counts;
-		#endregion
+	    internal int[] Counts
+	    {
+	        get;
+	    }
+	    #endregion
 
 		#region Methods.
 	    /// <summary>
@@ -120,8 +119,8 @@ namespace Gorgon.Graphics.Core
         /// <param name="value">The value containing the native item.</param>
         protected override void OnStoreNativeItem(int nativeItemIndex, GorgonUavBinding value)
 	    {
-	        _nativeBindings[nativeItemIndex] = value.Uav?.NativeView;
-	        _counts[nativeItemIndex] = value.InitialCount;
+	        Native[nativeItemIndex] = value.Uav?.NativeView;
+	        Counts[nativeItemIndex] = value.InitialCount;
 	    }
 
         /// <summary>
@@ -134,8 +133,8 @@ namespace Gorgon.Graphics.Core
                 this[i] = GorgonUavBinding.Empty;
 		    }
 
-			Array.Clear(_nativeBindings, 0, _nativeBindings.Length);
-		    Array.Clear(_counts, 0, _counts.Length);
+			Array.Clear(Native, 0, Native.Length);
+		    Array.Clear(Counts, 0, Counts.Length);
 		}
 		#endregion
 
@@ -146,8 +145,8 @@ namespace Gorgon.Graphics.Core
     	internal GorgonUavBindings()
 			: base(MaximumUavCount)
 		{
-			_nativeBindings = new D3D11.UnorderedAccessView[MaximumUavCount];
-            _counts = new int[MaximumUavCount];
+			Native = new D3D11.UnorderedAccessView[MaximumUavCount];
+            Counts = new int[MaximumUavCount];
 
             // Force us to clear to the empty views instead of the default for the type.
             Clear();

@@ -47,17 +47,15 @@ namespace Gorgon.Graphics.Core
 		public const int MaximumStreamOutCount = 4;
 		#endregion
 
-		#region Variables.
-		// The native bindings.
-		private readonly D3D11.StreamOutputBufferBinding[] _nativeBindings;
-		#endregion
-
 		#region Properties.
 		/// <summary>
 		/// Property to return the native items wrapped by this list.
 		/// </summary>
-		internal D3D11.StreamOutputBufferBinding[] Native => _nativeBindings;
-		#endregion
+		internal D3D11.StreamOutputBufferBinding[] Native
+		{
+		    get;
+	    }
+	    #endregion
 
 		#region Methods.
 	    /// <summary>
@@ -67,7 +65,7 @@ namespace Gorgon.Graphics.Core
 	    /// <param name="value">The value containing the native item.</param>
 	    protected override void OnStoreNativeItem(int nativeItemIndex, GorgonStreamOutBinding value)
 	    {
-            _nativeBindings[nativeItemIndex] = new D3D11.StreamOutputBufferBinding(value.Buffer?.NativeBuffer, value.Offset);
+            Native[nativeItemIndex] = new D3D11.StreamOutputBufferBinding(value.Buffer?.NativeBuffer, value.Offset);
 	    }
 
 		/// <summary>
@@ -75,7 +73,7 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		protected override void OnClear()
 		{
-			Array.Clear(_nativeBindings, 0, _nativeBindings.Length);
+			Array.Clear(Native, 0, Native.Length);
 		}
 		#endregion
 
@@ -86,7 +84,7 @@ namespace Gorgon.Graphics.Core
 		public GorgonStreamOutBindings()
 			: base(MaximumStreamOutCount)
 		{
-			_nativeBindings = new D3D11.StreamOutputBufferBinding[MaximumStreamOutCount];
+			Native = new D3D11.StreamOutputBufferBinding[MaximumStreamOutCount];
 		}
 		#endregion
 	}

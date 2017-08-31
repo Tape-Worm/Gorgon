@@ -45,8 +45,8 @@ namespace Gorgon.Graphics.Imaging
 		/// <param name="src">The source buffer to containing the source pixels to convert.</param>
 		private static unsafe void ConvertPixelsToB4G4R4A4(IGorgonImageBuffer dest, IGorgonImageBuffer src)
 		{
-			var destBufferPtr = (ushort*)dest.Data.Address;
-			var srcBufferPtr = (uint*)src.Data.Address;
+			ushort* destBufferPtr = (ushort*)dest.Data.Address;
+			uint* srcBufferPtr = (uint*)src.Data.Address;
 
 			for (int i = 0; i < src.PitchInformation.SlicePitch; i += sizeof(uint))
 			{
@@ -128,7 +128,7 @@ namespace Gorgon.Graphics.Imaging
 				                        };
 
 			// Our destination image for B8G8R8A8 or R8G8B8A8.
-			var destImage = new GorgonImage(destInfo);
+			GorgonImage destImage = new GorgonImage(destInfo);
 
 			try
 			{
@@ -271,8 +271,8 @@ namespace Gorgon.Graphics.Imaging
 				                               MipCount = mipCount
 			                               };
 
-			var newImage = new GorgonImage(destSettings);
-			var wic = new WicUtilities();
+			GorgonImage newImage = new GorgonImage(destSettings);
+			WicUtilities wic = new WicUtilities();
 
 			try
 			{
@@ -341,15 +341,15 @@ namespace Gorgon.Graphics.Imaging
 			}
 
 			// If the intersection of the crop rectangle and the source buffer are the same (and the depth is the same), then we don't need to crop.
-			var bufferRect = new DX.Rectangle(0, 0, baseImage.Info.Width, baseImage.Info.Height);
-			var clipRect = DX.Rectangle.Intersect(cropRect, bufferRect);
+			DX.Rectangle bufferRect = new DX.Rectangle(0, 0, baseImage.Info.Width, baseImage.Info.Height);
+			DX.Rectangle clipRect = DX.Rectangle.Intersect(cropRect, bufferRect);
 
 			if ((bufferRect.Equals(ref clipRect)) && (newDepth == baseImage.Info.Depth))
 			{
 				return baseImage;
 			}
 
-			var wic = new WicUtilities();
+			WicUtilities wic = new WicUtilities();
 
 			IGorgonImage newImage = null;
 
@@ -427,7 +427,7 @@ namespace Gorgon.Graphics.Imaging
 				return baseImage;
 			}
 
-			var wic = new WicUtilities();
+			WicUtilities wic = new WicUtilities();
 
 			IGorgonImage newImage = null;
 			try
@@ -499,7 +499,7 @@ namespace Gorgon.Graphics.Imaging
 				return ConvertFromB4G4R4A4(baseImage, format);
 			}
 
-			var destInfo = new GorgonFormatInfo(format);
+			GorgonFormatInfo destInfo = new GorgonFormatInfo(format);
 			WicUtilities wic = null;
 
 			IGorgonImage newImage = null;
@@ -548,7 +548,7 @@ namespace Gorgon.Graphics.Imaging
 			try
 			{
 				// Worker image.
-				var cloneImageInfo = new GorgonImageInfo(baseImage.Info)
+				GorgonImageInfo cloneImageInfo = new GorgonImageInfo(baseImage.Info)
 				                     {
 					                     HasPremultipliedAlpha = true
 				                     };
@@ -572,7 +572,7 @@ namespace Gorgon.Graphics.Imaging
 
 					for (int i = 0; i < newImage.SizeInBytes; i += newImage.FormatInfo.SizeInBytes)
 					{
-						var color = GorgonColor.FromABGR(*imagePtr);
+						GorgonColor color = GorgonColor.FromABGR(*imagePtr);
 						color = new GorgonColor(color.Red * color.Alpha, color.Green * color.Alpha, color.Blue * color.Alpha, color.Alpha);
 						*(imagePtr++) = color.ToABGR();
 					}

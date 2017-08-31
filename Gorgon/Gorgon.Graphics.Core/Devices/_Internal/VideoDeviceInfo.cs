@@ -38,7 +38,7 @@ namespace Gorgon.Graphics.Core
 	/// This information may be for a physical hardware device, or a software rasterizer.  To determine which type this device falls under, se the <see cref="VideoDeviceType"/> property to determine the type of device.
 	/// </para>
 	/// </remarks>
-	class VideoDeviceInfo
+	internal class VideoDeviceInfo
 		: IGorgonVideoDeviceInfo
 	{
 		#region Variables.

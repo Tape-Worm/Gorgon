@@ -34,7 +34,7 @@ namespace Gorgon.Graphics.Core
     /// <summary>
     /// A factory used to create texture samplers.
     /// </summary>
-    static class SamplerStateFactory
+    internal static class SamplerStateFactory
     {
         #region Variables.
         // The cached sampler states used for lookup.
@@ -51,6 +51,7 @@ namespace Gorgon.Graphics.Core
         {
             lock (_syncLock)
             {
+                // ReSharper disable once ForCanBeConvertedToForeach
                 for (int i = 0; i < _cachedSamplerStates.Count; ++i)
                 {
                     (GorgonSamplerState Sampler, int Index) samplerInfo = _cachedSamplerStates[i];
@@ -84,6 +85,7 @@ namespace Gorgon.Graphics.Core
             lock (_syncLock)
             {
                 // Look up an existing sampler.
+                // ReSharper disable once ForCanBeConvertedToForeach
                 for (int i = 0; i < _cachedSamplerStates.Count; ++i)
                 {
                     (GorgonSamplerState Sampler, int Index) samplerInfo = _cachedSamplerStates[i];

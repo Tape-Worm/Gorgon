@@ -144,12 +144,7 @@ namespace Gorgon.Graphics.Core
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
         public GorgonStructuredBufferInfo(IGorgonStructuredBufferInfo info)
         {
-            if (info == null)
-            {
-                throw new ArgumentNullException(nameof(info));
-            }
-
-            Usage = info.Usage;
+            Usage = info?.Usage ?? throw new ArgumentNullException(nameof(info));
             Binding = info.Binding;
             SizeInBytes = info.SizeInBytes;
             StructureSize = info.StructureSize;

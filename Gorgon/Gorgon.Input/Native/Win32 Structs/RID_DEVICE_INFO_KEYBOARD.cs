@@ -33,7 +33,7 @@ namespace Gorgon.Native
 	/// Keyboard device information.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	struct RID_DEVICE_INFO_KEYBOARD
+	internal struct RID_DEVICE_INFO_KEYBOARD
 	{
 		/// <summary>
 		/// Type.

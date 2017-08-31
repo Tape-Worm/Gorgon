@@ -34,7 +34,7 @@ namespace Gorgon.Graphics.Core
 	/// <summary>
 	/// Extension methods for SharpDX object conversion.
 	/// </summary>
-	static class SharpDXExtensions
+	internal static class SharpDXExtensions
 	{
 		/// <summary>
 		/// Function to convert a <see cref="GorgonBox"/> to a D3D11 resource region.

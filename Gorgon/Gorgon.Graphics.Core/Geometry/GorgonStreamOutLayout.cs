@@ -53,15 +53,16 @@ namespace Gorgon.Graphics.Core
         #region Variables.
         // Elements used to build the layout.
         private readonly GorgonStreamOutElement[] _elements;
-        // The Direct 3D input layout.
-        private readonly D3D11.StreamOutputElement[] _nativeElements;
         #endregion
 
         #region Properties.
         /// <summary>
         /// Property to return the native elements for the stream output.
         /// </summary>
-        internal D3D11.StreamOutputElement[] Native => _nativeElements;
+        internal D3D11.StreamOutputElement[] Native
+        {
+            get;
+        }
 
         /// <summary>
         /// Property to return the input elements for this layout.
@@ -161,10 +162,10 @@ namespace Gorgon.Graphics.Core
                 FindDuplicateElements(_elements, _elements[i], i, nameof(elements));
             }
 
-            _nativeElements = new D3D11.StreamOutputElement[_elements.Length];
+            Native = new D3D11.StreamOutputElement[_elements.Length];
             for (int i = 0; i < _elements.Length; ++i)
             {
-                _nativeElements[i] = _elements[i].NativeElement;
+                Native[i] = _elements[i].NativeElement;
             }
         }
         #endregion

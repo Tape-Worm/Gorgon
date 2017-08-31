@@ -38,7 +38,7 @@ namespace Gorgon.Examples
 	/// </summary>
 	/// <remarks>This example doesn't do much, just uses the idle time to draw pixels to the window.  It's meant to show 
 	/// how to use the idle loop from outside of the form.</remarks>
-	static class Program
+	internal static class Program
 	{
 		#region Variables.
         private static readonly Random _rnd = new Random();			// Random number generator.
@@ -82,7 +82,7 @@ namespace Gorgon.Examples
 		/// The main entry point for the application.
 		/// </summary>
 		[STAThread]
-		static void Main()
+		private static void Main()
 		{
 			try
 			{

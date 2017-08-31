@@ -34,7 +34,7 @@ namespace Gorgon.Native
 	/// Header item structure.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	struct HDITEM
+	internal struct HDITEM
 	{
 		public uint mask;
 		public int cxy;
@@ -49,5 +49,5 @@ namespace Gorgon.Native
 		public uint type;
 		public IntPtr pvFilter;
 		public uint state;
-	};
+	}
 }

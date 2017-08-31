@@ -71,9 +71,9 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <param name="obj">The object to compare with the current instance. </param>
 		public override bool Equals(object obj)
 		{
-			if (obj is GorgonImageCodecDescription)
+			if (obj is GorgonImageCodecDescription codecDesc)
 			{
-				return ((GorgonImageCodecDescription)obj).Equals(this);
+				return codecDesc.Equals(this);
 			}
 
 			return base.Equals(obj);

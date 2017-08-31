@@ -35,7 +35,7 @@ namespace Gorgon.Examples
 	/// <summary>
 	/// The spray can effect state object.
 	/// </summary>
-	class SprayCan
+	internal class SprayCan
 	{
 		#region Variables.
 		private float _time;					// Current time.
@@ -101,7 +101,7 @@ namespace Gorgon.Examples
 		{
 			get
 			{
-				var colorValue = (int)(((uint)0xFF << (Index * 8)) | (uint)SprayAlpha << 24);
+				int colorValue = (int)(((uint)0xFF << (Index * 8)) | (uint)SprayAlpha << 24);
 
 				return Color.FromArgb(colorValue);
 			}
@@ -246,14 +246,14 @@ namespace Gorgon.Examples
 			Controller.Vibrate(1, (int)_vibAmount);
 
 			// Get the spray vector in a -1 .. 1 range.
-			var sprayVector = new PointF(Controller.Axis[GamingDeviceAxis.RightStickX].Value - Controller.Info.AxisInfo[GamingDeviceAxis.RightStickX].Range.Minimum,
+			PointF sprayVector = new PointF(Controller.Axis[GamingDeviceAxis.RightStickX].Value - Controller.Info.AxisInfo[GamingDeviceAxis.RightStickX].Range.Minimum,
 										Controller.Axis[GamingDeviceAxis.RightStickY].Value - Controller.Info.AxisInfo[GamingDeviceAxis.RightStickY].Range.Minimum);
 
 			sprayVector = new PointF((sprayVector.X / (Controller.Info.AxisInfo[GamingDeviceAxis.RightStickX].Range.Range + 1)) * 2.0f - 1.0f,
 									 -((sprayVector.Y / (Controller.Info.AxisInfo[GamingDeviceAxis.RightStickY].Range.Range + 1)) * 2.0f - 1.0f));
 
 			// Calculate angle without magnitude.
-			var sprayVectorDelta = new PointF(sprayVector.X, sprayVector.Y);
+			PointF sprayVectorDelta = new PointF(sprayVector.X, sprayVector.Y);
 			float sprayAngle = 0.0f;
 
 			// Ensure that we get the correct angle.
@@ -311,7 +311,7 @@ namespace Gorgon.Examples
 			sprayVector = new PointF(_sprayAmount * (cos - sin), _sprayAmount * (sin + cos));
 
 			// Update the spray position.
-			var jitter = new PointF(GorgonRandom.RandomSingle(-_sprayAmount / _sprayMax * throttleValue / 10.0f, _sprayAmount / _sprayMax * throttleValue / 10.0f),
+			PointF jitter = new PointF(GorgonRandom.RandomSingle(-_sprayAmount / _sprayMax * throttleValue / 10.0f, _sprayAmount / _sprayMax * throttleValue / 10.0f),
 										GorgonRandom.RandomSingle(-_sprayAmount / _sprayMax * throttleValue / 10.0f, _sprayAmount / _sprayMax * throttleValue / 10.0f));
 			Position = new PointF(Origin.X + sprayVector.X + jitter.X, Origin.Y + sprayVector.Y + jitter.Y);
 		}

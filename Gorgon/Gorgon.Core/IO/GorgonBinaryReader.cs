@@ -132,7 +132,7 @@ namespace Gorgon.IO
 				return;
 			}
 
-			var data = (byte*)pointer;
+			byte* data = (byte*)pointer;
 			while (size > 0)
 			{
 				if (size >= 8)
@@ -392,7 +392,7 @@ namespace Gorgon.IO
 		public T[] ReadRange<T>(int count)
 			where T : struct
 		{
-			var array = new T[count];
+			T[] array = new T[count];
 
 			ReadRange(array, 0, count);
 

@@ -101,9 +101,9 @@ namespace Gorgon.Graphics.Core
 
 	        int[] strideList = strides?.Take(4).ToArray() ?? new int[0];
             // Clone the byte code just in case we decide to destroy the original.
-	        var byteCode = new D3DCompiler.ShaderBytecode(D3DByteCode.Data);
+	        D3DCompiler.ShaderBytecode byteCode = new D3DCompiler.ShaderBytecode(D3DByteCode.Data);
 
-	        var shader = new D3D.GeometryShader(VideoDevice.D3DDevice(), byteCode, streamOutLayout.Native, strideList, 0)
+	        D3D.GeometryShader shader = new D3D.GeometryShader(VideoDevice.D3DDevice(), byteCode, streamOutLayout.Native, strideList, 0)
 	                     {
 	                         DebugName = $"{Name} (SO) D3D11GeometryShader"
 	                     };

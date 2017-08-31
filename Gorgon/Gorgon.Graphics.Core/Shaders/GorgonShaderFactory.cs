@@ -74,7 +74,7 @@ namespace Gorgon.Graphics.Core
             (typeof(GorgonGeometryShader), ShaderType.Geometry),
 		    (typeof(GorgonHullShader), ShaderType.Hull),
 		    (typeof(GorgonDomainShader), ShaderType.Domain),
-		    (typeof(GorgonComputeShader), ShaderType.Compute),
+		    (typeof(GorgonComputeShader), ShaderType.Compute)
         };
 		#endregion
 
@@ -254,7 +254,7 @@ namespace Gorgon.Graphics.Core
 			
 			// We will store the shader as a Gorgon chunked binary format. 
 			// This will break the shader into parts within the file to allow us the ability to read portions of the file.
-			var chunkReader = new GorgonChunkFileReader(stream, new []
+			GorgonChunkFileReader chunkReader = new GorgonChunkFileReader(stream, new []
 			                                                    {
 				                                                    BinaryShaderFileHeader.ChunkID()
 			                                                    });
@@ -302,6 +302,7 @@ namespace Gorgon.Graphics.Core
 
                 // Validate the type for the shader.
                 // Just in case we try to cast a pixel shader to a compute shader or some such nonsense.
+			    // ReSharper disable once ForCanBeConvertedToForeach
 			    for (int i = 0; i < _shaderTypes.Length; ++i)
 			    {
 			        (Type ShaderObjectType, ShaderType Type) shaderTypeXref = _shaderTypes[i];

@@ -31,7 +31,7 @@ namespace Gorgon.Graphics.Fonts
 	/// <summary>
 	/// A node for the glyph packing.
 	/// </summary>
-	class GlyphNode
+	internal class GlyphNode
 	{
 		#region Variables.
 		// Flag to indicate that we have no more space.
@@ -117,7 +117,7 @@ namespace Gorgon.Graphics.Fonts
 			Right = new GlyphNode(this);
 
 			// Subdivide.
-			var delta = new Size(Region.Width - dimensions.Width, Region.Height - dimensions.Height);
+			Size delta = new Size(Region.Width - dimensions.Width, Region.Height - dimensions.Height);
 
 			if (delta.Width > delta.Height)
 			{

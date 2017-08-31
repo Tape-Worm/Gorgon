@@ -157,7 +157,7 @@ namespace Gorgon.Timing
 		public static bool SupportsQpc()
 		{
 
-			return KernelApi.QueryPerformanceFrequency(out long throwAway);
+			return KernelApi.QueryPerformanceFrequency(out long _);
 		}
 
 		/// <summary>

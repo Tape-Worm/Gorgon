@@ -31,7 +31,7 @@ namespace Gorgon.Graphics.Fonts
 	/// <summary>
 	/// Defines the rectangular regions for a glyph and its outline.
 	/// </summary>
-	class GlyphRegions
+	internal class GlyphRegions
 	{
 		/// <summary>
 		/// Property to set or return the region that encompasses the character.

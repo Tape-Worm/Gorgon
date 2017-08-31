@@ -32,7 +32,7 @@ namespace Gorgon.Input
 	/// <summary>
 	/// An equality comparer for the <see cref="Keys"/> enumeration.
 	/// </summary>
-	class GorgonKeysEqualityComparer
+	internal class GorgonKeysEqualityComparer
 		: IEqualityComparer<Keys>
 	{
 		#region IEqualityComparer<Keys> Members

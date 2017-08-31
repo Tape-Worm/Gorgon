@@ -59,7 +59,7 @@ namespace Gorgon.Examples
     /// directory will become accessible from the virtual file system.  The program will enumerate the directories and files and list 
     /// them in the console window with relevant file information.
 	/// </remarks>
-	static class Program
+	internal static class Program
     {
         #region Constants.
         private const string PluginName = "Gorgon.IO.Zip.ZipProvider";
@@ -139,7 +139,7 @@ namespace Gorgon.Examples
         /// Function to load the zip file provider plugin.
         /// </summary>
         /// <returns><b>true</b> if successfully loaded, <b>false</b> if not.</returns>
-        static bool LoadZipProviderPlugin()
+        private static bool LoadZipProviderPlugin()
         {
             string zipProviderPath = PluginPath + "Gorgon.FileSystem.Zip.dll";
 
@@ -160,7 +160,7 @@ namespace Gorgon.Examples
 	        _pluginAssemblies.Load(assemblyName);
 
 			// Create our file system provider factory so we can retrieve the zip file provider.
-	        var providerFactory = new GorgonFileSystemProviderFactory(_pluginService, GorgonApplication.Log);
+	        GorgonFileSystemProviderFactory providerFactory = new GorgonFileSystemProviderFactory(_pluginService, GorgonApplication.Log);
 
 			// Get our zip file provider.
 	        GorgonFileSystemProvider provider;
@@ -189,7 +189,7 @@ namespace Gorgon.Examples
 	    /// <summary>
 	    /// The main entry point for the application.
 	    /// </summary>
-	    static void Main()
+	    private static void Main()
 		{
 			// Create the plugin assembly cache.
 			_pluginAssemblies = new GorgonPluginAssemblyCache(GorgonApplication.Log);
@@ -228,7 +228,7 @@ namespace Gorgon.Examples
 			    // would load files from the system into memory when mounting a 
 			    // directory.  While this version only loads directory and file 
 			    // information when mounting.  This is considerably more efficient.
-			    var physicalPath = GetResourcePath(@"FileSystem.zip");
+			    string physicalPath = GetResourcePath(@"FileSystem.zip");
 			    _fileSystem.Mount(physicalPath);
 
 			    Console.Write("\nMounted: ");
@@ -241,7 +241,7 @@ namespace Gorgon.Examples
 			    Console.ForegroundColor = ConsoleColor.White;
 
 			    // Get a count of all sub directories and files under the root directory.
-			    var directoryList = _fileSystem.FindDirectories("*").ToArray();
+			    IGorgonVirtualDirectory[] directoryList = _fileSystem.FindDirectories("*").ToArray();
 
 			    // Display directories.
 			    Console.WriteLine("Virtual file system contents:");
@@ -261,7 +261,7 @@ namespace Gorgon.Examples
 
 				    Console.ForegroundColor = ConsoleColor.Yellow;
 
-				    foreach (var file in directory.Files)
+				    foreach (IGorgonVirtualFile file in directory.Files)
 				    {
 					    Console.Write("   {0}", file.Name);
 					    // Align the size to the same place.

@@ -666,7 +666,7 @@ namespace Gorgon.Input
 
 			if (upButtons != MouseButtons.None)
 			{
-				var e = new GorgonMouseEventArgs(upButtons, Buttons, _position, _wheelPosition, RelativePositionOffset, RelativeWheelDelta, _clickCount, !rawInputData.IsRelative);
+				GorgonMouseEventArgs e = new GorgonMouseEventArgs(upButtons, Buttons, _position, _wheelPosition, RelativePositionOffset, RelativeWheelDelta, _clickCount, !rawInputData.IsRelative);
 
 				MouseButtonUp?.Invoke(this, e);
 
@@ -717,12 +717,7 @@ namespace Gorgon.Input
 				                                    });
 			}
 
-			if (info == null)
-			{
-				throw new InvalidCastException(string.Format(Resources.GORINP_RAW_ERR_INVALID_DEVICE_INFO_TYPE, mouseInfo.GetType().FullName, GetType().FullName));
-			}
-
-			_deviceHandle = info.Handle;
+		    _deviceHandle = info?.Handle ?? throw new InvalidCastException(string.Format(Resources.GORINP_RAW_ERR_INVALID_DEVICE_INFO_TYPE, mouseInfo.GetType().FullName, GetType().FullName));
 
 			Info = mouseInfo;
 		}

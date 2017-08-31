@@ -128,9 +128,9 @@ namespace Gorgon.Graphics.Core
 		/// </returns>
 		public override bool Equals(object obj)
 		{
-			if (obj is GorgonShaderInclude)
+			if (obj is GorgonShaderInclude include)
 			{
-				return Equals((GorgonShaderInclude)obj);
+				return include.Equals(this);
 			}
 
 			return base.Equals(obj);

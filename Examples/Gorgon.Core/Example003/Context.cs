@@ -36,7 +36,7 @@ namespace Gorgon.Examples
 	/// The application context.
 	/// </summary>
 	/// <remarks>We'll use this to display our splash screen, and then our main form and still use the idle loop.</remarks>
-	class Context
+	internal class Context
 		: ApplicationContext
 	{
 		#region Variables.

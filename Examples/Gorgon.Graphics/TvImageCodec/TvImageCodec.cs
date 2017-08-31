@@ -46,7 +46,7 @@ namespace Gorgon.Graphics.Example
     /// To create a codec, we must inherit the GorgonImageCodec object and implement functionality to load and save image data to and from a stream.
     /// </para>
     /// </remarks>
-    class TvImageCodec
+    internal class TvImageCodec
         : GorgonImageCodec
     {
         #region Value Types.
@@ -149,11 +149,11 @@ namespace Gorgon.Graphics.Example
             }
 
             // We only support 2D images with the tv format.
-            var settings = new GorgonImageInfo(ImageType.Image2D, DXGI.Format.R8G8B8A8_UNorm);
+            GorgonImageInfo settings = new GorgonImageInfo(ImageType.Image2D, DXGI.Format.R8G8B8A8_UNorm);
             TvHeader header;
 
             // Load the header for the image.
-            using(var reader = new GorgonBinaryReader(stream, true))
+            using(GorgonBinaryReader reader = new GorgonBinaryReader(stream, true))
             {
                 header = reader.ReadValue<TvHeader>();
             }
@@ -204,12 +204,12 @@ namespace Gorgon.Graphics.Example
 			}
 
 			// Create our resulting image buffer.
-			var result = new GorgonImage(settings);
+			GorgonImage result = new GorgonImage(settings);
 
 			// Get pointers to our data buffers.
 			IGorgonPointer imagePtr = result.ImageData;
 
-		    using (var reader = new GorgonBinaryReader(stream, true))
+		    using (GorgonBinaryReader reader = new GorgonBinaryReader(stream, true))
 		    {
 				// Write each scanline.
 				for (int y = 0; y < settings.Height; ++y)
@@ -233,8 +233,8 @@ namespace Gorgon.Graphics.Example
 					    // determined by dividing the row pitch by the image width.
 
 					    // Write the color by shifting the byte in the source data to the appropriate byte position.
-					    var color = (uint)(((pixel >> 8) & 0xff) << (8 * (x % 3)));
-					    var alpha = (uint)((pixel & 0xff) << 24);
+					    uint color = (uint)(((pixel >> 8) & 0xff) << (8 * (x % 3)));
+					    uint alpha = (uint)((pixel & 0xff) << 24);
 
 						imagePtr.Write(ptrPosition, color | alpha);
 					    ptrPosition += sizeof(uint);
@@ -269,7 +269,7 @@ namespace Gorgon.Graphics.Example
 	        }
 
 			// First, we'll need to set up our header metadata.
-	        var header = new TvHeader
+	        TvHeader header = new TvHeader
 	                     {
 		                     MagicValueData = MagicValue,
 		                     Width = imageData.Info.Width,
@@ -277,7 +277,7 @@ namespace Gorgon.Graphics.Example
 	                     };
 
 			// Write the metadata to the stream.
-	        using (var writer = new GorgonBinaryWriter(stream, true))
+	        using (GorgonBinaryWriter writer = new GorgonBinaryWriter(stream, true))
 	        {
 		        writer.WriteValue(header);
 
@@ -303,7 +303,7 @@ namespace Gorgon.Graphics.Example
 					    pointerPos += sizeof(uint);
 
 					    // Get the alpha channel for this pixel.
-					    var alpha = (byte)((pixel >> 24) & 0xff);
+					    byte alpha = (byte)((pixel >> 24) & 0xff);
 
 					    // Since we encode 1 byte per color component for each pixel, we need to bump up the bit shift
 					    // by 8 bits.  Once we get above 24 bits we'll start over since we're only working with 2 bytes 
@@ -314,7 +314,7 @@ namespace Gorgon.Graphics.Example
 					    // determined by dividing the row pitch by the image width.
 
 					    // Get the color component for the pixel.
-					    var color = (byte)((pixel >> (8 * (x % 3))) & 0xff);
+					    byte color = (byte)((pixel >> (8 * (x % 3))) & 0xff);
 
 					    // Write it to the scanline.
 					    // We're encoding a pixel as a single color component with its alpha channel
@@ -378,7 +378,7 @@ namespace Gorgon.Graphics.Example
 	            reader = new GorgonBinaryReader(stream, true);
                 
                 // Retrieve our magic number.
-                var header = reader.ReadValue<TvHeader>();
+                TvHeader header = reader.ReadValue<TvHeader>();
 
                 // Ensure that the image size is valid and that the magic numbers match up.
                 return header.Width > 0 && header.Height > 0 && header.MagicValueData == MagicValue;

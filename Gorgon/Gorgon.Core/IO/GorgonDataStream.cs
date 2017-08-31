@@ -302,7 +302,7 @@ namespace Gorgon.IO
 				                }
 
 				                Type memberType;
-				                var fieldInfo = item as FieldInfo;
+				                FieldInfo fieldInfo = item as FieldInfo;
 
 				                if (fieldInfo != null)
 				                {
@@ -315,7 +315,7 @@ namespace Gorgon.IO
 				                }
 				                else
 				                {
-					                var propInfo = (PropertyInfo)item;
+					                PropertyInfo propInfo = (PropertyInfo)item;
 
 					                if ((!propInfo.CanRead) || (!propInfo.CanWrite))
 					                {
@@ -427,7 +427,7 @@ namespace Gorgon.IO
 
 			int size = type.StructLayoutAttribute.Size <= 0 ? Marshal.SizeOf(type) * count : type.StructLayoutAttribute.Size * count;
 
-			var result = new GorgonDataStream(size);
+			GorgonDataStream result = new GorgonDataStream(size);
 
 			// ReSharper disable once ForCanBeConvertedToForeach
 			for (int i = 0; i < value.Length; ++i)
@@ -1043,7 +1043,7 @@ namespace Gorgon.IO
 		public T[] ReadRange<T>(int count)
 			where T : struct
 		{
-			var result = new T[count];
+			T[] result = new T[count];
 
 			ReadRange(result, 0, count);
 

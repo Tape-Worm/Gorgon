@@ -166,7 +166,7 @@ namespace Gorgon.Graphics.Core
 		private void BuildD3DLayout()
 		{
 			// ReSharper disable once InconsistentNaming
-			var d3dElements = new D3D11.InputElement[_elements.Length];
+			D3D11.InputElement[] d3dElements = new D3D11.InputElement[_elements.Length];
 
 			for (int i = 0; i < _elements.Length; ++i)
 			{
@@ -252,7 +252,7 @@ namespace Gorgon.Graphics.Core
 				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_VERTEX_NO_FIELDS, type.FullName));
 			}
 
-			var result = new List<(FieldInfo, InputElementAttribute)>();
+			List<(FieldInfo, InputElementAttribute)> result = new List<(FieldInfo, InputElementAttribute)>();
 
 			// ReSharper disable once ForCanBeConvertedToForeach
 			for (int i = 0; i < members.Length; ++i)
@@ -473,7 +473,7 @@ namespace Gorgon.Graphics.Core
 	            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_VERTEX_NO_FIELDS, type.FullName));
 	        }
 
-	        var elements = new GorgonInputElement[members.Count];
+	        GorgonInputElement[] elements = new GorgonInputElement[members.Count];
 
 	        for (int i = 0; i < elements.Length; i++)
 	        {
@@ -488,7 +488,7 @@ namespace Gorgon.Graphics.Core
 	                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_LAYOUT_INVALID_ELEMENT_TYPE, item.Field.FieldType.FullName));
 	            }
 
-	            var element = new GorgonInputElement(contextName, format,
+	            GorgonInputElement element = new GorgonInputElement(contextName, format,
 	                                                 (item.InputElement.AutoOffset ? byteOffset : item.InputElement.Offset),
 	                                                 item.InputElement.Index, item.InputElement.Slot, item.InputElement.Instanced,
 	                                                 item.InputElement.Instanced ? item.InputElement.InstanceCount : 0);
@@ -517,7 +517,7 @@ namespace Gorgon.Graphics.Core
         /// <seealso cref="GorgonStreamOutLayout"/>
 	    public GorgonStreamOutLayout ToStreamOutLayout(int stream = 0, byte slot = 0)
 	    {
-	        var elements = new GorgonStreamOutElement[_elements.Length];
+	        GorgonStreamOutElement[] elements = new GorgonStreamOutElement[_elements.Length];
 
 	        for (int i = 0; i < _elements.Length; ++i)
 	        {
@@ -529,7 +529,7 @@ namespace Gorgon.Graphics.Core
 
 	            GorgonInputElement inputElement = _elements[i];
 
-	            var info = new GorgonFormatInfo(inputElement.Format);
+	            GorgonFormatInfo info = new GorgonFormatInfo(inputElement.Format);
 
                 elements[i] = new GorgonStreamOutElement(inputElement.Context, 0, (byte)info.ComponentCount, slot, inputElement.Index, stream);
 	        }
@@ -553,7 +553,7 @@ namespace Gorgon.Graphics.Core
 		{
 			int lastOffset = 0;
 
-			var elements = new D3D11.InputElement[_elements.Length];
+			D3D11.InputElement[] elements = new D3D11.InputElement[_elements.Length];
 
 			for (int i = 0; i < _elements.Length - 1; i++)
 			{

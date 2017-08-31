@@ -33,7 +33,7 @@ namespace Gorgon.Native
 	/// Native functions from the windows multimedia API.
 	/// </summary>
 	[SuppressUnmanagedCodeSecurity]
-	static class WinMultimediaApi
+	internal static class WinMultimediaApi
 	{
 		#region Methods.
 		/// <summary>

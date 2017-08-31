@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -35,7 +36,7 @@ namespace Gorgon.Examples
 	/// <summary>
 	/// Used to handle the menu options for the application.
 	/// </summary>
-	static class MenuOptions
+	internal static class MenuOptions
 	{
 	    #region Methods.
 		/// <summary>
@@ -108,7 +109,7 @@ namespace Gorgon.Examples
 		{
 			Console.Clear();
 
-			foreach (var envString in GorgonComputerInfo.MachineEnvironmentVariables)
+			foreach (KeyValuePair<string, string> envString in GorgonComputerInfo.MachineEnvironmentVariables)
 			{
 				Console.WriteLine("{0} = {1}", envString.Key, envString.Value);
 			}

@@ -31,7 +31,7 @@ using System.Runtime.InteropServices;
 namespace Gorgon.Native
 {
 	[StructLayout(LayoutKind.Sequential)]
-	struct CURSORINFO
+	internal struct CURSORINFO
 	{
 		public int cbSize;
 		public CursorInfoFlags flags;

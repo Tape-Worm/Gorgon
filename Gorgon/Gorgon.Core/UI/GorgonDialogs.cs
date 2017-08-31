@@ -77,7 +77,7 @@ namespace Gorgon.UI
 		/// <returns>A formatted stack trace.</returns>
 		private static string FormatStackTrace(string stackTrace)
 		{
-			var result = new StringBuilder(8192);
+			StringBuilder result = new StringBuilder(8192);
 
 			if (string.IsNullOrEmpty(stackTrace))
 			{
@@ -119,7 +119,7 @@ namespace Gorgon.UI
 			}
 
 			// Find all inner exceptions.
-			var errorText = new StringBuilder(1024);
+			StringBuilder errorText = new StringBuilder(1024);
 			Exception nextException = innerException;
 
 			while (nextException != null)
@@ -143,9 +143,7 @@ namespace Gorgon.UI
 										   nextException.TargetSite.Name);
 				}
 
-				var gorgonException = nextException as GorgonException;
-
-				if (gorgonException != null)
+			    if (nextException is GorgonException gorgonException)
 				{
 					errorText.AppendFormat("\n{0}: [{1}] {2} (0x{3})",
 										   Resources.GOR_EXCEPT_GOREXCEPT_RESULT,
@@ -159,7 +157,7 @@ namespace Gorgon.UI
 				// Print custom information.
 				if (extraInfo.Count > 0)
 				{
-					var customData = new StringBuilder(256);
+					StringBuilder customData = new StringBuilder(256);
 
 					foreach (DictionaryEntry item in extraInfo)
 					{

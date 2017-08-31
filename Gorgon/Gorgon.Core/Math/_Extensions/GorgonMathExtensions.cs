@@ -901,7 +901,7 @@ namespace Gorgon.Math
         /// <returns>The largest integer less than or equal to <paramref name="value"/>.</returns>
         public static float FastFloor(this float value)
         {
-	        var result = (int)value;
+	        int result = (int)value;
 
             return (value < result) ? result - 1 : result;
         }
@@ -913,7 +913,7 @@ namespace Gorgon.Math
 		/// <returns>The largest integer greater than or equal to <paramref name="value"/>.</returns>
 		public static float FastCeiling(this float value)
         {
-	        var result = (int)value;
+	        int result = (int)value;
 
 	        return (value > result) ? result + 1 : result;
         }

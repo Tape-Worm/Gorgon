@@ -33,7 +33,7 @@ namespace Gorgon.Native
 	/// Value type for raw input from a mouse.
 	/// </summary>
 	[StructLayout(LayoutKind.Explicit)]
-	struct RAWINPUTMOUSE
+	internal struct RAWINPUTMOUSE
 	{
 		/// <summary>Flags for the event.</summary>
 		[FieldOffset(0)]

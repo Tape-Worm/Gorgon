@@ -32,7 +32,7 @@ namespace Gorgon.Input
 	/// <summary>
 	/// A key used to identify a device in a dictionary.
 	/// </summary>
-	struct DeviceKey
+	internal struct DeviceKey
 		: IEquatable<DeviceKey>
 	{
 		/// <summary>
@@ -64,9 +64,9 @@ namespace Gorgon.Input
 		/// <param name="obj">The object to compare with the current instance. </param><filterpriority>2</filterpriority>
 		public override bool Equals(object obj)
 		{
-			if (obj is DeviceKey)
+			if (obj is DeviceKey devKey)
 			{
-				return ((DeviceKey)obj).Equals(this);
+				return devKey.Equals(this);
 			}
 
 			return base.Equals(obj);

@@ -35,7 +35,7 @@ namespace Gorgon.Graphics.Example
 	/// <summary>
 	/// A plane object.
 	/// </summary>
-	class Plane
+	internal class Plane
 		: Model
 	{
 		#region Properties.
@@ -82,8 +82,8 @@ namespace Gorgon.Graphics.Example
 			          };
 
 			// Copy the above vertex/index data into a vertex and index buffer so we can render our plane.
-			using (var vertexPtr = new GorgonPointerPinned<BoingerVertex>(Vertices))
-			using (var indexPtr = new GorgonPointerPinned<int>(Indices))
+			using (GorgonPointerPinned<BoingerVertex> vertexPtr = new GorgonPointerPinned<BoingerVertex>(Vertices))
+			using (GorgonPointerPinned<int> indexPtr = new GorgonPointerPinned<int>(Indices))
 			{
 				VertexBufferBindings[0] = new GorgonVertexBufferBinding(new GorgonVertexBuffer("Plane Vertex Buffer",
 					                                                                            graphics,

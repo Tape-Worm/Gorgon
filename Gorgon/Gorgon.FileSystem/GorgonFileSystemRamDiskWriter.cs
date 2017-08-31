@@ -284,7 +284,7 @@ namespace Gorgon.IO
 			}
 
 			// ReSharper disable MethodSupportsCancellation
-			var data = await Task.Run(() =>
+			(IGorgonVirtualFile[] Files, IGorgonVirtualDirectory[] Directories) data = await Task.Run(() =>
 			{
 				IGorgonVirtualFile[] files = sourceFileSystem.FindFiles("/", "*").ToArray();
 				IGorgonVirtualDirectory[] directories = sourceFileSystem.FindDirectories("/", "*").ToArray();
@@ -618,12 +618,7 @@ namespace Gorgon.IO
 			             select ramProvider)
 				.FirstOrDefault();
 
-			if (_provider == null)
-			{
-				throw new ArgumentException(Resources.GORFS_ERR_NO_RAMDISK_PROVIDER, nameof(fileSystem));
-			}
-
-			_ramFiles = _provider.FileData;
+		    _ramFiles = _provider?.FileData ?? throw new ArgumentException(Resources.GORFS_ERR_NO_RAMDISK_PROVIDER, nameof(fileSystem));
 			_fileSystem = fileSystem;
 		}
 		#endregion

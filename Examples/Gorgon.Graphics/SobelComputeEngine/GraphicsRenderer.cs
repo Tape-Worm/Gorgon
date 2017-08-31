@@ -25,11 +25,7 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using DX = SharpDX;
 using DXGI = SharpDX.DXGI;
@@ -41,7 +37,7 @@ namespace Gorgon.Graphics.Example
     /// <summary>
     /// This is used to render our image data for the application.
     /// </summary>
-    class GraphicsRenderer
+    internal class GraphicsRenderer
         : IDisposable
     {
         #region Variables.
@@ -79,7 +75,7 @@ namespace Gorgon.Graphics.Example
             }
 
             // Get aspect ratio.
-            var scale = new DX.Size2F((_swapChain.Info.Width * 0.5f) / texture.Width, (float)_swapChain.Info.Height / texture.Height);
+            DX.Size2F scale = new DX.Size2F((_swapChain.Info.Width * 0.5f) / texture.Width, (float)_swapChain.Info.Height / texture.Height);
 
             // Only scale on a single axis if we don't have a 1:1 aspect ratio.
             if (scale.Height > scale.Width)
@@ -92,10 +88,10 @@ namespace Gorgon.Graphics.Example
             }
 
             // Scale the image.
-            var size = new DX.Size2((int)(scale.Width * texture.Width), (int)(scale.Height * texture.Height));
+            DX.Size2 size = new DX.Size2((int)(scale.Width * texture.Width), (int)(scale.Height * texture.Height));
 
             // Find the position.
-            var bounds = new DX.Rectangle((_swapChain.Info.Width / 4) - (size.Width / 2), (_swapChain.Info.Height / 2 - size.Height / 2), size.Width, size.Height);
+            DX.Rectangle bounds = new DX.Rectangle((_swapChain.Info.Width / 4) - (size.Width / 2), (_swapChain.Info.Height / 2 - size.Height / 2), size.Width, size.Height);
 
             _graphics.DrawTexture(texture, bounds, blendState: GorgonBlendState.Default, samplerState: GorgonSamplerState.PointFiltering);
 

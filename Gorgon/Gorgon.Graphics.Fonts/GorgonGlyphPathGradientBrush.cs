@@ -140,13 +140,13 @@ namespace Gorgon.Graphics.Fonts
 		/// </returns>
 		internal override Brush ToGDIBrush()
 		{
-			var result = new PathGradientBrush(Points.Select(item => new PointF(item.X, item.Y)).ToArray(), (WrapMode)WrapMode);
+			PathGradientBrush result = new PathGradientBrush(Points.Select(item => new PointF(item.X, item.Y)).ToArray(), (WrapMode)WrapMode);
 
-			var blend = new Blend(BlendFactors.Count.Max(BlendPositions.Count).Max(1));
+			Blend blend = new Blend(BlendFactors.Count.Max(BlendPositions.Count).Max(1));
 			
 			if (Interpolation.Count > 2)
 			{
-				var interpolationColors = new ColorBlend(Interpolation.Count);
+				ColorBlend interpolationColors = new ColorBlend(Interpolation.Count);
 
 				for (int i = 0; i < Interpolation.Count; i++)
 				{

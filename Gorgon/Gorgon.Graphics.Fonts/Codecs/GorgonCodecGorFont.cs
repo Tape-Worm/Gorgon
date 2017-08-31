@@ -144,7 +144,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
 
 			writer.Write(fontData.KerningPairs.Count);
 
-			foreach (var kerningInfo in fontData.KerningPairs)
+			foreach (KeyValuePair<GorgonKerningPair, int> kerningInfo in fontData.KerningPairs)
 			{
 				writer.Write(kerningInfo.Key.LeftCharacter);
 				writer.Write(kerningInfo.Key.RightCharacter);
@@ -252,7 +252,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
 		{
 			IGorgonImage image = null;
 			GorgonBinaryReader reader = fontFile.OpenChunk(TextureChunk);
-			var result = new List<GorgonTexture>();
+			List<GorgonTexture> result = new List<GorgonTexture>();
 			GorgonDataStream memoryStream = null;
 			GZipStream textureStream = null;
 
@@ -309,7 +309,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
 		/// <param name="textures">The textures for the glyphs.</param>
 		private IReadOnlyList<GorgonGlyph> ReadGlyphs(GorgonChunkFileReader fontFile, IReadOnlyList<GorgonTexture> textures)
 		{
-			var result = new List<GorgonGlyph>();
+			List<GorgonGlyph> result = new List<GorgonGlyph>();
 
 			// Get glyph information.
 			GorgonBinaryReader reader = fontFile.OpenChunk(GlyphDataChunk);
@@ -382,7 +382,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
 		/// <param name="fontFile">Font file to read.</param>
 		private static Dictionary<GorgonKerningPair, int> ReadKernPairs(GorgonChunkFileReader fontFile)
 		{
-			var result = new Dictionary<GorgonKerningPair, int>();
+			Dictionary<GorgonKerningPair, int> result = new Dictionary<GorgonKerningPair, int>();
 			GorgonBinaryReader reader = fontFile.OpenChunk(KernDataChunk);
 
 			// Read optional kerning information.
@@ -390,7 +390,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
 
 			for (int i = 0; i < kernCount; ++i)
 			{
-				var kernPair = new GorgonKerningPair(reader.ReadChar(), reader.ReadChar());
+				GorgonKerningPair kernPair = new GorgonKerningPair(reader.ReadChar(), reader.ReadChar());
 				result[kernPair] = reader.ReadInt32();
 			}
 
@@ -497,7 +497,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
 		/// <returns>A new <seealso cref="GorgonFont"/>, or, an existing font from the <seealso cref="GorgonFontFactory"/> cache.</returns>
 		protected override GorgonFont OnLoadFromStream(string name, Stream stream)
 		{
-			var fontFile = new GorgonChunkFileReader(stream,
+			GorgonChunkFileReader fontFile = new GorgonChunkFileReader(stream,
 			                                         new[]
 			                                         {
 				                                         FileHeader.ChunkID()

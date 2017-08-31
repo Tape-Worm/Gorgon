@@ -38,7 +38,7 @@ namespace Gorgon.Graphics.Core
 	/// <summary>
 	/// A wrapper for a Direct 3D 11 device object and adapter.
 	/// </summary>
-	class VideoDevice
+	internal class VideoDevice
 		: IGorgonVideoDevice
 	{
 		#region Variables.
@@ -219,7 +219,7 @@ namespace Gorgon.Graphics.Core
 
 			try
 			{
-				using (var factory1 = new DXGI.Factory1())
+				using (DXGI.Factory1 factory1 = new DXGI.Factory1())
 				{
 					factory2 = factory1.QueryInterface<DXGI.Factory2>();
 				}
@@ -228,7 +228,7 @@ namespace Gorgon.Graphics.Core
 				{
 					case VideoDeviceType.ReferenceRasterizer:
 #if DEBUG
-						using (var device = new D3D11.Device(D3D.DriverType.Reference, D3D11.DeviceCreationFlags.Debug, GetFeatureLevel(requestedFeatureLevel))
+						using (D3D11.Device device = new D3D11.Device(D3D.DriverType.Reference, D3D11.DeviceCreationFlags.Debug, GetFeatureLevel(requestedFeatureLevel))
 						                    {
 							                    DebugName = $"{Info.Name} D3D11.1 Reference Device"
 						                    })
@@ -236,14 +236,14 @@ namespace Gorgon.Graphics.Core
 							_device = device.QueryInterface<D3D11.Device1>();
 						}
 
-						using (var giDevice = _device.QueryInterface<DXGI.Device2>())
+						using (DXGI.Device2 giDevice = _device.QueryInterface<DXGI.Device2>())
 						{
 							_adapter = giDevice.GetParent<DXGI.Adapter2>();
 						}
 						break;
 #endif
 					case VideoDeviceType.Software:
-						using (var device = new D3D11.Device(D3D.DriverType.Warp, flags, GetFeatureLevel(requestedFeatureLevel))
+						using (D3D11.Device device = new D3D11.Device(D3D.DriverType.Warp, flags, GetFeatureLevel(requestedFeatureLevel))
 						                    {
 							                    DebugName = $"{Info.Name} D3D11.1 Software Device"
 						                    })
@@ -251,7 +251,7 @@ namespace Gorgon.Graphics.Core
 							_device = device.QueryInterface<D3D11.Device1>();
 						}
 
-						using (var giDevice = _device.QueryInterface<DXGI.Device2>())
+						using (DXGI.Device2 giDevice = _device.QueryInterface<DXGI.Device2>())
 						{
 							_adapter = giDevice.GetParent<DXGI.Adapter2>();
 						}
@@ -262,7 +262,7 @@ namespace Gorgon.Graphics.Core
 							_adapter = adapter1.QueryInterface<DXGI.Adapter2>();
 						}
 
-						using (var device = new D3D11.Device(_adapter, flags, GetFeatureLevel(requestedFeatureLevel))
+						using (D3D11.Device device = new D3D11.Device(_adapter, flags, GetFeatureLevel(requestedFeatureLevel))
 						                    {
 							                    DebugName = $"{Info.Name} D3D 11.1 Device"
 						                    })

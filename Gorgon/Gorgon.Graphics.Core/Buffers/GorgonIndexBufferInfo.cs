@@ -96,12 +96,7 @@ namespace Gorgon.Graphics.Core
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
         public GorgonIndexBufferInfo(IGorgonIndexBufferInfo info)
 		{
-			if (info == null)
-			{
-				throw new ArgumentNullException(nameof(info));
-			}
-
-			Usage = info.Usage;
+		    Usage = info?.Usage ?? throw new ArgumentNullException(nameof(info));
 			Use16BitIndices = info.Use16BitIndices;
 			IndexCount = info.IndexCount;
 		    Binding = info.Binding;

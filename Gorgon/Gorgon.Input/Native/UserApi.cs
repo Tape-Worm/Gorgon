@@ -35,7 +35,7 @@ using Gorgon.Input.Properties;
 
 namespace Gorgon.Native
 {
-	enum CursorInfoFlags
+    internal enum CursorInfoFlags
 	{
 		CursorHidden = 0,
 		CursorShowing = 1,
@@ -46,7 +46,7 @@ namespace Gorgon.Native
 	/// Win32 native keyboard input functionality.
 	/// </summary>
 	[SuppressUnmanagedCodeSecurity]
-	static class UserApi
+	internal static class UserApi
 	{
 		#region Constants.
 		// Retrieves a window procedure.
@@ -129,7 +129,7 @@ namespace Gorgon.Native
 		{
 			unsafe
 			{
-				var cursorInfo = new CURSORINFO
+				CURSORINFO cursorInfo = new CURSORINFO
 				                 {
 					                 cbSize = DirectAccess.SizeOf<CURSORINFO>(),
 					                 flags = CursorInfoFlags.CursorHidden,

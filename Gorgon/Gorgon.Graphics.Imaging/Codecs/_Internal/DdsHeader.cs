@@ -35,7 +35,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 	/// Flags to convert older DDS files (pre-DX10).
 	/// </summary>
 	[Flags]
-	enum DdsConversionFlags
+	internal enum DdsConversionFlags
 	{
 		/// <summary>
 		/// No conversion flags.
@@ -93,13 +93,13 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// DirectX 10 extension header.
 		/// </summary>
 		DX10 = 0x10000
-	};
+	}
 
 	/// <summary>
 	/// Flags for the header.
 	/// </summary>
 	[Flags]
-	enum DdsHeaderFlags
+	internal enum DdsHeaderFlags
 		: uint
 	{
 		/// <summary>
@@ -136,7 +136,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 	/// Misc. flags for the header.
 	/// </summary>
 	[Flags]
-	enum DdsHeaderMiscFlags
+	internal enum DdsHeaderMiscFlags
 		: uint
 	{
 		/// <summary>
@@ -149,7 +149,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 	/// Flags for the pixel format.
 	/// </summary>
 	[Flags]
-	enum DdsPixelFormatFlags
+	internal enum DdsPixelFormatFlags
 		: uint
 	{
 		/// <summary>
@@ -187,7 +187,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 	/// DDS surface flags.
 	/// </summary>
 	[Flags]
-	enum DdsCaps1
+	internal enum DdsCaps1
 		: uint
 	{
 		/// <summary>
@@ -208,7 +208,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 	/// DDS cube map directions.
 	/// </summary>
 	[Flags]
-	enum DdsCaps2
+	internal enum DdsCaps2
 		: uint
 	{
 		/// <summary>
@@ -253,7 +253,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 	/// <summary>
 	/// DDS legacy conversion type.
 	/// </summary>
-	struct DdsLegacyConversion
+	internal struct DdsLegacyConversion
 	{
 		/// <summary>
 		/// Buffer format.
@@ -286,7 +286,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 	/// DDS file header.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential, Pack = 1)]
-	struct DdsHeader
+	internal struct DdsHeader
 	{
 		/// <summary>
 		/// Size of the header structure.
@@ -360,7 +360,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 	/// DDS DirectX 10 header.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential, Pack = 1)]
-	struct Dx10Header
+	internal struct Dx10Header
 	{
 		/// <summary>
 		/// Format.
@@ -388,7 +388,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 	/// Pixel format descriptor.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential, Pack = 1)]
-	struct DdsPixelFormat
+	internal struct DdsPixelFormat
 	{
 		/// <summary>
 		/// Size of the format, in bytes.

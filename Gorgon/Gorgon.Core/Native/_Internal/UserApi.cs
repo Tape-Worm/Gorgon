@@ -34,7 +34,7 @@ namespace Gorgon.Native
 	/// The win 32 windowing API.
 	/// </summary>
 	[SuppressUnmanagedCodeSecurity]
-	static class UserApi
+	internal static class UserApi
 	{
 		#region Methods.
 		/// <summary>

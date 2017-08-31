@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 using Gorgon.Graphics.Core;
@@ -39,14 +38,14 @@ namespace Gorgon.Graphics.Example
 	/// <summary>
 	/// An ico sphere object.
 	/// </summary>
-	class IcoSphere
+	internal class IcoSphere
 		: MoveableMesh
 	{
 		#region Variables.
 		// Initial orientation.
 		private DX.Matrix _orientation;
 		// A list of previously performed splits.
-		private readonly Dictionary<Int64, int> _cachedSplits = new Dictionary<long, int>();
+		private readonly Dictionary<long, int> _cachedSplits = new Dictionary<long, int>();
 		private readonly List<DX.Vector3> _vertices = new List<DX.Vector3>();
 		private int _index;
 		#endregion
@@ -58,7 +57,6 @@ namespace Gorgon.Graphics.Example
 		public float Radius
 		{
 			get;
-			private set;
 		}
 		#endregion
 
@@ -197,9 +195,9 @@ namespace Gorgon.Graphics.Example
 		/// <returns>The middle index.</returns>
 		private int GetMiddlePoint(int index1, int index2)
 		{
-			Int64 smallestIndex = index1.Min(index2);
-			Int64 largestIndex = index1.Max(index2);
-			Int64 key = (smallestIndex << 32) + largestIndex;
+			long smallestIndex = index1.Min(index2);
+			long largestIndex = index1.Max(index2);
+			long key = (smallestIndex << 32) + largestIndex;
 
             if (_cachedSplits.TryGetValue(key, out int index))
             {
@@ -224,16 +222,16 @@ namespace Gorgon.Graphics.Example
 		/// <param name="indexList">List of indices.</param>
 		private static void FixSeam(List<Vertex3D> vertexList, List<int> indexList)
 		{
-			var newIndices = new List<int>();
-			var corrections = new Dictionary<int, int>();
+			List<int> newIndices = new List<int>();
+			Dictionary<int, int> corrections = new Dictionary<int, int>();
 
 			for (int i = indexList.Count - 3; i >= 0; i -= 3)
 			{
 				// see if the texture coordinates appear in counter-clockwise order.
 				// If so, the triangle needs to be rectified.
-				var v0 = new DX.Vector3(vertexList[indexList[i + 0]].UV, 0);
-				var v1 = new DX.Vector3(vertexList[indexList[i + 1]].UV, 0);
-				var v2 = new DX.Vector3(vertexList[indexList[i + 2]].UV, 0);
+				DX.Vector3 v0 = new DX.Vector3(vertexList[indexList[i + 0]].UV, 0);
+				DX.Vector3 v1 = new DX.Vector3(vertexList[indexList[i + 1]].UV, 0);
+				DX.Vector3 v2 = new DX.Vector3(vertexList[indexList[i + 2]].UV, 0);
 
 
                 DX.Vector3.Subtract(ref v0, ref v1, out DX.Vector3 diff1);
@@ -296,7 +294,7 @@ namespace Gorgon.Graphics.Example
 
 			for (int i = 0; i < tesselation; ++i)
 			{
-				var subIndices = new List<int[]>();
+				List<int[]> subIndices = new List<int[]>();
 
 				foreach (int[] index in indices)
 				{
@@ -343,8 +341,8 @@ namespace Gorgon.Graphics.Example
 			const float pi2Recip = 1.0f / (2.0f * (float)System.Math.PI);
 
 			// Final list.
-			var vertexList = new List<Vertex3D>();
-			var indexList = new List<int>();
+			List<Vertex3D> vertexList = new List<Vertex3D>();
+			List<int> indexList = new List<int>();
 
 			foreach (DX.Vector3 vector in _vertices)
 			{

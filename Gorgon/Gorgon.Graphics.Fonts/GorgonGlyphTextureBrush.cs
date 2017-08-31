@@ -209,8 +209,8 @@ namespace Gorgon.Graphics.Fonts
 				// Clone the image data and convert it into a GDI+ compatible bitmap so we can use it as a brush.
 				brushBitmap = ConvertImageToGdiBitmap();
 
-				var textureRect = new RectangleF(0, 0, Image.Info.Width, Image.Info.Height);
-				var imageRect = new RectangleF(TextureRegion.X * textureRect.Width,
+				RectangleF textureRect = new RectangleF(0, 0, Image.Info.Width, Image.Info.Height);
+				RectangleF imageRect = new RectangleF(TextureRegion.X * textureRect.Width,
 				                               TextureRegion.Y * textureRect.Height,
 				                               TextureRegion.Width * textureRect.Width,
 				                               TextureRegion.Height * textureRect.Height);

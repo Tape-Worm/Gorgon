@@ -125,9 +125,9 @@ namespace Gorgon.Graphics.Imaging
 		/// </returns>
 		public override bool Equals(object obj)
 		{
-			if (obj is GorgonPitchLayout)
+			if (obj is GorgonPitchLayout pitchLayout)
 			{
-				return Equals((GorgonPitchLayout)obj);	
+				return pitchLayout.Equals(this);	
 			}
 
 			return base.Equals(obj);

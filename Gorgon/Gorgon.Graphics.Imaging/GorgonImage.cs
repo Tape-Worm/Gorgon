@@ -56,9 +56,7 @@ namespace Gorgon.Graphics.Imaging
 		: IGorgonImage
 	{
 		#region Variables.
-		// The pointer to the start of the image data.
-		private IGorgonPointer _imageData;
-		// Information used to create the image.
+	    // Information used to create the image.
 		private GorgonImageInfo _imageInfo;
 		// The list of image buffers.
 		private ImageBufferList _imageBuffers;
@@ -68,9 +66,13 @@ namespace Gorgon.Graphics.Imaging
 		/// <summary>
 		/// Property to return the pointer to the beginning of the internal buffer.
 		/// </summary>
-		public IGorgonPointer ImageData => _imageData;
+		public IGorgonPointer ImageData
+		{
+		    get;
+		    private set;
+	    }
 
-		/// <summary>
+	    /// <summary>
 		/// Property to return the information used to create the image.
 		/// </summary>
 		public IGorgonImageInfo Info => _imageInfo;
@@ -110,15 +112,15 @@ namespace Gorgon.Graphics.Imaging
 			// Create a buffer large enough to hold our data.
 			if ((data != null) && (!copy))
 			{
-				_imageData = new GorgonPointerAlias((void *)data.Address, SizeInBytes);
+				ImageData = new GorgonPointerAlias((void *)data.Address, SizeInBytes);
 				return;
 			}
 
-			_imageData = new GorgonPointer(SizeInBytes);
+			ImageData = new GorgonPointer(SizeInBytes);
 
 			if (data == null) 
 			{
-				DirectAccess.ZeroMemory((void*)_imageData.Address, SizeInBytes);
+				DirectAccess.ZeroMemory((void*)ImageData.Address, SizeInBytes);
 				return;
 			}
 
@@ -132,7 +134,7 @@ namespace Gorgon.Graphics.Imaging
 
 				while (size > 0)
 				{
-					data.CopyTo(_imageData, offset, bufferSize, offset);
+					data.CopyTo(ImageData, offset, bufferSize, offset);
 
 					offset += bufferSize;
 					size -= bufferSize;
@@ -147,7 +149,7 @@ namespace Gorgon.Graphics.Imaging
 			else
 			{
 				// Otherwise, just make a simple copy.
-				data.CopyTo(_imageData, (int)data.Size);
+				data.CopyTo(ImageData, (int)data.Size);
 			}
 		}
 
@@ -160,7 +162,7 @@ namespace Gorgon.Graphics.Imaging
 		{
 			GetImagePointer(data, copy);
 			_imageBuffers = new ImageBufferList(this);
-			_imageBuffers.CreateBuffers(_imageData);
+			_imageBuffers.CreateBuffers(ImageData);
 		}
 
 		/// <summary>
@@ -169,7 +171,7 @@ namespace Gorgon.Graphics.Imaging
 		/// <param name="info">Information used to create this image.</param>
 		private void SanitizeInfo(IGorgonImageInfo info)
 		{
-			var newInfo = new GorgonImageInfo(info);
+			GorgonImageInfo newInfo = new GorgonImageInfo(info);
 
 			// Validate the array size.
 			newInfo.ArrayCount = newInfo.ImageType == ImageType.Image3D ? 1 : newInfo.ArrayCount.Max(1);
@@ -227,7 +229,7 @@ namespace Gorgon.Graphics.Imaging
 			height = 1.Max(height);
 			depthOrArrayCount = 1.Max(depthOrArrayCount);
 			mipCount = 1.Max(mipCount);
-			var formatInfo = new GorgonFormatInfo(format);
+			GorgonFormatInfo formatInfo = new GorgonFormatInfo(format);
 			int result = 0;
 
 			if (formatInfo.SizeInBytes == 0)
@@ -240,7 +242,7 @@ namespace Gorgon.Graphics.Imaging
 
 			for (int mip = 0; mip < mipCount; mip++)
 			{
-				var pitchInfo = formatInfo.GetPitchForFormat(mipWidth, mipHeight, pitchFlags);
+				GorgonPitchLayout pitchInfo = formatInfo.GetPitchForFormat(mipWidth, mipHeight, pitchFlags);
 				result += pitchInfo.SlicePitch * depthOrArrayCount;
 
 				if (mipWidth > 1)
@@ -418,7 +420,7 @@ namespace Gorgon.Graphics.Imaging
 				sourceFormat = DXGI.Format.B8G8R8A8_UNorm;
 			}
 
-			using (var wic = new WicUtilities())
+			using (WicUtilities wic = new WicUtilities())
 			{
 				return wic.CanConvertFormats(sourceFormat,
 				                             new[]
@@ -444,13 +446,13 @@ namespace Gorgon.Graphics.Imaging
 			// If we're converting from B4G4R4A4, then we need to use another path.
 			if (Info.Format == DXGI.Format.B4G4R4A4_UNorm)
 			{
-				using (var wic = new WicUtilities())
+				using (WicUtilities wic = new WicUtilities())
 				{
 					return wic.CanConvertFormats(DXGI.Format.B8G8R8A8_UNorm, destFormats);
 				}
 			}
 
-			using (var wic = new WicUtilities())
+			using (WicUtilities wic = new WicUtilities())
 			{
 				return wic.CanConvertFormats(Info.Format, destFormats);
 			}
@@ -474,7 +476,7 @@ namespace Gorgon.Graphics.Imaging
 	        }
 
 	        _imageInfo = new GorgonImageInfo(source.Info);
-	        _imageData.Dispose();
+	        ImageData.Dispose();
 	        FormatInfo = new GorgonFormatInfo(_imageInfo.Format);
 	        SizeInBytes = CalculateSizeInBytes(_imageInfo);
 	        Initialize(source.ImageData, true);
@@ -507,7 +509,7 @@ namespace Gorgon.Graphics.Imaging
 		/// <returns>A new <see cref="IGorgonImage"/> that contains an identical copy of this image and its data.</returns>
 		public IGorgonImage Clone()
 		{
-			var image = new GorgonImage(_imageInfo)
+			GorgonImage image = new GorgonImage(_imageInfo)
 			            {
 				            FormatInfo = new GorgonFormatInfo(_imageInfo.Format),
 							SizeInBytes = CalculateSizeInBytes(_imageInfo)
@@ -522,7 +524,7 @@ namespace Gorgon.Graphics.Imaging
 		/// </summary>
 		public void Dispose()
 		{
-			_imageData?.Dispose();
+			ImageData?.Dispose();
 		}
 		#endregion
 

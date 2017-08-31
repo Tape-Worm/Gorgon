@@ -35,13 +35,14 @@ namespace Gorgon.Native
 	/// <summary>
 	/// Provides a window hook in order to filter raw input messages.
 	/// </summary>
-	class RawInputMessageFilter
+	internal class RawInputMessageFilter
 		: IDisposable, IMessageFilter
 	{
 		#region Constants.
 		// Mouse messages.
+	    // ReSharper disable UnusedMember.Local
 		private const int WM_XBUTTONDBLCLK = 0x020D;
-		private const int WM_XBUTTONDOWN = 0x020B;
+	    private const int WM_XBUTTONDOWN = 0x020B;
 		private const int WM_XBUTTONUP = 0x020C;
 		private const int WM_RBUTTONDBLCLK = 0x0206;
 		private const int WM_RBUTTONDOWN = 0x0204;
@@ -74,11 +75,12 @@ namespace Gorgon.Native
 		private const int WM_MBUTTONDOWN = 0x0207;
 		private const int WM_MBUTTONUP = 0x0208;
 		private const int WM_CAPTURECHANGED = 0x0215;
-		#endregion
+	    // ReSharper restore UnusedMember.Local
+        #endregion
 
-		#region Variables.
-		// Flag to indicate that the message hook has been installed.
-		private static int _hookInstalled;
+        #region Variables.
+        // Flag to indicate that the message hook has been installed.
+        private static int _hookInstalled;
 		// Flag to indicate that we've directly hooked the windows message procedure.
 		private bool _directHook;
 		// The window handle to hook into.

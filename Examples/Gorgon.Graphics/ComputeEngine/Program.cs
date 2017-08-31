@@ -41,7 +41,7 @@ namespace ComputeEngine
     /// The output data returned from the shader.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    struct OutputData
+    internal struct OutputData
     {
         /// <summary>
         /// The sum of integer data.
@@ -72,7 +72,7 @@ namespace ComputeEngine
     /// bind the buffers containing the input values and the output buffer. Then, finally, we execute the compute shader and retrieve the result values from 
     /// the output buffer into a buffer that the CPU can read and test them for accuracy.
     /// </remarks>
-    class Program
+    internal class Program
     {
         #region Constants.
         // The maximum number of elements to send and receive.
@@ -252,7 +252,7 @@ namespace ComputeEngine
         /// <returns>A list of errors if any were found, or an empty list if the operation was completely successful.</returns>
         private static IReadOnlyList<(int Index, OutputData Expected, OutputData Actual)> TestResults(OutputData[] results)
         {
-            var errors = new List<(int Index, OutputData Expected, OutputData Actual)>();
+            List<(int Index, OutputData Expected, OutputData Actual)> errors = new List<(int Index, OutputData Expected, OutputData Actual)>();
 
             // Compare the results.
             for (int i = 0; i < MaxValues; ++i)
@@ -277,7 +277,7 @@ namespace ComputeEngine
         /// <summary>
         /// Defines the entry point of the application.
         /// </summary>
-        static void Main()
+        private static void Main()
         {
             try
             {

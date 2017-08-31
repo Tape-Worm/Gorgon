@@ -155,9 +155,9 @@ namespace Gorgon.Core
 		/// </returns>
 		public override bool Equals(object obj)
 		{
-			if (obj is GorgonResult)
+			if (obj is GorgonResult result)
 			{
-				return ((GorgonResult)obj).Equals(this);
+				return result.Equals(this);
 			}
 
 			return false;

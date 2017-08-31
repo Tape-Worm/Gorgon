@@ -68,8 +68,8 @@ namespace Gorgon.UI
 
 			for (int columnNumber = 0; columnNumber < listViewControl.Columns.Count; columnNumber++)
 			{
-				var columnPtr = new IntPtr(columnNumber);
-				var item = new HDITEM
+				IntPtr columnPtr = new IntPtr(columnNumber);
+				HDITEM item = new HDITEM
 				{
 					mask = HeaderFormatMask
 				};

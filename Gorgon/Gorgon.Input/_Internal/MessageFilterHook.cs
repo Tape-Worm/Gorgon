@@ -41,7 +41,7 @@ namespace Gorgon.Input
 	/// </remarks>
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1049:TypesThatOwnNativeResourcesShouldBeDisposable", 
 		Justification = "This object is shut down when all devices are unregistered, this happens in a finalizer as well as the Unregister method, so dispose is unnecessary")]
-	class MessageFilterHook
+	internal class MessageFilterHook
 	{
 		#region Delegates.
 		/// <summary>
@@ -90,7 +90,7 @@ namespace Gorgon.Input
 				return UserApi.CallWindowProc(_defaultWndProc, hwnd, msg, wParam, lParam);
 			}
 
-			var windowMessage = new Message
+			Message windowMessage = new Message
 			                    {
 				                    HWnd = hwnd,
 				                    Msg = msg,
@@ -156,7 +156,7 @@ namespace Gorgon.Input
 		/// <param name="filter">The filter to add to the hook.</param>
 		private void AddFilter(IMessageFilter filter)
 		{
-			var filters = new List<IMessageFilter>(_messageFilters);
+			List<IMessageFilter> filters = new List<IMessageFilter>(_messageFilters);
 
 			if (!_messageFilters.Contains(filter))
 			{
@@ -172,7 +172,7 @@ namespace Gorgon.Input
 		/// <param name="filter">The filter to remove from the hook.</param>
 		private void RemoveFilter(IMessageFilter filter)
 		{
-			var filters = new List<IMessageFilter>(_messageFilters);
+			List<IMessageFilter> filters = new List<IMessageFilter>(_messageFilters);
 
 			if (!_messageFilters.Contains(filter))
 			{

@@ -122,7 +122,7 @@ namespace Gorgon.Graphics.Example
 	/// something useful).
 	/// </summary>
 	[SuppressMessage("ReSharper", "LocalizableElement")]
-	static class Program
+	internal static class Program
 	{
 		#region Variables.
 		// Format for our depth/stencil buffer.
@@ -276,7 +276,7 @@ namespace Gorgon.Graphics.Example
 
 		// TODO: This is temporary until we get 2D rendering in place.
 		// TODO: Its purpose right now is to ensure that updating the window caption doesn't hurt our framerate (which it really does unless we limit it).
-		private static IGorgonTimer _tempTimer = new GorgonTimerMultimedia();
+		private static readonly IGorgonTimer _tempTimer = new GorgonTimerMultimedia();
 
         /// <summary>
 		/// Function to handle idle time for the application.
@@ -507,7 +507,7 @@ namespace Gorgon.Graphics.Example
 			{
 				// If we've asked for full screen mode, then locate the correct video mode and set us up.
 				_output = _graphics.VideoDevice.Info.Outputs[Screen.PrimaryScreen.DeviceName];
-				var mode = new DXGI.ModeDescription1
+				DXGI.ModeDescription1 mode = new DXGI.ModeDescription1
 				        {
 					        Format = DXGI.Format.R8G8B8A8_UNorm,
 					        Height = Settings.Default.Resolution.Height,
@@ -592,7 +592,7 @@ namespace Gorgon.Graphics.Example
 			// Here's where we create the 2 planes for our rear wall and floor.  We set the texture size to texel units because that's how the video card expects 
 			// them.  However, it's a little hard to eyeball 0.67798223f by looking at the texture image display, so we use the ToTexel function to determine our 
 			// texel size.
-			var textureSize = _texture.ToTexel(new DX.Size2(511, 511));
+			DX.Size2F textureSize = _texture.ToTexel(new DX.Size2(511, 511));
 
 			// And here we set up the planes with a material, and initial positioning.
 		    _planes = new[]
@@ -622,7 +622,7 @@ namespace Gorgon.Graphics.Example
 
 			// Create our sphere.
 			// Again, here we're using texels to align the texture coordinates to the other image packed into the texture (atlasing).  
-			var textureOffset = _texture.ToTexel(new DX.Vector2(516, 0));
+			DX.Vector2 textureOffset = _texture.ToTexel(new DX.Vector2(516, 0));
 			// This is to scale our texture coordinates because the actual image is much smaller (255x255) than the full texture (1024x512).
 			textureSize = _texture.ToTexel(new DX.Size2(255, 255));
             // Give the sphere a place to live.
@@ -660,7 +660,7 @@ namespace Gorgon.Graphics.Example
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="KeyEventArgs" /> instance containing the event data.</param>
 		/// <exception cref="System.NotSupportedException"></exception>
-		static void _mainForm_KeyDown(object sender, KeyEventArgs e)
+		private static void _mainForm_KeyDown(object sender, KeyEventArgs e)
 		{
 			if ((!e.Alt) || (e.KeyCode != Keys.Enter) || (_output == null))
 			{
@@ -683,7 +683,7 @@ namespace Gorgon.Graphics.Example
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
 		/// <exception cref="System.NotSupportedException"></exception>
-		static void Swap_AfterResized(object sender, EventArgs e)
+		private static void Swap_AfterResized(object sender, EventArgs e)
 		{
 			// This method allows us to restore projection matrix after the swap chain has been resized.  If we didn't do this, we'd have a weird looking (e.g. distorted)
             // image because the old projection matrix would be in place for the previous swap chain size.
@@ -699,7 +699,7 @@ namespace Gorgon.Graphics.Example
 		/// The main entry point for the application.
 		/// </summary>
 		[STAThread]
-		static void Main()
+		private static void Main()
 		{
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);

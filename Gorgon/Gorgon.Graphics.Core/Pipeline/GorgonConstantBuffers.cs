@@ -48,17 +48,15 @@ namespace Gorgon.Graphics.Core
 		public const int MaximumConstantBufferCount = D3D11.CommonShaderStage.ConstantBufferApiSlotCount;
 		#endregion
 
-		#region Variables.
-		// The native binding.
-		private readonly D3D11.Buffer[] _native = new D3D11.Buffer[MaximumConstantBufferCount];
-		#endregion
-
 		#region Properties.
 		/// <summary>
 		/// Property to return whether the list is in a dirty state or not.
 		/// </summary>
-		internal D3D11.Buffer[] Native => _native;
-		#endregion
+		internal D3D11.Buffer[] Native
+		{
+		    get;
+		} = new D3D11.Buffer[MaximumConstantBufferCount];
+	    #endregion
 
 		#region Methods.
 		/// <summary>
@@ -71,7 +69,7 @@ namespace Gorgon.Graphics.Core
 		/// </remarks>
 		protected override void OnClear()
 		{
-			Array.Clear(_native, 0, MaximumConstantBufferCount);
+			Array.Clear(Native, 0, MaximumConstantBufferCount);
 		}
 
 	    /// <summary>
@@ -81,7 +79,7 @@ namespace Gorgon.Graphics.Core
 	    /// <param name="value">The value containing the native item.</param>
 	    protected override void OnStoreNativeItem(int nativeItemIndex, GorgonConstantBuffer value)
 	    {
-	        _native[nativeItemIndex] = value?.NativeBuffer;
+	        Native[nativeItemIndex] = value?.NativeBuffer;
 	    }
 		#endregion
 

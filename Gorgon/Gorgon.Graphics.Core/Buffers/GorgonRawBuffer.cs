@@ -117,7 +117,7 @@ namespace Gorgon.Graphics.Core
 
             Log.Print($"{Name} Raw Buffer: Creating D3D11 buffer. Size: {SizeInBytes} bytes", LoggingLevel.Simple);
 
-            var bindFlags = D3D11.BindFlags.None;
+            D3D11.BindFlags bindFlags = D3D11.BindFlags.None;
 
             if ((_info.Binding & BufferBinding.Shader) == BufferBinding.Shader)
             {
@@ -136,7 +136,7 @@ namespace Gorgon.Graphics.Core
 
             ValidateBufferBindings(_info.Usage, bindFlags);
             
-            var desc = new D3D11.BufferDescription
+            D3D11.BufferDescription desc = new D3D11.BufferDescription
                        {
                            SizeInBytes = SizeInBytes,
                            Usage = _info.Usage,
@@ -211,10 +211,9 @@ namespace Gorgon.Graphics.Core
 
             elementCount = elementCount.Min(totalElementCount - startElement).Max(1);
 
-            var key = new BufferShaderViewKey(startElement, elementCount, elementType);
-            var view = GetView(key) as GorgonRawBufferView;
+            BufferShaderViewKey key = new BufferShaderViewKey(startElement, elementCount, elementType);
 
-            if (view != null)
+            if (GetView(key) is GorgonRawBufferView view)
             {
                 return view;
             }
@@ -292,11 +291,9 @@ namespace Gorgon.Graphics.Core
 
             elementCount = elementCount.Min(totalElementCount - startElement).Max(1);
 
-            var key = new BufferShaderViewKey(startElement, elementCount, elementType);
+            BufferShaderViewKey key = new BufferShaderViewKey(startElement, elementCount, elementType);
 
-            var result = GetUav(key) as GorgonRawBufferUav;
-
-            if (result != null)
+            if (GetUav(key) is GorgonRawBufferUav result)
             {
                 return result;
             }

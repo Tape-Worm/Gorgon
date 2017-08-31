@@ -103,14 +103,14 @@ namespace Gorgon.Input
 		/// <returns>The device information for the system keyboard.</returns>
 		private static RawKeyboardInfo GetSysKeyboardInfo()
 		{
-			var rawInfo = new RID_DEVICE_INFO_KEYBOARD
+			RID_DEVICE_INFO_KEYBOARD rawInfo = new RID_DEVICE_INFO_KEYBOARD
 			              {
 				              dwNumberOfFunctionKeys = UserApi.FunctionKeyCount,
 				              dwKeyboardMode = 0,
 				              dwSubType = 0
 			              };
 
-			var keyboardType = UserApi.KeyboardType;
+			KeyboardType keyboardType = UserApi.KeyboardType;
 			rawInfo.dwType = (int)keyboardType;
 
 			switch (UserApi.KeyboardType)
@@ -162,7 +162,7 @@ namespace Gorgon.Input
 		/// <returns>The modifier keys.</returns>
 		private Keys GetModifiers()
 		{
-			var result = Keys.None;
+			Keys result = Keys.None;
 
 			if (KeyStates[Keys.ControlKey] == KeyState.Down)
 			{
@@ -357,12 +357,7 @@ namespace Gorgon.Input
 				keyboardInfo = rawInfo =  GetSysKeyboardInfo();
 			}
 
-			if (rawInfo == null)
-			{
-				throw new InvalidCastException(string.Format(Resources.GORINP_RAW_ERR_INVALID_DEVICE_INFO_TYPE, keyboardInfo.GetType().FullName, GetType().FullName));
-			}
-
-			_deviceHandle = rawInfo.Handle;
+		    _deviceHandle = rawInfo?.Handle ?? throw new InvalidCastException(string.Format(Resources.GORINP_RAW_ERR_INVALID_DEVICE_INFO_TYPE, keyboardInfo.GetType().FullName, GetType().FullName));
 
 			Info = keyboardInfo;
 			KeyStates = new GorgonKeyStateCollection();

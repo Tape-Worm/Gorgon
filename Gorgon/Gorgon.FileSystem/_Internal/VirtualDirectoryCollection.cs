@@ -37,7 +37,7 @@ namespace Gorgon.IO
 	/// <summary>
 	/// A collection of file system virtual directories.
 	/// </summary>
-	class VirtualDirectoryCollection
+	internal class VirtualDirectoryCollection
 		: IGorgonNamedObjectReadOnlyDictionary<IGorgonVirtualDirectory>
 	{
 		#region Variables.
@@ -243,7 +243,7 @@ namespace Gorgon.IO
 				}
 				else
 				{
-					var newDirectoryInfo = new VirtualDirectory(mountPoint, _parent.FileSystem, directory, item);
+					VirtualDirectory newDirectoryInfo = new VirtualDirectory(mountPoint, _parent.FileSystem, directory, item);
 					directory.Directories.Add(newDirectoryInfo);
 					directory = newDirectoryInfo;
 				}

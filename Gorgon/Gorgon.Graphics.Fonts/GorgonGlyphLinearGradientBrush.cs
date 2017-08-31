@@ -79,7 +79,7 @@ namespace Gorgon.Graphics.Fonts
 			}
 			set
 			{
-				var newValue = new GorgonGlyphBrushInterpolator(0, value);
+				GorgonGlyphBrushInterpolator newValue = new GorgonGlyphBrushInterpolator(0, value);
 
 				if (Interpolation.Count == 0)
 				{
@@ -100,21 +100,21 @@ namespace Gorgon.Graphics.Fonts
 		{
 			get
 			{
-				if (Interpolation.Count == 0)
+				switch (Interpolation.Count)
 				{
-					Interpolation.Add(new GorgonGlyphBrushInterpolator(0, GorgonColor.Black));
+				    case 0:
+				        Interpolation.Add(new GorgonGlyphBrushInterpolator(0, GorgonColor.Black));
+				        break;
+				    case 1:
+				        Interpolation.Add(new GorgonGlyphBrushInterpolator(1, GorgonColor.White));
+				        break;
 				}
 
-				if (Interpolation.Count == 1)
-				{
-					Interpolation.Add(new GorgonGlyphBrushInterpolator(1, GorgonColor.White));
-				}
-
-				return Interpolation[Interpolation.Count - 1].Color;
+			    return Interpolation[Interpolation.Count - 1].Color;
 			}
 			set
 			{
-				var newValue = new GorgonGlyphBrushInterpolator(1, value);
+				GorgonGlyphBrushInterpolator newValue = new GorgonGlyphBrushInterpolator(1, value);
 
 				switch (Interpolation.Count)
 				{
@@ -177,7 +177,7 @@ namespace Gorgon.Graphics.Fonts
 		/// </returns>
 		internal override Brush ToGDIBrush()
 		{
-			var result = new LinearGradientBrush(new Rectangle(GradientRegion.X, GradientRegion.Y, GradientRegion.Width, GradientRegion.Height),
+			LinearGradientBrush result = new LinearGradientBrush(new Rectangle(GradientRegion.X, GradientRegion.Y, GradientRegion.Width, GradientRegion.Height),
 			                                     StartColor,
 			                                     EndColor,
 			                                     Angle,
@@ -186,7 +186,7 @@ namespace Gorgon.Graphics.Fonts
 				             GammaCorrection = GammaCorrection
 			             };
 
-			var interpolationColors = new ColorBlend(Interpolation.Count);
+			ColorBlend interpolationColors = new ColorBlend(Interpolation.Count);
 
 			for (int i = 0; i < Interpolation.Count; i++)
 			{

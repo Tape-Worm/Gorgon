@@ -32,7 +32,7 @@ namespace Gorgon.IO.Providers
 	/// <summary>
 	/// Provides information about a file stored in a physical file system.
 	/// </summary>
-	class PhysicalFileInfo 
+	internal class PhysicalFileInfo 
 		: IGorgonPhysicalFileInfo
 	{
 		#region Properties.

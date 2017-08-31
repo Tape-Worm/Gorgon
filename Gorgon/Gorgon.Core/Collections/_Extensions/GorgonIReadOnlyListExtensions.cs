@@ -32,65 +32,48 @@ namespace Gorgon.Core.Collections
 		/// </remarks>
 		public static bool Contains<T>(this IReadOnlyList<T> list, T item)
 		{
-			if (list == null)
+			switch (list)
 			{
-				throw new ArgumentNullException(nameof(list));
+			    case null:
+			        throw new ArgumentNullException(nameof(list));
+			    case T[] arrayList:
+			        // If the list is an array, use the built in functionality.
+                    return Array.IndexOf(arrayList, item) != -1;
+			    case IList<T> readWriteList:
+			        // If it implements IList<T>, then use the IndexOf on that.
+                    return readWriteList.Contains(item);
 			}
 
-			// Since generic equality checking doesn't work, we have to fall back to using other means.
+		    switch (item)
+		    {
+		        // If the items in the type implement IEquatable<T>, then this will suffice.
+                case IEquatable<T> equalityItem:
+		            // ReSharper disable once LoopCanBeConvertedToQuery
+		            // ReSharper disable once ForCanBeConvertedToForeach
+		            for (int i = 0; i < list.Count; ++i)
+		            {
+		                if (equalityItem.Equals(list[i]))
+		                {
+		                    return true;
+		                }
+		            }
 
-			// If the list is an array, use the built in functionality.
-			var arrayList = list as T[];
+		            return false;
+		        // If no equality comparer is found, but we are comparable, then try to use that.
+                case IComparable<T> comparerItem:
+		            // ReSharper disable once ForCanBeConvertedToForeach
+		            for (int i = 0; i < list.Count; ++i)
+		            {
+		                if (comparerItem.CompareTo(list[i]) == 0)
+		                {
+		                    return true;
+		                }
+		            }
 
-			if (arrayList != null)
-			{
-				return Array.IndexOf(arrayList, item) != -1;
-			}
+		            return false;
+		    }
 
-			// If it implements IList<T>, then use the IndexOf on that.
-			var readWriteList = list as IList<T>;
-
-			if (readWriteList != null)
-			{
-				return readWriteList.Contains(item);
-			}
-
-			// If the items in the type implement IEquatable<T>, then this will suffice.
-			var equalityItem = item as IEquatable<T>;
-
-			if (equalityItem != null)
-			{
-				// ReSharper disable once LoopCanBeConvertedToQuery
-				// ReSharper disable once ForCanBeConvertedToForeach
-				for (int i = 0; i < list.Count; ++i)
-				{
-					if (equalityItem.Equals(list[i]))
-					{
-						return true;
-					}
-				}
-
-				return false;
-			}
-
-			// If no equality comparer is found, but we are comparable, then try to use that.
-			var comparerItem = item as IComparable<T>;
-
-			if (comparerItem != null)
-			{
-				// ReSharper disable once ForCanBeConvertedToForeach
-				for (int i = 0; i < list.Count; ++i)
-				{
-					if (comparerItem.CompareTo(list[i]) == 0)
-					{
-						return true;
-					}
-				}
-
-				return false;
-			}
-
-			// Finally, fall back to the object (and potentially boxing) method.
+		    // Finally, fall back to the object (and potentially boxing) method.
 			// ReSharper disable once ForCanBeConvertedToForeach
 			for (int i = 0; i < list.Count; ++i)
 			{
@@ -127,62 +110,45 @@ namespace Gorgon.Core.Collections
 		/// </remarks>
 		public static int IndexOf<T>(this IReadOnlyList<T> list, T item)
 		{
-			if (list == null)
+			switch (list)
 			{
-				throw new ArgumentNullException(nameof(list));
+			    case null:
+			        throw new ArgumentNullException(nameof(list));
+			    case T[] arrayList:
+			        // If the list is an array, use the built in functionality.
+                    return Array.IndexOf(arrayList, item);
+                case IList<T> readWriteList:
+                    // If it implements IList<T>, then use the IndexOf on that.
+                    return readWriteList.IndexOf(item);
 			}
+            
+		    switch (item)
+		    {
+		        case IEquatable<T> equalityItem:
+		            // If the items in the type implement IEquatable<T>, then this will suffice.
+                    for (int i = 0; i < list.Count; ++i)
+		            {
+		                if (equalityItem.Equals(list[i]))
+		                {
+		                    return i;
+		                }
+		            }
 
-			// Since generic equality checking doesn't work, we have to fall back to using other means.
+		            return -1;
+		        case IComparable<T> comparerItem:
+		            // If no equality comparer is found, but we are comparable, then try to use that.
+                    for (int i = 0; i < list.Count; ++i)
+		            {
+		                if (comparerItem.CompareTo(list[i]) == 0)
+		                {
+		                    return i;
+		                }
+		            }
 
-			// If the list is an array, use the built in functionality.
-			var arrayList = list as T[];
+		            return -1;
+		    }
 
-			if (arrayList != null)
-			{
-				return Array.IndexOf(arrayList, item);
-			}
-
-			// If it implements IList<T>, then use the IndexOf on that.
-			var readWriteList = list as IList<T>;
-
-			if (readWriteList != null)
-			{
-				return readWriteList.IndexOf(item);
-			}
-
-			// If the items in the type implement IEquatable<T>, then this will suffice.
-			var equalityItem = item as IEquatable<T>;
-
-			if (equalityItem != null)
-			{
-				for (int i = 0; i < list.Count; ++i)
-				{
-					if (equalityItem.Equals(list[i]))
-					{
-						return i;
-					}
-				}
-
-				return -1;
-			}
-
-			// If no equality comparer is found, but we are comparable, then try to use that.
-			var comparerItem = item as IComparable<T>;
-
-			if (comparerItem != null)
-			{
-				for (int i = 0; i < list.Count; ++i)
-				{
-					if (comparerItem.CompareTo(list[i]) == 0)
-					{
-						return i;
-					}
-				}
-
-				return -1;
-			}
-
-			// Finally, fall back to the object (and potentially boxing) method.
+		    // Finally, fall back to the object (and potentially boxing) method.
 			for (int i = 0; i < list.Count; ++i)
 			{
 				if (item.Equals(list[i]))

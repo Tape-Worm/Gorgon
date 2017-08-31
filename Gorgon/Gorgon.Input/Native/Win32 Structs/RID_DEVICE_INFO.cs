@@ -34,7 +34,7 @@ namespace Gorgon.Native
 	/// Device information.
 	/// </summary>
 	[StructLayout(LayoutKind.Explicit)]
-	struct RID_DEVICE_INFO
+	internal struct RID_DEVICE_INFO
 	{
 		[FieldOffset(0)]
 		public int cbSize;

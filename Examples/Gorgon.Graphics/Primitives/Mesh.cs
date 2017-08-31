@@ -35,7 +35,7 @@ namespace Gorgon.Graphics.Example
     /// <summary>
     /// Base class for a mesh object.
     /// </summary>
-    abstract class Mesh
+    internal abstract class Mesh
         : IDisposable
     {
         #region Properties.
@@ -128,8 +128,8 @@ namespace Gorgon.Graphics.Example
         /// <param name="indexData">Buffer holding the indices.</param>
         protected unsafe void CalculateTangents(Vertex3D* vertexData, int* indexData)
         {
-			var biTanData = new DX.Vector3[VertexCount];
-			var tanData = new DX.Vector3[VertexCount];
+			DX.Vector3[] biTanData = new DX.Vector3[VertexCount];
+			DX.Vector3[] tanData = new DX.Vector3[VertexCount];
 
             for (int i = 0; i < TriangleCount; ++i)
             {
@@ -164,11 +164,11 @@ namespace Gorgon.Graphics.Example
 		            r = 1.0f / denom;
 	            }
 				
-	            var tangent = new DX.Vector3((deltaUV2.Y * deltaPos1.X - deltaUV1.Y * deltaPos2.X) * r,
+	            DX.Vector3 tangent = new DX.Vector3((deltaUV2.Y * deltaPos1.X - deltaUV1.Y * deltaPos2.X) * r,
 	                                      (deltaUV2.Y * deltaPos1.Y - deltaUV1.Y * deltaPos2.Y) * r,
 	                                      (deltaUV2.Y * deltaPos1.Z - deltaUV1.Y * deltaPos2.Z) * r);
 
-				var biTangent = new DX.Vector3((deltaUV1.X * deltaPos2.X - deltaUV2.X * deltaPos1.X) * r,
+				DX.Vector3 biTangent = new DX.Vector3((deltaUV1.X * deltaPos2.X - deltaUV2.X * deltaPos1.X) * r,
 	                                        (deltaUV1.X * deltaPos2.Y - deltaUV2.X * deltaPos1.Y) * r,
 	                                        (deltaUV1.X * deltaPos2.Z - deltaUV2.X * deltaPos1.Z) * r);
 

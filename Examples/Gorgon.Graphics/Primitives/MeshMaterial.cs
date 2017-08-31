@@ -32,7 +32,7 @@ namespace Gorgon.Graphics.Example
     /// <summary>
     /// A material for a mesh.
     /// </summary>
-    class MeshMaterial
+    internal class MeshMaterial
     {
         #region Properties.
         /// <summary>

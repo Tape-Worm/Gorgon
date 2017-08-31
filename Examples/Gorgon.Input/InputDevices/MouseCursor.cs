@@ -35,7 +35,7 @@ namespace Gorgon.Examples
     /// <summary>
     /// This will display our mouse cursor on a double buffered surface.
     /// </summary>
-    class MouseCursor
+    internal class MouseCursor
         : IDisposable
     {
         #region Variables.
@@ -127,7 +127,7 @@ namespace Gorgon.Examples
         /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
         private void displayControl_Resize(object sender, EventArgs e)
         {
-            var displayControl = (Control)sender;
+            Control displayControl = (Control)sender;
             Form ownerForm = displayControl.FindForm();
             
             CleanUp();

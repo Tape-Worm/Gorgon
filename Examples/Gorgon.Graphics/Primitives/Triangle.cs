@@ -32,7 +32,7 @@ using Gorgon.Native;
 
 namespace Gorgon.Graphics.Example
 {
-	class Triangle
+    internal class Triangle
 		: MoveableMesh
 	{
         #region Constructor/Destructor.

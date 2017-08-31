@@ -33,7 +33,7 @@ namespace Gorgon.Graphics.Core
     /// <summary>
     /// A key used to uniquely identify a shader view.
     /// </summary>
-    struct BufferShaderViewKey
+    internal struct BufferShaderViewKey
         : IEquatable<BufferShaderViewKey>
     {
         /// <summary>
@@ -56,9 +56,9 @@ namespace Gorgon.Graphics.Core
         /// <returns><c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.</returns>
         public override bool Equals(object obj)
         {
-            if (obj is BufferShaderViewKey)
+            if (obj is BufferShaderViewKey key)
             {
-                return ((BufferShaderViewKey)obj).Equals(this);
+                return key.Equals(this);
             }
             return base.Equals(obj);
         }

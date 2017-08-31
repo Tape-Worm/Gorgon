@@ -83,8 +83,8 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <returns>A dictionary containing the key/value pair describing the metadata to write to the frame, or <b>null</b> if the frame contains no metadata.</returns>
 		protected override IReadOnlyDictionary<string, object> GetCustomEncodingMetadata(int frameIndex, IGorgonWicEncodingOptions options, IGorgonImageInfo settings)
 		{
-			var gifOptions = options as GorgonGifEncodingOptions;
-			var result = new Dictionary<string, object>();
+			GorgonGifEncodingOptions gifOptions = options as GorgonGifEncodingOptions;
+			Dictionary<string, object> result = new Dictionary<string, object>();
 
 			if (gifOptions?.Palette != null)
 			{ 
@@ -118,7 +118,6 @@ namespace Gorgon.Graphics.Imaging.Codecs
 			}
 
 			result["/grctlext/Delay"] = delayValue;
-			// TODO: There's a bug in SharpDX that keep this from working properly. 
 			result["/grctlext/Disposal"] = (ushort)1;
 
 			return result;
@@ -155,7 +154,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
                 throw new ArgumentEmptyException(nameof(filePath));
             }
 
-            using (var fileStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+            using (FileStream fileStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 return GetFrameDelays(fileStream);
             }
@@ -197,7 +196,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
             }
 
             long position = stream.Position;
-			var wic = new WicUtilities();
+			WicUtilities wic = new WicUtilities();
             
 			try
 			{

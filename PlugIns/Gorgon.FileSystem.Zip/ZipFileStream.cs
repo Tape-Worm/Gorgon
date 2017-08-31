@@ -267,7 +267,7 @@ namespace Gorgon.IO.Zip
                 return 0;
             }
 
-            var actualCount = (int)(Length - Position);
+            int actualCount = (int)(Length - Position);
 			int result = _zipStream.Read(buffer, offset, count > actualCount ? actualCount : count);
 
 			_position += result;

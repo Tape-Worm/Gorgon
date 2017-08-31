@@ -174,12 +174,6 @@ namespace Gorgon.Graphics.Core
         // The states used for texture samplers.  Used as a transitional buffer between D3D11 and Gorgon.
         private readonly D3D11.SamplerState[] _samplerStates = new D3D11.SamplerState[GorgonSamplerStates.MaximumSamplerStateCount];
 
-        // The scissor rectangles for clipping the output.
-        private readonly GorgonMonitoredValueTypeArray<DX.Rectangle> _scissorRectangles;
-
-        // The viewports used for rendering to the render target.
-        private readonly GorgonMonitoredValueTypeArray<DX.ViewportF> _viewports;
-
         // The texture blitter used to render a single texture.
         private readonly Lazy<TextureBlitter> _textureBlitter;
 
@@ -202,7 +196,16 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the list of cached pipeline states.
         /// </summary>
-        public IReadOnlyList<GorgonPipelineState> CachedPipelineStates => _stateCache;
+        public IReadOnlyList<GorgonPipelineState> CachedPipelineStates
+        {
+            get
+            {
+                lock (_stateCacheLock)
+                {
+                    return _stateCache;
+                }
+            }
+        }
 
         /// <summary>
         /// Property to set or return the video device to use for this graphics interface.
@@ -317,12 +320,18 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the scissor rectangles currently active for rendering.
         /// </summary>
-        public GorgonMonitoredValueTypeArray<DX.Rectangle> ScissorRectangles => _scissorRectangles;
+        public GorgonMonitoredValueTypeArray<DX.Rectangle> ScissorRectangles
+        {
+            get;
+        }
 
         /// <summary>
         /// Property to return the viewports used to render to the <see cref="RenderTargets"/>.
         /// </summary>
-        public GorgonMonitoredValueTypeArray<DX.ViewportF> Viewports => _viewports;
+        public GorgonMonitoredValueTypeArray<DX.ViewportF> Viewports
+        {
+            get;
+        }
         #endregion
 
         #region Methods.
@@ -816,7 +825,7 @@ namespace Gorgon.Graphics.Core
         /// <returns>The states that have been changed between this state and the other <paramref name="state"/>.</returns>
         private PipelineStateChange GetPipelineStateChange(GorgonPipelineState state)
         {
-            var pipelineFlags = PipelineStateChange.None;
+            PipelineStateChange pipelineFlags = PipelineStateChange.None;
 
             if ((_currentDrawCall.PipelineState == null) && (state == null))
             {
@@ -999,7 +1008,7 @@ namespace Gorgon.Graphics.Core
                                                             D3D11.RasterizerState1 rasterState)
         {
             D3D11.Device1 videoDevice = VideoDevice.D3DDevice();
-            var result = new GorgonPipelineState(info, _stateCache.Count)
+            GorgonPipelineState result = new GorgonPipelineState(info, _stateCache.Count)
                          {
                              D3DBlendState = blendState,
                              D3DDepthStencilState = depthStencilState,
@@ -1029,7 +1038,7 @@ namespace Gorgon.Graphics.Core
 
             int maxStates = info.BlendStates.Count.Min(D3D11.OutputMergerStage.SimultaneousRenderTargetCount);
 
-            var desc = new D3D11.BlendStateDescription1
+            D3D11.BlendStateDescription1 desc = new D3D11.BlendStateDescription1
                        {
                            IndependentBlendEnable = info.IsIndependentBlendingEnabled,
                            AlphaToCoverageEnable = info.IsAlphaToCoverageEnabled
@@ -1257,17 +1266,17 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         private unsafe void SetViewports()
         {
-            if (!_viewports.IsDirty)
+            if (!Viewports.IsDirty)
             {
                 return;
             }
 
-            ref (int Start, int Count) viewports = ref _viewports.GetDirtyItems();
+            ref (int Start, int Count) viewports = ref Viewports.GetDirtyItems();
             RawViewportF* rawViewports = stackalloc RawViewportF[viewports.Count];
 
             for (int i = 0; i < viewports.Count; ++i)
             {
-                rawViewports[i] = _viewports[i];
+                rawViewports[i] = Viewports[i];
             }
 
             D3DDeviceContext.Rasterizer.SetViewports(rawViewports, viewports.Count);
@@ -1279,12 +1288,12 @@ namespace Gorgon.Graphics.Core
         private void SetScissorRects()
         {
             // If there's been no change to the scissor rectangles, then we do nothing as the state should be the same as last time.
-            if (!_scissorRectangles.IsDirty)
+            if (!ScissorRectangles.IsDirty)
             {
                 return;
             }
 
-            ref (int Start, int Count) scissors = ref _scissorRectangles.GetDirtyItems();
+            ref (int Start, int Count) scissors = ref ScissorRectangles.GetDirtyItems();
 
             if (scissors.Count != _cachedScissors.Length)
             {
@@ -1303,7 +1312,7 @@ namespace Gorgon.Graphics.Core
 
             for (int i = 0; i < _cachedScissors.Length; ++i)
             {
-                _cachedScissors[i] = _scissorRectangles[i];
+                _cachedScissors[i] = ScissorRectangles[i];
             }
 
             D3DDeviceContext.Rasterizer.SetScissorRectangles(_cachedScissors);
@@ -2678,8 +2687,8 @@ namespace Gorgon.Graphics.Core
             }
 
             _renderTargets.Clear();
-            _scissorRectangles.Clear();
-            _viewports.Clear();
+            ScissorRectangles.Clear();
+            Viewports.Clear();
             _currentDrawCall?.Reset();
         }
 
@@ -2799,8 +2808,8 @@ namespace Gorgon.Graphics.Core
 
             _videoDevice = new VideoDevice(videoDeviceInfo, featureLevel.Value, _log);
 
-            _scissorRectangles = new GorgonMonitoredValueTypeArray<DX.Rectangle>(_videoDevice.MaxScissorCount);
-            _viewports = new GorgonMonitoredValueTypeArray<DX.ViewportF>(_videoDevice.MaxViewportCount);
+            ScissorRectangles = new GorgonMonitoredValueTypeArray<DX.Rectangle>(_videoDevice.MaxScissorCount);
+            Viewports = new GorgonMonitoredValueTypeArray<DX.ViewportF>(_videoDevice.MaxViewportCount);
 
             _deviceContext = _videoDevice.D3DDevice.ImmediateContext1;
             _renderTargets = new GorgonRenderTargetViews();

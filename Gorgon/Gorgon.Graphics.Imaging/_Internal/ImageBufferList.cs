@@ -37,7 +37,7 @@ namespace Gorgon.Graphics.Imaging
 	/// <summary>
 	/// A container for a list of image buffers.
 	/// </summary>
-	class ImageBufferList
+	internal class ImageBufferList
 		: IGorgonImageBufferList
 	{
 		#region Variables.
@@ -122,7 +122,7 @@ namespace Gorgon.Graphics.Imaging
 		internal void CreateBuffers(IGorgonPointer data)
 		{
 			int bufferIndex = 0;
-			var formatInfo = new GorgonFormatInfo(_image.Info.Format);	// Format information.
+			GorgonFormatInfo formatInfo = new GorgonFormatInfo(_image.Info.Format);	// Format information.
 			
 			// Allocate enough room for the array and mip levels.
 			_buffers = new IGorgonImageBuffer[GorgonImage.CalculateDepthSliceCount(_image.Info.Depth, _image.Info.MipCount) * _image.Info.ArrayCount];
@@ -145,7 +145,7 @@ namespace Gorgon.Graphics.Imaging
 				for (int mip = 0; mip < _image.Info.MipCount; mip++)
 				{
 					int arrayIndex = mip + (array * _image.Info.MipCount);
-					var pitchInformation = formatInfo.GetPitchForFormat(mipWidth, mipHeight);
+					GorgonPitchLayout pitchInformation = formatInfo.GetPitchForFormat(mipWidth, mipHeight);
 
 					// Get data box for texture upload.
 					DataBoxes[arrayIndex] = new DX.DataBox(dataAddress, pitchInformation.RowPitch, pitchInformation.SlicePitch);

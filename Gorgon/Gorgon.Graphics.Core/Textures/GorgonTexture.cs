@@ -211,7 +211,7 @@ namespace Gorgon.Graphics.Core
 					throw new ArgumentException(string.Format(Resources.GORGFX_ERR_IMAGE_TYPE_INVALID, texture.Info.TextureType), nameof(texture));
 			}
 
-			var bufferPtr = (byte*)buffer.Data.Address;
+			byte* bufferPtr = (byte*)buffer.Data.Address;
 
 			using (textureLock)
 			{
@@ -220,7 +220,7 @@ namespace Gorgon.Graphics.Core
 					|| (textureLock.PitchInformation.SlicePitch != sliceStride))
 				{
 					byte* destData = bufferPtr;
-					var sourceData = (byte*)textureLock.Data.Address;
+					byte* sourceData = (byte*)textureLock.Data.Address;
 
 					for (int depth = 0; depth < depthCount; depth++)
 					{
@@ -353,7 +353,7 @@ namespace Gorgon.Graphics.Core
 		private void ValidateTextureSettings()
 		{
 			D3D11.FormatSupport support = Graphics.VideoDevice.GetBufferFormatSupport(Info.Format);
-			var formatInfo = new GorgonFormatInfo(Info.Format);
+			GorgonFormatInfo formatInfo = new GorgonFormatInfo(Info.Format);
 
 			// For texture arrays, bump the value up to be a multiple of 6 if we want a cube map.
 			if (Info.TextureType != TextureType.Texture3D)
@@ -499,17 +499,17 @@ namespace Gorgon.Graphics.Core
 
 			D3D11.CpuAccessFlags cpuFlags = D3D11.CpuAccessFlags.None;
 
-			if (Info.Usage == D3D11.ResourceUsage.Staging)
+			switch (Info.Usage)
 			{
-				cpuFlags = D3D11.CpuAccessFlags.Read | D3D11.CpuAccessFlags.Write;
+			    case D3D11.ResourceUsage.Staging:
+			        cpuFlags = D3D11.CpuAccessFlags.Read | D3D11.CpuAccessFlags.Write;
+			        break;
+			    case D3D11.ResourceUsage.Dynamic:
+			        cpuFlags = D3D11.CpuAccessFlags.Write;
+			        break;
 			}
 
-			if (Info.Usage == D3D11.ResourceUsage.Dynamic)
-			{
-				cpuFlags = D3D11.CpuAccessFlags.Write;
-			}
-
-			D3D11.Texture1DDescription tex1DDesc = default(D3D11.Texture1DDescription);
+		    D3D11.Texture1DDescription tex1DDesc = default(D3D11.Texture1DDescription);
 			D3D11.Texture2DDescription tex2DDesc = default(D3D11.Texture2DDescription);
 			D3D11.Texture3DDescription tex3DDesc = default(D3D11.Texture3DDescription);
 
@@ -595,7 +595,7 @@ namespace Gorgon.Graphics.Core
 			}
 
 			// Upload the data to the texture.
-			var dataBoxes = new DX.DataBox[GorgonImage.CalculateDepthSliceCount(Info.Depth, Info.MipLevels) * Info.ArrayCount];
+			DX.DataBox[] dataBoxes = new DX.DataBox[GorgonImage.CalculateDepthSliceCount(Info.Depth, Info.MipLevels) * Info.ArrayCount];
 			
 			for (int arrayIndex = 0; arrayIndex < Info.ArrayCount; ++arrayIndex)
 			{
@@ -1176,7 +1176,7 @@ namespace Gorgon.Graphics.Core
 				throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_TEXTURE_RESOLVE_DEST_NOT_DEFAULT, destination.Name));
 			}
 
-			var resolveFormatInfo = new GorgonFormatInfo(resolveFormat);
+			GorgonFormatInfo resolveFormatInfo = new GorgonFormatInfo(resolveFormat);
 
 			// If we have typed formats, and they're not the same, then that's an error according to the D3D docs.
 			if ((!FormatInformation.IsTypeless) && (!destination.FormatInformation.IsTypeless))
@@ -1250,7 +1250,7 @@ namespace Gorgon.Graphics.Core
 				                          Usage = D3D11.ResourceUsage.Staging,
 				                          Binding = TextureBinding.None
 			                          };
-			var staging = new GorgonTexture(Name + " [Staging]", Graphics, info);
+			GorgonTexture staging = new GorgonTexture(Name + " [Staging]", Graphics, info);
 
 			// Copy the data from this texture into the new staging texture.
 			staging.CopyTo(this);
@@ -1348,7 +1348,7 @@ namespace Gorgon.Graphics.Core
 				      };
 			}
 
-			var boxPtr = new DX.DataBox
+			DX.DataBox boxPtr = new DX.DataBox
 			{
 				DataPointer = new IntPtr(buffer.Data.Address),
 				RowPitch = buffer.PitchInformation.RowPitch,
@@ -1416,7 +1416,7 @@ namespace Gorgon.Graphics.Core
 					for (int mipLevel = 0; mipLevel < stagingTexture.Info.MipLevels; mipLevel++)
 					{
 						// Get the buffer for the array and mip level.
-						var buffer = image.Buffers[mipLevel, array];
+						IGorgonImageBuffer buffer = image.Buffers[mipLevel, array];
 
 						// Copy the data from the texture.
 						GetTextureData(stagingTexture, array, mipLevel, buffer);
@@ -1580,7 +1580,7 @@ namespace Gorgon.Graphics.Core
 
 	        arrayCount = (arrayCount.Min(Info.ArrayCount - arrayIndex)).Max(1);
 
-            var key = new TextureViewKey(format, firstMipLevel, mipCount, arrayIndex, arrayCount);
+            TextureViewKey key = new TextureViewKey(format, firstMipLevel, mipCount, arrayIndex, arrayCount);
 
             if (_cachedSrvs.TryGetValue(key, out GorgonTextureView view))
             {
@@ -1667,7 +1667,7 @@ namespace Gorgon.Graphics.Core
 	        }
 
 	        // Ensure the size of the data type fits the requested format.
-	        var info = new GorgonFormatInfo(format);
+	        GorgonFormatInfo info = new GorgonFormatInfo(format);
 
 	        if (((info.Group != Format.R32_Typeless) && (FormatInformation.Group != info.Group))
 	            || (info.SizeInBytes != FormatInformation.SizeInBytes))
@@ -1688,7 +1688,7 @@ namespace Gorgon.Graphics.Core
 
 	        arrayOrDepthCount = arrayOrDepthCount.Min((Info.TextureType == TextureType.Texture3D ? (Info.Depth) : (Info.ArrayCount)) - arrayOrDepthIndex).Max(1);
 
-	        var key = new TextureViewKey(format, firstMipLevel, _info.MipLevels, arrayOrDepthIndex, arrayOrDepthCount);
+	        TextureViewKey key = new TextureViewKey(format, firstMipLevel, _info.MipLevels, arrayOrDepthIndex, arrayOrDepthCount);
 
 	        if (_cachedUavs.TryGetValue(key, out GorgonTextureUav view))
 	        {
@@ -1774,7 +1774,7 @@ namespace Gorgon.Graphics.Core
 	        arrayCount = arrayCount.Min(_info.ArrayCount - arrayIndex).Max(1);
 
             // Since we don't use the mip count, we can repurpose it to store the flag settings.
-	        var key = new TextureViewKey(format, firstMipLevel, (int)flags, arrayIndex, arrayCount);
+	        TextureViewKey key = new TextureViewKey(format, firstMipLevel, (int)flags, arrayIndex, arrayCount);
 
             if (_cachedDsvs.TryGetValue(key, out GorgonDepthStencilView view))
             {
@@ -1846,7 +1846,7 @@ namespace Gorgon.Graphics.Core
 
 	        arrayOrDepthCount = arrayOrDepthCount.Min((_info.TextureType == TextureType.Texture3D ? _info.Depth : _info.ArrayCount) - arrayOrDepthIndex).Max(1);
 
-	        var key = new TextureViewKey(format, firstMipLevel, 1, arrayOrDepthIndex, arrayOrDepthCount);
+	        TextureViewKey key = new TextureViewKey(format, firstMipLevel, 1, arrayOrDepthIndex, arrayOrDepthCount);
 
             if (_cachedRtvs.TryGetValue(key, out GorgonRenderTargetView view))
             {

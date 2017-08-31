@@ -82,9 +82,7 @@ namespace Gorgon.Examples
 		/// <param name="e">The <see cref="PaintEventArgs" /> instance containing the event data.</param>
 		private void ControllerControlsPaint(object sender, PaintEventArgs e)
 		{
-			var control = sender as Control;
-
-			if (control != null)
+		    if (sender is Control control)
 			{
 				e.Graphics.DrawLine(Pens.Black, Point.Empty, new Point(control.ClientRectangle.Right, 0));
 			}
@@ -97,8 +95,8 @@ namespace Gorgon.Examples
 		/// <param name="index">Index of the controller.</param>
 		private void UpdateControllerLabels(IGorgonGamingDevice device, int index)
 		{			
-			var panel = (Panel)panelControllers.Controls["panelController" + index];
-			var label = (Label)panel.Controls["labelController" + index];			
+			Panel panel = (Panel)panelControllers.Controls["panelController" + index];
+			Label label = (Label)panel.Controls["labelController" + index];			
 
 			// Update the label visibility for the controller.
 			if (device.IsConnected)
@@ -184,11 +182,11 @@ namespace Gorgon.Examples
 		{
 			GorgonRange xRange = controller.Info.AxisInfo[GamingDeviceAxis.LeftStickX].Range;
 			GorgonRange yRange = controller.Info.AxisInfo[GamingDeviceAxis.LeftStickY].Range;
-			var playerColorValue = (int)((uint)0xFF << (index * 8) | 0xFF000000);						// Get the color based on the controller index.			
-			var cursorSize = new Size(_surface.CursorSize.Width / 2, _surface.CursorSize.Height / 2);	// Get the cursor size with offset.
+			int playerColorValue = (int)((uint)0xFF << (index * 8) | 0xFF000000);						// Get the color based on the controller index.			
+			Size cursorSize = new Size(_surface.CursorSize.Width / 2, _surface.CursorSize.Height / 2);	// Get the cursor size with offset.
 
 			// Transform the axis into a -1 .. 1 range.				
-			var moveVector = new PointF(controller.Axis[GamingDeviceAxis.LeftStickX].Value - (float)xRange.Minimum,
+			PointF moveVector = new PointF(controller.Axis[GamingDeviceAxis.LeftStickX].Value - (float)xRange.Minimum,
 											controller.Axis[GamingDeviceAxis.LeftStickY].Value - (float)yRange.Minimum);
 
 			moveVector = new PointF((moveVector.X / (xRange.Range + 1) * 2.0f) - 1.0f,
@@ -196,7 +194,7 @@ namespace Gorgon.Examples
 
 			// Move at 100 units per second 
 			float speed = panelDisplay.ClientSize.Width / 2.0f * GorgonTiming.Delta;
-			var position = new PointF((speed * moveVector.X) + _stickPosition[index].X,
+			PointF position = new PointF((speed * moveVector.X) + _stickPosition[index].X,
 										(speed * -moveVector.Y) + _stickPosition[index].Y);
 
 
@@ -282,7 +280,7 @@ namespace Gorgon.Examples
 
 			for (int i = 0; i < _controllers.Count; i++)
 			{				
-				var controller = _controllers[i];
+				IGorgonGamingDevice controller = _controllers[i];
 
 				// Do nothing if this joystick isn't connected.
 				if (!controller.IsConnected)

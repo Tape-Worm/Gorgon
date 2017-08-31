@@ -31,7 +31,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
 	/// <summary>
 	/// Information about the BmFont.
 	/// </summary>
-	class BmFontInfo
+	internal class BmFontInfo
 		: GorgonFontInfo
 	{
 		#region Properties.

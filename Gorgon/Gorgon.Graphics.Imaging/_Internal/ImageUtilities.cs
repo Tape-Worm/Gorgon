@@ -56,7 +56,7 @@ namespace Gorgon.Graphics.Imaging
 	/// <summary>
 	/// Utilities to facilitate in manipulating image data.
 	/// </summary>
-	static class ImageUtilities
+	internal static class ImageUtilities
 	{
 		/// <summary>
 		/// Function to expand a 16BPP scan line in an image to a 32BPP RGBA line.
@@ -77,8 +77,8 @@ namespace Gorgon.Graphics.Imaging
 		/// </remarks>
 		public static unsafe void Expand16BPPScanline(void* src, int srcPitch, DXGI.Format srcFormat, void* dest, int destPitch, ImageBitFlags bitFlags)
 		{
-			var srcPtr = (ushort*)src;
-			var destPtr = (uint*)dest;
+			ushort* srcPtr = (ushort*)src;
+			uint* destPtr = (uint*)dest;
 
 			if ((srcFormat != DXGI.Format.B5G5R5A1_UNorm) && (srcFormat != DXGI.Format.B5G6R5_UNorm) && (srcFormat != DXGI.Format.B4G4R4A4_UNorm))
 			{
@@ -178,8 +178,8 @@ namespace Gorgon.Graphics.Imaging
 											nameof(format));
 			}
 
-			var srcPtr = (uint*)src;
-			var destPtr = (uint*)dest;
+			uint* srcPtr = (uint*)src;
+			uint* destPtr = (uint*)dest;
 
 			switch (format)
 			{
@@ -269,8 +269,8 @@ namespace Gorgon.Graphics.Imaging
 						                 ? 0x3F800000
 						                 : ((format == DXGI.Format.R32G32B32_SInt) ? 0x7FFFFFFF : 0xFFFFFFFF);
 
-					var srcPtr = (uint*)src;
-					var destPtr = (uint*)dest;
+					uint* srcPtr = (uint*)src;
+					uint* destPtr = (uint*)dest;
 
 					for (int i = 0; i < srcPitch; i += 16)
 					{
@@ -324,8 +324,8 @@ namespace Gorgon.Graphics.Imaging
 							break;
 					}
 
-					var srcPtr = (uint*)src;
-					var destPtr = (uint*)dest;
+					uint* srcPtr = (uint*)src;
+					uint* destPtr = (uint*)dest;
 
 					for (int i = 0; i < srcPitch; i += 8)
 					{
@@ -360,8 +360,8 @@ namespace Gorgon.Graphics.Imaging
 				case DXGI.Format.R10G10B10A2_UInt:
 				case DXGI.Format.R10G10B10_Xr_Bias_A2_UNorm:
 				{
-					var srcPtr = (uint*)src;
-					var destPtr = (uint*)dest;
+					uint* srcPtr = (uint*)src;
+					uint* destPtr = (uint*)dest;
 
 					for (int i = 0; i < srcPitch; i += 4)
 					{
@@ -401,8 +401,8 @@ namespace Gorgon.Graphics.Imaging
 				{
 					uint alphaMask = ((format == DXGI.Format.R8G8B8A8_SInt) || (format == DXGI.Format.R8G8B8A8_SNorm)) ? 0x7F000000 : 0xFF000000;
 
-					var srcPtr = (uint*)src;
-					var destPtr = (uint*)dest;
+					uint* srcPtr = (uint*)src;
+					uint* destPtr = (uint*)dest;
 
 					for (int i = 0; i < srcPitch; i += 4)
 					{
@@ -434,8 +434,8 @@ namespace Gorgon.Graphics.Imaging
 				case DXGI.Format.B4G4R4A4_UNorm:
 				{
 					ushort alphaMask = (ushort)(format == DXGI.Format.B5G5R5A1_UNorm ? 0x8000 : 0xF000);
-					var srcPtr = (ushort*)src;
-					var destPtr = (ushort*)dest;
+					ushort* srcPtr = (ushort*)src;
+					ushort* destPtr = (ushort*)dest;
 
 					for (int i = 0; i < srcPitch; i += 2)
 					{
@@ -488,8 +488,8 @@ namespace Gorgon.Graphics.Imaging
 					return false;
 				case DXGI.Format.A8_UNorm:
 				{
-					var srcPtr = (byte*)src;
-					var destPtr = (byte*)dest;
+					byte* srcPtr = (byte*)src;
+					byte* destPtr = (byte*)dest;
 
 					for (int x = 0; x < srcPitch; ++x)
 					{
@@ -566,8 +566,8 @@ namespace Gorgon.Graphics.Imaging
 							uint alpha = (format == DXGI.Format.R32G32B32_Float) ? 0x3F800000
 												: ((format == DXGI.Format.R32G32B32_SInt) ? 0x7FFFFFFF : 0xFFFFFFFF);
 
-							var srcPtr = (uint*)src;
-							var destPtr = (uint*)dest;
+							uint* srcPtr = (uint*)src;
+							uint* destPtr = (uint*)dest;
 
 							for (int i = 0; i < size; i += 16)
 							{
@@ -603,8 +603,8 @@ namespace Gorgon.Graphics.Imaging
 									break;
 							}
 
-							var srcPtr = (ushort*)src;
-							var destPtr = (ushort*)dest;
+							ushort* srcPtr = (ushort*)src;
+							ushort* destPtr = (ushort*)dest;
 
 							for (int i = 0; i < size; i += 8)
 							{
@@ -624,8 +624,8 @@ namespace Gorgon.Graphics.Imaging
 					case DXGI.Format.R10G10B10A2_UInt:
 					case DXGI.Format.R10G10B10_Xr_Bias_A2_UNorm:
 						{
-							var srcPtr = (uint*)src;
-							var destPtr = (uint*)dest;
+							uint* srcPtr = (uint*)src;
+							uint* destPtr = (uint*)dest;
 
 							for (int i = 0; i < size; i += 4)
 							{
@@ -652,8 +652,8 @@ namespace Gorgon.Graphics.Imaging
 						{
 							uint alpha = ((format == DXGI.Format.R8G8B8A8_SInt) || (format == DXGI.Format.R8G8B8A8_SNorm)) ? 0x7F000000 : 0xFF000000;
 
-							var srcPtr = (uint*)src;
-							var destPtr = (uint*)dest;
+							uint* srcPtr = (uint*)src;
+							uint* destPtr = (uint*)dest;
 
 							for (int i = 0; i < size; i += 4)
 							{
@@ -670,8 +670,8 @@ namespace Gorgon.Graphics.Imaging
 						return;
 					case DXGI.Format.B4G4R4A4_UNorm:
 						{
-							var srcPtr = (ushort*)src;
-							var destPtr = (ushort*)dest;
+							ushort* srcPtr = (ushort*)src;
+							ushort* destPtr = (ushort*)dest;
 
 							for (int i = 0; i < size; i += 2)
 							{
@@ -689,8 +689,8 @@ namespace Gorgon.Graphics.Imaging
 						return;
 					case DXGI.Format.B5G5R5A1_UNorm:
 						{
-							var srcPtr = (ushort*)src;
-							var destPtr = (ushort*)dest;
+							ushort* srcPtr = (ushort*)src;
+							ushort* destPtr = (ushort*)dest;
 
 							for (int i = 0; i < size; i += 2)
 							{
@@ -728,8 +728,8 @@ namespace Gorgon.Graphics.Imaging
 		/// <param name="reverse"><b>true</b> to fill the destination from the right side, <b>false</b> to fill from the left.</param>
 		public static unsafe void Expand24BPPScanLine(void* src, int srcPitch, void* dest, bool reverse)
 		{
-			var srcPtr = (byte*)src;
-			var destPtr = (uint*)dest;
+			byte* srcPtr = (byte*)src;
+			uint* destPtr = (uint*)dest;
 
 			for (int x = 0; x < srcPitch; x += 3)
 			{
@@ -755,8 +755,8 @@ namespace Gorgon.Graphics.Imaging
 		/// <param name="destPitch">The pitch of the destination data.</param>
 		public static unsafe void Compress24BPPScanLine(void* src, int srcPitch, void* dest, int destPitch)
 		{
-			var srcPtr = (uint*)src;
-			var destPtr = (byte*)dest;
+			uint* srcPtr = (uint*)src;
+			byte* destPtr = (byte*)dest;
 			byte* endPtr = destPtr + destPitch;
 
 			for (int srcCount = 0; srcCount < srcPitch; srcCount += 4)

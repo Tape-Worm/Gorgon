@@ -31,7 +31,7 @@ namespace Gorgon.Graphics.Core
     /// <summary>
     /// A generic interface for a <see cref="GorgonPipelineStateGroup{TKey}"/>.  Used to access the type without requiring a generic parameter.
     /// </summary>
-    interface IPipelineStateGroup
+    internal interface IPipelineStateGroup
         : IReadOnlyCollection<GorgonPipelineState>
     {
         #region Properties.

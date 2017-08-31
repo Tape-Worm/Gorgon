@@ -30,7 +30,7 @@ using System.Runtime.InteropServices;
 namespace Gorgon.Native
 {
 	[StructLayout(LayoutKind.Sequential)]
-	struct POINT
+	internal struct POINT
 	{
 		public int X;
 		public int Y;

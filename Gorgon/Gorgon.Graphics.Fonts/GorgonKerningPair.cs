@@ -69,9 +69,9 @@ namespace Gorgon.Graphics.Fonts
 		/// </returns>
 		public override bool Equals(object obj)
 		{
-			if (obj is GorgonKerningPair)
+			if (obj is GorgonKerningPair kernPair)
 			{
-				return ((GorgonKerningPair)obj).Equals(this);
+				return kernPair.Equals(this);
 			}
 
 			return base.Equals(obj);

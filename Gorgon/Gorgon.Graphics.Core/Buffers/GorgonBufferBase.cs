@@ -154,25 +154,25 @@ namespace Gorgon.Graphics.Core
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_NON_STAGING_NEEDS_BINDING, usage));
             }
 
-            if (usage == D3D11.ResourceUsage.Immutable)
+            switch (usage)
             {
-                if ((bindings & D3D11.BindFlags.StreamOutput) == D3D11.BindFlags.StreamOutput)
-                {
-                    throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_BUFFER_IMMUTABLE_STAGING_SO);
-                }
+                case D3D11.ResourceUsage.Immutable:
+                    if ((bindings & D3D11.BindFlags.StreamOutput) == D3D11.BindFlags.StreamOutput)
+                    {
+                        throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_BUFFER_IMMUTABLE_STAGING_SO);
+                    }
 
-                if ((bindings & D3D11.BindFlags.UnorderedAccess) == D3D11.BindFlags.UnorderedAccess)
-                {
-                    throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_BUFFER_IMMUTABLE_STAGING_UAV);
-                }
-            }
-
-            if (usage == D3D11.ResourceUsage.Staging)
-            {
-                if (bindings != D3D11.BindFlags.None)
-                {
-                    throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_CANNOT_BE_BOUND_TO_GPU, bindings));
-                }
+                    if ((bindings & D3D11.BindFlags.UnorderedAccess) == D3D11.BindFlags.UnorderedAccess)
+                    {
+                        throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_BUFFER_IMMUTABLE_STAGING_UAV);
+                    }
+                    break;
+                case D3D11.ResourceUsage.Staging:
+                    if (bindings != D3D11.BindFlags.None)
+                    {
+                        throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_CANNOT_BE_BOUND_TO_GPU, bindings));
+                    }
+                    break;
             }
 
             if (usage != D3D11.ResourceUsage.Dynamic)

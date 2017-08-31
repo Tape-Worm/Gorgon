@@ -82,9 +82,9 @@ namespace Gorgon.IO
 		/// </returns>
 		public override bool Equals(object obj)
 		{
-			if (obj is GorgonFileSystemMountPoint)
+			if (obj is GorgonFileSystemMountPoint mountPoint)
 			{
-				return Equals((GorgonFileSystemMountPoint)obj);
+				return mountPoint.Equals(this);
 			}
 
 			return base.Equals(obj);

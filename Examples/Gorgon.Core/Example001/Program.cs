@@ -34,7 +34,7 @@ namespace Gorgon.Examples
 	/// <summary>
 	/// Entry point class.
 	/// </summary>
-	class Program
+	internal class Program
 	{
 		#region Variables.
 		private static bool _quit;			// Flag to quit the application.
@@ -46,7 +46,7 @@ namespace Gorgon.Examples
 		/// </summary>
 		private static void UpdateTime()
 		{
-			var time = new TimeSpan(0, 0, (int)GorgonTiming.SecondsSinceStart);
+			TimeSpan time = new TimeSpan(0, 0, (int)GorgonTiming.SecondsSinceStart);
 
 			// Get the time.
 			string timeString = $"Application up time: {time.Hours}:{time.Minutes:00}:{time.Seconds:00}";
@@ -165,7 +165,7 @@ namespace Gorgon.Examples
 	    /// <summary>
 	    /// The entry point for the application.
 	    /// </summary>
-	    static void Main()
+	    private static void Main()
 		{
 			// This is here for any windows forms elements that get displayed.
 			// Without this, the elements will not use the visual styles and will 

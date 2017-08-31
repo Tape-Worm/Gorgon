@@ -35,7 +35,7 @@ namespace Gorgon.Native
 	/// Value type for a raw input header.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	struct RAWINPUTHEADER
+	internal struct RAWINPUTHEADER
 	{
 		/// <summary>Type of device the input is coming from.</summary>
 		public RawInputType Type;

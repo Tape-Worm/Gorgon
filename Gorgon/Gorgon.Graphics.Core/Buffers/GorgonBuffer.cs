@@ -112,7 +112,7 @@ namespace Gorgon.Graphics.Core
                           : $"{Name} Indirect Argument Buffer: Creating D3D11 buffer. Size: {SizeInBytes} bytes",
                       LoggingLevel.Simple);
 
-            var bindFlags = D3D11.BindFlags.None;
+            D3D11.BindFlags bindFlags = D3D11.BindFlags.None;
 
             if ((_info.Binding & BufferBinding.Shader) == BufferBinding.Shader)
             {
@@ -132,7 +132,7 @@ namespace Gorgon.Graphics.Core
             // Ensure we can use this combination of bindings and usages.
             ValidateBufferBindings(_info.Usage, bindFlags);
 
-            var desc = new D3D11.BufferDescription
+            D3D11.BufferDescription desc = new D3D11.BufferDescription
                        {
                            SizeInBytes = SizeInBytes,
                            Usage = _info.Usage,
@@ -205,7 +205,7 @@ namespace Gorgon.Graphics.Core
                 throw new ArgumentException(Resources.GORGFX_ERR_VIEW_UNKNOWN_FORMAT, nameof(format));
             }
 
-            var formatInfo = new GorgonFormatInfo(format);
+            GorgonFormatInfo formatInfo = new GorgonFormatInfo(format);
             int totalElementCount = GetTotalElementCount(formatInfo);
             startElement = startElement.Min(totalElementCount - 1).Max(0);
 
@@ -215,7 +215,7 @@ namespace Gorgon.Graphics.Core
                 elementCount = totalElementCount - startElement;
             }
 
-            var key = new BufferShaderViewKey(startElement, elementCount, format);
+            BufferShaderViewKey key = new BufferShaderViewKey(startElement, elementCount, format);
             if (GetView(key) is GorgonBufferView view)
             {
                 return view;
@@ -289,7 +289,7 @@ namespace Gorgon.Graphics.Core
             }
 
             // Ensure the size of the data type fits the requested format.
-            var info = new GorgonFormatInfo(format);
+            GorgonFormatInfo info = new GorgonFormatInfo(format);
             int totalElementCount = GetTotalElementCount(format);
 
             startElement = startElement.Min(totalElementCount - 1).Max(0);
@@ -301,7 +301,7 @@ namespace Gorgon.Graphics.Core
 
             elementCount = elementCount.Min(totalElementCount - startElement).Max(1);
 
-            var key = new BufferShaderViewKey(startElement, elementCount, format);
+            BufferShaderViewKey key = new BufferShaderViewKey(startElement, elementCount, format);
 
             if (GetUav(key) is GorgonBufferUav result)
             {

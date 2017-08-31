@@ -33,7 +33,7 @@ namespace Gorgon.Native
 	/// Used with GlobalMemoryStatusEx.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	struct MEMORYSTATUSEX
+	internal struct MEMORYSTATUSEX
 	{
 		public uint dwLength;
 		public uint dwMemoryLoad;

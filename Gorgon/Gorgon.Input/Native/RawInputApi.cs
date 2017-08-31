@@ -202,7 +202,7 @@ namespace Gorgon.Native
 	/// <summary>
 	/// Enumeration containing the command types to issue.
 	/// </summary>
-	enum RawInputCommand
+	internal enum RawInputCommand
 	{
 		/// <summary>
 		/// Get input data.
@@ -230,7 +230,7 @@ namespace Gorgon.Native
 	/// Enumeration containing flags for a raw input device.
 	/// </summary>
 	[Flags]
-	enum RawInputDeviceFlags
+	internal enum RawInputDeviceFlags
 	{
 		/// <summary>No flags.</summary>
 		None = 0,
@@ -258,7 +258,7 @@ namespace Gorgon.Native
 	/// <summary>
 	/// Native raw Input API functionality
 	/// </summary>
-	static class RawInputApi
+	internal static class RawInputApi
 	{
 		#region Variables.
 		// The size of the raw input data header.
@@ -424,8 +424,7 @@ namespace Gorgon.Native
 		/// <param name="flags">Flags used in device registration.</param>
 		public static void RegisterRawInputDevice(HIDUsage usage, IntPtr targetWindow, RawInputDeviceFlags flags)
 		{
-			var devices = new []
-			              {
+			RAWINPUTDEVICE[] devices = {
 				              new RAWINPUTDEVICE
 				              {
 					              Flags = flags,
@@ -483,8 +482,7 @@ namespace Gorgon.Native
 		/// <param name="usage">The HID usage code to unregister.</param>
 		public static void UnregisterRawInputDevice(HIDUsage usage)
 		{
-			var devices = new[]
-			              {
+			RAWINPUTDEVICE[] devices = {
 				              new RAWINPUTDEVICE
 				              {
 					              Flags = RawInputDeviceFlags.Remove,
@@ -551,7 +549,7 @@ namespace Gorgon.Native
 				}
 
 				// Send back a copy of our stack array.
-				var result = new RAWINPUTDEVICELIST[resultCount];
+				RAWINPUTDEVICELIST[] result = new RAWINPUTDEVICELIST[resultCount];
 
 				resultCount = 0;
 				for (int i = 0; i < deviceCount; ++i)

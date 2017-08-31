@@ -204,7 +204,7 @@ namespace Gorgon.Collections
 		/// <param name="item">The object to add to the dictionary.</param>
 		void ICollection<T>.Add(T item)
 		{
-			_list.Add(item.Name, item);
+			_list.Add(item?.Name ?? string.Empty, item);
 		}
 
 		/// <summary>
@@ -254,7 +254,7 @@ namespace Gorgon.Collections
 				return false;
 			}
 
-			_list.Remove(item.Name);
+			_list.Remove(item?.Name ?? string.Empty);
 			return true;
 		}
 		#endregion

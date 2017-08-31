@@ -84,7 +84,7 @@ namespace Gorgon.Graphics.Core
         {
             Log.Print($"Creating buffer shader view for {Buffer.Name}.", LoggingLevel.Verbose);
 
-            var desc = new D3D11.ShaderResourceViewDescription
+            D3D11.ShaderResourceViewDescription desc = new D3D11.ShaderResourceViewDescription
                                                  {
                                                      Format = Format,
                                                      Dimension = D3D.ShaderResourceViewDimension.ExtendedBuffer,

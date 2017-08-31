@@ -34,7 +34,7 @@ namespace Gorgon.Native
 	/// </summary>
 	[SuppressMessage("ReSharper", "InconsistentNaming")]
 	[StructLayout(LayoutKind.Sequential)]
-	struct OSVERSIONINFOEX
+	internal struct OSVERSIONINFOEX
 	{
 		public uint dwOSVersionInfoSize;
 		public uint dwMajorVersion;

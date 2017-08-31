@@ -35,7 +35,7 @@ namespace Gorgon.Examples
     /// <summary>
     /// This object is responsible for drawing the spray effect on the display surface.
     /// </summary>
-    class Spray
+    internal class Spray
         : IDisposable
     {
         #region Variables.
@@ -68,7 +68,7 @@ namespace Gorgon.Examples
                 _graphics = null;
             }
             
-            var newBuffer = new Bitmap(newSize.Width, newSize.Height, PixelFormat.Format32bppArgb);
+            Bitmap newBuffer = new Bitmap(newSize.Width, newSize.Height, PixelFormat.Format32bppArgb);
             _graphics = DrawingGraphics.FromImage(newBuffer);
 
             if (Surface != null)
@@ -89,7 +89,7 @@ namespace Gorgon.Examples
         /// <param name="point">Origin point for the spray.</param>
         public void SprayPoint(Point point)
         {
-            var randomArea = new Point(GorgonRandom.RandomInt32(-10, 10), GorgonRandom.RandomInt32(-10, 10));
+            Point randomArea = new Point(GorgonRandom.RandomInt32(-10, 10), GorgonRandom.RandomInt32(-10, 10));
 	        _graphics.FillEllipse(_brushes[GorgonRandom.RandomInt32(0, _brushes.Length)], new Rectangle(point.X + randomArea.X, point.Y + randomArea.Y, 10, 10));
         }
         #endregion

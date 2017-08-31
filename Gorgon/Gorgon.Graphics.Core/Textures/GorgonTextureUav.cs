@@ -263,7 +263,7 @@ namespace Gorgon.Graphics.Core
         protected internal override void CreateNativeView()
         {
             D3D11.UnorderedAccessViewDescription desc;
-            var texture = (GorgonTexture)Resource;
+            GorgonTexture texture = (GorgonTexture)Resource;
 
             _log.Print("Creating texture unordered access view for {0}.", LoggingLevel.Verbose, Resource.Name);
 

@@ -178,7 +178,7 @@ namespace Gorgon.Core
 				throw new ArgumentNullException(nameof(document));
 			}
 
-			var serializedXML = new StringBuilder();
+			StringBuilder serializedXML = new StringBuilder();
 
 			using (TextWriter writer = new StringWriter(serializedXML))
 			{

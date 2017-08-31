@@ -75,38 +75,30 @@ namespace Gorgon.Graphics.Core
         /// <param name="buffer">The buffer to validate.</param>
         private static void IsValidBufferType(GorgonBufferBase buffer)
         {
-            if (buffer == null)
+            switch (buffer)
             {
-                return;
+                case null:
+                    return;
+                case GorgonConstantBuffer _:
+                    // Deny constant buffers entirely.
+                    throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_BUFFER_CONSTANT_NO_SO);
+                case GorgonIndexBuffer indexBuffer when ((indexBuffer.Info.Binding & VertexIndexBufferBinding.StreamOut) != VertexIndexBufferBinding.StreamOut):
+                    throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_TYPE_MISSING_SO, buffer.Name));
+                case GorgonVertexBuffer vertexBuffer when ((vertexBuffer.Info.Binding & VertexIndexBufferBinding.StreamOut) != VertexIndexBufferBinding.StreamOut):
+                    throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_TYPE_MISSING_SO, buffer.Name));
             }
 
-            // Deny constant buffers entirely.
-            if (buffer is GorgonConstantBuffer)
-            {
-                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_BUFFER_CONSTANT_NO_SO);
-            }
-
-            if ((buffer is GorgonIndexBuffer indexBuffer) && ((indexBuffer.Info.Binding & VertexIndexBufferBinding.StreamOut) != VertexIndexBufferBinding.StreamOut))
-            {
-                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_TYPE_MISSING_SO, buffer.Name));
-            }
-
-            if ((buffer is GorgonVertexBuffer vertexBuffer) && ((vertexBuffer.Info.Binding & VertexIndexBufferBinding.StreamOut) != VertexIndexBufferBinding.StreamOut))
-            {
-                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_TYPE_MISSING_SO, buffer.Name));
-            }
-
-            var genericBuffer = buffer as GorgonBuffer;
+            GorgonBuffer genericBuffer = buffer as GorgonBuffer;
             BufferBinding binding = genericBuffer?.Info.Binding ?? BufferBinding.StreamOut;
 
             if (genericBuffer == null)
             {
-                var rawBuffer = buffer as GorgonRawBuffer;
+                GorgonRawBuffer rawBuffer = buffer as GorgonRawBuffer;
                 binding = rawBuffer?.Info.Binding ?? BufferBinding.StreamOut;
 
                 if (rawBuffer == null)
                 {
-                    var structBuffer = buffer as GorgonStructuredBuffer;
+                    GorgonStructuredBuffer structBuffer = buffer as GorgonStructuredBuffer;
                     binding = structBuffer?.Info.Binding ?? BufferBinding.StreamOut;
                 }
             }
@@ -169,9 +161,9 @@ namespace Gorgon.Graphics.Core
         /// </returns>
         public override bool Equals(object obj)
         {
-            if (obj is GorgonStreamOutBinding)
+            if (obj is GorgonStreamOutBinding streamOut)
             {
-                return Equals((GorgonStreamOutBinding)obj);
+                return streamOut.Equals(this);
             }
 
             return base.Equals(obj);

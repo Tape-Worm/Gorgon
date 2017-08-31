@@ -43,7 +43,7 @@ namespace Gorgon.IO.GorPack
 	/// <remarks>
 	/// The BZip2 compressed pack files are written by an older (1.x) version of Gorgon.  This provider will enable the new file system interface to be able to read these files.
 	/// </remarks>
-	class GorPackProvider
+	internal class GorPackProvider
 		: GorgonFileSystemProvider
 	{
 		#region Constants.
@@ -61,9 +61,9 @@ namespace Gorgon.IO.GorPack
 		/// <returns>The uncompressed data.</returns>
 		private static byte[] Decompress(byte[] data)
 		{
-			using (var sourceStream = new MemoryStream(data))
+			using (MemoryStream sourceStream = new MemoryStream(data))
 			{
-				using (var decompressedStream = new MemoryStream())
+				using (MemoryStream decompressedStream = new MemoryStream())
 				{			
 					BZip2.Decompress(sourceStream, decompressedStream, true);
 					return decompressedStream.ToArray();
@@ -79,12 +79,12 @@ namespace Gorgon.IO.GorPack
 		/// <returns>A read only list of directory paths mapped to the virtual file system.</returns>
 		private static IReadOnlyList<string> EnumerateDirectories(XDocument index, IGorgonVirtualDirectory mountPoint)
 		{
-			var result = new List<string>();
+			List<string> result = new List<string>();
 			IEnumerable<XElement> directories = index.Descendants("Path");
 
 			foreach (XElement directoryNode in directories)
 			{
-				var pathAttrib = directoryNode.Attribute("FullPath");
+				XAttribute pathAttrib = directoryNode.Attribute("FullPath");
 
 				if (string.IsNullOrWhiteSpace(pathAttrib?.Value))
 				{
@@ -109,18 +109,18 @@ namespace Gorgon.IO.GorPack
 		private static IReadOnlyList<IGorgonPhysicalFileInfo> EnumerateFiles(XDocument index, long offset, string physicalLocation, IGorgonVirtualDirectory mountPoint)
 		{
 			IEnumerable<XElement> files = index.Descendants("File");
-			var result = new List<IGorgonPhysicalFileInfo>();
+			List<IGorgonPhysicalFileInfo> result = new List<IGorgonPhysicalFileInfo>();
 
 			foreach (XElement file in files)
 			{
-				var fileNameNode = file.Element("Filename");
-				var fileExtensionNode = file.Element("Extension");
-				var fileOffsetNode = file.Element("Offset");
-				var fileCompressedSizeNode = file.Element("CompressedSize");
-				var fileSizeNode = file.Element("Size");
-				var fileDateNode = file.Element("FileDate");
-				var fileLastModNode = file.Element("LastModDate");
-				var parentDirectoryPath = file.Parent?.Attribute("FullPath")?.Value;
+				XElement fileNameNode = file.Element("Filename");
+				XElement fileExtensionNode = file.Element("Extension");
+				XElement fileOffsetNode = file.Element("Offset");
+				XElement fileCompressedSizeNode = file.Element("CompressedSize");
+				XElement fileSizeNode = file.Element("Size");
+				XElement fileDateNode = file.Element("FileDate");
+				XElement fileLastModNode = file.Element("LastModDate");
+				string parentDirectoryPath = file.Parent?.Attribute("FullPath")?.Value;
 				
 				// We need these nodes.
 				if ((fileNameNode == null) || (fileOffsetNode == null)
@@ -220,7 +220,7 @@ namespace Gorgon.IO.GorPack
 		/// </remarks>
 		protected override GorgonPhysicalFileSystemData OnEnumerate(string physicalLocation, IGorgonVirtualDirectory mountPoint)
         {
-            using (var reader = new GorgonBinaryReader(File.Open(physicalLocation, FileMode.Open, FileAccess.Read, FileShare.Read)))
+            using (GorgonBinaryReader reader = new GorgonBinaryReader(File.Open(physicalLocation, FileMode.Open, FileAccess.Read, FileShare.Read)))
             {
                 // Skip the header.
                 reader.ReadString();
@@ -286,7 +286,7 @@ namespace Gorgon.IO.GorPack
 		{
 			string header;
 
-			using (var reader = new GorgonBinaryReader(File.Open(physicalPath, FileMode.Open, FileAccess.Read, FileShare.Read)))
+			using (GorgonBinaryReader reader = new GorgonBinaryReader(File.Open(physicalPath, FileMode.Open, FileAccess.Read, FileShare.Read)))
 			{
 				// If the length of the stream is less or equal to the header size, it's unlikely that we can read this file.
 				if (reader.BaseStream.Length <= GorPackHeader.Length)

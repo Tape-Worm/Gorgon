@@ -164,9 +164,9 @@ namespace Gorgon.IO
 		/// </returns>
 		public override bool Equals(object obj)
 		{
-			if (obj is GorgonFileExtension)
+			if (obj is GorgonFileExtension ext)
 			{
-				return ((GorgonFileExtension)obj).Equals(this);
+				return ext.Equals(this);
 			}
 
 			return base.Equals(obj);

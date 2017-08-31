@@ -34,7 +34,7 @@ namespace Gorgon.Native
 	/// Value type for raw input devices.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	struct RAWINPUTDEVICE
+	internal struct RAWINPUTDEVICE
 	{
 		/// <summary>Top level collection Usage page for the raw input device.</summary>
 		public HIDUsagePage UsagePage;

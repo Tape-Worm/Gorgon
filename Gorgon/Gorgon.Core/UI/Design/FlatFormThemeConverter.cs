@@ -34,7 +34,7 @@ namespace Gorgon.UI.Design
 	/// <summary>
 	/// Type converter for the theme type.
 	/// </summary>
-	class GorgonFlatFormThemeConverter
+	internal class GorgonFlatFormThemeConverter
 		: ExpandableObjectConverter
 	{
 		#region Methods.

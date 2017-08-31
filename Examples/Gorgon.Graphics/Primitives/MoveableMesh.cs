@@ -33,7 +33,7 @@ namespace Gorgon.Graphics.Example
     /// <summary>
     /// Defines a mesh that can be transformed.
     /// </summary>
-    abstract class MoveableMesh
+    internal abstract class MoveableMesh
         : Mesh
     {
         #region Variables.
@@ -129,7 +129,7 @@ namespace Gorgon.Graphics.Example
 
                 if (_needsRotTransform)
                 {
-                    var rads = new DX.Vector3(_rotation.X.ToRadians(), _rotation.Y.ToRadians(), _rotation.Z.ToRadians());
+                    DX.Vector3 rads = new DX.Vector3(_rotation.X.ToRadians(), _rotation.Y.ToRadians(), _rotation.Z.ToRadians());
                     DX.Matrix.RotationYawPitchRoll(rads.Y, rads.X, rads.Z, out _rotMatrix);
                     _needsRotTransform = false;
                 }

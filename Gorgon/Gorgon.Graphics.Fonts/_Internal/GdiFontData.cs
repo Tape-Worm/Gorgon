@@ -32,7 +32,7 @@ namespace Gorgon.Graphics.Fonts
 	/// <summary>
 	/// Defines a structure to hold GDI font data used for rendering glyphs.
 	/// </summary>
-	class GdiFontData
+	internal class GdiFontData
 		: IDisposable
 	{
 		#region Properties.
@@ -100,10 +100,9 @@ namespace Gorgon.Graphics.Fonts
 		/// <returns>A new <see cref="GdiFontData"/> object.</returns>
 		public static GdiFontData GetFontData(Drawing.Graphics graphics, IGorgonFontInfo fontInfo)
 		{
-			var result = new GdiFontData();
+			GdiFontData result = new GdiFontData();
 
-			var range = new[]
-			            {
+			Drawing.CharacterRange[] range = {
 				            new Drawing.CharacterRange(0, 1)
 			            };
 

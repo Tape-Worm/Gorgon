@@ -35,7 +35,7 @@ namespace Gorgon.Native
 	/// Value type for raw input device list.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	struct RAWINPUTDEVICELIST
+	internal struct RAWINPUTDEVICELIST
 	{
 		/// <summary>Device handle.</summary>
 		public IntPtr Device;

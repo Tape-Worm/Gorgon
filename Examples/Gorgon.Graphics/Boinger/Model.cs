@@ -33,7 +33,7 @@ namespace Gorgon.Graphics.Example
 	/// <summary>
 	/// The base model object.
 	/// </summary>
-	abstract class Model
+	internal abstract class Model
 		: IDisposable
 	{
 		#region Variables.
@@ -199,7 +199,7 @@ namespace Gorgon.Graphics.Example
 				// Quaternion for rotation.
 
 				// Convert degrees to radians.
-				var rotRads = new DX.Vector3(_rotation.X.ToRadians(), _rotation.Y.ToRadians(), _rotation.Z.ToRadians());
+				DX.Vector3 rotRads = new DX.Vector3(_rotation.X.ToRadians(), _rotation.Y.ToRadians(), _rotation.Z.ToRadians());
 
 				DX.Quaternion.RotationYawPitchRoll(rotRads.Y, rotRads.X, rotRads.Z, out DX.Quaternion quatRotation);
 				DX.Matrix.RotationQuaternion(ref quatRotation, out _rotationMatrix);

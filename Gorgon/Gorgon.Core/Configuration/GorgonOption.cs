@@ -159,8 +159,9 @@ namespace Gorgon.Configuration
 				newValue = Convert.ChangeType(value, Type);
 			}
 
-			// If we're using a numeric, or date/time value, ensure that it's within the min/max range.
-			switch (Type.GetTypeCode(Type))
+		    // ReSharper disable PossibleNullReferenceException
+            // If we're using a numeric, or date/time value, ensure that it's within the min/max range.
+            switch (Type.GetTypeCode(Type))
 			{
 				case TypeCode.SByte:
 				case TypeCode.Byte:
@@ -176,7 +177,7 @@ namespace Gorgon.Configuration
 				{
 					// Convert to a decimal first, just because it's the largest primitive number format.
 					decimal convertedValue = (decimal)Convert.ChangeType(newValue, typeof(decimal));
-
+				    
 					if (_minValue != null)
 					{
 						decimal minValue = (decimal)Convert.ChangeType(_minValue, typeof(decimal));
@@ -227,8 +228,8 @@ namespace Gorgon.Configuration
 				}
 					break;
 			}
-
-			_value = newValue;
+		    // ReSharper restore PossibleNullReferenceException
+            _value = newValue;
 		}
 
 		/// <summary>

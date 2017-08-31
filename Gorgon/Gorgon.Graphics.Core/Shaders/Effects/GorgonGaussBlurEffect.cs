@@ -92,7 +92,7 @@ namespace Gorgon.Graphics.Example
         // The target that will receive the blurred image.
         private GorgonRenderTargetView _blurredTarget;
         // The number blur constant buffer parameters.
-        private GorgonConstantBuffers _blurConstants = new GorgonConstantBuffers(2);
+        private readonly GorgonConstantBuffers _blurConstants = new GorgonConstantBuffers(2);
         #endregion
 
         #region Properties.
@@ -312,7 +312,7 @@ namespace Gorgon.Graphics.Example
         private void UpdateOffsets()
         {
             // This adjusts just how far from the texel the blurring can occur.
-            var unitSize = new DX.Vector2(1.0f / BlurRenderTargetsSize.Width, 1.0f / BlurRenderTargetsSize.Height);
+            DX.Vector2 unitSize = new DX.Vector2(1.0f / BlurRenderTargetsSize.Width, 1.0f / BlurRenderTargetsSize.Height);
 
             int pointerOffset = 0;
             int byteBoundary = (((_blurRadius) * 2) + 1) * sizeof(float);
@@ -441,8 +441,7 @@ namespace Gorgon.Graphics.Example
             _blurConstants[1] = _blurBufferPass;
 
             // A macro used to define the size of the kernel weight data structure.
-            var weightsMacro = new[]
-                               {
+            GorgonShaderMacro[] weightsMacro = {
                                    new GorgonShaderMacro("GAUSS_BLUR_EFFECT"),
                                    new GorgonShaderMacro("MAX_KERNEL_SIZE", KernelSize.ToString(CultureInfo.InvariantCulture))
                                };

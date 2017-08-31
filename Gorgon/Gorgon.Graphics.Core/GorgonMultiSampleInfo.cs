@@ -110,9 +110,9 @@ namespace Gorgon.Graphics.Core
 		/// </returns>
 		public override bool Equals(object obj)
 		{
-		    if (obj is GorgonMultisampleInfo)
+		    if (obj is GorgonMultisampleInfo multiSample)
 		    {
-		        return Equals((GorgonMultisampleInfo)obj);
+		        return multiSample.Equals(this);
 		    }
 
 		    return base.Equals(obj);

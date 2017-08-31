@@ -349,7 +349,7 @@ namespace Gorgon.Graphics.Core
         {
             computeShader.ValidateObject(nameof(computeShader));
             indirectArgs.ValidateObject(nameof(computeShader));
-            threadGroupOffset.ValidateRange(nameof(threadGroupOffset), 0, Int32.MaxValue);
+            threadGroupOffset.ValidateRange(nameof(threadGroupOffset), 0, int.MaxValue);
 
             if (computeShader != _currentShader)
             {

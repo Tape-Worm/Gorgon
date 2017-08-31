@@ -38,7 +38,7 @@ namespace Gorgon.Input.DirectInput
 	/// <summary>
 	/// DirectInput gaming device.
 	/// </summary>
-	class DirectInputDevice
+	internal class DirectInputDevice
 		: GorgonGamingDevice
 	{
 		#region Variables.

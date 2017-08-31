@@ -32,7 +32,7 @@ namespace Gorgon.IO.GorPack
 	/// <summary>
 	/// Gorgon packed file physical file information.
 	/// </summary>
-	class GorPackPhysicalFileInfo
+	internal class GorPackPhysicalFileInfo
 		: IGorgonPhysicalFileInfo
 	{
 		#region Properties.

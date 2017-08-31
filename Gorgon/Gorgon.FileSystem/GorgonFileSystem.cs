@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -126,9 +127,7 @@ namespace Gorgon.IO
 		private readonly Dictionary<string, IGorgonFileSystemProvider> _providers;
 		// The log file for the application.
 		private readonly IGorgonLog _log;
-		// The root directory for the file system.
-		private readonly VirtualDirectory _rootDirectory;
-		// A list of mount points grouped by provider.
+	    // A list of mount points grouped by provider.
 		private readonly HashSet<GorgonFileSystemMountPoint> _mountProviders;
 		#endregion
 
@@ -156,14 +155,26 @@ namespace Gorgon.IO
 		/// This is a list of <see cref="GorgonFileSystemMountPoint"/> values. These values contain location of the mount point in the virtual file system, the physical location of the physical file system and 
 		/// the provider that mounted the physical file system.
 		/// </remarks>
-		public IEnumerable<GorgonFileSystemMountPoint> MountPoints => _mountProviders;
+		public IEnumerable<GorgonFileSystemMountPoint> MountPoints
+		{
+		    get
+		    {
+		        lock (_syncLock)
+		        {
+		            return _mountProviders;
+		        }
+		    }
+		}
 
-		/// <summary>
+	    /// <summary>
 		/// A read/write version of the RootDirectory property.
 		/// </summary>
-		internal VirtualDirectory InternalRootDirectory => _rootDirectory;
+		internal VirtualDirectory InternalRootDirectory
+	    {
+	        get;
+	    }
 
-		/// <summary>
+	    /// <summary>
 		/// Property to return the root directory for the file system.
 		/// </summary>
 		/// <remarks>
@@ -179,7 +190,7 @@ namespace Gorgon.IO
 		/// </note>
 		/// </para>
 		/// </remarks>
-		public IGorgonVirtualDirectory RootDirectory => _rootDirectory;
+		public IGorgonVirtualDirectory RootDirectory => InternalRootDirectory;
 		#endregion
 
 		#region Methods.
@@ -204,7 +215,7 @@ namespace Gorgon.IO
 				throw new IOException(string.Format(Resources.GORFS_ERR_CANNOT_READ_FILESYSTEM, physicalPath));
 			}
 
-			var mountPoint = new GorgonFileSystemMountPoint(provider, physicalPath, mountPath);
+			GorgonFileSystemMountPoint mountPoint = new GorgonFileSystemMountPoint(provider, physicalPath, mountPath);
 
 			GetFileSystemObjects(mountPoint);
 
@@ -239,7 +250,7 @@ namespace Gorgon.IO
 				throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, physicalPath));
 			}
 
-			var mountPoint = new GorgonFileSystemMountPoint(DefaultProvider, physicalPath, mountPath);
+			GorgonFileSystemMountPoint mountPoint = new GorgonFileSystemMountPoint(DefaultProvider, physicalPath, mountPath);
 
 			GetFileSystemObjects(mountPoint);
 
@@ -269,7 +280,7 @@ namespace Gorgon.IO
 				throw new IOException(string.Format(Resources.GORFS_ERR_CANNOT_READ_FILESYSTEM, location));
 			}
 
-			var mountPoint = new GorgonFileSystemMountPoint(provider, location, mountDirectory, true);
+			GorgonFileSystemMountPoint mountPoint = new GorgonFileSystemMountPoint(provider, location, mountDirectory, true);
 
 			GetFileSystemObjects(mountPoint);
 
@@ -308,7 +319,7 @@ namespace Gorgon.IO
 
 			if (mountDirectory == null)
 			{
-				mountDirectory = _rootDirectory.Directories.Add(mountPoint, mountPoint.MountLocation);
+				mountDirectory = InternalRootDirectory.Directories.Add(mountPoint, mountPoint.MountLocation);
 			}
 			else
 			{
@@ -329,7 +340,7 @@ namespace Gorgon.IO
 				// provider loaded if they already exist.
 				if (existingDirectory == null)
 	            {
-		            _rootDirectory.Directories.Add(mountPoint, directory);
+		            InternalRootDirectory.Directories.Add(mountPoint, directory);
 	            }
 	            else
 				{
@@ -435,7 +446,7 @@ namespace Gorgon.IO
 				directories = directories.Where(item => IsPatternMatch(item, searchMask));
 			}
 
-			var stack = new Queue<VirtualDirectory>(directories);
+			Queue<VirtualDirectory> stack = new Queue<VirtualDirectory>(directories);
 
 			while (stack.Count > 0)
 			{
@@ -596,7 +607,7 @@ namespace Gorgon.IO
 			// Optimization to deal with the root path.
 			if (path == "/")
 			{
-				return _rootDirectory;
+				return InternalRootDirectory;
 			}
 
 			string[] directories = path.Split(new[]
@@ -609,7 +620,7 @@ namespace Gorgon.IO
 				return null;
 			}
 
-			VirtualDirectory directory = _rootDirectory;
+			VirtualDirectory directory = InternalRootDirectory;
 
 			// ReSharper disable once ForCanBeConvertedToForeach
 			for (int i = 0; i < directories.Length; i++)
@@ -857,12 +868,12 @@ namespace Gorgon.IO
 		/// </remarks>
 		public void Refresh()
 		{
-			// Don't allow multiple threads to refresh this file system more than once.
+			// Don't allow multiple threads to refresh this file system at the same time.
 			lock (_syncLock)
 			{
 				// Unload everything at once.
-				_rootDirectory.Directories.Clear();
-				_rootDirectory.Files.Clear();
+				InternalRootDirectory.Directories.Clear();
+				InternalRootDirectory.Files.Clear();
 				_mountProviders.Clear();
 
 				// Refresh the mount points so we can capture the most up to date data.
@@ -998,7 +1009,7 @@ namespace Gorgon.IO
 		public void Unmount(string physicalPath, string mountLocation)
 		{
 			// Find all mount points with the physical and virtual paths supplied.
-			var mountPoints = MountPoints.Where(item =>
+			GorgonFileSystemMountPoint[] mountPoints = MountPoints.Where(item =>
 			                                    string.Equals(Path.GetFullPath(physicalPath),
 			                                                  Path.GetFullPath(item.PhysicalPath),
 			                                                  StringComparison.OrdinalIgnoreCase)
@@ -1038,13 +1049,13 @@ namespace Gorgon.IO
 		/// </remarks>
 		public void Unmount(string physicalPath)
 		{
-			var mountPoints = MountPoints.Where(item =>
+			GorgonFileSystemMountPoint[] mountPoints = MountPoints.Where(item =>
 			                                    string.Equals(Path.GetFullPath(physicalPath),
 			                                                  Path.GetFullPath(item.PhysicalPath),
 			                                                  StringComparison.OrdinalIgnoreCase))
 			                             .ToArray();
 
-			foreach (var mountPoint in mountPoints)
+			foreach (GorgonFileSystemMountPoint mountPoint in mountPoints)
 			{
 				Unmount(mountPoint);				
 			}
@@ -1183,12 +1194,7 @@ namespace Gorgon.IO
 		public GorgonFileSystem(IGorgonFileSystemProvider provider, IGorgonLog log = null)
 			: this(log)
 		{
-			if (provider == null)
-			{
-				throw new ArgumentNullException(nameof(provider));
-			}
-
-			_providers[provider.GetType().FullName] = provider;
+            _providers[provider.GetType().FullName ?? throw new ArgumentNullException()] = provider;
 		}
 
 		/// <summary>
@@ -1211,7 +1217,11 @@ namespace Gorgon.IO
 			// Get all the providers in the parameter.
 			foreach (IGorgonFileSystemProvider provider in providers.Where(item => item != null))
 			{
-				_providers[provider.GetType().FullName] = provider;
+			    string providerTypeName = provider.GetType().FullName;
+
+			    Debug.Assert(providerTypeName != null, nameof(providerTypeName) + " != null");
+
+			    _providers[providerTypeName] = provider;
 			}
 		}
 
@@ -1231,7 +1241,7 @@ namespace Gorgon.IO
 
 			DefaultProvider = new GorgonFileSystemProvider();
 
-			_rootDirectory = new VirtualDirectory(default(GorgonFileSystemMountPoint), this, null, "/");
+			InternalRootDirectory = new VirtualDirectory(default(GorgonFileSystemMountPoint), this, null, "/");
 		}
 		#endregion
 	}

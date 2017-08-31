@@ -117,7 +117,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
     /// TGA specific conversion flags.
     /// </summary>
     [Flags]
-    enum TGAConversionFlags
+    internal enum TGAConversionFlags
     {
         /// <summary>
         /// No conversion.
@@ -150,7 +150,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// <summary>
         /// 24 bit format.
         /// </summary>
-        RGB888 = 0x20000,
+        RGB888 = 0x20000
     }
 
 	/// <summary>
@@ -299,7 +299,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 					throw new IOException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, header.ImageType));
             }
 
-		    var settings = new GorgonImageInfo(ImageType.Image2D, pixelFormat)
+		    GorgonImageInfo settings = new GorgonImageInfo(ImageType.Image2D, pixelFormat)
 		                   {
 			                   MipCount = 1,
 			                   ArrayCount = 1,
@@ -709,17 +709,17 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		private void CopyImageData(GorgonBinaryReader reader, IGorgonImage image, TGAConversionFlags conversionFlags)
 		{
 			// TGA only supports 1 array level, and 1 mip level, so we only need to get the first buffer.
-			var buffer = image.Buffers[0];	        
+			IGorgonImageBuffer buffer = image.Buffers[0];	        
 			
 			// Determine how large a row is, in bytes.
-			var formatInfo = new GorgonFormatInfo(image.Info.Format);
+			GorgonFormatInfo formatInfo = new GorgonFormatInfo(image.Info.Format);
 
 			GorgonPitchLayout srcPitch = (conversionFlags & TGAConversionFlags.Expand) == TGAConversionFlags.Expand
 				                             ? new GorgonPitchLayout(image.Info.Width * 3, image.Info.Width * 3 * image.Info.Height)
 				                             : formatInfo.GetPitchForFormat(image.Info.Width, image.Info.Height);
 
 			// Otherwise, allocate a buffer for conversion.
-			var destPtr = (byte*)buffer.Data.Address;
+			byte* destPtr = (byte*)buffer.Data.Address;
 
 			// Adjust destination for inverted axes.
 			if ((conversionFlags & TGAConversionFlags.InvertX) == TGAConversionFlags.InvertX)
@@ -816,14 +816,14 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <exception cref="GorgonException">Thrown when the image data in the stream has a pixel format that is unsupported.</exception>
 		protected override IGorgonImage OnDecodeFromStream(Stream stream, long size, IGorgonImageCodecDecodingOptions options)
 		{
-			var tgaOptions = options as GorgonTgaDecodingOptions;
+			GorgonTgaDecodingOptions tgaOptions = options as GorgonTgaDecodingOptions;
 
 			if (DirectAccess.SizeOf<TgaHeader>() >= size)
 			{
 				throw new EndOfStreamException();
 			}
 
-			using (var reader = new GorgonBinaryReader(stream, true))
+			using (GorgonBinaryReader reader = new GorgonBinaryReader(stream, true))
 			{
 				IGorgonImageInfo info = ReadHeader(reader, out TGAConversionFlags flags);
 
@@ -866,7 +866,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 				throw new NotSupportedException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, imageData.Info.Format));
 			}
 
-			using (var writer = new GorgonBinaryWriter(stream, true))
+			using (GorgonBinaryWriter writer = new GorgonBinaryWriter(stream, true))
 			{
 				// Write the header for the file before we dump the file contents.
 				TgaHeader header = GetHeader(imageData.Info, out TGAConversionFlags conversionFlags);
@@ -879,13 +879,13 @@ namespace Gorgon.Graphics.Imaging.Codecs
 				}
 				else
 				{
-					var formatInfo = new GorgonFormatInfo(imageData.Info.Format);
+					GorgonFormatInfo formatInfo = new GorgonFormatInfo(imageData.Info.Format);
 					pitch = formatInfo.GetPitchForFormat(imageData.Info.Width, imageData.Info.Height);
 				}
 
 				// Get the pointer to the first mip/array/depth level.
-				var srcPointer = (byte*)imageData.Buffers[0].Data.Address;
-				var srcPitch = imageData.Buffers[0].PitchInformation;
+				byte* srcPointer = (byte*)imageData.Buffers[0].Data.Address;
+				GorgonPitchLayout srcPitch = imageData.Buffers[0].PitchInformation;
 
 				// If the two pitches are equal and we have no conversion requirements, then just write out the buffer.
 				if ((pitch == srcPitch) && (conversionFlags == TGAConversionFlags.None))
@@ -896,9 +896,9 @@ namespace Gorgon.Graphics.Imaging.Codecs
 				}
 
 				// We have a conversion, which will require a new buffer to write out to the stream.
-				using (var convertBuffer = new GorgonPointer(pitch.SlicePitch))
+				using (GorgonPointer convertBuffer = new GorgonPointer(pitch.SlicePitch))
 				{
-					var destPtr = (byte*)convertBuffer.Address;
+					byte* destPtr = (byte*)convertBuffer.Address;
 
 					// Write out each scan line.					
 					for (int y = 0; y < imageData.Info.Height; y++)
@@ -978,15 +978,13 @@ namespace Gorgon.Graphics.Imaging.Codecs
 
             try
             {
-				TGAConversionFlags conversion;
-				
-				position = stream.Position;
+                position = stream.Position;
 				headerBuffer = stream as GorgonDataStream;
 
 	            if (headerBuffer != null)
 	            {
 					reader = new GorgonBinaryReader(headerBuffer);
-					return ReadHeader(reader, out conversion);
+					return ReadHeader(reader, out _);
 	            }
 
 	            headerBuffer = new GorgonDataStream(headerSize);
@@ -994,7 +992,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 	            headerBuffer.Position = 0;
 				reader = new GorgonBinaryReader(headerBuffer);
 
-	            return ReadHeader(reader, out conversion);
+	            return ReadHeader(reader, out _);
             }
             finally
             {
@@ -1045,7 +1043,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 			try
 			{
                 position = stream.Position;
-				var reader = new GorgonBinaryReader(stream, true); 
+				GorgonBinaryReader reader = new GorgonBinaryReader(stream, true); 
 				header = reader.ReadValue<TgaHeader>();
 			}
 			finally

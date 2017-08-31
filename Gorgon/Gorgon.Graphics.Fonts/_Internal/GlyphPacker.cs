@@ -33,7 +33,7 @@ namespace Gorgon.Graphics.Fonts
 	/// <summary>
 	/// Used to determine where glyphs should be packed onto a texture.
 	/// </summary>
-	static class GlyphPacker
+	internal static class GlyphPacker
 	{
 		#region Properties.
 		/// <summary>

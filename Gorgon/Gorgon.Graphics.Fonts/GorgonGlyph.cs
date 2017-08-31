@@ -242,7 +242,7 @@ namespace Gorgon.Graphics.Fonts
 				                            Left = outlineCoordinates.Left / (float)texture.Info.Width,
 				                            Top = outlineCoordinates.Top / (float)texture.Info.Height,
 				                            Right = outlineCoordinates.Right / (float)texture.Info.Width,
-				                            Bottom = outlineCoordinates.Bottom / (float)texture.Info.Height,
+				                            Bottom = outlineCoordinates.Bottom / (float)texture.Info.Height
 			                            };
 		}
 

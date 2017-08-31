@@ -61,7 +61,7 @@ namespace Gorgon.Graphics.Example
 	/// One final note: The textures and samplers are assigned to slots. These slots must correspond to the slots declared in the pixel shader. So, for example, if we have declared a texture at slot 4 
 	/// in out pixel shader, then slot 4 on the PixelShaderResources must contain the texture, likewise for samplers.
 	/// </summary>
-	static class Program
+    internal static class Program
 	{
 		#region Variables.
 		// Main application form.
@@ -162,13 +162,12 @@ namespace Gorgon.Graphics.Example
 		{
 			// Define the points that make up our triangle.
 			// We'll push it back half a unit along the Z-Axis so that we can see it.
-			var vertices = new[]
-						   {
+			MiniTriVertex[] vertices = {
 							   // Note that we're assigning the texture coordinates in pixel space. The ToTexel function on the texture will convert these into 
 							   // texel space for us.
 				               new MiniTriVertex(new DX.Vector3(0, 0.5f, 1.0f), _texture.ToTexel(new DX.Point(128, 3))),
 				               new MiniTriVertex(new DX.Vector3(0.5f, -0.5f, 1.0f), _texture.ToTexel(new DX.Point(230, 252))),
-				               new MiniTriVertex(new DX.Vector3(-0.5f, -0.5f, 1.0f), _texture.ToTexel(new DX.Point(23, 252))),
+				               new MiniTriVertex(new DX.Vector3(-0.5f, -0.5f, 1.0f), _texture.ToTexel(new DX.Point(23, 252)))
 			               };
 
 			// Create the vertex buffer.
@@ -365,7 +364,7 @@ namespace Gorgon.Graphics.Example
 		/// The main entry point for the application.
 		/// </summary>
 		[STAThread]
-		static void Main()
+		private static void Main()
 		{
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);

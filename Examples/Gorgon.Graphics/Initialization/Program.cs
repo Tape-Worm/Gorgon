@@ -88,7 +88,7 @@ namespace Gorgon.Graphics.Example
 	/// current backbuffer frame to the window and can have a presentation interval to lock down the presentation to the refresh 
 	/// rate for the current video mode (this does not apply to windowed mode, and as such is not necessary for this application).
 	/// </summary>
-	static class Program
+	internal static class Program
 	{
 		#region Variables.
 		// Main application form.
@@ -238,7 +238,7 @@ namespace Gorgon.Graphics.Example
 		/// The main entry point for the application.
 		/// </summary>
 		[STAThread]
-		static void Main()
+		private static void Main()
 		{
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
