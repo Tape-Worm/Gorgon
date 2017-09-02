@@ -419,8 +419,8 @@ namespace Gorgon.Graphics.Example
 
 			while (selectedDeviceIndex < deviceList.Count)
 			{
-				// Reset back to a 24 bit depth with 8 bit stencil.
-				_depthFormat = DXGI.Format.D24_UNorm_S8_UInt;
+				// Reset back to a 32 bit floating point depth.
+				_depthFormat = DXGI.Format.D32_Float;
 
 				// Destroy the previous interface.
 				graphics?.Dispose();
@@ -438,8 +438,8 @@ namespace Gorgon.Graphics.Example
 					break;
 				}
 
-				// Fall back to 16 bit depth-buffer (no stencil) support.
-				_depthFormat = DXGI.Format.D16_UNorm;
+				// Fall back to 32 bit depth-buffer with 8 bit stencil support.
+				_depthFormat = DXGI.Format.D32_Float_S8X24_UInt;
 				support = graphics.VideoDevice.GetBufferFormatSupport(_depthFormat);
 
 				if ((support & D3D11.FormatSupport.DepthStencil) != D3D11.FormatSupport.DepthStencil)
@@ -447,7 +447,25 @@ namespace Gorgon.Graphics.Example
 					continue;
 				}
 
-				selectedDevice = graphics.VideoDevice;
+			    // Fall back to 24 bit depth-buffer with 8 bit stencil support.
+			    _depthFormat = DXGI.Format.D24_UNorm_S8_UInt;
+			    support = graphics.VideoDevice.GetBufferFormatSupport(_depthFormat);
+
+			    if ((support & D3D11.FormatSupport.DepthStencil) != D3D11.FormatSupport.DepthStencil)
+			    {
+			        continue;
+			    }
+
+			    // Fall back to 16 bit depth-buffer with no stencil support.
+			    _depthFormat = DXGI.Format.D16_UNorm;
+			    support = graphics.VideoDevice.GetBufferFormatSupport(_depthFormat);
+
+			    if ((support & D3D11.FormatSupport.DepthStencil) != D3D11.FormatSupport.DepthStencil)
+			    {
+			        continue;
+			    }
+
+                selectedDevice = graphics.VideoDevice;
 				break;
 			}
 
