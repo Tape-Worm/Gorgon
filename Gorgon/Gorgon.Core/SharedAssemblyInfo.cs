@@ -39,7 +39,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("RELEASE")]
 #endif
 [assembly: AssemblyCompany("Michael Winsor")]
-[assembly: AssemblyCopyright("Copyright © Michael Winsor 2011")]
+[assembly: AssemblyCopyright("Copyright © Michael Winsor 2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyProduct("Gorgon")]
 
