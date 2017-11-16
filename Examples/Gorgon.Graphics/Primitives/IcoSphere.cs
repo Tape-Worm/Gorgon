@@ -391,14 +391,14 @@ namespace Gorgon.Graphics.Example
 						                                                new GorgonVertexBufferInfo
 						                                                {
 																			SizeInBytes = (int)vertexData.Size,
-																			Usage = D3D11.ResourceUsage.Immutable
+																			Usage = ResourceUsage.Immutable
 						                                                },
 						                                                vertexData);
 				    IndexBuffer = new GorgonIndexBuffer("IcoSphereIndexBuffer",
 				                                        graphics,
 				                                        new GorgonIndexBufferInfo
 				                                        {
-				                                            Usage = D3D11.ResourceUsage.Immutable,
+				                                            Usage = ResourceUsage.Immutable,
 				                                            Use16BitIndices = false,
 				                                            IndexCount = IndexCount
 				                                        },

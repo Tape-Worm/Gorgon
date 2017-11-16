@@ -146,14 +146,14 @@ namespace Gorgon.Graphics
 					                                                                                _graphics,
 					                                                                                new GorgonVertexBufferInfo
 					                                                                                {
-						                                                                                Usage = D3D11.ResourceUsage.Dynamic,
+						                                                                                Usage = ResourceUsage.Dynamic,
 						                                                                                SizeInBytes = BltVertex.Size * 4
 					                                                                                }), BltVertex.Size)
 				                    };
 
 			_wvpBuffer = new GorgonConstantBuffer("Gorgon Blitter WVP Buffer", _graphics, new GorgonConstantBufferInfo
 				                                                                            {
-					                                                                            Usage = D3D11.ResourceUsage.Dynamic,
+					                                                                            Usage = ResourceUsage.Dynamic,
 																								SizeInBytes = DX.Matrix.SizeInBytes
 				                                                                            });
 

@@ -194,7 +194,7 @@ namespace Gorgon.Graphics.Core
 		/// <remarks>
 		/// This value is defaulted to <c>Default</c>.
 		/// </remarks>
-		public D3D11.ResourceUsage Usage
+		public ResourceUsage Usage
 		{
 			get;
 			set;
@@ -247,7 +247,7 @@ namespace Gorgon.Graphics.Core
 		public GorgonTextureInfo()
 		{
 			Binding = TextureBinding.ShaderResource;
-			Usage = D3D11.ResourceUsage.Default;
+			Usage = ResourceUsage.Default;
 			MultisampleInfo = GorgonMultisampleInfo.NoMultiSampling;
             DepthStencilFormat = BufferFormat.Unknown;
 			MipLevels = 1;

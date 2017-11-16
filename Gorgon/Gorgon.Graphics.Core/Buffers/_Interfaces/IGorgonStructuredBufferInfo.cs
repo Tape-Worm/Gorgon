@@ -44,7 +44,7 @@ namespace Gorgon.Graphics.Core
         /// <remarks>
         /// The default value is <c>Default</c>.
         /// </remarks>
-        D3D11.ResourceUsage Usage
+        ResourceUsage Usage
         {
             get;
         }

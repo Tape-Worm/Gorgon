@@ -183,7 +183,7 @@ namespace Gorgon.Graphics.Core
             int size = DirectAccess.SizeOf<T>();
 
 #if DEBUG
-            if ((Usage == D3D11.ResourceUsage.Dynamic) || (Usage == D3D11.ResourceUsage.Immutable))
+            if ((Usage == ResourceUsage.Dynamic) || (Usage == ResourceUsage.Immutable))
             {
                 throw new NotSupportedException(Resources.GORGFX_ERR_BUFFER_CANT_UPDATE_IMMUTABLE_OR_DYNAMIC);
             }
@@ -265,7 +265,7 @@ namespace Gorgon.Graphics.Core
             }
 
 #if DEBUG
-            if ((Usage == D3D11.ResourceUsage.Dynamic) || (Usage == D3D11.ResourceUsage.Immutable))
+            if ((Usage == ResourceUsage.Dynamic) || (Usage == ResourceUsage.Immutable))
             {
                 throw new NotSupportedException(Resources.GORGFX_ERR_BUFFER_CANT_UPDATE_IMMUTABLE_OR_DYNAMIC);
             }
@@ -370,7 +370,7 @@ namespace Gorgon.Graphics.Core
             }
 
 #if DEBUG
-            if ((Usage == D3D11.ResourceUsage.Dynamic) || (Usage == D3D11.ResourceUsage.Immutable))
+            if ((Usage == ResourceUsage.Dynamic) || (Usage == ResourceUsage.Immutable))
             {
                 throw new NotSupportedException(Resources.GORGFX_ERR_BUFFER_CANT_UPDATE_IMMUTABLE_OR_DYNAMIC);
             }

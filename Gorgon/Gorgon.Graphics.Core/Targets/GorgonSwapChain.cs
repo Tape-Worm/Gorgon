@@ -306,7 +306,7 @@ namespace Gorgon.Graphics.Core
 		                                                    MultisampleInfo = GorgonMultisampleInfo.NoMultiSampling,
 		                                                    MipLevels = 1,
 		                                                    TextureType = TextureType.Texture2D,
-		                                                    Usage = D3D11.ResourceUsage.Default
+		                                                    Usage = ResourceUsage.Default
 		                                                });
 
 		        _log.Print($"SwapChain '{Name}': Creating associated depth/stencil view...", LoggingLevel.Verbose);

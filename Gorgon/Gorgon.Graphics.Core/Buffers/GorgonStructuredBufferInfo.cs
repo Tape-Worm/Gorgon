@@ -42,7 +42,7 @@ namespace Gorgon.Graphics.Core
         /// <remarks>
         /// The default value is <c>Default</c>.
         /// </remarks>
-        public D3D11.ResourceUsage Usage
+        public ResourceUsage Usage
         {
             get;
             set;
@@ -156,7 +156,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         public GorgonStructuredBufferInfo()
         {
-            Usage = D3D11.ResourceUsage.Default;
+            Usage = ResourceUsage.Default;
             Binding = BufferBinding.Shader;
         }
         #endregion

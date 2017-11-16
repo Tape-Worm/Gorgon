@@ -267,7 +267,7 @@ namespace Gorgon.Graphics.Core
 				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_UAV_FORMAT_INVALID, Info.Format));
 			}
 
-			if ((Info.Usage == D3D11.ResourceUsage.Dynamic) || (Info.Usage == D3D11.ResourceUsage.Staging))
+			if ((Info.Usage == ResourceUsage.Dynamic) || (Info.Usage == ResourceUsage.Staging))
 			{
 				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_UNORDERED_RES_NOT_DEFAULT);
 			}
@@ -317,7 +317,7 @@ namespace Gorgon.Graphics.Core
 				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_DEPTHSTENCIL_MS_FL101);
 			}
 
-			if (Info.Usage != D3D11.ResourceUsage.Default)
+			if (Info.Usage != ResourceUsage.Default)
 			{
 				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_DEPTHSTENCIL_NOT_DEFAULT);
 			}
@@ -341,7 +341,7 @@ namespace Gorgon.Graphics.Core
 				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_DEPTHSTENCIL_FORMAT_INVALID, Info.Format));
 			}
 
-			if (Info.Usage != D3D11.ResourceUsage.Default)
+			if (Info.Usage != ResourceUsage.Default)
 			{
 				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_RENDERTARGET_NOT_DEFAULT);
 			}
@@ -501,10 +501,10 @@ namespace Gorgon.Graphics.Core
 
 			switch (Info.Usage)
 			{
-			    case D3D11.ResourceUsage.Staging:
+			    case ResourceUsage.Staging:
 			        cpuFlags = D3D11.CpuAccessFlags.Read | D3D11.CpuAccessFlags.Write;
 			        break;
-			    case D3D11.ResourceUsage.Dynamic:
+			    case ResourceUsage.Dynamic:
 			        cpuFlags = D3D11.CpuAccessFlags.Write;
 			        break;
 			}
@@ -527,7 +527,7 @@ namespace Gorgon.Graphics.Core
 						Format = (DXGI.Format)Info.Format,
 						Width = Info.Width,
 						ArraySize = Info.ArrayCount,
-						Usage = Info.Usage,
+						Usage = (D3D11.ResourceUsage)Info.Usage,
 						BindFlags = (D3D11.BindFlags)Info.Binding,
 						CpuAccessFlags = cpuFlags,
 						OptionFlags = D3D11.ResourceOptionFlags.None,
@@ -550,7 +550,7 @@ namespace Gorgon.Graphics.Core
 						Width = Info.Width,
 						Height = Info.Height,
 						ArraySize = Info.ArrayCount,
-						Usage = Info.Usage,
+						Usage = (D3D11.ResourceUsage)Info.Usage,
 						BindFlags = (D3D11.BindFlags)Info.Binding,
 						CpuAccessFlags = cpuFlags,
 						OptionFlags = Info.IsCubeMap ? D3D11.ResourceOptionFlags.TextureCube : D3D11.ResourceOptionFlags.None,
@@ -574,7 +574,7 @@ namespace Gorgon.Graphics.Core
 						Width = Info.Width,
 						Height = Info.Height,
 						Depth = Info.Depth,
-						Usage = Info.Usage,
+						Usage = (D3D11.ResourceUsage)Info.Usage,
 						BindFlags = (D3D11.BindFlags)Info.Binding,
 						CpuAccessFlags = cpuFlags,
 						OptionFlags = D3D11.ResourceOptionFlags.None,
@@ -635,7 +635,7 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		private void InitializeDefaultViews()
 		{
-			if (Info.Usage == D3D11.ResourceUsage.Staging)
+			if (Info.Usage == ResourceUsage.Staging)
 			{
 				return;
 			}
@@ -708,7 +708,7 @@ namespace Gorgon.Graphics.Core
 		                                                   {
 		                                                       Format = Info.DepthStencilFormat,
 		                                                       Binding = TextureBinding.DepthStencil,
-		                                                       Usage = D3D11.ResourceUsage.Default,
+		                                                       Usage = ResourceUsage.Default,
 		                                                       DepthStencilFormat = BufferFormat.Unknown
 		                                                   });
             }
@@ -733,7 +733,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="image">The image used to initialize the texture.</param>
 		private void Initialize(IGorgonImage image)
 		{
-			if ((Info.Usage == D3D11.ResourceUsage.Immutable) && (image == null))
+			if ((Info.Usage == ResourceUsage.Immutable) && (image == null))
 			{
 				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_TEXTURE_IMMUTABLE_REQUIRES_DATA, Name));
 			}
@@ -843,7 +843,7 @@ namespace Gorgon.Graphics.Core
         public GorgonTextureLockData Lock(D3D11.MapMode lockFlags, int mipLevel = 0, int arrayIndex = 0)
 		{
 #if DEBUG
-			if ((Info.Usage != D3D11.ResourceUsage.Staging) && (Info.Usage != D3D11.ResourceUsage.Dynamic))
+			if ((Info.Usage != ResourceUsage.Staging) && (Info.Usage != ResourceUsage.Dynamic))
 			{
 				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TEXTURE_USAGE_CANT_LOCK, Info.Usage));
 			}
@@ -853,7 +853,7 @@ namespace Gorgon.Graphics.Core
 				throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_BINDING_TYPE_CANNOT_BE_USED, TextureBinding.DepthStencil));
 			}
 
-			if ((Info.Usage == D3D11.ResourceUsage.Dynamic) &&
+			if ((Info.Usage == ResourceUsage.Dynamic) &&
 			    ((lockFlags == D3D11.MapMode.Read)
 			     || (lockFlags == D3D11.MapMode.ReadWrite)))
 			{
@@ -922,7 +922,7 @@ namespace Gorgon.Graphics.Core
 				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TEXTURE_NOT_SAME_TYPE, destTexture.Name, destTexture.ResourceType, ResourceType), nameof(destTexture));
 			}
 
-			if (Info.Usage == D3D11.ResourceUsage.Immutable)
+			if (Info.Usage == ResourceUsage.Immutable)
 			{
 				throw new NotSupportedException(Resources.GORGFX_ERR_TEXTURE_IMMUTABLE);
 			}
@@ -1053,7 +1053,7 @@ namespace Gorgon.Graphics.Core
 				throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_TEXTURE_COPY_CANNOT_CONVERT, sourceTexture.Info.Format, Info.Format));
 			}
 
-			if (Info.Usage == D3D11.ResourceUsage.Immutable)
+			if (Info.Usage == ResourceUsage.Immutable)
 			{
 				throw new NotSupportedException(Resources.GORGFX_ERR_TEXTURE_IMMUTABLE);
 			}
@@ -1171,7 +1171,7 @@ namespace Gorgon.Graphics.Core
 				throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_TEXTURE_NOT_MULTISAMPLED, Name));
 			}
 
-			if (destination.Info.Usage != D3D11.ResourceUsage.Default)
+			if (destination.Info.Usage != ResourceUsage.Default)
 			{
 				throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_TEXTURE_RESOLVE_DEST_NOT_DEFAULT, destination.Name));
 			}
@@ -1240,14 +1240,14 @@ namespace Gorgon.Graphics.Core
 		/// </remarks>
 		public GorgonTexture GetStagingTexture()
 		{
-			if (Info.Usage == D3D11.ResourceUsage.Immutable)
+			if (Info.Usage == ResourceUsage.Immutable)
 			{
 				throw new GorgonException(GorgonResult.AccessDenied, string.Format(Resources.GORGFX_ERR_TEXTURE_IMMUTABLE));
 			}
 
 			IGorgonTextureInfo info = new GorgonTextureInfo(Info)
 			                          {
-				                          Usage = D3D11.ResourceUsage.Staging,
+				                          Usage = ResourceUsage.Staging,
 				                          Binding = TextureBinding.None
 			                          };
 			GorgonTexture staging = new GorgonTexture(Name + " [Staging]", Graphics, info);
@@ -1306,7 +1306,7 @@ namespace Gorgon.Graphics.Core
 				throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_BINDING_TYPE_CANNOT_BE_USED, TextureBinding.DepthStencil));
 			}
 
-			if ((Info.Usage == D3D11.ResourceUsage.Dynamic) || (Info.Usage == D3D11.ResourceUsage.Immutable))
+			if ((Info.Usage == ResourceUsage.Dynamic) || (Info.Usage == ResourceUsage.Immutable))
 			{
 				throw new NotSupportedException(Resources.GORGFX_ERR_TEXTURE_IS_DYNAMIC_OR_IMMUTABLE);
 			}
@@ -1371,7 +1371,7 @@ namespace Gorgon.Graphics.Core
 		/// </exception>
 		public IGorgonImage ToImage()
 		{
-			if (Info.Usage == D3D11.ResourceUsage.Immutable)
+			if (Info.Usage == ResourceUsage.Immutable)
 			{
 				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_TEXTURE_IMMUTABLE));
 			}
@@ -1381,7 +1381,7 @@ namespace Gorgon.Graphics.Core
 
 			try
 			{
-				if (Info.Usage != D3D11.ResourceUsage.Staging)
+				if (Info.Usage != ResourceUsage.Staging)
 				{
 					stagingTexture = GetStagingTexture();
 				}
@@ -1644,7 +1644,7 @@ namespace Gorgon.Graphics.Core
 	            throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_UAV_REQUIRES_SM5);
 	        }
 
-	        if ((Info.Usage == D3D11.ResourceUsage.Staging)
+	        if ((Info.Usage == ResourceUsage.Staging)
                 || ((Info.Binding & TextureBinding.UnorderedAccess) != TextureBinding.UnorderedAccess))
 	        {
 	            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_UAV_RESOURCE_NOT_VALID, Name));
@@ -1930,7 +1930,7 @@ namespace Gorgon.Graphics.Core
 				        Width = texture.Description.Width,
 				        Height = texture.Description.Height,
 				        TextureType = TextureType.Texture2D,
-				        Usage = texture.Description.Usage,
+				        Usage = (ResourceUsage)texture.Description.Usage,
 				        ArrayCount = texture.Description.ArraySize,
 				        MipLevels = texture.Description.MipLevels,
 				        Depth = 0,
@@ -1969,7 +1969,7 @@ namespace Gorgon.Graphics.Core
         /// This constructor is used when converting an image to a texture.
         /// </para>
         /// </remarks>
-        internal GorgonTexture(string name, GorgonGraphics graphics, IGorgonImage image, D3D11.ResourceUsage usage, TextureBinding binding, GorgonMultisampleInfo multiSampleInfo, IGorgonLog log)
+        internal GorgonTexture(string name, GorgonGraphics graphics, IGorgonImage image, ResourceUsage usage, TextureBinding binding, GorgonMultisampleInfo multiSampleInfo, IGorgonLog log)
 			: base(graphics, name)
 		{
 			_log = log ?? GorgonLogDummy.DefaultInstance;

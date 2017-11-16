@@ -138,7 +138,7 @@ namespace Gorgon.Graphics.Example
 			// 3 vertices.
 			_vertexBuffer = new GorgonVertexBuffer("MiniTri Vertex Buffer", _graphics, new GorgonVertexBufferInfo
 			                                                                           {
-				                                                                           Usage = D3D11.ResourceUsage.Default,
+				                                                                           Usage = ResourceUsage.Default,
 																						   SizeInBytes = MiniTriVertex.SizeInBytes * vertices.Length
 			                                                                           });
 
@@ -164,7 +164,7 @@ namespace Gorgon.Graphics.Example
 			// The data we pass into here will apply the projection transformation to our vertex data so we can transform from 3D space into 2D space.
 			_constantBuffer = new GorgonConstantBuffer("MiniTri WVP Constant Buffer", _graphics, new GorgonConstantBufferInfo
 			                                                                                     {
-				                                                                                     Usage = D3D11.ResourceUsage.Default,
+				                                                                                     Usage = ResourceUsage.Default,
 																									 SizeInBytes = DX.Matrix.SizeInBytes
 			                                                                                     });
 

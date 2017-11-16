@@ -286,20 +286,20 @@ namespace Gorgon.Graphics.Fonts
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
 		private void GenerateTextures(Dictionary<Drawing.Bitmap, IEnumerable<GlyphInfo>> glyphData)
 		{
-			GorgonImageInfo imageSettings = new GorgonImageInfo(ImageType.Image2D, BufferFormat.R8G8B8A8_UNorm)
+			var imageSettings = new GorgonImageInfo(ImageType.Image2D, BufferFormat.R8G8B8A8_UNorm)
 			{
 				Width = Info.TextureWidth,
 				Height = Info.TextureHeight,
 				Depth = 1
 			};
-			GorgonTextureInfo textureSettings = new GorgonTextureInfo
+			var textureSettings = new GorgonTextureInfo
 			{
 				Format = BufferFormat.R8G8B8A8_UNorm,
 				Width = Info.TextureWidth,
 				Height = Info.TextureHeight,
 				Depth = 1,
 				TextureType = TextureType.Texture2D,
-				Usage = D3D11.ResourceUsage.Default,
+				Usage = ResourceUsage.Default,
 				Binding = TextureBinding.ShaderResource,
 				IsCubeMap = false,
 				MipLevels = 1,

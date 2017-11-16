@@ -368,14 +368,14 @@ namespace Gorgon.Graphics.Example
                                                              new GorgonConstantBufferInfo
                                                              {
                                                                  SizeInBytes = DirectAccess.SizeOf<ViewProjectionData>(),
-                                                                 Usage = D3D11.ResourceUsage.Dynamic
+                                                                 Usage = ResourceUsage.Dynamic
                                                              });
 
             _worldBuffer = new GorgonConstantBuffer("WorldBuffer",
                                                     _graphics,
                                                     new GorgonConstantBufferInfo
                                                     {
-                                                        Usage = D3D11.ResourceUsage.Dynamic,
+                                                        Usage = ResourceUsage.Dynamic,
                                                         SizeInBytes = DX.Matrix.SizeInBytes
                                                     });
 
@@ -383,7 +383,7 @@ namespace Gorgon.Graphics.Example
                                                      _graphics,
                                                      new GorgonConstantBufferInfo
                                                      {
-                                                         Usage = D3D11.ResourceUsage.Dynamic,
+                                                         Usage = ResourceUsage.Dynamic,
                                                          SizeInBytes = DirectAccess.SizeOf<CameraData>()
                                                      });
 
@@ -391,7 +391,7 @@ namespace Gorgon.Graphics.Example
                                                        _graphics,
                                                        new GorgonConstantBufferInfo
                                                        {
-                                                           Usage = D3D11.ResourceUsage.Dynamic,
+                                                           Usage = ResourceUsage.Dynamic,
                                                            SizeInBytes = DirectAccess.SizeOf<Material>()
                                                        });
 
@@ -399,7 +399,7 @@ namespace Gorgon.Graphics.Example
                                                     _graphics,
                                                     new GorgonConstantBufferInfo
                                                     {
-                                                        Usage = D3D11.ResourceUsage.Default,
+                                                        Usage = ResourceUsage.Default,
                                                         SizeInBytes = DirectAccess.SizeOf<LightData>() * MaxLights
                                                     });
 

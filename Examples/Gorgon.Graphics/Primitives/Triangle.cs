@@ -71,7 +71,7 @@ namespace Gorgon.Graphics.Example
 	                                                  graphics,
 	                                                  new GorgonVertexBufferInfo
 	                                                  {
-	                                                      Usage = D3D11.ResourceUsage.Immutable,
+	                                                      Usage = ResourceUsage.Immutable,
 	                                                      SizeInBytes = DirectAccess.SizeOf<Vertex3D>() * 3
 	                                                  },
 	                                                  new GorgonPointerAlias(points, DirectAccess.SizeOf<Vertex3D>() * 3));
@@ -80,7 +80,7 @@ namespace Gorgon.Graphics.Example
 	                                                graphics,
 	                                                new GorgonIndexBufferInfo
 	                                                {
-	                                                    Usage = D3D11.ResourceUsage.Dynamic,
+	                                                    Usage = ResourceUsage.Dynamic,
 	                                                    Use16BitIndices = false,
 	                                                    IndexCount = 3
 	                                                },

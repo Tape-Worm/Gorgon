@@ -170,7 +170,7 @@ namespace Gorgon.Graphics.Example
                                                           graphics,
                                                           new GorgonVertexBufferInfo
                                                           {
-                                                              Usage = D3D11.ResourceUsage.Immutable,
+                                                              Usage = ResourceUsage.Immutable,
                                                               SizeInBytes = (int)vertexData.Size
                                                           },
                                                           vertexData);
@@ -179,7 +179,7 @@ namespace Gorgon.Graphics.Example
                                                         graphics,
                                                         new GorgonIndexBufferInfo
                                                         {
-                                                            Usage = D3D11.ResourceUsage.Immutable,
+                                                            Usage = ResourceUsage.Immutable,
                                                             Use16BitIndices = false,
                                                             IndexCount = IndexCount
                                                         },

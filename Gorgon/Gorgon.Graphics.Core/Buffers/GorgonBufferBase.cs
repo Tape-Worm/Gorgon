@@ -94,7 +94,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the usage flags for the buffer.
         /// </summary>
-        protected abstract D3D11.ResourceUsage Usage
+        protected abstract ResourceUsage Usage
         {
             get;
         }
@@ -147,16 +147,16 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="usage">The usage flags for the buffer.</param>
         /// <param name="bindings">The bindings to apply to the buffer.</param>
-        protected void ValidateBufferBindings(D3D11.ResourceUsage usage, D3D11.BindFlags bindings)
+        protected void ValidateBufferBindings(ResourceUsage usage, D3D11.BindFlags bindings)
         {
-            if ((usage != D3D11.ResourceUsage.Staging) && (bindings == D3D11.BindFlags.None))
+            if ((usage != ResourceUsage.Staging) && (bindings == D3D11.BindFlags.None))
             {
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_NON_STAGING_NEEDS_BINDING, usage));
             }
 
             switch (usage)
             {
-                case D3D11.ResourceUsage.Immutable:
+                case ResourceUsage.Immutable:
                     if ((bindings & D3D11.BindFlags.StreamOutput) == D3D11.BindFlags.StreamOutput)
                     {
                         throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_BUFFER_IMMUTABLE_STAGING_SO);
@@ -167,7 +167,7 @@ namespace Gorgon.Graphics.Core
                         throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_BUFFER_IMMUTABLE_STAGING_UAV);
                     }
                     break;
-                case D3D11.ResourceUsage.Staging:
+                case ResourceUsage.Staging:
                     if (bindings != D3D11.BindFlags.None)
                     {
                         throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_CANNOT_BE_BOUND_TO_GPU, bindings));
@@ -175,7 +175,7 @@ namespace Gorgon.Graphics.Core
                     break;
             }
 
-            if (usage != D3D11.ResourceUsage.Dynamic)
+            if (usage != ResourceUsage.Dynamic)
             {
                 return;
             }
@@ -335,12 +335,12 @@ namespace Gorgon.Graphics.Core
         public GorgonPointerAlias Lock(D3D11.MapMode mode)
         {
 #if DEBUG
-            if ((Usage != D3D11.ResourceUsage.Dynamic) && (Usage != D3D11.ResourceUsage.Staging))
+            if ((Usage != ResourceUsage.Dynamic) && (Usage != ResourceUsage.Staging))
             {
                 throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_BUFFER_LOCK_NOT_DYNAMIC, Name, Usage));
             }
 
-            if ((Usage != D3D11.ResourceUsage.Staging) && ((mode == D3D11.MapMode.Read) || (mode == D3D11.MapMode.ReadWrite)))
+            if ((Usage != ResourceUsage.Staging) && ((mode == D3D11.MapMode.Read) || (mode == D3D11.MapMode.ReadWrite)))
             {
                 throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_BUFFER_ERR_WRITE_ONLY, Name, Usage));
             }

@@ -57,7 +57,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to set or return the intended usage for binding to the GPU.
         /// </summary>
-        public D3D11.ResourceUsage Usage
+        public ResourceUsage Usage
 		{
 			get;
 			set;
@@ -102,7 +102,7 @@ namespace Gorgon.Graphics.Core
 		/// <seealso cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>
 		/// <seealso cref="GorgonReflectionExtensions.IsSafeForNative(Type)"/>
 		/// <seealso cref="GorgonReflectionExtensions.IsSafeForNative(Type,out IReadOnlyList{FieldInfo})"/>
-		public static IGorgonVertexBufferInfo CreateFromType<T>(int count, D3D11.ResourceUsage usage = D3D11.ResourceUsage.Default)
+		public static IGorgonVertexBufferInfo CreateFromType<T>(int count, ResourceUsage usage = ResourceUsage.Default)
 			where T : struct
 		{
 			if (count < 1)
@@ -143,7 +143,7 @@ namespace Gorgon.Graphics.Core
 		/// </para>
 		/// </remarks>
 		/// <seealso cref="GorgonInputLayout"/>
-		public static IGorgonVertexBufferInfo CreateFromInputLayout(GorgonInputLayout layout, int slot, int count, D3D11.ResourceUsage usage = D3D11.ResourceUsage.Default)
+		public static IGorgonVertexBufferInfo CreateFromInputLayout(GorgonInputLayout layout, int slot, int count, ResourceUsage usage = ResourceUsage.Default)
 		{
 			if (layout == null)
 			{
@@ -188,7 +188,7 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		public GorgonVertexBufferInfo()
 		{
-			Usage = D3D11.ResourceUsage.Default;
+			Usage = ResourceUsage.Default;
 		}
 		#endregion
 	}

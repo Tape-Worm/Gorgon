@@ -110,7 +110,7 @@ namespace ComputeEngine
                                                      "OutputData",
                                                      new GorgonStructuredBufferInfo
                                                      {
-                                                         Usage = D3D11.ResourceUsage.Default,
+                                                         Usage = ResourceUsage.Default,
                                                          SizeInBytes = DirectAccess.SizeOf<OutputData>() * MaxValues,
                                                          Binding = BufferBinding.UnorderedAccess,
                                                          StructureSize = DirectAccess.SizeOf<OutputData>()
@@ -124,7 +124,7 @@ namespace ComputeEngine
                                                   "OutputDataCPU",
                                                   new GorgonStructuredBufferInfo(_outputBuffer.Info)
                                                   {
-                                                      Usage = D3D11.ResourceUsage.Staging,
+                                                      Usage = ResourceUsage.Staging,
                                                       Binding = BufferBinding.None
                                                   });
 
@@ -134,7 +134,7 @@ namespace ComputeEngine
                                         "IntData",
                                         new GorgonBufferInfo
                                         {
-                                            Usage = D3D11.ResourceUsage.Default,
+                                            Usage = ResourceUsage.Default,
                                             SizeInBytes = sizeof(int) * MaxValues,
                                             Binding = BufferBinding.Shader
                                         });
@@ -143,7 +143,7 @@ namespace ComputeEngine
                                         "FloatData",
                                         new GorgonBufferInfo
                                         {
-                                            Usage = D3D11.ResourceUsage.Default,
+                                            Usage = ResourceUsage.Default,
                                             SizeInBytes = sizeof(float) * MaxValues,
                                             Binding = BufferBinding.Shader
                                         });

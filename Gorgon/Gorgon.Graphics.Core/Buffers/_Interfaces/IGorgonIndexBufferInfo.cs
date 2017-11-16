@@ -49,7 +49,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the intended usage for binding to the GPU.
         /// </summary>
-        D3D11.ResourceUsage Usage
+        ResourceUsage Usage
 		{
 			get;
 		}

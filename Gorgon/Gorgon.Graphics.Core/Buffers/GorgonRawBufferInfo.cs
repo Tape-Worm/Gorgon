@@ -39,7 +39,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to set or return the intended usage for binding to the GPU.
         /// </summary>
-        public D3D11.ResourceUsage Usage
+        public ResourceUsage Usage
         {
             get;
             set;
@@ -123,7 +123,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         public GorgonRawBufferInfo()
         {
-            Usage = D3D11.ResourceUsage.Default;
+            Usage = ResourceUsage.Default;
             Binding = BufferBinding.Shader;
         }
         #endregion

@@ -283,7 +283,7 @@ namespace Gorgon.Graphics.Example
                                          new GorgonTextureInfo
                                          {
                                              Format = _blurTargetFormat,
-                                             Usage = D3D11.ResourceUsage.Default,
+                                             Usage = ResourceUsage.Default,
                                              Width = _blurTargetSize.Width,
                                              Height = _blurTargetSize.Height,
                                              Binding = TextureBinding.RenderTarget | TextureBinding.ShaderResource,
@@ -295,7 +295,7 @@ namespace Gorgon.Graphics.Example
                                          new GorgonTextureInfo
                                          {
                                              Format = _blurTargetFormat,
-                                             Usage = D3D11.ResourceUsage.Default,
+                                             Usage = ResourceUsage.Default,
                                              Width = _blurTargetSize.Width,
                                              Height = _blurTargetSize.Height,
                                              Binding = TextureBinding.RenderTarget | TextureBinding.ShaderResource,
@@ -420,7 +420,7 @@ namespace Gorgon.Graphics.Example
                                                          Graphics,
                                                          new GorgonConstantBufferInfo
                                                          {
-                                                             Usage = D3D11.ResourceUsage.Default,
+                                                             Usage = ResourceUsage.Default,
                                                              SizeInBytes = _kernelSizeBytes + _offsetSizeBytes + sizeof(int)
                                                          });
             _blurKernelData = new GorgonPointer(_blurBufferKernel.SizeInBytes);
@@ -430,7 +430,7 @@ namespace Gorgon.Graphics.Example
                                                        Graphics,
                                                        new GorgonConstantBufferInfo
                                                        {
-                                                           Usage = D3D11.ResourceUsage.Dynamic,
+                                                           Usage = ResourceUsage.Dynamic,
                                                            SizeInBytes = 16
                                                        });
 

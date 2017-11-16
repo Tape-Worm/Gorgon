@@ -59,7 +59,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the usage flags for the buffer.
         /// </summary>
-        protected override D3D11.ResourceUsage Usage => _info.Usage;
+        protected override ResourceUsage Usage => _info.Usage;
 
         /// <summary>
         /// Property to return the settings for the buffer.
@@ -86,7 +86,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="initialData">The data to copy into the buffer on creation.</param>
         private void Initialize(IGorgonPointer initialData)
         {
-            if ((_info.Usage == D3D11.ResourceUsage.Immutable) && (initialData == null))
+            if ((_info.Usage == ResourceUsage.Immutable) && (initialData == null))
             {
                 throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_BUFFER_IMMUTABLE_REQUIRES_DATA);
             }
@@ -97,10 +97,10 @@ namespace Gorgon.Graphics.Core
 
             switch (_info.Usage)
             {
-                case D3D11.ResourceUsage.Staging:
+                case ResourceUsage.Staging:
                     cpuFlags = D3D11.CpuAccessFlags.Read | D3D11.CpuAccessFlags.Write;
                     break;
-                case D3D11.ResourceUsage.Dynamic:
+                case ResourceUsage.Dynamic:
                     cpuFlags = D3D11.CpuAccessFlags.Write;
                     break;
             }
@@ -133,7 +133,7 @@ namespace Gorgon.Graphics.Core
             D3D11.BufferDescription desc = new D3D11.BufferDescription
                        {
                            SizeInBytes = SizeInBytes,
-                           Usage = _info.Usage,
+                           Usage = (D3D11.ResourceUsage)_info.Usage,
                            BindFlags = bindFlags,
                            OptionFlags = BufferType == BufferType.IndirectArgument ? D3D11.ResourceOptionFlags.DrawIndirectArguments : D3D11.ResourceOptionFlags.None,
                            CpuAccessFlags = cpuFlags,
@@ -274,7 +274,7 @@ namespace Gorgon.Graphics.Core
                 throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_UAV_REQUIRES_SM5);
             }
 
-            if ((Info.Usage == D3D11.ResourceUsage.Staging)
+            if ((Info.Usage == ResourceUsage.Staging)
                 || ((Info.Binding & BufferBinding.UnorderedAccess) != BufferBinding.UnorderedAccess))
             {
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_UAV_RESOURCE_NOT_VALID, Name));

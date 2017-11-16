@@ -26,8 +26,6 @@
 
 using Gorgon.Graphics.Core;
 using Gorgon.Native;
-using D3D11 = SharpDX.Direct3D11;
-using D3D = SharpDX.Direct3D;
 using DX = SharpDX;
 
 namespace Gorgon.Graphics.Example
@@ -89,7 +87,7 @@ namespace Gorgon.Graphics.Example
 					                                                                            graphics,
 					                                                                            new GorgonVertexBufferInfo
 					                                                                            {
-						                                                                            Usage = D3D11.ResourceUsage.Immutable,
+						                                                                            Usage = ResourceUsage.Immutable,
 						                                                                            SizeInBytes = Vertices.Length * BoingerVertex.Size
 					                                                                            },
 					                                                                            vertexPtr),
@@ -98,7 +96,7 @@ namespace Gorgon.Graphics.Example
 					                                graphics,
 					                                new GorgonIndexBufferInfo
 					                                {
-						                                Usage = D3D11.ResourceUsage.Immutable,
+						                                Usage = ResourceUsage.Immutable,
 						                                IndexCount = Indices.Length,
 						                                Use16BitIndices = false
 					                                },

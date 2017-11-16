@@ -108,7 +108,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the usage flags for the buffer.
         /// </summary>
-        protected override D3D11.ResourceUsage Usage => _info.Usage;
+        protected override ResourceUsage Usage => _info.Usage;
 
         /// <summary>
         /// Property used to return the information used to create this buffer.
@@ -135,10 +135,10 @@ namespace Gorgon.Graphics.Core
 
 			switch (_info.Usage)
 			{
-				case D3D11.ResourceUsage.Staging:
+				case ResourceUsage.Staging:
 					cpuFlags = D3D11.CpuAccessFlags.Read | D3D11.CpuAccessFlags.Write;
 					break;
-				case D3D11.ResourceUsage.Dynamic:
+				case ResourceUsage.Dynamic:
 					cpuFlags = D3D11.CpuAccessFlags.Write;
 					break;
 			}
@@ -148,7 +148,7 @@ namespace Gorgon.Graphics.Core
 			D3D11.BufferDescription desc  = new D3D11.BufferDescription
 			{
 				SizeInBytes = SizeInBytes,
-				Usage = _info.Usage,
+				Usage = (D3D11.ResourceUsage)_info.Usage,
 				BindFlags = D3D11.BindFlags.ConstantBuffer,
 				OptionFlags = D3D11.ResourceOptionFlags.None,
 				CpuAccessFlags = cpuFlags,
@@ -263,7 +263,7 @@ namespace Gorgon.Graphics.Core
 			int size = DirectAccess.SizeOf<T>();
 
 #if DEBUG
-			if ((Info.Usage == D3D11.ResourceUsage.Dynamic) || (Info.Usage == D3D11.ResourceUsage.Immutable))
+			if ((Info.Usage == ResourceUsage.Dynamic) || (Info.Usage == ResourceUsage.Immutable))
 			{
 				throw new NotSupportedException(Resources.GORGFX_ERR_BUFFER_CANT_UPDATE_IMMUTABLE_OR_DYNAMIC);
 			}
@@ -331,7 +331,7 @@ namespace Gorgon.Graphics.Core
 		    }
 
 #if DEBUG
-			if ((Info.Usage == D3D11.ResourceUsage.Dynamic) || (Info.Usage == D3D11.ResourceUsage.Immutable))
+			if ((Info.Usage == ResourceUsage.Dynamic) || (Info.Usage == ResourceUsage.Immutable))
 			{
 				throw new NotSupportedException(Resources.GORGFX_ERR_BUFFER_CANT_UPDATE_IMMUTABLE_OR_DYNAMIC);
 			}
@@ -421,7 +421,7 @@ namespace Gorgon.Graphics.Core
 		    }
 			
 #if DEBUG
-			if ((Info.Usage == D3D11.ResourceUsage.Dynamic) || (Info.Usage == D3D11.ResourceUsage.Immutable))
+			if ((Info.Usage == ResourceUsage.Dynamic) || (Info.Usage == ResourceUsage.Immutable))
 			{
 				throw new NotSupportedException(Resources.GORGFX_ERR_BUFFER_CANT_UPDATE_IMMUTABLE_OR_DYNAMIC);	
 			}

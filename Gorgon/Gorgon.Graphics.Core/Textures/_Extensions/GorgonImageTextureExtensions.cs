@@ -83,7 +83,7 @@ namespace Gorgon.Graphics.Core
 	    public static GorgonTexture ToTexture(this Drawing.Bitmap gdiBitmap,
 	                                          string name,
 	                                          GorgonGraphics graphics,
-	                                          D3D11.ResourceUsage usage = D3D11.ResourceUsage.Default,
+	                                          ResourceUsage usage = ResourceUsage.Default,
 	                                          TextureBinding binding = TextureBinding.ShaderResource,
 	                                          GorgonMultisampleInfo? multiSampleInfo = null,
 	                                          IGorgonLog log = null)
@@ -154,7 +154,7 @@ namespace Gorgon.Graphics.Core
         public static GorgonTexture ToTexture(this IGorgonImage image,
 		                                      string name,
 											  GorgonGraphics graphics,
-                                              D3D11.ResourceUsage usage = D3D11.ResourceUsage.Default,
+                                              ResourceUsage usage = ResourceUsage.Default,
                                               TextureBinding binding = TextureBinding.ShaderResource,
                                               GorgonMultisampleInfo? multiSampleInfo = null,
 											  IGorgonLog log = null)

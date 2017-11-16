@@ -211,7 +211,7 @@ namespace GorgonLibrary.Example
 													graphics,
 													new GorgonIndexBufferInfo
 													{
-														Usage = D3D11.ResourceUsage.Immutable,
+														Usage = ResourceUsage.Immutable,
 														IndexCount = indices.Length,
 														Use16BitIndices = true
 													},
@@ -223,7 +223,7 @@ namespace GorgonLibrary.Example
 																								graphics,
 																								new GorgonVertexBufferInfo
 																								{
-																									Usage = D3D11.ResourceUsage.Immutable,
+																									Usage = ResourceUsage.Immutable,
 																									SizeInBytes = GlassCubeVertex.SizeInBytes * vertices.Length
 																								},
 																								vertexPtr),

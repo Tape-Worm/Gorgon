@@ -432,7 +432,7 @@ namespace Gorgon.Graphics.Core
 		        format = texture.Info.Format;
 		    }
 
-            if ((texture.Info.Usage == D3D11.ResourceUsage.Staging) 
+            if ((texture.Info.Usage == ResourceUsage.Staging) 
 				|| ((texture.Info.Binding & TextureBinding.ShaderResource) != TextureBinding.ShaderResource))
 			{
 				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TEXTURE_NOT_SHADER_RESOURCE, texture.Name), nameof(texture));

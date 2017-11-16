@@ -39,7 +39,6 @@ using Gorgon.Timing;
 using Gorgon.UI;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D;
-using D3D11 = SharpDX.Direct3D11;
 using Color = System.Drawing.Color;
 using Point = System.Drawing.Point;
 
@@ -564,7 +563,7 @@ namespace Gorgon.Graphics.Example
 		    using (IGorgonImage image = Resources.Texture.ToGorgonImage()
 		                                         .GenerateMipMaps(GorgonImage.CalculateMaxMipCount(Resources.Texture.Width, Resources.Texture.Height, 0)))
 		    {
-		        _texture = image.ToTexture("Texture", _graphics, D3D11.ResourceUsage.Immutable);
+		        _texture = image.ToTexture("Texture", _graphics, ResourceUsage.Immutable);
 		    }
 
 		    // Create a sampler state for sampling our texture data.
@@ -590,13 +589,13 @@ namespace Gorgon.Graphics.Example
 			// to the vertex shader.  
 			_wvpBuffer = new GorgonConstantBuffer("WVPBuffer", _graphics, new GorgonConstantBufferInfo
 			                                                             {
-				                                                             Usage = D3D11.ResourceUsage.Dynamic,
+				                                                             Usage = ResourceUsage.Dynamic,
 																			 SizeInBytes = DX.Matrix.SizeInBytes
 			                                                             });
             // This one will hold our material information.
             _materialBuffer = new GorgonConstantBuffer("MaterialBuffer", _graphics, new GorgonConstantBufferInfo
                                                                                     {
-                                                                                        Usage = D3D11.ResourceUsage.Dynamic,
+                                                                                        Usage = ResourceUsage.Dynamic,
                                                                                         SizeInBytes = DirectAccess.SizeOf<GorgonColor>()
                                                                                     });
 

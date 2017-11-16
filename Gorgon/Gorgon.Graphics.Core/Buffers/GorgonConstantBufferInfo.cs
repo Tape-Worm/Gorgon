@@ -48,7 +48,7 @@ namespace Gorgon.Graphics.Core
 		/// <remarks>
 		/// This value is defaulted to <c>Default</c>.
 		/// </remarks>
-		public D3D11.ResourceUsage Usage
+		public ResourceUsage Usage
 		{
 			get;
 			set;
@@ -106,7 +106,7 @@ namespace Gorgon.Graphics.Core
 		/// <seealso cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>
 		/// <seealso cref="GorgonReflectionExtensions.IsSafeForNative(Type)"/>
 		/// <seealso cref="GorgonReflectionExtensions.IsSafeForNative(Type,out IReadOnlyList{FieldInfo})"/>
-		public static IGorgonConstantBufferInfo CreateFromType<T>(int count = 1, D3D11.ResourceUsage usage = D3D11.ResourceUsage.Default)
+		public static IGorgonConstantBufferInfo CreateFromType<T>(int count = 1, ResourceUsage usage = ResourceUsage.Default)
 			where T : struct
 		{
 			if (count < 1)
@@ -151,7 +151,7 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		public GorgonConstantBufferInfo()
 		{
-			Usage = D3D11.ResourceUsage.Default;
+			Usage = ResourceUsage.Default;
 		}
 		#endregion
 	}
