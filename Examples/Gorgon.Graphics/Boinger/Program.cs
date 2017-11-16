@@ -429,9 +429,9 @@ namespace Gorgon.Graphics.Example
 
 				// Validate depth buffer for this device.
 				// Odds are good that if this fails, you should probably invest in a better video card.  Preferably something created after 2005.
-				D3D11.FormatSupport support = graphics.VideoDevice.GetBufferFormatSupport(_depthFormat);
+				BufferFormatSupport support = graphics.VideoDevice.GetBufferFormatSupport(_depthFormat);
 
-				if ((support & D3D11.FormatSupport.DepthStencil) == D3D11.FormatSupport.DepthStencil)
+				if ((support & BufferFormatSupport.DepthStencil) == BufferFormatSupport.DepthStencil)
 				{
 					selectedDevice = graphics.VideoDevice;
 					break;
@@ -441,7 +441,7 @@ namespace Gorgon.Graphics.Example
 				_depthFormat = BufferFormat.D32_Float_S8X24_UInt;
 				support = graphics.VideoDevice.GetBufferFormatSupport(_depthFormat);
 
-				if ((support & D3D11.FormatSupport.DepthStencil) != D3D11.FormatSupport.DepthStencil)
+				if ((support & BufferFormatSupport.DepthStencil) != BufferFormatSupport.DepthStencil)
 				{
 					continue;
 				}
@@ -450,7 +450,7 @@ namespace Gorgon.Graphics.Example
 			    _depthFormat = BufferFormat.D24_UNorm_S8_UInt;
 			    support = graphics.VideoDevice.GetBufferFormatSupport(_depthFormat);
 
-			    if ((support & D3D11.FormatSupport.DepthStencil) != D3D11.FormatSupport.DepthStencil)
+			    if ((support & BufferFormatSupport.DepthStencil) != BufferFormatSupport.DepthStencil)
 			    {
 			        continue;
 			    }
@@ -459,7 +459,7 @@ namespace Gorgon.Graphics.Example
 			    _depthFormat = BufferFormat.D16_UNorm;
 			    support = graphics.VideoDevice.GetBufferFormatSupport(_depthFormat);
 
-			    if ((support & D3D11.FormatSupport.DepthStencil) != D3D11.FormatSupport.DepthStencil)
+			    if ((support & BufferFormatSupport.DepthStencil) != BufferFormatSupport.DepthStencil)
 			    {
 			        continue;
 			    }

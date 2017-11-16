@@ -83,6 +83,7 @@
     <Compile Include="..\Gorgon.Core\SharedAssemblyInfo.cs">
       <Link>SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="BufferFormatSupport.cs" />
     <Compile Include="Buffers\GorgonIndexBufferUav.cs" />
     <Compile Include="Buffers\GorgonVertexBufferUav.cs" />
     <Compile Include="Buffers\GorgonRawBufferInfo.cs" />

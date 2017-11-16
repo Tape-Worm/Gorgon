@@ -475,8 +475,8 @@ namespace Gorgon.Graphics.Example
         protected override bool OnBeforeRender()
         {
 #if DEBUG
-            if ((_renderTargetUpdated) && ((Graphics.VideoDevice.GetBufferFormatSupport(BlurTargetFormat) & D3D11.FormatSupport.RenderTarget) !=
-                                           D3D11.FormatSupport.RenderTarget))
+            if ((_renderTargetUpdated) && ((Graphics.VideoDevice.GetBufferFormatSupport(BlurTargetFormat) & BufferFormatSupport.RenderTarget) !=
+                                           BufferFormatSupport.RenderTarget))
             {
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_FORMAT_NOT_SUPPORTED, BlurTargetFormat));
             }

@@ -384,7 +384,7 @@ namespace Gorgon.Graphics.Core
 		private void Initialize()
 		{
 			// Ensure that we can use this format for display.
-			if ((Graphics.VideoDevice.GetBufferFormatSupport(Info.Format) & D3D11.FormatSupport.Display) != D3D11.FormatSupport.Display)
+			if ((Graphics.VideoDevice.GetBufferFormatSupport(Info.Format) & BufferFormatSupport.Display) != BufferFormatSupport.Display)
 			{
 				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_FORMAT_NOT_SUPPORTED, Info.Format));
 			}

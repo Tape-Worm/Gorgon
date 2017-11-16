@@ -258,7 +258,7 @@ namespace Gorgon.Graphics.Example
 			//
 			// This method is also used to determine if a format can be used for other objects (e.g. a texture, render target, etc...) Like the swap chain format, this is also a 
 			// best practice to check if the object you're creating supports the desired format.
-			if ((_graphics.VideoDevice.GetBufferFormatSupport(BufferFormat.R8G8B8A8_UNorm) & D3D11.FormatSupport.Display) != D3D11.FormatSupport.Display)
+			if ((_graphics.VideoDevice.GetBufferFormatSupport(BufferFormat.R8G8B8A8_UNorm) & BufferFormatSupport.Display) != BufferFormatSupport.Display)
 			{
 				// We should never see this unless you've performed some form of black magic.
 				GorgonDialogs.ErrorBox(_mainForm, "We should not see this error.");

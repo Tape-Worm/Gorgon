@@ -164,7 +164,7 @@ namespace Gorgon.Graphics.Core
 		/// enumeration and will contain the supported functionality represented as OR'd values.
 		/// </para>
 		/// </remarks>
-		D3D11.FormatSupport GetBufferFormatSupport(BufferFormat format);
+		BufferFormatSupport GetBufferFormatSupport(BufferFormat format);
 
 		/// <summary>
 		/// Function to retrieve the supported unordered access compute resource functionality for a given format.

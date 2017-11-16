@@ -229,8 +229,8 @@ namespace Gorgon.Graphics.Core
 	            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_UAV_RESOURCE_NOT_VALID, Name));
 	        }
 
-            if ((Graphics.VideoDevice.GetBufferFormatSupport(IndexFormat) & D3D11.FormatSupport.TypedUnorderedAccessView) !=
-	            D3D11.FormatSupport.TypedUnorderedAccessView)
+            if ((Graphics.VideoDevice.GetBufferFormatSupport(IndexFormat) & BufferFormatSupport.TypedUnorderedAccessView) !=
+	            BufferFormatSupport.TypedUnorderedAccessView)
 	        {
 	            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_UAV_FORMAT_INVALID, IndexFormat));
 	        }

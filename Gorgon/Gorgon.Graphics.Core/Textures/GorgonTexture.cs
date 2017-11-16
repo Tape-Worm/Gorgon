@@ -250,7 +250,7 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="support">Format support.</param>
 		// ReSharper disable once UnusedParameter.Local
-		private void ValidateUnorderedAccess(D3D11.FormatSupport support)
+		private void ValidateUnorderedAccess(BufferFormatSupport support)
 		{
 			if ((Info.Binding & TextureBinding.UnorderedAccess) != TextureBinding.UnorderedAccess)
 			{
@@ -262,7 +262,7 @@ namespace Gorgon.Graphics.Core
 				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_UAV_REQUIRES_SM5);
 			}
 
-			if ((!FormatInformation.IsTypeless) && (support & D3D11.FormatSupport.TypedUnorderedAccessView) != D3D11.FormatSupport.TypedUnorderedAccessView)
+			if ((!FormatInformation.IsTypeless) && (support & BufferFormatSupport.TypedUnorderedAccessView) != BufferFormatSupport.TypedUnorderedAccessView)
 			{
 				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_UAV_FORMAT_INVALID, Info.Format));
 			}
@@ -282,7 +282,7 @@ namespace Gorgon.Graphics.Core
 		/// Function to validate a depth/stencil binding for a texture.
 		/// </summary>
 		/// <param name="support">Format support.</param>
-		private void ValidateDepthStencil(D3D11.FormatSupport support)
+		private void ValidateDepthStencil(BufferFormatSupport support)
 		{
 			if ((Info.Binding & TextureBinding.DepthStencil) != TextureBinding.DepthStencil)
 			{
@@ -305,7 +305,7 @@ namespace Gorgon.Graphics.Core
 			else 
 			{
 				// Otherwise, we'll validate the format.
-				if ((Info.Format == BufferFormat.Unknown) || ((support & D3D11.FormatSupport.DepthStencil) != D3D11.FormatSupport.DepthStencil))
+				if ((Info.Format == BufferFormat.Unknown) || ((support & BufferFormatSupport.DepthStencil) != BufferFormatSupport.DepthStencil))
 				{
 					throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_DEPTHSTENCIL_FORMAT_INVALID, Info.Format));
 				}
@@ -328,7 +328,7 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="support">Format support.</param>
 		// ReSharper disable once UnusedParameter.Local
-		private void ValidateRenderTarget(D3D11.FormatSupport support)
+		private void ValidateRenderTarget(BufferFormatSupport support)
 		{
 			if ((Info.Binding & TextureBinding.RenderTarget) != TextureBinding.RenderTarget)
 			{
@@ -336,7 +336,7 @@ namespace Gorgon.Graphics.Core
 			}
 
 			// Otherwise, we'll validate the format.
-			if ((Info.Format == BufferFormat.Unknown) || ((support & D3D11.FormatSupport.RenderTarget) != D3D11.FormatSupport.RenderTarget))
+			if ((Info.Format == BufferFormat.Unknown) || ((support & BufferFormatSupport.RenderTarget) != BufferFormatSupport.RenderTarget))
 			{
 				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_DEPTHSTENCIL_FORMAT_INVALID, Info.Format));
 			}
@@ -352,7 +352,7 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		private void ValidateTextureSettings()
 		{
-			D3D11.FormatSupport support = Graphics.VideoDevice.GetBufferFormatSupport(Info.Format);
+			BufferFormatSupport support = Graphics.VideoDevice.GetBufferFormatSupport(Info.Format);
 			GorgonFormatInfo formatInfo = new GorgonFormatInfo(Info.Format);
 
 			// For texture arrays, bump the value up to be a multiple of 6 if we want a cube map.
@@ -375,9 +375,9 @@ namespace Gorgon.Graphics.Core
 
 			// Ensure that we can actually use our requested format as a texture.
 			if ((Info.Format == BufferFormat.Unknown)
-				|| ((Info.TextureType == TextureType.Texture3D) && ((support & D3D11.FormatSupport.Texture3D) != D3D11.FormatSupport.Texture3D))
-				|| ((Info.TextureType == TextureType.Texture2D) && ((support & D3D11.FormatSupport.Texture2D) != D3D11.FormatSupport.Texture2D))
-				|| ((Info.TextureType == TextureType.Texture1D) && ((support & D3D11.FormatSupport.Texture1D) != D3D11.FormatSupport.Texture1D)))
+				|| ((Info.TextureType == TextureType.Texture3D) && ((support & BufferFormatSupport.Texture3D) != BufferFormatSupport.Texture3D))
+				|| ((Info.TextureType == TextureType.Texture2D) && ((support & BufferFormatSupport.Texture2D) != BufferFormatSupport.Texture2D))
+				|| ((Info.TextureType == TextureType.Texture1D) && ((support & BufferFormatSupport.Texture1D) != BufferFormatSupport.Texture1D)))
 			{
 				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_TEXTURE_FORMAT_NOT_SUPPORTED, Info.Format, Info.TextureType));
 			}
@@ -455,7 +455,7 @@ namespace Gorgon.Graphics.Core
 			
 			if (Info.MipLevels > 1)
 			{
-				if ((support & D3D11.FormatSupport.Mip) != D3D11.FormatSupport.Mip)
+				if ((support & BufferFormatSupport.Mip) != BufferFormatSupport.Mip)
 				{
 					throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_TEXTURE_NO_MIP_SUPPORT, Info.Format));
 				}
@@ -1660,8 +1660,8 @@ namespace Gorgon.Graphics.Core
 	            format = Info.Format;
 	        }
 
-	        if ((Graphics.VideoDevice.GetBufferFormatSupport(format) & D3D11.FormatSupport.TypedUnorderedAccessView) !=
-	             D3D11.FormatSupport.TypedUnorderedAccessView)
+	        if ((Graphics.VideoDevice.GetBufferFormatSupport(format) & BufferFormatSupport.TypedUnorderedAccessView) !=
+	             BufferFormatSupport.TypedUnorderedAccessView)
 	        {
 	            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_UAV_FORMAT_INVALID, format));
 	        }

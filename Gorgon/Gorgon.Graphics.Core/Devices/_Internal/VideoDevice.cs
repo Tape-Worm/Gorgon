@@ -305,9 +305,9 @@ namespace Gorgon.Graphics.Core
 		/// enumeration and will contain the supported functionality represented as OR'd values.
 		/// </para>
 		/// </remarks>
-		public D3D11.FormatSupport GetBufferFormatSupport(BufferFormat format)
+		public BufferFormatSupport GetBufferFormatSupport(BufferFormat format)
 		{
-			return _device.CheckFormatSupport((DXGI.Format)format);
+			return (BufferFormatSupport)_device.CheckFormatSupport((DXGI.Format)format);
 		}
 
 		/// <summary>

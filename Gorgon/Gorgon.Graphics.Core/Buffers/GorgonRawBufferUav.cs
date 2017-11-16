@@ -158,7 +158,7 @@ namespace Gorgon.Graphics.Core
 
             FormatInformation = new GorgonFormatInfo(Format);
 
-            if ((buffer.Graphics.VideoDevice.GetBufferFormatSupport(Format) & D3D11.FormatSupport.TypedUnorderedAccessView) != D3D11.FormatSupport.TypedUnorderedAccessView)
+            if ((buffer.Graphics.VideoDevice.GetBufferFormatSupport(Format) & BufferFormatSupport.TypedUnorderedAccessView) != BufferFormatSupport.TypedUnorderedAccessView)
             {
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_UAV_FORMAT_INVALID, Format));
             }
