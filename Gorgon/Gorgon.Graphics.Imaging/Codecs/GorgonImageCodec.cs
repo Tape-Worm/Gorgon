@@ -30,7 +30,6 @@ using System.IO;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.IO;
-using DXGI = SharpDX.DXGI;
 
 namespace Gorgon.Graphics.Imaging.Codecs
 {
@@ -249,7 +248,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// <summary>
         /// Property to return the pixel formats supported by the codec.
         /// </summary>
-	    public abstract IReadOnlyList<DXGI.Format> SupportedPixelFormats
+	    public abstract IReadOnlyList<BufferFormat> SupportedPixelFormats
 	    {
 	        get;
 	    }

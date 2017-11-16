@@ -149,7 +149,7 @@ namespace CodecPlugIn
 			try
 			{
 				// Save the current texture using our useless new custom codec.
-				_customCodec.SaveToFile(_image.ConvertToFormat(DXGI.Format.R8G8B8A8_UNorm), tempPath);
+				_customCodec.SaveToFile(_image.ConvertToFormat(BufferFormat.R8G8B8A8_UNorm), tempPath);
 				_image.Dispose();
 				_texture?.Dispose();
 
@@ -228,7 +228,7 @@ namespace CodecPlugIn
 	                                        {
 		                                        Width = ClientSize.Width,
 		                                        Height = ClientSize.Height,
-		                                        Format = DXGI.Format.R8G8B8A8_UNorm
+		                                        Format = BufferFormat.R8G8B8A8_UNorm
 	                                        });
 
                 _graphics.SetRenderTarget(_swap.RenderTargetView);

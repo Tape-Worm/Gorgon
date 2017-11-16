@@ -37,7 +37,7 @@ using SharpDX.Mathematics.Interop;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D;
 using D3D11 = SharpDX.Direct3D11;
-using GI = SharpDX.DXGI;
+using DXGI =  SharpDX.DXGI;
 
 namespace Gorgon.Graphics.Core
 {
@@ -1192,12 +1192,12 @@ namespace Gorgon.Graphics.Core
         private void SetIndexbuffer(GorgonIndexBuffer indexBuffer)
         {
             D3D11.Buffer buffer = null;
-            GI.Format format = GI.Format.Unknown;
+            DXGI.Format format = DXGI.Format.Unknown;
 
             if (indexBuffer != null)
             {
                 buffer = indexBuffer.NativeBuffer;
-                format = indexBuffer.IndexFormat;
+                format = (DXGI.Format)indexBuffer.IndexFormat;
             }
 
             D3DDeviceContext.InputAssembler.SetIndexBuffer(buffer, format, 0);

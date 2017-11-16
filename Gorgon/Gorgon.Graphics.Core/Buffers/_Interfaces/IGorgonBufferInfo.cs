@@ -138,7 +138,7 @@ namespace Gorgon.Graphics.Core
         /// The default value for this property is <c>Unknown</c>.
         /// </para>
         /// </remarks>
-        DXGI.Format DefaultShaderViewFormat
+        BufferFormat DefaultShaderViewFormat
         {
             get;
         }

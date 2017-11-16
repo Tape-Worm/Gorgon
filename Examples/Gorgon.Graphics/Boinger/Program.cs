@@ -126,7 +126,7 @@ namespace Gorgon.Graphics.Example
 	{
 		#region Variables.
 		// Format for our depth/stencil buffer.
-		private static DXGI.Format _depthFormat;
+		private static BufferFormat _depthFormat;
 		// Main application form.
 		private static formMain _mainForm;
 		// The graphics interface for the application.
@@ -420,7 +420,7 @@ namespace Gorgon.Graphics.Example
 			while (selectedDeviceIndex < deviceList.Count)
 			{
 				// Reset back to a 32 bit floating point depth.
-				_depthFormat = DXGI.Format.D32_Float;
+				_depthFormat = BufferFormat.D32_Float;
 
 				// Destroy the previous interface.
 				graphics?.Dispose();
@@ -439,7 +439,7 @@ namespace Gorgon.Graphics.Example
 				}
 
 				// Fall back to 32 bit depth-buffer with 8 bit stencil support.
-				_depthFormat = DXGI.Format.D32_Float_S8X24_UInt;
+				_depthFormat = BufferFormat.D32_Float_S8X24_UInt;
 				support = graphics.VideoDevice.GetBufferFormatSupport(_depthFormat);
 
 				if ((support & D3D11.FormatSupport.DepthStencil) != D3D11.FormatSupport.DepthStencil)
@@ -448,7 +448,7 @@ namespace Gorgon.Graphics.Example
 				}
 
 			    // Fall back to 24 bit depth-buffer with 8 bit stencil support.
-			    _depthFormat = DXGI.Format.D24_UNorm_S8_UInt;
+			    _depthFormat = BufferFormat.D24_UNorm_S8_UInt;
 			    support = graphics.VideoDevice.GetBufferFormatSupport(_depthFormat);
 
 			    if ((support & D3D11.FormatSupport.DepthStencil) != D3D11.FormatSupport.DepthStencil)
@@ -457,7 +457,7 @@ namespace Gorgon.Graphics.Example
 			    }
 
 			    // Fall back to 16 bit depth-buffer with no stencil support.
-			    _depthFormat = DXGI.Format.D16_UNorm;
+			    _depthFormat = BufferFormat.D16_UNorm;
 			    support = graphics.VideoDevice.GetBufferFormatSupport(_depthFormat);
 
 			    if ((support & D3D11.FormatSupport.DepthStencil) != D3D11.FormatSupport.DepthStencil)
@@ -509,7 +509,7 @@ namespace Gorgon.Graphics.Example
 			                            new GorgonSwapChainInfo
 			                            {
 				                            // Set up for 32 bit RGBA normalized display.
-				                            Format = DXGI.Format.R8G8B8A8_UNorm,
+				                            Format = BufferFormat.R8G8B8A8_UNorm,
 				                            Width = Settings.Default.Resolution.Width,
 				                            Height = Settings.Default.Resolution.Height,
                                             DepthStencilFormat = _depthFormat
@@ -527,7 +527,7 @@ namespace Gorgon.Graphics.Example
 				_output = _graphics.VideoDevice.Info.Outputs[Screen.PrimaryScreen.DeviceName];
 				DXGI.ModeDescription1 mode = new DXGI.ModeDescription1
 				        {
-					        Format = DXGI.Format.R8G8B8A8_UNorm,
+					        Format = BufferFormat.R8G8B8A8_UNorm,
 					        Height = Settings.Default.Resolution.Height,
 					        Width = Settings.Default.Resolution.Width
 				        };

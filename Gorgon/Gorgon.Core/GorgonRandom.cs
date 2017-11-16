@@ -27,7 +27,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using DX = SharpDX;
 using Simplex;
 
 namespace Gorgon.Core
@@ -126,58 +125,64 @@ namespace Gorgon.Core
 		    return 1.0f + (Noise.Generate(value) - 1.0f);
 		}
 
-		/// <summary>
-		/// Function to generate 2 dimensional simplex noise.
-		/// </summary>
-		/// <param name="value">The <see cref="DX.Vector2"/> value to use to generate the simplex noise value.</param>
-		/// <returns>A <see cref="float"/> representing the simplex noise value.</returns>
-		/// <remarks>
-		/// <para>
-		/// Simplex noise values similar to Perlin noise but with fewer artifacts and better performance. 
-		/// </para>
-		/// <para>
-		/// This produces predictable random numbers based on the seed <paramref name="value"/> passed to the method. 
-		/// </para>
-		/// </remarks>
-		public static float SimplexNoise(DX.Vector2 value)
+        /// <summary>
+        /// Function to generate 2 dimensional simplex noise.
+        /// </summary>
+        /// <param name="x">The horizontal value to use to generate the simplex noise value.</param>
+        /// <param name="y">The vertical value to use to generate the simplex noise value.</param>
+        /// <returns>A <see cref="float"/> representing the simplex noise value.</returns>
+        /// <remarks>
+        /// <para>
+        /// Simplex noise values similar to Perlin noise but with fewer artifacts and better performance. 
+        /// </para>
+        /// <para>
+        /// This produces predictable random numbers based on the seed value passed to the method. 
+        /// </para>
+        /// </remarks>
+        public static float SimplexNoise(float x, float y)
 		{
-		    return 1.0f + (Noise.Generate(value.X, value.Y) - 1.0f);
+		    return 1.0f + (Noise.Generate(x, y) - 1.0f);
 		}
 
-		/// <summary>
-		/// Function to generate 3 dimensional simplex noise.
-		/// </summary>
-		/// <param name="value">The <see cref="DX.Vector3"/> value to use to generate the simplex noise value.</param>
+        /// <summary>
+        /// Function to generate 3 dimensional simplex noise.
+        /// </summary>
+        /// <param name="x">The horizontal value to use to generate the simplex noise value.</param>
+        /// <param name="y">The vertical value to use to generate the simplex noise value.</param>
+        /// <param name="z">The depth value to use to generate the simplex noise value.</param>
 		/// <returns>A <see cref="float"/> representing the simplex noise value.</returns>
-		/// <remarks>
-		/// <para>
-		/// Simplex noise values similar to Perlin noise but with fewer artifacts and better performance. 
-		/// </para>
-		/// <para>
-		/// This produces predictable random numbers based on the seed <paramref name="value"/> passed to the method. 
-		/// </para>
-		/// </remarks>
-		public static float SimplexNoise(DX.Vector3 value)
+        /// <remarks>
+        /// <para>
+        /// Simplex noise values similar to Perlin noise but with fewer artifacts and better performance. 
+        /// </para>
+        /// <para>
+        /// This produces predictable random numbers based on the seed values passed to the method. 
+        /// </para>
+        /// </remarks>
+        public static float SimplexNoise(float x, float y, float z)
 		{
-		    return 1.0f + (Noise.Generate(value.X, value.Y, value.Z) - 1.0f);
+		    return 1.0f + (Noise.Generate(x, y, z) - 1.0f);
 		}
 
-		/// <summary>
-		/// Function to generate 4 dimensional simplex noise.
-		/// </summary>
-		/// <param name="value">The <see cref="DX.Vector4"/> value to use to generate the simplex noise value.</param>
+        /// <summary>
+        /// Function to generate 4 dimensional simplex noise.
+        /// </summary>
+        /// <param name="x">The horizontal value to use to generate the simplex noise value.</param>
+        /// <param name="y">The vertical value to use to generate the simplex noise value.</param>
+        /// <param name="z">The depth value to use to generate the simplex noise value.</param>
+        /// <param name="w">The w value to use to generate the simplex noise value.</param>
 		/// <returns>A <see cref="float"/> representing the simplex noise value.</returns>
-		/// <remarks>
-		/// <para>
-		/// Simplex noise values similar to Perlin noise but with fewer artifacts and better performance. 
-		/// </para>
-		/// <para>
-		/// This produces predictable random numbers based on the seed <paramref name="value"/> passed to the method. 
-		/// </para>
-		/// </remarks>
-		public static float SimplexNoise(DX.Vector4 value)
+        /// <remarks>
+        /// <para>
+        /// Simplex noise values similar to Perlin noise but with fewer artifacts and better performance. 
+        /// </para>
+        /// <para>
+        /// This produces predictable random numbers based on the seed values passed to the method. 
+        /// </para>
+        /// </remarks>
+        public static float SimplexNoise(float x, float y, float z, float w)
 		{
-		    return SimplexNoise((DX.Vector3)value);
+		    return SimplexNoise(x, y, z);
 		}
         
 		/// <summary>

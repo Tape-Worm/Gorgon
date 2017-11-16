@@ -302,30 +302,29 @@ namespace Gorgon.IO
 				                }
 
 				                Type memberType;
-				                FieldInfo fieldInfo = item as FieldInfo;
 
-				                if (fieldInfo != null)
-				                {
-					                if ((fieldInfo.IsInitOnly) || (fieldInfo.IsStatic))
-					                {
-						                return false;
-					                }
+                                if (item is FieldInfo fieldInfo)
+                                {
+                                    if ((fieldInfo.IsInitOnly) || (fieldInfo.IsStatic))
+                                    {
+                                        return false;
+                                    }
 
-					                memberType = fieldInfo.FieldType;
-				                }
-				                else
-				                {
-					                PropertyInfo propInfo = (PropertyInfo)item;
+                                    memberType = fieldInfo.FieldType;
+                                }
+                                else
+                                {
+                                    PropertyInfo propInfo = (PropertyInfo)item;
 
-					                if ((!propInfo.CanRead) || (!propInfo.CanWrite))
-					                {
-						                return false;
-					                }
+                                    if ((!propInfo.CanRead) || (!propInfo.CanWrite))
+                                    {
+                                        return false;
+                                    }
 
-					                memberType = propInfo.PropertyType;
-				                }
+                                    memberType = propInfo.PropertyType;
+                                }
 
-				                return Attribute.IsDefined(item, typeof(MarshalAsAttribute), true) || UseMarshalling(memberType);
+                                return Attribute.IsDefined(item, typeof(MarshalAsAttribute), true) || UseMarshalling(memberType);
 			                });
 		}
 

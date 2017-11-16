@@ -69,7 +69,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the format for the view.
         /// </summary>
-        public DXGI.Format Format
+        public BufferFormat Format
         {
             get;
         }
@@ -105,7 +105,7 @@ namespace Gorgon.Graphics.Core
                                ElementCount = ElementCount,
                                Flags = D3D11.UnorderedAccessViewBufferFlags.None
                            },
-                           Format = Format
+                           Format = (DXGI.Format)Format
                        };
 
             NativeView = new D3D11.UnorderedAccessView(Resource.Graphics.VideoDevice.D3DDevice(), Resource.D3DResource, desc)
@@ -125,7 +125,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="format">The format of the view.</param>
         /// <param name="formatInfo">Information about the format.</param>
         /// <param name="log">The log used for debug information.</param>
-        internal GorgonIndexBufferUav(GorgonIndexBuffer buffer, int elementStart, int elementCount, DXGI.Format format, GorgonFormatInfo formatInfo, IGorgonLog log)
+        internal GorgonIndexBufferUav(GorgonIndexBuffer buffer, int elementStart, int elementCount, BufferFormat format, GorgonFormatInfo formatInfo, IGorgonLog log)
             : base(buffer, elementStart, elementCount, log)
         {
             Format = format;

@@ -346,14 +346,14 @@ namespace Gorgon.Reflection
 			}
 
 			ParameterExpression paramExpr = Expression.Parameter(typeof(object[]), "args");
-			Expression[] argumentsExpr = new Expression[constructor.Item2.Length];
+			Expression[] argumentsExpr = new Expression[constructor.Params.Length];
 
 			//pick each arg from the params array 
 			//and create a typed expression of them
-			for (int i = 0; i < constructor.Item2.Length; ++i)
+			for (int i = 0; i < constructor.Params.Length; ++i)
 			{
 				Expression index = Expression.Constant(i);
-				Type paramType = constructor.Item2[i].ParameterType;
+				Type paramType = constructor.Params[i].ParameterType;
 
 				Expression paramAccessorExp =
 					Expression.ArrayIndex(paramExpr, index);
@@ -366,7 +366,7 @@ namespace Gorgon.Reflection
 
 			//make a NewExpression that calls the
 			//ctor with the args we just created
-			NewExpression newExp = Expression.New(constructor.Item1, argumentsExpr);
+			NewExpression newExp = Expression.New(constructor.Ctor, argumentsExpr);
 
 			//create a lambda with the New
 			//Expression as body and our param object[] as arg

@@ -26,7 +26,6 @@
 
 using System;
 using Gorgon.Core;
-using DXGI = SharpDX.DXGI;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.Math;
 
@@ -85,7 +84,7 @@ namespace Gorgon.Graphics.Imaging
 		/// If the value is set to <c>Format.Unknown</c>, then an exception will be thrown upon image creation.
 		/// </para>
 		/// </remarks>
-		public DXGI.Format Format
+		public BufferFormat Format
 		{
 			get;
 			set;
@@ -175,9 +174,9 @@ namespace Gorgon.Graphics.Imaging
 		/// <param name="imageType">The type of the image to create.</param>
 		/// <param name="format">The format describing how a pixel is laid out in memory.</param>
 		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="format"/> parameter is set to <c>Format.Unknown</c>.</exception>
-		public GorgonImageInfo(ImageType imageType, DXGI.Format format)
+		public GorgonImageInfo(ImageType imageType, BufferFormat format)
 		{
-			if (format == DXGI.Format.Unknown)
+			if (format == BufferFormat.Unknown)
 			{
 				throw new ArgumentException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, format), nameof(format));
 			}
@@ -207,7 +206,7 @@ namespace Gorgon.Graphics.Imaging
 				throw new ArgumentNullException(nameof(info));
 			}
 
-			if (info.Format == DXGI.Format.Unknown)
+			if (info.Format == BufferFormat.Unknown)
 			{
 				throw new ArgumentException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, info.Format), nameof(info.Format));
 			}

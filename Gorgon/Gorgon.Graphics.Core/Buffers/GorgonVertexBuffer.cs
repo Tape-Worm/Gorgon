@@ -186,7 +186,7 @@ namespace Gorgon.Graphics.Core
 	    /// Use this to retrieve the number of elements based on the <paramref name="format"/> that will be passed to a shader resource view.
 	    /// </para>
 	    /// </remarks>
-	    public int GetTotalElementCount(DXGI.Format format) => format == DXGI.Format.Unknown ? 0 : GetTotalElementCount(new GorgonFormatInfo(format));
+	    public int GetTotalElementCount(BufferFormat format) => format == BufferFormat.Unknown ? 0 : GetTotalElementCount(new GorgonFormatInfo(format));
 
         /// <summary>
         /// Function to create a new <see cref="GorgonVertexBufferUav"/> for this buffer.
@@ -230,7 +230,7 @@ namespace Gorgon.Graphics.Core
         /// </note>
         /// </para>
         /// </remarks>
-        public GorgonVertexBufferUav GetUnorderedAccessView(DXGI.Format format, int startElement = 0, int elementCount = 0)
+        public GorgonVertexBufferUav GetUnorderedAccessView(BufferFormat format, int startElement = 0, int elementCount = 0)
 	    {
 	        if (Graphics.VideoDevice.RequestedFeatureLevel < FeatureLevelSupport.Level_11_0)
 	        {

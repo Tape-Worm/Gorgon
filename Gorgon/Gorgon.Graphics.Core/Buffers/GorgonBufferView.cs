@@ -57,7 +57,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the format for the view.
         /// </summary>
-        public DXGI.Format Format
+        public BufferFormat Format
         {
             get;
         }
@@ -86,7 +86,7 @@ namespace Gorgon.Graphics.Core
 
             D3D11.ShaderResourceViewDescription desc = new D3D11.ShaderResourceViewDescription
                                                  {
-                                                     Format = Format,
+                                                     Format = (DXGI.Format)Format,
                                                      Dimension = D3D.ShaderResourceViewDimension.ExtendedBuffer,
                                                      BufferEx = new D3D11.ShaderResourceViewDescription.ExtendedBufferResource
                                                                 {
@@ -116,7 +116,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="formatInfo">The information about the format being used.</param>
         /// <param name="log">The logging interface used for debug logging.</param>
         internal GorgonBufferView(GorgonBuffer buffer,
-                                      DXGI.Format format,
+                                      BufferFormat format,
                                       int startingElement,
                                       int elementCount,
                                       int totalElementCount,
@@ -124,7 +124,7 @@ namespace Gorgon.Graphics.Core
                                       IGorgonLog log)
             : base(buffer, startingElement, elementCount, totalElementCount, log)
         {
-            if (format == DXGI.Format.Unknown)
+            if (format == BufferFormat.Unknown)
             {
                 throw new ArgumentException(string.Format(Resources.GORGFX_ERR_VIEW_UNKNOWN_FORMAT, Format), nameof(format));
             }

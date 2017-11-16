@@ -31,7 +31,6 @@ using System.Linq;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.IO;
-using DXGI = SharpDX.DXGI;
 using DX = SharpDX;
 
 namespace Gorgon.Graphics.Imaging.Codecs
@@ -78,11 +77,11 @@ namespace Gorgon.Graphics.Imaging.Codecs
 	{
 		#region Variables.
         // Supported formats.
-		private readonly DXGI.Format[] _supportedFormats =
+		private readonly BufferFormat[] _supportedFormats =
 		{
-			DXGI.Format.R8G8B8A8_UNorm,
-			DXGI.Format.B8G8R8A8_UNorm,
-			DXGI.Format.B8G8R8X8_UNorm
+			BufferFormat.R8G8B8A8_UNorm,
+			BufferFormat.B8G8R8A8_UNorm,
+			BufferFormat.B8G8R8X8_UNorm
 		};
 		#endregion
 
@@ -137,7 +136,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <summary>
         /// Property to return the supported pixel formats for this codec.
         /// </summary>
-        public override IReadOnlyList<DXGI.Format> SupportedPixelFormats => _supportedFormats;
+        public override IReadOnlyList<BufferFormat> SupportedPixelFormats => _supportedFormats;
 		#endregion
 
 		#region Methods.
@@ -322,7 +321,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 				// Get our WIC interface.				
 	            GorgonImageInfo result =  wic.GetImageMetaDataFromStream(stream, SupportedFileFormat, options);
 
-	            if (result.Format == DXGI.Format.Unknown)
+	            if (result.Format == BufferFormat.Unknown)
 	            {
 		            throw new IOException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, result.Format));
 	            }
@@ -465,7 +464,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 					return false;
 				}
 
-				return info.Format != DXGI.Format.Unknown;
+				return info.Format != BufferFormat.Unknown;
 			}
 			catch(DX.SharpDXException)
 			{

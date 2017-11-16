@@ -297,7 +297,7 @@ namespace Gorgon.IO
 				return (0, 0);
 			}
 
-			return await Task.Run(() => CopyInternal(copyProgress, cancelToken, allowOverwrite, data.Item1, data.Item2));
+			return await Task.Run(() => CopyInternal(copyProgress, cancelToken, allowOverwrite, data.Files, data.Directories));
 			// ReSharper restore MethodSupportsCancellation
 		}
 

@@ -28,7 +28,6 @@ using System;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using DX = SharpDX;
-using DXGI = SharpDX.DXGI;
 using Gorgon.Math;
 using Gorgon.Native;
 
@@ -44,7 +43,7 @@ namespace Gorgon.Graphics.Imaging
         /// <summary>
         /// Property to return the format of the buffer.
         /// </summary>
-        public DXGI.Format Format
+        public BufferFormat Format
         {
             get;
         }
@@ -298,7 +297,7 @@ namespace Gorgon.Graphics.Imaging
         /// <param name="height">The height for the buffer.</param>
         /// <param name="depth">The depth for the buffer.</param>
         /// <param name="format">Format of the buffer.</param>
-        internal GorgonImageBuffer(GorgonPointerAlias data, GorgonPitchLayout pitchInfo, int mipLevel, int arrayIndex, int sliceIndex, int width, int height, int depth, DXGI.Format format)
+        internal GorgonImageBuffer(GorgonPointerAlias data, GorgonPitchLayout pitchInfo, int mipLevel, int arrayIndex, int sliceIndex, int width, int height, int depth, BufferFormat format)
         {
             Data = data;
             PitchInformation = pitchInfo;

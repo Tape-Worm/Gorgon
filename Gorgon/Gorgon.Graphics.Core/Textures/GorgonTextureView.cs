@@ -30,7 +30,7 @@ using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
-using SharpDX.DXGI;
+using DXGI = SharpDX.DXGI;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D;
 using D3D11 = SharpDX.Direct3D11;
@@ -130,7 +130,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the format used to interpret this view.
         /// </summary>
-        public Format Format
+        public BufferFormat Format
         {
             get;
         }
@@ -193,7 +193,7 @@ namespace Gorgon.Graphics.Core
 		{
 			return new D3D11.ShaderResourceViewDescription
 			       {
-				       Format = Format,
+				       Format = (DXGI.Format)Format,
 				       Dimension = Texture.Info.ArrayCount > 1
 					                   ? D3D.ShaderResourceViewDimension.Texture1DArray
 					                   : D3D.ShaderResourceViewDimension.Texture1D,
@@ -220,7 +220,7 @@ namespace Gorgon.Graphics.Core
 			{
 				return new D3D11.ShaderResourceViewDescription
 				       {
-					       Format = Format,
+					       Format = (DXGI.Format)Format,
 					       Dimension = Texture.Info.ArrayCount > 1
 						                   ? D3D.ShaderResourceViewDimension.Texture2DArray
 						                   : D3D.ShaderResourceViewDimension.Texture2D,
@@ -239,7 +239,7 @@ namespace Gorgon.Graphics.Core
 
 			return new D3D11.ShaderResourceViewDescription
 			       {
-				       Format = Format,
+				       Format = (DXGI.Format)Format,
 				       Dimension = Texture.Info.ArrayCount > 1
 					                   ? D3D.ShaderResourceViewDimension.Texture2DMultisampledArray
 					                   : D3D.ShaderResourceViewDimension.Texture2DMultisampled,
@@ -273,7 +273,7 @@ namespace Gorgon.Graphics.Core
 
 			return new D3D11.ShaderResourceViewDescription
 			       {
-				       Format = Format,
+				       Format = (DXGI.Format)Format,
 				       Dimension =
 					       cubeArrayCount > 1
 						       ? D3D.ShaderResourceViewDimension.TextureCubeArray
@@ -298,7 +298,7 @@ namespace Gorgon.Graphics.Core
 		    ArrayCount = 1;
 			return new D3D11.ShaderResourceViewDescription
 			       {
-				       Format = Format,
+				       Format = (DXGI.Format)Format,
 				       Dimension = D3D.ShaderResourceViewDimension.Texture3D,
 				       Texture3D =
 				       {
@@ -417,7 +417,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="arrayCount">For a 1D or 2D <see cref="GorgonTexture"/>, this will be the number of array indices to view.</param>
 		/// <param name="log">The log used for debugging.</param>
 		internal GorgonTextureView(GorgonTexture texture,
-		                           Format format,
+		                           BufferFormat format,
 		                           int firstMipLevel,
 		                           int mipCount,
 		                           int arrayIndex,
@@ -428,7 +428,7 @@ namespace Gorgon.Graphics.Core
             _log = log ?? GorgonLogDummy.DefaultInstance;
 		    Texture = texture;
 
-		    if (format == Format.Unknown)
+		    if (format == BufferFormat.Unknown)
 		    {
 		        format = texture.Info.Format;
 		    }
@@ -439,9 +439,9 @@ namespace Gorgon.Graphics.Core
 				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TEXTURE_NOT_SHADER_RESOURCE, texture.Name), nameof(texture));
 			}
 
-		    if (format == Format.Unknown)
+		    if (format == BufferFormat.Unknown)
 		    {
-		        throw new ArgumentException(string.Format(Resources.GORGFX_ERR_VIEW_UNKNOWN_FORMAT, Format.Unknown), nameof(texture));
+		        throw new ArgumentException(string.Format(Resources.GORGFX_ERR_VIEW_UNKNOWN_FORMAT, BufferFormat.Unknown), nameof(texture));
 		    }
 
 		    if (firstMipLevel + mipCount > texture.Info.MipLevels)

@@ -35,7 +35,6 @@ using Gorgon.IO;
 using Gorgon.Math;
 using DX = SharpDX;
 using WIC = SharpDX.WIC;
-using DXGI = SharpDX.DXGI;
 
 namespace Gorgon.Graphics.Imaging
 {
@@ -58,14 +57,14 @@ namespace Gorgon.Graphics.Imaging
 			/// <summary>
 			/// Gorgon buffer format to convert from/to.
 			/// </summary>
-			public readonly DXGI.Format Format;
+			public readonly BufferFormat Format;
 
 			/// <summary>
 			/// Initializes a new instance of the <see cref="WICGorgonFormat" /> struct.
 			/// </summary>
 			/// <param name="guid">The GUID.</param>
 			/// <param name="format">The format.</param>
-			public WICGorgonFormat(Guid guid, DXGI.Format format)
+			public WICGorgonFormat(Guid guid, BufferFormat format)
 			{
 				WICGuid = guid;
 				Format = format;
@@ -103,23 +102,23 @@ namespace Gorgon.Graphics.Imaging
 		// Formats for conversion between Gorgon and WIC.
 		private readonly WICGorgonFormat[] _wicDXGIFormats =
 		{
-			new WICGorgonFormat(WIC.PixelFormat.Format128bppRGBAFloat, DXGI.Format.R32G32B32A32_Float),
-			new WICGorgonFormat(WIC.PixelFormat.Format64bppRGBAHalf, DXGI.Format.R16G16B16A16_Float),
-			new WICGorgonFormat(WIC.PixelFormat.Format64bppRGBA, DXGI.Format.R16G16B16A16_UNorm),
-			new WICGorgonFormat(WIC.PixelFormat.Format32bppRGBA, DXGI.Format.R8G8B8A8_UNorm),
-			new WICGorgonFormat(WIC.PixelFormat.Format32bppBGRA, DXGI.Format.B8G8R8A8_UNorm),
-			new WICGorgonFormat(WIC.PixelFormat.Format32bppBGR, DXGI.Format.B8G8R8X8_UNorm),
-			new WICGorgonFormat(WIC.PixelFormat.Format32bppRGBA1010102XR,DXGI.Format.R10G10B10_Xr_Bias_A2_UNorm),
-			new WICGorgonFormat(WIC.PixelFormat.Format32bppRGBA1010102, DXGI.Format.R10G10B10A2_UNorm),
-			new WICGorgonFormat(WIC.PixelFormat.Format32bppRGBE, DXGI.Format.R9G9B9E5_Sharedexp),
-			new WICGorgonFormat(WIC.PixelFormat.Format16bppBGR565, DXGI.Format.B5G6R5_UNorm),
-			new WICGorgonFormat(WIC.PixelFormat.Format16bppBGRA5551, DXGI.Format.B5G5R5A1_UNorm),
-			new WICGorgonFormat(WIC.PixelFormat.Format32bppRGBE, DXGI.Format.R9G9B9E5_Sharedexp),
-			new WICGorgonFormat(WIC.PixelFormat.Format32bppGrayFloat, DXGI.Format.R32_Float),
-			new WICGorgonFormat(WIC.PixelFormat.Format16bppGrayHalf, DXGI.Format.R16_Float),
-			new WICGorgonFormat(WIC.PixelFormat.Format16bppGray, DXGI.Format.R16_UNorm),
-			new WICGorgonFormat(WIC.PixelFormat.Format8bppGray, DXGI.Format.R8_UNorm),
-			new WICGorgonFormat(WIC.PixelFormat.Format8bppAlpha, DXGI.Format.A8_UNorm)
+			new WICGorgonFormat(WIC.PixelFormat.Format128bppRGBAFloat, BufferFormat.R32G32B32A32_Float),
+			new WICGorgonFormat(WIC.PixelFormat.Format64bppRGBAHalf, BufferFormat.R16G16B16A16_Float),
+			new WICGorgonFormat(WIC.PixelFormat.Format64bppRGBA, BufferFormat.R16G16B16A16_UNorm),
+			new WICGorgonFormat(WIC.PixelFormat.Format32bppRGBA, BufferFormat.R8G8B8A8_UNorm),
+			new WICGorgonFormat(WIC.PixelFormat.Format32bppBGRA, BufferFormat.B8G8R8A8_UNorm),
+			new WICGorgonFormat(WIC.PixelFormat.Format32bppBGR, BufferFormat.B8G8R8X8_UNorm),
+			new WICGorgonFormat(WIC.PixelFormat.Format32bppRGBA1010102XR,BufferFormat.R10G10B10_Xr_Bias_A2_UNorm),
+			new WICGorgonFormat(WIC.PixelFormat.Format32bppRGBA1010102, BufferFormat.R10G10B10A2_UNorm),
+			new WICGorgonFormat(WIC.PixelFormat.Format32bppRGBE, BufferFormat.R9G9B9E5_Sharedexp),
+			new WICGorgonFormat(WIC.PixelFormat.Format16bppBGR565, BufferFormat.B5G6R5_UNorm),
+			new WICGorgonFormat(WIC.PixelFormat.Format16bppBGRA5551, BufferFormat.B5G5R5A1_UNorm),
+			new WICGorgonFormat(WIC.PixelFormat.Format32bppRGBE, BufferFormat.R9G9B9E5_Sharedexp),
+			new WICGorgonFormat(WIC.PixelFormat.Format32bppGrayFloat, BufferFormat.R32_Float),
+			new WICGorgonFormat(WIC.PixelFormat.Format16bppGrayHalf, BufferFormat.R16_Float),
+			new WICGorgonFormat(WIC.PixelFormat.Format16bppGray, BufferFormat.R16_UNorm),
+			new WICGorgonFormat(WIC.PixelFormat.Format8bppGray, BufferFormat.R8_UNorm),
+			new WICGorgonFormat(WIC.PixelFormat.Format8bppAlpha, BufferFormat.A8_UNorm)
 		};
 
 		// Best fit for supported format conversions.
@@ -176,17 +175,17 @@ namespace Gorgon.Graphics.Imaging
 		/// <param name="flags">Flags to apply to the pixel format conversion.</param>
 		/// <param name="updatedPixelFormat">The updated pixel format after flags are applied.</param>
 		/// <returns>The buffer format, or Unknown if the format couldn't be converted.</returns>
-		private DXGI.Format FindBestFormat(Guid sourcePixelFormat, WICFlags flags, out Guid updatedPixelFormat)
+		private BufferFormat FindBestFormat(Guid sourcePixelFormat, WICFlags flags, out Guid updatedPixelFormat)
 		{
-			DXGI.Format result = _wicDXGIFormats.FirstOrDefault(item => item.WICGuid == sourcePixelFormat).Format;
+			BufferFormat result = _wicDXGIFormats.FirstOrDefault(item => item.WICGuid == sourcePixelFormat).Format;
 			updatedPixelFormat = Guid.Empty;
 
-			if (result == DXGI.Format.Unknown)
+			if (result == BufferFormat.Unknown)
 			{
 				if (sourcePixelFormat == WIC.PixelFormat.Format96bppRGBFixedPoint)
 				{
 					updatedPixelFormat = WIC.PixelFormat.Format128bppRGBAFloat;
-					result = DXGI.Format.R32G32B32A32_Float;
+					result = BufferFormat.R32G32B32A32_Float;
 				}
 				else
 				{
@@ -202,7 +201,7 @@ namespace Gorgon.Graphics.Imaging
 						result = _wicDXGIFormats.FirstOrDefault(item => item.WICGuid == bestFormat).Format;
 						
 						// We couldn't find the format, bail out.
-						if (result == DXGI.Format.Unknown)
+						if (result == BufferFormat.Unknown)
 						{
 							return result;
 						}
@@ -215,33 +214,33 @@ namespace Gorgon.Graphics.Imaging
 
 			switch (result)
 			{
-				case DXGI.Format.B8G8R8A8_UNorm:
-				case DXGI.Format.B8G8R8X8_UNorm:
+				case BufferFormat.B8G8R8A8_UNorm:
+				case BufferFormat.B8G8R8X8_UNorm:
 					if ((flags & WICFlags.ForceRGB) == WICFlags.ForceRGB)
 					{
-						result = DXGI.Format.R8G8B8A8_UNorm;
+						result = BufferFormat.R8G8B8A8_UNorm;
 						updatedPixelFormat = WIC.PixelFormat.Format32bppRGBA;
 					}
 					break;
-				case DXGI.Format.R10G10B10_Xr_Bias_A2_UNorm:
+				case BufferFormat.R10G10B10_Xr_Bias_A2_UNorm:
 					if ((flags & WICFlags.NoX2Bias) == WICFlags.NoX2Bias)
 					{
-						result = DXGI.Format.R10G10B10A2_UNorm;
+						result = BufferFormat.R10G10B10A2_UNorm;
 						updatedPixelFormat = WIC.PixelFormat.Format32bppRGBA1010102;
 					}
 					break;
-				case DXGI.Format.B5G5R5A1_UNorm:
-				case DXGI.Format.B5G6R5_UNorm:
+				case BufferFormat.B5G5R5A1_UNorm:
+				case BufferFormat.B5G6R5_UNorm:
 					if ((flags & WICFlags.No16BPP) == WICFlags.No16BPP)
 					{
-						result = DXGI.Format.R8G8B8A8_UNorm;
+						result = BufferFormat.R8G8B8A8_UNorm;
 						updatedPixelFormat = WIC.PixelFormat.Format32bppRGBA;
 					}
 					break;
-				case DXGI.Format.R1_UNorm:
+				case BufferFormat.R1_UNorm:
 					if ((flags & WICFlags.AllowMono) != WICFlags.AllowMono)
 					{
-						result = DXGI.Format.R1_UNorm;
+						result = BufferFormat.R1_UNorm;
 						updatedPixelFormat = WIC.PixelFormat.Format8bppGray;
 					}
 					break;
@@ -255,7 +254,7 @@ namespace Gorgon.Graphics.Imaging
 		/// </summary>
 		/// <param name="format">Format to look up.</param>
 		/// <returns>The GUID for the format, or <b>null</b> if not found.</returns>
-		private Guid GetGUID(DXGI.Format format)
+		private Guid GetGUID(BufferFormat format)
 		{
 			for (int i = 0; i < _wicDXGIFormats.Length; i++)
 			{
@@ -267,15 +266,15 @@ namespace Gorgon.Graphics.Imaging
 
 			switch (format)
 			{
-				case DXGI.Format.R8G8B8A8_UNorm_SRgb:
+				case BufferFormat.R8G8B8A8_UNorm_SRgb:
 					return WIC.PixelFormat.Format32bppRGBA;
-				case DXGI.Format.D32_Float:
+				case BufferFormat.D32_Float:
 					return WIC.PixelFormat.Format32bppGrayFloat;
-				case DXGI.Format.D16_UNorm:
+				case BufferFormat.D16_UNorm:
 					return WIC.PixelFormat.Format16bppGray;
-				case DXGI.Format.B8G8R8A8_UNorm_SRgb:
+				case BufferFormat.B8G8R8A8_UNorm_SRgb:
 					return WIC.PixelFormat.Format32bppBGRA;
-				case DXGI.Format.B8G8R8X8_UNorm_SRgb:
+				case BufferFormat.B8G8R8X8_UNorm_SRgb:
 					return WIC.PixelFormat.Format32bppBGR;
 			}
 
@@ -582,7 +581,7 @@ namespace Gorgon.Graphics.Imaging
 			}
 			finally
 			{
-				paletteInfo?.Item1?.Dispose();
+				paletteInfo?.Palette?.Dispose();
 				bitmap?.Dispose();
 				frame?.Dispose();
 			}
@@ -594,27 +593,27 @@ namespace Gorgon.Graphics.Imaging
 		/// <param name="sourceFormat">The source format to convert.</param>
 		/// <param name="destFormats">The destination formats to convert to.</param>
 		/// <returns>A list of formats that the <paramref name="sourceFormat"/> can convert into.</returns>
-		public IReadOnlyList<DXGI.Format> CanConvertFormats(DXGI.Format sourceFormat, IEnumerable<DXGI.Format> destFormats)
+		public IReadOnlyList<BufferFormat> CanConvertFormats(BufferFormat sourceFormat, IEnumerable<BufferFormat> destFormats)
 		{
 			Guid sourceGuid = GetGUID(sourceFormat);
 
 			if (sourceGuid == Guid.Empty)
 			{
-				return new DXGI.Format[0];
+				return new BufferFormat[0];
 			}
 
-			List<DXGI.Format> result = new List<DXGI.Format>();
+			List<BufferFormat> result = new List<BufferFormat>();
 
 			using (WIC.FormatConverter converter = new WIC.FormatConverter(_factory))
 			{
-				foreach (DXGI.Format destFormat in destFormats)
+				foreach (BufferFormat destFormat in destFormats)
 				{
 					Guid destGuid;
 					
 					// If we've asked for B4G4R4A4, we have to convert using a manual conversion by converting to B8G8R8A8 first and then manually downsampling those pixels.
-					if (destFormat == DXGI.Format.B4G4R4A4_UNorm)
+					if (destFormat == BufferFormat.B4G4R4A4_UNorm)
 					{
-						destGuid = GetGUID(DXGI.Format.B8G8R8A8_UNorm);
+						destGuid = GetGUID(BufferFormat.B8G8R8A8_UNorm);
 
 						if ((destGuid != Guid.Empty) && ((sourceGuid == destGuid) || (converter.CanConvert(sourceGuid, destGuid))))
 						{
@@ -672,7 +671,7 @@ namespace Gorgon.Graphics.Imaging
 			}
 
 			frame = decoder.GetFrame(0);
-			DXGI.Format format = FindBestFormat(frame.PixelFormat, options?.Flags ?? WICFlags.None, out actualPixelFormat);
+			BufferFormat format = FindBestFormat(frame.PixelFormat, options?.Flags ?? WICFlags.None, out actualPixelFormat);
 
 			int arrayCount = 1;
 			bool readAllFrames = decoder.DecoderInfo.IsMultiframeSupported;
@@ -857,7 +856,7 @@ namespace Gorgon.Graphics.Imaging
 			finally
 			{
 				tempBitmap?.Dispose();
-				paletteInfo?.Item1?.Dispose();
+				paletteInfo?.Palette?.Dispose();
 				formatConverter?.Dispose();
 				sourceBitmap?.Dispose();
 			}
@@ -1064,7 +1063,7 @@ namespace Gorgon.Graphics.Imaging
 					return null;
 				}
 
-				if (info.Format == DXGI.Format.Unknown)
+				if (info.Format == BufferFormat.Unknown)
 				{
 					throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, info.Format));
 				}
@@ -1240,7 +1239,7 @@ namespace Gorgon.Graphics.Imaging
 		/// <param name="isSrcSRgb"><b>true</b> if the image data uses sRgb; otherwise <b>false</b>.</param>
 		/// <param name="isDestSRgb"><b>true</b> if the resulting image data should use sRgb; otherwise <b>false</b>.</param>
 		/// <returns>A <see cref="IGorgonImage"/> containing the converted image data.</returns>
-		public IGorgonImage ConvertToFormat(IGorgonImage imageData, DXGI.Format format, ImageDithering dithering, bool isSrcSRgb, bool isDestSRgb)
+		public IGorgonImage ConvertToFormat(IGorgonImage imageData, BufferFormat format, ImageDithering dithering, bool isSrcSRgb, bool isDestSRgb)
 		{
 			Guid sourceFormat = GetGUID(imageData.Info.Format);
 			Guid destFormat = GetGUID(format);

@@ -108,7 +108,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the format of the buffer data when binding.
         /// </summary>
-        internal DXGI.Format IndexFormat => Info.Use16BitIndices ? DXGI.Format.R16_UInt : DXGI.Format.R32_UInt;
+        internal BufferFormat IndexFormat => Info.Use16BitIndices ? BufferFormat.R16_UInt : BufferFormat.R32_UInt;
 
 		/// <summary>
 		/// Property used to return the information used to create this buffer.

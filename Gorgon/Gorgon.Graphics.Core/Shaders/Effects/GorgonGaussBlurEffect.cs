@@ -76,7 +76,7 @@ namespace Gorgon.Graphics.Example
         // Vertical blur render target.
         private GorgonTexture _vTarget;
         // Format of the blur render targets.
-        private DXGI.Format _blurTargetFormat = DXGI.Format.R8G8B8A8_UNorm;
+        private BufferFormat _blurTargetFormat = BufferFormat.R8G8B8A8_UNorm;
         // Size of the render targets used for blurring.
         private DX.Size2 _blurTargetSize = new DX.Size2(256, 256);
         // A pointer to an in-memory buffer for kernel data.
@@ -211,7 +211,7 @@ namespace Gorgon.Graphics.Example
         /// </para>
         /// </remarks>
         /// <seealso cref="IGorgonVideoDevice.GetBufferFormatSupport"/>
-        public DXGI.Format BlurTargetFormat
+        public BufferFormat BlurTargetFormat
         {
             get => _blurTargetFormat;
             set

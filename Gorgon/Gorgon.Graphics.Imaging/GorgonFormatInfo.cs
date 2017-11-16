@@ -41,10 +41,10 @@
 
 using System;
 using System.Diagnostics;
-using DXGI = SharpDX.DXGI;
+using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
 
-namespace Gorgon.Graphics.Imaging
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// Flags to handle legacy format types.
@@ -118,7 +118,7 @@ namespace Gorgon.Graphics.Imaging
 		/// For example, <c>Format.R8G8B8A8_UNorm</c> would be a member of the group <c>Format.R8G8B8A8_Typeless</c>, as would <c>Format.R8G8B8A8_SInt</c>.
 		/// </para>
 		/// </remarks>
-		public DXGI.Format Group
+		public BufferFormat Group
 		{
 			get;
 			private set;
@@ -127,7 +127,7 @@ namespace Gorgon.Graphics.Imaging
 		/// <summary>
 		/// Property to return the format that the information in this object is based on.
 		/// </summary>
-		public DXGI.Format Format
+		public BufferFormat Format
 		{
 			get;
 		}
@@ -237,12 +237,12 @@ namespace Gorgon.Graphics.Imaging
 		/// <summary>
 		/// Property to return whether the pixel format is packed or not.
 		/// </summary>
-		public bool IsPacked => (Format == DXGI.Format.R8G8_B8G8_UNorm)
-								|| (Format == DXGI.Format.G8R8_G8B8_UNorm)
-								|| (Format == DXGI.Format.Y410)
-								|| (Format == DXGI.Format.Y416)
-								|| (Format == DXGI.Format.Y210)
-								|| (Format == DXGI.Format.Y216);
+		public bool IsPacked => (Format == BufferFormat.R8G8_B8G8_UNorm)
+								|| (Format == BufferFormat.G8R8_G8B8_UNorm)
+								|| (Format == BufferFormat.Y410)
+								|| (Format == BufferFormat.Y416)
+								|| (Format == BufferFormat.Y210)
+								|| (Format == BufferFormat.Y216);
 
 		/// <summary>
 		/// Property to return whether the pixel format is compressed or not.
@@ -263,7 +263,7 @@ namespace Gorgon.Graphics.Imaging
 		/// For some 8 bit formats, the pixel value is an index into a larger palette of color values. For example, if the index 10 is mapped to a color value of R:64, G:32, B:128, then any pixels with the value 
 		/// of 10 will use that color from the palette.
 		/// </remarks>
-		public bool IsPalettized => Format == DXGI.Format.A8P8 || Format == DXGI.Format.P8;
+		public bool IsPalettized => Format == BufferFormat.A8P8 || Format == BufferFormat.P8;
 		#endregion
 
 		#region Methods.
@@ -271,18 +271,18 @@ namespace Gorgon.Graphics.Imaging
 		/// Function to retrieve whether this format has a depth component or not.
 		/// </summary>
 		/// <param name="format">Format to look up.</param>
-		private void GetDepthState(DXGI.Format format)
+		private void GetDepthState(BufferFormat format)
 		{
 			switch (format)
 			{
-				case DXGI.Format.D24_UNorm_S8_UInt:
-				case DXGI.Format.D32_Float_S8X24_UInt:
+				case BufferFormat.D24_UNorm_S8_UInt:
+				case BufferFormat.D32_Float_S8X24_UInt:
 					HasDepth = true;
 					HasStencil = true;
 					break;
-				case DXGI.Format.D32_Float:
-				case DXGI.Format.D16_UNorm:
-					HasStencil = false;
+				case BufferFormat.D32_Float:
+				case BufferFormat.D16_UNorm:
+                    HasStencil = false;
 					HasDepth = true;
 					break;
 				default:
@@ -296,143 +296,143 @@ namespace Gorgon.Graphics.Imaging
 		/// Function to retrieve the number of bits required for the format.
 		/// </summary>
 		/// <param name="format">Format to evaluate.</param>
-		private void GetBitDepth(DXGI.Format format)
+		private void GetBitDepth(BufferFormat format)
 		{
 			switch (format)
 			{
-				case DXGI.Format.R1_UNorm:
+				case BufferFormat.R1_UNorm:
 					BitDepth = 1;
 					break;
-				case DXGI.Format.BC1_Typeless:
-				case DXGI.Format.BC1_UNorm:
-				case DXGI.Format.BC1_UNorm_SRgb:
-				case DXGI.Format.BC4_Typeless:
-				case DXGI.Format.BC4_UNorm:
-				case DXGI.Format.BC4_SNorm:
+				case BufferFormat.BC1_Typeless:
+				case BufferFormat.BC1_UNorm:
+				case BufferFormat.BC1_UNorm_SRgb:
+				case BufferFormat.BC4_Typeless:
+				case BufferFormat.BC4_UNorm:
+				case BufferFormat.BC4_SNorm:
 					BitDepth = 4;
 					break;
-				case DXGI.Format.R8_Typeless:
-				case DXGI.Format.R8_UNorm:
-				case DXGI.Format.R8_UInt:
-				case DXGI.Format.R8_SNorm:
-				case DXGI.Format.R8_SInt:
-				case DXGI.Format.A8_UNorm:
-				case DXGI.Format.BC2_Typeless:
-				case DXGI.Format.BC2_UNorm:
-				case DXGI.Format.BC2_UNorm_SRgb:
-				case DXGI.Format.BC3_Typeless:
-				case DXGI.Format.BC3_UNorm:
-				case DXGI.Format.BC3_UNorm_SRgb:
-				case DXGI.Format.BC5_Typeless:
-				case DXGI.Format.BC5_UNorm:
-				case DXGI.Format.BC5_SNorm:
-				case DXGI.Format.BC6H_Typeless:
-				case DXGI.Format.BC6H_Uf16:
-				case DXGI.Format.BC6H_Sf16:
-				case DXGI.Format.BC7_Typeless:
-				case DXGI.Format.BC7_UNorm:
-				case DXGI.Format.BC7_UNorm_SRgb:
-				case DXGI.Format.P8:
-				case DXGI.Format.AI44:
-				case DXGI.Format.IA44:
+				case BufferFormat.R8_Typeless:
+				case BufferFormat.R8_UNorm:
+				case BufferFormat.R8_UInt:
+				case BufferFormat.R8_SNorm:
+				case BufferFormat.R8_SInt:
+				case BufferFormat.A8_UNorm:
+				case BufferFormat.BC2_Typeless:
+				case BufferFormat.BC2_UNorm:
+				case BufferFormat.BC2_UNorm_SRgb:
+				case BufferFormat.BC3_Typeless:
+				case BufferFormat.BC3_UNorm:
+				case BufferFormat.BC3_UNorm_SRgb:
+				case BufferFormat.BC5_Typeless:
+				case BufferFormat.BC5_UNorm:
+				case BufferFormat.BC5_SNorm:
+				case BufferFormat.BC6H_Typeless:
+				case BufferFormat.BC6H_Uf16:
+				case BufferFormat.BC6H_Sf16:
+				case BufferFormat.BC7_Typeless:
+				case BufferFormat.BC7_UNorm:
+				case BufferFormat.BC7_UNorm_SRgb:
+				case BufferFormat.P8:
+				case BufferFormat.AI44:
+				case BufferFormat.IA44:
 					BitDepth = 8;
 					break;
-				case DXGI.Format.NV11:
-				case DXGI.Format.NV12:
-				case DXGI.Format.Opaque420:
+				case BufferFormat.NV11:
+				case BufferFormat.NV12:
+				case BufferFormat.Opaque420:
 					BitDepth = 12;
 					break;
-				case DXGI.Format.R8G8_Typeless:
-				case DXGI.Format.R8G8_UNorm:
-				case DXGI.Format.R8G8_UInt:
-				case DXGI.Format.R8G8_SNorm:
-				case DXGI.Format.R8G8_SInt:
-				case DXGI.Format.R16_Typeless:
-				case DXGI.Format.R16_Float:
-				case DXGI.Format.D16_UNorm:
-				case DXGI.Format.R16_UNorm:
-				case DXGI.Format.R16_UInt:
-				case DXGI.Format.R16_SNorm:
-				case DXGI.Format.R16_SInt:
-				case DXGI.Format.B5G6R5_UNorm:
-				case DXGI.Format.B5G5R5A1_UNorm:
-				case DXGI.Format.B4G4R4A4_UNorm:
-				case DXGI.Format.A8P8:
+				case BufferFormat.R8G8_Typeless:
+				case BufferFormat.R8G8_UNorm:
+				case BufferFormat.R8G8_UInt:
+				case BufferFormat.R8G8_SNorm:
+				case BufferFormat.R8G8_SInt:
+				case BufferFormat.R16_Typeless:
+				case BufferFormat.R16_Float:
+				case BufferFormat.D16_UNorm:
+				case BufferFormat.R16_UNorm:
+				case BufferFormat.R16_UInt:
+				case BufferFormat.R16_SNorm:
+				case BufferFormat.R16_SInt:
+				case BufferFormat.B5G6R5_UNorm:
+				case BufferFormat.B5G5R5A1_UNorm:
+				case BufferFormat.B4G4R4A4_UNorm:
+				case BufferFormat.A8P8:
 					BitDepth = 16;
 					break;
-				case DXGI.Format.P010:
-				case DXGI.Format.P016:
+				case BufferFormat.P010:
+				case BufferFormat.P016:
 					BitDepth = 24;
 					break;
-				case DXGI.Format.R10G10B10A2_Typeless:
-				case DXGI.Format.R10G10B10A2_UNorm:
-				case DXGI.Format.R10G10B10A2_UInt:
-				case DXGI.Format.R11G11B10_Float:
-				case DXGI.Format.R8G8B8A8_Typeless:
-				case DXGI.Format.R8G8B8A8_UNorm:
-				case DXGI.Format.R8G8B8A8_UNorm_SRgb:
-				case DXGI.Format.R8G8B8A8_UInt:
-				case DXGI.Format.R8G8B8A8_SNorm:
-				case DXGI.Format.R8G8B8A8_SInt:
-				case DXGI.Format.R16G16_Typeless:
-				case DXGI.Format.R16G16_Float:
-				case DXGI.Format.R16G16_UNorm:
-				case DXGI.Format.R16G16_UInt:
-				case DXGI.Format.R16G16_SNorm:
-				case DXGI.Format.R16G16_SInt:
-				case DXGI.Format.R32_Typeless:
-				case DXGI.Format.D32_Float:
-				case DXGI.Format.R32_Float:
-				case DXGI.Format.R32_UInt:
-				case DXGI.Format.R32_SInt:
-				case DXGI.Format.R24G8_Typeless:
-				case DXGI.Format.D24_UNorm_S8_UInt:
-				case DXGI.Format.R24_UNorm_X8_Typeless:
-				case DXGI.Format.X24_Typeless_G8_UInt:
-				case DXGI.Format.R9G9B9E5_Sharedexp:
-				case DXGI.Format.R8G8_B8G8_UNorm:
-				case DXGI.Format.G8R8_G8B8_UNorm:
-				case DXGI.Format.B8G8R8A8_UNorm:
-				case DXGI.Format.B8G8R8X8_UNorm:
-				case DXGI.Format.R10G10B10_Xr_Bias_A2_UNorm:
-				case DXGI.Format.B8G8R8A8_Typeless:
-				case DXGI.Format.B8G8R8A8_UNorm_SRgb:
-				case DXGI.Format.B8G8R8X8_Typeless:
-				case DXGI.Format.B8G8R8X8_UNorm_SRgb:
-				case DXGI.Format.AYUV:
-				case DXGI.Format.Y410:
-				case DXGI.Format.YUY2:
+				case BufferFormat.R10G10B10A2_Typeless:
+				case BufferFormat.R10G10B10A2_UNorm:
+				case BufferFormat.R10G10B10A2_UInt:
+				case BufferFormat.R11G11B10_Float:
+				case BufferFormat.R8G8B8A8_Typeless:
+				case BufferFormat.R8G8B8A8_UNorm:
+				case BufferFormat.R8G8B8A8_UNorm_SRgb:
+				case BufferFormat.R8G8B8A8_UInt:
+				case BufferFormat.R8G8B8A8_SNorm:
+				case BufferFormat.R8G8B8A8_SInt:
+				case BufferFormat.R16G16_Typeless:
+				case BufferFormat.R16G16_Float:
+				case BufferFormat.R16G16_UNorm:
+				case BufferFormat.R16G16_UInt:
+				case BufferFormat.R16G16_SNorm:
+				case BufferFormat.R16G16_SInt:
+				case BufferFormat.R32_Typeless:
+				case BufferFormat.D32_Float:
+				case BufferFormat.R32_Float:
+				case BufferFormat.R32_UInt:
+				case BufferFormat.R32_SInt:
+				case BufferFormat.R24G8_Typeless:
+				case BufferFormat.D24_UNorm_S8_UInt:
+				case BufferFormat.R24_UNorm_X8_Typeless:
+				case BufferFormat.X24_Typeless_G8_UInt:
+				case BufferFormat.R9G9B9E5_Sharedexp:
+				case BufferFormat.R8G8_B8G8_UNorm:
+				case BufferFormat.G8R8_G8B8_UNorm:
+				case BufferFormat.B8G8R8A8_UNorm:
+				case BufferFormat.B8G8R8X8_UNorm:
+				case BufferFormat.R10G10B10_Xr_Bias_A2_UNorm:
+				case BufferFormat.B8G8R8A8_Typeless:
+				case BufferFormat.B8G8R8A8_UNorm_SRgb:
+				case BufferFormat.B8G8R8X8_Typeless:
+				case BufferFormat.B8G8R8X8_UNorm_SRgb:
+				case BufferFormat.AYUV:
+				case BufferFormat.Y410:
+				case BufferFormat.YUY2:
 					BitDepth = 32;
 					break;
-				case DXGI.Format.R16G16B16A16_Typeless:
-				case DXGI.Format.R16G16B16A16_Float:
-				case DXGI.Format.R16G16B16A16_UNorm:
-				case DXGI.Format.R16G16B16A16_UInt:
-				case DXGI.Format.R16G16B16A16_SNorm:
-				case DXGI.Format.R16G16B16A16_SInt:
-				case DXGI.Format.R32G32_Typeless:
-				case DXGI.Format.R32G32_Float:
-				case DXGI.Format.R32G32_UInt:
-				case DXGI.Format.R32G32_SInt:
-				case DXGI.Format.R32G8X24_Typeless:
-				case DXGI.Format.D32_Float_S8X24_UInt:
-				case DXGI.Format.R32_Float_X8X24_Typeless:
-				case DXGI.Format.X32_Typeless_G8X24_UInt:
-				case DXGI.Format.Y416:
-				case DXGI.Format.Y210:
-				case DXGI.Format.Y216:
+				case BufferFormat.R16G16B16A16_Typeless:
+				case BufferFormat.R16G16B16A16_Float:
+				case BufferFormat.R16G16B16A16_UNorm:
+				case BufferFormat.R16G16B16A16_UInt:
+				case BufferFormat.R16G16B16A16_SNorm:
+				case BufferFormat.R16G16B16A16_SInt:
+				case BufferFormat.R32G32_Typeless:
+				case BufferFormat.R32G32_Float:
+				case BufferFormat.R32G32_UInt:
+				case BufferFormat.R32G32_SInt:
+				case BufferFormat.R32G8X24_Typeless:
+				case BufferFormat.D32_Float_S8X24_UInt:
+				case BufferFormat.R32_Float_X8X24_Typeless:
+				case BufferFormat.X32_Typeless_G8X24_UInt:
+				case BufferFormat.Y416:
+				case BufferFormat.Y210:
+				case BufferFormat.Y216:
 					BitDepth = 64;
 					break;
-				case DXGI.Format.R32G32B32_Typeless:
-				case DXGI.Format.R32G32B32_Float:
-				case DXGI.Format.R32G32B32_UInt:
-				case DXGI.Format.R32G32B32_SInt:
+				case BufferFormat.R32G32B32_Typeless:
+				case BufferFormat.R32G32B32_Float:
+				case BufferFormat.R32G32B32_UInt:
+				case BufferFormat.R32G32B32_SInt:
 					BitDepth = 96;
 					break;
-				case DXGI.Format.R32G32B32A32_Typeless:
-				case DXGI.Format.R32G32B32A32_Float:
-				case DXGI.Format.R32G32B32A32_UInt:
-				case DXGI.Format.R32G32B32A32_SInt:
+				case BufferFormat.R32G32B32A32_Typeless:
+				case BufferFormat.R32G32B32A32_Float:
+				case BufferFormat.R32G32B32A32_UInt:
+				case BufferFormat.R32G32B32A32_SInt:
 					BitDepth = 128;
 					break;
 				default:
@@ -445,17 +445,17 @@ namespace Gorgon.Graphics.Imaging
 		/// Function to retrieve whether this format is an SRgb format or not.
 		/// </summary>
 		/// <param name="format">Format to look up.</param>
-		private void GetSRgbState(DXGI.Format format)
+		private void GetSRgbState(BufferFormat format)
 		{
 			switch (format)
 			{
-				case DXGI.Format.R8G8B8A8_UNorm_SRgb:
-				case DXGI.Format.B8G8R8A8_UNorm_SRgb:
-				case DXGI.Format.B8G8R8X8_UNorm_SRgb:
-				case DXGI.Format.BC1_UNorm_SRgb:
-				case DXGI.Format.BC2_UNorm_SRgb:
-				case DXGI.Format.BC3_UNorm_SRgb:
-				case DXGI.Format.BC7_UNorm_SRgb:
+				case BufferFormat.R8G8B8A8_UNorm_SRgb:
+				case BufferFormat.B8G8R8A8_UNorm_SRgb:
+				case BufferFormat.B8G8R8X8_UNorm_SRgb:
+				case BufferFormat.BC1_UNorm_SRgb:
+				case BufferFormat.BC2_UNorm_SRgb:
+				case BufferFormat.BC3_UNorm_SRgb:
+				case BufferFormat.BC7_UNorm_SRgb:
 					IsSRgb = true;
 					break;
 				default:
@@ -468,134 +468,134 @@ namespace Gorgon.Graphics.Imaging
         /// Function to retrieve the number of components that make up a format.
         /// </summary>
         /// <param name="format">The format to evaulate.</param>
-	    private void GetComponentCount(DXGI.Format format)
+	    private void GetComponentCount(BufferFormat format)
 	    {
 	        switch (format)
 	        {
-	            case DXGI.Format.R32G32B32A32_Typeless:
-	            case DXGI.Format.R32G32B32A32_Float:
-	            case DXGI.Format.R32G32B32A32_UInt:
-	            case DXGI.Format.R32G32B32A32_SInt:
-	            case DXGI.Format.R16G16B16A16_Typeless:
-	            case DXGI.Format.R16G16B16A16_Float:
-	            case DXGI.Format.R16G16B16A16_UNorm:
-	            case DXGI.Format.R16G16B16A16_UInt:
-	            case DXGI.Format.R16G16B16A16_SNorm:
-	            case DXGI.Format.R16G16B16A16_SInt:
-	            case DXGI.Format.R10G10B10A2_Typeless:
-	            case DXGI.Format.R10G10B10A2_UNorm:
-	            case DXGI.Format.R10G10B10A2_UInt:
-	            case DXGI.Format.R8G8B8A8_Typeless:
-	            case DXGI.Format.R8G8B8A8_UNorm:
-	            case DXGI.Format.R8G8B8A8_UNorm_SRgb:
-	            case DXGI.Format.R8G8B8A8_UInt:
-	            case DXGI.Format.R8G8B8A8_SNorm:
-	            case DXGI.Format.R8G8B8A8_SInt:
-	            case DXGI.Format.R8G8_B8G8_UNorm:
-	            case DXGI.Format.G8R8_G8B8_UNorm:
-	            case DXGI.Format.BC1_Typeless:
-	            case DXGI.Format.BC1_UNorm:
-	            case DXGI.Format.BC1_UNorm_SRgb:
-	            case DXGI.Format.BC2_Typeless:
-	            case DXGI.Format.BC2_UNorm:
-	            case DXGI.Format.BC2_UNorm_SRgb:
-	            case DXGI.Format.BC3_Typeless:
-	            case DXGI.Format.BC3_UNorm:
-	            case DXGI.Format.BC3_UNorm_SRgb:
-	            case DXGI.Format.BC4_Typeless:
-	            case DXGI.Format.BC4_UNorm:
-	            case DXGI.Format.BC4_SNorm:
-	            case DXGI.Format.BC5_Typeless:
-	            case DXGI.Format.BC5_UNorm:
-	            case DXGI.Format.BC5_SNorm:
-	            case DXGI.Format.B5G5R5A1_UNorm:
-	            case DXGI.Format.B8G8R8A8_UNorm:
-	            case DXGI.Format.B8G8R8X8_UNorm:
-	            case DXGI.Format.R10G10B10_Xr_Bias_A2_UNorm:
-	            case DXGI.Format.B8G8R8A8_Typeless:
-	            case DXGI.Format.B8G8R8A8_UNorm_SRgb:
-	            case DXGI.Format.B8G8R8X8_Typeless:
-	            case DXGI.Format.B8G8R8X8_UNorm_SRgb:
-	            case DXGI.Format.BC6H_Typeless:
-	            case DXGI.Format.BC6H_Uf16:
-	            case DXGI.Format.BC6H_Sf16:
-	            case DXGI.Format.BC7_Typeless:
-	            case DXGI.Format.BC7_UNorm:
-	            case DXGI.Format.BC7_UNorm_SRgb:
-	            case DXGI.Format.B4G4R4A4_UNorm:
+	            case BufferFormat.R32G32B32A32_Typeless:
+	            case BufferFormat.R32G32B32A32_Float:
+	            case BufferFormat.R32G32B32A32_UInt:
+	            case BufferFormat.R32G32B32A32_SInt:
+	            case BufferFormat.R16G16B16A16_Typeless:
+	            case BufferFormat.R16G16B16A16_Float:
+	            case BufferFormat.R16G16B16A16_UNorm:
+	            case BufferFormat.R16G16B16A16_UInt:
+	            case BufferFormat.R16G16B16A16_SNorm:
+	            case BufferFormat.R16G16B16A16_SInt:
+	            case BufferFormat.R10G10B10A2_Typeless:
+	            case BufferFormat.R10G10B10A2_UNorm:
+	            case BufferFormat.R10G10B10A2_UInt:
+	            case BufferFormat.R8G8B8A8_Typeless:
+	            case BufferFormat.R8G8B8A8_UNorm:
+	            case BufferFormat.R8G8B8A8_UNorm_SRgb:
+	            case BufferFormat.R8G8B8A8_UInt:
+	            case BufferFormat.R8G8B8A8_SNorm:
+	            case BufferFormat.R8G8B8A8_SInt:
+	            case BufferFormat.R8G8_B8G8_UNorm:
+	            case BufferFormat.G8R8_G8B8_UNorm:
+	            case BufferFormat.BC1_Typeless:
+	            case BufferFormat.BC1_UNorm:
+	            case BufferFormat.BC1_UNorm_SRgb:
+	            case BufferFormat.BC2_Typeless:
+	            case BufferFormat.BC2_UNorm:
+	            case BufferFormat.BC2_UNorm_SRgb:
+	            case BufferFormat.BC3_Typeless:
+	            case BufferFormat.BC3_UNorm:
+	            case BufferFormat.BC3_UNorm_SRgb:
+	            case BufferFormat.BC4_Typeless:
+	            case BufferFormat.BC4_UNorm:
+	            case BufferFormat.BC4_SNorm:
+	            case BufferFormat.BC5_Typeless:
+	            case BufferFormat.BC5_UNorm:
+	            case BufferFormat.BC5_SNorm:
+	            case BufferFormat.B5G5R5A1_UNorm:
+	            case BufferFormat.B8G8R8A8_UNorm:
+	            case BufferFormat.B8G8R8X8_UNorm:
+	            case BufferFormat.R10G10B10_Xr_Bias_A2_UNorm:
+	            case BufferFormat.B8G8R8A8_Typeless:
+	            case BufferFormat.B8G8R8A8_UNorm_SRgb:
+	            case BufferFormat.B8G8R8X8_Typeless:
+	            case BufferFormat.B8G8R8X8_UNorm_SRgb:
+	            case BufferFormat.BC6H_Typeless:
+	            case BufferFormat.BC6H_Uf16:
+	            case BufferFormat.BC6H_Sf16:
+	            case BufferFormat.BC7_Typeless:
+	            case BufferFormat.BC7_UNorm:
+	            case BufferFormat.BC7_UNorm_SRgb:
+	            case BufferFormat.B4G4R4A4_UNorm:
 	                ComponentCount = 4;
 	                break;
-	            case DXGI.Format.R11G11B10_Float:
-	            case DXGI.Format.R32G32B32_Typeless:
-	            case DXGI.Format.R32G32B32_Float:
-	            case DXGI.Format.R32G32B32_UInt:
-	            case DXGI.Format.R32G32B32_SInt:
-	            case DXGI.Format.B5G6R5_UNorm:
-	            case DXGI.Format.R9G9B9E5_Sharedexp:
+	            case BufferFormat.R11G11B10_Float:
+	            case BufferFormat.R32G32B32_Typeless:
+	            case BufferFormat.R32G32B32_Float:
+	            case BufferFormat.R32G32B32_UInt:
+	            case BufferFormat.R32G32B32_SInt:
+	            case BufferFormat.B5G6R5_UNorm:
+	            case BufferFormat.R9G9B9E5_Sharedexp:
 	                ComponentCount = 3;
                     break;
-	            case DXGI.Format.R32G32_Typeless:
-	            case DXGI.Format.R32G32_Float:
-	            case DXGI.Format.R32G32_UInt:
-	            case DXGI.Format.R32G32_SInt:
-	            case DXGI.Format.R32G8X24_Typeless:
-	            case DXGI.Format.R16G16_Typeless:
-	            case DXGI.Format.R16G16_Float:
-	            case DXGI.Format.R16G16_UNorm:
-	            case DXGI.Format.R16G16_UInt:
-	            case DXGI.Format.R16G16_SNorm:
-	            case DXGI.Format.R16G16_SInt:
-	            case DXGI.Format.R24G8_Typeless:
-	            case DXGI.Format.R8G8_Typeless:
-	            case DXGI.Format.R8G8_UNorm:
-	            case DXGI.Format.R8G8_UInt:
-	            case DXGI.Format.R8G8_SNorm:
-	            case DXGI.Format.R8G8_SInt:
-	            case DXGI.Format.AYUV:
-	            case DXGI.Format.YUY2:
-	            case DXGI.Format.NV11:
-	            case DXGI.Format.AI44:
-	            case DXGI.Format.IA44:
-	            case DXGI.Format.A8P8:
+	            case BufferFormat.R32G32_Typeless:
+	            case BufferFormat.R32G32_Float:
+	            case BufferFormat.R32G32_UInt:
+	            case BufferFormat.R32G32_SInt:
+	            case BufferFormat.R32G8X24_Typeless:
+	            case BufferFormat.R16G16_Typeless:
+	            case BufferFormat.R16G16_Float:
+	            case BufferFormat.R16G16_UNorm:
+	            case BufferFormat.R16G16_UInt:
+	            case BufferFormat.R16G16_SNorm:
+	            case BufferFormat.R16G16_SInt:
+	            case BufferFormat.R24G8_Typeless:
+	            case BufferFormat.R8G8_Typeless:
+	            case BufferFormat.R8G8_UNorm:
+	            case BufferFormat.R8G8_UInt:
+	            case BufferFormat.R8G8_SNorm:
+	            case BufferFormat.R8G8_SInt:
+	            case BufferFormat.AYUV:
+	            case BufferFormat.YUY2:
+	            case BufferFormat.NV11:
+	            case BufferFormat.AI44:
+	            case BufferFormat.IA44:
+	            case BufferFormat.A8P8:
 	                ComponentCount = 2;
 	                break;
-	            case DXGI.Format.R8_Typeless:
-	            case DXGI.Format.R8_UNorm:
-	            case DXGI.Format.R8_UInt:
-	            case DXGI.Format.R8_SNorm:
-	            case DXGI.Format.R8_SInt:
-	            case DXGI.Format.A8_UNorm:
-	            case DXGI.Format.R1_UNorm:
-	            case DXGI.Format.Y410:
-	            case DXGI.Format.Y416:
-	            case DXGI.Format.NV12:
-	            case DXGI.Format.P010:
-	            case DXGI.Format.P016:
-	            case DXGI.Format.Opaque420:
-	            case DXGI.Format.Y210:
-	            case DXGI.Format.Y216:
-	            case DXGI.Format.P8:
-	            case DXGI.Format.P208:
-	            case DXGI.Format.V208:
-	            case DXGI.Format.V408:
-	            case DXGI.Format.X32_Typeless_G8X24_UInt:
-	            case DXGI.Format.R32_Float_X8X24_Typeless:
-	            case DXGI.Format.R32_Typeless:
-	            case DXGI.Format.D32_Float:
-	            case DXGI.Format.R32_Float:
-	            case DXGI.Format.R32_UInt:
-	            case DXGI.Format.R32_SInt:
-	            case DXGI.Format.R16_Typeless:
-	            case DXGI.Format.R16_Float:
-	            case DXGI.Format.D16_UNorm:
-	            case DXGI.Format.R16_UNorm:
-	            case DXGI.Format.R16_UInt:
-	            case DXGI.Format.R16_SNorm:
-	            case DXGI.Format.R16_SInt:
-	            case DXGI.Format.D24_UNorm_S8_UInt:
-	            case DXGI.Format.R24_UNorm_X8_Typeless:
-	            case DXGI.Format.X24_Typeless_G8_UInt:
-	            case DXGI.Format.D32_Float_S8X24_UInt:
+	            case BufferFormat.R8_Typeless:
+	            case BufferFormat.R8_UNorm:
+	            case BufferFormat.R8_UInt:
+	            case BufferFormat.R8_SNorm:
+	            case BufferFormat.R8_SInt:
+	            case BufferFormat.A8_UNorm:
+	            case BufferFormat.R1_UNorm:
+	            case BufferFormat.Y410:
+	            case BufferFormat.Y416:
+	            case BufferFormat.NV12:
+	            case BufferFormat.P010:
+	            case BufferFormat.P016:
+	            case BufferFormat.Opaque420:
+	            case BufferFormat.Y210:
+	            case BufferFormat.Y216:
+	            case BufferFormat.P8:
+	            case BufferFormat.P208:
+	            case BufferFormat.V208:
+	            case BufferFormat.V408:
+	            case BufferFormat.X32_Typeless_G8X24_UInt:
+	            case BufferFormat.R32_Float_X8X24_Typeless:
+	            case BufferFormat.R32_Typeless:
+	            case BufferFormat.D32_Float:
+	            case BufferFormat.R32_Float:
+	            case BufferFormat.R32_UInt:
+	            case BufferFormat.R32_SInt:
+	            case BufferFormat.R16_Typeless:
+	            case BufferFormat.R16_Float:
+	            case BufferFormat.D16_UNorm:
+	            case BufferFormat.R16_UNorm:
+	            case BufferFormat.R16_UInt:
+	            case BufferFormat.R16_SNorm:
+	            case BufferFormat.R16_SInt:
+	            case BufferFormat.D24_UNorm_S8_UInt:
+	            case BufferFormat.R24_UNorm_X8_Typeless:
+	            case BufferFormat.X24_Typeless_G8_UInt:
+	            case BufferFormat.D32_Float_S8X24_UInt:
 	                ComponentCount = 1;
 	                break;
                 default:
@@ -608,31 +608,31 @@ namespace Gorgon.Graphics.Imaging
 		/// Function to retrieve whether a buffer is compressed or not.
 		/// </summary>
 		/// <param name="format">Format of the buffer.</param>
-		private void GetCompressedState(DXGI.Format format)
+		private void GetCompressedState(BufferFormat format)
 		{
 			switch (format)
 			{
-				case DXGI.Format.BC1_Typeless:
-				case DXGI.Format.BC1_UNorm:
-				case DXGI.Format.BC1_UNorm_SRgb:
-				case DXGI.Format.BC2_Typeless:
-				case DXGI.Format.BC2_UNorm:
-				case DXGI.Format.BC2_UNorm_SRgb:
-				case DXGI.Format.BC3_Typeless:
-				case DXGI.Format.BC3_UNorm:
-				case DXGI.Format.BC3_UNorm_SRgb:
-				case DXGI.Format.BC4_Typeless:
-				case DXGI.Format.BC4_SNorm:
-				case DXGI.Format.BC4_UNorm:
-				case DXGI.Format.BC5_Typeless:
-				case DXGI.Format.BC5_SNorm:
-				case DXGI.Format.BC5_UNorm:
-				case DXGI.Format.BC6H_Typeless:
-				case DXGI.Format.BC6H_Sf16:
-				case DXGI.Format.BC6H_Uf16:
-				case DXGI.Format.BC7_Typeless:
-				case DXGI.Format.BC7_UNorm:
-				case DXGI.Format.BC7_UNorm_SRgb:
+				case BufferFormat.BC1_Typeless:
+				case BufferFormat.BC1_UNorm:
+				case BufferFormat.BC1_UNorm_SRgb:
+				case BufferFormat.BC2_Typeless:
+				case BufferFormat.BC2_UNorm:
+				case BufferFormat.BC2_UNorm_SRgb:
+				case BufferFormat.BC3_Typeless:
+				case BufferFormat.BC3_UNorm:
+				case BufferFormat.BC3_UNorm_SRgb:
+				case BufferFormat.BC4_Typeless:
+				case BufferFormat.BC4_SNorm:
+				case BufferFormat.BC4_UNorm:
+				case BufferFormat.BC5_Typeless:
+				case BufferFormat.BC5_SNorm:
+				case BufferFormat.BC5_UNorm:
+				case BufferFormat.BC6H_Typeless:
+				case BufferFormat.BC6H_Sf16:
+				case BufferFormat.BC6H_Uf16:
+				case BufferFormat.BC7_Typeless:
+				case BufferFormat.BC7_UNorm:
+				case BufferFormat.BC7_UNorm_SRgb:
 					IsCompressed = true;
 					break;
 				default:
@@ -645,132 +645,132 @@ namespace Gorgon.Graphics.Imaging
 		/// Function to determine which typeless group the format belongs to.
 		/// </summary>
 		/// <param name="format">The format to evaluate.</param>
-		private void GetGroup(DXGI.Format format)
+		private void GetGroup(BufferFormat format)
 		{
 			switch (format)
 			{
-				case DXGI.Format.B8G8R8A8_Typeless:
-				case DXGI.Format.B8G8R8A8_UNorm:
-				case DXGI.Format.B8G8R8A8_UNorm_SRgb:
-					Group = DXGI.Format.B8G8R8A8_Typeless;
+				case BufferFormat.B8G8R8A8_Typeless:
+				case BufferFormat.B8G8R8A8_UNorm:
+				case BufferFormat.B8G8R8A8_UNorm_SRgb:
+					Group = BufferFormat.B8G8R8A8_Typeless;
 					break;
-				case DXGI.Format.B8G8R8X8_Typeless:
-				case DXGI.Format.B8G8R8X8_UNorm:
-				case DXGI.Format.B8G8R8X8_UNorm_SRgb:
-					Group = DXGI.Format.B8G8R8X8_Typeless;
+				case BufferFormat.B8G8R8X8_Typeless:
+				case BufferFormat.B8G8R8X8_UNorm:
+				case BufferFormat.B8G8R8X8_UNorm_SRgb:
+					Group = BufferFormat.B8G8R8X8_Typeless;
 					break;
-				case DXGI.Format.BC1_Typeless:
-				case DXGI.Format.BC1_UNorm:
-				case DXGI.Format.BC1_UNorm_SRgb:
-					Group = DXGI.Format.BC1_Typeless;
+				case BufferFormat.BC1_Typeless:
+				case BufferFormat.BC1_UNorm:
+				case BufferFormat.BC1_UNorm_SRgb:
+					Group = BufferFormat.BC1_Typeless;
 					break;
-				case DXGI.Format.BC2_Typeless:
-				case DXGI.Format.BC2_UNorm:
-				case DXGI.Format.BC2_UNorm_SRgb:
-					Group = DXGI.Format.BC2_Typeless;
+				case BufferFormat.BC2_Typeless:
+				case BufferFormat.BC2_UNorm:
+				case BufferFormat.BC2_UNorm_SRgb:
+					Group = BufferFormat.BC2_Typeless;
 					break;
-				case DXGI.Format.BC3_Typeless:
-				case DXGI.Format.BC3_UNorm:
-				case DXGI.Format.BC3_UNorm_SRgb:
-					Group = DXGI.Format.BC3_Typeless;
+				case BufferFormat.BC3_Typeless:
+				case BufferFormat.BC3_UNorm:
+				case BufferFormat.BC3_UNorm_SRgb:
+					Group = BufferFormat.BC3_Typeless;
 					break;
-				case DXGI.Format.BC4_Typeless:
-				case DXGI.Format.BC4_UNorm:
-				case DXGI.Format.BC4_SNorm:
-					Group = DXGI.Format.BC4_Typeless;
+				case BufferFormat.BC4_Typeless:
+				case BufferFormat.BC4_UNorm:
+				case BufferFormat.BC4_SNorm:
+					Group = BufferFormat.BC4_Typeless;
 					break;
-				case DXGI.Format.BC5_Typeless:
-				case DXGI.Format.BC5_UNorm:
-				case DXGI.Format.BC5_SNorm:
-					Group = DXGI.Format.BC5_Typeless;
+				case BufferFormat.BC5_Typeless:
+				case BufferFormat.BC5_UNorm:
+				case BufferFormat.BC5_SNorm:
+					Group = BufferFormat.BC5_Typeless;
 					break;
-				case DXGI.Format.BC6H_Typeless:
-				case DXGI.Format.BC6H_Uf16:
-				case DXGI.Format.BC6H_Sf16:
-					Group = DXGI.Format.BC6H_Typeless;
+				case BufferFormat.BC6H_Typeless:
+				case BufferFormat.BC6H_Uf16:
+				case BufferFormat.BC6H_Sf16:
+					Group = BufferFormat.BC6H_Typeless;
 					break;
-				case DXGI.Format.BC7_Typeless:
-				case DXGI.Format.BC7_UNorm:
-				case DXGI.Format.BC7_UNorm_SRgb:
-					Group = DXGI.Format.BC7_Typeless;
+				case BufferFormat.BC7_Typeless:
+				case BufferFormat.BC7_UNorm:
+				case BufferFormat.BC7_UNorm_SRgb:
+					Group = BufferFormat.BC7_Typeless;
 					break;
-				case DXGI.Format.R10G10B10A2_Typeless:
-				case DXGI.Format.R10G10B10A2_UNorm:
-				case DXGI.Format.R10G10B10A2_UInt:
-					Group = DXGI.Format.R10G10B10A2_Typeless;
+				case BufferFormat.R10G10B10A2_Typeless:
+				case BufferFormat.R10G10B10A2_UNorm:
+				case BufferFormat.R10G10B10A2_UInt:
+					Group = BufferFormat.R10G10B10A2_Typeless;
 					break;
-				case DXGI.Format.R16_Typeless:
-				case DXGI.Format.R16_Float:
-				case DXGI.Format.R16_UNorm:
-				case DXGI.Format.R16_UInt:
-				case DXGI.Format.R16_SNorm:
-				case DXGI.Format.R16_SInt:
-					Group = DXGI.Format.R16_Typeless;
+				case BufferFormat.R16_Typeless:
+				case BufferFormat.R16_Float:
+				case BufferFormat.R16_UNorm:
+				case BufferFormat.R16_UInt:
+				case BufferFormat.R16_SNorm:
+				case BufferFormat.R16_SInt:
+					Group = BufferFormat.R16_Typeless;
 					break;
-				case DXGI.Format.R16G16_Typeless:
-				case DXGI.Format.R16G16_Float:
-				case DXGI.Format.R16G16_UNorm:
-				case DXGI.Format.R16G16_UInt:
-				case DXGI.Format.R16G16_SNorm:
-				case DXGI.Format.R16G16_SInt:
-					Group = DXGI.Format.R16G16_Typeless;
+				case BufferFormat.R16G16_Typeless:
+				case BufferFormat.R16G16_Float:
+				case BufferFormat.R16G16_UNorm:
+				case BufferFormat.R16G16_UInt:
+				case BufferFormat.R16G16_SNorm:
+				case BufferFormat.R16G16_SInt:
+					Group = BufferFormat.R16G16_Typeless;
 					break;
-				case DXGI.Format.R16G16B16A16_Typeless:
-				case DXGI.Format.R16G16B16A16_Float:
-				case DXGI.Format.R16G16B16A16_UNorm:
-				case DXGI.Format.R16G16B16A16_UInt:
-				case DXGI.Format.R16G16B16A16_SNorm:
-				case DXGI.Format.R16G16B16A16_SInt:
-					Group = DXGI.Format.R16G16B16A16_Typeless;
+				case BufferFormat.R16G16B16A16_Typeless:
+				case BufferFormat.R16G16B16A16_Float:
+				case BufferFormat.R16G16B16A16_UNorm:
+				case BufferFormat.R16G16B16A16_UInt:
+				case BufferFormat.R16G16B16A16_SNorm:
+				case BufferFormat.R16G16B16A16_SInt:
+					Group = BufferFormat.R16G16B16A16_Typeless;
 					break;
-				case DXGI.Format.R32_Typeless:
-				case DXGI.Format.R32_Float:
-				case DXGI.Format.R32_UInt:
-				case DXGI.Format.R32_SInt:
-					Group = DXGI.Format.R32_Typeless;
+				case BufferFormat.R32_Typeless:
+				case BufferFormat.R32_Float:
+				case BufferFormat.R32_UInt:
+				case BufferFormat.R32_SInt:
+					Group = BufferFormat.R32_Typeless;
 					break;
-				case DXGI.Format.R32G32_Typeless:
-				case DXGI.Format.R32G32_Float:
-				case DXGI.Format.R32G32_UInt:
-				case DXGI.Format.R32G32_SInt:
-					Group = DXGI.Format.R32G32_Typeless;
+				case BufferFormat.R32G32_Typeless:
+				case BufferFormat.R32G32_Float:
+				case BufferFormat.R32G32_UInt:
+				case BufferFormat.R32G32_SInt:
+					Group = BufferFormat.R32G32_Typeless;
 					break;
-				case DXGI.Format.R32G32B32_Typeless:
-				case DXGI.Format.R32G32B32_Float:
-				case DXGI.Format.R32G32B32_UInt:
-				case DXGI.Format.R32G32B32_SInt:
-					Group = DXGI.Format.R32G32B32_Typeless;
+				case BufferFormat.R32G32B32_Typeless:
+				case BufferFormat.R32G32B32_Float:
+				case BufferFormat.R32G32B32_UInt:
+				case BufferFormat.R32G32B32_SInt:
+					Group = BufferFormat.R32G32B32_Typeless;
 					break;
-				case DXGI.Format.R32G32B32A32_Typeless:
-				case DXGI.Format.R32G32B32A32_Float:
-				case DXGI.Format.R32G32B32A32_UInt:
-				case DXGI.Format.R32G32B32A32_SInt:
-					Group = DXGI.Format.R32G32B32A32_Typeless;
+				case BufferFormat.R32G32B32A32_Typeless:
+				case BufferFormat.R32G32B32A32_Float:
+				case BufferFormat.R32G32B32A32_UInt:
+				case BufferFormat.R32G32B32A32_SInt:
+					Group = BufferFormat.R32G32B32A32_Typeless;
 					break;
-				case DXGI.Format.R8_Typeless:
-				case DXGI.Format.R8_UNorm:
-				case DXGI.Format.R8_UInt:
-				case DXGI.Format.R8_SNorm:
-				case DXGI.Format.R8_SInt:
-					Group = DXGI.Format.R8_Typeless;
+				case BufferFormat.R8_Typeless:
+				case BufferFormat.R8_UNorm:
+				case BufferFormat.R8_UInt:
+				case BufferFormat.R8_SNorm:
+				case BufferFormat.R8_SInt:
+					Group = BufferFormat.R8_Typeless;
 					break;
-				case DXGI.Format.R8G8_Typeless:
-				case DXGI.Format.R8G8_UNorm:
-				case DXGI.Format.R8G8_UInt:
-				case DXGI.Format.R8G8_SNorm:
-				case DXGI.Format.R8G8_SInt:
-					Group = DXGI.Format.R8G8_Typeless;
+				case BufferFormat.R8G8_Typeless:
+				case BufferFormat.R8G8_UNorm:
+				case BufferFormat.R8G8_UInt:
+				case BufferFormat.R8G8_SNorm:
+				case BufferFormat.R8G8_SInt:
+					Group = BufferFormat.R8G8_Typeless;
 					break;
-				case DXGI.Format.R8G8B8A8_Typeless:
-				case DXGI.Format.R8G8B8A8_UNorm:
-				case DXGI.Format.R8G8B8A8_UNorm_SRgb:
-				case DXGI.Format.R8G8B8A8_UInt:
-				case DXGI.Format.R8G8B8A8_SNorm:
-				case DXGI.Format.R8G8B8A8_SInt:
-					Group = DXGI.Format.R8G8B8A8_Typeless;
+				case BufferFormat.R8G8B8A8_Typeless:
+				case BufferFormat.R8G8B8A8_UNorm:
+				case BufferFormat.R8G8B8A8_UNorm_SRgb:
+				case BufferFormat.R8G8B8A8_UInt:
+				case BufferFormat.R8G8B8A8_SNorm:
+				case BufferFormat.R8G8B8A8_SInt:
+					Group = BufferFormat.R8G8B8A8_Typeless;
 					break;
 				default:
-					Group = DXGI.Format.Unknown;
+					Group = BufferFormat.Unknown;
 					break;
 			}
 		}
@@ -779,33 +779,33 @@ namespace Gorgon.Graphics.Imaging
 		/// Function to determine if the specified format is typeless.
 		/// </summary>
 		/// <param name="format">The format to check.</param>
-		private void GetTypelessState(DXGI.Format format)
+		private void GetTypelessState(BufferFormat format)
 		{
 			switch (format)
 			{
-				case DXGI.Format.R32G32B32A32_Typeless:
-				case DXGI.Format.R32G32B32_Typeless:
-				case DXGI.Format.R16G16B16A16_Typeless:
-				case DXGI.Format.R32G32_Typeless:
-				case DXGI.Format.R32G8X24_Typeless:
-				case DXGI.Format.R10G10B10A2_Typeless:
-				case DXGI.Format.R8G8B8A8_Typeless:
-				case DXGI.Format.R16G16_Typeless:
-				case DXGI.Format.R32_Typeless:
-				case DXGI.Format.R24G8_Typeless:
-				case DXGI.Format.R8G8_Typeless:
-				case DXGI.Format.R16_Typeless:
-				case DXGI.Format.R8_Typeless:
-				case DXGI.Format.BC1_Typeless:
-				case DXGI.Format.BC2_Typeless:
-				case DXGI.Format.BC3_Typeless:
-				case DXGI.Format.BC4_Typeless:
-				case DXGI.Format.BC5_Typeless:
-				case DXGI.Format.B8G8R8A8_Typeless:
-				case DXGI.Format.B8G8R8X8_Typeless:
-				case DXGI.Format.BC6H_Typeless:
-				case DXGI.Format.BC7_Typeless:
-				case DXGI.Format.Unknown:
+				case BufferFormat.R32G32B32A32_Typeless:
+				case BufferFormat.R32G32B32_Typeless:
+				case BufferFormat.R16G16B16A16_Typeless:
+				case BufferFormat.R32G32_Typeless:
+				case BufferFormat.R32G8X24_Typeless:
+				case BufferFormat.R10G10B10A2_Typeless:
+				case BufferFormat.R8G8B8A8_Typeless:
+				case BufferFormat.R16G16_Typeless:
+				case BufferFormat.R32_Typeless:
+				case BufferFormat.R24G8_Typeless:
+				case BufferFormat.R8G8_Typeless:
+				case BufferFormat.R16_Typeless:
+				case BufferFormat.R8_Typeless:
+				case BufferFormat.BC1_Typeless:
+				case BufferFormat.BC2_Typeless:
+				case BufferFormat.BC3_Typeless:
+				case BufferFormat.BC4_Typeless:
+				case BufferFormat.BC5_Typeless:
+				case BufferFormat.B8G8R8A8_Typeless:
+				case BufferFormat.B8G8R8X8_Typeless:
+				case BufferFormat.BC6H_Typeless:
+				case BufferFormat.BC7_Typeless:
+				case BufferFormat.Unknown:
 					IsTypeless = true;
 					break;
 				default:
@@ -818,49 +818,49 @@ namespace Gorgon.Graphics.Imaging
 		/// Function to determine if the format has an alpha channel.
 		/// </summary>
 		/// <param name="format">Format to check.</param>
-		private void GetAlphaChannel(DXGI.Format format)
+		private void GetAlphaChannel(BufferFormat format)
 		{
 			switch (format)
 			{
-				case DXGI.Format.R32G32B32A32_Typeless:
-				case DXGI.Format.R32G32B32A32_Float:
-				case DXGI.Format.R32G32B32A32_UInt:
-				case DXGI.Format.R32G32B32A32_SInt:
-				case DXGI.Format.R16G16B16A16_Typeless:
-				case DXGI.Format.R16G16B16A16_Float:
-				case DXGI.Format.R16G16B16A16_UNorm:
-				case DXGI.Format.R16G16B16A16_UInt:
-				case DXGI.Format.R16G16B16A16_SNorm:
-				case DXGI.Format.R16G16B16A16_SInt:
-				case DXGI.Format.R10G10B10A2_Typeless:
-				case DXGI.Format.R10G10B10A2_UNorm:
-				case DXGI.Format.R10G10B10A2_UInt:
-				case DXGI.Format.R8G8B8A8_Typeless:
-				case DXGI.Format.R8G8B8A8_UNorm:
-				case DXGI.Format.R8G8B8A8_UNorm_SRgb:
-				case DXGI.Format.R8G8B8A8_UInt:
-				case DXGI.Format.R8G8B8A8_SNorm:
-				case DXGI.Format.R8G8B8A8_SInt:
-				case DXGI.Format.A8_UNorm:
-				case DXGI.Format.BC1_Typeless:
-				case DXGI.Format.BC1_UNorm:
-				case DXGI.Format.BC1_UNorm_SRgb:
-				case DXGI.Format.BC2_Typeless:
-				case DXGI.Format.BC2_UNorm:
-				case DXGI.Format.BC2_UNorm_SRgb:
-				case DXGI.Format.BC3_Typeless:
-				case DXGI.Format.BC3_UNorm:
-				case DXGI.Format.BC3_UNorm_SRgb:
-				case DXGI.Format.B5G5R5A1_UNorm:
-				case DXGI.Format.B8G8R8A8_UNorm:
-				case DXGI.Format.R10G10B10_Xr_Bias_A2_UNorm:
-				case DXGI.Format.B8G8R8A8_Typeless:
-				case DXGI.Format.B8G8R8A8_UNorm_SRgb:
-				case DXGI.Format.BC7_Typeless:
-				case DXGI.Format.BC7_UNorm:
-				case DXGI.Format.BC7_UNorm_SRgb:
-				case DXGI.Format.B4G4R4A4_UNorm:
-				case DXGI.Format.A8P8:
+				case BufferFormat.R32G32B32A32_Typeless:
+				case BufferFormat.R32G32B32A32_Float:
+				case BufferFormat.R32G32B32A32_UInt:
+				case BufferFormat.R32G32B32A32_SInt:
+				case BufferFormat.R16G16B16A16_Typeless:
+				case BufferFormat.R16G16B16A16_Float:
+				case BufferFormat.R16G16B16A16_UNorm:
+				case BufferFormat.R16G16B16A16_UInt:
+				case BufferFormat.R16G16B16A16_SNorm:
+				case BufferFormat.R16G16B16A16_SInt:
+				case BufferFormat.R10G10B10A2_Typeless:
+				case BufferFormat.R10G10B10A2_UNorm:
+				case BufferFormat.R10G10B10A2_UInt:
+				case BufferFormat.R8G8B8A8_Typeless:
+				case BufferFormat.R8G8B8A8_UNorm:
+				case BufferFormat.R8G8B8A8_UNorm_SRgb:
+				case BufferFormat.R8G8B8A8_UInt:
+				case BufferFormat.R8G8B8A8_SNorm:
+				case BufferFormat.R8G8B8A8_SInt:
+				case BufferFormat.A8_UNorm:
+				case BufferFormat.BC1_Typeless:
+				case BufferFormat.BC1_UNorm:
+				case BufferFormat.BC1_UNorm_SRgb:
+				case BufferFormat.BC2_Typeless:
+				case BufferFormat.BC2_UNorm:
+				case BufferFormat.BC2_UNorm_SRgb:
+				case BufferFormat.BC3_Typeless:
+				case BufferFormat.BC3_UNorm:
+				case BufferFormat.BC3_UNorm_SRgb:
+				case BufferFormat.B5G5R5A1_UNorm:
+				case BufferFormat.B8G8R8A8_UNorm:
+				case BufferFormat.R10G10B10_Xr_Bias_A2_UNorm:
+				case BufferFormat.B8G8R8A8_Typeless:
+				case BufferFormat.B8G8R8A8_UNorm_SRgb:
+				case BufferFormat.BC7_Typeless:
+				case BufferFormat.BC7_UNorm:
+				case BufferFormat.BC7_UNorm_SRgb:
+				case BufferFormat.B4G4R4A4_UNorm:
+				case BufferFormat.A8P8:
 					HasAlpha = true;
 					break;
 				default:
@@ -896,12 +896,12 @@ namespace Gorgon.Graphics.Imaging
 
 				switch (Format)
 				{
-					case DXGI.Format.BC1_Typeless:
-					case DXGI.Format.BC1_UNorm:
-					case DXGI.Format.BC1_UNorm_SRgb:
-					case DXGI.Format.BC4_Typeless:
-					case DXGI.Format.BC4_SNorm:
-					case DXGI.Format.BC4_UNorm:
+					case BufferFormat.BC1_Typeless:
+					case BufferFormat.BC1_UNorm:
+					case BufferFormat.BC1_UNorm_SRgb:
+					case BufferFormat.BC4_Typeless:
+					case BufferFormat.BC4_SNorm:
+					case BufferFormat.BC4_UNorm:
 						bpb = 8;
 						break;
 					default:
@@ -922,28 +922,28 @@ namespace Gorgon.Graphics.Imaging
 
 				switch (Format)
 				{
-					case DXGI.Format.R8G8_B8G8_UNorm:
-					case DXGI.Format.G8R8_G8B8_UNorm:
-					case DXGI.Format.YUY2:
+					case BufferFormat.R8G8_B8G8_UNorm:
+					case BufferFormat.G8R8_G8B8_UNorm:
+					case BufferFormat.YUY2:
 						rowPitch = ((width + 1) >> 1) << 2;
 						slicePitch = rowPitch * height;
 						break;
-					case DXGI.Format.Y210:
-					case DXGI.Format.Y216:
+					case BufferFormat.Y210:
+					case BufferFormat.Y216:
 						rowPitch = ((width + 1) >> 1) << 4;
 						slicePitch = rowPitch * height;
 						break;
-					case DXGI.Format.NV12:
-					case DXGI.Format.Opaque420:
+					case BufferFormat.NV12:
+					case BufferFormat.Opaque420:
 						rowPitch = ((width + 1) >> 1) << 1;
 						slicePitch = rowPitch * (height + ((height + 1) >> 1));
 						break;
-					case DXGI.Format.P010:
-					case DXGI.Format.P016:
+					case BufferFormat.P010:
+					case BufferFormat.P016:
 						rowPitch = ((width + 1) >> 1) << 2;
 						slicePitch = rowPitch * (height + ((height + 1) >> 1));
 						break;
-					case DXGI.Format.NV11:
+					case BufferFormat.NV11:
 						rowPitch = ((width + 3) >> 2) << 2;
 						slicePitch = rowPitch * height << 1;
 						break;
@@ -1025,12 +1025,12 @@ namespace Gorgon.Graphics.Imaging
 			switch (Format)
 			{
 				// These are planar formats.
-				case DXGI.Format.NV11:
+				case BufferFormat.NV11:
 					return height << 1;
-				case DXGI.Format.NV12:
-				case DXGI.Format.P010:
-				case DXGI.Format.P016:
-				case DXGI.Format.Opaque420:
+				case BufferFormat.NV12:
+				case BufferFormat.P010:
+				case BufferFormat.P016:
+				case BufferFormat.Opaque420:
 					return height + ((height + 1) >> 1);
 				// All other formats report height as-is.
 				default:
@@ -1047,12 +1047,12 @@ namespace Gorgon.Graphics.Imaging
 		/// <remarks>
 		/// If the <paramref name="format"/> parameter is set to <c>Format.Unknown</c>, then the members of this object, except for <see cref="Group"/>, will be set to default values and may not be accurate. 
 		/// </remarks>
-		public GorgonFormatInfo(DXGI.Format format)
+		public GorgonFormatInfo(BufferFormat format)
 		{
 			Format = format;
-			Group = DXGI.Format.Unknown;
+			Group = BufferFormat.Unknown;
 
-			if (format == DXGI.Format.Unknown)
+			if (format == BufferFormat.Unknown)
 			{
 				return;
 			}

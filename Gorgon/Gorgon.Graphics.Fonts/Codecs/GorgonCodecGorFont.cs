@@ -264,7 +264,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
 				{
 					string textureName = reader.ReadString();
 
-					image = new GorgonImage(new GorgonImageInfo(ImageType.Image2D, DXGI.Format.R8G8B8A8_UNorm)
+					image = new GorgonImage(new GorgonImageInfo(ImageType.Image2D, BufferFormat.R8G8B8A8_UNorm)
 					                        {
 						                        ArrayCount = reader.ReadInt32(),
 						                        Depth = 1,

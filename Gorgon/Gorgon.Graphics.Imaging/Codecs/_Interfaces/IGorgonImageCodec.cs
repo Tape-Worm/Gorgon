@@ -254,7 +254,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <summary>
 		/// Property to return the pixel formats supported by the codec.
 		/// </summary>
-		IReadOnlyList<SharpDX.DXGI.Format> SupportedPixelFormats
+		IReadOnlyList<BufferFormat> SupportedPixelFormats
 		{
 			get;
 		}

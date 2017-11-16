@@ -30,7 +30,7 @@ using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
-using SharpDX.DXGI;
+using DXGI = SharpDX.DXGI;
 using DX = SharpDX;
 using D3D11 = SharpDX.Direct3D11;
 
@@ -139,7 +139,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the format used to interpret this view.
         /// </summary>
-        public Format Format
+        public BufferFormat Format
         {
             get;
         }
@@ -203,7 +203,7 @@ namespace Gorgon.Graphics.Core
         {
             return new D3D11.UnorderedAccessViewDescription
                    {
-                       Format = Format,
+                       Format = (DXGI.Format)Format,
                        Dimension = texture.Info.ArrayCount > 1
                                        ? D3D11.UnorderedAccessViewDimension.Texture1DArray
                                        : D3D11.UnorderedAccessViewDimension.Texture1D,
@@ -225,7 +225,7 @@ namespace Gorgon.Graphics.Core
         {
             return new D3D11.UnorderedAccessViewDescription
                    {
-                       Format = Format,
+                       Format = (DXGI.Format)Format,
                        Dimension = texture.Info.ArrayCount > 1
                                        ? D3D11.UnorderedAccessViewDimension.Texture2DArray
                                        : D3D11.UnorderedAccessViewDimension.Texture2D,
@@ -246,7 +246,7 @@ namespace Gorgon.Graphics.Core
         {
             return new D3D11.UnorderedAccessViewDescription
                    {
-                       Format = Format,
+                       Format = (DXGI.Format)Format,
                        Dimension = D3D11.UnorderedAccessViewDimension.Texture3D,
                        Texture3D =
                        {
@@ -353,7 +353,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="arrayDepthCount">For a 1D or 2D <see cref="GorgonTexture"/>, this will be the number of array indices to view, for a 3D <see cref="GorgonTexture"/>, this will be the number of depth slices.</param>
         /// <param name="log">The log used for debugging.</param>
         internal GorgonTextureUav(GorgonTexture texture,
-                                  Format format,
+                                  BufferFormat format,
                                   GorgonFormatInfo formatInfo,
                                   int firstMipLevel,
                                   int arrayDepthIndex,

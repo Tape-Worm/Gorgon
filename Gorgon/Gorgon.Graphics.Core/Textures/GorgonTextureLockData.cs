@@ -27,7 +27,6 @@
 using System;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Native;
-using SharpDX.DXGI;
 using DX = SharpDX;
 
 namespace Gorgon.Graphics.Core
@@ -73,7 +72,7 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Property to return the format of the buffer.
 		/// </summary>
-		public Format Format
+		public BufferFormat Format
 		{
 			get;
 		}

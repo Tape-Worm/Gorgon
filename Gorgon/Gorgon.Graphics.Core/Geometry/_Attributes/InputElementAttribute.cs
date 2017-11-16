@@ -136,7 +136,7 @@ namespace Gorgon.Graphics.Core
 		/// <remarks>
 		/// This is used to specify the type of data for the element, and will also determine how many bytes the element will occupy.
 		/// </remarks>
-		public DXGI.Format Format
+		public BufferFormat Format
 		{
 			get;
 			set;
@@ -208,7 +208,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="context">The context of the element.</param>
 		/// <param name="format">The format/type of the element.</param>
 		/// <param name="offset">Offset of the element in the structure.</param>
-		public InputElementAttribute(string context, DXGI.Format format, int offset)
+		public InputElementAttribute(string context, BufferFormat format, int offset)
 		{
 
 			Context = context;
@@ -234,7 +234,7 @@ namespace Gorgon.Graphics.Core
 		/// </para>
 		/// </remarks>
 		public InputElementAttribute(int fieldOrder, string context)
-			: this(context, DXGI.Format.Unknown, 0)
+			: this(context, BufferFormat.Unknown, 0)
 		{
 			ExplicitOrder = fieldOrder;
 			Offset = 0;

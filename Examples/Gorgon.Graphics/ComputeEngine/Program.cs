@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using ComputeEngine.Properties;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Native;
@@ -210,8 +211,8 @@ namespace ComputeEngine
         private static OutputData[] Execute()
         {
             // The first step is to provide the compute shader with the information it needs to do its job.
-            _engine.ShaderResourceViews[0] = _intBuffer.GetShaderResourceView(DXGI.Format.R32_SInt);
-            _engine.ShaderResourceViews[1] = _floatBuffer.GetShaderResourceView(DXGI.Format.R32_Float);
+            _engine.ShaderResourceViews[0] = _intBuffer.GetShaderResourceView(BufferFormat.R32_SInt);
+            _engine.ShaderResourceViews[1] = _floatBuffer.GetShaderResourceView(BufferFormat.R32_Float);
             _engine.UnorderedAccessViews[0] = new GorgonUavBinding(_outputBuffer.GetUnorderedAccessView());
 
             // Now, we execute the shader with MaxValues threads for the first thread group.

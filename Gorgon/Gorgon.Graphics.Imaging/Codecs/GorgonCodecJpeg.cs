@@ -27,7 +27,6 @@
 using System.Collections.Generic;
 using Gorgon.Graphics.Imaging.Properties;
 using WIC = SharpDX.WIC;
-using DXGI = SharpDX.DXGI;
 
 namespace Gorgon.Graphics.Imaging.Codecs
 {
@@ -59,9 +58,9 @@ namespace Gorgon.Graphics.Imaging.Codecs
     {
         #region Variables.
 		// Supported formats.
-		private readonly DXGI.Format[] _supportedFormats =
+		private readonly BufferFormat[] _supportedFormats =
 		{
-			DXGI.Format.B8G8R8X8_UNorm
+			BufferFormat.B8G8R8X8_UNorm
 		};
 
 		// Image quality for lossy compressed images.
@@ -72,7 +71,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <summary>
 		/// Property to return the supported pixel formats for this codec.
 		/// </summary>
-		public override IReadOnlyList<DXGI.Format> SupportedPixelFormats => _supportedFormats;
+		public override IReadOnlyList<BufferFormat> SupportedPixelFormats => _supportedFormats;
 
 	    /// <summary>
         /// Property to set or return the quality of an image compressed with lossy compression.

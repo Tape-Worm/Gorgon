@@ -85,10 +85,10 @@ namespace Gorgon.Graphics.Example
 
         // Formats supported by the image.
         // We need to tell Gorgon which pixel formats this image codec stores its data as.  Otherwise, the image will not look right when it's loaded.
-	    private readonly DXGI.Format[] _supportedFormats =
-	    {
-		    DXGI.Format.R8G8B8A8_UNorm
-	    };
+        private readonly BufferFormat[] _supportedFormats =
+        {
+            BufferFormat.R8G8B8A8_UNorm
+        };
         #endregion
 
         #region Properties.
@@ -105,7 +105,7 @@ namespace Gorgon.Graphics.Example
 	    /// <summary>
 	    /// Property to return the pixel formats supported by the codec.
 	    /// </summary>
-	    public override IReadOnlyList<DXGI.Format> SupportedPixelFormats => _supportedFormats;
+	    public override IReadOnlyList<BufferFormat> SupportedPixelFormats => _supportedFormats;
 
 	    /// <summary>
         /// Property to return whether the image codec supports a depth component for volume textures.
@@ -149,7 +149,7 @@ namespace Gorgon.Graphics.Example
             }
 
             // We only support 2D images with the tv format.
-            GorgonImageInfo settings = new GorgonImageInfo(ImageType.Image2D, DXGI.Format.R8G8B8A8_UNorm);
+            GorgonImageInfo settings = new GorgonImageInfo(ImageType.Image2D, BufferFormat.R8G8B8A8_UNorm);
             TvHeader header;
 
             // Load the header for the image.
@@ -263,7 +263,7 @@ namespace Gorgon.Graphics.Example
 	    /// </remarks>
 	    public override void SaveToStream(IGorgonImage imageData, Stream stream, IGorgonImageCodecEncodingOptions encodingOptions = null)
         {
-	        if (imageData.Info.Format != DXGI.Format.R8G8B8A8_UNorm)
+	        if (imageData.Info.Format != BufferFormat.R8G8B8A8_UNorm)
 	        {
 				throw new ArgumentException(@"The image format must be R8G8B8A8_UNorm", nameof(imageData));    
 	        }

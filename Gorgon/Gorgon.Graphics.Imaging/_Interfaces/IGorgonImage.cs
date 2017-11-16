@@ -145,14 +145,14 @@ namespace Gorgon.Graphics.Imaging
 		/// </summary>
 		/// <param name="format">The pixel format to convert to.</param>
 		/// <returns><b>true</b> if the the current pixel format and the requested pixel format can be converted, <b>false</b> if not.</returns>
-		bool CanConvertToFormat(SharpDX.DXGI.Format format);
+		bool CanConvertToFormat(BufferFormat format);
 
 		/// <summary>
 		/// Function to determine if the source format can convert to any of the formats in the destination list.
 		/// </summary>
 		/// <param name="destFormats">List of destination formats to compare.</param>
 		/// <returns>A list of formats that the source format can be converted into, or an empty array if no conversion is possible.</returns>
-		IReadOnlyList<SharpDX.DXGI.Format> CanConvertToFormats(SharpDX.DXGI.Format[] destFormats);
+		IReadOnlyList<BufferFormat> CanConvertToFormats(BufferFormat[] destFormats);
 
 	    /// <summary>
 	    /// Function to copy another <see cref="IGorgonImage"/> into this image object.

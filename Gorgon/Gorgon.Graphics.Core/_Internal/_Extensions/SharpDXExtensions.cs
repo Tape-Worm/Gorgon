@@ -166,7 +166,7 @@ namespace Gorgon.Graphics.Core
 				       BufferCount = 2,
 				       AlphaMode = DXGI.AlphaMode.Unspecified,
 				       Flags = DXGI.SwapChainFlags.AllowModeSwitch,
-				       Format = swapChainInfo.Format,
+				       Format = (DXGI.Format)swapChainInfo.Format,
 				       Width = swapChainInfo.Width,
 				       Height = swapChainInfo.Height,
 				       Scaling = swapChainInfo.StretchBackBuffer ? DXGI.Scaling.Stretch : DXGI.Scaling.None,

@@ -165,7 +165,7 @@ namespace Gorgon.Graphics.Core
 		/// enumeration and will contain the supported functionality represented as OR'd values.
 		/// </para>
 		/// </remarks>
-		D3D11.FormatSupport GetBufferFormatSupport(DXGI.Format format);
+		D3D11.FormatSupport GetBufferFormatSupport(BufferFormat format);
 
 		/// <summary>
 		/// Function to retrieve the supported unordered access compute resource functionality for a given format.
@@ -182,7 +182,7 @@ namespace Gorgon.Graphics.Core
 		/// Level_11_0 feature level support.
 		/// </para>
 		/// </remarks>
-		D3D11.ComputeShaderFormatSupport GetBufferFormatComputeSupport(DXGI.Format format);
+		D3D11.ComputeShaderFormatSupport GetBufferFormatComputeSupport(BufferFormat format);
 
 		/// <summary>
 		/// Function to return a <see cref="GorgonMultisampleInfo"/> with the best quality level for the given count and format.
@@ -202,7 +202,7 @@ namespace Gorgon.Graphics.Core
 		/// Before calling this method, call the <see cref="O:Gorgon.Graphics.IGorgonVideoDevice.SupportsMultisampleCount"/> method to determine if multisampling is supported for the given <paramref name="count"/> and <paramref name="format"/>.
 		/// </para>
 		/// </remarks>
-		GorgonMultisampleInfo GetMultisampleInfo(DXGI.Format format, int count);
+		GorgonMultisampleInfo GetMultisampleInfo(BufferFormat format, int count);
 
 		/// <summary>
 		/// Function to return whether or not the device supports multisampling for the given format and sample count.
@@ -218,7 +218,7 @@ namespace Gorgon.Graphics.Core
 		/// If <c>Unknown</c> is passed to the <paramref name="format"/> parameter, then this method will return <b>true</b> because this will equate to no multisampling.
 		/// </para>
 		/// </remarks>
-		bool SupportsMultisampleCount(DXGI.Format format, int count);
+		bool SupportsMultisampleCount(BufferFormat format, int count);
 
 		/// <summary>
 		/// Function to return whether or not the device supports multisampling for the given format and the supplied <see cref="GorgonMultisampleInfo"/>.
@@ -234,7 +234,7 @@ namespace Gorgon.Graphics.Core
 		/// If <c>Unknown</c> is passed to the <paramref name="format"/> parameter, then this method will return <b>true</b> because this will equate to no multisampling.
 		/// </para>
 		/// </remarks>
-		bool SupportsMultisampleInfo(DXGI.Format format, GorgonMultisampleInfo multiSampleInfo);
+		bool SupportsMultisampleInfo(BufferFormat format, GorgonMultisampleInfo multiSampleInfo);
 
 		/// <summary>
 		/// Function to find a display mode supported by the Gorgon.

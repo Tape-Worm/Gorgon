@@ -101,7 +101,7 @@ namespace Gorgon.Graphics.Core
         /// The default value for this property is <c>Unknown</c>.
         /// </para>
         /// </remarks>
-        public DXGI.Format DefaultShaderViewFormat
+        public BufferFormat DefaultShaderViewFormat
         {
             get;
             set;
@@ -128,7 +128,7 @@ namespace Gorgon.Graphics.Core
         public GorgonBufferInfo()
         {
             Usage = D3D11.ResourceUsage.Default;
-            DefaultShaderViewFormat = DXGI.Format.Unknown;
+            DefaultShaderViewFormat = BufferFormat.Unknown;
             Binding = BufferBinding.Shader;
         }
         #endregion

@@ -107,7 +107,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Gorgon.Core;
-using DXGI = SharpDX.DXGI;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.IO;
 using Gorgon.Math;
@@ -202,61 +201,61 @@ namespace Gorgon.Graphics.Imaging.Codecs
         // Mappings for legacy formats.
 	    private readonly DdsLegacyConversion[] _legacyMapping = 
 		    {
-			    new DdsLegacyConversion(DXGI.Format.BC1_UNorm, DdsConversionFlags.None, _pfDxt1),
-			    new DdsLegacyConversion(DXGI.Format.BC2_UNorm, DdsConversionFlags.None, _pfDxt3),
-			    new DdsLegacyConversion(DXGI.Format.BC3_UNorm, DdsConversionFlags.None, _pfDxt5),
-			    new DdsLegacyConversion(DXGI.Format.BC2_UNorm, DdsConversionFlags.None, _pfDxt2),
-			    new DdsLegacyConversion(DXGI.Format.BC3_UNorm, DdsConversionFlags.None, _pfDxt4),
-			    new DdsLegacyConversion(DXGI.Format.BC4_UNorm, DdsConversionFlags.None, _pfBC4U),
-			    new DdsLegacyConversion(DXGI.Format.BC4_SNorm, DdsConversionFlags.None, _pfBC4S),
-			    new DdsLegacyConversion(DXGI.Format.BC5_UNorm, DdsConversionFlags.None, _pfBC5U),
-			    new DdsLegacyConversion(DXGI.Format.BC4_SNorm, DdsConversionFlags.None, _pfBC5S),
-			    new DdsLegacyConversion(DXGI.Format.BC4_UNorm, DdsConversionFlags.None, new DdsPixelFormat(DdsPixelFormatFlags.FourCC, MakeFourCC('A', 'T', 'I', '1'), 0, 0, 0, 0, 0)),
-			    new DdsLegacyConversion(DXGI.Format.BC5_UNorm, DdsConversionFlags.None, new DdsPixelFormat(DdsPixelFormatFlags.FourCC, MakeFourCC('A', 'T', 'I', '2'), 0, 0, 0, 0, 0)),
-			    new DdsLegacyConversion(DXGI.Format.R8G8_B8G8_UNorm, DdsConversionFlags.None, _pfR8G8_B8G8),
-			    new DdsLegacyConversion(DXGI.Format.G8R8_G8B8_UNorm, DdsConversionFlags.None, _pfG8R8_G8B8),
-			    new DdsLegacyConversion(DXGI.Format.B8G8R8A8_UNorm, DdsConversionFlags.None, _pfA8R8G8B8),
-			    new DdsLegacyConversion(DXGI.Format.B8G8R8X8_UNorm, DdsConversionFlags.None, _pfX8R8G8B8),
-			    new DdsLegacyConversion(DXGI.Format.R8G8B8A8_UNorm, DdsConversionFlags.None, _pfA8B8G8R8),
-			    new DdsLegacyConversion(DXGI.Format.R8G8B8A8_UNorm, DdsConversionFlags.NoAlpha, _pfX8B8G8R8),
-			    new DdsLegacyConversion(DXGI.Format.R16G16_UNorm, DdsConversionFlags.None, _pfG16R16),
-			    new DdsLegacyConversion(DXGI.Format.R10G10B10A2_UNorm, DdsConversionFlags.Swizzle, new DdsPixelFormat(DdsPixelFormatFlags.RGB, 0, 32, 0x000003ff, 0x000ffc00, 0x3ff00000, 0xc0000000)),
-			    new DdsLegacyConversion(DXGI.Format.R10G10B10A2_UNorm, DdsConversionFlags.None, new DdsPixelFormat(DdsPixelFormatFlags.RGB, 0, 32, 0x3ff00000, 0x000ffc00, 0x000003ff, 0xc0000000)),
-			    new DdsLegacyConversion(DXGI.Format.R8G8B8A8_UNorm, DdsConversionFlags.Expand | DdsConversionFlags.NoAlpha | DdsConversionFlags.RGB888, _pfR8G8B8),
-			    new DdsLegacyConversion(DXGI.Format.B5G6R5_UNorm, DdsConversionFlags.RGB565, _pfR5G6B5),
-			    new DdsLegacyConversion(DXGI.Format.B5G5R5A1_UNorm, DdsConversionFlags.RGB5551, _pfA1R5G5B5),
-			    new DdsLegacyConversion(DXGI.Format.B5G5R5A1_UNorm, DdsConversionFlags.RGB5551 | DdsConversionFlags.NoAlpha, new DdsPixelFormat(DdsPixelFormatFlags.RGB, 0, 16, 0x7c00, 0x03e0, 0x001f, 0x0000)),
-			    new DdsLegacyConversion(DXGI.Format.R8G8B8A8_UNorm, DdsConversionFlags.Expand | DdsConversionFlags.RGB8332, new DdsPixelFormat(DdsPixelFormatFlags.RGB, 0, 16, 0x00e0, 0x001c, 0x0003, 0xff00)),
-			    new DdsLegacyConversion(DXGI.Format.B5G6R5_UNorm, DdsConversionFlags.Expand | DdsConversionFlags.RGB332, new DdsPixelFormat(DdsPixelFormatFlags.RGB, 0, 8, 0xe0, 0x1c, 0x03, 0x00)),
-			    new DdsLegacyConversion(DXGI.Format.R8_UNorm, DdsConversionFlags.None, _pfL8),
-			    new DdsLegacyConversion(DXGI.Format.R16_UNorm, DdsConversionFlags.None, _pfL16),
-			    new DdsLegacyConversion(DXGI.Format.R8G8_UNorm, DdsConversionFlags.None, _pfA8L8),
-			    new DdsLegacyConversion(DXGI.Format.A8_UNorm, DdsConversionFlags.None, _pfA8),
-			    new DdsLegacyConversion(DXGI.Format.R16G16B16A16_UNorm, DdsConversionFlags.None, new DdsPixelFormat(DdsPixelFormatFlags.FourCC, 36, 0, 0, 0, 0, 0)),
-			    new DdsLegacyConversion(DXGI.Format.R16G16B16A16_SNorm, DdsConversionFlags.None, new DdsPixelFormat(DdsPixelFormatFlags.FourCC, 110, 0, 0, 0, 0, 0)),
-			    new DdsLegacyConversion(DXGI.Format.R16_Float, DdsConversionFlags.None, new DdsPixelFormat(DdsPixelFormatFlags.FourCC, 111, 0, 0, 0, 0, 0)),
-			    new DdsLegacyConversion(DXGI.Format.R16G16_Float, DdsConversionFlags.None, new DdsPixelFormat(DdsPixelFormatFlags.FourCC, 112, 0, 0, 0, 0, 0)),
-			    new DdsLegacyConversion(DXGI.Format.R16G16B16A16_Float, DdsConversionFlags.None, new DdsPixelFormat(DdsPixelFormatFlags.FourCC, 113, 0, 0, 0, 0, 0)),
-			    new DdsLegacyConversion(DXGI.Format.R32_Float, DdsConversionFlags.None, new DdsPixelFormat(DdsPixelFormatFlags.FourCC, 114, 0, 0, 0, 0, 0)),
-			    new DdsLegacyConversion(DXGI.Format.R32G32_Float, DdsConversionFlags.None, new DdsPixelFormat(DdsPixelFormatFlags.FourCC, 115, 0, 0, 0, 0, 0)),
-			    new DdsLegacyConversion(DXGI.Format.R32G32B32A32_Float, DdsConversionFlags.None, new DdsPixelFormat(DdsPixelFormatFlags.FourCC, 116, 0, 0, 0, 0, 0)),
-			    new DdsLegacyConversion(DXGI.Format.R32_Float, DdsConversionFlags.None, new DdsPixelFormat(DdsPixelFormatFlags.RGB, 0, 32, 0xffffffff, 0x00000000, 0x00000000, 0x00000000)),
-			    new DdsLegacyConversion(DXGI.Format.R8G8B8A8_UNorm, DdsConversionFlags.Expand | DdsConversionFlags.Palette | DdsConversionFlags.A8P8, new DdsPixelFormat(DdsPixelFormatFlags.PaletteIndexed, 0, 16, 0, 0, 0, 0)),
-			    new DdsLegacyConversion(DXGI.Format.R8G8B8A8_UNorm, DdsConversionFlags.Expand | DdsConversionFlags.Palette, new DdsPixelFormat(DdsPixelFormatFlags.PaletteIndexed, 0, 8, 0, 0, 0, 0)), 
-				new DdsLegacyConversion(DXGI.Format.R8G8B8A8_UNorm, DdsConversionFlags.Expand | DdsConversionFlags.RGB4444,_pfA4R4G4B4),
-				new DdsLegacyConversion(DXGI.Format.R8G8B8A8_UNorm, DdsConversionFlags.Expand | DdsConversionFlags.NoAlpha | DdsConversionFlags.RGB4444, new DdsPixelFormat(DdsPixelFormatFlags.RGB, 0, 16, 0x0f00, 0x00f0, 0x000f, 0x0000)),
-			    new DdsLegacyConversion(DXGI.Format.R8G8B8A8_UNorm, DdsConversionFlags.Expand | DdsConversionFlags.A4L4, new DdsPixelFormat(DdsPixelFormatFlags.Luminance, 0, 8, 0x0f, 0x00, 0x00, 0xf0))
+			    new DdsLegacyConversion(BufferFormat.BC1_UNorm, DdsConversionFlags.None, _pfDxt1),
+			    new DdsLegacyConversion(BufferFormat.BC2_UNorm, DdsConversionFlags.None, _pfDxt3),
+			    new DdsLegacyConversion(BufferFormat.BC3_UNorm, DdsConversionFlags.None, _pfDxt5),
+			    new DdsLegacyConversion(BufferFormat.BC2_UNorm, DdsConversionFlags.None, _pfDxt2),
+			    new DdsLegacyConversion(BufferFormat.BC3_UNorm, DdsConversionFlags.None, _pfDxt4),
+			    new DdsLegacyConversion(BufferFormat.BC4_UNorm, DdsConversionFlags.None, _pfBC4U),
+			    new DdsLegacyConversion(BufferFormat.BC4_SNorm, DdsConversionFlags.None, _pfBC4S),
+			    new DdsLegacyConversion(BufferFormat.BC5_UNorm, DdsConversionFlags.None, _pfBC5U),
+			    new DdsLegacyConversion(BufferFormat.BC4_SNorm, DdsConversionFlags.None, _pfBC5S),
+			    new DdsLegacyConversion(BufferFormat.BC4_UNorm, DdsConversionFlags.None, new DdsPixelFormat(DdsPixelFormatFlags.FourCC, MakeFourCC('A', 'T', 'I', '1'), 0, 0, 0, 0, 0)),
+			    new DdsLegacyConversion(BufferFormat.BC5_UNorm, DdsConversionFlags.None, new DdsPixelFormat(DdsPixelFormatFlags.FourCC, MakeFourCC('A', 'T', 'I', '2'), 0, 0, 0, 0, 0)),
+			    new DdsLegacyConversion(BufferFormat.R8G8_B8G8_UNorm, DdsConversionFlags.None, _pfR8G8_B8G8),
+			    new DdsLegacyConversion(BufferFormat.G8R8_G8B8_UNorm, DdsConversionFlags.None, _pfG8R8_G8B8),
+			    new DdsLegacyConversion(BufferFormat.B8G8R8A8_UNorm, DdsConversionFlags.None, _pfA8R8G8B8),
+			    new DdsLegacyConversion(BufferFormat.B8G8R8X8_UNorm, DdsConversionFlags.None, _pfX8R8G8B8),
+			    new DdsLegacyConversion(BufferFormat.R8G8B8A8_UNorm, DdsConversionFlags.None, _pfA8B8G8R8),
+			    new DdsLegacyConversion(BufferFormat.R8G8B8A8_UNorm, DdsConversionFlags.NoAlpha, _pfX8B8G8R8),
+			    new DdsLegacyConversion(BufferFormat.R16G16_UNorm, DdsConversionFlags.None, _pfG16R16),
+			    new DdsLegacyConversion(BufferFormat.R10G10B10A2_UNorm, DdsConversionFlags.Swizzle, new DdsPixelFormat(DdsPixelFormatFlags.RGB, 0, 32, 0x000003ff, 0x000ffc00, 0x3ff00000, 0xc0000000)),
+			    new DdsLegacyConversion(BufferFormat.R10G10B10A2_UNorm, DdsConversionFlags.None, new DdsPixelFormat(DdsPixelFormatFlags.RGB, 0, 32, 0x3ff00000, 0x000ffc00, 0x000003ff, 0xc0000000)),
+			    new DdsLegacyConversion(BufferFormat.R8G8B8A8_UNorm, DdsConversionFlags.Expand | DdsConversionFlags.NoAlpha | DdsConversionFlags.RGB888, _pfR8G8B8),
+			    new DdsLegacyConversion(BufferFormat.B5G6R5_UNorm, DdsConversionFlags.RGB565, _pfR5G6B5),
+			    new DdsLegacyConversion(BufferFormat.B5G5R5A1_UNorm, DdsConversionFlags.RGB5551, _pfA1R5G5B5),
+			    new DdsLegacyConversion(BufferFormat.B5G5R5A1_UNorm, DdsConversionFlags.RGB5551 | DdsConversionFlags.NoAlpha, new DdsPixelFormat(DdsPixelFormatFlags.RGB, 0, 16, 0x7c00, 0x03e0, 0x001f, 0x0000)),
+			    new DdsLegacyConversion(BufferFormat.R8G8B8A8_UNorm, DdsConversionFlags.Expand | DdsConversionFlags.RGB8332, new DdsPixelFormat(DdsPixelFormatFlags.RGB, 0, 16, 0x00e0, 0x001c, 0x0003, 0xff00)),
+			    new DdsLegacyConversion(BufferFormat.B5G6R5_UNorm, DdsConversionFlags.Expand | DdsConversionFlags.RGB332, new DdsPixelFormat(DdsPixelFormatFlags.RGB, 0, 8, 0xe0, 0x1c, 0x03, 0x00)),
+			    new DdsLegacyConversion(BufferFormat.R8_UNorm, DdsConversionFlags.None, _pfL8),
+			    new DdsLegacyConversion(BufferFormat.R16_UNorm, DdsConversionFlags.None, _pfL16),
+			    new DdsLegacyConversion(BufferFormat.R8G8_UNorm, DdsConversionFlags.None, _pfA8L8),
+			    new DdsLegacyConversion(BufferFormat.A8_UNorm, DdsConversionFlags.None, _pfA8),
+			    new DdsLegacyConversion(BufferFormat.R16G16B16A16_UNorm, DdsConversionFlags.None, new DdsPixelFormat(DdsPixelFormatFlags.FourCC, 36, 0, 0, 0, 0, 0)),
+			    new DdsLegacyConversion(BufferFormat.R16G16B16A16_SNorm, DdsConversionFlags.None, new DdsPixelFormat(DdsPixelFormatFlags.FourCC, 110, 0, 0, 0, 0, 0)),
+			    new DdsLegacyConversion(BufferFormat.R16_Float, DdsConversionFlags.None, new DdsPixelFormat(DdsPixelFormatFlags.FourCC, 111, 0, 0, 0, 0, 0)),
+			    new DdsLegacyConversion(BufferFormat.R16G16_Float, DdsConversionFlags.None, new DdsPixelFormat(DdsPixelFormatFlags.FourCC, 112, 0, 0, 0, 0, 0)),
+			    new DdsLegacyConversion(BufferFormat.R16G16B16A16_Float, DdsConversionFlags.None, new DdsPixelFormat(DdsPixelFormatFlags.FourCC, 113, 0, 0, 0, 0, 0)),
+			    new DdsLegacyConversion(BufferFormat.R32_Float, DdsConversionFlags.None, new DdsPixelFormat(DdsPixelFormatFlags.FourCC, 114, 0, 0, 0, 0, 0)),
+			    new DdsLegacyConversion(BufferFormat.R32G32_Float, DdsConversionFlags.None, new DdsPixelFormat(DdsPixelFormatFlags.FourCC, 115, 0, 0, 0, 0, 0)),
+			    new DdsLegacyConversion(BufferFormat.R32G32B32A32_Float, DdsConversionFlags.None, new DdsPixelFormat(DdsPixelFormatFlags.FourCC, 116, 0, 0, 0, 0, 0)),
+			    new DdsLegacyConversion(BufferFormat.R32_Float, DdsConversionFlags.None, new DdsPixelFormat(DdsPixelFormatFlags.RGB, 0, 32, 0xffffffff, 0x00000000, 0x00000000, 0x00000000)),
+			    new DdsLegacyConversion(BufferFormat.R8G8B8A8_UNorm, DdsConversionFlags.Expand | DdsConversionFlags.Palette | DdsConversionFlags.A8P8, new DdsPixelFormat(DdsPixelFormatFlags.PaletteIndexed, 0, 16, 0, 0, 0, 0)),
+			    new DdsLegacyConversion(BufferFormat.R8G8B8A8_UNorm, DdsConversionFlags.Expand | DdsConversionFlags.Palette, new DdsPixelFormat(DdsPixelFormatFlags.PaletteIndexed, 0, 8, 0, 0, 0, 0)), 
+				new DdsLegacyConversion(BufferFormat.R8G8B8A8_UNorm, DdsConversionFlags.Expand | DdsConversionFlags.RGB4444,_pfA4R4G4B4),
+				new DdsLegacyConversion(BufferFormat.R8G8B8A8_UNorm, DdsConversionFlags.Expand | DdsConversionFlags.NoAlpha | DdsConversionFlags.RGB4444, new DdsPixelFormat(DdsPixelFormatFlags.RGB, 0, 16, 0x0f00, 0x00f0, 0x000f, 0x0000)),
+			    new DdsLegacyConversion(BufferFormat.R8G8B8A8_UNorm, DdsConversionFlags.Expand | DdsConversionFlags.A4L4, new DdsPixelFormat(DdsPixelFormatFlags.Luminance, 0, 8, 0x0f, 0x00, 0x00, 0xf0))
 		};
 
 		// Supported buffer formats.
-        private readonly DXGI.Format[] _formats;
+        private readonly BufferFormat[] _formats;
 		#endregion
 
 		#region Properties.
 		/// <summary>
 		/// Property to return the pixel formats supported by the codec.
 		/// </summary>
-		public override IReadOnlyList<DXGI.Format> SupportedPixelFormats => _formats;
+		public override IReadOnlyList<BufferFormat> SupportedPixelFormats => _formats;
 
 		/// <summary>
 		/// Property to return whether the codec supports decoding/encoding multiple frames or not.
@@ -364,10 +363,10 @@ namespace Gorgon.Graphics.Imaging.Codecs
 				throw new IOException(string.Format(Resources.GORIMG_ERR_FILE_FORMAT_NOT_CORRECT, Codec));
             }
 
-			DXGI.Format format = DXGI.Format.Unknown;
+			BufferFormat format = BufferFormat.Unknown;
 
 			// Ensure the format is correct.
-			foreach (DXGI.Format supportedFormat in _formats)
+			foreach (BufferFormat supportedFormat in _formats)
 			{
 				if (supportedFormat != dx10Header.Format)
 				{
@@ -377,7 +376,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 				format = dx10Header.Format;
 			}
 			
-			if (format == DXGI.Format.Unknown)
+			if (format == BufferFormat.Unknown)
 			{
 				throw new IOException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, dx10Header.Format));
 			}
@@ -429,7 +428,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// <param name="flags">Flags to alter conversion behaviour.</param>
         /// <param name="conversionFlags">Flags to indicate the types of conversions.</param>
         /// <returns>The format of the buffer, or Unknown if the format is not supported.</returns>
-        private DXGI.Format GetFormat(ref DdsPixelFormat format, DdsLegacyFlags flags, out DdsConversionFlags conversionFlags)
+        private BufferFormat GetFormat(ref DdsPixelFormat format, DdsLegacyFlags flags, out DdsConversionFlags conversionFlags)
         {
 	        DdsLegacyConversion conversion = default(DdsLegacyConversion);
 
@@ -483,21 +482,21 @@ namespace Gorgon.Graphics.Imaging.Codecs
 			}
 
             conversionFlags = conversion.Flags;
-            DXGI.Format result = conversion.Format;
+            BufferFormat result = conversion.Format;
 
-            if (conversion.Format == DXGI.Format.Unknown)
+            if (conversion.Format == BufferFormat.Unknown)
             {
-                return DXGI.Format.Unknown;
+                return BufferFormat.Unknown;
             }
 
             // We do not want to expand the bit count to match, so we can't convert.
             if (((flags & DdsLegacyFlags.NoLegacyExpansion) == DdsLegacyFlags.NoLegacyExpansion) && ((conversionFlags & DdsConversionFlags.Expand) == DdsConversionFlags.Expand))
             {
-                return DXGI.Format.Unknown;
+                return BufferFormat.Unknown;
             }
 
             // Don't fix up RGB101010A2.
-            if ((result == DXGI.Format.R10G10B10A2_UNorm) && ((flags & DdsLegacyFlags.NoR10B10G10A2Fix) == DdsLegacyFlags.NoR10B10G10A2Fix))
+            if ((result == BufferFormat.R10G10B10A2_UNorm) && ((flags & DdsLegacyFlags.NoR10B10G10A2Fix) == DdsLegacyFlags.NoR10B10G10A2Fix))
             {
                 conversionFlags ^= DdsConversionFlags.Swizzle;
             }
@@ -555,7 +554,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
             }
             else
 			{
-				DXGI.Format format = GetFormat(ref header.PixelFormat, legacyFlags, out conversionFlags);
+				BufferFormat format = GetFormat(ref header.PixelFormat, legacyFlags, out conversionFlags);
 
 				// If we actually have a volume texture, or we want to make one.
 				if ((header.Flags & DdsHeaderFlags.Volume) == DdsHeaderFlags.Volume)
@@ -594,7 +593,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
                 settings.Width = (int)header.Width;
                 settings.Height = (int)header.Height;
 
-                if (settings.Format == DXGI.Format.Unknown)
+                if (settings.Format == BufferFormat.Unknown)
                 {
                     throw new IOException(string.Format(Resources.GORIMG_ERR_FILE_FORMAT_NOT_CORRECT, settings.Format));
                 }
@@ -620,29 +619,29 @@ namespace Gorgon.Graphics.Imaging.Codecs
             {
                 switch (settings.Format)
                 {
-                    case DXGI.Format.B8G8R8A8_UNorm:
-                        settings.Format = DXGI.Format.R8G8B8A8_UNorm;
+                    case BufferFormat.B8G8R8A8_UNorm:
+                        settings.Format = BufferFormat.R8G8B8A8_UNorm;
                         conversionFlags |= DdsConversionFlags.Swizzle;
                         break;
-                    case DXGI.Format.B8G8R8X8_UNorm:
-                        settings.Format = DXGI.Format.R8G8B8A8_UNorm;
+                    case BufferFormat.B8G8R8X8_UNorm:
+                        settings.Format = BufferFormat.R8G8B8A8_UNorm;
                         conversionFlags  |= DdsConversionFlags.Swizzle | DdsConversionFlags.NoAlpha;
                         break;
-                    case DXGI.Format.B8G8R8A8_Typeless:
-                        settings.Format = DXGI.Format.R8G8B8A8_Typeless;
+                    case BufferFormat.B8G8R8A8_Typeless:
+                        settings.Format = BufferFormat.R8G8B8A8_Typeless;
                         conversionFlags  |= DdsConversionFlags.Swizzle;
                         break;
-                    case DXGI.Format.B8G8R8A8_UNorm_SRgb:
-                        settings.Format = DXGI.Format.R8G8B8A8_UNorm_SRgb;
+                    case BufferFormat.B8G8R8A8_UNorm_SRgb:
+                        settings.Format = BufferFormat.R8G8B8A8_UNorm_SRgb;
                         conversionFlags  |= DdsConversionFlags.Swizzle;
                         break;
 
-                    case DXGI.Format.B8G8R8X8_Typeless:
-                        settings.Format = DXGI.Format.R8G8B8A8_Typeless;
+                    case BufferFormat.B8G8R8X8_Typeless:
+                        settings.Format = BufferFormat.R8G8B8A8_Typeless;
                         conversionFlags  |= DdsConversionFlags.Swizzle | DdsConversionFlags.NoAlpha;
                         break;
-                    case DXGI.Format.B8G8R8X8_UNorm_SRgb:
-                        settings.Format = DXGI.Format.R8G8B8A8_UNorm_SRgb;
+                    case BufferFormat.B8G8R8X8_UNorm_SRgb:
+                        settings.Format = BufferFormat.R8G8B8A8_UNorm_SRgb;
                         conversionFlags  |= DdsConversionFlags.Swizzle | DdsConversionFlags.NoAlpha;
                         break;
                 }
@@ -656,11 +655,11 @@ namespace Gorgon.Graphics.Imaging.Codecs
 
 		    switch (settings.Format)
 		    {
-		        case DXGI.Format.B5G6R5_UNorm:
-		        case DXGI.Format.B5G5R5A1_UNorm:
-		            settings.Format = DXGI.Format.R8G8B8A8_UNorm;
+		        case BufferFormat.B5G6R5_UNorm:
+		        case BufferFormat.B5G5R5A1_UNorm:
+		            settings.Format = BufferFormat.R8G8B8A8_UNorm;
 		            conversionFlags |= DdsConversionFlags.Expand;
-		            if (settings.Format == DXGI.Format.B5G6R5_UNorm)
+		            if (settings.Format == BufferFormat.B5G6R5_UNorm)
 		            {
 		                conversionFlags |= DdsConversionFlags.NoAlpha;
 		            }
@@ -681,10 +680,10 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <param name="destFormat">The destination format.</param>
 		/// <param name="bitFlags">Image bit conversion control flags.</param>
 		/// <param name="palette">Palette to assigned to indexed images.</param>
-		private static unsafe void ExpandLegacyScanline(void* src, int srcPitch, DdsConversionFlags srcFormat, void* dest, int destPitch, DXGI.Format destFormat, ImageBitFlags bitFlags, uint[] palette)
+		private static unsafe void ExpandLegacyScanline(void* src, int srcPitch, DdsConversionFlags srcFormat, void* dest, int destPitch, BufferFormat destFormat, ImageBitFlags bitFlags, uint[] palette)
 		{
-			if (((srcFormat == DdsConversionFlags.RGB332) && (destFormat != DXGI.Format.B5G6R5_UNorm))
-				|| ((srcFormat != DdsConversionFlags.RGB332) && (destFormat != DXGI.Format.R8G8B8A8_UNorm)))
+			if (((srcFormat == DdsConversionFlags.RGB332) && (destFormat != BufferFormat.B5G6R5_UNorm))
+				|| ((srcFormat != DdsConversionFlags.RGB332) && (destFormat != BufferFormat.R8G8B8A8_UNorm)))
 			{
 				throw new IOException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, destFormat));
 			}
@@ -732,7 +731,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 
 					switch (destFormat)
 					{
-						case DXGI.Format.R8G8B8A8_UNorm:
+						case BufferFormat.R8G8B8A8_UNorm:
 							{
 								uint* destPtr = (uint*)dest;
 
@@ -749,7 +748,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 								}
 							}
 							break;
-						case DXGI.Format.B5G6R5_UNorm:
+						case BufferFormat.B5G6R5_UNorm:
 							{
 								ushort* destPtr = (ushort*)dest;
 
@@ -864,85 +863,85 @@ namespace Gorgon.Graphics.Imaging.Codecs
 			{
 				switch (settings.Format)
 				{
-					case DXGI.Format.R8G8B8A8_UNorm:
+					case BufferFormat.R8G8B8A8_UNorm:
 						format = _pfA8B8G8R8;
 						break;
-					case DXGI.Format.R16G16_UNorm:
+					case BufferFormat.R16G16_UNorm:
 						format = _pfG16R16;
 						break;
-					case DXGI.Format.R8G8_UNorm:
+					case BufferFormat.R8G8_UNorm:
 						format = _pfA8L8;
 						break;
-					case DXGI.Format.R16_UNorm:
+					case BufferFormat.R16_UNorm:
 						format = _pfL16;
 						break;
-					case DXGI.Format.R8_UNorm:
+					case BufferFormat.R8_UNorm:
 						format = _pfL8;
 						break;
-					case DXGI.Format.A8_UNorm:
+					case BufferFormat.A8_UNorm:
 						format = _pfA8;
 						break;
-					case DXGI.Format.R8G8_B8G8_UNorm:
+					case BufferFormat.R8G8_B8G8_UNorm:
 						format = _pfR8G8_B8G8;
 						break;
-					case DXGI.Format.G8R8_G8B8_UNorm:
+					case BufferFormat.G8R8_G8B8_UNorm:
 						format = _pfG8R8_G8B8;
 						break;
-					case DXGI.Format.BC1_UNorm:
+					case BufferFormat.BC1_UNorm:
 						format = _pfDxt1;
 						break;
-					case DXGI.Format.BC2_UNorm:
+					case BufferFormat.BC2_UNorm:
 						format = _pfDxt3;
 						break;
-					case DXGI.Format.BC3_UNorm:
+					case BufferFormat.BC3_UNorm:
 						format = _pfDxt5;
 						break;
-					case DXGI.Format.BC4_UNorm:
+					case BufferFormat.BC4_UNorm:
 						format = _pfBC4U;
 						break;
-					case DXGI.Format.BC4_SNorm:
+					case BufferFormat.BC4_SNorm:
 						format = _pfBC4S;
 						break;
-					case DXGI.Format.BC5_UNorm:
+					case BufferFormat.BC5_UNorm:
 						format = _pfBC5U;
 						break;
-					case DXGI.Format.BC5_SNorm:
+					case BufferFormat.BC5_SNorm:
 						format = _pfBC5S;
 						break;
-					case DXGI.Format.B5G6R5_UNorm:
+					case BufferFormat.B5G6R5_UNorm:
 						format = _pfR5G6B5;
 						break;
-					case DXGI.Format.B5G5R5A1_UNorm:
+					case BufferFormat.B5G5R5A1_UNorm:
 						format = _pfA1R5G5B5;
 						break;
-					case DXGI.Format.B8G8R8A8_UNorm:
+					case BufferFormat.B8G8R8A8_UNorm:
 						format = _pfA8R8G8B8;
 						break;
-					case DXGI.Format.B8G8R8X8_UNorm:
+					case BufferFormat.B8G8R8X8_UNorm:
 						format = _pfX8R8G8B8;
 						break;
-					case DXGI.Format.R32G32B32A32_Float:
+					case BufferFormat.R32G32B32A32_Float:
 						format = new DdsPixelFormat(DdsPixelFormatFlags.FourCC, 116, 0, 0, 0, 0, 0);
 						break;
-					case DXGI.Format.R16G16B16A16_Float:
+					case BufferFormat.R16G16B16A16_Float:
 						format = new DdsPixelFormat(DdsPixelFormatFlags.FourCC, 113, 0, 0, 0, 0, 0);
 						break;
-					case DXGI.Format.R16G16B16A16_UNorm:
+					case BufferFormat.R16G16B16A16_UNorm:
 						format = new DdsPixelFormat(DdsPixelFormatFlags.FourCC, 36, 0, 0, 0, 0, 0);
 						break;
-					case DXGI.Format.R16G16B16A16_SNorm:
+					case BufferFormat.R16G16B16A16_SNorm:
 						format = new DdsPixelFormat(DdsPixelFormatFlags.FourCC, 110, 0, 0, 0, 0, 0);
 						break;
-					case DXGI.Format.R32G32_Float:
+					case BufferFormat.R32G32_Float:
 						format = new DdsPixelFormat(DdsPixelFormatFlags.FourCC, 115, 0, 0, 0, 0, 0);
 						break;
-					case DXGI.Format.R16G16_Float:
+					case BufferFormat.R16G16_Float:
 						format = new DdsPixelFormat(DdsPixelFormatFlags.FourCC, 112, 0, 0, 0, 0, 0);
 						break;
-					case DXGI.Format.R32_Float:
+					case BufferFormat.R32_Float:
 						format = new DdsPixelFormat(DdsPixelFormatFlags.FourCC, 114, 0, 0, 0, 0, 0);
 						break;
-					case DXGI.Format.R16_Float:
+					case BufferFormat.R16_Float:
 						format = new DdsPixelFormat(DdsPixelFormatFlags.FourCC, 111, 0, 0, 0, 0, 0);
 						break;
 				}
@@ -1052,22 +1051,22 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <param name="flags">Conversion flags used to determine how to expand the scanline.</param>
 		/// <param name="imageBitFlags">Bit depth conversion flags.</param>
 		/// <param name="palette">A palette, used to expand indexed 8 bpp image data.</param>
-		private static unsafe void ExpandScanline(byte* srcData, byte* destData, int srcRowPitch, int destRowPitch, DXGI.Format format, DdsConversionFlags flags, ImageBitFlags imageBitFlags, uint[] palette)
+		private static unsafe void ExpandScanline(byte* srcData, byte* destData, int srcRowPitch, int destRowPitch, BufferFormat format, DdsConversionFlags flags, ImageBitFlags imageBitFlags, uint[] palette)
 		{
 			// Perform expansion.
 			if (((flags & DdsConversionFlags.RGB565) == DdsConversionFlags.RGB565)
 				|| ((flags & DdsConversionFlags.RGB5551) == DdsConversionFlags.RGB5551))
 			{
-				DXGI.Format expandFormat = DXGI.Format.B5G6R5_UNorm;
+				BufferFormat expandFormat = BufferFormat.B5G6R5_UNorm;
 
 				if ((flags & DdsConversionFlags.RGB5551) == DdsConversionFlags.RGB5551)
 				{
-					expandFormat = DXGI.Format.B5G5R5A1_UNorm;
+					expandFormat = BufferFormat.B5G5R5A1_UNorm;
 				}
 
 				if ((flags & DdsConversionFlags.RGB4444) == DdsConversionFlags.RGB4444)
 				{
-					expandFormat = DXGI.Format.B4G4R4A4_UNorm;
+					expandFormat = BufferFormat.B4G4R4A4_UNorm;
 				}
 
 				ImageUtilities.Expand16BPPScanline(srcData, srcRowPitch, expandFormat, destData, destRowPitch, imageBitFlags);
@@ -1637,9 +1636,9 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		{
 			CodecCommonExtensions = new[] { "dds" };
 
-			_formats = (from format in (DXGI.Format[])Enum.GetValues(typeof(DXGI.Format))
+			_formats = (from format in (BufferFormat[])Enum.GetValues(typeof(BufferFormat))
 			            let info = new GorgonFormatInfo(format)
-			            where format != DXGI.Format.Unknown && !info.IsTypeless
+			            where format != BufferFormat.Unknown && !info.IsTypeless
 			            select format).ToArray();
 		}
 		#endregion

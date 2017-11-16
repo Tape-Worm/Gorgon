@@ -78,7 +78,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="start">The start.</param>
         /// <param name="count">The count.</param>
         /// <param name="format">The format.</param>
-        public BufferShaderViewKey(int start, int count, DXGI.Format format)
+        public BufferShaderViewKey(int start, int count, BufferFormat format)
             : this(start, count, (int)format)
         {
         }

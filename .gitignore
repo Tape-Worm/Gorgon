@@ -17,9 +17,11 @@ x86/
 build/
 bld/
 Docs/Help/
+Gorgon/backup_*/
 Gorgon/OldAndBroken/
 Gorgon/__OBSOLETE__/
 Gorgon/*.txt
+Experiment_*/
 Test/*
 !Test/Gorgon.Core.Test/
 !Test/Gorgon.Input.Test/

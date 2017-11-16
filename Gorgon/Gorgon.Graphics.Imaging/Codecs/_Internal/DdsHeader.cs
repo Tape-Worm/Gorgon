@@ -27,7 +27,6 @@
 using System;
 using System.Runtime.InteropServices;
 using Gorgon.Native;
-using DXGI = SharpDX.DXGI;
 
 namespace Gorgon.Graphics.Imaging.Codecs
 {
@@ -258,7 +257,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <summary>
 		/// Buffer format.
 		/// </summary>
-		public readonly DXGI.Format Format;
+		public readonly BufferFormat Format;
 		/// <summary>
 		/// Conversion flags.
 		/// </summary>
@@ -274,7 +273,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <param name="format">The format.</param>
 		/// <param name="flags">The flags.</param>
 		/// <param name="pixelFormat">The pixel format.</param>
-		public DdsLegacyConversion(DXGI.Format format, DdsConversionFlags flags, DdsPixelFormat pixelFormat)
+		public DdsLegacyConversion(BufferFormat format, DdsConversionFlags flags, DdsPixelFormat pixelFormat)
 		{
 			Format = format;
 			Flags = flags;
@@ -365,7 +364,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <summary>
 		/// Format.
 		/// </summary>
-		public DXGI.Format Format;
+		public BufferFormat Format;
 		/// <summary>
 		/// Resource dimension.
 		/// </summary>

@@ -157,7 +157,7 @@ namespace Gorgon.Graphics.Core
                                           };
             }
 
-            if ((_info.DefaultShaderViewFormat == DXGI.Format.Unknown)
+            if ((_info.DefaultShaderViewFormat == BufferFormat.Unknown)
                 || ((bindFlags & D3D11.BindFlags.ShaderResource) != D3D11.BindFlags.ShaderResource))
             {
                 return;
@@ -176,7 +176,7 @@ namespace Gorgon.Graphics.Core
         /// Use this to retrieve the number of elements based on the <paramref name="format"/> that will be passed to a shader resource view.
         /// </para>
         /// </remarks>
-        public int GetTotalElementCount(DXGI.Format format) => format == DXGI.Format.Unknown ? 0 : GetTotalElementCount(new GorgonFormatInfo(format));
+        public int GetTotalElementCount(BufferFormat format) => format == BufferFormat.Unknown ? 0 : GetTotalElementCount(new GorgonFormatInfo(format));
 
         /// <summary>
         /// Function to create or retrieve a <see cref="GorgonBufferView"/> for this buffer.
@@ -198,9 +198,9 @@ namespace Gorgon.Graphics.Core
         /// If the <paramref name="elementCount"/> is omitted (less than 1), then the entire buffer minus the <paramref name="startElement"/> will be available to the shader.
         /// </para>
         /// </remarks>
-        public GorgonBufferView GetShaderResourceView(DXGI.Format format, int startElement = 0, int elementCount = 0)
+        public GorgonBufferView GetShaderResourceView(BufferFormat format, int startElement = 0, int elementCount = 0)
         {
-            if (format == DXGI.Format.Unknown)
+            if (format == BufferFormat.Unknown)
             {
                 throw new ArgumentException(Resources.GORGFX_ERR_VIEW_UNKNOWN_FORMAT, nameof(format));
             }
@@ -269,7 +269,7 @@ namespace Gorgon.Graphics.Core
         /// </note>
         /// </para>
         /// </remarks>
-        public GorgonBufferUav GetUnorderedAccessView(DXGI.Format format, int startElement = 0, int elementCount = 0)
+        public GorgonBufferUav GetUnorderedAccessView(BufferFormat format, int startElement = 0, int elementCount = 0)
         {
             if (Graphics.VideoDevice.RequestedFeatureLevel < FeatureLevelSupport.Level_11_0)
             {

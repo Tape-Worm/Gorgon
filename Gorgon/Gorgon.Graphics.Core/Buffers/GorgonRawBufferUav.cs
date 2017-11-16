@@ -70,7 +70,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the format for the view.
         /// </summary>
-        public DXGI.Format Format
+        public BufferFormat Format
         {
             get;
         }
@@ -118,7 +118,7 @@ namespace Gorgon.Graphics.Core
                                ElementCount = ElementCount,
                                Flags = D3D11.UnorderedAccessViewBufferFlags.Raw
                            },
-                           Format = Format
+                           Format = (DXGI.Format)Format
                        };
 
             NativeView = new D3D11.UnorderedAccessView(Resource.Graphics.VideoDevice.D3DDevice(), Resource.D3DResource, desc)
@@ -145,16 +145,16 @@ namespace Gorgon.Graphics.Core
             switch (elementType)
             {
                 case RawBufferElementType.Int32:
-                    Format = DXGI.Format.R32_SInt;
+                    Format = BufferFormat.R32_SInt;
                     break;
                 case RawBufferElementType.UInt32:
-                    Format = DXGI.Format.R32_UInt;
+                    Format = BufferFormat.R32_UInt;
                     break;
                 case RawBufferElementType.Single:
-                    Format = DXGI.Format.R32_Float;
+                    Format = BufferFormat.R32_Float;
                     break;
                 default:
-                    throw new ArgumentException(string.Format(Resources.GORGFX_ERR_VIEW_UNKNOWN_FORMAT, DXGI.Format.Unknown), nameof(elementType));
+                    throw new ArgumentException(string.Format(Resources.GORGFX_ERR_VIEW_UNKNOWN_FORMAT, BufferFormat.Unknown), nameof(elementType));
             }
 
             FormatInformation = new GorgonFormatInfo(Format);

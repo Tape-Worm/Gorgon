@@ -202,7 +202,7 @@ namespace GorgonLibrary.Example
             IGorgonImageCodec pngCodec = new GorgonCodecPng();
 
 			// Load the texture.
-	        using (IGorgonImage image = pngCodec.LoadFromFile(Program.GetResourcePath(@"Textures\GlassCube\Glass.png")).ConvertToFormat(DXGI.Format.R8G8B8A8_UNorm))
+	        using (IGorgonImage image = pngCodec.LoadFromFile(Program.GetResourcePath(@"Textures\GlassCube\Glass.png")).ConvertToFormat(BufferFormat.R8G8B8A8_UNorm))
 	        {
 		        _texture = image.ToTexture("GlassCube Texture", _graphics);
 	        }
@@ -339,7 +339,7 @@ namespace GorgonLibrary.Example
 				// Build our swap chain.
 				_swap = new GorgonSwapChain("GlassCube SwapChain", _graphics, this, new GorgonSwapChainInfo
 				                                                                    {
-					                                                                    Format = DXGI.Format.R8G8B8A8_UNorm,
+					                                                                    Format = BufferFormat.R8G8B8A8_UNorm,
 																						Width = ClientSize.Width,
 																						Height = ClientSize.Height,
 																						// We don't need this, as it's the default, but it's included for 

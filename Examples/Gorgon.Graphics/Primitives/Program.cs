@@ -546,8 +546,8 @@ namespace Gorgon.Graphics.Example
 		                                     {
 		                                         Width = _form.ClientSize.Width,
 		                                         Height = _form.ClientSize.Height,
-		                                         DepthStencilFormat = DXGI.Format.D24_UNorm_S8_UInt,
-		                                         Format = DXGI.Format.R8G8B8A8_UNorm
+		                                         DepthStencilFormat = BufferFormat.D24_UNorm_S8_UInt,
+		                                         Format = BufferFormat.R8G8B8A8_UNorm
 		                                     });
 
 		    _graphics.SetRenderTarget(_swapChain.RenderTargetView);

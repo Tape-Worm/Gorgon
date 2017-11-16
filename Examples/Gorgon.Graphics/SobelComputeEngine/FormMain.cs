@@ -28,6 +28,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using Gorgon.Graphics;
 using DXGI = SharpDX.DXGI;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Example;
@@ -100,21 +101,21 @@ namespace SobelComputeEngine
                 _outputTexture = null;
 
                 image = png.LoadFromFile(DialogOpenPng.FileName);
-                _sourceTexture = image.ConvertToFormat(DXGI.Format.R8G8B8A8_UNorm).ToTexture(Path.GetFileNameWithoutExtension(DialogOpenPng.FileName), _graphics);
+                _sourceTexture = image.ConvertToFormat(BufferFormat.R8G8B8A8_UNorm).ToTexture(Path.GetFileNameWithoutExtension(DialogOpenPng.FileName), _graphics);
 
                 _outputTexture = new GorgonTexture("Output",
                                                    _graphics,
                                                    new GorgonTextureInfo(_sourceTexture.Info)
                                                    {
-                                                       Format = DXGI.Format.R8G8B8A8_Typeless,
+                                                       Format = BufferFormat.R8G8B8A8_Typeless,
                                                        Binding = TextureBinding.ShaderResource | TextureBinding.UnorderedAccess
                                                    });
 
                 // Get an SRV for the output texture so we can render it later.
-                _outputView = _outputTexture.GetShaderResourceView(DXGI.Format.R8G8B8A8_UNorm);
+                _outputView = _outputTexture.GetShaderResourceView(BufferFormat.R8G8B8A8_UNorm);
 
                 // Get a UAV for the output.
-                _outputUav = _outputTexture.GetUnorderedAccessView(DXGI.Format.R32_UInt);
+                _outputUav = _outputTexture.GetUnorderedAccessView(BufferFormat.R32_UInt);
 
                 // Process the newly loaded texture.
                 _sobel.Process(_sourceTexture.DefaultShaderResourceView, _outputUav, TrackThickness.Value, TrackThreshold.Value / 100.0f);

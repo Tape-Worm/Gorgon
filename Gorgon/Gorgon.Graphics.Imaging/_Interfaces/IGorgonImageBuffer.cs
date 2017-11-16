@@ -28,7 +28,6 @@ using System;
 using Gorgon.Core;
 using Gorgon.Native;
 using DX = SharpDX;
-using DXGI = SharpDX.DXGI;
 
 namespace Gorgon.Graphics.Imaging
 {
@@ -40,7 +39,7 @@ namespace Gorgon.Graphics.Imaging
 		/// <summary>
 		/// Property to return the format of the buffer.
 		/// </summary>
-		DXGI.Format Format
+		BufferFormat Format
 		{
 			get;
 		}

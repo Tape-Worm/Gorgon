@@ -109,7 +109,6 @@ using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.IO;
 using Gorgon.Native;
-using DXGI = SharpDX.DXGI;
 
 namespace Gorgon.Graphics.Imaging.Codecs
 {
@@ -180,17 +179,17 @@ namespace Gorgon.Graphics.Imaging.Codecs
 	{
         #region Variables.
         // List of supported image formats.
-		private readonly DXGI.Format[] _supportedFormats =
+		private readonly BufferFormat[] _supportedFormats =
 		{
 			// 8 bit grayscale.
-			DXGI.Format.R8_UNorm,
-			DXGI.Format.A8_UNorm,
+			BufferFormat.R8_UNorm,
+			BufferFormat.A8_UNorm,
 			// 16 bit (only supports 5 bit color and 1 bit alpha).
-			DXGI.Format.B5G5R5A1_UNorm,
+			BufferFormat.B5G5R5A1_UNorm,
 			// 24/32 bit.
-			DXGI.Format.R8G8B8A8_UNorm,
-			DXGI.Format.B8G8R8A8_UNorm,
-			DXGI.Format.B8G8R8X8_UNorm
+			BufferFormat.R8G8B8A8_UNorm,
+			BufferFormat.B8G8R8A8_UNorm,
+			BufferFormat.B8G8R8X8_UNorm
 		};
         #endregion
 
@@ -198,7 +197,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <summary>
 		/// Property to return the pixel formats supported by the codec.
 		/// </summary>
-		public override IReadOnlyList<DXGI.Format> SupportedPixelFormats => _supportedFormats;
+		public override IReadOnlyList<BufferFormat> SupportedPixelFormats => _supportedFormats;
 
 		/// <summary>
 		/// Property to return whether the image codec supports block compression.
@@ -253,7 +252,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
                 throw new NotSupportedException(Resources.GORIMG_ERR_TGA_TYPE_NOT_SUPPORTED);
             }
 
-			DXGI.Format pixelFormat = DXGI.Format.Unknown;
+			BufferFormat pixelFormat = BufferFormat.Unknown;
 
             switch (header.ImageType)
             {
@@ -262,11 +261,11 @@ namespace Gorgon.Graphics.Imaging.Codecs
                     switch (header.BPP)
                     {
                         case 16:
-                            pixelFormat = DXGI.Format.B5G5R5A1_UNorm;
+                            pixelFormat = BufferFormat.B5G5R5A1_UNorm;
                             break;
                         case 24:
                         case 32:
-                            pixelFormat = DXGI.Format.R8G8B8A8_UNorm;
+                            pixelFormat = BufferFormat.R8G8B8A8_UNorm;
                             if (header.BPP == 24)
                             {
                                 conversionFlags |= TGAConversionFlags.Expand;
@@ -283,7 +282,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
                 case TgaImageType.BlackAndWhiteRLE:
                     if (header.BPP == 8)
                     {
-                        pixelFormat = DXGI.Format.R8_UNorm;
+                        pixelFormat = BufferFormat.R8_UNorm;
                     }
                     else
                     {
@@ -354,35 +353,35 @@ namespace Gorgon.Graphics.Imaging.Codecs
 
 			switch (settings.Format)
 			{
-				case DXGI.Format.R8G8B8A8_UNorm:
-				case DXGI.Format.R8G8B8A8_UNorm_SRgb:
+				case BufferFormat.R8G8B8A8_UNorm:
+				case BufferFormat.R8G8B8A8_UNorm_SRgb:
 					header.ImageType = TgaImageType.TrueColor;
 					header.BPP = 32;
 					header.Descriptor = TgaDescriptor.InvertY | TgaDescriptor.RGB888A8;
 					conversionFlags |= TGAConversionFlags.Swizzle;
 					break;
-				case DXGI.Format.B8G8R8A8_UNorm:
-				case DXGI.Format.B8G8R8A8_UNorm_SRgb:
+				case BufferFormat.B8G8R8A8_UNorm:
+				case BufferFormat.B8G8R8A8_UNorm_SRgb:
 					header.ImageType = TgaImageType.TrueColor;
 					header.BPP = 32;
 					header.Descriptor = TgaDescriptor.InvertY | TgaDescriptor.RGB888A8;
 					break;
-				case DXGI.Format.B8G8R8X8_UNorm:
-				case DXGI.Format.B8G8R8X8_UNorm_SRgb:
+				case BufferFormat.B8G8R8X8_UNorm:
+				case BufferFormat.B8G8R8X8_UNorm_SRgb:
 					header.ImageType = TgaImageType.TrueColor;
 					header.BPP = 24;
 					header.Descriptor = TgaDescriptor.InvertY;
 					conversionFlags |= TGAConversionFlags.RGB888;
 					break;
 
-				case DXGI.Format.R8_UNorm:
-				case DXGI.Format.A8_UNorm:
+				case BufferFormat.R8_UNorm:
+				case BufferFormat.A8_UNorm:
 					header.ImageType = TgaImageType.BlackAndWhite;
 					header.BPP = 8;
 					header.Descriptor = TgaDescriptor.InvertY;
 					break;
 
-				case DXGI.Format.B5G5R5A1_UNorm:
+				case BufferFormat.B5G5R5A1_UNorm:
 					header.ImageType = TgaImageType.TrueColor;
 					header.BPP = 16;
 					header.Descriptor = TgaDescriptor.InvertY | TgaDescriptor.RGB555A1;
@@ -407,13 +406,13 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <param name="flipHorizontal"><b>true</b> to decode the pixels from right to left, or <b>false</b> to decode from left to right.</param>
 		/// <param name="format">The pixel format.</param>
 		/// <returns><b>true</b> if the run contains entirely transparent pixels, or <b>false</b> if not.</returns>
-		private bool DecodeRleEncodedRun(GorgonBinaryReader reader, ref byte* dest, ref int x, int runLength, int width, bool expand, bool flipHorizontal, DXGI.Format format)
+		private bool DecodeRleEncodedRun(GorgonBinaryReader reader, ref byte* dest, ref int x, int runLength, int width, bool expand, bool flipHorizontal, BufferFormat format)
 		{
 			bool result = true;
 
 			switch (format)
 			{
-				case DXGI.Format.R8_UNorm:
+				case BufferFormat.R8_UNorm:
 					for (; runLength > 0; --runLength, ++x)
 					{
 						if (x >= width)
@@ -431,7 +430,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 						}
 					}
 					break;
-				case DXGI.Format.B5G5R5A1_UNorm:
+				case BufferFormat.B5G5R5A1_UNorm:
 				{
 					ushort* destPtr = (ushort*)dest;
 					ushort pixel = reader.ReadUInt16();
@@ -461,7 +460,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 						dest = (byte *)destPtr;
 					}
 					return result;
-				case DXGI.Format.R8G8B8A8_UNorm:
+				case BufferFormat.R8G8B8A8_UNorm:
 				{
 					uint pixel;
 
@@ -520,13 +519,13 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <param name="flipHorizontal"><b>true</b> to decode the pixels from right to left, or <b>false</b> to decode from left to right.</param>
 		/// <param name="format">The pixel format.</param>
 		/// <returns><b>true</b> if the run contains entirely transparent pixels, or <b>false</b> if not.</returns>
-		private bool DecodeUncompressedRun(GorgonBinaryReader reader, ref byte* dest, ref int x, int runLength, int width, bool expand, bool flipHorizontal, DXGI.Format format)
+		private bool DecodeUncompressedRun(GorgonBinaryReader reader, ref byte* dest, ref int x, int runLength, int width, bool expand, bool flipHorizontal, BufferFormat format)
 		{
 			bool result = true;
 
 			switch (format)
 			{
-				case DXGI.Format.R8_UNorm:
+				case BufferFormat.R8_UNorm:
 					for (; runLength > 0; --runLength, ++x)
 					{
 						if (x >= width)
@@ -544,7 +543,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 						}
 					}
 					break;
-				case DXGI.Format.B5G5R5A1_UNorm:
+				case BufferFormat.B5G5R5A1_UNorm:
 				{
 					ushort* destPtr = (ushort*)dest;
 
@@ -577,7 +576,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 					dest = (byte*)destPtr;
 				}
 					return result;
-				case DXGI.Format.R8G8B8A8_UNorm:
+				case BufferFormat.R8G8B8A8_UNorm:
 				{
 					uint* destPtr = (uint*)dest;
 
@@ -633,7 +632,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <param name="dest">Destination buffer pointner</param>
 		/// <param name="format">Format of the destination buffer.</param>
 		/// <param name="conversionFlags">Flags used for conversion.</param>
-		private bool ReadCompressed(GorgonBinaryReader reader, int width, byte *dest, DXGI.Format format, TGAConversionFlags conversionFlags)
+		private bool ReadCompressed(GorgonBinaryReader reader, int width, byte *dest, BufferFormat format, TGAConversionFlags conversionFlags)
 		{
 			bool setOpaque = true;
 			bool flipHorizontal = (conversionFlags & TGAConversionFlags.InvertX) == TGAConversionFlags.InvertX;
@@ -674,7 +673,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <param name="dest">Destination buffer pointner</param>
 		/// <param name="format">Format of the destination buffer.</param>
 		/// <param name="conversionFlags">Flags used for conversion.</param>
-		private static bool ReadUncompressed(GorgonPointer srcPtr, int srcPitch, byte* dest, DXGI.Format format, TGAConversionFlags conversionFlags)
+		private static bool ReadUncompressed(GorgonPointer srcPtr, int srcPitch, byte* dest, BufferFormat format, TGAConversionFlags conversionFlags)
 		{
 			bool flipHorizontal = (conversionFlags & TGAConversionFlags.InvertX) == TGAConversionFlags.InvertX;
 
@@ -682,10 +681,10 @@ namespace Gorgon.Graphics.Imaging.Codecs
 
 			switch (format)
 			{
-				case DXGI.Format.R8_UNorm:
-				case DXGI.Format.B5G5R5A1_UNorm:
+				case BufferFormat.R8_UNorm:
+				case BufferFormat.B5G5R5A1_UNorm:
 					return ImageUtilities.CopyScanline(src, srcPitch, dest, format, flipHorizontal);
-				case DXGI.Format.R8G8B8A8_UNorm:
+				case BufferFormat.R8G8B8A8_UNorm:
 					if ((conversionFlags & TGAConversionFlags.Expand) != TGAConversionFlags.Expand)
 					{
 						return ImageUtilities.CopyScanline(src, srcPitch, dest, format, flipHorizontal);

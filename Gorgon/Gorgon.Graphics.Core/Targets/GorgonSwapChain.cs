@@ -282,12 +282,12 @@ namespace Gorgon.Graphics.Core
 		{
 			_backBufferTextures = !Info.UseFlipMode ? new GorgonTexture[1] : new GorgonTexture[2];
 
-		    if (Info.DepthStencilFormat != DXGI.Format.Unknown)
+		    if (Info.DepthStencilFormat != BufferFormat.Unknown)
 		    {
-		        if ((Info.DepthStencilFormat != DXGI.Format.D16_UNorm)
-		            && (Info.DepthStencilFormat != DXGI.Format.D24_UNorm_S8_UInt)
-		            && (Info.DepthStencilFormat != DXGI.Format.D32_Float)
-		            && (Info.DepthStencilFormat != DXGI.Format.D32_Float_S8X24_UInt))
+		        if ((Info.DepthStencilFormat != BufferFormat.D16_UNorm)
+		            && (Info.DepthStencilFormat != BufferFormat.D24_UNorm_S8_UInt)
+		            && (Info.DepthStencilFormat != BufferFormat.D32_Float)
+		            && (Info.DepthStencilFormat != BufferFormat.D32_Float_S8X24_UInt))
 		        {
 		            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_DEPTHSTENCIL_FORMAT_INVALID, Info.DepthStencilFormat));
 		        }
@@ -648,7 +648,7 @@ namespace Gorgon.Graphics.Core
 
 			(int, bool) indices = ReleaseResources();
 
-			GISwapChain.ResizeBuffers(IsWindowed ? 2 : 3, newWidth, newHeight, Info.Format, DXGI.SwapChainFlags.AllowModeSwitch);
+			GISwapChain.ResizeBuffers(IsWindowed ? 2 : 3, newWidth, newHeight, (DXGI.Format)Info.Format, DXGI.SwapChainFlags.AllowModeSwitch);
 
 			_info.Width = newWidth;
 			_info.Height = newHeight;
@@ -846,7 +846,7 @@ namespace Gorgon.Graphics.Core
 				DXGI.ModeDescription resizeMode = actualMode.ToModeDesc();
 
 				// Switch to the format we want so that ResizeBackBuffers will work correctly.
-				_info.Format = desiredMode.Format;
+				_info.Format = (BufferFormat)desiredMode.Format;
 
 				// Bring the control up before attempting to switch to full screen.
 				// Otherwise things get real weird, real fast.
@@ -874,7 +874,7 @@ namespace Gorgon.Graphics.Core
 				FullscreenOutput = output;
 				_info.Width = desiredMode.Width;
 				_info.Height = desiredMode.Height;
-				_info.Format = desiredMode.Format;
+				_info.Format = (BufferFormat)desiredMode.Format;
 
 				_log.Print($"SwapChain '{Name}': Full screen mode was set.  Final mode: {FullScreenVideoMode}.  Swap chain back buffer size: {_info.Width}x{_info.Height}, Format: {_info.Format}",
 				           LoggingLevel.Verbose);
@@ -942,7 +942,7 @@ namespace Gorgon.Graphics.Core
 
 				_info.Width = desc.Width;
 				_info.Height = desc.Height;
-				_info.Format = desc.Format;
+				_info.Format = (BufferFormat)desc.Format;
 
 				_log.Print($"SwapChain '{Name}': Windowed mode restored. Back buffer size: {_info.Width}x{_info.Height}, Format: {_info.Format}.", LoggingLevel.Verbose);
 			}

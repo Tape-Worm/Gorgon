@@ -24,8 +24,6 @@
 // 
 #endregion
 
-using DXGI = SharpDX.DXGI;
-
 namespace Gorgon.Graphics.Imaging
 {
 	/// <summary>
@@ -120,7 +118,7 @@ namespace Gorgon.Graphics.Imaging
 		/// If the value is set to <c>Format.Unknown</c>, then an exception will be thrown upon image creation.
 		/// </para>
 		/// </remarks>
-		DXGI.Format Format
+		BufferFormat Format
 		{
 			get;
 		}

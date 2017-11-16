@@ -88,13 +88,16 @@ namespace Gorgon.Graphics.Core
 		/// </remarks>
 		public int Index => D3DInputElement.SemanticIndex;
 
-		/// <summary>
-		/// Property to return the format of the data.
-		/// </summary>
-		/// <remarks>
-		/// This is used to specify the type of data for the element, and will also determine how many bytes the element will occupy.
-		/// </remarks>
-		public DXGI.Format Format => D3DInputElement.Format;
+	    /// <summary>
+	    /// Property to return the format of the data.
+	    /// </summary>
+	    /// <remarks>
+	    /// This is used to specify the type of data for the element, and will also determine how many bytes the element will occupy.
+	    /// </remarks>
+	    public BufferFormat Format
+	    {
+	        get;
+	    }
 
 		/// <summary>
 		/// Property to return the offset of this element compared to other elements.
@@ -251,7 +254,7 @@ namespace Gorgon.Graphics.Core
 		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="context"/> parameter is empty.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="format"/> parameter is not supported.</exception> 
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="slot"/> parameter is less than 0 or greater than 15.</exception>
-		public GorgonInputElement(string context, DXGI.Format format, int offset, int index = 0, int slot = 0, bool instanced = false, int instanceCount = 0)
+		public GorgonInputElement(string context, BufferFormat format, int offset, int index = 0, int slot = 0, bool instanced = false, int instanceCount = 0)
 		{
 		    if (context == null)
 		    {
@@ -275,9 +278,10 @@ namespace Gorgon.Graphics.Core
 				throw new ArgumentOutOfRangeException(nameof(slot), string.Format(Resources.GORGFX_ERR_VALUE_OUT_OF_RANGE, slot, 16));
             }
 
+		    Format = format;
 			D3DInputElement = new D3D11.InputElement(context,
 			                                         index,
-			                                         format,
+			                                         (DXGI.Format)format,
 			                                         offset,
 			                                         slot,
 			                                         instanced ? D3D11.InputClassification.PerInstanceData : D3D11.InputClassification.PerVertexData,

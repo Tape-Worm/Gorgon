@@ -26,7 +26,6 @@
 
 using System;
 using System.Collections.Generic;
-using DXGI = SharpDX.DXGI;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.Math;
@@ -218,9 +217,9 @@ namespace Gorgon.Graphics.Imaging
 		/// The <paramref name="pitchFlags"/> parameter is used to compensate in cases where the original image data is not laid out correctly (such as with older DirectDraw DDS images).
 		/// </para>
 		/// </remarks>
-		public static int CalculateSizeInBytes(ImageType imageType, int width, int height, int depthOrArrayCount, DXGI.Format format, int mipCount = 1, PitchFlags pitchFlags = PitchFlags.None)
+		public static int CalculateSizeInBytes(ImageType imageType, int width, int height, int depthOrArrayCount, BufferFormat format, int mipCount = 1, PitchFlags pitchFlags = PitchFlags.None)
 		{
-			if (format == DXGI.Format.Unknown)
+			if (format == BufferFormat.Unknown)
 			{
 				throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, format));
 			}
@@ -392,7 +391,7 @@ namespace Gorgon.Graphics.Imaging
 				throw new ArgumentOutOfRangeException(nameof(mipLevel), mipLevel, string.Format(Resources.GORIMG_ERR_INDEX_OUT_OF_RANGE, 0, Info.MipCount));
 			}
 
-			return Info.Depth <= 1 ? 1 : _imageBuffers.MipOffsetSize[mipLevel].Item2;
+			return Info.Depth <= 1 ? 1 : _imageBuffers.MipOffsetSize[mipLevel].MipDepth;
 		}
 
 		/// <summary>
@@ -400,9 +399,9 @@ namespace Gorgon.Graphics.Imaging
 		/// </summary>
 		/// <param name="format">The pixel format to convert to.</param>
 		/// <returns><b>true</b> if the the current pixel format and the requested pixel format can be converted, <b>false</b> if not.</returns>
-		public bool CanConvertToFormat(DXGI.Format format)
+		public bool CanConvertToFormat(BufferFormat format)
 		{
-			if (format == DXGI.Format.Unknown)
+			if (format == BufferFormat.Unknown)
 			{
 				return false;
 			}
@@ -412,12 +411,12 @@ namespace Gorgon.Graphics.Imaging
 				return true;
 			}
 
-			DXGI.Format sourceFormat = Info.Format;
+			BufferFormat sourceFormat = Info.Format;
 
 			// If we want to convert from B4G4R4A4 to another format, then we first have to upsample to B8R8G8A8.
-			if (sourceFormat == DXGI.Format.B4G4R4A4_UNorm)
+			if (sourceFormat == BufferFormat.B4G4R4A4_UNorm)
 			{
-				sourceFormat = DXGI.Format.B8G8R8A8_UNorm;
+				sourceFormat = BufferFormat.B8G8R8A8_UNorm;
 			}
 
 			using (WicUtilities wic = new WicUtilities())
@@ -435,20 +434,20 @@ namespace Gorgon.Graphics.Imaging
 		/// </summary>
 		/// <param name="destFormats">List of destination formats to compare.</param>
 		/// <returns>A list of formats that the source format can be converted into, or an empty array if no conversion is possible.</returns>
-		public IReadOnlyList<DXGI.Format> CanConvertToFormats(DXGI.Format[] destFormats)
+		public IReadOnlyList<BufferFormat> CanConvertToFormats(BufferFormat[] destFormats)
 		{
 			if ((destFormats == null)
 				|| (destFormats.Length == 0))
 			{
-				return new DXGI.Format[0];
+				return new BufferFormat[0];
 			}
 
 			// If we're converting from B4G4R4A4, then we need to use another path.
-			if (Info.Format == DXGI.Format.B4G4R4A4_UNorm)
+			if (Info.Format == BufferFormat.B4G4R4A4_UNorm)
 			{
 				using (WicUtilities wic = new WicUtilities())
 				{
-					return wic.CanConvertFormats(DXGI.Format.B8G8R8A8_UNorm, destFormats);
+					return wic.CanConvertFormats(BufferFormat.B8G8R8A8_UNorm, destFormats);
 				}
 			}
 

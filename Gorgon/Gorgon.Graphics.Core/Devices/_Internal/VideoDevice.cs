@@ -305,9 +305,9 @@ namespace Gorgon.Graphics.Core
 		/// enumeration and will contain the supported functionality represented as OR'd values.
 		/// </para>
 		/// </remarks>
-		public D3D11.FormatSupport GetBufferFormatSupport(DXGI.Format format)
+		public D3D11.FormatSupport GetBufferFormatSupport(BufferFormat format)
 		{
-			return _device.CheckFormatSupport(format);
+			return _device.CheckFormatSupport((DXGI.Format)format);
 		}
 
 		/// <summary>
@@ -325,9 +325,9 @@ namespace Gorgon.Graphics.Core
 		/// Level_11_0 feature level support.
 		/// </para>
 		/// </remarks>
-		public D3D11.ComputeShaderFormatSupport GetBufferFormatComputeSupport(DXGI.Format format)
+		public D3D11.ComputeShaderFormatSupport GetBufferFormatComputeSupport(BufferFormat format)
 		{
-			return RequestedFeatureLevel < FeatureLevelSupport.Level_11_0 ? D3D11.ComputeShaderFormatSupport.None : _device.CheckComputeShaderFormatSupport(format);
+			return RequestedFeatureLevel < FeatureLevelSupport.Level_11_0 ? D3D11.ComputeShaderFormatSupport.None : _device.CheckComputeShaderFormatSupport((DXGI.Format)format);
 		}
 
 		/// <summary>
@@ -348,14 +348,14 @@ namespace Gorgon.Graphics.Core
 		/// Before calling this method, call the <see cref="O:Gorgon.Graphics.IGorgonVideoDevice.SupportsMultisampleCount"/> method to determine if multisampling is supported for the given <paramref name="count"/> and <paramref name="format"/>.
 		/// </para>
 		/// </remarks>
-		public GorgonMultisampleInfo GetMultisampleInfo(DXGI.Format format, int count)
+		public GorgonMultisampleInfo GetMultisampleInfo(BufferFormat format, int count)
 		{
-			if (format == DXGI.Format.Unknown)
+			if (format == BufferFormat.Unknown)
 			{
 				return GorgonMultisampleInfo.NoMultiSampling;
 			}
 
-			int quality = _device.CheckMultisampleQualityLevels(format, count);
+			int quality = _device.CheckMultisampleQualityLevels((DXGI.Format)format, count);
 
 			if (quality == 0)
 			{
@@ -379,19 +379,19 @@ namespace Gorgon.Graphics.Core
 		/// If <c>Unknown</c> is passed to the <paramref name="format"/> parameter, then this method will return <b>true</b> because this will equate to no multisampling.
 		/// </para>
 		/// </remarks>
-		public bool SupportsMultisampleCount(DXGI.Format format, int count)
+		public bool SupportsMultisampleCount(BufferFormat format, int count)
 		{
 			if (count < 1)
 			{
 				return false;
 			}
 
-			if (format == DXGI.Format.Unknown)
+			if (format == BufferFormat.Unknown)
 			{
 				return true;
 			}
 
-			return _device.CheckMultisampleQualityLevels(format, count) > 0;
+			return _device.CheckMultisampleQualityLevels((DXGI.Format)format, count) > 0;
 		}
 
 		/// <summary>
@@ -408,9 +408,9 @@ namespace Gorgon.Graphics.Core
 		/// If <c>Unknown</c> is passed to the <paramref name="format"/> parameter, then this method will return <b>true</b> because this will equate to no multisampling.
 		/// </para>
 		/// </remarks>
-		public bool SupportsMultisampleInfo(DXGI.Format format, GorgonMultisampleInfo multiSampleInfo)
+		public bool SupportsMultisampleInfo(BufferFormat format, GorgonMultisampleInfo multiSampleInfo)
 		{
-			if (format == DXGI.Format.Unknown)
+			if (format == BufferFormat.Unknown)
 			{
 				return true;
 			}
@@ -420,7 +420,7 @@ namespace Gorgon.Graphics.Core
 				return false;
 			}
 
-			int quality = _device.CheckMultisampleQualityLevels(format, multiSampleInfo.Count);
+			int quality = _device.CheckMultisampleQualityLevels((DXGI.Format)format, multiSampleInfo.Count);
 
 			return ((quality != 0) && (multiSampleInfo.Quality < quality));
 		}

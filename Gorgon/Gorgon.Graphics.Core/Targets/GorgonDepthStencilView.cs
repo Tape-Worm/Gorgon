@@ -78,7 +78,7 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Property to return the format for this view.
 		/// </summary>
-		public DXGI.Format Format
+		public BufferFormat Format
 		{
 			get;
 		}
@@ -202,7 +202,7 @@ namespace Gorgon.Graphics.Core
 			{
 				return new D3D11.DepthStencilViewDescription
 				{
-					Format = Format,
+					Format = (DXGI.Format)Format,
 					Dimension = D3D11.DepthStencilViewDimension.Texture1DArray,
 					Texture1DArray =
 					{
@@ -215,7 +215,7 @@ namespace Gorgon.Graphics.Core
 
 			return new D3D11.DepthStencilViewDescription
 			{
-				Format = Format,
+				Format = (DXGI.Format)Format,
 				Dimension = D3D11.DepthStencilViewDimension.Texture1D,
 				Texture1D =
 				{
@@ -237,7 +237,7 @@ namespace Gorgon.Graphics.Core
 			{
 				return new D3D11.DepthStencilViewDescription
 				{
-					Format = Format,
+					Format = (DXGI.Format)Format,
 					Dimension = isMultisampled
 									? D3D11.DepthStencilViewDimension.Texture2DMultisampledArray
 									: D3D11.DepthStencilViewDimension.Texture2DArray,
@@ -252,7 +252,7 @@ namespace Gorgon.Graphics.Core
 
 			return new D3D11.DepthStencilViewDescription
 			{
-				Format = Format,
+				Format = (DXGI.Format)Format,
 				Dimension = isMultisampled
 								? D3D11.DepthStencilViewDimension.Texture2DMultisampled
 								: D3D11.DepthStencilViewDimension.Texture2D,
@@ -391,7 +391,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="flags">Depth/stencil view flags.</param>
 		/// <param name="log">[Optional] The log used for debugging.</param>
 		internal GorgonDepthStencilView(GorgonTexture texture,
-		                              DXGI.Format format,
+		                              BufferFormat format,
 		                              int mipSlice,
 		                              int firstArrayIndex,
 		                              int arrayCount,

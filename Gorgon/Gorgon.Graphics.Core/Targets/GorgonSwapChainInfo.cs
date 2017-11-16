@@ -83,7 +83,7 @@ namespace Gorgon.Graphics.Core
 		/// <remarks>
 		/// The default value is <c>R8G8B8A8_UNorm</c>.
 		/// </remarks>
-		public DXGI.Format Format
+		public BufferFormat Format
 		{
 			get;
 			set;
@@ -104,7 +104,7 @@ namespace Gorgon.Graphics.Core
         /// The default value <c>Unknown</c>.
         /// </para>
         /// </remarks>
-	    public DXGI.Format DepthStencilFormat
+	    public BufferFormat DepthStencilFormat
 	    {
 	        get;
 	        set;
@@ -152,8 +152,8 @@ namespace Gorgon.Graphics.Core
 		public GorgonSwapChainInfo()
 		{
 			StretchBackBuffer = true;
-			Format = DXGI.Format.R8G8B8A8_UNorm;
-		    DepthStencilFormat = DXGI.Format.Unknown;
+			Format = BufferFormat.R8G8B8A8_UNorm;
+		    DepthStencilFormat = BufferFormat.Unknown;
 		}
 		#endregion
 	}

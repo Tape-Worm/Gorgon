@@ -83,7 +83,7 @@ namespace Gorgon.Graphics.Core
 		/// <remarks>
 		/// The default value is <c>R8G8B8A8_UNorm</c>.
 		/// </remarks>
-		DXGI.Format Format
+		BufferFormat Format
 		{
 			get;
 		}
@@ -103,7 +103,7 @@ namespace Gorgon.Graphics.Core
 	    /// The default value <c>Unknown</c>.
 	    /// </para>
 	    /// </remarks>
-	    DXGI.Format DepthStencilFormat
+	    BufferFormat DepthStencilFormat
         {
 	        get;
 	    }

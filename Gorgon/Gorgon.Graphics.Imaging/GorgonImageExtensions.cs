@@ -29,7 +29,6 @@ using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.Math;
 using DX = SharpDX;
-using DXGI = SharpDX.DXGI;
 
 namespace Gorgon.Graphics.Imaging
 {
@@ -53,7 +52,7 @@ namespace Gorgon.Graphics.Imaging
 				uint srcPixel = *(srcBufferPtr++);
 				uint b, g, r, a;
 
-				if (src.Format == DXGI.Format.B8G8R8A8_UNorm)
+				if (src.Format == BufferFormat.B8G8R8A8_UNorm)
 				{
 					b = ((srcPixel >> 24) & 0xff) >> 4;
 					g = ((srcPixel >> 16) & 0xff) >> 4;
@@ -98,7 +97,7 @@ namespace Gorgon.Graphics.Imaging
 				g = ((g << 4) | g);
 				b = ((b << 4) | b);
 
-				uint value = (uint)((dest.Format == DXGI.Format.B8G8R8A8_UNorm)
+				uint value = (uint)((dest.Format == BufferFormat.B8G8R8A8_UNorm)
 						            ? (b << 24 | g << 16 | r << 8 | a)
 						            // Convert to R8G8B8A8 (flipped for little endian).
 						            : (b << 24 | a << 16 | r << 8 | g));
@@ -112,10 +111,10 @@ namespace Gorgon.Graphics.Imaging
 		/// <param name="baseImage">The base image to convert.</param>
 		/// <param name="destFormat">The destination format.</param>
 		/// <returns>The updated image.</returns>
-		private static IGorgonImage ConvertFromB4G4R4A4(IGorgonImage baseImage, DXGI.Format destFormat)
+		private static IGorgonImage ConvertFromB4G4R4A4(IGorgonImage baseImage, BufferFormat destFormat)
 		{
 			// If we're converting to R8G8B8A8 or B8G8R8A8, then use those formats, otherwise, default to B8G8R8A8 as an intermediate buffer.
-			DXGI.Format tempFormat = ((destFormat != DXGI.Format.B8G8R8A8_UNorm) && (destFormat != DXGI.Format.R8G8B8A8_UNorm)) ? DXGI.Format.B8G8R8A8_UNorm : destFormat;
+			BufferFormat tempFormat = ((destFormat != BufferFormat.B8G8R8A8_UNorm) && (destFormat != BufferFormat.R8G8B8A8_UNorm)) ? BufferFormat.B8G8R8A8_UNorm : destFormat;
 			
 			// Create an worker image in B8G8R8A8 format.
 			IGorgonImageInfo destInfo = new GorgonImageInfo(baseImage.Info.ImageType, tempFormat)
@@ -178,7 +177,7 @@ namespace Gorgon.Graphics.Imaging
 			// This temporary image will be used to convert to B8G8R8A8.
 			IGorgonImage newImage = baseImage;
 
-			IGorgonImageInfo destInfo = new GorgonImageInfo(baseImage.Info.ImageType, DXGI.Format.B4G4R4A4_UNorm)
+			IGorgonImageInfo destInfo = new GorgonImageInfo(baseImage.Info.ImageType, BufferFormat.B4G4R4A4_UNorm)
 			{
 				Depth = baseImage.Info.Depth,
 				Height = baseImage.Info.Height,
@@ -193,11 +192,11 @@ namespace Gorgon.Graphics.Imaging
 			try
 			{
 				// If necessary, convert to B8G8R8A8. Otherwise, we'll just downsample directly.
-				if ((newImage.Info.Format != DXGI.Format.B8G8R8A8_UNorm)
-					&& (newImage.Info.Format != DXGI.Format.R8G8B8A8_UNorm))
+				if ((newImage.Info.Format != BufferFormat.B8G8R8A8_UNorm)
+					&& (newImage.Info.Format != BufferFormat.R8G8B8A8_UNorm))
 				{
 					newImage = baseImage.Clone();
-					ConvertToFormat(newImage, DXGI.Format.B8G8R8A8_UNorm, dithering);
+					ConvertToFormat(newImage, BufferFormat.B8G8R8A8_UNorm, dithering);
 				}
 
 				// The next step is to manually downsample to R4G4B4A4.
@@ -470,14 +469,14 @@ namespace Gorgon.Graphics.Imaging
 		/// downsampling to that format.
 		/// </para>
 		/// </remarks>
-		public static IGorgonImage ConvertToFormat(this IGorgonImage baseImage, DXGI.Format format, ImageDithering dithering = ImageDithering.None)
+		public static IGorgonImage ConvertToFormat(this IGorgonImage baseImage, BufferFormat format, ImageDithering dithering = ImageDithering.None)
 		{
 			if (baseImage == null)
 			{
 				throw new ArgumentNullException(nameof(baseImage));
 			}
 
-			if ((format == DXGI.Format.Unknown) || (!baseImage.CanConvertToFormat(format)))
+			if ((format == BufferFormat.Unknown) || (!baseImage.CanConvertToFormat(format)))
 			{
 				throw new ArgumentException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, format), nameof(format));
 			}
@@ -488,13 +487,13 @@ namespace Gorgon.Graphics.Imaging
 			}
 
 			// If we've asked for 4 bit per channel BGRA, then we have to convert the base image to B8R8G8A8,and then convert manually (no support in WIC).
-			if (format == DXGI.Format.B4G4R4A4_UNorm)
+			if (format == BufferFormat.B4G4R4A4_UNorm)
 			{
 				return ConvertToB4G4R4A4(baseImage, dithering);
 			}
 
 			// If we're currently using B4G4R4A4, then manually convert (no support in WIC).
-			if (baseImage.Info.Format == DXGI.Format.B4G4R4A4_UNorm)
+			if (baseImage.Info.Format == BufferFormat.B4G4R4A4_UNorm)
 			{
 				return ConvertFromB4G4R4A4(baseImage, format);
 			}
@@ -555,15 +554,15 @@ namespace Gorgon.Graphics.Imaging
 				newImage = new GorgonImage(cloneImageInfo);
 				baseImage.CopyTo(newImage);			
 
-				if (newImage.Info.Format != DXGI.Format.R8G8B8A8_UNorm)
+				if (newImage.Info.Format != BufferFormat.R8G8B8A8_UNorm)
 				{
-					if (!newImage.CanConvertToFormat(DXGI.Format.R8G8B8A8_UNorm))
+					if (!newImage.CanConvertToFormat(BufferFormat.R8G8B8A8_UNorm))
 					{
-						throw new ArgumentException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, DXGI.Format.R8G8B8A8_UNorm), nameof(baseImage));
+						throw new ArgumentException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, BufferFormat.R8G8B8A8_UNorm), nameof(baseImage));
 					}
 
 					// Clone the image so we can convert it to the correct format.
-					newImage.ConvertToFormat(DXGI.Format.R8G8B8A8_UNorm);
+					newImage.ConvertToFormat(BufferFormat.R8G8B8A8_UNorm);
 				}
 
 				unsafe

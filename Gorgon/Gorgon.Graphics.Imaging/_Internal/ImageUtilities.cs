@@ -26,7 +26,6 @@
 
 using System;
 using Gorgon.Core;
-using DXGI = SharpDX.DXGI;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.Math;
 using Gorgon.Native;
@@ -75,12 +74,12 @@ namespace Gorgon.Graphics.Imaging
 		/// Use this to expand a 16 BPP (B5G6R5 or B5G5R5A1 format) into a 32 BPP R8G8B8A8 (normalized unsigned integer) format.
 		/// </para>
 		/// </remarks>
-		public static unsafe void Expand16BPPScanline(void* src, int srcPitch, DXGI.Format srcFormat, void* dest, int destPitch, ImageBitFlags bitFlags)
+		public static unsafe void Expand16BPPScanline(void* src, int srcPitch, BufferFormat srcFormat, void* dest, int destPitch, ImageBitFlags bitFlags)
 		{
 			ushort* srcPtr = (ushort*)src;
 			uint* destPtr = (uint*)dest;
 
-			if ((srcFormat != DXGI.Format.B5G5R5A1_UNorm) && (srcFormat != DXGI.Format.B5G6R5_UNorm) && (srcFormat != DXGI.Format.B4G4R4A4_UNorm))
+			if ((srcFormat != BufferFormat.B5G5R5A1_UNorm) && (srcFormat != BufferFormat.B5G6R5_UNorm) && (srcFormat != BufferFormat.B4G4R4A4_UNorm))
 			{
 				throw new ArgumentException(string.Format(Resources.GORIMG_ERR_FORMAT_IS_NOT_16BPP, srcFormat), nameof(srcFormat));
 			}
@@ -102,7 +101,7 @@ namespace Gorgon.Graphics.Imaging
 
 				switch (srcFormat)
 				{
-					case DXGI.Format.B5G6R5_UNorm:
+					case BufferFormat.B5G6R5_UNorm:
 						R = (uint)((srcPixel & 0xF800) >> 11);
 						G = (uint)((srcPixel & 0x07E0) >> 5);
 						B = (uint)(srcPixel & 0x001F);
@@ -111,7 +110,7 @@ namespace Gorgon.Graphics.Imaging
 						B = ((B << 3) | (B >> 2)) << 16;
 						A = 0xFF000000;
 						break;
-					case DXGI.Format.B5G5R5A1_UNorm:
+					case BufferFormat.B5G5R5A1_UNorm:
 						R = (uint)((srcPixel & 0x7C00) >> 10);
 						G = (uint)((srcPixel & 0x03E0) >> 5);
 						B = (uint)(srcPixel & 0x001F);
@@ -122,7 +121,7 @@ namespace Gorgon.Graphics.Imaging
 								? 0xFF000000
 								: (((srcPixel & 0x8000) != 0) ? 0xFF000000 : 0);
 						break;
-					case DXGI.Format.B4G4R4A4_UNorm:
+					case BufferFormat.B4G4R4A4_UNorm:
 						A = (uint)((srcPixel & 0xF000) >> 12);
 						R = (uint)((srcPixel & 0xF00) >> 8);
 						G = (uint)((srcPixel & 0xF0) >> 4);
@@ -157,7 +156,7 @@ namespace Gorgon.Graphics.Imaging
 		/// Use this method to copy a single scanline and swizzle the bits of an image and (optionally) set an opaque constant alpha value.
 		/// </para>
 		/// </remarks>
-		public static unsafe void SwizzleScanline(void* src, int srcPitch, void* dest, int destPitch, DXGI.Format format, ImageBitFlags bitFlags)
+		public static unsafe void SwizzleScanline(void* src, int srcPitch, void* dest, int destPitch, BufferFormat format, ImageBitFlags bitFlags)
 		{
 			int size = srcPitch.Min(destPitch);
 			uint r, g, b, a, pixel;
@@ -172,7 +171,7 @@ namespace Gorgon.Graphics.Imaging
 				throw new ArgumentNullException(nameof(dest));
 			}
 
-			if (format == DXGI.Format.Unknown)
+			if (format == BufferFormat.Unknown)
 			{
 				throw new ArgumentException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, format),
 											nameof(format));
@@ -183,10 +182,10 @@ namespace Gorgon.Graphics.Imaging
 
 			switch (format)
 			{
-				case DXGI.Format.R10G10B10A2_Typeless:
-				case DXGI.Format.R10G10B10A2_UInt:
-				case DXGI.Format.R10G10B10A2_UNorm:
-				case DXGI.Format.R10G10B10_Xr_Bias_A2_UNorm:
+				case BufferFormat.R10G10B10A2_Typeless:
+				case BufferFormat.R10G10B10A2_UInt:
+				case BufferFormat.R10G10B10A2_UNorm:
+				case BufferFormat.R10G10B10_Xr_Bias_A2_UNorm:
 					for (int i = 0; i < size; i += 4)
 					{
 						if (src != dest)
@@ -207,15 +206,15 @@ namespace Gorgon.Graphics.Imaging
 						destPtr++;
 					}
 					return;
-				case DXGI.Format.R8G8B8A8_Typeless:
-				case DXGI.Format.R8G8B8A8_UNorm:
-				case DXGI.Format.R8G8B8A8_UNorm_SRgb:
-				case DXGI.Format.B8G8R8A8_UNorm:
-				case DXGI.Format.B8G8R8X8_UNorm:
-				case DXGI.Format.B8G8R8A8_Typeless:
-				case DXGI.Format.B8G8R8A8_UNorm_SRgb:
-				case DXGI.Format.B8G8R8X8_Typeless:
-				case DXGI.Format.B8G8R8X8_UNorm_SRgb:
+				case BufferFormat.R8G8B8A8_Typeless:
+				case BufferFormat.R8G8B8A8_UNorm:
+				case BufferFormat.R8G8B8A8_UNorm_SRgb:
+				case BufferFormat.B8G8R8A8_UNorm:
+				case BufferFormat.B8G8R8X8_UNorm:
+				case BufferFormat.B8G8R8A8_Typeless:
+				case BufferFormat.B8G8R8A8_UNorm_SRgb:
+				case BufferFormat.B8G8R8X8_Typeless:
+				case BufferFormat.B8G8R8X8_UNorm_SRgb:
 					for (int i = 0; i < size; i += 4)
 					{
 						if (src != dest)
@@ -253,21 +252,21 @@ namespace Gorgon.Graphics.Imaging
 		/// <param name="format">The format used to copy.</param>
 		/// <param name="flipHorizontal"><b>true</b> to write horizontal pixel values from right to left, or <b>false</b> to write left to right.</param>
 		/// <returns><b>true</b> if the line contains all 0 alpha values, <b>false</b> if not.</returns>
-		public static unsafe bool CopyScanline(void* src, int srcPitch, void* dest, DXGI.Format format, bool flipHorizontal)
+		public static unsafe bool CopyScanline(void* src, int srcPitch, void* dest, BufferFormat format, bool flipHorizontal)
 		{
 			bool result = true;
 
 			// Do a straight copy.
 			switch (format)
 			{
-				case DXGI.Format.R32G32B32A32_Typeless:
-				case DXGI.Format.R32G32B32A32_Float:
-				case DXGI.Format.R32G32B32A32_UInt:
-				case DXGI.Format.R32G32B32A32_SInt:
+				case BufferFormat.R32G32B32A32_Typeless:
+				case BufferFormat.R32G32B32A32_Float:
+				case BufferFormat.R32G32B32A32_UInt:
+				case BufferFormat.R32G32B32A32_SInt:
 				{
-					uint alphaMask = (format == DXGI.Format.R32G32B32_Float)
+					uint alphaMask = (format == BufferFormat.R32G32B32_Float)
 						                 ? 0x3F800000
-						                 : ((format == DXGI.Format.R32G32B32_SInt) ? 0x7FFFFFFF : 0xFFFFFFFF);
+						                 : ((format == BufferFormat.R32G32B32_SInt) ? 0x7FFFFFFF : 0xFFFFFFFF);
 
 					uint* srcPtr = (uint*)src;
 					uint* destPtr = (uint*)dest;
@@ -304,22 +303,22 @@ namespace Gorgon.Graphics.Imaging
 					}
 				}
 					return result;
-				case DXGI.Format.R16G16B16A16_Typeless:
-				case DXGI.Format.R16G16B16A16_Float:
-				case DXGI.Format.R16G16B16A16_UNorm:
-				case DXGI.Format.R16G16B16A16_UInt:
-				case DXGI.Format.R16G16B16A16_SNorm:
-				case DXGI.Format.R16G16B16A16_SInt:
+				case BufferFormat.R16G16B16A16_Typeless:
+				case BufferFormat.R16G16B16A16_Float:
+				case BufferFormat.R16G16B16A16_UNorm:
+				case BufferFormat.R16G16B16A16_UInt:
+				case BufferFormat.R16G16B16A16_SNorm:
+				case BufferFormat.R16G16B16A16_SInt:
 				{
 					uint alphaMask = 0xFFFF0000;
 
 					switch (format)
 					{
-						case DXGI.Format.R16G16B16A16_Float:
+						case BufferFormat.R16G16B16A16_Float:
 							alphaMask = 0x3C000000;
 							break;
-						case DXGI.Format.R16G16B16A16_SInt:
-						case DXGI.Format.R16G16B16A16_SNorm:
+						case BufferFormat.R16G16B16A16_SInt:
+						case BufferFormat.R16G16B16A16_SNorm:
 							alphaMask = 0x7FFF0000;
 							break;
 					}
@@ -355,10 +354,10 @@ namespace Gorgon.Graphics.Imaging
 					}
 				}
 					return result;
-				case DXGI.Format.R10G10B10A2_Typeless:
-				case DXGI.Format.R10G10B10A2_UNorm:
-				case DXGI.Format.R10G10B10A2_UInt:
-				case DXGI.Format.R10G10B10_Xr_Bias_A2_UNorm:
+				case BufferFormat.R10G10B10A2_Typeless:
+				case BufferFormat.R10G10B10A2_UNorm:
+				case BufferFormat.R10G10B10A2_UInt:
+				case BufferFormat.R10G10B10_Xr_Bias_A2_UNorm:
 				{
 					uint* srcPtr = (uint*)src;
 					uint* destPtr = (uint*)dest;
@@ -389,17 +388,17 @@ namespace Gorgon.Graphics.Imaging
 					}
 				}
 					return result;
-				case DXGI.Format.R8G8B8A8_Typeless:
-				case DXGI.Format.R8G8B8A8_UNorm:
-				case DXGI.Format.R8G8B8A8_UNorm_SRgb:
-				case DXGI.Format.R8G8B8A8_UInt:
-				case DXGI.Format.R8G8B8A8_SNorm:
-				case DXGI.Format.R8G8B8A8_SInt:
-				case DXGI.Format.B8G8R8A8_UNorm:
-				case DXGI.Format.B8G8R8A8_Typeless:
-				case DXGI.Format.B8G8R8A8_UNorm_SRgb:
+				case BufferFormat.R8G8B8A8_Typeless:
+				case BufferFormat.R8G8B8A8_UNorm:
+				case BufferFormat.R8G8B8A8_UNorm_SRgb:
+				case BufferFormat.R8G8B8A8_UInt:
+				case BufferFormat.R8G8B8A8_SNorm:
+				case BufferFormat.R8G8B8A8_SInt:
+				case BufferFormat.B8G8R8A8_UNorm:
+				case BufferFormat.B8G8R8A8_Typeless:
+				case BufferFormat.B8G8R8A8_UNorm_SRgb:
 				{
-					uint alphaMask = ((format == DXGI.Format.R8G8B8A8_SInt) || (format == DXGI.Format.R8G8B8A8_SNorm)) ? 0x7F000000 : 0xFF000000;
+					uint alphaMask = ((format == BufferFormat.R8G8B8A8_SInt) || (format == BufferFormat.R8G8B8A8_SNorm)) ? 0x7F000000 : 0xFF000000;
 
 					uint* srcPtr = (uint*)src;
 					uint* destPtr = (uint*)dest;
@@ -430,10 +429,10 @@ namespace Gorgon.Graphics.Imaging
 					}
 				}
 					return result;
-				case DXGI.Format.B5G5R5A1_UNorm:
-				case DXGI.Format.B4G4R4A4_UNorm:
+				case BufferFormat.B5G5R5A1_UNorm:
+				case BufferFormat.B4G4R4A4_UNorm:
 				{
-					ushort alphaMask = (ushort)(format == DXGI.Format.B5G5R5A1_UNorm ? 0x8000 : 0xF000);
+					ushort alphaMask = (ushort)(format == BufferFormat.B5G5R5A1_UNorm ? 0x8000 : 0xF000);
 					ushort* srcPtr = (ushort*)src;
 					ushort* destPtr = (ushort*)dest;
 
@@ -464,8 +463,8 @@ namespace Gorgon.Graphics.Imaging
 					}
 				}
 					return result;
-				case DXGI.Format.R8_UNorm:
-				case DXGI.Format.B5G6R5_UNorm:
+				case BufferFormat.R8_UNorm:
+				case BufferFormat.B5G6R5_UNorm:
 					if (dest == src)
 					{
 						return false;
@@ -486,7 +485,7 @@ namespace Gorgon.Graphics.Imaging
 					DirectAccess.MemoryCopy(dest, src, srcPitch);
 
 					return false;
-				case DXGI.Format.A8_UNorm:
+				case BufferFormat.A8_UNorm:
 				{
 					byte* srcPtr = (byte*)src;
 					byte* destPtr = (byte*)dest;
@@ -534,7 +533,7 @@ namespace Gorgon.Graphics.Imaging
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="src"/> or the <paramref name="dest"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="srcPitch"/> or the <paramref name="destPitch"/> parameter is less than 0.</exception>
 		/// <remarks>Use this method to copy a single scanline of an image and (optionally) set an opaque constant alpha value.</remarks>
-		public static unsafe void CopyScanline(void* src, int srcPitch, void* dest, int destPitch, DXGI.Format format, ImageBitFlags bitFlags)
+		public static unsafe void CopyScanline(void* src, int srcPitch, void* dest, int destPitch, BufferFormat format, ImageBitFlags bitFlags)
 		{
 			if (src == null)
 			{
@@ -546,7 +545,7 @@ namespace Gorgon.Graphics.Imaging
 				throw new ArgumentNullException(nameof(dest));
 			}
 
-			if (format == DXGI.Format.Unknown)
+			if (format == BufferFormat.Unknown)
 			{
 				throw new ArgumentException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, format), nameof(format));
 			}
@@ -558,13 +557,13 @@ namespace Gorgon.Graphics.Imaging
 				// Do a straight copy.
 				switch (format)
 				{
-					case DXGI.Format.R32G32B32A32_Typeless:
-					case DXGI.Format.R32G32B32A32_Float:
-					case DXGI.Format.R32G32B32A32_UInt:
-					case DXGI.Format.R32G32B32A32_SInt:
+					case BufferFormat.R32G32B32A32_Typeless:
+					case BufferFormat.R32G32B32A32_Float:
+					case BufferFormat.R32G32B32A32_UInt:
+					case BufferFormat.R32G32B32A32_SInt:
 						{
-							uint alpha = (format == DXGI.Format.R32G32B32_Float) ? 0x3F800000
-												: ((format == DXGI.Format.R32G32B32_SInt) ? 0x7FFFFFFF : 0xFFFFFFFF);
+							uint alpha = (format == BufferFormat.R32G32B32_Float) ? 0x3F800000
+												: ((format == BufferFormat.R32G32B32_SInt) ? 0x7FFFFFFF : 0xFFFFFFFF);
 
 							uint* srcPtr = (uint*)src;
 							uint* destPtr = (uint*)dest;
@@ -583,22 +582,22 @@ namespace Gorgon.Graphics.Imaging
 							}
 						}
 						return;
-					case DXGI.Format.R16G16B16A16_Typeless:
-					case DXGI.Format.R16G16B16A16_Float:
-					case DXGI.Format.R16G16B16A16_UNorm:
-					case DXGI.Format.R16G16B16A16_UInt:
-					case DXGI.Format.R16G16B16A16_SNorm:
-					case DXGI.Format.R16G16B16A16_SInt:
+					case BufferFormat.R16G16B16A16_Typeless:
+					case BufferFormat.R16G16B16A16_Float:
+					case BufferFormat.R16G16B16A16_UNorm:
+					case BufferFormat.R16G16B16A16_UInt:
+					case BufferFormat.R16G16B16A16_SNorm:
+					case BufferFormat.R16G16B16A16_SInt:
 						{
 							ushort alpha = 0xFFFF;
 
 							switch (format)
 							{
-								case DXGI.Format.R16G16B16A16_Float:
+								case BufferFormat.R16G16B16A16_Float:
 									alpha = 0x3C00;
 									break;
-								case DXGI.Format.R16G16B16A16_SInt:
-								case DXGI.Format.R16G16B16A16_SNorm:
+								case BufferFormat.R16G16B16A16_SInt:
+								case BufferFormat.R16G16B16A16_SNorm:
 									alpha = 0x7FFF;
 									break;
 							}
@@ -619,10 +618,10 @@ namespace Gorgon.Graphics.Imaging
 							}
 						}
 						return;
-					case DXGI.Format.R10G10B10A2_Typeless:
-					case DXGI.Format.R10G10B10A2_UNorm:
-					case DXGI.Format.R10G10B10A2_UInt:
-					case DXGI.Format.R10G10B10_Xr_Bias_A2_UNorm:
+					case BufferFormat.R10G10B10A2_Typeless:
+					case BufferFormat.R10G10B10A2_UNorm:
+					case BufferFormat.R10G10B10A2_UInt:
+					case BufferFormat.R10G10B10_Xr_Bias_A2_UNorm:
 						{
 							uint* srcPtr = (uint*)src;
 							uint* destPtr = (uint*)dest;
@@ -640,17 +639,17 @@ namespace Gorgon.Graphics.Imaging
 							}
 						}
 						return;
-					case DXGI.Format.R8G8B8A8_Typeless:
-					case DXGI.Format.R8G8B8A8_UNorm:
-					case DXGI.Format.R8G8B8A8_UNorm_SRgb:
-					case DXGI.Format.R8G8B8A8_UInt:
-					case DXGI.Format.R8G8B8A8_SNorm:
-					case DXGI.Format.R8G8B8A8_SInt:
-					case DXGI.Format.B8G8R8A8_UNorm:
-					case DXGI.Format.B8G8R8A8_Typeless:
-					case DXGI.Format.B8G8R8A8_UNorm_SRgb:
+					case BufferFormat.R8G8B8A8_Typeless:
+					case BufferFormat.R8G8B8A8_UNorm:
+					case BufferFormat.R8G8B8A8_UNorm_SRgb:
+					case BufferFormat.R8G8B8A8_UInt:
+					case BufferFormat.R8G8B8A8_SNorm:
+					case BufferFormat.R8G8B8A8_SInt:
+					case BufferFormat.B8G8R8A8_UNorm:
+					case BufferFormat.B8G8R8A8_Typeless:
+					case BufferFormat.B8G8R8A8_UNorm_SRgb:
 						{
-							uint alpha = ((format == DXGI.Format.R8G8B8A8_SInt) || (format == DXGI.Format.R8G8B8A8_SNorm)) ? 0x7F000000 : 0xFF000000;
+							uint alpha = ((format == BufferFormat.R8G8B8A8_SInt) || (format == BufferFormat.R8G8B8A8_SNorm)) ? 0x7F000000 : 0xFF000000;
 
 							uint* srcPtr = (uint*)src;
 							uint* destPtr = (uint*)dest;
@@ -668,7 +667,7 @@ namespace Gorgon.Graphics.Imaging
 							}
 						}
 						return;
-					case DXGI.Format.B4G4R4A4_UNorm:
+					case BufferFormat.B4G4R4A4_UNorm:
 						{
 							ushort* srcPtr = (ushort*)src;
 							ushort* destPtr = (ushort*)dest;
@@ -687,7 +686,7 @@ namespace Gorgon.Graphics.Imaging
 							}
 						}
 						return;
-					case DXGI.Format.B5G5R5A1_UNorm:
+					case BufferFormat.B5G5R5A1_UNorm:
 						{
 							ushort* srcPtr = (ushort*)src;
 							ushort* destPtr = (ushort*)dest;
@@ -706,7 +705,7 @@ namespace Gorgon.Graphics.Imaging
 							}
 						}
 						return;
-					case DXGI.Format.A8_UNorm:
+					case BufferFormat.A8_UNorm:
 						DirectAccess.FillMemory(dest, 0xFF, size);
 						return;
 				}

@@ -88,7 +88,7 @@ namespace Gorgon.Graphics.Core
 	    /// <summary>
 	    /// Property to return the format used to interpret this view.
 	    /// </summary>
-	    public DXGI.Format Format
+	    public BufferFormat Format
 	    {
 		    get;
 	    }
@@ -214,7 +214,7 @@ namespace Gorgon.Graphics.Core
             {
                 return new D3D11.RenderTargetViewDescription
                 {
-                    Format = Format,
+                    Format = (DXGI.Format)Format,
                     Dimension = D3D11.RenderTargetViewDimension.Texture1DArray,
                     Texture1DArray =
                     {
@@ -227,7 +227,7 @@ namespace Gorgon.Graphics.Core
 
             return new D3D11.RenderTargetViewDescription
             {
-                Format = Format,
+                Format = (DXGI.Format)Format,
                 Dimension = D3D11.RenderTargetViewDimension.Texture1D,
                 Texture1D =
                 {
@@ -248,7 +248,7 @@ namespace Gorgon.Graphics.Core
             {
                 return new D3D11.RenderTargetViewDescription
                 {
-                    Format = Format,
+                    Format = (DXGI.Format)Format,
                     Dimension = isMultisampled
                         ? D3D11.RenderTargetViewDimension.Texture2DMultisampledArray
                         : D3D11.RenderTargetViewDimension.Texture2DArray,
@@ -263,7 +263,7 @@ namespace Gorgon.Graphics.Core
 
             return new D3D11.RenderTargetViewDescription
             {
-                Format = Format,
+                Format = (DXGI.Format)Format,
                 Dimension = isMultisampled
                     ? D3D11.RenderTargetViewDimension.Texture2DMultisampled
                     : D3D11.RenderTargetViewDimension.Texture2D,
@@ -282,7 +282,7 @@ namespace Gorgon.Graphics.Core
         {
             return new D3D11.RenderTargetViewDescription
             {
-                Format = Format,
+                Format = (DXGI.Format)Format,
                 Dimension = D3D11.RenderTargetViewDimension.Texture3D,
                 Texture3D =
                 {
@@ -370,12 +370,12 @@ namespace Gorgon.Graphics.Core
         /// <param name="arrayOrDepthIndex">The first array index to use in the view.</param>
         /// <param name="arrayOrDepthCount">The number of array indices to use in the view.</param>
         /// <param name="log">Logging interface for debugging.</param>
-        internal GorgonRenderTargetView(GorgonTexture texture, DXGI.Format format, int mipSlice, int arrayOrDepthIndex, int arrayOrDepthCount, IGorgonLog log)
+        internal GorgonRenderTargetView(GorgonTexture texture, BufferFormat format, int mipSlice, int arrayOrDepthIndex, int arrayOrDepthCount, IGorgonLog log)
         {
 	        _log = log ?? GorgonLogDummy.DefaultInstance;
             Texture = texture;
 
-            if (format == DXGI.Format.Unknown)
+            if (format == BufferFormat.Unknown)
             {
                 format = texture.Info.Format;
             }

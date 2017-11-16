@@ -59,46 +59,46 @@ namespace Gorgon.Graphics.Core
 	{
 		#region Variables.
 		// Type mapping for types.
-		private static readonly Dictionary<Type, DXGI.Format> _typeMapping = new Dictionary<Type, DXGI.Format>
+		private static readonly Dictionary<Type, BufferFormat> _typeMapping = new Dictionary<Type, BufferFormat>
 			{
 				{
-					typeof(byte), DXGI.Format.R8_UInt
+					typeof(byte), BufferFormat.R8_UInt
 				},
 				{
-					typeof(sbyte), DXGI.Format.R8_SInt
+					typeof(sbyte), BufferFormat.R8_SInt
 				},
 				{
-					typeof(int), DXGI.Format.R32_UInt
+					typeof(int), BufferFormat.R32_UInt
 				},
 				{
-					typeof(uint), DXGI.Format.R32_UInt
+					typeof(uint), BufferFormat.R32_UInt
 				},
 				{
-					typeof(short), DXGI.Format.R16_UInt
+					typeof(short), BufferFormat.R16_UInt
 				},
 				{
-					typeof(ushort), DXGI.Format.R16_UInt
+					typeof(ushort), BufferFormat.R16_UInt
 				},
 				{
-					typeof(long), DXGI.Format.R32G32_SInt
+					typeof(long), BufferFormat.R32G32_SInt
 				},
 				{
-					typeof(ulong), DXGI.Format.R32G32_UInt
+					typeof(ulong), BufferFormat.R32G32_UInt
 				},
 				{
-					typeof(float), DXGI.Format.R32_Float
+					typeof(float), BufferFormat.R32_Float
 				},
 				{
-					typeof(DX.Vector2), DXGI.Format.R32G32_Float
+					typeof(DX.Vector2), BufferFormat.R32G32_Float
 				},
 				{
-					typeof(DX.Vector3), DXGI.Format.R32G32B32_Float
+					typeof(DX.Vector3), BufferFormat.R32G32B32_Float
 				},
 				{
-					typeof(DX.Vector4), DXGI.Format.R32G32B32A32_Float
+					typeof(DX.Vector4), BufferFormat.R32G32B32A32_Float
 				},
 				{
-					typeof(GorgonColor), DXGI.Format.R32G32B32A32_Float
+					typeof(GorgonColor), BufferFormat.R32G32B32A32_Float
 				}
 			};
 
@@ -479,11 +479,11 @@ namespace Gorgon.Graphics.Core
 	        {
 	            (FieldInfo Field, InputElementAttribute InputElement) item = members[i];
 
-	            DXGI.Format format = item.InputElement.Format;
+	            BufferFormat format = item.InputElement.Format;
 	            string contextName = item.InputElement.Context;
 
 	            // Try to determine the format from the type.
-	            if ((format == DXGI.Format.Unknown) && (!_typeMapping.TryGetValue(item.Field.FieldType, out format)))
+	            if ((format == BufferFormat.Unknown) && (!_typeMapping.TryGetValue(item.Field.FieldType, out format)))
 	            {
 	                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_LAYOUT_INVALID_ELEMENT_TYPE, item.Field.FieldType.FullName));
 	            }

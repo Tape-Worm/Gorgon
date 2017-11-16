@@ -27,7 +27,6 @@
 
 using System.Collections.Generic;
 using Gorgon.Graphics.Imaging.Properties;
-using DXGI = SharpDX.DXGI;
 using WIC = SharpDX.WIC;
 
 namespace Gorgon.Graphics.Imaging.Codecs
@@ -69,12 +68,12 @@ namespace Gorgon.Graphics.Imaging.Codecs
 	{
 		#region Variables.
 		// Supported formats.
-	    private readonly DXGI.Format[] _supportedPixelFormats =
+	    private readonly BufferFormat[] _supportedPixelFormats =
 	    {
-		    DXGI.Format.R8G8B8A8_UNorm,
-		    DXGI.Format.B8G8R8A8_UNorm,
-		    DXGI.Format.B8G8R8X8_UNorm,
-		    DXGI.Format.R16G16B16A16_UNorm
+		    BufferFormat.R8G8B8A8_UNorm,
+		    BufferFormat.B8G8R8A8_UNorm,
+		    BufferFormat.B8G8R8X8_UNorm,
+		    BufferFormat.R16G16B16A16_UNorm
 	    };
 		#endregion
 
@@ -82,7 +81,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 	    /// <summary>
 	    /// Property to return the supported pixel formats for this codec.
 	    /// </summary>
-	    public override IReadOnlyList<DXGI.Format> SupportedPixelFormats => _supportedPixelFormats;
+	    public override IReadOnlyList<BufferFormat> SupportedPixelFormats => _supportedPixelFormats;
         #endregion
 
         #region Constructor/Destructor.

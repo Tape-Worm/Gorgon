@@ -31,7 +31,7 @@ using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts.Properties;
 using Gorgon.Math;
-using SharpDX.DXGI;
+using DXGI = SharpDX.DXGI;
 
 namespace Gorgon.Graphics.Fonts
 {
@@ -170,7 +170,7 @@ namespace Gorgon.Graphics.Fonts
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="texture"/> is not a 2D texture.
 		/// <para>-or-</para>
-		/// <para>Thrown if the <paramref name="texture"/> format is not <c>R8G8B8A8_UNorm</c>, <c>R8G8B8A8_UNorm_SRgb</c>, <c>Format.B8G8R8A8_UNorm</c> or <c>B8G8R8A8_UNorm_SRgb</c>.</para>
+		/// <para>Thrown if the <paramref name="texture"/> format is not <c>R8G8B8A8_UNorm</c>, <c>R8G8B8A8_UNorm_SRgb</c>, <c>BufferFormat.B8G8R8A8_UNorm</c> or <c>B8G8R8A8_UNorm_SRgb</c>.</para>
 		/// </exception>
 		/// <remarks>
 		/// <para>
@@ -207,10 +207,10 @@ namespace Gorgon.Graphics.Fonts
 					throw new ArgumentException(Resources.GORGFX_ERR_FONT_GLYPH_IMAGE_NOT_2D, nameof(texture));
 				}
 
-				if ((texture.Info.Format != Format.R8G8B8A8_UNorm)
-				    && (texture.Info.Format != Format.R8G8B8A8_UNorm_SRgb)
-				    && (texture.Info.Format != Format.B8G8R8A8_UNorm)
-				    && (texture.Info.Format != Format.B8G8R8A8_UNorm_SRgb))
+				if ((texture.Info.Format != BufferFormat.R8G8B8A8_UNorm)
+				    && (texture.Info.Format != BufferFormat.R8G8B8A8_UNorm_SRgb)
+				    && (texture.Info.Format != BufferFormat.B8G8R8A8_UNorm)
+				    && (texture.Info.Format != BufferFormat.B8G8R8A8_UNorm_SRgb))
 				{
 					throw new ArgumentException(Resources.GORGFX_ERR_GLYPH_TEXTURE_FORMAT_INVALID, nameof(texture));
 				}

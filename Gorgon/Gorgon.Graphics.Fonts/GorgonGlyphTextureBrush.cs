@@ -74,7 +74,7 @@ namespace Gorgon.Graphics.Fonts
 	/// </para>
 	/// <para>
 	/// The texture used by this brush is a <see cref="IGorgonImage"/> and not a <see cref="GorgonTexture"/>, and must be a 2D image, and have a format of <c>R8G8B8A8_UNorm_SRgb</c>,
-	/// <c>DXGI.Format.R8G8B8A8_UNorm</c>, <c>DXGI.Format.B8G8R8A8_UNorm</c>, or <c>DXGI.Format.B8G8R8A8_UNorm_SRgb</c>.
+	/// <c>BufferFormat.R8G8B8A8_UNorm</c>, <c>BufferFormat.B8G8R8A8_UNorm</c>, or <c>BufferFormat.B8G8R8A8_UNorm_SRgb</c>.
 	/// </para>
 	/// </remarks>
 	/// <seealso cref="GorgonGlyphSolidBrush"/>
@@ -134,10 +134,10 @@ namespace Gorgon.Graphics.Fonts
 			try
 			{
 				// We have to convert to BGRA in order to use the image data with GDI+.
-				if (Image.Info.Format != DXGI.Format.B8G8R8A8_UNorm)
+				if (Image.Info.Format != BufferFormat.B8G8R8A8_UNorm)
 				{
 					image = Image.Clone();
-					image.ConvertToFormat(DXGI.Format.B8G8R8A8_UNorm);
+					image.ConvertToFormat(BufferFormat.B8G8R8A8_UNorm);
 				}
 				else
 				{
@@ -253,10 +253,10 @@ namespace Gorgon.Graphics.Fonts
 				throw new ArgumentNullException(nameof(textureImage));	
 			}
 
-			if ((textureImage.Info.Format != DXGI.Format.R8G8B8A8_UNorm_SRgb)
-				&& (textureImage.Info.Format != DXGI.Format.R8G8B8A8_UNorm)
-				&& (textureImage.Info.Format != DXGI.Format.B8G8R8A8_UNorm)
-				&& (textureImage.Info.Format != DXGI.Format.B8G8R8A8_UNorm_SRgb))
+			if ((textureImage.Info.Format != BufferFormat.R8G8B8A8_UNorm_SRgb)
+				&& (textureImage.Info.Format != BufferFormat.R8G8B8A8_UNorm)
+				&& (textureImage.Info.Format != BufferFormat.B8G8R8A8_UNorm)
+				&& (textureImage.Info.Format != BufferFormat.B8G8R8A8_UNorm_SRgb))
 			{
 				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_FORMAT_NOT_SUPPORTED, textureImage.Info.Format), nameof(textureImage));
 			}
