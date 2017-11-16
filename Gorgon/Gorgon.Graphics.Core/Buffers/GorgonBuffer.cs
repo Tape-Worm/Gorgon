@@ -28,10 +28,8 @@ using System;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
-using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
 using Gorgon.Native;
-using DXGI = SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
@@ -234,7 +232,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="startElement">[Optional] The first element to start viewing from.</param>
         /// <param name="elementCount">[Optional] The number of elements to view.</param>
         /// <returns>A <see cref="GorgonBufferUav"/> used to bind the buffer to a shader.</returns>
-        /// <exception cref="GorgonException">Thrown if the video device does not support feature level 11 or better.
+        /// <exception cref="GorgonException">Thrown if the video adapter does not support feature level 11 or better.
         /// <para>-or-</para>
         /// <para>Thrown when this buffer does not have a <see cref="BufferBinding"/> of <see cref="BufferBinding.UnorderedAccess"/>.</para>
         /// <para>-or-</para>
@@ -264,7 +262,7 @@ namespace Gorgon.Graphics.Core
         /// <para>
         /// <note type="important">
         /// <para>
-        /// This method requires a video device capable of supporting feature level 11 or better. If the current video device does not support feature level 11, an exception will be thrown.
+        /// This method requires a video adapter capable of supporting feature level 11 or better. If the current video adapter does not support feature level 11, an exception will be thrown.
         /// </para>
         /// </note>
         /// </para>

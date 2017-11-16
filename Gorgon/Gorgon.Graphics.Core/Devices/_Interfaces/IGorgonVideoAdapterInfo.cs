@@ -31,18 +31,18 @@ using Gorgon.Core;
 namespace Gorgon.Graphics.Core
 {
 	/// <summary>
-	/// Defines the level of support for functionality for a video device.
+	/// Defines the level of support for functionality for a video adapter.
 	/// </summary>
 	/// <remarks>
 	/// <para>
-	/// A feature level is used to describe what functionality a video device can support when using Direct 3D. For example, shader model 5 shaders are only supported by devices that support Direct 3D 11.0
+	/// A feature level is used to describe what functionality a video adapter can support when using Direct 3D. For example, shader model 5 shaders are only supported by devices that support Direct 3D 11.0
 	/// or greater, and this will be reflected by a value of <see cref="Level_11_0"/> or <see cref="Level_11_1"/>.
 	/// </para>
 	/// <para>
 	/// Feature levels do not necessarily mean the hardware is limited, it may be that a device does not support a feature because the current driver does not expose that functionality. 
 	/// </para>
 	/// <para>
-	/// Applications can use this to define a minimum supported video device, or take an alternate code (potentially slower) path to achieve the same result.
+	/// Applications can use this to define a minimum supported video adapter, or take an alternate code (potentially slower) path to achieve the same result.
 	/// </para>
 	/// </remarks>
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue", Justification = "If we don't have one of these values, Gorgon will not execute.")]
@@ -67,37 +67,38 @@ namespace Gorgon.Graphics.Core
 	}
 
 	/// <summary>
-	/// Defines the type of video device.
+	/// Defines the type of video adapter.
 	/// </summary>
 	public enum VideoDeviceType
 	{
 		/// <summary>
-		/// Hardware video device.
+		/// Hardware video adapter.
 		/// </summary>
 		Hardware = 0,
 		/// <summary>
-		/// Software video device (WARP).
+		/// Software video adapter (WARP).
 		/// </summary>
 		Software = 1,
 		/// <summary>
-		/// Reference rasterizer video device.
+		/// Reference rasterizer video adapter.
 		/// </summary>
 		ReferenceRasterizer = 2
 	}
 
 	/// <summary>
-	/// Provides information about a video device in the system.
+	/// Provides information about a video adapter in the system.
 	/// </summary>
 	/// <remarks>
 	/// <para>
-	/// This information may be for a physical hardware device, or a software rasterizer.  To determine which type this device falls under, se the <see cref="VideoDeviceType"/> property to determine the type of device.
+	/// This information may be for a physical hardware adapter, or a software rasterizer.  To determine which type this device falls under, se the <see cref="VideoDeviceType"/> property to determine the 
+	/// type of device.
 	/// </para>
 	/// </remarks>
-	public interface IGorgonVideoDeviceInfo 
+	public interface IGorgonVideoAdapterInfo 
 		: IGorgonNamedObject
 	{
 		/// <summary>
-		/// Property to return the index of the video device within a <see cref="GorgonVideoDeviceList"/>.
+		/// Property to return the index of the video adapter within a <see cref="GorgonVideoDeviceList"/>.
 		/// </summary>
 		int Index
 		{
@@ -105,7 +106,7 @@ namespace Gorgon.Graphics.Core
 		}
 
 		/// <summary>
-		/// Property to return the type of video device.
+		/// Property to return the type of video adapter.
 		/// </summary>
 		VideoDeviceType VideoDeviceType
 		{

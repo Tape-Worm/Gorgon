@@ -348,7 +348,7 @@ namespace Gorgon.Graphics.Core
         /// <see cref="IGorgonTextureInfo.MultisampleInfo"/> <see cref="GorgonMultisampleInfo.Count"/> greater than 1.
         /// </para>
         /// <para>
-        /// If the current <see cref="IGorgonVideoDevice"/> has a <see cref="IGorgonVideoDevice.RequestedFeatureLevel"/> of <see cref="FeatureLevelSupport.Level_10_0"/>, then setting this value to 
+        /// If the current <see cref="IGorgonVideoAdapter"/> has a <see cref="IGorgonVideoAdapter.RequestedFeatureLevel"/> of <see cref="FeatureLevelSupport.Level_10_0"/>, then setting this value to 
         /// <b>false</b> will disable anti-aliasing.
         /// </para>
         /// <para>

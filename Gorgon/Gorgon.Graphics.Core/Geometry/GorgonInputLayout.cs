@@ -32,11 +32,9 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
 using DX = SharpDX;
-using DXGI = SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
-using Gorgon.Graphics.Imaging;
 using Gorgon.Reflection;
 
 namespace Gorgon.Graphics.Core
@@ -117,9 +115,9 @@ namespace Gorgon.Graphics.Core
 		internal D3D11.InputLayout D3DInputLayout => _d3DInputLayout;
 
 		/// <summary>
-		/// Property to return the video device that created this object.
+		/// Property to return the video adapter that created this object.
 		/// </summary>
-		public IGorgonVideoDevice VideoDevice
+		public IGorgonVideoAdapter VideoDevice
 		{
 			get;
 		}
@@ -288,7 +286,7 @@ namespace Gorgon.Graphics.Core
 		/// Function to build an input layout using the fields from a value type.
 		/// </summary>
 		/// <typeparam name="T">The type to evaluate. This must be a value type.</typeparam>
-		/// <param name="videoDevice">The video device used to create the input layout.</param>
+		/// <param name="videoDevice">The video adapter used to create the input layout.</param>
 		/// <param name="shader">Vertex shader to bind the layout with.</param>
 		/// <returns>A new <see cref="GorgonInputLayout"/> for the type passed to <typeparamref name="T"/>.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="videoDevice"/>, or the <paramref name="shader"/> parameter is <b>null</b>.</exception>
@@ -363,7 +361,7 @@ namespace Gorgon.Graphics.Core
 		/// <seealso cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>
 		/// <seealso cref="GorgonReflectionExtensions.IsSafeForNative(Type)"/>
 		/// <seealso cref="GorgonReflectionExtensions.IsSafeForNative(Type,out IReadOnlyList{FieldInfo})"/>
-		public static GorgonInputLayout CreateUsingType<T>(IGorgonVideoDevice videoDevice, GorgonVertexShader shader)
+		public static GorgonInputLayout CreateUsingType<T>(IGorgonVideoAdapter videoDevice, GorgonVertexShader shader)
 			where T : struct
 		{
 		    return CreateUsingType(videoDevice, typeof(T), shader);
@@ -372,7 +370,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Function to build an input layout using the fields from a value type.
         /// </summary>
-        /// <param name="videoDevice">The video device used to create the input layout.</param>
+        /// <param name="videoDevice">The video adapter used to create the input layout.</param>
         /// <param name="type">The type to evaluate.</param>
         /// <param name="shader">Vertex shader to bind the layout with.</param>
         /// <returns>A new <see cref="GorgonInputLayout"/> for the type passed to <paramref name="type"/>.</returns>
@@ -448,7 +446,7 @@ namespace Gorgon.Graphics.Core
         /// <seealso cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>
         /// <seealso cref="GorgonReflectionExtensions.IsSafeForNative(Type)"/>
         /// <seealso cref="GorgonReflectionExtensions.IsSafeForNative(Type,out IReadOnlyList{FieldInfo})"/>
-        public static GorgonInputLayout CreateUsingType(IGorgonVideoDevice videoDevice, Type type, GorgonVertexShader shader)
+        public static GorgonInputLayout CreateUsingType(IGorgonVideoAdapter videoDevice, Type type, GorgonVertexShader shader)
 	    {
 	        if (videoDevice == null)
 	        {
@@ -627,13 +625,13 @@ namespace Gorgon.Graphics.Core
 		/// Initializes a new instance of the <see cref="GorgonInputLayout"/> class.
 		/// </summary>
 		/// <param name="name">Name of the object.</param>
-		/// <param name="videoDevice">The video device interface used to create this input layout.</param>
+		/// <param name="videoDevice">The video adapter interface used to create this input layout.</param>
 		/// <param name="shader">Vertex shader to bind the layout with.</param>
 		/// <param name="elements">The input elements to assign to this layout.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/>, <paramref name="videoDevice"/>, <paramref name="shader"/>, or the <paramref name="elements"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/>, or the <paramref name="elements"/> parameter is empty.</exception>
 		/// <exception cref="ArgumentException">Thrown when an element with the same context, slot and index appears more than once in the <paramref name="elements"/> parameter.</exception>
-		public GorgonInputLayout(string name, IGorgonVideoDevice videoDevice, GorgonVertexShader shader, IEnumerable<GorgonInputElement> elements)
+		public GorgonInputLayout(string name, IGorgonVideoAdapter videoDevice, GorgonVertexShader shader, IEnumerable<GorgonInputElement> elements)
 		{
 			if (name == null)
 			{

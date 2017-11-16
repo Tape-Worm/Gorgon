@@ -140,7 +140,7 @@
     <value>The offset [{0}] or context '{1}' is in use by another item with the same index or slot.</value>
   </data>
   <data name="GORGFX_ERR_DEVICE_CANNOT_FIND_DEVICES" xml:space="preserve">
-    <value>Could not find any supported video devices.  Gorgon requires a device that can support a minimum feature level of 10.0.</value>
+    <value>Could not find any supported video adapters.  Gorgon requires a device that can support a minimum feature level of 10.0.</value>
   </data>
   <data name="GORGFX_TOSTR_SHADER_INCLUDE" xml:space="preserve">
     <value>Gorgon Shader Include '{0}'</value>
@@ -206,7 +206,7 @@ Please report this error by pasting the details to the bug tracker in Gorgon's g
     <value>The include line '{0}' is not valid.</value>
   </data>
   <data name="GORGFX_ERR_MULTISAMPLE_INVALID" xml:space="preserve">
-    <value>The video device '{0}' does not support multisampling with a count of {1} and a quality of {2} for format [{3}].</value>
+    <value>The video adapter '{0}' does not support multisampling with a count of {1} and a quality of {2} for format [{3}].</value>
   </data>
   <data name="GORGFX_ERR_TEXTURE_DEPTH_INVALID" xml:space="preserve">
     <value>Cannot create the [{0}].  The depth must be between 1 and {1}.</value>
@@ -284,7 +284,7 @@ Please report this error by pasting the details to the bug tracker in Gorgon's g
     <value>The format [{0}] is not supported for a [{1}] texture.</value>
   </data>
   <data name="GORGFX_ERR_UAV_REQUIRES_SM5" xml:space="preserve">
-    <value>Unordered access views for textures requires a feature level 11 or better video device.</value>
+    <value>Unordered access views for textures requires a feature level 11 or better video adapter.</value>
   </data>
   <data name="GORGFX_ERR_TEXTURE_NO_MIP_SUPPORT" xml:space="preserve">
     <value>The texture format [{0}] must be used with a mip map count of 1.</value>
@@ -293,7 +293,7 @@ Please report this error by pasting the details to the bug tracker in Gorgon's g
     <value>Cannot use a multisampled texture as a texture cube.</value>
   </data>
   <data name="GORGFX_ERR_NO_VIDEO_DEVICE_WITH_NAME" xml:space="preserve">
-    <value>There is no video device with the name '{0}'.</value>
+    <value>There is no video adapter with the name '{0}'.</value>
   </data>
   <data name="GORGFX_ERR_FEATURE_LEVEL_INVALID" xml:space="preserve">
     <value>The feature level [{0}] is not valid.</value>
@@ -523,5 +523,8 @@ The width must be a value between 1-{2}, and the height must be a value between 
   </data>
   <data name="GORGFX_ERR_CONFLICT_UAV_RTV" xml:space="preserve">
     <value>Cannot bind the '{0}' resource as an unordered access view because it is already bound as a render target view at slot {1}.</value>
+  </data>
+  <data name="GORGFX_TOSTR_VIDEO_MODE" xml:space="preserve">
+    <value>Video Mode - {0}x{1} {2} Refresh Rate: {3:#####0.0}Hz</value>
   </data>
 </root>

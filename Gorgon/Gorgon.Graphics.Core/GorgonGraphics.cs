@@ -49,20 +49,20 @@ namespace Gorgon.Graphics.Core
     /// This is used to initialize the functionality available for rendering hardware accelerated graphics for applications. It is also used in the initialization of other objects used to create graphics. 
     /// </para>
     /// <para>
-    /// Typically, a graphics object is assigned to a single <see cref="IGorgonVideoDeviceInfo"/> to provide access to the functionality of that video device. If the system has more than once video device 
-    /// installed then access to subsequent devices can be given by creating a new instance of this object with the appropriate <see cref="IGorgonVideoDeviceInfo"/>.
+    /// Typically, a graphics object is assigned to a single <see cref="IGorgonVideoAdapterInfo"/> to provide access to the functionality of that video adapter. If the system has more than once video adapter 
+    /// installed then access to subsequent devices can be given by creating a new instance of this object with the appropriate <see cref="IGorgonVideoAdapterInfo"/>.
     /// </para>
     /// <para>
     /// <note type="tip">
     /// <para>
-    /// To determine what devices are attached to the system, use a <see cref="IGorgonVideoDeviceList"/> to retreive a list of applicable video devices. This will contain a list of 
-    /// <see cref="IGorgonVideoDeviceInfo"/> objects suitable for construction of the graphics object.
+    /// To determine what devices are attached to the system, use a <see cref="IGorgonVideoDeviceList"/> to retreive a list of applicable video adapters. This will contain a list of 
+    /// <see cref="IGorgonVideoAdapterInfo"/> objects suitable for construction of the graphics object.
     /// </para>
     /// </note>
     /// </para>
     /// <para>
-    /// When creating a graphics object, the user can choose which feature level they will support for a given <see cref="IGorgonVideoDevice"/> so that older devices may be used. The actual feature level 
-    /// support is provided by the <see cref="IGorgonVideoDeviceInfo.SupportedFeatureLevel"/> on the <see cref="IGorgonVideoDeviceInfo"/> interface.
+    /// When creating a graphics object, the user can choose which feature level they will support for a given <see cref="IGorgonVideoAdapter"/> so that older devices may be used. The actual feature level 
+    /// support is provided by the <see cref="IGorgonVideoAdapterInfo.SupportedFeatureLevel"/> on the <see cref="IGorgonVideoAdapterInfo"/> interface.
     /// </para>
     /// <para>
     /// This object is quite simple in its functionality. It provides some state assignment, and a means to submit a <see cref="GorgonDrawCallBase">draw call</see> so that graphics information can be 
@@ -121,7 +121,7 @@ namespace Gorgon.Graphics.Core
     /// <a target="_blank" href="http://www.monogame.net/">MonoGame</a> or <a target="_blank" href="https://unity3d.com/">Unity</a> which should work fine on older versions.
     /// </para>
     /// </remarks>
-    /// <seealso cref="IGorgonVideoDeviceInfo"/>
+    /// <seealso cref="IGorgonVideoAdapterInfo"/>
     /// <seealso cref="IGorgonVideoDeviceList"/>
     /// <seealso cref="GorgonDrawCall"/>
     /// <seealso cref="GorgonDrawIndexedCall"/>
@@ -141,7 +141,7 @@ namespace Gorgon.Graphics.Core
         // The log interface used to log debug messages.
         private readonly IGorgonLog _log;
 
-        // The video device to use for this graphics object.
+        // The video adapter to use for this graphics object.
         private VideoDevice _videoDevice;
 
         // The current device context.
@@ -208,9 +208,9 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Property to set or return the video device to use for this graphics interface.
+        /// Property to set or return the video adapter to use for this graphics interface.
         /// </summary>
-        public IGorgonVideoDevice VideoDevice => _videoDevice;
+        public IGorgonVideoAdapter VideoDevice => _videoDevice;
 
         /// <summary>
         /// Property to set or return whether object tracking is disabled.
@@ -2633,7 +2633,7 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         /// <seealso cref="GorgonPipelineState"/>
         /// <seealso cref="IGorgonPipelineStateInfo"/>
-        /// <seealso cref="IGorgonVideoDevice"/>
+        /// <seealso cref="IGorgonVideoAdapter"/>
         public GorgonPipelineState GetPipelineState(IGorgonPipelineStateInfo info)
         {
             if (info == null)
@@ -2697,7 +2697,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         public void Dispose()
         {
-            IGorgonVideoDevice device = Interlocked.Exchange(ref _videoDevice, null);
+            IGorgonVideoAdapter device = Interlocked.Exchange(ref _videoDevice, null);
             D3D11.DeviceContext context = Interlocked.Exchange(ref _deviceContext, null);
 
             if ((device == null)
@@ -2727,13 +2727,13 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonGraphics"/> class.
         /// </summary>
-        /// <param name="videoDeviceInfo">[Optional] A <see cref="VideoDeviceInfo"/> to specify the video device to use for this instance.</param>
-        /// <param name="featureLevel">[Optional] The requested feature level for the video device used with this object.</param>
+        /// <param name="videoDeviceInfo">[Optional] A <see cref="VideoDeviceInfo"/> to specify the video adapter to use for this instance.</param>
+        /// <param name="featureLevel">[Optional] The requested feature level for the video adapter used with this object.</param>
         /// <param name="log">[Optional] The log to use for debugging.</param>
         /// <exception cref="GorgonException">Thrown when the <paramref name="featureLevel"/> is unsupported.</exception>
         /// <remarks>
         /// <para>
-        /// When the <paramref name="videoDeviceInfo"/> is set to <b>null</b>, Gorgon will use the first video device with feature level specified by <paramref name="featureLevel"/>  
+        /// When the <paramref name="videoDeviceInfo"/> is set to <b>null</b>, Gorgon will use the first video adapter with feature level specified by <paramref name="featureLevel"/>  
         /// will be used. If the feature level requested is higher than what any device in the system can support, then the first device with the highest feature level will be used.
         /// </para>
         /// <para>
@@ -2742,7 +2742,7 @@ namespace Gorgon.Graphics.Core
         /// highest feature of the specified <paramref name="videoDeviceInfo"/>. 
         /// </para>
         /// <para>
-        /// If Gorgon is compiled in DEBUG mode, and <see cref="VideoDeviceInfo"/> is <b>null</b>, then it will attempt to find the most appropriate hardware video device, and failing that, will fall 
+        /// If Gorgon is compiled in DEBUG mode, and <see cref="VideoDeviceInfo"/> is <b>null</b>, then it will attempt to find the most appropriate hardware video adapter, and failing that, will fall 
         /// back to a software device (WARP).
         /// </para>
         /// <para>
@@ -2759,11 +2759,11 @@ namespace Gorgon.Graphics.Core
         /// </para>
         /// <code lang="csharp">
         /// <![CDATA[
-        /// // Create using the first video device with the highest feature level:
+        /// // Create using the first video adapter with the highest feature level:
         /// var graphics = new GorgonGraphics();
         /// 
-        /// // Create using a specific video device and use the highest feature level supported by that device:
-        /// // Get a list of available video devices.
+        /// // Create using a specific video adapter and use the highest feature level supported by that device:
+        /// // Get a list of available video adapters.
         /// IGorgonVideoDeviceList videoDevices = new GorgonVideoDeviceList(log);
         /// videoDevices.Enumerate(true);
         /// var graphics = new GorgonGraphics(videoDevices[0]);
@@ -2781,7 +2781,7 @@ namespace Gorgon.Graphics.Core
         /// </code>
         /// </example>
         /// <seealso cref="VideoDeviceInfo"/>
-        public GorgonGraphics(IGorgonVideoDeviceInfo videoDeviceInfo, FeatureLevelSupport? featureLevel = null, IGorgonLog log = null)
+        public GorgonGraphics(IGorgonVideoAdapterInfo videoDeviceInfo, FeatureLevelSupport? featureLevel = null, IGorgonLog log = null)
         {
             if (!Win32API.IsWindows10OrGreater(15063))
             {
@@ -2804,7 +2804,7 @@ namespace Gorgon.Graphics.Core
             _log = log ?? GorgonLogDummy.DefaultInstance;
 
             _log.Print("Gorgon Graphics initializing...", LoggingLevel.Simple);
-            _log.Print($"Using video device '{videoDeviceInfo.Name}' at feature level [{featureLevel.Value}] for Direct 3D 11.1.", LoggingLevel.Simple);
+            _log.Print($"Using video adapter '{videoDeviceInfo.Name}' at feature level [{featureLevel.Value}] for Direct 3D 11.1.", LoggingLevel.Simple);
 
             _videoDevice = new VideoDevice(videoDeviceInfo, featureLevel.Value, _log);
 

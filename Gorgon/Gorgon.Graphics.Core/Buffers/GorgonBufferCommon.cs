@@ -29,7 +29,6 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
-using Gorgon.Graphics.Imaging;
 using Gorgon.Native;
 using Gorgon.Reflection;
 using DX = SharpDX;

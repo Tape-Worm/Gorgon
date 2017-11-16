@@ -19,7 +19,7 @@ namespace Gorgon.Graphics.Core.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -372,7 +372,7 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Could not find any supported video devices.  Gorgon requires a device that can support a minimum feature level of 10.0..
+        ///   Looks up a localized string similar to Could not find any supported video adapters.  Gorgon requires a device that can support a minimum feature level of 10.0..
         /// </summary>
         internal static string GORGFX_ERR_DEVICE_CANNOT_FIND_DEVICES {
             get {
@@ -507,7 +507,7 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The video device &apos;{0}&apos; does not support multisampling with a count of {1} and a quality of {2} for format [{3}]..
+        ///   Looks up a localized string similar to The video adapter &apos;{0}&apos; does not support multisampling with a count of {1} and a quality of {2} for format [{3}]..
         /// </summary>
         internal static string GORGFX_ERR_MULTISAMPLE_INVALID {
             get {
@@ -534,7 +534,7 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There is no video device with the name &apos;{0}&apos;..
+        ///   Looks up a localized string similar to There is no video adapter with the name &apos;{0}&apos;..
         /// </summary>
         internal static string GORGFX_ERR_NO_VIDEO_DEVICE_WITH_NAME {
             get {
@@ -1040,7 +1040,7 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unordered access views for textures requires a feature level 11 or better video device..
+        ///   Looks up a localized string similar to Unordered access views for textures requires a feature level 11 or better video adapter..
         /// </summary>
         internal static string GORGFX_ERR_UAV_REQUIRES_SM5 {
             get {
@@ -1247,6 +1247,15 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Video Mode - {0}x{1} {2} Refresh Rate: {3:#####0.0}Hz.
+        /// </summary>
+        internal static string GORGFX_TOSTR_VIDEO_MODE {
+            get {
+                return ResourceManager.GetString("GORGFX_TOSTR_VIDEO_MODE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap Gorgon_2_x_Logo_Small {
@@ -1258,6 +1267,25 @@ namespace Gorgon.Graphics.Core.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to // Texture and sampler for blitting a texture.
+        ///Texture2D _bltTexture : register(t0);
+        ///SamplerState _bltSampler : register(s0);
+        ///
+        ///// Our default blitting vertex.
+        ///struct GorgonBltVertex
+        ///{
+        ///   float4 position : SV_POSITION;
+        ///   float2 uv : TEXCOORD;
+        ///   float4 color : COLOR;
+        ///};
+        ///
+        ///// The transformation matrices (for vertex shader).
+        ///cbuffer GorgonBltWorldViewProjection : register(b0)
+        ///{
+        ///	float4x4 WorldViewProjection;
+        ///}
+        ///
+        ///// Our vertex shader for blitting textures.
+        ///GorgonBltVertex GorgonBltVertexShader [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string GraphicsShaders {
             get {

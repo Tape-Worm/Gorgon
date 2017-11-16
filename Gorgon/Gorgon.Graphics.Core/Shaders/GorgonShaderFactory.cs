@@ -155,13 +155,13 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Function to build the actual shader from byte code.
 		/// </summary>
-		/// <param name="device">The video device used to create the shader.</param>
+		/// <param name="device">The video adapter used to create the shader.</param>
 		/// <param name="shaderType">The type of shader to build.</param>
 		/// <param name="entryPoint">The entry point function.</param>
 		/// <param name="isDebug"><b>true</b> if the byte code has debug info, <b>false</b> if not.</param>
 		/// <param name="byteCode">The byte code for the shader.</param>
 		/// <returns>The shader based on the <paramref name="shaderType"/>.</returns>
-		private static GorgonShader GetShader(IGorgonVideoDevice device, ShaderType shaderType, string entryPoint, bool isDebug, D3DCompiler.ShaderBytecode byteCode)
+		private static GorgonShader GetShader(IGorgonVideoAdapter device, ShaderType shaderType, string entryPoint, bool isDebug, D3DCompiler.ShaderBytecode byteCode)
 		{
 			switch (shaderType)
 			{
@@ -186,7 +186,7 @@ namespace Gorgon.Graphics.Core
 		/// Function to load a shader from a <see cref="Stream"/> containing a Gorgon binary shader in chunked format.
 		/// </summary>
 		/// <typeparam name="T">The type of shader to return. Must inherit from <see cref="GorgonShader"/>.</typeparam>
-		/// <param name="device">The video device used to create the shader.</param>
+		/// <param name="device">The video adapter used to create the shader.</param>
 		/// <param name="stream">The stream containing the binary shader data.</param>
 		/// <param name="size">The size, in bytes, of the binary shader within the stream.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="device"/>, or the <paramref name="stream"/> parameter is <b>null</b>.</exception>
@@ -224,7 +224,7 @@ namespace Gorgon.Graphics.Core
 		/// <seealso cref="GorgonChunkFile{T}"/>
 		/// <seealso cref="GorgonChunkFileReader"/>
 		/// <seealso cref="GorgonChunkFileWriter"/>
-		public static T FromStream<T>(IGorgonVideoDevice device, Stream stream, int size)
+		public static T FromStream<T>(IGorgonVideoAdapter device, Stream stream, int size)
 			where T : GorgonShader
 		{
 			if (device == null)
@@ -346,7 +346,7 @@ namespace Gorgon.Graphics.Core
         /// Function to load a shader from a file containing a Gorgon binary shader in chunked format.
         /// </summary>
         /// <typeparam name="T">The type of shader to return. Must inherit from <see cref="GorgonShader"/>.</typeparam>
-        /// <param name="device">The video device used to create the shader.</param>
+        /// <param name="device">The video adapter used to create the shader.</param>
         /// <param name="path">The path to the file containing the Gorgon binary shader data.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="device"/>, or the <paramref name="path"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
@@ -381,7 +381,7 @@ namespace Gorgon.Graphics.Core
         /// <seealso cref="GorgonChunkFile{T}"/>
         /// <seealso cref="GorgonChunkFileReader"/>
         /// <seealso cref="GorgonChunkFileWriter"/>
-        public static T FromFile<T>(IGorgonVideoDevice device, string path)
+        public static T FromFile<T>(IGorgonVideoAdapter device, string path)
 			where T : GorgonShader
 		{
 			if (device == null)
@@ -409,7 +409,7 @@ namespace Gorgon.Graphics.Core
 		/// Function to compile a shader from source code.
 		/// </summary>
 		/// <typeparam name="T">The type of shader to return.</typeparam>
-		/// <param name="videoDevice">The video device used to create the shader.</param>
+		/// <param name="videoDevice">The video adapter used to create the shader.</param>
 		/// <param name="sourceCode">A string containing the source code to compile.</param>
 		/// <param name="entryPoint">The entry point function for the shader.</param>
 		/// <param name="debug">[Optional] <b>true</b> to indicate whether the shader should be compiled with debug information; otherwise, <b>false</b> to strip out debug information.</param>
@@ -457,7 +457,7 @@ namespace Gorgon.Graphics.Core
 		/// </list>
 		/// </para>
 		/// </remarks>
-		public static T Compile<T>(IGorgonVideoDevice videoDevice, string sourceCode, string entryPoint, bool debug = false, IList<GorgonShaderMacro> macros = null, string sourceFileName = "(in memory)")
+		public static T Compile<T>(IGorgonVideoAdapter videoDevice, string sourceCode, string entryPoint, bool debug = false, IList<GorgonShaderMacro> macros = null, string sourceFileName = "(in memory)")
 			where T : GorgonShader
 		{
 			if (videoDevice == null)

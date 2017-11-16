@@ -29,7 +29,6 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using Gorgon.Graphics;
-using DXGI = SharpDX.DXGI;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Example;
 using Gorgon.Graphics.Example.Properties;
@@ -209,7 +208,7 @@ namespace SobelComputeEngine
                 IGorgonVideoDeviceList videoDevices = new GorgonVideoDeviceList();
                 videoDevices.Enumerate();
 
-                IGorgonVideoDeviceInfo videoDeviceInfo = videoDevices.FirstOrDefault(item => item.SupportedFeatureLevel >= FeatureLevelSupport.Level_11_0);
+                IGorgonVideoAdapterInfo videoDeviceInfo = videoDevices.FirstOrDefault(item => item.SupportedFeatureLevel >= FeatureLevelSupport.Level_11_0);
 
                 // Do not allow us to continue further if we don't have a device capable of supporting the compute functionality.
                 if (videoDeviceInfo == null)

@@ -81,7 +81,7 @@ namespace Gorgon.Graphics.Core
 		/// <para>
 		/// <note type="warning">
 		/// <para>
-		/// This value must be 0 or less than the value returned by <see cref="IGorgonVideoDevice.GetMultisampleInfo"/>.  Failure to do so will cause an exception for objects that use this type.
+		/// This value must be 0 or less than the value returned by <see cref="IGorgonVideoAdapter.GetMultisampleInfo"/>.  Failure to do so will cause an exception for objects that use this type.
 		/// </para>
 		/// </note>
 		/// </para>

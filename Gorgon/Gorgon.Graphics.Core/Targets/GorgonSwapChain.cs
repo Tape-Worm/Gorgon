@@ -87,7 +87,7 @@ namespace Gorgon.Graphics.Core
 		// The previous output to use when restoring full screen mode.
 		private IGorgonVideoOutputInfo _previousOutput;
 		// The previous video mode to use when restoring full screen mode.
-		private DXGI.ModeDescription1? _previousMode;
+		private GorgonVideoMode? _previousMode;
 		// The backing store for the information used to create this swap chain.
 		private readonly GorgonSwapChainInfo _info;
 	    // The previously assigned render target views captured when using flip mode.
@@ -116,7 +116,7 @@ namespace Gorgon.Graphics.Core
 		}
 		
 		/// <summary>
-		/// Property to return the video device used to create this swap chain.
+		/// Property to return the video adapter used to create this swap chain.
 		/// </summary>
 		public GorgonGraphics Graphics
 		{
@@ -219,7 +219,7 @@ namespace Gorgon.Graphics.Core
 		/// <remarks>
 		/// When <see cref="IsWindowed"/> is <b>false</b>, this value will be <b>null</b>.
 		/// </remarks>
-		public DXGI.ModeDescription1? FullScreenVideoMode
+		public GorgonVideoMode? FullScreenVideoMode
 		{
 			get;
 			private set;
@@ -446,7 +446,7 @@ namespace Gorgon.Graphics.Core
 				return;
 			}
 
-			DXGI.ModeDescription1 mode = _previousMode.Value;
+			GorgonVideoMode mode = _previousMode.Value;
 
 			try
 			{
@@ -812,7 +812,7 @@ namespace Gorgon.Graphics.Core
 		/// </para>
 		/// </remarks>
 		/// <seealso cref="ExitFullScreen"/>
-		public void EnterFullScreen(ref DXGI.ModeDescription1 desiredMode, IGorgonVideoOutputInfo output)
+		public void EnterFullScreen(ref GorgonVideoMode desiredMode, IGorgonVideoOutputInfo output)
 		{
 			if (output == null)
 			{
@@ -841,12 +841,13 @@ namespace Gorgon.Graphics.Core
 
 
 				// Try to find something resembling the video mode we asked for.
-				dxgiOutput1.FindClosestMatchingMode1(ref desiredMode, out DXGI.ModeDescription1 actualMode, Graphics.VideoDevice.D3DDevice());
+			    DXGI.ModeDescription1 desiredDxGiMode = desiredMode.ToModeDesc1();
+				dxgiOutput1.FindClosestMatchingMode1(ref desiredDxGiMode, out DXGI.ModeDescription1 actualMode, Graphics.VideoDevice.D3DDevice());
 
 				DXGI.ModeDescription resizeMode = actualMode.ToModeDesc();
 
 				// Switch to the format we want so that ResizeBackBuffers will work correctly.
-				_info.Format = (BufferFormat)desiredMode.Format;
+				_info.Format = desiredMode.Format;
 
 				// Bring the control up before attempting to switch to full screen.
 				// Otherwise things get real weird, real fast.
@@ -870,11 +871,11 @@ namespace Gorgon.Graphics.Core
 
 				// Ensure that we have an up-to-date copy of the video mode information.
 				resizeMode.RefreshRate = refreshRate;
-				FullScreenVideoMode = desiredMode = resizeMode.ToModeDesc1();
+				FullScreenVideoMode = desiredMode = resizeMode.ToGorgonVideoMode();
 				FullscreenOutput = output;
 				_info.Width = desiredMode.Width;
 				_info.Height = desiredMode.Height;
-				_info.Format = (BufferFormat)desiredMode.Format;
+				_info.Format = desiredMode.Format;
 
 				_log.Print($"SwapChain '{Name}': Full screen mode was set.  Final mode: {FullScreenVideoMode}.  Swap chain back buffer size: {_info.Width}x{_info.Height}, Format: {_info.Format}",
 				           LoggingLevel.Verbose);
@@ -932,8 +933,7 @@ namespace Gorgon.Graphics.Core
 				_log.Print($"SwapChain '{Name}': Restoring windowed mode.", LoggingLevel.Verbose);
 
 				_screenStateTransition = true;
-				DXGI.ModeDescription1 desc1 = FullScreenVideoMode.Value;
-				DXGI.ModeDescription desc = desc1.ToModeDesc();
+				DXGI.ModeDescription desc = FullScreenVideoMode.Value.ToModeDesc();
 
 				GISwapChain.SetFullscreenState(false, null);
 
@@ -991,7 +991,7 @@ namespace Gorgon.Graphics.Core
 		/// </para>
 		/// <para>
 		/// When choosing a buffer format in the <see cref="IGorgonSwapChainInfo.Format"/> passed by the <paramref name="info"/> property, it is important to choose a format that can be used as a display format. 
-		/// Failure to do so will result in an exception. Users may determine if a format is supported for display by using the <see cref="IGorgonVideoDevice.GetBufferFormatSupport"/> method on the the 
+		/// Failure to do so will result in an exception. Users may determine if a format is supported for display by using the <see cref="IGorgonVideoAdapter.GetBufferFormatSupport"/> method on the the 
 		/// <see cref="GorgonGraphics.VideoDevice"/> property of the <see cref="GorgonGraphics"/> instance passed to this method.
 		/// </para>
 		/// <para>

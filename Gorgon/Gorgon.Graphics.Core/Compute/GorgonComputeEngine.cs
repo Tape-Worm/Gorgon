@@ -45,7 +45,7 @@ namespace Gorgon.Graphics.Core
     /// <para>
     /// <note type="warning">
     /// <para>
-    /// This engine requires a <c>Feature Level 11</c> video device or better. If one is not passed to the constructor, then an exception will be thrown.
+    /// This engine requires a <c>Feature Level 11</c> video adapter or better. If one is not passed to the constructor, then an exception will be thrown.
     /// </para>
     /// </note>
     /// </para>
@@ -390,7 +390,7 @@ namespace Gorgon.Graphics.Core
         /// <para>
         /// <note type="warning">
         /// <para>
-        /// This engine requires a <c>Feature Level 11</c> video device or better. If one is not present on the <paramref name="graphics"/> parameter, then an exception will be thrown.
+        /// This engine requires a <c>Feature Level 11</c> video adapter or better. If one is not present on the <paramref name="graphics"/> parameter, then an exception will be thrown.
         /// </para>
         /// </note>
         /// </para>

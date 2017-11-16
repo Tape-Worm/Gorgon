@@ -27,7 +27,6 @@
 using System;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
-using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
 using DX = SharpDX;
@@ -96,7 +95,7 @@ namespace Gorgon.Graphics.Core
 		/// This is only valid if the resource allows shader access.
 		/// </para>
 		/// <para>
-		/// This is only valid on video devices with a feature level of 11.0 or better.
+		/// This is only valid on video adapters with a feature level of 11.0 or better.
 		/// </para>
 		/// </remarks>
 		public D3D11.DepthStencilViewFlags Flags

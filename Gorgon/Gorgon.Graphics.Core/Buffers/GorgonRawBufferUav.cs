@@ -30,7 +30,6 @@ using D3D11 = SharpDX.Direct3D11;
 using DXGI = SharpDX.DXGI;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
-using Gorgon.Graphics.Imaging;
 
 namespace Gorgon.Graphics.Core
 {

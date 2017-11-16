@@ -144,7 +144,7 @@ namespace Gorgon.Graphics.Fonts
 		/// requested glyphs cannot fit onto a single texture, a new texture will be created to store the remaining glyphs. Keeping as few textures as possible for a font is beneficial for performance.
 		/// </para>
 		/// <para>
-		/// Font textures cannot be smaller than 256x256 and the maximum size is dependent upon <see cref="FeatureLevelSupport"/> for the <see cref="IGorgonVideoDevice"/>.
+		/// Font textures cannot be smaller than 256x256 and the maximum size is dependent upon <see cref="FeatureLevelSupport"/> for the <see cref="IGorgonVideoAdapter"/>.
 		/// </para>
 		/// <para>
 		/// The default width is 256.
@@ -164,7 +164,7 @@ namespace Gorgon.Graphics.Fonts
 		/// requested glyphs cannot fit onto a single texture, a new texture will be created to store the remaining glyphs. Keeping as few textures as possible for a font is beneficial for performance.
 		/// </para>
 		/// <para>
-		/// Font textures cannot be smaller than 256x256 and the maximum size is dependent upon <see cref="FeatureLevelSupport"/> for the <see cref="IGorgonVideoDevice"/>.
+		/// Font textures cannot be smaller than 256x256 and the maximum size is dependent upon <see cref="FeatureLevelSupport"/> for the <see cref="IGorgonVideoAdapter"/>.
 		/// </para>
 		/// <para>
 		/// The default height is 256.

@@ -31,7 +31,6 @@ using System.Drawing.Imaging;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using DX = SharpDX;
-using DXGI = SharpDX.DXGI;
 using Gorgon.Graphics.Fonts.Properties;
 using Gorgon.Math;
 using Gorgon.Native;

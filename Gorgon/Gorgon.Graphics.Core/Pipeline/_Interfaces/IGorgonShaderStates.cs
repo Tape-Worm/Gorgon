@@ -52,7 +52,7 @@
         /// <para>
         /// <note type="important">
         /// <para>
-        /// This only applies to an <see cref="IGorgonVideoDevice"/> that has a <see cref="IGorgonVideoDevice.RequestedFeatureLevel"/> of <c>Level_11_0</c> or better.
+        /// This only applies to an <see cref="IGorgonVideoAdapter"/> that has a <see cref="IGorgonVideoAdapter.RequestedFeatureLevel"/> of <c>Level_11_0</c> or better.
         /// </para>
         /// </note>
         /// </para>

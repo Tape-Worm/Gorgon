@@ -38,7 +38,6 @@ using Gorgon.Native;
 using Gorgon.Timing;
 using Gorgon.UI;
 using DX = SharpDX;
-using DXGI = SharpDX.DXGI;
 using D3D = SharpDX.Direct3D;
 using D3D11 = SharpDX.Direct3D11;
 using Color = System.Drawing.Color;
@@ -166,7 +165,7 @@ namespace Gorgon.Graphics.Example
 		// Drop speed.
 		private static float _dropSpeed = 0.01f;
 		// The selected video mode.
-		private static DXGI.ModeDescription1 _selectedVideoMode;
+		private static GorgonVideoMode _selectedVideoMode;
 		// The current output.
 		private static IGorgonVideoOutputInfo _output;
 		// The texture sampler state to use.
@@ -415,7 +414,7 @@ namespace Gorgon.Graphics.Example
 			deviceList.Enumerate();
 
 			int selectedDeviceIndex = 0;
-			IGorgonVideoDevice selectedDevice = null;
+			IGorgonVideoAdapter selectedDevice = null;
 
 			while (selectedDeviceIndex < deviceList.Count)
 			{
@@ -525,13 +524,8 @@ namespace Gorgon.Graphics.Example
 			{
 				// If we've asked for full screen mode, then locate the correct video mode and set us up.
 				_output = _graphics.VideoDevice.Info.Outputs[Screen.PrimaryScreen.DeviceName];
-				DXGI.ModeDescription1 mode = new DXGI.ModeDescription1
-				        {
-					        Format = BufferFormat.R8G8B8A8_UNorm,
-					        Height = Settings.Default.Resolution.Height,
-					        Width = Settings.Default.Resolution.Width
-				        };
-				_selectedVideoMode = _graphics.VideoDevice.FindNearestVideoMode(_output, ref mode);
+			    var mode = new GorgonVideoMode(Settings.Default.Resolution.Width, Settings.Default.Resolution.Height, BufferFormat.R8G8B8A8_UNorm);
+				_graphics.VideoDevice.FindNearestVideoMode(_output, ref mode, out _selectedVideoMode);
 					
 				_swap.EnterFullScreen(ref mode, _output);
 			}

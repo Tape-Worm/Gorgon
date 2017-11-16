@@ -117,13 +117,17 @@
     <Compile Include="Buffers\_Internal\ShaderViewKey.cs" />
     <Compile Include="Compute\GorgonComputeEngine.cs" />
     <Compile Include="Devices\_Interfaces\IGorgonVideoOutputInfo.cs" />
-    <Compile Include="Devices\_Interfaces\IGorgonVideoDeviceInfo.cs" />
+    <Compile Include="Devices\_Interfaces\IGorgonVideoAdapterInfo.cs" />
     <Compile Include="Devices\_Internal\VideoDeviceInfo.cs" />
     <Compile Include="Devices\GorgonVideoDeviceList.cs" />
     <Compile Include="Devices\_Internal\VideoDevice.cs" />
     <Compile Include="Devices\_Internal\VideoOutputInfo.cs" />
-    <Compile Include="Devices\_Interfaces\IGorgonVideoDevice.cs" />
+    <Compile Include="Devices\_Interfaces\IGorgonVideoAdapter.cs" />
     <Compile Include="Devices\_Interfaces\IGorgonVideoDeviceList.cs" />
+    <Compile Include="Devices\_ValueTypes\GorgonVideoAdapterMemory.cs" />
+    <Compile Include="Devices\_ValueTypes\GorgonVideoAdapterPciInfo.cs" />
+    <Compile Include="Devices\_ValueTypes\GorgonVideoMemoryBudgetInfo.cs" />
+    <Compile Include="Devices\_ValueTypes\GorgonVideoMode.cs" />
     <Compile Include="Geometry\GorgonStreamOutElement.cs" />
     <Compile Include="Geometry\GorgonInputElement.cs" />
     <Compile Include="Geometry\GorgonStreamOutLayout.cs" />
@@ -204,6 +208,7 @@
     <Compile Include="Textures\_Extensions\GorgonImageTextureExtensions.cs" />
     <Compile Include="GorgonBlendStateListExtensions.cs" />
     <Compile Include="Pipeline\GorgonPipelineStateGroup.cs" />
+    <Compile Include="_Internal\_Extensions\GorgonColorExtensions.cs" />
     <Compile Include="_Internal\_Extensions\SharpDXExtensions.cs" />
   </ItemGroup>
   <ItemGroup>

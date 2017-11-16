@@ -28,7 +28,6 @@ using System;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
-using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
 using DXGI = SharpDX.DXGI;
 using DX = SharpDX;

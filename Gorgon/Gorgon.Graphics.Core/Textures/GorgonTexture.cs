@@ -877,7 +877,7 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="destTexture">The <see cref="GorgonTexture"/> that will receive a copy of this texture.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="destTexture"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the formats cannot be converted because they're not of the same group or the current video device has a feature level of <see cref="FeatureLevelSupport.Level_10_0"/>.
+		/// <exception cref="ArgumentException">Thrown when the formats cannot be converted because they're not of the same group or the current video adapter has a feature level of <see cref="FeatureLevelSupport.Level_10_0"/>.
 		/// <para>-or-</para>
 		/// <para>Thrown when the <see cref="IGorgonTextureInfo.MultisampleInfo"/>.<see cref="GorgonMultisampleInfo.Count"/> is not the same for the source <paramref name="destTexture"/> and this texture.</para>
 		/// <para>-or-</para>
@@ -899,7 +899,7 @@ namespace Gorgon.Graphics.Core
 		/// have a <see cref="IGorgonTextureInfo.Usage"/> of <c>Immutable.</c>. If these contraints are violated, then an exception will be thrown.
 		/// </para>
 		/// <para>
-		/// If the current video device has a feature level better than <see cref="FeatureLevelSupport.Level_10_0"/>, then limited format conversion will be performed if the two textures are within the same bit 
+		/// If the current video adapter has a feature level better than <see cref="FeatureLevelSupport.Level_10_0"/>, then limited format conversion will be performed if the two textures are within the same bit 
 		/// group (e.g. <c>R8G8B8A8_SInt</c> is convertible to <c>R8G8B8A8_UInt</c> and so on, since they are both R8G8B8A8). If the feature level is <see cref="FeatureLevelSupport.Level_10_0"/>, or the bit group 
 		/// does not match, then an exception will be thrown.
 		/// </para>
@@ -961,7 +961,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="destArrayIndex">[Optional] The array index of the destination sub resource to copy into (for 1D/2D textures only).</param>
 		/// <param name="destMipLevel">[Optional] The mip map level of the destination sub resource to copy into.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the texture parameter is <b>null</b>.</exception>
-		/// <exception cref="NotSupportedException">Thrown when the formats cannot be converted because they're not of the same group or the current video device has a feature level of <see cref="FeatureLevelSupport.Level_10_0"/>.
+		/// <exception cref="NotSupportedException">Thrown when the formats cannot be converted because they're not of the same group or the current video adapter has a feature level of <see cref="FeatureLevelSupport.Level_10_0"/>.
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="sourceTexture"/> is the same as this texture, and the <paramref name="sourceArrayIndex"/>, <paramref name="destArrayIndex"/>, <paramref name="sourceMipLevel"/> and the <paramref name="destMipLevel"/> 
 		/// specified are pointing to the same subresource.</para>
@@ -976,7 +976,7 @@ namespace Gorgon.Graphics.Core
 		/// supported by this method. If the entire texture needs to be copied, then use the <see cref="CopyTo"/> method.
 		/// </para>
 		/// <para>
-		/// If the current video device has a feature level better than <see cref="FeatureLevelSupport.Level_10_0"/>, then limited format conversion will be performed if the two textures are within the same bit 
+		/// If the current video adapter has a feature level better than <see cref="FeatureLevelSupport.Level_10_0"/>, then limited format conversion will be performed if the two textures are within the same bit 
 		/// group (e.g. <c>R8G8B8A8_SInt</c> is convertible to <c>R8G8B8A8_UInt</c> and so on, since they are both R8G8B8A8). If the feature level is <see cref="FeatureLevelSupport.Level_10_0"/>, or the bit group 
 		/// does not match, then an exception will be thrown.
 		/// </para>
@@ -1602,7 +1602,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="arrayOrDepthIndex">[Optional] The array index or depth slice to start viewing from.</param>
         /// <param name="arrayOrDepthCount">[Optional] The number of array indices or depth slices to view.</param>
         /// <returns>A <see cref="GorgonTextureUav"/> used to bind the texture to a shader.</returns>
-        /// <exception cref="GorgonException">Thrown if the video device does not support feature level 11 or better.
+        /// <exception cref="GorgonException">Thrown if the video adapter does not support feature level 11 or better.
         /// <para>-or-</para>
         /// <para>Thrown when this texture does not have a <see cref="TextureBinding"/> of <see cref="TextureBinding.UnorderedAccess"/>.</para>
         /// <para>-or-</para>
@@ -1632,7 +1632,7 @@ namespace Gorgon.Graphics.Core
         /// <para>
         /// <note type="important">
         /// <para>
-        /// This method requires a video device capable of supporting feature level 11 or better. If the current video device does not support feature level 11, an exception will be thrown.
+        /// This method requires a video adapter capable of supporting feature level 11 or better. If the current video adapter does not support feature level 11, an exception will be thrown.
         /// </para>
         /// </note>
         /// </para>
@@ -1719,7 +1719,7 @@ namespace Gorgon.Graphics.Core
         /// <para>-or-</para>
         /// <para>Thrown when the <paramref name="arrayIndex"/> plus the <paramref name="arrayCount"/> is larger than the number of array indices/depth slices for this texture.</para>
         /// <para>-or-</para>
-        /// <para>Thrown if the <paramref name="flags"/> parameter was set to value other than <c>None</c>, and the current video device does not support feature level 11 or better.</para>
+        /// <para>Thrown if the <paramref name="flags"/> parameter was set to value other than <c>None</c>, and the current video adapter does not support feature level 11 or better.</para>
         /// </exception>
         /// <exception cref="GorgonException">Thrown if this texture type is <see cref="TextureType.Texture3D"/>.</exception>
         public GorgonDepthStencilView GetDepthStencilView(BufferFormat format = BufferFormat.Unknown, int firstMipLevel = 0, int arrayIndex = 0, int arrayCount = 0, D3D11.DepthStencilViewFlags flags = D3D11.DepthStencilViewFlags.None)

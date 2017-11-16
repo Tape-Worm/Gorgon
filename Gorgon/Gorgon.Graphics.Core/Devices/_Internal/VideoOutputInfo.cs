@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SharpDX;
 using DXGI = SharpDX.DXGI;
 
@@ -35,7 +36,7 @@ namespace Gorgon.Graphics.Core
 	/// Provides information about an output on a <see cref="VideoDevice"/>.
 	/// </summary>
 	/// <remarks>
-	/// An output is typically a physical connection between the video device and another device.
+	/// An output is typically a physical connection between the video adapter and another device.
 	/// </remarks>
 	internal class VideoOutputInfo 
 		: IGorgonVideoOutputInfo
@@ -80,15 +81,18 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		public bool IsAttachedToDesktop => _desc.IsAttachedToDesktop;
 
-		/// <summary>
-		/// Property to return how the display image is rotated by the output.
-		/// </summary>
-		public DXGI.DisplayModeRotation Rotation => _desc.Rotation;
+	    /// <summary>
+	    /// Property to return how the display image is rotated by the output.
+	    /// </summary>
+	    public RotationMode Rotation
+	    {
+	        get;
+	    }
 
 		/// <summary>
 		/// Property to return the list of video modes supported by this output.
 		/// </summary>
-		public IReadOnlyList<DXGI.ModeDescription1> VideoModes
+		public IReadOnlyList<GorgonVideoMode> VideoModes
 		{
 			get;
 		}
@@ -100,13 +104,13 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="index">The index of the output.</param>
 		/// <param name="output">The output used to provide information.</param>
-		/// <param name="modes">The list of full screen display modes supported by this output on the video device.</param>
-		public VideoOutputInfo(int index, DXGI.Output output, IReadOnlyList<DXGI.ModeDescription1> modes)
+		/// <param name="modes">The list of full screen display modes supported by this output on the video adapter.</param>
+		public VideoOutputInfo(int index, DXGI.Output output, IEnumerable<DXGI.ModeDescription1> modes)
 		{
 			Index = index;
 			_desc = output.Description;
 			Name = _desc.DeviceName.Replace("\0", string.Empty);
-			VideoModes = modes;
+			VideoModes = modes.Select(item => new GorgonVideoMode(item)).ToArray();
 		}
 		#endregion
 	}

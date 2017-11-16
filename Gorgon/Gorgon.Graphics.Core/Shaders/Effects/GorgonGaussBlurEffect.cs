@@ -29,7 +29,6 @@ using System.Globalization;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using DX = SharpDX;
-using DXGI = SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Core.Properties;
@@ -201,7 +200,7 @@ namespace Gorgon.Graphics.Example
         /// <remarks>
         /// <para>
         /// This is the default texture surface format for the internal render targets used for blurring. This value may be any type of format supported by a render target (see 
-        /// <see cref="IGorgonVideoDevice.GetBufferFormatSupport"/> for determing an acceptable format).
+        /// <see cref="IGorgonVideoAdapter.GetBufferFormatSupport"/> for determing an acceptable format).
         /// </para>
         /// <para>
         /// If this value is set to an unacceptable format, then the effect will throw an exception during rendering.
@@ -210,7 +209,7 @@ namespace Gorgon.Graphics.Example
         /// The default value is <c>R8G8B8A8_UNorm</c>.
         /// </para>
         /// </remarks>
-        /// <seealso cref="IGorgonVideoDevice.GetBufferFormatSupport"/>
+        /// <seealso cref="IGorgonVideoAdapter.GetBufferFormatSupport"/>
         public BufferFormat BlurTargetFormat
         {
             get => _blurTargetFormat;
@@ -234,7 +233,7 @@ namespace Gorgon.Graphics.Example
         /// This is used to adjust the size of a render target for more accurate blurring (at the expense of performance and video memory). 
         /// </para>
         /// <para>
-        /// This value is limited to <c>3x3</c> up to the maximum width and height specified by <see cref="IGorgonVideoDevice.MaxTextureWidth"/> and <see cref="IGorgonVideoDevice.MaxTextureHeight"/>.
+        /// This value is limited to <c>3x3</c> up to the maximum width and height specified by <see cref="IGorgonVideoAdapter.MaxTextureWidth"/> and <see cref="IGorgonVideoAdapter.MaxTextureHeight"/>.
         /// </para>
         /// <para>
         /// The default size is <c>256x256</c>.
@@ -242,7 +241,7 @@ namespace Gorgon.Graphics.Example
         /// <para>
         /// <note type="warning">
         /// <para>
-        /// Increasing the render target size will have a performance impact due to the number of texels being processed. It is recommended to scale this size based on your target video device(s) 
+        /// Increasing the render target size will have a performance impact due to the number of texels being processed. It is recommended to scale this size based on your target video adapter(s) 
         /// capabilities.
         /// </para>
         /// </note>

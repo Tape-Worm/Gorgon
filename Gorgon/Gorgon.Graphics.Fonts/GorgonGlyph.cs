@@ -31,7 +31,6 @@ using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts.Properties;
 using Gorgon.Math;
-using DXGI = SharpDX.DXGI;
 
 namespace Gorgon.Graphics.Fonts
 {

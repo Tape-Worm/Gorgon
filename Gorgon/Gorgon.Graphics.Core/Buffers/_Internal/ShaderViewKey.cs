@@ -26,7 +26,6 @@
 
 using System;
 using Gorgon.Core;
-using DXGI = SharpDX.DXGI;
 
 namespace Gorgon.Graphics.Core
 {

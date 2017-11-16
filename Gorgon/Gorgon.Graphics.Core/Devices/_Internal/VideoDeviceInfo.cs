@@ -31,7 +31,7 @@ using Gorgon.Collections;
 namespace Gorgon.Graphics.Core
 {
 	/// <summary>
-	/// Provides information about a video device in the system.
+	/// Provides information about a video adapter in the system.
 	/// </summary>
 	/// <remarks>
 	/// <para>
@@ -39,7 +39,7 @@ namespace Gorgon.Graphics.Core
 	/// </para>
 	/// </remarks>
 	internal class VideoDeviceInfo
-		: IGorgonVideoDeviceInfo
+		: IGorgonVideoAdapterInfo
 	{
 		#region Variables.
 		// The DXGI adapter description
@@ -48,7 +48,7 @@ namespace Gorgon.Graphics.Core
 
 		#region Properties.
 		/// <summary>
-		/// Property to return the name of the video device.
+		/// Property to return the name of the video adapter.
 		/// </summary>
 		public string Name
 		{
@@ -56,7 +56,7 @@ namespace Gorgon.Graphics.Core
 		}
 
 		/// <summary>
-		/// Property to return the index of the video device within a <see cref="GorgonVideoDeviceList"/>.
+		/// Property to return the index of the video adapter within a <see cref="GorgonVideoDeviceList"/>.
 		/// </summary>
 		public int Index
 		{
@@ -64,7 +64,7 @@ namespace Gorgon.Graphics.Core
 		}
 
 		/// <summary>
-		/// Property to return the type of video device.
+		/// Property to return the type of video adapter.
 		/// </summary>
 		public VideoDeviceType VideoDeviceType
 		{
@@ -142,11 +142,11 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Initializes a new instance of the <see cref="VideoDeviceInfo" /> class.
 		/// </summary>
-		/// <param name="index">The index of the video device within a list.</param>
+		/// <param name="index">The index of the video adapter within a list.</param>
 		/// <param name="adapter">The DXGI adapter from which to retrieve all information.</param>
-		/// <param name="featureLevel">The supported feature level for the video device.</param>
-		/// <param name="outputs">The list of outputs attached to the video device.</param>
-		/// <param name="deviceType">The type of video device.</param>
+		/// <param name="featureLevel">The supported feature level for the video adapter.</param>
+		/// <param name="outputs">The list of outputs attached to the video adapter.</param>
+		/// <param name="deviceType">The type of video adapter.</param>
 		public VideoDeviceInfo(int index,
 		                       DXGI.Adapter2 adapter,
 		                       D3D.FeatureLevel featureLevel,

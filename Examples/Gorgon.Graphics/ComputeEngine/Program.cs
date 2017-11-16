@@ -33,7 +33,6 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Native;
-using DXGI = SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace ComputeEngine
@@ -178,7 +177,7 @@ namespace ComputeEngine
 
             devices.Enumerate();
 
-            IGorgonVideoDeviceInfo firstDevice = devices.FirstOrDefault(item => item.SupportedFeatureLevel >= FeatureLevelSupport.Level_11_0);
+            IGorgonVideoAdapterInfo firstDevice = devices.FirstOrDefault(item => item.SupportedFeatureLevel >= FeatureLevelSupport.Level_11_0);
 
             // If a device with a feature level of at least 11.0 not found, then we cannot run this example. The compute engine requires a minimum 
             // of feature level 11.0 to run.

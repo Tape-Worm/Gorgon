@@ -25,7 +25,6 @@
 #endregion
 
 using Gorgon.Math;
-using SharpDX.Mathematics.Interop;
 using DXGI = SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;
 
@@ -47,52 +46,31 @@ namespace Gorgon.Graphics.Core
 		}
 
 		/// <summary>
-		/// Function to retrieve the underlying Direct 3D device from a <see cref="IGorgonVideoDevice"/> interface.
+		/// Function to retrieve the underlying Direct 3D device from a <see cref="IGorgonVideoAdapter"/> interface.
 		/// </summary>
-		/// <param name="videoDevice">The video device to use.</param>
-		/// <returns>The Direct 3D video device.</returns>
-		public static D3D11.Device1 D3DDevice(this IGorgonVideoDevice videoDevice)
+		/// <param name="videoDevice">The video adapter to use.</param>
+		/// <returns>The Direct 3D video adapter.</returns>
+		public static D3D11.Device1 D3DDevice(this IGorgonVideoAdapter videoDevice)
 		{
 			return ((VideoDevice)videoDevice).D3DDevice;
 		}
 
 		/// <summary>
-		/// Function to retrieve the underlying DXGI adapter from a <see cref="IGorgonVideoDevice"/> interface.
+		/// Function to retrieve the underlying DXGI adapter from a <see cref="IGorgonVideoAdapter"/> interface.
 		/// </summary>
-		/// <param name="videoDevice">The video device to use.</param>
+		/// <param name="videoDevice">The video adapter to use.</param>
 		/// <returns>The DXGI adapter.</returns>
-		public static DXGI.Adapter2 DXGIAdapter(this IGorgonVideoDevice videoDevice)
+		public static DXGI.Adapter2 DXGIAdapter(this IGorgonVideoAdapter videoDevice)
 		{
 			return ((VideoDevice)videoDevice).Adapter;
 		}
-
-		/// <summary>
-		/// Function to convert a sharp dx raw color 4 type to a GorgonColor.
-		/// </summary>
-		/// <param name="color">The color type to convert.</param>
-		/// <returns>The new color type.</returns>
-		public static GorgonColor ToGorgonColor(this RawColor4 color)
-		{
-			return new GorgonColor(color.R, color.G, color.B, color.A);	
-		}
-
-		/// <summary>
-		/// Function to convert a GorgonColor to a sharp dx raw color 4 type.
-		/// </summary>
-		/// <param name="color">The color type to convert.</param>
-		/// <returns>The new color type.</returns>
-		public static RawColor4 ToRawColor4(this GorgonColor color)
-		{
-			return new RawColor4(color.Red, color.Green, color.Blue, color.Alpha);
-		}
-
 
 		/// <summary>
 		/// Function to convert a DXGI rational number to a Gorgon rational number.
 		/// </summary>
 		/// <param name="rational">The rational number to convert.</param>
 		/// <returns>A Gorgon rational number.</returns>
-		public static GorgonRationalNumber FromRational(this DXGI.Rational rational)
+		public static GorgonRationalNumber ToGorgonRational(this DXGI.Rational rational)
 		{
 			return new GorgonRationalNumber(rational.Numerator, rational.Denominator);
 		}
@@ -102,17 +80,74 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="rational">The rational number to convert.</param>
 		/// <returns>The DXGI ration number.</returns>
-		public static DXGI.Rational ToRational(this GorgonRationalNumber rational)
+		public static DXGI.Rational ToDxGiRational(this GorgonRationalNumber rational)
 		{
 			return new DXGI.Rational(rational.Numerator, rational.Denominator);
 		}
 
-		/// <summary>
-		/// Function to convert a ModeDescription1 to a ModeDescription.
-		/// </summary>
-		/// <param name="mode">ModeDescription1 to convert.</param>
-		/// <returns>The new mode description.</returns>
-		public static DXGI.ModeDescription ToModeDesc(this DXGI.ModeDescription1 mode)
+	    /// <summary>
+	    /// Function to convert a GorgonVideoMode to a ModeDescription.
+	    /// </summary>
+	    /// <param name="mode">ModeDescription1 to convert.</param>
+	    /// <returns>The new mode description.</returns>
+	    public static DXGI.ModeDescription ToModeDesc(this GorgonVideoMode mode)
+	    {
+	        return new DXGI.ModeDescription
+	               {
+	                   Format = (DXGI.Format)mode.Format,
+	                   Height = mode.Height,
+	                   Scaling = (DXGI.DisplayModeScaling)mode.Scaling,
+	                   Width = mode.Width,
+	                   ScanlineOrdering = (DXGI.DisplayModeScanlineOrder)mode.ScanlineOrder,
+	                   RefreshRate = mode.RefreshRate.ToDxGiRational()
+	               };
+	    }
+
+	    /// <summary>
+	    /// Function to convert a GorgonVideoMode to a ModeDescription1.
+	    /// </summary>
+	    /// <param name="mode">ModeDescription to convert.</param>
+	    /// <returns>The new mode description.</returns>
+	    public static DXGI.ModeDescription1 ToModeDesc1(this GorgonVideoMode mode)
+	    {
+	        return new DXGI.ModeDescription1
+	               {
+	                   Format = (DXGI.Format)mode.Format,
+	                   Height = mode.Height,
+	                   Scaling = (DXGI.DisplayModeScaling)mode.Scaling,
+	                   Width = mode.Width,
+	                   ScanlineOrdering = (DXGI.DisplayModeScanlineOrder)mode.ScanlineOrder,
+	                   RefreshRate = mode.RefreshRate.ToDxGiRational(),
+                       Stereo = mode.SupportsStereo
+	               };
+	    }
+
+	    /// <summary>
+	    /// Function to convert a DXGI ModeDescription1 to a <see cref="GorgonVideoMode"/>.
+	    /// </summary>
+	    /// <param name="mode">ModeDescription1 to convert.</param>
+	    /// <returns>The new mode description.</returns>
+	    public static GorgonVideoMode ToGorgonVideoMode(this DXGI.ModeDescription1 mode)
+	    {
+	        return new GorgonVideoMode(mode);
+	    }
+
+        /// <summary>
+        /// Function to convert a DXGI ModeDescription to a <see cref="GorgonVideoMode"/>.
+        /// </summary>
+        /// <param name="mode">ModeDescription to convert.</param>
+        /// <returns>The new mode description.</returns>
+        public static GorgonVideoMode ToGorgonVideoMode(this DXGI.ModeDescription mode)
+	    {
+	        return new GorgonVideoMode(mode.ToModeDesc1());
+	    }
+
+        /// <summary>
+        /// Function to convert a ModeDescription1 to a ModeDescription.
+        /// </summary>
+        /// <param name="mode">ModeDescription1 to convert.</param>
+        /// <returns>The new mode description.</returns>
+        public static DXGI.ModeDescription ToModeDesc(this DXGI.ModeDescription1 mode)
 		{
 			return new DXGI.ModeDescription
 			       {

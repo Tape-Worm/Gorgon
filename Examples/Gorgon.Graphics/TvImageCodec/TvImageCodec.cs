@@ -30,7 +30,6 @@ using System.IO;
 using System.Runtime.InteropServices;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging;
-using DXGI = SharpDX.DXGI;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 using Gorgon.Native;

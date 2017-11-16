@@ -28,7 +28,6 @@ using System;
 using System.IO;
 using System.Windows.Forms;
 using DX = SharpDX;
-using DXGI = SharpDX.DXGI;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;

@@ -26,19 +26,46 @@
 
 using System;
 using System.Collections.Generic;
-using DXGI = SharpDX.DXGI;
 using Gorgon.Core;
-using SharpDX;
+using DX = SharpDX;
+using DXGI = SharpDX.DXGI;
 
 namespace Gorgon.Graphics.Core
 {
-	/// <summary>
-	/// Provides information about an output on a <see cref="VideoDevice"/>.
-	/// </summary>
-	/// <remarks>
-	/// An output is typically a physical connection between the video device and another device.
-	/// </remarks>
-	public interface IGorgonVideoOutputInfo 
+    /// <summary>
+    /// An enumeration that indicates how the back buffers should be rotated to fit the physical rotation of a monitor.
+    /// </summary>
+    public enum RotationMode
+    {
+        /// <summary>
+        /// No rotation mode specified.
+        /// </summary>
+        Unspecified = DXGI.DisplayModeRotation.Unspecified,
+        /// <summary>
+        /// No rotation.
+        /// </summary>
+        Identity = DXGI.DisplayModeRotation.Identity,
+        /// <summary>
+        /// Rotated 90 degrees.
+        /// </summary>
+        Rotate90 = DXGI.DisplayModeRotation.Rotate90,
+        /// <summary>
+        /// Rotated 180 degrees.
+        /// </summary>
+        Rotate180 = DXGI.DisplayModeRotation.Rotate180,
+        /// <summary>
+        /// Rotated 270 degrees.
+        /// </summary>
+        Rotate270 = DXGI.DisplayModeRotation.Rotate270
+    }
+
+    /// <summary>
+    /// Provides information about an output on a <see cref="VideoDevice"/>.
+    /// </summary>
+    /// <remarks>
+    /// An output is typically a physical connection between the video adapter and another device.
+    /// </remarks>
+    public interface IGorgonVideoOutputInfo 
 		: IGorgonNamedObject
 	{
 		/// <summary>
@@ -63,7 +90,7 @@ namespace Gorgon.Graphics.Core
 		/// <remarks>
 		/// The desktop coordinates depend on the dots per inch (DPI) of the desktop. For more information about writing DPI-aware Win32 applications, see <a target="_blank" href="https://msdn.microsoft.com/en-us/library/bb173068.aspx">High DPI</a>.
 		/// </remarks>
-		Rectangle DesktopBounds
+		DX.Rectangle DesktopBounds
 		{
 			get;
 		}
@@ -79,7 +106,7 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Property to return how the display image is rotated by the output.
 		/// </summary>
-		DXGI.DisplayModeRotation Rotation
+		RotationMode Rotation
 		{
 			get;
 		}
@@ -87,7 +114,7 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Property to return the list of video modes supported by this output.
 		/// </summary>
-		IReadOnlyList<DXGI.ModeDescription1> VideoModes
+		IReadOnlyList<GorgonVideoMode> VideoModes
 		{
 			get;
 		}

@@ -42,7 +42,7 @@ namespace Gorgon.Graphics.Core
     /// <para>
     /// <note type="warning">
     /// <para>
-    /// Structured buffers require a video device capable of a <see cref="IGorgonVideoDevice.RequestedFeatureLevel"/> of 11.0 or better.
+    /// Structured buffers require a video adapter capable of a <see cref="IGorgonVideoAdapter.RequestedFeatureLevel"/> of 11.0 or better.
     /// </para>
     /// </note>
     /// </para>
@@ -250,7 +250,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="elementCount">[Optional] The number of elements to view.</param>
         /// <param name="uavType">[Optional] The type of uav to create.</param>
         /// <returns>A <see cref="GorgonStructuredBufferUav"/> used to bind the buffer to a shader.</returns>
-        /// <exception cref="GorgonException">Thrown if the video device does not support feature level 11 or better.
+        /// <exception cref="GorgonException">Thrown if the video adapter does not support feature level 11 or better.
         /// <para>-or-</para>
         /// <para>Thrown when this buffer does not have a <see cref="BufferBinding"/> of <see cref="BufferBinding.UnorderedAccess"/>.</para>
         /// <para>-or-</para>
@@ -279,7 +279,7 @@ namespace Gorgon.Graphics.Core
         /// <para>
         /// <note type="important">
         /// <para>
-        /// This method requires a video device capable of supporting feature level 11 or better. If the current video device does not support feature level 11, an exception will be thrown.
+        /// This method requires a video adapter capable of supporting feature level 11 or better. If the current video adapter does not support feature level 11, an exception will be thrown.
         /// </para>
         /// </note>
         /// </para>

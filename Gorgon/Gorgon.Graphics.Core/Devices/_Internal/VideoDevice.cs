@@ -39,7 +39,7 @@ namespace Gorgon.Graphics.Core
 	/// A wrapper for a Direct 3D 11 device object and adapter.
 	/// </summary>
 	internal class VideoDevice
-		: IGorgonVideoDevice
+		: IGorgonVideoAdapter
 	{
 		#region Variables.
 		// The Direct 3D 11 device object.
@@ -57,7 +57,7 @@ namespace Gorgon.Graphics.Core
 		public D3D11.Device1 D3DDevice => _device;
 
 		/// <summary>
-		/// Property to return the adapter for the video device.
+		/// Property to return the adapter for the video adapter.
 		/// </summary>
 		public DXGI.Adapter2 Adapter => _adapter;
 
@@ -144,7 +144,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the <see cref="VideoDeviceInfo"/> used to create this device.
         /// </summary>
-        public IGorgonVideoDeviceInfo Info
+        public IGorgonVideoAdapterInfo Info
 		{
 			get;
 		}
@@ -154,12 +154,12 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// A user may request a lower <see cref="FeatureLevelSupport"/> than what is supported by the device to allow the application to run on older video devices that lack support for newer functionality. 
+		/// A user may request a lower <see cref="FeatureLevelSupport"/> than what is supported by the device to allow the application to run on older video adapters that lack support for newer functionality. 
 		/// This requested feature level will be returned by this property if supported by the device. 
 		/// </para>
 		/// <para>
-		/// If the user does not request a feature level, or has specified one higher than what the video device supports, then the highest feature level supported by the video device 
-		/// (indicated by the <see cref="VideoDeviceInfo.SupportedFeatureLevel"/> property in the <see cref="IGorgonVideoDevice.Info"/> property) will be returned.
+		/// If the user does not request a feature level, or has specified one higher than what the video adapter supports, then the highest feature level supported by the video adapter 
+		/// (indicated by the <see cref="VideoDeviceInfo.SupportedFeatureLevel"/> property in the <see cref="IGorgonVideoAdapter.Info"/> property) will be returned.
 		/// </para>
 		/// </remarks>
 		/// <seealso cref="FeatureLevelSupport"/>
@@ -275,7 +275,7 @@ namespace Gorgon.Graphics.Core
 				// Get the maximum supported feature level for this device.
 				RequestedFeatureLevel = (FeatureLevelSupport)_device.FeatureLevel;
 
-				_log.Print($"Direct 3D 11.1 device created for video device '{Info.Name}' at feature level [{RequestedFeatureLevel}]", LoggingLevel.Simple);
+				_log.Print($"Direct 3D 11.1 device created for video adapter '{Info.Name}' at feature level [{RequestedFeatureLevel}]", LoggingLevel.Simple);
 			}
 			finally
 			{
@@ -336,7 +336,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="format">A <c>Format</c> to evaluate.</param>
 		/// <param name="count">The number of samples.</param>
 		/// <returns>A <see cref="GorgonMultisampleInfo"/> containing the quality count and sample count for multisampling.</returns>
-		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="count"/> is not supported by this video device.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="count"/> is not supported by this video adapter.</exception>
 		/// <remarks>
 		/// <para>
 		/// Use this to return a <see cref="GorgonMultisampleInfo"/> containing the best quality level for a given <paramref name="count"/> and <paramref name="format"/>.
@@ -373,7 +373,7 @@ namespace Gorgon.Graphics.Core
 		/// <returns><b>true</b> if the device supports the format, or <b>false</b> if not.</returns>
 		/// <remarks>
 		/// <para>
-		/// Use this to determine if the video device will support multisampling with a specific sample <paramref name="count"/> and <paramref name="format"/>. 
+		/// Use this to determine if the video adapter will support multisampling with a specific sample <paramref name="count"/> and <paramref name="format"/>. 
 		/// </para>
 		/// <para>
 		/// If <c>Unknown</c> is passed to the <paramref name="format"/> parameter, then this method will return <b>true</b> because this will equate to no multisampling.
@@ -402,7 +402,7 @@ namespace Gorgon.Graphics.Core
 		/// <returns><b>true</b> if the device supports the format, or <b>false</b> if not.</returns>
 		/// <remarks>
 		/// <para>
-		/// Use this to determine if the video device will support multisampling with a specific <paramref name="multiSampleInfo"/> and <paramref name="format"/>. 
+		/// Use this to determine if the video adapter will support multisampling with a specific <paramref name="multiSampleInfo"/> and <paramref name="format"/>. 
 		/// </para>
 		/// <para>
 		/// If <c>Unknown</c> is passed to the <paramref name="format"/> parameter, then this method will return <b>true</b> because this will equate to no multisampling.
@@ -425,61 +425,53 @@ namespace Gorgon.Graphics.Core
 			return ((quality != 0) && (multiSampleInfo.Quality < quality));
 		}
 
-		/// <summary>
-		/// Function to find a display mode supported by the Gorgon.
-		/// </summary>
-		/// <param name="output">The output to use when looking for a video mode.</param>
-		/// <param name="videoMode">The <c>ModeDescription1</c> used to find the closest match.</param>
-		/// <returns>A <c>ModeDescription1</c> that is the nearest match for the provided video mode.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="output"/> parameter is <b>null</b>.</exception>
-		/// <remarks>
-		/// <para>
-		/// Users may leave the <c>ModeDescription1</c> values at unspecified (either 0, or default enumeration values) to indicate that these values should not be used in the search.
-		/// </para>
-		/// <para>
-		/// The following members in <c>ModeDescription1</c> may be skipped (if not listed, then this member must be specified):
-		/// <list type="bullet">
-		///		<item>
-		///			<description><c>ModeDescription1.Width</c> and <c>ModeDescription1.Height</c>.  Both values must be set to 0 if not filtering by width or height.</description>
-		///		</item>
-		///		<item>
-		///			<description><c>ModeDescription1.RefreshRate</c> should be set to empty in order to skip filtering by refresh rate.</description>
-		///		</item>
-		///		<item>
-		///			<description><c>ModeDescription1.Scaling</c> should be set to <c>DisplayModeScaling.Unspecified</c> in order to skip filtering by the scaling mode.</description>
-		///		</item>
-		///		<item>
-		///			<description><c>ModeDescription1.ScanlineOrdering</c> should be set to <c>ScanlineOrder.Unspecified</c> in order to skip filtering by the scanline order.</description>
-		///		</item>
-		/// </list>
-		/// </para>
-		/// <para>
-		/// <note type="important">
-		/// <para>
-		/// The <c>ModeDescription1.Format</c> member must be one of the UNorm format types and cannot be set to <c>Format.Unknown</c>.
-		/// </para>
-		/// </note>
-		/// </para>
-		/// </remarks>
-		public DXGI.ModeDescription1 FindNearestVideoMode(IGorgonVideoOutputInfo output, ref DXGI.ModeDescription1 videoMode)
+	    /// <summary>
+	    /// Function to find a display mode supported by the Gorgon.
+	    /// </summary>
+	    /// <param name="output">The output to use when looking for a video mode.</param>
+	    /// <param name="videoMode">The <see cref="GorgonVideoMode"/> used to find the closest match.</param>
+	    /// <param name="suggestedMode">A <see cref="GorgonVideoMode"/> that is the nearest match for the provided video mode.</param>
+	    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="output"/> parameter is <b>null</b>.</exception>
+	    /// <remarks>
+	    /// <para>
+	    /// Users may leave the <see cref="GorgonVideoMode"/> values at unspecified (either 0, or default enumeration values) to indicate that these values should not be used in the search.
+	    /// </para>
+	    /// <para>
+	    /// The following members in <see cref="GorgonVideoMode"/> may be skipped (if not listed, then this member must be specified):
+	    /// <list type="bullet">
+	    ///		<item>
+	    ///			<description><see cref="GorgonVideoMode.Width"/> and <see cref="GorgonVideoMode.Height"/>.  Both values must be set to 0 if not filtering by width or height.</description>
+	    ///		</item>
+	    ///		<item>
+	    ///			<description><see cref="GorgonVideoMode.RefreshRate"/> should be set to empty in order to skip filtering by refresh rate.</description>
+	    ///		</item>
+	    ///		<item>
+	    ///			<description><see cref="GorgonVideoMode.Scaling"/> should be set to <see cref="ModeScaling.Unspecified"/> in order to skip filtering by the scaling mode.</description>
+	    ///		</item>
+	    ///		<item>
+	    ///			<description><see cref="GorgonVideoMode.ScanlineOrder"/> should be set to <see cref="ModeScanlineOrder.Unspecified"/> in order to skip filtering by the scanline order.</description>
+	    ///		</item>
+	    /// </list>
+	    /// </para>
+	    /// <para>
+	    /// <note type="important">
+	    /// <para>
+	    /// The <see cref="GorgonVideoMode.Format"/> member must be one of the UNorm format types and cannot be set to <see cref="BufferFormat.Unknown"/>.
+	    /// </para>
+	    /// </note>
+	    /// </para>
+	    /// </remarks>
+	    public void FindNearestVideoMode(IGorgonVideoOutputInfo output, ref GorgonVideoMode videoMode, out GorgonVideoMode suggestedMode)
 		{
 			using (DXGI.Output giOutput = _adapter.GetOutput(output.Index))
 			{
 				using (DXGI.Output1 giOutput1 = giOutput.QueryInterface<DXGI.Output1>())
 				{
-					DXGI.ModeDescription matchMode = videoMode.ToModeDesc();
+					DXGI.ModeDescription1 matchMode = videoMode.ToModeDesc1();
 
-					giOutput1.GetClosestMatchingMode(_device, matchMode, out DXGI.ModeDescription mode);
+					giOutput1.FindClosestMatchingMode1(ref matchMode, out DXGI.ModeDescription1 mode, _device);
 
-					return new DXGI.ModeDescription1
-					       {
-						       Format = mode.Format,
-							   Width = mode.Width,
-							   Height = mode.Height,
-							   RefreshRate = mode.RefreshRate,
-							   Scaling = mode.Scaling,
-							   ScanlineOrdering = mode.ScanlineOrdering
-					       };
+					suggestedMode =  mode.ToGorgonVideoMode();
 				}
 			}
 		}
@@ -502,10 +494,10 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Initializes a new instance of the <see cref="VideoDevice"/> class.
 		/// </summary>
-		/// <param name="deviceInfo">A <see cref="VideoDeviceInfo"/> containing information about which video device to use.</param>
+		/// <param name="deviceInfo">A <see cref="VideoDeviceInfo"/> containing information about which video adapter to use.</param>
 		/// <param name="requestedFeatureLevel">The desired feature level for the device.</param>
 		/// <param name="log">A <see cref="IGorgonLog"/> used for logging debug output.</param>
-		public VideoDevice(IGorgonVideoDeviceInfo deviceInfo, FeatureLevelSupport requestedFeatureLevel, IGorgonLog log)
+		public VideoDevice(IGorgonVideoAdapterInfo deviceInfo, FeatureLevelSupport requestedFeatureLevel, IGorgonLog log)
 		{
 			_log = log ?? GorgonLogDummy.DefaultInstance;
 			Info = deviceInfo;

@@ -42,18 +42,18 @@ using Gorgon.Collections;
 namespace Gorgon.Graphics.Core
 {
 	/// <summary>
-	/// Functionality to retrieve information about the installed video devices on the system.
+	/// Functionality to retrieve information about the installed video adapters on the system.
 	/// </summary>
 	/// <remarks>
 	/// <para>
-	/// Use this to retrieve a list of video devices available on the system. A video device may be a discreet video card, or a device on the motherboard.
+	/// Use this to retrieve a list of video adapters available on the system. A video adapter may be a discreet video card, or a device on the motherboard.
 	/// </para>
 	/// <para>
 	/// This list will contain <see cref="VideoDeviceInfo"/> objects which can then be passed to a <see cref="GorgonGraphics"/> instance. This allows applications or users to pick and choose which device 
 	/// they wish to use.
 	/// </para>
 	/// <para>
-	/// This list will also allow enumeration of the WARP/Reference devices.  WARP is a high performance software device that will emulate much of the functionality that a real video device would have. The 
+	/// This list will also allow enumeration of the WARP/Reference devices.  WARP is a high performance software device that will emulate much of the functionality that a real video adapter would have. The 
 	/// reference device is a fully featured device for debugging driver issues.
 	/// </para>
 	/// <para>
@@ -73,7 +73,7 @@ namespace Gorgon.Graphics.Core
 	{
 		#region Variables.
 		// The backing store for the device list.
-		private List<IGorgonVideoDeviceInfo> _devices = new List<IGorgonVideoDeviceInfo>();
+		private List<IGorgonVideoAdapterInfo> _devices = new List<IGorgonVideoAdapterInfo>();
 		// Log used for debugging info.
 		private readonly IGorgonLog _log;
 		#endregion
@@ -82,7 +82,7 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Property to return whether the keys are case sensitive.
 		/// </summary>
-		bool IGorgonNamedObjectReadOnlyList<IGorgonVideoDeviceInfo>.KeysAreCaseSensitive => true;
+		bool IGorgonNamedObjectReadOnlyList<IGorgonVideoAdapterInfo>.KeysAreCaseSensitive => true;
 
 		/// <summary>
 		/// Gets the number of elements in the collection.
@@ -99,12 +99,12 @@ namespace Gorgon.Graphics.Core
 		/// The element at the specified index in the read-only list.
 		/// </returns>
 		/// <param name="index">The zero-based index of the element to get. </param>
-		public IGorgonVideoDeviceInfo this[int index] => _devices[index];
+		public IGorgonVideoAdapterInfo this[int index] => _devices[index];
 
 		/// <summary>
 		/// Property to return an item in this list by its name.
 		/// </summary>
-		public IGorgonVideoDeviceInfo this[string name]
+		public IGorgonVideoAdapterInfo this[string name]
 		{
 			get
 			{
@@ -125,7 +125,7 @@ namespace Gorgon.Graphics.Core
 		/// Function to add the WARP software device.
 		/// </summary>
 		/// <param name="index">Index of the device.</param>
-		/// <returns>The video device used for WARP software rendering.</returns>
+		/// <returns>The video adapter used for WARP software rendering.</returns>
 		private VideoDeviceInfo GetWARPSoftwareDevice(int index)
 		{
 			D3D.FeatureLevel[] featureLevels =
@@ -173,7 +173,7 @@ namespace Gorgon.Graphics.Core
 		/// Function to add the reference device.
 		/// </summary>
 		/// <param name="index">Index of the device.</param>
-        /// <returns>The video device used for reference software rendering.</returns>
+        /// <returns>The video adapter used for reference software rendering.</returns>
 		private VideoDeviceInfo GetRefSoftwareDevice(int index)
 		{
 			using (D3D11.Device D3DDevice = new D3D11.Device(D3D.DriverType.Reference, D3D11.DeviceCreationFlags.Debug))
@@ -238,11 +238,10 @@ namespace Gorgon.Graphics.Core
 				_log.Print($"Retrieving video modes for output '{output.Name}'...", LoggingLevel.Simple);
 				_log.Print("===================================================================", LoggingLevel.Simple);
 
-				foreach (DXGI.ModeDescription1 mode in output.VideoModes)
+				foreach (GorgonVideoMode mode in output.VideoModes)
 				{
-					_log.Print($"Size: {mode.Width}x{mode.Height}, Format: {mode.Format}, Refresh Rate: {mode.RefreshRate.Numerator}/{mode.RefreshRate.Denominator}, " +
-							   $"Scaling: {mode.Scaling}, Scanline order: {mode.ScanlineOrdering}",
-							   LoggingLevel.Verbose);
+				    _log.Print($"{mode.ToString().PadRight(70)}\tScaling: {mode.Scaling.ToString().PadRight(20)}Scanline Order: {mode.ScanlineOrder.ToString().PadRight(25)}Stereo: {mode.SupportsStereo}",
+				               LoggingLevel.Verbose);
 				}
 
 				_log.Print("===================================================================", LoggingLevel.Verbose);
@@ -257,33 +256,24 @@ namespace Gorgon.Graphics.Core
 		/// <param name="D3DDevice">D3D device for filtering supported display modes.</param>
 		/// <param name="giOutput">Output that contains the video modes.</param>
 		/// <returns>A list of display compatible full screen video modes.</returns>
-		private static IReadOnlyList<DXGI.ModeDescription1> GetVideoModes(D3D11.Device1 D3DDevice, DXGI.Output1 giOutput)
+		private static IEnumerable<DXGI.ModeDescription1> GetVideoModes(D3D11.Device1 D3DDevice, DXGI.Output1 giOutput)
 		{
-			List<DXGI.ModeDescription1> result = new List<DXGI.ModeDescription1>();
 		    var formats = ((DXGI.Format[])Enum.GetValues(typeof(DXGI.Format)))
 		        .Where(item => (D3DDevice.CheckFormatSupport(item) & D3D11.FormatSupport.Display) == D3D11.FormatSupport.Display)
 		        .ToArray();
 
+		    IEnumerable<DXGI.ModeDescription1> result = Enumerable.Empty<DXGI.ModeDescription1>();
+
 			// Test each format for display compatibility.
-			foreach (DXGI.Format format in formats)
-			{
-				DXGI.ModeDescription1[] modes = giOutput.GetDisplayModeList1(format, DXGI.DisplayModeEnumerationFlags.Scaling | DXGI.DisplayModeEnumerationFlags.Interlaced);
-
-				if ((modes == null) || (modes.Length <= 0))
-				{
-					continue;
-				}
-
-				result.AddRange((from mode in modes
-				                 where (D3DDevice.CheckFormatSupport(format) & D3D11.FormatSupport.Display) == D3D11.FormatSupport.Display
-				                 select mode));
-			}
-
-			return result;
+		    return formats.Aggregate(result,
+		                             (current, format) =>
+		                                 current.Concat(giOutput.GetDisplayModeList1(format,
+		                                                                             DXGI.DisplayModeEnumerationFlags.Scaling | DXGI.DisplayModeEnumerationFlags.Interlaced)
+		                                                        .Where(item => (D3DDevice.CheckFormatSupport(format) & D3D11.FormatSupport.Display) == D3D11.FormatSupport.Display)));
 		}
 
 		/// <summary>
-		/// Function to retrieve the highest feature level for a video device.
+		/// Function to retrieve the highest feature level for a video adapter.
 		/// </summary>
 		/// <param name="device">The D3D device to use.</param>
 		/// <returns>The highest available feature level for the device.</returns>
@@ -297,12 +287,12 @@ namespace Gorgon.Graphics.Core
 				return result;
 			}
 
-			_log.Print("This video device is not supported by Gorgon and will be skipped.", LoggingLevel.Verbose);
+			_log.Print("This video adapter is not supported by Gorgon and will be skipped.", LoggingLevel.Verbose);
 			return null;
 		}
 
 		/// <summary>
-		/// Function to retrieve the outputs attached to a video device.
+		/// Function to retrieve the outputs attached to a video adapter.
 		/// </summary>
 		/// <param name="device">The Direct 3D device used to filter display modes.</param>
 		/// <param name="adapter">The adapter to retrieve the outputs from.</param>
@@ -325,15 +315,15 @@ namespace Gorgon.Graphics.Core
 				{
 					using (DXGI.Output1 output1 = output.QueryInterface<DXGI.Output1>())
 					{
-						IReadOnlyList<DXGI.ModeDescription1> videoModes = GetVideoModes(device, output1);
+                        IGorgonVideoOutputInfo outputInfo = new VideoOutputInfo(i, output, GetVideoModes(device, output1));
 
-						if (videoModes.Count <= 0)
-						{
-							_log.Print($"Output '{output.Description.DeviceName.Replace("\0", string.Empty)}' on adapter '{adapter.Description1.Description.Replace("\0", string.Empty)}' has no full screen video modes.",
-							           LoggingLevel.Intermediate);
-						}
+					    if (outputInfo.VideoModes.Count == 0)
+					    {
+					        _log.Print($"Output '{output.Description.DeviceName.Replace("\0", string.Empty)}' on adapter '{adapter.Description1.Description.Replace("\0", string.Empty)}' has no full screen video modes.",
+					                   LoggingLevel.Intermediate);
+                        }
 
-						result.Add(new VideoOutputInfo(i, output, videoModes));
+                        result.Add(outputInfo);
 					}
 				}
 			}
@@ -342,32 +332,32 @@ namespace Gorgon.Graphics.Core
 		}
 
 		/// <summary>
-		/// Function to return a video device by its unique identifier.
+		/// Function to return a video adapter by its unique identifier.
 		/// </summary>
 		/// <returns>A <see cref="VideoDeviceInfo"/> for the device with the specified LUID, or <b>null</b> if no device was found with the appropriate <paramref name="luid"/>.</returns>
-		public IGorgonVideoDeviceInfo GetByLuid(long luid)
+		public IGorgonVideoAdapterInfo GetByLuid(long luid)
 		{
 			return _devices.FirstOrDefault(item => item.Luid == luid);
 		}
 
 		/// <summary>
-		/// Function to perform an enumeration of the video devices attached to the system and populate this list.
+		/// Function to perform an enumeration of the video adapters attached to the system and populate this list.
 		/// </summary>
 		/// <param name="enumerateWARPDevice">[Optional] <b>true</b> to enumerate the WARP software device, or <b>false</b> to exclude it.</param>
 		/// <param name="enumerateRefRasterizer">[Optional] <b>true</b> to enumerate the reference rasterizer device, or <b>false</b> to exclude it.</param>
-		/// <exception cref="GorgonException">Thrown if no suitable video device could be found in the computer.</exception>
+		/// <exception cref="GorgonException">Thrown if no suitable video adapter could be found in the computer.</exception>
 		/// <remarks>
 		/// <para>
-		/// Use this method to populate this list with information about the video devices installed in the system.
+		/// Use this method to populate this list with information about the video adapters installed in the system.
 		/// </para>
 		/// <para>
-		/// You may include the WARP device, which is a software based device that emulates most of the functionality of a video device, by setting the <paramref name="enumerateWARPDevice"/> to <b>true</b>.
+		/// You may include the WARP device, which is a software based device that emulates most of the functionality of a video adapter, by setting the <paramref name="enumerateWARPDevice"/> to <b>true</b>.
 		/// </para>
 		/// <para>
 		/// If Gorgon is <i>not</i> compiled in DEBUG mode, then the <paramref name="enumerateRefRasterizer"/> parameter is ignored as it only applies to debugging scenarios.
 		/// </para>
 		/// <para>
-		/// Gorgon requires a video device that is capable of supporting Direct 3D 10 at minimum. If no suitable devices are found installed in the computer, then an exception will be thrown.
+		/// Gorgon requires a video adapter that is capable of supporting Direct 3D 10 at minimum. If no suitable devices are found installed in the computer, then an exception will be thrown.
 		/// </para>
 		/// <para>
 		/// <note type="caution">
@@ -383,18 +373,18 @@ namespace Gorgon.Graphics.Core
 		/// </remarks>
 		public void Enumerate(bool enumerateWARPDevice = false, bool enumerateRefRasterizer = false)
 		{
-			List<IGorgonVideoDeviceInfo> devices = new List<IGorgonVideoDeviceInfo>();
+			List<IGorgonVideoAdapterInfo> devices = new List<IGorgonVideoAdapterInfo>();
 
 			using (DXGI.Factory1 factory = new DXGI.Factory1())
 			{
 				int adapterCount = factory.GetAdapterCount1();
 
-				_log.Print("Enumerating video devices...", LoggingLevel.Simple);
+				_log.Print("Enumerating video adapters...", LoggingLevel.Simple);
 
 				// Begin gathering device information.
 				for (int i = 0; i < adapterCount; i++)
 				{
-					// Get the video device information.
+					// Get the video adapter information.
 					using (DXGI.Adapter1 adapter1 = factory.GetAdapter1(i))
 					{
 						using (DXGI.Adapter2 adapter = adapter1.QueryInterface<DXGI.Adapter2>())
@@ -480,7 +470,7 @@ namespace Gorgon.Graphics.Core
 
 			Interlocked.Exchange(ref _devices, devices);
 
-			_log.Print("Found {0} video devices.", LoggingLevel.Simple, Count);
+			_log.Print("Found {0} video adapters.", LoggingLevel.Simple, Count);
 		}
 
 		/// <summary>
@@ -517,7 +507,7 @@ namespace Gorgon.Graphics.Core
 		/// <returns>
 		/// The index of <paramref name="item"/> if found in the list; otherwise, -1.
 		/// </returns>
-		public int IndexOf(IGorgonVideoDeviceInfo item) => _devices.IndexOf(item);
+		public int IndexOf(IGorgonVideoAdapterInfo item) => _devices.IndexOf(item);
 
 		/// <summary>
 		/// Determines whether the list contains a specific value.
@@ -526,7 +516,7 @@ namespace Gorgon.Graphics.Core
 		/// <returns>
 		/// true if <paramref name="item"/> is found in the list; otherwise, false.
 		/// </returns>
-		public bool Contains(IGorgonVideoDeviceInfo item) => _devices.Contains(item);
+		public bool Contains(IGorgonVideoAdapterInfo item) => _devices.Contains(item);
 
 		/// <summary>
 		/// Returns an enumerator that iterates through the collection.
@@ -534,7 +524,7 @@ namespace Gorgon.Graphics.Core
 		/// <returns>
 		/// An enumerator that can be used to iterate through the collection.
 		/// </returns>
-		public IEnumerator<IGorgonVideoDeviceInfo> GetEnumerator()
+		public IEnumerator<IGorgonVideoAdapterInfo> GetEnumerator()
 		{
 			return _devices.GetEnumerator();
 		}

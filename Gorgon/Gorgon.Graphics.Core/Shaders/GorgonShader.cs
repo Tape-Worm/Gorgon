@@ -123,9 +123,9 @@ namespace Gorgon.Graphics.Core
 		}
 		
 		/// <summary>
-		/// Property to return the video device that created this shader.
+		/// Property to return the video adapter that created this shader.
 		/// </summary>
-		public IGorgonVideoDevice VideoDevice
+		public IGorgonVideoAdapter VideoDevice
 		{
 			get;
 		}
@@ -269,11 +269,11 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonShader"/> class.
 		/// </summary>
-		/// <param name="videoDevice">The video device used to create the shader.</param>
+		/// <param name="videoDevice">The video adapter used to create the shader.</param>
 		/// <param name="name">The name for this shader.</param>
 		/// <param name="isDebug"><b>true</b> if debug information is included in the byte code, <b>false</b> if not.</param>
 		/// <param name="byteCode">The byte code for the shader.</param>
-		protected GorgonShader(IGorgonVideoDevice videoDevice, string name, bool isDebug, D3DCompiler.ShaderBytecode byteCode)
+		protected GorgonShader(IGorgonVideoAdapter videoDevice, string name, bool isDebug, D3DCompiler.ShaderBytecode byteCode)
 			: base(name)
 		{
 		    ID = Interlocked.Increment(ref _shaderID);
