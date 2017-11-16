@@ -255,7 +255,7 @@ namespace Gorgon.Graphics.Example
 			UpdateWVP(ref worldMatrix);
 
 		    GorgonColor color = model.Material.Diffuse;
-		    GorgonPointerAlias data = _materialBuffer.Lock(D3D11.MapMode.WriteDiscard);
+		    GorgonPointerAlias data = _materialBuffer.Lock(MapMode.WriteDiscard);
             data.Write(ref color);
             _materialBuffer.Unlock(ref data);
             
@@ -389,7 +389,7 @@ namespace Gorgon.Graphics.Example
 			DX.Matrix.Transpose(ref wvp, out wvp);
 
 			// Update the constant buffer.
-		    GorgonPointerAlias data = _wvpBuffer.Lock(D3D11.MapMode.WriteDiscard);
+		    GorgonPointerAlias data = _wvpBuffer.Lock(MapMode.WriteDiscard);
             data.Write(ref wvp);
             _wvpBuffer.Unlock(ref data);
 		}

@@ -96,7 +96,7 @@ namespace Gorgon.Graphics
 						   1.0f,
 						   out DX.Matrix projectionMatrix);
             
-		    GorgonPointerAlias data = _wvpBuffer.Lock(D3D11.MapMode.WriteDiscard);
+		    GorgonPointerAlias data = _wvpBuffer.Lock(MapMode.WriteDiscard);
             data.Write(ref projectionMatrix);
             _wvpBuffer.Unlock(ref data);
 
@@ -285,7 +285,7 @@ namespace Gorgon.Graphics
 	                       };
 
 	        // Copy to the vertex buffer.
-	        GorgonPointerAlias data = _vertexBufferBindings[0].VertexBuffer.Lock(D3D11.MapMode.WriteDiscard);
+	        GorgonPointerAlias data = _vertexBufferBindings[0].VertexBuffer.Lock(MapMode.WriteDiscard);
 	        data.WriteRange(_vertices);
 	        _vertexBufferBindings[0].VertexBuffer.Unlock(ref data);
 

@@ -188,7 +188,7 @@ namespace Gorgon.Graphics.Core
 			int height = 1.Max(buffer.Height);
 			int rowStride = buffer.PitchInformation.RowPitch;
 			int sliceStride = buffer.PitchInformation.SlicePitch;
-			D3D11.MapMode flags = D3D11.MapMode.ReadWrite;
+			MapMode flags = MapMode.ReadWrite;
 
 			// If this image is compressed, then use the block height information.
 			if (buffer.PitchInformation.VerticalBlockCount > 0)
@@ -840,7 +840,7 @@ namespace Gorgon.Graphics.Core
         /// </para>
         /// </remarks>
         /// <returns>This method will return a <see cref="GorgonTextureLockData"/> containing information about the locked sub resource and a pointer to the texture data in memory.</returns>
-        public GorgonTextureLockData Lock(D3D11.MapMode lockFlags, int mipLevel = 0, int arrayIndex = 0)
+        public GorgonTextureLockData Lock(MapMode lockFlags, int mipLevel = 0, int arrayIndex = 0)
 		{
 #if DEBUG
 			if ((Info.Usage != ResourceUsage.Staging) && (Info.Usage != ResourceUsage.Dynamic))
@@ -854,15 +854,15 @@ namespace Gorgon.Graphics.Core
 			}
 
 			if ((Info.Usage == ResourceUsage.Dynamic) &&
-			    ((lockFlags == D3D11.MapMode.Read)
-			     || (lockFlags == D3D11.MapMode.ReadWrite)))
+			    ((lockFlags == MapMode.Read)
+			     || (lockFlags == MapMode.ReadWrite)))
 			{
 				throw new NotSupportedException(Resources.GORGFX_ERR_LOCK_CANNOT_READ_NON_STAGING);
 			}
 
-			if (lockFlags == D3D11.MapMode.WriteNoOverwrite)
+			if (lockFlags == MapMode.WriteNoOverwrite)
 			{
-				lockFlags = D3D11.MapMode.Write;
+				lockFlags = MapMode.Write;
 			}
 #endif
 

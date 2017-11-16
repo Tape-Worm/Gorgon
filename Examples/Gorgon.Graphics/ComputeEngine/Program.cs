@@ -33,7 +33,6 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Native;
-using D3D11 = SharpDX.Direct3D11;
 
 namespace ComputeEngine
 {
@@ -228,7 +227,7 @@ namespace ComputeEngine
             using (GorgonPointerPinned<OutputData> dataPtr = new GorgonPointerPinned<OutputData>(results))
             {
                 // We only need read-only access to the buffer.
-                GorgonPointerAlias cpuLock = _cpuBuffer.Lock(D3D11.MapMode.Read);
+                GorgonPointerAlias cpuLock = _cpuBuffer.Lock(MapMode.Read);
                 // memcpy the data into our array.
                 cpuLock.CopyTo(dataPtr, (int)dataPtr.Size);
 

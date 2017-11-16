@@ -37,6 +37,47 @@ using D3D11 = SharpDX.Direct3D11;
 namespace Gorgon.Graphics.Core
 {
     /// <summary>
+    /// Defines the available modes for mapping a dynamic resource from GPU to CPU address space.
+    /// </summary>
+    [Flags]
+    public enum MapMode
+    {
+        /// <summary>
+        /// <para>
+        /// Resource is mapped for reading. The resource must have been created with read access
+        /// </para>
+        /// </summary>
+        Read = D3D11.MapMode.Read,
+        /// <summary>
+        /// <para>
+        /// Resource is mapped for writing. The resource must have been created with write
+        /// </para>
+        /// </summary>
+        Write = D3D11.MapMode.Write,
+        /// <summary>
+        /// <para>
+        /// Resource is mapped for reading and writing. The resource must have been created with read and write
+        /// </para>
+        /// </summary>
+        ReadWrite = D3D11.MapMode.ReadWrite,
+        /// <summary>
+        /// <para>
+        /// Resource is mapped for writing; the previous contents of the resource will be undefined. The resource must have been created with write access and dynamic usage
+        /// </para>
+        /// </summary>
+        WriteDiscard = D3D11.MapMode.WriteDiscard,
+        /// <summary>
+        /// <para>
+        /// Resource is mapped for writing; the existing contents of the resource cannot be overwritten. This flag is only valid on vertex and index buffers. The resource must have been created with write access.
+        /// </para>
+        /// <para>
+        /// This flag will not work with constant buffers.
+        /// </para>
+        /// </summary>
+        WriteNoOverwrite = D3D11.MapMode.WriteNoOverwrite
+    }
+
+    /// <summary>
     /// The type of data to be stored in the buffer.
     /// </summary>
     public enum BufferType
@@ -332,7 +373,7 @@ namespace Gorgon.Graphics.Core
         /// </note>
         /// </para>
         /// </remarks>
-        public GorgonPointerAlias Lock(D3D11.MapMode mode)
+        public GorgonPointerAlias Lock(MapMode mode)
         {
 #if DEBUG
             if ((Usage != ResourceUsage.Dynamic) && (Usage != ResourceUsage.Staging))
@@ -340,7 +381,7 @@ namespace Gorgon.Graphics.Core
                 throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_BUFFER_LOCK_NOT_DYNAMIC, Name, Usage));
             }
 
-            if ((Usage != ResourceUsage.Staging) && ((mode == D3D11.MapMode.Read) || (mode == D3D11.MapMode.ReadWrite)))
+            if ((Usage != ResourceUsage.Staging) && ((mode == MapMode.Read) || (mode == MapMode.ReadWrite)))
             {
                 throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_BUFFER_ERR_WRITE_ONLY, Name, Usage));
             }
@@ -351,7 +392,7 @@ namespace Gorgon.Graphics.Core
             }
 #endif
 
-            Graphics.D3DDeviceContext.MapSubresource(NativeBuffer, mode, D3D11.MapFlags.None, out DX.DataStream stream);
+            Graphics.D3DDeviceContext.MapSubresource(NativeBuffer, (D3D11.MapMode)mode, D3D11.MapFlags.None, out DX.DataStream stream);
 
             if (_lockAddress == null)
             {

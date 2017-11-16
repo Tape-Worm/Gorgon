@@ -526,7 +526,7 @@ namespace Gorgon.Graphics.Example
                         return false;
                     }
 
-                    data = _blurBufferPass.Lock(D3D11.MapMode.WriteDiscard);
+                    data = _blurBufferPass.Lock(MapMode.WriteDiscard);
                     data.Write(passIndex);
                     _blurBufferPass.Unlock(ref data);
 
@@ -538,7 +538,7 @@ namespace Gorgon.Graphics.Example
                         return false;
                     }
                     
-                    data = _blurBufferPass.Lock(D3D11.MapMode.WriteDiscard);
+                    data = _blurBufferPass.Lock(MapMode.WriteDiscard);
                     data.Write(passIndex);
                     _blurBufferPass.Unlock(ref data);
 

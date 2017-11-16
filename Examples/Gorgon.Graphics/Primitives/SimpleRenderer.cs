@@ -31,7 +31,6 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Runtime.InteropServices;
 using DX = SharpDX;
-using D3D11 = SharpDX.Direct3D11;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Native;
@@ -319,7 +318,7 @@ namespace Gorgon.Graphics.Example
         private static void UpdateDynamicConstantBuffer<T>(GorgonConstantBuffer buffer, ref T value)
             where T : struct
         {
-            GorgonPointerAlias data = buffer.Lock(D3D11.MapMode.WriteDiscard);
+            GorgonPointerAlias data = buffer.Lock(MapMode.WriteDiscard);
             data.Write(value);
             buffer.Unlock(ref data);
         }

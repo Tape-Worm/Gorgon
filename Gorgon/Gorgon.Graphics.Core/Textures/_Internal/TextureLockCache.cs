@@ -164,7 +164,7 @@ namespace Gorgon.Graphics.Core
 	    /// <param name="mipLevel">Mip map level to lock.</param>
 	    /// <param name="arrayIndex">Array index to lock (1D/2D textures only).</param>
 	    /// <returns>A new <see cref="GorgonTextureLockData"/> containing the data from the lock.</returns>
-	    public GorgonTextureLockData Lock(D3D11.MapMode lockFlags, int mipLevel, int arrayIndex)
+	    public GorgonTextureLockData Lock(MapMode lockFlags, int mipLevel, int arrayIndex)
 	    {
 		    LockCacheKey key = new LockCacheKey(mipLevel, arrayIndex);
 
@@ -181,7 +181,7 @@ namespace Gorgon.Graphics.Core
 
 			        DX.DataBox box = Texture.Graphics.D3DDeviceContext.MapSubresource(Texture.D3DResource,
 				                                                                      D3D11.Resource.CalculateSubResourceIndex(mipLevel, arrayIndex, Texture.Info.MipLevels),
-				                                                                      lockFlags,
+				                                                                      (D3D11.MapMode)lockFlags,
 				                                                                      D3D11.MapFlags.None,
 				                                                                      out _);
 

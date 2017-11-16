@@ -37,8 +37,6 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
 using Gorgon.Timing;
 using Gorgon.UI;
-using SharpDX.Direct3D;
-using SharpDX.Direct3D11;
 
 namespace GorgonLibrary.Example
 {
