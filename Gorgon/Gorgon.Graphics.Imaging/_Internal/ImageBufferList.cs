@@ -49,15 +49,6 @@ namespace Gorgon.Graphics.Imaging
 
 		#region Properties.
 		/// <summary>
-		/// Property to return the databoxes for the buffers.
-		/// </summary>
-		internal DX.DataBox[] DataBoxes
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
 		/// Property to return the offsets of the mip map levels.
 		/// </summary>
 		internal (int BufferIndex, int MipDepth)[] MipOffsetSize
@@ -129,9 +120,6 @@ namespace Gorgon.Graphics.Imaging
 
 			// Offsets for the mip maps.
 			MipOffsetSize = new (int BufferIndex, int MipDepth)[_image.Info.MipCount * _image.Info.ArrayCount];
-			// Create the data boxes for images.
-			DataBoxes = new DX.DataBox[_image.Info.ArrayCount * _image.Info.MipCount];
-
 			IntPtr dataAddress = new IntPtr(data.Address);
 
 			// Enumerate array indices. (For 1D and 2D only, 3D will always be 1)
@@ -146,9 +134,6 @@ namespace Gorgon.Graphics.Imaging
 				{
 					int arrayIndex = mip + (array * _image.Info.MipCount);
 					GorgonPitchLayout pitchInformation = formatInfo.GetPitchForFormat(mipWidth, mipHeight);
-
-					// Get data box for texture upload.
-					DataBoxes[arrayIndex] = new DX.DataBox(dataAddress, pitchInformation.RowPitch, pitchInformation.SlicePitch);
 
 					// Calculate buffer offset by mip.
 					MipOffsetSize[arrayIndex] = (bufferIndex, mipDepth);
