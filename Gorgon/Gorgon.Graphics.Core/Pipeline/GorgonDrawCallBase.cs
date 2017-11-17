@@ -29,10 +29,270 @@ using D3D = SharpDX.Direct3D;
 
 namespace Gorgon.Graphics.Core
 {
-	/// <summary>
-	/// Flags to indicate which part of the pipeline resources need updating.
-	/// </summary>
-	[Flags]
+    #region Enums
+    /// <summary>
+    /// Specifies the type of primitive geometry to render from vertex data bound to the pipeline.
+    /// </summary>
+    public enum PrimitiveType
+    {
+        /// <summary>
+        /// <para>
+        /// The IA stage has not been initialized with a primitive topology. The IA stage will not function properly unless a primitive topology is defined.
+        /// </para>
+        /// </summary>
+        None = D3D.PrimitiveTopology.Undefined,
+        /// <summary>
+        /// <para>
+        /// Interpret the vertex data as a list of points.
+        /// </para>
+        /// </summary>
+        PointList = D3D.PrimitiveTopology.PointList,
+        /// <summary>
+        /// <para>
+        /// Interpret the vertex data as a list of lines.
+        /// </para>
+        /// </summary>
+        LineList = D3D.PrimitiveTopology.LineList,
+        /// <summary>
+        /// <para>
+        /// Interpret the vertex data as a line strip.
+        /// </para>
+        /// </summary>
+        LineStrip = D3D.PrimitiveTopology.LineStrip,
+        /// <summary>
+        /// <para>
+        /// Interpret the vertex data as a list of triangles.
+        /// </para>
+        /// </summary>
+        TriangleList = D3D.PrimitiveTopology.TriangleList,
+        /// <summary>
+        /// <para>
+        /// Interpret the vertex data as a triangle strip.
+        /// </para>
+        /// </summary>
+        TriangleStrip = D3D.PrimitiveTopology.TriangleStrip,
+        /// <summary>
+        /// <para>
+        /// Interpret the vertex data as list of lines with adjacency data.
+        /// </para>
+        /// </summary>
+        LineListWithAdjacency = D3D.PrimitiveTopology.LineListWithAdjacency,
+        /// <summary>
+        /// <para>
+        /// Interpret the vertex data as line strip with adjacency data.
+        /// </para>
+        /// </summary>
+        LineStripWithAdjacency = D3D.PrimitiveTopology.LineStripWithAdjacency,
+        /// <summary>
+        /// <para>
+        /// Interpret the vertex data as list of triangles with adjacency data.
+        /// </para>
+        /// </summary>
+        TriangleListWithAdjacency = D3D.PrimitiveTopology.TriangleListWithAdjacency,
+        /// <summary>
+        /// <para>
+        /// Interpret the vertex data as triangle strip with adjacency data.
+        /// </para>
+        /// </summary>
+        TriangleStripWithAdjacency = D3D.PrimitiveTopology.TriangleStripWithAdjacency,
+        /// <summary>
+        /// <para>
+        /// Interpret the vertex data as a patch list.
+        /// </para>
+        /// </summary>
+        PatchListWith1ControlPoints = D3D.PrimitiveTopology.PatchListWith1ControlPoints,
+        /// <summary>
+        /// <para>
+        /// Interpret the vertex data as a patch list.
+        /// </para>
+        /// </summary>
+        PatchListWith2ControlPoints = D3D.PrimitiveTopology.PatchListWith2ControlPoints,
+        /// <summary>
+        /// <para>
+        /// Interpret the vertex data as a patch list.
+        /// </para>
+        /// </summary>
+        PatchListWith3ControlPoints = D3D.PrimitiveTopology.PatchListWith3ControlPoints,
+        /// <summary>
+        /// <para>
+        /// Interpret the vertex data as a patch list.
+        /// </para>
+        /// </summary>
+        PatchListWith4ControlPoints = D3D.PrimitiveTopology.PatchListWith4ControlPoints,
+        /// <summary>
+        /// <para>
+        /// Interpret the vertex data as a patch list.
+        /// </para>
+        /// </summary>
+        PatchListWith5ControlPoints = D3D.PrimitiveTopology.PatchListWith5ControlPoints,
+        /// <summary>
+        /// <para>
+        /// Interpret the vertex data as a patch list.
+        /// </para>
+        /// </summary>
+        PatchListWith6ControlPoints = D3D.PrimitiveTopology.PatchListWith6ControlPoints,
+        /// <summary>
+        /// <para>
+        /// Interpret the vertex data as a patch list.
+        /// </para>
+        /// </summary>
+        PatchListWith7ControlPoints = D3D.PrimitiveTopology.PatchListWith7ControlPoints,
+        /// <summary>
+        /// <para>
+        /// Interpret the vertex data as a patch list.
+        /// </para>
+        /// </summary>
+        PatchListWith8ControlPoints = D3D.PrimitiveTopology.PatchListWith8ControlPoints,
+        /// <summary>
+        /// <para>
+        /// Interpret the vertex data as a patch list.
+        /// </para>
+        /// </summary>
+        PatchListWith9ControlPoints = D3D.PrimitiveTopology.PatchListWith9ControlPoints,
+        /// <summary>
+        /// <para>
+        /// Interpret the vertex data as a patch list.
+        /// </para>
+        /// </summary>
+        PatchListWith10ControlPoints = D3D.PrimitiveTopology.PatchListWith10ControlPoints,
+        /// <summary>
+        /// <para>
+        /// Interpret the vertex data as a patch list.
+        /// </para>
+        /// </summary>
+        PatchListWith11ControlPoints = D3D.PrimitiveTopology.PatchListWith11ControlPoints,
+        /// <summary>
+        /// <para>
+        /// Interpret the vertex data as a patch list.
+        /// </para>
+        /// </summary>
+        PatchListWith12ControlPoints = D3D.PrimitiveTopology.PatchListWith12ControlPoints,
+        /// <summary>
+        /// <para>
+        /// Interpret the vertex data as a patch list.
+        /// </para>
+        /// </summary>
+        PatchListWith13ControlPoints = D3D.PrimitiveTopology.PatchListWith13ControlPoints,
+        /// <summary>
+        /// <para>
+        /// Interpret the vertex data as a patch list.
+        /// </para>
+        /// </summary>
+        PatchListWith14ControlPoints = D3D.PrimitiveTopology.PatchListWith14ControlPoints,
+        /// <summary>
+        /// <para>
+        /// Interpret the vertex data as a patch list.
+        /// </para>
+        /// </summary>
+        PatchListWith15ControlPoints = D3D.PrimitiveTopology.PatchListWith15ControlPoints,
+        /// <summary>
+        /// <para>
+        /// Interpret the vertex data as a patch list.
+        /// </para>
+        /// </summary>
+        PatchListWith16ControlPoints = D3D.PrimitiveTopology.PatchListWith16ControlPoints,
+        /// <summary>
+        /// <para>
+        /// Interpret the vertex data as a patch list.
+        /// </para>
+        /// </summary>
+        PatchListWith17ControlPoints = D3D.PrimitiveTopology.PatchListWith17ControlPoints,
+        /// <summary>
+        /// <para>
+        /// Interpret the vertex data as a patch list.
+        /// </para>
+        /// </summary>
+        PatchListWith18ControlPoints = D3D.PrimitiveTopology.PatchListWith18ControlPoints,
+        /// <summary>
+        /// <para>
+        /// Interpret the vertex data as a patch list.
+        /// </para>
+        /// </summary>
+        PatchListWith19ControlPoints = D3D.PrimitiveTopology.PatchListWith19ControlPoints,
+        /// <summary>
+        /// <para>
+        /// Interpret the vertex data as a patch list.
+        /// </para>
+        /// </summary>
+        PatchListWith20ControlPoints = D3D.PrimitiveTopology.PatchListWith20ControlPoints,
+        /// <summary>
+        /// <para>
+        /// Interpret the vertex data as a patch list.
+        /// </para>
+        /// </summary>
+        PatchListWith21ControlPoints = D3D.PrimitiveTopology.PatchListWith21ControlPoints,
+        /// <summary>
+        /// <para>
+        /// Interpret the vertex data as a patch list.
+        /// </para>
+        /// </summary>
+        PatchListWith22ControlPoints = D3D.PrimitiveTopology.PatchListWith22ControlPoints,
+        /// <summary>
+        /// <para>
+        /// Interpret the vertex data as a patch list.
+        /// </para>
+        /// </summary>
+        PatchListWith23ControlPoints = D3D.PrimitiveTopology.PatchListWith23ControlPoints,
+        /// <summary>
+        /// <para>
+        /// Interpret the vertex data as a patch list.
+        /// </para>
+        /// </summary>
+        PatchListWith24ControlPoints = D3D.PrimitiveTopology.PatchListWith24ControlPoints,
+        /// <summary>
+        /// <para>
+        /// Interpret the vertex data as a patch list.
+        /// </para>
+        /// </summary>
+        PatchListWith25ControlPoints = D3D.PrimitiveTopology.PatchListWith25ControlPoints,
+        /// <summary>
+        /// <para>
+        /// Interpret the vertex data as a patch list.
+        /// </para>
+        /// </summary>
+        PatchListWith26ControlPoints = D3D.PrimitiveTopology.PatchListWith26ControlPoints,
+        /// <summary>
+        /// <para>
+        /// Interpret the vertex data as a patch list.
+        /// </para>
+        /// </summary>
+        PatchListWith27ControlPoints = D3D.PrimitiveTopology.PatchListWith27ControlPoints,
+        /// <summary>
+        /// <para>
+        /// Interpret the vertex data as a patch list.
+        /// </para>
+        /// </summary>
+        PatchListWith28ControlPoints = D3D.PrimitiveTopology.PatchListWith28ControlPoints,
+        /// <summary>
+        /// <para>
+        /// Interpret the vertex data as a patch list.
+        /// </para>
+        /// </summary>
+        PatchListWith29ControlPoints = D3D.PrimitiveTopology.PatchListWith29ControlPoints,
+        /// <summary>
+        /// <para>
+        /// Interpret the vertex data as a patch list.
+        /// </para>
+        /// </summary>
+        PatchListWith30ControlPoints = D3D.PrimitiveTopology.PatchListWith30ControlPoints,
+        /// <summary>
+        /// <para>
+        /// Interpret the vertex data as a patch list.
+        /// </para>
+        /// </summary>
+        PatchListWith31ControlPoints = D3D.PrimitiveTopology.PatchListWith31ControlPoints,
+        /// <summary>
+        /// <para>
+        /// Interpret the vertex data as a patch list.
+        /// </para>
+        /// </summary>
+        PatchListWith32ControlPoints = D3D.PrimitiveTopology.PatchListWith32ControlPoints
+    }
+
+    /// <summary>
+    /// Flags to indicate which part of the pipeline resources need updating.
+    /// </summary>
+    [Flags]
 	internal enum PipelineResourceChange
 	{
 		/// <summary>
@@ -178,17 +438,18 @@ namespace Gorgon.Graphics.Core
 			| PrimitiveTopology
             | StreamOut
 	}
+    #endregion
 
-	/// <summary>
-	/// A common class for draw calls.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// A draw call is used to submit vertex (and potentially index and instance) data to the GPU pipeline or an output buffer. This type will contain all the necessary information used to set the state of the 
-	/// pipeline prior to rendering any data.
-	/// </para>
-	/// </remarks>
-	public class GorgonDrawCallBase 
+    /// <summary>
+    /// A common class for draw calls.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A draw call is used to submit vertex (and potentially index and instance) data to the GPU pipeline or an output buffer. This type will contain all the necessary information used to set the state of the 
+    /// pipeline prior to rendering any data.
+    /// </para>
+    /// </remarks>
+    public class GorgonDrawCallBase 
         : IGorgonShaderStates
 	{
 		#region Properties.
@@ -368,11 +629,11 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the type of primitives to draw.
         /// </summary>
-        public D3D.PrimitiveTopology PrimitiveTopology
+        public PrimitiveType PrimitiveType
 		{
 			get;
 			set;
-		} = D3D.PrimitiveTopology.TriangleList;
+		} = PrimitiveType.TriangleList;
 
 		/// <summary>
 		/// Property to set or return the current pipeline state.
@@ -432,7 +693,7 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		public void Reset()
 		{
-			PrimitiveTopology = D3D.PrimitiveTopology.TriangleList;
+			PrimitiveType = PrimitiveType.TriangleList;
 			VertexBuffers = null;
 			IndexBuffer = null;
 			PipelineState = null;

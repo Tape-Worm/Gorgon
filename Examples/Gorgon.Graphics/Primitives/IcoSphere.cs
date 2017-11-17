@@ -420,7 +420,7 @@ namespace Gorgon.Graphics.Example
             : base(graphics)
 	    {
 		    Radius = radius;
-			PrimitiveType = D3D.PrimitiveTopology.TriangleList;
+			PrimitiveType = PrimitiveType.TriangleList;
             DX.Quaternion.RotationYawPitchRoll(angle.Y.ToRadians(), angle.X.ToRadians(), angle.Z.ToRadians(), out DX.Quaternion orientation);
             DX.Matrix.RotationQuaternion(ref orientation, out _orientation);
 

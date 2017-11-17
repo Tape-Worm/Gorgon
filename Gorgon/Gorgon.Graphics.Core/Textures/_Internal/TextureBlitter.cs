@@ -319,7 +319,7 @@ namespace Gorgon.Graphics
 
 			_drawCall = new GorgonDrawCall
 			            {
-				            PrimitiveTopology = D3D.PrimitiveTopology.TriangleStrip,
+				            PrimitiveType = PrimitiveType.TriangleStrip,
 				            VertexCount = _vertices.Length,
 				            PixelShaderSamplers =
 				            {

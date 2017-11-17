@@ -256,7 +256,7 @@ namespace Gorgon.Graphics.Example
 				            // This defines what type of primitive data to render. 
 				            // For this, and most other examples, this will be a list of individual triangles. However, this could also be a strip of joined triangles, 
 				            //lines, points, etc...
-				            PrimitiveTopology = PrimitiveTopology.TriangleList,
+				            PrimitiveType = PrimitiveType.TriangleList,
 				            // Our triangle has 3 points, obviously.
 				            VertexCount = 3,
 				            // This will bind the vertex buffer to the GPU so it can be read from when rendering.

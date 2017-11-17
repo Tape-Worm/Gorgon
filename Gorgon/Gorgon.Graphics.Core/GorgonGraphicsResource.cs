@@ -70,7 +70,7 @@ namespace Gorgon.Graphics.Core
     /// This defines how the resource should be used when rendering and whether or not it is CPU and/or GPU accessible.
     /// </para>
     /// </remarks>
-    [Flags]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue", Justification = "No. Fuck off.")]
     public enum ResourceUsage
     {
         /// <summary>

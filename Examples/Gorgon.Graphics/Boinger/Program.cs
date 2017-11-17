@@ -539,7 +539,7 @@ namespace Gorgon.Graphics.Example
             // All objects are using triangle lists, so we must tell the draw call that's what we need to render.
             _drawCall = new GorgonDrawIndexedCall
 			            {
-				            PrimitiveTopology = D3D.PrimitiveTopology.TriangleList
+				            PrimitiveType = PrimitiveType.TriangleList
 			            };
 
 			// TODO: Create the 2D interface for our text.
@@ -569,8 +569,8 @@ namespace Gorgon.Graphics.Example
 		    // Create a sampler state for sampling our texture data.
 		    _samplerState = new GorgonSamplerState(GorgonSamplerState.PointFiltering)
 		                    {
-		                        AddressU = D3D11.TextureAddressMode.Wrap,
-		                        AddressV = D3D11.TextureAddressMode.Wrap
+		                        WrapU = TextureWrap.Wrap,
+		                        WrapV = TextureWrap.Wrap
 		                    };
 
 			// Set up our view matrix.

@@ -95,11 +95,11 @@ namespace Gorgon.Graphics.Core
         // The texture filter.
         private D3D11.Filter _filter;
         // The addressing mode for moving beyond texture horizontal extents.
-	    private D3D11.TextureAddressMode _addressU;
+	    private TextureWrap _addressU;
 	    // The addressing mode for moving beyond texture vertical extents.
-        private D3D11.TextureAddressMode _addressV;
+        private TextureWrap _addressV;
 	    // The addressing mode for moving beyond texture depth extents.
-        private D3D11.TextureAddressMode _addressW;
+        private TextureWrap _addressW;
         // Current mip map level of detail bias.
 	    private float _mipLevelOfDetailBias;
         // Maxium anisotropy value.
@@ -168,7 +168,7 @@ namespace Gorgon.Graphics.Core
 	    }
 
 	    /// <summary>
-	    /// Property to set or return the horizontal-U direction addressing for a texture.
+	    /// Property to set or return the horizontal-U direction wrapping mode for a texture.
 	    /// </summary>
 	    /// <remarks>
 	    /// <para>
@@ -178,7 +178,7 @@ namespace Gorgon.Graphics.Core
 	    /// The default value is <c>Clamp</c>.
 	    /// </para>
 	    /// </remarks>
-	    public D3D11.TextureAddressMode AddressU
+	    public TextureWrap WrapU
 	    {
 	        get => _addressU;
 	        set
@@ -189,7 +189,7 @@ namespace Gorgon.Graphics.Core
 	    }
 
 	    /// <summary>
-	    /// Property to set or return the verical-V direction addressing for a texture.
+	    /// Property to set or return the verical-V direction wrapping mode for a texture.
 	    /// </summary>
 	    /// <remarks>
 	    /// <para>
@@ -199,7 +199,7 @@ namespace Gorgon.Graphics.Core
 	    /// The default value is <c>Clamp</c>.
 	    /// </para>
 	    /// </remarks>
-	    public D3D11.TextureAddressMode AddressV
+	    public TextureWrap WrapV
 	    {
 	        get => _addressV;
 	        set
@@ -210,7 +210,7 @@ namespace Gorgon.Graphics.Core
 	    }
 
 	    /// <summary>
-	    /// Property to set or return the depth-W direction addressing for a texture.
+	    /// Property to set or return the depth-W direction wrapping mode for a texture.
 	    /// </summary>
 	    /// <remarks>
 	    /// <para>
@@ -220,7 +220,7 @@ namespace Gorgon.Graphics.Core
 	    /// The default value is <c>Clamp</c>.
 	    /// </para>
 	    /// </remarks>
-	    public D3D11.TextureAddressMode AddressW
+	    public TextureWrap WrapW
 	    {
 	        get => _addressW;
 	        set
@@ -298,7 +298,7 @@ namespace Gorgon.Graphics.Core
 	    /// </summary>
 	    /// <remarks>
 	    /// <para>
-	    /// This value defines the color to use when the <see cref="AddressU"/>, <see cref="AddressV"/> or <see cref="AddressW"/> is set to <c>Border</c>. When those address modes are defined, the renderer 
+	    /// This value defines the color to use when the <see cref="WrapU"/>, <see cref="WrapV"/> or <see cref="WrapW"/> is set to <c>Border</c>. When those address modes are defined, the renderer 
 	    /// will draw a border in the color specified when the addressing exceeds 0.0f and 1.0f.
 	    /// </para>
 	    /// <para>
@@ -385,9 +385,9 @@ namespace Gorgon.Graphics.Core
 	    public bool Equals(GorgonSamplerState other)
 	    {
 	        return (this == other) || (other != null
-	                                   && other.AddressU == AddressU
-	                                   && other.AddressV == AddressV
-	                                   && other.AddressW == AddressW
+	                                   && other.WrapU == WrapU
+	                                   && other.WrapV == WrapV
+	                                   && other.WrapW == WrapW
 	                                   && other.BorderColor.Equals(BorderColor)
 	                                   && other.ComparisonFunction == ComparisonFunction
 	                                   && other.Filter == Filter
@@ -411,9 +411,9 @@ namespace Gorgon.Graphics.Core
 		    ID = Interlocked.Increment(ref _stateID);
             Native = info?.Native ?? throw new ArgumentNullException(nameof(info));
 			Filter = info.Filter;
-			AddressU = info.AddressU;
-			AddressV = info.AddressV;
-			AddressW = info.AddressW;
+			WrapU = info.WrapU;
+			WrapV = info.WrapV;
+			WrapW = info.WrapW;
 			MaxAnisotropy = info.MaxAnisotropy;
 			BorderColor = info.BorderColor;
 			MinimumLevelOfDetail = info.MinimumLevelOfDetail;
@@ -429,9 +429,9 @@ namespace Gorgon.Graphics.Core
 		{
 		    ID = Interlocked.Increment(ref _stateID);
             Filter = D3D11.Filter.MinMagMipLinear;
-			AddressU = D3D11.TextureAddressMode.Clamp;
-			AddressV = D3D11.TextureAddressMode.Clamp;
-			AddressW = D3D11.TextureAddressMode.Clamp;
+			WrapU = TextureWrap.Clamp;
+			WrapV = TextureWrap.Clamp;
+			WrapW = TextureWrap.Clamp;
 			MaxAnisotropy = 1;
 			BorderColor = GorgonColor.White;
 			MinimumLevelOfDetail = float.MinValue;

@@ -124,7 +124,7 @@ namespace Gorgon.Graphics.Example
         public Plane(GorgonGraphics graphics, DX.Vector2 size, RectangleF textureCoordinates, DX.Vector3 angle, int columns = 1, int rows = 1)
             : base(graphics)
         {
-            PrimitiveType = D3D.PrimitiveTopology.TriangleStrip;
+            PrimitiveType = PrimitiveType.TriangleStrip;
             VertexCount = (columns + 1) * (rows + 1);
             IndexCount = ((columns * rows) * 6) + (rows - 1);
             TriangleCount = (IndexCount - (rows - 1)) / 3;

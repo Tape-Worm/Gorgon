@@ -239,7 +239,7 @@ namespace GorgonLibrary.Example
 			// Set up the pipeline to draw the cube.
             _drawCall = new GorgonDrawIndexedCall
                         {
-                            PrimitiveTopology = PrimitiveTopology.TriangleList,
+                            PrimitiveType = PrimitiveType.TriangleList,
                             IndexBuffer = _cube.IndexBuffer,
                             VertexBuffers = _cube.VertexBuffer,
                             PixelShaderResourceViews =

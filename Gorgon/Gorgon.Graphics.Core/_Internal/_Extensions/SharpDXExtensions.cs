@@ -254,9 +254,9 @@ namespace Gorgon.Graphics.Core
 			return new D3D11.SamplerStateDescription
 			       {
 				       Filter = state.Filter,
-				       AddressU = state.AddressU,
-				       AddressV = state.AddressV,
-				       AddressW = state.AddressW,
+				       AddressU = (D3D11.TextureAddressMode)state.WrapU,
+				       AddressV = (D3D11.TextureAddressMode)state.WrapV,
+				       AddressW = (D3D11.TextureAddressMode)state.WrapW,
 				       BorderColor = state.BorderColor.ToRawColor4(),
 				       ComparisonFunction = state.ComparisonFunction,
 				       MaximumAnisotropy = state.MaxAnisotropy,

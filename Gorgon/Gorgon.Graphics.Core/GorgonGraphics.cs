@@ -931,15 +931,15 @@ namespace Gorgon.Graphics.Core
             {
                 _currentDrawCall = new GorgonDrawCallBase
                                    {
-                                       PrimitiveTopology = D3D.PrimitiveTopology.Undefined
+                                       PrimitiveType = PrimitiveType.None
                                    };
             }
 
             PipelineResourceChange stateChanges = PipelineResourceChange.None;
 
-            if (_currentDrawCall.PrimitiveTopology != sourceDrawCall.PrimitiveTopology)
+            if (_currentDrawCall.PrimitiveType != sourceDrawCall.PrimitiveType)
             {
-                _currentDrawCall.PrimitiveTopology = sourceDrawCall.PrimitiveTopology;
+                _currentDrawCall.PrimitiveType = sourceDrawCall.PrimitiveType;
                 stateChanges |= PipelineResourceChange.PrimitiveTopology;
             }
 
@@ -1700,7 +1700,7 @@ namespace Gorgon.Graphics.Core
         {
             if ((resourceChanges & PipelineResourceChange.PrimitiveTopology) == PipelineResourceChange.PrimitiveTopology)
             {
-                D3DDeviceContext.InputAssembler.PrimitiveTopology = drawCall.PrimitiveTopology;
+                D3DDeviceContext.InputAssembler.PrimitiveTopology = (D3D.PrimitiveTopology)drawCall.PrimitiveType;
             }
 
             // Bind the scissor rectangles.

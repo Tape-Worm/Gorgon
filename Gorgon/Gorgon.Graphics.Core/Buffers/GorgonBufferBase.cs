@@ -39,7 +39,7 @@ namespace Gorgon.Graphics.Core
     /// <summary>
     /// Defines the available modes for mapping a dynamic resource from GPU to CPU address space.
     /// </summary>
-    [Flags]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue")]
     public enum MapMode
     {
         /// <summary>
@@ -68,10 +68,7 @@ namespace Gorgon.Graphics.Core
         WriteDiscard = D3D11.MapMode.WriteDiscard,
         /// <summary>
         /// <para>
-        /// Resource is mapped for writing; the existing contents of the resource cannot be overwritten. This flag is only valid on vertex and index buffers. The resource must have been created with write access.
-        /// </para>
-        /// <para>
-        /// This flag will not work with constant buffers.
+        /// Resource is mapped for writing; the existing contents of the resource cannot be overwritten. The resource must have been created with write access.
         /// </para>
         /// </summary>
         WriteNoOverwrite = D3D11.MapMode.WriteNoOverwrite

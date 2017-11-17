@@ -167,8 +167,8 @@ namespace Gorgon.Graphics.Example
         // The default sampler state.
         private readonly GorgonSamplerState _defaultSampler = new GorgonSamplerState(GorgonSamplerState.Default)
                                                               {
-                                                                  AddressU = D3D11.TextureAddressMode.Wrap,
-                                                                  AddressV = D3D11.TextureAddressMode.Wrap
+                                                                  WrapU = TextureWrap.Wrap,
+                                                                  WrapV = TextureWrap.Wrap
                                                               };
         #endregion
 
@@ -260,7 +260,7 @@ namespace Gorgon.Graphics.Example
                            {
                                PipelineState = pipelineState,
                                IndexCount = mesh.IndexCount,
-                               PrimitiveTopology = mesh.PrimitiveType,
+                               PrimitiveType = mesh.PrimitiveType,
                                VertexBuffers = new GorgonVertexBufferBindings(_vertexLayout),
                                IndexBuffer = mesh.IndexBuffer
                            };

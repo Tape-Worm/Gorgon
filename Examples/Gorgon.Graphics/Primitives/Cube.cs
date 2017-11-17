@@ -132,7 +132,7 @@ namespace Gorgon.Graphics.Example
         public Cube(GorgonGraphics graphics, DX.Vector3 size, RectangleF textureCoordinates, DX.Vector3 angle, int columnsPerFace = 1, int rowsPerFace = 1)
             : base(graphics)
 		{
-			PrimitiveType = D3D.PrimitiveTopology.TriangleList;
+			PrimitiveType = PrimitiveType.TriangleList;
             int faceVertexCount = (columnsPerFace + 1) * (rowsPerFace + 1);
             int faceIndexCount = (columnsPerFace * rowsPerFace) * 6;
 			VertexCount = faceVertexCount * 6;

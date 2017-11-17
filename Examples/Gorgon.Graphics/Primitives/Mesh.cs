@@ -58,7 +58,7 @@ namespace Gorgon.Graphics.Example
         /// <summary>
         /// Property to return the type of primitive used to draw the object.
         /// </summary>
-        public D3D.PrimitiveTopology PrimitiveType
+        public PrimitiveType PrimitiveType
         {
             get;
             protected set;
@@ -136,7 +136,7 @@ namespace Gorgon.Graphics.Example
                 int index1 = *(indexData++);
 
 				// If we hit a strip-restart index, then skip to the next index.
-	            if ((PrimitiveType == D3D.PrimitiveTopology.TriangleStrip) 
+	            if ((PrimitiveType == PrimitiveType.TriangleStrip) 
 					&& (index1 < 0))
 	            {
 		            index1 = *(indexData++);

@@ -144,7 +144,7 @@ namespace Gorgon.Graphics.Example
         {
 
             // Calculate number of vertices and indices required for our sphere.
-            PrimitiveType = D3D.PrimitiveTopology.TriangleList;
+            PrimitiveType = PrimitiveType.TriangleList;
             VertexCount = (ringCount + 1) * (segmentCount + 1);
             IndexCount = 6 * ringCount * (segmentCount + 1);
             TriangleCount = IndexCount / 3;

@@ -44,7 +44,7 @@ namespace Gorgon.Graphics.Example
         public Triangle(GorgonGraphics graphics, Vertex3D point1, Vertex3D point2, Vertex3D point3)
             : base(graphics)
 	    {
-	        PrimitiveType = D3D.PrimitiveTopology.TriangleList;
+	        PrimitiveType = PrimitiveType.TriangleList;
 	        VertexCount = 3;
 	        IndexCount = 3;
 	        TriangleCount = 1;
