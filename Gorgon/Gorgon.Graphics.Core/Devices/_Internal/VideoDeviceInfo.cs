@@ -55,10 +55,10 @@ namespace Gorgon.Graphics.Core
 			get;
 		}
 
-		/// <summary>
-		/// Property to return the index of the video adapter within a <see cref="GorgonVideoDeviceList"/>.
-		/// </summary>
-		public int Index
+	    /// <summary>
+	    /// Property to return the index of the video adapter within a list returned by <see cref="GorgonGraphics.EnumerateAdapters"/>.
+	    /// </summary>
+	    public int Index
 		{
 			get;
 		}
@@ -74,7 +74,7 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Property to return the highest feature level that the hardware can support.
 		/// </summary>
-		public FeatureLevelSupport SupportedFeatureLevel
+		public FeatureSet SupportedFeatureLevel
 		{
 			get;
 		}
@@ -144,12 +144,12 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="index">The index of the video adapter within a list.</param>
 		/// <param name="adapter">The DXGI adapter from which to retrieve all information.</param>
-		/// <param name="featureLevel">The supported feature level for the video adapter.</param>
+		/// <param name="featureSet">The supported feature set for the video adapter.</param>
 		/// <param name="outputs">The list of outputs attached to the video adapter.</param>
 		/// <param name="deviceType">The type of video adapter.</param>
 		public VideoDeviceInfo(int index,
 		                       DXGI.Adapter2 adapter,
-		                       D3D.FeatureLevel featureLevel,
+		                       FeatureSet featureSet,
 		                       IGorgonNamedObjectReadOnlyList<IGorgonVideoOutputInfo> outputs,
 		                       VideoDeviceType deviceType)
 		{
@@ -160,7 +160,7 @@ namespace Gorgon.Graphics.Core
 			Index = index;
 			VideoDeviceType = deviceType;
 			Outputs = outputs;
-			SupportedFeatureLevel = (FeatureLevelSupport)featureLevel;
+			SupportedFeatureLevel = featureSet;
 		}
 		#endregion
 	}

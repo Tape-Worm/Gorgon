@@ -286,7 +286,7 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public GorgonStructuredBufferUav GetUnorderedAccessView(int startElement = 0, int elementCount = 0, StructuredBufferUavType uavType = StructuredBufferUavType.None)
         {
-            if (Graphics.VideoDevice.RequestedFeatureLevel < FeatureLevelSupport.Level_11_0)
+            if (Graphics.VideoDevice.RequestedFeatureLevel < FeatureSet.Level_12_0)
             {
                 throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_UAV_REQUIRES_SM5);
             }
@@ -354,9 +354,9 @@ namespace Gorgon.Graphics.Core
                 throw new ArgumentException(string.Format(Resources.GORGFX_ERR_BUFFER_SIZE_TOO_SMALL, 1));
             }
 
-            if (graphics.VideoDevice.RequestedFeatureLevel < FeatureLevelSupport.Level_11_0)
+            if (graphics.VideoDevice.RequestedFeatureLevel < FeatureSet.Level_12_0)
             {
-                throw new ArgumentException(string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureLevelSupport.Level_11_0), nameof(graphics));
+                throw new ArgumentException(string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureSet.Level_12_0), nameof(graphics));
             }
 
             BufferType = BufferType.Structured;

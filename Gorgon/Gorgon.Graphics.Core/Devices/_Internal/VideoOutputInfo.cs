@@ -105,11 +105,12 @@ namespace Gorgon.Graphics.Core
 		/// <param name="index">The index of the output.</param>
 		/// <param name="output">The output used to provide information.</param>
 		/// <param name="modes">The list of full screen display modes supported by this output on the video adapter.</param>
-		public VideoOutputInfo(int index, DXGI.Output output, IEnumerable<DXGI.ModeDescription1> modes)
+		public VideoOutputInfo(int index, DXGI.Output6 output, IEnumerable<DXGI.ModeDescription1> modes)
 		{
 			Index = index;
 			_desc = output.Description;
 			Name = _desc.DeviceName.Replace("\0", string.Empty);
+		    Rotation = (RotationMode)_desc.Rotation;
 			VideoModes = modes.Select(item => new GorgonVideoMode(item)).ToArray();
 		}
 		#endregion

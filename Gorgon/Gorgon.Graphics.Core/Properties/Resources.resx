@@ -121,7 +121,7 @@
     <value>Cannot update buffers with a usage of [Immutable] or [Dynamic].</value>
   </data>
   <data name="GORGFX_ERR_INVALID_OS" xml:space="preserve">
-    <value>The Gorgon Graphics interface requires Windows 10 (Build 15063) or greater.</value>
+    <value>The Gorgon Graphics interface requires Windows 10 Fall Creators Update (Build 16299) or greater.</value>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="Gorgon_2_x_Logo_Small" type="System.Resources.ResXFileRef, System.Windows.Forms">

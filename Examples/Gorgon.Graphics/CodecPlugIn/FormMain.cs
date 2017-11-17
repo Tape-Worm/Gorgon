@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 using DX = SharpDX;
@@ -213,12 +214,18 @@ namespace CodecPlugIn
 				}
 
 
-				// Set up the graphics interface.
-				IGorgonVideoDeviceList devices = new GorgonVideoDeviceList();
-				devices.Enumerate();
+                // Set up the graphics interface.
+                // Find out which devices we have installed in the system.
+                IReadOnlyList<IGorgonVideoAdapterInfo> deviceList = GorgonGraphics.EnumerateAdapters();
 
-				// 
-				_graphics = new GorgonGraphics(devices[0]);
+                if (deviceList.Count == 0)
+                {
+                    GorgonDialogs.ErrorBox(this, "There are no suitable video adapters available in the system. This example is unable to continue and will now exit.");
+                    GorgonApplication.Quit();
+                    return;
+                }
+
+                _graphics = new GorgonGraphics(deviceList[0]);
 
 	            _swap = new GorgonSwapChain("Codec Plugin SwapChain",
 	                                        _graphics,

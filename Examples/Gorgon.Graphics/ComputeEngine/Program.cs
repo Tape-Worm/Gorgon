@@ -170,20 +170,19 @@ namespace ComputeEngine
         private static void Initialize()
         {
             // We will need to access the graphics device in order to use compute functionality, so we'll use the first usable device in the system.
-            IGorgonVideoDeviceList devices = new GorgonVideoDeviceList();
+            // Find out which devices we have installed in the system.
+            IReadOnlyList<IGorgonVideoAdapterInfo> deviceList = GorgonGraphics.EnumerateAdapters();
 
             Console.WriteLine("Enumerating video devices...");
 
-            devices.Enumerate();
+            IGorgonVideoAdapterInfo firstDevice = deviceList.FirstOrDefault(item => item.SupportedFeatureLevel >= FeatureSet.Level_12_0);
 
-            IGorgonVideoAdapterInfo firstDevice = devices.FirstOrDefault(item => item.SupportedFeatureLevel >= FeatureLevelSupport.Level_11_0);
-
-            // If a device with a feature level of at least 11.0 not found, then we cannot run this example. The compute engine requires a minimum 
-            // of feature level 11.0 to run.
+            // If a device with a feature set of at least 12.0 not found, then we cannot run this example. The compute engine requires a minimum 
+            // of feature level 12.0 to run.
             if (firstDevice == null)
             {
                 Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine("No FeatureLevel 11.0 or better devices found in the system. This example requires a FeatureLevel 11.0 or better device.");
+                Console.WriteLine("No Level 12.0 or better adapters found in the system. This example requires a FeatureLevel 12.0 or better adapter.");
                 Console.ResetColor();
                 return;
             }

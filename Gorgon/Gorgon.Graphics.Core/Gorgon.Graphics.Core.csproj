@@ -120,11 +120,10 @@
     <Compile Include="Devices\_Interfaces\IGorgonVideoOutputInfo.cs" />
     <Compile Include="Devices\_Interfaces\IGorgonVideoAdapterInfo.cs" />
     <Compile Include="Devices\_Internal\VideoDeviceInfo.cs" />
-    <Compile Include="Devices\GorgonVideoDeviceList.cs" />
+    <Compile Include="Devices\_Internal\VideoAdapterEnumerator.cs" />
     <Compile Include="Devices\_Internal\VideoDevice.cs" />
     <Compile Include="Devices\_Internal\VideoOutputInfo.cs" />
     <Compile Include="Devices\_Interfaces\IGorgonVideoAdapter.cs" />
-    <Compile Include="Devices\_Interfaces\IGorgonVideoDeviceList.cs" />
     <Compile Include="Devices\_ValueTypes\GorgonVideoAdapterMemory.cs" />
     <Compile Include="Devices\_ValueTypes\GorgonVideoAdapterPciInfo.cs" />
     <Compile Include="Devices\_ValueTypes\GorgonVideoMemoryBudgetInfo.cs" />

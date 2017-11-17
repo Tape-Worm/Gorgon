@@ -295,7 +295,7 @@ namespace Gorgon.Graphics.Core
 				return;
 			}
 
-			if (Graphics.VideoDevice.RequestedFeatureLevel < FeatureLevelSupport.Level_11_0)
+			if (Graphics.VideoDevice.RequestedFeatureLevel < FeatureSet.Level_12_0)
 			{
 				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_UAV_REQUIRES_SM5);
 			}
@@ -350,7 +350,7 @@ namespace Gorgon.Graphics.Core
 			}
 
 			if ((!Info.MultisampleInfo.Equals(GorgonMultisampleInfo.NoMultiSampling))
-			    && (Graphics.VideoDevice.RequestedFeatureLevel < FeatureLevelSupport.Level_10_1))
+			    && (Graphics.VideoDevice.RequestedFeatureLevel < FeatureSet.Level_12_0))
 			{
 				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_DEPTHSTENCIL_MS_FL101);
 			}
@@ -431,7 +431,7 @@ namespace Gorgon.Graphics.Core
 
 			if ((Info.TextureType == TextureType.Texture2D) && (Info.IsCubeMap))
 			{
-				if ((Info.ArrayCount != 6) && (Graphics.VideoDevice.RequestedFeatureLevel == FeatureLevelSupport.Level_10_0))
+				if ((Info.ArrayCount != 6) && (Graphics.VideoDevice.RequestedFeatureLevel == FeatureSet.Level_12_0))
 				{
 					throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_TEXTURE_CUBE_REQUIRES_6_ARRAY);
 				}
@@ -915,7 +915,7 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="destTexture">The <see cref="GorgonTexture"/> that will receive a copy of this texture.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="destTexture"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the formats cannot be converted because they're not of the same group or the current video adapter has a feature level of <see cref="FeatureLevelSupport.Level_10_0"/>.
+		/// <exception cref="ArgumentException">Thrown when the formats cannot be converted because they're not of the same group or the current video adapter has a feature level of <see cref="FeatureSet.Level_12_0"/>.
 		/// <para>-or-</para>
 		/// <para>Thrown when the <see cref="IGorgonTextureInfo.MultisampleInfo"/>.<see cref="GorgonMultisampleInfo.Count"/> is not the same for the source <paramref name="destTexture"/> and this texture.</para>
 		/// <para>-or-</para>
@@ -937,8 +937,8 @@ namespace Gorgon.Graphics.Core
 		/// have a <see cref="IGorgonTextureInfo.Usage"/> of <c>Immutable.</c>. If these contraints are violated, then an exception will be thrown.
 		/// </para>
 		/// <para>
-		/// If the current video adapter has a feature level better than <see cref="FeatureLevelSupport.Level_10_0"/>, then limited format conversion will be performed if the two textures are within the same bit 
-		/// group (e.g. <c>R8G8B8A8_SInt</c> is convertible to <c>R8G8B8A8_UInt</c> and so on, since they are both R8G8B8A8). If the feature level is <see cref="FeatureLevelSupport.Level_10_0"/>, or the bit group 
+		/// If the current video adapter has a feature level better than <see cref="FeatureSet.Level_12_0"/>, then limited format conversion will be performed if the two textures are within the same bit 
+		/// group (e.g. <c>R8G8B8A8_SInt</c> is convertible to <c>R8G8B8A8_UInt</c> and so on, since they are both R8G8B8A8). If the feature level is <see cref="FeatureSet.Level_12_0"/>, or the bit group 
 		/// does not match, then an exception will be thrown.
 		/// </para>
 		/// <para>
@@ -972,7 +972,7 @@ namespace Gorgon.Graphics.Core
 
 			// If the format is different, then check to see if the format group is the same.
 			if ((destTexture.Info.Format != Info.Format) && ((destTexture.FormatInformation.Group != FormatInformation.Group) 
-				|| (Graphics.VideoDevice.RequestedFeatureLevel == FeatureLevelSupport.Level_10_0)))
+				|| (Graphics.VideoDevice.RequestedFeatureLevel == FeatureSet.Level_12_0)))
 			{
 				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TEXTURE_COPY_CANNOT_CONVERT, destTexture.Info.Format, Info.Format), nameof(destTexture));
 			}
@@ -999,7 +999,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="destArrayIndex">[Optional] The array index of the destination sub resource to copy into (for 1D/2D textures only).</param>
 		/// <param name="destMipLevel">[Optional] The mip map level of the destination sub resource to copy into.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the texture parameter is <b>null</b>.</exception>
-		/// <exception cref="NotSupportedException">Thrown when the formats cannot be converted because they're not of the same group or the current video adapter has a feature level of <see cref="FeatureLevelSupport.Level_10_0"/>.
+		/// <exception cref="NotSupportedException">Thrown when the formats cannot be converted because they're not of the same group or the current video adapter has a feature level of <see cref="FeatureSet.Level_12_0"/>.
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="sourceTexture"/> is the same as this texture, and the <paramref name="sourceArrayIndex"/>, <paramref name="destArrayIndex"/>, <paramref name="sourceMipLevel"/> and the <paramref name="destMipLevel"/> 
 		/// specified are pointing to the same subresource.</para>
@@ -1014,8 +1014,8 @@ namespace Gorgon.Graphics.Core
 		/// supported by this method. If the entire texture needs to be copied, then use the <see cref="CopyTo"/> method.
 		/// </para>
 		/// <para>
-		/// If the current video adapter has a feature level better than <see cref="FeatureLevelSupport.Level_10_0"/>, then limited format conversion will be performed if the two textures are within the same bit 
-		/// group (e.g. <c>R8G8B8A8_SInt</c> is convertible to <c>R8G8B8A8_UInt</c> and so on, since they are both R8G8B8A8). If the feature level is <see cref="FeatureLevelSupport.Level_10_0"/>, or the bit group 
+		/// If the current video adapter has a feature level better than <see cref="FeatureSet.Level_12_0"/>, then limited format conversion will be performed if the two textures are within the same bit 
+		/// group (e.g. <c>R8G8B8A8_SInt</c> is convertible to <c>R8G8B8A8_UInt</c> and so on, since they are both R8G8B8A8). If the feature level is <see cref="FeatureSet.Level_12_0"/>, or the bit group 
 		/// does not match, then an exception will be thrown.
 		/// </para>
 		/// <para>
@@ -1086,7 +1086,7 @@ namespace Gorgon.Graphics.Core
 			// If the format is different, then check to see if the format group is the same.
 			if ((sourceTexture.Info.Format != Info.Format)
 				&& ((sourceTexture.FormatInformation.Group != FormatInformation.Group)
-					|| (Graphics.VideoDevice.RequestedFeatureLevel == FeatureLevelSupport.Level_10_0)))
+					|| (Graphics.VideoDevice.RequestedFeatureLevel == FeatureSet.Level_12_0)))
 			{
 				throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_TEXTURE_COPY_CANNOT_CONVERT, sourceTexture.Info.Format, Info.Format));
 			}
@@ -1677,7 +1677,7 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public GorgonTextureUav GetUnorderedAccessView(BufferFormat format = BufferFormat.Unknown, int firstMipLevel = 0, int arrayOrDepthIndex = 0, int arrayOrDepthCount = 0)
 	    {
-	        if (Graphics.VideoDevice.RequestedFeatureLevel < FeatureLevelSupport.Level_11_0)
+	        if (Graphics.VideoDevice.RequestedFeatureLevel < FeatureSet.Level_12_0)
 	        {
 	            throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_UAV_REQUIRES_SM5);
 	        }
@@ -1767,9 +1767,9 @@ namespace Gorgon.Graphics.Core
 	            throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_VIEW_DEPTH_STENCIL_NO_3D);
 	        }
 
-	        if ((flags != D3D11.DepthStencilViewFlags.None) && (Graphics.VideoDevice.RequestedFeatureLevel < FeatureLevelSupport.Level_11_0))
+	        if ((flags != D3D11.DepthStencilViewFlags.None) && (Graphics.VideoDevice.RequestedFeatureLevel < FeatureSet.Level_12_0))
 	        {
-	            throw new ArgumentException(string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureLevelSupport.Level_11_0), nameof(flags));
+	            throw new ArgumentException(string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureSet.Level_12_0), nameof(flags));
 	        }
 
 	        if (format == BufferFormat.Unknown)

@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -409,8 +410,13 @@ namespace Gorgon.Graphics.Example
 			GorgonGraphics graphics = null;
 
 			// Find out which devices we have installed in the system.
-			IGorgonVideoDeviceList deviceList = new GorgonVideoDeviceList();
-			deviceList.Enumerate();
+			IReadOnlyList<IGorgonVideoAdapterInfo> deviceList = GorgonGraphics.EnumerateAdapters();
+
+		    if (deviceList.Count == 0)
+		    {
+		        GorgonDialogs.ErrorBox(_mainForm, "There are no suitable video adapters available in the system. This example is unable to continue and will now exit.");
+		        return null;
+		    }
 
 			int selectedDeviceIndex = 0;
 			IGorgonVideoAdapter selectedDevice = null;

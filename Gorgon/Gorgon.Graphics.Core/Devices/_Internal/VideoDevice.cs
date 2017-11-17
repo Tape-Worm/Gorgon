@@ -71,41 +71,15 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         public int MaxTextureArrayCount => 2048;
 
-        /// <summary>
-		/// Property to return the maximum width of a 1D or 2D texture.
-		/// </summary>
-		public int MaxTextureWidth
-		{
-			get
-			{
-				switch (RequestedFeatureLevel)
-				{
-					case FeatureLevelSupport.Level_10_1:
-					case FeatureLevelSupport.Level_10_0:
-						return 8192;
-					default:
-						return 16384;
-				}
-			}
-		}
+	    /// <summary>
+	    /// Property to return the maximum width of a 1D or 2D texture.
+	    /// </summary>
+	    public int MaxTextureWidth => 16384;
 
-		/// <summary>
-		/// Property to return the maximum height of a 2D texture.
-		/// </summary>
-		public int MaxTextureHeight
-		{
-			get
-			{
-				switch (RequestedFeatureLevel)
-				{
-					case FeatureLevelSupport.Level_10_1:
-					case FeatureLevelSupport.Level_10_0:
-						return 8192;
-					default:
-						return 16384;
-				}
-			}
-		}
+	    /// <summary>
+	    /// Property to return the maximum height of a 2D texture.
+	    /// </summary>
+	    public int MaxTextureHeight => 16384;
 
 		/// <summary>
 		/// Property to return the maximum width of a 3D texture.
@@ -126,10 +100,10 @@ namespace Gorgon.Graphics.Core
 		/// Property to return the maximum size, in bytes, for a constant buffer.
 		/// </summary>
 		/// <remarks>
-		/// On devices with a a <see cref="FeatureLevelSupport"/> of <see cref="FeatureLevelSupport.Level_11_1"/>, this value will return <see cref="int.MaxValue"/>, indicating that there is no limit to the size of a 
+		/// On devices with a a <see cref="FeatureSet"/> of <see cref="FeatureSet.Level_12_0"/>, this value will return <see cref="int.MaxValue"/>, indicating that there is no limit to the size of a 
 		/// constant buffer. On devices with a lower feature level this value is limited to 65536 (4096 * 16) bytes.
 		/// </remarks>
-		public int MaxConstantBufferSize => RequestedFeatureLevel < FeatureLevelSupport.Level_11_1 ? int.MaxValue : 65536;
+		public int MaxConstantBufferSize => RequestedFeatureLevel < FeatureSet.Level_12_0 ? int.MaxValue : 65536;
 
 	    /// <summary>
 	    /// Property to return the maximum number of allowed scissor rectangles.
@@ -150,11 +124,11 @@ namespace Gorgon.Graphics.Core
 		}
 
 		/// <summary>
-		/// Property to return the actual supported <see cref="FeatureLevelSupport"/> from the device.
+		/// Property to return the actual supported <see cref="FeatureSet"/> from the device.
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// A user may request a lower <see cref="FeatureLevelSupport"/> than what is supported by the device to allow the application to run on older video adapters that lack support for newer functionality. 
+		/// A user may request a lower <see cref="FeatureSet"/> than what is supported by the device to allow the application to run on older video adapters that lack support for newer functionality. 
 		/// This requested feature level will be returned by this property if supported by the device. 
 		/// </para>
 		/// <para>
@@ -162,8 +136,8 @@ namespace Gorgon.Graphics.Core
 		/// (indicated by the <see cref="VideoDeviceInfo.SupportedFeatureLevel"/> property in the <see cref="IGorgonVideoAdapter.Info"/> property) will be returned.
 		/// </para>
 		/// </remarks>
-		/// <seealso cref="FeatureLevelSupport"/>
-		public FeatureLevelSupport RequestedFeatureLevel
+		/// <seealso cref="FeatureSet"/>
+		public FeatureSet RequestedFeatureLevel
 		{
 			get;
 			private set;
@@ -273,7 +247,7 @@ namespace Gorgon.Graphics.Core
 				}
 
 				// Get the maximum supported feature level for this device.
-				RequestedFeatureLevel = (FeatureLevelSupport)_device.FeatureLevel;
+				RequestedFeatureLevel = (FeatureSet)_device.FeatureLevel;
 
 				_log.Print($"Direct 3D 11.1 device created for video adapter '{Info.Name}' at feature level [{RequestedFeatureLevel}]", LoggingLevel.Simple);
 			}
@@ -327,7 +301,7 @@ namespace Gorgon.Graphics.Core
 		/// </remarks>
 		public D3D11.ComputeShaderFormatSupport GetBufferFormatComputeSupport(BufferFormat format)
 		{
-			return RequestedFeatureLevel < FeatureLevelSupport.Level_11_0 ? D3D11.ComputeShaderFormatSupport.None : _device.CheckComputeShaderFormatSupport((DXGI.Format)format);
+			return RequestedFeatureLevel < FeatureSet.Level_12_0 ? D3D11.ComputeShaderFormatSupport.None : _device.CheckComputeShaderFormatSupport((DXGI.Format)format);
 		}
 
 		/// <summary>
@@ -497,7 +471,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="deviceInfo">A <see cref="VideoDeviceInfo"/> containing information about which video adapter to use.</param>
 		/// <param name="requestedFeatureLevel">The desired feature level for the device.</param>
 		/// <param name="log">A <see cref="IGorgonLog"/> used for logging debug output.</param>
-		public VideoDevice(IGorgonVideoAdapterInfo deviceInfo, FeatureLevelSupport requestedFeatureLevel, IGorgonLog log)
+		public VideoDevice(IGorgonVideoAdapterInfo deviceInfo, FeatureSet requestedFeatureLevel, IGorgonLog log)
 		{
 			_log = log ?? GorgonLogDummy.DefaultInstance;
 			Info = deviceInfo;

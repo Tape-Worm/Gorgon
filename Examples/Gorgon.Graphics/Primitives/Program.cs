@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
@@ -532,10 +533,15 @@ namespace Gorgon.Graphics.Example
 		{
 			_form = new FormMain();
 
-		    GorgonVideoDeviceList devices = new GorgonVideoDeviceList();
-            devices.Enumerate();
+		    // Find out which devices we have installed in the system.
+		    IReadOnlyList<IGorgonVideoAdapterInfo> deviceList = GorgonGraphics.EnumerateAdapters();
 
-            _graphics = new GorgonGraphics(devices[0]);
+		    if (deviceList.Count == 0)
+		    {
+                throw new NotSupportedException("There are no suitable video adapters available in the system. This example is unable to continue and will now exit.");
+		    }
+
+            _graphics = new GorgonGraphics(deviceList[0]);
 		    _renderer = new SimpleRenderer(_graphics);
 
             _swapChain = new GorgonSwapChain("Swap",

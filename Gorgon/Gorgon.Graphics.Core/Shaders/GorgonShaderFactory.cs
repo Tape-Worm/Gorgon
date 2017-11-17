@@ -99,22 +99,22 @@ namespace Gorgon.Graphics.Core
 		/// <param name="featureLevel">The feature level used to determine the profile.</param>
 		/// <param name="shaderType">The type of shader.</param>
 		/// <returns>A string containing the profile information.</returns>
-		private static string GetProfile(FeatureLevelSupport featureLevel, ShaderType shaderType)
+		private static string GetProfile(FeatureSet featureLevel, ShaderType shaderType)
 		{
 			string prefix;
 
 			if (((shaderType == ShaderType.Compute)
 			     || (shaderType == ShaderType.Domain)
 			     || (shaderType == ShaderType.Hull))
-			    && (featureLevel < FeatureLevelSupport.Level_11_0))
+			    && (featureLevel < FeatureSet.Level_12_0))
 			{
-				throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureLevelSupport.Level_11_0));
+				throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureSet.Level_12_0));
 			}
 
 			if ((shaderType == ShaderType.Geometry)
-				&& ((featureLevel < FeatureLevelSupport.Level_10_0)))
+				&& ((featureLevel < FeatureSet.Level_12_0)))
 			{
-				throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureLevelSupport.Level_10_0));
+				throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureSet.Level_12_0));
 			}
 
 			switch (shaderType)
@@ -141,15 +141,7 @@ namespace Gorgon.Graphics.Core
 					throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_SHADER_UNKNOWN_TYPE, shaderType));
 			}
 
-			switch (featureLevel)
-			{
-				case FeatureLevelSupport.Level_10_0:
-					return prefix + "_4_0";
-				case FeatureLevelSupport.Level_10_1:
-					return prefix + "_4_1";
-				default:
-					return prefix + "_5_0";
-			}
+		    return prefix + "_5_1";
 		}
 
 		/// <summary>
@@ -495,7 +487,7 @@ namespace Gorgon.Graphics.Core
 			// Get shader flags based on our feature level and whether we want debug info or not.
 			D3DCompiler.ShaderFlags flags = debug ? D3DCompiler.ShaderFlags.Debug : D3DCompiler.ShaderFlags.OptimizationLevel3;
 
-			if (videoDevice.RequestedFeatureLevel < FeatureLevelSupport.Level_11_0)
+			if (videoDevice.RequestedFeatureLevel < FeatureSet.Level_12_0)
 			{
 				flags |= D3DCompiler.ShaderFlags.EnableBackwardsCompatibility;
 			}

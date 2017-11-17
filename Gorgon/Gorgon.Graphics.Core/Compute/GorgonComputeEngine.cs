@@ -403,9 +403,9 @@ namespace Gorgon.Graphics.Core
                 throw new ArgumentNullException(nameof(graphics));
             }
 
-            if (graphics.VideoDevice.RequestedFeatureLevel < FeatureLevelSupport.Level_11_0)
+            if (graphics.VideoDevice.RequestedFeatureLevel < FeatureSet.Level_12_0)
             {
-                throw new ArgumentException(string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureLevelSupport.Level_11_0));
+                throw new ArgumentException(string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureSet.Level_12_0));
             }
 
             _log = log ?? GorgonLogDummy.DefaultInstance;

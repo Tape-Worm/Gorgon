@@ -25,8 +25,8 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Windows.Forms;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -35,6 +35,7 @@ using Gorgon.Graphics.Example.Properties;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.UI;
+using System.Linq;
 
 namespace SobelComputeEngine
 {
@@ -205,10 +206,17 @@ namespace SobelComputeEngine
 
             try
             {
-                IGorgonVideoDeviceList videoDevices = new GorgonVideoDeviceList();
-                videoDevices.Enumerate();
+                // Find out which devices we have installed in the system.
+                IReadOnlyList<IGorgonVideoAdapterInfo> deviceList = GorgonGraphics.EnumerateAdapters();
 
-                IGorgonVideoAdapterInfo videoDeviceInfo = videoDevices.FirstOrDefault(item => item.SupportedFeatureLevel >= FeatureLevelSupport.Level_11_0);
+                if (deviceList.Count == 0)
+                {
+                    GorgonDialogs.ErrorBox(this, "There are no suitable video adapters available in the system. This example is unable to continue and will now exit.");
+                    GorgonApplication.Quit();
+                    return;
+                }
+
+                IGorgonVideoAdapterInfo videoDeviceInfo = deviceList.FirstOrDefault(item => item.SupportedFeatureLevel >= FeatureSet.Level_12_0);
 
                 // Do not allow us to continue further if we don't have a device capable of supporting the compute functionality.
                 if (videoDeviceInfo == null)

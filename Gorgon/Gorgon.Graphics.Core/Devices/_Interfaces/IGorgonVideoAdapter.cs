@@ -117,11 +117,11 @@ namespace Gorgon.Graphics.Core
 		}
 
 		/// <summary>
-		/// Property to return the supported <see cref="FeatureLevelSupport"/> for the device.
+		/// Property to return the supported <see cref="FeatureSet"/> for the device.
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// A user may request a lower <see cref="FeatureLevelSupport"/> than what is supported by the device to allow the application to run on older video adapters that lack support for newer functionality. 
+		/// A user may request a lower <see cref="FeatureSet"/> than what is supported by the device to allow the application to run on older video adapters that lack support for newer functionality. 
 		/// This requested feature level will be returned by this property if supported by the device. 
 		/// </para>
 		/// <para>
@@ -129,8 +129,8 @@ namespace Gorgon.Graphics.Core
 		/// (indicated by the <see cref="VideoDeviceInfo.SupportedFeatureLevel"/> property in the <see cref="Info"/> property) will be returned.
 		/// </para>
 		/// </remarks>
-		/// <seealso cref="FeatureLevelSupport"/>
-		FeatureLevelSupport RequestedFeatureLevel
+		/// <seealso cref="FeatureSet"/>
+		FeatureSet RequestedFeatureLevel
 		{
 			get;
 		}

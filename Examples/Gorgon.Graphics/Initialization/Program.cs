@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using Gorgon.Core;
@@ -190,21 +191,25 @@ namespace Gorgon.Graphics.Example
 			_mainForm.Location = new Point(Screen.PrimaryScreen.WorkingArea.Width / 2 - _mainForm.Width / 2,
 				Screen.PrimaryScreen.WorkingArea.Height / 2 - _mainForm.Height / 2);
 
-			// First we create and enumerate the list of video devices installed in the computer.
-			// We must do this in order to tell Gorgon which video device we intend to use. Note that this method may be quite slow (particularly when running DEBUG versions of 
-			// Direct 3D). To counter this, this object and its Enumerate method are thread safe so this can be run in the background while keeping the main UI responsive.
-			IGorgonVideoDeviceList devices = new GorgonVideoDeviceList();
+		    // First we create and enumerate the list of video devices installed in the computer.
+		    // We must do this in order to tell Gorgon which video device we intend to use. Note that this method may be quite slow (particularly when running DEBUG versions of 
+		    // Direct 3D). To counter this, this object and its Enumerate method are thread safe so this can be run in the background while keeping the main UI responsive.
+		    // Find out which devices we have installed in the system.
 
-			// If no suitable device was found (no Direct 3D 11.1 support) in the computer, this method will throw an exception. However, if it succeeds, then the devices object 
-			// will be populated with the IGorgonVideoDeviceInfo for each video device in the system.
-			//
-			// Using this method, we could also enumerate the WARP software rasterizer, and/of the D3D Reference device (only if the DEBUG functionality provided by the Windows 
-			// SDK is installed). These devices are typically used to determine if there's a driver error, and can be terribly slow to render (reference moreso than WARP). It is 
-			// recommended that these only be used in diagnostic scenarios only.
-			devices.Enumerate();
+		    // If no suitable device was found (no Direct 3D 12.0 support) in the computer, this method will throw an exception. However, if it succeeds, then the devices object 
+		    // will be populated with the IGorgonVideoDeviceInfo for each video device in the system.
+		    //
+		    // Using this method, we could also enumerate the software rasterizer. These devices are typically used to determine if there's a driver error, and can be terribly slow to render 
+		    // It is recommended that these only be used in diagnostic scenarios only.
+		    IReadOnlyList<IGorgonVideoAdapterInfo> deviceList = GorgonGraphics.EnumerateAdapters();
 
-			// Now we create the main graphics interface with the first applicable video device.
-			_graphics = new GorgonGraphics(devices[0]);
+		    if (deviceList.Count == 0)
+		    {
+		        throw new NotSupportedException("There are no suitable video adapters available in the system. This example is unable to continue and will now exit.");
+		    }
+
+            // Now we create the main graphics interface with the first applicable video device.
+            _graphics = new GorgonGraphics(deviceList[0]);
 
 			// Check to ensure that we can support the format required for our swap chain.
 			// If a video device can't support this format, then the odds are good it won't render anything. Since we're asking for a very common display format, this will 

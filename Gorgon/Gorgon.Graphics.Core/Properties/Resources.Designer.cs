@@ -462,7 +462,7 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The Gorgon Graphics interface requires Windows 10 (Build 15063) or greater..
+        ///   Looks up a localized string similar to The Gorgon Graphics interface requires Windows 10 Fall Creators Update (Build 16299) or greater..
         /// </summary>
         internal static string GORGFX_ERR_INVALID_OS {
             get {

@@ -31,12 +31,12 @@ using Gorgon.Core;
 namespace Gorgon.Graphics.Core
 {
 	/// <summary>
-	/// Defines the level of support for functionality for a video adapter.
+	/// Defines the level of support for functionality for a <see cref="IGorgonVideoAdapter"/>.
 	/// </summary>
 	/// <remarks>
 	/// <para>
-	/// A feature level is used to describe what functionality a video adapter can support when using Direct 3D. For example, shader model 5 shaders are only supported by devices that support Direct 3D 11.0
-	/// or greater, and this will be reflected by a value of <see cref="Level_11_0"/> or <see cref="Level_11_1"/>.
+	/// A feature level is used to describe what functionality a video adapter can support when using Direct 3D. For example, shader model 5 shaders are only supported by devices that support Direct 3D 12.0
+	/// or greater, and this will be reflected by a value of <see cref="Level_12_0"/>, or <see cref="Level_12_1"/>.
 	/// </para>
 	/// <para>
 	/// Feature levels do not necessarily mean the hardware is limited, it may be that a device does not support a feature because the current driver does not expose that functionality. 
@@ -45,31 +45,23 @@ namespace Gorgon.Graphics.Core
 	/// Applications can use this to define a minimum supported video adapter, or take an alternate code (potentially slower) path to achieve the same result.
 	/// </para>
 	/// </remarks>
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue", Justification = "If we don't have one of these values, Gorgon will not execute.")]
-	public enum FeatureLevelSupport
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue")]
+	public enum FeatureSet
 	{
-		/// <summary>
-		/// Device supports Direct 3D 10.0 functionality.
-		/// </summary>
-		Level_10_0 = D3D.FeatureLevel.Level_10_0,
-		/// <summary>
-		/// Device supports Direct 3D 10.1 functionality.
-		/// </summary>
-		Level_10_1 = D3D.FeatureLevel.Level_10_1,
-		/// <summary>
-		/// Device supports Direct 3D 11.0 functionality.
-		/// </summary>
-		Level_11_0 = D3D.FeatureLevel.Level_11_0,
-		/// <summary>
-		/// Device supports Direct 3D 11.1 functionality.
-		/// </summary>
-		Level_11_1 = D3D.FeatureLevel.Level_11_1
-	}
+	    /// <summary>
+	    /// Device supports the equivalent of Direct 3D 12.0 functionality.
+	    /// </summary>
+	    Level_12_0 = D3D.FeatureLevel.Level_12_0,
+	    /// <summary>
+	    /// Device supports the equivalent of Direct 3D 12.1 functionality.
+	    /// </summary>
+	    Level_12_1 = D3D.FeatureLevel.Level_12_1,
+    }
 
-	/// <summary>
-	/// Defines the type of video adapter.
-	/// </summary>
-	public enum VideoDeviceType
+    /// <summary>
+    /// Defines the type of video adapter.
+    /// </summary>
+    public enum VideoDeviceType
 	{
 		/// <summary>
 		/// Hardware video adapter.
@@ -98,7 +90,7 @@ namespace Gorgon.Graphics.Core
 		: IGorgonNamedObject
 	{
 		/// <summary>
-		/// Property to return the index of the video adapter within a <see cref="GorgonVideoDeviceList"/>.
+		/// Property to return the index of the video adapter within a list returned by <see cref="GorgonGraphics.EnumerateAdapters"/>.
 		/// </summary>
 		int Index
 		{
@@ -116,7 +108,7 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Property to return the highest feature level that the hardware can support.
 		/// </summary>
-		FeatureLevelSupport SupportedFeatureLevel
+		FeatureSet SupportedFeatureLevel
 		{
 			get;
 		}

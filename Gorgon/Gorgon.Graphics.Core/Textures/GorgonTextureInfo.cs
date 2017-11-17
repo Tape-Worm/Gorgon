@@ -113,7 +113,7 @@ namespace Gorgon.Graphics.Core
 		/// For textures that have a <see cref="TextureType"/> of <see cref="Core.TextureType.Texture3D"/>, this value is ignored.
 		/// </para>
 		/// <para>
-		/// For video adapters with a feature level of <see cref="FeatureLevelSupport.Level_10_0"/>, there can only be a single cube map and thus this value must be set to 6 when creating a cube map texture.
+		/// For video adapters with a feature level of <see cref="FeatureSet.Level_12_0"/>, there can only be a single cube map and thus this value must be set to 6 when creating a cube map texture.
 		/// </para>
 		/// <para>
 		/// This value is defaulted to 1.
@@ -134,7 +134,7 @@ namespace Gorgon.Graphics.Core
 		/// must be a multiple of 6. If it is not, then the array count will be adjusted to meet the requirement.
 		/// </para>
 		/// <para>
-		/// For video adapters with a feature level of <see cref="FeatureLevelSupport.Level_10_0"/>, there can only be a single cube map and thus <see cref="ArrayCount"/> must be set to 6 when creating a cube map 
+		/// For video adapters with a feature level of <see cref="FeatureSet.Level_12_0"/>, there can only be a single cube map and thus <see cref="ArrayCount"/> must be set to 6 when creating a cube map 
 		/// texture.
 		/// </para>
 		/// <para>

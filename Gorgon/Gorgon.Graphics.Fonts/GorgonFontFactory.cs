@@ -291,7 +291,7 @@ namespace Gorgon.Graphics.Fonts
 		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.
 		/// <para>-or-</para>
 		/// <para>Thrown when the <see cref="IGorgonFontInfo.TextureWidth"/> or <see cref="IGorgonFontInfo.TextureHeight"/> parameters exceed the <see cref="IGorgonVideoAdapter.MaxTextureWidth"/> or 
-		/// <see cref="IGorgonVideoAdapter.MaxTextureHeight"/> available for the current <see cref="FeatureLevelSupport"/>.</para>
+		/// <see cref="IGorgonVideoAdapter.MaxTextureHeight"/> available for the current <see cref="FeatureSet"/>.</para>
 		/// <para>-or-</para>
 		/// <para>Thrown if the <see cref="IGorgonFontInfo.Characters"/> list does not contain the <see cref="IGorgonFontInfo.DefaultCharacter"/> character.</para>
 		/// </exception>

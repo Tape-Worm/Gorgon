@@ -230,7 +230,7 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public GorgonVertexBufferUav GetUnorderedAccessView(BufferFormat format, int startElement = 0, int elementCount = 0)
 	    {
-	        if (Graphics.VideoDevice.RequestedFeatureLevel < FeatureLevelSupport.Level_11_0)
+	        if (Graphics.VideoDevice.RequestedFeatureLevel < FeatureSet.Level_12_0)
 	        {
 	            throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_UAV_REQUIRES_SM5);
 	        }
