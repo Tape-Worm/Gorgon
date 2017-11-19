@@ -523,14 +523,6 @@ namespace Gorgon.Graphics.Core
         /// by the <see cref="GorgonUnorderedAccessView"/> at that slot. Conversely, if there is an unordered access view bound to a specific slot, and a render target is assigned to that slot, then the 
         /// unordered access view will be unbound.
         /// </para>
-        /// <para>
-        /// <note type="information">
-        /// <para>
-        /// These views require a feature set of <c>Level_11_0</c> or better. For devices that support a feature set of <c>Level_11_1</c>, these views can be accessed from any shader stage. However, on 
-        /// devices with only <c>Level_11_0</c> support, only the pixel and compute shaders can access unordered access views.
-        /// </para>
-        /// </note>
-        /// </para>
         /// </remarks>
 	    public GorgonUavBindings UnorderedAccessViews
 	    {
@@ -540,15 +532,6 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Property to return the vertex shader samplers to bind to the pipeline.
 		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// <note type="important">
-		/// <para>
-		/// This only applies to an <see cref="IGorgonVideoAdapter"/> that has a <see cref="IGorgonVideoAdapter.RequestedFeatureLevel"/> of <c>Level_11_0</c> or better.
-		/// </para>
-		/// </note>
-		/// </para>
-		/// </remarks>
 		public GorgonSamplerStates VertexShaderSamplers
 		{
 			get;

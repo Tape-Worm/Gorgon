@@ -197,7 +197,7 @@ namespace Gorgon.Graphics.Core
         /// <para>-or-</para>
         /// <para>Thrown when this buffer does not have a <see cref="VertexIndexBufferBinding"/> of <see cref="VertexIndexBufferBinding.UnorderedAccess"/>.</para>
         /// <para>-or-</para>
-        /// <para>Thrown when this buffer has a usage of <c>Staging</c>.</para>
+        /// <para>Thrown when this buffer has a usage of <see cref="ResourceUsage.Staging"/>.</para>
         /// <para>-or-</para>
         /// <para>Thrown when the <paramref name="format"/> is typeless or is not a supported format for unordered access views.</para>
         /// </exception>

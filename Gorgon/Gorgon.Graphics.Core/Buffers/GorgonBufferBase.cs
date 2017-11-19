@@ -329,9 +329,9 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="mode">The type of access to the buffer data.</param>
         /// <returns>A <see cref="GorgonPointerAlias"/> used to read or write the data in the buffer.</returns>
-        /// <exception cref="NotSupportedException">Thrown when if buffer does not have a usage of <c>Dynamic</c> or <c>Staging</c>.
+        /// <exception cref="NotSupportedException">Thrown when if buffer does not have a usage of <see cref="ResourceUsage.Dynamic"/> or <see cref="ResourceUsage.Staging"/>.
         /// <para>-or-</para>
-        /// <para>Thrown when if buffer does not have a usage of <c>Staging</c>, and the <paramref name="mode"/> is set to <c>Read</c> or <c>ReadWrite</c>.</para>
+        /// <para>Thrown when if buffer does not have a usage of <see cref="ResourceUsage.Staging"/>, and the <paramref name="mode"/> is set to <see cref="MapMode.Read"/> or <see cref="MapMode.ReadWrite"/>.</para>
         /// </exception>
         /// <exception cref="InvalidOperationException">Thrown when the buffer is already locked.</exception>
         /// <remarks>
@@ -341,18 +341,18 @@ namespace Gorgon.Graphics.Core
         /// </para>
         /// <para>
         /// Unlike the <see cref="O:Gorgon.Graphics.GorgonBufferCommon.Update{T}">Update&lt;T&gt;</see> methods, this allows the CPU to change portions of the buffer every frame with little performance 
-        /// penalty (this, of course, is dependent upon drivers, hardware, etc...). It also allows reading from the buffer if it was created with a usage of <c>Staging</c>.
+        /// penalty (this, of course, is dependent upon drivers, hardware, etc...). It also allows reading from the buffer if it was created with a usage of <see cref="ResourceUsage.Staging"/>.
         /// </para>
         /// <para>
         /// When the lock method returns, it returns a <see cref="GorgonPointerAlias"/> containing a pointer to the CPU memory that contains the buffer data. Applications can use this to access the 
         /// buffer data.
         /// </para>
         /// <para>
-        /// The lock access is affected by the <paramref name="mode"/> parameter. A value of <c>Read</c> or <c>ReadWrite</c> will allow read access to the buffer data but only if the buffer has a 
-        /// usage of <c>Staging</c>. Applications can use one of the <c>Write</c> flags to write to the buffer. For <c>Dynamic</c> buffers, it is ideal to use 
-        /// <c>WriteNoOverwrite</c> to inform the GPU that you will not be overwriting parts of the buffer still being used for rendering by the GPU. If this cannot be guaranteed (for example, writing to 
-        /// the beginning of the buffer at the start of a frame), then applications should use the <c>WriteDiscard</c> to instruct the GPU that the contents of the buffer are now invalidated and it will be 
-        /// refreshed with new data entirely.
+        /// The lock access is affected by the <paramref name="mode"/> parameter. A value of <see cref="MapMode.Read"/> or <see cref="MapMode.ReadWrite"/> will allow read access to the buffer data but only 
+        /// if the buffer has a usage of <see cref="ResourceUsage.Staging"/>. Applications can use one of the <see cref="MapMode.Write"/> flags to write to the buffer. For <see cref="ResourceUsage.Dynamic"/> 
+        /// buffers, it is ideal to use <see cref="MapMode.WriteNoOverwrite"/> to inform the GPU that you will not be overwriting parts of the buffer still being used for rendering by the GPU. If this cannot 
+        /// be guaranteed (for example, writing to the beginning of the buffer at the start of a frame), then applications should use the <see cref="MapMode.WriteDiscard"/> to instruct the GPU that the 
+        /// contents of the buffer are now invalidated and it will be refreshed with new data entirely.
         /// </para>
         /// <para>
         /// <note type="important">
@@ -370,6 +370,8 @@ namespace Gorgon.Graphics.Core
         /// </note>
         /// </para>
         /// </remarks>
+        /// <seealso cref="ResourceUsage"/>
+        /// <seealso cref="MapMode"/>
         public GorgonPointerAlias Lock(MapMode mode)
         {
 #if DEBUG
@@ -417,14 +419,14 @@ namespace Gorgon.Graphics.Core
         /// <para>-or-</para>
         /// <para>Thrown when the <paramref name="destOffset"/> plus the <paramref name="byteCount"/> is less than 0 or larger than the size of the destination <paramref name="buffer"/>.</para>
         /// </exception>
-        /// <exception cref="GorgonException">Thrown when <paramref name="buffer"/> has a resource usage of <c>Immutable</c>.</exception>
+        /// <exception cref="GorgonException">Thrown when <paramref name="buffer"/> has a resource usage of <see cref="ResourceUsage.Immutable"/>.</exception>
         /// <remarks>
         /// <para>
         /// Use this method to copy the contents of this buffer into another.
         /// </para> 
         /// <para>
         /// The source and destination buffer offsets must fit within their range of their allocated space, as must the <paramref name="byteCount"/>. Otherwise, an exception will be thrown. Also, the 
-        /// destination buffer must not be <c>Immutable</c>.
+        /// destination buffer must not be <see cref="ResourceUsage.Immutable"/>.
         /// </para>
         /// <para>
         /// <note type="warning">

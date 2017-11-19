@@ -465,8 +465,8 @@ namespace Gorgon.Graphics.Imaging
 		/// Because this method uses WIC, not all formats will be convertible. To determine if a format can be converted, use the <see cref="GorgonImage.CanConvertToFormat"/> method. 
 		/// </para>
 		/// <para>
-		/// For the <c>B4G4R4A4_UNorm</c> format, Gorgon has to perform a manual conversion since that format is not supported by WIC. Because of this, the <paramref name="dithering"/> flag will be ignored when 
-		/// downsampling to that format.
+		/// For the <see cref="BufferFormat.B4G4R4A4_UNorm"/> format, Gorgon has to perform a manual conversion since that format is not supported by WIC. Because of this, the 
+		/// <paramref name="dithering"/> flag will be ignored when downsampling to that format.
 		/// </para>
 		/// </remarks>
 		public static IGorgonImage ConvertToFormat(this IGorgonImage baseImage, BufferFormat format, ImageDithering dithering = ImageDithering.None)

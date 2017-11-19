@@ -201,14 +201,14 @@ namespace Gorgon.Graphics.Core
         /// <param name="data">The data used to populate the buffer.</param>
         /// <exception cref="ArgumentException">Thrown if the type specified by <typeparamref name="T"/> is not safe to use in a native memory operation.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the size, in bytes, of the <paramref name="data"/> parameter is larger than the total <see cref="IGorgonConstantBufferInfo.SizeInBytes"/> of the buffer.</exception>
-        /// <exception cref="NotSupportedException">Thrown when the <see cref="IGorgonConstantBufferInfo.Usage"/> is either <c>Immutable</c> or <c>Dynamic</c>.</exception>
+        /// <exception cref="NotSupportedException">Thrown when the <see cref="IGorgonConstantBufferInfo.Usage"/> is either <see cref="ResourceUsage.Immutable"/> or <see cref="ResourceUsage.Dynamic"/>.</exception>
         /// <remarks>
         /// <para>
         /// Use this method to send a value type (<c>struct</c>) or primitive value to the buffer. This passes <paramref name="data"/> by value, and is suitable for small items of data like primitive 
         /// values and small structs. If larger values need to be passed, call the <see cref="Update{T}(ref T)"/> method.
         /// </para>
 	    /// <para>
-        /// This method will throw an exception when the buffer is created with a <see cref="IGorgonConstantBufferInfo.Usage"/> of <c>Immutable</c> or <c>Dynamic</c>.
+        /// This method will throw an exception when the buffer is created with a <see cref="IGorgonConstantBufferInfo.Usage"/> of <see cref="ResourceUsage.Immutable"/> or <see cref="ResourceUsage.Dynamic"/>.
         /// </para>
         /// <para>
         /// When sending a value type to the buffer the data must be a primitive type with no complex members (i.e. members must be value types or primitive types). Furthermore, the value type and any 
@@ -236,13 +236,13 @@ namespace Gorgon.Graphics.Core
         /// <param name="data">The data used to populate the buffer.</param>
         /// <exception cref="ArgumentException">Thrown if the type specified by <typeparamref name="T"/> is not safe to use in a native memory operation.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the size, in bytes, of the <paramref name="data"/> parameter is larger than the total <see cref="IGorgonConstantBufferInfo.SizeInBytes"/> of the buffer.</exception>
-        /// <exception cref="NotSupportedException">Thrown when the <see cref="IGorgonConstantBufferInfo.Usage"/> is either <c>Immutable</c> or <c>Dynamic</c>.</exception>
+        /// <exception cref="NotSupportedException">Thrown when the <see cref="IGorgonConstantBufferInfo.Usage"/> is either <see cref="ResourceUsage.Immutable"/> or <see cref="ResourceUsage.Dynamic"/>.</exception>
         /// <remarks>
         /// <para>
         /// Use this method to send a value type (<c>struct</c>) or primitive value to the buffer. 
         /// </para>
         /// <para>
-        /// This method will throw an exception when the buffer is created with a <see cref="IGorgonConstantBufferInfo.Usage"/> of <c>Immutable</c> or <c>Dynamic</c>.
+        /// This method will throw an exception when the buffer is created with a <see cref="IGorgonConstantBufferInfo.Usage"/> of <see cref="ResourceUsage.Immutable"/> or <see cref="ResourceUsage.Dynamic"/>.
         /// </para>
         /// <para>
         /// When sending a value type to the buffer the data must be a primitive type with no complex members (i.e. members must be value types or primitive types). Furthermore, the value type and any 
@@ -293,7 +293,7 @@ namespace Gorgon.Graphics.Core
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="data"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="offset"/> plus the size of the data in <paramref name="data"/> exceed the size of this buffer.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the size, in bytes, of the <paramref name="data"/> parameter is larger than the total <see cref="IGorgonConstantBufferInfo.SizeInBytes"/> of the buffer.
-        /// <exception cref="NotSupportedException">Thrown when the <see cref="IGorgonConstantBufferInfo.Usage"/> is either <c>Immutable</c> or <c>Dynamic</c>.</exception>
+        /// <exception cref="NotSupportedException">Thrown when the <see cref="IGorgonConstantBufferInfo.Usage"/> is either <see cref="ResourceUsage.Immutable"/> or <see cref="ResourceUsage.Dynamic"/>.</exception>
         /// <para>-or-</para>
         /// <para>The <paramref name="size"/> parameter is less than 1, or larger than the buffer size.</para>
         /// <para>-or-</para>
@@ -308,7 +308,7 @@ namespace Gorgon.Graphics.Core
         /// taken to ensure that <paramref name="offset"/> and <paramref name="size"/> do not exceed the bounds of the memory region.
         /// </para>
         /// <para>
-        /// This method will throw an exception when the buffer is created with a <see cref="IGorgonConstantBufferInfo.Usage"/> of <c>Immutable</c> or <c>Dynamic</c>.
+        /// This method will throw an exception when the buffer is created with a <see cref="IGorgonConstantBufferInfo.Usage"/> of <see cref="ResourceUsage.Immutable"/> or <see cref="ResourceUsage.Dynamic"/>.
         /// </para>
         /// <para>
         /// If the <paramref name="size"/> parameter is omitted (<b>null</b>), then the entire buffer size is used minus the <paramref name="offset"/>.
@@ -384,7 +384,7 @@ namespace Gorgon.Graphics.Core
         /// <para>-or-</para>
         /// <para>Thrown when the size of the type <typeparamref name="T"/> multiplied by the count (minus the offset) is larger than the buffer size.</para>
         /// </exception>
-        /// <exception cref="NotSupportedException">Thrown when the <see cref="IGorgonConstantBufferInfo.Usage"/> is either <c>Immutable</c> or <c>Dynamic</c>.</exception>
+        /// <exception cref="NotSupportedException">Thrown when the <see cref="IGorgonConstantBufferInfo.Usage"/> is either <see cref="ResourceUsage.Immutable"/> or <see cref="ResourceUsage.Dynamic"/>.</exception>
         /// <remarks>
         /// <para>
         /// Use this method to send an array of value types (<c>struct</c>) or primitive values to the buffer. 
@@ -398,7 +398,7 @@ namespace Gorgon.Graphics.Core
         /// If the <paramref name="count"/> parameter is omitted (<b>null</b>), then the length of the <paramref name="data"/> parameter is used minus the <paramref name="startIndex"/>.
         /// </para>
 		/// <para>
-        /// This method will throw an exception when the buffer is created with a <see cref="IGorgonConstantBufferInfo.Usage"/> of <c>Immutable</c> or <c>Dynamic</c>.
+        /// This method will throw an exception when the buffer is created with a <see cref="IGorgonConstantBufferInfo.Usage"/> of <see cref="ResourceUsage.Immutable"/> or <see cref="ResourceUsage.Dynamic"/>.
         /// </para>
         /// <para>
         /// <note type="warning">

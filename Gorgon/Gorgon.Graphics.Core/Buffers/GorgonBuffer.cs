@@ -236,7 +236,7 @@ namespace Gorgon.Graphics.Core
         /// <para>-or-</para>
         /// <para>Thrown when this buffer does not have a <see cref="BufferBinding"/> of <see cref="BufferBinding.UnorderedAccess"/>.</para>
         /// <para>-or-</para>
-        /// <para>Thrown when this buffer has a usage of <c>Staging</c>.</para>
+        /// <para>Thrown when this buffer has a usage of <see cref="ResourceUsage.Staging"/>.</para>
         /// <para>-or-</para>
         /// <para>Thrown when the <paramref name="format"/> is typeless or is not a supported format for unordered access views.</para>
         /// </exception>
@@ -328,7 +328,7 @@ namespace Gorgon.Graphics.Core
         /// <para>-or-</para>
         /// <para>Thrown if the size of the buffer is less than 1 byte.</para>
         /// </exception>
-        /// <exception cref="GorgonException">Thrown if the buffer is created with a usage of <c>Immutable</c>, but the <paramref name="initialData"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="GorgonException">Thrown if the buffer is created with a usage of <see cref="ResourceUsage.Immutable"/>, but the <paramref name="initialData"/> parameter is <b>null</b>.</exception>
         public GorgonBuffer(GorgonGraphics graphics, string name, IGorgonBufferInfo info, IGorgonPointer initialData = null, IGorgonLog log = null)
             : base(graphics, name, log)
         {

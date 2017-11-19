@@ -254,7 +254,7 @@ namespace Gorgon.Graphics.Core
         /// <para>-or-</para>
         /// <para>Thrown when this buffer does not have a <see cref="BufferBinding"/> of <see cref="BufferBinding.UnorderedAccess"/>.</para>
         /// <para>-or-</para>
-        /// <para>Thrown when this buffer has a usage of <c>Staging</c>.</para>
+        /// <para>Thrown when this buffer has a usage of <see cref="ResourceUsage.Staging"/>.</para>
         /// </exception>
         /// <remarks>
         /// <para>
@@ -340,7 +340,7 @@ namespace Gorgon.Graphics.Core
         /// <para>-or-</para>
         /// <para>Thrown if this object is created with a device that does not have a feature set of 11.0 or better.</para>
         /// </exception>
-        /// <exception cref="GorgonException">Thrown if the buffer is created with a usage of <c>Immutable</c>, but the <paramref name="initialData"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="GorgonException">Thrown if the buffer is created with a usage of <see cref="ResourceUsage.Immutable"/>, but the <paramref name="initialData"/> parameter is <b>null</b>.</exception>
         public GorgonStructuredBuffer(GorgonGraphics graphics, string name, IGorgonStructuredBufferInfo info, IGorgonPointer initialData = null, IGorgonLog log = null)
             : base(graphics, name, log)
         {

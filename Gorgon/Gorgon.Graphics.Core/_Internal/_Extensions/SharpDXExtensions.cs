@@ -275,16 +275,16 @@ namespace Gorgon.Graphics.Core
 		{
 			return new D3D11.RenderTargetBlendDescription1
 			       {
-				       LogicOperation = state.LogicOperation,
-				       SourceAlphaBlend = state.SourceAlphaBlend,
-				       AlphaBlendOperation = state.AlphaBlendOperation,
-				       SourceBlend = state.SourceColorBlend,
-				       DestinationAlphaBlend = state.DestinationAlphaBlend,
-				       BlendOperation = state.ColorBlendOperation,
-				       DestinationBlend = state.DestinationColorBlend,
+				       LogicOperation = (D3D11.LogicOperation)state.LogicOperation,
+				       SourceAlphaBlend = (D3D11.BlendOption)state.SourceAlphaBlend,
+				       AlphaBlendOperation = (D3D11.BlendOperation)state.AlphaBlendOperation,
+				       SourceBlend = (D3D11.BlendOption)state.SourceColorBlend,
+				       DestinationAlphaBlend = (D3D11.BlendOption)state.DestinationAlphaBlend,
+				       BlendOperation = (D3D11.BlendOperation)state.ColorBlendOperation,
+				       DestinationBlend = (D3D11.BlendOption)state.DestinationColorBlend,
 				       IsBlendEnabled = state.IsBlendingEnabled,
 				       IsLogicOperationEnabled = state.IsLogicalOperationEnabled,
-				       RenderTargetWriteMask = state.WriteMask
+				       RenderTargetWriteMask = (D3D11.ColorWriteMaskFlags)state.WriteMask
 			       };
 		}
 

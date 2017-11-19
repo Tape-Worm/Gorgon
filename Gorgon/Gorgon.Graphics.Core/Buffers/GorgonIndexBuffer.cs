@@ -187,7 +187,7 @@ namespace Gorgon.Graphics.Core
 	    /// <para>-or-</para>
 	    /// <para>Thrown when this buffer does not have a <see cref="VertexIndexBufferBinding"/> of <see cref="VertexIndexBufferBinding.UnorderedAccess"/>.</para>
 	    /// <para>-or-</para>
-	    /// <para>Thrown when this buffer has a usage of <c>Staging</c>.</para>
+	    /// <para>Thrown when this buffer has a usage of <see cref="ResourceUsage.Staging"/>.</para>
 	    /// </exception>
 	    /// <remarks>
 	    /// <para>
@@ -276,7 +276,7 @@ namespace Gorgon.Graphics.Core
         /// <para>-or-</para>
         /// <para>The <paramref name="offset"/> or the <paramref name="bufferOffset"/> parameter is less than 0.</para>
         /// </exception>
-        /// <exception cref="NotSupportedException">Thrown when the <see cref="IGorgonIndexBufferInfo.Usage"/> is either <c>Immutable</c> or <c>Dynamic</c>.</exception>
+        /// <exception cref="NotSupportedException">Thrown when the <see cref="IGorgonIndexBufferInfo.Usage"/> is either <see cref="ResourceUsage.Immutable"/> or <see cref="ResourceUsage.Dynamic"/>.</exception>
         /// <remarks>
         /// <para>
         /// Use this method to send a blob of byte data to the buffer. This allows for fine grained control over what gets sent to the buffer. 
@@ -289,7 +289,7 @@ namespace Gorgon.Graphics.Core
         /// If the <paramref name="size"/> parameter is omitted (<b>null</b>), then the entire buffer size is used minus the <paramref name="offset"/>.
         /// </para>
         /// <para>
-        /// This method will throw an exception when the buffer is created with a <see cref="IGorgonIndexBufferInfo.Usage"/> of <c>Immutable</c> or <c>Dynamic</c>.
+        /// This method will throw an exception when the buffer is created with a <see cref="IGorgonIndexBufferInfo.Usage"/> of <see cref="ResourceUsage.Immutable"/> or <see cref="ResourceUsage.Dynamic"/>.
         /// </para>
         /// <para>
         /// <note type="warning">
@@ -374,7 +374,7 @@ namespace Gorgon.Graphics.Core
         /// <para>-or-</para>
         /// <para>Thrown when the size of an index multiplied by the count (minus the offset) is larger than the buffer size.</para>
         /// </exception> 
-        /// <exception cref="NotSupportedException">Thrown when the <see cref="IGorgonIndexBufferInfo.Usage"/> is either <c>Immutable</c> or <c>Dynamic</c>.
+        /// <exception cref="NotSupportedException">Thrown when the <see cref="IGorgonIndexBufferInfo.Usage"/> is either <see cref="ResourceUsage.Immutable"/> or <see cref="ResourceUsage.Dynamic"/>.
         /// <para>-or-</para>
         /// <para>The buffer was created as a 16 bit index buffer, use the <see cref="Update(int[],int,int,int?)"/> method instead.</para>
         /// </exception>
@@ -386,7 +386,7 @@ namespace Gorgon.Graphics.Core
         /// If the <paramref name="count"/> parameter is omitted (<b>null</b>), then the length of the <paramref name="data"/> parameter is used minus the <paramref name="startIndex"/>.
         /// </para>
         /// <para>
-        /// This method will throw an exception when the buffer is created with a <see cref="IGorgonIndexBufferInfo.Usage"/> of <c>Immutable</c> or <c>Dynamic</c>.
+        /// This method will throw an exception when the buffer is created with a <see cref="IGorgonIndexBufferInfo.Usage"/> of <see cref="ResourceUsage.Immutable"/> or <see cref="ResourceUsage.Dynamic"/>.
         /// </para>
         /// <para>
         /// <note type="warning">
@@ -473,7 +473,7 @@ namespace Gorgon.Graphics.Core
         /// <para>-or-</para>
         /// <para>Thrown when the size of an index multiplied by the count (minus the offset) is larger than the buffer size.</para>
         /// </exception> 
-        /// <exception cref="NotSupportedException">Thrown when the <see cref="IGorgonIndexBufferInfo.Usage"/> is either <c>Immutable</c> or <c>Dynamic</c>.
+        /// <exception cref="NotSupportedException">Thrown when the <see cref="IGorgonIndexBufferInfo.Usage"/> is either <see cref="ResourceUsage.Immutable"/> or <see cref="ResourceUsage.Dynamic"/>.
         /// <para>-or-</para>
         /// <para>The buffer was created as a 16 bit index buffer, use the <see cref="Update(short[],int,int,int?)"/> method instead.</para>
         /// </exception>
@@ -485,7 +485,7 @@ namespace Gorgon.Graphics.Core
         /// If the <paramref name="count"/> parameter is omitted (<b>null</b>), then the length of the <paramref name="data"/> parameter is used minus the <paramref name="startIndex"/>.
         /// </para>
         /// <para>
-        /// This method will throw an exception when the buffer is created with a <see cref="IGorgonIndexBufferInfo.Usage"/> of <c>Immutable</c> or <c>Dynamic</c>.
+        /// This method will throw an exception when the buffer is created with a <see cref="IGorgonIndexBufferInfo.Usage"/> of <see cref="ResourceUsage.Immutable"/> or <see cref="ResourceUsage.Dynamic"/>.
         /// </para>
         /// <para>
         /// <note type="warning">

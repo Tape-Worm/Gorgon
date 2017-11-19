@@ -862,11 +862,11 @@ namespace Gorgon.Graphics.Core
         /// is locked and returned.  There is no setting to return a portion of the texture subresource.
         /// </para>
         /// <para>
-        /// This method is only works for textures with a <see cref="IGorgonTextureInfo.Usage"/> of <c>Dynamic</c> or <c>Staging</c>. If the usage is not either of those values, then an exception will be thrown. 
+        /// This method is only works for textures with a <see cref="IGorgonTextureInfo.Usage"/> of <see cref="ResourceUsage.Dynamic"/> or <see cref="ResourceUsage.Staging"/>. If the usage is not either of those values, then an exception will be thrown. 
         /// If the texture has a <see cref="TextureBinding"/> of <see cref="TextureBinding.DepthStencil"/>, then this method will throw an exception.
         /// </para>
         /// <para>
-        /// When the texture usage is set to <c>Dynamic</c>, the lock will be write-only, but when the usage is set to <c>Staging</c>, then the lock will allow reading and writing of the texture data. This is 
+        /// When the texture usage is set to <see cref="ResourceUsage.Dynamic"/>, the lock will be write-only, but when the usage is set to <see cref="ResourceUsage.Staging"/>, then the lock will allow reading and writing of the texture data. This is 
         /// specified by the <paramref name="lockFlags"/> parameter. If the <c>WriteNoOverwrite</c> flag is supplied, it will be ignored and treated as a <c>Write</c> flag.
         /// </para> 
         /// <para>
@@ -923,7 +923,7 @@ namespace Gorgon.Graphics.Core
         /// <para>-or-</para>
         /// <para>Thrown when the texture types are not the same.</para>
         /// </exception>
-        /// <exception cref="NotSupportedException">Thrown when this texture has a <see cref="IGorgonTextureInfo.Usage"/> setting of <c>Immutable</c>.</exception>
+        /// <exception cref="NotSupportedException">Thrown when this texture has a <see cref="IGorgonTextureInfo.Usage"/> setting of <see cref="ResourceUsage.Immutable"/>.</exception>
         /// <remarks>
         /// <para>
         /// This method copies the contents of this texture into the texture specified by the <paramref name="destTexture"/> parameter. If a sub resource for the <paramref name="destTexture"/> must be 
@@ -1004,7 +1004,7 @@ namespace Gorgon.Graphics.Core
 		/// <para>Thrown when the <paramref name="sourceTexture"/> is the same as this texture, and the <paramref name="sourceArrayIndex"/>, <paramref name="destArrayIndex"/>, <paramref name="sourceMipLevel"/> and the <paramref name="destMipLevel"/> 
 		/// specified are pointing to the same subresource.</para>
 		/// <para>-or-</para>
-		/// <para>Thrown when this texture has a <see cref="IGorgonTextureInfo.Usage"/> of <c>Immutable</c>.</para>
+		/// <para>Thrown when this texture has a <see cref="IGorgonTextureInfo.Usage"/> of <see cref="ResourceUsage.Immutable"/>.</para>
 		/// </exception>
 		/// <exception cref="InvalidOperationException"></exception>
 		/// <remarks>
@@ -1022,7 +1022,7 @@ namespace Gorgon.Graphics.Core
 		/// When copying sub resources (e.g. mip levels, array indices, etc...), the mip levels and array indices must be different if copying to the same texture.  If they are not, an exception will be thrown.
 		/// </para>
 		/// <para>
-		/// The destination texture must not have a <see cref="IGorgonTextureInfo.Usage"/> of <c>Immutable</c>.
+		/// The destination texture must not have a <see cref="IGorgonTextureInfo.Usage"/> of <see cref="ResourceUsage.Immutable"/>.
 		/// </para>
 		/// <para>
 		/// <note type="caution">
@@ -1265,8 +1265,8 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Function to get a staging texture from this texture.
 		/// </summary>
-		/// <returns>A new <see cref="GorgonTexture"/> containing a copy of the data in this texture, with a usage of <c>Staging</c>.</returns>
-		/// <exception cref="GorgonException">Thrown when this texture has a <see cref="IGorgonTextureInfo.Usage"/> of <c>Immutable</c>.</exception>
+		/// <returns>A new <see cref="GorgonTexture"/> containing a copy of the data in this texture, with a usage of <see cref="ResourceUsage.Staging"/>.</returns>
+		/// <exception cref="GorgonException">Thrown when this texture has a <see cref="IGorgonTextureInfo.Usage"/> of <see cref="ResourceUsage.Immutable"/>.</exception>
 		/// <remarks>
 		/// <para>
 		/// This allows an application to make a copy of the texture for editing on the CPU. The resulting staging texture, once edited, can then be reuploaded to the same texture, or another texture.
@@ -1303,7 +1303,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="destBox">[Optional] A <see cref="GorgonBox"/> that will specify the region that will receive the data.</param>
 		/// <param name="destArrayIndex">[Optional] The array index that will receive the data (1D/2D textures only).</param>
 		/// <param name="destMipLevel">[Optional] The mip map level that will receive the data.</param>
-		/// <exception cref="NotSupportedException">Thrown when this texture has a <see cref="IGorgonTextureInfo.Usage"/> of <c>Dynamic</c> or <c>Immutable</c>.
+		/// <exception cref="NotSupportedException">Thrown when this texture has a <see cref="IGorgonTextureInfo.Usage"/> of <see cref="ResourceUsage.Dynamic"/> or <see cref="ResourceUsage.Immutable"/>.
 		/// <para>-or-</para>
 		/// <para>Thrown when this texture has <see cref="IGorgonTextureInfo.MultisampleInfo"/>.</para>
 		/// <para>-or-</para>
@@ -1311,7 +1311,7 @@ namespace Gorgon.Graphics.Core
 		/// </exception>
 		/// <remarks>
 		/// <para>
-		/// Use this to copy data into a texture with a <see cref="IGorgonTextureInfo.Usage"/> of <c>Staging</c> or <c>Default</c>.  If the texture does not have a <c>Staging</c> or <c>Default</c> usage, then an 
+		/// Use this to copy data into a texture with a <see cref="IGorgonTextureInfo.Usage"/> of <see cref="ResourceUsage.Staging"/> or <see cref="ResourceUsage.Default"/>.  If the texture does not have a <see cref="ResourceUsage.Staging"/> or <see cref="ResourceUsage.Default"/> usage, then an 
 		/// exception will be thrown.
 		/// </para>
 		/// <para>
@@ -1403,7 +1403,7 @@ namespace Gorgon.Graphics.Core
 		/// Function to convert this texture to a <see cref="IGorgonImage"/>.
 		/// </summary>
 		/// <returns>A new <see cref="IGorgonImage"/> containing the texture data.</returns>
-		/// <exception cref="GorgonException">Thrown when this texture has a <see cref="IGorgonTextureInfo.Usage"/> set to <c>Immutable</c>.
+		/// <exception cref="GorgonException">Thrown when this texture has a <see cref="IGorgonTextureInfo.Usage"/> set to <see cref="ResourceUsage.Immutable"/>.
 		/// <para>-or-</para>
 		/// <para>Thrown when the type of texture is not supported.</para>
 		/// </exception>
@@ -1564,7 +1564,7 @@ namespace Gorgon.Graphics.Core
         /// <returns>A <see cref="GorgonTextureView"/> used to bind the texture to a shader.</returns>
         /// <exception cref="ArgumentException">Thrown when this texture does not have a <see cref="TextureBinding"/> of <see cref="TextureBinding.ShaderResource"/>.
         /// <para>-or-</para>
-        /// <para>Thrown when this texture has a usage of <c>Staging</c>.</para>
+        /// <para>Thrown when this texture has a usage of <see cref="ResourceUsage.Staging"/>.</para>
         /// <para>-or-</para>
         /// <para>Thrown when the <paramref name="format"/> is typeless or cannot be determined from the this texture, or the <paramref name="format"/> is not in the same group as the texture format.</para>
         /// </exception>
@@ -1644,7 +1644,7 @@ namespace Gorgon.Graphics.Core
         /// <para>-or-</para>
         /// <para>Thrown when this texture does not have a <see cref="TextureBinding"/> of <see cref="TextureBinding.UnorderedAccess"/>.</para>
         /// <para>-or-</para>
-        /// <para>Thrown when this texture has a usage of <c>Staging</c>.</para>
+        /// <para>Thrown when this texture has a usage of <see cref="ResourceUsage.Staging"/>.</para>
         /// <para>-or-</para>
         /// <para>Thrown when the <paramref name="format"/> is typeless or is not a supported format for unordered access views.</para>
         /// <para>-or-</para>
@@ -1751,7 +1751,7 @@ namespace Gorgon.Graphics.Core
         /// <returns>A <see cref="GorgonTextureView"/> used to bind the texture to a shader.</returns>
         /// <exception cref="ArgumentException">Thrown when this texture does not have a <see cref="TextureBinding"/> of <see cref="TextureBinding.DepthStencil"/>.
         /// <para>-or-</para>
-        /// <para>Thrown when this texture has a usage of <c>Staging</c>.</para>
+        /// <para>Thrown when this texture has a usage of <see cref="ResourceUsage.Staging"/>.</para>
         /// <para>-or-</para>
         /// <para>Thrown when the <paramref name="format"/> is not supported as a depth/stencil format.</para>
         /// <para>-or-</para>
@@ -1836,7 +1836,7 @@ namespace Gorgon.Graphics.Core
         /// <returns>A <see cref="GorgonTextureView"/> used to bind the texture to a shader.</returns>
         /// <exception cref="ArgumentException">Thrown when this texture does not have a <see cref="TextureBinding"/> of <see cref="TextureBinding.RenderTarget"/>.
         /// <para>-or-</para>
-        /// <para>Thrown when this texture has a usage of <c>Staging</c>.</para>
+        /// <para>Thrown when this texture has a usage of <see cref="ResourceUsage.Staging"/>.</para>
         /// <para>-or-</para>
         /// <para>Thrown when the <paramref name="format"/> is typeless or cannot be determined from the this texture, or the <paramref name="format"/> is not in the same group as the texture format.</para>
         /// <para>-or-</para>
@@ -2060,12 +2060,12 @@ namespace Gorgon.Graphics.Core
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/>, <paramref name="graphics"/>, or the <paramref name="textureInfo"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.
 		/// <para>-or-</para>
-		/// <para>Thrown when the <see cref="IGorgonTextureInfo.Usage"/> is set to <c>Immutable</c>.</para>
+		/// <para>Thrown when the <see cref="IGorgonTextureInfo.Usage"/> is set to <see cref="ResourceUsage.Immutable"/>.</para>
 		/// </exception>
 		/// <exception cref="GorgonException">Thrown when the texture could not be created due to misconfiguration.</exception>
 		/// <remarks>
 		/// <para>
-		/// This constructor creates an empty texture. Data may be uploaded to the texture at a later time if its <see cref="IGorgonTextureInfo.Usage"/> is not set to <c>Immutable</c>. If the 
+		/// This constructor creates an empty texture. Data may be uploaded to the texture at a later time if its <see cref="IGorgonTextureInfo.Usage"/> is not set to <see cref="ResourceUsage.Immutable"/>. If the 
 		/// <see cref="IGorgonTextureInfo.Usage"/> is set to <c>immutable</c> with this constructor, then an exception will be thrown. To use an immutable texture, use the 
 		/// <see cref="O:Gorgon.Graphics.Core.GorgonImageTextureExtensions.ToTexture"/> extension method on the <see cref="IGorgonImage"/> type.
 		/// </para>

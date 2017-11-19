@@ -69,7 +69,7 @@ namespace Gorgon.Graphics.Core
 		/// </para>
 		/// <para>
 		/// If this flag is set, then this texture cannot be bound with the pipeline. And this is the only binding flag allowed with the texture has a <see cref="IGorgonTextureInfo.Usage"/> 
-		/// of <c>Staging</c>.
+		/// of <see cref="ResourceUsage.Staging"/>.
 		/// </para>
 		/// </summary>
 		None = D3D11.BindFlags.None,
@@ -287,7 +287,7 @@ namespace Gorgon.Graphics.Core
 		/// Property to return the intended usage flags for this texture.
 		/// </summary>
 		/// <remarks>
-		/// This value is defaulted to <c>Default</c>.
+		/// This value is defaulted to <see cref="ResourceUsage.Default"/>.
 		/// </remarks>
 		ResourceUsage Usage
 		{
@@ -299,7 +299,7 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// If the <see cref="Usage"/> property is set to <c>Staging</c>, then the texture must be created with a value of <see cref="TextureBinding.None"/> as staging textures do not 
+		/// If the <see cref="Usage"/> property is set to <see cref="ResourceUsage.Staging"/>, then the texture must be created with a value of <see cref="TextureBinding.None"/> as staging textures do not 
 		/// support bindings of any kind. If this value is set to anything other than <see cref="TextureBinding.None"/>, an exception will be thrown.
 		/// </para>
 		/// <para>

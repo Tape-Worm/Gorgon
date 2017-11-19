@@ -48,15 +48,6 @@
         /// <summary>
         /// Property to return the vertex shader samplers to bind to the pipeline.
         /// </summary>
-        /// <remarks>
-        /// <para>
-        /// <note type="important">
-        /// <para>
-        /// This only applies to an <see cref="IGorgonVideoAdapter"/> that has a <see cref="IGorgonVideoAdapter.RequestedFeatureLevel"/> of <c>Level_11_0</c> or better.
-        /// </para>
-        /// </note>
-        /// </para>
-        /// </remarks>
         GorgonSamplerStates VertexShaderSamplers
         {
             get;

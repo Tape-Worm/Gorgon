@@ -42,13 +42,6 @@ namespace Gorgon.Graphics.Core
     /// In Gorgon, shaders can be compiled from a string containing source code via the <see cref="GorgonShaderFactory"/>, or loaded from a <see cref="Stream"/> or file for quicker access. The 
     /// <see cref="GorgonShaderFactory"/> is required to compile or read shaders, they cannot be created via the <c>new</c> keyword.
     /// </para>
-    /// <para>
-    /// <note type="important">
-    /// <para>
-    /// A domain shader requires a video adapter with a <see cref="IGorgonVideoAdapter.RequestedFeatureLevel"/> of <c>Level_11_0</c> or better.
-    /// </para>
-    /// </note>
-    /// </para>
     /// </remarks>
     public class GorgonDomainShader
         : GorgonShader

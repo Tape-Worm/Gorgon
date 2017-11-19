@@ -32,6 +32,280 @@ using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
 {
+    #region Enums.
+    /// <summary>
+    /// Defines the type of logical operations to perform while blending a render target.
+    /// </summary>
+    [Flags]
+    public enum WriteMask
+    {
+        /// <summary>The red channel will be written.</summary>
+        Red = D3D11.ColorWriteMaskFlags.Red,
+        /// <summary>The green channel will be written.</summary>
+        Green = D3D11.ColorWriteMaskFlags.Green,
+        /// <summary>The blue channel will be written.</summary>
+        Blue = D3D11.ColorWriteMaskFlags.Blue,
+        /// <summary>The alpha channel will be written.</summary>
+        Alpha = D3D11.ColorWriteMaskFlags.Alpha,
+        /// <summary>All channels will be written.</summary>
+        All = D3D11.ColorWriteMaskFlags.All
+    }
+
+    /// <summary>
+    /// Defines the type of logical operations to perform while blending a render target.
+    /// </summary>
+    public enum LogicOperation
+    {
+        /// <summary>
+        /// <para>
+        /// Clears the render target.
+        /// </para>
+        /// </summary>
+        Clear = D3D11.LogicOperation.Clear,
+        /// <summary>
+        /// <para>
+        /// Sets the render target.
+        /// </para>
+        /// </summary>
+        Set = D3D11.LogicOperation.Set,
+        /// <summary>
+        /// <para>
+        /// Copys the render target.
+        /// </para>
+        /// </summary>
+        Copy = D3D11.LogicOperation.Copy,
+        /// <summary>
+        /// <para>
+        /// Performs an inverted-copy of the render target.
+        /// </para>
+        /// </summary>
+        CopyInverted = D3D11.LogicOperation.CopyInverted,
+        /// <summary>
+        /// <para>
+        /// No operation is performed on the render target.
+        /// </para>
+        /// </summary>
+        Noop = D3D11.LogicOperation.Noop,
+        /// <summary>
+        /// <para>
+        /// Inverts the render target.
+        /// </para>
+        /// </summary>
+        Invert = D3D11.LogicOperation.Invert,
+        /// <summary>
+        /// <para>
+        /// Performs a logical AND operation on the render target.
+        /// </para>
+        /// </summary>
+        And = D3D11.LogicOperation.And,
+        /// <summary>
+        /// <para>
+        /// Performs a logical NAND operation on the render target.
+        /// </para>
+        /// </summary>
+        Nand = D3D11.LogicOperation.Nand,
+        /// <summary>
+        /// <para>
+        /// Performs a logical OR operation on the render target.
+        /// </para>
+        /// </summary>
+        Or = D3D11.LogicOperation.Or,
+        /// <summary>
+        /// <para>
+        /// Performs a logical NOR operation on the render target.
+        /// </para>
+        /// </summary>
+        Nor = D3D11.LogicOperation.Nor,
+        /// <summary>
+        /// <para>
+        /// Performs a logical XOR operation on the render target.
+        /// </para>
+        /// </summary>
+        Xor = D3D11.LogicOperation.Xor,
+        /// <summary>
+        /// <para>
+        /// Performs a logical equal operation on the render target.
+        /// </para>
+        /// </summary>
+        Equiv = D3D11.LogicOperation.Equiv,
+        /// <summary>
+        /// <para>
+        /// Performs a logical AND and reverse operation on the render target.
+        /// </para>
+        /// </summary>
+        AndReverse = D3D11.LogicOperation.AndReverse,
+        /// <summary>
+        /// <para>
+        /// Performs a logical AND and invert operation on the render target.
+        /// </para>
+        /// </summary>
+        AndInverted = D3D11.LogicOperation.AndInverted,
+        /// <summary>
+        /// <para>
+        /// Performs a logical OR and reverse operation on the render target.
+        /// </para>
+        /// </summary>
+        OrReverse = D3D11.LogicOperation.OrReverse,
+        /// <summary>
+        /// <para>
+        /// Performs a logical OR and invert operation on the render target.
+        /// </para>
+        /// </summary>
+        OrInverted = D3D11.LogicOperation.OrInverted
+    }
+
+    /// <summary>
+    /// Defines the type of operation to perform while blending colors.
+    /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue")]
+    public enum Blend
+    {
+        /// <summary>
+        /// <para>
+        /// The blend factor is (0, 0, 0, 0). No pre-blend operation.
+        /// </para>
+        /// </summary>
+        Zero = D3D11.BlendOption.Zero,
+        /// <summary>
+        /// <para>
+        /// The blend factor is (1, 1, 1, 1). No pre-blend operation.
+        /// </para>
+        /// </summary>
+        One = D3D11.BlendOption.One,
+        /// <summary>
+        /// <para>
+        /// The blend factor is (Rₛ, Gₛ, Bₛ, Aₛ), that is color data (RGB) from a pixel shader. No pre-blend operation.
+        /// </para>
+        /// </summary>
+        SourceColor = D3D11.BlendOption.SourceColor,
+        /// <summary>
+        /// <para>
+        /// The blend factor is (1 - Rₛ, 1 - Gₛ, 1 - Bₛ, 1 - Aₛ), that is color data (RGB) from a pixel shader. The pre-blend operation inverts the data, generating 1 - RGB.
+        /// </para>
+        /// </summary>
+        InverseSourceColor = D3D11.BlendOption.InverseSourceColor,
+        /// <summary>
+        /// <para>
+        /// The blend factor is (Aₛ, Aₛ, Aₛ, Aₛ), that is alpha data (A) from a pixel shader. No pre-blend operation.
+        /// </para>
+        /// </summary>
+        SourceAlpha = D3D11.BlendOption.SourceAlpha,
+        /// <summary>
+        /// <para>
+        /// The blend factor is ( 1 - Aₛ, 1 - Aₛ, 1 - Aₛ, 1 - Aₛ), that is alpha data (A) from a pixel shader. The pre-blend operation inverts the data, generating 1 - A.
+        /// </para>
+        /// </summary>
+        InverseSourceAlpha = D3D11.BlendOption.InverseSourceAlpha,
+        /// <summary>
+        /// <para>
+        /// The blend factor is (A A A A), that is alpha data from a render target. No pre-blend operation.
+        /// </para>
+        /// </summary>
+        DestinationAlpha = D3D11.BlendOption.DestinationAlpha,
+        /// <summary>
+        /// <para>
+        /// The blend factor is (1 - A 1 - A 1 - A 1 - A), that is alpha data from a render target. The pre-blend operation inverts the data, generating 1 - A.
+        /// </para>
+        /// </summary>
+        InverseDestinationAlpha = D3D11.BlendOption.InverseDestinationAlpha,
+        /// <summary>
+        /// <para>
+        /// The blend factor is (R, G, B, A), that is color data from a render target. No pre-blend operation.
+        /// </para>
+        /// </summary>
+        DestinationColor = D3D11.BlendOption.DestinationColor,
+        /// <summary>
+        /// <para>
+        /// The blend factor is (1 - R, 1 - G, 1 - B, 1 - A), that is color data from a render target. The pre-blend operation inverts the data, generating 1 - RGB.
+        /// </para>
+        /// </summary>
+        InverseDestinationColor = D3D11.BlendOption.InverseDestinationColor,
+        /// <summary>
+        /// <para>
+        /// The blend factor is (f, f, f, 1); where f = min(Aₛ, 1
+        /// </para>
+        /// <para>
+        /// - A). The pre-blend operation clamps the data to 1 or less.
+        /// </para>
+        /// </summary>
+        SourceAlphaSaturate = D3D11.BlendOption.SourceAlphaSaturate,
+        /// <summary>
+        /// <para>
+        /// The blend factor is the blend factor set with ID3D11DeviceContext::OMSetBlendState. No pre-blend operation.
+        /// </para>
+        /// </summary>
+        BlendFactor = D3D11.BlendOption.BlendFactor,
+        /// <summary>
+        /// <para>
+        /// The blend factor is the blend factor set with ID3D11DeviceContext::OMSetBlendState. The pre-blend operation inverts the blend factor, generating 1 - blend_factor.
+        /// </para>
+        /// </summary>
+        InverseBlendFactor = D3D11.BlendOption.InverseBlendFactor,
+        /// <summary>
+        /// <para>
+        /// The blend factor is data sources both as color data output by a pixel shader. There is no pre-blend operation. This blend factor supports dual-source color blending.
+        /// </para>
+        /// </summary>
+        SecondarySourceColor = D3D11.BlendOption.SecondarySourceColor,
+        /// <summary>
+        /// <para>
+        /// The blend factor is data sources both as color data output by a pixel shader. The pre-blend operation inverts the data, generating 1 - RGB. This blend factor supports dual-source color blending.
+        /// </para>
+        /// </summary>
+        InverseSecondarySourceColor = D3D11.BlendOption.InverseSecondarySourceColor,
+        /// <summary>
+        /// <para>
+        /// The blend factor is data sources as alpha data output by a pixel shader. There is no pre-blend operation. This blend factor supports dual-source color blending.
+        /// </para>
+        /// </summary>
+        SecondarySourceAlpha = D3D11.BlendOption.SecondarySourceAlpha,
+        /// <summary>
+        /// <para>
+        /// The blend factor is data sources as alpha data output by a pixel shader. The pre-blend operation inverts the data, generating 1 - A. This blend factor supports dual-source color blending.
+        /// </para>
+        /// </summary>
+        InverseSecondarySourceAlpha = D3D11.BlendOption.InverseSecondarySourceAlpha
+    }
+
+    /// <summary>
+    /// Defines the type of operation to perform while blending colors.
+    /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue")]
+    public enum BlendOperation
+    {
+        /// <summary>
+        /// <para>
+        /// Add source 1 and source 2.
+        /// </para>
+        /// </summary>
+        Add = D3D11.BlendOperation.Add,
+        /// <summary>
+        /// <para>
+        /// Subtract source 1 from source 2.
+        /// </para>
+        /// </summary>
+        Subtract = D3D11.BlendOperation.Subtract,
+        /// <summary>
+        /// <para>
+        /// Subtract source 2 from source 1.
+        /// </para>
+        /// </summary>
+        ReverseSubtract = D3D11.BlendOperation.ReverseSubtract,
+        /// <summary>
+        /// <para>
+        /// Find the minimum of source 1 and source 2.
+        /// </para>
+        /// </summary>
+        Minimum = D3D11.BlendOperation.Minimum,
+        /// <summary>
+        /// <para>
+        /// Find the maximum of source 1 and source 2.
+        /// </para>
+        /// </summary>
+        Maximum = D3D11.BlendOperation.Maximum
+    }
+    #endregion
+
     /// <summary>
     /// Describes how rasterized data is blended with a <see cref="GorgonRenderTargetView"/> and how render targets blend with each other.
     /// </summary>
@@ -64,7 +338,7 @@ namespace Gorgon.Graphics.Core
     /// <seealso cref="Additive"/>
     /// <seealso cref="Premultiplied"/>
     /// <seealso cref="Inverted"/>
-	public class GorgonBlendState 
+    public class GorgonBlendState 
 		: IEquatable<GorgonBlendState>
 	{
 		#region Common States.
@@ -105,21 +379,21 @@ namespace Gorgon.Graphics.Core
         // Flag to indicate that a logical operator should be applied when blending.
 	    private bool _isLogicalOperationEnabled;
         // The blend operation used on color channels.
-	    private D3D11.BlendOperation _colorBlendOperation;
+	    private BlendOperation _colorBlendOperation;
         // The blend operation used on the alpha channel.
-	    private D3D11.BlendOperation _alphaBlendOperation;
+	    private BlendOperation _alphaBlendOperation;
         // The source blending op on color channels.
-	    private D3D11.BlendOption _sourceColorBlend;
+	    private Blend _sourceColorBlend;
         // The destination blending op on color channels.
-	    private D3D11.BlendOption _destinationColorBlend;
+	    private Blend _destinationColorBlend;
         // The source blending op on the alpha channel.
-	    private D3D11.BlendOption _sourceAlphaBlend;
+	    private Blend _sourceAlphaBlend;
         // The destination blending op on the alpha channel.
-	    private D3D11.BlendOption _destinationAlphaBlend;
+	    private Blend _destinationAlphaBlend;
         // The logical operation to perform when blending.
-	    private D3D11.LogicOperation _logicOperation;
+	    private LogicOperation _logicOperation;
         // The mask used to enable/disable channels when writing blended data.
-	    private D3D11.ColorWriteMaskFlags _writeMask;
+	    private WriteMask _writeMask;
 	    #endregion
 
         #region Properties.
@@ -180,10 +454,10 @@ namespace Gorgon.Graphics.Core
 	    /// This value specifies the type how to combine the <see cref="SourceColorBlend"/> and <see cref="DestinationColorBlend"/> operation results.
 	    /// </para>
 	    /// <para>
-	    /// The default value is <c>Add</c>.
+	    /// The default value is <see cref="BlendOperation.Add"/>.
 	    /// </para>
 	    /// </remarks>
-	    public D3D11.BlendOperation ColorBlendOperation
+	    public BlendOperation ColorBlendOperation
 	    {
 	        get => _colorBlendOperation;
 	        set
@@ -201,10 +475,10 @@ namespace Gorgon.Graphics.Core
 	    /// This value specifies the type how to combine the <see cref="SourceAlphaBlend"/> and <see cref="DestinationAlphaBlend"/> operation results.
 	    /// </para>
 	    /// <para>
-	    /// The default value is <c>Add</c>.
+	    /// The default value is <see cref="BlendOperation.Add"/>.
 	    /// </para>
 	    /// </remarks>
-	    public D3D11.BlendOperation AlphaBlendOperation
+	    public BlendOperation AlphaBlendOperation
 	    {
 	        get => _alphaBlendOperation;
 	        set
@@ -222,10 +496,10 @@ namespace Gorgon.Graphics.Core
 	    /// This defines the type of operation to apply to the color (RGB) components of a pixel being blended from the source pixel data. 
 	    /// </para> 
 	    /// <para>
-	    /// The default value is <c>One</c>.
+	    /// The default value is <see cref="Blend.One"/>.
 	    /// </para>
 	    /// </remarks>
-	    public D3D11.BlendOption SourceColorBlend
+	    public Blend SourceColorBlend
 	    {
 	        get => _sourceColorBlend;
 	        set
@@ -243,10 +517,10 @@ namespace Gorgon.Graphics.Core
 	    /// This defines the type of operation to apply to the color (RGB) components of a pixel being blended with the destination pixel data. 
 	    /// </para> 
 	    /// <para>
-	    /// The default value is <c>Zero</c>.
+	    /// The default value is <see cref="Blend.Zero"/>.
 	    /// </para>
 	    /// </remarks>
-	    public D3D11.BlendOption DestinationColorBlend
+	    public Blend DestinationColorBlend
 	    {
 	        get => _destinationColorBlend;
 	        set
@@ -264,10 +538,10 @@ namespace Gorgon.Graphics.Core
 	    /// This defines the type of operation to apply to the alpha component of a pixel being blended from the source pixel data. 
 	    /// </para> 
 	    /// <para>
-	    /// The default value is <c>One</c>.
+	    /// The default value is <see cref="Blend.One"/>.
 	    /// </para>
 	    /// </remarks>
-	    public D3D11.BlendOption SourceAlphaBlend
+	    public Blend SourceAlphaBlend
 	    {
 	        get => _sourceAlphaBlend;
 	        set
@@ -285,10 +559,10 @@ namespace Gorgon.Graphics.Core
 	    /// This defines the type of operation to apply to the alpha component of a pixel being blended with the destination pixel data. 
 	    /// </para> 
 	    /// <para>
-	    /// The default value is <c>Zero</c>.
+	    /// The default value is <see cref="Blend.Zero"/>.
 	    /// </para>
 	    /// </remarks>
-	    public D3D11.BlendOption DestinationAlphaBlend
+	    public Blend DestinationAlphaBlend
 	    {
 	        get => _destinationAlphaBlend;
 	        set
@@ -307,10 +581,10 @@ namespace Gorgon.Graphics.Core
 	    /// This provides extra functionality used when performing a blending operation. See <a target="_blank" href="https://msdn.microsoft.com/en-us/library/windows/desktop/hh404484(v=vs.85).aspx">this link</a> for more details.
 	    /// </para>
 	    /// <para>
-	    /// The default value is <c>Noop</c>.
+	    /// The default value is <see cref="Core.LogicOperation.Noop"/>.
 	    /// </para>
 	    /// </remarks>
-	    public D3D11.LogicOperation LogicOperation
+	    public LogicOperation LogicOperation
 	    {
 	        get => _logicOperation;
 	        set
@@ -328,10 +602,10 @@ namespace Gorgon.Graphics.Core
 	    /// This provides the ability to allow writes to only the specified component(s) defined in the mask. To define multiple components, combine the flags with the OR operator.
 	    /// </para>
 	    /// <para>
-	    /// The default value is <c>All</c>.
+	    /// The default value is <see cref="Core.WriteMask.All"/>.
 	    /// </para>
 	    /// </remarks>
-	    public D3D11.ColorWriteMaskFlags WriteMask
+	    public WriteMask WriteMask
 	    {
 	        get => _writeMask;
 	        set
@@ -424,11 +698,11 @@ namespace Gorgon.Graphics.Core
         public GorgonBlendState()
         {
             ID = Interlocked.Increment(ref _stateID);
-			_logicOperation = D3D11.LogicOperation.Noop;
-			_sourceAlphaBlend = _sourceColorBlend = D3D11.BlendOption.One;
-			_destinationAlphaBlend = _destinationColorBlend = D3D11.BlendOption.Zero;
-			_alphaBlendOperation = _colorBlendOperation = D3D11.BlendOperation.Add;
-			_writeMask = D3D11.ColorWriteMaskFlags.All;
+			_logicOperation = LogicOperation.Noop;
+			_sourceAlphaBlend = _sourceColorBlend = Blend.One;
+			_destinationAlphaBlend = _destinationColorBlend = Blend.Zero;
+			_alphaBlendOperation = _colorBlendOperation = BlendOperation.Add;
+			_writeMask = WriteMask.All;
 		}
 
 		/// <summary>
@@ -440,8 +714,8 @@ namespace Gorgon.Graphics.Core
 		    Default = new GorgonBlendState
 		              {
 		                  IsBlendingEnabled = true,
-		                  SourceColorBlend = D3D11.BlendOption.SourceAlpha,
-		                  DestinationColorBlend = D3D11.BlendOption.InverseSourceAlpha,
+		                  SourceColorBlend = Blend.SourceAlpha,
+		                  DestinationColorBlend = Blend.InverseSourceAlpha,
 		                  IsLocked = true
 		              };
 
@@ -450,8 +724,8 @@ namespace Gorgon.Graphics.Core
 			Additive = new GorgonBlendState
 			{
 				IsBlendingEnabled = true,
-				SourceColorBlend = D3D11.BlendOption.SourceAlpha,
-				DestinationColorBlend = D3D11.BlendOption.One,
+				SourceColorBlend = Blend.SourceAlpha,
+				DestinationColorBlend = Blend.One,
 			    IsLocked = true
             };
 
@@ -459,8 +733,8 @@ namespace Gorgon.Graphics.Core
 			Premultiplied = new GorgonBlendState
 			{
 				IsBlendingEnabled = true,
-				SourceColorBlend = D3D11.BlendOption.One,
-				DestinationColorBlend = D3D11.BlendOption.InverseSourceAlpha,
+				SourceColorBlend = Blend.One,
+				DestinationColorBlend = Blend.InverseSourceAlpha,
 			    IsLocked = true
             };
 
@@ -468,8 +742,8 @@ namespace Gorgon.Graphics.Core
 			Inverted = new GorgonBlendState
 			{
 				IsBlendingEnabled = true,
-				SourceColorBlend = D3D11.BlendOption.InverseDestinationColor,
-				DestinationColorBlend = D3D11.BlendOption.InverseSourceColor,
+				SourceColorBlend = Blend.InverseDestinationColor,
+				DestinationColorBlend = Blend.InverseSourceColor,
 			    IsLocked = true
             };
 		}

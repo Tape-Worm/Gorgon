@@ -42,7 +42,7 @@ namespace Gorgon.Graphics.Core
         /// Property to return the intended usage for binding to the GPU.
         /// </summary>
         /// <remarks>
-        /// The default value is <c>Default</c>.
+        /// The default value is <see cref="ResourceUsage.Default"/>.
         /// </remarks>
         ResourceUsage Usage
         {
@@ -73,7 +73,8 @@ namespace Gorgon.Graphics.Core
         /// Different bindings may be applied at the same time by OR'ing the <see cref="BufferBinding"/> flags together.
         /// </para>
         /// <para>
-        /// If the <see cref="Usage"/> is set to <c>Staging</c>, then this value must be set to <see cref="BufferBinding.None"/>, otherwise an exception will be raised when the buffer is created.
+        /// If the <see cref="Usage"/> is set to <see cref="ResourceUsage.Staging"/>, then this value must be set to <see cref="BufferBinding.None"/>, otherwise an exception will be raised when the buffer 
+        /// is created.
         /// </para>
         /// <para>
         /// The default value is <see cref="BufferBinding.Shader"/>

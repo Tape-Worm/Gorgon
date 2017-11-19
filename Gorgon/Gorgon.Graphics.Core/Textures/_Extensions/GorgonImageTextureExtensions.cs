@@ -71,7 +71,7 @@ namespace Gorgon.Graphics.Core
 	    ///		</item>
 	    ///		<item>
 	    ///			<term>Usage</term>
-	    ///			<description>When defined, will indicate the preferred usage for the texture. If it is omitted, then the usage will be set to <c>Default</c>.</description>
+	    ///			<description>When defined, will indicate the preferred usage for the texture. If it is omitted, then the usage will be set to <see cref="ResourceUsage.Default"/>.</description>
 	    ///		</item>
 	    ///		<item>
 	    ///			<term>Multisample info</term>
@@ -142,7 +142,7 @@ namespace Gorgon.Graphics.Core
         ///		</item>
         ///		<item>
         ///			<term>Usage</term>
-        ///			<description>When defined, will indicate the preferred usage for the texture. If it is omitted, then the usage will be set to <c>Default</c>.</description>
+        ///			<description>When defined, will indicate the preferred usage for the texture. If it is omitted, then the usage will be set to <see cref="ResourceUsage.Default"/>.</description>
         ///		</item>
         ///		<item>
         ///			<term>Multisample info</term>

@@ -46,7 +46,7 @@ namespace Gorgon.Graphics.Core
 		/// Property to set or return the intended usage flags for this texture.
 		/// </summary>
 		/// <remarks>
-		/// This value is defaulted to <c>Default</c>.
+		/// This value is defaulted to <see cref="ResourceUsage.Default"/>.
 		/// </remarks>
 		public ResourceUsage Usage
 		{

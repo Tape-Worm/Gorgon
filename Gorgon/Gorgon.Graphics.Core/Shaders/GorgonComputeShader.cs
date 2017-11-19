@@ -24,12 +24,98 @@
 // 
 #endregion
 
+using System;
 using System.IO;
 using D3DCompiler = SharpDX.D3DCompiler;
-using D3D = SharpDX.Direct3D11;
+using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
 {
+    /// <summary>
+    /// Defines what functionality is available for a <see cref="BufferFormat"/> and a Compute Shader.
+    /// </summary>
+    [Flags]
+    public enum ComputeShaderFormatSupport
+    {
+        /// <summary>
+        /// No support.
+        /// </summary>
+        None = D3D11.ComputeShaderFormatSupport.None,
+        /// <summary>
+        /// <para>
+        /// Format supports atomic add.
+        /// </para>
+        /// </summary>
+        AtomicAdd = D3D11.ComputeShaderFormatSupport.AtomicAdd,
+        /// <summary>
+        /// <para>
+        /// Format supports atomic bitwise operations.
+        /// </para>
+        /// </summary>
+        AtomicBitwiseOperations = D3D11.ComputeShaderFormatSupport.AtomicBitwiseOperations,
+        /// <summary>
+        /// <para>
+        /// Format supports atomic compare with store or exchange.
+        /// </para>
+        /// </summary>
+        AtomCompareStoreOrExchange = D3D11.ComputeShaderFormatSupport.AtomicCompareStoreOrCompareExchange,
+        /// <summary>
+        /// <para>
+        /// Format supports atomic exchange.
+        /// </para>
+        /// </summary>
+        AtomicExchange = D3D11.ComputeShaderFormatSupport.AtomicExchange,
+        /// <summary>
+        /// <para>
+        /// Format supports atomic min and max.
+        /// </para>
+        /// </summary>
+        AtomicSignedMinMax = D3D11.ComputeShaderFormatSupport.AtomicSignedMinimumOrMaximum,
+        /// <summary>
+        /// <para>
+        /// Format supports atomic unsigned min and max.
+        /// </para>
+        /// </summary>
+        AtomicUnsignedMinMax = D3D11.ComputeShaderFormatSupport.AtomicUnsignedMinimumOrMaximum,
+        /// <summary>
+        /// <para>
+        /// Format supports a typed load.
+        /// </para>
+        /// </summary>
+        TypedLoad = D3D11.ComputeShaderFormatSupport.TypedLoad,
+        /// <summary>
+        /// <para>
+        /// Format supports a typed store.
+        /// </para>
+        /// </summary>
+        TypedStore = D3D11.ComputeShaderFormatSupport.TypedStore,
+        /// <summary>
+        /// <para>
+        /// Format supports logic operations in blend state.
+        /// </para>
+        /// </summary>
+        OutputMergerLogicOperation = D3D11.ComputeShaderFormatSupport.OutputMergerLogicOperation,
+        /// <summary>
+        /// <para>
+        /// Format supports tiled resources.
+        /// </para>
+        /// </summary>
+        Tiled = D3D11.ComputeShaderFormatSupport.Tiled,
+        /// <summary>
+        /// <para>
+        /// Format supports shareable resources.
+        /// </para>
+        /// </summary>
+        Shareable = D3D11.ComputeShaderFormatSupport.Shareable,
+        /// <summary>
+        /// <para>
+        /// Format supports multi-plane overlays.
+        /// </para>
+        /// </summary>
+        MultiplaneOverlay = D3D11.ComputeShaderFormatSupport.MultiplaneOverlay
+    }
+
+
     /// <summary>
     /// A shader that performs mathematical and other operations in parallel using the GPU.
     /// </summary>
@@ -42,13 +128,6 @@ namespace Gorgon.Graphics.Core
     /// In Gorgon, shaders can be compiled from a string containing source code via the <see cref="GorgonShaderFactory"/>, or loaded from a <see cref="Stream"/> or file for quicker access. The 
     /// <see cref="GorgonShaderFactory"/> is required to compile or read shaders, they cannot be created via the <c>new</c> keyword.
     /// </para>
-    /// <para>
-    /// <note type="important">
-    /// <para>
-    /// A compute shader requires a video adapter with a <see cref="IGorgonVideoAdapter.RequestedFeatureLevel"/> of <c>Level_11_0</c> or better.
-    /// </para>
-    /// </note>
-    /// </para>
 	/// </remarks>
     public sealed class GorgonComputeShader
 		: GorgonShader
@@ -57,7 +136,7 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Property to return the Direct 3D compute shader.
 		/// </summary>
-		internal D3D.ComputeShader NativeShader
+		internal D3D11.ComputeShader NativeShader
 		{
 			get;
 		}
@@ -90,7 +169,7 @@ namespace Gorgon.Graphics.Core
 	    internal GorgonComputeShader(IGorgonVideoAdapter videoAdapter, string name, bool isDebug, D3DCompiler.ShaderBytecode byteCode)
 	        : base(videoAdapter, name, isDebug, byteCode)
 	    {
-	        NativeShader = new D3D.ComputeShader(videoAdapter.D3DDevice(), byteCode)
+	        NativeShader = new D3D11.ComputeShader(videoAdapter.D3DDevice(), byteCode)
 	                       {
 	                           DebugName = name + " D3D11ComputeShader"
 	                       };
