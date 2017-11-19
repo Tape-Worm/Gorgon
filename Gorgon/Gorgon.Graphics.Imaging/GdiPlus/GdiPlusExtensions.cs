@@ -123,8 +123,8 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
         /// and no mip map levels.
         /// </para>
         /// <para>
-        /// Some format conversion is performed on the <paramref name="bitmap"/> when it is imported. The format conversion will always convert to the image format of <c>R8G8B8A8_UNorm</c>. Only the 
-        /// following GDI+ pixel formats are supported for conversion:
+        /// Some format conversion is performed on the <paramref name="bitmap"/> when it is imported. The format conversion will always convert to the image format of <see cref="BufferFormat.R8G8B8A8_UNorm"/>. 
+        /// Only the following GDI+ pixel formats are supported for conversion:
         /// <list type="bullet">
         ///     <item>
         ///         <term><see cref="PixelFormat.Format32bppArgb"/></term>

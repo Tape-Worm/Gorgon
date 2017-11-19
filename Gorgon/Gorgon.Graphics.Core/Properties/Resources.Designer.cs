@@ -336,7 +336,7 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot use multisampling with a depth/stencil texture on feature level 10 devices or below..
+        ///   Looks up a localized string similar to Cannot use multisampling with a depth/stencil texture on feature set 10 devices or below..
         /// </summary>
         internal static string GORGFX_ERR_DEPTHSTENCIL_MS_FL101 {
             get {
@@ -372,7 +372,7 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Could not find any supported video adapters.  Gorgon requires a device that can support a minimum feature level of 10.0..
+        ///   Looks up a localized string similar to Could not find any supported video adapters.  Gorgon requires a device that can support a minimum feature set of 10.0..
         /// </summary>
         internal static string GORGFX_ERR_DEVICE_CANNOT_FIND_DEVICES {
             get {
@@ -408,7 +408,7 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The feature level [{0}] is not valid..
+        ///   Looks up a localized string similar to The feature set [{0}] is not valid..
         /// </summary>
         internal static string GORGFX_ERR_FEATURE_LEVEL_INVALID {
             get {
@@ -570,7 +570,7 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A device with feature level {0} (or better) is necessary to use this object or perform this operation..
+        ///   Looks up a localized string similar to A device with feature set {0} (or better) is necessary to use this object or perform this operation..
         /// </summary>
         internal static string GORGFX_ERR_REQUIRES_FEATURE_LEVEL {
             get {
@@ -1040,7 +1040,7 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unordered access views for textures requires a feature level 11 or better video adapter..
+        ///   Looks up a localized string similar to Unordered access views for textures requires a feature set 11 or better video adapter..
         /// </summary>
         internal static string GORGFX_ERR_UAV_REQUIRES_SM5 {
             get {

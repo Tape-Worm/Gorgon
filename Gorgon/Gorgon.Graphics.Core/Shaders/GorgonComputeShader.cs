@@ -83,14 +83,14 @@ namespace Gorgon.Graphics.Core
 	    /// <summary>
 	    /// Initializes a new instance of the <see cref="GorgonVertexShader" /> class.
 	    /// </summary>
-	    /// <param name="videoDevice">The video adapter used to create the shader.</param>
+	    /// <param name="videoAdapter">The video adapter used to create the shader.</param>
 	    /// <param name="name">The name for this shader.</param>
 	    /// <param name="isDebug"><b>true</b> if debug information is included in the byte code, <b>false</b> if not.</param>
 	    /// <param name="byteCode">The byte code for the shader..</param>
-	    internal GorgonComputeShader(IGorgonVideoAdapter videoDevice, string name, bool isDebug, D3DCompiler.ShaderBytecode byteCode)
-	        : base(videoDevice, name, isDebug, byteCode)
+	    internal GorgonComputeShader(IGorgonVideoAdapter videoAdapter, string name, bool isDebug, D3DCompiler.ShaderBytecode byteCode)
+	        : base(videoAdapter, name, isDebug, byteCode)
 	    {
-	        NativeShader = new D3D.ComputeShader(videoDevice.D3DDevice(), byteCode)
+	        NativeShader = new D3D.ComputeShader(videoAdapter.D3DDevice(), byteCode)
 	                       {
 	                           DebugName = name + " D3D11ComputeShader"
 	                       };

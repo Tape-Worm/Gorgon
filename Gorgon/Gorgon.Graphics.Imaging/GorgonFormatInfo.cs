@@ -115,7 +115,7 @@ namespace Gorgon.Graphics
 		/// formats in the group.
 		/// </para>
 		/// <para>
-		/// For example, <c>Format.R8G8B8A8_UNorm</c> would be a member of the group <c>Format.R8G8B8A8_Typeless</c>, as would <c>Format.R8G8B8A8_SInt</c>.
+		/// For example, <see cref="BufferFormat.R8G8B8A8_UNorm"/> would be a member of the group <see cref="BufferFormat.R8G8B8A8_Typeless"/>, as would <see cref="BufferFormat.R8G8B8A8_SInt"/>.
 		/// </para>
 		/// </remarks>
 		public BufferFormat Group
@@ -153,14 +153,14 @@ namespace Gorgon.Graphics
 			private set;
 		}
 
-		/// <summary>
-		/// Property to return the bit depth for the format.
-		/// </summary>
-		/// <remarks>
-		/// This is the number of bits in the format, not per component. For example, <c>Format.R8G8B8A8_UNorm</c> would be 32 bits, and <c>Format.R5G6B5_UNorm</c> would be 16 
-		/// bits.
-		/// </remarks>
-		public int BitDepth
+        /// <summary>
+        /// Property to return the bit depth for the format.
+        /// </summary>
+        /// <remarks>
+        /// This is the number of bits in the format, not per component. For example, <see cref="BufferFormat.R8G8B8A8_UNorm"/> would be 32 bits, and <see cref="BufferFormat.B5G6R5_UNorm"/> would be 16 
+        /// bits.
+        /// </remarks>
+        public int BitDepth
 		{
 			get;
 			private set;
@@ -1045,7 +1045,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="format">The format to evaluate.</param>
 		/// <remarks>
-		/// If the <paramref name="format"/> parameter is set to <c>Format.Unknown</c>, then the members of this object, except for <see cref="Group"/>, will be set to default values and may not be accurate. 
+		/// If the <paramref name="format"/> parameter is set to <see cref="BufferFormat.Unknown"/>, then the members of this object, except for <see cref="Group"/>, will be set to default values and may not be accurate. 
 		/// </remarks>
 		public GorgonFormatInfo(BufferFormat format)
 		{

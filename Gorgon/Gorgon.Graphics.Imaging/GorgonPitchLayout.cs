@@ -78,19 +78,19 @@ namespace Gorgon.Graphics.Imaging
 		/// The number of horizontal blocks in a compressed format.
 		/// </summary>
 		/// <remarks>
-		/// In the block compressed formats (e.g. <c>Format.BC3_UNorm</c>), the dimensions of the images are broken up into 4x4 blocks. This value indicates the total number of 4x4 blocks across 
+		/// In the block compressed formats (e.g. <see cref="BufferFormat.BC3_UNorm"/>), the dimensions of the images are broken up into 4x4 blocks. This value indicates the total number of 4x4 blocks across 
 		/// the width of the image. For example, if an image has a width of 256 pixels, it would be 64 blocks in the horizontal direction.
 		/// </remarks>
 		public readonly int HorizontalBlockCount;
 
-		/// <summary>
-		/// The number of vertical blocks in a compressed format.
-		/// </summary>
-		/// <remarks>
-		/// In the block compressed formats (e.g. <c>Format.BC3_UNorm</c>), the dimensions of the images are broken up into 4x4 blocks. This value indicates the total number of 4x4 blocks across 
-		/// the height of the image. For example, if an image has a height of 256 pixels, it would be 64 blocks in the vertical direction.
-		/// </remarks>
-		public readonly int VerticalBlockCount;
+        /// <summary>
+        /// The number of vertical blocks in a compressed format.
+        /// </summary>
+        /// <remarks>
+        /// In the block compressed formats (e.g. <see cref="BufferFormat.BC3_UNorm"/>), the dimensions of the images are broken up into 4x4 blocks. This value indicates the total number of 4x4 blocks across 
+        /// the height of the image. For example, if an image has a height of 256 pixels, it would be 64 blocks in the vertical direction.
+        /// </remarks>
+        public readonly int VerticalBlockCount;
 		#endregion
 
 		#region Methods.
@@ -181,28 +181,28 @@ namespace Gorgon.Graphics.Imaging
 		{
 			return !Equals(ref left, ref right);
 		}
-		#endregion
+        #endregion
 
-		#region Constructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonPitchLayout" /> struct.
-		/// </summary>
-		/// <param name="rowPitch">The number of bytes for a row in an image, or the total bytes for other buffer types.</param>
-		/// <param name="slicePitch">The number of bytes between each slice in a depth (3D) image, or, for other image types, this indicates the total size of the image in bytes.</param>
-		/// <param name="horizontalBlockCount">[Optional] The number of horizontal blocks in a block compressed format.</param>
-		/// <param name="verticalBlockCount">[Optional] The number of vertical blocks in a block compressed format.</param>
-		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="horizontalBlockCount"/> is greater than 0, and the <paramref name="verticalBlockCount"/> is 0, or the <paramref name="verticalBlockCount"/> is greater than 0, and the <paramref name="horizontalBlockCount"/> is 0.</exception>
-		/// <remarks>
-		/// <para>
-		/// For a 2D image, the <paramref name="slicePitch"/> indicates the total size of the image, in bytes (typically <paramref name="rowPitch"/> * height). In a depth image (3D), this indicates the size, in 
-		/// bytes, of a single slice along the Z-axis of the image. For other buffer types, this will be the same as the <paramref name="rowPitch"/> parameter.
-		/// </para>
-		/// <para>
-		/// If the format is a block compressed image (e.g. <c>Format.BC3_UNorm</c>), then both the <paramref name="horizontalBlockCount"/>, and the <paramref name="verticalBlockCount"/> must be 
-		/// larger than 0. Otherwise an exception will be thrown.
-		/// </para>
-		/// </remarks>
-		public GorgonPitchLayout(int rowPitch, int slicePitch, int horizontalBlockCount = 0, int verticalBlockCount = 0)
+        #region Constructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonPitchLayout" /> struct.
+        /// </summary>
+        /// <param name="rowPitch">The number of bytes for a row in an image, or the total bytes for other buffer types.</param>
+        /// <param name="slicePitch">The number of bytes between each slice in a depth (3D) image, or, for other image types, this indicates the total size of the image in bytes.</param>
+        /// <param name="horizontalBlockCount">[Optional] The number of horizontal blocks in a block compressed format.</param>
+        /// <param name="verticalBlockCount">[Optional] The number of vertical blocks in a block compressed format.</param>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="horizontalBlockCount"/> is greater than 0, and the <paramref name="verticalBlockCount"/> is 0, or the <paramref name="verticalBlockCount"/> is greater than 0, and the <paramref name="horizontalBlockCount"/> is 0.</exception>
+        /// <remarks>
+        /// <para>
+        /// For a 2D image, the <paramref name="slicePitch"/> indicates the total size of the image, in bytes (typically <paramref name="rowPitch"/> * height). In a depth image (3D), this indicates the size, in 
+        /// bytes, of a single slice along the Z-axis of the image. For other buffer types, this will be the same as the <paramref name="rowPitch"/> parameter.
+        /// </para>
+        /// <para>
+        /// If the format is a block compressed image (e.g. <see cref="BufferFormat.BC3_UNorm"/>), then both the <paramref name="horizontalBlockCount"/>, and the <paramref name="verticalBlockCount"/> must be 
+        /// larger than 0. Otherwise an exception will be thrown.
+        /// </para>
+        /// </remarks>
+        public GorgonPitchLayout(int rowPitch, int slicePitch, int horizontalBlockCount = 0, int verticalBlockCount = 0)
 		{
 			RowPitch = rowPitch;
 			SlicePitch = slicePitch;

@@ -526,7 +526,7 @@ namespace Gorgon.Graphics.Core
         /// <para>
         /// <note type="information">
         /// <para>
-        /// These views require a feature level of <c>Level_11_0</c> or better. For devices that support a feature level of <c>Level_11_1</c>, these views can be accessed from any shader stage. However, on 
+        /// These views require a feature set of <c>Level_11_0</c> or better. For devices that support a feature set of <c>Level_11_1</c>, these views can be accessed from any shader stage. However, on 
         /// devices with only <c>Level_11_0</c> support, only the pixel and compute shaders can access unordered access views.
         /// </para>
         /// </note>

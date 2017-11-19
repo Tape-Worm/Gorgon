@@ -37,6 +37,10 @@ namespace Gorgon.Graphics.Core
     public enum BufferFormatSupport
     {
         /// <summary>
+        /// No support.
+        /// </summary>
+        None = D3D11.FormatSupport.None,
+        /// <summary>
         /// <para>
         /// Buffer resources supported.
         /// </para>

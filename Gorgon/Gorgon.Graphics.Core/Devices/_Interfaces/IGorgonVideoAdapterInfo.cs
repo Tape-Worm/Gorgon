@@ -35,7 +35,7 @@ namespace Gorgon.Graphics.Core
 	/// </summary>
 	/// <remarks>
 	/// <para>
-	/// A feature level is used to describe what functionality a video adapter can support when using Direct 3D. For example, shader model 5 shaders are only supported by devices that support Direct 3D 12.0
+	/// A feature set is used to describe what functionality a video adapter can support when using Direct 3D. For example, shader model 5 shaders are only supported by devices that support Direct 3D 12.0
 	/// or greater, and this will be reflected by a value of <see cref="Level_12_0"/>, or <see cref="Level_12_1"/>.
 	/// </para>
 	/// <para>
@@ -106,7 +106,7 @@ namespace Gorgon.Graphics.Core
 		}
 
 		/// <summary>
-		/// Property to return the highest feature level that the hardware can support.
+		/// Property to return the highest feature set that the hardware can support.
 		/// </summary>
 		FeatureSet SupportedFeatureLevel
 		{

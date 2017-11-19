@@ -38,7 +38,7 @@ namespace Gorgon.Graphics.Core
 	/// This information may be for a physical hardware device, or a software rasterizer.  To determine which type this device falls under, se the <see cref="VideoDeviceType"/> property to determine the type of device.
 	/// </para>
 	/// </remarks>
-	internal class VideoDeviceInfo
+	internal class VideoAdapterInfo
 		: IGorgonVideoAdapterInfo
 	{
 		#region Variables.
@@ -72,7 +72,7 @@ namespace Gorgon.Graphics.Core
 		}
 
 		/// <summary>
-		/// Property to return the highest feature level that the hardware can support.
+		/// Property to return the highest feature set that the hardware can support.
 		/// </summary>
 		public FeatureSet SupportedFeatureLevel
 		{
@@ -140,14 +140,14 @@ namespace Gorgon.Graphics.Core
 
 		#region Constructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="VideoDeviceInfo" /> class.
+		/// Initializes a new instance of the <see cref="VideoAdapterInfo" /> class.
 		/// </summary>
 		/// <param name="index">The index of the video adapter within a list.</param>
 		/// <param name="adapter">The DXGI adapter from which to retrieve all information.</param>
 		/// <param name="featureSet">The supported feature set for the video adapter.</param>
 		/// <param name="outputs">The list of outputs attached to the video adapter.</param>
 		/// <param name="deviceType">The type of video adapter.</param>
-		public VideoDeviceInfo(int index,
+		public VideoAdapterInfo(int index,
 		                       DXGI.Adapter2 adapter,
 		                       FeatureSet featureSet,
 		                       IGorgonNamedObjectReadOnlyList<IGorgonVideoOutputInfo> outputs,

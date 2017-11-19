@@ -453,7 +453,7 @@ namespace Gorgon.Graphics.Imaging
 		/// <param name="dithering">[Optional] Flag to indicate the type of dithering to perform when the bit depth for the <paramref name="format"/> is lower than the original bit depth.</param>
 		/// <returns>A <see cref="IGorgonImage"/> containing the image data with the converted pixel format.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="baseImage"/> is <b>null</b>.</exception>
-		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="format"/> is set to <c>Format.Unknown</c>.
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="format"/> is set to <see cref="BufferFormat.Unknown"/>.
 		/// <para>-or-</para>
 		/// <para>Thrown when the original format could not be converted into the desired <paramref name="format"/>.</para>
 		/// </exception>
@@ -519,23 +519,23 @@ namespace Gorgon.Graphics.Imaging
 			}
 		}
 
-		/// <summary>
-		/// Function to convert the image data into a premultiplied format.
-		/// </summary>
-		/// <param name="baseImage">The image to convert.</param>
-		/// <returns>A <see cref="IGorgonImage"/> containing the image data with the premultiplied alpha pixel data.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="baseImage"/> is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the original format could not be converted to <c>R8G8B8A8_UNorm</c>.</exception>
-		/// <remarks>
-		/// <para>
-		/// Use this to convert an image to a premultiplied format. This takes each Red, Green and Blue element and multiplies them by the Alpha element.
-		/// </para>
-		/// <para>
-		/// Because this method will only operate on <c>R8G8B8A8_UNorm</c> formattted image data, the image will be converted to that format and converted back to its original format after the alpha is 
-		/// premultiplied. This may cause color fidelity issues. If the image cannot be converted, then an exception will be thrown. 
-		/// </para>
-		/// </remarks>
-		public static IGorgonImage ConvertToPremultipliedAlpha(this IGorgonImage baseImage)
+        /// <summary>
+        /// Function to convert the image data into a premultiplied format.
+        /// </summary>
+        /// <param name="baseImage">The image to convert.</param>
+        /// <returns>A <see cref="IGorgonImage"/> containing the image data with the premultiplied alpha pixel data.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="baseImage"/> is <b>null</b>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the original format could not be converted to <see cref="BufferFormat.R8G8B8A8_UNorm"/>.</exception>
+        /// <remarks>
+        /// <para>
+        /// Use this to convert an image to a premultiplied format. This takes each Red, Green and Blue element and multiplies them by the Alpha element.
+        /// </para>
+        /// <para>
+        /// Because this method will only operate on <see cref="BufferFormat.R8G8B8A8_UNorm"/> formattted image data, the image will be converted to that format and converted back to its original format 
+        /// after the alpha is premultiplied. This may cause color fidelity issues. If the image cannot be converted, then an exception will be thrown. 
+        /// </para>
+        /// </remarks>
+        public static IGorgonImage ConvertToPremultipliedAlpha(this IGorgonImage baseImage)
 		{
 			IGorgonImage newImage = null;
 

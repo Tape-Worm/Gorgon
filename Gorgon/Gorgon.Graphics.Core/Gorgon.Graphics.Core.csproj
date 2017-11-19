@@ -119,9 +119,9 @@
     <Compile Include="Compute\GorgonComputeEngine.cs" />
     <Compile Include="Devices\_Interfaces\IGorgonVideoOutputInfo.cs" />
     <Compile Include="Devices\_Interfaces\IGorgonVideoAdapterInfo.cs" />
-    <Compile Include="Devices\_Internal\VideoDeviceInfo.cs" />
+    <Compile Include="Devices\_Internal\VideoAdapter.cs" />
     <Compile Include="Devices\_Internal\VideoAdapterEnumerator.cs" />
-    <Compile Include="Devices\_Internal\VideoDevice.cs" />
+    <Compile Include="Devices\_Internal\VideoAdapterInfo.cs" />
     <Compile Include="Devices\_Internal\VideoOutputInfo.cs" />
     <Compile Include="Devices\_Interfaces\IGorgonVideoAdapter.cs" />
     <Compile Include="Devices\_ValueTypes\GorgonVideoAdapterMemory.cs" />

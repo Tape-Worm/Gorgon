@@ -115,7 +115,7 @@ namespace Gorgon.Graphics.Imaging
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// If the value is set to <c>Format.Unknown</c>, then an exception will be thrown upon image creation.
+		/// If the value is set to <see cref="BufferFormat.Unknown"/>, then an exception will be thrown upon image creation.
 		/// </para>
 		/// </remarks>
 		BufferFormat Format

@@ -910,47 +910,47 @@ namespace Gorgon.Graphics.Core
 			return _lockCache.Lock(lockFlags, mipLevel, arrayIndex);
 		}
 
-		/// <summary>
-		/// Function to copy this texture into another <see cref="GorgonTexture"/>.
-		/// </summary>
-		/// <param name="destTexture">The <see cref="GorgonTexture"/> that will receive a copy of this texture.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="destTexture"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the formats cannot be converted because they're not of the same group or the current video adapter has a feature level of <see cref="FeatureSet.Level_12_0"/>.
-		/// <para>-or-</para>
-		/// <para>Thrown when the <see cref="IGorgonTextureInfo.MultisampleInfo"/>.<see cref="GorgonMultisampleInfo.Count"/> is not the same for the source <paramref name="destTexture"/> and this texture.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when the texture sizes are not the same.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when the texture types are not the same.</para>
-		/// </exception>
-		/// <exception cref="NotSupportedException">Thrown when this texture has a <see cref="IGorgonTextureInfo.Usage"/> setting of <c>Immutable</c>.</exception>
-		/// <remarks>
-		/// <para>
-		/// This method copies the contents of this texture into the texture specified by the <paramref name="destTexture"/> parameter. If a sub resource for the <paramref name="destTexture"/> must be 
-		/// copied, use the <see cref="CopySubResource"/> method.
-		/// </para>
-		/// <para>
-		/// This method does not perform stretching, filtering or clipping.
-		/// </para>
-		/// <para>
-		/// The <paramref name="destTexture"/> dimensions must be have the same dimensions, and <see cref="IGorgonTextureInfo.MultisampleInfo"/> as this texture. As well, the destination texture must not 
-		/// have a <see cref="IGorgonTextureInfo.Usage"/> of <c>Immutable.</c>. If these contraints are violated, then an exception will be thrown.
-		/// </para>
-		/// <para>
-		/// If the current video adapter has a feature level better than <see cref="FeatureSet.Level_12_0"/>, then limited format conversion will be performed if the two textures are within the same bit 
-		/// group (e.g. <c>R8G8B8A8_SInt</c> is convertible to <c>R8G8B8A8_UInt</c> and so on, since they are both R8G8B8A8). If the feature level is <see cref="FeatureSet.Level_12_0"/>, or the bit group 
-		/// does not match, then an exception will be thrown.
-		/// </para>
-		/// <para>
-		/// <note type="important">
-		/// <para>
-		/// For performance reasons, any exceptions thrown from this method will only be thrown when Gorgon is compiled as DEBUG.
-		/// </para>
-		/// </note>
-		/// </para>
-		/// </remarks>
-		/// <seealso cref="CopySubResource"/>
-		public void CopyTo(GorgonTexture destTexture)
+        /// <summary>
+        /// Function to copy this texture into another <see cref="GorgonTexture"/>.
+        /// </summary>
+        /// <param name="destTexture">The <see cref="GorgonTexture"/> that will receive a copy of this texture.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="destTexture"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the formats cannot be converted because they're not of the same group or the current video adapter has a feature set of <see cref="FeatureSet.Level_12_0"/>.
+        /// <para>-or-</para>
+        /// <para>Thrown when the <see cref="IGorgonTextureInfo.MultisampleInfo"/>.<see cref="GorgonMultisampleInfo.Count"/> is not the same for the source <paramref name="destTexture"/> and this texture.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the texture sizes are not the same.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the texture types are not the same.</para>
+        /// </exception>
+        /// <exception cref="NotSupportedException">Thrown when this texture has a <see cref="IGorgonTextureInfo.Usage"/> setting of <c>Immutable</c>.</exception>
+        /// <remarks>
+        /// <para>
+        /// This method copies the contents of this texture into the texture specified by the <paramref name="destTexture"/> parameter. If a sub resource for the <paramref name="destTexture"/> must be 
+        /// copied, use the <see cref="CopySubResource"/> method.
+        /// </para>
+        /// <para>
+        /// This method does not perform stretching, filtering or clipping.
+        /// </para>
+        /// <para>
+        /// The <paramref name="destTexture"/> dimensions must be have the same dimensions, and <see cref="IGorgonTextureInfo.MultisampleInfo"/> as this texture. As well, the destination texture must not 
+        /// have a <see cref="IGorgonTextureInfo.Usage"/> of <c>Immutable.</c>. If these contraints are violated, then an exception will be thrown.
+        /// </para>
+        /// <para>
+        /// If the current video adapter has a feature set better than <see cref="FeatureSet.Level_12_0"/>, then limited format conversion will be performed if the two textures are within the same bit 
+        /// group (e.g. <see cref="BufferFormat.R8G8B8A8_SInt"/> is convertible to <see cref="BufferFormat.R8G8B8A8_UInt"/> and so on, since they are both <c>R8G8B8A8</c>). If the feature set is 
+        /// <see cref="FeatureSet.Level_12_0"/>, or the bit group does not match, then an exception will be thrown.
+        /// </para>
+        /// <para>
+        /// <note type="important">
+        /// <para>
+        /// For performance reasons, any exceptions thrown from this method will only be thrown when Gorgon is compiled as DEBUG.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="CopySubResource"/>
+        public void CopyTo(GorgonTexture destTexture)
 		{
 			destTexture.ValidateObject(nameof(destTexture));
 
@@ -999,7 +999,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="destArrayIndex">[Optional] The array index of the destination sub resource to copy into (for 1D/2D textures only).</param>
 		/// <param name="destMipLevel">[Optional] The mip map level of the destination sub resource to copy into.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the texture parameter is <b>null</b>.</exception>
-		/// <exception cref="NotSupportedException">Thrown when the formats cannot be converted because they're not of the same group or the current video adapter has a feature level of <see cref="FeatureSet.Level_12_0"/>.
+		/// <exception cref="NotSupportedException">Thrown when the formats cannot be converted because they're not of the same group or the current video adapter has a feature set of <see cref="FeatureSet.Level_12_0"/>.
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="sourceTexture"/> is the same as this texture, and the <paramref name="sourceArrayIndex"/>, <paramref name="destArrayIndex"/>, <paramref name="sourceMipLevel"/> and the <paramref name="destMipLevel"/> 
 		/// specified are pointing to the same subresource.</para>
@@ -1014,8 +1014,8 @@ namespace Gorgon.Graphics.Core
 		/// supported by this method. If the entire texture needs to be copied, then use the <see cref="CopyTo"/> method.
 		/// </para>
 		/// <para>
-		/// If the current video adapter has a feature level better than <see cref="FeatureSet.Level_12_0"/>, then limited format conversion will be performed if the two textures are within the same bit 
-		/// group (e.g. <c>R8G8B8A8_SInt</c> is convertible to <c>R8G8B8A8_UInt</c> and so on, since they are both R8G8B8A8). If the feature level is <see cref="FeatureSet.Level_12_0"/>, or the bit group 
+		/// If the current video adapter has a feature set better than <see cref="FeatureSet.Level_12_0"/>, then limited format conversion will be performed if the two textures are within the same bit 
+		/// group (e.g. <c>R8G8B8A8_SInt</c> is convertible to <c>R8G8B8A8_UInt</c> and so on, since they are both R8G8B8A8). If the feature set is <see cref="FeatureSet.Level_12_0"/>, or the bit group 
 		/// does not match, then an exception will be thrown.
 		/// </para>
 		/// <para>
@@ -1574,7 +1574,7 @@ namespace Gorgon.Graphics.Core
         /// This will create a view that makes a texture accessible to shaders. This allows viewing of the texture data in a different format, or even a subsection of the texture from within the shader.
         /// </para>
         /// <para>
-        /// The <paramref name="format"/> parameter is used present the texture data as another format type to the shader. If this value is left at the default of <c>Unknown</c>, then the format from the 
+        /// The <paramref name="format"/> parameter is used present the texture data as another format type to the shader. If this value is left at the default of <see cref="BufferFormat.Unknown"/>, then the format from the 
         /// this texture is used. The <paramref name="format"/> must be castable to the format of this texture. If it is not, an exception will be thrown.
         /// </para>
         /// <para>
@@ -1640,7 +1640,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="arrayOrDepthIndex">[Optional] The array index or depth slice to start viewing from.</param>
         /// <param name="arrayOrDepthCount">[Optional] The number of array indices or depth slices to view.</param>
         /// <returns>A <see cref="GorgonTextureUav"/> used to bind the texture to a shader.</returns>
-        /// <exception cref="GorgonException">Thrown if the video adapter does not support feature level 11 or better.
+        /// <exception cref="GorgonException">Thrown if the video adapter does not support feature set 11 or better.
         /// <para>-or-</para>
         /// <para>Thrown when this texture does not have a <see cref="TextureBinding"/> of <see cref="TextureBinding.UnorderedAccess"/>.</para>
         /// <para>-or-</para>
@@ -1670,7 +1670,7 @@ namespace Gorgon.Graphics.Core
         /// <para>
         /// <note type="important">
         /// <para>
-        /// This method requires a video adapter capable of supporting feature level 11 or better. If the current video adapter does not support feature level 11, an exception will be thrown.
+        /// This method requires a video adapter capable of supporting feature set 11 or better. If the current video adapter does not support feature set 11, an exception will be thrown.
         /// </para>
         /// </note>
         /// </para>
@@ -1757,7 +1757,7 @@ namespace Gorgon.Graphics.Core
         /// <para>-or-</para>
         /// <para>Thrown when the <paramref name="arrayIndex"/> plus the <paramref name="arrayCount"/> is larger than the number of array indices/depth slices for this texture.</para>
         /// <para>-or-</para>
-        /// <para>Thrown if the <paramref name="flags"/> parameter was set to value other than <c>None</c>, and the current video adapter does not support feature level 11 or better.</para>
+        /// <para>Thrown if the <paramref name="flags"/> parameter was set to value other than <c>None</c>, and the current video adapter does not support feature set 11 or better.</para>
         /// </exception>
         /// <exception cref="GorgonException">Thrown if this texture type is <see cref="TextureType.Texture3D"/>.</exception>
         public GorgonDepthStencilView GetDepthStencilView(BufferFormat format = BufferFormat.Unknown, int firstMipLevel = 0, int arrayIndex = 0, int arrayCount = 0, D3D11.DepthStencilViewFlags flags = D3D11.DepthStencilViewFlags.None)
@@ -1847,7 +1847,7 @@ namespace Gorgon.Graphics.Core
         /// This will create a view that allows a texture to become a render target. This allows rendering into texture data in a different format, or even a subsection of the texture.
         /// </para>
         /// <para>
-        /// The <paramref name="format"/> parameter is used present the texture data as another format type to the shader. If this value is left at the default of <c>Unknown</c>, then the format from the 
+        /// The <paramref name="format"/> parameter is used present the texture data as another format type to the shader. If this value is left at the default of <see cref="BufferFormat.Unknown"/>, then the format from the 
         /// this texture is used. The <paramref name="format"/> must be castable to the format of this texture. If it is not, an exception will be thrown.
         /// </para>
         /// <para>

@@ -76,13 +76,13 @@ namespace Gorgon.Graphics.Core
 			set;
 		}
 
-		/// <summary>
-		/// Property to set or return the format of the swap chain back buffer.
-		/// </summary>
-		/// <remarks>
-		/// The default value is <c>R8G8B8A8_UNorm</c>.
-		/// </remarks>
-		public BufferFormat Format
+        /// <summary>
+        /// Property to set or return the format of the swap chain back buffer.
+        /// </summary>
+        /// <remarks>
+        /// The default value is <see cref="BufferFormat.R8G8B8A8_UNorm"/>
+        /// </remarks>
+        public BufferFormat Format
 		{
 			get;
 			set;
@@ -93,14 +93,14 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <remarks>
         /// <para>
-        /// This value must be set to one of the depth formats (<c>D16_UNorm</c>, <c>D24_UNorm_S8_UInt</c>, <c>D32_Float</c>, or <c>D32_Float_S8X24_UInt</c>), or <c>Unknown</c>. Any other value will cause 
+        /// This value must be set to one of the depth formats (<see cref="BufferFormat.D16_UNorm"/>, <see cref="BufferFormat.D24_UNorm_S8_UInt"/>, <see cref="BufferFormat.D32_Float"/>, or <see cref="BufferFormat.D32_Float_S8X24_UInt"/>), or <see cref="BufferFormat.Unknown"/>. Any other value will cause 
         /// an exception when the swap chain is created. 
         /// </para>
         /// <para>
-        /// If this value is set to <c>Unknown</c>, then no depth buffer will be created for this swap chain.
+        /// If this value is set to <see cref="BufferFormat.Unknown"/>, then no depth buffer will be created for this swap chain.
         /// </para>
         /// <para>
-        /// The default value <c>Unknown</c>.
+        /// The default value <see cref="BufferFormat.Unknown"/>.
         /// </para>
         /// </remarks>
 	    public BufferFormat DepthStencilFormat

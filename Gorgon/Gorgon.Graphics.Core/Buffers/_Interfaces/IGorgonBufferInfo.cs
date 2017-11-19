@@ -117,7 +117,7 @@ namespace Gorgon.Graphics.Core
         /// <remarks>
         /// <para>
         /// Use this to define a default <see cref="GorgonBufferView"/> for the buffer. This default view will allow shaders to access the buffer without needing to create an additional view. If this 
-        /// value is set to <c>Unknown</c>, then no default shader view will be created.
+        /// value is set to <see cref="BufferFormat.Unknown"/>, then no default shader view will be created.
         /// </para>
         /// <para>
         /// The default shader view will expose the entire buffer to the shader. To limit view to only a portion of the buffer, call the <see cref="GorgonBuffer.GetShaderResourceView"/> with the appropriate 
@@ -134,7 +134,7 @@ namespace Gorgon.Graphics.Core
         /// </note>
         /// </para>
         /// <para>
-        /// The default value for this property is <c>Unknown</c>.
+        /// The default value for this property is <see cref="BufferFormat.Unknown"/>.
         /// </para>
         /// </remarks>
         BufferFormat DefaultShaderViewFormat

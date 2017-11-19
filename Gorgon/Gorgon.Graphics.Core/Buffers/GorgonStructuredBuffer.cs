@@ -250,7 +250,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="elementCount">[Optional] The number of elements to view.</param>
         /// <param name="uavType">[Optional] The type of uav to create.</param>
         /// <returns>A <see cref="GorgonStructuredBufferUav"/> used to bind the buffer to a shader.</returns>
-        /// <exception cref="GorgonException">Thrown if the video adapter does not support feature level 11 or better.
+        /// <exception cref="GorgonException">Thrown if the video adapter does not support feature set 11 or better.
         /// <para>-or-</para>
         /// <para>Thrown when this buffer does not have a <see cref="BufferBinding"/> of <see cref="BufferBinding.UnorderedAccess"/>.</para>
         /// <para>-or-</para>
@@ -279,7 +279,7 @@ namespace Gorgon.Graphics.Core
         /// <para>
         /// <note type="important">
         /// <para>
-        /// This method requires a video adapter capable of supporting feature level 11 or better. If the current video adapter does not support feature level 11, an exception will be thrown.
+        /// This method requires a video adapter capable of supporting feature set 11 or better. If the current video adapter does not support feature set 11, an exception will be thrown.
         /// </para>
         /// </note>
         /// </para>
@@ -338,7 +338,7 @@ namespace Gorgon.Graphics.Core
         /// <para>-or-</para>
         /// <para>Thrown if the size of the buffer is less than 1 byte.</para>
         /// <para>-or-</para>
-        /// <para>Thrown if this object is created with a device that does not have a feature level of 11.0 or better.</para>
+        /// <para>Thrown if this object is created with a device that does not have a feature set of 11.0 or better.</para>
         /// </exception>
         /// <exception cref="GorgonException">Thrown if the buffer is created with a usage of <c>Immutable</c>, but the <paramref name="initialData"/> parameter is <b>null</b>.</exception>
         public GorgonStructuredBuffer(GorgonGraphics graphics, string name, IGorgonStructuredBufferInfo info, IGorgonPointer initialData = null, IGorgonLog log = null)

@@ -140,7 +140,7 @@
     <value>The offset [{0}] or context '{1}' is in use by another item with the same index or slot.</value>
   </data>
   <data name="GORGFX_ERR_DEVICE_CANNOT_FIND_DEVICES" xml:space="preserve">
-    <value>Could not find any supported video adapters.  Gorgon requires a device that can support a minimum feature level of 10.0.</value>
+    <value>Could not find any supported video adapters.  Gorgon requires a device that can support a minimum feature set of 10.0.</value>
   </data>
   <data name="GORGFX_TOSTR_SHADER_INCLUDE" xml:space="preserve">
     <value>Gorgon Shader Include '{0}'</value>
@@ -170,7 +170,7 @@
     <value>The buffer requires at least {0} byte(s).</value>
   </data>
   <data name="GORGFX_ERR_REQUIRES_FEATURE_LEVEL" xml:space="preserve">
-    <value>A device with feature level {0} (or better) is necessary to use this object or perform this operation.</value>
+    <value>A device with feature set {0} (or better) is necessary to use this object or perform this operation.</value>
   </data>
   <data name="GORGFX_ERR_BUFFER_STRUCTURE_SIZE_INVALID" xml:space="preserve">
     <value>The current aligned structure size of {0} is not valid.
@@ -284,7 +284,7 @@ Please report this error by pasting the details to the bug tracker in Gorgon's g
     <value>The format [{0}] is not supported for a [{1}] texture.</value>
   </data>
   <data name="GORGFX_ERR_UAV_REQUIRES_SM5" xml:space="preserve">
-    <value>Unordered access views for textures requires a feature level 11 or better video adapter.</value>
+    <value>Unordered access views for textures requires a feature set 11 or better video adapter.</value>
   </data>
   <data name="GORGFX_ERR_TEXTURE_NO_MIP_SUPPORT" xml:space="preserve">
     <value>The texture format [{0}] must be used with a mip map count of 1.</value>
@@ -296,7 +296,7 @@ Please report this error by pasting the details to the bug tracker in Gorgon's g
     <value>There is no video adapter with the name '{0}'.</value>
   </data>
   <data name="GORGFX_ERR_FEATURE_LEVEL_INVALID" xml:space="preserve">
-    <value>The feature level [{0}] is not valid.</value>
+    <value>The feature set [{0}] is not valid.</value>
   </data>
   <data name="GORGFX_ERR_SWAP_BACKBUFFER_TOO_SMALL" xml:space="preserve">
     <value>The swap chain back buffer is too small: {0}x{1}. The buffer must have a width and height of least 1 pixel.</value>
@@ -364,7 +364,7 @@ Errors:
     <value>The format [{0}] is not valid for a depth/stencil binding.</value>
   </data>
   <data name="GORGFX_ERR_DEPTHSTENCIL_MS_FL101" xml:space="preserve">
-    <value>Cannot use multisampling with a depth/stencil texture on feature level 10 devices or below.</value>
+    <value>Cannot use multisampling with a depth/stencil texture on feature set 10 devices or below.</value>
   </data>
   <data name="GORGFX_ERR_DEPTHSTENCIL_NOT_DEFAULT" xml:space="preserve">
     <value>A depth/stencil texture must have a usage of [Default].</value>

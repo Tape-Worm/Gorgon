@@ -94,25 +94,25 @@ namespace Gorgon.Graphics.Core
 
 		#region Methods.
 		/// <summary>
-		/// Function to retrieve the shader profile to use based on the feature level.
+		/// Function to retrieve the shader profile to use based on the feature set.
 		/// </summary>
-		/// <param name="featureLevel">The feature level used to determine the profile.</param>
+		/// <param name="featureSet">The feature set used to determine the profile.</param>
 		/// <param name="shaderType">The type of shader.</param>
 		/// <returns>A string containing the profile information.</returns>
-		private static string GetProfile(FeatureSet featureLevel, ShaderType shaderType)
+		private static string GetProfile(FeatureSet featureSet, ShaderType shaderType)
 		{
 			string prefix;
 
 			if (((shaderType == ShaderType.Compute)
 			     || (shaderType == ShaderType.Domain)
 			     || (shaderType == ShaderType.Hull))
-			    && (featureLevel < FeatureSet.Level_12_0))
+			    && (featureSet < FeatureSet.Level_12_0))
 			{
 				throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureSet.Level_12_0));
 			}
 
 			if ((shaderType == ShaderType.Geometry)
-				&& ((featureLevel < FeatureSet.Level_12_0)))
+				&& ((featureSet < FeatureSet.Level_12_0)))
 			{
 				throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureSet.Level_12_0));
 			}
@@ -401,14 +401,14 @@ namespace Gorgon.Graphics.Core
 		/// Function to compile a shader from source code.
 		/// </summary>
 		/// <typeparam name="T">The type of shader to return.</typeparam>
-		/// <param name="videoDevice">The video adapter used to create the shader.</param>
+		/// <param name="videoAdapter">The video adapter used to create the shader.</param>
 		/// <param name="sourceCode">A string containing the source code to compile.</param>
 		/// <param name="entryPoint">The entry point function for the shader.</param>
 		/// <param name="debug">[Optional] <b>true</b> to indicate whether the shader should be compiled with debug information; otherwise, <b>false</b> to strip out debug information.</param>
 		/// <param name="macros">[Optional] A list of macros for conditional compilation.</param>
 		/// <param name="sourceFileName">[Optional] The name of the file where the source code came from.</param>
 		/// <returns>A byte array containing the compiled shader.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="sourceCode"/>, <paramref name="entryPoint"/> or the <paramref name="videoDevice"/> parameter is <b>null</b>.</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="sourceCode"/>, <paramref name="entryPoint"/> or the <paramref name="videoAdapter"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="sourceCode"/>, <paramref name="entryPoint"/> parameter is empty.</exception>
 		/// <exception cref="GorgonException">Thrown when the type specified by <typeparamref name="T"/> is not a valid shader type.
 		/// <para>-or-</para>
@@ -449,12 +449,12 @@ namespace Gorgon.Graphics.Core
 		/// </list>
 		/// </para>
 		/// </remarks>
-		public static T Compile<T>(IGorgonVideoAdapter videoDevice, string sourceCode, string entryPoint, bool debug = false, IList<GorgonShaderMacro> macros = null, string sourceFileName = "(in memory)")
+		public static T Compile<T>(IGorgonVideoAdapter videoAdapter, string sourceCode, string entryPoint, bool debug = false, IList<GorgonShaderMacro> macros = null, string sourceFileName = "(in memory)")
 			where T : GorgonShader
 		{
-			if (videoDevice == null)
+			if (videoAdapter == null)
 			{
-				throw new ArgumentNullException(nameof(videoDevice));
+				throw new ArgumentNullException(nameof(videoAdapter));
 			}
 
 			if (sourceCode == null)
@@ -484,10 +484,10 @@ namespace Gorgon.Graphics.Core
 				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_SHADER_UNKNOWN_TYPE, typeof(T).FullName));
 			}
 
-			// Get shader flags based on our feature level and whether we want debug info or not.
+			// Get shader flags based on our feature set and whether we want debug info or not.
 			D3DCompiler.ShaderFlags flags = debug ? D3DCompiler.ShaderFlags.Debug : D3DCompiler.ShaderFlags.OptimizationLevel3;
 
-			if (videoDevice.RequestedFeatureLevel < FeatureSet.Level_12_0)
+			if (videoAdapter.RequestedFeatureLevel < FeatureSet.Level_12_0)
 			{
 				flags |= D3DCompiler.ShaderFlags.EnableBackwardsCompatibility;
 			}
@@ -500,7 +500,7 @@ namespace Gorgon.Graphics.Core
 				actualMacros = macros.Select(item => item.D3DShaderMacro).ToArray();
 			}
 
-			string profile = GetProfile(videoDevice.RequestedFeatureLevel, shaderType.Value.Item2);
+			string profile = GetProfile(videoAdapter.RequestedFeatureLevel, shaderType.Value.Item2);
 			string processedSource = _processor.Process(sourceCode);
 
 			try
@@ -519,7 +519,7 @@ namespace Gorgon.Graphics.Core
 					throw new GorgonException(GorgonResult.CannotCompile, string.Format(Resources.GORGFX_ERR_CANNOT_COMPILE_SHADER, byteCode.Message));
 				}
 
-				return (T)GetShader(videoDevice, shaderType.Value.Item2, entryPoint, debug, byteCode);
+				return (T)GetShader(videoAdapter, shaderType.Value.Item2, entryPoint, debug, byteCode);
 			}
 			catch (DX.CompilationException cEx)
 			{

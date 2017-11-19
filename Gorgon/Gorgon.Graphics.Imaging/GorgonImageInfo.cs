@@ -81,7 +81,7 @@ namespace Gorgon.Graphics.Imaging
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// If the value is set to <c>Format.Unknown</c>, then an exception will be thrown upon image creation.
+		/// If the value is set to <see cref="BufferFormat.Unknown"/>, then an exception will be thrown upon image creation.
 		/// </para>
 		/// </remarks>
 		public BufferFormat Format
@@ -173,7 +173,7 @@ namespace Gorgon.Graphics.Imaging
 		/// </summary>
 		/// <param name="imageType">The type of the image to create.</param>
 		/// <param name="format">The format describing how a pixel is laid out in memory.</param>
-		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="format"/> parameter is set to <c>Format.Unknown</c>.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="format"/> parameter is set to <see cref="BufferFormat.Unknown"/>.</exception>
 		public GorgonImageInfo(ImageType imageType, BufferFormat format)
 		{
 			if (format == BufferFormat.Unknown)
@@ -193,7 +193,7 @@ namespace Gorgon.Graphics.Imaging
 		/// </summary>
 		/// <param name="info">The initial image information to copy into this instance.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <see cref="Format"/> value of the <paramref name="info"/> parameter is set to <c>Format.Unknown</c>.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <see cref="Format"/> value of the <paramref name="info"/> parameter is set to <see cref="BufferFormat.Unknown"/>.</exception>
 		/// <remarks>
 		/// <para>
 		/// Use this constructor to create a copy of an existing <see cref="IGorgonImageInfo"/> object.

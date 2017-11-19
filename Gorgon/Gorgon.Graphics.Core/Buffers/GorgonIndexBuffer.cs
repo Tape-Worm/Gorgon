@@ -183,7 +183,7 @@ namespace Gorgon.Graphics.Core
 	    /// <param name="startElement">[Optional] The first element to start viewing from.</param>
 	    /// <param name="elementCount">[Optional] The number of elements to view.</param>
 	    /// <returns>A <see cref="GorgonIndexBufferUav"/> used to bind the buffer to a shader.</returns>
-	    /// <exception cref="GorgonException">Thrown if the video adapter does not support feature level 11 or better.
+	    /// <exception cref="GorgonException">Thrown if the video adapter does not support feature set 11 or better.
 	    /// <para>-or-</para>
 	    /// <para>Thrown when this buffer does not have a <see cref="VertexIndexBufferBinding"/> of <see cref="VertexIndexBufferBinding.UnorderedAccess"/>.</para>
 	    /// <para>-or-</para>
@@ -211,7 +211,7 @@ namespace Gorgon.Graphics.Core
 	    /// <para>
 	    /// <note type="important">
 	    /// <para>
-	    /// This method requires a video adapter capable of supporting feature level 11 or better. If the current video adapter does not support feature level 11, an exception will be thrown.
+	    /// This method requires a video adapter capable of supporting feature set 11 or better. If the current video adapter does not support feature set 11, an exception will be thrown.
 	    /// </para>
 	    /// </note>
 	    /// </para>

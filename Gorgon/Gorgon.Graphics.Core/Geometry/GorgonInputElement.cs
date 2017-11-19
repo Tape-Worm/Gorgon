@@ -102,8 +102,8 @@ namespace Gorgon.Graphics.Core
 		/// Property to return the offset of this element compared to other elements.
 		/// </summary>
 		/// <remarks>
-		/// This is used to determine the order in which an element will appear after another element. For example, if the previous element has a format of <c>Format.R32G32B32A32_Float</c> and an offset of 0, 
-		/// then this value needs to be set to 16. If this element were to use a format of <c>Format.R32G32_Float</c>, then the following element would have an offset of 16 + 8 (24).
+		/// This is used to determine the order in which an element will appear after another element. For example, if the previous element has a format of <see cref="BufferFormat.R32G32B32A32_Float"/> and an offset of 0, 
+		/// then this value needs to be set to 16. If this element were to use a format of <see cref="BufferFormat.R32G32_Float"/>, then the following element would have an offset of 16 + 8 (24).
 		/// </remarks>
 		public int Offset => D3DInputElement.AlignedByteOffset;
 

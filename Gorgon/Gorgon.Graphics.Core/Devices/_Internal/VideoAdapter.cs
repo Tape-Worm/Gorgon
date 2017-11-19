@@ -36,30 +36,37 @@ using D3D11 = SharpDX.Direct3D11;
 namespace Gorgon.Graphics.Core
 {
 	/// <summary>
-	/// A wrapper for a Direct 3D 11 device object and adapter.
+	/// A wrapper for a Direct 3D 11.4 device object and DXGI adapter.
 	/// </summary>
-	internal class VideoDevice
+	internal class VideoAdapter
 		: IGorgonVideoAdapter
 	{
 		#region Variables.
-		// The Direct 3D 11 device object.
-		private D3D11.Device1 _device;
-		// The DXGI adapter.
-		private DXGI.Adapter2 _adapter;
 		// The logging interface for debug logging.
 		private readonly IGorgonLog _log;
-		#endregion
+        // The Direct 3D 11.4 device object.
+	    private D3D11.Device5 _d3DDevice;
+        // The DXGI factory used to create DXGI objects.
+	    private DXGI.Factory5 _factory;
+        // The DXGI adapter.
+	    private DXGI.Adapter4 _adapter;
+	    #endregion
 
 		#region Properties.
-		/// <summary>
-		/// Property to return the Direct 3D 11.1 device object
-		/// </summary>
-		public D3D11.Device1 D3DDevice => _device;
+	    /// <summary>
+	    /// Property to return the factory used to create DXGI objects.
+	    /// </summary>
+	    public DXGI.Factory5 Factory => _factory;
 
-		/// <summary>
-		/// Property to return the adapter for the video adapter.
-		/// </summary>
-		public DXGI.Adapter2 Adapter => _adapter;
+	    /// <summary>
+	    /// Property to return the Direct 3D 11.4 device object
+	    /// </summary>
+	    public D3D11.Device5 D3DDevice => _d3DDevice;
+
+	    /// <summary>
+	    /// Property to return the adapter for the video adapter.
+	    /// </summary>
+	    public DXGI.Adapter4 Adapter => _adapter;
 
 	    /// <summary>
 	    /// Property to return the maximum number of render targets allow to be assigned at the same time.
@@ -101,7 +108,7 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <remarks>
 		/// On devices with a a <see cref="FeatureSet"/> of <see cref="FeatureSet.Level_12_0"/>, this value will return <see cref="int.MaxValue"/>, indicating that there is no limit to the size of a 
-		/// constant buffer. On devices with a lower feature level this value is limited to 65536 (4096 * 16) bytes.
+		/// constant buffer. On devices with a lower feature set this value is limited to 65536 (4096 * 16) bytes.
 		/// </remarks>
 		public int MaxConstantBufferSize => RequestedFeatureLevel < FeatureSet.Level_12_0 ? int.MaxValue : 65536;
 
@@ -116,7 +123,7 @@ namespace Gorgon.Graphics.Core
 	    public int MaxViewportCount => 16;
 
         /// <summary>
-        /// Property to return the <see cref="VideoDeviceInfo"/> used to create this device.
+        /// Property to return the <see cref="VideoAdapterInfo"/> used to create this device.
         /// </summary>
         public IGorgonVideoAdapterInfo Info
 		{
@@ -129,11 +136,11 @@ namespace Gorgon.Graphics.Core
 		/// <remarks>
 		/// <para>
 		/// A user may request a lower <see cref="FeatureSet"/> than what is supported by the device to allow the application to run on older video adapters that lack support for newer functionality. 
-		/// This requested feature level will be returned by this property if supported by the device. 
+		/// This requested feature set will be returned by this property if supported by the device. 
 		/// </para>
 		/// <para>
-		/// If the user does not request a feature level, or has specified one higher than what the video adapter supports, then the highest feature level supported by the video adapter 
-		/// (indicated by the <see cref="VideoDeviceInfo.SupportedFeatureLevel"/> property in the <see cref="IGorgonVideoAdapter.Info"/> property) will be returned.
+		/// If the user does not request a feature set, or has specified one higher than what the video adapter supports, then the highest feature set supported by the video adapter 
+		/// (indicated by the <see cref="VideoAdapterInfo.SupportedFeatureLevel"/> property in the <see cref="IGorgonVideoAdapter.Info"/> property) will be returned.
 		/// </para>
 		/// </remarks>
 		/// <seealso cref="FeatureSet"/>
@@ -142,40 +149,27 @@ namespace Gorgon.Graphics.Core
 			get;
 			private set;
 		}
-		#endregion
+	    #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to convert a Gorgon feature level into a D3D feature level.
-		/// </summary>
-		/// <param name="requestedFeatureLevel">The requested feature level.</param>
-		/// <returns>The D3D feature levels to use.</returns>
-		private static D3D.FeatureLevel[] GetFeatureLevel(D3D.FeatureLevel requestedFeatureLevel)
+        #region Methods.
+        /// <summary>
+        /// Function to convert a Gorgon feature set into a D3D feature set.
+        /// </summary>
+        /// <param name="requestedFeatureLevel">The requested feature set.</param>
+        /// <returns>The D3D feature sets to use.</returns>
+        private static D3D.FeatureLevel[] GetFeatureLevel(D3D.FeatureLevel requestedFeatureLevel)
 		{
 			switch (requestedFeatureLevel)
 			{
-				case D3D.FeatureLevel.Level_11_1:
+				case D3D.FeatureLevel.Level_12_1:
 					return new[]
 					       {
-						       D3D.FeatureLevel.Level_11_1,
-						       D3D.FeatureLevel.Level_11_0,
-						       D3D.FeatureLevel.Level_10_1,
-						       D3D.FeatureLevel.Level_10_0
+						       D3D.FeatureLevel.Level_12_1,
+						       D3D.FeatureLevel.Level_12_0
 					       };
-				case D3D.FeatureLevel.Level_11_0:
+				case D3D.FeatureLevel.Level_12_0:
 					return new[] {
-							D3D.FeatureLevel.Level_11_0,
-							D3D.FeatureLevel.Level_10_1,
-							D3D.FeatureLevel.Level_10_0
-					};
-				case D3D.FeatureLevel.Level_10_1:
-					return new[] {
-							D3D.FeatureLevel.Level_10_1,
-							D3D.FeatureLevel.Level_10_0
-					};
-				case D3D.FeatureLevel.Level_10_0:
-					return new[] {
-							D3D.FeatureLevel.Level_10_0
+							D3D.FeatureLevel.Level_12_0
 					};
 				default:
 					throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_FEATURE_LEVEL_INVALID, requestedFeatureLevel));
@@ -185,76 +179,33 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Function to create the Direct 3D device and Adapter for use with Gorgon.
 		/// </summary>
-		/// <param name="requestedFeatureLevel">The requested feature level for the device.</param>
+		/// <param name="requestedFeatureLevel">The requested feature set for the device.</param>
 		private void CreateDevice(D3D.FeatureLevel requestedFeatureLevel)
 		{
-			DXGI.Factory2 factory2 = null;
 			D3D11.DeviceCreationFlags flags = GorgonGraphics.IsDebugEnabled ? D3D11.DeviceCreationFlags.Debug : D3D11.DeviceCreationFlags.None;
 
-			try
-			{
-				using (DXGI.Factory1 factory1 = new DXGI.Factory1())
-				{
-					factory2 = factory1.QueryInterface<DXGI.Factory2>();
-				}
+		    using (DXGI.Factory2 factory2 = new DXGI.Factory2(GorgonGraphics.IsDebugEnabled))
+		    {
+		        _factory = factory2.QueryInterface<DXGI.Factory5>();
 
-				switch (Info.VideoDeviceType)
-				{
-					case VideoDeviceType.ReferenceRasterizer:
-#if DEBUG
-						using (D3D11.Device device = new D3D11.Device(D3D.DriverType.Reference, D3D11.DeviceCreationFlags.Debug, GetFeatureLevel(requestedFeatureLevel))
-						                    {
-							                    DebugName = $"{Info.Name} D3D11.1 Reference Device"
-						                    })
-						{
-							_device = device.QueryInterface<D3D11.Device1>();
-						}
+                using (DXGI.Adapter adapter = (Info.VideoDeviceType == VideoDeviceType.Hardware ? _factory.GetAdapter1(Info.Index) : _factory.GetWarpAdapter()))
+		        {
+		            _adapter = adapter.QueryInterface<DXGI.Adapter4>();
 
-						using (DXGI.Device2 giDevice = _device.QueryInterface<DXGI.Device2>())
-						{
-							_adapter = giDevice.GetParent<DXGI.Adapter2>();
-						}
-						break;
-#endif
-					case VideoDeviceType.Software:
-						using (D3D11.Device device = new D3D11.Device(D3D.DriverType.Warp, flags, GetFeatureLevel(requestedFeatureLevel))
-						                    {
-							                    DebugName = $"{Info.Name} D3D11.1 Software Device"
-						                    })
-						{
-							_device = device.QueryInterface<D3D11.Device1>();
-						}
+		            using (D3D11.Device device = new D3D11.Device(_adapter, flags, GetFeatureLevel(requestedFeatureLevel))
+		                                         {
+		                                             DebugName =
+		                                                 $"'{Info.Name}' D3D11.4 {(Info.VideoDeviceType == VideoDeviceType.Software ? "Software Adapter" : "Adapter")}"
+		                                         })
+		            {
+		                _d3DDevice = device.QueryInterface<D3D11.Device5>();
+		                // Get the maximum supported feature set for this device.
+		                RequestedFeatureLevel = (FeatureSet)_d3DDevice.FeatureLevel;
 
-						using (DXGI.Device2 giDevice = _device.QueryInterface<DXGI.Device2>())
-						{
-							_adapter = giDevice.GetParent<DXGI.Adapter2>();
-						}
-						break;
-					default:
-						using (DXGI.Adapter1 adapter1 = factory2.GetAdapter1(Info.Index))
-						{
-							_adapter = adapter1.QueryInterface<DXGI.Adapter2>();
-						}
-
-						using (D3D11.Device device = new D3D11.Device(_adapter, flags, GetFeatureLevel(requestedFeatureLevel))
-						                    {
-							                    DebugName = $"{Info.Name} D3D 11.1 Device"
-						                    })
-						{
-							_device = device.QueryInterface<D3D11.Device1>();
-						}
-						break;
-				}
-
-				// Get the maximum supported feature level for this device.
-				RequestedFeatureLevel = (FeatureSet)_device.FeatureLevel;
-
-				_log.Print($"Direct 3D 11.1 device created for video adapter '{Info.Name}' at feature level [{RequestedFeatureLevel}]", LoggingLevel.Simple);
-			}
-			finally
-			{
-				factory2?.Dispose();
-			}
+		                _log.Print($"Direct 3D 11.4 device created for video adapter '{Info.Name}' at feature set [{RequestedFeatureLevel}]", LoggingLevel.Simple);
+		            }
+		        }
+		    }
 		}
 
 		/// <summary>
@@ -268,46 +219,44 @@ namespace Gorgon.Graphics.Core
 			return string.Format(Resources.GORGFX_TOSTR_DEVICE, Info.Name);
 		}
 
-		/// <summary>
-		/// Function to retrieve the supported functionality for a given format.
-		/// </summary>
-		/// <param name="format">The format to evaluate.</param>
-		/// <returns>A <c>FormatSupport</c> containing OR'd values representing the functionality supported by the format.</returns>
-		/// <remarks>
-		/// <para>
-		/// Use this method to determine if a format can be used with a specific resource type (e.g. a 2D texture, vertex buffer, etc...). The value returned will be of the <c>FormatSupport</c> 
-		/// enumeration and will contain the supported functionality represented as OR'd values.
-		/// </para>
-		/// </remarks>
-		public BufferFormatSupport GetBufferFormatSupport(BufferFormat format)
+	    /// <summary>
+	    /// Function to retrieve the supported functionality for a given format.
+	    /// </summary>
+	    /// <param name="format">The format to evaluate.</param>
+	    /// <returns>A <see cref="BufferFormatSupport"/> containing OR'd values representing the functionality supported by the format.</returns>
+	    /// <remarks>
+	    /// <para>
+	    /// Use this method to determine if a format can be used with a specific resource type (e.g. a 2D texture, vertex buffer, etc...). The value returned will be of the <see cref="BufferFormatSupport"/>
+	    /// enumeration and will contain the supported functionality represented as OR'd values.
+	    /// </para>
+	    /// </remarks>
+	    /// <seealso cref="BufferFormatSupport"/>
+	    public BufferFormatSupport GetBufferFormatSupport(BufferFormat format)
 		{
-			return (BufferFormatSupport)_device.CheckFormatSupport((DXGI.Format)format);
+			return (BufferFormatSupport)D3DDevice.CheckFormatSupport((DXGI.Format)format);
 		}
 
-		/// <summary>
-		/// Function to retrieve the supported unordered access compute resource functionality for a given format.
-		/// </summary>
-		/// <param name="format">The format to evaluate.</param>
-		/// <returns>A <c>ComputeShaderFormatSupport</c> containing OR'd values representing the functionality supported by the format.</returns>
-		/// <remarks>
-		/// <para>
-		/// Use this method to determine if a format can be used with specific unordered access view operations in a compute shader. The value returned will be of the <c>ComputeShaderFormatSupport</c> 
-		/// enumeration type and will contain the supported functionality represented as OR'd values.
-		/// </para>
-		/// <para>
-		/// Regardless of whether limited compute shader support is available on some Direct3D 10 class devices, this will always return <c>ComputeShaderFormatSupport.None</c> on devices with lower than 
-		/// Level_11_0 feature level support.
-		/// </para>
-		/// </remarks>
-		public D3D11.ComputeShaderFormatSupport GetBufferFormatComputeSupport(BufferFormat format)
+	    /// <summary>
+	    /// Function to retrieve the supported unordered access compute resource functionality for a given format.
+	    /// </summary>
+	    /// <param name="format">The format to evaluate.</param>
+	    /// <returns>A <see cref="ComputeShaderFormatSupport"/> containing OR'd values representing the functionality supported by the format.</returns>
+	    /// <remarks>
+	    /// <para>
+	    /// Use this method to determine if a format can be used with specific unordered access view operations in a compute shader. The value returned will be of the <see cref="ComputeShaderFormatSupport"/> 
+	    /// enumeration type and will contain the supported functionality represented as OR'd values.
+	    /// </para>
+	    /// </remarks>
+	    /// <seealso cref="ComputeShaderFormatSupport"/>
+		public ComputeShaderFormatSupport GetBufferFormatComputeSupport(BufferFormat format)
 		{
-			return RequestedFeatureLevel < FeatureSet.Level_12_0 ? D3D11.ComputeShaderFormatSupport.None : _device.CheckComputeShaderFormatSupport((DXGI.Format)format);
+			return (ComputeShaderFormatSupport)D3DDevice.CheckComputeShaderFormatSupport((DXGI.Format)format);
 		}
 
 		/// <summary>
 		/// Function to return a <see cref="GorgonMultisampleInfo"/> with the best quality level for the given count and format.
 		/// </summary>
-		/// <param name="format">A <c>Format</c> to evaluate.</param>
+		/// <param name="format">A <see cref="BufferFormat"/> to evaluate.</param>
 		/// <param name="count">The number of samples.</param>
 		/// <returns>A <see cref="GorgonMultisampleInfo"/> containing the quality count and sample count for multisampling.</returns>
 		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="count"/> is not supported by this video adapter.</exception>
@@ -316,7 +265,7 @@ namespace Gorgon.Graphics.Core
 		/// Use this to return a <see cref="GorgonMultisampleInfo"/> containing the best quality level for a given <paramref name="count"/> and <paramref name="format"/>.
 		/// </para>
 		/// <para>
-		/// If <c>Unknown</c> is passed to the <paramref name="format"/> parameter, then this method will return <see cref="GorgonMultisampleInfo.NoMultiSampling"/>.
+		/// If <see cref="BufferFormat.Unknown"/> is passed to the <paramref name="format"/> parameter, then this method will return <see cref="GorgonMultisampleInfo.NoMultiSampling"/>.
 		/// </para>
 		/// <para>
 		/// Before calling this method, call the <see cref="O:Gorgon.Graphics.IGorgonVideoDevice.SupportsMultisampleCount"/> method to determine if multisampling is supported for the given <paramref name="count"/> and <paramref name="format"/>.
@@ -329,7 +278,7 @@ namespace Gorgon.Graphics.Core
 				return GorgonMultisampleInfo.NoMultiSampling;
 			}
 
-			int quality = _device.CheckMultisampleQualityLevels((DXGI.Format)format, count);
+			int quality = D3DDevice.CheckMultisampleQualityLevels((DXGI.Format)format, count);
 
 			if (quality == 0)
 			{
@@ -342,7 +291,7 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Function to return whether or not the device supports multisampling for the given format and sample count.
 		/// </summary>
-		/// <param name="format">A <c>Format</c> to evaluate.</param>
+		/// <param name="format">A <see cref="BufferFormat"/> to evaluate.</param>
 		/// <param name="count">The number of samples.</param>
 		/// <returns><b>true</b> if the device supports the format, or <b>false</b> if not.</returns>
 		/// <remarks>
@@ -350,7 +299,7 @@ namespace Gorgon.Graphics.Core
 		/// Use this to determine if the video adapter will support multisampling with a specific sample <paramref name="count"/> and <paramref name="format"/>. 
 		/// </para>
 		/// <para>
-		/// If <c>Unknown</c> is passed to the <paramref name="format"/> parameter, then this method will return <b>true</b> because this will equate to no multisampling.
+		/// If <see cref="BufferFormat.Unknown"/> is passed to the <paramref name="format"/> parameter, then this method will return <b>true</b> because this will equate to no multisampling.
 		/// </para>
 		/// </remarks>
 		public bool SupportsMultisampleCount(BufferFormat format, int count)
@@ -365,13 +314,13 @@ namespace Gorgon.Graphics.Core
 				return true;
 			}
 
-			return _device.CheckMultisampleQualityLevels((DXGI.Format)format, count) > 0;
+			return D3DDevice.CheckMultisampleQualityLevels((DXGI.Format)format, count) > 0;
 		}
 
 		/// <summary>
 		/// Function to return whether or not the device supports multisampling for the given format and the supplied <see cref="GorgonMultisampleInfo"/>.
 		/// </summary>
-		/// <param name="format">A <c>Format</c> to evaluate.</param>
+		/// <param name="format">A <see cref="BufferFormat"/> to evaluate.</param>
 		/// <param name="multiSampleInfo">The multisample info to use when evaluating.</param>
 		/// <returns><b>true</b> if the device supports the format, or <b>false</b> if not.</returns>
 		/// <remarks>
@@ -379,7 +328,7 @@ namespace Gorgon.Graphics.Core
 		/// Use this to determine if the video adapter will support multisampling with a specific <paramref name="multiSampleInfo"/> and <paramref name="format"/>. 
 		/// </para>
 		/// <para>
-		/// If <c>Unknown</c> is passed to the <paramref name="format"/> parameter, then this method will return <b>true</b> because this will equate to no multisampling.
+		/// If <see cref="BufferFormat.Unknown"/> is passed to the <paramref name="format"/> parameter, then this method will return <b>true</b> because this will equate to no multisampling.
 		/// </para>
 		/// </remarks>
 		public bool SupportsMultisampleInfo(BufferFormat format, GorgonMultisampleInfo multiSampleInfo)
@@ -394,7 +343,7 @@ namespace Gorgon.Graphics.Core
 				return false;
 			}
 
-			int quality = _device.CheckMultisampleQualityLevels((DXGI.Format)format, multiSampleInfo.Count);
+			int quality = D3DDevice.CheckMultisampleQualityLevels((DXGI.Format)format, multiSampleInfo.Count);
 
 			return ((quality != 0) && (multiSampleInfo.Quality < quality));
 		}
@@ -437,13 +386,13 @@ namespace Gorgon.Graphics.Core
 	    /// </remarks>
 	    public void FindNearestVideoMode(IGorgonVideoOutputInfo output, ref GorgonVideoMode videoMode, out GorgonVideoMode suggestedMode)
 		{
-			using (DXGI.Output giOutput = _adapter.GetOutput(output.Index))
+			using (DXGI.Output giOutput = Adapter.GetOutput(output.Index))
 			{
 				using (DXGI.Output1 giOutput1 = giOutput.QueryInterface<DXGI.Output1>())
 				{
 					DXGI.ModeDescription1 matchMode = videoMode.ToModeDesc1();
 
-					giOutput1.FindClosestMatchingMode1(ref matchMode, out DXGI.ModeDescription1 mode, _device);
+					giOutput1.FindClosestMatchingMode1(ref matchMode, out DXGI.ModeDescription1 mode, D3DDevice);
 
 					suggestedMode =  mode.ToGorgonVideoMode();
 				}
@@ -455,28 +404,28 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		public void Dispose()
 		{
-			D3D11.Device device = Interlocked.Exchange(ref _device, null);
-			DXGI.Adapter1 adapter = Interlocked.Exchange(ref _adapter, null);
+		    D3D11.Device5 device = Interlocked.Exchange(ref _d3DDevice, null);
+		    DXGI.Adapter4 adapter = Interlocked.Exchange(ref _adapter, null);
+		    DXGI.Factory5 factory = Interlocked.Exchange(ref _factory, null);
 
-			device?.Dispose();
-			adapter?.Dispose();
-			_device = null;
+            device?.Dispose();
+            adapter?.Dispose();
+            factory?.Dispose();
 		}
 		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="VideoDevice"/> class.
+		/// Initializes a new instance of the <see cref="VideoAdapter"/> class.
 		/// </summary>
-		/// <param name="deviceInfo">A <see cref="VideoDeviceInfo"/> containing information about which video adapter to use.</param>
-		/// <param name="requestedFeatureLevel">The desired feature level for the device.</param>
+		/// <param name="deviceInfo">A <see cref="VideoAdapterInfo"/> containing information about which video adapter to use.</param>
+		/// <param name="requestedFeatureLevel">The desired feature set for the device.</param>
 		/// <param name="log">A <see cref="IGorgonLog"/> used for logging debug output.</param>
-		public VideoDevice(IGorgonVideoAdapterInfo deviceInfo, FeatureSet requestedFeatureLevel, IGorgonLog log)
+		public VideoAdapter(IGorgonVideoAdapterInfo deviceInfo, FeatureSet requestedFeatureLevel, IGorgonLog log)
 		{
 			_log = log ?? GorgonLogDummy.DefaultInstance;
 			Info = deviceInfo;
 			CreateDevice((D3D.FeatureLevel)requestedFeatureLevel);
-			RequestedFeatureLevel = requestedFeatureLevel;
 		}
 		#endregion
 	}

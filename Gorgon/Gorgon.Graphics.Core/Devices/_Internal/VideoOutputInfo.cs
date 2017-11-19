@@ -33,7 +33,7 @@ using DXGI = SharpDX.DXGI;
 namespace Gorgon.Graphics.Core
 {
 	/// <summary>
-	/// Provides information about an output on a <see cref="VideoDevice"/>.
+	/// Provides information about an output on a <see cref="IGorgonVideoAdapter"/>.
 	/// </summary>
 	/// <remarks>
 	/// An output is typically a physical connection between the video adapter and another device.

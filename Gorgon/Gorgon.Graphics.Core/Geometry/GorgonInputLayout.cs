@@ -286,10 +286,10 @@ namespace Gorgon.Graphics.Core
 		/// Function to build an input layout using the fields from a value type.
 		/// </summary>
 		/// <typeparam name="T">The type to evaluate. This must be a value type.</typeparam>
-		/// <param name="videoDevice">The video adapter used to create the input layout.</param>
+		/// <param name="videoAdapter">The video adapter used to create the input layout.</param>
 		/// <param name="shader">Vertex shader to bind the layout with.</param>
 		/// <returns>A new <see cref="GorgonInputLayout"/> for the type passed to <typeparamref name="T"/>.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="videoDevice"/>, or the <paramref name="shader"/> parameter is <b>null</b>.</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="videoAdapter"/>, or the <paramref name="shader"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when an element with the same context, slot and index appears more than once in the members of the <typeparamref name="T"/> type.</exception>
 		/// <exception cref="GorgonException">Thrown when the type specified by <typeparamref name="T"/> is not safe for use with native functions (see <see cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>).
 		/// <para>-or-</para>
@@ -361,20 +361,20 @@ namespace Gorgon.Graphics.Core
 		/// <seealso cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>
 		/// <seealso cref="GorgonReflectionExtensions.IsSafeForNative(Type)"/>
 		/// <seealso cref="GorgonReflectionExtensions.IsSafeForNative(Type,out IReadOnlyList{FieldInfo})"/>
-		public static GorgonInputLayout CreateUsingType<T>(IGorgonVideoAdapter videoDevice, GorgonVertexShader shader)
+		public static GorgonInputLayout CreateUsingType<T>(IGorgonVideoAdapter videoAdapter, GorgonVertexShader shader)
 			where T : struct
 		{
-		    return CreateUsingType(videoDevice, typeof(T), shader);
+		    return CreateUsingType(videoAdapter, typeof(T), shader);
 		}
 
         /// <summary>
         /// Function to build an input layout using the fields from a value type.
         /// </summary>
-        /// <param name="videoDevice">The video adapter used to create the input layout.</param>
+        /// <param name="videoAdapter">The video adapter used to create the input layout.</param>
         /// <param name="type">The type to evaluate.</param>
         /// <param name="shader">Vertex shader to bind the layout with.</param>
         /// <returns>A new <see cref="GorgonInputLayout"/> for the type passed to <paramref name="type"/>.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="videoDevice"/>, <paramref name="type"/> or the <paramref name="shader"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="videoAdapter"/>, <paramref name="type"/> or the <paramref name="shader"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentException">Thrown when an element with the same context, slot and index appears more than once in the members of the <paramref name="type"/>.</exception>
         /// <exception cref="GorgonException">Thrown when the type specified by <paramref name="type"/> is not safe for use with native functions (see <see cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>).
         /// <para>-or-</para>
@@ -446,11 +446,11 @@ namespace Gorgon.Graphics.Core
         /// <seealso cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>
         /// <seealso cref="GorgonReflectionExtensions.IsSafeForNative(Type)"/>
         /// <seealso cref="GorgonReflectionExtensions.IsSafeForNative(Type,out IReadOnlyList{FieldInfo})"/>
-        public static GorgonInputLayout CreateUsingType(IGorgonVideoAdapter videoDevice, Type type, GorgonVertexShader shader)
+        public static GorgonInputLayout CreateUsingType(IGorgonVideoAdapter videoAdapter, Type type, GorgonVertexShader shader)
 	    {
-	        if (videoDevice == null)
+	        if (videoAdapter == null)
 	        {
-	            throw new ArgumentNullException(nameof(videoDevice));
+	            throw new ArgumentNullException(nameof(videoAdapter));
 	        }
 
 	        if (type == null)
@@ -497,7 +497,7 @@ namespace Gorgon.Graphics.Core
 	            byteOffset += element.SizeInBytes;
 	        }
 
-	        return new GorgonInputLayout(type.Name, videoDevice, shader, elements);
+	        return new GorgonInputLayout(type.Name, videoAdapter, shader, elements);
 	    }
 
         /// <summary>
@@ -625,13 +625,13 @@ namespace Gorgon.Graphics.Core
 		/// Initializes a new instance of the <see cref="GorgonInputLayout"/> class.
 		/// </summary>
 		/// <param name="name">Name of the object.</param>
-		/// <param name="videoDevice">The video adapter interface used to create this input layout.</param>
+		/// <param name="videoAdapter">The video adapter interface used to create this input layout.</param>
 		/// <param name="shader">Vertex shader to bind the layout with.</param>
 		/// <param name="elements">The input elements to assign to this layout.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/>, <paramref name="videoDevice"/>, <paramref name="shader"/>, or the <paramref name="elements"/> parameter is <b>null</b>.</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/>, <paramref name="videoAdapter"/>, <paramref name="shader"/>, or the <paramref name="elements"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/>, or the <paramref name="elements"/> parameter is empty.</exception>
 		/// <exception cref="ArgumentException">Thrown when an element with the same context, slot and index appears more than once in the <paramref name="elements"/> parameter.</exception>
-		public GorgonInputLayout(string name, IGorgonVideoAdapter videoDevice, GorgonVertexShader shader, IEnumerable<GorgonInputElement> elements)
+		public GorgonInputLayout(string name, IGorgonVideoAdapter videoAdapter, GorgonVertexShader shader, IEnumerable<GorgonInputElement> elements)
 		{
 			if (name == null)
 			{
@@ -661,7 +661,7 @@ namespace Gorgon.Graphics.Core
 				FindDuplicateElements(_elements, _elements[i], i, nameof(elements));
 			}
 
-			VideoDevice = videoDevice ?? throw new ArgumentNullException(nameof(videoDevice));
+			VideoDevice = videoAdapter ?? throw new ArgumentNullException(nameof(videoAdapter));
 			Shader = shader ?? throw new ArgumentNullException(nameof(shader));
 
 			UpdateVertexSize();

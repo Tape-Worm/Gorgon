@@ -48,21 +48,21 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Function to retrieve the underlying Direct 3D device from a <see cref="IGorgonVideoAdapter"/> interface.
 		/// </summary>
-		/// <param name="videoDevice">The video adapter to use.</param>
+		/// <param name="videoAdapter">The video adapter to use.</param>
 		/// <returns>The Direct 3D video adapter.</returns>
-		public static D3D11.Device1 D3DDevice(this IGorgonVideoAdapter videoDevice)
+		public static D3D11.Device1 D3DDevice(this IGorgonVideoAdapter videoAdapter)
 		{
-			return ((VideoDevice)videoDevice).D3DDevice;
+			return ((VideoAdapter)videoAdapter).D3DDevice;
 		}
 
 		/// <summary>
 		/// Function to retrieve the underlying DXGI adapter from a <see cref="IGorgonVideoAdapter"/> interface.
 		/// </summary>
-		/// <param name="videoDevice">The video adapter to use.</param>
+		/// <param name="videoAdapter">The video adapter to use.</param>
 		/// <returns>The DXGI adapter.</returns>
-		public static DXGI.Adapter2 DXGIAdapter(this IGorgonVideoAdapter videoDevice)
+		public static DXGI.Adapter2 DXGIAdapter(this IGorgonVideoAdapter videoAdapter)
 		{
-			return ((VideoDevice)videoDevice).Adapter;
+			return ((VideoAdapter)videoAdapter).Adapter;
 		}
 
 		/// <summary>

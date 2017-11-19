@@ -50,7 +50,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="factory">The factory used to query the adapter.</param>
 		/// <param name="log">The log interface used to send messages to a debug log.</param>
 		/// <returns>The video adapter used for WARP software rendering.</returns>
-		private static VideoDeviceInfo GetWARPSoftwareDevice(int index, DXGI.Factory5 factory, IGorgonLog log)
+		private static VideoAdapterInfo GetWARPSoftwareDevice(int index, DXGI.Factory5 factory, IGorgonLog log)
 		{
 			D3D11.DeviceCreationFlags flags = D3D11.DeviceCreationFlags.None;
 
@@ -68,11 +68,11 @@ namespace Gorgon.Graphics.Core
 
                 if (featureSet == null)
                 {
-                    log.Print("WARNING: The WARP software adapter does not support the minimum feature level of 12.0. This device will be excluded.", LoggingLevel.All);
+                    log.Print("WARNING: The WARP software adapter does not support the minimum feature set of 12.0. This device will be excluded.", LoggingLevel.All);
                     return null;
                 }
 
-                VideoDeviceInfo result = new VideoDeviceInfo(index, warpAdapter4, featureSet.Value, new GorgonNamedObjectList<IGorgonVideoOutputInfo>(), VideoDeviceType.Software);
+                VideoAdapterInfo result = new VideoAdapterInfo(index, warpAdapter4, featureSet.Value, new GorgonNamedObjectList<IGorgonVideoOutputInfo>(), VideoDeviceType.Software);
 
                 PrintLog(result, log);
 
@@ -85,11 +85,11 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="device">Device to print.</param>
 		/// <param name="log">The log interface to output debug messages.</param>
-		private static void PrintLog(VideoDeviceInfo device, IGorgonLog log)
+		private static void PrintLog(VideoAdapterInfo device, IGorgonLog log)
 		{
 			log.Print($"Device found: {device.Name}", LoggingLevel.Simple);
 			log.Print("===================================================================", LoggingLevel.Simple);
-			log.Print($"Supported feature level: {device.SupportedFeatureLevel}", LoggingLevel.Simple);
+			log.Print($"Supported feature set: {device.SupportedFeatureLevel}", LoggingLevel.Simple);
 			log.Print($"Video memory: {(device.DedicatedVideoMemory).FormatMemory()}", LoggingLevel.Simple);
 			log.Print($"System memory: {(device.DedicatedSystemMemory).FormatMemory()}", LoggingLevel.Intermediate);
 			log.Print($"Shared memory: {(device.SharedSystemMemory).FormatMemory()}", LoggingLevel.Intermediate);
@@ -152,10 +152,10 @@ namespace Gorgon.Graphics.Core
 		}
 
 		/// <summary>
-		/// Function to retrieve the highest feature level for a video adapter.
+		/// Function to retrieve the highest feature set for a video adapter.
 		/// </summary>
 		/// <param name="device">The D3D device to use.</param>
-		/// <returns>The highest available feature level for the device.</returns>
+		/// <returns>The highest available feature set for the device.</returns>
 		private static FeatureSet? GetFeatureLevel(D3D11.Device5 device)
 		{
 			D3D.FeatureLevel result = device.FeatureLevel;
@@ -268,10 +268,10 @@ namespace Gorgon.Graphics.Core
                         {
                             D3DDevice5.DebugName = "Output enumerator device.";
 
-                            FeatureSet? featureLevel = GetFeatureLevel(D3DDevice5);
+                            FeatureSet? featureSet = GetFeatureLevel(D3DDevice5);
 
-                            // Do not enumerate this device if its feature level is not supported.
-                            if (featureLevel == null)
+                            // Do not enumerate this device if its feature set is not supported.
+                            if (featureSet == null)
                             {
                                 log.Print("This video adapter is not supported by Gorgon and will be skipped.", LoggingLevel.Verbose);
                                 continue;
@@ -281,13 +281,13 @@ namespace Gorgon.Graphics.Core
 
                             if (outputs.Count <= 0)
                             {
-                                log.Print($"WARNING: Video device {adapter.Description1.Description.Replace("\0", string.Empty)} has no outputs. Full screen mode will not be possible.",
+                                log.Print($"WARNING: Video adapter {adapter.Description1.Description.Replace("\0", string.Empty)} has no outputs. Full screen mode will not be possible.",
                                             LoggingLevel.Verbose);
                             }
 
-                            VideoDeviceInfo videoDevice = new VideoDeviceInfo(i, adapter, featureLevel.Value, outputs, VideoDeviceType.Hardware);
-                            devices.Add(videoDevice);
-                            PrintLog(videoDevice, log);
+                            VideoAdapterInfo videoAdapter = new VideoAdapterInfo(i, adapter, featureSet.Value, outputs, VideoDeviceType.Hardware);
+                            devices.Add(videoAdapter);
+                            PrintLog(videoAdapter, log);
                         }
                     }
                 }
@@ -298,7 +298,7 @@ namespace Gorgon.Graphics.Core
                     return devices;
                 }
 
-                VideoDeviceInfo device = GetWARPSoftwareDevice(devices.Count, factory5, log);
+                VideoAdapterInfo device = GetWARPSoftwareDevice(devices.Count, factory5, log);
 
                 if (device != null)
                 {

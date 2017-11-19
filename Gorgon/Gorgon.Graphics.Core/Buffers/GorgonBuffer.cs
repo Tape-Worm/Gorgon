@@ -185,7 +185,7 @@ namespace Gorgon.Graphics.Core
         /// <returns>The <see cref="GorgonBufferView"/> requested for this buffer.</returns>
         /// <exception cref="ArgumentException">Thrown if this buffer is a staging resource, or does not have a binding flag for shader access.
         /// <para>-or-</para>
-        /// <para>Thrown if the <paramref name="format"/> is <c>Unknown</c>.</para>
+        /// <para>Thrown if the <paramref name="format"/> is <see cref="BufferFormat.Unknown"/>.</para>
         /// </exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="startElement"/> and the <paramref name="elementCount"/> are larger than the total number of elements.</exception>
         /// <remarks>
@@ -232,7 +232,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="startElement">[Optional] The first element to start viewing from.</param>
         /// <param name="elementCount">[Optional] The number of elements to view.</param>
         /// <returns>A <see cref="GorgonBufferUav"/> used to bind the buffer to a shader.</returns>
-        /// <exception cref="GorgonException">Thrown if the video adapter does not support feature level 11 or better.
+        /// <exception cref="GorgonException">Thrown if the video adapter does not support feature set 11 or better.
         /// <para>-or-</para>
         /// <para>Thrown when this buffer does not have a <see cref="BufferBinding"/> of <see cref="BufferBinding.UnorderedAccess"/>.</para>
         /// <para>-or-</para>
@@ -262,7 +262,7 @@ namespace Gorgon.Graphics.Core
         /// <para>
         /// <note type="important">
         /// <para>
-        /// This method requires a video adapter capable of supporting feature level 11 or better. If the current video adapter does not support feature level 11, an exception will be thrown.
+        /// This method requires a video adapter capable of supporting feature set 11 or better. If the current video adapter does not support feature set 11, an exception will be thrown.
         /// </para>
         /// </note>
         /// </para>

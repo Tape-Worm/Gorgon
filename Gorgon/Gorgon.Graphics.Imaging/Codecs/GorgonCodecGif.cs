@@ -43,7 +43,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 	/// </para>
 	/// <para>
 	/// This codec only supports 1, 4, and 8 bit indexed pixel formats, and uses a palette to define the actual colors at the indices for each pixel. All data decoded will be encoded using the 
-	/// 32 bit <c>R8G8B8A8_UNorm</c> pixel format. Data encoded with this codec will be downsampled to 8 bit indexed data.
+	/// 32 bit <see cref="BufferFormat.R8G8B8A8_UNorm"/> pixel format. Data encoded with this codec will be downsampled to 8 bit indexed data.
 	/// </para>
 	/// </remarks>
 	public sealed class GorgonCodecGif

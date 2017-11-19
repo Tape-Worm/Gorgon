@@ -206,7 +206,7 @@ namespace Gorgon.Graphics.Example
         /// If this value is set to an unacceptable format, then the effect will throw an exception during rendering.
         /// </para>
         /// <para>
-        /// The default value is <c>R8G8B8A8_UNorm</c>.
+        /// The default value is <see cref="BufferFormat.R8G8B8A8_UNorm"/>
         /// </para>
         /// </remarks>
         /// <seealso cref="IGorgonVideoAdapter.GetBufferFormatSupport"/>
