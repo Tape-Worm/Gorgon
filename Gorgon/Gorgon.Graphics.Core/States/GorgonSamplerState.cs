@@ -105,7 +105,7 @@ namespace Gorgon.Graphics.Core
         // Maxium anisotropy value.
 	    private int _maxAnisotropy;
         // The comparsion function for filtering.
-	    private D3D11.Comparison _comparisonFunction;
+	    private Comparison _comparisonFunction;
         // The border color for bordered addressing.
 	    private GorgonColor _borderColor;
         // The minimum LOD for a mip mapped texture.
@@ -280,10 +280,10 @@ namespace Gorgon.Graphics.Core
 	    /// This sets how a comparison between current sampled data and existing sampled data is handled.
 	    /// </para>
 	    /// <para>
-	    /// The default value is <c>Never</c>.
+	    /// The default value is <see cref="Comparison.Never"/>.
 	    /// </para>
 	    /// </remarks>
-	    public D3D11.Comparison ComparisonFunction
+	    public Comparison ComparisonFunction
 	    {
 	        get => _comparisonFunction;
 	        set
@@ -436,7 +436,7 @@ namespace Gorgon.Graphics.Core
 			BorderColor = GorgonColor.White;
 			MinimumLevelOfDetail = float.MinValue;
 			MaximumLevelOfDetail = float.MaxValue;
-			ComparisonFunction = D3D11.Comparison.Never;
+			ComparisonFunction = Comparison.Never;
 			MipLevelOfDetailBias = 0.0f;
 		}
         #endregion

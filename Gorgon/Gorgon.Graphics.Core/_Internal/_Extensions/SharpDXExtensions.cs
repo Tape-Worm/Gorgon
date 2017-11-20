@@ -258,7 +258,7 @@ namespace Gorgon.Graphics.Core
 				       AddressV = (D3D11.TextureAddressMode)state.WrapV,
 				       AddressW = (D3D11.TextureAddressMode)state.WrapW,
 				       BorderColor = state.BorderColor.ToRawColor4(),
-				       ComparisonFunction = state.ComparisonFunction,
+				       ComparisonFunction = (D3D11.Comparison)state.ComparisonFunction,
 				       MaximumAnisotropy = state.MaxAnisotropy,
 				       MaximumLod = state.MaximumLevelOfDetail,
 				       MinimumLod = state.MinimumLevelOfDetail,
@@ -300,22 +300,22 @@ namespace Gorgon.Graphics.Core
 				       StencilReadMask = state.StencilReadMask,
 				       DepthWriteMask = state.IsDepthWriteEnabled ? D3D11.DepthWriteMask.All : D3D11.DepthWriteMask.Zero,
 				       StencilWriteMask = state.StencilWriteMask,
-				       DepthComparison = state.DepthComparison,
+				       DepthComparison = (D3D11.Comparison)state.DepthComparison,
 				       IsStencilEnabled = state.IsStencilEnabled,
 				       IsDepthEnabled = state.IsDepthEnabled,
 				       BackFace = new D3D11.DepthStencilOperationDescription
 				                  {
-					                  Comparison = state.BackFaceStencilOp.Comparison,
-					                  FailOperation = state.BackFaceStencilOp.FailOperation,
-					                  PassOperation = state.BackFaceStencilOp.PassOperation,
-					                  DepthFailOperation = state.BackFaceStencilOp.DepthFailOperation
+					                  Comparison = (D3D11.Comparison)state.BackFaceStencilOp.Comparison,
+					                  FailOperation = (D3D11.StencilOperation)state.BackFaceStencilOp.FailOperation,
+					                  PassOperation = (D3D11.StencilOperation)state.BackFaceStencilOp.PassOperation,
+					                  DepthFailOperation = (D3D11.StencilOperation)state.BackFaceStencilOp.DepthFailOperation
 				                  },
 				       FrontFace = new D3D11.DepthStencilOperationDescription
 				                   {
-					                   Comparison = state.FrontFaceStencilOp.Comparison,
-					                   FailOperation = state.FrontFaceStencilOp.FailOperation,
-					                   PassOperation = state.FrontFaceStencilOp.PassOperation,
-					                   DepthFailOperation = state.FrontFaceStencilOp.DepthFailOperation
+					                   Comparison = (D3D11.Comparison)state.FrontFaceStencilOp.Comparison,
+					                   FailOperation = (D3D11.StencilOperation)state.FrontFaceStencilOp.FailOperation,
+					                   PassOperation = (D3D11.StencilOperation)state.FrontFaceStencilOp.PassOperation,
+					                   DepthFailOperation = (D3D11.StencilOperation)state.FrontFaceStencilOp.DepthFailOperation
 				                   }
 			       };
 		}

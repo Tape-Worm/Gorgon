@@ -31,23 +31,79 @@ using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
 {
-	/// <summary>
-	/// Information used to create the stencil portion of a <see cref="GorgonDepthStencilState"/>.
-	/// </summary>
-	public class GorgonStencilOperation 
+    /// <summary>
+    /// Defines a type of operation to perform when masking using the stencil buffer.
+    /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue")]
+    public enum StencilOperation
+    {
+        /// <summary>
+        /// <para>
+        /// Keep the existing stencil data.
+        /// </para>
+        /// </summary>
+        Keep = D3D11.StencilOperation.Keep,
+        /// <summary>
+        /// <para>
+        /// Set the stencil data to 0.
+        /// </para>
+        /// </summary>
+        Zero = D3D11.StencilOperation.Zero,
+        /// <summary>
+        /// <para>
+        /// Set the stencil data to the reference value set by calling ID3D11DeviceContext::OMSetDepthStencilState.
+        /// </para>
+        /// </summary>
+        Replace = D3D11.StencilOperation.Replace,
+        /// <summary>
+        /// <para>
+        /// Increment the stencil value by 1, and clamp the result.
+        /// </para>
+        /// </summary>
+        IncrementClamp = D3D11.StencilOperation.IncrementAndClamp,
+        /// <summary>
+        /// <para>
+        /// Decrement the stencil value by 1, and clamp the result.
+        /// </para>
+        /// </summary>
+        DecrementClamp = D3D11.StencilOperation.DecrementAndClamp,
+        /// <summary>
+        /// <para>
+        /// Invert the stencil data.
+        /// </para>
+        /// </summary>
+        Invert = D3D11.StencilOperation.Invert,
+        /// <summary>
+        /// <para>
+        /// Increment the stencil value by 1, and wrap the result if necessary.
+        /// </para>
+        /// </summary>
+        Increment = D3D11.StencilOperation.Increment,
+        /// <summary>
+        /// <para>
+        /// Decrement the stencil value by 1, and wrap the result if necessary.
+        /// </para>
+        /// </summary>
+        Decrement = D3D11.StencilOperation.Decrement
+    }
+
+    /// <summary>
+    /// Information used to create the stencil portion of a <see cref="GorgonDepthStencilState"/>.
+    /// </summary>
+    public class GorgonStencilOperation 
 		: IEquatable<GorgonStencilOperation>
 	{
         #region Variables.
         // The depth/stencil state that owns this type.
 	    private readonly GorgonDepthStencilState _depthStencilState;
         // The type of stencil comparison to perform.
-	    private D3D11.Comparison _comparison;
+	    private Comparison _comparison;
         // The type of operation to perform when a depth test fails.
-	    private D3D11.StencilOperation _depthFailOperation;
+	    private StencilOperation _depthFailOperation;
         // The type of operation to perform when a stencil test fails.
-	    private D3D11.StencilOperation _failOperation;
+	    private StencilOperation _failOperation;
         // The type of operation to perform when a stencil test passes.
-	    private D3D11.StencilOperation _passOperation;
+	    private StencilOperation _passOperation;
 	    #endregion
 
         #region Properties.
@@ -64,10 +120,10 @@ namespace Gorgon.Graphics.Core
 	    /// This specifies the function to evaluate with stencil data being read/written and existing stencil data.
 	    /// </para>
 	    /// <para>
-	    /// The default value is <c>Keep</c>.
+	    /// The default value is <see cref="Core.Comparison.Always"/>.
 	    /// </para>
 	    /// </remarks>
-	    public D3D11.Comparison Comparison
+	    public Comparison Comparison
 	    {
 	        get => _comparison;
 	        set
@@ -81,9 +137,9 @@ namespace Gorgon.Graphics.Core
 	    /// Property to set or return the operation to perform when the depth testing function fails, but stencil testing passes.
 	    /// </summary>
 	    /// <remarks>
-	    /// The default value is <c>Keep</c>.
+	    /// The default value is <see cref="StencilOperation.Keep"/>.
 	    /// </remarks>
-	    public D3D11.StencilOperation DepthFailOperation
+	    public StencilOperation DepthFailOperation
 	    {
 	        get => _depthFailOperation;
 	        set
@@ -97,9 +153,9 @@ namespace Gorgon.Graphics.Core
 	    /// Property to set or return the operation to perform when the stencil testing fails.
 	    /// </summary>
 	    /// <remarks>
-	    /// The default value is <c>Keep</c>.
+	    /// The default value is <see cref="StencilOperation.Keep"/>.
 	    /// </remarks>
-	    public D3D11.StencilOperation FailOperation
+	    public StencilOperation FailOperation
 	    {
 	        get => _failOperation;
 	        set
@@ -113,9 +169,9 @@ namespace Gorgon.Graphics.Core
 	    /// Property to set or return the operation to perform when the stencil testing passes.
 	    /// </summary>
 	    /// <remarks>
-	    /// The default value is <c>Keep</c>.
+	    /// The default value is <see cref="StencilOperation.Keep"/>.
 	    /// </remarks>
-	    public D3D11.StencilOperation PassOperation
+	    public StencilOperation PassOperation
 	    {
 	        get => _passOperation;
 	        set
@@ -176,8 +232,8 @@ namespace Gorgon.Graphics.Core
 
 		    if (opInfo == null)
 		    {
-		        _comparison = D3D11.Comparison.Always;
-		        _failOperation = _passOperation = _depthFailOperation = D3D11.StencilOperation.Keep;
+		        _comparison = Comparison.Always;
+		        _failOperation = _passOperation = _depthFailOperation = StencilOperation.Keep;
 		        return;
 		    }
 

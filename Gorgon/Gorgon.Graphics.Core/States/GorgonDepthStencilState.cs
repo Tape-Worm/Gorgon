@@ -138,7 +138,7 @@ namespace Gorgon.Graphics.Core
                                                                                    IsDepthWriteEnabled = true,
                                                                                    IsDepthEnabled = true,
                                                                                    IsStencilEnabled = true,
-                                                                                   DepthComparison = D3D11.Comparison.GreaterEqual,
+                                                                                   DepthComparison = Comparison.GreaterEqual,
                                                                                    IsLocked = true
                                                                                };
         #endregion
@@ -147,7 +147,7 @@ namespace Gorgon.Graphics.Core
 	    // The state ID.
 	    private static long _stateID;
         // The type of comparison to perform for depth testing.
-        private D3D11.Comparison _depthComparison;
+        private Comparison _depthComparison;
         // Flag to indicate that depth writing is enabled.
 	    private bool _isDepthWriteEnabled;
         // Flag to indicate that the depth buffer is enabled.
@@ -186,10 +186,10 @@ namespace Gorgon.Graphics.Core
         /// Use this property to determine whether a depth value will be written into the buffer if the function specified evaluates to true using the data being written and existing data.
         /// </para>
         /// <para>
-        /// The default value is <c>Less</c>.
+        /// The default value is <see cref="Comparison.Less"/>.
         /// </para>
         /// </remarks>
-        public D3D11.Comparison DepthComparison
+        public Comparison DepthComparison
 		{
 		    get => _depthComparison;
 		    set
@@ -388,7 +388,7 @@ namespace Gorgon.Graphics.Core
         {
             ID = Interlocked.Increment(ref _stateID);
 			_isDepthWriteEnabled = true;
-			_depthComparison = D3D11.Comparison.Less;
+			_depthComparison = Comparison.Less;
 			_stencilReadMask = 0xff;
 			_stencilWriteMask = 0xff;
 			BackFaceStencilOp = new GorgonStencilOperation(this);
