@@ -230,10 +230,10 @@ namespace Gorgon.Graphics.Core
 		{
 			return new D3D11.RasterizerStateDescription1
 			       {
-						CullMode = state.CullMode,
+						CullMode = (D3D11.CullMode)state.CullMode,
 						DepthBias = state.DepthBias,
 						IsFrontCounterClockwise = state.IsFrontCounterClockwise,
-						FillMode = state.FillMode,
+						FillMode = (D3D11.FillMode)state.FillMode,
 						DepthBiasClamp = state.DepthBiasClamp,
 						SlopeScaledDepthBias = state.SlopeScaledDepthBias,
 						ForcedSampleCount = state.ForcedUavSampleCount,
@@ -253,7 +253,7 @@ namespace Gorgon.Graphics.Core
 		{
 			return new D3D11.SamplerStateDescription
 			       {
-				       Filter = state.Filter,
+				       Filter = (D3D11.Filter)state.Filter,
 				       AddressU = (D3D11.TextureAddressMode)state.WrapU,
 				       AddressV = (D3D11.TextureAddressMode)state.WrapV,
 				       AddressW = (D3D11.TextureAddressMode)state.WrapW,
