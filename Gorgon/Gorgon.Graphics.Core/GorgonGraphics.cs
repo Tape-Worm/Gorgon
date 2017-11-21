@@ -1387,7 +1387,7 @@ namespace Gorgon.Graphics.Core
             // Unbind any depth/stencil bound as input.
             if ((_depthStencilView != null)
                 && ((_depthStencilView.Texture.Info.Binding & TextureBinding.ShaderResource) == TextureBinding.ShaderResource)
-                && (_depthStencilView.Flags == D3D11.DepthStencilViewFlags.None))
+                && (_depthStencilView.Flags == DepthStencilViewFlags.None))
             {
                 UnbindFromShader(ShaderType.Pixel, _depthStencilView.Texture, ref psSrvBindings, _currentDrawCall.PixelShaderResourceViews);
                 UnbindFromShader(ShaderType.Geometry, _depthStencilView.Texture, ref gsSrvBindings, _currentDrawCall.GeometryShaderResourceViews);

@@ -34,6 +34,50 @@ using D3D11 = SharpDX.Direct3D11;
 namespace Gorgon.Graphics.Core
 {
     /// <summary>
+    /// Defines how a triangle primitive should be rendered.
+    /// </summary>
+    public enum FillMode
+    {
+        /// <summary>
+        /// <para>
+        /// Draw lines connecting the vertices. Adjacent vertices are not drawn.
+        /// </para>
+        /// </summary>
+        Wireframe = D3D11.FillMode.Wireframe,
+        /// <summary>
+        /// <para>
+        /// Fill the triangles formed by the vertices. Adjacent vertices are not drawn.
+        /// </para>
+        /// </summary>
+        Solid = D3D11.FillMode.Solid
+    }
+
+    /// <summary>
+    /// Defines how a triangle primitive should be culled from rendering.
+    /// </summary>
+    public enum CullingMode
+    {
+        /// <summary>
+        /// <para>
+        /// Always draw all triangles.
+        /// </para>
+        /// </summary>
+        None = D3D11.CullMode.None,
+        /// <summary>
+        /// <para>
+        /// Do not draw triangles that are front-facing.
+        /// </para>
+        /// </summary>
+        Front = D3D11.CullMode.Front,
+        /// <summary>
+        /// <para>
+        /// Do not draw triangles that are back-facing.
+        /// </para>
+        /// </summary>
+        Back = D3D11.CullMode.Back
+    }
+
+    /// <summary>
     /// Describes how primitive data (i.e. triangles, lines, etc...) are rasterized by the GPU.
     /// </summary>
     /// <remarks>
@@ -84,8 +128,8 @@ namespace Gorgon.Graphics.Core
             get;
         } = new GorgonRasterState
             {
-                CullMode = D3D11.CullMode.None,
-                FillMode = D3D11.FillMode.Wireframe,
+                CullMode = CullingMode.None,
+                FillMode = FillMode.Wireframe,
                 IsLocked = true
             };
 
@@ -97,7 +141,7 @@ namespace Gorgon.Graphics.Core
             get;
         } = new GorgonRasterState
             {
-                CullMode = D3D11.CullMode.Front,
+                CullMode = CullingMode.Front,
                 IsLocked = true
             };
 
@@ -109,7 +153,7 @@ namespace Gorgon.Graphics.Core
             get;
         } = new GorgonRasterState
             {
-                CullMode = D3D11.CullMode.None,
+                CullMode = CullingMode.None,
                 IsLocked = true
             };
 
@@ -131,10 +175,10 @@ namespace Gorgon.Graphics.Core
         private static long _stateID;
 
         // The current triangle culling mode.
-        private D3D11.CullMode _cullMode;
+        private CullingMode _cullMode;
 
         // The current primitive filling mode.
-        private D3D11.FillMode _fillMode;
+        private FillMode _fillMode;
 
         // Flag to indicate that front facing primitives should have their vertices ordered counter clockwise.
         private bool _isFrontCounterClockwise;
@@ -190,10 +234,10 @@ namespace Gorgon.Graphics.Core
         /// This value is used to determine if a triangle is drawn or not by the direction it's facing.
         /// </para>
         /// <para>
-        /// The default value is <c>Back</c>.
+        /// The default value is <see cref="CullingMode.Back"/>.
         /// </para>
         /// </remarks>
-        public D3D11.CullMode CullMode
+        public CullingMode CullMode
         {
             get => _cullMode;
             set
@@ -207,9 +251,9 @@ namespace Gorgon.Graphics.Core
         /// Property to set or return the triangle fill mode.
         /// </summary>
         /// <remarks>
-        /// The default value is <c>Solid</c>.
+        /// The default value is <see cref="Core.FillMode.Solid"/>.
         /// </remarks>
-        public D3D11.FillMode FillMode
+        public FillMode FillMode
         {
             get => _fillMode;
             set
@@ -523,8 +567,8 @@ namespace Gorgon.Graphics.Core
         {
             ID = Interlocked.Increment(ref _stateID);
             _isScissorClippingEnabled = true;
-            _cullMode = D3D11.CullMode.Back;
-            _fillMode = D3D11.FillMode.Solid;
+            _cullMode = CullingMode.Back;
+            _fillMode = FillMode.Solid;
             _isDepthClippingEnabled = true;
         }
         #endregion

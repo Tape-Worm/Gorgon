@@ -75,7 +75,7 @@ namespace Gorgon.Graphics.Core
 	    /// </summary>
 	    public static readonly GorgonSamplerState PointFiltering = new GorgonSamplerState
 	                                                               {
-	                                                                   Filter = D3D11.Filter.MinMagMipPoint,
+	                                                                   Filter = SampleFilter.MinMagMipPoint,
 	                                                                   IsLocked = true
 	                                                               };
 
@@ -84,7 +84,7 @@ namespace Gorgon.Graphics.Core
 	    /// </summary>
 	    public static readonly GorgonSamplerState AnisotropicFiltering = new GorgonSamplerState
 	                                                                     {
-	                                                                         Filter = D3D11.Filter.Anisotropic,
+	                                                                         Filter = SampleFilter.Anisotropic,
 	                                                                         IsLocked = true
 	                                                                     };
         #endregion
@@ -93,7 +93,7 @@ namespace Gorgon.Graphics.Core
 	    // The state ID.
 	    private static long _stateID;
         // The texture filter.
-        private D3D11.Filter _filter;
+        private SampleFilter _filter;
         // The addressing mode for moving beyond texture horizontal extents.
 	    private TextureWrap _addressU;
 	    // The addressing mode for moving beyond texture vertical extents.
@@ -154,10 +154,10 @@ namespace Gorgon.Graphics.Core
         /// Click this <a target="_blank" href="https://msdn.microsoft.com/en-us/library/windows/desktop/ff476132(v=vs.85).aspx">link</a> for a full description of each filter type.
         /// </para>
         /// <para>
-        /// The default value is <c>MinMagMipLinear</c>.
+        /// The default value is <see cref="SampleFilter.MinMagMipLinear"/>.
         /// </para>
         /// </remarks>
-        public D3D11.Filter Filter
+        public SampleFilter Filter
 	    {
 	        get => _filter;
 	        set
@@ -428,7 +428,7 @@ namespace Gorgon.Graphics.Core
 		public GorgonSamplerState()
 		{
 		    ID = Interlocked.Increment(ref _stateID);
-            Filter = D3D11.Filter.MinMagMipLinear;
+            Filter = SampleFilter.MinMagMipLinear;
 			WrapU = TextureWrap.Clamp;
 			WrapV = TextureWrap.Clamp;
 			WrapW = TextureWrap.Clamp;

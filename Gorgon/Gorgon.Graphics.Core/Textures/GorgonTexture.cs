@@ -688,20 +688,20 @@ namespace Gorgon.Graphics.Core
 						case BufferFormat.R32G8X24_Typeless:
 							// We'll only default to the depth portion of the view, we'd need to create a separate view to read the stencil component.
 							DefaultShaderResourceView = GetShaderResourceView(BufferFormat.R32_Float_X8X24_Typeless);
-							DefaultDepthStencilView = GetDepthStencilView(BufferFormat.D32_Float_S8X24_UInt, 0, 0, 0, D3D11.DepthStencilViewFlags.ReadOnlyDepth);
+							DefaultDepthStencilView = GetDepthStencilView(BufferFormat.D32_Float_S8X24_UInt, 0, 0, 0, DepthStencilViewFlags.ReadOnlyDepth);
 							break;
 						case BufferFormat.R24G8_Typeless:
 							// We'll only default to the depth portion of the view, we'd need to create a separate view to read the stencil component.
 							DefaultShaderResourceView = GetShaderResourceView(BufferFormat.R24_UNorm_X8_Typeless);
-							DefaultDepthStencilView = GetDepthStencilView(BufferFormat.D24_UNorm_S8_UInt, 0, 0, 0, D3D11.DepthStencilViewFlags.ReadOnlyDepth);
+							DefaultDepthStencilView = GetDepthStencilView(BufferFormat.D24_UNorm_S8_UInt, 0, 0, 0, DepthStencilViewFlags.ReadOnlyDepth);
 							break;
 						case BufferFormat.R16_Typeless:
 							DefaultShaderResourceView = GetShaderResourceView(BufferFormat.R16_Float);
-							DefaultDepthStencilView = GetDepthStencilView(BufferFormat.D16_UNorm, 0, 0, 0, D3D11.DepthStencilViewFlags.ReadOnlyDepth);
+							DefaultDepthStencilView = GetDepthStencilView(BufferFormat.D16_UNorm, 0, 0, 0, DepthStencilViewFlags.ReadOnlyDepth);
 							break;
 						case BufferFormat.R32_Typeless:
 							DefaultShaderResourceView = GetShaderResourceView(BufferFormat.R32_Float);
-							DefaultDepthStencilView = GetDepthStencilView(BufferFormat.D32_Float, 0, 0, 0, D3D11.DepthStencilViewFlags.ReadOnlyDepth);
+							DefaultDepthStencilView = GetDepthStencilView(BufferFormat.D32_Float, 0, 0, 0, DepthStencilViewFlags.ReadOnlyDepth);
 							break;
 					}
 					return;
@@ -1756,18 +1756,23 @@ namespace Gorgon.Graphics.Core
         /// <para>Thrown when the <paramref name="format"/> is not supported as a depth/stencil format.</para>
         /// <para>-or-</para>
         /// <para>Thrown when the <paramref name="arrayIndex"/> plus the <paramref name="arrayCount"/> is larger than the number of array indices/depth slices for this texture.</para>
-        /// <para>-or-</para>
-        /// <para>Thrown if the <paramref name="flags"/> parameter was set to value other than <c>None</c>, and the current video adapter does not support feature set 11 or better.</para>
         /// </exception>
         /// <exception cref="GorgonException">Thrown if this texture type is <see cref="TextureType.Texture3D"/>.</exception>
-        public GorgonDepthStencilView GetDepthStencilView(BufferFormat format = BufferFormat.Unknown, int firstMipLevel = 0, int arrayIndex = 0, int arrayCount = 0, D3D11.DepthStencilViewFlags flags = D3D11.DepthStencilViewFlags.None)
+        /// <remarks>
+        /// <para>
+        /// The <paramref name="flags"/> parameter will allow the depth/stencil buffer to be read simultaneously from the depth/stencil view and from a shader view.  It is not normally possible to bind a view of 
+        /// a resource to 2 parts of the pipeline at the same time.  However, with the flags provided, read-only access may be granted to a part of the resource (depth or stencil) or all of it for all parts of 
+        /// the pipline.  This would bind the depth/stencil as a read-only view and make it a read-only view accessible to shaders.
+        /// </para>
+        /// </remarks>
+        public GorgonDepthStencilView GetDepthStencilView(BufferFormat format = BufferFormat.Unknown, int firstMipLevel = 0, int arrayIndex = 0, int arrayCount = 0, DepthStencilViewFlags flags = DepthStencilViewFlags.None)
 	    {
 	        if (_info.TextureType == TextureType.Texture3D)
 	        {
 	            throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_VIEW_DEPTH_STENCIL_NO_3D);
 	        }
 
-	        if ((flags != D3D11.DepthStencilViewFlags.None) && (Graphics.VideoDevice.RequestedFeatureLevel < FeatureSet.Level_12_0))
+	        if ((flags != DepthStencilViewFlags.None) && (Graphics.VideoDevice.RequestedFeatureLevel < FeatureSet.Level_12_0))
 	        {
 	            throw new ArgumentException(string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureSet.Level_12_0), nameof(flags));
 	        }

@@ -36,20 +36,49 @@ using DXGI = SharpDX.DXGI;
 
 namespace Gorgon.Graphics.Core
 {
-	/// <summary>
-	/// A depth/stencil view for textures.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// This is a depth/stencil view to allow a <see cref="GorgonTexture"/> to be bound to the GPU pipeline as a depth/stencil resource.
-	/// </para>
-	/// <para>
-	/// Use a resource view to allow a shader access to the contents of a resource (or sub resource).  When the resource is created with a typeless format, this will allow the resource to be cast to any 
-	/// format within the same group.	
-	/// </para>
-	/// </remarks>
-	/// <seealso cref="GorgonTexture"/>
-	public class GorgonDepthStencilView
+    /// <summary>
+    /// Defines options for using a depth/stencil view.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Limiting a depth-stencil buffer to read-only access allows more than one depth-stencil view to be bound to the pipeline.
+    /// </para>
+    /// </remarks>
+    [Flags]
+    public enum DepthStencilViewFlags
+    {
+        /// <summary>
+        /// Depth and stencil buffers are read-write.
+        /// </summary>
+        None = D3D11.DepthStencilViewFlags.None,
+        /// <summary>
+        /// <para>
+        /// Indicates that depth values are read only.
+        /// </para>
+        /// </summary>
+        ReadOnlyDepth = D3D11.DepthStencilViewFlags.ReadOnlyDepth,
+        /// <summary>
+        /// <para>
+        /// Indicates that stencil values are read only.
+        /// </para>
+        /// </summary>
+        ReadOnlyStencil = D3D11.DepthStencilViewFlags.ReadOnlyStencil
+    }
+
+    /// <summary>
+    /// A depth/stencil view for textures.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This is a depth/stencil view to allow a <see cref="GorgonTexture"/> to be bound to the GPU pipeline as a depth/stencil resource.
+    /// </para>
+    /// <para>
+    /// Use a resource view to allow a shader access to the contents of a resource (or sub resource).  When the resource is created with a typeless format, this will allow the resource to be cast to any 
+    /// format within the same group.	
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="GorgonTexture"/>
+    public class GorgonDepthStencilView
     {
 		#region Variables.
 		// A log for debug logging.
@@ -94,11 +123,8 @@ namespace Gorgon.Graphics.Core
 		/// <para>
 		/// This is only valid if the resource allows shader access.
 		/// </para>
-		/// <para>
-		/// This is only valid on video adapters with a feature set of 11.0 or better.
-		/// </para>
 		/// </remarks>
-		public D3D11.DepthStencilViewFlags Flags
+		public DepthStencilViewFlags Flags
         {
             get;
 		}
@@ -394,7 +420,7 @@ namespace Gorgon.Graphics.Core
 		                              int mipSlice,
 		                              int firstArrayIndex,
 		                              int arrayCount,
-		                              D3D11.DepthStencilViewFlags flags,
+		                              DepthStencilViewFlags flags,
 									  IGorgonLog log)
 		{
 			_log = log ?? GorgonLogDummy.DefaultInstance;

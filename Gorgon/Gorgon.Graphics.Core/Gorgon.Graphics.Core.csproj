@@ -177,6 +177,7 @@
     <Compile Include="States\GorgonDepthStencilState.cs" />
     <Compile Include="States\GorgonSamplerState.cs" />
     <Compile Include="States\GorgonStencilOperation.cs" />
+    <Compile Include="States\SampleFilter.cs" />
     <Compile Include="Targets\GorgonBeforeSwapChainResizedEventArgs.cs" />
     <Compile Include="Targets\GorgonDepthStencilView.cs" />
     <Compile Include="Targets\GorgonRenderTargetView.cs" />
