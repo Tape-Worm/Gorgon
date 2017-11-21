@@ -141,7 +141,7 @@ namespace Gorgon.Graphics.Core
 					throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_SHADER_UNKNOWN_TYPE, shaderType));
 			}
 
-		    return prefix + "_5_1";
+		    return prefix + "_5_0";
 		}
 
 		/// <summary>
