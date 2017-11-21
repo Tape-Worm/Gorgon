@@ -185,7 +185,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="usage">The usage flags for the buffer.</param>
         /// <param name="bindings">The bindings to apply to the buffer.</param>
-        protected void ValidateBufferBindings(ResourceUsage usage, D3D11.BindFlags bindings)
+        internal void ValidateBufferBindings(ResourceUsage usage, D3D11.BindFlags bindings)
         {
             if ((usage != ResourceUsage.Staging) && (bindings == D3D11.BindFlags.None))
             {
