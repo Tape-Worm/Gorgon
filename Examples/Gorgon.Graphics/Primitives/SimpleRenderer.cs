@@ -324,12 +324,33 @@ namespace Gorgon.Graphics.Example
         }
 
         /// <summary>
+        /// Function to determine if any lights have a dirty property.
+        /// </summary>
+        /// <returns><b>true</b> if a light is dirty, or <b>false</b> if not.</returns>
+        private bool LightPropsDirty()
+        {
+            if (Lights.IsDirty)
+            {
+                return true;
+            }
+
+            for (int i = 0; i < Lights.Count; ++i)
+            {
+                if ((Lights[i] != null) && (Lights[i].IsDirty))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Function to update the list of lights.
         /// </summary>
         private void UpdateLights()
         {
-            if ((!Lights.IsDirty)
-                && (Lights.All(item => item != null && !item.IsDirty)))
+            if (!LightPropsDirty())
             {
                 return;
             }
@@ -353,7 +374,9 @@ namespace Gorgon.Graphics.Example
             }
 
             // Send to the constant buffer right away.
-            _lightBuffer.Update<LightData>(_lightData);
+            GorgonPointerAlias ptr = _lightBuffer.Lock(MapMode.WriteDiscard);
+            ptr.WriteRange(_lightData);
+            _lightBuffer.Unlock(ref ptr);
         }
 
         /// <summary>
@@ -398,7 +421,7 @@ namespace Gorgon.Graphics.Example
                                                     _graphics,
                                                     new GorgonConstantBufferInfo
                                                     {
-                                                        Usage = ResourceUsage.Default,
+                                                        Usage = ResourceUsage.Dynamic,
                                                         SizeInBytes = DirectAccess.SizeOf<LightData>() * MaxLights
                                                     });
 
