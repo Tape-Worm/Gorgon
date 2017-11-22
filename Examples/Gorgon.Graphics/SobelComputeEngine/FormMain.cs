@@ -232,9 +232,9 @@ namespace SobelComputeEngine
 
                 // Load the compute shader.
 #if DEBUG
-                _sobelShader = GorgonShaderFactory.Compile<GorgonComputeShader>(_graphics.VideoDevice, Resources.ComputeShader, "SobelCS", true);
+                _sobelShader = GorgonShaderFactory.Compile<GorgonComputeShader>(_graphics, Resources.ComputeShader, "SobelCS", true);
 #else
-                _sobelShader = GorgonShaderFactory.Compile<GorgonComputeShader>(_graphics.VideoDevice, Resources.ComputeShader, "SobelCS");
+                _sobelShader = GorgonShaderFactory.Compile<GorgonComputeShader>(_graphics, Resources.ComputeShader, "SobelCS");
 #endif
                 _sobel = new Sobel(_graphics, _sobelShader);
 

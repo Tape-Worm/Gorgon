@@ -29,15 +29,13 @@ using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Native;
 using DX = SharpDX;
-using D3D = SharpDX.Direct3D;
-using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics
 {
-	/// <summary>
-	/// Provides functionality for blitting a texture to the currently active <see cref="GorgonGraphics.RenderTargets">render target</see>.
-	/// </summary>
-	internal class TextureBlitter
+    /// <summary>
+    /// Provides functionality for blitting a texture to the currently active <see cref="GorgonGraphics.RenderTargets">render target</see>.
+    /// </summary>
+    internal class TextureBlitter
 		: IDisposable
 	{
         #region Constants.
@@ -135,10 +133,10 @@ namespace Gorgon.Graphics
 				return;
 			}
 
-			_vertexShader = GorgonShaderFactory.Compile<GorgonVertexShader>(_graphics.VideoDevice, Resources.GraphicsShaders, "GorgonBltVertexShader", GorgonGraphics.IsDebugEnabled);
-			_pixelShader = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics.VideoDevice, Resources.GraphicsShaders, "GorgonBltPixelShader", GorgonGraphics.IsDebugEnabled);
+			_vertexShader = GorgonShaderFactory.Compile<GorgonVertexShader>(_graphics, Resources.GraphicsShaders, "GorgonBltVertexShader", GorgonGraphics.IsDebugEnabled);
+			_pixelShader = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics, Resources.GraphicsShaders, "GorgonBltPixelShader", GorgonGraphics.IsDebugEnabled);
 
-			_inputLayout = GorgonInputLayout.CreateUsingType<BltVertex>(_graphics.VideoDevice, _vertexShader);
+			_inputLayout = GorgonInputLayout.CreateUsingType<BltVertex>(_graphics, _vertexShader);
 
 			_vertexBufferBindings = new GorgonVertexBufferBindings(_inputLayout)
 				                    {

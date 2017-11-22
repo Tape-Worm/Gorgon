@@ -419,7 +419,7 @@ namespace Gorgon.Graphics.Example
 		    }
 
 			int selectedDeviceIndex = 0;
-			IGorgonVideoAdapter selectedDevice = null;
+			IGorgonVideoAdapterInfo selectedDevice = null;
 
 			while (selectedDeviceIndex < deviceList.Count)
 			{
@@ -434,42 +434,42 @@ namespace Gorgon.Graphics.Example
 
 				// Validate depth buffer for this device.
 				// Odds are good that if this fails, you should probably invest in a better video card.  Preferably something created after 2005.
-				BufferFormatSupport support = graphics.VideoDevice.GetBufferFormatSupport(_depthFormat);
+				GorgonFormatSupportInfo support = graphics.FormatSupport[_depthFormat];
 
-				if ((support & BufferFormatSupport.DepthStencil) == BufferFormatSupport.DepthStencil)
+				if ((support.FormatSupport & BufferFormatSupport.DepthStencil) == BufferFormatSupport.DepthStencil)
 				{
-					selectedDevice = graphics.VideoDevice;
+					selectedDevice = graphics.VideoAdapter;
 					break;
 				}
 
 				// Fall back to 32 bit depth-buffer with 8 bit stencil support.
 				_depthFormat = BufferFormat.D32_Float_S8X24_UInt;
-				support = graphics.VideoDevice.GetBufferFormatSupport(_depthFormat);
+				support = graphics.FormatSupport[_depthFormat];
 
-				if ((support & BufferFormatSupport.DepthStencil) != BufferFormatSupport.DepthStencil)
+				if ((support.FormatSupport & BufferFormatSupport.DepthStencil) != BufferFormatSupport.DepthStencil)
 				{
 					continue;
 				}
 
 			    // Fall back to 24 bit depth-buffer with 8 bit stencil support.
 			    _depthFormat = BufferFormat.D24_UNorm_S8_UInt;
-			    support = graphics.VideoDevice.GetBufferFormatSupport(_depthFormat);
+			    support = graphics.FormatSupport[_depthFormat];
 
-			    if ((support & BufferFormatSupport.DepthStencil) != BufferFormatSupport.DepthStencil)
+			    if ((support.FormatSupport & BufferFormatSupport.DepthStencil) != BufferFormatSupport.DepthStencil)
 			    {
 			        continue;
 			    }
 
 			    // Fall back to 16 bit depth-buffer with no stencil support.
 			    _depthFormat = BufferFormat.D16_UNorm;
-			    support = graphics.VideoDevice.GetBufferFormatSupport(_depthFormat);
+			    support = graphics.FormatSupport[_depthFormat];
 
-			    if ((support & BufferFormatSupport.DepthStencil) != BufferFormatSupport.DepthStencil)
+			    if ((support.FormatSupport & BufferFormatSupport.DepthStencil) != BufferFormatSupport.DepthStencil)
 			    {
 			        continue;
 			    }
 
-                selectedDevice = graphics.VideoDevice;
+                selectedDevice = graphics.VideoAdapter;
 				break;
 			}
 
@@ -528,9 +528,9 @@ namespace Gorgon.Graphics.Example
 			if (!Settings.Default.IsWindowed)
 			{
 				// If we've asked for full screen mode, then locate the correct video mode and set us up.
-				_output = _graphics.VideoDevice.Info.Outputs[Screen.PrimaryScreen.DeviceName];
+				_output = _graphics.VideoAdapter.Outputs[Screen.PrimaryScreen.DeviceName];
 			    var mode = new GorgonVideoMode(Settings.Default.Resolution.Width, Settings.Default.Resolution.Height, BufferFormat.R8G8B8A8_UNorm);
-				_graphics.VideoDevice.FindNearestVideoMode(_output, ref mode, out _selectedVideoMode);
+				_graphics.FindNearestVideoMode(_output, ref mode, out _selectedVideoMode);
 					
 				_swap.EnterFullScreen(ref mode, _output);
 			}
@@ -554,15 +554,15 @@ namespace Gorgon.Graphics.Example
 			// Create our shaders.
 			// Our vertex shader.  This is a simple shader, it just processes a vertex by multiplying it against
 			// the world/view/projection matrix and spits it back out.
-			_vertexShader = GorgonShaderFactory.Compile<GorgonVertexShader>(_graphics.VideoDevice, Resources.Shader, "BoingerVS");
+			_vertexShader = GorgonShaderFactory.Compile<GorgonVertexShader>(_graphics, Resources.Shader, "BoingerVS");
 			// Our main pixel shader.  This is a very simple shader, it just reads a texture and spits it back out.  Has no
 			// diffuse capability.
-			_pixelShader = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics.VideoDevice, Resources.Shader, "BoingerPS");
+			_pixelShader = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics, Resources.Shader, "BoingerPS");
 
             // Create the vertex input layout.
             // We need to create a layout for our vertex type because the shader won't know how to interpret the data we're sending it otherwise.  
             // This is why we need a vertex shader before we even create the layout.
-			_inputLayout = GorgonInputLayout.CreateUsingType<BoingerVertex>(_graphics.VideoDevice, _vertexShader);
+			_inputLayout = GorgonInputLayout.CreateUsingType<BoingerVertex>(_graphics, _vertexShader);
 
 			// Resources are stored as System.Drawing.Bitmap files, so we need to convert into an IGorgonImage so we can upload it to a texture.
 			// We also will generate mip-map levels for this image so that scaling the texture will look better. 

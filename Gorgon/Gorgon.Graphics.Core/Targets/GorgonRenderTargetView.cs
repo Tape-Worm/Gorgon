@@ -31,26 +31,25 @@ using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
 using DX = SharpDX;
 using DXGI = SharpDX.DXGI;
-using D3D = SharpDX.Direct3D;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
 {
-	/// <summary>
-	/// A view to allow texture based render targets to be bound to the pipeline.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// A render target view allows a render target (such as a <see cref="GorgonSwapChain"/> or <see cref="GorgonTexture"/>) to be bound to the GPU pipeline as a render target resource.
-	/// </para>
-	/// <para>
-	/// The view can bind the entire resource, or a sub section of the resource as required. It will also allow for casting of the format to allow for reinterpreting the data stored within the the render 
-	/// target. 
-	/// </para>
-	/// </remarks>
-	/// <seealso cref="GorgonSwapChain"/>
-	/// <seealso cref="GorgonTexture"/>
-	public sealed class GorgonRenderTargetView
+    /// <summary>
+    /// A view to allow texture based render targets to be bound to the pipeline.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A render target view allows a render target (such as a <see cref="GorgonSwapChain"/> or <see cref="GorgonTexture"/>) to be bound to the GPU pipeline as a render target resource.
+    /// </para>
+    /// <para>
+    /// The view can bind the entire resource, or a sub section of the resource as required. It will also allow for casting of the format to allow for reinterpreting the data stored within the the render 
+    /// target. 
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="GorgonSwapChain"/>
+    /// <seealso cref="GorgonTexture"/>
+    public sealed class GorgonRenderTargetView
 		: IDisposable
     {
 		#region Variables.
@@ -330,7 +329,7 @@ namespace Gorgon.Graphics.Core
 	        _log.Print($"Render Target View '{Texture.Name}': {Texture.ResourceType} -> Mip slice: {MipSlice}, Array/Depth Index: {ArrayOrDepthIndex}, Array/Depth Count: {ArrayOrDepthCount}",
 	                   LoggingLevel.Verbose);
 
-	        D3DRenderTargetView = new D3D11.RenderTargetView(Texture.Graphics.VideoDevice.D3DDevice(), Texture.D3DResource, desc)
+	        D3DRenderTargetView = new D3D11.RenderTargetView(Texture.Graphics.D3DDevice, Texture.D3DResource, desc)
 	                              {
 		                              DebugName = $"'{Texture.Name}': D3D 11 Render target view"
 	                              };

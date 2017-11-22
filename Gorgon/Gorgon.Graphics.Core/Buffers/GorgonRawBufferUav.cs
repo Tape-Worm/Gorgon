@@ -120,7 +120,7 @@ namespace Gorgon.Graphics.Core
                            Format = (DXGI.Format)Format
                        };
 
-            NativeView = new D3D11.UnorderedAccessView(Resource.Graphics.VideoDevice.D3DDevice(), Resource.D3DResource, desc)
+            NativeView = new D3D11.UnorderedAccessView(Resource.Graphics.D3DDevice, Resource.D3DResource, desc)
                          {
                              DebugName = $"'{Buffer.Name}': D3D 11 Unordered access view (raw)"
                          };
@@ -158,7 +158,12 @@ namespace Gorgon.Graphics.Core
 
             FormatInformation = new GorgonFormatInfo(Format);
 
-            if ((buffer.Graphics.VideoDevice.GetBufferFormatSupport(Format) & BufferFormatSupport.TypedUnorderedAccessView) != BufferFormatSupport.TypedUnorderedAccessView)
+            if (!buffer.Graphics.FormatSupport.TryGetValue(Format, out GorgonFormatSupportInfo support))
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_UAV_FORMAT_INVALID, Format));
+            }
+
+            if ((support.FormatSupport & BufferFormatSupport.TypedUnorderedAccessView) != BufferFormatSupport.TypedUnorderedAccessView)
             {
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_UAV_FORMAT_INVALID, Format));
             }

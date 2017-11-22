@@ -25,32 +25,82 @@
 #endregion
 
 using DXGI = SharpDX.DXGI;
-using D3D = SharpDX.Direct3D;
+using D3D11 = SharpDX.Direct3D11;
 using Gorgon.Collections;
 
 namespace Gorgon.Graphics.Core
 {
-	/// <summary>
-	/// Provides information about a video adapter in the system.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// This information may be for a physical hardware device, or a software rasterizer.  To determine which type this device falls under, se the <see cref="VideoDeviceType"/> property to determine the type of device.
-	/// </para>
-	/// </remarks>
-	internal class VideoAdapterInfo
+    /// <summary>
+    /// Provides information about a video adapter in the system.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This information may be for a physical hardware device, or a software rasterizer.  To determine which type this device falls under, se the <see cref="VideoDeviceType"/> property to determine the type of device.
+    /// </para>
+    /// </remarks>
+    internal class VideoAdapterInfo
 		: IGorgonVideoAdapterInfo
 	{
 		#region Variables.
 		// The DXGI adapter description
 		private readonly DXGI.AdapterDescription2 _adapterDesc;
-		#endregion
+        #endregion
 
-		#region Properties.
-		/// <summary>
-		/// Property to return the name of the video adapter.
-		/// </summary>
-		public string Name
+        #region Properties.
+        /// <summary>
+        /// Property to return the maximum number of render targets allow to be assigned at the same time.
+        /// </summary>
+        public int MaxRenderTargetCount => D3D11.OutputMergerStage.SimultaneousRenderTargetCount;
+
+        /// <summary>
+        /// Property to return the maximum number of array indices for 1D and 2D textures.
+        /// </summary>
+        public int MaxTextureArrayCount => 2048;
+
+        /// <summary>
+        /// Property to return the maximum width of a 1D or 2D texture.
+        /// </summary>
+        public int MaxTextureWidth => 16384;
+
+        /// <summary>
+        /// Property to return the maximum height of a 2D texture.
+        /// </summary>
+        public int MaxTextureHeight => 16384;
+
+        /// <summary>
+        /// Property to return the maximum width of a 3D texture.
+        /// </summary>
+        public int MaxTexture3DWidth => 2048;
+
+        /// <summary>
+        /// Property to return the maximum height of a 3D texture.
+        /// </summary>
+        public int MaxTexture3DHeight => 2048;
+
+        /// <summary>
+        /// Property to return the maximum depth of a 3D texture.
+        /// </summary>
+        public int MaxTexture3DDepth => 2048;
+
+        /// <summary>
+        /// Property to return the maximum size, in bytes, for a constant buffer.
+        /// </summary>
+        public int MaxConstantBufferSize => int.MaxValue;
+
+        /// <summary>
+        /// Property to return the maximum number of allowed scissor rectangles.
+        /// </summary>
+        public int MaxScissorCount => 16;
+
+        /// <summary>
+        /// Property to return the maximum number of allowed viewports.
+        /// </summary>
+        public int MaxViewportCount => 16;
+
+        /// <summary>
+        /// Property to return the name of the video adapter.
+        /// </summary>
+        public string Name
 		{
 			get;
 		}
@@ -80,53 +130,10 @@ namespace Gorgon.Graphics.Core
 		}
 
 		/// <summary>
-		/// Property to return the device ID.
-		/// </summary>
-		public int DeviceID => _adapterDesc.DeviceId;
-
-		/// <summary>
 		/// Property to return the unique identifier for the device.
 		/// </summary>
 		public long Luid => _adapterDesc.Luid;
 
-		/// <summary>
-		/// Property to return the revision for the device.
-		/// </summary>
-		public int Revision => _adapterDesc.Revision;
-
-		/// <summary>
-		/// Property to return the sub system ID for the device.
-		/// </summary>
-		public int SubSystemID => _adapterDesc.SubsystemId;
-
-		/// <summary>
-		/// Property to return the vendor ID for the device.
-		/// </summary>
-		public int VendorID => _adapterDesc.VendorId;
-
-		/// <summary>
-		/// Property to return the amount of dedicated system memory for the device, in bytes.
-		/// </summary>
-		/// <remarks>
-		/// If the application is running as an x86 application, this value may report an incorrect value. This is a known issue with SharpDX.
-		/// </remarks>
-		public long DedicatedSystemMemory => _adapterDesc.DedicatedSystemMemory;
-
-		/// <summary>
-		/// Property to return the amount of dedicated video memory for the device, in bytes.
-		/// </summary>
-		/// <remarks>
-		/// If the application is running as an x86 application, this value may report an incorrect value. is a known issue with SharpDX.
-		/// </remarks>
-		public long DedicatedVideoMemory => _adapterDesc.DedicatedVideoMemory;
-
-		/// <summary>
-		/// Property to return the amount of shared system memory for the device.
-		/// </summary>
-		/// <remarks>
-		/// If the application is running as an x86 application, this value may report an incorrect value.
-		/// </remarks>
-		public long SharedSystemMemory => _adapterDesc.SharedSystemMemory;
 
 		/// <summary>
 		/// Property to return the outputs on this device.
@@ -136,24 +143,43 @@ namespace Gorgon.Graphics.Core
 		{
 			get;
 		}
-		#endregion
 
-		#region Constructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="VideoAdapterInfo" /> class.
-		/// </summary>
-		/// <param name="index">The index of the video adapter within a list.</param>
-		/// <param name="adapter">The DXGI adapter from which to retrieve all information.</param>
-		/// <param name="featureSet">The supported feature set for the video adapter.</param>
-		/// <param name="outputs">The list of outputs attached to the video adapter.</param>
-		/// <param name="deviceType">The type of video adapter.</param>
-		public VideoAdapterInfo(int index,
+	    /// <summary>
+	    /// Property to return the amount of memory for the adapter, in bytes.
+	    /// </summary>
+	    public GorgonVideoAdapterMemory Memory
+	    {
+	        get;
+	    }
+
+	    /// <summary>
+	    /// Property to return the PCI bus information for the adapter.
+	    /// </summary>
+	    public GorgonVideoAdapterPciInfo PciInfo
+	    {
+	        get;
+	    }
+        #endregion
+
+        #region Constructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="VideoAdapterInfo" /> class.
+        /// </summary>
+        /// <param name="index">The index of the video adapter within a list.</param>
+        /// <param name="adapter">The DXGI adapter from which to retrieve all information.</param>
+        /// <param name="featureSet">The supported feature set for the video adapter.</param>
+        /// <param name="outputs">The list of outputs attached to the video adapter.</param>
+        /// <param name="deviceType">The type of video adapter.</param>
+        public VideoAdapterInfo(int index,
 		                       DXGI.Adapter2 adapter,
 		                       FeatureSet featureSet,
 		                       IGorgonNamedObjectReadOnlyList<IGorgonVideoOutputInfo> outputs,
 		                       VideoDeviceType deviceType)
 		{
 			_adapterDesc = adapter.Description2;
+		    Memory = new GorgonVideoAdapterMemory(_adapterDesc.DedicatedSystemMemory, _adapterDesc.SharedSystemMemory, _adapterDesc.DedicatedVideoMemory);
+            PciInfo = new GorgonVideoAdapterPciInfo(_adapterDesc.DeviceId, _adapterDesc.Revision, _adapterDesc.SubsystemId, _adapterDesc.VendorId);
+
 			// Ensure that any trailing nulls are removed. This is unlikely to happen with D3D 11.x, but if we ever jump up to 12, we have to 
 			// watch out for this as SharpDX does not strip the nulls.
 			Name = _adapterDesc.Description.Replace("\0", string.Empty);

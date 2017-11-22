@@ -60,6 +60,12 @@ namespace Gorgon.Graphics.Core
         IndexBuffer = D3D11.FormatSupport.InputAssemblyIndexBuffer,
         /// <summary>
         /// <para>
+        /// Streaming output buffers supported.
+        /// </para>
+        /// </summary>
+        StreamOutBuffer = D3D11.FormatSupport.StreamOutputBuffer,
+        /// <summary>
+        /// <para>
         /// 1D texture resources supported.
         /// </para>
         /// </summary>

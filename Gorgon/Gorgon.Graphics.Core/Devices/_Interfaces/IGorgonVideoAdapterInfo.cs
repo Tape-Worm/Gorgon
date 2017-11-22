@@ -31,7 +31,7 @@ using Gorgon.Core;
 namespace Gorgon.Graphics.Core
 {
 	/// <summary>
-	/// Defines the level of support for functionality for a <see cref="IGorgonVideoAdapter"/>.
+	/// Defines the level of support for functionality for a <see cref="IGorgonVideoAdapterInfo"/>.
 	/// </summary>
 	/// <remarks>
 	/// <para>
@@ -89,10 +89,90 @@ namespace Gorgon.Graphics.Core
 	public interface IGorgonVideoAdapterInfo 
 		: IGorgonNamedObject
 	{
-		/// <summary>
-		/// Property to return the index of the video adapter within a list returned by <see cref="GorgonGraphics.EnumerateAdapters"/>.
-		/// </summary>
-		int Index
+	    /// <summary>
+	    /// Property to return the maximum number of array indices for 1D and 2D textures.
+	    /// </summary>
+	    int MaxTextureArrayCount
+	    {
+	        get;
+	    }
+
+	    /// <summary>
+	    /// Property to return the maximum width of a 1D or 2D texture.
+	    /// </summary>
+	    int MaxTextureWidth
+	    {
+	        get;
+	    }
+
+	    /// <summary>
+	    /// Property to return the maximum height of a 2D texture.
+	    /// </summary>
+	    int MaxTextureHeight
+	    {
+	        get;
+	    }
+
+	    /// <summary>
+	    /// Property to return the maximum width of a 3D texture.
+	    /// </summary>
+	    int MaxTexture3DWidth
+	    {
+	        get;
+	    }
+
+	    /// <summary>
+	    /// Property to return the maximum height of a 3D texture.
+	    /// </summary>
+	    int MaxTexture3DHeight
+	    {
+	        get;
+	    }
+
+	    /// <summary>
+	    /// Property to return the maximum depth of a 3D texture.
+	    /// </summary>
+	    int MaxTexture3DDepth
+	    {
+	        get;
+	    }
+
+	    /// <summary>
+	    /// Property to return the maximum number of allowed scissor rectangles.
+	    /// </summary>
+	    int MaxScissorCount
+	    {
+	        get;
+	    }
+
+	    /// <summary>
+	    /// Property to return the maximum number of allowed viewports.
+	    /// </summary>
+	    int MaxViewportCount
+	    {
+	        get;
+	    }
+
+	    /// <summary>
+	    /// Property to return the maximum number of render targets allow to be assigned at the same time.
+	    /// </summary>
+	    int MaxRenderTargetCount
+	    {
+	        get;
+	    }
+
+	    /// <summary>
+	    /// Property to return the maximum size, in bytes, for a constant buffer.
+	    /// </summary>
+	    int MaxConstantBufferSize
+	    {
+	        get;
+	    }
+
+        /// <summary>
+        /// Property to return the index of the video adapter within a list returned by <see cref="GorgonGraphics.EnumerateAdapters"/>.
+        /// </summary>
+        int Index
 		{
 			get;
 		}
@@ -114,77 +194,28 @@ namespace Gorgon.Graphics.Core
 		}
 
 		/// <summary>
-		/// Property to return the device ID.
-		/// </summary>
-		int DeviceID
-		{
-			get;
-		}
-
-		/// <summary>
-		/// Property to return the unique identifier for the device.
+		/// Property to return the unique identifier for the adapter.
 		/// </summary>
 		long Luid
 		{
 			get;
 		}
 
-		/// <summary>
-		/// Property to return the revision for the device.
-		/// </summary>
-		int Revision
-		{
-			get;
-		}
+        /// <summary>
+        /// Property to return the amount of memory for the adapter, in bytes.
+        /// </summary>
+	    GorgonVideoAdapterMemory Memory
+	    {
+	        get;
+	    }
 
-		/// <summary>
-		/// Property to return the sub system ID for the device.
-		/// </summary>
-		int SubSystemID
-		{
-			get;
-		}
-
-		/// <summary>
-		/// Property to return the vendor ID for the device.
-		/// </summary>
-		int VendorID
-		{
-			get;
-		}
-
-		/// <summary>
-		/// Property to return the amount of dedicated system memory for the device, in bytes.
-		/// </summary>
-		/// <remarks>
-		/// If the application is running as an x86 application, this value may report an incorrect value. This is a known issue with SharpDX.
-		/// </remarks>
-		long DedicatedSystemMemory
-		{
-			get;
-		}
-
-		/// <summary>
-		/// Property to return the amount of dedicated video memory for the device, in bytes.
-		/// </summary>
-		/// <remarks>
-		/// If the application is running as an x86 application, this value may report an incorrect value. is a known issue with SharpDX.
-		/// </remarks>
-		long DedicatedVideoMemory
-		{
-			get;
-		}
-
-		/// <summary>
-		/// Property to return the amount of shared system memory for the device.
-		/// </summary>
-		/// <remarks>
-		/// If the application is running as an x86 application, this value may report an incorrect value.
-		/// </remarks>
-		long SharedSystemMemory
-		{
-			get;
-		}
+        /// <summary>
+        /// Property to return the PCI bus information for the adapter.
+        /// </summary>
+	    GorgonVideoAdapterPciInfo PciInfo
+	    {
+	        get;
+	    }
 
 		/// <summary>
 		/// Property to return the outputs on this device.

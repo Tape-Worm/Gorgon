@@ -35,42 +35,38 @@ using Gorgon.Graphics.Core.Properties;
 using Gorgon.UI;
 using DX = SharpDX;
 using DXGI = SharpDX.DXGI;
-using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
 {
-	/// <summary>
-	/// A swap chain used to display graphics to a window.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// The swap chain is used to display graphics data into a window either through an exclusive full screen view of the rendering surface, or can be used to display the rendering data in the client area 
-	/// of the window.
-	/// </para> 
-	/// <para>
-	/// By default, if a window loses focus and the swap chain is in full screen, it will revert to windowed mode.  The swap chain will attempt to reacquire full screen mode when the window regains focus. 
-	/// This functionality can be disabled with the <see cref="ExitFullScreenModeOnFocusLoss"/> property if it does not suit the needs of the developer.  Setting this value to <b>false</b> is mandatory in full 
-	/// screen multi-monitor applications, if the <see cref="ExitFullScreenModeOnFocusLoss"/> flag is <b>false</b> in this scenario. Be aware that when this flag is set to <b>false</b>, the behaviour will be 
-	/// unhandled and it will be the responsibility of the developer to handle application focus loss/restoration in multi-monitor environments.
-	/// </para>
-	/// <para>
-	/// Multiple swap chains can be set to full screen on different video outputs.  When setting up for multiple video outputs in full screen, ensure that the window for the extra video output is located on 
-	/// the monitor attached to that video output.  Failure to do so will keep the mode from switching.
-	/// </para>	
-	/// <para>
-	/// If the swap chain is currently assigned to the <see cref="GorgonGraphics.RenderTargets"/> property, and it is resized, it will do its best to ensure it stays bound to the active render target list 
-	/// (this also includes its <see cref="DepthStencilView"/> if it was assigned to the <see cref="GorgonGraphics.DepthStencilView"/> property). This only applies to the default <see cref="RenderTargetView"/> 
-	/// associated with the swap chain. If a user has created a custom <see cref="GorgonRenderTargetView"/> object for the swap chain, and assigned that view to the <see cref="GorgonGraphics.RenderTargets"/> 
-	/// list, then it is their responsibility to ensure that the view is rebuilt and reassigned. Users may intercept a swap chain back buffer resize by hooking the <see cref="BeforeSwapChainResized"/> and 
-	/// the <see cref="AfterSwapChainResized"/> events.
-	/// </para>
-	/// </remarks>
-	/// <seealso cref="EnterFullScreen"/>
-	/// <seealso cref="ExitFullScreenModeOnFocusLoss"/>
-	/// <seealso cref="GorgonGraphics.RenderTargets"/>
-	/// <seealso cref="GorgonGraphics.DepthStencilView"/>
-	/// <seealso cref="GorgonRenderTargetView"/>
-	public sealed class GorgonSwapChain
+    /// <summary>
+    /// A swap chain used to display graphics to a window.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The swap chain is used to display graphics data into a window either through an exclusive full screen view of the rendering surface, or can be used to display the rendering data in the client area 
+    /// of the window.
+    /// </para> 
+    /// <para>
+    /// By default, if a window loses focus and the swap chain is in full screen, it will revert to windowed mode.  The swap chain will attempt to reacquire full screen mode when the window regains focus. 
+    /// This functionality can be disabled with the <see cref="ExitFullScreenModeOnFocusLoss"/> property if it does not suit the needs of the developer.  Setting this value to <b>false</b> is mandatory in full 
+    /// screen multi-monitor applications, if the <see cref="ExitFullScreenModeOnFocusLoss"/> flag is <b>false</b> in this scenario. Be aware that when this flag is set to <b>false</b>, the behaviour will be 
+    /// unhandled and it will be the responsibility of the developer to handle application focus loss/restoration in multi-monitor environments.
+    /// </para>
+    /// <para>
+    /// Multiple swap chains can be set to full screen on different video outputs.  When setting up for multiple video outputs in full screen, ensure that the window for the extra video output is located on 
+    /// the monitor attached to that video output.  Failure to do so will keep the mode from switching.
+    /// </para>	
+    /// <para>
+    /// If the swap chain is currently assigned to the <see cref="GorgonGraphics.RenderTargets"/> property, and it is resized, it will do its best to ensure it stays bound to the active render target list 
+    /// (this also includes its <see cref="DepthStencilView"/> if it was assigned to the <see cref="GorgonGraphics.DepthStencilView"/> property). This only applies to the default <see cref="RenderTargetView"/> 
+    /// associated with the swap chain. If a user has created a custom <see cref="GorgonRenderTargetView"/> object for the swap chain, and assigned that view to the <see cref="GorgonGraphics.RenderTargets"/> 
+    /// list, then it is their responsibility to ensure that the view is rebuilt and reassigned. Users may intercept a swap chain back buffer resize by hooking the <see cref="BeforeSwapChainResized"/> and 
+    /// the <see cref="AfterSwapChainResized"/> events.
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="GorgonGraphics"/>
+    /// <seealso cref="GorgonRenderTargetView"/>
+    public sealed class GorgonSwapChain
 		: GorgonNamedObject, IDisposable
 	{
 		#region Variables.
@@ -383,8 +379,13 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		private void Initialize()
 		{
-			// Ensure that we can use this format for display.
-			if ((Graphics.VideoDevice.GetBufferFormatSupport(Info.Format) & BufferFormatSupport.Display) != BufferFormatSupport.Display)
+		    if (!Graphics.FormatSupport.TryGetValue(Info.Format, out GorgonFormatSupportInfo support))
+		    {
+		        throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_FORMAT_NOT_SUPPORTED, Info.Format));
+		    }
+
+            // Ensure that we can use this format for display.
+            if ((support.FormatSupport & BufferFormatSupport.Display) != BufferFormatSupport.Display)
 			{
 				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_FORMAT_NOT_SUPPORTED, Info.Format));
 			}
@@ -394,41 +395,38 @@ namespace Gorgon.Graphics.Core
 				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_SWAP_BACKBUFFER_TOO_SMALL, Info.Width, Info.Height));
 			}
 
-		    if ((Info.Width > Graphics.VideoDevice.MaxTextureWidth) || (Info.Height > Graphics.VideoDevice.MaxTextureHeight))
+		    if ((Info.Width > Graphics.VideoAdapter.MaxTextureWidth) || (Info.Height > Graphics.VideoAdapter.MaxTextureHeight))
 		    {
 		        throw new GorgonException(GorgonResult.CannotCreate,
 		                                  string.Format(Resources.GORGFX_ERR_SWAP_BACKBUFFER_TOO_LARGE,
 		                                                Info.Width,
 		                                                Info.Height,
-		                                                Graphics.VideoDevice.MaxTextureWidth,
-		                                                Graphics.VideoDevice.MaxTextureHeight));
+		                                                Graphics.VideoAdapter.MaxTextureWidth,
+		                                                Graphics.VideoAdapter.MaxTextureHeight));
 		    }
 
-			using (DXGI.Factory2 factory = Graphics.VideoDevice.DXGIAdapter().GetParent<DXGI.Factory2>())
-			{
-				DXGI.SwapChainDescription1 swapDesc = _info.ToSwapChainDesc();
+			DXGI.SwapChainDescription1 swapDesc = _info.ToSwapChainDesc();
 
-				GISwapChain = new DXGI.SwapChain1(factory, Graphics.VideoDevice.D3DDevice(), Window.Handle, ref swapDesc)
-				              {
-					              DebugName = Name + " DXGISwapChain"
-				              };
+			GISwapChain = new DXGI.SwapChain1(Graphics.DXGIFactory, Graphics.D3DDevice, Window.Handle, ref swapDesc)
+				            {
+					            DebugName = Name + " DXGISwapChain"
+				            };
 
-				// Due to an issue with winforms and DXGI, we have to manually handle transitions ourselves.
-				factory.MakeWindowAssociation(Window.Handle, DXGI.WindowAssociationFlags.IgnoreAll);
+            // Due to an issue with winforms and DXGI, we have to manually handle transitions ourselves.
+		    Graphics.DXGIFactory.MakeWindowAssociation(Window.Handle, DXGI.WindowAssociationFlags.IgnoreAll);
 
-				CreateResources((-1, false));
+			CreateResources((-1, false));
 				
-				Window.Resize += Window_Resize;
+			Window.Resize += Window_Resize;
 				
-				// We assign these events to the parent form so that a window resize is smooth, currently using the Resize event only introduces massive
-				// lag when resizing the back buffers. This will counter that by only resizing when the resize operation ends.
-				_parentForm.ResizeBegin += ParentForm_ResizeBegin;
-				_parentForm.ResizeEnd += ParentForm_ResizeEnd;
+			// We assign these events to the parent form so that a window resize is smooth, currently using the Resize event only introduces massive
+			// lag when resizing the back buffers. This will counter that by only resizing when the resize operation ends.
+			_parentForm.ResizeBegin += ParentForm_ResizeBegin;
+			_parentForm.ResizeEnd += ParentForm_ResizeEnd;
 
-				// Use these events to restore full screen or windowed state when the application regains or loses focus.
-				_parentForm.Activated += ParentForm_Activated;
-				_parentForm.Deactivate += ParentForm_Deactivated;
-			}
+			// Use these events to restore full screen or windowed state when the application regains or loses focus.
+			_parentForm.Activated += ParentForm_Activated;
+			_parentForm.Deactivate += ParentForm_Deactivated;
 		}
 
 		/// <summary>
@@ -836,13 +834,13 @@ namespace Gorgon.Graphics.Core
 			{
 				_log.Print($"SwapChain '{Name}': Entering full screen mode.  Requested mode {desiredMode} on output {output.Name}.", LoggingLevel.Verbose);
 
-				dxgiOutput = Graphics.VideoDevice.DXGIAdapter().GetOutput(output.Index);
+				dxgiOutput = Graphics.DXGIAdapter.GetOutput(output.Index);
 				dxgiOutput1 = dxgiOutput.QueryInterface<DXGI.Output1>();
 
 
 				// Try to find something resembling the video mode we asked for.
 			    DXGI.ModeDescription1 desiredDxGiMode = desiredMode.ToModeDesc1();
-				dxgiOutput1.FindClosestMatchingMode1(ref desiredDxGiMode, out DXGI.ModeDescription1 actualMode, Graphics.VideoDevice.D3DDevice());
+				dxgiOutput1.FindClosestMatchingMode1(ref desiredDxGiMode, out DXGI.ModeDescription1 actualMode, Graphics.D3DDevice);
 
 				DXGI.ModeDescription resizeMode = actualMode.ToModeDesc();
 
@@ -991,8 +989,8 @@ namespace Gorgon.Graphics.Core
 		/// </para>
 		/// <para>
 		/// When choosing a buffer format in the <see cref="IGorgonSwapChainInfo.Format"/> passed by the <paramref name="info"/> property, it is important to choose a format that can be used as a display format. 
-		/// Failure to do so will result in an exception. Users may determine if a format is supported for display by using the <see cref="IGorgonVideoAdapter.GetBufferFormatSupport"/> method on the the 
-		/// <see cref="GorgonGraphics.VideoDevice"/> property of the <see cref="GorgonGraphics"/> instance passed to this method.
+		/// Failure to do so will result in an exception. Users may determine if a format is supported for display by using the <see cref="GorgonGraphics.FormatSupport"/> property on the 
+		/// <see cref="GorgonGraphics"/> instance passed to this method.
 		/// </para>
 		/// <para>
 		/// <note type="warning">
@@ -1003,9 +1001,8 @@ namespace Gorgon.Graphics.Core
 		/// </note>
 		/// </para>
 		/// </remarks>
-		/// <seealso cref="Present"/>
-		/// <seealso cref="DoNotAutoResizeBackBuffer"/>
 		/// <seealso cref="IGorgonSwapChainInfo"/>
+		/// <seealso cref="GorgonGraphics"/>
 		public GorgonSwapChain(string name, GorgonGraphics graphics, Control window, IGorgonSwapChainInfo info, IGorgonLog log = null)
 			: base(name)
 		{

@@ -24,19 +24,18 @@
 // 
 #endregion
 
-using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
 {
-	/// <summary>
-	/// Provides the necessary information required to set up a index buffer.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// This provides an immutable view of the index buffer information so that it cannot be modified after the buffer is created.
-	/// </para>
-	/// </remarks>
-	public interface IGorgonIndexBufferInfo 
+    /// <summary>
+    /// Provides the necessary information required to set up a index buffer.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This provides an immutable view of the index buffer information so that it cannot be modified after the buffer is created.
+    /// </para>
+    /// </remarks>
+    public interface IGorgonIndexBufferInfo 
 	{
 	    /// <summary>
 	    /// Property to return the binding used to bind this buffer to the GPU.

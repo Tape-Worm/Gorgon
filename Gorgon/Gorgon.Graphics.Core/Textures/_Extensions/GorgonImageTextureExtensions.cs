@@ -26,7 +26,6 @@
 
 using System;
 using Drawing = System.Drawing;
-using D3D11 = SharpDX.Direct3D11;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Imaging;
@@ -34,10 +33,10 @@ using Gorgon.Graphics.Imaging.GdiPlus;
 
 namespace Gorgon.Graphics.Core
 {
-	/// <summary>
-	/// Extension methods used to create textures from images.
-	/// </summary>
-	public static class GorgonImageTextureExtensions
+    /// <summary>
+    /// Extension methods used to create textures from images.
+    /// </summary>
+    public static class GorgonImageTextureExtensions
 	{
 	    /// <summary>
 	    /// Function to create a <see cref="GorgonTexture"/> from a GDI+ bitmap.

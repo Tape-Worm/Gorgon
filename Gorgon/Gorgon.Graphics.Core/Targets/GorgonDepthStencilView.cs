@@ -317,7 +317,7 @@ namespace Gorgon.Graphics.Core
             _log.Print($"Depth/Stencil View '{Texture.Name}': {Texture.ResourceType} -> Mip slice: {MipSlice}, Array Index: {ArrayIndex}, Array Count: {ArrayCount}",
 					   LoggingLevel.Verbose);
 
-			Native = new D3D11.DepthStencilView(Texture.Graphics.VideoDevice.D3DDevice(), Texture.D3DResource, desc)
+			Native = new D3D11.DepthStencilView(Texture.Graphics.D3DDevice, Texture.D3DResource, desc)
 			          {
 				          DebugName = $"'{Texture.Name}': D3D11 depth/stencil view"
 			          };

@@ -126,9 +126,9 @@ namespace Gorgon.Graphics.Core
 			// If the buffer is not aligned to 16 bytes, then increase its size.
 			SizeInBytes = (Info.SizeInBytes + 15) & ~15;
 
-			if (SizeInBytes > Graphics.VideoDevice.MaxConstantBufferSize)
+			if (SizeInBytes > Graphics.VideoAdapter.MaxConstantBufferSize)
 			{
-				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_CONSTANT_BUFFER_TOO_LARGE, SizeInBytes, Graphics.VideoDevice.MaxConstantBufferSize));
+				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_CONSTANT_BUFFER_TOO_LARGE, SizeInBytes, Graphics.VideoAdapter.MaxConstantBufferSize));
 			}
 			
 			D3D11.CpuAccessFlags cpuFlags = D3D11.CpuAccessFlags.None;
@@ -157,14 +157,14 @@ namespace Gorgon.Graphics.Core
 
 			if ((initialData != null) && (initialData.Size > 0))
 			{
-			    D3DResource = NativeBuffer = new D3D11.Buffer(Graphics.VideoDevice.D3DDevice(), new IntPtr(initialData.Address), desc)
+			    D3DResource = NativeBuffer = new D3D11.Buffer(Graphics.D3DDevice, new IntPtr(initialData.Address), desc)
 			                              {
 			                                  DebugName = Name
 			                              };
 			}
 			else
 			{
-			    D3DResource = NativeBuffer = new D3D11.Buffer(Graphics.VideoDevice.D3DDevice(), desc)
+			    D3DResource = NativeBuffer = new D3D11.Buffer(Graphics.D3DDevice, desc)
 			                              {
 			                                  DebugName = Name
 			                              };
@@ -462,7 +462,7 @@ namespace Gorgon.Graphics.Core
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, <paramref name="name"/>, or <paramref name="info"/> parameters are <b>null</b>.</exception>
 		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> is empty.</exception>
 		/// <exception cref="GorgonException">
-		/// Thrown when the size of the constant buffer exceeds the maximum constant buffer size. See <see cref="IGorgonVideoAdapter.MaxConstantBufferSize"/> to determine the maximum size of a constant buffer.
+		/// Thrown when the size of the constant buffer exceeds the maximum constant buffer size. See <see cref="IGorgonVideoAdapterInfo.MaxConstantBufferSize"/> to determine the maximum size of a constant buffer.
 		/// </exception>
 		public GorgonConstantBuffer(string name, GorgonGraphics graphics, IGorgonConstantBufferInfo info, IGorgonPointer initialData = null, IGorgonLog log = null)
 			: base(graphics, name, log)

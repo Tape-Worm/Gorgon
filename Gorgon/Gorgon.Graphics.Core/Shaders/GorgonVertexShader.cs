@@ -26,7 +26,7 @@
 
 using System.IO;
 using D3DCompiler = SharpDX.D3DCompiler;
-using D3D = SharpDX.Direct3D11;
+using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
 {
@@ -49,7 +49,7 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Property to return the Direct 3D vertex shader.
 		/// </summary>
-		internal D3D.VertexShader NativeShader
+		internal D3D11.VertexShader NativeShader
 		{
 			get;
 		}
@@ -75,17 +75,17 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonVertexShader" /> class.
 		/// </summary>
-		/// <param name="videoAdapter">The video adapter used to create the shader.</param>
+		/// <param name="device">The D3D 11.4 device used to create the shader.</param>
 		/// <param name="name">The name for this shader.</param>
 		/// <param name="isDebug"><b>true</b> if debug information is included in the byte code, <b>false</b> if not.</param>
 		/// <param name="byteCode">The byte code for the shader..</param>
-		internal GorgonVertexShader(IGorgonVideoAdapter videoAdapter, string name, bool isDebug, D3DCompiler.ShaderBytecode byteCode)
-			: base(videoAdapter, name, isDebug, byteCode)
+		internal GorgonVertexShader(D3D11.Device5 device, string name, bool isDebug, D3DCompiler.ShaderBytecode byteCode)
+			: base(name, isDebug, byteCode)
 		{
-			NativeShader = new D3D.VertexShader(videoAdapter.D3DDevice(), byteCode)
-			            {
-				            DebugName = name + " D3D11VertexShader"
-			            };
+		    NativeShader = new D3D11.VertexShader(device, byteCode)
+		                   {
+		                       DebugName = name + " D3D11VertexShader"
+		                   };
 		}
 		#endregion
 	}

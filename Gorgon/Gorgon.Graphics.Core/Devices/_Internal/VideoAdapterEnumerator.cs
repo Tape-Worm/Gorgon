@@ -90,13 +90,13 @@ namespace Gorgon.Graphics.Core
 			log.Print($"Device found: {device.Name}", LoggingLevel.Simple);
 			log.Print("===================================================================", LoggingLevel.Simple);
 			log.Print($"Supported feature set: {device.SupportedFeatureLevel}", LoggingLevel.Simple);
-			log.Print($"Video memory: {(device.DedicatedVideoMemory).FormatMemory()}", LoggingLevel.Simple);
-			log.Print($"System memory: {(device.DedicatedSystemMemory).FormatMemory()}", LoggingLevel.Intermediate);
-			log.Print($"Shared memory: {(device.SharedSystemMemory).FormatMemory()}", LoggingLevel.Intermediate);
-			log.Print($"Device ID: 0x{device.DeviceID.FormatHex()}", LoggingLevel.Verbose);
-			log.Print($"Sub-system ID: 0x{device.SubSystemID.FormatHex()}", LoggingLevel.Verbose);
-			log.Print($"Vendor ID: 0x{device.VendorID.FormatHex()}", LoggingLevel.Verbose);
-			log.Print($"Revision: {device.Revision}", LoggingLevel.Verbose);
+			log.Print($"Video memory: {(device.Memory.Video).FormatMemory()}", LoggingLevel.Simple);
+			log.Print($"System memory: {(device.Memory.System).FormatMemory()}", LoggingLevel.Intermediate);
+			log.Print($"Shared memory: {(device.Memory.Shared).FormatMemory()}", LoggingLevel.Intermediate);
+			log.Print($"Device ID: 0x{device.PciInfo.DeviceID.FormatHex()}", LoggingLevel.Verbose);
+			log.Print($"Sub-system ID: 0x{device.PciInfo.SubSystemID.FormatHex()}", LoggingLevel.Verbose);
+			log.Print($"Vendor ID: 0x{device.PciInfo.VendorID.FormatHex()}", LoggingLevel.Verbose);
+			log.Print($"Revision: {device.PciInfo.Revision}", LoggingLevel.Verbose);
 			log.Print($"Unique ID: 0x{device.Luid.FormatHex()}", LoggingLevel.Verbose);
 			log.Print("===================================================================", LoggingLevel.Simple);
 

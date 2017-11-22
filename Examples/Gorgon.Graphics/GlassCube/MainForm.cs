@@ -205,11 +205,11 @@ namespace GorgonLibrary.Example
 		        _texture = image.ToTexture("GlassCube Texture", _graphics);
 	        }
             // Create our shaders.
-            _vertexShader = GorgonShaderFactory.Compile<GorgonVertexShader>(_graphics.VideoDevice, Resources.GlassCubeShaders, "GlassCubeVS");
-	        _pixelShader = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics.VideoDevice, Resources.GlassCubeShaders, "GlassCubePS");
+            _vertexShader = GorgonShaderFactory.Compile<GorgonVertexShader>(_graphics, Resources.GlassCubeShaders, "GlassCubeVS");
+	        _pixelShader = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics, Resources.GlassCubeShaders, "GlassCubePS");
 
 			// Create the input layout for a cube vertex.
-			_inputLayout = GorgonInputLayout.CreateUsingType<GlassCubeVertex>(_graphics.VideoDevice, _vertexShader);
+			_inputLayout = GorgonInputLayout.CreateUsingType<GlassCubeVertex>(_graphics, _vertexShader);
 
 			// Create our constant buffer so we can send our transformation information to the shader.
 	        _wvpBuffer = new GorgonConstantBuffer("GlassCube WVP Constant Buffer",

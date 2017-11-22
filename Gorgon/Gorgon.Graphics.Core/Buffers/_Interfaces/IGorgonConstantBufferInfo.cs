@@ -24,19 +24,18 @@
 // 
 #endregion
 
-using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
 {
-	/// <summary>
-	/// Provides information on how to set up a constant buffer.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// This provides an immutable view of the constant buffer information so that it cannot be modified after the buffer is created.
-	/// </para>
-	/// </remarks>
-	public interface IGorgonConstantBufferInfo 
+    /// <summary>
+    /// Provides information on how to set up a constant buffer.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This provides an immutable view of the constant buffer information so that it cannot be modified after the buffer is created.
+    /// </para>
+    /// </remarks>
+    public interface IGorgonConstantBufferInfo 
 	{
 		/// <summary>
 		/// Property to return the intended usage flags for this texture.

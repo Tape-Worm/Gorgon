@@ -27,7 +27,7 @@
 namespace Gorgon.Graphics.Core
 {
     /// <summary>
-    /// PCI slot information for a <see cref="IGorgonVideoAdapter"/>.
+    /// PCI slot information for a <see cref="IGorgonVideoAdapterInfo"/>.
     /// </summary>
     public struct GorgonVideoAdapterPciInfo
     {

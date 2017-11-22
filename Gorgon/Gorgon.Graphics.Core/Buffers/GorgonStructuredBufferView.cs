@@ -74,7 +74,7 @@ namespace Gorgon.Graphics.Core
                        };
 
             // Create our SRV.
-            NativeView = new D3D11.ShaderResourceView(Buffer.Graphics.VideoDevice.D3DDevice(), Buffer.D3DResource, desc)
+            NativeView = new D3D11.ShaderResourceView(Buffer.Graphics.D3DDevice, Buffer.D3DResource, desc)
                          {
                              DebugName = $"'{Buffer.Name}': D3D 11 Shader resource view"
                          };

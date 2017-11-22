@@ -31,6 +31,7 @@ using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.IO;
 using D3DCompiler = SharpDX.D3DCompiler;
+using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
 {
@@ -93,7 +94,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the shader byte code.
         /// </summary>
-        protected internal D3DCompiler.ShaderBytecode D3DByteCode
+        internal D3DCompiler.ShaderBytecode D3DByteCode
 		{
 			get;
 		}
@@ -118,14 +119,6 @@ namespace Gorgon.Graphics.Core
 		/// Property to return the type of shader.
 		/// </summary>
 		public abstract ShaderType ShaderType
-		{
-			get;
-		}
-		
-		/// <summary>
-		/// Property to return the video adapter that created this shader.
-		/// </summary>
-		public IGorgonVideoAdapter VideoDevice
 		{
 			get;
 		}
@@ -263,21 +256,19 @@ namespace Gorgon.Graphics.Core
 		{
 			D3DByteCode?.Dispose();
 		}
-		#endregion
+        #endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonShader"/> class.
-		/// </summary>
-		/// <param name="videoAdapter">The video adapter used to create the shader.</param>
-		/// <param name="name">The name for this shader.</param>
-		/// <param name="isDebug"><b>true</b> if debug information is included in the byte code, <b>false</b> if not.</param>
-		/// <param name="byteCode">The byte code for the shader.</param>
-		protected GorgonShader(IGorgonVideoAdapter videoAdapter, string name, bool isDebug, D3DCompiler.ShaderBytecode byteCode)
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonShader"/> class.
+        /// </summary>
+        /// <param name="name">The name for this shader.</param>
+        /// <param name="isDebug"><b>true</b> if debug information is included in the byte code, <b>false</b> if not.</param>
+        /// <param name="byteCode">The byte code for the shader.</param>
+        internal GorgonShader(string name, bool isDebug, D3DCompiler.ShaderBytecode byteCode)
 			: base(name)
 		{
 		    ID = Interlocked.Increment(ref _shaderID);
-			VideoDevice = videoAdapter;
 			IsDebug = isDebug;
 			D3DByteCode = byteCode;
 		}

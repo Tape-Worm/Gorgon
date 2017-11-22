@@ -26,7 +26,6 @@
 
 using System;
 using Gorgon.Diagnostics;
-using Gorgon.Graphics.Core.Properties;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
@@ -391,18 +390,8 @@ namespace Gorgon.Graphics.Core
         /// <seealso cref="GorgonGraphics"/>
         public GorgonComputeEngine(GorgonGraphics graphics, IGorgonLog log = null)
         {
-            if (graphics == null)
-            {
-                throw new ArgumentNullException(nameof(graphics));
-            }
-
-            if (graphics.VideoDevice.RequestedFeatureLevel < FeatureSet.Level_12_0)
-            {
-                throw new ArgumentException(string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureSet.Level_12_0));
-            }
-
             _log = log ?? GorgonLogDummy.DefaultInstance;
-            Graphics = graphics;
+            Graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
             ConstantBuffers = new GorgonConstantBuffers();
             UnorderedAccessViews = new GorgonUavBindings();
             ShaderResourceViews = new GorgonShaderResourceViews();

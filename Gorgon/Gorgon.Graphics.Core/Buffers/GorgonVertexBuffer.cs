@@ -31,55 +31,54 @@ using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
 using Gorgon.Native;
-using DX = SharpDX;
 
 namespace Gorgon.Graphics.Core
 {
-	/// <summary>
-	/// A buffer for vertices.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// Use a vertex buffer to send vertices to the GPU. 
-	/// </para>
-	/// <para>
-	/// To send vertices to the GPU using a vertex buffer, an application can upload a value type values, representing the vertices, to the buffer using one of the 
-	/// <see cref="O:Gorgon.Graphics.GorgonVertexBuffer.Update{T}(ref T)">Update&lt;T&gt;</see> overloads. For best performance, it is recommended to upload vertex data only once, or rarely. However, in 
-	/// some scenarios, and with the correct <see cref="IGorgonVertexBufferInfo.Usage"/> flag, vertex animation is possible by uploading data to a dynamic vertex buffer.
-	/// </para>
-	/// <para> 
-	/// <example language="csharp">
-	/// For example, to send a list of vertices to a vertex buffer:
-	/// <code language="csharp">
-	/// <![CDATA[
-	/// // Our vertex, with a position and color component.
-	/// [StructLayout(LayoutKind = LayoutKind.Sequential)] 
-	/// struct MyVertex
-	/// {
-	///		public Vector4 Position;
-	///		public Vector4 Color;
-	/// }
-	/// 
-	/// GorgonGraphics graphics;
-	/// MyVertex[] _vertices = new MyVertex[100];
-	/// GorgonVertexBuffer _vertexBuffer;
-	/// 
-	/// void InitializeVertexBuffer()
-	/// {
-	///		_vertices = ... // Fill your vertex array here.
-	/// 
-	///		// Create the vertex buffer large enough so that it'll hold all 100 vertices.
-	///		_vertexBuffer = new GorgonVertexBuffer("MyVB", graphics, GorgonVertexBufferInfo.CreateFromType<MyVertex>(Usage.Default));
-	/// 
-	///		// Copy our data to the vertex buffer.
-	///		_vertexBuffer.Update(_vertices);
-	/// }
-	/// ]]>
-	/// </code>
-	/// </example>
-	/// </para>
-	/// </remarks>
-	public sealed class GorgonVertexBuffer
+    /// <summary>
+    /// A buffer for vertices.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Use a vertex buffer to send vertices to the GPU. 
+    /// </para>
+    /// <para>
+    /// To send vertices to the GPU using a vertex buffer, an application can upload a value type values, representing the vertices, to the buffer using one of the 
+    /// <see cref="O:Gorgon.Graphics.GorgonVertexBuffer.Update{T}(ref T)">Update&lt;T&gt;</see> overloads. For best performance, it is recommended to upload vertex data only once, or rarely. However, in 
+    /// some scenarios, and with the correct <see cref="IGorgonVertexBufferInfo.Usage"/> flag, vertex animation is possible by uploading data to a dynamic vertex buffer.
+    /// </para>
+    /// <para> 
+    /// <example language="csharp">
+    /// For example, to send a list of vertices to a vertex buffer:
+    /// <code language="csharp">
+    /// <![CDATA[
+    /// // Our vertex, with a position and color component.
+    /// [StructLayout(LayoutKind = LayoutKind.Sequential)] 
+    /// struct MyVertex
+    /// {
+    ///		public Vector4 Position;
+    ///		public Vector4 Color;
+    /// }
+    /// 
+    /// GorgonGraphics graphics;
+    /// MyVertex[] _vertices = new MyVertex[100];
+    /// GorgonVertexBuffer _vertexBuffer;
+    /// 
+    /// void InitializeVertexBuffer()
+    /// {
+    ///		_vertices = ... // Fill your vertex array here.
+    /// 
+    ///		// Create the vertex buffer large enough so that it'll hold all 100 vertices.
+    ///		_vertexBuffer = new GorgonVertexBuffer("MyVB", graphics, GorgonVertexBufferInfo.CreateFromType<MyVertex>(Usage.Default));
+    /// 
+    ///		// Copy our data to the vertex buffer.
+    ///		_vertexBuffer.Update(_vertices);
+    /// }
+    /// ]]>
+    /// </code>
+    /// </example>
+    /// </para>
+    /// </remarks>
+    public sealed class GorgonVertexBuffer
 		: GorgonBufferCommon
 	{
 		#region Variables.
@@ -158,14 +157,14 @@ namespace Gorgon.Graphics.Core
 
 			if ((initialData != null) && (initialData.Size > 0))
 			{
-			    D3DResource = NativeBuffer = new D3D11.Buffer(Graphics.VideoDevice.D3DDevice(), new IntPtr(initialData.Address), desc)
+			    D3DResource = NativeBuffer = new D3D11.Buffer(Graphics.D3DDevice, new IntPtr(initialData.Address), desc)
 			                              {
 			                                  DebugName = Name
 			                              };
 			}
 			else
 			{
-			    D3DResource = NativeBuffer = new D3D11.Buffer(Graphics.VideoDevice.D3DDevice(), desc)
+			    D3DResource = NativeBuffer = new D3D11.Buffer(Graphics.D3DDevice, desc)
 			                              {
 			                                  DebugName = Name
 			                              };
@@ -230,7 +229,7 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public GorgonVertexBufferUav GetUnorderedAccessView(BufferFormat format, int startElement = 0, int elementCount = 0)
 	    {
-	        if (Graphics.VideoDevice.RequestedFeatureLevel < FeatureSet.Level_12_0)
+	        if (Graphics.RequestedFeatureSet < FeatureSet.Level_12_0)
 	        {
 	            throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_UAV_REQUIRES_SM5);
 	        }
@@ -241,8 +240,12 @@ namespace Gorgon.Graphics.Core
 	            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_UAV_RESOURCE_NOT_VALID, Name));
 	        }
 
-	        if ((Graphics.VideoDevice.GetBufferFormatSupport(format) & BufferFormatSupport.TypedUnorderedAccessView) !=
-	            BufferFormatSupport.TypedUnorderedAccessView)
+	        if (!Graphics.FormatSupport.TryGetValue(format, out GorgonFormatSupportInfo support))
+	        {
+	            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_UAV_FORMAT_INVALID, format));
+	        }
+
+            if ((support.FormatSupport & BufferFormatSupport.TypedUnorderedAccessView) != BufferFormatSupport.TypedUnorderedAccessView)
 	        {
 	            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_UAV_FORMAT_INVALID, format));
 	        }

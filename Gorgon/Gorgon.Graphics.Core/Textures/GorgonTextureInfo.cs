@@ -25,14 +25,13 @@
 #endregion
 
 using System;
-using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
 {
-	/// <summary>
-	/// Information used to create a texture object.
-	/// </summary>
-	public class GorgonTextureInfo 
+    /// <summary>
+    /// Information used to create a texture object.
+    /// </summary>
+    public class GorgonTextureInfo 
 		: IGorgonTextureInfo
 	{
 		#region Properties.

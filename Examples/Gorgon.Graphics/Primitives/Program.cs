@@ -326,10 +326,10 @@ namespace Gorgon.Graphics.Example
         /// </summary>
 	    private static void LoadShaders()
 	    {
-            _renderer.ShaderCache["VertexShader"] = GorgonShaderFactory.Compile<GorgonVertexShader>(_graphics.VideoDevice, Resources.Shaders, "PrimVS", true);
-            _renderer.ShaderCache["PixelShader"] = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics.VideoDevice, Resources.Shaders, "PrimPS", true);
-            _renderer.ShaderCache["BumpMapShader"] = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics.VideoDevice, Resources.Shaders, "PrimPSBump", true);
-            _renderer.ShaderCache["WaterShader"] = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics.VideoDevice, Resources.Shaders, "PrimPSWaterBump", true);
+            _renderer.ShaderCache["VertexShader"] = GorgonShaderFactory.Compile<GorgonVertexShader>(_graphics, Resources.Shaders, "PrimVS", true);
+            _renderer.ShaderCache["PixelShader"] = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics, Resources.Shaders, "PrimPS", true);
+            _renderer.ShaderCache["BumpMapShader"] = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics, Resources.Shaders, "PrimPSBump", true);
+            _renderer.ShaderCache["WaterShader"] = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics, Resources.Shaders, "PrimPSWaterBump", true);
         }
 
         /// <summary>

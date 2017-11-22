@@ -238,7 +238,7 @@ namespace Gorgon.Graphics.Example
             // here in this example.
             if ((_vertexLayout == null) && (vertexShader != null))
             {
-                _vertexLayout = GorgonInputLayout.CreateUsingType<Vertex3D>(_graphics.VideoDevice, vertexShader);
+                _vertexLayout = GorgonInputLayout.CreateUsingType<Vertex3D>(_graphics, vertexShader);
             }
 
             GorgonPixelShader pixelShader = (GorgonPixelShader)shader;

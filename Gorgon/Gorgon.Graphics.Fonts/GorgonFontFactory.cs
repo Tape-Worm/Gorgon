@@ -290,8 +290,8 @@ namespace Gorgon.Graphics.Fonts
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/>, or the <paramref name="fontInfo"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.
 		/// <para>-or-</para>
-		/// <para>Thrown when the <see cref="IGorgonFontInfo.TextureWidth"/> or <see cref="IGorgonFontInfo.TextureHeight"/> parameters exceed the <see cref="IGorgonVideoAdapter.MaxTextureWidth"/> or 
-		/// <see cref="IGorgonVideoAdapter.MaxTextureHeight"/> available for the current <see cref="FeatureSet"/>.</para>
+		/// <para>Thrown when the <see cref="IGorgonFontInfo.TextureWidth"/> or <see cref="IGorgonFontInfo.TextureHeight"/> parameters exceed the <see cref="IGorgonVideoAdapterInfo.MaxTextureWidth"/> or 
+		/// <see cref="IGorgonVideoAdapterInfo.MaxTextureHeight"/> available for the current <see cref="FeatureSet"/>.</para>
 		/// <para>-or-</para>
 		/// <para>Thrown if the <see cref="IGorgonFontInfo.Characters"/> list does not contain the <see cref="IGorgonFontInfo.DefaultCharacter"/> character.</para>
 		/// </exception>
@@ -336,8 +336,8 @@ namespace Gorgon.Graphics.Fonts
 					return result;
 				}
 
-				if ((fontInfo.TextureWidth > Graphics.VideoDevice.MaxTextureWidth)
-				    || (fontInfo.TextureHeight > Graphics.VideoDevice.MaxTextureHeight))
+				if ((fontInfo.TextureWidth > Graphics.VideoAdapter.MaxTextureWidth)
+				    || (fontInfo.TextureHeight > Graphics.VideoAdapter.MaxTextureHeight))
 				{
 					throw new ArgumentException(string.Format(Resources.GORGFX_ERR_FONT_TEXTURE_SIZE_TOO_LARGE,
 					                                          fontInfo.TextureWidth,

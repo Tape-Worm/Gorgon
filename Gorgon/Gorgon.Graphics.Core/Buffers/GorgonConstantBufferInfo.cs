@@ -31,14 +31,13 @@ using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Native;
 using Gorgon.Reflection;
-using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
 {
-	/// <summary>
-	/// Provides information on how to set up a constant buffer.
-	/// </summary>
-	public class GorgonConstantBufferInfo
+    /// <summary>
+    /// Provides information on how to set up a constant buffer.
+    /// </summary>
+    public class GorgonConstantBufferInfo
 		: IGorgonConstantBufferInfo
 	{
 		#region Properties.

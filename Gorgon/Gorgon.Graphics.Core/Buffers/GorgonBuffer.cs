@@ -142,14 +142,14 @@ namespace Gorgon.Graphics.Core
 
             if ((initialData != null) && (initialData.Size > 0))
             {
-                D3DResource = NativeBuffer = new D3D11.Buffer(Graphics.VideoDevice.D3DDevice(), new IntPtr(initialData.Address), desc)
+                D3DResource = NativeBuffer = new D3D11.Buffer(Graphics.D3DDevice, new IntPtr(initialData.Address), desc)
                                           {
                                               DebugName = Name
                                           };
             }
             else
             {
-                D3DResource = NativeBuffer = new D3D11.Buffer(Graphics.VideoDevice.D3DDevice(), desc)
+                D3DResource = NativeBuffer = new D3D11.Buffer(Graphics.D3DDevice, desc)
                                           {
                                               DebugName = Name
                                           };
@@ -269,7 +269,7 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public GorgonBufferUav GetUnorderedAccessView(BufferFormat format, int startElement = 0, int elementCount = 0)
         {
-            if (Graphics.VideoDevice.RequestedFeatureLevel < FeatureSet.Level_12_0)
+            if (Graphics.RequestedFeatureSet < FeatureSet.Level_12_0)
             {
                 throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_UAV_REQUIRES_SM5);
             }
@@ -280,8 +280,12 @@ namespace Gorgon.Graphics.Core
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_UAV_RESOURCE_NOT_VALID, Name));
             }
 
-            if ((Graphics.VideoDevice.GetBufferFormatSupport(format) & BufferFormatSupport.TypedUnorderedAccessView) !=
-                BufferFormatSupport.TypedUnorderedAccessView)
+            if (!Graphics.FormatSupport.TryGetValue(format, out GorgonFormatSupportInfo support))
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_UAV_FORMAT_INVALID, format));
+            }
+
+            if ((support.FormatSupport & BufferFormatSupport.TypedUnorderedAccessView) != BufferFormatSupport.TypedUnorderedAccessView)
             {
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_UAV_FORMAT_INVALID, format));
             }

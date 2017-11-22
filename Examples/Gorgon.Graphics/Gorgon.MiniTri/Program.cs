@@ -112,10 +112,10 @@ namespace Gorgon.Graphics.Example
 		{
 			// We compile the vertex shader program into byte code for use by the GPU.  When we do this we have to provide the shader source code, and the name of the function 
 			// that represents the entry point for the vertex shader.
-			_vertexShader = GorgonShaderFactory.Compile<GorgonVertexShader>(_graphics.VideoDevice, Resources.MiniTriShaders, "MiniTriVS");
+			_vertexShader = GorgonShaderFactory.Compile<GorgonVertexShader>(_graphics, Resources.MiniTriShaders, "MiniTriVS");
 
 			// Next, we'll compile the pixel shader.
-			_pixelShader = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics.VideoDevice, Resources.MiniTriShaders, "MiniTriPS");
+			_pixelShader = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics, Resources.MiniTriShaders, "MiniTriPS");
 		}
 
 		/// <summary>
@@ -208,7 +208,7 @@ namespace Gorgon.Graphics.Example
 			//
 			// This method is also used to determine if a format can be used for other objects (e.g. a texture, render target, etc...) Like the swap chain format, this is also a 
 			// best practice to check if the object you're creating supports the desired format.
-			if ((_graphics.VideoDevice.GetBufferFormatSupport(BufferFormat.R8G8B8A8_UNorm) & BufferFormatSupport.Display) != BufferFormatSupport.Display)
+			if ((_graphics.FormatSupport[BufferFormat.R8G8B8A8_UNorm].FormatSupport & BufferFormatSupport.Display) != BufferFormatSupport.Display)
 			{
 				// We should never see this unless you've performed some form of black magic.
 				GorgonDialogs.ErrorBox(_mainForm, "We should not see this error.");
@@ -240,7 +240,7 @@ namespace Gorgon.Graphics.Example
 			// We'll be using this to describe to Direct 3D how the elements of a vertex is laid out in memory. 
 			// In order to provide synchronization between the layout on the CPU side and the GPU side, we have to pass the vertex shader because it will contain the vertex 
 			// layout to match with our C# input layout.
-			_inputLayout = GorgonInputLayout.CreateUsingType<MiniTriVertex>(_graphics.VideoDevice, _vertexShader);
+			_inputLayout = GorgonInputLayout.CreateUsingType<MiniTriVertex>(_graphics, _vertexShader);
 
 			// Set up the triangle vertices.
 			CreateVertexBuffer();

@@ -38,15 +38,6 @@ namespace Gorgon.Graphics.Core
     /// <summary>
     /// A buffer for holding structured data to pass to the GPU.
     /// </summary>
-    /// <remarks>
-    /// <para>
-    /// <note type="warning">
-    /// <para>
-    /// Structured buffers require a video adapter capable of a <see cref="IGorgonVideoAdapter.RequestedFeatureLevel"/> of 11.0 or better.
-    /// </para>
-    /// </note>
-    /// </para>
-    /// </remarks>
     public class GorgonStructuredBuffer
         : GorgonBufferCommon
     {
@@ -170,14 +161,14 @@ namespace Gorgon.Graphics.Core
 
             if ((initialData != null) && (initialData.Size > 0))
             {
-                D3DResource = NativeBuffer = new D3D11.Buffer(Graphics.VideoDevice.D3DDevice(), new IntPtr(initialData.Address), desc)
+                D3DResource = NativeBuffer = new D3D11.Buffer(Graphics.D3DDevice, new IntPtr(initialData.Address), desc)
                                           {
                                               DebugName = Name
                                           };
             }
             else
             {
-                D3DResource = NativeBuffer = new D3D11.Buffer(Graphics.VideoDevice.D3DDevice(), desc)
+                D3DResource = NativeBuffer = new D3D11.Buffer(Graphics.D3DDevice, desc)
                                           {
                                               DebugName = Name
                                           };
@@ -286,7 +277,7 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public GorgonStructuredBufferUav GetUnorderedAccessView(int startElement = 0, int elementCount = 0, StructuredBufferUavType uavType = StructuredBufferUavType.None)
         {
-            if (Graphics.VideoDevice.RequestedFeatureLevel < FeatureSet.Level_12_0)
+            if (Graphics.RequestedFeatureSet < FeatureSet.Level_12_0)
             {
                 throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_UAV_REQUIRES_SM5);
             }
@@ -352,11 +343,6 @@ namespace Gorgon.Graphics.Core
             if (info.SizeInBytes < 1)
             {
                 throw new ArgumentException(string.Format(Resources.GORGFX_ERR_BUFFER_SIZE_TOO_SMALL, 1));
-            }
-
-            if (graphics.VideoDevice.RequestedFeatureLevel < FeatureSet.Level_12_0)
-            {
-                throw new ArgumentException(string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureSet.Level_12_0), nameof(graphics));
             }
 
             BufferType = BufferType.Structured;

@@ -29,7 +29,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using D3DCompiler = SharpDX.D3DCompiler;
-using D3D = SharpDX.Direct3D11;
+using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
 {
@@ -48,11 +48,16 @@ namespace Gorgon.Graphics.Core
 	public sealed class GorgonGeometryShader
 		: GorgonShader
 	{
-		#region Properties.
-		/// <summary>
-		/// Property to set or return the Direct3D geometry shader.
-		/// </summary>
-		internal D3D.GeometryShader NativeShader
+        #region Variables.
+        // The D3D 11.4 device used to create the shader.
+	    private readonly D3D11.Device5 _device;
+        #endregion
+
+        #region Properties.
+        /// <summary>
+        /// Property to set or return the Direct3D geometry shader.
+        /// </summary>
+        internal D3D11.GeometryShader NativeShader
 		{
 			get;
 		    private set;
@@ -103,11 +108,11 @@ namespace Gorgon.Graphics.Core
             // Clone the byte code just in case we decide to destroy the original.
 	        D3DCompiler.ShaderBytecode byteCode = new D3DCompiler.ShaderBytecode(D3DByteCode.Data);
 
-	        D3D.GeometryShader shader = new D3D.GeometryShader(VideoDevice.D3DDevice(), byteCode, streamOutLayout.Native, strideList, 0)
+	        D3D11.GeometryShader shader = new D3D11.GeometryShader(_device, byteCode, streamOutLayout.Native, strideList, 0)
 	                     {
 	                         DebugName = $"{Name} (SO) D3D11GeometryShader"
 	                     };
-	        return new GorgonGeometryShader(VideoDevice, Name + " (SO)", IsDebug, byteCode)
+	        return new GorgonGeometryShader(_device, Name + " (SO)", IsDebug, byteCode)
 	               {
 	                   NativeShader = shader,
 	                   StreamOutLayout = streamOutLayout
@@ -128,17 +133,18 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonGeometryShader" /> class.
 		/// </summary>
-		/// <param name="videoAdapter">The video adapter used to create the shader.</param>
+		/// <param name="device">The video adapter used to create the shader.</param>
 		/// <param name="name">The name for this shader.</param>
 		/// <param name="isDebug"><b>true</b> if debug information is included in the byte code, <b>false</b> if not.</param>
 		/// <param name="byteCode">The byte code for the shader.</param>
-		internal GorgonGeometryShader(IGorgonVideoAdapter videoAdapter, string name, bool isDebug, D3DCompiler.ShaderBytecode byteCode)
-			: base(videoAdapter, name, isDebug, byteCode)
+		internal GorgonGeometryShader(D3D11.Device5 device, string name, bool isDebug, D3DCompiler.ShaderBytecode byteCode)
+			: base(name, isDebug, byteCode)
 		{
-			NativeShader = new D3D.GeometryShader(videoAdapter.D3DDevice(), byteCode)
-			            {
-				            DebugName = name + " D3D11GeometryShader"
-			            };
+		    NativeShader = new D3D11.GeometryShader(device, byteCode)
+		                   {
+		                       DebugName = name + " D3D11GeometryShader"
+		                   };
+		    _device = device;
 		}
 		#endregion
 	}

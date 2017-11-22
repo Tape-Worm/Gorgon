@@ -107,7 +107,7 @@ namespace Gorgon.Graphics.Core
                            Format = (DXGI.Format)Format
                        };
 
-            NativeView = new D3D11.UnorderedAccessView(Resource.Graphics.VideoDevice.D3DDevice(), Resource.D3DResource, desc)
+            NativeView = new D3D11.UnorderedAccessView(Resource.Graphics.D3DDevice, Resource.D3DResource, desc)
                          {
                              DebugName = $"'{Buffer.Name}': D3D 11 Unordered access view"
                          };

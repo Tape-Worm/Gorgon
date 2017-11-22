@@ -29,7 +29,6 @@ using System.Globalization;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using DX = SharpDX;
-using D3D11 = SharpDX.Direct3D11;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
@@ -200,7 +199,7 @@ namespace Gorgon.Graphics.Example
         /// <remarks>
         /// <para>
         /// This is the default texture surface format for the internal render targets used for blurring. This value may be any type of format supported by a render target (see 
-        /// <see cref="IGorgonVideoAdapter.GetBufferFormatSupport"/> for determing an acceptable format).
+        /// <see cref="GorgonGraphics.FormatSupport"/> for determing an acceptable format).
         /// </para>
         /// <para>
         /// If this value is set to an unacceptable format, then the effect will throw an exception during rendering.
@@ -209,7 +208,8 @@ namespace Gorgon.Graphics.Example
         /// The default value is <see cref="BufferFormat.R8G8B8A8_UNorm"/>
         /// </para>
         /// </remarks>
-        /// <seealso cref="IGorgonVideoAdapter.GetBufferFormatSupport"/>
+        /// <seealso cref="GorgonGraphics"/>
+        /// <seealso cref="BufferFormat"/>
         public BufferFormat BlurTargetFormat
         {
             get => _blurTargetFormat;
@@ -233,7 +233,7 @@ namespace Gorgon.Graphics.Example
         /// This is used to adjust the size of a render target for more accurate blurring (at the expense of performance and video memory). 
         /// </para>
         /// <para>
-        /// This value is limited to <c>3x3</c> up to the maximum width and height specified by <see cref="IGorgonVideoAdapter.MaxTextureWidth"/> and <see cref="IGorgonVideoAdapter.MaxTextureHeight"/>.
+        /// This value is limited to <c>3x3</c> up to the maximum width and height specified by <see cref="IGorgonVideoAdapterInfo.MaxTextureWidth"/> and <see cref="IGorgonVideoAdapterInfo.MaxTextureHeight"/>.
         /// </para>
         /// <para>
         /// The default size is <c>256x256</c>.
@@ -258,8 +258,8 @@ namespace Gorgon.Graphics.Example
                 }
 
                 // Constrain the size.
-                value.Width = value.Width.Max(3).Min(Graphics.VideoDevice.MaxTextureWidth);
-                value.Height = value.Height.Max(3).Min(Graphics.VideoDevice.MaxTextureHeight);
+                value.Width = value.Width.Max(3).Min(Graphics.VideoAdapter.MaxTextureWidth);
+                value.Height = value.Height.Max(3).Min(Graphics.VideoAdapter.MaxTextureHeight);
 
                 _blurTargetSize = value;
                 _renderTargetUpdated = true;
@@ -446,13 +446,13 @@ namespace Gorgon.Graphics.Example
                                };
 
             // Compile our blur shaders.
-            _blurShader = GorgonShaderFactory.Compile<GorgonPixelShader>(Graphics.VideoDevice,
+            _blurShader = GorgonShaderFactory.Compile<GorgonPixelShader>(Graphics,
                                                                          Resources.GraphicsShaders,
                                                                          "GorgonPixelShaderGaussBlur",
                                                                          GorgonGraphics.IsDebugEnabled,
                                                                          weightsMacro);
 
-            _blurShaderNoAlpha = GorgonShaderFactory.Compile<GorgonPixelShader>(Graphics.VideoDevice,
+            _blurShaderNoAlpha = GorgonShaderFactory.Compile<GorgonPixelShader>(Graphics,
                                                                                 Resources.GraphicsShaders,
                                                                                 "GorgonPixelShaderGaussBlurNoAlpha",
                                                                                 GorgonGraphics.IsDebugEnabled,
@@ -475,8 +475,12 @@ namespace Gorgon.Graphics.Example
         protected override bool OnBeforeRender()
         {
 #if DEBUG
-            if ((_renderTargetUpdated) && ((Graphics.VideoDevice.GetBufferFormatSupport(BlurTargetFormat) & BufferFormatSupport.RenderTarget) !=
-                                           BufferFormatSupport.RenderTarget))
+            if (!Graphics.FormatSupport.TryGetValue(BlurTargetFormat, out GorgonFormatSupportInfo support))
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_FORMAT_NOT_SUPPORTED, BlurTargetFormat));
+            }
+
+            if ((_renderTargetUpdated) && ((support.FormatSupport & BufferFormatSupport.RenderTarget) != BufferFormatSupport.RenderTarget))
             {
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_FORMAT_NOT_SUPPORTED, BlurTargetFormat));
             }

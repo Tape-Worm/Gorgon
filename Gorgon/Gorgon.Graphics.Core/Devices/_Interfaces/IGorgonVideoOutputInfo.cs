@@ -60,7 +60,7 @@ namespace Gorgon.Graphics.Core
     }
 
     /// <summary>
-    /// Provides information about an output on a <see cref="IGorgonVideoAdapter"/>.
+    /// Provides information about an output on a <see cref="IGorgonVideoAdapterInfo"/>.
     /// </summary>
     /// <remarks>
     /// An output is typically a physical connection between the video adapter and another device.

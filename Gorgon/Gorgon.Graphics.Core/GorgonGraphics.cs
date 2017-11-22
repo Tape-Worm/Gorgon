@@ -61,7 +61,7 @@ namespace Gorgon.Graphics.Core
     /// </note>
     /// </para>
     /// <para>
-    /// When creating a graphics object, the user can choose which feature set they will support for a given <see cref="IGorgonVideoAdapter"/> so that older devices may be used. The actual feature set 
+    /// When creating a graphics object, the user can choose which feature set they will support for a given <see cref="IGorgonVideoAdapterInfo"/> so that older devices may be used. The actual feature set 
     /// support is provided by the <see cref="IGorgonVideoAdapterInfo.SupportedFeatureLevel"/> on the <see cref="IGorgonVideoAdapterInfo"/> interface.
     /// </para>
     /// <para>
@@ -141,10 +141,7 @@ namespace Gorgon.Graphics.Core
         private readonly IGorgonLog _log;
 
         // The video adapter to use for this graphics object.
-        private VideoAdapter _videoAdapter;
-
-        // The current device context.
-        private D3D11.DeviceContext1 _deviceContext;
+        private IGorgonVideoAdapterInfo _videoAdapter;
 
         // The last used draw call.
         private GorgonDrawCallBase _currentDrawCall;
@@ -184,13 +181,57 @@ namespace Gorgon.Graphics.Core
 
         // A buffer used to apply stream out buffers.
         private D3D11.StreamOutputBufferBinding[] _streamOutBuffer;
+        
+        // The list of support options for a given buffer format.
+        private readonly Dictionary<BufferFormat, GorgonFormatSupportInfo> _formatSupport = new Dictionary<BufferFormat, GorgonFormatSupportInfo>();
+
+        // The D3D 11.4 device context.
+        private D3D11.DeviceContext4 _d3DDeviceContext;
+
+        // The D3D 11.4 device.
+        private D3D11.Device5 _d3DDevice;
+
+        // The DXGI adapter.
+        private DXGI.Adapter4 _dxgiAdapter;
+
+        // The DXGI factory
+        private DXGI.Factory5 _dxgiFactory;
         #endregion
 
         #region Properties.
         /// <summary>
         /// Property to return the Direct 3D 11.4 device context for this graphics instance.
         /// </summary>
-        internal D3D11.DeviceContext1 D3DDeviceContext => _deviceContext;
+        internal D3D11.DeviceContext4 D3DDeviceContext => _d3DDeviceContext;
+
+        /// <summary>
+        /// Property to return the Direct 3D 11.4 device for this graphics instance.
+        /// </summary>
+        internal D3D11.Device5 D3DDevice => _d3DDevice;
+
+        /// <summary>
+        /// Property to return the selected DXGI video adapter for this graphics instance.
+        /// </summary>
+        internal DXGI.Adapter4 DXGIAdapter => _dxgiAdapter;
+
+        /// <summary>
+        /// Property to return the DXGI factory used to create DXGI objects.
+        /// </summary>
+        internal DXGI.Factory5 DXGIFactory => _dxgiFactory;
+
+        /// <summary>
+        /// Property to return the support available to each format.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This will return the options available to a <see cref="BufferFormat"/>.
+        /// </para>
+        /// <para>
+        /// The format support and compute shader/uav support value returned will be a bit mask of values from the <see cref="BufferFormatSupport"/> and the <see cref="ComputeShaderFormatSupport"/> 
+        /// enumeration respectively.
+        /// </para>
+        /// </remarks>
+        public IReadOnlyDictionary<BufferFormat, GorgonFormatSupportInfo> FormatSupport => _formatSupport;
 
         /// <summary>
         /// Property to return the list of cached pipeline states.
@@ -209,7 +250,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to set or return the video adapter to use for this graphics interface.
         /// </summary>
-        public IGorgonVideoAdapter VideoDevice => _videoAdapter;
+        public IGorgonVideoAdapterInfo VideoAdapter => _videoAdapter;
 
         /// <summary>
         /// Property to set or return whether object tracking is disabled.
@@ -331,9 +372,119 @@ namespace Gorgon.Graphics.Core
         {
             get;
         }
+
+        /// <summary>
+        /// Property to return the actual supported <see cref="FeatureSet"/> from the device.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// A user may request a lower <see cref="FeatureSet"/> than what is supported by the device to allow the application to run on older video adapters that lack support for newer functionality. 
+        /// This requested feature set will be returned by this property if supported by the device. 
+        /// </para>
+        /// <para>
+        /// If the user does not request a feature set, or has specified one higher than what the video adapter supports, then the highest feature set supported by the video adapter 
+        /// (indicated by the <see cref="IGorgonVideoAdapterInfo.SupportedFeatureLevel"/> property in the <see cref="IGorgonVideoAdapterInfo"/> class) will be returned.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="FeatureSet"/>
+        public FeatureSet RequestedFeatureSet
+        {
+            get;
+            private set;
+        }
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to retrieve the multi sample maximum quality level support for a given format.
+        /// </summary>
+        /// <param name="format">The DXGI format support to evaluate.</param>
+        /// <returns>A <see cref="GorgonMultisampleInfo"/> value containing the max count and max quality level.</returns>
+        private GorgonMultisampleInfo GetMultisampleSupport(DXGI.Format format)
+        {
+            try
+            {
+                for (int count = D3D11.Device.MultisampleCountMaximum; count >= 1; count = count / 2)
+                {
+                    int quality = D3DDevice.CheckMultisampleQualityLevels1(format, count, D3D11.CheckMultisampleQualityLevelsFlags.None);
+
+                    if ((quality < 1) || (count == 1))
+                    {
+                        continue;
+                    }
+
+                    return new GorgonMultisampleInfo(count, quality - 1);
+                }
+            }
+            catch (DX.SharpDXException sdEx)
+            {
+                _log.Print($"ERROR: Could not retrieve a multisample quality level max for format: [{format}]. Exception: {sdEx.Message}", LoggingLevel.Verbose);
+            }
+
+            return GorgonMultisampleInfo.NoMultiSampling;
+        }
+
+        /// <summary>
+        /// Function to create the Direct 3D device and Adapter for use with Gorgon.
+        /// </summary>
+        /// <param name="adapterInfo">The adapter to use.</param>
+        /// <param name="requestedFeatureLevel">The requested feature set for the device.</param>
+        private void CreateDevice(IGorgonVideoAdapterInfo adapterInfo, D3D.FeatureLevel requestedFeatureLevel)
+        {
+            D3D11.DeviceCreationFlags flags = IsDebugEnabled ? D3D11.DeviceCreationFlags.Debug : D3D11.DeviceCreationFlags.None;
+
+            using (DXGI.Factory2 factory2 = new DXGI.Factory2(IsDebugEnabled))
+            {
+                _dxgiFactory = factory2.QueryInterface<DXGI.Factory5>();
+
+                using (DXGI.Adapter adapter = (adapterInfo.VideoDeviceType == VideoDeviceType.Hardware ? _dxgiFactory.GetAdapter1(adapterInfo.Index) : _dxgiFactory.GetWarpAdapter()))
+                {
+                    _dxgiAdapter = adapter.QueryInterface<DXGI.Adapter4>();
+
+                    using (D3D11.Device device = new D3D11.Device(_dxgiAdapter, flags, requestedFeatureLevel)
+                                                 {
+                                                     DebugName = $"'{adapterInfo.Name}' D3D11.4 {(adapterInfo.VideoDeviceType == VideoDeviceType.Software ? "Software Adapter" : "Adapter")}"
+                                                 })
+                    {
+                        _d3DDevice = device.QueryInterface<D3D11.Device5>();
+                        RequestedFeatureSet = (FeatureSet)_d3DDevice.FeatureLevel;
+
+                        _d3DDeviceContext = device.ImmediateContext.QueryInterface<D3D11.DeviceContext4>();
+
+		                _log.Print($"Direct 3D 11.4 device created for video adapter '{adapterInfo.Name}' at feature set [{RequestedFeatureSet}]", LoggingLevel.Simple);
+                    }
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Function to initialize the selected video adapter for rendering using Direct 3D 11.4.
+        /// </summary>
+        /// <param name="adapterInfo">The information for the adapter to use.</param>
+        /// <param name="featureSet">The feature set for the adapter.</param>
+        private void InitializeVideoAdapter(IGorgonVideoAdapterInfo adapterInfo, FeatureSet featureSet)
+        {
+            CreateDevice(adapterInfo, (D3D.FeatureLevel)featureSet);
+
+            IEnumerable<BufferFormat> formats = (BufferFormat[])Enum.GetValues(typeof(BufferFormat));
+
+            // Get support values for each format.
+            foreach (BufferFormat format in formats)
+            {
+                DXGI.Format dxgiFormat = (DXGI.Format)format;
+
+                // NOTE: NV12 seems to come back as value of -92093664, no idea what the extra flags might be, the documentation for D3D doesn't
+                //       specify the flags, and this value is present in SharpDX too.
+                D3D11.FormatSupport formatSupport = D3DDevice.CheckFormatSupport(dxgiFormat);
+                D3D11.ComputeShaderFormatSupport computeSupport = D3DDevice.CheckComputeShaderFormatSupport(dxgiFormat);
+
+                _formatSupport[format] = new GorgonFormatSupportInfo(format, formatSupport, computeSupport, GetMultisampleSupport(dxgiFormat));
+            }
+
+            _videoAdapter = adapterInfo;
+        }
+
         /// <summary>
         /// Function to merge the previous draw call vertex buffers with new ones.
         /// </summary>
@@ -494,29 +645,10 @@ namespace Gorgon.Graphics.Core
                     destBuffers = _currentDrawCall.GeometryShaderConstantBuffers;
                     break;
                 case ShaderType.Hull:
-#if DEBUG
-                    if (VideoDevice.RequestedFeatureLevel < FeatureSet.Level_12_0)
-                    {
-                        _log.Print($"Error: Assigning a constant buffer to a hull shader requires feature set {FeatureSet.Level_12_0} or better.  The device '{VideoDevice.Info.Name}' only supports feature set {VideoDevice.RequestedFeatureLevel}",
-                                   LoggingLevel.All);
-                        throw new GorgonException(GorgonResult.CannotBind,
-                                                  string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureSet.Level_12_0));
-                    }
-#endif
-
                     desiredStateBit = PipelineResourceChange.HullShaderConstantBuffers;
                     destBuffers = _currentDrawCall.HullShaderConstantBuffers;
                     break;
                 case ShaderType.Domain:
-#if DEBUG
-                    if (VideoDevice.RequestedFeatureLevel < FeatureSet.Level_12_0)
-                    {
-                        _log.Print($"Error: Assigning a constant buffer to a domain shader requires feature set {FeatureSet.Level_12_0} or better.  The device '{VideoDevice.Info.Name}' only supports feature set {VideoDevice.RequestedFeatureLevel}",
-                                   LoggingLevel.All);
-                        throw new GorgonException(GorgonResult.CannotBind,
-                                                  string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureSet.Level_12_0));
-                    }
-#endif
                     desiredStateBit = PipelineResourceChange.DomainShaderConstantBuffers;
                     destBuffers = _currentDrawCall.DomainShaderConstantBuffers;
                     break;
@@ -592,28 +724,10 @@ namespace Gorgon.Graphics.Core
                     destSrvs = _currentDrawCall.GeometryShaderResourceViews;
                     break;
                 case ShaderType.Hull:
-#if DEBUG
-                    if (VideoDevice.RequestedFeatureLevel < FeatureSet.Level_12_0)
-                    {
-                        _log.Print($"Error: Assigning a resource to a hull shader requires feature set {FeatureSet.Level_12_0} or better.  The device '{VideoDevice.Info.Name}' only supports feature set {VideoDevice.RequestedFeatureLevel}",
-                                   LoggingLevel.All);
-                        throw new GorgonException(GorgonResult.CannotBind,
-                                                  string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureSet.Level_12_0));
-                    }
-#endif
                     desiredStateBit = PipelineResourceChange.HullShaderResources;
                     destSrvs = _currentDrawCall.HullShaderResourceViews;
                     break;
                 case ShaderType.Domain:
-#if DEBUG
-                    if (VideoDevice.RequestedFeatureLevel < FeatureSet.Level_12_0)
-                    {
-                        _log.Print($"Error: Assigning a resource to a domain shader requires feature set {FeatureSet.Level_12_0} or better.  The device '{VideoDevice.Info.Name}' only supports feature set {VideoDevice.RequestedFeatureLevel}",
-                                   LoggingLevel.All);
-                        throw new GorgonException(GorgonResult.CannotBind,
-                                                  string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureSet.Level_12_0));
-                    }
-#endif
                     desiredStateBit = PipelineResourceChange.DomainShaderResources;
                     destSrvs = _currentDrawCall.DomainShaderResourceViews;
                     break;
@@ -669,11 +783,6 @@ namespace Gorgon.Graphics.Core
             int newEnd = newItems.Count + newItems.StartSlot;
 
 #if DEBUG
-            if (VideoDevice.RequestedFeatureLevel < FeatureSet.Level_12_0)
-            {
-                throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureSet.Level_12_0));
-            }
-
             ref (int, int Count) rtvItems = ref _renderTargets.GetDirtyItems();
 
             for (int i = 0; (i < rtvItems.Count) && (newItems.Count > 0); ++i)
@@ -737,16 +846,6 @@ namespace Gorgon.Graphics.Core
             switch (shaderType)
             {
                 case ShaderType.Vertex:
-#if DEBUG
-                    // If the device doesn't support this, we need to crash out so the dev can fix it.
-                    if (VideoDevice.RequestedFeatureLevel < FeatureSet.Level_12_0)
-                    {
-                        _log.Print($"Error: Assigning a sampler to a vertex shader requires feature set {FeatureSet.Level_12_0} or better.  The device '{VideoDevice.Info.Name}' only supports feature set {VideoDevice.RequestedFeatureLevel}",
-                                   LoggingLevel.All);
-                        throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureSet.Level_12_0));
-                    }
-#endif
-
                     desiredStateBit = PipelineResourceChange.VertexShaderSamplers;
                     destSamplers = _currentDrawCall.VertexShaderSamplers;
                     break;
@@ -759,28 +858,10 @@ namespace Gorgon.Graphics.Core
                     destSamplers = _currentDrawCall.GeometryShaderSamplers;
                     break;
                 case ShaderType.Hull:
-#if DEBUG
-                    _log.Print($"Error: Assigning a sampler to a hull shader requires feature set {FeatureSet.Level_12_0} or better.  The device '{VideoDevice.Info.Name}' only supports feature set {VideoDevice.RequestedFeatureLevel}",
-                               LoggingLevel.All);
-                    if (VideoDevice.RequestedFeatureLevel < FeatureSet.Level_12_0)
-                    {
-                        throw new GorgonException(GorgonResult.CannotBind,
-                                                  string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureSet.Level_12_0));
-                    }
-#endif
                     desiredStateBit = PipelineResourceChange.HullShaderSamplers;
                     destSamplers = _currentDrawCall.HullShaderSamplers;
                     break;
                 case ShaderType.Domain:
-#if DEBUG
-                    _log.Print($"Error: Assigning a sampler to a domain shader requires feature set {FeatureSet.Level_12_0} or better.  The device '{VideoDevice.Info.Name}' only supports feature set {VideoDevice.RequestedFeatureLevel}",
-                               LoggingLevel.All);
-                    if (VideoDevice.RequestedFeatureLevel < FeatureSet.Level_12_0)
-                    {
-                        throw new GorgonException(GorgonResult.CannotBind,
-                                                  string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureSet.Level_12_0));
-                    }
-#endif
                     desiredStateBit = PipelineResourceChange.DomainShaderSamplers;
                     destSamplers = _currentDrawCall.DomainShaderSamplers;
                     break;
@@ -839,13 +920,9 @@ namespace Gorgon.Graphics.Core
                                  | PipelineStateChange.RasterState
                                  | PipelineStateChange.PixelShader
                                  | PipelineStateChange.VertexShader
-                                 | PipelineStateChange.GeometryShader;
-
-                if (VideoDevice.RequestedFeatureLevel >= FeatureSet.Level_12_0)
-                {
-                    pipelineFlags |= PipelineStateChange.HullShader
-                                     | PipelineStateChange.DomainShader;
-                }
+                                 | PipelineStateChange.GeometryShader
+                                 | PipelineStateChange.HullShader
+                                 | PipelineStateChange.DomainShader;
 
                 _currentDrawCall.PipelineState = state;
                 return pipelineFlags;
@@ -869,30 +946,11 @@ namespace Gorgon.Graphics.Core
 
             if (_currentDrawCall.PipelineState.Info.HullShader != state.Info.HullShader)
             {
-#if DEBUG
-                _log.Print($"Error: Assigning a hull shader requires feature set {FeatureSet.Level_12_0} or better.  The device '{VideoDevice.Info.Name}' only supports feature set {VideoDevice.RequestedFeatureLevel}",
-                           LoggingLevel.All);
-                if (VideoDevice.RequestedFeatureLevel < FeatureSet.Level_12_0)
-                {
-                    throw new GorgonException(GorgonResult.CannotBind,
-                                              string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureSet.Level_12_0));
-                }
-#endif
-
                 pipelineFlags |= PipelineStateChange.HullShader;
             }
 
             if (_currentDrawCall.PipelineState.Info.DomainShader != state.Info.DomainShader)
             {
-#if DEBUG
-                _log.Print($"Error: Assigning a domain shader requires feature set {FeatureSet.Level_12_0} or better.  The device '{VideoDevice.Info.Name}' only supports feature set {VideoDevice.RequestedFeatureLevel}",
-                           LoggingLevel.All);
-                if (VideoDevice.RequestedFeatureLevel < FeatureSet.Level_12_0)
-                {
-                    throw new GorgonException(GorgonResult.CannotBind,
-                                              string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureSet.Level_12_0));
-                }
-#endif
                 pipelineFlags |= PipelineStateChange.DomainShader;
             }
 
@@ -1006,7 +1064,6 @@ namespace Gorgon.Graphics.Core
                                                             D3D11.DepthStencilState depthStencilState,
                                                             D3D11.RasterizerState1 rasterState)
         {
-            D3D11.Device1 videoAdapter = VideoDevice.D3DDevice();
             GorgonPipelineState result = new GorgonPipelineState(info, _stateCache.Count)
                          {
                              D3DBlendState = blendState,
@@ -1016,7 +1073,7 @@ namespace Gorgon.Graphics.Core
 
             if ((rasterState == null) && (info.RasterState != null))
             {
-                result.D3DRasterState = new D3D11.RasterizerState1(videoAdapter, info.RasterState.ToRasterStateDesc1())
+                result.D3DRasterState = new D3D11.RasterizerState1(_d3DDevice, info.RasterState.ToRasterStateDesc1())
                                         {
                                             DebugName = "Gorgon D3D11RasterState"
                                         };
@@ -1024,7 +1081,7 @@ namespace Gorgon.Graphics.Core
 
             if ((depthStencilState == null) && (info.DepthStencilState != null))
             {
-                result.D3DDepthStencilState = new D3D11.DepthStencilState(videoAdapter, info.DepthStencilState.ToDepthStencilStateDesc())
+                result.D3DDepthStencilState = new D3D11.DepthStencilState(_d3DDevice, info.DepthStencilState.ToDepthStencilStateDesc())
                                               {
                                                   DebugName = "Gorgon D3D11DepthStencilState"
                                               };
@@ -1048,7 +1105,7 @@ namespace Gorgon.Graphics.Core
                 desc.RenderTarget[i] = info.BlendStates[i].ToRenderTargetBlendStateDesc1();
             }
 
-            result.D3DBlendState = new D3D11.BlendState1(videoAdapter, desc)
+            result.D3DBlendState = new D3D11.BlendState1(_d3DDevice, desc)
                                    {
                                        DebugName = "Gorgon D3D11BlendState"
                                    };
@@ -1096,27 +1153,11 @@ namespace Gorgon.Graphics.Core
 
                 if (cachedStateInfo.HullShader == newStateInfo.HullShader)
                 {
-                    if (VideoDevice.RequestedFeatureLevel < FeatureSet.Level_12_0)
-                    {
-                        _log.Print($"Error: A hull shader requires feature set {FeatureSet.Level_12_0} or better.  The device '{VideoDevice.Info.Name}' only supports feature set {VideoDevice.RequestedFeatureLevel}",
-                                   LoggingLevel.All);
-                        throw new GorgonException(GorgonResult.CannotCreate,
-                                                  string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureSet.Level_12_0));
-                    }
-
                     inheritedState |= PipelineStateChange.HullShader;
                 }
 
                 if (cachedStateInfo.DomainShader == newStateInfo.DomainShader)
                 {
-                    if (VideoDevice.RequestedFeatureLevel < FeatureSet.Level_12_0)
-                    {
-                        _log.Print($"Error: A domain shader requires feature set {FeatureSet.Level_12_0} or better.  The device '{VideoDevice.Info.Name}' only supports feature set {VideoDevice.RequestedFeatureLevel}",
-                                   LoggingLevel.All);
-                        throw new GorgonException(GorgonResult.CannotCreate,
-                                                  string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureSet.Level_12_0));
-                    }
-
                     inheritedState |= PipelineStateChange.DomainShader;
                 }
 
@@ -1391,13 +1432,9 @@ namespace Gorgon.Graphics.Core
             {
                 UnbindFromShader(ShaderType.Pixel, _depthStencilView.Texture, ref psSrvBindings, _currentDrawCall.PixelShaderResourceViews);
                 UnbindFromShader(ShaderType.Geometry, _depthStencilView.Texture, ref gsSrvBindings, _currentDrawCall.GeometryShaderResourceViews);
-
-                if (VideoDevice.RequestedFeatureLevel >= FeatureSet.Level_12_0)
-                {
-                    UnbindFromShader(ShaderType.Vertex, _depthStencilView.Texture, ref vsSrvBindings, _currentDrawCall.VertexShaderResourceViews);
-                    UnbindFromShader(ShaderType.Hull, _depthStencilView.Texture, ref hsSrvBindings, _currentDrawCall.HullShaderResourceViews);
-                    UnbindFromShader(ShaderType.Domain, _depthStencilView.Texture, ref dsSrvBindings, _currentDrawCall.DomainShaderResourceViews);
-                }
+                UnbindFromShader(ShaderType.Vertex, _depthStencilView.Texture, ref vsSrvBindings, _currentDrawCall.VertexShaderResourceViews);
+                UnbindFromShader(ShaderType.Hull, _depthStencilView.Texture, ref hsSrvBindings, _currentDrawCall.HullShaderResourceViews);
+                UnbindFromShader(ShaderType.Domain, _depthStencilView.Texture, ref dsSrvBindings, _currentDrawCall.DomainShaderResourceViews);
             }
 
             for (int i = 0; i < rtBindings.Start + rtBindings.Count; ++i)
@@ -1411,12 +1448,6 @@ namespace Gorgon.Graphics.Core
 
                 UnbindFromShader(ShaderType.Pixel, view.Texture, ref psSrvBindings, _currentDrawCall.PixelShaderResourceViews);
                 UnbindFromShader(ShaderType.Geometry, view.Texture, ref gsSrvBindings, _currentDrawCall.GeometryShaderResourceViews);
-
-                if (VideoDevice.RequestedFeatureLevel < FeatureSet.Level_12_0)
-                {
-                    continue;
-                }
-
                 UnbindFromShader(ShaderType.Vertex, view.Texture, ref vsSrvBindings, _currentDrawCall.VertexShaderResourceViews);
                 UnbindFromShader(ShaderType.Hull, view.Texture, ref hsSrvBindings, _currentDrawCall.HullShaderResourceViews);
                 UnbindFromShader(ShaderType.Domain, view.Texture, ref dsSrvBindings, _currentDrawCall.DomainShaderResourceViews);
@@ -1858,12 +1889,6 @@ namespace Gorgon.Graphics.Core
 
                 UnbindFromShader(ShaderType.Pixel, uavBinding.Uav.Resource, ref psSrvBindings, _currentDrawCall.PixelShaderResourceViews);
                 UnbindFromShader(ShaderType.Geometry, uavBinding.Uav.Resource, ref gsSrvBindings, _currentDrawCall.GeometryShaderResourceViews);
-
-                if (VideoDevice.RequestedFeatureLevel < FeatureSet.Level_12_0)
-                {
-                    continue;
-                }
-
                 UnbindFromShader(ShaderType.Vertex, uavBinding.Uav.Resource, ref vsSrvBindings, _currentDrawCall.VertexShaderResourceViews);
                 UnbindFromShader(ShaderType.Hull, uavBinding.Uav.Resource, ref hsSrvBindings, _currentDrawCall.HullShaderResourceViews);
                 UnbindFromShader(ShaderType.Domain, uavBinding.Uav.Resource, ref dsSrvBindings, _currentDrawCall.DomainShaderResourceViews);
@@ -1897,6 +1922,8 @@ namespace Gorgon.Graphics.Core
                 }
             }
         }
+
+        
 
         /// <summary>
         /// Function to validate the compute pipeline state against the graphics pipeline state.
@@ -2620,7 +2647,7 @@ namespace Gorgon.Graphics.Core
         /// <returns>A new <see cref="GorgonPipelineState"/>, or an existing one if one was already created.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="info"/> has no <see cref="IGorgonPipelineStateInfo.VertexShader"/>.</exception>
-        /// <exception cref="GorgonException">Thrown if a pipeline state requires a higher feature set than supported by the <see cref="VideoDevice"/>.</exception>
+        /// <exception cref="GorgonException">Thrown if a pipeline state requires a higher feature set than supported by the <see cref="VideoAdapter"/>.</exception>
         /// <remarks>
         /// <para>
         /// This method will create a new pipeline state, or retrieve an existing state if a cached state already exists that exactly matches the information passed to the <paramref name="info"/> parameter. 
@@ -2632,7 +2659,7 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         /// <seealso cref="GorgonPipelineState"/>
         /// <seealso cref="IGorgonPipelineStateInfo"/>
-        /// <seealso cref="IGorgonVideoAdapter"/>
+        /// <seealso cref="IGorgonVideoAdapterInfo"/>
         public GorgonPipelineState GetPipelineState(IGorgonPipelineStateInfo info)
         {
             if (info == null)
@@ -2713,15 +2740,69 @@ namespace Gorgon.Graphics.Core
         public static IReadOnlyList<IGorgonVideoAdapterInfo> EnumerateAdapters(bool includeSoftwareDevice = false, IGorgonLog log = null) => VideoAdapterEnumerator.Enumerate(includeSoftwareDevice, log);
 
         /// <summary>
+        /// Function to find a display mode supported by the Gorgon.
+        /// </summary>
+        /// <param name="output">The output to use when looking for a video mode.</param>
+        /// <param name="videoMode">The <see cref="GorgonVideoMode"/> used to find the closest match.</param>
+        /// <param name="suggestedMode">A <see cref="GorgonVideoMode"/> that is the nearest match for the provided video mode.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="output"/> parameter is <b>null</b>.</exception>
+        /// <remarks>
+        /// <para>
+        /// Users may leave the <see cref="GorgonVideoMode"/> values at unspecified (either 0, or default enumeration values) to indicate that these values should not be used in the search.
+        /// </para>
+        /// <para>
+        /// The following members in <see cref="GorgonVideoMode"/> may be skipped (if not listed, then this member must be specified):
+        /// <list type="bullet">
+        ///		<item>
+        ///			<description><see cref="GorgonVideoMode.Width"/> and <see cref="GorgonVideoMode.Height"/>.  Both values must be set to 0 if not filtering by width or height.</description>
+        ///		</item>
+        ///		<item>
+        ///			<description><see cref="GorgonVideoMode.RefreshRate"/> should be set to empty in order to skip filtering by refresh rate.</description>
+        ///		</item>
+        ///		<item>
+        ///			<description><see cref="GorgonVideoMode.Scaling"/> should be set to <see cref="ModeScaling.Unspecified"/> in order to skip filtering by the scaling mode.</description>
+        ///		</item>
+        ///		<item>
+        ///			<description><see cref="GorgonVideoMode.ScanlineOrder"/> should be set to <see cref="ModeScanlineOrder.Unspecified"/> in order to skip filtering by the scanline order.</description>
+        ///		</item>
+        /// </list>
+        /// </para>
+        /// <para>
+        /// <note type="important">
+        /// <para>
+        /// The <see cref="GorgonVideoMode.Format"/> member must be one of the UNorm format types and cannot be set to <see cref="BufferFormat.Unknown"/>.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        public void FindNearestVideoMode(IGorgonVideoOutputInfo output, ref GorgonVideoMode videoMode, out GorgonVideoMode suggestedMode)
+        {
+            suggestedMode = videoMode;
+            
+            using (DXGI.Output giOutput = _dxgiAdapter.GetOutput(output.Index))
+            {
+                using (DXGI.Output1 giOutput1 = giOutput.QueryInterface<DXGI.Output1>())
+                {
+                    DXGI.ModeDescription1 matchMode = videoMode.ToModeDesc1();
+
+                    giOutput1.FindClosestMatchingMode1(ref matchMode, out DXGI.ModeDescription1 mode, D3DDevice);
+
+                    suggestedMode =  mode.ToGorgonVideoMode();
+                }
+            }
+        }
+
+        /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         public void Dispose()
         {
-            IGorgonVideoAdapter device = Interlocked.Exchange(ref _videoAdapter, null);
-            D3D11.DeviceContext context = Interlocked.Exchange(ref _deviceContext, null);
+            D3D11.DeviceContext4 context = Interlocked.Exchange(ref _d3DDeviceContext, null);
+            D3D11.Device5 device = Interlocked.Exchange(ref _d3DDevice, null);
+            DXGI.Adapter4 adapter = Interlocked.Exchange(ref _dxgiAdapter, null);
+            DXGI.Factory5 factory = Interlocked.Exchange(ref _dxgiFactory, null);
 
-            if ((device == null)
-                || (context == null))
+            if (context == null)
             {
                 return;
             }
@@ -2735,11 +2816,14 @@ namespace Gorgon.Graphics.Core
             ClearStateCache();
 
             // Disconnect from the context.
-            _log.Print($"Destroying GorgonGraphics interface for device '{device.Info.Name}'...", LoggingLevel.Simple);
+            _log.Print($"Destroying GorgonGraphics interface for device '{_videoAdapter.Name}'...", LoggingLevel.Simple);
 
             // Reset the state for the context. This will ensure we don't have anything bound to the pipeline when we shut down.
             context.ClearState();
+            context.Dispose();
             device.Dispose();
+            adapter.Dispose();
+            factory.Dispose();
         }
         #endregion
 
@@ -2832,13 +2916,13 @@ namespace Gorgon.Graphics.Core
 
             _log.Print("Gorgon Graphics initializing...", LoggingLevel.Simple);
             _log.Print($"Using video adapter '{videoAdapterInfo.Name}' at feature set [{featureSet.Value}] for Direct 3D 11.4.", LoggingLevel.Simple);
+            
+            InitializeVideoAdapter(videoAdapterInfo, featureSet.Value);
 
-            _videoAdapter = new VideoAdapter(videoAdapterInfo, featureSet.Value, _log);
+            ScissorRectangles = new GorgonMonitoredValueTypeArray<DX.Rectangle>(videoAdapterInfo.MaxScissorCount);
+            Viewports = new GorgonMonitoredValueTypeArray<DX.ViewportF>(videoAdapterInfo.MaxViewportCount);
 
-            ScissorRectangles = new GorgonMonitoredValueTypeArray<DX.Rectangle>(_videoAdapter.MaxScissorCount);
-            Viewports = new GorgonMonitoredValueTypeArray<DX.ViewportF>(_videoAdapter.MaxViewportCount);
-
-            _deviceContext = _videoAdapter.D3DDevice.ImmediateContext1;
+            
             _renderTargets = new GorgonRenderTargetViews();
 
             // Assign common sampler states to the factory cache.

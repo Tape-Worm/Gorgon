@@ -317,9 +317,9 @@ namespace Gorgon.Graphics.Fonts
 				// it is absolutely necessary to change and should improve performance when rendering.
 				foreach (KeyValuePair<Drawing.Bitmap, IEnumerable<GlyphInfo>> glyphBitmap in glyphData)
 				{
-					if ((image == null) || (arrayIndex >= Graphics.VideoDevice.MaxTextureArrayCount))
+					if ((image == null) || (arrayIndex >= Graphics.VideoAdapter.MaxTextureArrayCount))
 					{
-						textureSettings.ArrayCount = imageSettings.ArrayCount = bitmapCount.Min(Graphics.VideoDevice.MaxTextureArrayCount);
+						textureSettings.ArrayCount = imageSettings.ArrayCount = bitmapCount.Min(Graphics.VideoAdapter.MaxTextureArrayCount);
 						arrayIndex = 0;
 
 						image?.Dispose();

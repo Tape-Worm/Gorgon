@@ -393,9 +393,9 @@ namespace Gorgon.Graphics.Core
 
             PassCount = passCount;
             Graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
-            _activeRenderTargets = new GorgonRenderTargetView[graphics.VideoDevice.MaxRenderTargetCount];
-            _activeViewports = new GorgonMonitoredValueTypeArray<DX.ViewportF>(graphics.VideoDevice.MaxViewportCount);
-            _activeScissors = new GorgonMonitoredValueTypeArray<DX.Rectangle>(graphics.VideoDevice.MaxScissorCount);
+            _activeRenderTargets = new GorgonRenderTargetView[graphics.VideoAdapter.MaxRenderTargetCount];
+            _activeViewports = new GorgonMonitoredValueTypeArray<DX.ViewportF>(graphics.VideoAdapter.MaxViewportCount);
+            _activeScissors = new GorgonMonitoredValueTypeArray<DX.Rectangle>(graphics.VideoAdapter.MaxScissorCount);
         }
         #endregion
     }

@@ -34,6 +34,7 @@ using Gorgon.IO;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D;
 using D3DCompiler = SharpDX.D3DCompiler;
+using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
 {
@@ -96,26 +97,11 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Function to retrieve the shader profile to use based on the feature set.
 		/// </summary>
-		/// <param name="featureSet">The feature set used to determine the profile.</param>
 		/// <param name="shaderType">The type of shader.</param>
 		/// <returns>A string containing the profile information.</returns>
-		private static string GetProfile(FeatureSet featureSet, ShaderType shaderType)
+		private static string GetProfile( ShaderType shaderType)
 		{
 			string prefix;
-
-			if (((shaderType == ShaderType.Compute)
-			     || (shaderType == ShaderType.Domain)
-			     || (shaderType == ShaderType.Hull))
-			    && (featureSet < FeatureSet.Level_12_0))
-			{
-				throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureSet.Level_12_0));
-			}
-
-			if ((shaderType == ShaderType.Geometry)
-				&& ((featureSet < FeatureSet.Level_12_0)))
-			{
-				throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureSet.Level_12_0));
-			}
 
 			switch (shaderType)
 			{
@@ -153,7 +139,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="isDebug"><b>true</b> if the byte code has debug info, <b>false</b> if not.</param>
 		/// <param name="byteCode">The byte code for the shader.</param>
 		/// <returns>The shader based on the <paramref name="shaderType"/>.</returns>
-		private static GorgonShader GetShader(IGorgonVideoAdapter device, ShaderType shaderType, string entryPoint, bool isDebug, D3DCompiler.ShaderBytecode byteCode)
+		private static GorgonShader GetShader(D3D11.Device5 device, ShaderType shaderType, string entryPoint, bool isDebug, D3DCompiler.ShaderBytecode byteCode)
 		{
 			switch (shaderType)
 			{
@@ -178,10 +164,10 @@ namespace Gorgon.Graphics.Core
 		/// Function to load a shader from a <see cref="Stream"/> containing a Gorgon binary shader in chunked format.
 		/// </summary>
 		/// <typeparam name="T">The type of shader to return. Must inherit from <see cref="GorgonShader"/>.</typeparam>
-		/// <param name="device">The video adapter used to create the shader.</param>
+		/// <param name="graphics">The graphics interface used to create the shader.</param>
 		/// <param name="stream">The stream containing the binary shader data.</param>
 		/// <param name="size">The size, in bytes, of the binary shader within the stream.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="device"/>, or the <paramref name="stream"/> parameter is <b>null</b>.</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, or the <paramref name="stream"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="IOException">Thrown if the <paramref name="stream"/> is write only.</exception>
 		/// <exception cref="EndOfStreamException">Thrown if an attempt to read beyond the end of the stream is made.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> parameter is less than 1 byte.</exception>
@@ -216,12 +202,12 @@ namespace Gorgon.Graphics.Core
 		/// <seealso cref="GorgonChunkFile{T}"/>
 		/// <seealso cref="GorgonChunkFileReader"/>
 		/// <seealso cref="GorgonChunkFileWriter"/>
-		public static T FromStream<T>(IGorgonVideoAdapter device, Stream stream, int size)
+		public static T FromStream<T>(GorgonGraphics graphics, Stream stream, int size)
 			where T : GorgonShader
 		{
-			if (device == null)
+			if (graphics == null)
 			{
-				throw new ArgumentNullException(nameof(device));
+				throw new ArgumentNullException(nameof(graphics));
 			}
 
 			if (stream == null)
@@ -321,7 +307,7 @@ namespace Gorgon.Graphics.Core
 
 				byteCode = new D3DCompiler.ShaderBytecode(data);
 
-				return (T)GetShader(device, shaderType, entryPoint, debug, byteCode);
+				return (T)GetShader(graphics.D3DDevice, shaderType, entryPoint, debug, byteCode);
 			}
 			catch (DX.CompilationException cEx)
 			{
@@ -338,9 +324,9 @@ namespace Gorgon.Graphics.Core
         /// Function to load a shader from a file containing a Gorgon binary shader in chunked format.
         /// </summary>
         /// <typeparam name="T">The type of shader to return. Must inherit from <see cref="GorgonShader"/>.</typeparam>
-        /// <param name="device">The video adapter used to create the shader.</param>
+        /// <param name="graphics">The graphics interface used to create the shader.</param>
         /// <param name="path">The path to the file containing the Gorgon binary shader data.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="device"/>, or the <paramref name="path"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, or the <paramref name="path"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
         /// <exception cref="InvalidCastException">Thrown if the application tries to load a specific shader type as <typeparamref name="T"/>, but it is stored as another type.</exception>
         /// <returns>A new <see cref="GorgonShader"/>. The type of shader depends on the data that was written to the file and the <typeparamref name="T"/> type parameter.</returns>
@@ -373,12 +359,12 @@ namespace Gorgon.Graphics.Core
         /// <seealso cref="GorgonChunkFile{T}"/>
         /// <seealso cref="GorgonChunkFileReader"/>
         /// <seealso cref="GorgonChunkFileWriter"/>
-        public static T FromFile<T>(IGorgonVideoAdapter device, string path)
+        public static T FromFile<T>(GorgonGraphics graphics, string path)
 			where T : GorgonShader
 		{
-			if (device == null)
+			if (graphics == null)
 			{
-				throw new ArgumentNullException(nameof(device));
+				throw new ArgumentNullException(nameof(graphics));
 			}
 
 			if (path == null)
@@ -393,7 +379,7 @@ namespace Gorgon.Graphics.Core
 
 			using (FileStream stream = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read))
 			{
-				return FromStream<T>(device, stream, (int)stream.Length);
+				return FromStream<T>(graphics, stream, (int)stream.Length);
 			}
 		}
 
@@ -401,14 +387,14 @@ namespace Gorgon.Graphics.Core
 		/// Function to compile a shader from source code.
 		/// </summary>
 		/// <typeparam name="T">The type of shader to return.</typeparam>
-		/// <param name="videoAdapter">The video adapter used to create the shader.</param>
+		/// <param name="graphics">The graphics interface to use.</param>
 		/// <param name="sourceCode">A string containing the source code to compile.</param>
 		/// <param name="entryPoint">The entry point function for the shader.</param>
 		/// <param name="debug">[Optional] <b>true</b> to indicate whether the shader should be compiled with debug information; otherwise, <b>false</b> to strip out debug information.</param>
 		/// <param name="macros">[Optional] A list of macros for conditional compilation.</param>
 		/// <param name="sourceFileName">[Optional] The name of the file where the source code came from.</param>
 		/// <returns>A byte array containing the compiled shader.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="sourceCode"/>, <paramref name="entryPoint"/> or the <paramref name="videoAdapter"/> parameter is <b>null</b>.</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="sourceCode"/>, <paramref name="entryPoint"/> or the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="sourceCode"/>, <paramref name="entryPoint"/> parameter is empty.</exception>
 		/// <exception cref="GorgonException">Thrown when the type specified by <typeparamref name="T"/> is not a valid shader type.
 		/// <para>-or-</para>
@@ -449,13 +435,13 @@ namespace Gorgon.Graphics.Core
 		/// </list>
 		/// </para>
 		/// </remarks>
-		public static T Compile<T>(IGorgonVideoAdapter videoAdapter, string sourceCode, string entryPoint, bool debug = false, IList<GorgonShaderMacro> macros = null, string sourceFileName = "(in memory)")
+		public static T Compile<T>(GorgonGraphics graphics, string sourceCode, string entryPoint, bool debug = false, IList<GorgonShaderMacro> macros = null, string sourceFileName = "(in memory)")
 			where T : GorgonShader
 		{
-			if (videoAdapter == null)
-			{
-				throw new ArgumentNullException(nameof(videoAdapter));
-			}
+		    if (graphics == null)
+		    {
+		        throw new ArgumentNullException(nameof(graphics));
+		    }
 
 			if (sourceCode == null)
 			{
@@ -487,11 +473,6 @@ namespace Gorgon.Graphics.Core
 			// Get shader flags based on our feature set and whether we want debug info or not.
 			D3DCompiler.ShaderFlags flags = debug ? D3DCompiler.ShaderFlags.Debug : D3DCompiler.ShaderFlags.OptimizationLevel3;
 
-			if (videoAdapter.RequestedFeatureLevel < FeatureSet.Level_12_0)
-			{
-				flags |= D3DCompiler.ShaderFlags.EnableBackwardsCompatibility;
-			}
-
 			// Make compatible macros for the shader compiler.
 			D3D.ShaderMacro[] actualMacros = null;
 
@@ -500,7 +481,7 @@ namespace Gorgon.Graphics.Core
 				actualMacros = macros.Select(item => item.D3DShaderMacro).ToArray();
 			}
 
-			string profile = GetProfile(videoAdapter.RequestedFeatureLevel, shaderType.Value.Item2);
+			string profile = GetProfile(shaderType.Value.Item2);
 			string processedSource = _processor.Process(sourceCode);
 
 			try
@@ -519,7 +500,7 @@ namespace Gorgon.Graphics.Core
 					throw new GorgonException(GorgonResult.CannotCompile, string.Format(Resources.GORGFX_ERR_CANNOT_COMPILE_SHADER, byteCode.Message));
 				}
 
-				return (T)GetShader(videoAdapter, shaderType.Value.Item2, entryPoint, debug, byteCode);
+				return (T)GetShader(graphics.D3DDevice, shaderType.Value.Item2, entryPoint, debug, byteCode);
 			}
 			catch (DX.CompilationException cEx)
 			{
