@@ -106,7 +106,7 @@ namespace GorgonLibrary.Example
 			DX.Matrix.Transpose(ref wvp, out wvp);
 
 			// Update the constant buffer.
-			_wvpBuffer.Update(ref wvp);
+		    _graphics.SetValue(ref wvp, _wvpBuffer);
 		}
 
 		/// <summary>

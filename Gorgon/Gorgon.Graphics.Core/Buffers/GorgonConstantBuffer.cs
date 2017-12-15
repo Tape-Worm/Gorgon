@@ -25,14 +25,11 @@
 #endregion
 
 using System;
-using System.Runtime.InteropServices;
 using D3D11 = SharpDX.Direct3D11;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Native;
-using Gorgon.Reflection;
-using DX = SharpDX;
 
 namespace Gorgon.Graphics.Core
 {
@@ -90,8 +87,6 @@ namespace Gorgon.Graphics.Core
 		#region Variables.
 		// The information used to create the buffer.
 		private readonly GorgonConstantBufferInfo _info;
-	    // The address returned by the lock on the buffer.
-	    private GorgonPointerAlias _lockAddress;
         #endregion
 
         #region Properties.
@@ -108,7 +103,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the usage flags for the buffer.
         /// </summary>
-        protected override ResourceUsage Usage => _info.Usage;
+        protected internal override ResourceUsage Usage => _info.Usage;
 
         /// <summary>
         /// Property used to return the information used to create this buffer.
@@ -169,284 +164,6 @@ namespace Gorgon.Graphics.Core
 			                                  DebugName = Name
 			                              };
 			}
-		}
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// Objects that override this method should be sure to call this base method or else a memory leak may occur.
-        /// </para>
-        /// </remarks>
-        public override void Dispose()
-	    {
-	        // If we're locked, then unlock the buffer before destroying it.
-	        if ((IsLocked) && (_lockAddress != null) && (!_lockAddress.IsDisposed))
-	        {
-	            Unlock(ref _lockAddress);
-
-	            // Because the pointer is an alias, we don't really NEED to call this, but just for consistency we'll do so anyway.
-	            _lockAddress.Dispose();
-	        }
-
-            base.Dispose();
-	    }
-
-
-        /// <summary>
-        /// Function to update the buffer with data.
-        /// </summary>
-        /// <typeparam name="T">The type of data to send to the buffer. This must be a value type or primitive.</typeparam>
-        /// <param name="data">The data used to populate the buffer.</param>
-        /// <exception cref="ArgumentException">Thrown if the type specified by <typeparamref name="T"/> is not safe to use in a native memory operation.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when the size, in bytes, of the <paramref name="data"/> parameter is larger than the total <see cref="IGorgonConstantBufferInfo.SizeInBytes"/> of the buffer.</exception>
-        /// <exception cref="NotSupportedException">Thrown when the <see cref="IGorgonConstantBufferInfo.Usage"/> is either <see cref="ResourceUsage.Immutable"/> or <see cref="ResourceUsage.Dynamic"/>.</exception>
-        /// <remarks>
-        /// <para>
-        /// Use this method to send a value type (<c>struct</c>) or primitive value to the buffer. This passes <paramref name="data"/> by value, and is suitable for small items of data like primitive 
-        /// values and small structs. If larger values need to be passed, call the <see cref="Update{T}(ref T)"/> method.
-        /// </para>
-	    /// <para>
-        /// This method will throw an exception when the buffer is created with a <see cref="IGorgonConstantBufferInfo.Usage"/> of <see cref="ResourceUsage.Immutable"/> or <see cref="ResourceUsage.Dynamic"/>.
-        /// </para>
-        /// <para>
-        /// When sending a value type to the buffer the data must be a primitive type with no complex members (i.e. members must be value types or primitive types). Furthermore, the value type and any 
-        /// members that are value types must use the <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind"/> of <see cref="LayoutKind.Explicit"/> or <see cref="LayoutKind.Sequential"/>. This is 
-        /// mandatory in order to ensure that the data gets sent to the card as-is without the .NET memory manager rearranging the members of the type. 
-        /// </para>
-        /// <para>
-        /// <note type="warning">
-        /// <para>
-        /// For performance reasons, exceptions raised by this method will only be done so when Gorgon is compiled as DEBUG.
-        /// </para>
-        /// </note>
-        /// </para>
-        /// </remarks>
-        public void Update<T>(T data)
-	        where T : struct
-	    {
-	        Update(ref data);
-	    }
-
-        /// <summary>
-        /// Function to update the buffer with data.
-        /// </summary>
-        /// <typeparam name="T">The type of data to send to the buffer. This must be a value type or primitive.</typeparam>
-        /// <param name="data">The data used to populate the buffer.</param>
-        /// <exception cref="ArgumentException">Thrown if the type specified by <typeparamref name="T"/> is not safe to use in a native memory operation.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when the size, in bytes, of the <paramref name="data"/> parameter is larger than the total <see cref="IGorgonConstantBufferInfo.SizeInBytes"/> of the buffer.</exception>
-        /// <exception cref="NotSupportedException">Thrown when the <see cref="IGorgonConstantBufferInfo.Usage"/> is either <see cref="ResourceUsage.Immutable"/> or <see cref="ResourceUsage.Dynamic"/>.</exception>
-        /// <remarks>
-        /// <para>
-        /// Use this method to send a value type (<c>struct</c>) or primitive value to the buffer. 
-        /// </para>
-        /// <para>
-        /// This method will throw an exception when the buffer is created with a <see cref="IGorgonConstantBufferInfo.Usage"/> of <see cref="ResourceUsage.Immutable"/> or <see cref="ResourceUsage.Dynamic"/>.
-        /// </para>
-        /// <para>
-        /// When sending a value type to the buffer the data must be a primitive type with no complex members (i.e. members must be value types or primitive types). Furthermore, the value type and any 
-        /// members that are value types must use the <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind"/> of <see cref="LayoutKind.Explicit"/> or <see cref="LayoutKind.Sequential"/>. This is 
-        /// mandatory in order to ensure that the data gets sent to the card as-is without the .NET memory manager rearranging the members of the type. 
-        /// </para>
-        /// <para>
-        /// <note type="warning">
-        /// <para>
-        /// For performance reasons, exceptions raised by this method will only be done so when Gorgon is compiled as DEBUG.
-        /// </para>
-        /// </note>
-        /// </para>
-        /// </remarks>
-        public void Update<T>(ref T data)
-			where T : struct
-		{
-			int size = DirectAccess.SizeOf<T>();
-
-#if DEBUG
-			if ((Info.Usage == ResourceUsage.Dynamic) || (Info.Usage == ResourceUsage.Immutable))
-			{
-				throw new NotSupportedException(Resources.GORGFX_ERR_BUFFER_CANT_UPDATE_IMMUTABLE_OR_DYNAMIC);
-			}
-
-			if (size > SizeInBytes)
-			{
-				throw new ArgumentOutOfRangeException(nameof(data));
-			}
-
-			Type type = typeof(T);
-
-			if (!type.IsSafeForNative())
-			{
-				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TYPE_NOT_VALID_FOR_NATIVE, type.FullName));
-			}
-#endif
-
-			Graphics.D3DDeviceContext.UpdateSubresource(ref data, D3DResource, 0, size);
-		}
-
-        /// <summary>
-        /// Function to update the constant buffer data with data from native memory.
-        /// </summary>
-        /// <param name="data">The <see cref="GorgonPointer"/> to the native memory holding the data to copy into the buffer.</param>
-        /// <param name="offset">[Optional] The offset, in bytes, to start copying from.</param>
-        /// <param name="size">[Optional] The size, in bytes, to copy.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="data"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="offset"/> plus the size of the data in <paramref name="data"/> exceed the size of this buffer.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when the size, in bytes, of the <paramref name="data"/> parameter is larger than the total <see cref="IGorgonConstantBufferInfo.SizeInBytes"/> of the buffer.
-        /// <exception cref="NotSupportedException">Thrown when the <see cref="IGorgonConstantBufferInfo.Usage"/> is either <see cref="ResourceUsage.Immutable"/> or <see cref="ResourceUsage.Dynamic"/>.</exception>
-        /// <para>-or-</para>
-        /// <para>The <paramref name="size"/> parameter is less than 1, or larger than the buffer size.</para>
-        /// <para>-or-</para>
-        /// <para>The <paramref name="offset"/> parameter is less than 0.</para>
-        /// </exception>
-        /// <remarks>
-        /// <para>
-        /// Use this method to send a blob of byte data to the buffer. This allows for fine grained control over what gets sent to the buffer. 
-        /// </para>
-        /// <para>
-        /// Because this is using native, unmanaged, memory, special care must be taken to ensure that the application does not attempt to read/write out of bounds of that memory region. Particular care must be 
-        /// taken to ensure that <paramref name="offset"/> and <paramref name="size"/> do not exceed the bounds of the memory region.
-        /// </para>
-        /// <para>
-        /// This method will throw an exception when the buffer is created with a <see cref="IGorgonConstantBufferInfo.Usage"/> of <see cref="ResourceUsage.Immutable"/> or <see cref="ResourceUsage.Dynamic"/>.
-        /// </para>
-        /// <para>
-        /// If the <paramref name="size"/> parameter is omitted (<b>null</b>), then the entire buffer size is used minus the <paramref name="offset"/>.
-        /// </para>
-		/// <para>
-        /// <note type="warning">
-        /// <para>
-        /// For performance reasons, exceptions raised by this method will only be done so when Gorgon is compiled as DEBUG.
-        /// </para>
-        /// </note>
-        /// </para>
-        /// </remarks>
-        public void UpdateFromPointer(IGorgonPointer data, int offset = 0, int? size = null)
-		{
-			data.ValidateObject(nameof(data));
-
-		    if (size == null)
-		    {
-		        size = ((int)data.Size) - offset;
-		    }
-
-#if DEBUG
-			if ((Info.Usage == ResourceUsage.Dynamic) || (Info.Usage == ResourceUsage.Immutable))
-			{
-				throw new NotSupportedException(Resources.GORGFX_ERR_BUFFER_CANT_UPDATE_IMMUTABLE_OR_DYNAMIC);
-			}
-
-			if (offset < 0)
-			{
-				throw new ArgumentOutOfRangeException(nameof(offset));
-			}
-
-			if (size < 1)
-			{
-				throw new ArgumentOutOfRangeException(nameof(size));
-			}
-
-			if (offset + size > data.Size)
-			{
-				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_DATA_OFFSET_COUNT_IS_TOO_LARGE, offset, size));
-			}
-
-			if (size > SizeInBytes)
-			{
-				throw new ArgumentOutOfRangeException(nameof(size));
-			}
-#endif
-
-			Graphics.D3DDeviceContext.UpdateSubresource(new DX.DataBox
-			                                             {
-				                                             DataPointer = new IntPtr(data.Address + offset),
-				                                             SlicePitch = 0,
-				                                             RowPitch = size.Value
-			                                             },
-			                                             D3DResource);
-		}
-        
-        /// <summary>
-        /// Function to update the buffer with data.
-        /// </summary>
-        /// <typeparam name="T">The type of data to send to the buffer. This must be a value type or primitive.</typeparam>
-        /// <param name="data">The array of data to populate the buffer with.</param>
-        /// <param name="startIndex">[Optional] The offset within the array to start copying from.</param>
-        /// <param name="count">[Optional] The number of elements to copy.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="data"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentException">Thrown if the type specified by <typeparamref name="T"/> is not safe to use in a native memory operation.
-        /// <para>-or-</para>
-        /// <para>Thrown when the <paramref name="startIndex"/> plus the <paramref name="count"/> exceeds the number of elements in the <paramref name="data"/> parameter.</para>
-        /// </exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when the size, in bytes, of the <paramref name="data"/> parameter, multiplied by the number of items to copy is larger than the total <see cref="IGorgonConstantBufferInfo.SizeInBytes"/> of the buffer.
-        /// <para>-or-</para>
-        /// <para>Thrown when the <paramref name="startIndex"/> is less than 0, or the <paramref name="count"/> is less than 1.</para>
-        /// <para>-or-</para>
-        /// <para>Thrown when the size of the type <typeparamref name="T"/> multiplied by the count (minus the offset) is larger than the buffer size.</para>
-        /// </exception>
-        /// <exception cref="NotSupportedException">Thrown when the <see cref="IGorgonConstantBufferInfo.Usage"/> is either <see cref="ResourceUsage.Immutable"/> or <see cref="ResourceUsage.Dynamic"/>.</exception>
-        /// <remarks>
-        /// <para>
-        /// Use this method to send an array of value types (<c>struct</c>) or primitive values to the buffer. 
-        /// </para>
-        /// <para>
-        /// When sending a value type to the buffer the data must be a primitive type with no complex members (i.e. members must be value types or primitive types). Furthermore, the value type and any 
-        /// members that are value types must use the <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind"/> of <see cref="LayoutKind.Explicit"/> or <see cref="LayoutKind.Sequential"/>. This is 
-        /// mandatory in order to ensure that the data gets sent to the card as-is without the .NET memory manager rearranging the members of the type. 
-        /// </para>
-        /// <para>
-        /// If the <paramref name="count"/> parameter is omitted (<b>null</b>), then the length of the <paramref name="data"/> parameter is used minus the <paramref name="startIndex"/>.
-        /// </para>
-		/// <para>
-        /// This method will throw an exception when the buffer is created with a <see cref="IGorgonConstantBufferInfo.Usage"/> of <see cref="ResourceUsage.Immutable"/> or <see cref="ResourceUsage.Dynamic"/>.
-        /// </para>
-        /// <para>
-        /// <note type="warning">
-        /// <para>
-        /// For performance reasons, exceptions raised by this method will only be done so when Gorgon is compiled as DEBUG.
-        /// </para>
-        /// </note>
-        /// </para>
-        /// </remarks>
-        public void Update<T>(T[] data, int startIndex = 0, int? count = null)
-			where T : struct
-		{
-			data.ValidateObject(nameof(data));
-
-			int size = DirectAccess.SizeOf<T>();
-
-		    if (count == null)
-		    {
-		        count = data.Length - startIndex;
-		    }
-			
-#if DEBUG
-			if ((Info.Usage == ResourceUsage.Dynamic) || (Info.Usage == ResourceUsage.Immutable))
-			{
-				throw new NotSupportedException(Resources.GORGFX_ERR_BUFFER_CANT_UPDATE_IMMUTABLE_OR_DYNAMIC);	
-			}
-
-			if (startIndex < 0)
-			{
-				throw new ArgumentOutOfRangeException(nameof(startIndex));
-			}
-
-			if (count < 1)
-			{
-				throw new ArgumentOutOfRangeException(nameof(count));
-			}
-
-			if ((startIndex + count) > data.Length)
-			{
-				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_DATA_OFFSET_COUNT_IS_TOO_LARGE, startIndex, count));
-			}
-
-			if ((size * count) > SizeInBytes)
-			{
-				throw new ArgumentOutOfRangeException(nameof(count));
-			}
-#endif
-			Graphics.D3DDeviceContext.UpdateSubresource(data, D3DResource, 0, size);
 		}
 		#endregion
 

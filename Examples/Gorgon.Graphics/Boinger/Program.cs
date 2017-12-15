@@ -248,7 +248,6 @@ namespace Gorgon.Graphics.Example
 		/// <param name="currentState">The pipeline state to apply.</param>
 		private static void RenderModel(Model model, GorgonPipelineState currentState)
 		{
-
 			// Send the transform for the model to the GPU so we can update its position and rotation.
 			// We're using an "out" and "ref" here because a matrix is a large struct, which loses its performance after 16 bytes.
 			// By making a reference to the struct, we can keep the performance high.
@@ -256,9 +255,7 @@ namespace Gorgon.Graphics.Example
 			UpdateWVP(ref worldMatrix);
 
 		    GorgonColor color = model.Material.Diffuse;
-		    GorgonPointerAlias data = _materialBuffer.Lock(MapMode.WriteDiscard);
-            data.Write(ref color);
-            _materialBuffer.Unlock(ref data);
+            _graphics.SetValue(ref color, _materialBuffer, copyMode: CopyMode.Discard);
             
 			// Set up the draw call to render this models Index and Vertex buffers along with the current pipeline state.
 			_drawCall.IndexStart = 0;
@@ -390,9 +387,10 @@ namespace Gorgon.Graphics.Example
 			DX.Matrix.Transpose(ref wvp, out wvp);
 
 			// Update the constant buffer.
-		    GorgonPointerAlias data = _wvpBuffer.Lock(MapMode.WriteDiscard);
+            _graphics.SetValue(ref wvp, _wvpBuffer);
+		    /*GorgonPointerAlias data = _wvpBuffer.Lock(LockMode.WriteDiscard);
             data.Write(ref wvp);
-            _wvpBuffer.Unlock(ref data);
+            _wvpBuffer.Unlock(ref data);*/
 		}
 
 		/// <summary>

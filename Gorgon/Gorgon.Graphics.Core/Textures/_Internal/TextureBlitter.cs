@@ -69,7 +69,7 @@ namespace Gorgon.Graphics
 	    // The default pipeline state if no custom pipeline state was set by the user.
 	    private GorgonPipelineStateInfo _pipelineStateInfo;
         // The previously used states by this blitter.
-	    private readonly GorgonPipelineStateGroup<long> _cachedStates;
+	    private readonly IGorgonPipelineStateGroup _cachedStates;
 	    #endregion
 
         #region Methods.
@@ -94,9 +94,7 @@ namespace Gorgon.Graphics
 						   1.0f,
 						   out DX.Matrix projectionMatrix);
             
-		    GorgonPointerAlias data = _wvpBuffer.Lock(MapMode.WriteDiscard);
-            data.Write(ref projectionMatrix);
-            _wvpBuffer.Unlock(ref data);
+            _graphics.SetValue(ref projectionMatrix, _wvpBuffer);
 
 		    _targetBounds = target.Bounds;
             _needsWvpUpdate = false;
@@ -283,10 +281,7 @@ namespace Gorgon.Graphics
 	                       };
 
 	        // Copy to the vertex buffer.
-	        GorgonPointerAlias data = _vertexBufferBindings[0].VertexBuffer.Lock(MapMode.WriteDiscard);
-	        data.WriteRange(_vertices);
-	        _vertexBufferBindings[0].VertexBuffer.Unlock(ref data);
-
+            _graphics.SetData(_vertices, _vertexBufferBindings[0].VertexBuffer);
 	        _graphics.Submit(_drawCall);
 	    }
 
@@ -313,7 +308,7 @@ namespace Gorgon.Graphics
 		{
 			_graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
 
-		    _cachedStates = _graphics.GetPipelineStateGroup<long>(BlitterGroupName);
+		    _cachedStates = _graphics.GetPipelineStateGroup(BlitterGroupName);
 
 			_drawCall = new GorgonDrawCall
 			            {

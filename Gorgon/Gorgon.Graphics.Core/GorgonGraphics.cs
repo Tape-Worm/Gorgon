@@ -150,7 +150,7 @@ namespace Gorgon.Graphics.Core
         private readonly List<GorgonPipelineState> _stateCache = new List<GorgonPipelineState>();
 
         // A group of pipeline state caches that applications can use for caching their own pipeline states.
-        private readonly Dictionary<string, IPipelineStateGroup> _groupedCache = new Dictionary<string, IPipelineStateGroup>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, IGorgonPipelineStateGroup> _groupedCache = new Dictionary<string, IGorgonPipelineStateGroup>(StringComparer.OrdinalIgnoreCase);
 
         // Synchronization lock for creating new pipeline cache entries.
         private readonly object _stateCacheLock = new object();
@@ -395,6 +395,77 @@ namespace Gorgon.Graphics.Core
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to validate the parameters for the set/get data methods.
+        /// </summary>
+        /// <param name="usage">The usage for the resource.</param>
+        /// <param name="srcSize">The total size of the data being uploaded.</param>
+        /// <param name="bufferSize">The total size of the resource receiving the data.</param>
+        /// <param name="sourceIndex">The index/offset to start reading from.</param>
+        /// <param name="sourceCount">The number of items/bytes to read.</param>
+        /// <param name="destOffset">The offset, in bytes, to start writing at.</param>
+        /// <param name="destSize">The number of bytes to write.</param>
+        private void ValidateSetData(ResourceUsage usage, int srcSize, int bufferSize, int sourceIndex, int sourceCount, int destOffset, int destSize)
+        {
+            if (sourceIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(sourceIndex));
+            }
+
+            if (destOffset < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(destOffset));
+            }
+
+            if (sourceIndex + sourceCount > srcSize)
+            {
+                throw new ArgumentException(string.Format(Resources.GORGFX_ERR_DATA_OFFSET_COUNT_IS_TOO_LARGE, sourceIndex, sourceCount));
+            }
+
+            if (destOffset + destSize > bufferSize)
+            {
+                throw new ArgumentException(string.Format(Resources.GORGFX_ERR_DATA_OFFSET_COUNT_IS_TOO_LARGE, destOffset, destSize));
+            }
+
+            if (usage == ResourceUsage.Immutable)
+            {
+                throw new NotSupportedException(Resources.GORGFX_ERR_BUFFER_CANT_UPDATE_IMMUTABLE_OR_DYNAMIC);
+            }
+        }
+
+        /// <summary>
+        /// Function to uplaod data into a D3D 11 resource via a pointer and a map operation.
+        /// </summary>
+        /// <param name="source">The pointer to the data to upload.</param>
+        /// <param name="dest">The D3D 11 resource that will receive the data.</param>
+        /// <param name="subResource">The sub resource on the resource to write into.</param>
+        /// <param name="sourceSize">The amount of data to copy from the pointer, in bytes.</param>
+        /// <param name="destOffset">The offset, in bytes, within the resource to start writing at.</param>
+        /// <param name="staging"><b>true</b> if the resource is a staging resource, or <b>false</b> if it is not.</param>
+        /// <param name="copyMode">The flags used to determine how to upload the data.</param>
+        private void MapBuffer(IntPtr source, D3D11.Resource dest, int subResource, int sourceSize, int destOffset, bool staging, CopyMode copyMode)
+        {
+            D3D11.MapMode mapMode = D3D11.MapMode.Write;
+
+            if (!staging)
+            {
+                switch (copyMode)
+                {
+                    case CopyMode.None:
+                    case CopyMode.Discard:
+                        mapMode = D3D11.MapMode.WriteDiscard;
+                        break;
+                    case CopyMode.NoOverwrite:
+                        mapMode = D3D11.MapMode.WriteNoOverwrite;
+                        break;
+                }
+            }
+
+            DX.DataBox box = D3DDeviceContext.MapSubresource(dest, subResource, mapMode, D3D11.MapFlags.None);
+            DirectAccess.MemoryCopy(box.DataPointer + destOffset, source, sourceSize);
+            D3DDeviceContext.UnmapSubresource(dest, subResource);
+        }
+
         /// <summary>
         /// Function to retrieve the multi sample maximum quality level support for a given format.
         /// </summary>
@@ -2155,7 +2226,7 @@ namespace Gorgon.Graphics.Core
             lock (_stateCacheLock)
             {
                 // Ensure that all groups lose their reference to the cached pipeline states first.
-                foreach (KeyValuePair<string, IPipelineStateGroup> cacheGroup in _groupedCache)
+                foreach (KeyValuePair<string, IGorgonPipelineStateGroup> cacheGroup in _groupedCache)
                 {
                     cacheGroup.Value.Invalidate();
                 }
@@ -2207,9 +2278,9 @@ namespace Gorgon.Graphics.Core
             indirectArgs.ValidateObject(nameof(indirectArgs));
 
             // Merge this draw call with our previous one (if available).
-            (PipelineResourceChange ChangedResources, PipelineStateChange ChangedStates) stateChange = MergeDrawCall(drawCall);
+            (PipelineResourceChange ChangedResources, PipelineStateChange ChangedStates) = MergeDrawCall(drawCall);
 
-            ApplyPerDrawStates(_currentDrawCall, drawCall.PipelineState, stateChange.ChangedResources, stateChange.ChangedStates);
+            ApplyPerDrawStates(_currentDrawCall, drawCall.PipelineState, ChangedResources, ChangedStates);
 
             D3DDeviceContext.DrawIndexedInstancedIndirect(indirectArgs.NativeBuffer, argumentOffset);
         }
@@ -2246,9 +2317,9 @@ namespace Gorgon.Graphics.Core
             indirectArgs.ValidateObject(nameof(indirectArgs));
 
             // Merge this draw call with our previous one (if available).
-            (PipelineResourceChange ChangedResources, PipelineStateChange ChangedStates) stateChange = MergeDrawCall(drawCall);
+            (PipelineResourceChange ChangedResources, PipelineStateChange ChangedStates) = MergeDrawCall(drawCall);
 
-            ApplyPerDrawStates(_currentDrawCall, drawCall.PipelineState, stateChange.ChangedResources, stateChange.ChangedStates);
+            ApplyPerDrawStates(_currentDrawCall, drawCall.PipelineState, ChangedResources, ChangedStates);
 
             D3DDeviceContext.DrawInstancedIndirect(indirectArgs.NativeBuffer, argumentOffset);
         }
@@ -2290,7 +2361,7 @@ namespace Gorgon.Graphics.Core
             drawCall.ValidateObject(nameof(drawCall));
 
             // Merge this draw call with our previous one (if available).
-            (PipelineResourceChange ChangedResources, PipelineStateChange ChangedStates) stateChange = MergeDrawCall(drawCall);
+            (PipelineResourceChange ChangedResources, PipelineStateChange ChangedStates) = MergeDrawCall(drawCall);
 
             // Unbind the index buffer if one is present.
             if (_currentDrawCall.IndexBuffer != null)
@@ -2298,7 +2369,7 @@ namespace Gorgon.Graphics.Core
                 _log.Print("The SubmitStreamOut method does not support the use of index buffers. The current index buffer will be reset to NULL.",
                            LoggingLevel.Verbose);
                 _currentDrawCall.IndexBuffer = null;
-                stateChange.ChangedResources |= PipelineResourceChange.IndexBuffer;
+                ChangedResources |= PipelineResourceChange.IndexBuffer;
             }
 
 #if DEBUG
@@ -2309,7 +2380,7 @@ namespace Gorgon.Graphics.Core
             }
 #endif
 
-            ApplyPerDrawStates(_currentDrawCall, drawCall.PipelineState, stateChange.ChangedResources, stateChange.ChangedStates);
+            ApplyPerDrawStates(_currentDrawCall, drawCall.PipelineState, ChangedResources, ChangedStates);
 
             D3DDeviceContext.DrawAuto();
         }
@@ -2337,9 +2408,9 @@ namespace Gorgon.Graphics.Core
             drawCall.ValidateObject(nameof(drawCall));
 
             // Merge this draw call with our previous one (if available).
-            (PipelineResourceChange ChangedResources, PipelineStateChange ChangedStates) stateChange = MergeDrawCall(drawCall);
+            (PipelineResourceChange ChangedResources, PipelineStateChange ChangedStates) = MergeDrawCall(drawCall);
 
-            ApplyPerDrawStates(_currentDrawCall, drawCall.PipelineState, stateChange.ChangedResources, stateChange.ChangedStates);
+            ApplyPerDrawStates(_currentDrawCall, drawCall.PipelineState, ChangedResources, ChangedStates);
 
             D3DDeviceContext.DrawIndexed(drawCall.IndexCount, drawCall.IndexStart, drawCall.BaseVertexIndex);
         }
@@ -2366,9 +2437,9 @@ namespace Gorgon.Graphics.Core
             drawCall.ValidateObject(nameof(drawCall));
 
             // Merge this draw call with our previous one (if available).
-            (PipelineResourceChange ChangedResources, PipelineStateChange ChangedStates) stateChange = MergeDrawCall(drawCall);
+            (PipelineResourceChange ChangedResources, PipelineStateChange ChangedStates) = MergeDrawCall(drawCall);
 
-            ApplyPerDrawStates(_currentDrawCall, drawCall.PipelineState, stateChange.ChangedResources, stateChange.ChangedStates);
+            ApplyPerDrawStates(_currentDrawCall, drawCall.PipelineState, ChangedResources, ChangedStates);
 
             D3DDeviceContext.Draw(drawCall.VertexCount, drawCall.VertexStartIndex);
         }
@@ -2395,9 +2466,9 @@ namespace Gorgon.Graphics.Core
             drawCall.ValidateObject(nameof(drawCall));
 
             // Merge this draw call with our previous one (if available).
-            (PipelineResourceChange ChangedResources, PipelineStateChange ChangedStates) stateChange = MergeDrawCall(drawCall);
+            (PipelineResourceChange ChangedResources, PipelineStateChange ChangedStates) = MergeDrawCall(drawCall);
 
-            ApplyPerDrawStates(_currentDrawCall, drawCall.PipelineState, stateChange.ChangedResources, stateChange.ChangedStates);
+            ApplyPerDrawStates(_currentDrawCall, drawCall.PipelineState, ChangedResources, ChangedStates);
 
             D3DDeviceContext.DrawInstanced(drawCall.VertexCountPerInstance, drawCall.InstanceCount, drawCall.VertexStartIndex, drawCall.StartInstanceIndex);
         }
@@ -2425,9 +2496,9 @@ namespace Gorgon.Graphics.Core
             drawCall.ValidateObject(nameof(drawCall));
 
             // Merge this draw call with our previous one (if available).
-            (PipelineResourceChange ChangedResources, PipelineStateChange ChangedStates) stateChange = MergeDrawCall(drawCall);
+            (PipelineResourceChange ChangedResources, PipelineStateChange ChangedStates) = MergeDrawCall(drawCall);
 
-            ApplyPerDrawStates(_currentDrawCall, drawCall.PipelineState, stateChange.ChangedResources, stateChange.ChangedStates);
+            ApplyPerDrawStates(_currentDrawCall, drawCall.PipelineState, ChangedResources, ChangedStates);
 
             D3DDeviceContext.DrawIndexedInstanced(drawCall.IndexCountPerInstance,
                                                   drawCall.InstanceCount,
@@ -2600,9 +2671,8 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Function to retrieve cached states, segregated by group names.
         /// </summary>
-        /// <typeparam name="TKey">The type of data used to represent a unique key for a <see cref="GorgonPipelineState"/>.</typeparam>
         /// <param name="groupName">The name of the grouping.</param>
-        /// <returns>A <see cref="GorgonPipelineStateGroup{TKey}"/> that will contain the cached <see cref="GorgonPipelineState"/> objects.</returns>
+        /// <returns>A <see cref="IGorgonPipelineStateGroup"/> that will contain the cached <see cref="GorgonPipelineState"/> objects.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="groupName"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="groupName"/> parameter is empty.</exception>
         /// <remarks>
@@ -2619,22 +2689,19 @@ namespace Gorgon.Graphics.Core
         /// the application if they're needed again.
         /// </para>
         /// </remarks>
-        /// <seealso cref="GorgonPipelineStateGroup{TKey}"/>
+        /// <seealso cref="IGorgonPipelineStateGroup"/>
         /// <seealso cref="GorgonPipelineState"/>
-        /// <seealso cref="CachedPipelineStates"/>
-        /// <seealso cref="GetPipelineState"/>
-        /// <seealso cref="ClearStateCache"/>
-        public GorgonPipelineStateGroup<TKey> GetPipelineStateGroup<TKey>(string groupName)
+        public IGorgonPipelineStateGroup GetPipelineStateGroup(string groupName)
         {
-            GorgonPipelineStateGroup<TKey> cacheGroup;
+            IGorgonPipelineStateGroup cacheGroup;
 
-            if (!_groupedCache.TryGetValue(groupName, out IPipelineStateGroup groupObject))
+            if (!_groupedCache.TryGetValue(groupName, out IGorgonPipelineStateGroup groupObject))
             {
-                _groupedCache[groupName] = cacheGroup = new GorgonPipelineStateGroup<TKey>(groupName);
+                _groupedCache[groupName] = cacheGroup = new PipelineStateGroup(groupName);
             }
             else
             {
-                cacheGroup = (GorgonPipelineStateGroup<TKey>)groupObject;
+                cacheGroup = groupObject;
             }
 
             return cacheGroup;
@@ -2792,6 +2859,286 @@ namespace Gorgon.Graphics.Core
             }
         }
 
+        private void ValidateGetData(ResourceUsage usage, int sourceIndex, int sourceCount, int resourceSize)
+        {
+            if (usage != ResourceUsage.Staging)
+            {
+                throw new ArgumentException(Resources.GORGFX_ERR_LOCK_CANNOT_READ_NON_STAGING);
+            }
+
+            if (sourceIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(sourceIndex));
+            }
+
+            if (sourceIndex + sourceCount > resourceSize)
+            {
+                throw new ArgumentException(string.Format(Resources.GORGFX_ERR_DATA_OFFSET_COUNT_IS_TOO_LARGE, sourceIndex, sourceCount));
+            }
+        }
+
+        /// <summary>
+        /// Function to retrieve data from an object that descends from <see cref="GorgonBufferBase"/>.
+        /// </summary>
+        /// <param name="buffer">The buffer to read from.</param>
+        /// <param name="sourceOffset">[Optional] The offset within the buffer to start reading from, in bytes.</param>
+        /// <param name="sourceSize">[Optional] The number of bytes to read from the buffer.</param>
+        /// <returns>A <see cref="IGorgonPointer"/> pointing to the data to read.</returns>
+        public IGorgonPointer GetData(GorgonBufferBase buffer, int sourceOffset = 0, int? sourceSize = null)
+        {
+            buffer.ValidateObject(nameof(buffer));
+
+            if (sourceSize == null)
+            {
+                sourceSize = buffer.SizeInBytes - sourceOffset;
+            }
+
+            ValidateGetData(buffer.Usage, sourceOffset, sourceSize.Value, buffer.SizeInBytes);
+
+            var result = new MapPointerData(this, buffer.D3DResource, D3D11.MapMode.Read, 0, sourceOffset, sourceSize.Value);
+            result.Lock();
+            return result;
+        }
+
+        /// <summary>
+        /// Function to upload data pointed to by a <see cref="IGorgonPointer"/> to an object that descends from a <see cref="GorgonBufferBase"/> type.
+        /// </summary>
+        /// <param name="sourceData">A pointer to memory that will be uploaded into the buffer.</param>
+        /// <param name="buffer">A buffer that will receive the data.</param>
+        /// <param name="sourceSize">[Optional] The number of bytes to read from <paramref name="sourceData"/>.</param>
+        /// <param name="destOffset">[Optional] The offset, in bytes, in the <paramref name="buffer"/> to start writing into.</param>
+        /// <param name="copyMode">[Optional] The type of locking mode to employ when copying data into the buffer.</param>
+        public void SetData(IGorgonPointer sourceData, GorgonBufferBase buffer, int? sourceSize = null, int destOffset = 0, CopyMode copyMode = CopyMode.None)
+        {
+            sourceData.ValidateObject(nameof(sourceData));
+            buffer.ValidateObject(nameof(buffer));
+
+            if (sourceSize == null)
+            {
+                sourceSize = (int)sourceData.Size;
+            }
+
+            int destSize = sourceSize.Value;
+
+            ValidateSetData(buffer.Usage, (int)sourceData.Size, buffer.SizeInBytes, 0, sourceSize.Value, destOffset, destSize);
+
+            if ((buffer.Usage == ResourceUsage.Dynamic) || (buffer.Usage == ResourceUsage.Staging))
+            {
+                MapBuffer(new IntPtr(sourceData.Address),
+                          buffer.D3DResource,
+                          0,
+                          sourceSize.Value,
+                          destOffset,
+                          buffer.Usage == ResourceUsage.Staging,
+                          copyMode);
+                return;
+            }
+
+            D3DDeviceContext.UpdateSubresource1(buffer.D3DResource,
+                                                0,
+                                                new D3D11.ResourceRegion
+                                                {
+                                                    Left = destOffset,
+                                                    Right = destOffset + destSize,
+                                                    Top = 0,
+                                                    Front = 0,
+                                                    Back = 1,
+                                                    Bottom = 1
+                                                },
+                                                new IntPtr(sourceData.Address),
+                                                sourceSize.Value,
+                                                0,
+                                                (int)copyMode);
+        }
+
+        /// <summary>
+        /// Function to upload data to an object that descends from a <see cref="GorgonBufferCommon"/> type.
+        /// </summary>
+        /// <typeparam name="T">The type of data to upload, must be a primitive or value type.</typeparam>
+        /// <param name="sourceData">An array of type <typeparamref name="T"/> to upload into the buffer.</param>
+        /// <param name="buffer">A buffer that will receive the data.</param>
+        /// <param name="sourceIndex">[Optional] The index to start reading from in the <paramref name="sourceData"/> array.</param>
+        /// <param name="sourceCount">[Optional] The number of elements to read from the <paramref name="sourceData"/> array.</param>
+        /// <param name="destOffset">[Optional] The offset, in bytes, in the <paramref name="buffer"/> to start writing into.</param>
+        /// <param name="copyMode">[Optional] The type of locking mode to employ when copying data into the buffer.</param>
+        public void SetData<T>(T[] sourceData, GorgonBufferBase buffer, int sourceIndex = 0, int? sourceCount = null, int destOffset = 0, CopyMode copyMode = CopyMode.None)
+            where T : struct
+        {
+            int elementSize = DirectAccess.SizeOf<T>();
+            
+            if (sourceCount == null)
+            {
+                sourceCount = sourceData.Length - sourceIndex;
+            }
+
+            int destSize = elementSize * sourceCount.Value;
+
+            if (sourceData == null)
+            {
+                throw new ArgumentNullException(nameof(sourceData));
+            }
+
+            if (buffer == null)
+            {
+                throw new ArgumentNullException(nameof(buffer));
+            }
+
+            ValidateSetData(buffer.Usage, sourceData.Length, buffer.SizeInBytes, sourceIndex, sourceCount.Value, destOffset, destSize);
+
+            using (var ptr = new GorgonPointerPinned<T>(sourceData, sourceIndex, sourceCount.Value))
+            {
+                if ((buffer.Usage == ResourceUsage.Dynamic) || (buffer.Usage == ResourceUsage.Staging))
+                {
+                    MapBuffer(new IntPtr(ptr.Address + sourceIndex * elementSize),
+                              buffer.D3DResource,
+                              0,
+                              sourceCount.Value * elementSize,
+                              destOffset,
+                              buffer.Usage == ResourceUsage.Staging,
+                              copyMode);
+                    return;
+                }
+
+                D3DDeviceContext.UpdateSubresource1(buffer.D3DResource,
+                                                    0,
+                                                    new D3D11.ResourceRegion
+                                                    {
+                                                        Left = destOffset,
+                                                        Right = destOffset + destSize,
+                                                        Top = 0,
+                                                        Front = 0,
+                                                        Back = 1,
+                                                        Bottom = 1
+                                                    },
+                                                    new IntPtr(ptr.Address + sourceIndex * elementSize),
+                                                    sourceCount.Value * elementSize,
+                                                    0,
+                                                    (int)copyMode);
+            }
+        }
+
+        /// <summary>
+        /// Function to upload data to an object that descends from a <see cref="GorgonBufferCommon"/> type.
+        /// </summary>
+        /// <typeparam name="T">The type of data to upload, must be a primitive or value type.</typeparam>
+        /// <param name="sourceData">An array of type <typeparamref name="T"/> to upload into the buffer.</param>
+        /// <param name="buffer">A buffer that will receive the data.</param>
+        /// <param name="destOffset">[Optional] The offset, in bytes, in the <paramref name="buffer"/> to start writing into.</param>
+        /// <param name="copyMode">[Optional] The type of locking mode to employ when copying data into the buffer.</param>
+        public void SetValue<T>(ref T sourceData, GorgonBufferBase buffer, int destOffset = 0, CopyMode copyMode = CopyMode.None)
+            where T : struct
+        {
+            int elementSize = DirectAccess.SizeOf<T>();
+
+            if (buffer == null)
+            {
+                throw new ArgumentNullException(nameof(buffer));
+            }
+
+            ValidateSetData(buffer.Usage, elementSize, buffer.SizeInBytes, 0, elementSize, destOffset, elementSize);
+
+            using (var ptr = new GorgonPointerPinned<T>(sourceData))
+            {
+                if ((buffer.Usage == ResourceUsage.Dynamic) || (buffer.Usage == ResourceUsage.Staging))
+                {
+                    MapBuffer(new IntPtr(ptr.Address),
+                              buffer.D3DResource,
+                              0,
+                              elementSize,
+                              destOffset,
+                              buffer.Usage == ResourceUsage.Staging,
+                              copyMode);
+                    return;
+                }
+
+                D3DDeviceContext.UpdateSubresource1(buffer.D3DResource,
+                                                    0,
+                                                    new D3D11.ResourceRegion
+                                                    {
+                                                        Left = destOffset,
+                                                        Right = destOffset + elementSize,
+                                                        Top = 0,
+                                                        Front = 0,
+                                                        Back = 1,
+                                                        Bottom = 1
+                                                    },
+                                                    new IntPtr(ptr.Address),
+                                                    elementSize,
+                                                    0,
+                                                    (int)copyMode);
+            }
+        }
+
+
+        /// <summary>
+        /// Function to copy the contents of a buffer into another buffer.
+        /// </summary>
+        /// <param name="sourceBuffer">The source buffer to read from.</param>
+        /// <param name="destBuffer">The destination buffer that will receive the data.</param>
+        /// <param name="sourceOffset">[Optional] Starting byte index to start copying from.</param>
+        /// <param name="byteCount">[Optional] The number of bytes to copy.</param>
+        /// <param name="destOffset">[Optional] The offset within the destination buffer.</param>
+        /// <param name="copyMode">[Optional] Defines how data should be copied into the buffer.</param>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="sourceOffset"/> plus the <paramref name="byteCount"/> is less than 0 or larger than the size of this buffer.
+        /// <para>-or-</para>
+        /// <para>Thrown when the <paramref name="destOffset"/> plus the <paramref name="byteCount"/> is less than 0 or larger than the size of the destination <paramref name="destBuffer"/>.</para>
+        /// </exception>
+        /// <exception cref="GorgonException">Thrown when <paramref name="destBuffer"/> has a resource usage of <see cref="ResourceUsage.Immutable"/>.</exception>
+        /// <remarks>
+        /// <para>
+        /// Use this method to copy the contents of this buffer into another.
+        /// </para> 
+        /// <para>
+        /// The <paramref name="copyMode"/> flag defines how data will be copied into this buffer.  See the <see cref="CopyMode"/> enumeration for a description of the values.
+        /// </para>
+        /// <para>
+        /// The source and destination buffer offsets must fit within their range of their allocated space, as must the <paramref name="byteCount"/>. Otherwise, an exception will be thrown. Also, the 
+        /// destination buffer must not be <see cref="ResourceUsage.Immutable"/>.
+        /// </para>
+        /// <para>
+        /// <note type="warning">
+        /// <para>
+        /// For performance reasons, this method will only throw exceptions when Gorgon is compiled as <b>DEBUG</b>.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        public void Copy(GorgonBufferBase sourceBuffer, GorgonBufferBase destBuffer, int sourceOffset = 0, int byteCount = 0, int destOffset = 0, CopyMode copyMode = CopyMode.None)
+        {
+            destBuffer.ValidateObject(nameof(destBuffer));
+
+            sourceOffset = sourceOffset.Max(0);
+            destOffset = destOffset.Max(0);
+
+            if (byteCount < 1)
+            {
+                byteCount = sourceBuffer.SizeInBytes.Min(destBuffer.SizeInBytes);
+            }
+
+            int sourceByteIndex = sourceOffset + byteCount;
+            int destByteIndex = destOffset + byteCount;
+
+            sourceOffset.ValidateRange(nameof(sourceOffset), 0, sourceBuffer.SizeInBytes);
+            destOffset.ValidateRange(nameof(destOffset), 0, destBuffer.SizeInBytes);
+            sourceByteIndex.ValidateRange(nameof(byteCount), 0, sourceBuffer.SizeInBytes, maxInclusive: true);
+            destByteIndex.ValidateRange(nameof(byteCount), 0, destBuffer.SizeInBytes, maxInclusive: true);
+
+#if DEBUG
+            if (destBuffer.NativeBuffer.Description.Usage == D3D11.ResourceUsage.Immutable)
+            {
+                throw new GorgonException(GorgonResult.AccessDenied, Resources.GORGFX_ERR_BUFFER_IS_IMMUTABLE);
+            }
+#endif
+            D3DDeviceContext.CopySubresourceRegion1(destBuffer.D3DResource,
+                                                             0,
+                                                             destOffset,
+                                                             0,
+                                                             0,
+                                                             sourceBuffer.D3DResource,
+                                                             0,
+                                                             new D3D11.ResourceRegion(sourceOffset, 0, 0, sourceByteIndex, 1, 1),
+                                                             (int)copyMode);
+        }
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>

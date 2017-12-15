@@ -160,8 +160,8 @@ namespace ComputeEngine
             }
 
             // Send to the buffers.
-            _intBuffer.Update(inputInts);
-            _floatBuffer.Update(inputFloats);
+            _graphics.SetData(inputInts, _intBuffer);
+            _graphics.SetData(inputFloats, _floatBuffer);
         }
 
         /// <summary>
@@ -214,9 +214,9 @@ namespace ComputeEngine
 
             // Now, we execute the shader with MaxValues threads for the first thread group.
             _engine.Execute(_computeShader, MaxValues, 1, 1);
-
+            
             // Then, we take the result of the compute operation and place it in CPU accessible memory.
-            _outputBuffer.CopyTo(_cpuBuffer);
+            _graphics.Copy(_outputBuffer, _cpuBuffer);
 
             // Finally, let's turn this into some meaningful data structures rather than raw buffer data.
             // This will enable us handle the data better in our code.
@@ -226,12 +226,11 @@ namespace ComputeEngine
             using (GorgonPointerPinned<OutputData> dataPtr = new GorgonPointerPinned<OutputData>(results))
             {
                 // We only need read-only access to the buffer.
-                GorgonPointerAlias cpuLock = _cpuBuffer.Lock(MapMode.Read);
-                // memcpy the data into our array.
-                cpuLock.CopyTo(dataPtr, (int)dataPtr.Size);
-
-                // ALWAYS unlock when you're done.
-                _cpuBuffer.Unlock(ref cpuLock);
+                using (IGorgonPointer cpuLock = _graphics.GetData(_cpuBuffer))
+                {
+                    // memcpy the data into our array.
+                    cpuLock.CopyTo(dataPtr, (int)dataPtr.Size);
+                }
             }
 
             // We can use this line to force the compute engine to reset its state back to the initial state.
@@ -306,19 +305,19 @@ namespace ComputeEngine
 
                 if (errors.Count != 0)
                 {
-                    foreach ((int Index, OutputData Expected, OutputData Actual) error in errors)
+                    foreach ((int Index, OutputData Expected, OutputData Actual) in errors)
                     {
                         Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine($"Failure at element {error.Index}.");
+                        Console.WriteLine($"Failure at element {Index}.");
 
-                        if (error.Expected.Sum != error.Actual.Sum)
+                        if (Expected.Sum != Actual.Sum)
                         {
-                            Console.WriteLine($"Sum should be: {error.Expected.Sum}, Got: {error.Actual.Sum}");
+                            Console.WriteLine($"Sum should be: {Expected.Sum}, Got: {Actual.Sum}");
                         }
 
-                        if (!error.Expected.Product.EqualsEpsilon(error.Actual.Product))
+                        if (!Expected.Product.EqualsEpsilon(Actual.Product))
                         {
-                            Console.WriteLine($"Product should be: {error.Expected.Product}, Got: {error.Actual.Product}");
+                            Console.WriteLine($"Product should be: {Expected.Product}, Got: {Actual.Product}");
                         }
 
                         Console.ResetColor();

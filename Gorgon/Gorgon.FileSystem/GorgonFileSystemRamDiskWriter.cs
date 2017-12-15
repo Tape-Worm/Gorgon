@@ -284,7 +284,7 @@ namespace Gorgon.IO
 			}
 
 			// ReSharper disable MethodSupportsCancellation
-			(IGorgonVirtualFile[] Files, IGorgonVirtualDirectory[] Directories) data = await Task.Run(() =>
+			(IGorgonVirtualFile[] Files, IGorgonVirtualDirectory[] Directories) = await Task.Run(() =>
 			{
 				IGorgonVirtualFile[] files = sourceFileSystem.FindFiles("/", "*").ToArray();
 				IGorgonVirtualDirectory[] directories = sourceFileSystem.FindDirectories("/", "*").ToArray();
@@ -292,12 +292,12 @@ namespace Gorgon.IO
 				return (Files: files, Directories: directories);
 			});
 
-			if ((data.Files.Length == 0) && (data.Directories.Length == 0))
+			if ((Files.Length == 0) && (Directories.Length == 0))
 			{
 				return (0, 0);
 			}
 
-			return await Task.Run(() => CopyInternal(copyProgress, cancelToken, allowOverwrite, data.Files, data.Directories));
+			return await Task.Run(() => CopyInternal(copyProgress, cancelToken, allowOverwrite, Files, Directories));
 			// ReSharper restore MethodSupportsCancellation
 		}
 

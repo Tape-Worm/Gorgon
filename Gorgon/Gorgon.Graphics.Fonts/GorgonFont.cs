@@ -332,7 +332,7 @@ namespace Gorgon.Graphics.Fonts
 					CopyBitmap(glyphBitmap.Key, image, arrayIndex);
 
 					// Send to our texture.
-					texture.UpdateSubResource(image.Buffers[0, arrayIndex], null, arrayIndex);
+					texture.Update(image.Buffers[0, arrayIndex], null, arrayIndex);
 
 					foreach (GlyphInfo info in glyphBitmap.Value)
 					{

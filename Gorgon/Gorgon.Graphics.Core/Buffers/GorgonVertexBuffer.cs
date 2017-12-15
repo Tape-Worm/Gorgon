@@ -84,8 +84,6 @@ namespace Gorgon.Graphics.Core
 		#region Variables.
 		// The information used to create the buffer.
 		private readonly GorgonVertexBufferInfo _info;
-		// The address returned by the lock on the buffer.
-		private GorgonPointerAlias _lockAddress;
         #endregion
 
         #region Properties.
@@ -102,9 +100,9 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the usage flags for the buffer.
         /// </summary>
-        protected override ResourceUsage Usage => _info.Usage;
+        protected internal override ResourceUsage Usage => _info.Usage;
 
-		/// <summary>
+        /// <summary>
         /// Property used to return the information used to create this buffer.
         /// </summary>
         public IGorgonVertexBufferInfo Info => _info;
@@ -276,31 +274,6 @@ namespace Gorgon.Graphics.Core
 
 	        return result;
 	    }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// If the vertex buffer is locked when this method is called, it will automatically be unlocked and any lock pointer will be invalidated.
-        /// </para>
-        /// <para>
-        /// Objects that override this method should be sure to call this base method or else a memory leak may occur.
-        /// </para>
-        /// </remarks>
-        public override void Dispose()
-		{
-			// If we're locked, then unlock the buffer before destroying it.
-			if ((IsLocked) && (_lockAddress != null) && (!_lockAddress.IsDisposed))
-			{
-				Unlock(ref _lockAddress);
-
-				// Because the pointer is an alias, we don't really NEED to call this, but just for consistency we'll do so anyway.
-				_lockAddress.Dispose();
-			}
-
-			base.Dispose();
-		}
 		#endregion
 
 		#region Constructor/Finalizer.

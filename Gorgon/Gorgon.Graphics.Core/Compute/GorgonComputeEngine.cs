@@ -216,11 +216,11 @@ namespace Gorgon.Graphics.Core
             }
 
             // Unbind from the GPU.
-            (int Start, int Count) buffers = ConstantBuffers.GetDirtyItems();
-            if (buffers.Count > 0)
+            (int Start, int Count) = ConstantBuffers.GetDirtyItems();
+            if (Count > 0)
             {
                 ConstantBuffers.Clear();
-                Graphics.D3DDeviceContext.ComputeShader.SetConstantBuffers(buffers.Start, buffers.Count, ConstantBuffers.Native);
+                Graphics.D3DDeviceContext.ComputeShader.SetConstantBuffers(Start, Count, ConstantBuffers.Native);
             }
 
             (int Start, int Count) uavs = UnorderedAccessViews.GetDirtyItems();

@@ -29,6 +29,7 @@ using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
+using SharpDX.Mathematics.Interop;
 using DX = SharpDX;
 using DXGI = SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;
@@ -335,13 +336,39 @@ namespace Gorgon.Graphics.Core
 	                              };
         }
 
-		/// <summary>
-		/// Function to clear the contents of the render target for this view.
-		/// </summary>
-		/// <param name="color">Color to use when clearing the render target view.</param>
-		public void Clear(GorgonColor color)
+        /// <summary>
+        /// Function to clear the contents of the render target for this view.
+        /// </summary>
+        /// <param name="color">Color to use when clearing the render target view.</param>
+        /// <param name="rectangles">[Optional] Specifies which regions on the view to clear.</param>
+        /// <remarks>
+        /// <para>
+        /// This will clear the render target view to the specified <paramref name="color"/>.  If a specific region should be cleared, one or more <paramref name="rectangles"/> should be passed to the 
+        /// method.
+        /// </para>
+        /// <para>
+        /// If the <paramref name="rectangles"/> parameter is <b>null</b>, or has a zero length, the entirety of the view is cleared.
+        /// </para>
+        /// <para>
+        /// If this method is called with a 3D texture bound to the view, and with regions specified, then the regions are ignored.
+        /// </para>
+		/// </remarks>
+        public void Clear(GorgonColor color, params DX.Rectangle[] rectangles)
 		{
-			Texture.Graphics.D3DDeviceContext.ClearRenderTargetView(D3DRenderTargetView, color.ToRawColor4());
+		    if ((rectangles == null) || (rectangles.Length == 0) || (Texture.Info.TextureType == TextureType.Texture3D))
+		    {
+		        Texture.Graphics.D3DDeviceContext.ClearRenderTargetView(D3DRenderTargetView, color.ToRawColor4());
+		        return;
+		    }
+
+            var rects = new RawRectangle[rectangles.Length];
+		        
+		    for (int i = 0; i < rects.Length; ++i)
+		    {
+		        rects[i] = rectangles[i];
+		    }
+
+		    Texture.Graphics.D3DDeviceContext.ClearView(D3DRenderTargetView, color.ToRawColor4(), rects);
 		}
 
 		/// <summary>

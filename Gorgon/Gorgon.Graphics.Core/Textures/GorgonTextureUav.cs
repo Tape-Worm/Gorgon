@@ -29,6 +29,7 @@ using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
+using SharpDX.Mathematics.Interop;
 using DXGI = SharpDX.DXGI;
 using DX = SharpDX;
 using D3D11 = SharpDX.Direct3D11;
@@ -337,6 +338,41 @@ namespace Gorgon.Graphics.Core
             mipLevel = mipLevel.Min(Texture.Info.MipLevels + MipSlice).Max(MipSlice);
 
             return Depth << mipLevel;
+        }
+
+        /// <summary>
+        /// Function to clear the contents of the texture for this view.
+        /// </summary>
+        /// <param name="color">Color to use when clearing the texture unordered access view.</param>
+        /// <param name="rectangles">[Optional] Specifies which regions on the view to clear.</param>
+        /// <remarks>
+        /// <para>
+        /// This will clear the texture unordered access view to the specified <paramref name="color"/>.  If a specific region should be cleared, one or more <paramref name="rectangles"/> should be passed 
+        /// to the method.
+        /// </para>
+        /// <para>
+        /// If the <paramref name="rectangles"/> parameter is <b>null</b>, or has a zero length, the entirety of the view is cleared.
+        /// </para>
+        /// <para>
+        /// If this method is called with a 3D texture bound to the view, and with regions specified, then the regions are ignored.
+        /// </para>
+        /// </remarks>
+        public void Clear(GorgonColor color, params DX.Rectangle[] rectangles)
+        {
+            if ((rectangles == null) || (rectangles.Length == 0) || (Texture.Info.TextureType == TextureType.Texture3D))
+            {
+                Clear(color.Red, color.Green, color.Blue, color.Alpha);
+                return;
+            }
+
+            var rects = new RawRectangle[rectangles.Length];
+
+            for (int i = 0; i < rects.Length; ++i)
+            {
+                rects[i] = rectangles[i];
+            }
+
+            Resource.Graphics.D3DDeviceContext.ClearView(NativeView, color.ToRawColor4(), rects);
         }
         #endregion
 

@@ -44,6 +44,8 @@ namespace Gorgon.Graphics.Example
         private readonly GorgonComputeShader _shader;
         // The sobel constant data.
         private readonly GorgonConstantBuffer _sobelData;
+        // The options to send to the sobel shader.
+        private float[] _sobelOptions = new float[2];
         #endregion
 
         #region Methods.
@@ -62,10 +64,9 @@ namespace Gorgon.Graphics.Example
                 return;
             }
 
-            GorgonPointerAlias data = _sobelData.Lock(MapMode.WriteDiscard);
-            data.Write((float)thickness);
-            data.Write(4, threshold);
-            _sobelData.Unlock(ref data);
+            _sobelOptions[0] = thickness;
+            _sobelOptions[1] = threshold;
+            _compute.Graphics.SetData(_sobelOptions, _sobelData);
 
             _compute.ConstantBuffers[0] = _sobelData;
             _compute.ShaderResourceViews[0] = texture;

@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using SharpDX.Mathematics.Interop;
 using DX = SharpDX;
 using D3D11 = SharpDX.Direct3D11;
 

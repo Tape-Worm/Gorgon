@@ -164,7 +164,7 @@ namespace Gorgon.Graphics.Core
 	    /// <param name="mipLevel">Mip map level to lock.</param>
 	    /// <param name="arrayIndex">Array index to lock (1D/2D textures only).</param>
 	    /// <returns>A new <see cref="GorgonTextureLockData"/> containing the data from the lock.</returns>
-	    public GorgonTextureLockData Lock(MapMode lockFlags, int mipLevel, int arrayIndex)
+	    public GorgonTextureLockData Lock(LockMode lockFlags, int mipLevel, int arrayIndex)
 	    {
 		    LockCacheKey key = new LockCacheKey(mipLevel, arrayIndex);
 

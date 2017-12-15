@@ -325,7 +325,7 @@ namespace Gorgon.Graphics.Example
                 pointerOffset += sizeof(float);
             }
 
-            _blurBufferKernel.UpdateFromPointer(_blurKernelData);
+            Graphics.SetData(_blurKernelData, _blurBufferKernel);
 
             _offsetsNeedUpdate = false;
         }
@@ -463,7 +463,7 @@ namespace Gorgon.Graphics.Example
             UpdateOffsets();
 
             // Upload to the GPU.
-            _blurBufferKernel.UpdateFromPointer(_blurKernelData);
+            Graphics.SetData(_blurKernelData, _blurBufferKernel);
         }
 
         /// <summary>
@@ -520,8 +520,6 @@ namespace Gorgon.Graphics.Example
         /// <returns><b>true</b> to continue rendering, or <b>false</b> to skip this pass and move to the next.</returns>
         protected override bool OnBeforePass(int passIndex)
         {
-            GorgonPointerAlias data;
-
             switch (passIndex)
             {
                 case 0:
@@ -530,10 +528,7 @@ namespace Gorgon.Graphics.Example
                         return false;
                     }
 
-                    data = _blurBufferPass.Lock(MapMode.WriteDiscard);
-                    data.Write(passIndex);
-                    _blurBufferPass.Unlock(ref data);
-
+                    Graphics.SetValue(ref passIndex, _blurBufferPass, copyMode: CopyMode.Discard);
                     Graphics.SetRenderTarget(_hTarget.DefaultRenderTargetView);
                     break;
                 case 1:
@@ -541,11 +536,8 @@ namespace Gorgon.Graphics.Example
                     {
                         return false;
                     }
-                    
-                    data = _blurBufferPass.Lock(MapMode.WriteDiscard);
-                    data.Write(passIndex);
-                    _blurBufferPass.Unlock(ref data);
 
+                    Graphics.SetValue(ref passIndex, _blurBufferPass, copyMode: CopyMode.Discard);
                     Graphics.SetRenderTarget(_vTarget.DefaultRenderTargetView);
                     break;
                 case 2:

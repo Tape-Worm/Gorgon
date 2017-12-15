@@ -54,9 +54,9 @@ namespace Gorgon.Graphics.Core
                 // ReSharper disable once ForCanBeConvertedToForeach
                 for (int i = 0; i < _cachedSamplerStates.Count; ++i)
                 {
-                    (GorgonSamplerState Sampler, int Index) samplerInfo = _cachedSamplerStates[i];
-                    samplerInfo.Sampler.Native?.Dispose();
-                    samplerInfo.Sampler.Native = null;
+                    (GorgonSamplerState Sampler, int Index) = _cachedSamplerStates[i];
+                    Sampler.Native?.Dispose();
+                    Sampler.Native = null;
                 }
 
                 _cachedSamplerStates.Clear();
@@ -88,11 +88,11 @@ namespace Gorgon.Graphics.Core
                 // ReSharper disable once ForCanBeConvertedToForeach
                 for (int i = 0; i < _cachedSamplerStates.Count; ++i)
                 {
-                    (GorgonSamplerState Sampler, int Index) samplerInfo = _cachedSamplerStates[i];
+                    (GorgonSamplerState Sampler, int Index) = _cachedSamplerStates[i];
 
-                    if ((samplerInfo.Sampler.Native != null) && (samplerInfo.Sampler.Equals(info)))
+                    if ((Sampler.Native != null) && (Sampler.Equals(info)))
                     {
-                        return samplerInfo.Sampler.Native;
+                        return Sampler.Native;
                     }
                 }
 

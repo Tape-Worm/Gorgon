@@ -475,21 +475,21 @@ namespace Gorgon.Graphics.Core
 
 	        for (int i = 0; i < elements.Length; i++)
 	        {
-	            (FieldInfo Field, InputElementAttribute InputElement) item = members[i];
+	            (FieldInfo Field, InputElementAttribute InputElement) = members[i];
 
-	            BufferFormat format = item.InputElement.Format;
-	            string contextName = item.InputElement.Context;
+	            BufferFormat format = InputElement.Format;
+	            string contextName = InputElement.Context;
 
 	            // Try to determine the format from the type.
-	            if ((format == BufferFormat.Unknown) && (!_typeMapping.TryGetValue(item.Field.FieldType, out format)))
+	            if ((format == BufferFormat.Unknown) && (!_typeMapping.TryGetValue(Field.FieldType, out format)))
 	            {
-	                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_LAYOUT_INVALID_ELEMENT_TYPE, item.Field.FieldType.FullName));
+	                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_LAYOUT_INVALID_ELEMENT_TYPE, Field.FieldType.FullName));
 	            }
 
 	            GorgonInputElement element = new GorgonInputElement(contextName, format,
-	                                                 (item.InputElement.AutoOffset ? byteOffset : item.InputElement.Offset),
-	                                                 item.InputElement.Index, item.InputElement.Slot, item.InputElement.Instanced,
-	                                                 item.InputElement.Instanced ? item.InputElement.InstanceCount : 0);
+	                                                 (InputElement.AutoOffset ? byteOffset : InputElement.Offset),
+	                                                 InputElement.Index, InputElement.Slot, InputElement.Instanced,
+	                                                 InputElement.Instanced ? InputElement.InstanceCount : 0);
 
 	            FindDuplicateElements(elements, element, i, nameof(element));
 

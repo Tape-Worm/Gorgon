@@ -154,7 +154,8 @@
     <Compile Include="Pipeline\GorgonMonitoredValueTypeArray.cs" />
     <Compile Include="Pipeline\_Interfaces\IGorgonShaderStates.cs" />
     <Compile Include="Pipeline\_Interfaces\IGorgonPipelineStateInfo.cs" />
-    <Compile Include="Pipeline\_Internal\IPipelineStateGroup.cs" />
+    <Compile Include="Pipeline\_Interfaces\IGorgonPipelineStateGroup.cs" />
+    <Compile Include="_Internal\MapPointerData.cs" />
     <Compile Include="Pipeline\_Internal\SamplerStateFactory.cs" />
     <Compile Include="Shaders\Effects\GorgonGaussBlurEffect.cs" />
     <Compile Include="Shaders\Effects\GorgonShaderEffect.cs" />
@@ -207,7 +208,7 @@
     <Compile Include="Targets\GorgonSwapChainInfo.cs" />
     <Compile Include="Textures\_Extensions\GorgonImageTextureExtensions.cs" />
     <Compile Include="GorgonBlendStateListExtensions.cs" />
-    <Compile Include="Pipeline\GorgonPipelineStateGroup.cs" />
+    <Compile Include="Pipeline\_Internal\PipelineStateGroup.cs" />
     <Compile Include="_Internal\_Extensions\GorgonColorExtensions.cs" />
     <Compile Include="_Internal\_Extensions\SharpDXExtensions.cs" />
   </ItemGroup>

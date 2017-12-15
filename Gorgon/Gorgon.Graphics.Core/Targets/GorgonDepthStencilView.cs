@@ -29,6 +29,7 @@ using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
+using SharpDX.Mathematics.Interop;
 using DX = SharpDX;
 using D3D11 = SharpDX.Direct3D11;
 using DXGI = SharpDX.DXGI;
@@ -389,10 +390,46 @@ namespace Gorgon.Graphics.Core
 			Texture.Graphics.D3DDeviceContext.ClearDepthStencilView(Native, D3D11.DepthStencilClearFlags.Stencil, 1.0f, stencilValue);
 		}
 
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		public void Dispose()
+        /// <summary>
+        /// Function to clear the contents of the depth buffer for this view.
+        /// </summary>
+        /// <param name="depthValue">Depth value to use when clearing the depth view.</param>
+        /// <param name="rectangles">[Optional] Specifies which regions on the view to clear.</param>
+        /// <remarks>
+        /// <para>
+        /// This will clear the depth view to the specified <paramref name="depthValue"/>.  If a specific region should be cleared, one or more <paramref name="rectangles"/> should be passed to the 
+        /// method.
+        /// </para>
+        /// <para>
+        /// If the <paramref name="rectangles"/> parameter is <b>null</b>, or has a zero length, the entirety of the view is cleared.
+        /// </para>
+        /// <para>
+        /// If this method is called with a 3D texture bound to the view, or the view references uses a <see cref="Buffer"/> with a stencil component, and with regions specified, then the regions are 
+        /// ignored.
+        /// </para>
+        /// </remarks>
+        public void Clear(float depthValue, params DX.Rectangle[] rectangles)
+        {
+            if ((rectangles == null) || (rectangles.Length == 0) || (Texture.Info.TextureType == TextureType.Texture3D) || (FormatInformation.HasStencil))
+            {
+                Clear(depthValue, 0);
+                return;
+            }
+
+            var rects = new RawRectangle[rectangles.Length];
+
+            for (int i = 0; i < rects.Length; ++i)
+            {
+                rects[i] = rectangles[i];
+            }
+
+            Texture.Graphics.D3DDeviceContext.ClearView(Native, new DX.Color4(depthValue), rects);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
 		{
 			if (Native != null)
 			{

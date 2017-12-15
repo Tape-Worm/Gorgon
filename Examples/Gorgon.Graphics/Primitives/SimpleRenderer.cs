@@ -310,20 +310,6 @@ namespace Gorgon.Graphics.Example
         }
 
         /// <summary>
-        /// Function to help update a constant buffer with a specific value.
-        /// </summary>
-        /// <typeparam name="T">The type of data to write to the buffer.</typeparam>
-        /// <param name="buffer">The buffer that will receive the data.</param>
-        /// <param name="value">The value to send to the buffer.</param>
-        private static void UpdateDynamicConstantBuffer<T>(GorgonConstantBuffer buffer, ref T value)
-            where T : struct
-        {
-            GorgonPointerAlias data = buffer.Lock(MapMode.WriteDiscard);
-            data.Write(value);
-            buffer.Unlock(ref data);
-        }
-
-        /// <summary>
         /// Function to determine if any lights have a dirty property.
         /// </summary>
         /// <returns><b>true</b> if a light is dirty, or <b>false</b> if not.</returns>
@@ -374,9 +360,7 @@ namespace Gorgon.Graphics.Example
             }
 
             // Send to the constant buffer right away.
-            GorgonPointerAlias ptr = _lightBuffer.Lock(MapMode.WriteDiscard);
-            ptr.WriteRange(_lightData);
-            _lightBuffer.Unlock(ref ptr);
+            _graphics.SetData(_lightData, _lightBuffer);
         }
 
         /// <summary>
@@ -448,11 +432,10 @@ namespace Gorgon.Graphics.Example
                                 };
 
 
-
-            UpdateDynamicConstantBuffer(_viewProjectionBuffer, ref emptyViewProjection);
-            UpdateDynamicConstantBuffer(_worldBuffer, ref emptyWorld);
-            UpdateDynamicConstantBuffer(_cameraBuffer, ref emptyCamera);
-            UpdateDynamicConstantBuffer(_materialBuffer, ref emptyMaterial);
+            _graphics.SetValue(ref emptyViewProjection, _viewProjectionBuffer);
+            _graphics.SetValue(ref emptyWorld, _worldBuffer);
+            _graphics.SetValue(ref emptyCamera, _cameraBuffer);
+            _graphics.SetValue(ref emptyMaterial, _materialBuffer);
         }
 
         /// <summary>
@@ -465,7 +448,7 @@ namespace Gorgon.Graphics.Example
                                    UVOffset = material.TextureOffset,
                                    SpecularPower = material.SpecularPower
                                };
-            UpdateDynamicConstantBuffer(_materialBuffer, ref materialData);
+            _graphics.SetValue(ref materialData, _materialBuffer);
         }
 
         /// <summary>
@@ -491,7 +474,7 @@ namespace Gorgon.Graphics.Example
                                       CameraPosition = Camera.EyePosition,
                                       CameraUp = Camera.Up
                                   };
-                    UpdateDynamicConstantBuffer(_cameraBuffer, ref camData);
+                    _graphics.SetValue(ref camData, _cameraBuffer);
                 }
 
                 ViewProjectionData viewProjData = new ViewProjectionData
@@ -500,15 +483,14 @@ namespace Gorgon.Graphics.Example
                                        View = Camera.GetViewMatrix(),
                                        ViewProjection = Camera.GetViewProjectionMatrix()
                                    };
-
-                UpdateDynamicConstantBuffer(_viewProjectionBuffer, ref viewProjData);
+                _graphics.SetValue(ref viewProjData, _viewProjectionBuffer);
             }
 
             for (int i = 0; i < _drawCalls.Count; ++i)
             {
                 if (_meshes[i] is MoveableMesh movableMesh)
                 {
-                    UpdateDynamicConstantBuffer(_worldBuffer, ref movableMesh.WorldMatrix);
+                    _graphics.SetValue(ref movableMesh.WorldMatrix, _worldBuffer);
                 }
 
                 UpdateMaterials(_meshes[i].Material);

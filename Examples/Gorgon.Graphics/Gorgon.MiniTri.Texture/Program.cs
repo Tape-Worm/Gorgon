@@ -179,7 +179,7 @@ namespace Gorgon.Graphics.Example
 			                                                                           });
 
 			// Send the vertex data into the buffer.
-			_vertexBuffer.Update(vertices);
+            _graphics.SetData(vertices, _vertexBuffer);
 		}
 
 		/// <summary>
@@ -204,7 +204,7 @@ namespace Gorgon.Graphics.Example
 																									 SizeInBytes = DX.Matrix.SizeInBytes
 			                                                                                     });
 
-			_constantBuffer.Update(ref projectionMatrix);
+		    _graphics.SetValue(ref projectionMatrix, _constantBuffer);
 		}
 
 		/// <summary>

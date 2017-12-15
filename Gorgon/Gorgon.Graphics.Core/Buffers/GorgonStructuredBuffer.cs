@@ -60,7 +60,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the usage flags for the buffer.
         /// </summary>
-        protected override ResourceUsage Usage => _info.Usage;
+        protected internal override ResourceUsage Usage => _info.Usage;
 
         /// <summary>
         /// Property to return the settings for the buffer.

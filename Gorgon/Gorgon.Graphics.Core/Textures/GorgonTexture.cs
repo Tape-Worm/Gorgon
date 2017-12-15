@@ -226,7 +226,7 @@ namespace Gorgon.Graphics.Core
 			int height = 1.Max(buffer.Height);
 			int rowStride = buffer.PitchInformation.RowPitch;
 			int sliceStride = buffer.PitchInformation.SlicePitch;
-			MapMode flags = MapMode.ReadWrite;
+			LockMode flags = LockMode.ReadWrite;
 
 			// If this image is compressed, then use the block height information.
 			if (buffer.PitchInformation.VerticalBlockCount > 0)
@@ -884,7 +884,7 @@ namespace Gorgon.Graphics.Core
         /// </para>
         /// </remarks>
         /// <returns>This method will return a <see cref="GorgonTextureLockData"/> containing information about the locked sub resource and a pointer to the texture data in memory.</returns>
-        public GorgonTextureLockData Lock(MapMode lockFlags, int mipLevel = 0, int arrayIndex = 0)
+        public GorgonTextureLockData Lock(LockMode lockFlags, int mipLevel = 0, int arrayIndex = 0)
 		{
 #if DEBUG
 			if ((Info.Usage != ResourceUsage.Staging) && (Info.Usage != ResourceUsage.Dynamic))
@@ -898,15 +898,15 @@ namespace Gorgon.Graphics.Core
 			}
 
 			if ((Info.Usage == ResourceUsage.Dynamic) &&
-			    ((lockFlags == MapMode.Read)
-			     || (lockFlags == MapMode.ReadWrite)))
+			    ((lockFlags == LockMode.Read)
+			     || (lockFlags == LockMode.ReadWrite)))
 			{
 				throw new NotSupportedException(Resources.GORGFX_ERR_LOCK_CANNOT_READ_NON_STAGING);
 			}
 
-			if (lockFlags == MapMode.WriteNoOverwrite)
+			if (lockFlags == LockMode.WriteNoOverwrite)
 			{
-				lockFlags = MapMode.Write;
+				lockFlags = LockMode.Write;
 			}
 #endif
 
@@ -992,54 +992,58 @@ namespace Gorgon.Graphics.Core
 			Graphics.D3DDeviceContext.CopyResource(D3DResource, destTexture.D3DResource);
 		}
 
-		/// <summary>
-		/// Function to copy a texture subresource from another <see cref="GorgonTexture"/> into this texture.
-		/// </summary>
-		/// <param name="sourceTexture">The texture to copy.</param>
-		/// <param name="sourceBox">[Optional] The dimensions of the source area to copy.</param>
-		/// <param name="sourceArrayIndex">[Optional] The array index of the sub resource to copy (for 1D/2D textures only).</param>
-		/// <param name="sourceMipLevel">[Optional] The mip map level of the sub resource to copy.</param>
-		/// <param name="destX">[Optional] Horizontal offset into the destination texture to place the copied data.</param>
-		/// <param name="destY">[Optional] Vertical offset into the destination texture to place the copied data (for 2D/3D textures only).</param>
-		/// <param name="destZ">[Optional] Depth offset into the destination texture to place the copied data (for 3D textures only).</param>
-		/// <param name="destArrayIndex">[Optional] The array index of the destination sub resource to copy into (for 1D/2D textures only).</param>
-		/// <param name="destMipLevel">[Optional] The mip map level of the destination sub resource to copy into.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the texture parameter is <b>null</b>.</exception>
-		/// <exception cref="NotSupportedException">Thrown when the formats cannot be converted because they're not of the same group or the current video adapter has a feature set of <see cref="FeatureSet.Level_12_0"/>.
-		/// <para>-or-</para>
-		/// <para>Thrown when the <paramref name="sourceTexture"/> is the same as this texture, and the <paramref name="sourceArrayIndex"/>, <paramref name="destArrayIndex"/>, <paramref name="sourceMipLevel"/> and the <paramref name="destMipLevel"/> 
-		/// specified are pointing to the same subresource.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when this texture has a <see cref="IGorgonTextureInfo.Usage"/> of <see cref="ResourceUsage.Immutable"/>.</para>
-		/// </exception>
-		/// <exception cref="InvalidOperationException"></exception>
-		/// <remarks>
-		/// <para>
-		/// Use this method to copy a specific sub resource of a <see cref="GorgonTexture"/> to another sub resource of this <see cref="GorgonTexture"/>, or to a different sub resource of the same texture.  
-		/// The <paramref name="sourceBox"/> coordinates must be inside of the destination, if it is not, then the source data will be clipped against the destination region. No stretching or filtering is 
-		/// supported by this method. If the entire texture needs to be copied, then use the <see cref="CopyTo"/> method.
-		/// </para>
-		/// <para>
-		/// If the current video adapter has a feature set better than <see cref="FeatureSet.Level_12_0"/>, then limited format conversion will be performed if the two textures are within the same bit 
-		/// group (e.g. <c>R8G8B8A8_SInt</c> is convertible to <c>R8G8B8A8_UInt</c> and so on, since they are both R8G8B8A8). If the feature set is <see cref="FeatureSet.Level_12_0"/>, or the bit group 
-		/// does not match, then an exception will be thrown.
-		/// </para>
-		/// <para>
-		/// When copying sub resources (e.g. mip levels, array indices, etc...), the mip levels and array indices must be different if copying to the same texture.  If they are not, an exception will be thrown.
-		/// </para>
-		/// <para>
-		/// The destination texture must not have a <see cref="IGorgonTextureInfo.Usage"/> of <see cref="ResourceUsage.Immutable"/>.
-		/// </para>
-		/// <para>
-		/// <note type="caution">
-		/// <para>
-		/// For performance reasons, any exceptions thrown from this method will only be thrown when Gorgon is compiled as DEBUG.
-		/// </para>
-		/// </note>
-		/// </para>
-		/// </remarks>
-		/// <seealso cref="CopyTo"/>
-		public void CopySubResource(GorgonTexture sourceTexture, GorgonBox? sourceBox = null, int sourceArrayIndex = 0, int sourceMipLevel = 0, int destX = 0, int destY = 0, int destZ = 0, int destArrayIndex = 0, int destMipLevel = 0)
+        /// <summary>
+        /// Function to copy a texture subresource from another <see cref="GorgonTexture"/> into this texture.
+        /// </summary>
+        /// <param name="sourceTexture">The texture to copy.</param>
+        /// <param name="sourceBox">[Optional] The dimensions of the source area to copy.</param>
+        /// <param name="sourceArrayIndex">[Optional] The array index of the sub resource to copy (for 1D/2D textures only).</param>
+        /// <param name="sourceMipLevel">[Optional] The mip map level of the sub resource to copy.</param>
+        /// <param name="destX">[Optional] Horizontal offset into the destination texture to place the copied data.</param>
+        /// <param name="destY">[Optional] Vertical offset into the destination texture to place the copied data (for 2D/3D textures only).</param>
+        /// <param name="destZ">[Optional] Depth offset into the destination texture to place the copied data (for 3D textures only).</param>
+        /// <param name="destArrayIndex">[Optional] The array index of the destination sub resource to copy into (for 1D/2D textures only).</param>
+        /// <param name="destMipLevel">[Optional] The mip map level of the destination sub resource to copy into.</param>
+        /// <param name="copyMode">[Optional] Defines how data should be copied into the texture.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the texture parameter is <b>null</b>.</exception>
+        /// <exception cref="NotSupportedException">Thrown when the formats cannot be converted because they're not of the same group or the current video adapter has a feature set of <see cref="FeatureSet.Level_12_0"/>.
+        /// <para>-or-</para>
+        /// <para>Thrown when the <paramref name="sourceTexture"/> is the same as this texture, and the <paramref name="sourceArrayIndex"/>, <paramref name="destArrayIndex"/>, <paramref name="sourceMipLevel"/> and the <paramref name="destMipLevel"/> 
+        /// specified are pointing to the same subresource.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when this texture has a <see cref="IGorgonTextureInfo.Usage"/> of <see cref="ResourceUsage.Immutable"/>.</para>
+        /// </exception>
+        /// <exception cref="InvalidOperationException"></exception>
+        /// <remarks>
+        /// <para>
+        /// Use this method to copy a specific sub resource of a <see cref="GorgonTexture"/> to another sub resource of this <see cref="GorgonTexture"/>, or to a different sub resource of the same texture.  
+        /// The <paramref name="sourceBox"/> coordinates must be inside of the destination, if it is not, then the source data will be clipped against the destination region. No stretching or filtering is 
+        /// supported by this method. If the entire texture needs to be copied, then use the <see cref="CopyTo"/> method.
+        /// </para>
+        /// <para>
+        /// If the current video adapter has a feature set better than <see cref="FeatureSet.Level_12_0"/>, then limited format conversion will be performed if the two textures are within the same bit 
+        /// group (e.g. <c>R8G8B8A8_SInt</c> is convertible to <c>R8G8B8A8_UInt</c> and so on, since they are both R8G8B8A8). If the feature set is <see cref="FeatureSet.Level_12_0"/>, or the bit group 
+        /// does not match, then an exception will be thrown.
+        /// </para>
+        /// <para>
+        /// When copying sub resources (e.g. mip levels, array indices, etc...), the mip levels and array indices must be different if copying to the same texture.  If they are not, an exception will be thrown.
+        /// </para>
+        /// <para>
+        /// The <paramref name="copyMode"/> flag defines how data will be copied into this buffer.  See the <see cref="CopyMode"/> enumeration for a description of the values.
+        /// </para>
+        /// <para>
+        /// The destination texture must not have a <see cref="IGorgonTextureInfo.Usage"/> of <see cref="ResourceUsage.Immutable"/>.
+        /// </para>
+        /// <para>
+        /// <note type="caution">
+        /// <para>
+        /// For performance reasons, any exceptions thrown from this method will only be thrown when Gorgon is compiled as DEBUG.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="CopyTo"/>
+        public void CopySubResource(GorgonTexture sourceTexture, GorgonBox? sourceBox = null, int sourceArrayIndex = 0, int sourceMipLevel = 0, int destX = 0, int destY = 0, int destZ = 0, int destArrayIndex = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
 		{
 			sourceTexture.ValidateObject(nameof(sourceTexture));
 
@@ -1155,14 +1159,15 @@ namespace Gorgon.Graphics.Core
 				return;
 			}
 
-			Graphics.D3DDeviceContext.CopySubresourceRegion(sourceTexture.D3DResource,
-			                                                sourceResource,
-			                                                box.ToResourceRegion(),
-			                                                D3DResource,
-			                                                destResource,
-			                                                destX,
-			                                                destY,
-			                                                destZ);
+		    Graphics.D3DDeviceContext.CopySubresourceRegion1(D3DResource,
+		                                                     destResource,
+		                                                     destX,
+		                                                     destY,
+		                                                     destZ,
+		                                                     sourceTexture.D3DResource,
+		                                                     sourceResource,
+		                                                     box.ToResourceRegion(),
+		                                                     (int)copyMode);
 		}
 
 		/// <summary>
@@ -1302,45 +1307,49 @@ namespace Gorgon.Graphics.Core
 			return staging;
 		}
 
-		/// <summary>
-		/// Function to copy data from the CPU using a <see cref="IGorgonImageBuffer"/> to this texture on the GPU.
-		/// </summary>
-		/// <param name="buffer">A <see cref="IGorgonImageBuffer"/> containing the image data to copy.</param>
-		/// <param name="destBox">[Optional] A <see cref="GorgonBox"/> that will specify the region that will receive the data.</param>
-		/// <param name="destArrayIndex">[Optional] The array index that will receive the data (1D/2D textures only).</param>
-		/// <param name="destMipLevel">[Optional] The mip map level that will receive the data.</param>
-		/// <exception cref="NotSupportedException">Thrown when this texture has a <see cref="IGorgonTextureInfo.Usage"/> of <see cref="ResourceUsage.Dynamic"/> or <see cref="ResourceUsage.Immutable"/>.
-		/// <para>-or-</para>
-		/// <para>Thrown when this texture has <see cref="IGorgonTextureInfo.MultisampleInfo"/>.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when this texture has a <see cref="IGorgonTextureInfo.Binding"/> with the <see cref="TextureBinding.DepthStencil"/> flag set.</para>
-		/// </exception>
-		/// <remarks>
-		/// <para>
-		/// Use this to copy data into a texture with a <see cref="IGorgonTextureInfo.Usage"/> of <see cref="ResourceUsage.Staging"/> or <see cref="ResourceUsage.Default"/>.  If the texture does not have a <see cref="ResourceUsage.Staging"/> or <see cref="ResourceUsage.Default"/> usage, then an 
-		/// exception will be thrown.
-		/// </para>
-		/// <para>
-		/// If the <paramref name="destBox"/> is specified, then a portion of the texture will be written into.  If the dimensions are larger than that of this texture, then the dimensions will be clipped to the 
-		/// dimensions of the texture if they are larger. If this parameter is omitted, then the entire texture will be used (or up to the size of the <paramref name="buffer"/>).
-		/// </para>
-		/// <para>
-		/// If the <paramref name="destArrayIndex"/>, or the <paramref name="destMipLevel"/> values are specified, then the data will be written into the array index if the texture is a 1D or 2D texture, otherwise 
-		/// this value is ignored.
-		/// </para>
-		/// <para>
-		/// This method will not work with textures that have a <see cref="IGorgonTextureInfo.Binding"/> that includes the <see cref="TextureBinding.DepthStencil"/> flag. If this texture has the 
-		/// <see cref="TextureBinding.DepthStencil"/> flag, then an exception will be thrown.
-		/// </para>
-		/// <para>
-		/// <note type="caution">
-		/// <para>
-		/// For performance reasons, any exceptions thrown from this method will only be thrown when Gorgon is compiled as DEBUG.
-		/// </para>
-		/// </note>
-		/// </para>
-		/// </remarks>
-		public void UpdateSubResource(IGorgonImageBuffer buffer, GorgonBox? destBox = null, int destArrayIndex = 0, int destMipLevel = 0)
+        /// <summary>
+        /// Function to copy data from the CPU using a <see cref="IGorgonImageBuffer"/> to this texture on the GPU.
+        /// </summary>
+        /// <param name="buffer">A <see cref="IGorgonImageBuffer"/> containing the image data to copy.</param>
+        /// <param name="destBox">[Optional] A <see cref="GorgonBox"/> that will specify the region that will receive the data.</param>
+        /// <param name="destArrayIndex">[Optional] The array index that will receive the data (1D/2D textures only).</param>
+        /// <param name="destMipLevel">[Optional] The mip map level that will receive the data.</param>
+        /// <param name="copyMode">[Optional] Defines how data should be copied into the buffer.</param>
+        /// <exception cref="NotSupportedException">Thrown when this texture has a <see cref="IGorgonTextureInfo.Usage"/> of <see cref="ResourceUsage.Dynamic"/> or <see cref="ResourceUsage.Immutable"/>.
+        /// <para>-or-</para>
+        /// <para>Thrown when this texture has <see cref="IGorgonTextureInfo.MultisampleInfo"/>.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when this texture has a <see cref="IGorgonTextureInfo.Binding"/> with the <see cref="TextureBinding.DepthStencil"/> flag set.</para>
+        /// </exception>
+        /// <remarks>
+        /// <para>
+        /// Use this to copy data into a texture with a <see cref="IGorgonTextureInfo.Usage"/> of <see cref="ResourceUsage.Staging"/> or <see cref="ResourceUsage.Default"/>.  If the texture does not have a <see cref="ResourceUsage.Staging"/> or <see cref="ResourceUsage.Default"/> usage, then an 
+        /// exception will be thrown.
+        /// </para>
+        /// <para>
+        /// If the <paramref name="destBox"/> is specified, then a portion of the texture will be written into.  If the dimensions are larger than that of this texture, then the dimensions will be clipped to the 
+        /// dimensions of the texture if they are larger. If this parameter is omitted, then the entire texture will be used (or up to the size of the <paramref name="buffer"/>).
+        /// </para>
+        /// <para>
+        /// If the <paramref name="destArrayIndex"/>, or the <paramref name="destMipLevel"/> values are specified, then the data will be written into the array index if the texture is a 1D or 2D texture, otherwise 
+        /// this value is ignored.
+        /// </para>
+        /// <para>
+        /// The <paramref name="copyMode"/> flag defines how data will be copied into this buffer.  See the <see cref="CopyMode"/> enumeration for a description of the values.
+        /// </para>
+        /// <para>
+        /// This method will not work with textures that have a <see cref="IGorgonTextureInfo.Binding"/> that includes the <see cref="TextureBinding.DepthStencil"/> flag. If this texture has the 
+        /// <see cref="TextureBinding.DepthStencil"/> flag, then an exception will be thrown.
+        /// </para>
+        /// <para>
+        /// <note type="caution">
+        /// <para>
+        /// For performance reasons, any exceptions thrown from this method will only be thrown when Gorgon is compiled as DEBUG.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        public void Update(IGorgonImageBuffer buffer, GorgonBox? destBox = null, int destArrayIndex = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
 		{
 			buffer.ValidateObject(nameof(buffer));
 
@@ -1392,17 +1401,13 @@ namespace Gorgon.Graphics.Core
 				      };
 			}
 
-			DX.DataBox boxPtr = new DX.DataBox
-			{
-				DataPointer = new IntPtr(buffer.Data.Address),
-				RowPitch = buffer.PitchInformation.RowPitch,
-				SlicePitch = buffer.PitchInformation.SlicePitch
-			};
-
-			Graphics.D3DDeviceContext.UpdateSubresource(boxPtr,
-			                                            D3DResource,
-			                                            D3D11.Resource.CalculateSubResourceIndex(destMipLevel, destArrayIndex, Info.MipLevels),
-			                                            box.ToResourceRegion());
+		    Graphics.D3DDeviceContext.UpdateSubresource1(D3DResource,
+		                                                 D3D11.Resource.CalculateSubResourceIndex(destMipLevel, destArrayIndex, Info.MipLevels),
+		                                                 box.ToResourceRegion(),
+		                                                 new IntPtr(buffer.Data.Address),
+		                                                 buffer.PitchInformation.RowPitch,
+		                                                 buffer.PitchInformation.SlicePitch,
+		                                                 (int)copyMode);
 		}
 
 		/// <summary>
