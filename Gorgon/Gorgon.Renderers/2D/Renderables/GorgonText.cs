@@ -44,7 +44,7 @@ namespace GorgonLibrary.Renderers
 	/// wrap text at a boundary, change its horizontal alignment and line spacing.  Text objects require the use of <see cref="GorgonLibrary.Graphics.GorgonFont">font</see> 
 	/// objects in order to render the glyphs used in the text.</remarks>
 	public class GorgonText
-		: GorgonNamedObject, IRenderable, IMoveable, I2DCollisionObject
+		: GorgonNamedObject, IRenderable, IMoveable, I2DCollisionObject, IDisposable
     {
         #region Value Types.
         /// <summary>
@@ -118,6 +118,7 @@ namespace GorgonLibrary.Renderers
 		private bool _useKerning = true;										// Flag to indicate that kerning should be used.
 	    private readonly List<ColorCode> _colorCodes = new List<ColorCode>();   // List of color code points.
 		private bool _allowColorCodes;											// Flag to indicate color codes are allowed.
+        private bool _disposed = false;
 		#endregion
 
 		#region Properties.
@@ -1535,13 +1536,14 @@ namespace GorgonLibrary.Renderers
 
 			UpdateText();
 		}
-		#endregion
 
-		#region IRenderable Members
-		/// <summary>
-		/// Property to return the number of vertices for the renderable.
-		/// </summary>
-		int IRenderable.VertexCount
+        #endregion
+
+        #region IRenderable Members
+        /// <summary>
+        /// Property to return the number of vertices for the renderable.
+        /// </summary>
+        int IRenderable.VertexCount
 		{
 			get
 			{
@@ -2108,6 +2110,41 @@ namespace GorgonLibrary.Renderers
 				return _vertices;
 			}
 		}
-		#endregion
-	}
+        #endregion
+
+        #region IDisposable Implementation
+
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources
+        /// </summary>
+        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                if (_font != null)
+                {
+                    _font.FontChanged -= FontChanged;
+                }
+            }
+
+            _disposed = true;
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        #endregion
+    }
 }
