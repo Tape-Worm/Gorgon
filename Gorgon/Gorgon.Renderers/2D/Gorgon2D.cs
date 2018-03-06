@@ -1218,6 +1218,11 @@ namespace GorgonLibrary.Renderers
 					_defaultTarget = default(Gorgon2DTarget);
 				}
 
+                if (Drawing != null)
+                {
+                    Drawing.Dispose();
+                }
+
 				Graphics.RemoveTrackedObject(this);
 			}
 			

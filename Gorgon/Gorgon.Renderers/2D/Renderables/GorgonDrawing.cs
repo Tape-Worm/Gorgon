@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System;
 using System.Drawing;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics;
@@ -34,7 +35,7 @@ namespace GorgonLibrary.Renderers
 	/// <summary>
 	/// Interface for immediate drawing of renderables.
 	/// </summary>
-	public class GorgonDrawing
+	public class GorgonDrawing : IDisposable
 	{
 		#region Variables.
 		private readonly GorgonRectangle _rect;											// Rectangle.
@@ -46,6 +47,7 @@ namespace GorgonLibrary.Renderers
 		private GorgonRenderable.DepthStencilStates _depthStencil;						// Depth stencil states.
 		private GorgonRenderable.TextureSamplerState _sampler;							// Texture sampler states.
 		private GorgonRenderable.BlendState _blend;										// Blending states.
+        private bool _disposed = false;
 		#endregion
 
 		#region Properties.
@@ -753,6 +755,42 @@ namespace GorgonLibrary.Renderers
 		                };
 			_string = gorgon2D.Renderables.CreateText("Gorgon2D.String");
 		}
-		#endregion
-	}
+        #endregion
+
+        #region IDisposable Implementation
+
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources
+        /// </summary>
+        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                if (_string != null)
+                {
+                    _string.Dispose();
+                }
+            }
+
+            _disposed = true;
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        #endregion
+
+    }
 }
