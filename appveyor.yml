@@ -4,6 +4,7 @@ pull_requests:
 branches:
   only:
   - master
+skip_tags: true
 skip_non_tags: true
 configuration: ReleaseAndDeploy
 platform: Any CPU
