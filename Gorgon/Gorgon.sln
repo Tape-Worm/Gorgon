@@ -128,6 +128,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TvImageCodec", "..\Examples
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.SpriteEditor", "..\Tools\Gorgon.Editor.PlugIns\Gorgon.SpriteEditor\Gorgon.SpriteEditor.csproj", "{CDE22A30-64FA-44B6-AB07-CE1E8859FDAA}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{F6B910DF-267F-4BF8-9714-F199086009C7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Font_EventLeak_Test", "..\Examples\Tests\Font_EventLeak_Test\Font_EventLeak_Test.csproj", "{3F4FDE55-6FA7-435A-8AF0-620C5DB13E84}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -409,6 +413,12 @@ Global
 		{CDE22A30-64FA-44B6-AB07-CE1E8859FDAA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CDE22A30-64FA-44B6-AB07-CE1E8859FDAA}.ReleaseAndDeploy|Any CPU.ActiveCfg = ReleaseAndDeploy|Any CPU
 		{CDE22A30-64FA-44B6-AB07-CE1E8859FDAA}.ReleaseAndDeploy|Any CPU.Build.0 = ReleaseAndDeploy|Any CPU
+		{3F4FDE55-6FA7-435A-8AF0-620C5DB13E84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F4FDE55-6FA7-435A-8AF0-620C5DB13E84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F4FDE55-6FA7-435A-8AF0-620C5DB13E84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F4FDE55-6FA7-435A-8AF0-620C5DB13E84}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F4FDE55-6FA7-435A-8AF0-620C5DB13E84}.ReleaseAndDeploy|Any CPU.ActiveCfg = Release|Any CPU
+		{3F4FDE55-6FA7-435A-8AF0-620C5DB13E84}.ReleaseAndDeploy|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -459,5 +469,7 @@ Global
 		{9524F1F2-8260-4203-AF0A-5457053F6BEE} = {2E124B08-EECF-44F6-9175-1580FF0BFFA8}
 		{58398BDA-7076-410A-B73C-928E79EAE8A9} = {2E124B08-EECF-44F6-9175-1580FF0BFFA8}
 		{CDE22A30-64FA-44B6-AB07-CE1E8859FDAA} = {94E5BF16-684A-45DA-AA0E-895972EE792B}
+		{F6B910DF-267F-4BF8-9714-F199086009C7} = {E656298C-C1C6-4274-87B5-A19C6BA689CB}
+		{3F4FDE55-6FA7-435A-8AF0-620C5DB13E84} = {F6B910DF-267F-4BF8-9714-F199086009C7}
 	EndGlobalSection
 EndGlobal
