@@ -4,6 +4,8 @@ pull_requests:
 branches:
   only:
   - master
+skip_tags: false
+skip_non_tags: false
 configuration: ReleaseAndDeploy
 platform: Any CPU
 shallow_clone: true
