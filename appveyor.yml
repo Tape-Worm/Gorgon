@@ -4,7 +4,7 @@ pull_requests:
 branches:
   only:
   - master
-  - /v\d+\.\d+\.\d+/
+  - \d+\.\d+\.\d+/
 skip_tags: false
 skip_non_tags: false
 configuration: ReleaseAndDeploy
