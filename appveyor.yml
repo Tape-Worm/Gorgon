@@ -46,4 +46,4 @@ deploy:
   artifact: Gorgon2.0,Gorgon2.0_Examples
   force_update: true
   on:
-    branch: master
+    appveyor_repo_tag: true
