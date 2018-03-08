@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.Text;
+using System.Windows;
 using GorgonLibrary.Animation;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Math;
@@ -482,15 +483,15 @@ namespace GorgonLibrary.Renderers
 
                 if (_font != null)
                 {
-                    _font.FontChanged -= FontChanged;
+					WeakEventManager<GorgonFont, EventArgs>.RemoveHandler(_font, "FontChanged", FontChanged);                    
                 }
 
 			    _font = value;
 
                 if (_font != null)
                 {
-                    _font.FontChanged += FontChanged;
-                }
+					WeakEventManager<GorgonFont, EventArgs>.AddHandler(_font, "FontChanged", FontChanged);
+				}
                 
 			    UpdateText();
 			}
@@ -1524,7 +1525,7 @@ namespace GorgonLibrary.Renderers
 			if (font != null)
 			{
 				_font = font;
-			    _font.FontChanged += FontChanged;
+				WeakEventManager<GorgonFont, EventArgs>.AddHandler(_font, "FontChanged", FontChanged);				
 			}
 			_shadowAlpha[3] = _shadowAlpha[2] = _shadowAlpha[1] = _shadowAlpha[0] = 0.25f;
 
