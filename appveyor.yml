@@ -4,8 +4,9 @@ pull_requests:
 branches:
   only:
   - master
-skip_tags: true
-skip_non_tags: true
+  - /\d+\.\d+\.\d+/
+skip_tags: false
+skip_non_tags: false
 configuration: ReleaseAndDeploy
 platform: Any CPU
 shallow_clone: true
@@ -46,4 +47,4 @@ deploy:
   artifact: Gorgon2.0,Gorgon2.0_Examples
   force_update: true
   on:
-    branch: master
+    appveyor_repo_tag: true
