@@ -25,7 +25,9 @@
 #endregion
 
 using System;
+using Gorgon.Core;
 using Gorgon.Diagnostics;
+using Gorgon.Graphics.Core.Properties;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
@@ -315,6 +317,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="threadGroupOffset">[Optional] The offset within the buffer, in bytes, to where the arguments are stored.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="computeShader"/>, or the <paramref name="indirectArgs"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="threadGroupOffset"/> is less than 0.</exception>
+        /// <exception cref="GorgonException">Thrown if the <paramref name="indirectArgs"/> was not created with the <see cref="IGorgonBufferInfo.IndirectArgs"/> flag set to <b>true</b>.</exception>
         /// <remarks>
         /// <para>
         /// This will take the <paramref name="computeShader"/> and execute it using the <paramref name="indirectArgs"/> buffer. This method will also bind any buffers set up to the GPU prior to executing 
@@ -337,11 +340,18 @@ namespace Gorgon.Graphics.Core
         /// </note>
         /// </para>
         /// </remarks>
-        public void Execute(GorgonComputeShader computeShader, GorgonIndirectArgumentBuffer indirectArgs, int threadGroupOffset = 0)
+        public void Execute(GorgonComputeShader computeShader, GorgonBuffer indirectArgs, int threadGroupOffset = 0)
         {
             computeShader.ValidateObject(nameof(computeShader));
             indirectArgs.ValidateObject(nameof(computeShader));
             threadGroupOffset.ValidateRange(nameof(threadGroupOffset), 0, int.MaxValue);
+
+            #if DEBUG
+            if (!indirectArgs.Info.IndirectArgs)
+            {
+                throw new GorgonException(GorgonResult.AccessDenied, string.Format(Resources.GORGFX_ERR_BUFFER_IS_NOT_INDIRECTARGS, indirectArgs.Name));
+            }
+            #endif
 
             if (computeShader != _currentShader)
             {

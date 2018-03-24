@@ -179,7 +179,7 @@ namespace Gorgon.Graphics.Example
 			                                                                           });
 
 			// Send the vertex data into the buffer.
-            _graphics.SetData(vertices, _vertexBuffer);
+            _graphics.SetDataRange(vertices, _vertexBuffer);
 		}
 
 		/// <summary>

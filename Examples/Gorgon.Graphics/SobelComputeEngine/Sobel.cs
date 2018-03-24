@@ -66,7 +66,7 @@ namespace Gorgon.Graphics.Example
 
             _sobelOptions[0] = thickness;
             _sobelOptions[1] = threshold;
-            _compute.Graphics.SetData(_sobelOptions, _sobelData);
+            _compute.Graphics.SetDataRange(_sobelOptions, _sobelData);
 
             _compute.ConstantBuffers[0] = _sobelData;
             _compute.ShaderResourceViews[0] = texture;

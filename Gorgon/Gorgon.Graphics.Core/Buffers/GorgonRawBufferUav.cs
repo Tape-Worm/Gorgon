@@ -34,12 +34,12 @@ using Gorgon.Graphics.Core.Properties;
 namespace Gorgon.Graphics.Core
 {
     /// <summary>
-    /// Provides an unordered access view for a <see cref="GorgonRawBuffer"/>.
+    /// Provides an unordered access view for a <see cref="GorgonBuffer"/>.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This type of view allows for unordered access to a <see cref="GorgonRawBuffer"/>. The buffer must have been created with the <see cref="BufferBinding.UnorderedAccess"/> flag in its 
-    /// <see cref="IGorgonRawBufferInfo.Binding"/> property.
+    /// This type of view allows for unordered access to a <see cref="GorgonBuffer"/>. The buffer must have been created with the <see cref="BufferBinding.UnorderedAccess"/> flag in its 
+    /// <see cref="IGorgonBufferInfo.Binding"/> property, and the <see cref="IGorgonBufferInfo.AllowRawView"/> flag must have been set to <b>true</b>.
     /// </para>
     /// <para>
     /// The unordered access allows a shader to read/write any part of a <see cref="GorgonGraphicsResource"/> by multiple threads without memory contention. This is done through the use of 
@@ -63,7 +63,7 @@ namespace Gorgon.Graphics.Core
     /// <seealso cref="GorgonPixelShader"/>
     /// <seealso cref="GorgonDrawCallBase"/>
     public sealed class GorgonRawBufferUav
-        : GorgonBufferUavBase<GorgonRawBuffer>
+        : GorgonBufferUavBase<GorgonBuffer>
     {
         #region Properties.
         /// <summary>
@@ -136,7 +136,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="elementCount">The number of elements in the view.</param>
         /// <param name="elementType">The type of element data in the buffer.</param>
         /// <param name="log">The log used for debug information.</param>
-        internal GorgonRawBufferUav(GorgonRawBuffer buffer, int elementStart, int elementCount, RawBufferElementType elementType, IGorgonLog log)
+        internal GorgonRawBufferUav(GorgonBuffer buffer, int elementStart, int elementCount, RawBufferElementType elementType, IGorgonLog log)
             : base(buffer, elementStart, elementCount, log)
         {
             ElementType = elementType;

@@ -901,7 +901,7 @@ namespace Gorgon.Graphics.Core
 			    ((lockFlags == LockMode.Read)
 			     || (lockFlags == LockMode.ReadWrite)))
 			{
-				throw new NotSupportedException(Resources.GORGFX_ERR_LOCK_CANNOT_READ_NON_STAGING);
+				throw new NotSupportedException(Resources.GORGFX_ERR_LOCK_CANNOT_READ_IMMUTABLE);
 			}
 
 			if (lockFlags == LockMode.WriteNoOverwrite)

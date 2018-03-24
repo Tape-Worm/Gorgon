@@ -52,12 +52,12 @@ namespace Gorgon.Graphics.Core
     }
 
     /// <summary>
-    /// Provides an unordered access view for a <see cref="GorgonStructuredBuffer"/>.
+    /// Provides an unordered access view for a <see cref="GorgonBuffer"/> containing structured data.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This type of view allows for unordered access to a <see cref="GorgonStructuredBuffer"/>. The buffer must have been created with the <see cref="BufferBinding.UnorderedAccess"/> flag in its 
-    /// <see cref="IGorgonStructuredBufferInfo.Binding"/> property.
+    /// This type of view allows for unordered access to a <see cref="GorgonBuffer"/>. The buffer must have been created with the <see cref="BufferBinding.UnorderedAccess"/> flag in its 
+    /// <see cref="IGorgonBufferInfo.Binding"/> property, and have a <see cref="IGorgonBufferInfo.StructureSize"/> greater than 0.
     /// </para>
     /// <para>
     /// The unordered access allows a shader to read/write any part of a <see cref="GorgonGraphicsResource"/> by multiple threads without memory contention. This is done through the use of 
@@ -81,7 +81,7 @@ namespace Gorgon.Graphics.Core
     /// <seealso cref="GorgonPixelShader"/>
     /// <seealso cref="GorgonDrawCallBase"/>
     public sealed class GorgonStructuredBufferUav
-        : GorgonBufferUavBase<GorgonStructuredBuffer>
+        : GorgonBufferUavBase<GorgonBuffer>
     {
         #region Properties.
         /// <summary>
@@ -95,7 +95,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the size of an element.
         /// </summary>
-        public override int ElementSize => Buffer.StructureSize;
+        public override int ElementSize => Buffer.Info.StructureSize;
         #endregion
 
         #region Methods.
@@ -148,7 +148,7 @@ namespace Gorgon.Graphics.Core
         /// </note>
         /// </para>
         /// </remarks>
-        public void CopyStructureCount(GorgonBufferCommon buffer, int offset = 0)
+        public void CopyStructureCount(GorgonBufferBase buffer, int offset = 0)
         {
             buffer.ValidateObject(nameof(buffer));
             offset.ValidateRange(nameof(offset), 0, Buffer.SizeInBytes - 4);
@@ -166,11 +166,11 @@ namespace Gorgon.Graphics.Core
         /// <param name="elementCount">The number of elements in the view.</param>
         /// <param name="uavType">Flags used to indicate the purpose of this view.</param>
         /// <param name="log">The log used for debug information.</param>
-        internal GorgonStructuredBufferUav(GorgonStructuredBuffer buffer,
-                                                     int elementStart,
-                                                     int elementCount,
-                                                     StructuredBufferUavType uavType,
-                                                     IGorgonLog log)
+        internal GorgonStructuredBufferUav(GorgonBuffer buffer,
+                                           int elementStart,
+                                           int elementCount,
+                                           StructuredBufferUavType uavType,
+                                           IGorgonLog log)
             : base(buffer, elementStart, elementCount, log)
         {
             UavType = uavType;

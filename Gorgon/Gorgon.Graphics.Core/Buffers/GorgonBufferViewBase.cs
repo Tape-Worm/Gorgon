@@ -34,10 +34,8 @@ namespace Gorgon.Graphics.Core
     /// <summary>
     /// The base class for buffer shader views.
     /// </summary>
-    /// <typeparam name="T">The type of buffer that will be linked to the view.</typeparam>
-    public abstract class GorgonBufferViewBase<T>
+    public abstract class GorgonBufferViewBase
         : GorgonShaderResourceView
-        where T : GorgonBufferCommon
     {
         #region Properties.
         /// <summary>
@@ -51,7 +49,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the buffer associated with the view.
         /// </summary>
-        public T Buffer
+        public GorgonBuffer Buffer
         {
             get;
         }
@@ -96,7 +94,7 @@ namespace Gorgon.Graphics.Core
 
         #region Constructor/Finalizer.
         /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonBufferViewBase{T}"/> class.
+        /// Initializes a new instance of the <see cref="GorgonBufferViewBase"/> class.
         /// </summary>
         /// <param name="buffer">The buffer to bind to the view.</param>
         /// <param name="startingElement">The starting element in the buffer to view.</param>
@@ -106,7 +104,7 @@ namespace Gorgon.Graphics.Core
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="buffer"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="buffer"/> is a staging resource, or does not have a binding flag for shader access.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="startingElement"/> and the <paramref name="elementCount"/> are larger than the total number of elements.</exception>
-        protected GorgonBufferViewBase(T buffer, int startingElement, int elementCount, int totalElementCount, IGorgonLog log)
+        protected GorgonBufferViewBase(GorgonBuffer buffer, int startingElement, int elementCount, int totalElementCount, IGorgonLog log)
             : base(buffer)
         {
             Log = log ?? GorgonLogDummy.DefaultInstance;

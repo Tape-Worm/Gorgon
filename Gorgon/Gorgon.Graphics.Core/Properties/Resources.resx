@@ -232,8 +232,8 @@ Please report this error by pasting the details to the bug tracker in Gorgon's g
   <data name="GORGFX_ERR_TEXTURE_NOT_SAME_TYPE" xml:space="preserve">
     <value>The texure '{0}' is a [{1}] and cannot be copied to or from the type [{2}].</value>
   </data>
-  <data name="GORGFX_ERR_LOCK_CANNOT_READ_NON_STAGING" xml:space="preserve">
-    <value>Cannot lock a buffer for reading if the resource does not have a usage of [Staging].</value>
+  <data name="GORGFX_ERR_LOCK_CANNOT_READ_IMMUTABLE" xml:space="preserve">
+    <value>Cannot lock an [Immutable] buffer for reading.</value>
   </data>
   <data name="GORGFX_ERR_TEXTURE_USAGE_CANT_LOCK" xml:space="preserve">
     <value>A texture with a usage of [{0}] cannot be locked.</value>
@@ -498,10 +498,10 @@ The width must be a value between 1-{2}, and the height must be a value between 
     <value>Cannot use unordered access views with dynamic buffers.</value>
   </data>
   <data name="GORGFX_ERR_BUFFER_IMMUTABLE_STAGING_SO" xml:space="preserve">
-    <value>Immutable or staging buffers cannot be used for stream out.</value>
+    <value>Dynamic, immutable or staging buffers cannot be used for stream out.</value>
   </data>
   <data name="GORGFX_ERR_BUFFER_IMMUTABLE_STAGING_UAV" xml:space="preserve">
-    <value>Immutable or staging buffers cannot use unordered access views.</value>
+    <value>Dynamic, immutable or staging buffers cannot use unordered access views.</value>
   </data>
   <data name="GORGFX_ERR_INDEX_BUFFER_TYPE_MISMATCH" xml:space="preserve">
     <value>This buffer uses {0} bit indices. {1} bit indices cannot be written to it.</value>
@@ -526,5 +526,22 @@ The width must be a value between 1-{2}, and the height must be a value between 
   </data>
   <data name="GORGFX_TOSTR_VIDEO_MODE" xml:space="preserve">
     <value>Video Mode - {0}x{1} {2} Refresh Rate: {3:#####0.0}Hz</value>
+  </data>
+  <data name="GORGFX_ERR_BUFFER_CANNOT_READ" xml:space="preserve">
+    <value>The following buffer settings are not allowed with a CPU readable buffer:
+An indirect argument buffer
+A buffer that is not bound as a shader and/or unordered resource.</value>
+  </data>
+  <data name="GORGFX_ERR_CANNOT_READ_NONSTAGE" xml:space="preserve">
+    <value>This resource has a usage of [{0}].  Only resources with a usage of [Staging] can be read.</value>
+  </data>
+  <data name="GORGFX_ERR_IMMUTABLE_CANNOT_STAGE" xml:space="preserve">
+    <value>The resource has a usage of [Immutable] and cannot be copied to a staging resource.</value>
+  </data>
+  <data name="GORGFX_ERR_BUFFER_NOT_READABLE" xml:space="preserve">
+    <value>The buffer was not set up to the readable by the CPU.</value>
+  </data>
+  <data name="GORGFX_ERR_BUFFER_IS_NOT_INDIRECTARGS" xml:space="preserve">
+    <value>The buffer '{0}' cannot hold indirect arguments.</value>
   </data>
 </root>

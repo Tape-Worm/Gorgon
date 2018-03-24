@@ -360,7 +360,7 @@ namespace Gorgon.Graphics.Example
             }
 
             // Send to the constant buffer right away.
-            _graphics.SetData(_lightData, _lightBuffer);
+            _graphics.SetDataRange(_lightData, _lightBuffer);
         }
 
         /// <summary>

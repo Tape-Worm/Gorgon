@@ -88,6 +88,17 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The following buffer settings are not allowed with a CPU readable buffer:
+        ///An indirect argument buffer
+        ///A buffer that is not bound as a shader and/or unordered resource..
+        /// </summary>
+        internal static string GORGFX_ERR_BUFFER_CANNOT_READ {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_BUFFER_CANNOT_READ", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot update buffers with a usage of [Immutable] or [Dynamic]..
         /// </summary>
         internal static string GORGFX_ERR_BUFFER_CANT_UPDATE_IMMUTABLE_OR_DYNAMIC {
@@ -142,7 +153,7 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Immutable or staging buffers cannot be used for stream out..
+        ///   Looks up a localized string similar to Dynamic, immutable or staging buffers cannot be used for stream out..
         /// </summary>
         internal static string GORGFX_ERR_BUFFER_IMMUTABLE_STAGING_SO {
             get {
@@ -151,7 +162,7 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Immutable or staging buffers cannot use unordered access views..
+        ///   Looks up a localized string similar to Dynamic, immutable or staging buffers cannot use unordered access views..
         /// </summary>
         internal static string GORGFX_ERR_BUFFER_IMMUTABLE_STAGING_UAV {
             get {
@@ -165,6 +176,15 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_BUFFER_IS_IMMUTABLE {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_BUFFER_IS_IMMUTABLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The buffer &apos;{0}&apos; cannot hold indirect arguments..
+        /// </summary>
+        internal static string GORGFX_ERR_BUFFER_IS_NOT_INDIRECTARGS {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_BUFFER_IS_NOT_INDIRECTARGS", resourceCulture);
             }
         }
         
@@ -192,6 +212,15 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_BUFFER_NON_STAGING_NEEDS_BINDING {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_BUFFER_NON_STAGING_NEEDS_BINDING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The buffer was not set up to the readable by the CPU..
+        /// </summary>
+        internal static string GORGFX_ERR_BUFFER_NOT_READABLE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_BUFFER_NOT_READABLE", resourceCulture);
             }
         }
         
@@ -249,6 +278,15 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_CANNOT_MULTISAMPLE_CUBE {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_CANNOT_MULTISAMPLE_CUBE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This resource has a usage of [{0}].  Only resources with a usage of [Staging] can be read..
+        /// </summary>
+        internal static string GORGFX_ERR_CANNOT_READ_NONSTAGE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_CANNOT_READ_NONSTAGE", resourceCulture);
             }
         }
         
@@ -453,6 +491,15 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The resource has a usage of [Immutable] and cannot be copied to a staging resource..
+        /// </summary>
+        internal static string GORGFX_ERR_IMMUTABLE_CANNOT_STAGE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_IMMUTABLE_CANNOT_STAGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This buffer uses {0} bit indices. {1} bit indices cannot be written to it..
         /// </summary>
         internal static string GORGFX_ERR_INDEX_BUFFER_TYPE_MISMATCH {
@@ -489,11 +536,11 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot lock a buffer for reading if the resource does not have a usage of [Staging]..
+        ///   Looks up a localized string similar to Cannot lock an [Immutable] buffer for reading..
         /// </summary>
-        internal static string GORGFX_ERR_LOCK_CANNOT_READ_NON_STAGING {
+        internal static string GORGFX_ERR_LOCK_CANNOT_READ_IMMUTABLE {
             get {
-                return ResourceManager.GetString("GORGFX_ERR_LOCK_CANNOT_READ_NON_STAGING", resourceCulture);
+                return ResourceManager.GetString("GORGFX_ERR_LOCK_CANNOT_READ_IMMUTABLE", resourceCulture);
             }
         }
         

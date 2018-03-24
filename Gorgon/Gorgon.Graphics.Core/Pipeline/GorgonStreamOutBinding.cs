@@ -41,7 +41,6 @@ namespace Gorgon.Graphics.Core
     /// </remarks>
     /// <seealso cref="GorgonBuffer"/>
     /// <seealso cref="GorgonRawBuffer"/>
-    /// <seealso cref="GorgonStructuredBuffer"/>
     /// <seealso cref="GorgonIndirectArgumentBuffer"/>
     /// <seealso cref="GorgonVertexBuffer"/>
     /// <seealso cref="GorgonIndexBuffer"/>
@@ -83,29 +82,9 @@ namespace Gorgon.Graphics.Core
                     // Deny constant buffers entirely.
                     throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_BUFFER_CONSTANT_NO_SO);
                 case GorgonIndexBuffer indexBuffer when ((indexBuffer.Info.Binding & VertexIndexBufferBinding.StreamOut) != VertexIndexBufferBinding.StreamOut):
-                    throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_TYPE_MISSING_SO, buffer.Name));
                 case GorgonVertexBuffer vertexBuffer when ((vertexBuffer.Info.Binding & VertexIndexBufferBinding.StreamOut) != VertexIndexBufferBinding.StreamOut):
+                case GorgonBuffer genericBuffer when ((genericBuffer.Info.Binding & BufferBinding.StreamOut) == BufferBinding.StreamOut):
                     throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_TYPE_MISSING_SO, buffer.Name));
-            }
-
-            GorgonBuffer genericBuffer = buffer as GorgonBuffer;
-            BufferBinding binding = genericBuffer?.Info.Binding ?? BufferBinding.StreamOut;
-
-            if (genericBuffer == null)
-            {
-                GorgonRawBuffer rawBuffer = buffer as GorgonRawBuffer;
-                binding = rawBuffer?.Info.Binding ?? BufferBinding.StreamOut;
-
-                if (rawBuffer == null)
-                {
-                    GorgonStructuredBuffer structBuffer = buffer as GorgonStructuredBuffer;
-                    binding = structBuffer?.Info.Binding ?? BufferBinding.StreamOut;
-                }
-            }
-
-            if ((binding & BufferBinding.StreamOut) != BufferBinding.StreamOut)
-            {
-                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_TYPE_MISSING_SO, buffer.Name));
             }
         }
 

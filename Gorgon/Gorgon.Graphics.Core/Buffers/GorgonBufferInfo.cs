@@ -36,6 +36,20 @@ namespace Gorgon.Graphics.Core
     {
         #region Properties.
         /// <summary>
+        /// Property to set or return whether to allow the CPU read access to the buffer.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// The default for this value is <b>false</b>.
+        /// </para>
+        /// </remarks>
+        public bool AllowCpuRead
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Property to set or return the intended usage for binding to the GPU.
         /// </summary>
         public ResourceUsage Usage
@@ -45,14 +59,14 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Property to set or return the size of the buffer, in bytes.
+        /// Property to return the size of the buffer, in bytes.
         /// </summary>
         /// <remarks>
         /// <para>
-        /// This value should be larger than 0, or else an exception will be thrown when the buffer is created.
+        /// For buffers that set <see cref="IGorgonBufferInfo.AllowRawView"/> to <b>true</b>, then this value will be rounded up to the nearest multiple of 4 at buffer creation time.
         /// </para>
         /// <para>
-        /// This value should also be a multiple of 16.
+        /// This value should be larger than 0, or else an exception will be thrown when the buffer is created.
         /// </para>
         /// </remarks>
         public int SizeInBytes
@@ -62,10 +76,25 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Property to set or return the type of binding for the GPU.
+        /// Property to return the type of binding for the GPU.
         /// </summary>
         /// <remarks>
+        /// <para>
         /// The type of binding should be used to determine what type of view to apply to the buffer when accessing it from shaders. This will also help determine how data will be interpreted.
+        /// </para>
+        /// <para>
+        /// Different bindings may be applied at the same time by OR'ing the <see cref="BufferBinding"/> flags together.
+        /// </para>
+        /// <para>
+        /// If the <see cref="IGorgonBufferInfo.Usage"/> is set to <see cref="ResourceUsage.Staging"/>, then this value must be set to <see cref="BufferBinding.None"/>, otherwise an exception will be raised 
+        /// when the buffer is created.
+        /// </para>
+        /// <para>
+        /// This value must be set to <see cref="BufferBinding.None"/> for constant buffers. If it is not, it will be reset to <see cref="BufferBinding.None"/> upon buffer creation.
+        /// </para>
+        /// <para>
+        /// The default value is <see cref="BufferBinding.Shader"/>
+        /// </para>
         /// </remarks>
         public BufferBinding Binding
         {
@@ -104,6 +133,68 @@ namespace Gorgon.Graphics.Core
             get;
             set;
         }
+
+        /// <summary>
+        /// Property to return whether the buffer will contain indirect argument data.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This flag only applies to buffers with a <see cref="IGorgonBufferInfo.Binding"/> of <see cref="BufferBinding.UnorderedAccess"/>, and/or <see cref="BufferBinding.Shader"/>. If the binding is set to anything else, 
+        /// then this flag is ignored.
+        /// </para>
+        /// <para>
+        /// The default value is <b>false</b>.
+        /// </para>
+        /// </remarks>
+        public bool IndirectArgs
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to return the size, in bytes, of an individual structure in a structured buffer.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Set this value to a number larger than 0 to indicate that this buffer will contain structured data.
+        /// </para>
+        /// <para>
+        /// This value should be larger than 0, and less than or equal to 2048 bytes.  The structure size should also be a multiple of 4, and will be rounded up at buffer creation if it is not.
+        /// </para>
+        /// <para>
+        /// Vertex and index buffers will ignore this flag and will reset it to 0.
+        /// </para>
+        /// <para>
+        /// The default value is 0.
+        /// </para>
+        /// </remarks>
+        public int StructureSize
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to return whether to allow raw unordered views of the buffer.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// When this value is <b>true</b>, then unordered access views for this buffer can use byte addressing to read/write the buffer in a shader. If it is <b>false</b>, then the SRV format or 
+        /// <see cref="IGorgonBufferInfo.StructureSize"/> will determine how to address data in the buffer.
+        /// </para>
+        /// <para>
+        /// This value is only used when the <see cref="IGorgonBufferInfo.Binding"/> property has the <see cref="BufferBinding.UnorderedAccess"/> flag. 
+        /// </para>
+        /// <para>
+        /// The default value is <b>false</b>.
+        /// </para>
+        /// </remarks>
+        public bool AllowRawView
+        {
+            get;
+            set;
+        }
         #endregion
 
         #region Constructor/Finalizer.
@@ -118,6 +209,10 @@ namespace Gorgon.Graphics.Core
             SizeInBytes = bufferInfo.SizeInBytes;
             Binding = bufferInfo.Binding;
             DefaultShaderViewFormat = bufferInfo.DefaultShaderViewFormat;
+            AllowCpuRead = bufferInfo.AllowCpuRead;
+            StructureSize = bufferInfo.StructureSize;
+            AllowRawView = bufferInfo.AllowRawView;
+            IndirectArgs = bufferInfo.IndirectArgs;
         }
 
         /// <summary>

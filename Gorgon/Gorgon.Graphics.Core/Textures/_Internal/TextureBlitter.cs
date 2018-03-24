@@ -281,7 +281,7 @@ namespace Gorgon.Graphics
 	                       };
 
 	        // Copy to the vertex buffer.
-            _graphics.SetData(_vertices, _vertexBufferBindings[0].VertexBuffer);
+            _graphics.SetDataRange(_vertices, _vertexBufferBindings[0].VertexBuffer);
 	        _graphics.Submit(_drawCall);
 	    }
 

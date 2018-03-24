@@ -50,7 +50,7 @@ namespace Gorgon.Graphics.Core
     /// </remarks>
     /// <seealso cref="GorgonBuffer"/>
     public sealed class GorgonBufferView
-        : GorgonBufferViewBase<GorgonBuffer>
+        : GorgonBufferViewBase
     {
        #region Properties.
         /// <summary>

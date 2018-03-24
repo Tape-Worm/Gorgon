@@ -31,26 +31,27 @@ using D3D11 = SharpDX.Direct3D11;
 namespace Gorgon.Graphics.Core
 {
     /// <summary>
-    /// A shader resource view for <see cref="GorgonStructuredBuffer"/>.
+    /// A shader resource view for <see cref="GorgonBuffer"/> containing structured data.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This is a generic view to allow a <see cref="GorgonStructuredBuffer"/> to be bound to the GPU pipeline as a structured buffer resource.
+    /// This is a generic view to allow a <see cref="GorgonBuffer"/> to be bound to the GPU pipeline as a structured buffer resource. The buffer must have been created with the <see cref="BufferBinding.Shader"/> 
+    /// flag in its <see cref="IGorgonBufferInfo.Binding"/> property, and have a <see cref="IGorgonBufferInfo.StructureSize"/> greater than 0.
     /// </para>
     /// <para>
     /// This type of view will allow shaders to access the data in the buffer by treating each data item as an "element".  The size of these elements is depends on the size of an individual "structure" in 
-    /// the buffer (this structure size defined by the <see cref="IGorgonStructuredBufferInfo"/> type).  Each element can be between 1-2048 bytes and will be aligned to a 4-byte boundary. 
+    /// the buffer (this structure size defined by the <see cref="IGorgonBufferInfo"/> type).  Each element can be between 1-2048 bytes and will be aligned to a 4-byte boundary. 
     /// </para>
     /// </remarks>
-    /// <seealso cref="GorgonStructuredBuffer"/>
+    /// <seealso cref="GorgonBuffer"/>
     public sealed class GorgonStructuredBufferView
-        : GorgonBufferViewBase<GorgonStructuredBuffer>
+        : GorgonBufferViewBase
     {
         #region Properties.
         /// <summary>
-        /// Property to return the size of an element, in bytes based on the <see cref="GorgonStructuredBuffer.StructureSize"/> defined.
+        /// Property to return the size of an element, in bytes.
         /// </summary>
-        public override int ElementSize => Buffer.StructureSize;
+        public override int ElementSize => Buffer.Info.StructureSize;
         #endregion
 
         #region Methods.
@@ -90,11 +91,11 @@ namespace Gorgon.Graphics.Core
         /// <param name="elementCount">The number of elements in the buffer to view.</param>
         /// <param name="totalElementCount">The total number of elements in the buffer.</param>
         /// <param name="log">The logging interface used for debug logging.</param>
-        internal GorgonStructuredBufferView(GorgonStructuredBuffer buffer,
-                                                  int startingElement,
-                                                  int elementCount,
-                                                  int totalElementCount,
-                                                  IGorgonLog log)
+        internal GorgonStructuredBufferView(GorgonBuffer buffer,
+                                            int startingElement,
+                                            int elementCount,
+                                            int totalElementCount,
+                                            IGorgonLog log)
             : base(buffer, startingElement, elementCount, totalElementCount, log)
         {
         }

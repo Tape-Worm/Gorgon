@@ -2247,13 +2247,14 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Function to submit a <see cref="GorgonDrawIndexedInstancedCall"/> to the GPU using a <see cref="GorgonIndirectArgumentBuffer"/> to pass in variable sized arguments.
+        /// Function to submit a <see cref="GorgonDrawIndexedInstancedCall"/> to the GPU using a <see cref="GorgonBuffer"/> to pass in variable sized arguments.
         /// </summary>
         /// <param name="drawCall">The draw call to submit.</param>
         /// <param name="indirectArgs">The buffer containing the draw call arguments to pass.</param>
         /// <param name="argumentOffset">[Optional] The offset, in bytes, within the buffer to start reading the arguments from.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawCall"/>, or the <paramref name="indirectArgs"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="argumentOffset"/> parameter is less than 0.</exception>
+        /// <exception cref="GorgonException">Thrown if the <paramref name="indirectArgs"/> was not created with the <see cref="IGorgonBufferInfo.IndirectArgs"/> flag set to <b>true</b>.</exception>
         /// <remarks>
         /// <para>
         /// This allows submitting a <see cref="GorgonDrawIndexedInstancedCall"/> with variable arguments without having to perform a read back of that data from the GPU and therefore avoid a stall. 
@@ -2272,10 +2273,17 @@ namespace Gorgon.Graphics.Core
         /// </para>
         /// </remarks>
         /// <seealso cref="GorgonDrawIndexedInstancedCall"/>
-        public void SubmitIndirect(GorgonDrawIndexedInstancedCall drawCall, GorgonIndirectArgumentBuffer indirectArgs, int argumentOffset = 0)
+        public void SubmitIndirect(GorgonDrawIndexedInstancedCall drawCall, GorgonBuffer indirectArgs, int argumentOffset = 0)
         {
             drawCall.ValidateObject(nameof(drawCall));
             indirectArgs.ValidateObject(nameof(indirectArgs));
+
+#if DEBUG
+            if (!indirectArgs.Info.IndirectArgs)
+            {
+                throw new GorgonException(GorgonResult.AccessDenied, string.Format(Resources.GORGFX_ERR_BUFFER_IS_NOT_INDIRECTARGS, indirectArgs.Name));
+            }
+#endif
 
             // Merge this draw call with our previous one (if available).
             (PipelineResourceChange ChangedResources, PipelineStateChange ChangedStates) = MergeDrawCall(drawCall);
@@ -2286,13 +2294,14 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Function to submit a <see cref="GorgonDrawInstancedCall"/> to the GPU using a <see cref="GorgonIndirectArgumentBuffer"/> to pass in variable sized arguments.
+        /// Function to submit a <see cref="GorgonDrawInstancedCall"/> to the GPU using a <see cref="GorgonBuffer"/> to pass in variable sized arguments.
         /// </summary>
         /// <param name="drawCall">The draw call to submit.</param>
         /// <param name="indirectArgs">The buffer containing the draw call arguments to pass.</param>
         /// <param name="argumentOffset">[Optional] The offset, in bytes, within the buffer to start reading the arguments from.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawCall"/>, or the <paramref name="indirectArgs"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="argumentOffset"/> parameter is less than 0.</exception>
+        /// <exception cref="GorgonException">Thrown if the <paramref name="indirectArgs"/> was not created with the <see cref="IGorgonBufferInfo.IndirectArgs"/> flag set to <b>true</b>.</exception>
         /// <remarks>
         /// <para>
         /// This allows submitting a <see cref="GorgonDrawInstancedCall"/> with variable arguments without having to perform a read back of that data from the GPU and therefore avoid a stall. 
@@ -2311,10 +2320,17 @@ namespace Gorgon.Graphics.Core
         /// </para>
         /// </remarks>
         /// <seealso cref="GorgonDrawIndexedInstancedCall"/>
-        public void SubmitIndirect(GorgonDrawInstancedCall drawCall, GorgonIndirectArgumentBuffer indirectArgs, int argumentOffset = 0)
+        public void SubmitIndirect(GorgonDrawInstancedCall drawCall, GorgonBuffer indirectArgs, int argumentOffset = 0)
         {
             drawCall.ValidateObject(nameof(drawCall));
             indirectArgs.ValidateObject(nameof(indirectArgs));
+
+#if DEBUG
+            if (!indirectArgs.Info.IndirectArgs)
+            {
+                throw new GorgonException(GorgonResult.AccessDenied, string.Format(Resources.GORGFX_ERR_BUFFER_IS_NOT_INDIRECTARGS, indirectArgs.Name));
+            }
+#endif
 
             // Merge this draw call with our previous one (if available).
             (PipelineResourceChange ChangedResources, PipelineStateChange ChangedStates) = MergeDrawCall(drawCall);
@@ -2859,11 +2875,18 @@ namespace Gorgon.Graphics.Core
             }
         }
 
-        private void ValidateGetData(ResourceUsage usage, int sourceIndex, int sourceCount, int resourceSize)
+        /// <summary>
+        /// Function to validate whether a buffer can have its data read or not.
+        /// </summary>
+        /// <param name="allowRead"><b>true</b> if the buffer allows reading, or <b>false</b> if not.</param>
+        /// <param name="sourceIndex">The index within the buffer data to start reading from.</param>
+        /// <param name="sourceCount">The number of items to read from the buffer.</param>
+        /// <param name="resourceSize">The total size of the buffer.</param>
+        private void ValidateGetData(bool allowRead, int sourceIndex, int sourceCount, int resourceSize)
         {
-            if (usage != ResourceUsage.Staging)
+            if (!allowRead)
             {
-                throw new ArgumentException(Resources.GORGFX_ERR_LOCK_CANNOT_READ_NON_STAGING);
+                throw new GorgonException(GorgonResult.CannotRead, Resources.GORGFX_ERR_BUFFER_NOT_READABLE);
             }
 
             if (sourceIndex < 0)
@@ -2877,27 +2900,162 @@ namespace Gorgon.Graphics.Core
             }
         }
 
-        /// <summary>
-        /// Function to retrieve data from an object that descends from <see cref="GorgonBufferBase"/>.
-        /// </summary>
-        /// <param name="buffer">The buffer to read from.</param>
-        /// <param name="sourceOffset">[Optional] The offset within the buffer to start reading from, in bytes.</param>
-        /// <param name="sourceSize">[Optional] The number of bytes to read from the buffer.</param>
-        /// <returns>A <see cref="IGorgonPointer"/> pointing to the data to read.</returns>
-        public IGorgonPointer GetData(GorgonBufferBase buffer, int sourceOffset = 0, int? sourceSize = null)
+        public T[] GetData<T>(GorgonBufferBase sourceBuffer, int bufferByteOffset = 0, int? itemCount = null)
+            where T : struct
         {
-            buffer.ValidateObject(nameof(buffer));
+            sourceBuffer.ValidateObject(nameof(sourceBuffer));
+            int typeSize = DirectAccess.SizeOf<T>();
 
-            if (sourceSize == null)
+            if (itemCount == null)
             {
-                sourceSize = buffer.SizeInBytes - sourceOffset;
+                itemCount = (sourceBuffer.SizeInBytes / typeSize) - (bufferByteOffset / typeSize);
             }
 
-            ValidateGetData(buffer.Usage, sourceOffset, sourceSize.Value, buffer.SizeInBytes);
+            int sourceCount = itemCount.Value * typeSize;
 
-            var result = new MapPointerData(this, buffer.D3DResource, D3D11.MapMode.Read, 0, sourceOffset, sourceSize.Value);
-            result.Lock();
-            return result;
+            GorgonBufferBase stageBuffer;
+            MapPointerData mapData = null;
+
+            // We have requested a read, and we are allowed to directly read the buffer.
+            if ((sourceBuffer.RequestedCpuReadable) && (sourceBuffer.IsCpuReadable))
+            {
+                stageBuffer = sourceBuffer;
+            }
+            else
+            {
+                stageBuffer = sourceBuffer.GetStaging();
+            }
+
+#if DEBUG
+            ValidateGetData(sourceBuffer.RequestedCpuReadable, bufferByteOffset, sourceCount, stageBuffer.SizeInBytes);
+#endif
+
+            try
+            {
+                mapData = new MapPointerData(this, stageBuffer.D3DResource, D3D11.MapMode.Read, 0, bufferByteOffset, sourceCount);
+                mapData.Lock();
+                var result = new T[itemCount.Value];
+                mapData.ReadRange(result, 0, result.Length);
+
+                return result;
+            }
+            finally
+            {
+                mapData?.Dispose();
+
+                if (stageBuffer != sourceBuffer)
+                {
+                    stageBuffer.Dispose();
+                }
+            }
+        }
+
+        public void GetDataRange<T>(GorgonBufferBase sourceBuffer, T[] destArray, int bufferByteOffset = 0, int? itemCount = null, int destIndex = 0)
+            where T : struct
+        {
+            sourceBuffer.ValidateObject(nameof(sourceBuffer));
+            sourceBuffer.ValidateObject(nameof(destArray));
+
+            int typeSize = DirectAccess.SizeOf<T>();
+
+            if (itemCount == null)
+            {
+                itemCount = (sourceBuffer.SizeInBytes / typeSize) - (bufferByteOffset / typeSize);
+            }
+            
+            int sourceCount = itemCount.Value * typeSize;
+
+            GorgonBufferBase stageBuffer;
+            MapPointerData mapData = null;
+
+            // We have requested a read, and we are allowed to directly read the buffer.
+            if ((sourceBuffer.RequestedCpuReadable) && (sourceBuffer.IsCpuReadable))
+            {
+                stageBuffer = sourceBuffer;
+            }
+            else
+            {
+                stageBuffer = sourceBuffer.GetStaging();
+            }
+
+#if DEBUG
+            if (destIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(destIndex));
+            }
+
+            if (destIndex + itemCount.Value > destArray.Length)
+            {
+                throw new ArgumentException(string.Format(Resources.GORGFX_ERR_DATA_OFFSET_COUNT_IS_TOO_LARGE, destIndex, sourceCount));
+            }
+
+            ValidateGetData(stageBuffer.RequestedCpuReadable, bufferByteOffset, sourceCount, stageBuffer.SizeInBytes);
+#endif
+
+            try
+            {
+                mapData = new MapPointerData(this, stageBuffer.D3DResource, D3D11.MapMode.Read, 0, bufferByteOffset, sourceCount);
+                mapData.Lock();
+                mapData.ReadRange(destArray, destIndex, itemCount.Value);
+            }
+            finally
+            {
+                mapData?.Dispose();
+
+                if (stageBuffer != sourceBuffer)
+                {
+                    stageBuffer.Dispose();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Function to read a single value from a <see cref="GorgonBufferBase"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of data to return. Must be a primitive or value type.</typeparam>
+        /// <param name="sourceBuffer">The buffer containing the data to read.</param>
+        /// <param name="result">The value returned from the buffer.</param>
+        /// <param name="bufferByteOffset">[Optional] The starting offset from the beginning of the buffer, in bytes, to start reading from.</param>
+        public void GetValue<T>(GorgonBufferBase sourceBuffer, out T result, int bufferByteOffset = 0)
+            where T : struct
+        {
+            sourceBuffer.ValidateObject(nameof(sourceBuffer));
+            int typeSize = DirectAccess.SizeOf<T>();
+
+            int sourceCount = typeSize;
+
+            GorgonBufferBase stageBuffer;
+            MapPointerData mapData = null;
+
+            // We have requested a read, and we are allowed to directly read the buffer.
+            if ((sourceBuffer.RequestedCpuReadable) && (sourceBuffer.IsCpuReadable))
+            {
+                stageBuffer = sourceBuffer;
+            }
+            else
+            {
+                stageBuffer = sourceBuffer.GetStaging();
+            }
+
+#if DEBUG
+            ValidateGetData(sourceBuffer.RequestedCpuReadable, bufferByteOffset, sourceCount, stageBuffer.SizeInBytes);
+#endif
+
+            try
+            {
+                mapData = new MapPointerData(this, stageBuffer.D3DResource, D3D11.MapMode.Read, 0, bufferByteOffset, sourceCount);
+                mapData.Lock();
+                mapData.Read(out result);
+            }
+            finally
+            {
+                mapData?.Dispose();
+
+                if (stageBuffer != sourceBuffer)
+                {
+                    stageBuffer.Dispose();
+                }
+            }
         }
 
         /// <summary>
@@ -2908,7 +3066,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="sourceSize">[Optional] The number of bytes to read from <paramref name="sourceData"/>.</param>
         /// <param name="destOffset">[Optional] The offset, in bytes, in the <paramref name="buffer"/> to start writing into.</param>
         /// <param name="copyMode">[Optional] The type of locking mode to employ when copying data into the buffer.</param>
-        public void SetData(IGorgonPointer sourceData, GorgonBufferBase buffer, int? sourceSize = null, int destOffset = 0, CopyMode copyMode = CopyMode.None)
+        public void SetDataRange(IGorgonPointer sourceData, GorgonBufferBase buffer, int? sourceSize = null, int destOffset = 0, CopyMode copyMode = CopyMode.None)
         {
             sourceData.ValidateObject(nameof(sourceData));
             buffer.ValidateObject(nameof(buffer));
@@ -2920,7 +3078,9 @@ namespace Gorgon.Graphics.Core
 
             int destSize = sourceSize.Value;
 
+#if DEBUG
             ValidateSetData(buffer.Usage, (int)sourceData.Size, buffer.SizeInBytes, 0, sourceSize.Value, destOffset, destSize);
+#endif
 
             if ((buffer.Usage == ResourceUsage.Dynamic) || (buffer.Usage == ResourceUsage.Staging))
             {
@@ -2952,18 +3112,21 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Function to upload data to an object that descends from a <see cref="GorgonBufferCommon"/> type.
+        /// Function to upload data to an object that descends from a <see cref="GorgonBufferBase"/> type.
         /// </summary>
         /// <typeparam name="T">The type of data to upload, must be a primitive or value type.</typeparam>
         /// <param name="sourceData">An array of type <typeparamref name="T"/> to upload into the buffer.</param>
-        /// <param name="buffer">A buffer that will receive the data.</param>
+        /// <param name="destBuffer">A buffer that will receive the data.</param>
         /// <param name="sourceIndex">[Optional] The index to start reading from in the <paramref name="sourceData"/> array.</param>
         /// <param name="sourceCount">[Optional] The number of elements to read from the <paramref name="sourceData"/> array.</param>
-        /// <param name="destOffset">[Optional] The offset, in bytes, in the <paramref name="buffer"/> to start writing into.</param>
+        /// <param name="destOffset">[Optional] The offset, in bytes, in the <paramref name="destBuffer"/> to start writing into.</param>
         /// <param name="copyMode">[Optional] The type of locking mode to employ when copying data into the buffer.</param>
-        public void SetData<T>(T[] sourceData, GorgonBufferBase buffer, int sourceIndex = 0, int? sourceCount = null, int destOffset = 0, CopyMode copyMode = CopyMode.None)
+        public void SetDataRange<T>(T[] sourceData, GorgonBufferBase destBuffer, int sourceIndex = 0, int? sourceCount = null, int destOffset = 0, CopyMode copyMode = CopyMode.None)
             where T : struct
         {
+            sourceData.ValidateObject(nameof(sourceData));
+            destBuffer.ValidateObject(nameof(destBuffer));
+
             int elementSize = DirectAccess.SizeOf<T>();
             
             if (sourceCount == null)
@@ -2973,33 +3136,25 @@ namespace Gorgon.Graphics.Core
 
             int destSize = elementSize * sourceCount.Value;
 
-            if (sourceData == null)
-            {
-                throw new ArgumentNullException(nameof(sourceData));
-            }
-
-            if (buffer == null)
-            {
-                throw new ArgumentNullException(nameof(buffer));
-            }
-
-            ValidateSetData(buffer.Usage, sourceData.Length, buffer.SizeInBytes, sourceIndex, sourceCount.Value, destOffset, destSize);
+#if DEBUG
+            ValidateSetData(destBuffer.Usage, sourceData.Length, destBuffer.SizeInBytes, sourceIndex, sourceCount.Value, destOffset, destSize);
+#endif
 
             using (var ptr = new GorgonPointerPinned<T>(sourceData, sourceIndex, sourceCount.Value))
             {
-                if ((buffer.Usage == ResourceUsage.Dynamic) || (buffer.Usage == ResourceUsage.Staging))
+                if ((destBuffer.Usage == ResourceUsage.Dynamic) || (destBuffer.Usage == ResourceUsage.Staging))
                 {
                     MapBuffer(new IntPtr(ptr.Address + sourceIndex * elementSize),
-                              buffer.D3DResource,
+                              destBuffer.D3DResource,
                               0,
                               sourceCount.Value * elementSize,
                               destOffset,
-                              buffer.Usage == ResourceUsage.Staging,
+                              destBuffer.Usage == ResourceUsage.Staging,
                               copyMode);
                     return;
                 }
 
-                D3DDeviceContext.UpdateSubresource1(buffer.D3DResource,
+                D3DDeviceContext.UpdateSubresource1(destBuffer.D3DResource,
                                                     0,
                                                     new D3D11.ResourceRegion
                                                     {
@@ -3018,40 +3173,39 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Function to upload data to an object that descends from a <see cref="GorgonBufferCommon"/> type.
+        /// Function to upload data to an object that descends from a <see cref="GorgonBufferBase"/> type.
         /// </summary>
         /// <typeparam name="T">The type of data to upload, must be a primitive or value type.</typeparam>
         /// <param name="sourceData">An array of type <typeparamref name="T"/> to upload into the buffer.</param>
-        /// <param name="buffer">A buffer that will receive the data.</param>
-        /// <param name="destOffset">[Optional] The offset, in bytes, in the <paramref name="buffer"/> to start writing into.</param>
+        /// <param name="destBuffer">A buffer that will receive the data.</param>
+        /// <param name="destOffset">[Optional] The offset, in bytes, in the <paramref name="destBuffer"/> to start writing into.</param>
         /// <param name="copyMode">[Optional] The type of locking mode to employ when copying data into the buffer.</param>
-        public void SetValue<T>(ref T sourceData, GorgonBufferBase buffer, int destOffset = 0, CopyMode copyMode = CopyMode.None)
+        public void SetValue<T>(ref T sourceData, GorgonBufferBase destBuffer, int destOffset = 0, CopyMode copyMode = CopyMode.None)
             where T : struct
         {
+            destBuffer.ValidateObject(nameof(destBuffer));
+
             int elementSize = DirectAccess.SizeOf<T>();
 
-            if (buffer == null)
-            {
-                throw new ArgumentNullException(nameof(buffer));
-            }
-
-            ValidateSetData(buffer.Usage, elementSize, buffer.SizeInBytes, 0, elementSize, destOffset, elementSize);
+#if DEBUG
+            ValidateSetData(destBuffer.Usage, elementSize, destBuffer.SizeInBytes, 0, elementSize, destOffset, elementSize);
+#endif
 
             using (var ptr = new GorgonPointerPinned<T>(sourceData))
             {
-                if ((buffer.Usage == ResourceUsage.Dynamic) || (buffer.Usage == ResourceUsage.Staging))
+                if ((destBuffer.Usage == ResourceUsage.Dynamic) || (destBuffer.Usage == ResourceUsage.Staging))
                 {
                     MapBuffer(new IntPtr(ptr.Address),
-                              buffer.D3DResource,
+                              destBuffer.D3DResource,
                               0,
                               elementSize,
                               destOffset,
-                              buffer.Usage == ResourceUsage.Staging,
+                              destBuffer.Usage == ResourceUsage.Staging,
                               copyMode);
                     return;
                 }
 
-                D3DDeviceContext.UpdateSubresource1(buffer.D3DResource,
+                D3DDeviceContext.UpdateSubresource1(destBuffer.D3DResource,
                                                     0,
                                                     new D3D11.ResourceRegion
                                                     {

@@ -52,11 +52,12 @@ namespace Gorgon.Graphics.Core
     }
 
     /// <summary>
-    /// A shader resource view for a <see cref="GorgonRawBuffer"/>.
+    /// A shader resource view for a <see cref="GorgonBuffer"/>.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This is a generic view to allow a <see cref="GorgonRawBuffer"/> to be bound to the GPU pipeline as a raw byte buffer resource.
+    /// This is a generic view to allow a <see cref="GorgonBuffer"/> to be bound to the GPU pipeline as a raw byte buffer resource. The buffer must have been created with the <see cref="BufferBinding.Shader"/> 
+    /// flag in its <see cref="IGorgonBufferInfo.Binding"/> property, and the <see cref="IGorgonBufferInfo.AllowRawView"/> flag must have been set to <b>true</b>.
     /// </para>
     /// <para>
     /// Use a resource view to allow a shader access to the contents of a resource (or sub resource).  When the resource is created with a typeless format, this will allow the resource to be cast to any 
@@ -67,9 +68,9 @@ namespace Gorgon.Graphics.Core
     /// type of data (signed integer, unsigned integer, and single floating point precision) which is defined via the <see cref="RawBufferElementType"/> enumeration. 
     /// </para>
     /// </remarks>
-    /// <seealso cref="GorgonRawBuffer"/>
+    /// <seealso cref="GorgonBuffer"/>
     public sealed class GorgonRawBufferView
-        : GorgonBufferViewBase<GorgonRawBuffer>
+        : GorgonBufferViewBase
     {
         #region Properties.
         /// <summary>
@@ -145,7 +146,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="elementCount">The number of elements in the buffer to view.</param>
         /// <param name="totalElementCount">The total number of elements in the buffer.</param>
         /// <param name="log">The logging interface used for debug logging.</param>
-        internal GorgonRawBufferView(GorgonRawBuffer buffer,
+        internal GorgonRawBufferView(GorgonBuffer buffer,
                                       RawBufferElementType elementType,
                                       int startingElement,
                                       int elementCount,

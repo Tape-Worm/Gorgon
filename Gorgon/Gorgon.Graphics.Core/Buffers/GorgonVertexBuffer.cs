@@ -71,7 +71,7 @@ namespace Gorgon.Graphics.Core
     ///		_vertexBuffer = new GorgonVertexBuffer("MyVB", graphics, GorgonVertexBufferInfo.CreateFromType<MyVertex>(Usage.Default));
     /// 
     ///		// Copy our data to the vertex buffer.
-    ///		_vertexBuffer.Update(_vertices);
+    ///     graphics.SetData<MyVertex>(_vertices);
     /// }
     /// ]]>
     /// </code>
@@ -79,7 +79,7 @@ namespace Gorgon.Graphics.Core
     /// </para>
     /// </remarks>
     public sealed class GorgonVertexBuffer
-		: GorgonBufferCommon
+		: GorgonBufferBase
 	{
 		#region Variables.
 		// The information used to create the buffer.
@@ -100,9 +100,14 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the usage flags for the buffer.
         /// </summary>
-        protected internal override ResourceUsage Usage => _info.Usage;
+        internal override ResourceUsage Usage => _info.Usage;
 
-        /// <summary>
+	    /// <summary>
+	    /// Property to return whether or not the user has requested that the buffer be readable from the CPU.
+	    /// </summary>
+	    internal override bool RequestedCpuReadable => false;
+
+	    /// <summary>
         /// Property used to return the information used to create this buffer.
         /// </summary>
         public IGorgonVertexBufferInfo Info => _info;
@@ -115,17 +120,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="initialData">The initial data used to populate the buffer.</param>
 		private void Initialize(IGorgonPointer initialData)
 		{
-			D3D11.CpuAccessFlags cpuFlags = D3D11.CpuAccessFlags.None;
-
-			switch (_info.Usage)
-			{
-				case ResourceUsage.Staging:
-                    cpuFlags = D3D11.CpuAccessFlags.Read | D3D11.CpuAccessFlags.Write;
-					break;
-				case ResourceUsage.Dynamic:
-					cpuFlags = D3D11.CpuAccessFlags.Write;
-					break;
-			}
+			D3D11.CpuAccessFlags cpuFlags = GetCpuFlags(false, D3D11.BindFlags.VertexBuffer);
 
 			Log.Print($"{Name} Vertex Buffer: Creating D3D11 buffer. Size: {SizeInBytes} bytes", LoggingLevel.Simple);
 
@@ -141,9 +136,10 @@ namespace Gorgon.Graphics.Core
 		        bindFlags |= D3D11.BindFlags.UnorderedAccess;
 		    }
 
-            ValidateBufferBindings(_info.Usage, bindFlags);
+		    // TODO:
+		    ValidateBufferBindings(_info.Usage, BufferBinding.None, 0);
 
-			D3D11.BufferDescription desc  = new D3D11.BufferDescription
+			var desc  = new D3D11.BufferDescription
 			{
 				SizeInBytes = Info.SizeInBytes,
 				Usage = (D3D11.ResourceUsage)_info.Usage,
@@ -288,7 +284,7 @@ namespace Gorgon.Graphics.Core
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, <paramref name="name"/>, or <paramref name="info"/> parameters are <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> is empty.</exception>
 		public GorgonVertexBuffer(string name, GorgonGraphics graphics, IGorgonVertexBufferInfo info, IGorgonPointer initialData = null, IGorgonLog log = null)
-			: base(graphics, name, log)
+			: base(name, graphics, log)
 		{
 			if (info == null)
 			{

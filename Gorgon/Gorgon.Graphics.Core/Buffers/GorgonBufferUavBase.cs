@@ -29,7 +29,7 @@ using Gorgon.Diagnostics;
 namespace Gorgon.Graphics.Core
 {
     /// <summary>
-    /// Provides an unordered access view for a <see cref="GorgonBuffer"/>, <see cref="GorgonRawBuffer"/> or a <see cref="GorgonStructuredBuffer"/>.
+    /// Provides an unordered access view for a <see cref="GorgonBuffer"/>, <see cref="GorgonVertexBuffer"/> or a <see cref="GorgonIndexBuffer"/>.
     /// </summary>
     /// <remarks>
     /// <para>

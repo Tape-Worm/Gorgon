@@ -325,7 +325,7 @@ namespace Gorgon.Graphics.Example
                 pointerOffset += sizeof(float);
             }
 
-            Graphics.SetData(_blurKernelData, _blurBufferKernel);
+            Graphics.SetDataRange(_blurKernelData, _blurBufferKernel);
 
             _offsetsNeedUpdate = false;
         }
@@ -463,7 +463,7 @@ namespace Gorgon.Graphics.Example
             UpdateOffsets();
 
             // Upload to the GPU.
-            Graphics.SetData(_blurKernelData, _blurBufferKernel);
+            Graphics.SetDataRange(_blurKernelData, _blurBufferKernel);
         }
 
         /// <summary>

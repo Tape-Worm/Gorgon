@@ -38,7 +38,7 @@ namespace Gorgon.Graphics.Core
     /// A raw buffer for holding byte data to pass to the GPU.
     /// </summary>
     public class GorgonRawBuffer
-        : GorgonBufferCommon
+        : GorgonBufferBase
     {
         #region Variables.
         // The information used to create the buffer.
@@ -59,7 +59,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the usage flags for the buffer.
         /// </summary>
-        protected internal override ResourceUsage Usage => _info.Usage;
+        internal override ResourceUsage Usage => _info.Usage;
 
         /// <summary>
         /// Property to return the settings for the buffer.
@@ -94,18 +94,6 @@ namespace Gorgon.Graphics.Core
             // Align to the nearest 4 bytes.
             SizeInBytes = (_info.SizeInBytes + 3) & ~3;
 
-            D3D11.CpuAccessFlags cpuFlags = D3D11.CpuAccessFlags.None;
-
-            switch (_info.Usage)
-            {
-                case ResourceUsage.Staging:
-                    cpuFlags = D3D11.CpuAccessFlags.Read | D3D11.CpuAccessFlags.Write;
-                    break;
-                case ResourceUsage.Dynamic:
-                    cpuFlags = D3D11.CpuAccessFlags.Write;
-                    break;
-            }
-
             Log.Print($"{Name} Raw Buffer: Creating D3D11 buffer. Size: {SizeInBytes} bytes", LoggingLevel.Simple);
 
             D3D11.BindFlags bindFlags = D3D11.BindFlags.None;
@@ -125,8 +113,11 @@ namespace Gorgon.Graphics.Core
                 bindFlags |= D3D11.BindFlags.StreamOutput;
             }
 
-            ValidateBufferBindings(_info.Usage, bindFlags);
-            
+            D3D11.CpuAccessFlags cpuFlags = GetCpuFlags(_info.AllowCpuRead, bindFlags);
+
+            // TODO:
+            ValidateBufferBindings(_info.Usage, BufferBinding.None, 0);
+
             D3D11.BufferDescription desc = new D3D11.BufferDescription
                        {
                            SizeInBytes = SizeInBytes,
@@ -314,8 +305,8 @@ namespace Gorgon.Graphics.Core
         /// <para>Thrown if this object is created with a device that does not have a feature set of 11.0 or better.</para>
         /// </exception>
         /// <exception cref="GorgonException">Thrown if the buffer is created with a usage of <see cref="ResourceUsage.Immutable"/>, but the <paramref name="initialData"/> parameter is <b>null</b>.</exception>
-        public GorgonRawBuffer(GorgonGraphics graphics, string name, IGorgonRawBufferInfo info, IGorgonPointer initialData = null, IGorgonLog log = null)
-            : base(graphics, name, log)
+        public GorgonRawBuffer(string name, GorgonGraphics graphics, IGorgonRawBufferInfo info, IGorgonPointer initialData = null, IGorgonLog log = null)
+            : base(name, graphics, log)
         {
             if (info == null)
             {
@@ -329,6 +320,13 @@ namespace Gorgon.Graphics.Core
 
             BufferType = BufferType.Raw;
             _info = new GorgonRawBufferInfo(info);
+
+            // Implicitly allow reading for staging resources.
+            if (_info.Usage == ResourceUsage.Staging)
+            {
+                _info.AllowCpuRead = true;
+            }
+
             Initialize(initialData);
         }
         #endregion

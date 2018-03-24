@@ -100,12 +100,17 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         protected internal override bool IsUavResource => false;
 
-        /// <summary>
+	    /// <summary>
         /// Property to return the usage flags for the buffer.
         /// </summary>
-        protected internal override ResourceUsage Usage => _info.Usage;
+        internal override ResourceUsage Usage => _info.Usage;
 
-        /// <summary>
+	    /// <summary>
+	    /// Property to return whether or not the user has requested that the buffer be readable from the CPU.
+	    /// </summary>
+	    internal override bool RequestedCpuReadable => false;
+
+	    /// <summary>
         /// Property used to return the information used to create this buffer.
         /// </summary>
         public IGorgonConstantBufferInfo Info => _info;
@@ -126,17 +131,7 @@ namespace Gorgon.Graphics.Core
 				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_CONSTANT_BUFFER_TOO_LARGE, SizeInBytes, Graphics.VideoAdapter.MaxConstantBufferSize));
 			}
 			
-			D3D11.CpuAccessFlags cpuFlags = D3D11.CpuAccessFlags.None;
-
-			switch (_info.Usage)
-			{
-				case ResourceUsage.Staging:
-					cpuFlags = D3D11.CpuAccessFlags.Read | D3D11.CpuAccessFlags.Write;
-					break;
-				case ResourceUsage.Dynamic:
-					cpuFlags = D3D11.CpuAccessFlags.Write;
-					break;
-			}
+			D3D11.CpuAccessFlags cpuFlags = GetCpuFlags(false, D3D11.BindFlags.ConstantBuffer);
 
 			Log.Print($"{Name} Constant Buffer: Creating D3D11 buffer. Size: {SizeInBytes} bytes", LoggingLevel.Simple);
 
@@ -182,7 +177,7 @@ namespace Gorgon.Graphics.Core
 		/// Thrown when the size of the constant buffer exceeds the maximum constant buffer size. See <see cref="IGorgonVideoAdapterInfo.MaxConstantBufferSize"/> to determine the maximum size of a constant buffer.
 		/// </exception>
 		public GorgonConstantBuffer(string name, GorgonGraphics graphics, IGorgonConstantBufferInfo info, IGorgonPointer initialData = null, IGorgonLog log = null)
-			: base(graphics, name, log)
+			: base(name, graphics, log)
 		{
 			if (info == null)
 			{
