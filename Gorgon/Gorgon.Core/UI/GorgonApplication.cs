@@ -132,11 +132,11 @@ namespace Gorgon.UI
 		// The log interface to use.
 		private static IGorgonLog _log;
 		// The dummy log interface.
-		private static readonly IGorgonLog _dummyLog = GorgonLogDummy.DefaultInstance;
+		private static readonly IGorgonLog _dummyLog = GorgonLog.NullLog;
 		// A synchronization object for threads.
 		private static readonly object _syncLock = new object();
 		// The number of milliseconds to sleep while the application is unfocused but running in the background.
-		private static int _unfocusedSleepTime = 10;
+		private static int _unfocusedSleepTime = 16;
 		// An atomic to ensure that run is only called by 1 thread at a time.
 		private static int _runAtomic;
 		// Timer used for timing the application.
@@ -414,8 +414,7 @@ namespace Gorgon.UI
 			{
 				lock (_syncLock)
 				{
-					IGorgonLogFile logFile = _log as IGorgonLogFile;
-					logFile?.End();
+					_log?.LogEnd();
 
 					if (value == null)
 					{
@@ -490,8 +489,12 @@ namespace Gorgon.UI
 		/// </summary>
 		private static void InitializeLogger()
 		{
-			IGorgonLogFile logFile = _log as IGorgonLogFile;
-			logFile?.Begin();
+		    if (Log == null)
+		    {
+		        return;
+		    }
+
+			Log.LogStart();
 
 			// Display information
 			Log.Print("Logging interface assigned. Initializing...", LoggingLevel.All);
@@ -517,7 +520,7 @@ namespace Gorgon.UI
 			// until the application completes processing its queue on first run.
 			if (GorgonTimerQpc.SupportsQpc())
 			{
-				_applicationTimer = new Lazy<IGorgonTimer>(() => new GorgonTimerQpc());
+				_applicationTimer = new Lazy<IGorgonTimer>(() => new GorgonTimerQpc(), true);
 			}
 			else
 			{
@@ -527,7 +530,7 @@ namespace Gorgon.UI
 				                                           {
 					                                           GorgonTimerMultimedia.BeginTiming();
 					                                           return new GorgonTimerMultimedia();
-				                                           });
+				                                           }, true);
 			}
 
 			// Notify that we're in a running state.
@@ -613,8 +616,7 @@ namespace Gorgon.UI
 			Log.Print("Shutting down.", LoggingLevel.All);
 
 			// Destroy log.
-			IGorgonLogFile logFile = _log as IGorgonLogFile;
-			logFile?.End();
+			_log?.LogEnd();
 		}
 
 		/// <summary>
@@ -905,7 +907,7 @@ namespace Gorgon.UI
 		{
 			ThreadID = Thread.CurrentThread.ManagedThreadId;
 			
-			Log = new GorgonLogFile(LogFile, "Tape_Worm");
+			Log = new GorgonLog(LogFile, "Tape_Worm", typeof(GorgonApplication).Assembly.GetName().Version);
 		}
 		#endregion
 	}

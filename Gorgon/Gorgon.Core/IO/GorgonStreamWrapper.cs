@@ -160,9 +160,11 @@ namespace Gorgon.IO
 		/// An <see cref="T:System.IAsyncResult"/> that represents the asynchronous read, which could still be pending.
 		/// </returns>
 		/// <param name="buffer">The buffer to read the data into. </param><param name="offset">The byte offset in <paramref name="buffer"/> at which to begin writing data read from the stream. </param><param name="count">The maximum number of bytes to read. </param><param name="callback">An optional asynchronous callback, to be called when the read is complete. </param><param name="state">A user-provided object that distinguishes this particular asynchronous read request from other requests. </param><exception cref="T:System.IO.IOException">Attempted an asynchronous read past the end of the stream, or a disk error occurs. </exception><exception cref="T:System.ArgumentException">One or more of the arguments is invalid. </exception><exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception><exception cref="T:System.NotSupportedException">The current Stream implementation does not support the read operation. </exception><filterpriority>2</filterpriority>
-		/// <exception cref="NotSupportedException">This stream does not support asynchronous I/O.</exception>
-		public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
-	    {
+		/// <exception cref="NotSupportedException">This stream does not support asynchronous I/O with this method.</exception>
+		[Obsolete("Use the ReadAsync method instead.")]
+#pragma warning disable CS0809 // Obsolete member overrides non-obsolete member
+        public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
+        {
 		    throw new NotSupportedException(Resources.GOR_ERR_STREAM_DOES_NOT_SUPPORT_ASYNC);
 	    }
 
@@ -173,7 +175,8 @@ namespace Gorgon.IO
 		/// An IAsyncResult that represents the asynchronous write, which could still be pending.
 		/// </returns>
 		/// <param name="buffer">The buffer to write data from. </param><param name="offset">The byte offset in <paramref name="buffer"/> from which to begin writing. </param><param name="count">The maximum number of bytes to write. </param><param name="callback">An optional asynchronous callback, to be called when the write is complete. </param><param name="state">A user-provided object that distinguishes this particular asynchronous write request from other requests. </param><exception cref="T:System.IO.IOException">Attempted an asynchronous write past the end of the stream, or a disk error occurs. </exception><exception cref="T:System.ArgumentException">One or more of the arguments is invalid. </exception><exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception><exception cref="T:System.NotSupportedException">The current Stream implementation does not support the write operation. </exception><filterpriority>2</filterpriority>
-		/// <exception cref="NotSupportedException">This stream does not support asynchronous I/O.</exception>
+		/// <exception cref="NotSupportedException">This stream does not support asynchronous I/O with this method.</exception>
+		[Obsolete("Use the WriteAsync method instead.")]
 		public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
 	    {
 			throw new NotSupportedException(Resources.GOR_ERR_STREAM_DOES_NOT_SUPPORT_ASYNC);
@@ -186,7 +189,8 @@ namespace Gorgon.IO
 		/// The number of bytes read from the stream, between zero (0) and the number of bytes you requested. Streams return zero (0) only at the end of the stream, otherwise, they should block until at least one byte is available.
 		/// </returns>
 		/// <param name="asyncResult">The reference to the pending asynchronous request to finish. </param><exception cref="T:System.ArgumentNullException"><paramref name="asyncResult"/> is null. </exception><exception cref="T:System.ArgumentException">A handle to the pending read operation is not available.-or-The pending operation does not support reading.</exception><exception cref="T:System.InvalidOperationException"><paramref name="asyncResult"/> did not originate from a <see cref="M:System.IO.Stream.BeginRead(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)"/> method on the current stream.</exception><exception cref="T:System.IO.IOException">The stream is closed or an internal error has occurred.</exception><filterpriority>2</filterpriority>
-		/// <exception cref="NotSupportedException">This stream does not support asynchronous I/O.</exception>
+		/// <exception cref="NotSupportedException">This stream does not support asynchronous I/O with this method.</exception>
+		[Obsolete("Use the ReadAsync method instead.")]
 		public override int EndRead(IAsyncResult asyncResult)
 	    {
 			throw new NotSupportedException(Resources.GOR_ERR_STREAM_DOES_NOT_SUPPORT_ASYNC);
@@ -196,11 +200,13 @@ namespace Gorgon.IO
 		/// Ends an asynchronous write operation. (Consider using <see cref="M:System.IO.Stream.WriteAsync(System.Byte[],System.Int32,System.Int32)"/> instead; see the Remarks section.)
 		/// </summary>
 		/// <param name="asyncResult">A reference to the outstanding asynchronous I/O request. </param><exception cref="T:System.ArgumentNullException"><paramref name="asyncResult"/> is null. </exception><exception cref="T:System.ArgumentException">A handle to the pending write operation is not available.-or-The pending operation does not support writing.</exception><exception cref="T:System.InvalidOperationException"><paramref name="asyncResult"/> did not originate from a <see cref="M:System.IO.Stream.BeginWrite(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)"/> method on the current stream.</exception><exception cref="T:System.IO.IOException">The stream is closed or an internal error has occurred.</exception><filterpriority>2</filterpriority>
-		/// <exception cref="NotSupportedException">This stream does not support asynchronous I/O.</exception>
+		/// <exception cref="NotSupportedException">This stream does not support asynchronous I/O with this method.</exception>
+		[Obsolete("Use the WriteAsync method instead.")]
 		public override void EndWrite(IAsyncResult asyncResult)
 	    {
 			throw new NotSupportedException(Resources.GOR_ERR_STREAM_DOES_NOT_SUPPORT_ASYNC);
 		}
+#pragma warning restore CS0809 // Obsolete member overrides non-obsolete member
 
 		/// <summary>
 		/// Asynchronously clears all buffers for this stream, causes any buffered data to be written to the underlying device, and monitors cancellation requests.
@@ -209,11 +215,10 @@ namespace Gorgon.IO
 		/// A task that represents the asynchronous flush operation.
 		/// </returns>
 		/// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="P:System.Threading.CancellationToken.None"/>.</param><exception cref="T:System.ObjectDisposedException">The stream has been disposed.</exception>
-		/// <exception cref="NotSupportedException">This stream does not support asynchronous I/O.</exception>
 		public override Task FlushAsync(CancellationToken cancellationToken)
-	    {
-		    throw new NotSupportedException(Resources.GOR_ERR_STREAM_DOES_NOT_SUPPORT_ASYNC);
-	    }
+		{
+		    return ParentStream.FlushAsync(cancellationToken);
+		}
 
 		/// <summary>
 		/// Asynchronously reads the bytes from the current stream and writes them to another stream, using a specified buffer size and cancellation token.
@@ -222,10 +227,37 @@ namespace Gorgon.IO
 		/// A task that represents the asynchronous copy operation.
 		/// </returns>
 		/// <param name="destination">The stream to which the contents of the current stream will be copied.</param><param name="bufferSize">The size, in bytes, of the buffer. This value must be greater than zero. The default size is 81920.</param><param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="P:System.Threading.CancellationToken.None"/>.</param><exception cref="T:System.ArgumentNullException"><paramref name="destination"/> is null.</exception><exception cref="T:System.ArgumentOutOfRangeException"><paramref name="bufferSize"/> is negative or zero.</exception><exception cref="T:System.ObjectDisposedException">Either the current stream or the destination stream is disposed.</exception><exception cref="T:System.NotSupportedException">The current stream does not support reading, or the destination stream does not support writing.</exception>
-		/// <exception cref="NotSupportedException">This stream does not support asynchronous I/O.</exception>
-		public override Task CopyToAsync(Stream destination, int bufferSize, CancellationToken cancellationToken)
+		public override async Task CopyToAsync(Stream destination, int bufferSize, CancellationToken cancellationToken)
 	    {
-			throw new NotSupportedException(Resources.GOR_ERR_STREAM_DOES_NOT_SUPPORT_ASYNC);
+	        if (destination == null)
+	        {
+                throw new ArgumentNullException(nameof(destination));
+	        }
+
+	        if (!destination.CanWrite)
+	        {
+                throw new IOException(Resources.GOR_ERR_STREAM_IS_READONLY);
+	        }
+
+	        if (!CanRead)
+	        {
+                throw new IOException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
+	        }
+
+	        long lastPosition = ParentStream.Position;
+
+	        try
+	        {
+	            ParentStream.Position = _currentPosition + _parentOffset;
+
+	            await ParentStream.CopyToAsync(destination, bufferSize, cancellationToken);
+
+	            _currentPosition = Length;
+	        }
+	        finally
+	        {
+	            ParentStream.Position = lastPosition;
+	        }
 	    }
 
 		/// <summary>
@@ -235,10 +267,61 @@ namespace Gorgon.IO
 		/// A task that represents the asynchronous read operation. The value of the <paramref name="count"/> parameter contains the total number of bytes read into the buffer. The result value can be less than the number of bytes requested if the number of bytes currently available is less than the requested number, or it can be 0 (zero) if the end of the stream has been reached. 
 		/// </returns>
 		/// <param name="buffer">The buffer to write the data into.</param><param name="offset">The byte offset in <paramref name="buffer"/> at which to begin writing data from the stream.</param><param name="count">The maximum number of bytes to read.</param><param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="P:System.Threading.CancellationToken.None"/>.</param><exception cref="T:System.ArgumentNullException"><paramref name="buffer"/> is null.</exception><exception cref="T:System.ArgumentOutOfRangeException"><paramref name="offset"/> or <paramref name="count"/> is negative.</exception><exception cref="T:System.ArgumentException">The sum of <paramref name="offset"/> and <paramref name="count"/> is larger than the buffer length.</exception><exception cref="T:System.NotSupportedException">The stream does not support reading.</exception><exception cref="T:System.ObjectDisposedException">The stream has been disposed.</exception><exception cref="T:System.InvalidOperationException">The stream is currently in use by a previous read operation. </exception>
-		/// <exception cref="NotSupportedException">This stream does not support asynchronous I/O.</exception>
-		public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+		public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
 	    {
-			throw new NotSupportedException(Resources.GOR_ERR_STREAM_DOES_NOT_SUPPORT_ASYNC);
+	        if (buffer == null)
+	        {
+	            throw new ArgumentNullException(nameof(buffer));
+	        }
+
+	        if (offset < 0)
+	        {
+	            throw new ArgumentOutOfRangeException(nameof(offset));
+	        }
+
+	        if (count < 0)
+	        {
+	            throw new ArgumentOutOfRangeException(nameof(count));
+	        }
+
+	        if ((offset + count) > buffer.Length)
+	        {
+	            throw new ArgumentException(string.Format(Resources.GOR_ERR_OFFSET_AND_SIZE_ARE_LARGER_THAN_ARRAY, offset, count, buffer.Length));
+	        }
+
+	        if (!ParentStream.CanRead)
+	        {
+	            throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
+	        }
+
+	        int actualCount = count;
+			
+	        if (actualCount > _streamLength - _currentPosition)
+	        {
+	            actualCount = (int)(_streamLength - _currentPosition);
+	        }
+
+	        if (actualCount <= 0)
+	        {
+	            return 0;
+	        }
+
+	        long lastPosition = ParentStream.Position;
+
+	        try
+	        {
+	            ParentStream.Position = _currentPosition + _parentOffset;
+				
+	            int result = await ParentStream.ReadAsync(buffer, offset, actualCount, cancellationToken);
+
+	            _currentPosition += result;
+
+	            return result;
+	        }
+	        finally
+	        {
+	            ParentStream.Position = lastPosition;
+	        }
 	    }
 
 		/// <summary>
@@ -248,11 +331,53 @@ namespace Gorgon.IO
 		/// A task that represents the asynchronous write operation.
 		/// </returns>
 		/// <param name="buffer">The buffer to write data from.</param><param name="offset">The zero-based byte offset in <paramref name="buffer"/> from which to begin copying bytes to the stream.</param><param name="count">The maximum number of bytes to write.</param><param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="P:System.Threading.CancellationToken.None"/>.</param><exception cref="T:System.ArgumentNullException"><paramref name="buffer"/> is null.</exception><exception cref="T:System.ArgumentOutOfRangeException"><paramref name="offset"/> or <paramref name="count"/> is negative.</exception><exception cref="T:System.ArgumentException">The sum of <paramref name="offset"/> and <paramref name="count"/> is larger than the buffer length.</exception><exception cref="T:System.NotSupportedException">The stream does not support writing.</exception><exception cref="T:System.ObjectDisposedException">The stream has been disposed.</exception><exception cref="T:System.InvalidOperationException">The stream is currently in use by a previous write operation. </exception>
-		/// <exception cref="NotSupportedException">This stream does not support asynchronous I/O.</exception>
-		public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+		public override async Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
 	    {
-			throw new NotSupportedException(Resources.GOR_ERR_STREAM_DOES_NOT_SUPPORT_ASYNC);
-	    }
+            if (buffer == null)
+            {
+                throw new ArgumentNullException(nameof(buffer));
+            }
+
+            if (offset < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(offset));
+            }
+
+            if (count < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(count));
+            }
+
+            if ((offset + count) > buffer.Length)
+            {
+                throw new ArgumentException(string.Format(Resources.GOR_ERR_OFFSET_AND_SIZE_ARE_LARGER_THAN_ARRAY, offset, count, buffer.Length));
+            }
+
+            if (!ParentStream.CanWrite)
+            {
+                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_READONLY);
+            }
+
+            long lastPosition = ParentStream.Position;
+
+            try
+            {
+                ParentStream.Position = _parentOffset + _currentPosition;
+
+                await ParentStream.WriteAsync(buffer, offset, count, cancellationToken);
+
+                _currentPosition += count;
+
+                if (_currentPosition > _streamLength)
+                {
+                    _streamLength += count;
+                }
+            }
+            finally
+            {
+                ParentStream.Position = lastPosition;
+            }
+        }
 		
 	    /// <summary>
 	    /// Writes a byte to the current position in the stream and advances the position within the stream by one byte.

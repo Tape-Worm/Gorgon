@@ -29,6 +29,34 @@ using System.Security;
 
 namespace Gorgon.Native
 {
+    /// <summary>
+    /// The type of control signal used to close the console window.
+    /// </summary>
+    internal enum ConsoleCloseSignal
+        : uint
+    {
+        /// <summary>
+        /// The CTRL+C key event.
+        /// </summary>
+        CtrlC = 0,
+        /// <summary>
+        /// The CTRL+BREAK key event.
+        /// </summary>
+        Break = 1,
+        /// <summary>
+        /// The application close event (close on the console window or the process shut downs down).
+        /// </summary>
+        Close = 2,
+        /// <summary>
+        /// System log off close event.
+        /// </summary>
+        LogOff = 5,
+        /// <summary>
+        /// System shut down close event.
+        /// </summary>
+        ShutDown = 6
+    }
+
 	/// <summary>
 	/// Native windows kernal API functionality.
 	/// </summary>
@@ -79,7 +107,41 @@ namespace Gorgon.Native
 		}
 		#endregion
 
+        #region Delegates.
+        /// <summary>
+        /// Event delegate for closing the console window.
+        /// </summary>
+        /// <param name="dwControlType">The type of event.</param>
+        /// <returns><b>true</b> if the event is handled, <b>false</b> if not.</returns>
+	    public delegate bool ConsoleCloseHandler(ConsoleCloseSignal dwControlType);
+        #endregion
+
 		#region Methods.
+        /// <summary>
+        /// Function to set up a console control handler to intercept console close events.
+        /// </summary>
+        /// <param name="handler">The handler to assign.</param>
+        /// <param name="add"><b>true</b> to add the handler, <b>false</b> to remove it.</param>
+        /// <returns><b>true</b> if the function succeeds, <b>false</b> if not.</returns>
+	    [return: MarshalAs(UnmanagedType.Bool)]
+	    [DllImport("kernel32.dll")]
+	    public static extern bool SetConsoleCtrlHandler(ConsoleCloseHandler handler, [MarshalAs(UnmanagedType.Bool)] bool add);
+
+	    /// <summary>
+        /// Function to allocate a console window.
+        /// </summary>
+        /// <returns><b>true</b> if successful, <b>false</b> if not.</returns>
+        [return: MarshalAs(UnmanagedType.Bool)]
+	    [DllImport("kernel32.dll")]
+	    public static extern bool AllocConsole();
+
+        /// <summary>
+        /// Function to free an allocated console window.
+        /// </summary>
+        /// <returns>Non zero if successful, zero if failed.</returns>
+	    [DllImport("kernel32.dll")]
+	    public static extern int FreeConsole();
+
 		/// <summary>
 		/// Function to return the amount of memory available on the machine.
 		/// </summary>

@@ -65,6 +65,49 @@ namespace Gorgon.Plugins
         private readonly List<string> _paths = new List<string>();
 		#endregion
 
+	    #region Properties
+	    /// <summary>
+	    /// Gets or sets the path at the specified index.
+	    /// </summary>
+	    public string this[int index]
+	    {
+	        get => _paths[index];
+	        set
+	        {
+	            if (string.IsNullOrWhiteSpace(value))
+	            {
+	                return;
+	            }
+
+	            value = ValidatePath(value);
+
+	            if ((IndexOf(value) != -1)
+	                || (string.IsNullOrWhiteSpace(value)))
+	            {
+	                return;
+	            }
+
+	            _paths[index] = value;
+	        }
+	    }
+
+	    /// <summary>
+	    /// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+	    /// </summary>
+	    /// <returns>
+	    /// The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+	    ///   </returns>
+	    public int Count => _paths.Count;
+
+	    /// <summary>
+	    /// Gets a value indicating whether this instance is read only.
+	    /// </summary>
+	    /// <value>
+	    /// 	<b>true</b> if this instance is read only; otherwise, <b>false</b>.
+	    /// </value>
+	    bool ICollection<string>.IsReadOnly => false;
+	    #endregion
+
 		#region Methods.
 		/// <summary>
 		/// Function to validate the path.
@@ -187,117 +230,55 @@ namespace Gorgon.Plugins
 				Add(path);
 			}
 		}
-		#endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonPluginPathCollection"/> class.
-		/// </summary>
-		internal GorgonPluginPathCollection()
-		{
-		}
-		#endregion
+	    /// <summary>
+	    /// Determines the index of a specific item in the collection.
+	    /// </summary>
+	    /// <param name="path">The object to locate in the collection.</param>
+	    /// <returns>
+	    /// The index of <paramref name="path" /> if found in the list; otherwise, -1.
+	    /// </returns>
+	    public int IndexOf(string path)
+	    {
+	        if (string.IsNullOrWhiteSpace(path))
+	        {
+	            return -1;
+	        }
 
-		#region IList<string> Members
-		#region Properties.
-		/// <summary>
-		/// Gets or sets the path at the specified index.
-		/// </summary>
-		public string this[int index]
-		{
-			get => _paths[index];
-			set
-			{
-				if (string.IsNullOrWhiteSpace(value))
-				{
-					return;
-				}
+	        path = ValidatePath(path);
 
-				value = ValidatePath(value);
+	        return _paths.FindIndex(_ => string.Equals(path, _, StringComparison.OrdinalIgnoreCase));
+	    }
 
-				if ((IndexOf(value) != -1)
-					|| (string.IsNullOrWhiteSpace(value)))
-				{
-					return;
-				}
+	    /// <summary>
+	    /// Inserts an item to the collection at the specified index.
+	    /// </summary>
+	    /// <param name="index">The zero-based index at which <paramref name="path" /> should be inserted.</param>
+	    /// <param name="path">The object to insert into the <see cref="T:System.Collections.Generic.IList`1" />.</param>
+	    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <b>null</b>.</exception>
+	    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
+	    public void Insert(int index, string path)
+	    {
+	        path = ValidatePath(path);
 
-				_paths[index] = value;
-			}
-		}
-		#endregion
+	        if ((IndexOf(path) != -1)
+	            || (string.IsNullOrWhiteSpace(path)))
+	        {
+	            return;
+	        }
 
-		#region Methods.
-		/// <summary>
-		/// Determines the index of a specific item in the collection.
-		/// </summary>
-		/// <param name="path">The object to locate in the collection.</param>
-		/// <returns>
-		/// The index of <paramref name="path" /> if found in the list; otherwise, -1.
-		/// </returns>
-		public int IndexOf(string path)
-		{
-			if (string.IsNullOrWhiteSpace(path))
-			{
-				return -1;
-			}
+	        _paths.Insert(index, path);
+	    }
 
-			path = ValidatePath(path);
+	    /// <summary>
+	    /// Removes the <see cref="T:System.Collections.Generic.IList`1" /> item at the specified index.
+	    /// </summary>
+	    /// <param name="index">The zero-based index of the item to remove.</param>
+	    void IList<string>.RemoveAt(int index)
+	    {
+	        Remove(index);
+	    }
 
-			return _paths.FindIndex(_ => string.Equals(path, _, StringComparison.OrdinalIgnoreCase));
-		}
-
-		/// <summary>
-		/// Inserts an item to the collection at the specified index.
-		/// </summary>
-		/// <param name="index">The zero-based index at which <paramref name="path" /> should be inserted.</param>
-		/// <param name="path">The object to insert into the <see cref="T:System.Collections.Generic.IList`1" />.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
-		public void Insert(int index, string path)
-		{
-			path = ValidatePath(path);
-
-			if ((IndexOf(path) != -1)
-				|| (string.IsNullOrWhiteSpace(path)))
-			{
-				return;
-			}
-
-			_paths.Insert(index, path);
-		}
-
-		/// <summary>
-		/// Removes the <see cref="T:System.Collections.Generic.IList`1" /> item at the specified index.
-		/// </summary>
-		/// <param name="index">The zero-based index of the item to remove.</param>
-		void IList<string>.RemoveAt(int index)
-		{
-			Remove(index);
-		}
-		#endregion
-		#endregion
-
-		#region ICollection<string> Members
-		#region Properties.
-		/// <summary>
-		/// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.
-		/// </summary>
-		/// <returns>
-		/// The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.
-		///   </returns>
-		public int Count => _paths.Count;
-
-		/// <summary>
-		/// Gets a value indicating whether this instance is read only.
-		/// </summary>
-		/// <value>
-		/// 	<b>true</b> if this instance is read only; otherwise, <b>false</b>.
-		/// </value>
-		bool ICollection<string>.IsReadOnly => false;
-
-		#endregion
-
-		#region Methods.
 		/// <summary>
 		/// Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1" />.
 		/// </summary>
@@ -379,32 +360,36 @@ namespace Gorgon.Plugins
         {
             _paths.CopyTo(array, arrayIndex);
         }
-        #endregion
+
+	    /// <summary>
+	    /// Returns an enumerator that iterates through the collection.
+	    /// </summary>
+	    /// <returns>
+	    /// A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.
+	    /// </returns>
+	    public IEnumerator<string> GetEnumerator()
+	    {
+	        return _paths.GetEnumerator();
+	    }
+
+	    /// <summary>
+	    /// Returns an enumerator that iterates through a collection.
+	    /// </summary>
+	    /// <returns>
+	    /// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
+	    /// </returns>
+	    IEnumerator IEnumerable.GetEnumerator()
+	    {
+	        return ((IEnumerable) _paths).GetEnumerator();
+	    }
 		#endregion
 
-		#region IEnumerable<string> Members
+		#region Constructor/Destructor.
 		/// <summary>
-		/// Returns an enumerator that iterates through the collection.
+		/// Initializes a new instance of the <see cref="GorgonPluginPathCollection"/> class.
 		/// </summary>
-		/// <returns>
-		/// A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.
-		/// </returns>
-		public IEnumerator<string> GetEnumerator()
+		internal GorgonPluginPathCollection()
 		{
-		    return _paths.GetEnumerator();
-		}
-		#endregion
-
-		#region IEnumerable Members
-		/// <summary>
-		/// Returns an enumerator that iterates through a collection.
-		/// </summary>
-		/// <returns>
-		/// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
-		/// </returns>
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-		    return ((IEnumerable) _paths).GetEnumerator();
 		}
 		#endregion
 	}

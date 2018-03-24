@@ -58,11 +58,15 @@ namespace Gorgon.IO
 		#endregion
 
 		#region Properties.
+	    /// <summary>
+	    /// Property to return the name of the object.
+	    /// </summary>
+	    string IGorgonNamedObject.Name => Extension;
+
 		/// <summary>
 		/// Property to return whether the extension is empty or not.
 		/// </summary>
 		public bool IsEmpty => string.IsNullOrWhiteSpace(Extension);
-
 		#endregion
 
 		#region Operators.
@@ -193,6 +197,75 @@ namespace Gorgon.IO
 		{
 			return string.Format(Resources.GOR_TOSTR_FILE_EXTENSION, Description, Extension);
 		}
+
+	    /// <summary>
+	    /// Indicates whether the current object is equal to another object of the same type.
+	    /// </summary>
+	    /// <param name="other">An object to compare with this object.</param>
+	    /// <returns>
+	    /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
+	    /// </returns>
+	    public bool Equals(GorgonFileExtension other)
+	    {
+	        return Equals(ref this, ref other);
+	    }
+
+	    /// <summary>
+	    /// Compares the current object with another object of the same type.
+	    /// </summary>
+	    /// <param name="other">An object to compare with this object.</param>
+	    /// <returns>
+	    /// A value that indicates the relative order of the objects being compared. The return value has the following meanings: Value Meaning Less than zero This object is less than the <paramref name="other" /> parameter.Zero This object is equal to <paramref name="other" />. Greater than zero This object is greater than <paramref name="other" />.
+	    /// </returns>
+	    public int CompareTo(GorgonFileExtension other)
+	    {
+	        return string.Compare(Extension, other.Extension, StringComparison.OrdinalIgnoreCase);
+	    }
+
+	    /// <summary>
+	    /// Indicates whether the current object is equal to another object of the same type.
+	    /// </summary>
+	    /// <param name="other">An object to compare with this object.</param>
+	    /// <returns>
+	    /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
+	    /// </returns>
+	    public bool Equals(string other)
+	    {
+	        if (string.IsNullOrWhiteSpace(other))
+	        {
+	            return false;
+	        }
+
+	        if (other.StartsWith(".", StringComparison.Ordinal))
+	        {
+	            other = other.Substring(1);
+	        }
+
+	        return string.Equals(Extension, other, StringComparison.OrdinalIgnoreCase);
+	    }
+
+	    /// <summary>
+	    /// Compares the current object with another object of the same type.
+	    /// </summary>
+	    /// <param name="other">An object to compare with this object.</param>
+	    /// <returns>
+	    /// A value that indicates the relative order of the objects being compared. The return value has the following meanings: Value Meaning Less than zero This object is less than the <paramref name="other" /> parameter.Zero This object is equal to <paramref name="other" />. Greater than zero This object is greater than <paramref name="other" />.
+	    /// </returns>
+	    /// <exception cref="System.NotImplementedException"></exception>
+	    public int CompareTo(string other)
+	    {
+	        if (string.IsNullOrWhiteSpace(other))
+	        {
+	            return -1;
+	        }
+
+	        if (other.StartsWith(".", StringComparison.Ordinal))
+	        {
+	            other = other.Substring(1);
+	        }
+
+	        return string.Compare(Extension, other, StringComparison.OrdinalIgnoreCase);
+	    }
 		#endregion
 
 		#region Constructor/Destructor.
@@ -230,91 +303,6 @@ namespace Gorgon.IO
             : this(extension, string.Empty)
 	    {
 	    }
-		#endregion
-
-		#region IEquatable<FileExtension> Members
-		/// <summary>
-		/// Indicates whether the current object is equal to another object of the same type.
-		/// </summary>
-		/// <param name="other">An object to compare with this object.</param>
-		/// <returns>
-		/// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
-		/// </returns>
-		public bool Equals(GorgonFileExtension other)
-		{
-			return Equals(ref this, ref other);
-		}
-		#endregion
-
-		#region IComparable<FileExtension> Members
-		/// <summary>
-		/// Compares the current object with another object of the same type.
-		/// </summary>
-		/// <param name="other">An object to compare with this object.</param>
-		/// <returns>
-		/// A value that indicates the relative order of the objects being compared. The return value has the following meanings: Value Meaning Less than zero This object is less than the <paramref name="other" /> parameter.Zero This object is equal to <paramref name="other" />. Greater than zero This object is greater than <paramref name="other" />.
-		/// </returns>
-		public int CompareTo(GorgonFileExtension other)
-		{
-			return string.Compare(Extension, other.Extension, StringComparison.OrdinalIgnoreCase);
-		}
-		#endregion
-
-		#region IEquatable<string> Members
-		/// <summary>
-		/// Indicates whether the current object is equal to another object of the same type.
-		/// </summary>
-		/// <param name="other">An object to compare with this object.</param>
-		/// <returns>
-		/// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
-		/// </returns>
-		public bool Equals(string other)
-		{
-			if (string.IsNullOrWhiteSpace(other))
-			{
-				return false;
-			}
-
-			if (other.StartsWith(".", StringComparison.Ordinal))
-			{
-				other = other.Substring(1);
-			}
-
-			return string.Equals(Extension, other, StringComparison.OrdinalIgnoreCase);
-		}
-		#endregion
-
-		#region IComparable<string> Members
-		/// <summary>
-		/// Compares the current object with another object of the same type.
-		/// </summary>
-		/// <param name="other">An object to compare with this object.</param>
-		/// <returns>
-		/// A value that indicates the relative order of the objects being compared. The return value has the following meanings: Value Meaning Less than zero This object is less than the <paramref name="other" /> parameter.Zero This object is equal to <paramref name="other" />. Greater than zero This object is greater than <paramref name="other" />.
-		/// </returns>
-		/// <exception cref="System.NotImplementedException"></exception>
-		public int CompareTo(string other)
-		{
-			if (string.IsNullOrWhiteSpace(other))
-			{
-				return -1;
-			}
-
-			if (other.StartsWith(".", StringComparison.Ordinal))
-			{
-				other = other.Substring(1);
-			}
-
-			return string.Compare(Extension, other, StringComparison.OrdinalIgnoreCase);
-		}
-		#endregion
-
-		#region IGorgonNamedObject Members
-		/// <summary>
-		/// Property to return the name of the object.
-		/// </summary>
-		string IGorgonNamedObject.Name => Extension;
-
 		#endregion
 	}
 }

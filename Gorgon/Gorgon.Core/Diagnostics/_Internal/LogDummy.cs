@@ -26,23 +26,16 @@
 
 using System;
 using System.Threading;
+using Gorgon.Diagnostics.LogProviders;
 
 namespace Gorgon.Diagnostics
 {
 	/// <summary>
 	/// An implementation of the <see cref="IGorgonThreadedLog"/> type that does nothing.
 	/// </summary>
-	public sealed class GorgonLogDummy
+	internal class LogDummy
 		: IGorgonThreadedLog
 	{
-		#region Variables.
-		/// <summary>
-		/// The default instance of the dummy log used across the Gorgon libraries when no logging is required.
-		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "Sure. It's immutable.  Why not.")]
-		public static readonly IGorgonLog DefaultInstance = new GorgonLogDummy();
-		#endregion
-
 		#region Properties.
 		/// <summary>
 		/// Property to return the ID of the thread that created the log object.
@@ -65,20 +58,25 @@ namespace Gorgon.Diagnostics
 		/// Property to return the name of the application that is being logged.
 		/// </summary>
 		public string LogApplication => string.Empty;
-		#endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to send an exception to the log.
-		/// </summary>
-		/// <param name="ex">The exception to log.</param>
-		/// <remarks>
-		/// <para>
-		/// If the <see cref="GorgonLogFile.LogFilterLevel"/> is set to <c>LoggingLevel.NoLogging</c>, then the exception will not be logged. If the filter is set to any other setting, it will be logged 
-		/// regardless of filter level.
-		/// </para>
-		/// </remarks>
-		public void LogException(Exception ex)
+        /// <summary>
+        /// Property to return the provider for this log.
+        /// </summary>
+        public IGorgonLogProvider Provider => null;
+        #endregion
+
+        #region Methods.
+        /// <summary>
+        /// Function to send an exception to the log.
+        /// </summary>
+        /// <param name="ex">The exception to log.</param>
+        /// <remarks>
+        /// <para>
+        /// If the <see cref="GorgonLog.LogFilterLevel"/> is set to <c>LoggingLevel.NoLogging</c>, then the exception will not be logged. If the filter is set to any other setting, it will be logged 
+        /// regardless of filter level.
+        /// </para>
+        /// </remarks>
+        public void LogException(Exception ex)
 		{
 			// Intentionally left blank.
 		}
@@ -93,13 +91,29 @@ namespace Gorgon.Diagnostics
 		{
 			// Intentionally left blank.
 		}
-		#endregion
 
-		#region Constructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonLogDummy"/> class.
-		/// </summary>
-		private GorgonLogDummy()
+        /// <summary>
+        /// Function to perform any one time inital logging.
+        /// </summary>
+        public void LogStart()
+        {
+            // Intentionally left blank.
+        }
+
+        /// <summary>
+        /// Function to perform any one time final logging.
+        /// </summary>
+        public void LogEnd()
+        {
+            // Intentionally left blank.
+        }
+        #endregion
+
+        #region Constructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LogDummy"/> class.
+        /// </summary>
+        public LogDummy()
 		{
 			ThreadID = Thread.CurrentThread.ManagedThreadId;
 		}

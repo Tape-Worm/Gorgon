@@ -48,7 +48,7 @@ namespace Gorgon.Design
 		/// <returns>The string value for the resource object.</returns>
 		private static string GetString(Type resourcesType, string resourceName)
 		{
-            Debug.Assert(resourcesType.FullName != null, nameof(resourcesType) + ".FullName != null");
+            Debug.Assert(resourcesType.FullName != null, nameof(resourcesType) + ".FullName is null");
 			var manager = new ResourceManager(resourcesType.FullName, resourcesType.Assembly);
 			return manager.GetString(resourceName, Thread.CurrentThread.CurrentUICulture);
 		}

@@ -26,10 +26,10 @@
 
 using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using Gorgon.Core.Properties;
-using Gorgon.Native;
 
 namespace Gorgon.IO
 {
@@ -112,6 +112,62 @@ namespace Gorgon.IO
 			Write(pointer.ToPointer(), size);
 		}
 
+        /// <summary>
+        /// Function to write the bytes stored at the provided reference location into the stream.
+        /// </summary>
+        /// <param name="sourceData">The reference location to copy data from.</param>
+        /// <param name="size">The number of bytes to copy.</param>
+        /// <remarks>
+        /// <para>
+        /// This method will write the number of bytes specified by the <paramref name="size"/> parameter from the data stored at the referenced location specified in <paramref name="sourceData"/>.
+        /// </para>
+        /// </remarks>
+	    public void Write(ref byte sourceData, int size)
+	    {
+	        if (size < 1)
+	        {
+	            return;
+	        }
+
+	        int offset = 0;
+
+	        while (size > 0)
+	        {
+	            if (size >= sizeof(long))
+	            {
+	                ref long longRef = ref Unsafe.As<byte, long>(ref Unsafe.Add(ref sourceData, offset));
+                    Write(longRef); 
+	                size -= sizeof(long);
+	                offset += sizeof(long);
+	            }
+
+	            if (size >= sizeof(int))
+	            {
+	                ref int intRef = ref Unsafe.As<byte, int>(ref Unsafe.Add(ref sourceData, offset));
+	                Write(intRef); 
+	                size -= sizeof(int);
+	                offset += sizeof(int);
+	            }
+
+	            if (size >= sizeof(short))
+	            {
+	                ref short shortRef = ref Unsafe.As<byte, short>(ref Unsafe.Add(ref sourceData, offset));
+                    Write(shortRef);
+	                size -= sizeof(short);
+	                offset += sizeof(short);
+	            }
+
+	            if (size <= 0)
+	            {
+	                return;
+	            }
+
+	            Write(Unsafe.Add(ref sourceData, sizeof(byte)));
+	            size -= sizeof(byte);
+	            offset += sizeof(byte);
+	        }
+	    }
+
 		/// <summary>
 		/// Function to write the bytes pointed at by the pointer into the stream.
 		/// </summary>
@@ -132,129 +188,105 @@ namespace Gorgon.IO
 				return;
 			}
 
-			byte* data = (byte*)pointer;
+            var data = (byte*)pointer;
+
 			while (size > 0)
 			{
-				if (size >= 8)
+				if (size >= sizeof(long))
 				{
 					Write(*((long*)data));
-					size -= 8;
-					data += 8;
+					size -= sizeof(long);
+					data += sizeof(long);
 				}
-				else if (size >= 4)
+				
+			    if (size >= sizeof(int))
 				{
 					Write(*((int*)data));
-					size -= 4;
-					data += 4;
+					size -= sizeof(int);
+					data += sizeof(int);
 				}
-				else if (size >= 2)
+				
+			    if (size >= 2)
 				{
 					Write(*((short*)data));
-					size -= 2;
-					data += 2;
+					size -= sizeof(short);
+					data += sizeof(short);
 				}
-				else
-				{
-					Write(*data);
-					size--;
-					data++;
-				}
+
+			    if (size <= 0)
+			    {
+			        return;
+			    }
+
+				Write(*data);
+				size--;
+				data++;
 			}
 		}
 
-		/// <summary>
-		/// Function to write a generic value to the stream.
-		/// </summary>
-		/// <typeparam name="T">Type of value to write.  Must be a value or primitive type.</typeparam>
-		/// <param name="value">Value to write to the stream.</param>
-		/// <remarks>
-		/// <para>
-		/// This method will write the data to the binary stream from the <paramref name="value"/> of type <typeparamref name="T"/>. The amount of data written will be dependant upon the size of 
-		/// <typeparamref name="T"/>, and any packing rules applied.
-		/// </para>
-		/// <note type="important">
-		/// <para>
-		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
-		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
-		/// </para>
-		/// <para>
-		/// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
-		/// </para>
-		/// </note>
-		/// </remarks>
-		/// <exception cref="System.IO.IOException">Thrown when the stream is read-only.</exception>
-		public unsafe void WriteValue<T>(T value)
+        /// <summary>
+        /// Function to write a generic value to the stream.
+        /// </summary>
+        /// <typeparam name="T">Type of value to write.  Must be a value or primitive type.</typeparam>
+        /// <param name="value">Value to write to the stream.</param>
+        /// <remarks>
+        /// <para>
+        /// This method will write the data to the binary stream from the <paramref name="value"/> of type <typeparamref name="T"/>. The amount of data written will be dependant upon the size of 
+        /// <typeparamref name="T"/>, and any packing rules applied.
+        /// </para>
+        /// <note type="important">
+        /// <para>
+        /// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
+        /// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
+        /// </para>
+        /// <para>
+        /// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
+        /// </para>
+        /// </note>
+        /// </remarks>
+        /// <exception cref="IOException">Thrown when the stream is read-only.</exception>
+        public void WriteValue<T>(ref T value)
 			where T : struct
-		{
-			int size = DirectAccess.SizeOf<T>();
-			byte* pointer = stackalloc byte[size];
-
-			DirectAccess.WriteValue(pointer, ref value);
-
-			while (size > 0)
-			{
-				if (size >= 8)
-				{					
-					Write(*((long*)pointer));
-					pointer += 8;
-					size -= 8;
-				}
-				else if (size >= 4)
-				{
-					Write(*((int*)pointer));
-					pointer += 4;
-					size -= 4;
-				}
-				else if (size >= 2)
-				{
-					Write(*((short*)pointer));
-					pointer += 2;
-					size -= 2;
-				}
-				else
-				{
-					Write(*pointer);
-					pointer++;
-					size--;
-				}
-			}
+        {
+            ref byte valueRef = ref Unsafe.As<T, byte>(ref value);
+            Write(ref valueRef, Unsafe.SizeOf<T>());
 		}
 
-		/// <summary>
-		/// Function to write a range of generic values.
-		/// </summary>
-		/// <typeparam name="T">Type of value to write.  Must be a value or primitive type.</typeparam>
-		/// <param name="value">Array of values to write.</param>
-		/// <param name="startIndex">Starting index in the array.</param>
-		/// <param name="count">Number of array elements to copy.</param>
-		/// <remarks>
-		/// <para>
-		/// This will write data into the binary stream from the specified array of values of type <typeparamref name="T"/>. The values will start at the <paramref name="startIndex"/> in the array up to 
-		/// the <paramref name="count"/> specified. 
-		/// </para>
-		/// <para>
-		/// The amount of data written will be dependant upon the size of type <typeparamref name="T"/> <c>* (</c><paramref name="count"/>-<paramref name="startIndex"/><c>)</c>. 
-		/// Packing rules on type <typeparamref name="T"/> will affect the size of the type.
-		/// </para>
-		/// <note type="important">
-		/// <para>
-		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
-		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
-		/// </para>
-		/// <para>
-		/// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
-		/// </para>
-		/// </note>
-		/// </remarks>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="value"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="startIndex"/> parameter is less than 0.
-		/// <para>-or-</para>
-		/// <para>Thrown when the startIndex parameter is equal to or greater than the number of elements in the value parameter.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when the sum of startIndex and <paramref name="count"/> is greater than the number of elements in the value parameter.</para>
-		/// </exception>
-		/// <exception cref="System.IO.IOException">Thrown when the stream is read-only.</exception>
-		public unsafe void WriteRange<T>(T[] value, int startIndex, int count)
+        /// <summary>
+        /// Function to write a range of generic values.
+        /// </summary>
+        /// <typeparam name="T">Type of value to write.  Must be a value or primitive type.</typeparam>
+        /// <param name="value">Array of values to write.</param>
+        /// <param name="startIndex">[Optional] Starting index in the array.</param>
+        /// <param name="count">[Optional] Number of array elements to copy.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="value"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="startIndex"/> parameter is less than 0.
+        /// <para>-or-</para>
+        /// <para>Thrown when the startIndex parameter is equal to or greater than the number of elements in the value parameter.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the sum of startIndex and <paramref name="count"/> is greater than the number of elements in the value parameter.</para>
+        /// </exception>
+        /// <exception cref="IOException">Thrown when the stream is read-only.</exception>
+        /// <remarks>
+        /// <para>
+        /// This will write data into the binary stream from the specified array of values of type <typeparamref name="T"/>. The values will start at the <paramref name="startIndex"/> in the array up to 
+        /// the <paramref name="count"/> specified. If the <paramref name="count"/> is not specified (i.e. it is <b>null</b>), then the entire array minus the <paramref name="startIndex"/> will be used.
+        /// </para>
+        /// <para>
+        /// The amount of data written will be dependant upon the size of type <typeparamref name="T"/> <c>* (</c><paramref name="count"/>-<paramref name="startIndex"/><c>)</c>. 
+        /// Packing rules on type <typeparamref name="T"/> will affect the size of the type.
+        /// </para>
+        /// <note type="important">
+        /// <para>
+        /// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
+        /// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
+        /// </para>
+        /// <para>
+        /// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
+        /// </para>
+        /// </note>
+        /// </remarks>
+        public void WriteRange<T>(T[] value, int startIndex = 0, int? count = null)
 			where T : struct
 		{
 			if (value == null)
@@ -262,10 +294,10 @@ namespace Gorgon.IO
 				throw new ArgumentNullException(nameof(value));
 			}
 
-			if ((value.Length == 0) || (count <= 0))
-			{
-				return;
-			}
+		    if (count == null)
+		    {
+		        count = value.Length - startIndex;
+		    }
 
 			if (startIndex < 0)
 			{
@@ -276,108 +308,47 @@ namespace Gorgon.IO
 			{
                 throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_ERR_VALUE_IS_GREATER_THAN, startIndex, value.Length));
 			}
+            
+		    if ((value.Length == 0) || (count <= 0))
+		    {
+		        return;
+		    }
 
-			if (startIndex + count > value.Length)
+			if ((startIndex + count) > value.Length)
 			{
                 throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_ERR_VALUE_IS_LESS_THAN, startIndex + count, value.Length));
 			}
 
-			int typeSize = DirectAccess.SizeOf<T>();
-			int offset = typeSize * startIndex;
-			int size = typeSize * count;
+		    if (_tempBuffer == null)
+		    {
+                _tempBuffer = new byte[_bufferSize];
+		    }
 
-			// Allocate our temporary buffer if we haven't already.
-			if (_tempBuffer == null)
-			{
-				_tempBuffer = new byte[_bufferSize];
-			}
+		    int typeSize = Unsafe.SizeOf<T>();
+		    int totalSize = count.Value * typeSize;
+		    int blockSize = _tempBuffer.Length;
+		    int offset = 0;
+		    ref byte valueRef = ref Unsafe.As<T, byte>(ref value[startIndex]);
+		    ref byte bufferRef = ref _tempBuffer[0];
+            
+		    while (totalSize > 0)
+		    {
+		        if (blockSize > totalSize)
+		        {
+		            blockSize = totalSize;
+		        }
 
-			while (size > 0)
-			{
-				int blockSize = size > _bufferSize ? _bufferSize : size;
+		        ref byte srcRef = ref Unsafe.Add(ref valueRef, offset);
 
-				fixed (byte* tempBufferPointer = &_tempBuffer[0])
-				{
-					// Read our array into our temporary byte buffer.
-					DirectAccess.ReadArray(tempBufferPointer, value, offset, blockSize);
+                // Not a fan of doing it this way. This extra indirection is kind of annoying, but we have no real way to cast T[] into byte[] and passing that 
+		        // to the Stream Write method.  This may be solvable with Span<T>, but it's still in preview and I won't touch that with a 10,000 foot pole 
+                // until it's ready for use.
+                Unsafe.CopyBlock(ref bufferRef, ref srcRef, (uint)blockSize);
+                Write(_tempBuffer, 0, blockSize);
 
-					// Write the temporary byte buffer to the stream.
-					Write(_tempBuffer, 0, blockSize);
-				}
-
-				offset += blockSize;
-				size -= size;
-			}
-		}
-
-		/// <summary>
-		/// Function to write a range of generic values.
-		/// </summary>
-		/// <typeparam name="T">Type of value to write.  Must be a value or primitive type.</typeparam>
-		/// <param name="value">Array of values to write.</param>
-		/// <param name="count">Number of array elements to copy.</param>
-		/// <remarks>
-		/// <para>
-		/// This will write data into the binary stream from the specified array of values of type <typeparamref name="T"/>. 
-		/// </para>
-		/// <para>
-		/// The amount of data written will be dependant upon the size of type <typeparamref name="T"/> <c>*</c> <paramref name="count"/>.  Packing rules on type <typeparamref name="T"/> will affect the 
-		/// size of the type.
-		/// </para>
-		/// <note type="important">
-		/// <para>
-		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
-		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
-		/// </para>
-		/// <para>
-		/// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
-		/// </para>
-		/// </note>
-		/// </remarks>
-		/// <exception cref="System.IO.IOException">Thrown when the stream is read-only.</exception>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="value"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when <paramref name="count"/> parameter is greater than the number of elements in the value parameter.
-		/// </exception>
-		public void WriteRange<T>(T[] value, int count)
-			where T : struct
-		{
-			WriteRange(value, 0, count);
-		}
-
-		/// <summary>
-		/// Function to write a range of generic values.
-		/// </summary>
-		/// <typeparam name="T">Type of value to write.  Must be a value or primitive type.</typeparam>
-		/// <param name="value">Array of values to write.</param>
-		/// <remarks>
-		/// <para>
-		/// This will write data into the binary stream from the specified array of values of type <typeparamref name="T"/>. 
-		/// </para>
-		/// <para>
-		/// The amount of data written will be dependant upon the size of type <typeparamref name="T"/> <c>* value.Length</c>.  Packing rules on type <typeparamref name="T"/> will affect the 
-		/// size of the type.
-		/// </para>
-		/// <note type="important">
-		/// <para>
-		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
-		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
-		/// </para>
-		/// <para>
-		/// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
-		/// </para>
-		/// </note>
-		/// </remarks>
-		/// <exception cref="System.IO.IOException">Thrown when the stream is read-only.</exception>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="value"/> parameter is <b>null</b>.</exception>
-		public void WriteRange<T>(T[] value)
-			where T : struct
-		{
-			if (value == null)
-			{
-				throw new ArgumentNullException(nameof(value));
-			}
-
-			WriteRange(value, 0, value.Length);
+		        totalSize -= blockSize;
+		        offset += blockSize;
+		    }
 		}
 		#endregion
 

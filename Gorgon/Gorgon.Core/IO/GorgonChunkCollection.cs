@@ -186,7 +186,7 @@ namespace Gorgon.IO
 			{
 				int index = IndexOf(chunkName);
 
-				return index == -1 ? default(GorgonChunk) : _list[index];
+				return index == -1 ? default : _list[index];
 			}
 		}
 
@@ -202,7 +202,7 @@ namespace Gorgon.IO
 			{
 				int index = IndexOf(ID);
 
-				return index == -1 ? default(GorgonChunk) : _list[index];
+				return index == -1 ? default : _list[index];
 			}
 		}
 		#endregion

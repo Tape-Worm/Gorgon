@@ -1,7 +1,7 @@
 ﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2015 Michael Winsor
+// Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,25 +20,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Monday, August 17, 2015 9:41:38 PM
+// Created: February 23, 2017 9:06:11 PM
 // 
 #endregion
 
-namespace Gorgon.Diagnostics
-{
-	/// <summary>
-	/// Provides functionality to log to a file on the file system.
-	/// </summary>
-	public interface IGorgonLogFile
-	{
-		/// <summary>
-		/// Function to start logging to a new file.
-		/// </summary>
-		void Begin();
+using System.Reflection;
+using System.Runtime.InteropServices;
 
-		/// <summary>
-		/// Function to end logging to the file.
-		/// </summary>
-		void End();
-	}
-}
+//
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+#if DEBUG
+[assembly: AssemblyTitle("Gorgon Core Example #5 [DEBUG]")]
+#else
+[assembly: AssemblyTitle("Gorgon Core Example #5 ")]
+#endif
+
+// The following GUID is for the ID of the typelib if this project is exposed to COM
+[assembly: Guid("C5CD3AE7-CF79-49E9-ACA9-28746CB3D25C")]

@@ -62,6 +62,7 @@ namespace Gorgon.Core.Collections
 		        // If no equality comparer is found, but we are comparable, then try to use that.
                 case IComparable<T> comparerItem:
 		            // ReSharper disable once ForCanBeConvertedToForeach
+                    // ReSharper disable once LoopCanBeConvertedToQuery
 		            for (int i = 0; i < list.Count; ++i)
 		            {
 		                if (comparerItem.CompareTo(list[i]) == 0)
@@ -117,9 +118,12 @@ namespace Gorgon.Core.Collections
 			    case T[] arrayList:
 			        // If the list is an array, use the built in functionality.
                     return Array.IndexOf(arrayList, item);
-                case IList<T> readWriteList:
-                    // If it implements IList<T>, then use the IndexOf on that.
+                case List<T> readWriteList:
+                    // If it inherits List<T>, then use the IndexOf on that.
                     return readWriteList.IndexOf(item);
+                case IList<T> readWriteIList:
+                    // If it implements IList<T>, then use the IndexOf on that.
+                    return readWriteIList.IndexOf(item);
 			}
             
 		    switch (item)

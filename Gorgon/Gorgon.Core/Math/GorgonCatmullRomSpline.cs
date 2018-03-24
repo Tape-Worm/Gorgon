@@ -96,7 +96,7 @@ namespace Gorgon.Math
 		/// Property to return the list of points for the spline.
 		/// </summary>
 		/// <remarks>
-		/// When adding or removing points> from the spline, a call to the <see cref="IGorgonSpline.UpdateTangents"/> method is required to recalculate the tangents. Otherwise, the spline interpolation will be incorrect.
+		/// When adding or removing points from the spline, a call to the <see cref="IGorgonSpline.UpdateTangents"/> method is required to recalculate the tangents. Otherwise, the spline interpolation will be incorrect.
 		/// </remarks>
 		public IList<DX.Vector4> Points
         {

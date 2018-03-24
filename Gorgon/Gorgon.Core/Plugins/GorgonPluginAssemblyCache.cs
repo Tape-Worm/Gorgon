@@ -111,12 +111,10 @@ namespace Gorgon.Plugins
 		// List of loaded assemblies.
 		private static readonly Lazy<Dictionary<string, Assembly>> _assemblies =
 			new Lazy<Dictionary<string, Assembly>>(() => new Dictionary<string, Assembly>(StringComparer.OrdinalIgnoreCase));
-		// Synchronization primitive for get-or-add method.
-		private static int _getOrAddSync;
-		// Enumeration synchronization.
-		private static int _enumSync;
+		// Synchronization primitive for thread safety.
+		private static int _syncAssemblies;
 		// Application log file.
-		private readonly IGorgonLog _log = GorgonLogDummy.DefaultInstance;
+		private readonly IGorgonLog _log = GorgonLog.NullLog;
 		// A resolver function for errant assemblies.
 		private Func<AppDomain, ResolveEventArgs, Assembly> _resolver;
 		// An application domain used for plugin information discovery.
@@ -207,7 +205,7 @@ namespace Gorgon.Plugins
 		private GorgonPluginVerifier GetVerifier()
 		{
 			Type verifierType = typeof(GorgonPluginVerifier);
-		    Debug.Assert(verifierType.FullName != null, nameof(verifierType) + ".FullName != null");
+		    Debug.Assert(verifierType.FullName != null, nameof(GorgonPluginVerifier) + ".FullName == null");
             _log.Print("Creating plugin verifier...", LoggingLevel.Verbose);
 			return (GorgonPluginVerifier)(_discoveryDomain.Value.CreateInstanceFrom(verifierType.Assembly.Location, verifierType.FullName).Unwrap());
 		}
@@ -241,34 +239,36 @@ namespace Gorgon.Plugins
 			// load the same assembly multiple times - which is a waste. We only want the assembly to load once, and only once.
 			while (true)
 			{
-
 				if (_assemblies.Value.TryGetValue(assemblyName.FullName, out Assembly result))
 				{
 					return !HasPluginTypes(result) ? null : result;
 				}
 
+			    if (Interlocked.Exchange(ref _syncAssemblies, 1) == 1)
+			    {
+			        Thread.Sleep(100);
+			        continue;
+			    }
+
 				try
 				{
-					if (Interlocked.Increment(ref _getOrAddSync) == 1)
+					_log.Print("Loading plugin assembly '{0}' from {1}", LoggingLevel.Simple, assemblyName.FullName, assemblyName.EscapedCodeBase);
+
+					result = Assembly.Load(assemblyName);
+
+					if (!HasPluginTypes(result))
 					{
-						_log.Print("Loading plugin assembly '{0}' from {1}", LoggingLevel.Simple, assemblyName.FullName, assemblyName.EscapedCodeBase);
-
-						result = Assembly.Load(assemblyName);
-
-						if (!HasPluginTypes(result))
-						{
-							return null;
-						}
-
-						_assemblies.Value.Add(assemblyName.FullName, result);
-						added = true;
-
-						return result;
+						return null;
 					}
+
+					_assemblies.Value.Add(assemblyName.FullName, result);
+					added = true;
+
+					return result;
 				}
 				finally
 				{
-					Interlocked.Decrement(ref _getOrAddSync);
+					Interlocked.Exchange(ref _syncAssemblies, 0);
 				}
 			}
 		}
@@ -322,26 +322,28 @@ namespace Gorgon.Plugins
 						break;
 					}
 
+				    if (Interlocked.Exchange(ref _syncAssemblies, 1) == 1)
+				    {
+				        Thread.Sleep(100);
+				        continue;
+				    }
+
 					try
 					{
-						if (Interlocked.Increment(ref _enumSync) == 1)
+					    // We've already scanned this guy, so we're done.
+						if (!checkedAssembly.Contains(assembly.FullName))
 						{
-							// We've already scanned this guy, so we're done.
-							if (!checkedAssembly.Contains(assembly.FullName))
-							{
-								checkedAssembly.Add(assembly.FullName);
-							}
+							checkedAssembly.Add(assembly.FullName);
+						}
 
-							if (HasPluginTypes(assembly))
-							{
-								_assemblies.Value.Add(assembly.FullName, assembly);
-							}
-							break;
+						if (HasPluginTypes(assembly))
+						{
+							_assemblies.Value.Add(assembly.FullName, assembly);
 						}
 					}
 					finally
 					{
-						Interlocked.Decrement(ref _enumSync);
+						Interlocked.Exchange(ref _syncAssemblies, 0);
 					}
 				}
 			}
@@ -715,6 +717,40 @@ namespace Gorgon.Plugins
 			}
 		}
 
+	    /// <summary>
+	    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+	    /// </summary>
+	    /// <remarks>
+	    /// <para>
+	    /// <note type="important">
+	    /// <para>
+	    /// This method must be called, or the application domain that is created to interrogate assembly types will live until the end of the application. This could lead to memory bloat or worse. 
+	    /// </para>
+	    /// <para>
+	    /// Because the application domain is unloaded on a separate thread, it may deadlock with the finalizer thread and thus we cannot count on the finalizer to clean evict the stale app domain on our 
+	    /// behalf.
+	    /// </para>
+	    /// </note>
+	    /// </para>
+	    /// </remarks>
+	    public void Dispose()
+	    {
+	        if ((_discoveryDomain == null) || (_discoveryDomain.IsValueCreated))
+	        {
+	            return;
+	        }
+
+	        _log.Print("Unloading temporary application domain.", LoggingLevel.Intermediate);
+
+	        AssemblyResolver = null;
+	        _verifier = null;
+
+	        // App domains get unloaded on a separate thread. So we have to manually call dispose to unload the thread,
+	        // otherwise we'll get a deadlock if we try to do this in the finalizer thread.
+	        AppDomain.Unload(_discoveryDomain.Value);
+	        _discoveryDomain = null;
+	    }
+
 		/// <summary>
 		/// Function to load an assembly that contains <see cref="GorgonPlugin"/> types.
 		/// </summary>
@@ -769,42 +805,6 @@ namespace Gorgon.Plugins
 
 			_discoveryDomain = new Lazy<AppDomain>(CreateAppDomain);
 			_verifier = new Lazy<GorgonPluginVerifier>(GetVerifier);
-		}
-		#endregion
-
-		#region IDisposable Members
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// <note type="important">
-		/// <para>
-		/// This method must be called, or the application domain that is created to interrogate assembly types will live until the end of the application. This could lead to memory bloat or worse. 
-		/// </para>
-		/// <para>
-		/// Because the application domain is unloaded on a separate thread, it may deadlock with the finalizer thread and thus we cannot count on the finalizer to clean evict the stale app domain on our 
-		/// behalf.
-		/// </para>
-		/// </note>
-		/// </para>
-		/// </remarks>
-		public void Dispose()
-		{
-			if ((_discoveryDomain == null) || (_discoveryDomain.IsValueCreated))
-			{
-				return;
-			}
-
-			_log.Print("Unloading temporary application domain.", LoggingLevel.Intermediate);
-
-			AssemblyResolver = null;
-			_verifier = null;
-
-			// App domains get unloaded on a separate thread. So we have to manually call dispose to unload the thread,
-			// otherwise we'll get a deadlock if we try to do this in the finalizer thread.
-			AppDomain.Unload(_discoveryDomain.Value);
-			_discoveryDomain = null;
 		}
 		#endregion
 	}

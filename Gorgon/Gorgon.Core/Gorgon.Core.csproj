@@ -28,7 +28,7 @@
     </UpgradeBackupLocation>
     <SignAssembly>false</SignAssembly>
     <OldToolsVersion>3.5</OldToolsVersion>
-    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <TargetFrameworkProfile />
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
@@ -74,6 +74,7 @@
     <Prefer32Bit>false</Prefer32Bit>
     <CodeAnalysisRuleSet>..\NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>true</RunCodeAnalysis>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\Release\</OutputPath>
@@ -100,23 +101,22 @@
     <DebugType>pdbonly</DebugType>
     <Prefer32Bit>false</Prefer32Bit>
     <RunCodeAnalysis>false</RunCodeAnalysis>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Gorgon.Native">
-      <HintPath>..\Gorgon.Native\Gorgon.Native.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="SharpDX.Mathematics, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
       <HintPath>..\..\packages\SharpDX.Mathematics.4.0.1\lib\net45\SharpDX.Mathematics.dll</HintPath>
     </Reference>
-    <Reference Include="System">
-      <Name>System</Name>
-    </Reference>
+    <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Drawing">
       <Name>System.Drawing</Name>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Runtime.CompilerServices.Unsafe.4.4.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="System.Windows.Forms">
       <Name>System.Windows.Forms</Name>
@@ -135,12 +135,9 @@
     <Compile Include="Collections\Specialized\GorgonNamedObjectDictionary.cs" />
     <Compile Include="Collections\_Interfaces\IGorgonNamedObjectReadOnlyDictionary.cs" />
     <Compile Include="Collections\_Interfaces\IGorgonNamedObjectDictionary.cs" />
-    <Compile Include="Collections\Specialized\GorgonDisposableObjectCollection.cs" />
     <Compile Include="Collections\Specialized\GorgonNamedObjectList.cs" />
     <Compile Include="Collections\_Interfaces\IGorgonNamedObjectList.cs" />
     <Compile Include="Collections\_Interfaces\IGorgonNamedObjectReadOnlyList.cs" />
-    <Compile Include="Configuration\GorgonApplicationSettingAttribute.cs" />
-    <Compile Include="Configuration\GorgonApplicationSettings.cs" />
     <Compile Include="Configuration\_Interfaces\IGorgonOption.cs" />
     <Compile Include="Configuration\_Interfaces\IGorgonOptionBag.cs" />
     <Compile Include="Design\GorgonFreezable.cs" />
@@ -148,12 +145,14 @@
     <Compile Include="Design\LocalDescriptionAttribute.cs" />
     <Compile Include="Design\LocalDisplayNameAttribute.cs" />
     <Compile Include="Diagnostics\GorgonComputerInfo.cs" />
-    <Compile Include="Diagnostics\GorgonLogDummy.cs" />
+    <Compile Include="Diagnostics\GorgonLogConsole.cs" />
+    <Compile Include="Diagnostics\LogProviders\GorgonLogConsoleProvider.cs" />
+    <Compile Include="Diagnostics\_Internal\LogDummy.cs" />
+    <Compile Include="Diagnostics\LogProviders\GorgonLogTextFileProvider.cs" />
     <Compile Include="Diagnostics\_Interfaces\IGorgonLog.cs" />
-    <Compile Include="Diagnostics\_Interfaces\IGorgonLogFile.cs" />
+    <Compile Include="Diagnostics\LogProviders\_Interfaces\IGorgonLogProvider.cs" />
     <Compile Include="Diagnostics\_Interfaces\IGorgonThreadedLog.cs" />
     <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="GorgonCancelEventArgs.cs" />
     <Compile Include="GorgonHandledEventArgs.cs" />
     <Compile Include="Graphics\BufferFormat.cs" />
     <Compile Include="Graphics\GorgonBox.cs" />
@@ -167,20 +166,15 @@
     <Compile Include="IO\_Interfaces\IGorgonReadOnlyChunkCollection.cs" />
     <Compile Include="Math\GorgonRationalNumber.cs" />
     <Compile Include="Math\_Interfaces\IGorgonSpline.cs" />
-    <Compile Include="Memory\GorgonLinearAllocatorPool.cs" />
+    <Compile Include="Memory\GorgonPool.cs" />
+    <Compile Include="Memory\GorgonLinearPool.cs" />
+    <Compile Include="Memory\GorgonRingPool.cs" />
     <Compile Include="Native\GorgonIntPtrEqualityComparer.cs" />
-    <Compile Include="Native\GorgonPointerTyped.cs" />
-    <Compile Include="Native\GorgonPointerAlias.cs" />
-    <Compile Include="Native\GorgonPointerAliasTyped.cs" />
-    <Compile Include="Native\GorgonPointerBase.cs" />
     <Compile Include="Native\_Internal\KernelApi.cs" />
     <Compile Include="Native\_Internal\Win32 Structs\HDITEM.cs" />
     <Compile Include="Native\_Internal\Win32 Structs\MEMORYSTATUSEX.cs" />
     <Compile Include="Native\_Internal\Win32 Structs\MSG.cs" />
     <Compile Include="Native\_Internal\Win32 Structs\TIMECAPS.cs" />
-    <Compile Include="Native\_Interfaces\IGorgonPointer.cs" />
-    <Compile Include="Native\GorgonPointer.cs" />
-    <Compile Include="Native\GorgonPointerPinned.cs" />
     <Compile Include="Native\_Internal\UserApi.cs" />
     <Compile Include="Native\_Internal\WinMultimediaApi.cs" />
     <Compile Include="Plugins\GorgonPluginService.cs" />
@@ -206,7 +200,7 @@
     <Compile Include="GorgonRange.cs" />
     <Compile Include="Collections\GorgonBaseNamedObjectDictionary.cs" />
     <Compile Include="Collections\GorgonBaseNamedObjectList.cs" />
-    <Compile Include="Diagnostics\GorgonLogFile.cs" />
+    <Compile Include="Diagnostics\GorgonLog.cs" />
     <Compile Include="Timing\GorgonTiming.cs" />
     <Compile Include="Timing\GorgonTimerQpc.cs" />
     <Compile Include="_Interfaces\IGorgonNamedObject.cs" />
@@ -216,7 +210,6 @@
     <Compile Include="IO\GorgonBinaryWriter.cs" />
     <Compile Include="GorgonResult.cs" />
     <Compile Include="GorgonNamedObject.cs" />
-    <Compile Include="IO\GorgonDataStream.cs" />
     <Compile Include="IO\GorgonFileExtensionComparer.cs" />
     <Compile Include="GorgonRandom.cs" />
     <Compile Include="Math\GorgonCatmullRomSpline.cs" />

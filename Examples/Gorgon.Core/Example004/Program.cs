@@ -192,6 +192,8 @@ namespace Gorgon.Examples
 			{
 				// Always call dispose so we can unload our temporary application domain.
 				pluginAssemblies.Dispose();
+
+                GorgonApplication.Log.LogEnd();
 			}
 		}
 		#endregion

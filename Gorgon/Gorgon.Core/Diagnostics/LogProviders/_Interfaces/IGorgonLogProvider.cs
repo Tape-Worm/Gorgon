@@ -1,7 +1,7 @@
-﻿#region MIT.
+﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2011 Michael Winsor
+// Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,40 +20,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Wednesday, November 02, 2011 6:19:58 AM
+// Created: March 20, 2018 11:05:20 PM
 // 
 #endregion
 
-using System;
-
-namespace Gorgon.Core
+namespace Gorgon.Diagnostics.LogProviders
 {
-	/// <summary>
-	/// Event parameters used when an event allows cancellation.
-	/// </summary>
-	public class GorgonCancelEventArgs
-		: EventArgs
-	{
-		#region Properties.
-		/// <summary>
-		/// Property to set or return whether an operation should be cancelled or not.
-		/// </summary>
-		public bool Cancel
-		{
-			get;
-			set;
-		}
-		#endregion
+    /// <summary>
+    /// A provider that accesses a data store to store logging messages.
+    /// </summary>
+    public interface IGorgonLogProvider
+    {
+        /// <summary>
+        /// Function to open the data store for writing.
+        /// </summary>
+        /// <param name="initialMessage">[Optional] The initial message to write.</param>
+        void Open(string initialMessage = null);
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonCancelEventArgs"/> class.
-		/// </summary>
-		/// <param name="cancel"><b>true</b> if the operation should be cancelled, <b>false</b> if not.</param>
-		public GorgonCancelEventArgs(bool cancel)
-		{
-			Cancel = cancel;
-		}
-		#endregion
-	}
+        /// <summary>
+        /// Function to write a message to the data store.
+        /// </summary>
+        /// <param name="message">The message to write.</param>
+        void SendMessage(string message);
+
+        /// <summary>
+        /// Function to close the data store for writing.
+        /// </summary>
+        /// <param name="closingMessage">[Optional] The message to write when closing.</param>
+        void Close(string closingMessage = null);
+    }
 }

@@ -40,7 +40,7 @@ namespace Gorgon.IO
 		/// <summary>
 		/// An empty chunk.
 		/// </summary>
-		public static readonly GorgonChunk EmptyChunk = default(GorgonChunk);
+		public static readonly GorgonChunk EmptyChunk = default;
 
 		/// <summary>
 		/// The ID for the chunk.

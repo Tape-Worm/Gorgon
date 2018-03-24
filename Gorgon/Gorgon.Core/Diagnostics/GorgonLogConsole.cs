@@ -1,7 +1,7 @@
-﻿#region MIT.
+﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2011 Michael Winsor
+// Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,35 +20,35 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Tuesday, June 14, 2011 8:58:43 PM
+// Created: March 22, 2018 11:38:18 AM
 // 
 #endregion
 
-using System.Collections.Generic;
+using System;
+using Gorgon.Core;
+using Gorgon.Diagnostics.LogProviders;
 
-namespace Gorgon.Core
+namespace Gorgon.Diagnostics
 {
-	/// <summary>
-	/// Gives an arbitrary object type a name to be used for lookup or another things that require an identifier.
-	/// </summary>
-	/// <remarks> 
-	/// <para>
-	/// Many objects require an ID to give uniqueness to that object. This could be necessary for lookup in a <see cref="IDictionary{TKey,TValue}"/>, or merely for logging purposes. This interface 
-	/// will ensure that items that need a textual representation of the object have a <see cref="Name"/> they can use for that purpose. 
-	/// </para>
-	/// </remarks>
-	public interface IGorgonNamedObject
-	{
+    /// <summary>
+    /// Sends logging information into a Console window.
+    /// </summary>
+    public class GorgonLogConsole
+        : GorgonLog
+    {
+		#region Constructor/Destructor.
 		/// <summary>
-		/// Property to return the name of this object.
+		/// Initializes a new instance of the <see cref="GorgonLog"/> class.
 		/// </summary>
-		/// <remarks>
-		/// For best practice, the name should only be set once during the lifetime of an object. Hence, this interface only provides a read-only implementation of this 
-		/// property.
-		/// </remarks>
-		string Name
+		/// <param name="appname">File name for the log file.</param>
+		/// <param name="version">[Optional] The version of the application that is logging.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="appname"/> parameter is <b>null</b>.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="appname"/> parameter is empty.</exception>
+		public GorgonLogConsole(string appname, Version version = null)
+            : base(appname, version)
 		{
-			get;
+            Provider = new GorgonLogConsoleProvider();
 		}
-	}
+		#endregion
+    }
 }

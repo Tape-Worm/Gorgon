@@ -26,10 +26,10 @@
 
 using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using Gorgon.Core.Properties;
-using Gorgon.Native;
 
 namespace Gorgon.IO
 {
@@ -132,33 +132,39 @@ namespace Gorgon.IO
 				return;
 			}
 
-			byte* data = (byte*)pointer;
+		    var bytePtr = (byte*)pointer;
+            
 			while (size > 0)
 			{
-				if (size >= 8)
+				if (size >= sizeof(long))
 				{
-					*((long*)data) = ReadInt64();
-					size -= 8;
-					data += 8;
+				    *((long*)bytePtr) = ReadInt64();
+				    bytePtr += sizeof(long);
+					size -= sizeof(long);
 				}
-				else if (size >= 4)
+				
+			    if (size >= sizeof(int))
 				{
-					*((int*)data) = ReadInt32();
-					size -= 4;
-					data += 4;
+				    *((int*)bytePtr) = ReadInt32();
+				    bytePtr += sizeof(int);
+				    size -= sizeof(int);
 				}
-				else if (size >= 2)
+
+				if (size >= sizeof(short))
 				{
-					*((short*)data) = ReadInt16();
-					size -= 2;
-					data += 2;
+				    *((short*)bytePtr) = ReadInt16();
+				    bytePtr += sizeof(short);
+				    size -= sizeof(short);
 				}
-				else
-				{
-					*data = ReadByte();
-					size--;
-					data++;
-				}
+
+			    if (size <= 0)
+			    {
+			        return;
+			    }
+
+			    *bytePtr = ReadByte();
+			    ++bytePtr;
+			    --size;
 			}
 		}
 
@@ -181,77 +187,130 @@ namespace Gorgon.IO
 		/// </para>
 		/// </note>
 		/// </remarks>
-		public unsafe T ReadValue<T>()
+		public T ReadValue<T>()
 			where T : struct
 		{
-			int size = DirectAccess.SizeOf<T>();
-			byte* pointer = stackalloc byte[size];
-			byte* bytes = pointer;
+		    ReadValue(out T result);
 
-			while (size > 0)
-			{
-				if (size >= 8)
-				{
-					*((long*)bytes) = ReadInt64();
-					bytes += 8;
-					size -= 8;
-				}
-				else if (size >= 4)
-				{
-					*((int*)bytes) = ReadInt32();
-					bytes += 4;
-					size -= 4;
-				}
-				else if (size >= 2)
-				{
-					*((short*)bytes) = ReadInt16();
-					bytes += 2;
-					size -= 2;
-				}
-				else
-				{
-					*bytes = ReadByte();
-					bytes++;
-					size--;
-				}
-			}
-
-			DirectAccess.ReadValue(pointer, out T returnVal);
-
-			return returnVal;
+		    return result;
 		}
 
-		/// <summary>
-		/// Function to read a range of generic values.
-		/// </summary>
-		/// <typeparam name="T">Type of value to read.  Must be a value or primitive type.</typeparam>
-		/// <param name="value">Array of values to read.</param>
-		/// <param name="startIndex">Starting index in the array.</param>
-		/// <param name="count">Number of array elements to copy.</param>
-		/// <remarks>
-		/// <para>
-		/// This will read data from the binary stream into the specified array of values of type <typeparamref name="T"/>. The values will be populated starting at the <paramref name="startIndex"/> up to 
-		/// the <paramref name="count"/> specified.
-		/// </para>
-		/// <note type="important">
-		/// <para>
-		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
-		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
-		/// </para>
-		/// <para>
-		/// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
-		/// </para>
-		/// </note>
-		/// </remarks>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="value"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="startIndex"/> parameter is less than 0.
-		/// <para>-or-</para>
-		/// <para>Thrown when the startIndex parameter is equal to or greater than the number of elements in the value parameter.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when the sum of startIndex and <paramref name="count"/> is greater than the number of elements in the value parameter.</para>
-		/// </exception>
-		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
-		public unsafe void ReadRange<T>(T[] value, int startIndex, int count)
+	    /// <summary>
+	    /// Function to read a generic value from the stream.
+	    /// </summary>
+	    /// <typeparam name="T">Type of value to read.  Must be a value or primitive type.</typeparam>
+	    /// <param name="result">The value from the stream.</param>
+	    /// <returns>The value in the stream.</returns>
+	    /// <remarks>
+	    /// <para>
+	    /// This method will read the data from the binary stream into a value of type <typeparamref name="T"/>, and return that value.
+	    /// </para>
+	    /// <note type="important">
+	    /// <para>
+	    /// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
+	    /// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
+	    /// </para>
+	    /// <para>
+	    /// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
+	    /// </para>
+	    /// </note>
+	    /// </remarks>
+	    public void ReadValue<T>(out T result)
+	        where T : struct
+	    {
+	        result = default;
+	        ref byte resultRef = ref Unsafe.As<T, byte>(ref result);
+	        Read(ref resultRef, Unsafe.SizeOf<T>());
+	    }
+
+	    /// <summary>
+	    /// Function to read the bytes stored in the stream into the provided reference location.
+	    /// </summary>
+	    /// <param name="destination">The reference location to copy data into.</param>
+	    /// <param name="size">The number of bytes to copy.</param>
+	    /// <remarks>
+	    /// <para>
+	    /// This method will read the number of bytes specified by the <paramref name="size"/> parameter from the stream and copy it into the referenced location specified in <paramref name="destination"/>.
+	    /// </para>
+	    /// </remarks>
+	    public void Read(ref byte destination, int size)
+	    {
+	        if (size < 1)
+	        {
+	            return;
+	        }
+
+            int offset = 0;
+
+	        while (size > 0)
+	        {
+	            if (size >= sizeof(long))
+	            {
+	                ref long longRef = ref Unsafe.As<byte, long>(ref Unsafe.Add(ref destination, offset));
+	                longRef = ReadInt64();
+	                offset += sizeof(long);
+	                size -= sizeof(long);
+	            }
+
+	            if (size >= sizeof(int))
+	            {
+	                ref int intRef = ref Unsafe.As<byte, int>(ref Unsafe.Add(ref destination, offset));
+	                intRef = ReadInt32();
+	                offset += sizeof(int);
+	                size -= sizeof(int);
+	            }
+
+	            if (size >= sizeof(short))
+	            {
+	                ref short shortRef = ref Unsafe.As<byte, short>(ref Unsafe.Add(ref destination, offset));
+	                shortRef = ReadInt16();
+	                offset += sizeof(short);
+	                size -= sizeof(short);
+	            }
+
+	            if (size <= 0)
+	            {
+	                return;
+	            }
+
+	            ref byte byteRef = ref Unsafe.Add(ref destination, offset);
+	            byteRef = ReadByte();
+	            offset += sizeof(byte);
+	            size -= sizeof(byte);
+	        }
+	    }
+
+        /// <summary>
+        /// Function to read a range of generic values.
+        /// </summary>
+        /// <typeparam name="T">Type of value to read.  Must be a value or primitive type.</typeparam>
+        /// <param name="value">Array of values to read.</param>
+        /// <param name="startIndex">[Optional] Starting index in the array.</param>
+        /// <param name="count">[Optional] Number of array elements to copy.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="value"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="startIndex"/> parameter is less than 0.
+        /// <para>-or-</para>
+        /// <para>Thrown when the startIndex parameter is equal to or greater than the number of elements in the value parameter.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the sum of startIndex and <paramref name="count"/> is greater than the number of elements in the value parameter.</para>
+        /// </exception>
+        /// <exception cref="IOException">Thrown when the stream is write-only.</exception>
+        /// <remarks>
+        /// <para>
+        /// This will read data from the binary stream into the specified array of values of type <typeparamref name="T"/>. The values will be populated starting at the <paramref name="startIndex"/> up to 
+        /// the <paramref name="count"/> specified. If the <paramref name="count"/> is not specified (i.e. it is <b>null</b>), then the entire array minus the <paramref name="startIndex"/> will be used.
+        /// </para>
+        /// <note type="important">
+        /// <para>
+        /// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
+        /// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
+        /// </para>
+        /// <para>
+        /// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
+        /// </para>
+        /// </note>
+        /// </remarks>
+        public void ReadRange<T>(T[] value, int startIndex = 0, int? count = null)
 			where T : struct
 		{
 			if (value == null)
@@ -259,11 +318,11 @@ namespace Gorgon.IO
 				throw new ArgumentNullException(nameof(value));
 			}
 
-			if ((value.Length == 0) || (count <= 0))
-			{
-				return;
-			}
-            
+		    if (count == null)
+		    {
+		        count = value.Length - startIndex;
+		    }
+           
 			if (startIndex < 0)
 			{
 			    throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_ERR_VALUE_IS_LESS_THAN, startIndex, 0));
@@ -274,125 +333,76 @@ namespace Gorgon.IO
                 throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_ERR_VALUE_IS_GREATER_THAN, startIndex, value.Length));
 			}
 
+		    if ((value.Length == 0) || (count <= 0))
+		    {
+		        return;
+		    }
+
 			if (startIndex + count > value.Length)
 			{
                 throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_ERR_VALUE_IS_LESS_THAN, startIndex + count, value.Length));
 			}
-
-			int typeSize = DirectAccess.SizeOf<T>();
-			int size = typeSize * count;
-			int offset = startIndex * typeSize;
 
 			if (_tempBuffer == null)
 			{
 				_tempBuffer = new byte[_bufferSize];
 			}
 
-			while (size > 0)
-			{
-				int blockSize = size > _bufferSize ? _bufferSize : size;
+		    int typeSize = Unsafe.SizeOf<T>();
+		    int blockSize = _tempBuffer.Length;
+		    int size = typeSize * count.Value;
+		    int offset = 0;
+		    ref byte valueRef = ref Unsafe.As<T, byte>(ref value[startIndex]);
+		    ref byte bufferRef = ref _tempBuffer[0];
 
-				// Read the data from the stream as byte values.
-				fixed (byte* tempBufferPointer = &_tempBuffer[0])
-				{
-					Read(_tempBuffer, 0, blockSize);
+		    while (size > 0)
+		    {
+		        if (blockSize > size)
+		        {
+		            blockSize = size;
+		        }
 
-					// Copy into our array.
-					DirectAccess.ReadArray(tempBufferPointer, value, offset, blockSize);
-				}
+		        ref byte destRef = ref Unsafe.Add(ref valueRef, offset);
+                    
+		        // Read the data from the stream as byte values.
+		        Read(_tempBuffer, 0, blockSize);
+                Unsafe.CopyBlock(ref destRef, ref bufferRef, (uint)blockSize);
 
-				offset += blockSize;
-				size -= blockSize;
-			}
+		        size -= blockSize;
+		        offset += blockSize;
+		    }
 		}
 
-		/// <summary>
-		/// Function to read a range of generic values.
-		/// </summary>
-		/// <typeparam name="T">Type of value to read.  Must be a value or primitive type.</typeparam>
-		/// <param name="value">Array of values to read.</param>
-		/// <param name="count">Number of array elements to copy.</param>
-		/// <remarks>
-		/// <para>
-		/// This method will read data from the binary stream into the specified array of values of type <typeparamref name="T"/> up to the <paramref name="count"/> specified.
-		/// </para>
-		/// <note type="important">
-		/// <para>
-		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
-		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
-		/// </para>
-		/// <para>
-		/// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
-		/// </para>
-		/// </note>
-		/// </remarks>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="value"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="count"/> parameter is greater than the number of elements in the value parameter.
-		/// </exception>
-		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
-		public void ReadRange<T>(T[] value, int count)
+        /// <summary>
+        /// Function to read a range of generic values.
+        /// </summary>
+        /// <typeparam name="T">Type of value to read.  Must be a value or primitive type.</typeparam>
+        /// <param name="count">Number of array elements to copy.</param>
+        /// <returns>An array filled with values of type <typeparamref name="T"/>.</returns>
+        /// <remarks>
+        /// <para>
+        /// This method will read the specified <paramref name="count"/> of values of type <typeparamref name="T"/> into an array from a binary data stream and return that array.
+        /// </para>
+        /// <note type="important">
+        /// <para>
+        /// The return value for this type will always create a new array of type <typeparamref name="T"/>. This may be inefficient depending on the use case.
+        /// </para>
+        /// </note>
+        /// <note type="important">
+        /// <para> 
+        /// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
+        /// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
+        /// </para>
+        /// <para>
+        /// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
+        /// </para>
+        /// </note>
+        /// </remarks>
+        /// <exception cref="IOException">Thrown when the stream is write-only.</exception>
+        public T[] ReadRange<T>(int count)
 			where T : struct
 		{
-			ReadRange(value, 0, count);
-		}
-
-		/// <summary>
-		/// Function to read a range of generic values.
-		/// </summary>
-		/// <typeparam name="T">Type of value to read.  Must be a value or primitive type.</typeparam>
-		/// <param name="value">Array of values to read.</param>
-		/// <remarks>
-		/// <para>
-		/// This method will read data from the binary stream into the specified array of values of type <typeparamref name="T"/>.
-		/// </para>
-		/// <note type="important">
-		/// <para>
-		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
-		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
-		/// </para>
-		/// <para>
-		/// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
-		/// </para>
-		/// </note>
-		/// </remarks>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="value"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
-		public void ReadRange<T>(T[] value)
-			where T : struct
-		{
-			if (value == null)
-			{
-				throw new ArgumentNullException(nameof(value));
-			}
-
-			ReadRange(value, 0, value.Length);
-		}
-
-		/// <summary>
-		/// Function to read a range of generic values.
-		/// </summary>
-		/// <typeparam name="T">Type of value to read.  Must be a value or primitive type.</typeparam>
-		/// <param name="count">Number of array elements to copy.</param>
-		/// <returns>An array filled with values of type <typeparamref name="T"/>.</returns>
-		/// <remarks>
-		/// <para>
-		/// This method will read the specified <paramref name="count"/> of values of type <typeparamref name="T"/> into an array from a binary data stream and return that array.
-		/// </para>
-		/// <note type="important">
-		/// <para>
-		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
-		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
-		/// </para>
-		/// <para>
-		/// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
-		/// </para>
-		/// </note>
-		/// </remarks>
-		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
-		public T[] ReadRange<T>(int count)
-			where T : struct
-		{
-			T[] array = new T[count];
+			var array = new T[count];
 
 			ReadRange(array, 0, count);
 

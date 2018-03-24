@@ -163,7 +163,7 @@ namespace Gorgon.Plugins
 		// List of constructors from a specific assembly.
 		private readonly Lazy<ConcurrentDictionary<string, Lazy<ConcurrentDictionary<Type, ObjectActivator<GorgonPlugin>>>>> _assemblyConstructors;
 		// The application log file.
-		private readonly IGorgonLog _log = GorgonLogDummy.DefaultInstance;
+		private readonly IGorgonLog _log = GorgonLog.NullLog;
 		// Thread synchronization for the plugin dictionary.
 		private int _pluginSync;
 		#endregion
@@ -194,7 +194,7 @@ namespace Gorgon.Plugins
 		/// <returns>An array of plugins created or retrieved.</returns>
 		private T[] GetPluginsFromConstructors<T>(ConcurrentDictionary<Type, ObjectActivator<GorgonPlugin>> pluginConstructors)
 		{
-			ConcurrentBag<GorgonPlugin> result = new ConcurrentBag<GorgonPlugin>();
+			var result = new List<GorgonPlugin>();
 			Type typeT = typeof(T);
 
 			// Match the types with our generic type. The type in the plugin must be an exact match with T, or a subclass of T.
@@ -213,7 +213,7 @@ namespace Gorgon.Plugins
 
 					try
 					{
-						if (Interlocked.Increment(ref _pluginSync) > 1)
+						if (Interlocked.Exchange(ref _pluginSync, 1) == 1)
 						{
 							continue;
 						}
@@ -229,7 +229,7 @@ namespace Gorgon.Plugins
 					}
 					finally
 					{
-						Interlocked.Decrement(ref _pluginSync);
+						Interlocked.Exchange(ref _pluginSync, 0);
 					}
 				}
 
@@ -255,7 +255,7 @@ namespace Gorgon.Plugins
 				return new T[0];
 			}
 
-			List<T> result = new List<T>();
+			var result = new List<T>();
 
 			foreach (KeyValuePair<string, Lazy<ConcurrentDictionary<Type, ObjectActivator<GorgonPlugin>>>> item in _assemblyConstructors.Value)
 			{
@@ -332,7 +332,7 @@ namespace Gorgon.Plugins
 
 				try
 				{
-					if (Interlocked.Increment(ref _pluginSync) > 1)
+					if (Interlocked.Exchange(ref _pluginSync, 1) == 1)
 					{
 						continue;
 					}
@@ -355,7 +355,7 @@ namespace Gorgon.Plugins
 				}
 				finally
 				{
-					Interlocked.Decrement(ref _pluginSync);
+					Interlocked.Exchange(ref _pluginSync, 0);
 				}
 			}
 		}
@@ -505,7 +505,7 @@ namespace Gorgon.Plugins
 		/// </summary>
 		/// <param name="name">Fully qualified type name of the plugin to remove.</param>
 		/// <exception cref="ArgumentNullException">The <paramref name="name"/> parameter was <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">The <paramref name="name "/> parameter was an empty string.</exception>
+		/// <exception cref="ArgumentEmptyException">The <paramref name="name "/> parameter was an empty string.</exception>
 		/// <returns><b>true</b> if the plugin was unloaded successfully, <b>false</b> if it did not exist in the collection, or failed to unload.</returns>
 		public bool Unload(string name)
 		{
@@ -530,7 +530,7 @@ namespace Gorgon.Plugins
 
 				try
 				{
-					if (Interlocked.Increment(ref _pluginSync) > 1)
+					if (Interlocked.Exchange(ref _pluginSync, 1) == 1)
 					{
 						continue;
 					}
@@ -547,7 +547,7 @@ namespace Gorgon.Plugins
 				}
 				finally
 				{
-					Interlocked.Decrement(ref _pluginSync);
+					Interlocked.Exchange(ref _pluginSync, 0);
 				}
 			}
 		}

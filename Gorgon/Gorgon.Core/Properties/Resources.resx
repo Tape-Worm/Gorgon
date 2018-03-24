@@ -874,7 +874,7 @@ Code: 0x{2}</value>
     <value>The offset {0} + size {1} requested are larger than the array: {2}</value>
   </data>
   <data name="GOR_ERR_STREAM_DOES_NOT_SUPPORT_ASYNC" xml:space="preserve">
-    <value>This stream does not support asynchronous I/O.</value>
+    <value>This stream does not support asynchronous I/O on this method.</value>
   </data>
   <data name="GOR_ERR_STREAM_PARENT_NEEDS_SEEK" xml:space="preserve">
     <value>The child stream requires a parent stream that can seek.</value>
@@ -1010,5 +1010,11 @@ Code: 0x{2}</value>
   </data>
   <data name="GOR_TOSTR_RECTANGLE" xml:space="preserve">
     <value>Gorgon Rectangle - Left: {0}, Top: {1}, Right: {2}, Bottom: {3} (Width: {4}, Height {5})</value>
+  </data>
+  <data name="GOR_ERR_ALLOCATOR_FULL" xml:space="preserve">
+    <value>The memory for the allocator is full.</value>
+  </data>
+  <data name="GOR_RESULT_OUT_OF_MEMORY" xml:space="preserve">
+    <value>There is not enough memory to complete the operation.</value>
   </data>
 </root>

@@ -26,6 +26,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using Gorgon.Core.Properties;
 using Gorgon.Native;
 using Gorgon.UI;
@@ -246,7 +247,7 @@ namespace Gorgon.Timing
 		/// <exception cref="Win32Exception">Thrown when timer information cannot be retrieved from the operating system.</exception>
 		public void Reset()
 		{
-			if (WinMultimediaApi.timeGetDevCaps(ref _timeCaps, DirectAccess.SizeOf<TIMECAPS>()) != 0)
+            if (WinMultimediaApi.timeGetDevCaps(ref _timeCaps, Unsafe.SizeOf<TIMECAPS>()) != 0)
 			{
 				throw new Win32Exception(Resources.GOR_ERR_TIME_CANNOT_BEGIN);
 			}

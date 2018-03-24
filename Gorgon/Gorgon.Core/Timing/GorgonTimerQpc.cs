@@ -45,7 +45,7 @@ namespace Gorgon.Timing
 	///		<see cref="SupportsQpc"/> static method on this class to determine if the system will support the timer. This should not be an issue with a reasonably modern system.
 	///		</para> 
 	///		<para>
-	///		This is an issue on systems with Windows versions before Windows Vista because multi-core systems may not report the correct time stamp. Since Gorgon requires Windows Vista SP2 at minimum, 
+	///		This is an issue on systems with Windows versions before Windows Vista because multi-core systems may not report the correct time stamp. Since Gorgon requires Windows 10 at minimum, 
 	///		this should not be an issue.
 	///		</para>
 	///		<para>

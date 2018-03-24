@@ -42,6 +42,14 @@ namespace Gorgon.Plugins
 		: IGorgonNamedObject
 	{
 		#region Properties.
+	    /// <summary>
+	    /// Property to return the name of this object.
+	    /// </summary>
+	    public string Name
+	    {
+	        get;
+	    }
+
 		/// <summary>
 		/// Property to return the assembly that contains this plugin.
 		/// </summary>
@@ -82,16 +90,6 @@ namespace Gorgon.Plugins
 			Assembly = GetType().Assembly.GetName();
 			PlugInPath = GetType().Assembly.ManifestModule.FullyQualifiedName;
 			Name = GetType().FullName;
-		}
-		#endregion
-
-		#region IGorgonNamedObject Members
-		/// <summary>
-		/// Property to return the name of this object.
-		/// </summary>
-		public string Name
-		{
-			get;
 		}
 		#endregion
 	}

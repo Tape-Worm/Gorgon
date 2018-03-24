@@ -157,6 +157,15 @@ namespace Gorgon.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The memory for the allocator is full..
+        /// </summary>
+        internal static string GOR_ERR_ALLOCATOR_FULL {
+            get {
+                return ResourceManager.GetString("GOR_ERR_ALLOCATOR_FULL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There must be a minimum of 1 item available to the allocator..
         /// </summary>
         internal static string GOR_ERR_ALLOCATOR_SIZE_TOO_SMALL {
@@ -599,7 +608,7 @@ namespace Gorgon.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This stream does not support asynchronous I/O..
+        ///   Looks up a localized string similar to This stream does not support asynchronous I/O on this method..
         /// </summary>
         internal static string GOR_ERR_STREAM_DOES_NOT_SUPPORT_ASYNC {
             get {
@@ -937,6 +946,15 @@ namespace Gorgon.Core.Properties {
         internal static string GOR_RESULT_FILE_FORMAT_NOT_SUPPORTED {
             get {
                 return ResourceManager.GetString("GOR_RESULT_FILE_FORMAT_NOT_SUPPORTED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There is not enough memory to complete the operation..
+        /// </summary>
+        internal static string GOR_RESULT_OUT_OF_MEMORY {
+            get {
+                return ResourceManager.GetString("GOR_RESULT_OUT_OF_MEMORY", resourceCulture);
             }
         }
         

@@ -86,7 +86,7 @@ namespace Gorgon.IO
 	///			file.Open();
 	/// 
 	///			// Read the chunk that contains the integers. Note that this is different than the writer example,
-	///			// we're wrote these items last, and in a sequential file read, we'd have to read the values last when 
+	///			// we wrote these items last, and in a sequential file read, we'd have to read the values last when 
 	///			// reading the file. But with this format, we can find the chunk and read it from anywhere in the file.
 	///			// Alternatively, we could pass in an ulong value for the chunk ID instead of a string.
 	///			using (GorgonBinaryReader reader = file.OpenChunk(IntChunk))
@@ -236,7 +236,8 @@ namespace Gorgon.IO
 				}
 
 				// Ensure that our table position is not less than our header position.
-				if (tablePosition <= _headerEnd)
+				if ((tablePosition <= _headerEnd)
+                    || (tablePosition >= _fileSize))
 				{
 					throw new GorgonException(GorgonResult.CannotRead, Resources.GOR_ERR_CHUNK_FILE_TABLE_OFFSET_INVALID);
 				}
@@ -266,7 +267,7 @@ namespace Gorgon.IO
 				return;
 			}
 
-			_activeChunk = default(GorgonChunk);
+			_activeChunk = default;
 			Stream.Position = _headerEnd;
 			_activeReader.Dispose();
 			_activeReader = null;
