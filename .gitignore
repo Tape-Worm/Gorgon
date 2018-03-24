@@ -13,7 +13,6 @@
 [Oo]bj/
 x64/
 x86/
-.vs/
 build/
 bld/
 Docs/Help/
@@ -31,7 +30,6 @@ Resources/__OLDE__/
 
 # Roslyn cache directories
 *.ide/
-storage.ide
 
 # MSTest test Results
 [Tt]est[Rr]esult*/
@@ -55,7 +53,6 @@ dlldata.c
 *.obj
 *.pch
 *.pdb
-!Gorgon.Native.pdb
 *.pgc
 *.pgd
 *.rsp
@@ -198,5 +195,3 @@ FakesAssemblies/
 /Deploy.ps1
 /Deploy_Examples.ps1
 GorgonFull.snk
-Browse.VC.db
-/.vs/Gorgon/v15/Browse.VC.opendb
