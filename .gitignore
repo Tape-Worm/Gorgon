@@ -195,3 +195,7 @@ FakesAssemblies/
 /Deploy.ps1
 /Deploy_Examples.ps1
 GorgonFull.snk
+/Docs/D3D11.1_Features.txt
+/Docs/D3D11.2_Features.txt
+/Docs/D3D11.3_Features.txt
+/Docs/D3D11.4_Features.txt
