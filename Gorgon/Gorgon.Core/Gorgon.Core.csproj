@@ -199,7 +199,7 @@
     <Compile Include="Plugins\GorgonMefPluginCache.cs" />
     <Compile Include="Plugins\_Attributes\ExcludeAsPluginAttribute.cs" />
     <Compile Include="Plugins\_Interfaces\IGorgonPluginService.cs" />
-    <Compile Include="Plugins\_Interfaces\IClrStrongName.cs" />
+    <Compile Include="Plugins\_Internal\_Interfaces\IClrStrongName.cs" />
     <Compile Include="Security\Aes256Encryption.cs" />
     <Compile Include="Security\_Interfaces\IEncryption.cs" />
     <Compile Include="SharedAssemblyInfo.cs" />
