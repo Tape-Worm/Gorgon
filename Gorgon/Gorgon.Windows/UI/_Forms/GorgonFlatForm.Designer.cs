@@ -149,7 +149,7 @@ namespace Gorgon.UI
 			// 
 			// itemRestore
 			// 
-			this.itemRestore.Image = global::Gorgon.Properties.Resources.Restore;
+			this.itemRestore.Image = global::Gorgon.Windows.Properties.Resources.Restore;
 			this.itemRestore.Name = "itemRestore";
 			resources.ApplyResources(this.itemRestore, "itemRestore");
 			this.itemRestore.Click += new System.EventHandler(this.itemRestore_Click);
@@ -186,7 +186,7 @@ namespace Gorgon.UI
 			// itemClose
 			// 
 			resources.ApplyResources(this.itemClose, "itemClose");
-			this.itemClose.Image = global::Gorgon.Properties.Resources.Close;
+			this.itemClose.Image = global::Gorgon.Windows.Properties.Resources.Close;
 			this.itemClose.Name = "itemClose";
 			this.itemClose.Click += new System.EventHandler(this.itemClose_Click);
 			// 

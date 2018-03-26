@@ -630,7 +630,7 @@ namespace Gorgon.Core
 		/// </remarks>
 		public static string FormatHex(this IntPtr pointer)
 		{
-		    return GorgonComputerInfo.PlatformArchitecture == PlatformArchitecture.x64
+		    return Environment.Is64BitProcess
 		               ? pointer.ToInt64().ToString("x").PadLeft(16, '0')
 		               : pointer.ToInt32().ToString("x").PadLeft(8, '0');
 		}

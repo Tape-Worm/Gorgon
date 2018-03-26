@@ -29,7 +29,7 @@ using System.Collections;
 using System.Text;
 using System.Windows.Forms;
 using Gorgon.Core;
-using Gorgon.Properties;
+using Gorgon.Windows.Properties;
 
 namespace Gorgon.UI
 {
@@ -307,7 +307,7 @@ namespace Gorgon.UI
 			{
 				dialog = new BaseDialog
 				    {
-				        Icon = Resources.GorgonInfo,
+				        Icon = Resources.InfoDialogIcon,
 				        DialogImage = Resources.Info_48x48,
 				        Message = message,
 				        ButtonAction = DialogResult.OK

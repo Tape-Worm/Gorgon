@@ -74,7 +74,7 @@ namespace Gorgon.UI
 			// 
 			// pictureDialog
 			// 
-			this.pictureDialog.Image = global::Gorgon.Properties.Resources.Warning_48x48;
+			this.pictureDialog.Image = global::Gorgon.Windows.Properties.Resources.Warning_48x48;
 			// 
 			// textWarningDetails
 			// 
@@ -101,7 +101,7 @@ namespace Gorgon.UI
 			resources.ApplyResources(this, "$this");
 			this.Controls.Add(this.checkDetail);
 			this.Controls.Add(this.textWarningDetails);
-			this.DialogImage = global::Gorgon.Properties.Resources.Warning_48x48;
+			this.DialogImage = global::Gorgon.Windows.Properties.Resources.Warning_48x48;
 			this.Name = "WarningDialog";
 			this.Controls.SetChildIndex(this.pictureDialog, 0);
 			this.Controls.SetChildIndex(this.textWarningDetails, 0);

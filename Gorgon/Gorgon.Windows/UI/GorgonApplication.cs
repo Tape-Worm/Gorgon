@@ -30,7 +30,7 @@ using System.IO;
 using System.Threading;
 using System.Windows.Forms;
 using Gorgon.Core;
-using Gorgon.Properties;
+using Gorgon.Windows.Properties;
 using Gorgon.Diagnostics;
 using Gorgon.IO;
 using Gorgon.Native;
@@ -139,13 +139,19 @@ namespace Gorgon.UI
 		private static int _unfocusedSleepTime = 16;
 		// An atomic to ensure that run is only called by 1 thread at a time.
 		private static int _runAtomic;
-		// Timer used for timing the application.
-		private static Lazy<IGorgonTimer> _applicationTimer;
 		// Event used to put the application to sleep.
 		private static readonly ManualResetEventSlim _unfocusedTimeout = new ManualResetEventSlim(false, 20);
 		#endregion
 
 		#region Properties.
+        /// <summary>
+        /// Property to return information about the computer.
+        /// </summary>
+	    public static IGorgonComputerInfo ComputerInfo
+	    {
+	        get;
+	    }
+
 		/// <summary>
 		/// Property to set or return the current <see cref="CultureInfo"/> for the application.
 		/// </summary>
@@ -450,15 +456,19 @@ namespace Gorgon.UI
 			// run regardless since we have an idle method to execute.
 			bool appShouldProcess = MainForm == null || AllowBackground || IsForeground;
 
+		    if (GorgonTimerQpc.SupportsQpc())
+		    {
+                GorgonTiming.StartTiming<GorgonTimerQpc>();
+		    }
+		    else
+		    {
+                GorgonTimerMultimedia.BeginTiming();
+                GorgonTiming.StartTiming<GorgonTimerMultimedia>();
+		    }
+
 		    // ReSharper disable once UnusedVariable
 			while ((appShouldProcess) && (!UserApi.PeekMessage(out MSG message, IntPtr.Zero, 0, 0, PeekMessageNoRemove)))
 			{
-                // Reset the timer so that frame rate timing can start with the first iteration of the loop.
-			    if (!_applicationTimer.IsValueCreated)
-			    {
-				    GorgonTiming.Timer = _applicationTimer.Value;
-			    }
-
 				GorgonTiming.Update();
 				
 				if (!IdleMethod())
@@ -498,11 +508,11 @@ namespace Gorgon.UI
 
 			// Display information
 			Log.Print("Logging interface assigned. Initializing...", LoggingLevel.All);
-			Log.Print("Architecture: {0}", LoggingLevel.Verbose, GorgonComputerInfo.PlatformArchitecture);
-			Log.Print("Processor count: {0}", LoggingLevel.Verbose, GorgonComputerInfo.ProcessorCount);
-			Log.Print("Installed Memory: {0}", LoggingLevel.Verbose, GorgonComputerInfo.TotalPhysicalRAM.FormatMemory());
-			Log.Print("Available Memory: {0}", LoggingLevel.Verbose, GorgonComputerInfo.AvailablePhysicalRAM.FormatMemory());
-			Log.Print("Operating System: {0} ({1})", LoggingLevel.Verbose, GorgonComputerInfo.OperatingSystemVersionText, GorgonComputerInfo.OperatingSystemArchitecture); 
+			Log.Print("Architecture: {0}", LoggingLevel.Verbose, ComputerInfo.PlatformArchitecture);
+			Log.Print("Processor count: {0}", LoggingLevel.Verbose, ComputerInfo.ProcessorCount);
+			Log.Print("Installed Memory: {0}", LoggingLevel.Verbose, ComputerInfo.TotalPhysicalRAM.FormatMemory());
+			Log.Print("Available Memory: {0}", LoggingLevel.Verbose, ComputerInfo.AvailablePhysicalRAM.FormatMemory());
+			Log.Print("Operating System: {0} ({1})", LoggingLevel.Verbose, ComputerInfo.OperatingSystemVersionText, ComputerInfo.OperatingSystemArchitecture); 
 			Log.Print(string.Empty, LoggingLevel.Verbose);
 		}
 
@@ -515,23 +525,6 @@ namespace Gorgon.UI
 			// This will start the application uptime counter.  But since there's no actual timer set on this yet,
 			// no statistical timing will be collected until the application begins its run in Application_Idle.
 			GorgonTiming.Reset();
-
-			// Initialize the timer. By creating them as lazy instantiated objects, we can ensure that they won't start 
-			// until the application completes processing its queue on first run.
-			if (GorgonTimerQpc.SupportsQpc())
-			{
-				_applicationTimer = new Lazy<IGorgonTimer>(() => new GorgonTimerQpc(), true);
-			}
-			else
-			{
-				// Set the period to 1 millisecond (the default for the BeginTiming method) before using the multimedia timing, 
-				// otherwise things may not be  accurate. 
-				_applicationTimer = new Lazy<IGorgonTimer>(() =>
-				                                           {
-					                                           GorgonTimerMultimedia.BeginTiming();
-					                                           return new GorgonTimerMultimedia();
-				                                           }, true);
-			}
 
 			// Notify that we're in a running state.
 			IsRunning = true;
@@ -608,7 +601,7 @@ namespace Gorgon.UI
 			}
 
 			// Reset the low resolution timer period on application end.
-			if ((_applicationTimer.IsValueCreated) && (_applicationTimer.Value is GorgonTimerMultimedia))
+			if (!GorgonTimerQpc.SupportsQpc())
 			{
 				GorgonTimerMultimedia.EndTiming();
 			}
@@ -905,6 +898,7 @@ namespace Gorgon.UI
 		/// </summary>
 		static GorgonApplication()
 		{
+            ComputerInfo = new GorgonComputerInfo();
 			ThreadID = Thread.CurrentThread.ManagedThreadId;
 			
 			Log = new GorgonLog(LogFile, "Tape_Worm", typeof(GorgonApplication).Assembly.GetName().Version);

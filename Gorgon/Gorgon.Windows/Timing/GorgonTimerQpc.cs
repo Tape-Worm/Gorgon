@@ -25,7 +25,7 @@
 #endregion
 
 using System.ComponentModel;
-using Gorgon.Properties;
+using Gorgon.Windows.Properties;
 using Gorgon.Native;
 
 namespace Gorgon.Timing

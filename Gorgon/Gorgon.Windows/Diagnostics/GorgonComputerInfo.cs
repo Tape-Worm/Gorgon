@@ -32,51 +32,31 @@ using Gorgon.Native;
 
 namespace Gorgon.Diagnostics
 {
-	#region Enumerations.
-    // ReSharper disable InconsistentNaming
-
-    /// <summary>
-	/// CPU/OS platform type.
-	/// </summary>
-	public enum PlatformArchitecture
-	{
-		/// <summary>
-		/// x86 architecture.
-		/// </summary>
-		x86 = 0,
-		/// <summary>
-		/// x64 architecture.
-		/// </summary>
-		x64 = 1
-	}
-
-    // ReSharper restore InconsistentNaming
-    #endregion
-
 	/// <summary>
 	/// Information about the computer and operating system that is running Gorgon.
 	/// </summary>
-	public static class GorgonComputerInfo
+	public class GorgonComputerInfo
+        : IGorgonComputerInfo
 	{
 		#region Variables.
 		// List of machine specific environment variables.
-		private static readonly GorgonConcurrentDictionary<string, string> _machineVariables;
+		private readonly GorgonConcurrentDictionary<string, string> _machineVariables;
 		// List of user specific environment variables.
-		private static readonly GorgonConcurrentDictionary<string, string> _userVariables;
+		private readonly GorgonConcurrentDictionary<string, string> _userVariables;
 		// List of process specific environment variables.
-		private static readonly GorgonConcurrentDictionary<string, string> _processVariables;
+		private readonly GorgonConcurrentDictionary<string, string> _processVariables;
 		#endregion
 
 		#region Properties.
 		/// <summary>
 		/// Property to return the total physical RAM available in bytes.
 		/// </summary>
-		public static long TotalPhysicalRAM => KernelApi.TotalPhysicalRAM;
+		public long TotalPhysicalRAM => KernelApi.TotalPhysicalRAM;
 
 		/// <summary>
 		/// Property to return the available physical RAM in bytes.
 		/// </summary>
-		public static long AvailablePhysicalRAM => KernelApi.AvailablePhysicalRAM;
+		public long AvailablePhysicalRAM => KernelApi.AvailablePhysicalRAM;
 
 		/// <summary>
 		/// Property to return the platform that this instance of Gorgon was compiled for.
@@ -85,7 +65,7 @@ namespace Gorgon.Diagnostics
 		/// When the application that uses this class is run on a 64 bit version of windows, on a 64 bit machine, and the application is running as 64 bit, then this value will return 
 		/// <see cref="Diagnostics.PlatformArchitecture.x64"/>, otherwise it will return <see cref="Diagnostics.PlatformArchitecture.x86"/>.
 		/// </remarks>
-		public static PlatformArchitecture PlatformArchitecture => Environment.Is64BitProcess ? PlatformArchitecture.x64 : PlatformArchitecture.x86;
+		public PlatformArchitecture PlatformArchitecture => Environment.Is64BitProcess ? PlatformArchitecture.x64 : PlatformArchitecture.x86;
 
 		/// <summary>
 		/// Property to return the architecture of the Operating System that Gorgon is running on.
@@ -94,58 +74,58 @@ namespace Gorgon.Diagnostics
 		/// When the application that uses this class is run on a 64 bit version of windows, and on a 64 bit machine then this value will return <see cref="Diagnostics.PlatformArchitecture.x64"/>, 
 		/// otherwise it will return <see cref="Diagnostics.PlatformArchitecture.x86"/>.
 		/// </remarks>
-		public static PlatformArchitecture OperatingSystemArchitecture => Environment.Is64BitOperatingSystem ? PlatformArchitecture.x64 : PlatformArchitecture.x86;
+		public PlatformArchitecture OperatingSystemArchitecture => Environment.Is64BitOperatingSystem ? PlatformArchitecture.x64 : PlatformArchitecture.x86;
 
 		/// <summary>
 		/// Property to return the name for the computer.
 		/// </summary>
-		public static string ComputerName => Environment.MachineName;
+		public string ComputerName => Environment.MachineName;
 
 		/// <summary>
 		/// Property to return the platform for the Operating System.
 		/// </summary>
-		public static PlatformID OperatingSystemPlatform => Environment.OSVersion.Platform;
+		public PlatformID OperatingSystemPlatform => Environment.OSVersion.Platform;
 
 		/// <summary>
 		/// Property to return the version of the operating system.
 		/// </summary>
-		public static Version OperatingSystemVersion => Environment.OSVersion.Version;
+		public Version OperatingSystemVersion => Environment.OSVersion.Version;
 
 		/// <summary>
 		/// Property to return the operating system version as a formatted text string.
 		/// </summary>
 		/// <remarks>This includes the platform, version number and service pack.</remarks>
-		public static string OperatingSystemVersionText => Environment.OSVersion.VersionString;
+		public string OperatingSystemVersionText => Environment.OSVersion.VersionString;
 
 		/// <summary>
 		/// Property to return the service pack that is applied to the operating system.
 		/// </summary>
-		public static string OperatingSystemServicePack => Environment.OSVersion.ServicePack;
+		public string OperatingSystemServicePack => Environment.OSVersion.ServicePack;
 
 		/// <summary>
 		/// Property to return the number of processors in the computer.
 		/// </summary>
-		public static int ProcessorCount => Environment.ProcessorCount;
+		public int ProcessorCount => Environment.ProcessorCount;
 
 		/// <summary>
 		/// Property to return the system directory for the operating system.
 		/// </summary>
-		public static string SystemDirectory => Environment.SystemDirectory;
+		public string SystemDirectory => Environment.SystemDirectory;
 
 		/// <summary>
 		/// Property to return a list of machine specific environment variables.
 		/// </summary>
-		public static IReadOnlyDictionary<string, string> MachineEnvironmentVariables => _machineVariables;
+		public IReadOnlyDictionary<string, string> MachineEnvironmentVariables => _machineVariables;
 
 		/// <summary>
 		/// Property to return a list of user specific environment variables.
 		/// </summary>
-		public static IReadOnlyDictionary<string, string> UserEnvironmentVariables => _userVariables;
+		public IReadOnlyDictionary<string, string> UserEnvironmentVariables => _userVariables;
 
 		/// <summary>
 		/// Property to return a list of process specific environment variables.
 		/// </summary>
-		public static IReadOnlyDictionary<string, string> ProcessEnvironmentVariables => _processVariables;
+		public IReadOnlyDictionary<string, string> ProcessEnvironmentVariables => _processVariables;
 
 		#endregion
 
@@ -157,7 +137,7 @@ namespace Gorgon.Diagnostics
 		/// This method will populate the <see cref="MachineEnvironmentVariables"/>, <see cref="ProcessEnvironmentVariables"/>, and the <see cref="UserEnvironmentVariables"/> properties with values from the 
 		/// environment variables for the operating system. These values cannot be modified from this class since this class is meant for information gathering only.
 		/// </remarks>
-		public static void RefreshEnvironmentVariables()
+		public void RefreshEnvironmentVariables()
 		{
 			IDictionary machine = Environment.GetEnvironmentVariables(EnvironmentVariableTarget.Machine);
 			IDictionary process = Environment.GetEnvironmentVariables(EnvironmentVariableTarget.Process);
@@ -187,7 +167,7 @@ namespace Gorgon.Diagnostics
 		/// <summary>
 		/// Initializes the <see cref="GorgonComputerInfo"/> class.
 		/// </summary>
-		static GorgonComputerInfo()
+		public GorgonComputerInfo()
 		{
 			_machineVariables = new GorgonConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 			_userVariables = new GorgonConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);

@@ -27,7 +27,7 @@
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using Gorgon.Properties;
+using Gorgon.Windows.Properties;
 using Gorgon.Native;
 using Gorgon.UI;
 

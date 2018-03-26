@@ -29,8 +29,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Gorgon.Core;
+using Gorgon.Diagnostics;
+using Gorgon.IO;
 using Gorgon.Plugins;
-using Gorgon.UI;
 
 namespace Gorgon.Examples
 {
@@ -65,31 +66,28 @@ namespace Gorgon.Examples
 	/// </remarks>
 	internal static class Program
 	{
-		#region Methods.
-		/// <summary>
-		/// Function to retrieve a list of our plugin assemblies.
-		/// </summary>
-		/// <returns>The list of plugin assemblies.</returns>
-		private static IEnumerable<string> GetPluginAssemblies()
-		{
-			return Directory.EnumerateFiles(GorgonApplication.StartupPath, "Example004.*Plugin.dll");
-		}
+        #region Variables.
+        // The logging interface for debug messaging.
+	    private static IGorgonLog _log;
+        #endregion
 
+		#region Methods.
 		/// <summary>
 		/// The main entry point for the application.
 		/// </summary>
+		/// <param name="args">The command line arguments.</param>
 		[STAThread]
-		private static void Main()
+		private static void Main(string[] args)
 		{
+            _log = new GorgonLog("Example 004", "Tape_Worm",  typeof(Program).Assembly.GetName().Version);
+
 			// Set up the assembly cache.
 			// We'll need the assemblies loaded into this object in order to load our plugin types.
-			//GorgonPluginAssemblyCache pluginAssemblies = new GorgonPluginAssemblyCache(GorgonApplication.Log);
-            GorgonMefPluginCache pluginCache = new GorgonMefPluginCache(GorgonApplication.Log);
+            GorgonMefPluginCache pluginCache = new GorgonMefPluginCache(_log);
 
 			// Create our plugin service.
-			// This takes the cache of assemblies that we just loaded.
-			//GorgonPluginService pluginService = new GorgonPluginService(pluginAssemblies, GorgonApplication.Log);
-            IGorgonPluginService pluginService = new GorgonMefPluginService(pluginCache, GorgonApplication.Log);
+			// This takes the cache of assemblies we just created.
+            IGorgonPluginService pluginService = new GorgonMefPluginService(pluginCache, _log);
 
 			try
 			{
@@ -102,15 +100,7 @@ namespace Gorgon.Examples
 
 				Console.ResetColor();
 
-				/*string[] pluginFiles = GetPluginAssemblies().ToArray();
-
-				// Load the plugins into Gorgon.
-				foreach (string pluginPath in pluginFiles)
-				{
-					pluginCache.Load(pluginPath);
-				}*/
-
-                pluginCache.LoadPluginAssemblies(GorgonApplication.StartupPath, "Example004.*Plugin.dll");
+                pluginCache.LoadPluginAssemblies(Path.GetDirectoryName(args[0]).FormatDirectory(Path.DirectorySeparatorChar), "Example004.*Plugin.dll");
 				Console.WriteLine("{0} plugin assemblies found.", pluginCache.PluginAssemblies.Count);
 				
 				if (pluginCache.PluginAssemblies.Count == 0)
@@ -185,7 +175,7 @@ namespace Gorgon.Examples
 					         Console.ForegroundColor = ConsoleColor.Red;
 					         Console.WriteLine("Exception:\n{0}\n\nStack Trace:{1}", ex.Message, ex.StackTrace);
 				         },
-				         GorgonApplication.Log);
+				         _log);
 				Console.ResetColor();
 #if DEBUG
 				Console.ReadKey(true);
@@ -197,7 +187,7 @@ namespace Gorgon.Examples
 				//pluginAssemblies.Dispose();
                 pluginCache.Dispose();
 
-                GorgonApplication.Log.LogEnd();
+                _log.LogEnd();
 			}
 		}
 		#endregion

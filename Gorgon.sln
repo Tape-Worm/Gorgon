@@ -33,6 +33,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Gorgon.Graphics", "Gorgon.G
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example005", "Examples\Gorgon.Core\Example005\Example005.csproj", "{07147BD3-7F0F-42AD-8ECA-69E94DE7F49F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Windows", "Gorgon\Gorgon.Windows\Gorgon.Windows.csproj", "{A19CB981-2D25-4316-9542-1D2BD7064F2B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -88,6 +90,12 @@ Global
 		{07147BD3-7F0F-42AD-8ECA-69E94DE7F49F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{07147BD3-7F0F-42AD-8ECA-69E94DE7F49F}.ReleaseAndDeploy|Any CPU.ActiveCfg = ReleaseAndDeploy|Any CPU
 		{07147BD3-7F0F-42AD-8ECA-69E94DE7F49F}.ReleaseAndDeploy|Any CPU.Build.0 = ReleaseAndDeploy|Any CPU
+		{A19CB981-2D25-4316-9542-1D2BD7064F2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A19CB981-2D25-4316-9542-1D2BD7064F2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A19CB981-2D25-4316-9542-1D2BD7064F2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A19CB981-2D25-4316-9542-1D2BD7064F2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A19CB981-2D25-4316-9542-1D2BD7064F2B}.ReleaseAndDeploy|Any CPU.ActiveCfg = Release|Any CPU
+		{A19CB981-2D25-4316-9542-1D2BD7064F2B}.ReleaseAndDeploy|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
