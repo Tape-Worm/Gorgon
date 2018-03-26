@@ -73,7 +73,7 @@ namespace Gorgon.UI
 			// 
 			// pictureDialog
 			// 
-			this.pictureDialog.Image = global::Gorgon.Core.Properties.Resources.Confirm_48x48;
+			this.pictureDialog.Image = global::Gorgon.Properties.Resources.Confirm_48x48;
 			// 
 			// buttonNo
 			// 
@@ -90,7 +90,7 @@ namespace Gorgon.UI
 			this.buttonCancel.FlatAppearance.BorderColor = System.Drawing.Color.Black;
 			this.buttonCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
 			this.buttonCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-			this.buttonCancel.Image = global::Gorgon.Core.Properties.Resources.cancel_16x16;
+			this.buttonCancel.Image = global::Gorgon.Properties.Resources.cancel_16x16;
 			this.buttonCancel.Name = "buttonCancel";
 			this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
 			// 
@@ -100,7 +100,7 @@ namespace Gorgon.UI
 			resources.ApplyResources(this, "$this");
 			this.Controls.Add(this.buttonNo);
 			this.Controls.Add(this.buttonCancel);
-			this.DialogImage = global::Gorgon.Core.Properties.Resources.Confirm_48x48;
+			this.DialogImage = global::Gorgon.Properties.Resources.Confirm_48x48;
 			this.Name = "ConfirmationDialog";
 			this.Controls.SetChildIndex(this.pictureDialog, 0);
 			this.Controls.SetChildIndex(this.buttonOK, 0);

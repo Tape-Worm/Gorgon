@@ -26,7 +26,7 @@
 
 using System;
 using System.Globalization;
-using Gorgon.Core.Properties;
+using Gorgon.Properties;
 using Gorgon.Diagnostics;
 using Gorgon.Math;
 

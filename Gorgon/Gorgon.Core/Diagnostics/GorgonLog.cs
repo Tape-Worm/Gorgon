@@ -34,7 +34,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using Gorgon.Core;
-using Gorgon.Core.Properties;
+using Gorgon.Properties;
 using Gorgon.IO;
 using Gorgon.Diagnostics.LogProviders;
 

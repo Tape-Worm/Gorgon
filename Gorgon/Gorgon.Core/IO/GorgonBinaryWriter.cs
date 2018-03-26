@@ -29,7 +29,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
-using Gorgon.Core.Properties;
+using Gorgon.Properties;
 
 namespace Gorgon.IO
 {

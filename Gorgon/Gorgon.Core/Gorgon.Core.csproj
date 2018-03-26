@@ -18,7 +18,7 @@
     <DefaultTargetSchema>IE50</DefaultTargetSchema>
     <DelaySign>false</DelaySign>
     <OutputType>Library</OutputType>
-    <RootNamespace>Gorgon.Core</RootNamespace>
+    <RootNamespace>Gorgon</RootNamespace>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
     <StartupObject>
     </StartupObject>
@@ -109,12 +109,30 @@
       <HintPath>..\..\packages\SharpDX.Mathematics.4.0.1\lib\net45\SharpDX.Mathematics.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.ComponentModel.Composition.Registration" />
+    <Reference Include="System.Composition.AttributedModel, Version=1.0.32.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Composition.AttributedModel.1.1.0\lib\netstandard2.0\System.Composition.AttributedModel.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Composition.Convention, Version=1.0.32.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Composition.Convention.1.1.0\lib\netstandard2.0\System.Composition.Convention.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Composition.Hosting, Version=1.0.32.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Composition.Hosting.1.1.0\lib\netstandard2.0\System.Composition.Hosting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Composition.Runtime, Version=1.0.32.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Composition.Runtime.1.1.0\lib\netstandard2.0\System.Composition.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Composition.TypedParts, Version=1.0.32.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Composition.TypedParts.1.1.0\lib\netstandard2.0\System.Composition.TypedParts.dll</HintPath>
+    </Reference>
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Drawing">
       <Name>System.Drawing</Name>
     </Reference>
+    <Reference Include="System.Reflection.Context" />
     <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\System.Runtime.CompilerServices.Unsafe.4.4.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
@@ -177,10 +195,13 @@
     <Compile Include="Native\_Internal\Win32 Structs\TIMECAPS.cs" />
     <Compile Include="Native\_Internal\UserApi.cs" />
     <Compile Include="Native\_Internal\WinMultimediaApi.cs" />
-    <Compile Include="Plugins\GorgonPluginService.cs" />
+    <Compile Include="Plugins\GorgonMefPluginService.cs" />
+    <Compile Include="Plugins\GorgonMefPluginCache.cs" />
     <Compile Include="Plugins\_Attributes\ExcludeAsPluginAttribute.cs" />
     <Compile Include="Plugins\_Interfaces\IGorgonPluginService.cs" />
     <Compile Include="Plugins\_Interfaces\IClrStrongName.cs" />
+    <Compile Include="Security\Aes256Encryption.cs" />
+    <Compile Include="Security\_Interfaces\IEncryption.cs" />
     <Compile Include="SharedAssemblyInfo.cs" />
     <Compile Include="Timing\GorgonTimerMultimedia.cs" />
     <Compile Include="Timing\_Interfaces\IGorgonTimer.cs" />
@@ -213,9 +234,7 @@
     <Compile Include="IO\GorgonFileExtensionComparer.cs" />
     <Compile Include="GorgonRandom.cs" />
     <Compile Include="Math\GorgonCatmullRomSpline.cs" />
-    <Compile Include="Plugins\GorgonPluginAssemblyCache.cs" />
     <Compile Include="Plugins\GorgonPlugin.cs" />
-    <Compile Include="Plugins\GorgonPluginPathCollection.cs" />
     <Compile Include="Plugins\_Internal\GorgonPlugInVerifier.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">

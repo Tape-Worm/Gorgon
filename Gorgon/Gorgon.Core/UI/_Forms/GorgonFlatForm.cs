@@ -33,7 +33,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
-using Gorgon.Core.Properties;
+using Gorgon.Properties;
 using Gorgon.Design;
 using Gorgon.Math;
 using Gorgon.Native;

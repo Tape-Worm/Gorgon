@@ -36,7 +36,7 @@ using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
-using Gorgon.Core.Properties;
+using Gorgon.Properties;
 using Gorgon.Design;
 using Gorgon.UI.Design;
 

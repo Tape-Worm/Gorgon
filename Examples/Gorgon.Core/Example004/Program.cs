@@ -83,11 +83,13 @@ namespace Gorgon.Examples
 		{
 			// Set up the assembly cache.
 			// We'll need the assemblies loaded into this object in order to load our plugin types.
-			GorgonPluginAssemblyCache pluginAssemblies = new GorgonPluginAssemblyCache(GorgonApplication.Log);
+			//GorgonPluginAssemblyCache pluginAssemblies = new GorgonPluginAssemblyCache(GorgonApplication.Log);
+            GorgonMefPluginCache pluginCache = new GorgonMefPluginCache(GorgonApplication.Log);
 
 			// Create our plugin service.
 			// This takes the cache of assemblies that we just loaded.
-			GorgonPluginService pluginService = new GorgonPluginService(pluginAssemblies, GorgonApplication.Log);
+			//GorgonPluginService pluginService = new GorgonPluginService(pluginAssemblies, GorgonApplication.Log);
+            IGorgonPluginService pluginService = new GorgonMefPluginService(pluginCache, GorgonApplication.Log);
 
 			try
 			{
@@ -100,29 +102,30 @@ namespace Gorgon.Examples
 
 				Console.ResetColor();
 
-				string[] pluginFiles = GetPluginAssemblies().ToArray();
+				/*string[] pluginFiles = GetPluginAssemblies().ToArray();
 
 				// Load the plugins into Gorgon.
 				foreach (string pluginPath in pluginFiles)
 				{
-					pluginAssemblies.Load(pluginPath);
-				}
+					pluginCache.Load(pluginPath);
+				}*/
 
-				Console.WriteLine("{0} plugin assemblies found.", pluginAssemblies.PluginAssemblies.Count);
+                pluginCache.LoadPluginAssemblies(GorgonApplication.StartupPath, "Example004.*Plugin.dll");
+				Console.WriteLine("{0} plugin assemblies found.", pluginCache.PluginAssemblies.Count);
 				
-				if (pluginFiles.Length == 0)
+				if (pluginCache.PluginAssemblies.Count == 0)
 				{
 					return;
 				}
 
 				// Our text writer plugin interfaces.
-				IList<TextColorWriter> writers = new List<TextColorWriter>(); 
+				IList<TextColorWriter> writers = new List<TextColorWriter>();
 
 				// Create our plugin instances, we'll limit to 9 entries just for giggles.
 				TextColorPlugIn[] plugins = (from pluginName in pluginService.GetPluginNames()
 							   let plugin = pluginService.GetPlugin<TextColorPlugIn>(pluginName)
 				               where plugin != null
-				               select plugin).Take(9).ToArray();
+				               select plugin).ToArray();
 
 				// Display a list of the available plugins.
 				Console.WriteLine("\n{0} Plug-ins loaded:\n", plugins.Length);
@@ -132,7 +135,7 @@ namespace Gorgon.Examples
 					Console.WriteLine("{0}. {1} ({2})", i + 1, plugins[i].Description, plugins[i].GetType().FullName);
 
 					// Create the text writer interface and add it to the list.
-					writers.Add(plugins.ElementAt(i).CreateWriter());
+					writers.Add(plugins[i].CreateWriter());
 				}
 
 				Console.Write("0. Quit\n\nSelect a plugin:  ");
@@ -191,7 +194,8 @@ namespace Gorgon.Examples
 			finally
 			{
 				// Always call dispose so we can unload our temporary application domain.
-				pluginAssemblies.Dispose();
+				//pluginAssemblies.Dispose();
+                pluginCache.Dispose();
 
                 GorgonApplication.Log.LogEnd();
 			}

@@ -30,7 +30,7 @@ using System.IO;
 using System.Threading;
 using System.Windows.Forms;
 using Gorgon.Core;
-using Gorgon.Core.Properties;
+using Gorgon.Properties;
 using Gorgon.Diagnostics;
 using Gorgon.IO;
 using Gorgon.Native;

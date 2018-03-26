@@ -26,7 +26,7 @@
 
 using System;
 using System.Runtime.Serialization;
-using Gorgon.Core.Properties;
+using Gorgon.Properties;
 
 namespace Gorgon.Core
 {

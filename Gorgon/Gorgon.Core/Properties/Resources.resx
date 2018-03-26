@@ -630,8 +630,8 @@ Code: 0x{2}</value>
     <value>Not a valid plug-in assembly.  There are no plug-ins in the assembly '{0}'.</value>
   </data>
   <data name="GOR_ERR_PLUGIN_TYPE_LOAD_FAILURE" xml:space="preserve">
-    <value>Cannot read types from the assembly '{0}'
-{1}</value>
+    <value>Cannot read types from the plugin assemblies:
+{0}</value>
   </data>
   <data name="GOR_EXCEPT_CUSTOM_INFO" xml:space="preserve">
     <value>Custom Information</value>
@@ -1016,5 +1016,11 @@ Code: 0x{2}</value>
   </data>
   <data name="GOR_RESULT_OUT_OF_MEMORY" xml:space="preserve">
     <value>There is not enough memory to complete the operation.</value>
+  </data>
+  <data name="GOR_ERR_ENCRYPTION_KEY_NOT_VALID" xml:space="preserve">
+    <value>The encryption key provided is not valid for the provider.</value>
+  </data>
+  <data name="GOR_ERR_DIRECTORY_NOT_FOUND" xml:space="preserve">
+    <value>The directory '{0}' was not found.</value>
   </data>
 </root>

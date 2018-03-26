@@ -28,7 +28,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
-using Gorgon.Core.Properties;
+using Gorgon.Properties;
 using Gorgon.Native;
 
 namespace Gorgon.Diagnostics.LogProviders

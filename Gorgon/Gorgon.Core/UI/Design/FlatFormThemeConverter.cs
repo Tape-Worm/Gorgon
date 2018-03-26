@@ -27,7 +27,7 @@
 using System;
 using System.ComponentModel;
 using System.Globalization;
-using Gorgon.Core.Properties;
+using Gorgon.Properties;
 
 namespace Gorgon.UI.Design
 {

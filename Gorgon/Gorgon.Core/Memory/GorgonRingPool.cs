@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading;
-using Gorgon.Core.Properties;
+using Gorgon.Properties;
 
 namespace Gorgon.Memory
 {

@@ -29,7 +29,7 @@ using System.Collections;
 using System.Text;
 using System.Windows.Forms;
 using Gorgon.Core;
-using Gorgon.Core.Properties;
+using Gorgon.Properties;
 
 namespace Gorgon.UI
 {

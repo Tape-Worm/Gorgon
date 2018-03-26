@@ -25,7 +25,7 @@
 #endregion
 
 using Gorgon.Core;
-using Gorgon.Core.Properties;
+using Gorgon.Properties;
 using Gorgon.Math;
 
 namespace Gorgon.Graphics

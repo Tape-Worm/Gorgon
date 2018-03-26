@@ -28,7 +28,7 @@
 using System;
 using System.Windows.Forms;
 using Gorgon.Core;
-using Gorgon.Core.Properties;
+using Gorgon.Properties;
 using Gorgon.Native;
 
 namespace Gorgon.UI

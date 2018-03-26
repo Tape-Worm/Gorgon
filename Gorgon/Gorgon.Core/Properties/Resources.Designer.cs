@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Gorgon.Core.Properties {
+namespace Gorgon.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Gorgon.Core.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Gorgon.Core.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Gorgon.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -400,6 +400,24 @@ namespace Gorgon.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The directory &apos;{0}&apos; was not found..
+        /// </summary>
+        internal static string GOR_ERR_DIRECTORY_NOT_FOUND {
+            get {
+                return ResourceManager.GetString("GOR_ERR_DIRECTORY_NOT_FOUND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The encryption key provided is not valid for the provider..
+        /// </summary>
+        internal static string GOR_ERR_ENCRYPTION_KEY_NOT_VALID {
+            get {
+                return ResourceManager.GetString("GOR_ERR_ENCRYPTION_KEY_NOT_VALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The file extension &apos;{0}&apos; already exists in this collection..
         /// </summary>
         internal static string GOR_ERR_FILE_EXTENSION_EXISTS {
@@ -535,8 +553,8 @@ namespace Gorgon.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot read types from the assembly &apos;{0}&apos;
-        ///{1}.
+        ///   Looks up a localized string similar to Cannot read types from the plugin assemblies:
+        ///{0}.
         /// </summary>
         internal static string GOR_ERR_PLUGIN_TYPE_LOAD_FAILURE {
             get {

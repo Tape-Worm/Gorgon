@@ -43,6 +43,7 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
@@ -59,6 +60,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
