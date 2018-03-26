@@ -26,15 +26,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Composition.Registration;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Runtime.Remoting.Messaging;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Properties;
@@ -47,7 +44,7 @@ namespace Gorgon.Plugins
 	/// <remarks>
 	/// <para>
 	/// This assembly cache is meant to load/hold a list of plugin assemblies that contain types that implement the <see cref="GorgonPlugin"/> type and is 
-	/// meant to be used in conjunction with the <see cref="GorgonPluginService"/> type.
+	/// meant to be used in conjunction with the <see cref="IGorgonPluginService"/> type.
 	/// </para>
 	/// <para>
 	/// The cache attempts to ensure that the application only loads an assembly once during the lifetime of the application in order to cut down on 
@@ -69,7 +66,7 @@ namespace Gorgon.Plugins
         // The synchronization lock for multiple threads..
 	    private static readonly object _syncLock = new object();
         // The builder used for type registration.
-	    private RegistrationBuilder _builder = new RegistrationBuilder();
+	    private readonly RegistrationBuilder _builder = new RegistrationBuilder();
 		#endregion
 
 		#region Properties.
@@ -332,7 +329,7 @@ namespace Gorgon.Plugins
 
 		#region Constructor/Finalizer.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonPluginAssemblyCache"/> class.
+		/// Initializes a new instance of the <see cref="GorgonMefPluginCache"/> class.
 		/// </summary>
 		/// <param name="log">[Optional] The application log file to use.</param>
 		public GorgonMefPluginCache(IGorgonLog log = null)
