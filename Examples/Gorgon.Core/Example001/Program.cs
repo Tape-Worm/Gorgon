@@ -173,7 +173,7 @@ namespace Gorgon.Examples
 			Application.EnableVisualStyles();
 			Application.DoEvents();
 
-			Console.Title = "Gorgon Core Library Example #1.";
+			Console.Title = "Gorgon Example #1 - Core functionality";
 			Console.CursorVisible = false;
 
 			try

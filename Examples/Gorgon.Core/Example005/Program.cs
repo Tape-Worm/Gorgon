@@ -84,7 +84,7 @@ namespace Gorgon.Examples
 	                       };
 
 	            Console.ForegroundColor = ConsoleColor.Cyan;
-	            Console.WriteLine(@"Writing/Reading pointer to memory into a memory stream.");
+	            Console.WriteLine("Writing/Reading pointer to memory into a memory stream.");
 	            Console.ForegroundColor = ConsoleColor.White;
 
 	            writer.Write(&data, Unsafe.SizeOf<SomeTestData>());
@@ -94,9 +94,9 @@ namespace Gorgon.Examples
 	            SomeTestData readData = default;
 	            reader.Read(&readData, Unsafe.SizeOf<SomeTestData>());
 
-	            Console.WriteLine($@"int32 Value1 = 1: {readData.Value1 == 1}");
-	            Console.WriteLine($@"double Value2 = 2.1: {readData.Value2.EqualsEpsilon(2.1)}");
-	            Console.WriteLine($@"int16 Value3 = 3: {readData.Value3 == 3}");
+	            Console.WriteLine($"int32 Value1 = 1: {readData.Value1 == 1}");
+	            Console.WriteLine($"double Value2 = 2.1: {readData.Value2.EqualsEpsilon(2.1)}");
+	            Console.WriteLine($"int16 Value3 = 3: {readData.Value3 == 3}");
 
 	            stream.Position = 0;
 	        }
@@ -127,7 +127,7 @@ namespace Gorgon.Examples
 	                       };
 
 	            Console.ForegroundColor = ConsoleColor.Cyan;
-	            Console.WriteLine(@"Writing/Reading a value type to a memory stream.");
+	            Console.WriteLine("Writing/Reading a value type to a memory stream.");
 	            Console.ForegroundColor = ConsoleColor.White;
 
 	            writer.WriteValue(ref data);
@@ -136,9 +136,9 @@ namespace Gorgon.Examples
 
 	            reader.ReadValue(out SomeTestData readData);
 
-	            Console.WriteLine($@"int32 Value1 = 1234: {readData.Value1 == 1234}");
-	            Console.WriteLine($@"double Value2 = 3.1459: {readData.Value2.EqualsEpsilon(3.1459)}");
-	            Console.WriteLine($@"int16 Value3 = 42: {readData.Value3 == 42}");
+	            Console.WriteLine($"int32 Value1 = 1234: {readData.Value1 == 1234}");
+	            Console.WriteLine($"double Value2 = 3.1459: {readData.Value2.EqualsEpsilon(3.1459)}");
+	            Console.WriteLine($"int16 Value3 = 42: {readData.Value3 == 42}");
 
 	            stream.Position = 0;
 	        }
@@ -175,7 +175,7 @@ namespace Gorgon.Examples
 	            }
 
 	            Console.ForegroundColor = ConsoleColor.Cyan;
-	            Console.WriteLine(@"Writing/Reading an array of value types to a memory stream.");
+	            Console.WriteLine("Writing/Reading an array of value types to a memory stream.");
 	            Console.ForegroundColor = ConsoleColor.White;
 
 	            writer.WriteRange(expected);
@@ -188,17 +188,17 @@ namespace Gorgon.Examples
 	            for (int i = 1; i < 4; ++i)
 	            {
 	                Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.Write($@"[{i - 1}] ");
+                    Console.Write($"[{i - 1}] ");
 	                Console.ForegroundColor = ConsoleColor.White;
-	                Console.WriteLine($@"int32 Value1 = {expected[i - 1].Value1}: {actual[i].Value1 == expected[i - 1].Value1}");
+	                Console.WriteLine($"int32 Value1 = {expected[i - 1].Value1}: {actual[i].Value1 == expected[i - 1].Value1}");
 	                Console.ForegroundColor = ConsoleColor.Yellow;
-	                Console.Write($@"[{i - 1}] ");
+	                Console.Write($"[{i - 1}] ");
 	                Console.ForegroundColor = ConsoleColor.White;
-	                Console.WriteLine($@"double Value2 = {expected[i - 1].Value2:0.00000}: {actual[i].Value2.EqualsEpsilon(expected[i - 1].Value2)}");
+	                Console.WriteLine($"double Value2 = {expected[i - 1].Value2:0.00000}: {actual[i].Value2.EqualsEpsilon(expected[i - 1].Value2)}");
 	                Console.ForegroundColor = ConsoleColor.Yellow;
-	                Console.Write($@"[{i - 1}] ");
+	                Console.Write($"[{i - 1}] ");
 	                Console.ForegroundColor = ConsoleColor.White;
-	                Console.WriteLine($@"int16 Value3 = {expected[i - 1].Value3}: {actual[i].Value3 == expected[i - 1].Value3}");
+	                Console.WriteLine($"int16 Value3 = {expected[i - 1].Value3}: {actual[i].Value3 == expected[i - 1].Value3}");
 	            }
                 
 	            stream.Position = 0;
@@ -220,11 +220,12 @@ namespace Gorgon.Examples
 
 		    try
 		    {
+		        Console.Title = "Gorgon Example #5 - Binary reader/write enhancements.";
 		        Console.ForegroundColor = ConsoleColor.White;
-		        Console.WriteLine(@"This example showcases the enhancements brought by the new GorgonBinaryReader and GorgonBinaryWriter objects.");
+		        Console.WriteLine("This example showcases the enhancements brought by the new GorgonBinaryReader and GorgonBinaryWriter objects.");
 		        Console.WriteLine();
-		        Console.WriteLine(@"These objects provide extended functionality for the standard .NET BinaryReader/Writer classes so that generic types ");
-                Console.WriteLine(@"can be read and/or written, and raw memory (unsafe and ref managed pointers) can be also be read and/or written.");
+		        Console.WriteLine("These objects provide extended functionality for the standard .NET BinaryReader/Writer classes so that generic types ");
+                Console.WriteLine("can be read and/or written, and raw memory (unsafe and ref managed pointers) can be also be read and/or written.");
 		        Console.WriteLine();
 
                 WriteByRefValueType(stream);
@@ -232,14 +233,11 @@ namespace Gorgon.Examples
                 WriteArrayValues(stream);
 
                 Console.ResetColor();
-                Console.WriteLine();
-                Console.WriteLine(@"Press any key.");
-		        Console.ReadKey();
 		    }
 		    catch (Exception ex)
 		    {
 		        Console.ForegroundColor = ConsoleColor.Red;
-		        Console.WriteLine($@"There was an error:\n{ex.Message}\n\nStack Trace:\n{ex.StackTrace}");
+		        Console.WriteLine($"There was an error:\n{ex.Message}\n\nStack Trace:\n{ex.StackTrace}");
                 Console.ResetColor();
 		    }
 		    finally
@@ -247,8 +245,10 @@ namespace Gorgon.Examples
                 stream.Dispose();
 		        
 		        Console.ResetColor();
-		        Console.CursorLeft = 0;
-		        Console.CursorTop = Console.WindowHeight - 1;
+		        Console.WriteLine();
+		        Console.WriteLine("Press any key.");
+
+		        Console.ReadKey();
 		    }
 		}
 	}

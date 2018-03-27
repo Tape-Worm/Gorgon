@@ -24,6 +24,8 @@
 // 
 #endregion
 
+using System.Threading;
+
 namespace Gorgon.Timing
 {	
 	/// <summary>
@@ -97,10 +99,17 @@ namespace Gorgon.Timing
 		// Average delta draw time total.
 		private static float _averageDeltaTotal;
 		// Maximum number of iterations for average reset.
-		private static long _maxAverageCount = 500;			
+		private static long _maxAverageCount = 500;
+        // Flag to indicate that timing has started.
+	    private static int _timingStarted;
 		#endregion
 
 		#region Properties.
+	    /// <summary>
+	    /// Property to return whether or not the timing has been started by <see cref="StartTiming{T}"/>.
+	    /// </summary>
+	    public static bool TimingStarted => _timingStarted != 0;
+
 		/// <summary>
 		/// Property to scale the frame delta times.
 		/// </summary>
@@ -499,6 +508,11 @@ namespace Gorgon.Timing
 	    public static void StartTiming<T>()
 	        where T : class, IGorgonTimer, new()
         {
+            if (Interlocked.CompareExchange(ref _timingStarted, 1, 0) == 1)
+            {
+                return;
+            }
+
             _timer = new T();
             _appTimer = new T();
 

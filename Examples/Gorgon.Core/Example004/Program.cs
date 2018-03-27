@@ -91,7 +91,7 @@ namespace Gorgon.Examples
 
 			try
 			{
-				Console.Title = "Example #4 - Gorgon Plug-Ins.";
+				Console.Title = "Gorgon Example #4 - Plugins.";
 				Console.ForegroundColor = ConsoleColor.White;
 
 				Console.WriteLine("This is an example to show how to create and use custom plugins.");
@@ -100,7 +100,7 @@ namespace Gorgon.Examples
 
 				Console.ResetColor();
 
-                pluginCache.LoadPluginAssemblies(Path.GetDirectoryName(args[0]).FormatDirectory(Path.DirectorySeparatorChar), "Example004.*Plugin.dll");
+			    pluginCache.LoadPluginAssemblies(Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]).FormatDirectory(Path.DirectorySeparatorChar), "Example004.*Plugin.dll");
 				Console.WriteLine("{0} plugin assemblies found.", pluginCache.PluginAssemblies.Count);
 				
 				if (pluginCache.PluginAssemblies.Count == 0)

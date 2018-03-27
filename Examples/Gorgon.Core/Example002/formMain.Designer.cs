@@ -42,31 +42,34 @@ namespace Gorgon.Examples
             this.labelFPS.Dock = System.Windows.Forms.DockStyle.Top;
             this.labelFPS.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
             this.labelFPS.Location = new System.Drawing.Point(0, 0);
+            this.labelFPS.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.labelFPS.Name = "labelFPS";
-            this.labelFPS.Size = new System.Drawing.Size(550, 13);
+            this.labelFPS.Size = new System.Drawing.Size(733, 16);
             this.labelFPS.TabIndex = 0;
             this.labelFPS.Text = "FPS: 0";
             // 
             // panelGraphics
             // 
             this.panelGraphics.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelGraphics.Location = new System.Drawing.Point(0, 13);
+            this.panelGraphics.Location = new System.Drawing.Point(0, 16);
+            this.panelGraphics.Margin = new System.Windows.Forms.Padding(4);
             this.panelGraphics.Name = "panelGraphics";
-            this.panelGraphics.Size = new System.Drawing.Size(550, 253);
+            this.panelGraphics.Size = new System.Drawing.Size(733, 311);
             this.panelGraphics.TabIndex = 1;
             // 
             // formMain
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(550, 266);
+            this.ClientSize = new System.Drawing.Size(733, 327);
             this.Controls.Add(this.panelGraphics);
             this.Controls.Add(this.labelFPS);
             this.DoubleBuffered = true;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "formMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Gorgon.Common Example #2 - Idle loop.";
+            this.Text = "Gorgon Example #2 - Idle loop.";
             this.ResumeLayout(false);
 
 		}

@@ -37,8 +37,11 @@ namespace Gorgon.Examples
 	/// <summary>
 	/// Entry point class.
 	/// </summary>
-	/// <remarks>This example is tiny bit more advanced.  It'll show how to use an application context with Gorgon and how to 
-	/// dynamically switch idle loops on the fly.</remarks>
+	/// <remarks>
+	/// This example is tiny bit more advanced.  It'll show how to use an application context with Gorgon and how to dynamically switch idle loops on the fly.
+	/// 
+	/// It will also demonstrate the use of the Console log.
+	/// </remarks>
 	internal static class Program
 	{
 		#region Variables.

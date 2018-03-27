@@ -456,14 +456,17 @@ namespace Gorgon.UI
 			// run regardless since we have an idle method to execute.
 			bool appShouldProcess = MainForm == null || AllowBackground || IsForeground;
 
-		    if (GorgonTimerQpc.SupportsQpc())
+		    if (!GorgonTiming.TimingStarted)
 		    {
-                GorgonTiming.StartTiming<GorgonTimerQpc>();
-		    }
-		    else
-		    {
-                GorgonTimerMultimedia.BeginTiming();
-                GorgonTiming.StartTiming<GorgonTimerMultimedia>();
+		        if (GorgonTimerQpc.SupportsQpc())
+		        {
+		            GorgonTiming.StartTiming<GorgonTimerQpc>();
+		        }
+		        else
+		        {
+		            GorgonTimerMultimedia.BeginTiming();
+		            GorgonTiming.StartTiming<GorgonTimerMultimedia>();
+		        }
 		    }
 
 		    // ReSharper disable once UnusedVariable

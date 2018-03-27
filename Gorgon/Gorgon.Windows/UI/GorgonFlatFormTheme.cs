@@ -867,16 +867,16 @@ namespace Gorgon.UI
 			ToolStripBackColor = WindowBackground;
 			ToolStripArrowColor = ForeColor;
 		}
-		#endregion
+        #endregion
 
-		#region IXmlSerializable Members
-		/// <summary>
-		/// This method is reserved and should not be used. When implementing the IXmlSerializable interface, you should return null (<i>Nothing</i> in Visual Basic) from this method, and instead, if specifying a custom schema is required, apply the <see cref="T:System.Xml.Serialization.XmlSchemaProviderAttribute" /> to the class.
-		/// </summary>
-		/// <returns>
-		/// An <see cref="T:System.Xml.Schema.XmlSchema" /> that describes the XML representation of the object that is produced by the <see cref="M:System.Xml.Serialization.IXmlSerializable.WriteXml(System.Xml.XmlWriter)" /> method and consumed by the <see cref="M:System.Xml.Serialization.IXmlSerializable.ReadXml(System.Xml.XmlReader)" /> method.
-		/// </returns>
-		XmlSchema IXmlSerializable.GetSchema()
+        #region IXmlSerializable Members
+        /// <summary>
+        /// This method is reserved and should not be used. When implementing the IXmlSerializable interface, you should return null (<i>Nothing</i> in Visual Basic) from this method, and instead, if specifying a custom schema is required, apply the <see cref="T:System.Xml.Serialization.XmlSchemaProviderAttribute" /> to the class.
+        /// </summary>
+        /// <returns>
+        /// An <see cref="T:System.Xml.Schema.XmlSchema" /> that describes the XML representation of the object that is produced by the <see cref="M:System.Xml.Serialization.IXmlSerializable.WriteXml(System.Xml.XmlWriter)" /> method and consumed by the <see cref="M:System.Xml.Serialization.IXmlSerializable.ReadXml(System.Xml.XmlReader)" /> method.
+        /// </returns>
+        XmlSchema IXmlSerializable.GetSchema()
 		{
 			return null;
 		}
