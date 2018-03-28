@@ -553,11 +553,31 @@ namespace Gorgon.Windows.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Layout.
+        /// </summary>
+        internal static string PROP_CATEGORY_LAYOUT {
+            get {
+                return ResourceManager.GetString("PROP_CATEGORY_LAYOUT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Window Style.
         /// </summary>
         internal static string PROP_CATEGORY_WINDOWSTYLE {
             get {
                 return ResourceManager.GetString("PROP_CATEGORY_WINDOWSTYLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sets whether the form will scale with the display DPI or not.
+        ///
+        ///This flag only works when the app.config contains a setting for DpiAwareness that has a value of PerMonitorV2..
+        /// </summary>
+        internal static string PROP_DPIAWARE_DESC {
+            get {
+                return ResourceManager.GetString("PROP_DPIAWARE_DESC", resourceCulture);
             }
         }
         
@@ -657,6 +677,15 @@ namespace Gorgon.Windows.Properties {
         internal static string PROP_THEME_CONTENTBACKCOLOR_DESC {
             get {
                 return ResourceManager.GetString("PROP_THEME_CONTENTBACKCOLOR_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contains values to change the appearance of window elements..
+        /// </summary>
+        internal static string PROP_THEME_DESC {
+            get {
+                return ResourceManager.GetString("PROP_THEME_DESC", resourceCulture);
             }
         }
         

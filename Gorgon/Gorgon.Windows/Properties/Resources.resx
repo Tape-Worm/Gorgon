@@ -385,4 +385,15 @@
   <data name="GOR_TEXT_XML_FILTER" xml:space="preserve">
     <value>Gorgon theme XML Files (*.xml)|*.xml</value>
   </data>
+  <data name="PROP_CATEGORY_LAYOUT" xml:space="preserve">
+    <value>Layout</value>
+  </data>
+  <data name="PROP_DPIAWARE_DESC" xml:space="preserve">
+    <value>Sets whether the form will scale with the display DPI or not.
+
+This flag only works when the app.config contains a setting for DpiAwareness that has a value of PerMonitorV2.</value>
+  </data>
+  <data name="PROP_THEME_DESC" xml:space="preserve">
+    <value>Contains values to change the appearance of window elements.</value>
+  </data>
 </root>

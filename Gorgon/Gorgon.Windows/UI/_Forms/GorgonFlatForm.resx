@@ -129,6 +129,9 @@
   <data name="labelClose.Font" type="System.Drawing.Font, System.Drawing">
     <value>Marlett, 16px</value>
   </data>
+  <data name="labelClose.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
   <data name="labelClose.Location" type="System.Drawing.Point, System.Drawing">
     <value>70, 0</value>
   </data>
@@ -136,7 +139,7 @@
     <value>0, 0, 0, 0</value>
   </data>
   <data name="labelClose.Size" type="System.Drawing.Size, System.Drawing">
-    <value>35, 24</value>
+    <value>35, 23</value>
   </data>
   <data name="labelClose.TabIndex" type="System.Int32, mscorlib">
     <value>2</value>
@@ -174,6 +177,9 @@
   <data name="labelMaxRestore.Font" type="System.Drawing.Font, System.Drawing">
     <value>Marlett, 16px</value>
   </data>
+  <data name="labelMaxRestore.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
   <data name="labelMaxRestore.Location" type="System.Drawing.Point, System.Drawing">
     <value>35, 0</value>
   </data>
@@ -181,7 +187,7 @@
     <value>0, 0, 0, 0</value>
   </data>
   <data name="labelMaxRestore.Size" type="System.Drawing.Size, System.Drawing">
-    <value>35, 24</value>
+    <value>35, 23</value>
   </data>
   <data name="labelMaxRestore.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -216,6 +222,9 @@
   <data name="labelMinimize.Font" type="System.Drawing.Font, System.Drawing">
     <value>Marlett, 16px</value>
   </data>
+  <data name="labelMinimize.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
   <data name="labelMinimize.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 0</value>
   </data>
@@ -223,7 +232,7 @@
     <value>0, 0, 0, 0</value>
   </data>
   <data name="labelMinimize.Size" type="System.Drawing.Size, System.Drawing">
-    <value>35, 24</value>
+    <value>35, 23</value>
   </data>
   <data name="labelMinimize.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -252,14 +261,14 @@
   <data name="labelCaption.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Fill</value>
   </data>
-  <data name="labelCaption.Font" type="System.Drawing.Font, System.Drawing">
-    <value>Segoe UI, 11.25pt</value>
+  <data name="labelCaption.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
   </data>
   <data name="labelCaption.Location" type="System.Drawing.Point, System.Drawing">
     <value>24, 0</value>
   </data>
   <data name="labelCaption.Size" type="System.Drawing.Size, System.Drawing">
-    <value>358, 24</value>
+    <value>358, 23</value>
   </data>
   <data name="labelCaption.TabIndex" type="System.Int32, mscorlib">
     <value>3</value>
@@ -304,7 +313,7 @@
     <value>1</value>
   </data>
   <data name="panelWinIcons.Size" type="System.Drawing.Size, System.Drawing">
-    <value>105, 24</value>
+    <value>105, 23</value>
   </data>
   <data name="panelWinIcons.TabIndex" type="System.Int32, mscorlib">
     <value>6</value>
@@ -327,6 +336,9 @@
   <data name="pictureIcon.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Left</value>
   </data>
+  <data name="pictureIcon.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
   <data name="pictureIcon.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 0</value>
   </data>
@@ -334,7 +346,7 @@
     <value>0, 0, 0, 0</value>
   </data>
   <data name="pictureIcon.Size" type="System.Drawing.Size, System.Drawing">
-    <value>24, 24</value>
+    <value>24, 23</value>
   </data>
   <data name="pictureIcon.SizeMode" type="System.Windows.Forms.PictureBoxSizeMode, System.Windows.Forms">
     <value>CenterImage</value>
@@ -364,7 +376,7 @@
     <value>0, 0, 0, 0</value>
   </data>
   <data name="panelCaptionArea.Size" type="System.Drawing.Size, System.Drawing">
-    <value>487, 24</value>
+    <value>487, 23</value>
   </data>
   <data name="panelCaptionArea.TabIndex" type="System.Int32, mscorlib">
     <value>4</value>
@@ -385,19 +397,19 @@
     <value>17, 17</value>
   </metadata>
   <data name="itemRestore.Size" type="System.Drawing.Size, System.Drawing">
-    <value>179, 26</value>
+    <value>151, 26</value>
   </data>
   <data name="itemRestore.Text" xml:space="preserve">
     <value>&amp;Restore</value>
   </data>
   <data name="itemMove.Size" type="System.Drawing.Size, System.Drawing">
-    <value>179, 26</value>
+    <value>151, 26</value>
   </data>
   <data name="itemMove.Text" xml:space="preserve">
     <value>&amp;Move</value>
   </data>
   <data name="itemSize.Size" type="System.Drawing.Size, System.Drawing">
-    <value>179, 26</value>
+    <value>151, 26</value>
   </data>
   <data name="itemSize.Text" xml:space="preserve">
     <value>&amp;Size</value>
@@ -411,7 +423,7 @@
 </value>
   </data>
   <data name="itemMinimize.Size" type="System.Drawing.Size, System.Drawing">
-    <value>179, 26</value>
+    <value>151, 26</value>
   </data>
   <data name="itemMinimize.Text" xml:space="preserve">
     <value>Mi&amp;nimize</value>
@@ -426,13 +438,13 @@
 </value>
   </data>
   <data name="itemMaximize.Size" type="System.Drawing.Size, System.Drawing">
-    <value>179, 26</value>
+    <value>151, 26</value>
   </data>
   <data name="itemMaximize.Text" xml:space="preserve">
     <value>Ma&amp;ximize</value>
   </data>
   <data name="toolStripMenuItem1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>176, 6</value>
+    <value>148, 6</value>
   </data>
   <data name="itemClose.Font" type="System.Drawing.Font, System.Drawing">
     <value>Segoe UI, 9pt, style=Bold</value>
@@ -441,13 +453,13 @@
     <value>Alt+F4</value>
   </data>
   <data name="itemClose.Size" type="System.Drawing.Size, System.Drawing">
-    <value>179, 26</value>
+    <value>151, 26</value>
   </data>
   <data name="itemClose.Text" xml:space="preserve">
     <value>Close</value>
   </data>
   <data name="popupSysMenu.Size" type="System.Drawing.Size, System.Drawing">
-    <value>180, 194</value>
+    <value>152, 166</value>
   </data>
   <data name="&gt;&gt;popupSysMenu.Name" xml:space="preserve">
     <value>popupSysMenu</value>
@@ -458,11 +470,14 @@
   <data name="_panelContent.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Fill</value>
   </data>
+  <data name="_panelContent.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Segoe UI, 9pt</value>
+  </data>
   <data name="_panelContent.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 24</value>
+    <value>0, 23</value>
   </data>
   <data name="_panelContent.Size" type="System.Drawing.Size, System.Drawing">
-    <value>487, 432</value>
+    <value>487, 433</value>
   </data>
   <data name="_panelContent.TabIndex" type="System.Int32, mscorlib">
     <value>5</value>
@@ -483,16 +498,16 @@
     <value>True</value>
   </metadata>
   <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
-    <value>11, 25</value>
+    <value>8, 19</value>
   </data>
   <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
     <value>487, 456</value>
   </data>
   <data name="$this.Font" type="System.Drawing.Font, System.Drawing">
-    <value>Segoe UI, 11.25pt</value>
+    <value>Segoe UI, 10.5pt</value>
   </data>
   <data name="$this.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>4, 5, 4, 5</value>
+    <value>5, 4, 5, 4</value>
   </data>
   <data name="&gt;&gt;itemRestore.Name" xml:space="preserve">
     <value>itemRestore</value>

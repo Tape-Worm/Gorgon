@@ -25,8 +25,10 @@
 #endregion
 
 using System;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.ComponentModel.Design;
+using System.Configuration;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -169,6 +171,7 @@ namespace Gorgon.UI
 		#endregion
 
 		#region Variables.
+	    private readonly WindowMessagePreFilter _messageFilter;
 		private Padding? _currentPadding;
 	    private ResizeDirection _resizeDirection = ResizeDirection.None;
 		private Image _iconImage;
@@ -258,6 +261,50 @@ namespace Gorgon.UI
 		[Browsable(false)]
 		public Panel ContentArea => _panelContent;
 
+
+        /// <summary>
+        /// Gets or sets the automatic scaling mode of the control.
+        /// </summary>
+        /// <remarks>
+        /// This property is disabled and will be handled by the DpiAware property.
+        /// </remarks>
+        [Browsable(false), 
+         EditorBrowsable(EditorBrowsableState.Never), 
+         DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public new AutoScaleMode AutoScaleMode
+	    {
+	        get => AutoScaleMode.None;
+            // ReSharper disable once ValueParameterNotUsed
+	        set => base.AutoScaleMode = AutoScaleMode.None;
+	    }
+
+	    /// <summary>
+	    /// Property to set or return whether the form will scale with the current display DPI.
+	    /// </summary>
+	    /// <remarks>
+	    /// <para>
+	    /// This flag only works when the app.config contains a setting for DpiAwareness that has a value of PerMonitorV2. See <a href="https://docs.microsoft.com/en-us/dotnet/framework/winforms/high-dpi-support-in-windows-forms">https://docs.microsoft.com/en-us/dotnet/framework/winforms/high-dpi-support-in-windows-forms</a> 
+	    /// for information on how to set your application as DPI aware.
+	    /// </para>
+	    /// <para>
+	    /// Please note that this will not scale the fonts in the application as they are physically larger on higher DPI settings. Therefore, you must compensate for this when designing your form.
+	    /// </para>
+	    /// <para>
+	    /// This flag is only available at design time. 
+	    /// </para>
+	    /// </remarks>
+	    [Browsable(true),
+	     EditorBrowsable(EditorBrowsableState.Never),
+	     LocalCategory(typeof(Resources), nameof(Resources.PROP_CATEGORY_LAYOUT)),
+	     LocalDescription(typeof(Resources), nameof(Resources.PROP_DPIAWARE_DESC)),
+	     DefaultValue(true),
+	     DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
+	    public bool ScaleWithDpi
+	    {
+	        get;
+	        set;
+	    } = true;
+
 		/// <summary>
 		/// Property to set or return the current <see cref="GorgonFlatFormTheme"/> for the window.
 		/// </summary>
@@ -265,7 +312,8 @@ namespace Gorgon.UI
 		/// Setting a theme will set all the colors on the <see cref="GorgonFlatForm"/> at once. All toolbars and menus will automatically be updated to the new theme as well.
 		/// </remarks>
 		[Browsable(true), 
-		LocalCategory(typeof(Resources), "PROP_CATEGORY_APPEARANCE"), 
+		LocalCategory(typeof(Resources), nameof(Resources.PROP_CATEGORY_APPEARANCE)), 
+        LocalDescription(typeof(Resources), nameof(Resources.PROP_THEME_DESC)),
 		TypeConverter(typeof(GorgonFlatFormThemeConverter)),
 		DesignerSerializationVisibility(DesignerSerializationVisibility.Content),
 		RefreshProperties(RefreshProperties.All)]
@@ -312,7 +360,10 @@ namespace Gorgon.UI
 		/// <summary>
 		/// Property to set or return whether a single pixel width border will be drawn on the form.
 		/// </summary>
-		[Browsable(true), LocalCategory(typeof(Resources), "PROP_CATEGORY_APPEARANCE"), LocalDescription(typeof(Resources), "PROP_BORDER_DESC"), DefaultValue(false), 
+		[Browsable(true), 
+		 LocalCategory(typeof(Resources), nameof(Resources.PROP_CATEGORY_APPEARANCE)), 
+		 LocalDescription(typeof(Resources), nameof(Resources.PROP_BORDER_DESC)),
+		 DefaultValue(false), 
 		RefreshProperties(RefreshProperties.All)]
 		public bool ShowBorder
 		{
@@ -331,7 +382,9 @@ namespace Gorgon.UI
 		/// <remarks>
 		/// This is only valid when the <see cref="Resizable"/> property is set to <b>true</b>.
 		/// </remarks>
-		[Browsable(true), LocalDescription(typeof(Resources), "PROP_BORDERSIZE_DESC"), LocalCategory(typeof(Resources), "PROP_CATEGORY_APPEARANCE"),
+		[Browsable(true), 
+		 LocalDescription(typeof(Resources), nameof(Resources.PROP_BORDERSIZE_DESC)), 
+		 LocalCategory(typeof(Resources), nameof(Resources.PROP_CATEGORY_APPEARANCE)),
 		RefreshProperties(RefreshProperties.All), DefaultValue(1)]
 		public int BorderSize
 		{
@@ -352,7 +405,7 @@ namespace Gorgon.UI
 		/// <summary>
 		/// Property to set or return whether the form can be resized by a user or not.
 		/// </summary>
-		[Browsable(true), LocalCategory(typeof(Resources), "PROP_CATEGORY_BEHAVIOR"), LocalDescription(typeof(Resources), "PROP_RESIZABLE_DESC"), DefaultValue(true)]
+		[Browsable(true), LocalCategory(typeof(Resources), nameof(Resources.PROP_CATEGORY_BEHAVIOR)), LocalDescription(typeof(Resources), nameof(Resources.PROP_RESIZABLE_DESC)), DefaultValue(true)]
 		public bool Resizable
 		{
 			get;
@@ -365,7 +418,7 @@ namespace Gorgon.UI
 		/// <remarks>
 		/// This is only valid when the <see cref="Resizable"/> property is set to <b>true</b>.
 		/// </remarks>
-		[Browsable(true), LocalDescription(typeof(Resources), "PROP_RESIZEHANDLE_DESC"), LocalCategory(typeof(Resources), "PROP_CATEGORY_DESIGN"),
+		[Browsable(true), LocalDescription(typeof(Resources), nameof(Resources.PROP_RESIZEHANDLE_DESC)), LocalCategory(typeof(Resources), nameof(Resources.PROP_CATEGORY_DESIGN)),
 		RefreshProperties(RefreshProperties.All), DefaultValue(6)]
 		public int ResizeHandleSize
 		{
@@ -382,11 +435,8 @@ namespace Gorgon.UI
 		[Browsable(false), EditorBrowsable(EditorBrowsableState.Never), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public new bool ControlBox
 		{
-			get
-			{
-				return true;
-			}
-			// ReSharper disable once ValueParameterNotUsed
+			get => true;
+		    // ReSharper disable once ValueParameterNotUsed
 			set
 			{
 			}
@@ -401,11 +451,8 @@ namespace Gorgon.UI
 		[Browsable(false), EditorBrowsable(EditorBrowsableState.Never), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public new bool HelpButton
 		{
-			get
-			{
-				return false;
-			}
-			// ReSharper disable once ValueParameterNotUsed
+			get => false;
+		    // ReSharper disable once ValueParameterNotUsed
 			set
 			{
 			}
@@ -417,7 +464,7 @@ namespace Gorgon.UI
 		/// <remarks>
 		/// This is the window icon on the upper-left corner where the system menu for the window is displayed.
 		/// </remarks>
-		[Browsable(true), LocalCategory(typeof(Resources), "PROP_CATEGORY_DESIGN"), LocalDescription(typeof(Resources), "PROP_SHOWICON_DESC")]
+		[Browsable(true), LocalCategory(typeof(Resources), nameof(Resources.PROP_CATEGORY_DESIGN)), LocalDescription(typeof(Resources), nameof(Resources.PROP_SHOWICON_DESC))]
 		public new bool ShowIcon
 		{
 			get => base.ShowIcon;
@@ -431,7 +478,7 @@ namespace Gorgon.UI
 		/// <summary>
 		/// Property to set or return whether the window caption, system menu, max/min buttons and the close button are visible.
 		/// </summary>
-		[Browsable(true), LocalCategory(typeof(Resources), "PROP_CATEGORY_WINDOWSTYLE"), LocalDescription(typeof(Resources), "PROP_WINDOWCAPTION_DESC")]
+		[Browsable(true), LocalCategory(typeof(Resources), nameof(Resources.PROP_CATEGORY_WINDOWSTYLE)), LocalDescription(typeof(Resources), nameof(Resources.PROP_WINDOWCAPTION_DESC))]
 		public bool ShowWindowCaption
 		{
 			get => _showWindowCaption;
@@ -445,7 +492,7 @@ namespace Gorgon.UI
 		/// <summary>
 		/// Property to set or return the caption for the <see cref="GorgonFlatForm"/>.
 		/// </summary>
-		[Browsable(true), LocalCategory(typeof(Resources), "PROP_CATEGORY_APPEARANCE"), LocalDescription(typeof(Resources), "PROP_TEXT_DESC")]
+		[Browsable(true), LocalCategory(typeof(Resources), nameof(Resources.PROP_CATEGORY_APPEARANCE)), LocalDescription(typeof(Resources), nameof(Resources.PROP_TEXT_DESC))]
 		public override string Text
 		{
 			get => base.Text;
@@ -460,7 +507,7 @@ namespace Gorgon.UI
 		/// <summary>
 		/// Property to set or return the icon for this form.
 		/// </summary>
-		[Browsable(true), LocalCategory(typeof(Resources), "PROP_CATEGORY_APPEARANCE"), LocalDescription(typeof(Resources), "PROP_ICON_DESC")]
+		[Browsable(true), LocalCategory(typeof(Resources), nameof(Resources.PROP_CATEGORY_APPEARANCE)), LocalDescription(typeof(Resources), nameof(Resources.PROP_ICON_DESC))]
 		public new Icon Icon
 		{
 			get => base.Icon;
@@ -481,11 +528,8 @@ namespace Gorgon.UI
 		[Browsable(false)]
 		public new SizeGripStyle SizeGripStyle
 		{
-			get
-			{
-				return SizeGripStyle.Hide;
-			}
-			// ReSharper disable once ValueParameterNotUsed
+			get => SizeGripStyle.Hide;
+		    // ReSharper disable once ValueParameterNotUsed
 			set
 			{
 				// Do nothing.
@@ -1077,46 +1121,54 @@ namespace Gorgon.UI
 		/// <summary>
 		/// Handles the MouseMove event of the <see cref="GorgonFlatForm"/> control.
 		/// </summary>
-		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
-		private void Form_MouseMove(object sender, MouseEventArgs e)
+		internal bool Form_MouseMove(MouseEventArgs e)
 		{
 			try
 			{
 				if ((DesignMode) || (WindowState != FormWindowState.Normal) || (!Resizable))
 				{
-					return;
+					return false;
 				}
 
-				if ((e.Location.X < ResizeHandleSize * 2) && (e.Location.Y < ResizeHandleSize * 2))
+                var topArea = new Rectangle(ResizeHandleSize, 0, Width - ResizeHandleSize * 2, ResizeHandleSize);
+			    var bottomArea = new Rectangle(ResizeHandleSize, Height - ResizeHandleSize, Width - ResizeHandleSize * 2, ResizeHandleSize);
+			    var leftArea = new Rectangle(0, ResizeHandleSize, ResizeHandleSize, Height - ResizeHandleSize * 2);
+			    var rightArea = new Rectangle(Width - ResizeHandleSize, ResizeHandleSize, ResizeHandleSize, Height - ResizeHandleSize * 2);
+			    var nwArea = new Rectangle(0, 0, ResizeHandleSize, ResizeHandleSize);
+			    var neArea = new Rectangle(Width - ResizeHandleSize, 0, ResizeHandleSize, ResizeHandleSize);
+			    var swArea = new Rectangle(0, Height - ResizeHandleSize, ResizeHandleSize, ResizeHandleSize);
+			    var seArea = new Rectangle(Width - ResizeHandleSize, Height - ResizeHandleSize, ResizeHandleSize, ResizeHandleSize);
+
+                if (nwArea.Contains(e.Location))
 				{
 					ResizeDir = ResizeDirection.TopLeft;
 				}
-				else if ((e.Location.X < ResizeHandleSize * 2) && (e.Location.Y > Height - ResizeHandleSize * 2))
+				else if (swArea.Contains(e.Location))
 				{
 					ResizeDir = ResizeDirection.BottomLeft;
 				}
-				else if ((e.Location.X > Width - ResizeHandleSize * 2) && (e.Location.Y > Height - ResizeHandleSize * 2))
+				else if (seArea.Contains(e.Location))
 				{
 					ResizeDir = ResizeDirection.BottomRight;
 				}
-				else if ((e.Location.X > Width - ResizeHandleSize * 2) && (e.Location.Y < ResizeHandleSize * 2))
+				else if (neArea.Contains(e.Location))
 				{
 					ResizeDir = ResizeDirection.TopRight;
 				}
-				else if ((e.Location.X < ResizeHandleSize))
+				else if (leftArea.Contains(e.Location))
 				{
 					ResizeDir = ResizeDirection.Left;
 				}
-				else if ((e.Location.X > Width - ResizeHandleSize))
+				else if (rightArea.Contains(e.Location))
 				{
 					ResizeDir = ResizeDirection.Right;
 				}
-				else if ((e.Location.Y < ResizeHandleSize))
+				else if (topArea.Contains(e.Location))
 				{
 					ResizeDir = ResizeDirection.Top;
 				}
-				else if ((e.Location.Y > Height - ResizeHandleSize))
+				else if (bottomArea.Contains(e.Location))
 				{
 					ResizeDir = ResizeDirection.Bottom;
 				}
@@ -1124,6 +1176,8 @@ namespace Gorgon.UI
 				{
 					ResizeDir = ResizeDirection.None;
 				}
+
+			    return ResizeDir != ResizeDirection.None;
 			}
 			finally
 			{
@@ -1169,13 +1223,12 @@ namespace Gorgon.UI
 		/// <summary>
 		/// Handles the MouseDown event of the <see cref="GorgonFlatForm"/> control.
 		/// </summary>
-		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
-		private void Form_MouseDown(object sender, MouseEventArgs e)
+		internal bool Form_MouseDown(MouseEventArgs e)
 		{
 			if (DesignMode)
 			{
-				return;
+				return false;
 			}
 
 			try
@@ -1185,71 +1238,85 @@ namespace Gorgon.UI
 					if (panelCaptionArea.ClientRectangle.Contains(panelCaptionArea.PointToClient(e.Location)))
 					{
 						panelCaptionArea_DoubleClick(this, EventArgs.Empty);
+					    return true;
 					}
-					return;
+					
+				    return false;
 				}
 
 				if (e.Button != MouseButtons.Left)
 				{
-					return;
+					return false;
 				}
 
-				if ((Width - ResizeHandleSize > e.X) && (e.X > ResizeHandleSize) && (e.Y > ResizeHandleSize) && (e.Y < Height - ResizeHandleSize) && (WindowState == FormWindowState.Normal))
+                // Allow us to move the window if we click on the client area (as long as no control is under the cursor) or header.
+                var clientArea = new Rectangle(ResizeHandleSize, ResizeHandleSize, Width - ResizeHandleSize * 2, Height - ResizeHandleSize * 2);
+
+				if (clientArea.Contains(e.Location))
 				{
+				    IntPtr handle = UserApi.WindowFromPoint(MousePosition);
+
+				    if ((handle != Handle)
+                        && (handle != labelCaption.Handle))
+				    {
+				        return false;
+				    }
+
 					UserApi.ReleaseCapture();
 					UserApi.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Caption), IntPtr.Zero);
+				    return true;
 				}
-				else
-				{
-					if ((WindowState != FormWindowState.Normal) || (!Resizable))
-					{
-						return;
-					}
 
-					switch (ResizeDir)
-					{
-						case ResizeDirection.Left:
-							UserApi.ReleaseCapture();
-							Cursor.Current = Cursors.SizeWE;
-							UserApi.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Left), IntPtr.Zero);
-							break;
-						case ResizeDirection.TopLeft:
-							UserApi.ReleaseCapture();
-							Cursor.Current = Cursors.SizeNWSE;
-							UserApi.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.TopLeft), IntPtr.Zero);
-							break;
-						case ResizeDirection.Top:
-							UserApi.ReleaseCapture();
-							Cursor.Current = Cursors.SizeNS;
-							UserApi.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Top), IntPtr.Zero);
-							break;
-						case ResizeDirection.TopRight:
-							UserApi.ReleaseCapture();
-							Cursor.Current = Cursors.SizeNESW;
-							UserApi.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.TopRight), IntPtr.Zero);
-							break;
-						case ResizeDirection.Right:
-							UserApi.ReleaseCapture();
-							Cursor.Current = Cursors.SizeWE;
-							UserApi.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Right), IntPtr.Zero);
-							break;
-						case ResizeDirection.BottomRight:
-							UserApi.ReleaseCapture();
-							Cursor.Current = Cursors.SizeNWSE;
-							UserApi.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.BottomRight), IntPtr.Zero);
-							break;
-						case ResizeDirection.Bottom:
-							UserApi.ReleaseCapture();
-							Cursor.Current = Cursors.SizeNS;
-							UserApi.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Bottom), IntPtr.Zero);
-							break;
-						case ResizeDirection.BottomLeft:
-							UserApi.ReleaseCapture();
-							Cursor.Current = Cursors.SizeNESW;
-							UserApi.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.BottomLeft), IntPtr.Zero);
-							break;
-					}
+				if ((WindowState != FormWindowState.Normal) || (!Resizable))
+				{
+					return false;
 				}
+
+				switch (ResizeDir)
+				{
+					case ResizeDirection.Left:
+						UserApi.ReleaseCapture();
+						Cursor.Current = Cursors.SizeWE;
+						UserApi.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Left), IntPtr.Zero);
+						return true;
+					case ResizeDirection.TopLeft:
+						UserApi.ReleaseCapture();
+						Cursor.Current = Cursors.SizeNWSE;
+						UserApi.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.TopLeft), IntPtr.Zero);
+						return true;
+					case ResizeDirection.Top:
+						UserApi.ReleaseCapture();
+						Cursor.Current = Cursors.SizeNS;
+						UserApi.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Top), IntPtr.Zero);
+						return true;
+					case ResizeDirection.TopRight:
+						UserApi.ReleaseCapture();
+						Cursor.Current = Cursors.SizeNESW;
+						UserApi.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.TopRight), IntPtr.Zero);
+						return true;
+					case ResizeDirection.Right:
+						UserApi.ReleaseCapture();
+						Cursor.Current = Cursors.SizeWE;
+						UserApi.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Right), IntPtr.Zero);
+						return true;
+					case ResizeDirection.BottomRight:
+						UserApi.ReleaseCapture();
+						Cursor.Current = Cursors.SizeNWSE;
+						UserApi.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.BottomRight), IntPtr.Zero);
+						return true;
+					case ResizeDirection.Bottom:
+						UserApi.ReleaseCapture();
+						Cursor.Current = Cursors.SizeNS;
+						UserApi.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Bottom), IntPtr.Zero);
+						return true;
+					case ResizeDirection.BottomLeft:
+						UserApi.ReleaseCapture();
+						Cursor.Current = Cursors.SizeNESW;
+						UserApi.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.BottomLeft), IntPtr.Zero);
+						return true;
+				}
+
+                return false;
 			}
 			finally
 			{
@@ -1257,7 +1324,59 @@ namespace Gorgon.UI
 			}
 		}
 
-		/// <summary>
+	    /// <summary>Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.</summary>
+	    /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data. </param>
+	    protected override void OnLoad(EventArgs e)
+	    {
+	        if (DesignMode)
+	        {
+	            return;
+	        }
+
+	        // Ensure we have the config element, or else this is pointless.
+	        if ((!(ConfigurationManager.GetSection("System.Windows.Forms.ApplicationConfigurationSection") is NameValueCollection item))
+	            || (item["DpiAwareness"] != "PerMonitorV2")
+	            || (DeviceDpi == 96))
+	        {
+	            return;
+	        }
+
+	        if (!ScaleWithDpi)
+	        {
+	            float newWindowFontSize = Font.Unit == GraphicsUnit.Pixel ? Font.Size : Font.Size * (96.0f / DeviceDpi);
+	            float newPanelFontSize = ContentArea.Font.Unit == GraphicsUnit.Pixel ? ContentArea.Font.Size : ContentArea.Font.Size * (96.0f / DeviceDpi);
+                
+	            Font = new Font(Font.FontFamily, newWindowFontSize, Font.Style, Font.Unit, Font.GdiCharSet);
+	            ContentArea.Font = new Font(ContentArea.Font.FontFamily,
+	                                        newPanelFontSize,
+	                                        ContentArea.Font.Style,
+	                                        ContentArea.Font.Unit,
+	                                        ContentArea.Font.GdiCharSet);
+	            return;
+	        }
+
+	        SuspendLayout();
+	        // Force us to scale with DPI.
+	        base.AutoScaleMode = AutoScaleMode.Font;
+	        // This is our base DPI to start scaling from.
+	        AutoScaleDimensions = new SizeF(8F, 19F);
+	        ResumeLayout(true);
+
+	        switch (StartPosition)
+	        {
+	            case FormStartPosition.CenterScreen:
+	                CenterToScreen();
+	                break;
+	            case FormStartPosition.CenterParent:
+	                CenterToParent();
+	                break;
+	        }
+
+
+	        base.OnLoad(e);
+	    }
+
+	    /// <summary>
 		/// Handles the Load event of the <see cref="GorgonFlatForm"/> control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
@@ -1554,6 +1673,9 @@ namespace Gorgon.UI
 			RestoreBounds = Bounds;
 
 			ValidateWindowControls();
+
+            _messageFilter = new WindowMessagePreFilter(this);
+            Application.AddMessageFilter(_messageFilter);
 		}
 		#endregion
 	}

@@ -117,7 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="LabelText.Text" xml:space="preserve">
+  <data name="TextText.Text" xml:space="preserve">
     <value>This is an example of the Gorgon "Flat Form" look.  This was originally built to emulate the look of the Microsoft Zune style window, however with the arrival of Windows 10, this look is now part of the operating system, so the value of this is minimal and is left here merely as a curiosity.
 
 However, unlike the Windows 10 window, this window can be themed to match a color scheme that better suits your application.  You can choose the window decoration color, and other element colors. It will even theme any of the toolstrip controls that come with .NET (other controls however are left to the developer to override).  Application can override the theme via the Theme property. Themes can also be saved to and loaded from an XML file containing the theme settings.
@@ -132,7 +132,8 @@ And that's it.
 
 The window is pretty much a standard window with an Icon, Minimize, Maximize and Close buttons (all of which can be disabled).  Below the title bar, there's a client area panel where you can drop in any controls you'd like to flesh out the control.
 
-The border is not visible by default (although the mouse will react as though there is a border, and this is affected by the ResizeHandleSize property). To show a border the user must set the ShowBorder flag to TRUE, and increase the BorderSize and Padding properties to the desired size(s).</value>
+The border is not visible by default (although the mouse will react as though there is a border, and this is affected by the ResizeHandleSize property). To show a border the user must set the ShowBorder flag to TRUE, and increase the BorderSize and Padding properties to the desired size(s).
+</value>
   </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">

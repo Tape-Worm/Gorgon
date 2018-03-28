@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Security;
 
@@ -35,8 +36,17 @@ namespace Gorgon.Native
 	/// </summary>
 	[SuppressUnmanagedCodeSecurity]
 	internal static class UserApi
-	{
-		#region Methods.
+    {
+        #region Methods.
+        /// <summary>
+        /// Function to retrieve a window handle from a position.
+        /// </summary>
+        /// <param name="pnt">The position to pass in.</param>
+        /// <returns>A handle to the window.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Portability", "CA1901:PInvokeDeclarationsShouldBePortable", MessageId = "0", Justification = "See https://stackoverflow.com/questions/33083725/how-to-declare-point-structure-to-get-rid-of-code-analysis-error")]
+        [DllImport("user32.dll")]
+	    public static extern IntPtr WindowFromPoint(Point pnt);
+
 		/// <summary>
 		/// Function to release the captured mouse.
 		/// </summary>

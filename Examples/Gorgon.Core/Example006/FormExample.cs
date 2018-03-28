@@ -14,8 +14,8 @@ namespace Gorgon.Examples
     /// of the operating system, so the value of this is minimal and is left here merely as a curiosity.
     ///  
     /// However, unlike the Windows 10 window, this window can be themed to match a color scheme that better suits your application.  You can choose the window decoration color, and other element colors. 
-    /// It will even theme any of the toolstrip controls that come with .NET (other controls however are left to the developer to override).  Application can override the theme via the Theme property. 
-    /// Themes can also be saved to and loaded from an XML file containing the theme settings.
+    /// It will even theme any of the toolstrip controls that come with .NET (other controls however are left to the developer to override via the ApplyTheme method).  Application can override the theme via 
+    /// the Theme property. Themes can also be saved to and loaded from an XML file containing the theme settings.
     /// 
     /// To use it:
     /// * Create a Windows Forms application.
@@ -40,22 +40,6 @@ namespace Gorgon.Examples
         #endregion
 
         #region Methods.
-        /// <summary>Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.</summary>
-        /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data. </param>
-        protected override void OnLoad(EventArgs e)
-        {
-            base.OnLoad(e);
-
-            // This allows us the chance to update our size based on display DPI while keeping the designer from breaking everything.
-            SuspendLayout();
-            AutoScaleMode = AutoScaleMode.Dpi;
-            AutoScaleDimensions = new SizeF(96, 96);
-            ResumeLayout(true);
-
-            // We'll need to reposition as our form size will change on higher DPI monitors.
-            Location = new Point(Screen.FromControl(this).Bounds.Width / 2 - Size.Width / 2, Screen.FromControl(this).Bounds.Height / 2 - Size.Height / 2);
-        }
-
         /// <summary>
         /// Function to load a theme from an XML file on disk and set it on the form.
         /// </summary>
@@ -71,6 +55,20 @@ namespace Gorgon.Examples
                 // Setting the theme is incredibly simple.
                 Theme = GorgonFlatFormTheme.Load(stream);
             }
+        }
+
+        /// <summary>
+        /// Function to allow themes to be applied to child controls/windows that do not support <see cref="GorgonFlatFormTheme"/>.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// While the <see cref="GorgonFlatForm"/> is themeable, most controls are not. And while many controls will inherit the color scheme of their parent window, some will use their own. This method, when 
+        /// overridden in your application will allow you to change the color scheme of those child controls (or windows) that don't support theming.
+        /// </para>
+        /// </remarks>
+        protected override void ApplyTheme()
+        {
+            base.ApplyTheme();
 
             // Unfortunately, some controls cannot have their colors changed automatically...
             ButtonThemeColors.BackColor = Theme.WindowBackground;
@@ -97,6 +95,9 @@ namespace Gorgon.Examples
         public FormExample()
         {
             InitializeComponent();
+
+            // Text box insists that we start with all text selected. I disagree.
+            TextText.SelectionStart = TextText.SelectionLength = 0;
         }
         #endregion
     }

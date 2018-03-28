@@ -29,31 +29,19 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormExample));
-            this.LabelText = new System.Windows.Forms.Label();
             this.ButtonThemeColors = new System.Windows.Forms.Button();
+            this.TextText = new System.Windows.Forms.TextBox();
             this.ContentArea.SuspendLayout();
             this.SuspendLayout();
             // 
             // ContentArea
             // 
             this.ContentArea.BackColor = System.Drawing.SystemColors.Window;
-            this.ContentArea.Controls.Add(this.LabelText);
+            this.ContentArea.Controls.Add(this.TextText);
             this.ContentArea.Controls.Add(this.ButtonThemeColors);
-            this.ContentArea.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.ContentArea.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.ContentArea.Location = new System.Drawing.Point(2, 35);
-            this.ContentArea.Size = new System.Drawing.Size(952, 568);
-            // 
-            // LabelText
-            // 
-            this.LabelText.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.LabelText.ForeColor = System.Drawing.Color.Black;
-            this.LabelText.Location = new System.Drawing.Point(0, 0);
-            this.LabelText.Margin = new System.Windows.Forms.Padding(3);
-            this.LabelText.Name = "LabelText";
-            this.LabelText.Size = new System.Drawing.Size(952, 532);
-            this.LabelText.TabIndex = 0;
-            this.LabelText.Text = resources.GetString("LabelText.Text");
+            this.ContentArea.Location = new System.Drawing.Point(1, 33);
+            this.ContentArea.Size = new System.Drawing.Size(638, 446);
             // 
             // ButtonThemeColors
             // 
@@ -64,36 +52,49 @@
             this.ButtonThemeColors.FlatAppearance.MouseDownBackColor = System.Drawing.SystemColors.ControlDark;
             this.ButtonThemeColors.FlatAppearance.MouseOverBackColor = System.Drawing.SystemColors.ControlLight;
             this.ButtonThemeColors.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.ButtonThemeColors.Location = new System.Drawing.Point(0, 532);
+            this.ButtonThemeColors.Location = new System.Drawing.Point(0, 410);
             this.ButtonThemeColors.Name = "ButtonThemeColors";
-            this.ButtonThemeColors.Size = new System.Drawing.Size(952, 36);
+            this.ButtonThemeColors.Size = new System.Drawing.Size(638, 36);
             this.ButtonThemeColors.TabIndex = 1;
             this.ButtonThemeColors.Text = "Click to change theme colors.";
             this.ButtonThemeColors.UseVisualStyleBackColor = true;
             this.ButtonThemeColors.Click += new System.EventHandler(this.ButtonThemeColors_Click);
             // 
+            // TextText
+            // 
+            this.TextText.BackColor = System.Drawing.Color.White;
+            this.TextText.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.TextText.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.TextText.Location = new System.Drawing.Point(0, 0);
+            this.TextText.Multiline = true;
+            this.TextText.Name = "TextText";
+            this.TextText.ReadOnly = true;
+            this.TextText.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.TextText.Size = new System.Drawing.Size(638, 410);
+            this.TextText.TabIndex = 1;
+            this.TextText.Text = resources.GetString("TextText.Text");
+            // 
             // FormExample
             // 
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BorderSize = 2;
-            this.ClientSize = new System.Drawing.Size(956, 605);
+            this.ClientSize = new System.Drawing.Size(640, 480);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(6, 8, 6, 8);
             this.MinimumSize = new System.Drawing.Size(320, 240);
             this.Name = "FormExample";
-            this.Padding = new System.Windows.Forms.Padding(2);
+            this.Padding = new System.Windows.Forms.Padding(1);
             this.ShowBorder = true;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Gorgon Example #6 - Flat Form.";
             this.ContentArea.ResumeLayout(false);
+            this.ContentArea.PerformLayout();
             this.ResumeLayout(false);
 
         }
 
         #endregion
-
-        private System.Windows.Forms.Label LabelText;
         private System.Windows.Forms.Button ButtonThemeColors;
+        private System.Windows.Forms.TextBox TextText;
     }
 }
 
