@@ -37,6 +37,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Windows", "Gorgon\Go
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example006", "Examples\Gorgon.Core\Example006\Example006.csproj", "{B2FD2542-C213-4321-B328-B173A1717A66}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Graphics.Imaging", "Gorgon\Gorgon.Graphics.Imaging\Gorgon.Graphics.Imaging.csproj", "{9DD1EC99-5D74-4B0A-AD93-14746939F6BE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -104,6 +106,12 @@ Global
 		{B2FD2542-C213-4321-B328-B173A1717A66}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B2FD2542-C213-4321-B328-B173A1717A66}.ReleaseAndDeploy|Any CPU.ActiveCfg = Release|Any CPU
 		{B2FD2542-C213-4321-B328-B173A1717A66}.ReleaseAndDeploy|Any CPU.Build.0 = Release|Any CPU
+		{9DD1EC99-5D74-4B0A-AD93-14746939F6BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9DD1EC99-5D74-4B0A-AD93-14746939F6BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9DD1EC99-5D74-4B0A-AD93-14746939F6BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9DD1EC99-5D74-4B0A-AD93-14746939F6BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9DD1EC99-5D74-4B0A-AD93-14746939F6BE}.ReleaseAndDeploy|Any CPU.ActiveCfg = Release|Any CPU
+		{9DD1EC99-5D74-4B0A-AD93-14746939F6BE}.ReleaseAndDeploy|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
