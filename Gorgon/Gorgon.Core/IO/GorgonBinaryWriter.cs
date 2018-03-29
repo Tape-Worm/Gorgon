@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Buffers;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -47,8 +48,6 @@ namespace Gorgon.IO
 		#region Variables.
 		// The size of the temporary buffer used to stream data out.
 		private int _bufferSize = 65536;
-		// Temporary buffer.
-		private byte[] _tempBuffer;
 		#endregion
 
 		#region Properties.
@@ -75,12 +74,6 @@ namespace Gorgon.IO
 				}
 
 				_bufferSize = value;
-
-				// If we've previously allocated the buffer, then resize it.
-				if (_tempBuffer != null)
-				{
-					_tempBuffer = new byte[_bufferSize];
-				}
 			}
 		}
 
@@ -94,7 +87,7 @@ namespace Gorgon.IO
 		#endregion
 
 		#region Methods.
-		/// <summary>
+	    /// <summary>
 		/// Function to write the bytes pointed at by the pointer into the stream.
 		/// </summary>
 		/// <param name="pointer">Pointer to the buffer containing the data.</param>
@@ -319,35 +312,39 @@ namespace Gorgon.IO
                 throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_ERR_VALUE_IS_LESS_THAN, startIndex + count, value.Length));
 			}
 
-		    if (_tempBuffer == null)
-		    {
-                _tempBuffer = new byte[_bufferSize];
-		    }
+		    byte[] tempBuffer = ArrayPool<byte>.Shared.Rent(_bufferSize);
 
-		    int typeSize = Unsafe.SizeOf<T>();
-		    int totalSize = count.Value * typeSize;
-		    int blockSize = _tempBuffer.Length;
-		    int offset = 0;
-		    ref byte valueRef = ref Unsafe.As<T, byte>(ref value[startIndex]);
-		    ref byte bufferRef = ref _tempBuffer[0];
-            
-		    while (totalSize > 0)
+		    try
 		    {
-		        if (blockSize > totalSize)
+		        int typeSize = Unsafe.SizeOf<T>();
+		        int totalSize = count.Value * typeSize;
+		        int blockSize = _bufferSize;
+		        int offset = 0;
+		        ref byte valueRef = ref Unsafe.As<T, byte>(ref value[startIndex]);
+		        ref byte bufferRef = ref tempBuffer[0];
+
+		        while (totalSize > 0)
 		        {
-		            blockSize = totalSize;
+		            if (blockSize > totalSize)
+		            {
+		                blockSize = totalSize;
+		            }
+
+		            ref byte srcRef = ref Unsafe.Add(ref valueRef, offset);
+
+		            // Not a fan of doing it this way. This extra indirection is kind of annoying, but we have no real way to cast T[] into byte[] and passing that 
+		            // to the Stream Write method.  This may be solvable with Span<T>, but it's still in preview and I won't touch that with a 10,000 foot pole 
+		            // until it's ready for use.
+		            Unsafe.CopyBlock(ref bufferRef, ref srcRef, (uint)blockSize);
+		            Write(tempBuffer, 0, blockSize);
+
+		            totalSize -= blockSize;
+		            offset += blockSize;
 		        }
-
-		        ref byte srcRef = ref Unsafe.Add(ref valueRef, offset);
-
-                // Not a fan of doing it this way. This extra indirection is kind of annoying, but we have no real way to cast T[] into byte[] and passing that 
-		        // to the Stream Write method.  This may be solvable with Span<T>, but it's still in preview and I won't touch that with a 10,000 foot pole 
-                // until it's ready for use.
-                Unsafe.CopyBlock(ref bufferRef, ref srcRef, (uint)blockSize);
-                Write(_tempBuffer, 0, blockSize);
-
-		        totalSize -= blockSize;
-		        offset += blockSize;
+		    }
+		    finally
+		    {
+                ArrayPool<byte>.Shared.Return(tempBuffer);
 		    }
 		}
 		#endregion

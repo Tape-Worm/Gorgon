@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Buffers;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -47,8 +48,6 @@ namespace Gorgon.IO
 		#region Variables.
 		// The size of the temporary buffer used to stream data in.
 		private int _bufferSize = 65536;
-		// Temporary buffer.
-		private byte[] _tempBuffer;			
 		#endregion
 
 		#region Properties.
@@ -75,12 +74,6 @@ namespace Gorgon.IO
 				}
 
 				_bufferSize = value;
-
-				// If we've previously allocated the buffer, then resize it.
-				if (_tempBuffer != null)
-				{
-					_tempBuffer = new byte[_bufferSize];
-				}
 			}
 		}
 
@@ -94,7 +87,7 @@ namespace Gorgon.IO
 		#endregion
 
 		#region Methods.
-		/// <summary>
+	    /// <summary>
 		/// Function to read bytes from a stream into a buffer pointed at by the pointer.
 		/// </summary>
 		/// <param name="pointer">Pointer to the buffer to fill with data.</param>
@@ -343,33 +336,37 @@ namespace Gorgon.IO
                 throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_ERR_VALUE_IS_LESS_THAN, startIndex + count, value.Length));
 			}
 
-			if (_tempBuffer == null)
-			{
-				_tempBuffer = new byte[_bufferSize];
-			}
+		    byte[] tempBuffer = ArrayPool<byte>.Shared.Rent(_bufferSize);
 
-		    int typeSize = Unsafe.SizeOf<T>();
-		    int blockSize = _tempBuffer.Length;
-		    int size = typeSize * count.Value;
-		    int offset = 0;
-		    ref byte valueRef = ref Unsafe.As<T, byte>(ref value[startIndex]);
-		    ref byte bufferRef = ref _tempBuffer[0];
-
-		    while (size > 0)
+		    try
 		    {
-		        if (blockSize > size)
+                int typeSize = Unsafe.SizeOf<T>();
+		        int blockSize = _bufferSize;
+		        int size = typeSize * count.Value;
+		        int offset = 0;
+                ref byte valueRef = ref Unsafe.As<T, byte>(ref value[startIndex]);
+		        ref byte bufferRef = ref tempBuffer[0];
+
+		        while (size > 0)
 		        {
-		            blockSize = size;
+		            if (blockSize > size)
+		            {
+		                blockSize = size;
+		            }
+
+		            ref byte destRef = ref Unsafe.Add(ref valueRef, offset);
+
+		            // Read the data from the stream as byte values.
+		            Read(tempBuffer, 0, blockSize);
+		            Unsafe.CopyBlock(ref destRef, ref bufferRef, (uint)blockSize);
+
+		            size -= blockSize;
+		            offset += blockSize;
 		        }
-
-		        ref byte destRef = ref Unsafe.Add(ref valueRef, offset);
-                    
-		        // Read the data from the stream as byte values.
-		        Read(_tempBuffer, 0, blockSize);
-                Unsafe.CopyBlock(ref destRef, ref bufferRef, (uint)blockSize);
-
-		        size -= blockSize;
-		        offset += blockSize;
+		    }
+		    finally
+		    {
+                ArrayPool<byte>.Shared.Return(tempBuffer);
 		    }
 		}
 
