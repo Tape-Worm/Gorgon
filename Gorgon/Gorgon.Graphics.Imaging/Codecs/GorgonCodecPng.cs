@@ -64,7 +64,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 	/// </para>
 	/// </remarks>
 	public sealed class GorgonCodecPng
-        : GorgonCodecWic
+        : GorgonCodecWic<GorgonPngEncodingOptions, IGorgonWicDecodingOptions>
 	{
 		#region Variables.
 		// Supported formats.
@@ -88,8 +88,9 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonCodecPng"/> class.
         /// </summary>
-        public GorgonCodecPng()
-            : base("PNG", Resources.GORIMG_DESC_PNG_CODEC, new[] { "png" }, WIC.ContainerFormatGuids.Png)
+        /// <param name="encodingOptions">[Optional] Options used when encoding the image data.</param>
+        public GorgonCodecPng(GorgonPngEncodingOptions encodingOptions = null)
+            : base("PNG", Resources.GORIMG_DESC_PNG_CODEC, new[] { "png" }, WIC.ContainerFormatGuids.Png, encodingOptions, null)
         {
         }
         #endregion

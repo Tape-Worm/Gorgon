@@ -273,7 +273,6 @@ Code: 0x{2}</value>
   <data name="GOR_ERR_PLUGIN_ASSEMBLY_NOT_FOUND" xml:space="preserve">
     <value>Could not find a plugin assembly named '{0}'.</value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="GOR_ERR_CHUNK_ILLEGAL_OPEN_MODE" xml:space="preserve">
     <value>The mode must be either [Read] or [Write].</value>
   </data>

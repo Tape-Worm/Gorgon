@@ -347,13 +347,13 @@ namespace Gorgon.UI
 			}
 		}
 
-		/// <summary>
-		/// Property to return the directory for the currently running application.
-		/// </summary>
-		/// <remarks>
-		/// This does not include the name of the assembly that is executing, only the directory that the application was executed from.
-		/// </remarks>
-		public static string StartupPath => Application.StartupPath.FormatDirectory(Path.DirectorySeparatorChar);
+	    /// <summary>
+	    /// Property to return the directory for the currently running application.
+	    /// </summary>
+	    public static DirectoryInfo StartupPath
+	    {
+	        get;
+	    }
 
 		/// <summary>
 		/// Property to return the path for the currently running application.
@@ -905,6 +905,8 @@ namespace Gorgon.UI
 			ThreadID = Thread.CurrentThread.ManagedThreadId;
 			
 			Log = new GorgonLog(LogFile, "Tape_Worm", typeof(GorgonApplication).Assembly.GetName().Version);
+
+		    StartupPath = new DirectoryInfo(Application.StartupPath.FormatDirectory(Path.DirectorySeparatorChar));
 		}
 		#endregion
 	}

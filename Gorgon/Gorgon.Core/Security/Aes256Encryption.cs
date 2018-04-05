@@ -232,19 +232,19 @@ namespace Gorgon.Security
                 }
             }
         }
-		#endregion
+        #endregion
 
-		#region Constructor/Finalizer.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Aes256Encryption"/> class.
-		/// </summary>
-		/// <param name="keyPairFileData">A byte array containing a initialization and key.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="keyPairFileData"/> is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="keyPairFileData"/> is empty.
-		/// <para>-or-</para>
-		/// <para>Thrown when the <paramref name="keyPairFileData"/> does not contain valid information.</para>
-		/// </exception>
-		public Aes256Encryption(byte[] keyPairFileData)
+        #region Constructor/Finalizer.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Aes256Encryption"/> class.
+        /// </summary>
+        /// <param name="keyPairFileData">A byte array containing a initialization and key.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="keyPairFileData"/> is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="keyPairFileData"/> is empty.
+        /// <para>-or-</para>
+        /// <para>Thrown when the <paramref name="keyPairFileData"/> does not contain valid information.</para>
+        /// </exception>
+        public Aes256Encryption(byte[] keyPairFileData)
 		{
 			if (keyPairFileData == null)
 			{
@@ -265,14 +265,14 @@ namespace Gorgon.Security
 		}
 
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Aes256Encryption"/> class.
-		/// </summary>
-		/// <param name="iv">The initialization vector to use.</param>
-		/// <param name="key">The key to use.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="iv"/>, or the <paramref name="key"/> parameters are <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="iv"/>, or the <paramref name="key"/> parameters are empty.</exception>
-		public Aes256Encryption(byte[] iv, byte[] key)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Aes256Encryption"/> class.
+        /// </summary>
+        /// <param name="iv">The initialization vector to use.</param>
+        /// <param name="key">The key to use.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="iv"/>, or the <paramref name="key"/> parameters are <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="iv"/>, or the <paramref name="key"/> parameters are empty.</exception>
+        public Aes256Encryption(byte[] iv, byte[] key)
 		{
 			if (iv == null)
 			{

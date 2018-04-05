@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.Math;
@@ -42,9 +43,9 @@ namespace Gorgon.Graphics.Imaging
 	/// of representing standard 2D images, but can also represent 1D and 3D images. And, depending on the type of image, there is also support for mip map levels, and arrayed images.
 	/// </para>
 	/// <para>
-	/// Images can access their data directly through a <see cref="IGorgonPointer"/> interface that allows safe access to raw, unmanaged memory where the image data is stored. In cases where images have 
+	/// Images can access their data directly through a <see cref="GorgonReadOnlyPointer"/> interface that allows safe access to raw, unmanaged memory where the image data is stored. In cases where images have 
 	/// multiple parts like depth slices for a 3D image, or an array for 2D images, this object will provide access through a series of buffers that will point to the individual locations for depth slices, 
-	/// array indices, and mip map levels. These buffers will also provide their own <see cref="IGorgonPointer"/> that will allow safe and direct access to the native memory where the buffer is located.
+	/// array indices, and mip map levels. These buffers will also provide their own <see cref="GorgonReadOnlyPointer"/> that will allow safe and direct access to the native memory where the buffer is located.
 	/// </para>
 	/// <para>
 	/// Because this object stored data in native memory instead of on the heaps provided by .NET, this object should be disposed by calling its <see cref="IDisposable.Dispose"/> method when it is no 
@@ -59,22 +60,24 @@ namespace Gorgon.Graphics.Imaging
 		private GorgonImageInfo _imageInfo;
 		// The list of image buffers.
 		private ImageBufferList _imageBuffers;
-		#endregion
+        // The backing image data store.
+	    private GorgonNativeBuffer<byte> _imageData;
+	    #endregion
 
 		#region Properties.
-		/// <summary>
-		/// Property to return the pointer to the beginning of the internal buffer.
-		/// </summary>
-		public IGorgonPointer ImageData
-		{
-		    get;
-		    private set;
+	    /// <summary>
+	    /// Property to return the pointer to the beginning of the internal buffer.
+	    /// </summary>
+	    public GorgonNativeBuffer<byte> ImageData
+	    {
+	        get => _imageData;
+	        private set => _imageData = value;
 	    }
 
 	    /// <summary>
-		/// Property to return the information used to create the image.
-		/// </summary>
-		public IGorgonImageInfo Info => _imageInfo;
+	    /// Property to return the information used to create the image.
+	    /// </summary>
+	    public IGorgonImageInfo Info => _imageInfo;
 
 		/// <summary>
 		/// Property to return information about the pixel format for this image.
@@ -106,50 +109,23 @@ namespace Gorgon.Graphics.Imaging
 		/// </summary>
 		/// <param name="data">The image data base pointer.</param>
 		/// <param name="copy"><b>true</b> to copy the data in the base pointer to a new pointer, or <b>false</b> to alias the existing base pointer.</param>
-		private unsafe void GetImagePointer(IGorgonPointer data, bool copy)
+		private void GetImagePointer(GorgonReadOnlyPointer data, bool copy)
 		{
 			// Create a buffer large enough to hold our data.
-			if ((data != null) && (!copy))
+			if ((!data.IsNull) && (!copy))
 			{
-				ImageData = new GorgonPointerAlias((void *)data.Address, SizeInBytes);
+			    ImageData = new GorgonNativeBuffer<byte>(data);
 				return;
 			}
 
-			ImageData = new GorgonPointer(SizeInBytes);
+            ImageData = new GorgonNativeBuffer<byte>(SizeInBytes);
 
-			if (data == null) 
+			if (data.IsNull) 
 			{
-				DirectAccess.ZeroMemory((void*)ImageData.Address, SizeInBytes);
 				return;
 			}
 
-			// Copy the data in chunks if it's larger than 2GB
-			if (data.Size > int.MaxValue)
-			{
-				long size = data.Size;
-				// Copy 1 GB at a time.
-				int bufferSize = 1073741824;
-				long offset = 0;
-
-				while (size > 0)
-				{
-					data.CopyTo(ImageData, offset, bufferSize, offset);
-
-					offset += bufferSize;
-					size -= bufferSize;
-
-					// Copy remaining bytes.
-					if (size > bufferSize)
-					{
-						bufferSize = (int)size;
-					}
-				}
-			}
-			else
-			{
-				// Otherwise, just make a simple copy.
-				data.CopyTo(ImageData, (int)data.Size);
-			}
+            data.CopyTo(ImageData);
 		}
 
 		/// <summary>
@@ -157,7 +133,7 @@ namespace Gorgon.Graphics.Imaging
 		/// </summary>
 		/// <param name="data">Pre-existing data to use.</param>
 		/// <param name="copy"><b>true</b> to copy the data, <b>false</b> to take ownership of the pointer.  Only applies when data is non-null.</param>
-		private void Initialize(IGorgonPointer data, bool copy)
+		private void Initialize(GorgonReadOnlyPointer data, bool copy)
 		{
 			GetImagePointer(data, copy);
 			_imageBuffers = new ImageBufferList(this);
@@ -474,11 +450,12 @@ namespace Gorgon.Graphics.Imaging
 	            throw new ArgumentNullException(nameof(source));
 	        }
 
+            Dispose();
+
 	        _imageInfo = new GorgonImageInfo(source.Info);
-	        ImageData.Dispose();
 	        FormatInfo = new GorgonFormatInfo(_imageInfo.Format);
 	        SizeInBytes = CalculateSizeInBytes(_imageInfo);
-	        Initialize(source.ImageData, true);
+	        Initialize((GorgonReadOnlyPointer)source.ImageData, true);
         }
 
         /// <summary>
@@ -513,7 +490,7 @@ namespace Gorgon.Graphics.Imaging
 				            FormatInfo = new GorgonFormatInfo(_imageInfo.Format),
 							SizeInBytes = CalculateSizeInBytes(_imageInfo)
 			            };
-			image.Initialize(ImageData, true);
+			image.Initialize((GorgonReadOnlyPointer)ImageData, true);
 
 			return image;
 		}
@@ -523,7 +500,8 @@ namespace Gorgon.Graphics.Imaging
 		/// </summary>
 		public void Dispose()
 		{
-			ImageData?.Dispose();
+		    GorgonNativeBuffer<byte> imageData = Interlocked.Exchange(ref _imageData, null);
+            imageData?.Dispose();
 		}
 		#endregion
 
@@ -532,7 +510,7 @@ namespace Gorgon.Graphics.Imaging
 		/// Initializes a new instance of the <see cref="GorgonImage" /> class.
 		/// </summary>
 		/// <param name="info">A <see cref="IGorgonImageInfo"/> containing information used to create the image.</param>
-		/// <param name="data">[Optional] A <see cref="IGorgonPointer"/> that points to a blob of existing image data.</param>
+		/// <param name="data">[Optional] A <see cref="GorgonReadOnlyPointer"/> that points to a blob of existing image data.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="GorgonException">Thrown when the image format is unknown or is unsupported.</exception>
 		/// <remarks>
@@ -545,13 +523,13 @@ namespace Gorgon.Graphics.Imaging
 		/// <para>
 		/// <note type="important">
 		/// <para>
-		/// If the <paramref name="data"/> parameter is not omitted, then the user is responsible for managing the lifetime of the <see cref="IGorgonPointer"/> object passed in. Failure to do so may cause 
+		/// If the <paramref name="data"/> parameter is not omitted, then the user is responsible for managing the lifetime of the <see cref="GorgonReadOnlyPointer"/> object passed in. Failure to do so may cause 
 		/// a potential memory leak until garbage collection can recover the object.
 		/// </para>
 		/// </note>
 		/// </para>
 		/// </remarks>
-		public GorgonImage(IGorgonImageInfo info, IGorgonPointer data = null)
+		public GorgonImage(IGorgonImageInfo info, GorgonReadOnlyPointer? data = null)
 		{
 			if (info == null)
 			{
@@ -583,12 +561,12 @@ namespace Gorgon.Graphics.Imaging
 			SizeInBytes = CalculateSizeInBytes(info);
 
 			// Validate the image size.
-			if ((data != null) && (SizeInBytes > data.Size))
+			if ((data != null) && (SizeInBytes > data.Value.SizeInBytes))
 			{
-				throw new ArgumentException(string.Format(Resources.GORIMG_ERR_IMAGE_SIZE_MISMATCH, SizeInBytes, data.Size), nameof(data));
+				throw new ArgumentException(string.Format(Resources.GORIMG_ERR_IMAGE_SIZE_MISMATCH, SizeInBytes, data.Value.SizeInBytes), nameof(data));
 			}
 
-			Initialize(data, false);
+			Initialize(data ?? GorgonReadOnlyPointer.Null, false);
 		}
 		#endregion
 	}

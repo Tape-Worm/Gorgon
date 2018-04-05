@@ -19,7 +19,7 @@ namespace Gorgon.Graphics.Imaging.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -111,6 +111,15 @@ namespace Gorgon.Graphics.Imaging.Properties {
         internal static string GORIMG_DESC_TGA_CODEC {
             get {
                 return ResourceManager.GetString("GORIMG_DESC_TGA_CODEC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The size of the bitmap ({0}x{1}) is not the same as the buffer ({2}x{3})..
+        /// </summary>
+        internal static string GORIMG_ERR_BITMAP_SIZE_NOT_CORRECT {
+            get {
+                return ResourceManager.GetString("GORIMG_ERR_BITMAP_SIZE_NOT_CORRECT", resourceCulture);
             }
         }
         

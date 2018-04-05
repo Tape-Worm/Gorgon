@@ -32,6 +32,49 @@ using DX = SharpDX;
 
 namespace Gorgon.Graphics.Imaging
 {
+    /// <summary>
+    /// An anchor for repositioning the image after the image has been expanded.
+    /// </summary>
+    public enum ImageExpandAnchor
+    {
+        /// <summary>
+        /// Image is in the upper left corner.
+        /// </summary>
+        UpperLeft = 0,
+        /// <summary>
+        /// Image is in the center at the top.
+        /// </summary>
+        UpperMiddle = 1,
+        /// <summary>
+        /// Image is in the upper right corner.
+        /// </summary>
+        UpperRight = 2,
+        /// <summary>
+        /// Image is in the middle and to the left.
+        /// </summary>
+        MiddleLeft = 3,
+        /// <summary>
+        /// Image is centered.
+        /// </summary>
+        Center = 4,
+        /// <summary>
+        /// Image is in the middle and to the right.
+        /// </summary>
+        MiddleRight = 5,
+        /// <summary>
+        /// Image is in the bottom left corner.
+        /// </summary>
+        BottomLeft = 6,
+        /// <summary>
+        /// Image is in the center at the bottom.
+        /// </summary>
+        BottomMiddle = 7,
+        /// <summary>
+        /// Image is in the bottom right corner.
+        /// </summary>
+        BottomRight = 8
+    }
+
 	/// <summary>
 	/// Extension methods to provide method chaining for a fluent interface for the <see cref="IGorgonImage"/> type.
 	/// </summary>
@@ -44,8 +87,8 @@ namespace Gorgon.Graphics.Imaging
 		/// <param name="src">The source buffer to containing the source pixels to convert.</param>
 		private static unsafe void ConvertPixelsToB4G4R4A4(IGorgonImageBuffer dest, IGorgonImageBuffer src)
 		{
-			ushort* destBufferPtr = (ushort*)dest.Data.Address;
-			uint* srcBufferPtr = (uint*)src.Data.Address;
+			ushort* destBufferPtr = (ushort*)dest.Data;
+			uint* srcBufferPtr = (uint*)src.Data;
 
 			for (int i = 0; i < src.PitchInformation.SlicePitch; i += sizeof(uint))
 			{
@@ -78,8 +121,8 @@ namespace Gorgon.Graphics.Imaging
 		/// <param name="src">The source buffer to containing the source pixels to convert.</param>
 		private static unsafe void ConvertPixelsFromB4G4R4A4(IGorgonImageBuffer dest, IGorgonImageBuffer src)
 		{
-			ushort* srcBufferPtr = (ushort*)src.Data.Address;
-			uint* destBufferPtr = (uint*)dest.Data.Address;
+			ushort* srcBufferPtr = (ushort*)src.Data;
+			uint* destBufferPtr = (uint*)dest.Data;
 
 			for (int i = 0; i < src.PitchInformation.SlicePitch; i += sizeof(ushort))
 			{
@@ -279,7 +322,7 @@ namespace Gorgon.Graphics.Imaging
 				for (int array = 0; array < baseImage.Info.ArrayCount; ++array)
 				{
 				    baseImage.Buffers[0, array].Data.CopyTo(newImage.Buffers[0, array].Data,
-				                                            (int)newImage.Buffers[0, array].Data.Size * newImage.Info.Depth);
+				                                            newImage.Buffers[0, array].Data.SizeInBytes * newImage.Info.Depth);
 				}
 
 				if (mipCount < 2)
@@ -355,7 +398,7 @@ namespace Gorgon.Graphics.Imaging
 			try
 			{
 				int calcMipLevels = GorgonImage.CalculateMaxMipCount(cropRect.Width, cropRect.Height, newDepth).Min(baseImage.Info.MipCount);
-				newImage = wic.Resize(baseImage, cropRect.X, cropRect.Y, cropRect.Width, cropRect.Height, newDepth, calcMipLevels, ImageFilter.Point, true);
+				newImage = wic.Resize(baseImage, cropRect.X, cropRect.Y, cropRect.Width, cropRect.Height, newDepth, calcMipLevels, ImageFilter.Point, ResizeMode.Crop);
 
 				// Send the data over to the new image.
 				newImage.CopyTo(baseImage);
@@ -368,6 +411,113 @@ namespace Gorgon.Graphics.Imaging
 				wic.Dispose();
 			}
 		}
+
+        /// <summary>
+        /// Function to expand an image width, height, and/or depth.
+        /// </summary>
+        /// <param name="baseImage">The image to expand.</param>
+        /// <param name="newWidth">The new width of the image.</param>
+        /// <param name="newHeight">The new height of the image.</param>
+        /// <param name="newDepth">The new depth of the image.</param>
+        /// <param name="anchor">[Optional] The anchor point for placing the image data after the image is expanded.</param>
+        /// <returns>The expanded image.</returns>
+        /// <remarks>
+        /// <para>
+        /// This will expand the size of an image, but not stretch the actual image data. This will leave a padding around the original image area filled with transparent pixels. 
+        /// </para>
+        /// <para>
+        /// The image data can be repositioned in the new image by specifying an <paramref name="anchor"/> point. 
+        /// </para>
+        /// <para>
+        /// If the new size of the image is smaller than that of the <paramref name="baseImage"/>, then the new size is constrained to the old size. Cropping is not supported by this method. 
+        /// </para>
+        /// <para>
+        /// If a user wishes to resize the image, then call the <see cref="Resize"/> method, of if they wish to crop an image, use the <see cref="Crop"/> method.
+        /// </para>
+        /// </remarks>
+	    public static IGorgonImage Expand(this IGorgonImage baseImage, int newWidth, int newHeight, int newDepth, ImageExpandAnchor anchor = ImageExpandAnchor.UpperLeft)
+	    {
+	        IGorgonImage workingImage = null;
+	        WicUtilities wic = null;
+
+	        try
+	        {
+	            // Constrain to the correct sizes.
+	            newWidth = newWidth.Max(baseImage.Info.Width);
+	            newHeight = newHeight.Max(baseImage.Info.Height);
+	            newDepth = newDepth.Max(baseImage.Info.Depth);
+
+	            // Only use the appropriate dimensions.
+	            switch (baseImage.Info.ImageType)
+	            {
+	                case ImageType.Image1D:
+	                    newHeight = baseImage.Info.Height;
+	                    break;
+	                case ImageType.Image2D:
+	                case ImageType.ImageCube:
+	                    newDepth = baseImage.Info.Depth;
+	                    break;
+	            }
+
+	            // We don't shink with this method, use the Crop method for that.
+	            if ((newWidth <= baseImage.Info.Width) && (newHeight <= baseImage.Info.Height) && (newDepth <= baseImage.Info.Depth))
+	            {
+	                return baseImage;
+	            }
+
+	            wic = new WicUtilities();
+
+                workingImage = new GorgonImage(new GorgonImageInfo(baseImage.Info)
+                                               {
+                                                   Width = newWidth,
+                                                   Height = newHeight,
+                                                   Depth = newDepth
+                                               });
+
+	            DX.Point position = DX.Point.Zero;
+
+	            switch (anchor)
+	            {
+	                case ImageExpandAnchor.UpperMiddle:
+	                    position = new DX.Point(newWidth / 2 - baseImage.Info.Width / 2, 0);
+	                    break;
+                    case ImageExpandAnchor.UpperRight:
+                        position = new DX.Point(newWidth - baseImage.Info.Width, 0);
+	                    break;
+                    case ImageExpandAnchor.MiddleLeft:
+                        position = new DX.Point(0, newHeight / 2 - baseImage.Info.Height / 2);
+	                    break;
+                    case ImageExpandAnchor.Center:
+                        position = new DX.Point(newWidth / 2 - baseImage.Info.Width / 2, newHeight / 2 - baseImage.Info.Height / 2);
+	                    break;
+                    case ImageExpandAnchor.MiddleRight:
+                        position = new DX.Point(newWidth - baseImage.Info.Width, newHeight / 2 - baseImage.Info.Height / 2);
+	                    break;
+                    case ImageExpandAnchor.BottomLeft:
+                        position = new DX.Point(0, newHeight - baseImage.Info.Height);
+	                    break;
+                    case ImageExpandAnchor.BottomMiddle:
+                        position = new DX.Point(newWidth / 2 - baseImage.Info.Width / 2, newHeight - baseImage.Info.Height);
+	                    break;
+                    case ImageExpandAnchor.BottomRight:
+                        position = new DX.Point(newWidth - baseImage.Info.Width, newHeight - baseImage.Info.Height);
+	                    break;
+	            }
+
+	            int calcMipLevels = GorgonImage.CalculateMaxMipCount(newWidth, newHeight, newDepth).Min(baseImage.Info.MipCount);
+	            workingImage = wic.Resize(baseImage, position.X, position.Y, newWidth, newHeight, newDepth, calcMipLevels, ImageFilter.Point, ResizeMode.Expand);
+
+	            // Send the data over to the new image.
+	            workingImage.CopyTo(baseImage);
+
+	            return baseImage;
+	        }
+	        finally
+	        {
+                workingImage?.Dispose();
+                wic?.Dispose();
+	        }
+	    }
 
 		/// <summary>
 		/// Function to resize the image to a new width, height and/or depth.
@@ -432,7 +582,7 @@ namespace Gorgon.Graphics.Imaging
 			try
 			{
 				int calcMipLevels = GorgonImage.CalculateMaxMipCount(newWidth, newHeight, newDepth).Min(baseImage.Info.MipCount);
-				newImage = wic.Resize(baseImage, 0, 0, newWidth, newHeight, newDepth, calcMipLevels, filter, false);
+				newImage = wic.Resize(baseImage, 0, 0, newWidth, newHeight, newDepth, calcMipLevels, filter, ResizeMode.Scale);
 
 				newImage.CopyTo(baseImage);
 
@@ -567,7 +717,7 @@ namespace Gorgon.Graphics.Imaging
 
 				unsafe
 				{
-					int* imagePtr = (int *)(newImage.ImageData.Address);
+					int* imagePtr = (int *)(newImage.ImageData);
 
 					for (int i = 0; i < newImage.SizeInBytes; i += newImage.FormatInfo.SizeInBytes)
 					{

@@ -97,9 +97,9 @@ namespace Gorgon.Graphics.Imaging
 		}
 
 		/// <summary>
-		/// Property to return the data stream for the image data.
+		/// Property to return the native memory buffer holding the data for this image buffer.
 		/// </summary>
-		IGorgonPointer Data
+		GorgonNativeBuffer<byte> Data
 		{
 			get;
 		}

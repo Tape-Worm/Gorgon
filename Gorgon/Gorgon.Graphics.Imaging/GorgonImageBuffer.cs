@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Runtime.CompilerServices;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using DX = SharpDX;
@@ -101,9 +102,9 @@ namespace Gorgon.Graphics.Imaging
         }
 
         /// <summary>
-        /// Property to return the data stream for the image data.
+        /// Property to return the native memory buffer holding the data for this image buffer.
         /// </summary>
-        public IGorgonPointer Data
+        public GorgonNativeBuffer<byte> Data
         {
             get;
         }
@@ -160,7 +161,7 @@ namespace Gorgon.Graphics.Imaging
 				throw new ArgumentNullException(nameof(buffer));	
 			}
 
-			if (buffer.Data.Size == 0)
+			if (buffer.Data.SizeInBytes == 0)
 			{
 				throw new ArgumentEmptyException(nameof(buffer));
 			}
@@ -172,7 +173,7 @@ namespace Gorgon.Graphics.Imaging
 
 			// If we're attempting to copy ourselves into... well, ourselves, then do nothing.
 			if ((buffer == this)
-				|| (buffer.Data.Address == Data.Address))
+				|| (buffer.Data == Data))
 			{
 				return;
 			}
@@ -225,13 +226,13 @@ namespace Gorgon.Graphics.Imaging
 			}
 
 			// Ensure that the regions actually fit within their respective buffers.
-			DX.Rectangle dstRegion = new DX.Rectangle
-			                {
-				                Left = destX,
-				                Top = destY,
-				                Right = (destX + (srcRegion.Right - srcRegion.Left)).Min(buffer.Width),
-				                Bottom = (destY + (srcRegion.Bottom - srcRegion.Top)).Min(buffer.Height)
-			                };
+		    var dstRegion = new DX.Rectangle
+		                    {
+		                        Left = destX,
+		                        Top = destY,
+		                        Right = (destX + (srcRegion.Right - srcRegion.Left)).Min(buffer.Width),
+		                        Bottom = (destY + (srcRegion.Bottom - srcRegion.Top)).Min(buffer.Height)
+		                    };
 
 			// If the source/dest region is empty, then we have nothing to copy.
 			if ((srcRegion.IsEmpty)
@@ -248,14 +249,14 @@ namespace Gorgon.Graphics.Imaging
 				&& (srcRegion.Right == dstRegion.Right)
 				&& (srcRegion.Bottom == dstRegion.Bottom))
 		    {
-				buffer.Data.CopyTo(Data, (int)Data.Size);
+                buffer.Data.CopyTo(Data);
 		        return;
 		    }
 
 			unsafe
 			{
-				byte* dest = (byte*)buffer.Data.Address;
-				byte* source = (byte*)Data.Address;
+				var dest = (byte*)buffer.Data;
+				var source = (byte*)Data;
 
 				// Find out how many bytes each pixel occupies.
 				int dataSize = PitchInformation.RowPitch / Width;
@@ -275,7 +276,7 @@ namespace Gorgon.Graphics.Imaging
 				// Finally, copy our data.
 				for (int i = 0; i < minHeight; ++i)
 				{
-					DirectAccess.MemoryCopy(dstData, srcData, minLineSize);
+                    Unsafe.CopyBlock(dstData, srcData, (uint)minLineSize);
 
 					srcData += PitchInformation.RowPitch;
 					dstData += buffer.PitchInformation.RowPitch;
@@ -297,7 +298,7 @@ namespace Gorgon.Graphics.Imaging
         /// <param name="height">The height for the buffer.</param>
         /// <param name="depth">The depth for the buffer.</param>
         /// <param name="format">Format of the buffer.</param>
-        internal GorgonImageBuffer(GorgonPointerAlias data, GorgonPitchLayout pitchInfo, int mipLevel, int arrayIndex, int sliceIndex, int width, int height, int depth, BufferFormat format)
+        internal GorgonImageBuffer(GorgonNativeBuffer<byte> data, GorgonPitchLayout pitchInfo, int mipLevel, int arrayIndex, int sliceIndex, int width, int height, int depth, BufferFormat format)
         {
             Data = data;
             PitchInformation = pitchInfo;

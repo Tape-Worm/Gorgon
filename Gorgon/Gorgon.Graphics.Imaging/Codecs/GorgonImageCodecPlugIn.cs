@@ -36,7 +36,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
     /// <summary>
     /// A plug-in to allow for loading of custom image codecs.
     /// </summary>
-    public abstract class GorgonImageCodecPlugIn
+    public abstract class GorgonImageCodecPlugin
         : GorgonPlugin
     {
 		#region Properties.
@@ -201,7 +201,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonImageCodecPlugIn"/> class.
+		/// Initializes a new instance of the <see cref="GorgonImageCodecPlugin"/> class.
 		/// </summary>
 		/// <param name="description">Optional description of the plug-in.</param>
 		/// <remarks>
@@ -209,7 +209,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// Objects that implement this base class should pass in a hard coded description on the base constructor.
 		/// </para>
 		/// </remarks>
-		protected GorgonImageCodecPlugIn(string description)
+		protected GorgonImageCodecPlugin(string description)
             : base(description)
         {
         }

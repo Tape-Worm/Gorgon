@@ -30,6 +30,8 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using Gorgon.Math;
+using Gorgon.Native;
 using Gorgon.Properties;
 
 namespace Gorgon.IO
@@ -87,24 +89,6 @@ namespace Gorgon.IO
 		#endregion
 
 		#region Methods.
-	    /// <summary>
-		/// Function to write the bytes pointed at by the pointer into the stream.
-		/// </summary>
-		/// <param name="pointer">Pointer to the buffer containing the data.</param>
-		/// <param name="size">Number of bytes to write.</param>
-		/// <remarks>
-		/// <para>
-		/// This method will write the number of bytes specified by the <paramref name="size"/> parameter from the data located at the <see cref="IntPtr"/> representing a memory pointer.
-		/// </para>
-		/// <note type="caution">
-		/// This method is unsafe, therefore a proper <paramref name="size"/> must be passed to the method.  Failure to do so can lead to memory corruption.  Use this method at your own peril.
-		/// </note>
-		/// </remarks>
-		public unsafe void Write(IntPtr pointer, int size)
-		{
-			Write(pointer.ToPointer(), size);
-		}
-
         /// <summary>
         /// Function to write the bytes stored at the provided reference location into the stream.
         /// </summary>
@@ -158,6 +142,53 @@ namespace Gorgon.IO
 	            Write(Unsafe.Add(ref sourceData, sizeof(byte)));
 	            size -= sizeof(byte);
 	            offset += sizeof(byte);
+	        }
+	    }
+
+	    /// <summary>
+	    /// Function to write data from a <see cref="GorgonNativeBuffer{T}"/> to a stream.
+	    /// </summary>
+	    /// <typeparam name="T">The type of data in the buffer. Must be a value type.</typeparam>
+	    /// <param name="buffer">The buffer to write to the stream.</param>
+	    /// <param name="index">[Optional] The index in the buffer to start copying from.</param>
+	    /// <param name="count">[Optional] The number of items in the buffer to copy.</param>
+	    /// <remarks>
+	    /// <para>
+	    /// If the <paramref name="count"/> is omitted, then the <see cref="GorgonNativeBuffer{T}.Length"/> of the buffer minus the index is used.
+	    /// </para>
+	    /// <para>
+	    /// This method will constrain the <paramref name="index"/> and <paramref name="count"/> parameters to ensure they do not go out of bounds in the buffer.
+	    /// </para>
+	    /// </remarks>
+	    public void WriteRange<T>(GorgonNativeBuffer<T> buffer, int index = 0, int? count = null)
+	        where T : struct
+	    {
+	        if (buffer == null)
+	        {
+	            return;
+	        }
+
+            // Constrain the start index to within the length of the buffer.
+	        index = index.Max(0).Min(buffer.Length);
+
+	        if (count == null)
+	        {
+	            count = buffer.Length - index;
+	        }
+
+	        if ((count + index) > buffer.Length)
+	        {
+	            count = buffer.Length - index;
+	        }
+
+	        if (count < 1)
+	        {
+	            return;
+	        }
+
+	        for (int i = index; i < count.Value; ++i)
+	        {
+                WriteValue(ref buffer[i]);
 	        }
 	    }
 
@@ -253,7 +284,7 @@ namespace Gorgon.IO
         /// <param name="startIndex">[Optional] Starting index in the array.</param>
         /// <param name="count">[Optional] Number of array elements to copy.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="value"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="startIndex"/> parameter is less than 0.
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="startIndex"/> parameter is less than 0.
         /// <para>-or-</para>
         /// <para>Thrown when the startIndex parameter is equal to or greater than the number of elements in the value parameter.</para>
         /// <para>-or-</para>

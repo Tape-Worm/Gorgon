@@ -944,6 +944,19 @@ namespace Gorgon.Math
             return (value < result) ? result - 1 : result;
         }
 
+	    /// <summary>
+	    /// Function to return the largest integer less than or equal to the specified <see cref="float"/> value.
+	    /// </summary>
+	    /// <param name="value">The value to find the floor for.</param>
+	    /// <returns>The largest integer less than or equal to <paramref name="value"/>.</returns>
+	    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+	    public static float FastFloor(this double value)
+	    {
+	        int result = (int)value;
+
+	        return (value < result) ? result - 1 : result;
+	    }
+
 		/// <summary>
 		/// Function to return the largest integer greater than or equal to the specified <see cref="float"/> value.
 		/// </summary>
@@ -956,6 +969,19 @@ namespace Gorgon.Math
 
 	        return (value > result) ? result + 1 : result;
         }
+
+	    /// <summary>
+	    /// Function to return the largest integer greater than or equal to the specified <see cref="double"/> value.
+	    /// </summary>
+	    /// <param name="value">The value to find the ceiling for.</param>
+	    /// <returns>The largest integer greater than or equal to <paramref name="value"/>.</returns>
+	    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+	    public static float FastCeiling(this double value)
+	    {
+	        int result = (int)value;
+
+	        return (value > result) ? result + 1 : result;
+	    }
 
 		/// <summary>
 		/// Function to return the sign of an <see cref="int"/> value.

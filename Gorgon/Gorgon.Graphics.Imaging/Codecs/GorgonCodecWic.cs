@@ -36,44 +36,20 @@ using DX = SharpDX;
 namespace Gorgon.Graphics.Imaging.Codecs
 {
 	/// <summary>
-	/// Special case flags for decoding images.
-	/// </summary>
-	[Flags]
-	public enum WICFlags
-	{
-		/// <summary>
-		/// No special flags.
-		/// </summary>
-		None = 0,
-		/// <summary>
-		/// Loads BGR formats as R8G8B8A8_UNorm.
-		/// </summary>
-		ForceRGB = 0x1,
-		/// <summary>
-		/// Loads R10G10B10_XR_BIAS_A2_UNorm as R10G10B10A2_UNorm.
-		/// </summary>
-		NoX2Bias = 0x2,
-		/// <summary>
-		/// Loads 565, 5551, and 4444 as R8G8B8A8_UNorm.
-		/// </summary>
-		No16BPP = 0x4,
-		/// <summary>
-		/// Loads 1-bit monochrome as 8 bit grayscale.
-		/// </summary>
-		AllowMono = 0x8
-	}
-
-	/// <summary>
 	/// Base class for the WIC based file formats (PNG, JPG, and BMP).
 	/// </summary>
+	/// <typeparam name="TWicEncOpt">The type of the options object used to provide options when encoding an image. Must be a reference type and implement <see cref="IGorgonWicEncodingOptions"/>.</typeparam>
+	/// <typeparam name="TWicDecOpt">The type of the options object used to provide options when decoding an image. Must be a reference type and implement <see cref="IGorgonWicDecodingOptions"/>.</typeparam>
 	/// <remarks>
 	/// <para>
 	/// A codec allows for reading and/or writing of data in an encoded format.  Users may inherit from this object to define their own 
 	/// image formats, or use one of the predefined image codecs available in Gorgon.
 	/// </para>
 	/// </remarks>
-	public abstract class GorgonCodecWic
-		: GorgonImageCodec
+	public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
+		: GorgonImageCodec<TWicEncOpt, TWicDecOpt>
+        where TWicEncOpt : class, IGorgonWicEncodingOptions
+        where TWicDecOpt : class, IGorgonWicDecodingOptions
 	{
 		#region Variables.
         // Supported formats.
@@ -144,10 +120,9 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// Function to retrieve custom metadata when encoding an image frame.
 		/// </summary>
 		/// <param name="frameIndex">The index of the frame being encoded.</param>
-		/// <param name="options">The encoding options to use.</param>
 		/// <param name="settings">The settings for the image being encoded.</param>
 		/// <returns>A dictionary containing the key/value pair describing the metadata to write to the frame, or <b>null</b> if the frame contains no metadata.</returns>
-		protected virtual IReadOnlyDictionary<string, object> GetCustomEncodingMetadata(int frameIndex, IGorgonWicEncodingOptions options, IGorgonImageInfo settings)
+		protected virtual IReadOnlyDictionary<string, object> GetCustomEncodingMetadata(int frameIndex, IGorgonImageInfo settings)
 		{
 			return null;
 		}
@@ -166,10 +141,9 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// </summary>
 		/// <param name="stream">The stream containing the image data to read.</param>
 		/// <param name="size">The size of the image within the stream, in bytes.</param>
-		/// <param name="options">[Optional] Options used for decoding the image data.</param>
 		/// <returns>A <see cref="IGorgonImage"/> containing the image data from the stream.</returns>
 		/// <exception cref="GorgonException">Thrown when the image data in the stream has a pixel format that is unsupported.</exception>
-		protected override IGorgonImage OnDecodeFromStream(Stream stream, long size, IGorgonImageCodecDecodingOptions options)
+		protected override IGorgonImage OnDecodeFromStream(Stream stream, long size)
 		{
 			WicUtilities wic = new WicUtilities();
 			Stream streamAlias = stream;
@@ -184,7 +158,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 					streamAlias = new GorgonStreamWrapper(stream, 0, size);
 				}
 
-				IGorgonImage result = wic.DecodeImageData(streamAlias, size, SupportedFileFormat, options as IGorgonWicDecodingOptions, FrameOffsetMetadataNames);
+				IGorgonImage result = wic.DecodeImageData(streamAlias, size, SupportedFileFormat, DecodingOptions, FrameOffsetMetadataNames);
 
 				if (result == null)
 				{
@@ -214,7 +188,6 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// </summary>
 		/// <param name="imageData">A <see cref="IGorgonImage"/> to persist to the stream.</param>
 		/// <param name="stream">The stream that will receive the image data.</param>
-		/// <param name="encodingOptions">[Optional] Options used to encode the image data when it is persisted to the stream.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/>, or the <paramref name="imageData"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="stream"/> is read only.</exception>
 		/// <exception cref="NotSupportedException">Thrown when the image data in the stream has a pixel format that is unsupported by the codec.</exception>
@@ -224,7 +197,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// property. Applications may convert their image data a supported format before saving the data using a codec.
 		/// </para>
 		/// </remarks>
-		public override void SaveToStream(IGorgonImage imageData, Stream stream, IGorgonImageCodecEncodingOptions encodingOptions = null)
+		public override void SaveToStream(IGorgonImage imageData, Stream stream)
 		{
 			if (imageData == null)
 			{
@@ -241,8 +214,6 @@ namespace Gorgon.Graphics.Imaging.Codecs
 				throw new IOException(string.Format(Resources.GORIMG_ERR_STREAM_IS_READONLY));
 			}
 
-			IGorgonWicEncodingOptions options = encodingOptions as IGorgonWicEncodingOptions;
-
 			WicUtilities wic = new WicUtilities();
 
 			try
@@ -252,8 +223,8 @@ namespace Gorgon.Graphics.Imaging.Codecs
 					throw new NotSupportedException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, imageData.Info.Format));
 				}
 
-				IReadOnlyDictionary<string, object> metaData = GetCustomEncodingMetadata(0, encodingOptions as IGorgonWicEncodingOptions, imageData.Info);
-				wic.EncodeImageData(imageData, stream, SupportedFileFormat, options, metaData);
+				IReadOnlyDictionary<string, object> metaData = GetCustomEncodingMetadata(0, imageData.Info);
+				wic.EncodeImageData(imageData, stream, SupportedFileFormat, EncodingOptions, metaData);
 			}
 			finally
 			{
@@ -479,15 +450,18 @@ namespace Gorgon.Graphics.Imaging.Codecs
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonCodecWic" /> class.
+		/// Initializes a new instance of the <see cref="GorgonCodecWic{TWicEncOpt, TWicDecOpt}" /> class.
 		/// </summary>
 		/// <param name="codec">Codec name.</param>
 		/// <param name="description">Description for the codec.</param>
 		/// <param name="extensions">Common extension(s) for the codec.</param>
 		/// <param name="containerGUID">GUID for the container format.</param>
+		/// <param name="encodingOptions">Options for encoding WIC images.</param>
+		/// <param name="decodingOptions">Options for decoding WIC images.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="codec"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="codec"/> parameter is empty.</exception>
-		protected GorgonCodecWic(string codec, string description, IReadOnlyList<string> extensions, Guid containerGUID)
+		protected GorgonCodecWic(string codec, string description, IReadOnlyList<string> extensions, Guid containerGUID, TWicEncOpt encodingOptions, TWicDecOpt decodingOptions)
+            : base(encodingOptions, decodingOptions)
 		{
 			if (codec == null)
 			{

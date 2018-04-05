@@ -189,7 +189,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 	/// </para>
 	/// </para>
 	/// <para>
-	///	While many of the image formats supplied will be useful out of the box, the system can read/write images via a <see cref="GorgonImageCodecPlugIn"/> if the supplied formats are too limited or do not 
+	///	While many of the image formats supplied will be useful out of the box, the system can read/write images via a <see cref="GorgonImageCodecPlugin"/> if the supplied formats are too limited or do not 
 	/// support a necessary feature.
 	/// </para>
 	/// </remarks>
@@ -289,62 +289,51 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// Function to load an image from a stream.
 		/// </summary>
 		/// <param name="stream">The stream containing the image data to read.</param>
-		/// <param name="size">The size of the image within the stream, in bytes.</param>
-		/// <param name="options">[Optional] Options used for decoding the image data.</param>
+		/// <param name="size">[Optional] The size of the image within the stream, in bytes.</param>
 		/// <returns>A <see cref="IGorgonImage"/> containing the image data from the stream.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="stream"/> is write only.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> parameter is less than 1.</exception>
 		/// <exception cref="EndOfStreamException">Thrown when the amount of data requested exceeds the size of the stream minus its current position.</exception>
 		/// <exception cref="GorgonException">Thrown when the image data in the stream has a pixel format that is unsupported.</exception>
-		IGorgonImage LoadFromStream(Stream stream, long size, IGorgonImageCodecDecodingOptions options = null);
-
-		/// <summary>
-		/// Function to load an image from a stream.
-		/// </summary>
-		/// <param name="stream">The stream containing the image data to read.</param>
-		/// <param name="options">[Optional] Options used for decoding the image data.</param>
-		/// <returns>A <see cref="IGorgonImage"/> containing the image data from the stream.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="stream"/> is write only.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when the length of the <paramref name="stream"/> parameter is less than 1.</exception>
-		/// <exception cref="EndOfStreamException">Thrown when the amount of data requested exceeds the size of the stream minus its current position.</exception>
-		/// <exception cref="GorgonException">Thrown when the image data in the stream has a pixel format that is unsupported.</exception>
-		IGorgonImage LoadFromStream(Stream stream, IGorgonImageCodecDecodingOptions options = null);
+		/// <remarks>
+		/// <para>
+		/// When the <paramref name="size"/> parameter is specified, the image data will be read from the stream up to the amount specified. If it is omitted, then image data will be read up to the end of 
+		/// the stream.
+		/// </para>
+		/// </remarks>
+		IGorgonImage LoadFromStream(Stream stream, long? size = null);
 
 		/// <summary>
 		/// Function to load an image from a file on the physical file system.
 		/// </summary>
 		/// <param name="filePath">Path to the file to load.</param>
-		/// <param name="options">[Optional] Options used for decoding the image data.</param>
 		/// <returns>A <see cref="IGorgonImage"/> containing the image data from the stream.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="filePath"/> parameter is empty.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when the size of the file is less than 1 byte.</exception>
 		/// <exception cref="GorgonException">Thrown when the image data in the file has a pixel format that is unsupported.</exception>
-		IGorgonImage LoadFromFile(string filePath, IGorgonImageCodecDecodingOptions options = null);
+		IGorgonImage LoadFromFile(string filePath);
 
 		/// <summary>
 		/// Function to persist a <see cref="IGorgonImage"/> to a stream.
 		/// </summary>
 		/// <param name="imageData">A <see cref="IGorgonImage"/> to persist to the stream.</param>
 		/// <param name="stream">The stream that will receive the image data.</param>
-		/// <param name="encodingOptions">[Optional] Options used to encode the image data when it is persisted to the stream.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/>, or the <paramref name="imageData"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="stream"/> is read only.</exception>
 		/// <exception cref="GorgonException">Thrown when the image data in the stream has a pixel format that is unsupported.</exception>
-		void SaveToStream(IGorgonImage imageData, Stream stream, IGorgonImageCodecEncodingOptions encodingOptions = null);
+		void SaveToStream(IGorgonImage imageData, Stream stream);
 
 		/// <summary>
 		/// Function to persist a <see cref="IGorgonImage"/> to a file on the physical file system.
 		/// </summary>
 		/// <param name="imageData">A <see cref="IGorgonImage"/> to persist to the stream.</param>
 		/// <param name="filePath">The path to the file that will hold the image data.</param>
-		/// <param name="encodingOptions">[Optional] Options used to encode the image data when it is persisted to the stream.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath"/>, or the <paramref name="imageData"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="filePath"/> is empty..</exception>
 		/// <exception cref="GorgonException">Thrown when the image data in the stream has a pixel format that is unsupported.</exception>
-		void SaveToFile(IGorgonImage imageData, string filePath, IGorgonImageCodecEncodingOptions encodingOptions = null);
+		void SaveToFile(IGorgonImage imageData, string filePath);
 
 		/// <summary>
 		/// Function to determine if this codec can read the image data within the stream or not.

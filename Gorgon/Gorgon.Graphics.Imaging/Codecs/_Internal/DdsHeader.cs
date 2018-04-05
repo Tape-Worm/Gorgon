@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Native;
 
@@ -434,7 +435,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <param name="aMask">A mask.</param>
 		public DdsPixelFormat(DdsPixelFormatFlags flags, uint fourCC, uint bitCount, uint rMask, uint gMask, uint bMask, uint aMask)
 		{
-			SizeInBytes = (uint)DirectAccess.SizeOf<DdsPixelFormat>();
+			SizeInBytes = (uint)Unsafe.SizeOf<DdsPixelFormat>();
 			Flags = flags;
 			FourCC = fourCC;
 			BitCount = bitCount;

@@ -64,26 +64,26 @@ namespace Gorgon.Math
 		{
 			get;
 		}
-		#endregion
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to return an interpolated point from the spline.
-		/// </summary>
-		/// <param name="startPointIndex">Index in the point list to start from.</param>
-		/// <param name="delta">Delta value to interpolate.</param>
-		/// <returns>The interpolated value at <paramref name="delta"/>.</returns>
-		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="startPointIndex"/> parameter is less than 0, or greater than/equal to the number of points in the spline minus 1.</exception>
-		/// <remarks>
-		/// <para>
-		/// The <paramref name="delta"/> parameter is a unit value where 0 is the first point in the spline (relative to <paramref name="startPointIndex"/>) and 1 is the next point from the <paramref name="startPointIndex"/> in the spline.
-		/// </para>
-		/// <para>
-		/// If the <paramref name="delta"/> is less than 0, or greater than 1, the value will be wrapped to fit within the 0..1 range.
-		/// </para>
-		/// </remarks>
-		/// <exception cref="ArgumentOutOfRangeException"><c>[Debug only]</c> Thrown when the <paramref name="startPointIndex"/> is less than 0, or greater than/equal to the number of points - 1 in the <see cref="Points"/> parameter.</exception>
-		DX.Vector4 GetInterpolatedValue(int startPointIndex, float delta);
+        #region Methods.
+        /// <summary>
+        /// Function to return an interpolated point from the spline.
+        /// </summary>
+        /// <param name="startPointIndex">Index in the point list to start from.</param>
+        /// <param name="delta">Delta value to interpolate.</param>
+        /// <returns>The interpolated value at <paramref name="delta"/>.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="startPointIndex"/> parameter is less than 0, or greater than/equal to the number of points in the spline minus 1.</exception>
+        /// <remarks>
+        /// <para>
+        /// The <paramref name="delta"/> parameter is a unit value where 0 is the first point in the spline (relative to <paramref name="startPointIndex"/>) and 1 is the next point from the <paramref name="startPointIndex"/> in the spline.
+        /// </para>
+        /// <para>
+        /// If the <paramref name="delta"/> is less than 0, or greater than 1, the value will be wrapped to fit within the 0..1 range.
+        /// </para>
+        /// </remarks>
+        /// <exception cref="ArgumentOutOfRangeException"><c>[Debug only]</c> Thrown when the <paramref name="startPointIndex"/> is less than 0, or greater than/equal to the number of points - 1 in the <see cref="Points"/> parameter.</exception>
+        DX.Vector4 GetInterpolatedValue(int startPointIndex, float delta);
 
 		/// <summary>
 		/// Function to return an interpolated point from the spline.

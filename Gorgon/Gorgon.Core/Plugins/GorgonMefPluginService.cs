@@ -374,7 +374,7 @@ namespace Gorgon.Plugins
         /// Function to unload a plugin by its name.
         /// </summary>
         /// <param name="name">Fully qualified type name of the plugin to remove.</param>
-        /// <exception cref="System.ArgumentNullException">The <paramref name="name"/> parameter was <b>null</b>.</exception>
+        /// <exception cref="ArgumentNullException">The <paramref name="name"/> parameter was <b>null</b>.</exception>
         /// <exception cref="System.ArgumentException">The <paramref name="name "/> parameter was an empty string.</exception>
         /// <returns><b>true</b> if the plugin was unloaded successfully, <b>false</b> if it did not exist in the collection, or failed to unload.</returns>
         public bool Unload(string name)

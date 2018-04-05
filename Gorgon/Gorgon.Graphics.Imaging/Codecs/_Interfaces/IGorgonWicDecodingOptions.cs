@@ -24,8 +24,38 @@
 // 
 #endregion
 
+using System;
+
 namespace Gorgon.Graphics.Imaging.Codecs
 {
+	/// <summary>
+	/// Special case flags for decoding images.
+	/// </summary>
+	[Flags]
+	public enum WICFlags
+	{
+		/// <summary>
+		/// No special flags.
+		/// </summary>
+		None = 0,
+		/// <summary>
+		/// Loads BGR formats as R8G8B8A8_UNorm.
+		/// </summary>
+		ForceRGB = 0x1,
+		/// <summary>
+		/// Loads R10G10B10_XR_BIAS_A2_UNorm as R10G10B10A2_UNorm.
+		/// </summary>
+		NoX2Bias = 0x2,
+		/// <summary>
+		/// Loads 565, 5551, and 4444 as R8G8B8A8_UNorm.
+		/// </summary>
+		No16BPP = 0x4,
+		/// <summary>
+		/// Loads 1-bit monochrome as 8 bit grayscale.
+		/// </summary>
+		AllowMono = 0x8
+	}
+
 	/// <summary>
 	/// Provides options used when decoding a <see cref="IGorgonImage"/>.
 	/// </summary>

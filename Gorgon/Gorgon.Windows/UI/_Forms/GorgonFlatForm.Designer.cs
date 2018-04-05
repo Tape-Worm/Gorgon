@@ -23,6 +23,11 @@ namespace Gorgon.UI
 
 			if (disposing)
 			{
+			    if (_theme != null)
+			    {
+			        _theme.PropertyChanged -= Theme_PropertyChangedEvent;
+			    }
+
 			    if (_messageFilter != null)
 			    {
                     Application.RemoveMessageFilter(_messageFilter);
