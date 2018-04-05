@@ -409,16 +409,6 @@ namespace Gorgon.Windows.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        internal static System.Drawing.Icon Gorgon2 {
-            get {
-                object obj = ResourceManager.GetObject("Gorgon2", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap GorgonSelectablePanel {
@@ -449,70 +439,11 @@ namespace Gorgon.Windows.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        internal static System.Drawing.Icon InfoDialogIcon {
-            get {
-                object obj = ResourceManager.GetObject("InfoDialogIcon", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Maximize {
-            get {
-                object obj = ResourceManager.GetObject("Maximize", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Minimize {
-            get {
-                object obj = ResourceManager.GetObject("Minimize", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap no_16x16 {
-            get {
-                object obj = ResourceManager.GetObject("no_16x16", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap ok_16x16 {
-            get {
-                object obj = ResourceManager.GetObject("ok_16x16", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to When set to true, a border will be drawn on the form..
         /// </summary>
         internal static string PROP_BORDER_DESC {
             get {
                 return ResourceManager.GetString("PROP_BORDER_DESC", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Sets the color of the border on the form when Border is set to true..
-        /// </summary>
-        internal static string PROP_BORDERCOLOR_DESC {
-            get {
-                return ResourceManager.GetString("PROP_BORDERCOLOR_DESC", resourceCulture);
             }
         }
         
@@ -591,15 +522,6 @@ namespace Gorgon.Windows.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Sets the color of the border on the form when Border is set to true and the window is in an inactive state..
-        /// </summary>
-        internal static string PROP_INACTIVE_BORDERCOLOR_DESC {
-            get {
-                return ResourceManager.GetString("PROP_INACTIVE_BORDERCOLOR_DESC", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Determines if a form can be resized by the user or not..
         /// </summary>
         internal static string PROP_RESIZABLE_DESC {
@@ -614,15 +536,6 @@ namespace Gorgon.Windows.Properties {
         internal static string PROP_RESIZEHANDLE_DESC {
             get {
                 return ResourceManager.GetString("PROP_RESIZEHANDLE_DESC", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Sets whether to show a rectangle on this control when the control has been focused..
-        /// </summary>
-        internal static string PROP_SHOWFOCUS_DESC {
-            get {
-                return ResourceManager.GetString("PROP_SHOWFOCUS_DESC", resourceCulture);
             }
         }
         
@@ -895,16 +808,6 @@ namespace Gorgon.Windows.Properties {
             get {
                 object obj = ResourceManager.GetObject("Warning_48x48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        internal static System.Drawing.Icon WarningDialogIcon {
-            get {
-                object obj = ResourceManager.GetObject("WarningDialogIcon", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
             }
         }
     }

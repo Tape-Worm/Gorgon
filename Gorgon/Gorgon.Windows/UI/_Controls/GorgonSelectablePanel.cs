@@ -71,7 +71,7 @@ namespace Gorgon.UI
 		///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence" />
 		///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
 		///   </PermissionSet>
-		[Browsable(true), LocalDescription(typeof(Resources), "PROP_TABSTOP_DESC"), LocalCategory(typeof(Resources), "PROP_CATEGORY_DESIGN"), DefaultValue(true)]
+		[Browsable(true), LocalDescription(typeof(Resources), nameof(Resources.PROP_TABSTOP_DESC)), LocalCategory(typeof(Resources), nameof(Resources.PROP_CATEGORY_DESIGN)), DefaultValue(true)]
 		public new bool TabStop
 		{
 			get => base.TabStop;
@@ -81,7 +81,7 @@ namespace Gorgon.UI
 		/// <summary>
 		/// Property to set or return whether to show the focus rectangle when the control is focused.
 		/// </summary>
-		[Browsable(true), LocalDescription(typeof(Resources), "PROP_TABSTOP_DESC"), LocalCategory(typeof(Resources), "PROP_CATEGORY_APPEARANCE"), DefaultValue(true)]
+		[Browsable(true), LocalDescription(typeof(Resources), nameof(Resources.PROP_TABSTOP_DESC)), LocalCategory(typeof(Resources), nameof(Resources.PROP_CATEGORY_APPEARANCE)), DefaultValue(true)]
 		public bool ShowFocus
 		{
 			get => _showFocus;

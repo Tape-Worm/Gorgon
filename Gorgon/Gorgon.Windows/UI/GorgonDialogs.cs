@@ -307,7 +307,6 @@ namespace Gorgon.UI
 			{
 				dialog = new BaseDialog
 				    {
-				        Icon = Resources.InfoDialogIcon,
 				        DialogImage = Resources.Info_48x48,
 				        Message = message,
 				        ButtonAction = DialogResult.OK

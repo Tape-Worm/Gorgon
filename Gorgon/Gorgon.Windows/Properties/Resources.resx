@@ -136,35 +136,14 @@
   <data name="Error_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Error_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Gorgon2" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Gorgon2.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="GorgonSelectablePanel" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\GorgonSelectablePanel.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="InfoDialogIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\InfoDialogIcon.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Info_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Info_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Info_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Info_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Maximize" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Maximize.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Minimize" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Minimize.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="no_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\no_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="ok_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\ok_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="PROP_BORDERCOLOR_DESC" xml:space="preserve">
-    <value>Sets the color of the border on the form when Border is set to true.</value>
   </data>
   <data name="PROP_BORDERSIZE_DESC" xml:space="preserve">
     <value>The size, in pixels, of the window border when the Border property is set to true.</value>
@@ -187,17 +166,11 @@
   <data name="PROP_ICON_DESC" xml:space="preserve">
     <value>Sets the icon for the window.</value>
   </data>
-  <data name="PROP_INACTIVE_BORDERCOLOR_DESC" xml:space="preserve">
-    <value>Sets the color of the border on the form when Border is set to true and the window is in an inactive state.</value>
-  </data>
   <data name="PROP_RESIZABLE_DESC" xml:space="preserve">
     <value>Determines if a form can be resized by the user or not.</value>
   </data>
   <data name="PROP_RESIZEHANDLE_DESC" xml:space="preserve">
     <value>The size, in pixels, of the resizable handles on the window border.</value>
-  </data>
-  <data name="PROP_SHOWFOCUS_DESC" xml:space="preserve">
-    <value>Sets whether to show a rectangle on this control when the control has been focused.</value>
   </data>
   <data name="PROP_SHOWICON_DESC" xml:space="preserve">
     <value>Shows or hides the icon for the window.</value>
@@ -282,9 +255,6 @@
   </data>
   <data name="VERB_SAVE_THEME" xml:space="preserve">
     <value>Save theme...</value>
-  </data>
-  <data name="WarningDialogIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\WarningDialogIcon.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Warning_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Warning_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

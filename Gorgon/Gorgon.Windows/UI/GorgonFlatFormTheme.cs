@@ -94,7 +94,7 @@ namespace Gorgon.UI
 		/// </summary>
 		[Browsable(true)]
 		[DefaultValue(typeof(Color), "Control")]
-		[LocalDescription(typeof(Resources), "PROP_THEME_TOOLSTRIPBACKCOLOR_DESC")]
+		[LocalDescription(typeof(Resources), nameof(Resources.PROP_THEME_TOOLSTRIPBACKCOLOR_DESC))]
 		public Color ToolStripBackColor
 		{
 			get => _toolStripBackColor;
@@ -110,7 +110,7 @@ namespace Gorgon.UI
 		/// </summary>
 		[Browsable(true)]
 		[DefaultValue(typeof(Color), "WindowText")]
-		[LocalDescription(typeof(Resources), "PROP_THEME_TOOLSTRIPARROWCOLOR_DESC")]
+		[LocalDescription(typeof(Resources), nameof(Resources.PROP_THEME_TOOLSTRIPARROWCOLOR_DESC))]
 		public Color ToolStripArrowColor
 		{
 			get => _toolStripArrowColor;
@@ -126,7 +126,7 @@ namespace Gorgon.UI
 		/// </summary>
 		[Browsable(true)]
 		[DefaultValue(typeof(Color), "Highlight")]
-		[LocalDescription(typeof(Resources), "PROP_THEME_MENUCHECKBACKCOLORHILIGHT_DESC")]
+		[LocalDescription(typeof(Resources), nameof(Resources.PROP_THEME_MENUCHECKBACKCOLORHILIGHT_DESC))]
 		public Color CheckBoxBackColorHilight
 		{
 			get => _checkBoxBackColorHilight;
@@ -142,7 +142,7 @@ namespace Gorgon.UI
 		/// </summary>
 		[Browsable(true)]
 		[DefaultValue(typeof(Color), "Control")]
-		[LocalDescription(typeof(Resources), "PROP_THEME_MENUCHECKBACKCOLOR_DESC")]
+		[LocalDescription(typeof(Resources), nameof(Resources.PROP_THEME_MENUCHECKBACKCOLOR_DESC))]
 		public Color CheckBoxBackColor
 		{
 			get => _checkBoxBackColor;
@@ -158,7 +158,7 @@ namespace Gorgon.UI
 		/// </summary>
 		[Browsable(true)]
 		[DefaultValue(typeof(Color), "ActiveBorder")]
-		[LocalDescription(typeof(Resources), "PROP_THEME_DROPDOWNBORDERCOLOR_DESC")]
+		[LocalDescription(typeof(Resources), nameof(Resources.PROP_THEME_DROPDOWNBORDERCOLOR_DESC))]
 		public Color DropDownBorderColor
 		{
 			get => _dropDownBorderColor;
@@ -174,7 +174,7 @@ namespace Gorgon.UI
 		/// </summary>
 		[Browsable(true)]
 		[DefaultValue(typeof(Color), "WindowText")]
-		[LocalDescription(typeof(Resources), "PROP_THEME_FORECOLOR_DESC")]
+		[LocalDescription(typeof(Resources), nameof(Resources.PROP_THEME_FORECOLOR_DESC))]
 		[NotifyParentProperty(true)]
 		public Color ForeColor
 		{
@@ -191,7 +191,7 @@ namespace Gorgon.UI
 		/// </summary>
 		[Browsable(true)]
 		[DefaultValue(typeof(Color), "DimGray")]
-		[LocalDescription(typeof(Resources), "PROP_THEME_FORECOLOR_INACTIVE_DESC")]
+		[LocalDescription(typeof(Resources), nameof(Resources.PROP_THEME_FORECOLOR_INACTIVE_DESC))]
 		public Color ForeColorInactive
 		{
 			get => _foreColorInactive;
@@ -207,7 +207,7 @@ namespace Gorgon.UI
 		/// </summary>
 		[Browsable(true)]
 		[DefaultValue(typeof(Color), "DimGray")]
-		[LocalDescription(typeof(Resources), "PROP_THEME_DISABLECOLOR_DESC")]
+		[LocalDescription(typeof(Resources), nameof(Resources.PROP_THEME_DISABLECOLOR_DESC))]
 		public Color DisabledColor
 		{
 			get => _disabledColor;
@@ -223,7 +223,7 @@ namespace Gorgon.UI
 		/// </summary>
 		[Browsable(true)]
 		[DefaultValue(typeof(Color), "HighlightText")]
-		[LocalDescription(typeof(Resources), "PROP_THEME_HILIGHTFORECOLOR_DESC")]
+		[LocalDescription(typeof(Resources), nameof(Resources.PROP_THEME_HILIGHTFORECOLOR_DESC))]
 		public Color HilightForeColor
 		{
 			get => _hilightForeColor;
@@ -239,7 +239,7 @@ namespace Gorgon.UI
 		/// </summary>
 		[Browsable(true)]
 		[DefaultValue(typeof(Color), "Highlight")]
-		[LocalDescription(typeof(Resources), "PROP_THEME_HILIGHTBACKCOLOR_DESC")]
+		[LocalDescription(typeof(Resources), nameof(Resources.PROP_THEME_HILIGHTBACKCOLOR_DESC))]
 		public Color HilightBackColor
 		{
 			get => _hilightBackColor;
@@ -255,7 +255,7 @@ namespace Gorgon.UI
 		/// </summary>
 		[Browsable(true)]
 		[DefaultValue(typeof(Color), "Control")]
-		[LocalDescription(typeof(Resources), "PROP_THEME_WINBACKCOLOR_DESC")]
+		[LocalDescription(typeof(Resources), nameof(Resources.PROP_THEME_WINBACKCOLOR_DESC))]
 		public Color WindowBackground
 		{
 			get => _windowBackground;
@@ -271,7 +271,7 @@ namespace Gorgon.UI
 		/// </summary>
 		[Browsable(true)]
 		[DefaultValue(typeof(Color), "Window")]
-		[LocalDescription(typeof(Resources), "PROP_THEME_WINBACKCOLOR_DESC")]
+		[LocalDescription(typeof(Resources), nameof(Resources.PROP_THEME_CONTENTBACKCOLOR_DESC))]
 		public Color ContentPanelBackground
 		{
 			get => _contentBackground;
@@ -287,7 +287,7 @@ namespace Gorgon.UI
 		/// </summary>
 		[Browsable(true)]
 		[DefaultValue(typeof(Color), "ActiveBorder")]
-		[LocalDescription(typeof(Resources), "PROP_THEME_WINBORDERACTIVE_DESC")]
+		[LocalDescription(typeof(Resources), nameof(Resources.PROP_THEME_WINBORDERACTIVE_DESC))]
 		public Color WindowBorderActive
 		{
 			get => _windowBorderActive;
@@ -303,7 +303,7 @@ namespace Gorgon.UI
 		/// </summary>
 		[Browsable(true)]
 		[DefaultValue(typeof(Color), "InactiveBorder")]
-		[LocalDescription(typeof(Resources), "PROP_THEME_WINBORDERINACTIVE_DESC")]
+		[LocalDescription(typeof(Resources), nameof(Resources.PROP_THEME_WINBORDERINACTIVE_DESC))]
 		public Color WindowBorderInactive
 		{
 			get => _windowBorderInactive;
@@ -319,7 +319,7 @@ namespace Gorgon.UI
 		/// </summary>
 		[Browsable(true)]
 		[DefaultValue(typeof(Color), "WindowText")]
-		[LocalDescription(typeof(Resources), "PROP_THEME_WINICONHILIGHT_DESC")]
+		[LocalDescription(typeof(Resources), nameof(Resources.PROP_THEME_WINICONHILIGHT_DESC))]
 		public Color WindowSizeIconsForeColor
 		{
 			get => _windowSizeIconsForeColor;
@@ -335,7 +335,7 @@ namespace Gorgon.UI
 		/// </summary>
 		[Browsable(true)]
 		[DefaultValue(typeof(Color), "HighlightText")]
-		[LocalDescription(typeof(Resources), "PROP_THEME_WINICONHILIGHT_DESC")]
+		[LocalDescription(typeof(Resources), nameof(Resources.PROP_THEME_WINICONHILIGHT_DESC))]
 		public Color WindowSizeIconsForeColorHilight
 		{
 			get => _windowSizeIconsForeColorHilight;
@@ -351,7 +351,7 @@ namespace Gorgon.UI
 		/// </summary>
 		[Browsable(true)]
 		[DefaultValue(typeof(Color), "Highlight")]
-		[LocalDescription(typeof(Resources), "PROP_THEME_WINICONBACKHILIGHT_DESC")]
+		[LocalDescription(typeof(Resources), nameof(Resources.PROP_THEME_WINICONBACKHILIGHT_DESC))]
 		public Color WindowSizeIconsBackColorHilight
 		{
 			get => _windowSizeIconsBackColorHilight;
@@ -367,7 +367,7 @@ namespace Gorgon.UI
 		/// </summary>
 		[Browsable(true)]
 		[DefaultValue(typeof(Color), "WindowText")]
-		[LocalDescription(typeof(Resources), "PROP_THEME_WINCLOSEFORECOLOR_DESC")]
+		[LocalDescription(typeof(Resources), nameof(Resources.PROP_THEME_WINCLOSEFORECOLOR_DESC))]
 		public Color WindowCloseIconForeColor
 		{
 			get => _windowCloseIconForeColor;
@@ -383,7 +383,7 @@ namespace Gorgon.UI
 		/// </summary>
 		[Browsable(true)]
 		[DefaultValue(typeof(Color), "HighlightText")]
-		[LocalDescription(typeof(Resources), "PROP_THEME_WINCLOSEFORECOLORHILIGHT_DESC")]
+		[LocalDescription(typeof(Resources), nameof(Resources.PROP_THEME_WINCLOSEFORECOLORHILIGHT_DESC))]
 		public Color WindowCloseIconForeColorHilight
 		{
 			get => _windowCloseIconForeColorHilight;
@@ -399,7 +399,7 @@ namespace Gorgon.UI
 		/// </summary>
 		[Browsable(true)]
 		[DefaultValue(typeof(Color), "Red")]
-		[LocalDescription(typeof(Resources), "PROP_THEME_WINCLOSEBACKCOLORHILIGHT_DESC")]
+		[LocalDescription(typeof(Resources), nameof(Resources.PROP_THEME_WINCLOSEBACKCOLORHILIGHT_DESC))]
 		public Color WindowCloseIconBackColorHilight
 		{
 			get => _windowCloseIconBackColorHilight;
@@ -415,7 +415,7 @@ namespace Gorgon.UI
 		/// </summary>
 		[Browsable(true)]
 		[DefaultValue(typeof(Image), null)]
-		[LocalDescription(typeof(Resources), "PROP_THEME_CHECKENABLED_IMAGE")]
+		[LocalDescription(typeof(Resources), nameof(Resources.PROP_THEME_CHECKENABLED_IMAGE))]
 		public Image MenuCheckEnabledImage
 		{
 			get => _checkEnabledImage;
@@ -431,7 +431,7 @@ namespace Gorgon.UI
 		/// </summary>
 		[Browsable(true)]
 		[DefaultValue(typeof(Image), null)]
-		[LocalDescription(typeof(Resources), "PROP_THEME_CHECKDISABLED_IMAGE")]
+		[LocalDescription(typeof(Resources), nameof(Resources.PROP_THEME_CHECKDISABLED_IMAGE))]
 		public Image MenuCheckDisabledImage
 		{
 			get => _checkDisabledImage;

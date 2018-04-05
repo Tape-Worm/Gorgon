@@ -133,15 +133,6 @@ namespace Gorgon.Graphics.Imaging.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The source and destination image do not share the same width, height, or pixel format..
-        /// </summary>
-        internal static string GORIMG_ERR_CANNOT_COPY_DATA_MISMATCH {
-            get {
-                return ResourceManager.GetString("GORIMG_ERR_CANNOT_COPY_DATA_MISMATCH", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The codec &apos;{0}&apos; was not found in the plug in..
         /// </summary>
         internal static string GORIMG_ERR_CODEC_NOT_IN_PLUGIN {

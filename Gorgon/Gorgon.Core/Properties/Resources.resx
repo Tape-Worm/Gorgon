@@ -134,9 +134,6 @@ Code: 0x{2}</value>
   <data name="GOR_ERR_KEY_NOT_FOUND" xml:space="preserve">
     <value>The key '{0}' does not exist in this collection.</value>
   </data>
-  <data name="GOR_ERR_SETTING_INVALID_FILE" xml:space="preserve">
-    <value>'{0}' is not a Gorgon application settings file.</value>
-  </data>
   <data name="GOR_UNIT_MEM_BYTES" xml:space="preserve">
     <value>bytes</value>
   </data>
@@ -176,33 +173,6 @@ Code: 0x{2}</value>
   <data name="GOR_ERR_STREAM_NOT_SEEKABLE" xml:space="preserve">
     <value>Unable to seek within this stream.</value>
   </data>
-  <data name="GOR_ERR_STREAM_BOS" xml:space="preserve">
-    <value>Cannot read beyond the beginning of the stream.</value>
-  </data>
-  <data name="GOR_ERR_STRUCT_NOT_EXPLICIT_LAYOUT" xml:space="preserve">
-    <value>The type '{0}' is not explicitly or sequentially laid out using the StructLayout attribute.</value>
-  </data>
-  <data name="GOR_ERR_STREAM_COUNT_OUT_OF_RANGE" xml:space="preserve">
-    <value>The count [{0}] must be greater than or equal to 0.</value>
-  </data>
-  <data name="GOR_ERR_STREAM_OFFSET_COUNT_TOO_LARGE" xml:space="preserve">
-    <value>The offset plus the count is too large for this stream.</value>
-  </data>
-  <data name="GOR_ERR_STREAM_OFFSET_OUT_OF_RANGE" xml:space="preserve">
-    <value>The offset [{0}] must be greater than or equal to 0 and less than {1}.</value>
-  </data>
-  <data name="GOR_ERR_DATASTREAM_NOT_OWNER_NO_RESIZE" xml:space="preserve">
-    <value>The data stream encapsulates a pointer that it does not own and cannot be resized.</value>
-  </data>
-  <data name="GOR_ERR_PLUGIN_CANNOT_CREATE" xml:space="preserve">
-    <value>Could not create the plug-in.  '{0}' in assembly '{1}' is not inherited from type '{2}'.</value>
-  </data>
-  <data name="GOR_ERR_PLUGIN_CANNOT_FIND_FILE" xml:space="preserve">
-    <value>The could not find the assembly file '{0}' on any of the plug-in search paths.</value>
-  </data>
-  <data name="GOR_ERR_PLUGIN_NOT_PLUGIN_ASSEMBLY" xml:space="preserve">
-    <value>Not a valid plug-in assembly.  There are no plug-ins in the assembly '{0}'.</value>
-  </data>
   <data name="GOR_ERR_PLUGIN_TYPE_LOAD_FAILURE" xml:space="preserve">
     <value>Cannot read types from the plugin assemblies:
 {0}</value>
@@ -222,9 +192,6 @@ Code: 0x{2}</value>
   <data name="GOR_EXCEPT_NEXT_EXCEPTION" xml:space="preserve">
     <value>Next Exception</value>
   </data>
-  <data name="GOR_EXCEPT_NO_MSG" xml:space="preserve">
-    <value>No message given.</value>
-  </data>
   <data name="GOR_EXCEPT_SRC" xml:space="preserve">
     <value>Source</value>
   </data>
@@ -236,9 +203,6 @@ Code: 0x{2}</value>
   </data>
   <data name="GOR_LOG_EXCEPTION" xml:space="preserve">
     <value>Exception</value>
-  </data>
-  <data name="GOR_ERR_SETTING_CANNOT_CONVERT_VERSION" xml:space="preserve">
-    <value>Version type string could not be converted to a version type.</value>
   </data>
   <data name="GOR_ERR_FILE_EXTENSION_EXISTS" xml:space="preserve">
     <value>The file extension '{0}' already exists in this collection.</value>
@@ -261,17 +225,11 @@ Code: 0x{2}</value>
   <data name="GOR_ERR_PROPERTY_TYPE_MISMATCH" xml:space="preserve">
     <value>The property '{0}' has a type of [{1}], which is not the same as the generic [{2}].</value>
   </data>
-  <data name="GOR_ERR_PATH_NOT_FOUND" xml:space="preserve">
-    <value>The path '{0}' was not found in this collection.</value>
-  </data>
   <data name="GOR_ERR_ACTIVATOR_CANNOT_CREATE_ABSTRACT" xml:space="preserve">
     <value>The type [{0}] is abstract and cannot be created directly.</value>
   </data>
   <data name="GOR_ERR_ACTIVATOR_CANNOT_CREATE_INTERFACE_TYPE" xml:space="preserve">
     <value>The type [{0}] is an interface. There is no constructor for this type.</value>
-  </data>
-  <data name="GOR_ERR_PLUGIN_ASSEMBLY_NOT_FOUND" xml:space="preserve">
-    <value>Could not find a plugin assembly named '{0}'.</value>
   </data>
   <data name="GOR_ERR_CHUNK_ILLEGAL_OPEN_MODE" xml:space="preserve">
     <value>The mode must be either [Read] or [Write].</value>
@@ -312,27 +270,6 @@ Code: 0x{2}</value>
   <data name="GOR_ERR_FILE_EXTENSION_NOT_FOUND" xml:space="preserve">
     <value>The file extension '{0}' was not found in this collection.</value>
   </data>
-  <data name="GOR_ERR_DATASTREAM_POINTER_IS_NULL" xml:space="preserve">
-    <value />
-  </data>
-  <data name="GOR_ERR_DATASTREAM_POINTER_SIZE_TOO_SMALL" xml:space="preserve">
-    <value>The stream size must be 0 or greater.</value>
-  </data>
-  <data name="GOR_ERR_DATABUFF_CANNOT_ALLOC_x86" xml:space="preserve">
-    <value>Cannot allocate more than 2GB on an x86 platform.</value>
-  </data>
-  <data name="GOR_ERR_DATABUFF_COUNT_TOO_SMALL" xml:space="preserve">
-    <value>The count should be {0} or greater.</value>
-  </data>
-  <data name="GOR_ERR_DATABUFF_INDEX_COUNT_TOO_LARGE" xml:space="preserve">
-    <value>The index: {0} + the count: {1} is larger than the array.</value>
-  </data>
-  <data name="GOR_ERR_DATABUFF_INDEX_LESS_THAN_ZERO" xml:space="preserve">
-    <value>The index must be equal to or greater than 0.</value>
-  </data>
-  <data name="GOR_ERR_DATABUFF_PINNED_ARRAY_NO_ELEMENTS" xml:space="preserve">
-    <value>The array should have at least 1 element.</value>
-  </data>
   <data name="GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE" xml:space="preserve">
     <value>The offset: {0} + the size: {1} is larger than the buffer.</value>
   </data>
@@ -345,14 +282,8 @@ Code: 0x{2}</value>
   <data name="GOR_ERR_DATABUFF_OFFSET_TOO_SMALL" xml:space="preserve">
     <value>The offset must be 0 or greater.</value>
   </data>
-  <data name="GOR_ERR_DATABUFF_PTR_DISPOSED" xml:space="preserve">
-    <value>Pointer has been disposed.</value>
-  </data>
   <data name="GOR_TOSTR_GORGONCOLOR" xml:space="preserve">
     <value>Color Value: Red={0}, Green={1}, Blue={2}, Alpha={3}</value>
-  </data>
-  <data name="GOR_EXCEPT_STACK_TRACE" xml:space="preserve">
-    <value>Stack trace</value>
   </data>
   <data name="GOR_RESULT_DESC_ACCESS_DENIED" xml:space="preserve">
     <value>Access is denied.</value>
@@ -404,9 +335,6 @@ Code: 0x{2}</value>
   </data>
   <data name="GOR_ERR_OPTION_ALREADY_EXISTS" xml:space="preserve">
     <value>The option '{0}' is already included in this option bag.</value>
-  </data>
-  <data name="GOR_TOSTR_RECTANGLE" xml:space="preserve">
-    <value>Gorgon Rectangle - Left: {0}, Top: {1}, Right: {2}, Bottom: {3} (Width: {4}, Height {5})</value>
   </data>
   <data name="GOR_ERR_ALLOCATOR_FULL" xml:space="preserve">
     <value>The memory for the allocator is full.</value>

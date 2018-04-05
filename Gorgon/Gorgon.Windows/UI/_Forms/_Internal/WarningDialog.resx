@@ -198,22 +198,6 @@
   <data name="checkDetail.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
-  <data name="checkDetail.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAnVJREFUOE+t
-        kl1IU2EYxx+1ieJVYLATAy+6CAm7cBeR3Qcxuoi+JgUlJiZO1Jmbepyt4hRqggZ9m1HQRRiC0ehTpbzx
-        Qm2eOaeezY9MXWnBuZoV49/zzrMUwbv+8IP3fc/zf/7Pe3jp/+twm0SnepSMs71qjuNdLKfifSzjnE+l
-        Mz6Fjt43G1Xb6HSPXSp7q5c8HEP761m0voqg1RdB+5t5lHQFIVV+0un8B7tRvUWFvfZc18d43fMpyN0a
-        brwMY+13HL/+xNHim4XcM4O6FzPI9QzH6cLgliZH2s3Z5f16UWcQxV2hBA8GFpDU48ElFD8Jo/hpBEVM
-        du2oToXdkuFmFfUpBcoIbB0B2G6NM0Ecux1EX/AHBkI/cfzeJGx3phkNtrthFLRNgyr8iuEmMpUOqlbF
-        D6uiwno9gHxm/1U/8hKMIb85BGvrFKPBejMMa1sEppoJ1bCzLg7FsqqGIdX7YZFVmN2jxvDrMjcEYPFO
-        w3JFg+QNI6tBA13SYoabVT4SI8dnMRbSqlTsqA4gzTFs2AGTcxwmt4Y0VxjkioDcM6C6uU0NKgMqVY2D
-        qidAzhCoZhJinxQ5ee+eY9M8qP4LqOErSF7cdAXnpEI1U2IsUK1I4QTeJ0W1nCovghqXQJ4oqOkb833j
-        J5L9mUTuWZ3HWk8QcGpSiabCdHllHe+qTqX9W16lK2LnlDg1LiNdnjesG0r38NjeVUGcm23zGuUFOyfo
-        mddWYGleQl7HcgKxFmeJ5KboNmahXXtT6GCZhU50tpBjaCKlKbomEGs6+aiZDlVYyJyXYlT/UyqTyexk
-        djN7mH1MPnPAQKzFmfgmakQteyj1LxLTsNrJ2y09AAAAAElFTkSuQmCC
-</value>
-  </data>
   <data name="checkDetail.ImageAlign" type="System.Drawing.ContentAlignment, System.Drawing">
     <value>MiddleLeft</value>
   </data>
@@ -3439,6 +3423,6 @@
     <value>WarningDialog</value>
   </data>
   <data name="&gt;&gt;$this.Type" xml:space="preserve">
-    <value>Gorgon.UI.BaseDialog, Gorgon.Core, Version=2.0.5660.35509, Culture=neutral, PublicKeyToken=null</value>
+    <value>Gorgon.UI.BaseDialog, Gorgon.Windows, Version=3.0.6669.25947, Culture=neutral, PublicKeyToken=null</value>
   </data>
 </root>
