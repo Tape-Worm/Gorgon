@@ -131,6 +131,8 @@ namespace Gorgon.Examples
 		/// <param name="infoMessage">Message to display.</param>
 		public static void DisplayInfo(string infoMessage)
 		{
+		    GorgonDialogs.ConfirmBox(null, "This is a question", allowCancel: true, allowToAll: true);
+		    GorgonDialogs.ConfirmBox(null, "This is a question", allowCancel: true);
 			GorgonDialogs.InfoBox(null, infoMessage);
 		}
 

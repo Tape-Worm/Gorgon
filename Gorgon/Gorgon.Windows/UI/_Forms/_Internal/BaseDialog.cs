@@ -26,6 +26,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Text;
 using System.Windows.Forms;
@@ -129,15 +130,17 @@ namespace Gorgon.UI
 		    {
 		        return;
 		    }
-
+            
 			Screen currentScreen = Screen.FromControl(this);
+
+            _textPosition = new Point(pictureDialog.DisplayRectangle.Right + 4, 2);
 
 			if (_maxTextSize.Height <= 0)
 			{
-				_maxTextSize.Height = currentScreen.WorkingArea.Height - (buttonOK.Height + 100);
+				_maxTextSize.Height = currentScreen.WorkingArea.Height - (ClientSize.Height - buttonOK.Top - 8);
 			}
 
-			_maxTextSize.Width = _maxTextSize.Width == 0 ? currentScreen.WorkingArea.Width / 4 : _maxTextSize.Width;
+			_maxTextSize.Width = _maxTextSize.Width <= 0 ? currentScreen.WorkingArea.Width / 4 : _maxTextSize.Width;
 
 			// Inherit the parent icon.
 		    if (Owner != null)
@@ -193,10 +196,12 @@ namespace Gorgon.UI
 			// Resize the form if needed.
 			Size newClientSize = ClientSize;
 
-			if (textDimensions.Width + _textPosition.X > newClientSize.Width)
-				newClientSize.Width = (int)textDimensions.Width + _textPosition.X + 8;
-			
-			float maxTextHeight = textDimensions.Height;
+		    if (textDimensions.Width + _textPosition.X > newClientSize.Width)
+		    {
+		        newClientSize.Width = (int)textDimensions.Width + _textPosition.X + 8;
+		    }
+
+		    float maxTextHeight = textDimensions.Height;
 
 		    if (maxTextHeight > _maxTextSize.Height)
 		    {
@@ -256,22 +261,19 @@ namespace Gorgon.UI
 		        return;
 		    }
 
-		    if (Parent == null) 
+            if (Parent == null) 
 		    {
-		        Left = (Screen.FromControl(this).WorkingArea.Width / 2) - (Width / 2);
-		        Top = (Screen.FromControl(this).WorkingArea.Height / 2) - (Height / 2);
+		        CenterToScreen();
 		    } 
             else
 		    {
-		        Left = (Parent.Width / 2) - (Width / 2);
-		        Top = (Parent.Height / 2) - (Height / 2);
+                CenterToParent();
 		    }
 		}
 
-        /// <summary>
-        /// </summary>
-        /// <param name="e">The <see cref="System.Windows.Forms.PaintEventArgs" /> instance containing the event data.</param>
-		protected override void OnPaint(PaintEventArgs e)
+	    /// <summary>Raises the <see cref="E:System.Windows.Forms.Control.Paint" /> event.</summary>
+	    /// <param name="e">A <see cref="T:System.Windows.Forms.PaintEventArgs" /> that contains the event data.</param>
+	    protected override void OnPaint(PaintEventArgs e)
 		{
 			base.OnPaint(e);
 

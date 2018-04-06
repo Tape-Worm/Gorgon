@@ -92,14 +92,13 @@ namespace Gorgon.UI
             this.checkDetail.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.checkDetail.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.checkDetail.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.checkDetail.Image = global::Gorgon.Windows.Properties.Resources.Info_16x16;
             this.checkDetail.Name = "checkDetail";
             this.checkDetail.Click += new System.EventHandler(this.detailsButton_Click);
             // 
             // WarningDialog
             // 
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             resources.ApplyResources(this, "$this");
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.checkDetail);
             this.Controls.Add(this.textWarningDetails);
             this.DialogImage = global::Gorgon.Windows.Properties.Resources.Warning_48x48;

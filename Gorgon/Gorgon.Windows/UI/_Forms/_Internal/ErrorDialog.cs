@@ -81,17 +81,16 @@ namespace Gorgon.UI
 			if (checkDetail.Checked)
 			{
 				_lastWidth = Width;
+			    Width = MessageWidth + ((Width - ClientSize.Width) * 2);
 				Height += _detailHeight;
-				Width = MessageWidth + ((Width - ClientSize.Width) * 2);
 				errorDetails.Visible = true;
 			}
 			else
 			{
 				errorDetails.Visible = false;
-				Width = _lastWidth;
 				Height -= _detailHeight;
+			    Width = _lastWidth;
 			}
-
 			Refresh();
 			Invalidate();
 		}

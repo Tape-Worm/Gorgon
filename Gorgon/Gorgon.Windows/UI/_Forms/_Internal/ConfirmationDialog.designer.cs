@@ -57,58 +57,56 @@ namespace Gorgon.UI
 		/// </summary>
 		private void InitializeComponent()
 		{
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ConfirmationDialog));
-			this.buttonNo = new System.Windows.Forms.Button();
-			this.buttonCancel = new System.Windows.Forms.Button();
-			((System.ComponentModel.ISupportInitialize)(this.pictureDialog)).BeginInit();
-			this.SuspendLayout();
-			// 
-			// buttonOK
-			// 
-			this.buttonOK.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-			this.buttonOK.FlatAppearance.MouseDownBackColor = System.Drawing.SystemColors.ControlDark;
-			this.buttonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-			resources.ApplyResources(this.buttonOK, "buttonOK");
-			this.buttonOK.Click += new System.EventHandler(this.OKButton_Click);
-			// 
-			// pictureDialog
-			// 
-			this.pictureDialog.Image = global::Gorgon.Windows.Properties.Resources.Confirm_48x48;
-			// 
-			// buttonNo
-			// 
-			resources.ApplyResources(this.buttonNo, "buttonNo");
-			this.buttonNo.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-			this.buttonNo.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-			this.buttonNo.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-			this.buttonNo.Name = "buttonNo";
-			this.buttonNo.Click += new System.EventHandler(this.buttonNo_Click);
-			// 
-			// buttonCancel
-			// 
-			resources.ApplyResources(this.buttonCancel, "buttonCancel");
-			this.buttonCancel.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-			this.buttonCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-			this.buttonCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-			this.buttonCancel.Image = global::Gorgon.Windows.Properties.Resources.cancel_16x16;
-			this.buttonCancel.Name = "buttonCancel";
-			this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
-			// 
-			// ConfirmationDialog
-			// 
-			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-			resources.ApplyResources(this, "$this");
-			this.Controls.Add(this.buttonNo);
-			this.Controls.Add(this.buttonCancel);
-			this.DialogImage = global::Gorgon.Windows.Properties.Resources.Confirm_48x48;
-			this.Name = "ConfirmationDialog";
-			this.Controls.SetChildIndex(this.pictureDialog, 0);
-			this.Controls.SetChildIndex(this.buttonOK, 0);
-			this.Controls.SetChildIndex(this.buttonCancel, 0);
-			this.Controls.SetChildIndex(this.buttonNo, 0);
-			((System.ComponentModel.ISupportInitialize)(this.pictureDialog)).EndInit();
-			this.ResumeLayout(false);
-			this.PerformLayout();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ConfirmationDialog));
+            this.buttonNo = new System.Windows.Forms.Button();
+            this.buttonCancel = new System.Windows.Forms.Button();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureDialog)).BeginInit();
+            this.SuspendLayout();
+            // 
+            // buttonOK
+            // 
+            this.buttonOK.FlatAppearance.BorderColor = System.Drawing.Color.Black;
+            this.buttonOK.FlatAppearance.MouseDownBackColor = System.Drawing.SystemColors.ControlDark;
+            this.buttonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            resources.ApplyResources(this.buttonOK, "buttonOK");
+            this.buttonOK.Click += new System.EventHandler(this.OKButton_Click);
+            // 
+            // pictureDialog
+            // 
+            this.pictureDialog.Image = global::Gorgon.Windows.Properties.Resources.Confirm_48x48;
+            // 
+            // buttonNo
+            // 
+            this.buttonNo.FlatAppearance.BorderColor = System.Drawing.Color.Black;
+            this.buttonNo.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.buttonNo.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            resources.ApplyResources(this.buttonNo, "buttonNo");
+            this.buttonNo.Name = "buttonNo";
+            this.buttonNo.Click += new System.EventHandler(this.buttonNo_Click);
+            // 
+            // buttonCancel
+            // 
+            this.buttonCancel.FlatAppearance.BorderColor = System.Drawing.Color.Black;
+            this.buttonCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.buttonCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            resources.ApplyResources(this.buttonCancel, "buttonCancel");
+            this.buttonCancel.Name = "buttonCancel";
+            this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
+            // 
+            // ConfirmationDialog
+            // 
+            resources.ApplyResources(this, "$this");
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.buttonNo);
+            this.Controls.Add(this.buttonCancel);
+            this.DialogImage = global::Gorgon.Windows.Properties.Resources.Confirm_48x48;
+            this.Name = "ConfirmationDialog";
+            this.Controls.SetChildIndex(this.pictureDialog, 0);
+            this.Controls.SetChildIndex(this.buttonOK, 0);
+            this.Controls.SetChildIndex(this.buttonCancel, 0);
+            this.Controls.SetChildIndex(this.buttonNo, 0);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureDialog)).EndInit();
+            this.ResumeLayout(false);
 
 		}
 

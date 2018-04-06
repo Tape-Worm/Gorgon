@@ -366,4 +366,7 @@ This flag only works when the app.config contains a setting for DpiAwareness tha
   <data name="PROP_THEME_DESC" xml:space="preserve">
     <value>Contains values to change the appearance of window elements.</value>
   </data>
+  <data name="GOR_DLG_CAPTION_INFO" xml:space="preserve">
+    <value>Information</value>
+  </data>
 </root>

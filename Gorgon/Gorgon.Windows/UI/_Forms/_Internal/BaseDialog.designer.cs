@@ -57,41 +57,40 @@ namespace Gorgon.UI
         /// </summary>
         private void InitializeComponent()
         {
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BaseDialog));
-			this.buttonOK = new System.Windows.Forms.Button();
-			this.pictureDialog = new System.Windows.Forms.PictureBox();
-			((System.ComponentModel.ISupportInitialize)(this.pictureDialog)).BeginInit();
-			this.SuspendLayout();
-			// 
-			// buttonOK
-			// 
-			resources.ApplyResources(this.buttonOK, "buttonOK");
-			this.buttonOK.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-			this.buttonOK.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Silver;
-			this.buttonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
-			this.buttonOK.Name = "buttonOK";
-			// 
-			// pictureDialog
-			// 
-			resources.ApplyResources(this.pictureDialog, "pictureDialog");
-			this.pictureDialog.Name = "pictureDialog";
-			this.pictureDialog.TabStop = false;
-			// 
-			// BaseDialog
-			// 
-			this.AcceptButton = this.buttonOK;
-			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-			resources.ApplyResources(this, "$this");
-			this.Controls.Add(this.pictureDialog);
-			this.Controls.Add(this.buttonOK);
-			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-			this.KeyPreview = true;
-			this.MaximizeBox = false;
-			this.MinimizeBox = false;
-			this.Name = "BaseDialog";
-			((System.ComponentModel.ISupportInitialize)(this.pictureDialog)).EndInit();
-			this.ResumeLayout(false);
-			this.PerformLayout();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BaseDialog));
+            this.buttonOK = new System.Windows.Forms.Button();
+            this.pictureDialog = new System.Windows.Forms.PictureBox();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureDialog)).BeginInit();
+            this.SuspendLayout();
+            // 
+            // buttonOK
+            // 
+            this.buttonOK.FlatAppearance.BorderColor = System.Drawing.Color.Black;
+            this.buttonOK.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Silver;
+            this.buttonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
+            resources.ApplyResources(this.buttonOK, "buttonOK");
+            this.buttonOK.Name = "buttonOK";
+            // 
+            // pictureDialog
+            // 
+            resources.ApplyResources(this.pictureDialog, "pictureDialog");
+            this.pictureDialog.Name = "pictureDialog";
+            this.pictureDialog.TabStop = false;
+            // 
+            // BaseDialog
+            // 
+            this.AcceptButton = this.buttonOK;
+            resources.ApplyResources(this, "$this");
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.pictureDialog);
+            this.Controls.Add(this.buttonOK);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.KeyPreview = true;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.Name = "BaseDialog";
+            ((System.ComponentModel.ISupportInitialize)(this.pictureDialog)).EndInit();
+            this.ResumeLayout(false);
 
         }
 

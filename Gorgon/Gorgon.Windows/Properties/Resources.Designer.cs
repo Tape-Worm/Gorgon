@@ -121,6 +121,15 @@ namespace Gorgon.Windows.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Information.
+        /// </summary>
+        internal static string GOR_DLG_CAPTION_INFO {
+            get {
+                return ResourceManager.GetString("GOR_DLG_CAPTION_INFO", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The application is already running..
         /// </summary>
         internal static string GOR_ERR_APPLICATION_ALREADY_RUNNING {

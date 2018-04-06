@@ -75,7 +75,7 @@ namespace Gorgon.Examples
 			Console.ForegroundColor = ConsoleColor.White;			
 
 			Console.Clear();
-			
+            
 			Console.WriteLine("This is a small example of -some- of the functionality that's provided in the");
 			Console.ForegroundColor = ConsoleColor.Green;
 			Console.Write("Gorgon.Common");

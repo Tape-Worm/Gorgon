@@ -305,26 +305,23 @@ namespace Gorgon.UI
 
 			try
 			{
-				dialog = new BaseDialog
-				    {
-				        DialogImage = Resources.Info_48x48,
-				        Message = message,
-				        ButtonAction = DialogResult.OK
-				    };
+			    dialog = new BaseDialog
+			             {
+			                 DialogImage = Resources.Info_48x48,
+			                 Message = message,
+			                 ButtonAction = DialogResult.OK
+			             };
 
 			    if (owner != null)
 			    {
-			        dialog.MessageHeight = Screen.FromControl(owner).WorkingArea.Height/2;
+			        dialog.MessageHeight = Screen.FromControl(owner).WorkingArea.Height / 2;
 			    }
 			    else
 			    {
-			        dialog.MessageHeight = Screen.FromControl(dialog).WorkingArea.Height/2;
+			        dialog.MessageHeight = Screen.FromControl(dialog).WorkingArea.Height / 2;
 			    }
 
-				if (!string.IsNullOrEmpty(caption))
-				{
-					dialog.Text = caption;
-				}
+				dialog.Text = !string.IsNullOrEmpty(caption) ? caption : Resources.GOR_DLG_CAPTION_INFO;
 
 				dialog.ShowDialog(owner);
 			}

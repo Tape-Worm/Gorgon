@@ -163,10 +163,14 @@ namespace Gorgon.UI
 			base.OnLoad(e);
 
 			// Force focus.
-			if (_showCancel)
-				buttonCancel.Focus();
-			else
-				buttonNo.Focus();
+		    if (_showCancel)
+		    {
+		        buttonCancel.Focus();
+		    }
+		    else
+		    {
+		        buttonNo.Focus();
+		    }
 		}
 		#endregion
 

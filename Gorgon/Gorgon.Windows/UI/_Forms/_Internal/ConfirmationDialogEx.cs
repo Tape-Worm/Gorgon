@@ -39,10 +39,6 @@ namespace Gorgon.UI
 
 		#endregion
 
-		#region Properties.
-
-		#endregion
-
 		#region Methods.
 		/// <summary>
 		/// Raises the <see cref="E:System.Windows.Forms.Form.FormClosing"></see> event.
@@ -64,10 +60,10 @@ namespace Gorgon.UI
 		/// </summary>
 		/// <param name="e">Event arguments.</param>
 		protected override void OnLoad(EventArgs e)
-		{			
+		{
+		    MessageHeight -= checkToAll.Height;
+
 			base.OnLoad(e);
-			
-			MessageHeight -= checkToAll.Height;
 		}
 
 		/// <summary>
