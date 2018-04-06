@@ -109,6 +109,7 @@ namespace Gorgon.Examples
             base.OnResize(e);
 
             ContentArea.Refresh();
+            _gifAnim?.Reset();
         }
 
         /// <summary>
@@ -118,7 +119,8 @@ namespace Gorgon.Examples
         /// <param name="e">The <see cref="PaintEventArgs"/> instance containing the event data.</param>
         private void ContentArea_Paint(object sender, PaintEventArgs e)
         {
-            _gallery.DrawGallery(e.Graphics, ContentArea.ClientSize);
+            _gallery?.DrawGallery(e.Graphics, ContentArea.ClientSize);
+            _gifAnim?.Reset();
         }
 
         /// <summary>Raises the <see cref="E:System.Windows.Forms.Form.FormClosing" /> event.</summary>

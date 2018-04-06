@@ -284,7 +284,6 @@ namespace Gorgon.Examples
                 graphics.CompositingMode = CompositingMode.SourceOver;
             }
 
-
             try
             {
                 Interlocked.Increment(ref _isDrawing);

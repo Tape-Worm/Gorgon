@@ -43,6 +43,7 @@ namespace Gorgon.Examples
         private readonly SynchronizationContext _syncContext;
         // Cancellation support.
         private CancellationTokenSource _cancel;
+        private int _currentFrame;
         #endregion
 
         #region Properties.
@@ -51,8 +52,8 @@ namespace Gorgon.Examples
         /// </summary>
         public int CurrentFrame
         {
-            get;
-            private set;
+            get => _currentFrame;
+            private set => _currentFrame = value;
         }
 
         /// <summary>
@@ -66,6 +67,14 @@ namespace Gorgon.Examples
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to reset the frame index.
+        /// </summary>
+        public void Reset()
+        {
+            Interlocked.Exchange(ref _currentFrame, 0);
+        }
+
         /// <summary>
         /// Function to start the animation.
         /// </summary>
