@@ -135,11 +135,11 @@
   <data name="GORIMG_DESC_TGA_CODEC" xml:space="preserve">
     <value>Truevision Targa</value>
   </data>
+  <data name="GORIMG_ERR_BITMAP_SIZE_NOT_CORRECT" xml:space="preserve">
+    <value>The size of the bitmap ({0}x{1}) is not the same as the buffer ({2}x{3}).</value>
+  </data>
   <data name="GORIMG_ERR_BUFFER_FORMAT_MISMATCH" xml:space="preserve">
     <value>The buffer formats must be same: [{0}].</value>
-  </data>
-  <data name="GORIMG_ERR_CANNOT_COPY_DATA_MISMATCH" xml:space="preserve">
-    <value>The source and destination image do not share the same width, height, or pixel format.</value>
   </data>
   <data name="GORIMG_ERR_CODEC_NOT_IN_PLUGIN" xml:space="preserve">
     <value>The codec '{0}' was not found in the plug in.</value>

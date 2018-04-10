@@ -29,8 +29,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Gorgon.Core;
+using Gorgon.Diagnostics;
+using Gorgon.IO;
 using Gorgon.Plugins;
-using Gorgon.UI;
 
 namespace Gorgon.Examples
 {
@@ -65,33 +66,32 @@ namespace Gorgon.Examples
 	/// </remarks>
 	internal static class Program
 	{
-		#region Methods.
-		/// <summary>
-		/// Function to retrieve a list of our plugin assemblies.
-		/// </summary>
-		/// <returns>The list of plugin assemblies.</returns>
-		private static IEnumerable<string> GetPluginAssemblies()
-		{
-			return Directory.EnumerateFiles(GorgonApplication.StartupPath, "Example004.*Plugin.dll");
-		}
+        #region Variables.
+        // The logging interface for debug messaging.
+	    private static IGorgonLog _log;
+        #endregion
 
+		#region Methods.
 		/// <summary>
 		/// The main entry point for the application.
 		/// </summary>
+		/// <param name="args">The command line arguments.</param>
 		[STAThread]
-		private static void Main()
+		private static void Main(string[] args)
 		{
+            _log = new GorgonLog("Example 004", "Tape_Worm",  typeof(Program).Assembly.GetName().Version);
+
 			// Set up the assembly cache.
 			// We'll need the assemblies loaded into this object in order to load our plugin types.
-			GorgonPluginAssemblyCache pluginAssemblies = new GorgonPluginAssemblyCache(GorgonApplication.Log);
+            GorgonMefPluginCache pluginCache = new GorgonMefPluginCache(_log);
 
 			// Create our plugin service.
-			// This takes the cache of assemblies that we just loaded.
-			GorgonPluginService pluginService = new GorgonPluginService(pluginAssemblies, GorgonApplication.Log);
+			// This takes the cache of assemblies we just created.
+            IGorgonPluginService pluginService = new GorgonMefPluginService(pluginCache, _log);
 
 			try
 			{
-				Console.Title = "Example #4 - Gorgon Plug-Ins.";
+				Console.Title = "Gorgon Example #4 - Plugins.";
 				Console.ForegroundColor = ConsoleColor.White;
 
 				Console.WriteLine("This is an example to show how to create and use custom plugins.");
@@ -100,29 +100,22 @@ namespace Gorgon.Examples
 
 				Console.ResetColor();
 
-				string[] pluginFiles = GetPluginAssemblies().ToArray();
-
-				// Load the plugins into Gorgon.
-				foreach (string pluginPath in pluginFiles)
-				{
-					pluginAssemblies.Load(pluginPath);
-				}
-
-				Console.WriteLine("{0} plugin assemblies found.", pluginAssemblies.PluginAssemblies.Count);
+			    pluginCache.LoadPluginAssemblies(Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]).FormatDirectory(Path.DirectorySeparatorChar), "Example004.*Plugin.dll");
+				Console.WriteLine("{0} plugin assemblies found.", pluginCache.PluginAssemblies.Count);
 				
-				if (pluginFiles.Length == 0)
+				if (pluginCache.PluginAssemblies.Count == 0)
 				{
 					return;
 				}
 
 				// Our text writer plugin interfaces.
-				IList<TextColorWriter> writers = new List<TextColorWriter>(); 
+				IList<TextColorWriter> writers = new List<TextColorWriter>();
 
 				// Create our plugin instances, we'll limit to 9 entries just for giggles.
 				TextColorPlugIn[] plugins = (from pluginName in pluginService.GetPluginNames()
 							   let plugin = pluginService.GetPlugin<TextColorPlugIn>(pluginName)
 				               where plugin != null
-				               select plugin).Take(9).ToArray();
+				               select plugin).ToArray();
 
 				// Display a list of the available plugins.
 				Console.WriteLine("\n{0} Plug-ins loaded:\n", plugins.Length);
@@ -132,7 +125,7 @@ namespace Gorgon.Examples
 					Console.WriteLine("{0}. {1} ({2})", i + 1, plugins[i].Description, plugins[i].GetType().FullName);
 
 					// Create the text writer interface and add it to the list.
-					writers.Add(plugins.ElementAt(i).CreateWriter());
+					writers.Add(plugins[i].CreateWriter());
 				}
 
 				Console.Write("0. Quit\n\nSelect a plugin:  ");
@@ -182,7 +175,7 @@ namespace Gorgon.Examples
 					         Console.ForegroundColor = ConsoleColor.Red;
 					         Console.WriteLine("Exception:\n{0}\n\nStack Trace:{1}", ex.Message, ex.StackTrace);
 				         },
-				         GorgonApplication.Log);
+				         _log);
 				Console.ResetColor();
 #if DEBUG
 				Console.ReadKey(true);
@@ -191,7 +184,10 @@ namespace Gorgon.Examples
 			finally
 			{
 				// Always call dispose so we can unload our temporary application domain.
-				pluginAssemblies.Dispose();
+				//pluginAssemblies.Dispose();
+                pluginCache.Dispose();
+
+                _log.LogEnd();
 			}
 		}
 		#endregion

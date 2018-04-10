@@ -30,7 +30,7 @@ using Gorgon.Graphics.Imaging.Properties;
 namespace Gorgon.Graphics.Imaging.Codecs
 {
 	/// <summary>
-	/// A name and description for an image codec within a <see cref="GorgonImageCodecPlugIn"/>.
+	/// A name and description for an image codec within a <see cref="GorgonImageCodecPlugin"/>.
 	/// </summary>
 	public struct GorgonImageCodecDescription
 		: IEquatable<GorgonImageCodecDescription>

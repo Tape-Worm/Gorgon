@@ -48,8 +48,12 @@ namespace Gorgon.Plugins
 		/// <summary>
 		/// Function to retrieve the Gorgon plugin type.
 		/// </summary>
-		/// <remarks>This loads the base Gorgon assembly as a reflection only library.  This is done to extract specific reflection only 
-		/// information for type comparisons later on.</remarks>
+		/// <remarks>
+		/// <para>
+		/// This loads the base Gorgon assembly as a reflection only library.  This is done to extract specific reflection only 
+		/// information for type comparisons later on.
+		/// </para>
+		/// </remarks>
 		private void GetGorgonPlugInType()
 		{
 			if (_plugInType != null)

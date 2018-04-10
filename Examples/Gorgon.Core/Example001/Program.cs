@@ -75,7 +75,7 @@ namespace Gorgon.Examples
 			Console.ForegroundColor = ConsoleColor.White;			
 
 			Console.Clear();
-			
+            
 			Console.WriteLine("This is a small example of -some- of the functionality that's provided in the");
 			Console.ForegroundColor = ConsoleColor.Green;
 			Console.Write("Gorgon.Common");
@@ -173,13 +173,13 @@ namespace Gorgon.Examples
 			Application.EnableVisualStyles();
 			Application.DoEvents();
 
-			Console.Title = "Gorgon Core Library Example #1.";
+			Console.Title = "Gorgon Example #1 - Core functionality";
 			Console.CursorVisible = false;
 
 			try
 			{
 				// In order to use the GorgonTiming class, we need to supply a timer to it.
-				GorgonTiming.Timer = new GorgonTimerMultimedia();
+				GorgonTiming.StartTiming<GorgonTimerMultimedia>();
 
 				WriteOptions();
 				ReadValue();

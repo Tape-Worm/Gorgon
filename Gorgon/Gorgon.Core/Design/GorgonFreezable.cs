@@ -7,7 +7,7 @@ namespace Gorgon.Core.Design
 	/// </summary>
 	/// <remarks>
 	/// <para>
-	/// This base class will help dynamically make an object immutable. This is useful in cases where an object can be accessed for reading by multiple threads, but written to by a single thread.
+	/// This base class will allow developers to mark an object as immutable. This is useful in cases where an object can be accessed for reading by multiple threads, but written to by a single thread.
 	/// </para>
 	/// </remarks>
 	public abstract class GorgonFreezable

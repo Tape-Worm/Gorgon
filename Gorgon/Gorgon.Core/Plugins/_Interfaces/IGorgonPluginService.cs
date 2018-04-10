@@ -1,14 +1,36 @@
+using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Gorgon.Core;
 
 namespace Gorgon.Plugins
 {
+    /// <summary>
+    /// The return values for the an assembly signing test.
+    /// </summary>
+    [Flags]
+    public enum AssemblySigningResult
+    {
+        /// <summary>
+        /// Assembly is not signed.  This flag is mutually exclusive.
+        /// </summary>
+        NotSigned = 1,
+        /// <summary>
+        /// Assembly is signed, and if it was requested, the key matches.
+        /// </summary>
+        Signed = 2,
+        /// <summary>
+        /// This flag is combined with the Signed flag to indicate that it was signed, but the keys did not match.
+        /// </summary>
+        KeyMismatch = 4
+    }
+
 	/// <summary>
 	/// A service to create, cache and return <see cref="GorgonPlugin"/> instances.
 	/// </summary>
 	/// <remarks>
 	/// <para>
-	/// This service object is meant to instantiate, and cache instances of <see cref="GorgonPlugin"/> objects contained within external assemblies loaded by the <see cref="GorgonPluginAssemblyCache"/>. 
+	/// This service object is meant to instantiate, and cache instances of <see cref="GorgonPlugin"/> objects contained within external assemblies loaded by an assembly cache of some kind. 
 	/// It also allows the user to unload plugin instances when necessary.
 	/// </para>
 	/// <para>
@@ -17,73 +39,73 @@ namespace Gorgon.Plugins
 	/// <see cref="GetPlugin{T}"/> or <see cref="GetPlugins{T}"/> methods. When these methods are called, they will instantiate the plugin type, and cache it for quick retrieval on subsequent calls to the 
 	/// methods.
 	/// </para>
-	/// <note type="tip">
-	/// A plugin assembly may contain many or one plugin type, otherwise it is not considered when enumerating plugin types.
-	/// </note>
-	/// <para>
-	/// <para>
-	/// <h3>Defining your own plugin</h3>
-	/// While any class can be a plugin within an assembly, Gorgon uses the following strategy to define a plugin assembly.
-	/// </para>
-	/// <h3>In your host assembly (an application, DLL, etc...):</h3>
-	/// <code language="csharp">
-	/// <![CDATA[
-	/// // This will go into your host assembly (e.g. an application, another DLL, etc...)
-	/// // This defines the functionality that you wish to override in your plugin assembly.
-	/// public abstract class FunctionalityBase
-	/// {
-	///		public abstract int DoSomething();
-	/// }
-	/// 
-	/// // This too will go into the host assembly and be overridden in your plugin assembly.
-	/// public abstract class FunctionalityPlugin
-	///		: GorgonPlugin
-	/// {
-	///		public abstract FunctionalityBase GetNewFunctionality();
-	/// 
-	///		protected FunctionalityPlugin(string description)
-	///		{
-	///		}
-	/// }
-	///	]]>
-	/// </code>
-	/// <h3>In your plugin assembly:</h3>
-	/// <note type="tip">
-	/// Be sure to reference your host assembly in the plugin assembly project.
-	/// </note>
-	/// <code language="csharp">
-	/// <![CDATA[
-	/// // We put the namespace here because when loading the plugin in our example below, we need to give a fully qualified name for the type that we're loading.
-	/// namespace Fully.Qualified.Name
-	/// {
-	///		// Typically Gorgon makes the extension classes internal, but they can have a public accessor if you wish.
-	///		class ConcreteFunctionality
-	///			: FunctionalityBase
-	///		{
-	///			public override int DoSomething()
-	///			{
-	///				return 42;
-	///			}
-	///		}
-	/// 
-	///		public class ConcreteFunctionalityPlugin
-	///			: FunctionalityPlugin
-	///		{
-	///			public override FunctionalityBase GetNewFunctionality()
-	///			{
-	///				return new ConcreteFunctionality();
-	///			}
-	/// 
-	///			public ConcreteFunctionalityPlugin()
-	///				: base("What is the answer to life, the universe, and blah blah blah?")
-	///			{
-	///			}
-	///		}
-	/// }
-	/// ]]>
-	/// </code>  
-	/// </para>
-	/// </remarks>
+    /// <note type="tip">
+    /// A plugin assembly may contain many or one plugin type, otherwise it is not considered when enumerating plugin types.
+    /// </note>
+    /// <para>
+    /// <para>
+    /// <h3>Defining your own plugin</h3>
+    /// While any class can be a plugin within an assembly, Gorgon uses the following strategy to define a plugin assembly.
+    /// </para>
+    /// <h3>In your host assembly (an application, DLL, etc...):</h3>
+    /// <code language="csharp">
+    /// <![CDATA[
+    /// // This will go into your host assembly (e.g. an application, another DLL, etc...)
+    /// // This defines the functionality that you wish to override in your plugin assembly.
+    /// public abstract class FunctionalityBase
+    /// {
+    ///		public abstract int DoSomething();
+    /// }
+    /// 
+    /// // This too will go into the host assembly and be overridden in your plugin assembly.
+    /// public abstract class FunctionalityPlugin
+    ///		: GorgonPlugin
+    /// {
+    ///		public abstract FunctionalityBase GetNewFunctionality();
+    /// 
+    ///		protected FunctionalityPlugin(string description)
+    ///		{
+    ///		}
+    /// }
+    ///	]]>
+    /// </code>
+    /// <h3>In your plugin assembly:</h3>
+    /// <note type="tip">
+    /// Be sure to reference your host assembly in the plugin assembly project.
+    /// </note>
+    /// <code language="csharp">
+    /// <![CDATA[
+    /// // We put the namespace here because when loading the plugin in our example below, we need to give a fully qualified name for the type that we're loading.
+    /// namespace Fully.Qualified.Name
+    /// {
+    ///		// Typically Gorgon makes the extension classes internal, but they can have a public accessor if you wish.
+    ///		class ConcreteFunctionality
+    ///			: FunctionalityBase
+    ///		{
+    ///			public override int DoSomething()
+    ///			{
+    ///				return 42;
+    ///			}
+    ///		}
+    /// 
+    ///		public class ConcreteFunctionalityPlugin
+    ///			: FunctionalityPlugin
+    ///		{
+    ///			public override FunctionalityBase GetNewFunctionality()
+    ///			{
+    ///				return new ConcreteFunctionality();
+    ///			}
+    /// 
+    ///			public ConcreteFunctionalityPlugin()
+    ///				: base("What is the answer to life, the universe, and blah blah blah?")
+    ///			{
+    ///			}
+    ///		}
+    /// }
+    /// ]]>
+    /// </code>  
+    /// </para>
+    /// </remarks>
 	/// <example>
 	/// This example shows how to load a plugin and get its plugin instance. It will use the <c>ConcreteFunctionalityPlugin</c> above:
 	/// <code language="csharp"> 
@@ -93,14 +115,14 @@ namespace Gorgon.Plugins
 	/// 
 	/// void LoadFunctionality()
 	/// {
-	///		using (IGorgonPluginAssemblyCache assemblies = new GorgonPluginAssemblyCache())
+	///		using (GorgonMefPluginCache assemblies = new GorgonMefPluginCache())
 	///		{	
 	///			// For brevity, we've omitted checking to see if the assembly is valid and such.
 	///			// In the real world, you should always determine whether the assembly can be loaded 
 	///			// before calling the Load method.
-	///			assemblies.Load("ConcreteFunctionality.dll");
+	///			assemblies.LoadPluginAssemblies("Your\Directory\Here");  // You can also pass a wild card like (e.g. *.dll, *.exe, etc...)
 	/// 			
-	///			IGorgonPluginService pluginService = new GorgonPluginService(assemblies);
+	///			IGorgonPluginService pluginService = new GorgonMefPluginService(assemblies);
 	/// 
 	///			_functionality = pluginService.GetPlugin<FunctionalityBase>("Fully.Qualified.Name.ConcreteFunctionalityPlugin"); 
 	///		}
@@ -117,6 +139,7 @@ namespace Gorgon.Plugins
 	/// </example>
 	public interface IGorgonPluginService
 	{
+        #region Properties.
 		/// <summary>
 		/// Property to return the number of plugins that are currently loaded in this service.
 		/// </summary>
@@ -124,7 +147,9 @@ namespace Gorgon.Plugins
 		{
 			get;
 		}
+        #endregion
 
+        #region Methods.
 		/// <summary>
 		/// Function to retrieve the list of plugins from a given assembly.
 		/// </summary>
@@ -144,8 +169,8 @@ namespace Gorgon.Plugins
 		/// <typeparam name="T">The base type of the plugin. Must implement <see cref="GorgonPlugin"/>.</typeparam>
 		/// <param name="pluginName">Fully qualified type name of the plugin to find.</param>
 		/// <returns>The plugin, if found, or <b>null</b> if not.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="pluginName"/> is <b>null</b>.</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="pluginName"/> is empty.</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginName"/> is <b>null</b>.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="pluginName"/> is empty.</exception>
 		T GetPlugin<T>(string pluginName)
 			where T : GorgonPlugin;
 
@@ -156,10 +181,6 @@ namespace Gorgon.Plugins
 		/// <returns>A list of names for the available plugins.</returns>
 		/// <remarks>
 		/// <para>
-		/// This method will retrieve a list of fully qualified type names for plugins contained within the <see cref="GorgonPluginAssemblyCache"/> passed to this object. This list is 
-		/// not indicative of whether the type has been created or not.
-		/// </para>
-		/// <para>
 		/// The <paramref name="assemblyName"/> parameter, when not <b>null</b>, will return only plugin names belonging to that assembly. 
 		/// If the assembly is not loaded, then an exception is thrown.
 		/// </para>
@@ -167,7 +188,7 @@ namespace Gorgon.Plugins
 		IReadOnlyList<string> GetPluginNames(AssemblyName assemblyName = null);
 
 		/// <summary>
-		/// Function to scan for plugins in the loaded plugin assemblies that are cached in the <see cref="GorgonPluginAssemblyCache"/> passed to this object.
+		/// Function to scan for plugins in the loaded plugin assemblies.
 		/// </summary>
 		/// <remarks>
 		/// This method will unload any active plugins, and, if implemented, call the dispose method for any plugin.
@@ -179,13 +200,14 @@ namespace Gorgon.Plugins
 		/// </summary>
 		void UnloadAll();
 
-		/// <summary>
-		/// Function to unload a plugin by its name.
-		/// </summary>
-		/// <param name="name">Fully qualified type name of the plugin to remove.</param>
-		/// <exception cref="System.ArgumentNullException">The <paramref name="name"/> parameter was <b>null</b>.</exception>
-		/// <exception cref="System.ArgumentException">The <paramref name="name "/> parameter was an empty string.</exception>
-		/// <returns><b>true</b> if the plugin was unloaded successfully, <b>false</b> if it did not exist in the collection, or failed to unload.</returns>
-		bool Unload(string name);
+        /// <summary>
+        /// Function to unload a plugin by its name.
+        /// </summary>
+        /// <param name="name">Fully qualified type name of the plugin to remove.</param>
+        /// <exception cref="ArgumentNullException">The <paramref name="name"/> parameter was <b>null</b>.</exception>
+        /// <exception cref="System.ArgumentException">The <paramref name="name "/> parameter was an empty string.</exception>
+        /// <returns><b>true</b> if the plugin was unloaded successfully, <b>false</b> if it did not exist in the collection, or failed to unload.</returns>
+        bool Unload(string name);
+        #endregion
 	}
 }

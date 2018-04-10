@@ -99,10 +99,6 @@
       <Project>{933569ed-52a9-4232-a929-1d4c4489b5a1}</Project>
       <Name>Gorgon.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Gorgon.Graphics.Core\Gorgon.Graphics.Core.csproj">
-      <Project>{ea4b0a1a-586a-47a4-89c1-3e6a4e821c31}</Project>
-      <Name>Gorgon.Graphics.Core</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Gorgon.Graphics.Imaging\Gorgon.Graphics.Imaging.csproj">
       <Project>{9dd1ec99-5d74-4b0a-ad93-14746939f6be}</Project>
       <Name>Gorgon.Graphics.Imaging</Name>

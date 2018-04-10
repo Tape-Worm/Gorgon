@@ -1,1 +1,0 @@
-ilasm /DLL /PDB /OPTIMIZE /FOLD /RESOURCE=Gorgon.Native.res Gorgon.Native.il /OUTPUT=Gorgon.Native.dll

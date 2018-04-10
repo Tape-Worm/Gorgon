@@ -57,7 +57,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 	/// </para>
 	/// </remarks>
 	public sealed class GorgonCodecBmp
-        : GorgonCodecWic
+        : GorgonCodecWic<IGorgonWicEncodingOptions, IGorgonWicDecodingOptions>
 	{
 		#region Variables.
 		// Supported formats.
@@ -80,7 +80,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// Initializes a new instance of the <see cref="GorgonCodecBmp"/> class.
         /// </summary>
         public GorgonCodecBmp()
-            : base("BMP", Resources.GORIMG_DESC_BMP_CODEC, new[] { "bmp", "dib" }, WIC.ContainerFormatGuids.Bmp)
+            : base("BMP", Resources.GORIMG_DESC_BMP_CODEC, new[] { "bmp", "dib" }, WIC.ContainerFormatGuids.Bmp, null, null)
         {
         }
         #endregion

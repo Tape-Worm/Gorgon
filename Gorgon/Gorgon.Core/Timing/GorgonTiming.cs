@@ -24,7 +24,7 @@
 // 
 #endregion
 
-using Gorgon.UI;
+using System.Threading;
 
 namespace Gorgon.Timing
 {	
@@ -33,17 +33,16 @@ namespace Gorgon.Timing
 	/// </summary>
 	/// <remarks>
 	/// <para>
-	/// This object is used to calculate the time it takes for a single iteration of the idle loop to execute. It will gather statistics such as the frames per second, the time elapsed since the application started 
+	/// This class is used to calculate the time it takes for a single iteration an idle loop to execute. It will gather statistics such as the frames per second, the time elapsed since the application started 
 	/// and peaks, lows and averages for those values.
 	/// </para>
 	/// <para>
-	/// This object will automatically gather data if your application has an <see cref="GorgonApplication.IdleMethod"/> assigned.  Otherwise, if a custom idle time polling method is 
-	/// used, then the user should call assign a timer to the <see cref="Timer"/> property, then call <see cref="Reset"/> before starting the application loop. Once the loop is running, the loop should 
-	/// <see cref="Update"/> at the beginning of the idle loop.
+	/// To use this in a custom idle processing loop the user should initialize using the <see cref="StartTiming{T}"/> method, and then, in the loop, call the <see cref="Update"/> method to populate the data 
+	/// with the most recent timings.
 	/// </para>
 	/// </remarks>
 	/// <example>
-	/// The application loop usage with the <see cref="GorgonApplication.IdleMethod"/> assigned by one of the <see cref="O:Gorgon.UI.GorgonApplication.Run"/> methods:
+	/// When using the <c>Gorgon.Windows.UI.GorgonApplication</c> class, the timing code is automatically updated by its own idle loop:
 	/// <code>
 	///	public static bool MyLoop()
 	/// {
@@ -58,8 +57,8 @@ namespace Gorgon.Timing
 	/// {
 	///		GorgonApplication.Run(MyLoop);
 	/// }
-	/// </code>
-	/// A custom application loop using the <see cref="GorgonTiming"/> class:
+	/// </code> 
+	/// And here is a a custom application loop using the <see cref="GorgonTiming"/> class:
 	/// <code>
 	/// // This assumes the Win32 API call to PeekMessage is imported.
 	/// public void DoLoop()
@@ -67,9 +66,7 @@ namespace Gorgon.Timing
 	///		MSG message;  // Win32 Message structure.
 	/// 
 	///		// Before loop execution.
-	///		GorgonTiming.Timer = new GorgonTimerQpc();  // Or GorgonTimerMultimedia()
-	/// 
-	///		GorgonTiming.Reset();
+	///     GorgonTiming.StartTiming&lt;GorgonTimerQpc&gt;();
 	/// 
 	///		while (!API.PeekMessage(out message, IntPtr.Zero, 0, 0, PeekMessage.NoRemove))
 	///     {
@@ -102,10 +99,17 @@ namespace Gorgon.Timing
 		// Average delta draw time total.
 		private static float _averageDeltaTotal;
 		// Maximum number of iterations for average reset.
-		private static long _maxAverageCount = 500;			
+		private static long _maxAverageCount = 500;
+        // Flag to indicate that timing has started.
+	    private static int _timingStarted;
 		#endregion
 
 		#region Properties.
+	    /// <summary>
+	    /// Property to return whether or not the timing has been started by <see cref="StartTiming{T}"/>.
+	    /// </summary>
+	    public static bool TimingStarted => _timingStarted != 0;
+
 		/// <summary>
 		/// Property to scale the frame delta times.
 		/// </summary>
@@ -366,29 +370,6 @@ namespace Gorgon.Timing
 			get;
 			private set;
 		}
-
-		/// <summary>
-		/// Property to set or return the timer to use when calculating timings.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// This value cannot be set to <b>null</b>.
-		/// </para>
-		/// </remarks>
-		public static IGorgonTimer Timer
-		{
-			get => _timer;
-			set
-			{
-				if (value == null)
-				{
-					return;
-				}
-
-				_timer = value;
-				Reset();
-			}
-		}
 		#endregion
 
 		#region Methods.
@@ -397,11 +378,13 @@ namespace Gorgon.Timing
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// There is no need to call this method manually from your application if using the <see cref="GorgonApplication"/> class to run your application. The only time this method 
-		/// should be called is when you have a custom application loop that needs timing.
+		/// Ensure that the <see cref="StartTiming{T}"/> was called prior to calling this method, or no meaningful data will be collected.
 		/// </para>
 		/// <para>
-		/// Ensure that the <see cref="Timer"/> property is assigned with an appropriate <see cref="IGorgonTimer"/> before calling this method, or no meaningful data will be collected.
+		/// <note type="tip">
+		/// If you are using the <c>Gorgon.Windows.GorgonApplication</c> class, you do not need to call this method since it contains its own idle processing and therefore will 
+		/// call this method on your behalf.
+		/// </note>
 		/// </para>
 		/// </remarks>
 		public static void Update()
@@ -507,6 +490,35 @@ namespace Gorgon.Timing
 			}
 		}
 
+        /// <summary>
+        /// Function to initialize the timing data.
+        /// </summary>
+        /// <typeparam name="T">The type of timer to use. Must be a class, implement <see cref="IGorgonTimer"/> and have a parameterless constructor.</typeparam>
+        /// <remarks>
+        /// <para>
+        /// Applications must call this method prior to using this class. Otherwise, no data will be present.
+        /// </para>
+        /// <para>
+        /// <note type="tip">
+        /// If you are using the <c>Gorgon.Windows.GorgonApplication</c> class, you do not need to call this method since it contains its own idle processing and therefore will 
+        /// call this method on your behalf.
+        /// </note>
+        /// </para>
+        /// </remarks>
+	    public static void StartTiming<T>()
+	        where T : class, IGorgonTimer, new()
+        {
+            if (Interlocked.CompareExchange(ref _timingStarted, 1, 0) == 1)
+            {
+                return;
+            }
+
+            _timer = new T();
+            _appTimer = new T();
+
+            Reset();
+        }
+
 		/// <summary>
 		/// Function to clear the timing data and reset any timers.
 		/// </summary>
@@ -520,11 +532,6 @@ namespace Gorgon.Timing
 		/// </remarks>
 		public static void Reset()
 		{
-			if (_appTimer == null)
-			{
-				_appTimer = GorgonTimerQpc.SupportsQpc() ? (IGorgonTimer)new GorgonTimerQpc() : new GorgonTimerMultimedia();
-			}
-
 			HighestFPS = float.MinValue;
 			LowestFPS = float.MaxValue;
 			AverageFPS = 0.0f;

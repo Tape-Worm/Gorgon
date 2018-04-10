@@ -30,7 +30,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Gorgon.Core;
-using Gorgon.Core.Properties;
+using Gorgon.Properties;
 using Gorgon.Math;
 
 namespace Gorgon.IO
@@ -639,23 +639,23 @@ namespace Gorgon.IO
 				throw new ArgumentNullException(nameof(chunkName));
 			}
 
-			byte[] chunkBytes = new byte[8];
-
-			if (chunkName.Length > chunkBytes.Length)
+			if (chunkName.Length > 8)
 			{
-				chunkName = chunkName.Substring(0, chunkBytes.Length);
+				chunkName = chunkName.Substring(0, 8);
+			}
+			else if (chunkName.Length < 8)
+			{
+			    chunkName = chunkName.PadRight(8, '\0');
 			}
 
-			Encoding.ASCII.GetBytes(chunkName, 0, chunkName.Length, chunkBytes, 0);
-
-			return ((ulong)chunkBytes[7] << 56)
-			       | ((ulong)chunkBytes[6] << 48)
-			       | ((ulong)chunkBytes[5] << 40)
-			       | ((ulong)chunkBytes[4] << 32)
-			       | ((ulong)chunkBytes[3] << 24)
-			       | ((ulong)chunkBytes[2] << 16)
-			       | ((ulong)chunkBytes[1] << 8)
-			       | chunkBytes[0];
+			return ((ulong)((byte)chunkName[7]) << 56)
+			       | ((ulong)((byte)chunkName[6]) << 48)
+			       | ((ulong)((byte)chunkName[5]) << 40)
+			       | ((ulong)((byte)chunkName[4]) << 32)
+			       | ((ulong)((byte)chunkName[3]) << 24)
+			       | ((ulong)((byte)chunkName[2]) << 16)
+			       | ((ulong)((byte)chunkName[1]) << 8)
+			       | (byte)chunkName[0];
 		}
         #endregion
     }

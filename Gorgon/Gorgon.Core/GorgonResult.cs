@@ -25,7 +25,7 @@
 #endregion
 
 using System;
-using Gorgon.Core.Properties;
+using Gorgon.Properties;
 
 namespace Gorgon.Core
 {
@@ -53,6 +53,11 @@ namespace Gorgon.Core
 		/// There was an error while writing.
 		/// </summary>
 		public static GorgonResult CannotWrite => new GorgonResult(nameof(CannotWrite), ErrorBase + 0xa, Resources.GOR_RESULT_DESC_CANNOT_WRITE);
+
+        /// <summary>
+        /// There was not enough memory to complete the operation.
+        /// </summary>
+        public static GorgonResult OutOfMemory => new GorgonResult(nameof(OutOfMemory), ErrorBase + 0xb, Resources.GOR_RESULT_OUT_OF_MEMORY);
 
 		/// <summary>
 		/// Access is denied.
@@ -141,7 +146,7 @@ namespace Gorgon.Core
 		/// <param name="left">The left instance to compare.</param>
 		/// <param name="right">The right instance to compare.</param>
 		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-		public static bool Equals(ref GorgonResult left, ref GorgonResult right)
+		public static bool Equals(in GorgonResult left, in GorgonResult right)
 		{
 			return ((left.Code == right.Code) && (string.Equals(left.Name, right.Name, StringComparison.OrdinalIgnoreCase)));
 		}
@@ -255,7 +260,7 @@ namespace Gorgon.Core
 		/// <returns>
 		/// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
 		/// </returns>
-		public bool Equals(GorgonResult other) => Equals(ref this, ref other);
+		public bool Equals(GorgonResult other) => Equals(this, other);
 		#endregion
 	}
 }

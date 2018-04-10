@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Gorgon.Graphics.Imaging</RootNamespace>
     <AssemblyName>Gorgon.Graphics.Imaging</AssemblyName>
-    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -25,6 +25,7 @@
     <DocumentationFile>bin\Debug\Gorgon.Graphics.Imaging.XML</DocumentationFile>
     <CodeAnalysisRuleSet>..\NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
     <UseVSHostingProcess>true</UseVSHostingProcess>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -40,21 +41,6 @@
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Gorgon.Native">
-      <HintPath>..\Gorgon.Native\Gorgon.Native.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\SharpDX.4.0.1\lib\net45\SharpDX.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Direct2D1, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\SharpDX.Direct2D1.4.0.1\lib\net45\SharpDX.Direct2D1.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.DXGI, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\SharpDX.DXGI.4.0.1\lib\net45\SharpDX.DXGI.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Mathematics, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\SharpDX.Mathematics.4.0.1\lib\net45\SharpDX.Mathematics.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -63,27 +49,27 @@
     <Compile Include="..\Gorgon.Core\SharedAssemblyInfo.cs">
       <Link>SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Codecs\GorgonCodecDds.cs" />
-    <Compile Include="Codecs\GorgonImageCodecDescription.cs" />
-    <Compile Include="Codecs\GorgonImageCodecPlugIn.cs" />
-    <Compile Include="Codecs\GorgonCodecTga.cs" />
-    <Compile Include="Codecs\GorgonDdsEncodingOptions.cs" />
-    <Compile Include="Codecs\GorgonDdsDecodingOptions.cs" />
-    <Compile Include="Codecs\GorgonGifDecodingOptions.cs" />
     <Compile Include="Codecs\GorgonCodecBmp.cs" />
+    <Compile Include="Codecs\GorgonCodecDds.cs" />
     <Compile Include="Codecs\GorgonCodecGif.cs" />
     <Compile Include="Codecs\GorgonCodecJpeg.cs" />
-    <Compile Include="Codecs\GorgonJpegEncodingOptions.cs" />
-    <Compile Include="Codecs\GorgonGifEncodingOptions.cs" />
     <Compile Include="Codecs\GorgonCodecPng.cs" />
+    <Compile Include="Codecs\GorgonCodecTga.cs" />
     <Compile Include="Codecs\GorgonCodecWic.cs" />
-    <Compile Include="Codecs\GorgonPngEncodingOptions.cs" />
+    <Compile Include="Codecs\GorgonDdsDecodingOptions.cs" />
+    <Compile Include="Codecs\GorgonGifDecodingOptions.cs" />
+    <Compile Include="Codecs\GorgonGifEncodingOptions.cs" />
     <Compile Include="Codecs\GorgonImageCodec.cs" />
+    <Compile Include="Codecs\GorgonImageCodecDescription.cs" />
+    <Compile Include="Codecs\GorgonImageCodecPlugin.cs" />
+    <Compile Include="Codecs\GorgonJpegEncodingOptions.cs" />
+    <Compile Include="Codecs\GorgonPngEncodingOptions.cs" />
     <Compile Include="Codecs\GorgonTgaDecodingOptions.cs" />
     <Compile Include="Codecs\_Interfaces\IGorgonImageCodec.cs" />
+    <Compile Include="Codecs\_Interfaces\IGorgonImageCodecDecodingOptions.cs" />
+    <Compile Include="Codecs\_Interfaces\IGorgonImageCodecEncodingOptions.cs" />
     <Compile Include="Codecs\_Interfaces\IGorgonWicDecodingOptions.cs" />
     <Compile Include="Codecs\_Interfaces\IGorgonWicEncodingOptions.cs" />
-    <Compile Include="Codecs\_Interfaces\IGorgonImageCodecDecodingOptions.cs" />
     <Compile Include="Codecs\_Internal\DdsHeader.cs" />
     <Compile Include="Codecs\_Internal\TgaHeader.cs" />
     <Compile Include="GdiPlus\GdiPlusExtensions.cs" />
@@ -103,7 +89,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Codecs\_Interfaces\IGorgonImageCodecEncodingOptions.cs" />
     <Compile Include="_Interfaces\IGorgonImageInfo.cs" />
     <Compile Include="_Internal\ImageUtilities.cs" />
     <Compile Include="_Internal\WicUtilities.cs" />
@@ -118,13 +103,30 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="SharpDX">
+      <Version>4.0.1</Version>
+    </PackageReference>
+    <PackageReference Include="SharpDX.Direct2D1">
+      <Version>4.0.1</Version>
+    </PackageReference>
+    <PackageReference Include="SharpDX.Mathematics">
+      <Version>4.0.1</Version>
+    </PackageReference>
+    <PackageReference Include="System.Buffers">
+      <Version>4.5.0-preview3-26331-05</Version>
+    </PackageReference>
+    <PackageReference Include="System.Memory">
+      <Version>4.5.0-preview3-26331-05</Version>
+    </PackageReference>
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
+      <Version>4.5.0-preview3-26331-05</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Gorgon.Core\Gorgon.Core.csproj">
       <Project>{933569ed-52a9-4232-a929-1d4c4489b5a1}</Project>
       <Name>Gorgon.Core</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

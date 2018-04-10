@@ -25,11 +25,12 @@
 #endregion
 
 using System;
+using System.Runtime.CompilerServices;
 
 namespace Gorgon.Math
 {
 	/// <summary>
-	/// Extensions for mathematical operations on various numeric types.
+	/// Fluent extensions for mathematical operations on various numeric types.
 	/// </summary>
 	/// <remarks>
 	/// <para>
@@ -81,6 +82,7 @@ namespace Gorgon.Math
 		/// <a href="http://www.gamedev.net/topic/681723-faster-sin-and-cos/" target="_blank">http://www.gamedev.net/topic/681723-faster-sin-and-cos/</a>.
 		/// </para>
 		/// </remarks>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static float FastSin(this float rads)
 		{
 			int i32I = (int)(rads * 0.31830988618379067153776752674503f);  // 1 / PI.
@@ -124,6 +126,7 @@ namespace Gorgon.Math
 		/// <a href="http://www.gamedev.net/topic/681723-faster-sin-and-cos/" target="_blank">http://www.gamedev.net/topic/681723-faster-sin-and-cos/</a>.
 		/// </para>
 		/// </remarks>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static float FastCos(this float rads)
 		{
 			int i32I = (int)(rads * 0.31830988618379067153776752674503f);  // 1 / PI.
@@ -156,6 +159,7 @@ namespace Gorgon.Math
 		/// <param name="value1">The first value to test.</param>
 		/// <param name="value2">The second value to test.</param>
 		/// <returns>The larger of the two values.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static byte Max(this byte value1, byte value2)
 		{
 			return (value1 > value2) ? value1 : value2;
@@ -167,6 +171,7 @@ namespace Gorgon.Math
 		/// <param name="value1">The first value to test.</param>
 		/// <param name="value2">The second value to test.</param>
 		/// <returns>The smaller of the two values.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static byte Min(this byte value1, byte value2)
 		{
 			return (value1 < value2) ? value1 : value2;
@@ -178,6 +183,7 @@ namespace Gorgon.Math
 		/// <param name="value1">The first value to test.</param>
 		/// <param name="value2">The second value to test.</param>
 		/// <returns>The larger of the two values.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static ushort Max(this ushort value1, ushort value2)
 		{
 			return (value1 > value2) ? value1 : value2;
@@ -189,6 +195,7 @@ namespace Gorgon.Math
 		/// <param name="value1">The first value to test.</param>
 		/// <param name="value2">The second value to test.</param>
 		/// <returns>The smaller of the two values.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static ushort Min(this ushort value1, ushort value2)
 		{
 			return (value1 < value2) ? value1 : value2;
@@ -200,6 +207,7 @@ namespace Gorgon.Math
 		/// <param name="value1">The first value to test.</param>
 		/// <param name="value2">The second value to test.</param>
 		/// <returns>The larger of the two values.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static short Max(this short value1, short value2)
 		{
 			return (value1 > value2) ? value1 : value2;
@@ -211,6 +219,7 @@ namespace Gorgon.Math
 		/// <param name="value1">The first value to test.</param>
 		/// <param name="value2">The second value to test.</param>
 		/// <returns>The smaller of the two values.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static short Min(this short value1, short value2)
 		{
 			return (value1 < value2) ? value1 : value2;
@@ -222,6 +231,7 @@ namespace Gorgon.Math
 		/// <param name="value1">The first value to test.</param>
 		/// <param name="value2">The second value to test.</param>
 		/// <returns>The larger of the two values.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static uint Max(this uint value1, uint value2)
 		{
 			return (value1 > value2) ? value1 : value2;
@@ -233,6 +243,7 @@ namespace Gorgon.Math
 		/// <param name="value1">The first value to test.</param>
 		/// <param name="value2">The second value to test.</param>
 		/// <returns>The smaller of the two values.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static uint Min(this uint value1, uint value2)
 		{
 			return (value1 < value2) ? value1 : value2;
@@ -244,6 +255,7 @@ namespace Gorgon.Math
 		/// <param name="value1">The first value to test.</param>
 		/// <param name="value2">The second value to test.</param>
 		/// <returns>The larger of the two values.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int Max(this int value1, int value2)
 		{
 			return (value1 > value2) ? value1 : value2;
@@ -255,6 +267,7 @@ namespace Gorgon.Math
 		/// <param name="value1">The first value to test.</param>
 		/// <param name="value2">The second value to test.</param>
 		/// <returns>The smaller of the two values.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int Min(this int value1, int value2)
 		{
 			return (value1 < value2) ? value1 : value2;
@@ -266,6 +279,7 @@ namespace Gorgon.Math
 		/// <param name="value1">The first value to test.</param>
 		/// <param name="value2">The second value to test.</param>
 		/// <returns>The larger of the two values.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static ulong Max(this ulong value1, ulong value2)
 		{
 			return (value1 > value2) ? value1 : value2;
@@ -277,6 +291,7 @@ namespace Gorgon.Math
 		/// <param name="value1">The first value to test.</param>
 		/// <param name="value2">The second value to test.</param>
 		/// <returns>The smaller of the two values.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static ulong Min(this ulong value1, ulong value2)
 		{
 			return (value1 < value2) ? value1 : value2;
@@ -288,6 +303,7 @@ namespace Gorgon.Math
 		/// <param name="value1">The first value to test.</param>
 		/// <param name="value2">The second value to test.</param>
 		/// <returns>The larger of the two values.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static long Max(this long value1, long value2)
 		{
 			return (value1 > value2) ? value1 : value2;
@@ -299,6 +315,7 @@ namespace Gorgon.Math
 		/// <param name="value1">The first value to test.</param>
 		/// <param name="value2">The second value to test.</param>
 		/// <returns>The smaller of the two values.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static long Min(this long value1, long value2)
 		{
 			return (value1 < value2) ? value1 : value2;
@@ -310,6 +327,7 @@ namespace Gorgon.Math
 		/// <param name="value1">The first value to test.</param>
 		/// <param name="value2">The second value to test.</param>
 		/// <returns>The larger of the two values.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static float Max(this float value1, float value2)
 		{			
 			return (value1 > value2) ? value1 : value2;
@@ -321,6 +339,7 @@ namespace Gorgon.Math
 		/// <param name="value1">The first value to test.</param>
 		/// <param name="value2">The second value to test.</param>
 		/// <returns>The smaller of the two values.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static float Min(this float value1, float value2)
 		{
 			return (value1 < value2) ? value1 : value2;
@@ -332,6 +351,7 @@ namespace Gorgon.Math
 		/// <param name="value1">The first value to test.</param>
 		/// <param name="value2">The second value to test.</param>
 		/// <returns>The larger of the two values.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static double Max(this double value1, double value2)
 		{
 			return (value1 > value2) ? value1 : value2;
@@ -343,6 +363,7 @@ namespace Gorgon.Math
 		/// <param name="value1">The first value to test.</param>
 		/// <param name="value2">The second value to test.</param>
 		/// <returns>The smaller of the two values.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static double Min(this double value1, double value2)
 		{
 			return (value1 < value2) ? value1 : value2;
@@ -354,6 +375,7 @@ namespace Gorgon.Math
 		/// <param name="value1">The first value to test.</param>
 		/// <param name="value2">The second value to test.</param>
 		/// <returns>The larger of the two values.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static decimal Max(this decimal value1, decimal value2)
 		{
 			return (value1 > value2) ? value1 : value2;
@@ -365,6 +387,7 @@ namespace Gorgon.Math
 		/// <param name="value1">The first value to test.</param>
 		/// <param name="value2">The second value to test.</param>
 		/// <returns>The smaller of the two values.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static decimal Min(this decimal value1, decimal value2)
 		{
 			return (value1 < value2) ? value1 : value2;
@@ -480,6 +503,7 @@ namespace Gorgon.Math
 		/// </summary>
 		/// <param name="radians">The value to convert.</param>
 		/// <returns>The angle in degrees.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static float ToDegrees(this float radians)
 		{
 			return radians * RadConvert;
@@ -490,6 +514,7 @@ namespace Gorgon.Math
 		/// </summary>
 		/// <param name="degrees">The angle value to convert.</param>
 		/// <returns>The angle in radians.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static float ToRadians(this float degrees)
 		{
 			return degrees * DegConvert;
@@ -500,6 +525,7 @@ namespace Gorgon.Math
 		/// </summary>
 		/// <param name="radians">The value to convert.</param>
 		/// <returns>The angle in degrees.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static decimal ToDegrees(this decimal radians)
 		{
 			return radians * (decimal)RadConvert;
@@ -510,6 +536,7 @@ namespace Gorgon.Math
 		/// </summary>
 		/// <param name="degrees">The angle value to convert.</param>
 		/// <returns>The angle in radians.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static decimal ToRadians(this decimal degrees)
 		{
 			return degrees * (decimal)DegConvert;
@@ -521,6 +548,7 @@ namespace Gorgon.Math
 		/// </summary>
 		/// <param name="radians">The value to convert.</param>
 		/// <returns>The angle in degrees.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static double ToDegrees(this double radians)
 		{
 			return radians * RadConvert;
@@ -531,6 +559,7 @@ namespace Gorgon.Math
 		/// </summary>
 		/// <param name="degrees">The angle value to convert.</param>
 		/// <returns>The angle in radians.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static double ToRadians(this double degrees)
 		{
 			return degrees * DegConvert;
@@ -544,10 +573,13 @@ namespace Gorgon.Math
 		/// <param name="epsilon">[Optional] The epsilon representing the error tolerance.</param>
 		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
 		/// <remarks>
+		/// <para>
 		/// Floating point values are prone to error buildup due to their limited precision. Therefore, when performing a comparison between two floating point values: <c>4.23212f == 4.23212f</c> may 
 		/// actually be <c>4.232120000005422f == 4.232120000005433f</c>. Obviously, the result will not be <b>true</b> when the values are actually considered equal. This method ensures that the comparison will 
 		/// return true by removing the error through the <paramref name="epsilon"/> parameter.
+		/// </para>
 		/// </remarks>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool EqualsEpsilon(this float left, float right, float epsilon = 1e-06f)
 		{
 			return Abs(right - left) <= epsilon;
@@ -561,10 +593,13 @@ namespace Gorgon.Math
 		/// <param name="epsilon">[Optional] The epsilon representing the error tolerance.</param>
 		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
 		/// <remarks>
+		/// <para>
 		/// Floating point values are prone to error buildup due to their limited precision. Therefore, when performing a comparison between two floating point values: <c>4.23212f == 4.23212f</c> may 
 		/// actually be <c>4.232120000005422f == 4.232120000005433f</c>. Obviously, the result will not be <b>true</b> when the values are actually considered equal. This method ensures that the comparison will 
 		/// return true by removing the error through the <paramref name="epsilon"/> parameter.
+		/// </para>
 		/// </remarks>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool EqualsEpsilon(this double left, double right, double epsilon = 1e-12)
         {
             return Abs(right - left) <= epsilon;
@@ -575,6 +610,7 @@ namespace Gorgon.Math
 		/// </summary>
 		/// <param name="value">The value to get the inverse square root of.</param>
 		/// <returns>The inverted square root of the value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static double InverseSqrt(this double value)
 		{
 			return 1.0 / System.Math.Sqrt(value);
@@ -585,6 +621,7 @@ namespace Gorgon.Math
 		/// </summary>
 		/// <param name="value">The value to get the inverse square root of.</param>
 		/// <returns>The inverted square root of the value.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static float InverseSqrt(this float value)
 		{
 			return 1.0f / (float)System.Math.Sqrt(value);
@@ -899,6 +936,7 @@ namespace Gorgon.Math
         /// </summary>
         /// <param name="value">The value to find the floor for.</param>
         /// <returns>The largest integer less than or equal to <paramref name="value"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float FastFloor(this float value)
         {
 	        int result = (int)value;
@@ -906,11 +944,25 @@ namespace Gorgon.Math
             return (value < result) ? result - 1 : result;
         }
 
+	    /// <summary>
+	    /// Function to return the largest integer less than or equal to the specified <see cref="float"/> value.
+	    /// </summary>
+	    /// <param name="value">The value to find the floor for.</param>
+	    /// <returns>The largest integer less than or equal to <paramref name="value"/>.</returns>
+	    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+	    public static float FastFloor(this double value)
+	    {
+	        int result = (int)value;
+
+	        return (value < result) ? result - 1 : result;
+	    }
+
 		/// <summary>
 		/// Function to return the largest integer greater than or equal to the specified <see cref="float"/> value.
 		/// </summary>
 		/// <param name="value">The value to find the ceiling for.</param>
 		/// <returns>The largest integer greater than or equal to <paramref name="value"/>.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static float FastCeiling(this float value)
         {
 	        int result = (int)value;
@@ -918,11 +970,25 @@ namespace Gorgon.Math
 	        return (value > result) ? result + 1 : result;
         }
 
+	    /// <summary>
+	    /// Function to return the largest integer greater than or equal to the specified <see cref="double"/> value.
+	    /// </summary>
+	    /// <param name="value">The value to find the ceiling for.</param>
+	    /// <returns>The largest integer greater than or equal to <paramref name="value"/>.</returns>
+	    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+	    public static float FastCeiling(this double value)
+	    {
+	        int result = (int)value;
+
+	        return (value > result) ? result + 1 : result;
+	    }
+
 		/// <summary>
 		/// Function to return the sign of an <see cref="int"/> value.
 		/// </summary>
 		/// <param name="value">The value to evaluate.</param>
 		/// <returns>0 if the value is 0, -1 if the value is less than 0, and 1 if the value is greater than 0.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int Sign(this int value)
 		{
 			if (value == 0)
@@ -938,6 +1004,7 @@ namespace Gorgon.Math
 		/// </summary>
 		/// <param name="value">The value to evaluate.</param>
 		/// <returns>0 if the value is 0, -1 if the value is less than 0, and 1 if the value is greater than 0.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int Sign(this long value)
 		{
 			if (value == 0)
@@ -953,6 +1020,7 @@ namespace Gorgon.Math
 		/// </summary>
 		/// <param name="value">The value to evaluate.</param>
 		/// <returns>0 if the value is 0, -1 if the value is less than 0, and 1 if the value is greater than 0.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int Sign(this sbyte value)
 		{
 			if (value == 0)
@@ -968,6 +1036,7 @@ namespace Gorgon.Math
 		/// </summary>
 		/// <param name="value">The value to evaluate.</param>
 		/// <returns>0 if the value is 0, -1 if the value is less than 0, and 1 if the value is greater than 0.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int Sign(this short value)
 		{
 			if (value == 0)
@@ -983,6 +1052,7 @@ namespace Gorgon.Math
 		/// </summary>
 		/// <param name="value">The value to evaluate.</param>
 		/// <returns>0 if the value is 0, -1 if the value is less than 0, and 1 if the value is greater than 0.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int Sign(this decimal value)
 		{
 			if (value == 0)
@@ -998,6 +1068,7 @@ namespace Gorgon.Math
 		/// </summary>
 		/// <param name="value">The value to evaluate.</param>
 		/// <returns>0 if the value is 0, -1 if the value is less than 0, and 1 if the value is greater than 0.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int Sign(this float value)
 		{
 			if (value.EqualsEpsilon(0))
@@ -1013,6 +1084,7 @@ namespace Gorgon.Math
 		/// </summary>
 		/// <param name="value">The value to evaluate.</param>
 		/// <returns>0 if the value is 0, -1 if the value is less than 0, and 1 if the value is greater than 0.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static int Sign(this double value)
 		{
 			if (value.EqualsEpsilon(0))

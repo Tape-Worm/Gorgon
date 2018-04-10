@@ -6,11 +6,16 @@
 *.user
 *.sln.docstates
 
+# User-specific files (MonoDevelop/Xamarin Studio)
+*.userprefs
+
 # Build results
 [Bb]in/
 [Dd]ebug/
+[Dd]ebugPublic/
 [Rr]elease/
 [Oo]bj/
+[Ll]og/
 x64/
 x86/
 build/
@@ -28,6 +33,14 @@ Artifacts/
 Artifacts_Examples/
 Resources/__OLDE__/
 
+# Visual Studio 2015/2017 cache/options directory
+.vs/
+# Uncomment if you have tasks that create the project's static files in wwwroot
+#wwwroot/
+
+# Visual Studio 2017 auto generated files
+Generated\ Files/
+
 # Roslyn cache directories
 *.ide/
 
@@ -43,6 +56,18 @@ TestResult.xml
 [Dd]ebugPS/
 [Rr]eleasePS/
 dlldata.c
+
+# Benchmark Results
+BenchmarkDotNet.Artifacts/
+
+# .NET Core
+project.lock.json
+project.fragment.lock.json
+artifacts/
+**/Properties/launchSettings.json
+
+# StyleCop
+StyleCopReport.xml
 
 *.chw
 *_i.c
@@ -195,3 +220,7 @@ FakesAssemblies/
 /Deploy.ps1
 /Deploy_Examples.ps1
 GorgonFull.snk
+/Docs/D3D11.1_Features.txt
+/Docs/D3D11.2_Features.txt
+/Docs/D3D11.3_Features.txt
+/Docs/D3D11.4_Features.txt

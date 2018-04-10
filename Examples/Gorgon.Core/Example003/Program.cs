@@ -28,6 +28,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using Gorgon.Core;
+using Gorgon.Diagnostics;
 using Gorgon.Timing;
 using Gorgon.UI;
 
@@ -36,17 +37,30 @@ namespace Gorgon.Examples
 	/// <summary>
 	/// Entry point class.
 	/// </summary>
-	/// <remarks>This example is tiny bit more advanced.  It'll show how to use an application context with Gorgon and how to 
-	/// dynamically switch idle loops on the fly.</remarks>
+	/// <remarks>
+	/// This example is tiny bit more advanced.  It'll show how to use an application context with Gorgon and how to dynamically switch idle loops on the fly.
+	/// 
+	/// It will also demonstrate the use of the Console log.
+	/// </remarks>
 	internal static class Program
 	{
 		#region Variables.
-		private static readonly Random _rnd = new Random();	// Random number generator.
-		private static int _lastX;						    // Last horizontal coordinate.
-		private static int _lastY;						    // Last vertical coordinate.
-		private static float _lastTime;					    // Last time we drew.
-		private static int _color;						    // Color for the bars.
-		private static int _component;					    // Color component.
+	    // Random number generator.
+		private static readonly Random _rnd = new Random();	
+	    // Last horizontal coordinate.
+		private static int _lastX;						    
+	    // Last vertical coordinate.
+		private static int _lastY;						    
+	    // Last time we drew.
+		private static float _lastTime;					    
+	    // Color for the bars.
+		private static int _color;						    
+	    // Color component.
+		private static int _component;
+        // The debug logging interface.
+	    private static IGorgonLog _log;
+        // The current idle method.
+	    private static Func<bool> _currentIdle;
 		#endregion
 
 		#region Methods.
@@ -57,10 +71,16 @@ namespace Gorgon.Examples
 		/// <remarks>This is the secondary default idle loop.</remarks>
 		public static bool NewIdle()
 		{
+		    if (_currentIdle != NewIdle)
+		    {
+		        _currentIdle = NewIdle;
+		        _log.Print("In new idle loop.", LoggingLevel.All);
+		    }
+
 			formMain form = (formMain)GorgonApplication.ApplicationContext.MainForm;		// Get our main form from the context.
 			
 			// Draw some bars every 16 ms.
-			if (GorgonTiming.MillisecondsSinceStart - _lastTime >= 16.6f)
+			if ((GorgonTiming.MillisecondsSinceStart - _lastTime) >= 16.6f)
 			{
 				Color newColor = Color.Transparent;
 
@@ -112,24 +132,32 @@ namespace Gorgon.Examples
 		/// <remarks>This is the default idle loop.</remarks>
 		public static bool Idle()
 		{
-			formMain form = (formMain)GorgonApplication.ApplicationContext.MainForm;		// Get our main form from the context.
+		    if (_currentIdle != Idle)
+		    {
+		        _currentIdle = Idle;
+                _log.Print("In primary idle loop.", LoggingLevel.All);
+		    }
 
-			int x = _rnd.Next(0, form.GraphicsSize.Width - 1);
+		    formMain form = (formMain)GorgonApplication.ApplicationContext.MainForm;		// Get our main form from the context.
+
+		    int x = _rnd.Next(0, form.GraphicsSize.Width - 1);
 			int y = _rnd.Next(0, form.GraphicsSize.Height - 1);
 
 			// Draw a connected line on the form every 256 milliseconds.
 			// This will run continously until the application has ended.
-			if (GorgonTiming.MillisecondsSinceStart - _lastTime >= 256)
+			if ((GorgonTiming.MillisecondsSinceStart - _lastTime) >= 256)
 			{
 				_lastTime = GorgonTiming.MillisecondsSinceStart;
 				form.Draw(_lastX, _lastY, x, y, Color.FromArgb(_rnd.Next(0, 255), _rnd.Next(0, 255), _rnd.Next(0, 255)));
 				_lastX = x;
 				_lastY = y;
 			}
-			else
-				form.Draw(x, y, x, y, Color.FromArgb(_rnd.Next(0, 255), _rnd.Next(0, 255), _rnd.Next(0, 255)));
+		    else
+		    {
+		        form.Draw(x, y, x, y, Color.FromArgb(_rnd.Next(0, 255), _rnd.Next(0, 255), _rnd.Next(0, 255)));
+		    }
 
-			// Flip the buffer.
+		    // Flip the buffer.
 			form.Flip();
 
 			form.DrawFPS("Primary Idle Loop - FPS: " + GorgonTiming.FPS.ToString("0.0"));
@@ -150,6 +178,9 @@ namespace Gorgon.Examples
 
 				// Get the initial time.
 				_lastTime = GorgonTiming.MillisecondsSinceStart;
+
+                // Here we will override the log to use a console log.
+                GorgonApplication.Log = _log = new GorgonLogConsole(Application.ProductName, typeof(Program).Assembly.GetName().Version);
 
 				// Run the application context with an idle loop.
 				//

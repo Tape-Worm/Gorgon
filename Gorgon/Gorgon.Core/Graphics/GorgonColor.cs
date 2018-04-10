@@ -30,7 +30,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using DX = SharpDX;
 using Gorgon.Core;
-using Gorgon.Core.Properties;
+using Gorgon.Properties;
 
 namespace Gorgon.Graphics
 {
@@ -195,6 +195,17 @@ namespace Gorgon.Graphics
         {
             result = new GorgonColor(color, alpha);
         }
+
+	    /// <summary>
+	    /// Function to apply an alpha value to the specified <see cref="GorgonColor"/>.
+	    /// </summary>
+	    /// <param name="color">The <see cref="GorgonColor"/> to update.</param>
+	    /// <param name="alpha">The alpha value to set.</param>
+	    /// <returns>A new <see cref="GorgonColor"/> instance with the same <see cref="Red"/>, <see cref="Green"/>, and <see cref="Blue"/> values but with a modified <see cref="Alpha"/> component.</returns>
+	    public static GorgonColor SetAlpha(GorgonColor color, float alpha)
+	    {
+	        return new GorgonColor(color, alpha);
+	    }
 
 		/// <summary>
 		/// Function to perform linear interpolation between two <see cref="GorgonColor"/> values.
@@ -452,6 +463,40 @@ namespace Gorgon.Graphics
 			return new DX.Vector4(Red, Green, Blue, Alpha);
 		}
 
+	    /// <summary>
+	    /// Indicates whether the current object is equal to another object of the same type.
+	    /// </summary>
+	    /// <param name="other">An object to compare with this object.</param>
+	    /// <returns>
+	    /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
+	    /// </returns>
+	    public bool Equals(GorgonColor other)
+	    {
+	        return Equals(ref this, ref other);
+	    }
+
+	    /// <summary>
+	    /// Indicates whether the current object is equal to another object of the same type by reference.
+	    /// </summary>
+	    /// <param name="other">An object to compare with this object.</param>
+	    /// <returns>
+	    /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
+	    /// </returns>
+	    public bool Equals(ref GorgonColor other)
+	    {
+	        return Equals(ref this, ref other);
+	    }
+
+	    /// <summary>
+	    /// Populates a <see cref="T:System.Runtime.Serialization.SerializationInfo" /> with the data needed to serialize the target object.
+	    /// </summary>
+	    /// <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> to populate with data.</param>
+	    /// <param name="context">The destination (see <see cref="T:System.Runtime.Serialization.StreamingContext" />) for this serialization.</param>
+	    void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
+	    {
+	        info.AddValue("Color", ToARGB());
+	    }
+
 		/// <summary>
 		/// An operator to add two <see cref="GorgonColor"/> values together.
 		/// </summary>
@@ -634,7 +679,7 @@ namespace Gorgon.Graphics
 		{
 			return new GorgonColor(color);
 		}
-		#endregion
+        #endregion
 		
 		#region Constructor/Destructor.
 		/// <summary>
@@ -744,46 +789,6 @@ namespace Gorgon.Graphics
 			Red = ((colorValue >> 16) & 0xff) / 255.0f;
 			Green = ((colorValue >> 8) & 0xff) / 255.0f;
 			Blue = (colorValue & 0xff) / 255.0f;
-		}
-		#endregion
-
-		#region IEquatable<GorgonColor> Members
-		/// <summary>
-		/// Indicates whether the current object is equal to another object of the same type.
-		/// </summary>
-		/// <param name="other">An object to compare with this object.</param>
-		/// <returns>
-		/// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
-		/// </returns>
-		public bool Equals(GorgonColor other)
-		{
-			return Equals(ref this, ref other);
-		}
-		#endregion
-
-		#region IEquatableByRef<GorgonColor> Members
-		/// <summary>
-		/// Indicates whether the current object is equal to another object of the same type by reference.
-		/// </summary>
-		/// <param name="other">An object to compare with this object.</param>
-		/// <returns>
-		/// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
-		/// </returns>
-		public bool Equals(ref GorgonColor other)
-		{
-			return Equals(ref this, ref other);
-		}
-		#endregion
-
-		#region ISerializable Members
-		/// <summary>
-		/// Populates a <see cref="T:System.Runtime.Serialization.SerializationInfo" /> with the data needed to serialize the target object.
-		/// </summary>
-		/// <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> to populate with data.</param>
-		/// <param name="context">The destination (see <see cref="T:System.Runtime.Serialization.StreamingContext" />) for this serialization.</param>
-		void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
-		{
-			info.AddValue("Color", ToARGB());
 		}
 		#endregion
 	}

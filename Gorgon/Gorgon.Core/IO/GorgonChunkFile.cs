@@ -28,7 +28,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Gorgon.Core;
-using Gorgon.Core.Properties;
+using Gorgon.Properties;
 
 namespace Gorgon.IO
 {
@@ -74,6 +74,8 @@ namespace Gorgon.IO
 	/// </para>
 	/// </note>
 	/// </remarks>
+	/// <seealso cref="GorgonChunkFileReader"/>
+	/// <seealso cref="GorgonChunkFileWriter"/>
 	/// <conceptualLink target="7b81343e-e2fc-4f0f-926a-d9193ae481fe">Gorgon Chunk File Format (GCFF) details</conceptualLink>
 	[SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable",Justification = "The stream wrapper does not need its dispose method called. Ever.")]
 	public abstract class GorgonChunkFile<T>
@@ -127,7 +129,6 @@ namespace Gorgon.IO
 		/// Use this property to determine if a chunk exists when reading a chunk file.
 		/// </remarks>
 		public IGorgonReadOnlyChunkCollection Chunks => ChunkList;
-
 		#endregion
 
 		#region Methods.
@@ -206,15 +207,15 @@ namespace Gorgon.IO
 			{
 				case ChunkFileMode.Read:
 					ReadHeaderValidate();
-					_isOpen = true;
-					break;
+                    break;
 				case ChunkFileMode.Write:
 					WriteHeader();
-					_isOpen = true;
 					break;
 				default:
 					throw new ArgumentException(Resources.GOR_ERR_CHUNK_ILLEGAL_OPEN_MODE);
 			}
+
+		    _isOpen = true;
 		}
 
 		/// <summary>

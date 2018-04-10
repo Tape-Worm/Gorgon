@@ -5,13 +5,9 @@ namespace Gorgon.Timing
 	/// </summary>
 	/// <remarks>
 	/// <para>
-	/// Timers can be used to set up events that occur during a predefined time period, and/or can be used to measure the amount of time that operation takes to complete. Gorgon provides two implementations 
-	/// of timers: A precise high resolution timer (<see cref="GorgonTimerQpc"/>, based on the query performance counter), and a lower resolution timer (<see cref="GorgonTimerMultimedia"/>, based on the 
-	/// <a href="https://msdn.microsoft.com/en-us/library/dd757629(v=vs.85).aspx" target="_blank"><c>timeGetTime</c></a> win32 API call.
+	/// Timers can be used to set up events that occur during a predefined time period, and/or can be used to measure the amount of time that operation takes to complete. 
 	/// </para>
 	/// </remarks>
-	/// <seealso cref="GorgonTimerMultimedia"/>
-	/// <seealso cref="GorgonTimerQpc"/>
 	public interface IGorgonTimer
 	{
 		/// <summary>

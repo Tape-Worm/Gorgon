@@ -106,6 +106,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.IO;
@@ -164,7 +165,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 	/// </para>
 	/// </remarks>
 	public sealed class GorgonCodecDds
-		: GorgonImageCodec
+		: GorgonImageCodec<IGorgonImageCodecEncodingOptions, GorgonDdsDecodingOptions>
 	{
 		#region Constants.
 		// The DDS file magic number: "DDS "
@@ -430,7 +431,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// <returns>The format of the buffer, or Unknown if the format is not supported.</returns>
         private BufferFormat GetFormat(ref DdsPixelFormat format, DdsLegacyFlags flags, out DdsConversionFlags conversionFlags)
         {
-	        DdsLegacyConversion conversion = default(DdsLegacyConversion);
+	        DdsLegacyConversion conversion = default;
 
 			foreach (DdsLegacyConversion ddsFormat in _legacyMapping)
 			{
@@ -531,7 +532,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
             // Read the header from the file.
             DdsHeader header = reader.ReadValue<DdsHeader>();
 
-            if (header.PixelFormat.SizeInBytes != DirectAccess.SizeOf<DdsPixelFormat>())
+            if (header.PixelFormat.SizeInBytes != Unsafe.SizeOf<DdsPixelFormat>())
             {
 				throw new IOException(string.Format(Resources.GORIMG_ERR_FILE_FORMAT_NOT_CORRECT, Codec));
             }
@@ -545,7 +546,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 			// Get DX 10 header information.
 			if (((header.PixelFormat.Flags & DdsPixelFormatFlags.FourCC) == DdsPixelFormatFlags.FourCC) && (header.PixelFormat.FourCC == _pfDX10.FourCC))
             {
-                if (size < DirectAccess.SizeOf<Dx10Header>() + DirectAccess.SizeOf<DdsHeader>() + sizeof(uint))
+                if (size < Unsafe.SizeOf<Dx10Header>() + Unsafe.SizeOf<DdsHeader>() + sizeof(uint))
                 {
                     throw new EndOfStreamException();
                 }
@@ -951,7 +952,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 			writer.Write(MagicNumber);
 
 			// Set up the header.
-			header.Size = (uint)DirectAccess.SizeOf<DdsHeader>();
+			header.Size = (uint)Unsafe.SizeOf<DdsHeader>();
 			header.Flags = DdsHeaderFlags.Texture;
 			header.Caps1 = DdsCaps1.Texture;
 
@@ -1014,7 +1015,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 			header.PixelFormat = format ?? _pfDX10;
 
 			// Write out the header.
-			writer.WriteValue(header);
+			writer.WriteValue(ref header);
 
 			// If we didn't map a legacy format, then use the DX 10 header.
 			if (format != null)
@@ -1022,7 +1023,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 				return;
 			}
 
-			Dx10Header dx10Header = default(Dx10Header);
+			Dx10Header dx10Header = default;
 
 			dx10Header.Format = settings.Format;
 			if (settings.ImageType != ImageType.ImageCube)
@@ -1037,7 +1038,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 				dx10Header.ArrayCount = (uint)(settings.ArrayCount / 6);
 			}
 
-			writer.WriteValue(dx10Header);
+			writer.WriteValue(ref dx10Header);
 		}
 
 		/// <summary>
@@ -1133,7 +1134,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 					&& (pitchFlags == PitchFlags.None))
 			{
                 // First mip, array and depth slice is at the start of our image memory buffer.
-				reader.Read(new IntPtr(image.Buffers[0].Data.Address), sizeInBytes);
+			    reader.ReadRange(image.Buffers[0].Data, count: sizeInBytes);
                 return;
 			}
 
@@ -1150,7 +1151,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 			}
 
 			int depth = image.Info.Depth;
-			GorgonPointer lineBuffer = null;
+			GorgonNativeBuffer<byte> lineBuffer = null;
 
 			unsafe
 			{
@@ -1163,7 +1164,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 							// Get our destination buffer.
 							IGorgonImageBuffer destBuffer = image.Buffers[mipLevel, array];
 							GorgonPitchLayout pitchInfo = formatInfo.GetPitchForFormat(destBuffer.Width, destBuffer.Height, pitchFlags);
-							byte* destPointer = (byte*)destBuffer.Data.Address;
+							byte* destPointer = (byte*)destBuffer.Data;
 
 							for (int slice = 0; slice < depth; slice++)
 							{
@@ -1171,23 +1172,23 @@ namespace Gorgon.Graphics.Imaging.Codecs
 								if (formatInfo.IsCompressed)
 								{
 									int size = pitchInfo.SlicePitch.Min(destBuffer.PitchInformation.SlicePitch);
-									reader.Read((void*)destBuffer.Data.Address, size);
+									reader.ReadRange(destBuffer.Data, count: size);
 									continue;
 								}
-
-								// Use this to read a line of data from the source.
-								if (lineBuffer == null)
-								{
-									lineBuffer = new GorgonPointer(pitchInfo.RowPitch);
-								}
-
-								byte* srcPointer = (byte*)lineBuffer.Address;
-
-								reader.Read(srcPointer, pitchInfo.RowPitch);
 
 								// Read each scan line if we require some form of conversion. 
 								for (int h = 0; h < destBuffer.Height; h++)
 								{
+								    // Use this to read a line of data from the source.
+								    if (lineBuffer == null)
+								    {
+								        lineBuffer = new GorgonNativeBuffer<byte>(pitchInfo.RowPitch);
+								    }
+
+								    reader.ReadRange(lineBuffer, count: pitchInfo.RowPitch);
+
+								    byte* srcPointer = (byte*)lineBuffer;
+
 									if ((conversionFlags & DdsConversionFlags.Expand) == DdsConversionFlags.Expand)
 									{
 										ExpandScanline(srcPointer,
@@ -1211,7 +1212,6 @@ namespace Gorgon.Graphics.Imaging.Codecs
 									}
 
 									// Increment our pointer data by one line.
-									srcPointer += pitchInfo.RowPitch;
 									destPointer += destBuffer.PitchInformation.RowPitch;
 								}
 							}
@@ -1231,11 +1231,10 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		}
 
 		/// <summary>
-		/// Function to decode an image from a <see cref="GorgonDataStream"/>.
+		/// Function to decode an image from a stream.
 		/// </summary>
 		/// <param name="stream">The stream containing the image data to read.</param>
 		/// <param name="size">The size of the image within the stream, in bytes.</param>
-		/// <param name="options">Options used for decoding the image data.</param>
 		/// <returns>A <see cref="IGorgonImage"/> containing the image data from the stream.</returns>
 		/// <exception cref="GorgonException">Thrown when the image data in the stream has a pixel format that is unsupported.</exception>
 		/// <remarks>
@@ -1247,12 +1246,11 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// consumes more memory, it is necessary when handling streams that do not have seek capability (e.g. <see cref="System.Net.Sockets.NetworkStream"/>).
 		/// </para>
 		/// </remarks>
-		protected override IGorgonImage OnDecodeFromStream(Stream stream, long size, IGorgonImageCodecDecodingOptions options)
+		protected override IGorgonImage OnDecodeFromStream(Stream stream, long size)
 		{
 			uint[] palette = null;
-			GorgonDdsDecodingOptions ddsOptions = (GorgonDdsDecodingOptions)options;
 
-			if (size < DirectAccess.SizeOf<DdsHeader>() + sizeof(uint))
+			if (size < Unsafe.SizeOf<DdsHeader>() + sizeof(uint))
 			{
 				throw new EndOfStreamException();
 			}
@@ -1260,7 +1258,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 			GorgonBinaryReader reader = new GorgonBinaryReader(stream, true);
 
 			// Read the header information.
-			IGorgonImageInfo settings = ReadHeader(reader, size, ddsOptions?.LegacyFormatConversionFlags ?? DdsLegacyFlags.None, out DdsConversionFlags flags);
+			IGorgonImageInfo settings = ReadHeader(reader, size, DecodingOptions?.LegacyFormatConversionFlags ?? DdsLegacyFlags.None, out DdsConversionFlags flags);
 
 			GorgonImage imageData = new GorgonImage(settings);
 
@@ -1278,13 +1276,13 @@ namespace Gorgon.Graphics.Imaging.Codecs
 
 					palette = new uint[256];
 
-					if ((ddsOptions?.Palette != null) && (ddsOptions.Palette.Count > 0))
+					if ((DecodingOptions?.Palette != null) && (DecodingOptions.Palette.Count > 0))
 					{
-						int count = ddsOptions.Palette.Count.Min(256);
+						int count = DecodingOptions.Palette.Count.Min(256);
 
 						for (int i = 0; i < count; i++)
 						{
-							palette[i] = (uint)ddsOptions.Palette[i].ToARGB();
+							palette[i] = (uint)DecodingOptions.Palette[i].ToARGB();
 						}
 
 						// Skip past palette data since we're not using it.
@@ -1302,7 +1300,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 					}
 				}
 
-				DdsLegacyFlags legacyFlags = ddsOptions?.LegacyFormatConversionFlags ?? DdsLegacyFlags.None;
+				DdsLegacyFlags legacyFlags = DecodingOptions?.LegacyFormatConversionFlags ?? DdsLegacyFlags.None;
 
 				// Copy the data from the stream to the buffer.
 				CopyImageData(reader,
@@ -1420,17 +1418,16 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// </summary>
 		/// <param name="imageData">A <see cref="IGorgonImage"/> to persist to the stream.</param>
 		/// <param name="stream">The stream that will receive the image data.</param>
-		/// <param name="encodingOptions">[Optional] Options used to encode the image data when it is persisted to the stream.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/>, or the <paramref name="imageData"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="stream"/> is read only.</exception>
 		/// <exception cref="NotSupportedException">Thrown when the image data in the stream has a pixel format that is unsupported by the codec.</exception>
 		/// <remarks>
 		/// <para>
-		/// When persisting image data via a codec, the image must have a format that the codec can recognize. This list of supported formats is provided by the <see cref="GorgonImageCodec.SupportedPixelFormats"/> 
-		/// property. Applications may convert their image data a supported format before saving the data using a codec.
+		/// When persisting image data via a codec, the image must have a format that the codec can recognize. This list of supported formats is provided by the 
+		/// <see cref="GorgonImageCodec{TEncOpt, TDecOpt}.SupportedPixelFormats"/> property. Applications may convert their image data a supported format before saving the data using a codec.
 		/// </para>
 		/// </remarks>
-		public override void SaveToStream(IGorgonImage imageData, Stream stream, IGorgonImageCodecEncodingOptions encodingOptions = null)
+		public override void SaveToStream(IGorgonImage imageData, Stream stream)
 		{
 			if (imageData == null)
 			{
@@ -1451,48 +1448,44 @@ namespace Gorgon.Graphics.Imaging.Codecs
 			{
 				throw new ArgumentException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, imageData.Info.Format));
 			}
-
+            
 			// Use a binary writer.
 			using (GorgonBinaryWriter writer = new GorgonBinaryWriter(stream, true))
 			{
 				// Write the header for the file.
 				WriteHeader(imageData.Info, writer, DdsLegacyFlags.None);
 
-				unsafe
+				// Write image data.
+				switch (imageData.Info.ImageType)
 				{
-					// Write image data.
-					switch (imageData.Info.ImageType)
-					{
-						case ImageType.Image1D:
-						case ImageType.Image2D:
-						case ImageType.ImageCube:
-							for (int array = 0; array < imageData.Info.ArrayCount; array++)
-							{
-								for (int mipLevel = 0; mipLevel < imageData.Info.MipCount; mipLevel++)
-								{
-									IGorgonImageBuffer buffer = imageData.Buffers[mipLevel, array];
-
-									writer.Write((byte*)buffer.Data.Address, buffer.PitchInformation.SlicePitch);
-								}
-							}
-							break;
-						case ImageType.Image3D:
-							int depth = imageData.Info.Depth;
+					case ImageType.Image1D:
+					case ImageType.Image2D:
+					case ImageType.ImageCube:
+						for (int array = 0; array < imageData.Info.ArrayCount; array++)
+						{
 							for (int mipLevel = 0; mipLevel < imageData.Info.MipCount; mipLevel++)
 							{
-								for (int slice = 0; slice < depth; slice++)
-								{
-									IGorgonImageBuffer buffer = imageData.Buffers[mipLevel, slice];
-									writer.Write((byte*)buffer.Data.Address, buffer.PitchInformation.SlicePitch);
-								}
-
-								if (depth > 1)
-								{
-									depth >>= 1;
-								}
+								IGorgonImageBuffer buffer = imageData.Buffers[mipLevel, array];
+								writer.WriteRange(buffer.Data, count: buffer.PitchInformation.SlicePitch);
 							}
-							break;
-					}
+						}
+						break;
+					case ImageType.Image3D:
+						int depth = imageData.Info.Depth;
+						for (int mipLevel = 0; mipLevel < imageData.Info.MipCount; mipLevel++)
+						{
+							for (int slice = 0; slice < depth; slice++)
+							{
+								IGorgonImageBuffer buffer = imageData.Buffers[mipLevel, slice];
+								writer.WriteRange(buffer.Data, count: buffer.PitchInformation.SlicePitch);
+							}
+
+							if (depth > 1)
+							{
+								depth >>= 1;
+							}
+						}
+						break;
 				}
 			}
 		}
@@ -1520,7 +1513,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		public override IGorgonImageInfo GetMetaData(Stream stream)
 		{
 			// Allocate enough space to hold the header and the DX 10 header and the magic number.
-			int headerSize = DirectAccess.SizeOf<DdsHeader>() + DirectAccess.SizeOf<Dx10Header>() + sizeof(uint); 
+			int headerSize = Unsafe.SizeOf<DdsHeader>() + sizeof(uint); 
 			long position = 0;
 
 			if (stream == null)
@@ -1538,42 +1531,23 @@ namespace Gorgon.Graphics.Imaging.Codecs
 				throw new IOException(Resources.GORIMG_ERR_STREAM_CANNOT_SEEK);
 			}
 
-			if (stream.Length - stream.Position < sizeof(uint) + headerSize)
+			if (stream.Length - stream.Position < headerSize)
 			{
 				throw new EndOfStreamException();
 			}
 
-			GorgonDataStream headerBuffer = null;
 			GorgonBinaryReader reader = null;
 
 			try
 			{
 			    position = stream.Position;
-				headerBuffer = stream as GorgonDataStream;
-
-				if (headerBuffer != null)
-				{
-					reader = new GorgonBinaryReader(headerBuffer);
-					return ReadHeader(reader, headerSize, DdsLegacyFlags.None, out _);
-				}
-
-				headerBuffer = new GorgonDataStream(headerSize);
-				stream.CopyToStream(headerBuffer, headerSize);
-				headerBuffer.Position = 0;
-				reader = new GorgonBinaryReader(headerBuffer);
-
+			    reader = new GorgonBinaryReader(stream, true);
 				return ReadHeader(reader, headerSize, DdsLegacyFlags.None, out _);
 			}
 			finally
 			{
 				stream.Position = position;
-
 				reader?.Dispose();
-
-				if (stream != headerBuffer)
-				{
-					headerBuffer?.Dispose();
-				}
 			}
 		}
 
@@ -1606,7 +1580,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
                 throw new IOException(Resources.GORIMG_ERR_STREAM_CANNOT_SEEK);
             }
 
-            if (stream.Length - stream.Position < sizeof(uint) + DirectAccess.SizeOf<DdsHeader>())
+            if (stream.Length - stream.Position < sizeof(uint) + Unsafe.SizeOf<DdsHeader>())
             {
                 return false;
             }
@@ -1632,7 +1606,9 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonCodecDds" /> class.
 		/// </summary>
-		public GorgonCodecDds()
+		/// <param name="decodingOptions">[Optional] Codec specific options to use when decoding image data.</param>
+		public GorgonCodecDds(GorgonDdsDecodingOptions decodingOptions = null)
+            : base(null, decodingOptions)
 		{
 			CodecCommonExtensions = new[] { "dds" };
 

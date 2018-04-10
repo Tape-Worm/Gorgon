@@ -19,7 +19,7 @@ namespace Gorgon.Graphics.Imaging.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -115,20 +115,20 @@ namespace Gorgon.Graphics.Imaging.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The size of the bitmap ({0}x{1}) is not the same as the buffer ({2}x{3})..
+        /// </summary>
+        internal static string GORIMG_ERR_BITMAP_SIZE_NOT_CORRECT {
+            get {
+                return ResourceManager.GetString("GORIMG_ERR_BITMAP_SIZE_NOT_CORRECT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The buffer formats must be same: [{0}]..
         /// </summary>
         internal static string GORIMG_ERR_BUFFER_FORMAT_MISMATCH {
             get {
                 return ResourceManager.GetString("GORIMG_ERR_BUFFER_FORMAT_MISMATCH", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The source and destination image do not share the same width, height, or pixel format..
-        /// </summary>
-        internal static string GORIMG_ERR_CANNOT_COPY_DATA_MISMATCH {
-            get {
-                return ResourceManager.GetString("GORIMG_ERR_CANNOT_COPY_DATA_MISMATCH", resourceCulture);
             }
         }
         

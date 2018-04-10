@@ -32,8 +32,10 @@ namespace Gorgon.Core
 	/// Gives an arbitrary object type a name to be used for lookup or another things that require an identifier.
 	/// </summary>
 	/// <remarks> 
+	/// <para>
 	/// Many objects require an ID to give uniqueness to that object. This could be necessary for lookup in a <see cref="IDictionary{TKey,TValue}"/>, or merely for logging purposes. This interface 
 	/// will ensure that items that need a textual representation of the object have a <see cref="Name"/> they can use for that purpose. 
+	/// </para>
 	/// </remarks>
 	public interface IGorgonNamedObject
 	{
@@ -41,7 +43,7 @@ namespace Gorgon.Core
 		/// Property to return the name of this object.
 		/// </summary>
 		/// <remarks>
-		/// For best practises, the name should only be set once during the lifetime of an object. Hence, this interface only provides a read-only implementation of this 
+		/// For best practice, the name should only be set once during the lifetime of an object. Hence, this interface only provides a read-only implementation of this 
 		/// property.
 		/// </remarks>
 		string Name

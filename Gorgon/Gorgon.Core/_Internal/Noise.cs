@@ -12,6 +12,8 @@ namespace Simplex
     /// </summary>
     internal class Noise
     {
+        private static int _seed;
+
         static Noise()
         {
             Perm = new byte[_permOriginal.Length];
@@ -23,6 +25,11 @@ namespace Simplex
             get => _seed;
             set
             {
+                if (_seed == value)
+                {
+                    return;
+                }
+
                 if (value == 0)
                 {
                     Perm = new byte[_permOriginal.Length];
@@ -31,12 +38,13 @@ namespace Simplex
                 else
                 {
                     Perm = new byte[512];
-                    Random random = new Random(value);
+                    var random = new Random(value);
                     random.NextBytes(Perm);
                 }
+
+                _seed = value;
             }
         }
-        private static int _seed = 0;
 
         /// <summary>
         /// 1D simplex noise

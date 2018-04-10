@@ -37,7 +37,7 @@ namespace Gorgon.Graphics.Imaging
 	/// <summary>
 	/// A container for a list of image buffers.
 	/// </summary>
-	internal class ImageBufferList
+	class ImageBufferList
 		: IGorgonImageBufferList
 	{
 		#region Variables.
@@ -110,7 +110,7 @@ namespace Gorgon.Graphics.Imaging
 		/// Function to create a list of buffers to use.
 		/// </summary>
 		/// <param name="data">Data to copy/reference.</param>
-		internal void CreateBuffers(IGorgonPointer data)
+		internal void CreateBuffers(GorgonNativeBuffer<byte> data)
 		{
 			int bufferIndex = 0;
 			GorgonFormatInfo formatInfo = new GorgonFormatInfo(_image.Info.Format);	// Format information.
@@ -120,56 +120,62 @@ namespace Gorgon.Graphics.Imaging
 
 			// Offsets for the mip maps.
 			MipOffsetSize = new (int BufferIndex, int MipDepth)[_image.Info.MipCount * _image.Info.ArrayCount];
-			IntPtr dataAddress = new IntPtr(data.Address);
 
-			// Enumerate array indices. (For 1D and 2D only, 3D will always be 1)
-			for (int array = 0; array < _image.Info.ArrayCount; array++)
-			{
-				int mipWidth = _image.Info.Width;
-				int mipHeight = _image.Info.Height;
-				int mipDepth = _image.Info.Depth;
+		    unsafe
+		    {
+		        byte* dataAddress = (byte*)data;
 
-				// Enumerate mip map levels.
-				for (int mip = 0; mip < _image.Info.MipCount; mip++)
-				{
-					int arrayIndex = mip + (array * _image.Info.MipCount);
-					GorgonPitchLayout pitchInformation = formatInfo.GetPitchForFormat(mipWidth, mipHeight);
+		        // Enumerate array indices. (For 1D and 2D only, 3D will always be 1)
+		        for (int array = 0; array < _image.Info.ArrayCount; array++)
+		        {
+		            int mipWidth = _image.Info.Width;
+		            int mipHeight = _image.Info.Height;
+		            int mipDepth = _image.Info.Depth;
 
-					// Calculate buffer offset by mip.
-					MipOffsetSize[arrayIndex] = (bufferIndex, mipDepth);
+		            // Enumerate mip map levels.
+		            for (int mip = 0; mip < _image.Info.MipCount; mip++)
+		            {
+		                int arrayIndex = mip + (array * _image.Info.MipCount);
+		                GorgonPitchLayout pitchInformation = formatInfo.GetPitchForFormat(mipWidth, mipHeight);
 
-					// Enumerate depth slices.
-					for (int depth = 0; depth < mipDepth; depth++)
-					{
-						// Get mip information.						
-						_buffers[bufferIndex] = new GorgonImageBuffer(new GorgonPointerAlias(dataAddress, pitchInformation.SlicePitch), 
-						                                              pitchInformation,
-						                                              mip,
-						                                              array,
-						                                              depth,
-						                                              mipWidth,
-						                                              mipHeight,
-						                                              mipDepth,
-						                                              _image.Info.Format);
+		                // Calculate buffer offset by mip.
+		                MipOffsetSize[arrayIndex] = (bufferIndex, mipDepth);
 
-						dataAddress += pitchInformation.SlicePitch;
-						bufferIndex++;
-					}
+		                // Enumerate depth slices.
+		                for (int depth = 0; depth < mipDepth; depth++)
+		                {
+		                    // Get mip information.						
+		                    _buffers[bufferIndex] = new GorgonImageBuffer(new GorgonNativeBuffer<byte>(dataAddress, pitchInformation.SlicePitch),
+		                                                                  pitchInformation,
+		                                                                  mip,
+		                                                                  array,
+		                                                                  depth,
+		                                                                  mipWidth,
+		                                                                  mipHeight,
+		                                                                  mipDepth,
+		                                                                  _image.Info.Format);
 
-					if (mipWidth > 1)
-					{
-						mipWidth >>= 1;
-					}
-					if (mipHeight > 1)
-					{
-						mipHeight >>= 1;
-					}
-					if (mipDepth > 1)
-					{
-						mipDepth >>= 1;
-					}
-				}
-			}
+		                    dataAddress += pitchInformation.SlicePitch;
+		                    bufferIndex++;
+		                }
+
+		                if (mipWidth > 1)
+		                {
+		                    mipWidth >>= 1;
+		                }
+
+		                if (mipHeight > 1)
+		                {
+		                    mipHeight >>= 1;
+		                }
+
+		                if (mipDepth > 1)
+		                {
+		                    mipDepth >>= 1;
+		                }
+		            }
+		        }
+		    }
 		}
 
 		/// <summary>

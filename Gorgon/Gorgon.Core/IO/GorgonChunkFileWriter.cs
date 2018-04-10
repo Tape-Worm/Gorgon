@@ -26,7 +26,7 @@
 
 using System;
 using System.IO;
-using Gorgon.Core.Properties;
+using Gorgon.Properties;
 
 namespace Gorgon.IO
 {
@@ -118,11 +118,6 @@ namespace Gorgon.IO
 	public sealed class GorgonChunkFileWriter
 		: GorgonChunkFile<GorgonBinaryWriter>
 	{
-		#region Constants.
-		// The size of a long type.
-		private const int LongSize = sizeof(long);
-		#endregion
-
 		#region Variables.
 		// The application specific header ID.
 		private readonly ulong _appHeaderId;
@@ -140,7 +135,7 @@ namespace Gorgon.IO
 		/// <summary>
 		/// This method is not available for this type.
 		/// </summary>
-		/// <exception cref="NotSupportedException">Writing is not supported by this type.</exception>
+		/// <exception cref="NotSupportedException">Reading is not supported by this type.</exception>
 		protected override void ReadHeaderValidate()
 		{
 			throw new NotSupportedException();
@@ -230,7 +225,7 @@ namespace Gorgon.IO
 			}
 
 			// Size is 0 for now, we'll update it later.
-			_activeChunk = new GorgonChunk(chunkId, 0, (ulong)(Stream.Position - _headerEnd + LongSize));
+			_activeChunk = new GorgonChunk(chunkId, 0, (ulong)(Stream.Position - _headerEnd + sizeof(long)));
 
 			using (GorgonBinaryWriter chunkIDWriter = new GorgonBinaryWriter(Stream, true))
 			{
@@ -268,7 +263,7 @@ namespace Gorgon.IO
 			
 			ChunkList.Add(_activeChunk);
 
-			_activeChunk = default(GorgonChunk);
+			_activeChunk = default;
 			_activeWriter.Dispose();
 			_activeWriter = null;
 		}

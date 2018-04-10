@@ -54,7 +54,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 	/// </para>
 	/// </remarks>
 	public sealed class GorgonCodecJpeg
-        : GorgonCodecWic
+        : GorgonCodecWic<GorgonJpegEncodingOptions, IGorgonWicDecodingOptions>
     {
         #region Variables.
 		// Supported formats.
@@ -103,8 +103,9 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonCodecJpeg" /> class.
         /// </summary>
-        public GorgonCodecJpeg()
-            : base("JPEG", Resources.GORIMG_DESC_JPG_CODEC, new[] { "jpg", "jpeg", "jpe", "jif", "jfif", "jfi" }, WIC.ContainerFormatGuids.Jpeg)
+        /// <param name="encodingOptions">[Optional] Options to use when encoding a JPEG image.</param>
+        public GorgonCodecJpeg(GorgonJpegEncodingOptions encodingOptions = null)
+            : base("JPEG", Resources.GORIMG_DESC_JPG_CODEC, new[] { "jpg", "jpeg", "jpe", "jif", "jfif", "jfi" }, WIC.ContainerFormatGuids.Jpeg, encodingOptions, null)
         {
         }
         #endregion

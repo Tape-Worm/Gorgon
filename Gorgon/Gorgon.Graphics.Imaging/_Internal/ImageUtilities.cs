@@ -25,10 +25,10 @@
 #endregion
 
 using System;
+using System.Runtime.CompilerServices;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.Math;
-using Gorgon.Native;
 
 namespace Gorgon.Graphics.Imaging
 {
@@ -55,7 +55,7 @@ namespace Gorgon.Graphics.Imaging
 	/// <summary>
 	/// Utilities to facilitate in manipulating image data.
 	/// </summary>
-	internal static class ImageUtilities
+	static class ImageUtilities
 	{
 		/// <summary>
 		/// Function to expand a 16BPP scan line in an image to a 32BPP RGBA line.
@@ -239,7 +239,7 @@ namespace Gorgon.Graphics.Imaging
 
 			if (src != dest)
 			{
-				DirectAccess.MemoryCopy(dest, src, size);
+                Unsafe.CopyBlock(dest, src, (uint)size);
 			}
 		}
 		
@@ -295,10 +295,11 @@ namespace Gorgon.Graphics.Imaging
 						}
 						else
 						{
-							*(destPtr--) = *(srcPtr++);
-							*(destPtr--) = *(srcPtr++);
-							*(destPtr--) = *(srcPtr++);
-							*(destPtr--) = *(srcPtr++);
+							*(destPtr - 3) = *(srcPtr++);
+							*(destPtr - 2) = *(srcPtr++);
+							*(destPtr - 1) = *(srcPtr++);
+							*(destPtr) = *(srcPtr++);
+						    destPtr -= 4;
 						}
 					}
 				}
@@ -348,8 +349,9 @@ namespace Gorgon.Graphics.Imaging
 						}
 						else
 						{
-							*(destPtr--) = *(srcPtr++);
-							*(destPtr--) = *(srcPtr++);
+							*(destPtr - 1) = *(srcPtr++);
+							*(destPtr) = *(srcPtr++);
+						    destPtr -= 2;
 						}
 					}
 				}
@@ -482,7 +484,7 @@ namespace Gorgon.Graphics.Imaging
 						return false;
 					}
 
-					DirectAccess.MemoryCopy(dest, src, srcPitch);
+                    Unsafe.CopyBlock(dest, src, (uint)srcPitch);
 
 					return false;
 				case BufferFormat.A8_UNorm:
@@ -706,7 +708,7 @@ namespace Gorgon.Graphics.Imaging
 						}
 						return;
 					case BufferFormat.A8_UNorm:
-						DirectAccess.FillMemory(dest, 0xFF, size);
+                        Unsafe.InitBlock(dest, 0xff, (uint)size);
 						return;
 				}
 			}
@@ -714,7 +716,7 @@ namespace Gorgon.Graphics.Imaging
 			// Copy if not doing an in-place update.
 			if (dest != src)
 			{
-				DirectAccess.MemoryCopy(dest, src, size);
+                Unsafe.CopyBlock(dest, src, (uint)size);
 			}
 		}
 
@@ -752,7 +754,8 @@ namespace Gorgon.Graphics.Imaging
 		/// <param name="srcPitch">The pitch of the source data.</param>
 		/// <param name="dest">The pointer to the destination data.</param>
 		/// <param name="destPitch">The pitch of the destination data.</param>
-		public static unsafe void Compress24BPPScanLine(void* src, int srcPitch, void* dest, int destPitch)
+		/// <param name="swizzle"><b>true</b> to swap the R and B components, <b>false</b> to leave as is.</param>
+		public static unsafe void Compress24BPPScanLine(void* src, int srcPitch, void* dest, int destPitch, bool swizzle)
 		{
 			uint* srcPtr = (uint*)src;
 			byte* destPtr = (byte*)dest;
@@ -768,9 +771,9 @@ namespace Gorgon.Graphics.Imaging
 					return;
 				}
 
-				*(destPtr++) = (byte)((pixel & 0xFF));				//R
-				*(destPtr++) = (byte)((pixel & 0xFF00) >> 8);		//G
-				*(destPtr++) = (byte)((pixel & 0xFF0000) >> 16);    //B
+                *(destPtr++) = (byte)(swizzle ? ((pixel & 0xFF0000) >> 16) : (pixel & 0xFF));		//R (or B)
+				*(destPtr++) = (byte)((pixel & 0xFF00) >> 8);		                            //G
+				*(destPtr++) = (byte)(swizzle ? (pixel & 0xFF) : ((pixel & 0xFF0000) >> 16));     //B (or R)
 			}
 		}
 	}

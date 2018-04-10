@@ -159,7 +159,6 @@ namespace Gorgon.Configuration
 				newValue = Convert.ChangeType(value, Type);
 			}
 
-		    // ReSharper disable PossibleNullReferenceException
             // If we're using a numeric, or date/time value, ensure that it's within the min/max range.
             switch (Type.GetTypeCode(Type))
 			{
@@ -176,11 +175,11 @@ namespace Gorgon.Configuration
 				case TypeCode.Decimal:
 				{
 					// Convert to a decimal first, just because it's the largest primitive number format.
-					decimal convertedValue = (decimal)Convert.ChangeType(newValue, typeof(decimal));
+					var convertedValue = (decimal)Convert.ChangeType(newValue, typeof(decimal));
 				    
 					if (_minValue != null)
 					{
-						decimal minValue = (decimal)Convert.ChangeType(_minValue, typeof(decimal));
+						var minValue = (decimal)Convert.ChangeType(_minValue, typeof(decimal));
 
 						if (convertedValue < minValue)
 						{
@@ -190,7 +189,7 @@ namespace Gorgon.Configuration
 
 					if (_maxValue != null)
 					{
-						decimal maxValue = (decimal)Convert.ChangeType(_maxValue, typeof(decimal));
+						var maxValue = (decimal)Convert.ChangeType(_maxValue, typeof(decimal));
 
 						if (convertedValue > maxValue)
 						{
@@ -203,11 +202,11 @@ namespace Gorgon.Configuration
 					break;
 				case TypeCode.DateTime:
 				{
-					DateTime convertedValue = (DateTime)Convert.ChangeType(newValue, typeof(DateTime));
+					var convertedValue = (DateTime)Convert.ChangeType(newValue, typeof(DateTime));
 
 					if (_minValue != null)
 					{
-						DateTime minValue = (DateTime)Convert.ChangeType(_minValue, typeof(DateTime));
+						var minValue = (DateTime)Convert.ChangeType(_minValue, typeof(DateTime));
 
 						if (convertedValue < minValue)
 						{
@@ -217,7 +216,7 @@ namespace Gorgon.Configuration
 
 					if (_maxValue != null)
 					{
-						DateTime maxValue = (DateTime)Convert.ChangeType(_maxValue, typeof(DateTime));
+						var maxValue = (DateTime)Convert.ChangeType(_maxValue, typeof(DateTime));
 						if (convertedValue > maxValue)
 						{
 							convertedValue = maxValue;
@@ -228,7 +227,7 @@ namespace Gorgon.Configuration
 				}
 					break;
 			}
-		    // ReSharper restore PossibleNullReferenceException
+
             _value = newValue;
 		}
 
@@ -685,7 +684,7 @@ namespace Gorgon.Configuration
 		/// If the <paramref name="defaultValue"/> is omitted, then the default value for the type is used.
 		/// </para>
 		/// </remarks>
-		public static IGorgonOption CreateOption<T>(string name, T defaultValue = default(T), string description = null)
+		public static IGorgonOption CreateOption<T>(string name, T defaultValue = default, string description = null)
 		{
 			return new GorgonOption(name, typeof(T), defaultValue, null, null, description);
 		}

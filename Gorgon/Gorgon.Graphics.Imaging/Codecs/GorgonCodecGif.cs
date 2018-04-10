@@ -47,7 +47,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 	/// </para>
 	/// </remarks>
 	public sealed class GorgonCodecGif
-		: GorgonCodecWic
+		: GorgonCodecWic<GorgonGifEncodingOptions, GorgonGifDecodingOptions>
 	{
 		#region Variables.
 		// Meta data names for the frame offsets.
@@ -78,19 +78,17 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// Function to retrieve custom metadata when encoding an image frame.
 		/// </summary>
 		/// <param name="frameIndex">The index of the frame being encoded.</param>
-		/// <param name="options">The encoding options to use.</param>
 		/// <param name="settings">The settings for the image being encoded.</param>
 		/// <returns>A dictionary containing the key/value pair describing the metadata to write to the frame, or <b>null</b> if the frame contains no metadata.</returns>
-		protected override IReadOnlyDictionary<string, object> GetCustomEncodingMetadata(int frameIndex, IGorgonWicEncodingOptions options, IGorgonImageInfo settings)
+		protected override IReadOnlyDictionary<string, object> GetCustomEncodingMetadata(int frameIndex, IGorgonImageInfo settings)
 		{
-			GorgonGifEncodingOptions gifOptions = options as GorgonGifEncodingOptions;
 			Dictionary<string, object> result = new Dictionary<string, object>();
 
-			if (gifOptions?.Palette != null)
+			if (EncodingOptions?.Palette != null)
 			{ 
-				for (int i = 0; i < gifOptions.Palette.Count; ++i)
+				for (int i = 0; i < EncodingOptions.Palette.Count; ++i)
 				{
-					if (!gifOptions.Palette[i].Alpha.EqualsEpsilon(0))
+					if (!EncodingOptions.Palette[i].Alpha.EqualsEpsilon(0))
 					{
 						continue;
 					}
@@ -100,7 +98,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 				}
 			}
 
-			bool saveAllFrames = gifOptions?.SaveAllFrames ?? true;
+			bool saveAllFrames = EncodingOptions?.SaveAllFrames ?? true;
 
 			if ((settings == null)
 				|| (settings.ArrayCount < 2)
@@ -112,9 +110,9 @@ namespace Gorgon.Graphics.Imaging.Codecs
 			// Write out frame delays.
 			ushort delayValue = 0;
 
-			if ((gifOptions?.FrameDelays != null) && (frameIndex >= 0) && (frameIndex < gifOptions.FrameDelays.Count))
+			if ((EncodingOptions?.FrameDelays != null) && (frameIndex >= 0) && (frameIndex < EncodingOptions.FrameDelays.Count))
 			{
-				delayValue = (ushort)gifOptions.FrameDelays[frameIndex];
+				delayValue = (ushort)EncodingOptions.FrameDelays[frameIndex];
 			}
 
 			result["/grctlext/Delay"] = delayValue;
@@ -213,8 +211,10 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonCodecGif" /> class.
 		/// </summary>
-		public GorgonCodecGif()
-			: base("GIF", Resources.GORIMG_DESC_GIF_CODEC, new[] { "gif" }, WIC.ContainerFormatGuids.Gif)
+		/// <param name="encodingOptions">[Optional] Options to use when encoding a GIF file.</param>
+		/// <param name="decodingOptions">[Optional] Options to use when decoding a GIF file.</param>
+		public GorgonCodecGif(GorgonGifEncodingOptions encodingOptions = null, GorgonGifDecodingOptions decodingOptions = null)
+			: base("GIF", Resources.GORIMG_DESC_GIF_CODEC, new[] { "gif" }, WIC.ContainerFormatGuids.Gif, encodingOptions, decodingOptions)
 		{
 		}
 		#endregion

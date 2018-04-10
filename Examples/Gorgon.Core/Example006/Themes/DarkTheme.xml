@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<GorgonFlatFormTheme>
+  <ToolStripBackColor Color="68, 68, 68" />
+  <ToolStripArrowColor Color="WindowText" />
+  <CheckBoxBackColorHilight Color="Highlight" />
+  <CheckBoxBackColor Color="68, 68, 68" />
+  <DropDownBorderColor Color="ActiveBorder" />
+  <ForeColor Color="Silver" />
+  <ForeColorInactive Color="DimGray" />
+  <DisabledColor Color="DimGray" />
+  <HilightForeColor Color="HighlightText" />
+  <HilightBackColor Color="Highlight" />
+  <WindowBackground Color="68, 68, 68" />
+  <ContentPanelBackground Color="Window" />
+  <WindowBorderActive Color="DodgerBlue" />
+  <WindowBorderInactive Color="98, 98, 98" />
+  <WindowSizeIconsForeColor Color="Silver" />
+  <WindowSizeIconsForeColorHilight Color="HighlightText" />
+  <WindowSizeIconsBackColorHilight Color="Highlight" />
+  <WindowCloseIconForeColor Color="Silver" />
+  <WindowCloseIconForeColorHilight Color="HighlightText" />
+  <WindowCloseIconBackColorHilight Color="Red" />
+</GorgonFlatFormTheme>

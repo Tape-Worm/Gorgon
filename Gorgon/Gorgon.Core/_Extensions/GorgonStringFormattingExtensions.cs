@@ -406,5 +406,28 @@ namespace Gorgon.Core
 
 	        return result;
         }
+
+        /// <summary>
+        /// Function to determine if the string is composed of whitespace, or is empty.
+        /// </summary>
+        /// <param name="value">The string to examine.</param>
+        /// <returns><b>true</b> if the string is composed of whitespace, or is empty. <b>false</b> if not.</returns>
+        /// <exception cref="ArgumentNullException">Thrown if the <paramref name="value"/> parameter is <b>null</b>.</exception>
+	    public static bool IsWhiteSpaceOrEmpty(this string value)
+	    {
+	        if (value == null)
+	        {
+                throw new ArgumentNullException(nameof(value));
+	        }
+
+	        for (int i = 0; i < value.Length; ++i)
+	        {
+	            if (!char.IsWhiteSpace(value[i]))
+	            {
+	                return false;
+	            }
+	        }
+	        return true;
+	    }
 	}
 }

@@ -1,0 +1,181 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{A19CB981-2D25-4316-9542-1D2BD7064F2B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Gorgon.Windows</RootNamespace>
+    <AssemblyName>Gorgon.Windows</AssemblyName>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DocumentationFile>bin\Debug\Gorgon.Windows.xml</DocumentationFile>
+    <CodeAnalysisRuleSet>..\NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DocumentationFile>bin\Release\Gorgon.Windows.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Gorgon.Core\SharedAssemblyInfo.cs">
+      <Link>SharedAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Diagnostics\GorgonComputerInfo.cs" />
+    <Compile Include="Diagnostics\GorgonLogConsole.cs" />
+    <Compile Include="Diagnostics\LogProviders\GorgonLogConsoleProvider.cs" />
+    <Compile Include="Native\_Internal\KernelApi.cs" />
+    <Compile Include="Native\_Internal\UserApi.cs" />
+    <Compile Include="Native\_Internal\Win32 Structs\HDITEM.cs" />
+    <Compile Include="Native\_Internal\Win32 Structs\MEMORYSTATUSEX.cs" />
+    <Compile Include="Native\_Internal\Win32 Structs\MSG.cs" />
+    <Compile Include="Native\_Internal\Win32 Structs\TIMECAPS.cs" />
+    <Compile Include="Native\_Internal\WinMultimediaApi.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Timing\GorgonTimerMultimedia.cs" />
+    <Compile Include="Timing\GorgonTimerQpc.cs" />
+    <Compile Include="UI\Design\FlatFormThemeConverter.cs" />
+    <Compile Include="UI\GorgonApplication.cs" />
+    <Compile Include="UI\GorgonDialogs.cs" />
+    <Compile Include="UI\GorgonFlatFormTheme.cs" />
+    <Compile Include="UI\_Controls\GorgonSelectablePanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UI\_Enums\Alignment.cs" />
+    <Compile Include="UI\_Extensions\GorgonControlExtensions.cs" />
+    <Compile Include="UI\_Extensions\GorgonListViewExtensions.cs" />
+    <Compile Include="UI\_Forms\GorgonFlatForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\_Forms\GorgonFlatForm.Designer.cs">
+      <DependentUpon>GorgonFlatForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\_Forms\_Internal\BaseDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\_Forms\_Internal\BaseDialog.designer.cs">
+      <DependentUpon>BaseDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\_Forms\_Internal\ConfirmationDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\_Forms\_Internal\ConfirmationDialog.designer.cs">
+      <DependentUpon>ConfirmationDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\_Forms\_Internal\ConfirmationDialogEx.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\_Forms\_Internal\ConfirmationDialogEx.designer.cs">
+      <DependentUpon>ConfirmationDialogEx.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\_Forms\_Internal\ErrorDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\_Forms\_Internal\ErrorDialog.designer.cs">
+      <DependentUpon>ErrorDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\_Forms\_Internal\WarningDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\_Forms\_Internal\WarningDialog.designer.cs">
+      <DependentUpon>WarningDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\_Forms\_Internal\WindowMessagePreFilter.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Gorgon2.ico" />
+    <None Include="Resources\WarningDialogIcon.ico" />
+    <None Include="Resources\InfoDialogIcon.ico" />
+    <None Include="Resources\Gorgon2.ico" />
+    <None Include="Resources\Warning_48x48.png" />
+    <None Include="Resources\Restore.png" />
+    <None Include="Resources\ok_16x16.png" />
+    <None Include="Resources\no_16x16.png" />
+    <None Include="Resources\Minimize.png" />
+    <None Include="Resources\Maximize.png" />
+    <None Include="Resources\Info_48x48.png" />
+    <None Include="Resources\Info_16x16.png" />
+    <EmbeddedResource Include="Resources\GorgonSelectablePanel.bmp" />
+    <None Include="Resources\Error_48x48.png" />
+    <None Include="Resources\Confirm_48x48.png" />
+    <None Include="Resources\Close.png" />
+    <None Include="Resources\Check_Enabled1.png" />
+    <None Include="Resources\Check_Disabled1.png" />
+    <None Include="Resources\cancel_16x16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\_Forms\GorgonFlatForm.resx">
+      <DependentUpon>GorgonFlatForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\_Forms\_Internal\BaseDialog.resx">
+      <DependentUpon>BaseDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\_Forms\_Internal\ConfirmationDialog.resx">
+      <DependentUpon>ConfirmationDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\_Forms\_Internal\ConfirmationDialogEx.resx">
+      <DependentUpon>ConfirmationDialogEx.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\_Forms\_Internal\ErrorDialog.resx">
+      <DependentUpon>ErrorDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\_Forms\_Internal\WarningDialog.resx">
+      <DependentUpon>WarningDialog.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Gorgon.Core\Gorgon.Core.csproj">
+      <Project>{933569ed-52a9-4232-a929-1d4c4489b5a1}</Project>
+      <Name>Gorgon.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
+      <Version>4.5.0-preview3-26331-05</Version>
+    </PackageReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

@@ -30,7 +30,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using Gorgon.Core.Properties;
+using Gorgon.Properties;
 
 namespace Gorgon.Reflection
 {

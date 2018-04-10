@@ -30,18 +30,26 @@ using Gorgon.Core;
 namespace Gorgon.Plugins
 {
 	/// <summary>
-	/// The base for all plug ins used by the <see cref="GorgonPluginService"/>.
+	/// The base for all plug ins used by the <see cref="IGorgonPluginService"/>.
 	/// </summary>
 	/// <remarks>
 	/// <para>
-	/// Any plug ins used by the <see cref="GorgonPluginService"/> must be derived from this type. The plug in service will scan any plug in assemblies loaded into the 
-	/// <see cref="GorgonPluginAssemblyCache"/> and will enumerate only types that inherit this type.
+	/// Any plug ins used by the <see cref="IGorgonPluginService"/> must be derived from this type. The plug in service will scan any plug in assemblies loaded and will enumerate only types that inherit 
+	/// this type.
 	/// </para>
 	/// </remarks>
 	public abstract class GorgonPlugin
 		: IGorgonNamedObject
 	{
 		#region Properties.
+	    /// <summary>
+	    /// Property to return the name of this object.
+	    /// </summary>
+	    public string Name
+	    {
+	        get;
+	    }
+
 		/// <summary>
 		/// Property to return the assembly that contains this plugin.
 		/// </summary>
@@ -82,16 +90,6 @@ namespace Gorgon.Plugins
 			Assembly = GetType().Assembly.GetName();
 			PlugInPath = GetType().Assembly.ManifestModule.FullyQualifiedName;
 			Name = GetType().FullName;
-		}
-		#endregion
-
-		#region IGorgonNamedObject Members
-		/// <summary>
-		/// Property to return the name of this object.
-		/// </summary>
-		public string Name
-		{
-			get;
 		}
 		#endregion
 	}

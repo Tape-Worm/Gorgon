@@ -26,7 +26,7 @@
 
 using System;
 using System.Runtime.InteropServices;
-using Gorgon.Core.Properties;
+using Gorgon.Properties;
 using Gorgon.Math;
 
 namespace Gorgon.Core

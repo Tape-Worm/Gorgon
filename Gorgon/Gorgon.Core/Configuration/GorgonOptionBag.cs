@@ -27,7 +27,7 @@
 using System;
 using System.Collections.Generic;
 using Gorgon.Collections.Specialized;
-using Gorgon.Core.Properties;
+using Gorgon.Properties;
 
 namespace Gorgon.Configuration
 {

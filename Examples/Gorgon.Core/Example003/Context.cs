@@ -27,6 +27,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using Gorgon.Diagnostics;
 using Gorgon.Timing;
 using Gorgon.UI;
 
@@ -139,6 +140,8 @@ namespace Gorgon.Examples
 
 				// Resize the main form to 640 x 480.
 				MainForm.KeyDown += MainForm_KeyDown;
+			    MainForm.Deactivate += (sender, args) => GorgonApplication.Log.Print("Application is deactivated. Loops will pause.", LoggingLevel.All);
+			    MainForm.Activated += (sender, args) => GorgonApplication.Log.Print("Application is activated. Loops will run.", LoggingLevel.All);
 				MainForm.ClientSize = new Size(640, 480);
 				MainForm.Show();
 			}

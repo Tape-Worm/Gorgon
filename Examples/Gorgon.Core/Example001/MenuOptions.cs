@@ -38,6 +38,11 @@ namespace Gorgon.Examples
 	/// </summary>
 	internal static class MenuOptions
 	{
+        #region Variables.
+        // Computer information.
+        private static readonly IGorgonComputerInfo _computerInfo = new GorgonComputerInfo();
+        #endregion
+
 	    #region Methods.
 		/// <summary>
 		/// Function to throw the inner exception.
@@ -78,16 +83,16 @@ namespace Gorgon.Examples
 				Console.CursorLeft = 0;
 				Console.CursorTop = 0;
 
-				Console.WriteLine("Gorgon architecture:\t{0}", GorgonComputerInfo.PlatformArchitecture);
+				Console.WriteLine("Gorgon architecture:\t{0}", _computerInfo.PlatformArchitecture);
 				Console.WriteLine();
-				Console.WriteLine("Computer name:\t\t{0}", GorgonComputerInfo.ComputerName);
-				Console.WriteLine("# of processors:\t{0}", GorgonComputerInfo.ProcessorCount);
-				Console.WriteLine("Total RAM:\t\t{0} ({1:#,###} bytes)", GorgonComputerInfo.TotalPhysicalRAM.FormatMemory(), GorgonComputerInfo.TotalPhysicalRAM);
-				Console.WriteLine("Available RAM:\t\t{0} ({1:#,###} bytes)", GorgonComputerInfo.AvailablePhysicalRAM.FormatMemory(), GorgonComputerInfo.AvailablePhysicalRAM);
+				Console.WriteLine("Computer name:\t\t{0}", _computerInfo.ComputerName);
+				Console.WriteLine("# of processors:\t{0}", _computerInfo.ProcessorCount);
+				Console.WriteLine("Total RAM:\t\t{0} ({1:#,###} bytes)", _computerInfo.TotalPhysicalRAM.FormatMemory(), _computerInfo.TotalPhysicalRAM);
+				Console.WriteLine("Available RAM:\t\t{0} ({1:#,###} bytes)", _computerInfo.AvailablePhysicalRAM.FormatMemory(), _computerInfo.AvailablePhysicalRAM);
 				Console.WriteLine();
-				Console.WriteLine("Windows version:\t{0} {1}", GorgonComputerInfo.OperatingSystemVersionText, string.IsNullOrEmpty(GorgonComputerInfo.OperatingSystemServicePack) ? string.Empty : GorgonComputerInfo.OperatingSystemServicePack);
-				Console.WriteLine("Windows architecture:\t{0}", GorgonComputerInfo.OperatingSystemArchitecture);
-				Console.WriteLine("System path:\t\t{0}", GorgonComputerInfo.SystemDirectory);
+				Console.WriteLine("Windows version:\t{0} {1}", _computerInfo.OperatingSystemVersionText, string.IsNullOrEmpty(_computerInfo.OperatingSystemServicePack) ? string.Empty : _computerInfo.OperatingSystemServicePack);
+				Console.WriteLine("Windows architecture:\t{0}", _computerInfo.OperatingSystemArchitecture);
+				Console.WriteLine("System path:\t\t{0}", _computerInfo.SystemDirectory);
 
 				// Display exit.
 				Console.CursorLeft = 0;
@@ -109,7 +114,7 @@ namespace Gorgon.Examples
 		{
 			Console.Clear();
 
-			foreach (KeyValuePair<string, string> envString in GorgonComputerInfo.MachineEnvironmentVariables)
+			foreach (KeyValuePair<string, string> envString in _computerInfo.MachineEnvironmentVariables)
 			{
 				Console.WriteLine("{0} = {1}", envString.Key, envString.Value);
 			}
@@ -126,6 +131,8 @@ namespace Gorgon.Examples
 		/// <param name="infoMessage">Message to display.</param>
 		public static void DisplayInfo(string infoMessage)
 		{
+		    GorgonDialogs.ConfirmBox(null, "This is a question", allowCancel: true, allowToAll: true);
+		    GorgonDialogs.ConfirmBox(null, "This is a question", allowCancel: true);
 			GorgonDialogs.InfoBox(null, infoMessage);
 		}
 
