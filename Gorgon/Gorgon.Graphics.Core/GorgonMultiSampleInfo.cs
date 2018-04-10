@@ -44,7 +44,7 @@ namespace Gorgon.Graphics.Core
 	/// If multisample anti-aliasing is being used, all bound render targets and depth buffers must have the same sample counts and quality levels.
 	/// </para>
 	/// </remarks>
-	public struct GorgonMultisampleInfo
+	public readonly struct GorgonMultisampleInfo
 		: IEquatable<GorgonMultisampleInfo>
 	{
 		#region Variables.
@@ -81,8 +81,8 @@ namespace Gorgon.Graphics.Core
 		/// <para>
 		/// <note type="warning">
 		/// <para>
-		/// This value must be 0 or less than/equal to the value returned by <see cref="GorgonFormatSupportInfo.MaxMultisampleCountQuality"/> in the <see cref="GorgonGraphics.FormatSupport"/> list.  Failure to 
-		/// do so will cause an exception for objects that use this type.
+		/// This value must be 0 or less than/equal to the quality returned by <see cref="IGorgonFormatSupportInfo.MaxMultisampleCountQuality"/>.  Failure to do so will cause an exception for objects that use this 
+		/// type.
 		/// </para>
 		/// </note>
 		/// </para>
@@ -97,7 +97,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="left">Left value to compare.</param>
 		/// <param name="right">Right value to compare.</param>
 		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-		public static bool Equals(ref GorgonMultisampleInfo left, ref GorgonMultisampleInfo right)
+		public static bool Equals(GorgonMultisampleInfo left, GorgonMultisampleInfo right)
 		{
 			return left.Count == right.Count && left.Quality == right.Quality;
 		}
@@ -127,7 +127,7 @@ namespace Gorgon.Graphics.Core
 		/// <returns></returns>
 		public static bool operator ==(GorgonMultisampleInfo left, GorgonMultisampleInfo right)
 		{
-			return Equals(ref left, ref right);
+			return Equals(left, right);
 		}
 
 		/// <summary>
@@ -138,7 +138,7 @@ namespace Gorgon.Graphics.Core
 		/// <returns></returns>
 		public static bool operator !=(GorgonMultisampleInfo left, GorgonMultisampleInfo right)
 		{
-			return !Equals(ref left, ref right);
+			return !Equals(left, right);
 		}
 
 		/// <summary>
@@ -170,7 +170,7 @@ namespace Gorgon.Graphics.Core
 		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
 		public bool Equals(GorgonMultisampleInfo other)
 		{
-			return Equals(ref this, ref other);
+			return Equals(this, other);
 		}
 		#endregion
 

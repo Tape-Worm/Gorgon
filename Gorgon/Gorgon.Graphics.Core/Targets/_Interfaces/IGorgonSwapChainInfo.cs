@@ -24,6 +24,8 @@
 // 
 #endregion
 
+using Gorgon.Core;
+
 namespace Gorgon.Graphics.Core
 {
 	/// <summary> 
@@ -35,6 +37,7 @@ namespace Gorgon.Graphics.Core
 	/// </para>
 	/// </remarks>
 	public interface IGorgonSwapChainInfo
+        : IGorgonNamedObject
 	{
 		/// <summary>
 		/// Property to return whether the back buffer contents will be stretched to fit the size of the presentation target area (typically the client area of the window).

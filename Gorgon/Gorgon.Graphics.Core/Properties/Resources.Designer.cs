@@ -88,17 +88,6 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The following buffer settings are not allowed with a CPU readable buffer:
-        ///An indirect argument buffer
-        ///A buffer that is not bound as a shader and/or unordered resource..
-        /// </summary>
-        internal static string GORGFX_ERR_BUFFER_CANNOT_READ {
-            get {
-                return ResourceManager.GetString("GORGFX_ERR_BUFFER_CANNOT_READ", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Cannot update buffers with a usage of [Immutable] or [Dynamic]..
         /// </summary>
         internal static string GORGFX_ERR_BUFFER_CANT_UPDATE_IMMUTABLE_OR_DYNAMIC {
@@ -153,7 +142,7 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Dynamic, immutable or staging buffers cannot be used for stream out..
+        ///   Looks up a localized string similar to Immutable or staging buffers cannot be used for stream out..
         /// </summary>
         internal static string GORGFX_ERR_BUFFER_IMMUTABLE_STAGING_SO {
             get {
@@ -162,7 +151,7 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Dynamic, immutable or staging buffers cannot use unordered access views..
+        ///   Looks up a localized string similar to Immutable or staging buffers cannot use unordered access views..
         /// </summary>
         internal static string GORGFX_ERR_BUFFER_IMMUTABLE_STAGING_UAV {
             get {
@@ -176,15 +165,6 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_BUFFER_IS_IMMUTABLE {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_BUFFER_IS_IMMUTABLE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The buffer &apos;{0}&apos; cannot hold indirect arguments..
-        /// </summary>
-        internal static string GORGFX_ERR_BUFFER_IS_NOT_INDIRECTARGS {
-            get {
-                return ResourceManager.GetString("GORGFX_ERR_BUFFER_IS_NOT_INDIRECTARGS", resourceCulture);
             }
         }
         
@@ -212,15 +192,6 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_BUFFER_NON_STAGING_NEEDS_BINDING {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_BUFFER_NON_STAGING_NEEDS_BINDING", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The buffer was not set up to the readable by the CPU..
-        /// </summary>
-        internal static string GORGFX_ERR_BUFFER_NOT_READABLE {
-            get {
-                return ResourceManager.GetString("GORGFX_ERR_BUFFER_NOT_READABLE", resourceCulture);
             }
         }
         
@@ -273,20 +244,20 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot copy the data.  The resource or destination resource is locked..
+        /// </summary>
+        internal static string GORGFX_ERR_CANNOT_COPY_LOCKED {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_CANNOT_COPY_LOCKED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot use a multisampled texture as a texture cube..
         /// </summary>
         internal static string GORGFX_ERR_CANNOT_MULTISAMPLE_CUBE {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_CANNOT_MULTISAMPLE_CUBE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to This resource has a usage of [{0}].  Only resources with a usage of [Staging] can be read..
-        /// </summary>
-        internal static string GORGFX_ERR_CANNOT_READ_NONSTAGE {
-            get {
-                return ResourceManager.GetString("GORGFX_ERR_CANNOT_READ_NONSTAGE", resourceCulture);
             }
         }
         
@@ -374,7 +345,7 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot use multisampling with a depth/stencil texture on feature set 10 devices or below..
+        ///   Looks up a localized string similar to Cannot use multisampling with a depth/stencil texture on feature level 10 devices or below..
         /// </summary>
         internal static string GORGFX_ERR_DEPTHSTENCIL_MS_FL101 {
             get {
@@ -410,7 +381,7 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Could not find any supported video adapters.  Gorgon requires a device that can support a minimum feature set of 10.0..
+        ///   Looks up a localized string similar to Could not find any supported video adapters.  Gorgon requires a device that can support a minimum feature level of 10.0..
         /// </summary>
         internal static string GORGFX_ERR_DEVICE_CANNOT_FIND_DEVICES {
             get {
@@ -446,7 +417,7 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The feature set [{0}] is not valid..
+        ///   Looks up a localized string similar to The feature level [{0}] is not valid..
         /// </summary>
         internal static string GORGFX_ERR_FEATURE_LEVEL_INVALID {
             get {
@@ -491,15 +462,6 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The resource has a usage of [Immutable] and cannot be copied to a staging resource..
-        /// </summary>
-        internal static string GORGFX_ERR_IMMUTABLE_CANNOT_STAGE {
-            get {
-                return ResourceManager.GetString("GORGFX_ERR_IMMUTABLE_CANNOT_STAGE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to This buffer uses {0} bit indices. {1} bit indices cannot be written to it..
         /// </summary>
         internal static string GORGFX_ERR_INDEX_BUFFER_TYPE_MISMATCH {
@@ -509,7 +471,7 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The Gorgon Graphics interface requires Windows 10 Fall Creators Update (Build 16299) or greater..
+        ///   Looks up a localized string similar to The Gorgon Graphics interface requires Windows 10 (Build {0}) or better..
         /// </summary>
         internal static string GORGFX_ERR_INVALID_OS {
             get {
@@ -536,11 +498,11 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot lock an [Immutable] buffer for reading..
+        ///   Looks up a localized string similar to Cannot lock a buffer for reading if the resource does not have a usage of [Staging]..
         /// </summary>
-        internal static string GORGFX_ERR_LOCK_CANNOT_READ_IMMUTABLE {
+        internal static string GORGFX_ERR_LOCK_CANNOT_READ_NON_STAGING {
             get {
-                return ResourceManager.GetString("GORGFX_ERR_LOCK_CANNOT_READ_IMMUTABLE", resourceCulture);
+                return ResourceManager.GetString("GORGFX_ERR_LOCK_CANNOT_READ_NON_STAGING", resourceCulture);
             }
         }
         
@@ -599,11 +561,30 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Outputs from different adapters cannot be mixed.
+        ///The current graphics object instance uses the adapter &apos;{0}&apos;. The output supplied is from the &apos;{1}&apos; adapter. .
+        /// </summary>
+        internal static string GORGFX_ERR_OUTPUT_ADAPTER_MISMATCH {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_OUTPUT_ADAPTER_MISMATCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The effect pass index ({0}) must be 0 or less than {1}..
         /// </summary>
         internal static string GORGFX_ERR_PASS_INDEX_OUT_OF_RANGE {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_PASS_INDEX_OUT_OF_RANGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The format [{0}] is not valid for a render target..
+        /// </summary>
+        internal static string GORGFX_ERR_RENDERTARGET_FORMAT_NOT_VALID {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_RENDERTARGET_FORMAT_NOT_VALID", resourceCulture);
             }
         }
         
@@ -617,7 +598,7 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A device with feature set {0} (or better) is necessary to use this object or perform this operation..
+        ///   Looks up a localized string similar to A device with feature level {0} (or better) is necessary to use this object or perform this operation..
         /// </summary>
         internal static string GORGFX_ERR_REQUIRES_FEATURE_LEVEL {
             get {
@@ -1087,7 +1068,7 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unordered access views for textures requires a feature set 11 or better video adapter..
+        ///   Looks up a localized string similar to Unordered access views for textures requires a feature level 11 or better video adapter..
         /// </summary>
         internal static string GORGFX_ERR_UAV_REQUIRES_SM5 {
             get {

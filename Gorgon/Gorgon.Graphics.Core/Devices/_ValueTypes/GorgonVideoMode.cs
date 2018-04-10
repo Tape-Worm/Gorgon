@@ -78,10 +78,15 @@ namespace Gorgon.Graphics.Core
     /// <summary>
     /// Information about a full screen video mode provided by a <see cref="IGorgonVideoOutputInfo"/>.
     /// </summary>
-    public struct GorgonVideoMode
+    public readonly struct GorgonVideoMode
         : IGorgonEquatableByRef<GorgonVideoMode>, IComparable<GorgonVideoMode>
     {
         #region Variables.
+        /// <summary>
+        /// A representation of an invalid video mode.
+        /// </summary>
+        public static readonly GorgonVideoMode InvalidMode = default;
+
         /// <summary>
         /// The width, in pixels, for the video mode.
         /// </summary>
@@ -126,7 +131,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="left">The left value to compare.</param>
         /// <param name="right">The right value to compare.</param>
         /// <returns><b>true</b> if the modes are equal, <b>false</b> if not.</returns>
-        public static bool Equals(ref GorgonVideoMode left, ref GorgonVideoMode right)
+        public static bool Equals(in GorgonVideoMode left, in GorgonVideoMode right)
         {
             return left.Width == right.Width
                    && left.Height == right.Height
@@ -169,21 +174,21 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="other">The other instance to use for comparison.</param>
         /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-        public bool Equals(ref GorgonVideoMode other) => Equals(ref this, ref other);
+        public bool Equals(in GorgonVideoMode other) => Equals(in this, in other);
 
         /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
         /// <param name="other">An object to compare with this object.</param>
         /// <returns>
         /// <see langword="true" /> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <see langword="false" />.</returns>
-        public bool Equals(GorgonVideoMode other) => Equals(ref this, ref other);
+        public bool Equals(GorgonVideoMode other) => Equals(in this, in other);
 
         /// <summary>Compares the left instance with the right object of the same type and returns an integer that indicates whether the current instance precedes, follows, or occurs in the same position in the sort order as the other object. </summary>
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
         /// <returns>A value that indicates the relative order of the objects being compared. The return value has these meanings: Value Meaning Less than zero the left instance precedes the right in the sort order.  Zero the left instance occurs in the same position in the sort order as the right. Greater than zero the left instance follows the right in the sort order. </returns>
-        public static int CompareTo(ref GorgonVideoMode left, ref GorgonVideoMode right)
+        public static int CompareTo(in GorgonVideoMode left, in GorgonVideoMode right)
         {
-            if (Equals(ref left, ref right))
+            if (Equals(in left, in right))
             {
                 return 0;
             }
@@ -202,7 +207,7 @@ namespace Gorgon.Graphics.Core
         /// <returns>A value that indicates the relative order of the objects being compared. The return value has these meanings: Value Meaning Less than zero This instance precedes <paramref name="other" /> in the sort order.  Zero This instance occurs in the same position in the sort order as <paramref name="other" />. Greater than zero This instance follows <paramref name="other" /> in the sort order. </returns>
         int IComparable<GorgonVideoMode>.CompareTo(GorgonVideoMode other)
         {
-            return CompareTo(ref this, ref other);
+            return CompareTo(in this, in other);
         }
 
         /// <summary>
@@ -211,7 +216,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
         /// <returns><b>true</b> if left is less than the right, <b>false</b> if not.</returns>
-        public static bool operator <(GorgonVideoMode left, GorgonVideoMode right) => CompareTo(ref left, ref right) < 0;
+        public static bool operator <(GorgonVideoMode left, GorgonVideoMode right) => CompareTo(in left, in right) < 0;
 
         /// <summary>
         /// Operator to determine if the left instance is greater than the right instance.
@@ -219,7 +224,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
         /// <returns><b>true</b> if left is greater than the right, <b>false</b> if not.</returns>
-        public static bool operator >(GorgonVideoMode left, GorgonVideoMode right) => CompareTo(ref left, ref right) > 0;
+        public static bool operator >(GorgonVideoMode left, GorgonVideoMode right) => CompareTo(in left, in right) > 0;
 
         /// <summary>
         /// Operator to determine if the left instance is less than or equal to the right instance.
@@ -227,7 +232,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
         /// <returns><b>true</b> if left is less than or equal to the right, <b>false</b> if not.</returns>
-        public static bool operator <=(GorgonVideoMode left, GorgonVideoMode right) => Equals(ref left, ref right) || CompareTo(ref left, ref right) < 0;
+        public static bool operator <=(GorgonVideoMode left, GorgonVideoMode right) => Equals(in left, in right) || CompareTo(in left, in right) < 0;
 
         /// <summary>
         /// Operator to determine if the left instance is greater than or equal to the right instance.
@@ -235,7 +240,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
         /// <returns><b>true</b> if left is greater than or equal to the right, <b>false</b> if not.</returns>
-        public static bool operator >=(GorgonVideoMode left, GorgonVideoMode right) => Equals(ref left, ref right) || CompareTo(ref left, ref right) > 0;
+        public static bool operator >=(GorgonVideoMode left, GorgonVideoMode right) => Equals(in left, in right) || CompareTo(in left, in right) > 0;
 
         /// <summary>
         /// Operator to compare two instances for equality.
@@ -243,7 +248,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
         /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-        public static bool operator ==(GorgonVideoMode left, GorgonVideoMode right) => Equals(ref left, ref right);
+        public static bool operator ==(GorgonVideoMode left, GorgonVideoMode right) => Equals(in left, in right);
 
         /// <summary>
         /// Operator to compare two instances for inequality.
@@ -251,7 +256,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
         /// <returns><b>true</b> if not equal, <b>false</b> if equal.</returns>
-        public static bool operator !=(GorgonVideoMode left, GorgonVideoMode right) => !Equals(ref left, ref right);
+        public static bool operator !=(GorgonVideoMode left, GorgonVideoMode right) => !Equals(in left, in right);
         #endregion
 
         #region Constructor/Finalizer.

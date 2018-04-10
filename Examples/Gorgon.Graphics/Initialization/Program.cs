@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.Timing;
@@ -73,7 +74,9 @@ namespace Gorgon.Graphics.Example
 	/// and is typically set to the same size as the client area on the window that will be bound to the swap chain.  This buffer 
 	/// size will resized when the window is resized, or can be resized manually through a method on the object. 
 	/// 
-	/// Swap chains can also enter/exit full screen exclusive mode, but for our purposes here we won't be doing that.
+	/// Swap chains can also enter/exit full screen exclusive mode, and in this example we use Alt+Enter to switch between full 
+	/// screen and windowed mode. Gorgon also has functionality to set up a borderless full screen window (which is preferable to an 
+	/// exclusive full screen mode).
 	/// 
 	/// For this example we're just going to assign a window (although this could be any type that inherits from 
 	/// System.Windows.Forms.Control) to the swap chain via its constructor, and set its initial size to the client size of the 
@@ -91,7 +94,7 @@ namespace Gorgon.Graphics.Example
 	{
 		#region Variables.
 		// Main application form.
-		private static formMain _mainForm;                                      
+		private static FormMain _mainForm;                                      
 		// The graphics interface for the application.
 		private static GorgonGraphics _graphics;
 		// Our primary swap chain.
@@ -106,6 +109,10 @@ namespace Gorgon.Graphics.Example
 		private static int _direction = 1;
 		// Indicates how to cycle through the available channels (1 = Incrementing from R -> G -> B, -1 = B -> G -> R).
 		private static int _channelDirection = 1;
+        // Defines which regions on the swap chain to clear.
+        private static readonly DX.Rectangle[] _clearRegions = new DX.Rectangle[2];
+        // Clearing pattern values (0 = full swap chain, 1 upper left/lower right only, 2 upper right, lower left only)
+	    private static int _clearPattern;
 		#endregion
 
 		#region Methods.
@@ -115,10 +122,27 @@ namespace Gorgon.Graphics.Example
 		/// <returns><b>true</b> to continue processing, <b>false</b> to stop.</returns>
 		private static bool Idle()
 		{
-			// This will clear the swap chain to the specified color.  
-			// For our example, we'll cycle through multiple colors so we don't end up with a boring old screen with a static color. This will also prove that our 
-			// swap chain is working and rendering data to the window.
-			_swap.RenderTargetView.Clear(_clearColor);
+		    // This will clear the swap chain to the specified color.  
+		    // For our example, we'll cycle through multiple colors so we don't end up with a boring old screen with a static color. This will also prove that our 
+		    // swap chain is working and rendering data to the window.
+
+		    // Set up the clear to clear the upper left and lower right of the swap chain:
+		    switch (_clearPattern)
+		    {
+                case 1:
+                    _clearRegions[0] = new DX.Rectangle(0, 0, _swap.Width / 2, _swap.Height / 2);
+                    _clearRegions[1] = new DX.Rectangle(_swap.Width / 2, _swap.Height / 2, _swap.Width / 2, _swap.Height / 2);
+                    _swap.RenderTargetView.Clear(_clearColor, _clearRegions);
+                    break;
+                case 2:
+                    _clearRegions[0] = new DX.Rectangle(_swap.Width / 2, 0, _swap.Width / 2, _swap.Height / 2);
+                    _clearRegions[1] = new DX.Rectangle(0, _swap.Height / 2, _swap.Width / 2, _swap.Height / 2);
+                    _swap.RenderTargetView.Clear(_clearColor, _clearRegions);
+                    break;
+		        default:
+		            _swap.RenderTargetView.Clear(_clearColor);
+		            break;
+		    }
 
 			// This specifies how much color to apply to the channel.
 			// We're using the GorgonTiming.Delta property here to retrieve the number of seconds that it takes to draw a single frame. This allows us to smooth 
@@ -160,19 +184,31 @@ namespace Gorgon.Graphics.Example
 			{
 				_channel = 1;
 				_channelDirection = -1;
+
+			    ++_clearPattern;
+			    if (_clearPattern > 2)
+			    {
+			        _clearPattern = 0;
+			    }
 			}
 
 			if (_channel < 0)
 			{
 				_channel = 1;
 				_channelDirection = 1;
-			}
 
+			    ++_clearPattern;
+			    if (_clearPattern > 2)
+			    {
+			        _clearPattern = 0;
+			    }
+			}
+            
 			// Now we flip our buffers on the swap chain.  
 			// We need to this or we won't see anything at all except the standard window background color. Clearly, we don't want that. 
 			// This method will take the current frame back buffer and flip it to the front buffer (the window). If we had more than one swap chain tied to multiple 
 			// windows, then we'd need to do this for every swap chain.
-			_swap.Present(1);
+            _swap.Present(1);
 			
 			return true;
 		}
@@ -182,43 +218,38 @@ namespace Gorgon.Graphics.Example
 		/// </summary>
 		private static void Initialize()
 		{
-			// Create our form and center on the primary monitor.
-			_mainForm = new formMain
+            // First, create our form.
+			_mainForm = new FormMain
 			            {
 				            ClientSize = new Size(640, 480)
 			            };
+            _mainForm.Show();
 
-			_mainForm.Location = new Point(Screen.PrimaryScreen.WorkingArea.Width / 2 - _mainForm.Width / 2,
-				Screen.PrimaryScreen.WorkingArea.Height / 2 - _mainForm.Height / 2);
+            _mainForm.KeyUp += MainForm_KeyUp;
 
-		    // First we create and enumerate the list of video devices installed in the computer.
-		    // We must do this in order to tell Gorgon which video device we intend to use. Note that this method may be quite slow (particularly when running DEBUG versions of 
-		    // Direct 3D). To counter this, this object and its Enumerate method are thread safe so this can be run in the background while keeping the main UI responsive.
-		    // Find out which devices we have installed in the system.
-
-		    // If no suitable device was found (no Direct 3D 12.0 support) in the computer, this method will throw an exception. However, if it succeeds, then the devices object 
+			// Now we create and enumerate the list of video devices installed in the computer.
+			// We must do this in order to tell Gorgon which video device we intend to use. Note that this method may be quite slow (particularly when running DEBUG versions of 
+			// Direct 3D). To counter this, this object and its Enumerate method are thread safe so this can be run in the background while keeping the main UI responsive.
+            //
+		    // If no suitable device was found (no Direct 3D 11.4 support) in the computer, this method will throw an exception. However, if it succeeds, then the devices object 
 		    // will be populated with the IGorgonVideoDeviceInfo for each video device in the system.
 		    //
-		    // Using this method, we could also enumerate the software rasterizer. These devices are typically used to determine if there's a driver error, and can be terribly slow to render 
-		    // It is recommended that these only be used in diagnostic scenarios only.
-		    IReadOnlyList<IGorgonVideoAdapterInfo> deviceList = GorgonGraphics.EnumerateAdapters();
+		    // Using this method, we could also enumerate the WARP software rasterizer, and/of the D3D Reference device (only if the DEBUG functionality provided by the Windows 
+		    // SDK is installed). These devices are typically used to determine if there's a driver error, and can be terribly slow to render (reference moreso than WARP). It is 
+		    // recommended that these only be used in diagnostic scenarios only.
+		    IReadOnlyList<IGorgonVideoAdapterInfo> devices = GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log);
 
-		    if (deviceList.Count == 0)
-		    {
-		        throw new NotSupportedException("There are no suitable video adapters available in the system. This example is unable to continue and will now exit.");
-		    }
-
-            // Now we create the main graphics interface with the first applicable video device.
-            _graphics = new GorgonGraphics(deviceList[0]);
+			// Now we create the main graphics interface with the first applicable video device.
+			_graphics = new GorgonGraphics(devices[0], log: GorgonApplication.Log);
 
 			// Check to ensure that we can support the format required for our swap chain.
 			// If a video device can't support this format, then the odds are good it won't render anything. Since we're asking for a very common display format, this will 
-			// succeed nearly 100% of the time (unless you've somehow gotten an ancient video device to work with Direct 3D 11.1). Regardless, it's good form to the check for a 
+			// succeed nearly 100% of the time (unless you've somehow gotten an ancient video device to work with Direct 3D 11.4). Regardless, it's good form to the check for a 
 			// working display format prior to setting up the swap chain.
 			//
-			// This method is also used to determine if a format can be used for other objects (e.g. a texture, render target, etc...) Like the swap chain format, this is also a 
-			// best practice to check if the object you're creating supports the desired format.
-			if ((_graphics.FormatSupport[BufferFormat.R8G8B8A8_UNorm].FormatSupport & BufferFormatSupport.Display) != BufferFormatSupport.Display)
+			// This is also used to determine if a format can be used for other objects (e.g. a texture, render target, etc...) And like the swap chain format, it is also best 
+		    // practice to check if the object you're creating supports the desired format.
+		    if (!_graphics.FormatSupport[BufferFormat.R8G8B8A8_UNorm].IsDisplayFormat)
 			{
 				// We should never see this unless you've performed some form of black magic.
 				GorgonDialogs.ErrorBox(_mainForm, "We should not see this error.");
@@ -228,14 +259,50 @@ namespace Gorgon.Graphics.Example
 			// Finally, create a swap chain to display our output.
 			// In this case we're setting up our swap chain to bind with our main window, and we use its client size to determine the width/height of the swap chain back buffers.
 			// This width/height does not need to be the same size as the window, but, except for some scenarios, that would produce undesirable image quality.
-			_swap = new GorgonSwapChain("Main Swap Chain", _graphics, _mainForm, new GorgonSwapChainInfo
-			                                                                     {
-				                                                                     Format = BufferFormat.R8G8B8A8_UNorm,
-																					 Width = _mainForm.ClientSize.Width,
-																					 Height = _mainForm.ClientSize.Height
-			                                                                     });
+		    _swap = new GorgonSwapChain(_graphics,
+		                                _mainForm,
+		                                new GorgonSwapChainInfo("Main Swap Chain")
+		                                {
+		                                    Format = BufferFormat.R8G8B8A8_UNorm,
+		                                    Width = _mainForm.ClientSize.Width,
+		                                    Height = _mainForm.ClientSize.Height
+		                                });
 		}
-		#endregion
+
+        /// <summary>
+        /// Handles the KeyUp event of the MainForm control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
+        private static void MainForm_KeyUp(object sender, KeyEventArgs e)
+	    {
+	        if ((e.KeyCode != Keys.Enter)
+	            || (!e.Alt)
+	            || (_swap == null))
+	        {
+	            return;
+	        }
+            
+            if (!_swap.IsWindowed)
+	        {
+                _swap.ExitFullScreen();
+	            return;
+	        }
+
+	        IGorgonVideoOutputInfo output = _graphics.VideoAdapter.Outputs[_mainForm.Handle];
+
+	        if (output == null)
+	        {
+	            return;
+	        }
+
+            // Find an appropriate video mode.
+            var searchMode = new GorgonVideoMode(_mainForm.ClientSize.Width, _mainForm.ClientSize.Height, BufferFormat.R8G8B8A8_UNorm);
+	        output.VideoModes.FindNearestVideoMode(output, in searchMode, out GorgonVideoMode nearestMode);
+            // To enter full screen borderless window mode, call EnterFullScreen with no parameters.
+            _swap.EnterFullScreen(in nearestMode, output);
+	    }
+	    #endregion
 
 		/// <summary>
 		/// The main entry point for the application.
@@ -260,10 +327,12 @@ namespace Gorgon.Graphics.Example
 			}
 			finally
 			{
+			    _mainForm.KeyUp -= MainForm_KeyUp;
+
 				// Always clean up when you're done.
-				// Since Gorgon uses Direct 3D 11.1, which allocate objects that use native memory and COM objects, we must be careful to dispose of any objects that implement 
-				// IDisposable. Failure to do so can lead to warnings from the Direct 3D runtime when running in DEBUG mode.
-				_swap?.Dispose();
+				// Since Gorgon uses Direct 3D 11.4, we must be careful to dispose of any objects that implement IDisposable. 
+			    // Failure to do so can lead to warnings from the Direct 3D runtime when running in DEBUG mode.
+				//_swap?.Dispose();
 				_graphics?.Dispose();
 			}
 		}

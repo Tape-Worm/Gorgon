@@ -47,7 +47,7 @@ namespace Gorgon.Graphics
 	/// </remarks>
 	[Serializable]
 	[StructLayout(LayoutKind.Sequential, Pack=4)]
-	public struct GorgonColor
+	public readonly struct GorgonColor
 		: IGorgonEquatableByRef<GorgonColor>, ISerializable
 	{
 		#region Variables.
@@ -155,7 +155,7 @@ namespace Gorgon.Graphics
 		/// <param name="left">Left color to compare.</param>
 		/// <param name="right">Right color to compare.</param>
 		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-		public static bool Equals(ref GorgonColor left, ref GorgonColor right)
+		public static bool Equals(in GorgonColor left, in GorgonColor right)
 		{
 			// ReSharper disable CompareOfFloatsByEqualityOperator
 			return left.Red == right.Red && left.Green == right.Green && left.Blue == right.Blue && left.Alpha == right.Alpha;
@@ -173,13 +173,13 @@ namespace Gorgon.Graphics
 			return 281.GenerateHash(Red).GenerateHash(Green).GenerateHash(Blue).GenerateHash(Alpha);
 		}
 
-		/// <summary>
-		/// Returns a <see cref="System.String"/> that represents this instance.
-		/// </summary>
-		/// <returns>
-		/// A <see cref="System.String"/> that represents this instance.
-		/// </returns>
-		public override string ToString()
+        /// <summary>
+        /// Returns a <see cref="string"/> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="string"/> that represents this instance.
+        /// </returns>
+        public override string ToString()
 		{
 		    return string.Format(Resources.GOR_TOSTR_GORGONCOLOR, Red, Green, Blue, Alpha);
 		}
@@ -191,7 +191,7 @@ namespace Gorgon.Graphics
         /// <param name="alpha">The alpha value to set.</param>
 		/// <param name="result">The resulting updated <see cref="GorgonColor"/>.</param>
 		/// <returns>A new <see cref="GorgonColor"/> instance with the same <see cref="Red"/>, <see cref="Green"/>, and <see cref="Blue"/> values but with a modified <see cref="Alpha"/> component.</returns>
-        public static void SetAlpha(ref GorgonColor color, float alpha, out GorgonColor result)
+        public static void SetAlpha(in GorgonColor color, float alpha, out GorgonColor result)
         {
             result = new GorgonColor(color, alpha);
         }
@@ -213,10 +213,10 @@ namespace Gorgon.Graphics
 		/// <param name="start">The starting <see cref="GorgonColor"/>.</param>
 		/// <param name="end">The ending <see cref="GorgonColor"/>.</param>
 		/// <param name="weight">Value between 0 and 1.0f to indicate weighting between start and end.</param>
-		/// <returns>The new <see cref="GorgonColor"/> representing a color between the <paramref name="start"/> and <paramref name="end"/> values.</returns>
+		/// <returns>The new <see cref="GorgonColor"/> representing a color between the <paramin name="start"/> and <paramin name="end"/> values.</returns>
 		/// <remarks>
-		/// This will compute a new <see cref="GorgonColor"/> from the <paramref name="start"/> and <paramref name="end"/> parameters based on the <paramref name="weight"/> passed in. For example, if the 
-		/// <paramref name="start"/> is Red = 0, Green = 0, Blue = 0, and Alpha = 0, and the <paramref name="end"/> is Red = 1, Green = 0, Blue = 1, and Alpha 0.5f. Then, with a <paramref name="weight"/> of 
+		/// This will compute a new <see cref="GorgonColor"/> from the <paramin name="start"/> and <paramin name="end"/> parameters based on the <paramin name="weight"/> passed in. For example, if the 
+		/// <paramin name="start"/> is Red = 0, Green = 0, Blue = 0, and Alpha = 0, and the <paramin name="end"/> is Red = 1, Green = 0, Blue = 1, and Alpha 0.5f. Then, with a <paramin name="weight"/> of 
 		/// 0.5f, the result will be Red = 0.5f, Green = 0, Blue = 0.5f, and an Alpha = 0.25f.
 		/// </remarks>
 		public static GorgonColor Lerp(GorgonColor start, GorgonColor end, float weight)
@@ -236,13 +236,13 @@ namespace Gorgon.Graphics
 		/// <param name="start">The starting <see cref="GorgonColor"/>.</param>
 		/// <param name="end">The ending <see cref="GorgonColor"/>.</param>
 		/// <param name="weight">Value between 0 and 1.0f to indicate weighting between start and end.</param>
-		/// <param name="outColor">The new <see cref="GorgonColor"/> representing a color between the <paramref name="start"/> and <paramref name="end"/> values.</param>
+		/// <param name="outColor">The new <see cref="GorgonColor"/> representing a color between the <paramin name="start"/> and <paramin name="end"/> values.</param>
 		/// <remarks>
-		/// This will compute a new <see cref="GorgonColor"/> from the <paramref name="start"/> and <paramref name="end"/> parameters based on the <paramref name="weight"/> passed in. For example, if the 
-		/// <paramref name="start"/> is Red = 0, Green = 0, Blue = 0, and Alpha = 0, and the <paramref name="end"/> is Red = 1, Green = 0, Blue = 1, and Alpha 0.5f. Then, with a <paramref name="weight"/> of 
+		/// This will compute a new <see cref="GorgonColor"/> from the <paramin name="start"/> and <paramin name="end"/> parameters based on the <paramin name="weight"/> passed in. For example, if the 
+		/// <paramin name="start"/> is Red = 0, Green = 0, Blue = 0, and Alpha = 0, and the <paramin name="end"/> is Red = 1, Green = 0, Blue = 1, and Alpha 0.5f. Then, with a <paramin name="weight"/> of 
 		/// 0.5f, the result will be Red = 0.5f, Green = 0, Blue = 0.5f, and an Alpha = 0.25f.
 		/// </remarks>
-		public static void Lerp(ref GorgonColor start, ref GorgonColor end, float weight, out GorgonColor outColor)
+		public static void Lerp(in GorgonColor start, in GorgonColor end, float weight, out GorgonColor outColor)
 		{
             outColor = new GorgonColor(start.Red + ((end.Red - start.Red) * weight),
                 start.Green + ((end.Green - start.Green) * weight),
@@ -259,7 +259,7 @@ namespace Gorgon.Graphics
 		/// <remarks>
 		/// This method does not clamp its output. Values greater than 1 or less than 0 are possible.
 		/// </remarks>
-		public static void Add(ref GorgonColor left, ref GorgonColor right, out GorgonColor outColor)
+		public static void Add(in GorgonColor left, in GorgonColor right, out GorgonColor outColor)
 		{
             outColor = new GorgonColor(left.Red + right.Red,
                                         left.Green + right.Green,
@@ -293,7 +293,7 @@ namespace Gorgon.Graphics
 		/// <remarks>
 		/// This method does not clamp its output. Values greater than 1 or less than 0 are possible.
 		/// </remarks>
-		public static void Subtract(ref GorgonColor left, ref GorgonColor right, out GorgonColor outColor)
+		public static void Subtract(in GorgonColor left, in GorgonColor right, out GorgonColor outColor)
 		{
             outColor = new GorgonColor(left.Red - right.Red,
                                         left.Green - right.Green,
@@ -324,7 +324,7 @@ namespace Gorgon.Graphics
 		/// <param name="left">The left color to multiply.</param>
 		/// <param name="right">The right color to multiply.</param>
 		/// <param name="outColor">Product of the two colors.</param>
-		public static void Multiply(ref GorgonColor left, ref GorgonColor right, out GorgonColor outColor)
+		public static void Multiply(in GorgonColor left, in GorgonColor right, out GorgonColor outColor)
 		{
             outColor = new GorgonColor(left.Red * right.Red,
                                         left.Green * right.Green,
@@ -351,8 +351,8 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="color">The color to multiply.</param>
 		/// <param name="value">The value to multiply.</param>
-		/// <param name="outColor">Product of the <paramref name="color"/> and the <paramref name="value"/>.</param>
-		public static void Multiply(ref GorgonColor color, float value, out GorgonColor outColor)
+		/// <param name="outColor">Product of the <paramin name="color"/> and the <paramin name="value"/>.</param>
+		public static void Multiply(in GorgonColor color, float value, out GorgonColor outColor)
 		{
 		    outColor = new GorgonColor(color.Red * value,
 		                               color.Green * value,
@@ -365,7 +365,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="color">The color to multiply.</param>
 		/// <param name="value">The value to multiply.</param>
-		/// <returns>Product of the <paramref name="color"/> and the <paramref name="value"/>.</returns>
+		/// <returns>Product of the <paramin name="color"/> and the <paramin name="value"/>.</returns>
 		public static GorgonColor Multiply(GorgonColor color, float value)
 		{
 			return new GorgonColor(color.Red * value,
@@ -468,11 +468,11 @@ namespace Gorgon.Graphics
 	    /// </summary>
 	    /// <param name="other">An object to compare with this object.</param>
 	    /// <returns>
-	    /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
+	    /// true if the current object is equal to the <paramin name="other"/> parameter; otherwise, false.
 	    /// </returns>
 	    public bool Equals(GorgonColor other)
 	    {
-	        return Equals(ref this, ref other);
+	        return Equals(in this, in other);
 	    }
 
 	    /// <summary>
@@ -480,11 +480,11 @@ namespace Gorgon.Graphics
 	    /// </summary>
 	    /// <param name="other">An object to compare with this object.</param>
 	    /// <returns>
-	    /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
+	    /// true if the current object is equal to the <paramin name="other"/> parameter; otherwise, false.
 	    /// </returns>
-	    public bool Equals(ref GorgonColor other)
+	    public bool Equals(in GorgonColor other)
 	    {
-	        return Equals(ref this, ref other);
+	        return Equals(in this, in other);
 	    }
 
 	    /// <summary>
@@ -509,7 +509,7 @@ namespace Gorgon.Graphics
 		public static GorgonColor operator +(GorgonColor left, GorgonColor right)
 		{
 
-			Add(ref left, ref right, out GorgonColor result);
+			Add(in left, in right, out GorgonColor result);
 
 			return result;
 		}
@@ -526,7 +526,7 @@ namespace Gorgon.Graphics
 		public static GorgonColor operator -(GorgonColor left, GorgonColor right)
 		{
 
-			Subtract(ref left, ref right, out GorgonColor result);
+			Subtract(in left, in right, out GorgonColor result);
 
 			return result;
 		}
@@ -540,7 +540,7 @@ namespace Gorgon.Graphics
 		public static GorgonColor operator *(GorgonColor left, GorgonColor right)
 		{
 
-			Multiply(ref left, ref right, out GorgonColor result);
+			Multiply(in left, in right, out GorgonColor result);
 
 			return result;
 		}
@@ -554,7 +554,7 @@ namespace Gorgon.Graphics
 		public static GorgonColor operator *(GorgonColor color, float value)
 		{
 
-			Multiply(ref color, value, out GorgonColor result);
+			Multiply(in color, value, out GorgonColor result);
 
 			return result;
 		}
@@ -567,7 +567,7 @@ namespace Gorgon.Graphics
 		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
 		public static bool operator ==(GorgonColor left, GorgonColor right)
 		{
-			return Equals(ref left, ref right);
+			return Equals(in left, in right);
 		}
 
 		/// <summary>
@@ -578,7 +578,7 @@ namespace Gorgon.Graphics
 		/// <returns><b>true</b> if not equal, <b>false</b> if equal.</returns>
 		public static bool operator !=(GorgonColor left, GorgonColor right)
 		{
-			return !Equals(ref left, ref right);
+			return !Equals(in left, in right);
 		}
 
 		/// <summary>
@@ -620,7 +620,7 @@ namespace Gorgon.Graphics
 		/// <param name="color">The color.</param>
 		/// <returns>The result of the conversion.</returns>
 		/// <remarks>
-		/// This operator assumes the <paramref name="color"/> is in ARGB format.
+		/// This operator assumes the <paramin name="color"/> is in ARGB format.
 		/// </remarks>
 		public static implicit operator GorgonColor(int color)
 		{
@@ -766,7 +766,7 @@ namespace Gorgon.Graphics
         /// <param name="color">The base <see cref="GorgonColor"/>.</param>
         /// <param name="alpha">The alpha value to assign to the color.</param>
         /// <remarks>
-		/// This will retrieve the <see cref="Red"/>, <see cref="Green"/>, and <see cref="Blue"/> values from the <paramref name="color"/> parameter.
+		/// This will retrieve the <see cref="Red"/>, <see cref="Green"/>, and <see cref="Blue"/> values from the <paramin name="color"/> parameter.
         /// </remarks>
         public GorgonColor(GorgonColor color, float alpha)
         {

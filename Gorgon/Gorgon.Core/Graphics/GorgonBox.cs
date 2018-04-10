@@ -173,7 +173,7 @@ namespace Gorgon.Graphics
         /// <param name="box1">First box to intersect.</param>
         /// <param name="box2">Second box to intersect.</param>
         /// <param name="result">The resulting intersected box.</param>
-	    public static void Intersect(ref GorgonBox box1, ref GorgonBox box2, out GorgonBox result)
+	    public static void Intersect(in GorgonBox box1, in GorgonBox box2, out GorgonBox result)
         {
             int left = box2.Left.Max(box1.Left);
             int top = box2.Top.Max(box1.Top);
@@ -201,7 +201,7 @@ namespace Gorgon.Graphics
         public static GorgonBox Intersect(GorgonBox box1, GorgonBox box2)
         {
 
-			Intersect(ref box1, ref box2, out GorgonBox result);
+			Intersect(in box1, in box2, out GorgonBox result);
 
 			return result;
         }
@@ -214,7 +214,7 @@ namespace Gorgon.Graphics
 	    public GorgonBox Intersect(GorgonBox box)
         {
 
-			Intersect(ref this, ref box, out GorgonBox result);
+			Intersect(in this, in box, out GorgonBox result);
 
 			return result;
         }
@@ -225,7 +225,7 @@ namespace Gorgon.Graphics
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
         /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-	    public static bool Equals(ref GorgonBox left, ref GorgonBox right)
+	    public static bool Equals(in GorgonBox left, in GorgonBox right)
 	    {
 	        return ((left.X == right.X) && (left.Y == right.Y) && (left.Z == right.Z)
 	                && (left.Width == right.Width) && (left.Height == right.Height) && (left.Depth == right.Depth));
@@ -242,7 +242,7 @@ namespace Gorgon.Graphics
 	    {
 	        if (obj is GorgonBox box)
 	        {
-	            return box.Equals(ref this);
+	            return box.Equals(in this);
 	        }
 
 	        return base.Equals(obj);
@@ -256,7 +256,7 @@ namespace Gorgon.Graphics
         /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
 	    public static bool operator ==(GorgonBox left, GorgonBox right)
 	    {
-	        return Equals(ref left, ref right);
+	        return Equals(in left, in right);
 	    }
 
         /// <summary>
@@ -267,7 +267,7 @@ namespace Gorgon.Graphics
         /// <returns><b>true</b> if not equal, <b>false</b> if equal.</returns>
         public static bool operator !=(GorgonBox left, GorgonBox right)
 	    {
-	        return !Equals(ref left, ref right);
+	        return !Equals(in left, in right);
 	    }
 
         /// <summary>
@@ -296,7 +296,7 @@ namespace Gorgon.Graphics
 		/// </returns>
 		public bool Equals(GorgonBox other)
 		{
-			return Equals(ref this, ref other);
+			return Equals(in this, in other);
 		}
 
 		/// <summary>
@@ -306,9 +306,9 @@ namespace Gorgon.Graphics
 		/// <returns>
 		/// true if the current object is equal to the other parameter; otherwise, false.
 		/// </returns>
-		public bool Equals(ref GorgonBox other)
+		public bool Equals(in GorgonBox other)
 		{
-			return Equals(ref this, ref other);
+			return Equals(in this, in other);
 		}
 		#endregion
 	}

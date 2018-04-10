@@ -55,6 +55,15 @@ namespace Gorgon.Graphics.Core
 			get;
 		}
 
+	    /// <summary>
+	    /// Property to set or return the adapter that owns this output.
+	    /// </summary>
+	    public IGorgonVideoAdapterInfo Adapter
+	    {
+	        get;
+	        set;
+	    }
+
 		/// <summary>
 		/// Property to return the name of this output.
 		/// </summary>

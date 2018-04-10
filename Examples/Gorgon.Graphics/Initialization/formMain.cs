@@ -24,6 +24,8 @@
 // 
 #endregion
 
+using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace Gorgon.Graphics.Example
@@ -31,12 +33,21 @@ namespace Gorgon.Graphics.Example
 	/// <summary>
 	/// Main application form.
 	/// </summary>
-	public partial class formMain : Form
+	public partial class FormMain : Form
 	{
-		/// <summary>
-		/// Initializes a new instance of the <see cref="formMain"/> class.
+	    /// <summary>Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.</summary>
+	    /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data. </param>
+	    protected override void OnLoad(EventArgs e)
+	    {
+	        base.OnLoad(e);
+
+            CenterToScreen();
+	    }
+
+	    /// <summary>
+		/// Initializes a new instance of the <see cref="FormMain"/> class.
 		/// </summary>
-		public formMain()
+		public FormMain()
 		{
 			InitializeComponent();
 		}

@@ -28,13 +28,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
-using Gorgon.Collections.Specialized;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using DXGI = SharpDX.DXGI;
 using D3D = SharpDX.Direct3D;
 using D3D11 = SharpDX.Direct3D11;
-using Gorgon.Collections;
 
 namespace Gorgon.Graphics.Core
 {
@@ -72,7 +70,7 @@ namespace Gorgon.Graphics.Core
                     return null;
                 }
 
-                VideoAdapterInfo result = new VideoAdapterInfo(index, warpAdapter4, featureSet.Value, new GorgonNamedObjectList<IGorgonVideoOutputInfo>(), VideoDeviceType.Software);
+                VideoAdapterInfo result = new VideoAdapterInfo(index, warpAdapter4, featureSet.Value, new Dictionary<string, VideoOutputInfo>(), VideoDeviceType.Software);
 
                 PrintLog(result, log);
 
@@ -89,7 +87,7 @@ namespace Gorgon.Graphics.Core
 		{
 			log.Print($"Device found: {device.Name}", LoggingLevel.Simple);
 			log.Print("===================================================================", LoggingLevel.Simple);
-			log.Print($"Supported feature set: {device.SupportedFeatureLevel}", LoggingLevel.Simple);
+			log.Print($"Supported feature set: {device.FeatureSet}", LoggingLevel.Simple);
 			log.Print($"Video memory: {(device.Memory.Video).FormatMemory()}", LoggingLevel.Simple);
 			log.Print($"System memory: {(device.Memory.System).FormatMemory()}", LoggingLevel.Intermediate);
 			log.Print($"Shared memory: {(device.Memory.Shared).FormatMemory()}", LoggingLevel.Intermediate);
@@ -177,9 +175,9 @@ namespace Gorgon.Graphics.Core
 		/// <param name="outputCount">The number of outputs for the device.</param>
 		/// <param name="log">The logging interface used to capture debug messages.</param>
 		/// <returns>A list if video output info values.</returns>
-		private static IGorgonNamedObjectReadOnlyList<IGorgonVideoOutputInfo> GetOutputs(D3D11.Device5 device, DXGI.Adapter4 adapter, int outputCount, IGorgonLog log)
+		private static Dictionary<string, VideoOutputInfo> GetOutputs(D3D11.Device5 device, DXGI.Adapter4 adapter, int outputCount, IGorgonLog log)
 		{
-			var result = new GorgonNamedObjectList<IGorgonVideoOutputInfo>();
+			var result = new Dictionary<string, VideoOutputInfo>(StringComparer.OrdinalIgnoreCase);
 
 			// Devices created under RDP/TS do not support output selection.
 			if (SystemInformation.TerminalServerSession)
@@ -193,7 +191,7 @@ namespace Gorgon.Graphics.Core
 				using (DXGI.Output output = adapter.GetOutput(i))
 				using (DXGI.Output6 output6 = output.QueryInterface<DXGI.Output6>())
 				{
-                    IGorgonVideoOutputInfo outputInfo = new VideoOutputInfo(i, output6, GetVideoModes(device, output6));
+                    var outputInfo = new VideoOutputInfo(i, output6, GetVideoModes(device, output6));
 
                     if (outputInfo.VideoModes.Count == 0)
 					{
@@ -201,7 +199,7 @@ namespace Gorgon.Graphics.Core
 					                LoggingLevel.Intermediate);
                     }
 
-                    result.Add(outputInfo);
+                    result.Add(output.Description.DeviceName, outputInfo);
 				}
 			}
 
@@ -230,7 +228,7 @@ namespace Gorgon.Graphics.Core
 
             if (log == null)
 		    {
-		        log = GorgonLogDummy.DefaultInstance;
+		        log = GorgonLog.NullLog;
 		    }
 
             using (var factory2 = new DXGI.Factory2(GorgonGraphics.IsDebugEnabled))
@@ -277,7 +275,7 @@ namespace Gorgon.Graphics.Core
                                 continue;
                             }
 
-                            IGorgonNamedObjectReadOnlyList<IGorgonVideoOutputInfo> outputs = GetOutputs(D3DDevice5, adapter, adapter.GetOutputCount(), log);
+                            Dictionary<string, VideoOutputInfo> outputs = GetOutputs(D3DDevice5, adapter, adapter.GetOutputCount(), log);
 
                             if (outputs.Count <= 0)
                             {
@@ -286,6 +284,7 @@ namespace Gorgon.Graphics.Core
                             }
 
                             VideoAdapterInfo videoAdapter = new VideoAdapterInfo(i, adapter, featureSet.Value, outputs, VideoDeviceType.Hardware);
+
                             devices.Add(videoAdapter);
                             PrintLog(videoAdapter, log);
                         }

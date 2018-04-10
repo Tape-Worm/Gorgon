@@ -29,7 +29,7 @@ namespace Gorgon.Graphics.Core
     /// <summary>
     /// Information about video memory for a <see cref="IGorgonVideoAdapterInfo"/>.
     /// </summary>
-    public struct GorgonVideoAdapterMemory
+    public readonly struct GorgonVideoAdapterMemory
     {
         #region Variables.
         /// <summary>

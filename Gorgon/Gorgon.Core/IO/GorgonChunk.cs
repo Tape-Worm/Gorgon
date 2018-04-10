@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System;
 using Gorgon.Core;
 using Gorgon.Properties;
 
@@ -33,8 +32,8 @@ namespace Gorgon.IO
 	/// <summary>
 	/// A chunk for the chunked file format.
 	/// </summary>
-	public struct GorgonChunk
-		: IEquatable<GorgonChunk>
+	public readonly struct GorgonChunk
+		: IGorgonEquatableByRef<GorgonChunk>
 	{
 		#region Variables.		
 		/// <summary>
@@ -84,7 +83,7 @@ namespace Gorgon.IO
 		/// <param name="left">The first object of type <see cref="GorgonChunk"/> to compare.</param>
 		/// <param name="right">The second object of type <see cref="GorgonChunk"/> to compare.</param>
 		/// <returns><b>true</b> if the specified objects are equal; otherwise, <b>false</b> if not.</returns>
-		public static bool Equals(ref GorgonChunk left, ref GorgonChunk right)
+		public static bool Equals(in GorgonChunk left, in GorgonChunk right)
 		{
 			return left.ID == right.ID;
 		}
@@ -96,7 +95,7 @@ namespace Gorgon.IO
 		/// <returns><b>true</b> if equal, <b>false</b> otherwise.</returns>
 		public bool Equals(GorgonChunk other)
 		{
-			return Equals(ref this, ref other);
+			return Equals(in this, in other);
 		}
 
 		/// <summary>
@@ -112,18 +111,28 @@ namespace Gorgon.IO
 			}
 			return base.Equals(obj);
 		}
-		#endregion
 
-		#region Operators.
-		/// <summary>
-		/// Operator used to compare two instances for equality.
-		/// </summary>
-		/// <param name="left">The left instance to compare.</param>
-		/// <param name="right">The right instance to compare.</param>
-		/// <returns><b>true</b> if equal, <b>false</b> otherwise.</returns>
-		public static bool operator ==(GorgonChunk left, GorgonChunk right)
+	    /// <summary>
+	    /// Function to compare this instance with another.
+	    /// </summary>
+	    /// <param name="other">The other instance to use for comparison.</param>
+	    /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+	    public bool Equals(in GorgonChunk other)
+        {
+            return Equals(in this, in other);
+        }
+        #endregion
+
+        #region Operators.
+        /// <summary>
+        /// Operator used to compare two instances for equality.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        /// <returns><b>true</b> if equal, <b>false</b> otherwise.</returns>
+        public static bool operator ==(in GorgonChunk left, in GorgonChunk right)
 		{
-			return Equals(ref left, ref right);
+			return Equals(in left, in right);
 		}
 
 		/// <summary>
@@ -132,9 +141,9 @@ namespace Gorgon.IO
 		/// <param name="left">The left instance to compare.</param>
 		/// <param name="right">The right instance to compare.</param>
 		/// <returns><b>true</b> if not equal, <b>false</b> otherwise.</returns>
-		public static bool operator !=(GorgonChunk left, GorgonChunk right)
+		public static bool operator !=(in GorgonChunk left, in GorgonChunk right)
 		{
-			return !Equals(ref left, ref right);
+			return !Equals(in left, in right);
 		}
 		#endregion
 

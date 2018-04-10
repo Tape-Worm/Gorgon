@@ -54,7 +54,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <param name="left">The left instance to compare.</param>
 		/// <param name="right">The right instance to compare.</param>
 		/// <returns><b>true</b> if the two instances are equal, <b>false</b> if not.</returns>
-		public static bool Equals(ref GorgonImageCodecDescription left, ref GorgonImageCodecDescription right)
+		public static bool Equals(GorgonImageCodecDescription left, GorgonImageCodecDescription right)
 		{
 			return string.Equals(left.Name, right.Name, StringComparison.OrdinalIgnoreCase);
 		}
@@ -94,7 +94,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <exception cref="NotImplementedException"></exception>
 		public bool Equals(GorgonImageCodecDescription other)
 		{
-			return Equals(ref this, ref other);
+			return Equals(this, other);
 		}
 
 		/// <summary>
@@ -105,7 +105,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <returns><b>true</b> if the two instances are equal, <b>false</b> if not.</returns>
 		public static bool operator ==(GorgonImageCodecDescription left, GorgonImageCodecDescription right)
 		{
-			return Equals(ref left, ref right);
+			return Equals(left, right);
 		}
 
 		/// <summary>
@@ -116,7 +116,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <returns><b>true</b> if the two instances are not equal, <b>false</b> if they are.</returns>
 		public static bool operator !=(GorgonImageCodecDescription left, GorgonImageCodecDescription right)
 		{
-			return !Equals(ref left, ref right);
+			return !Equals(left, right);
 		}
 		#endregion
 

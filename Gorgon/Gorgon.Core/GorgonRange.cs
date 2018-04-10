@@ -40,8 +40,8 @@ namespace Gorgon.Core
 	/// values.
 	/// </remarks>
     [StructLayout(LayoutKind.Sequential, Pack = 8)]
-	public struct GorgonRangeD
-		: IEquatable<GorgonRangeD>, IComparable<GorgonRangeD>
+	public readonly struct GorgonRangeD
+		: IGorgonEquatableByRef<GorgonRangeD>, IComparable<GorgonRangeD>
 	{
 		#region Variables.
 		/// <summary>
@@ -89,7 +89,7 @@ namespace Gorgon.Core
 		/// <param name="range">A <see cref="GorgonRangeD"/> to shrink.</param>
 		/// <param name="amount">The amount to shrink the <see cref="GorgonRangeD"/> by.</param>
 		/// <param name="result">A new <see cref="GorgonRangeD"/> value, decreased in size by <paramref name="amount"/>.</param>
-		public static void Shrink(ref GorgonRangeD range, double amount, out GorgonRangeD result)
+		public static void Shrink(in GorgonRangeD range, double amount, out GorgonRangeD result)
 		{
 			double min;
 			double max;
@@ -139,7 +139,7 @@ namespace Gorgon.Core
 		/// <param name="range">A <see cref="GorgonRangeD"/> to expand.</param>
 		/// <param name="amount">The amount to expand the <see cref="GorgonRangeD"/> by.</param>
 		/// <param name="result">A new <see cref="GorgonRangeD"/> value, increased in size by <paramref name="amount"/>.</param>
-		public static void Expand(ref GorgonRangeD range, double amount, out GorgonRangeD result)
+		public static void Expand(in GorgonRangeD range, double amount, out GorgonRangeD result)
 		{
 			double min;
 			double max;
@@ -189,7 +189,7 @@ namespace Gorgon.Core
 		/// <param name="left">The left <see cref="GorgonRangeD"/> value to add</param>
 		/// <param name="right">The right <see cref="GorgonRangeD"/> value to add.</param>
 		/// <param name="result">A new <see cref="GorgonRangeD"/> representing the total of both ranges.</param>
-		public static void Add(ref GorgonRangeD left, ref GorgonRangeD right, out GorgonRangeD result)
+		public static void Add(in GorgonRangeD left, in GorgonRangeD right, out GorgonRangeD result)
 		{
 			result = new GorgonRangeD(left.Minimum + right.Minimum, left.Maximum + right.Maximum);
 		}
@@ -211,7 +211,7 @@ namespace Gorgon.Core
 		/// <param name="left">The left <see cref="GorgonRangeD"/> value to subtract.</param>
 		/// <param name="right">The right <see cref="GorgonRangeD"/> value to subtract.</param>
 		/// <param name="result">A new <see cref="GorgonRangeD"/> value representing the difference of both ranges.</param>
-		public static void Subtract(ref GorgonRangeD left, ref GorgonRangeD right, out GorgonRangeD result)
+		public static void Subtract(in GorgonRangeD left, in GorgonRangeD right, out GorgonRangeD result)
 		{
 			result = new GorgonRangeD(left.Minimum - right.Minimum, left.Maximum - right.Maximum);
 		}
@@ -233,7 +233,7 @@ namespace Gorgon.Core
 		/// <param name="left">The left <see cref="GorgonRangeD"/> value to multiply.</param>
 		/// <param name="right">The right <see cref="GorgonRangeD"/> value to multiply.</param>
 		/// <param name="result">A new <see cref="GorgonRangeD"/> value representing the product of both ranges.</param>
-		public static void Multiply(ref GorgonRangeD left, ref GorgonRangeD right, out GorgonRangeD result)
+		public static void Multiply(in GorgonRangeD left, in GorgonRangeD right, out GorgonRangeD result)
 		{
 			result = new GorgonRangeD(left.Minimum * right.Minimum, left.Maximum * right.Maximum);
 		}
@@ -252,10 +252,10 @@ namespace Gorgon.Core
 		/// <summary>
 		/// Function to multiply a <see cref="GorgonRangeD"/> by a scalar <see cref="double"/> value.
 		/// </summary>
-		/// <param name="range"><see cref="Multiply(ref Gorgon.Core.GorgonRangeD,ref Gorgon.Core.GorgonRangeD,out Gorgon.Core.GorgonRangeD)"/></param>
+		/// <param name="range">The range to multiply by.</param>
 		/// <param name="scalar">The <see cref="double"/> scalar value to multiply.</param>
 		/// <param name="result">A new <see cref="GorgonRangeD"/> representing the product of the <paramref name="range"/> and the <paramref name="scalar"/>.</param>
-		public static void Multiply(ref GorgonRangeD range, double scalar, out GorgonRangeD result)
+		public static void Multiply(in GorgonRangeD range, double scalar, out GorgonRangeD result)
 		{
 			result = new GorgonRangeD(range.Minimum * scalar, range.Maximum * scalar);
 		}
@@ -263,7 +263,7 @@ namespace Gorgon.Core
 		/// <summary>
 		/// Function to multiply a <see cref="GorgonRangeD"/> by a scalar <see cref="double"/> value.
 		/// </summary>
-		/// <param name="range"><see cref="Multiply(ref Gorgon.Core.GorgonRangeD,ref Gorgon.Core.GorgonRangeD,out Gorgon.Core.GorgonRangeD)"/></param>
+		/// <param name="range">The range to multiply by.</param>
 		/// <param name="scalar">The <see cref="double"/> scalar value to multiply.</param>
 		/// <returns>A new <see cref="GorgonRangeD"/> representing the product of the <paramref name="range"/> and the <paramref name="scalar"/>.</returns>
 		public static GorgonRangeD Multiply(GorgonRangeD range, double scalar)
@@ -278,7 +278,7 @@ namespace Gorgon.Core
 		/// <param name="scalar">The <see cref="double"/> scalar value to divide by.</param>
 		/// <param name="result">A new <see cref="GorgonRangeD"/> representing the product of the <paramref name="range"/> and the <paramref name="scalar"/>.</param>
 		/// <exception cref="DivideByZeroException">Thrown if the <paramref name="scalar"/> value is zero.</exception>
-		public static void Divide(ref GorgonRangeD range, double scalar, out GorgonRangeD result)
+		public static void Divide(in GorgonRangeD range, double scalar, out GorgonRangeD result)
 		{
 			result = new GorgonRangeD(range.Minimum / scalar, range.Maximum / scalar);
 		}
@@ -333,37 +333,37 @@ namespace Gorgon.Core
 		{
 			return string.Format(Resources.GOR_TOSTR_GORGONRANGE, Minimum, Maximum, Range);
 		}
+
+	    /// <summary>
+	    /// Indicates whether the current object is equal to another object of the same type.
+	    /// </summary>
+	    /// <param name="other">An object to compare with this object.</param>
+	    /// <returns>
+	    /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
+	    /// </returns>
+	    public bool Equals(GorgonRangeD other) => (Minimum.EqualsEpsilon(other.Minimum)) && (Maximum.EqualsEpsilon(other.Maximum));
+
+
+	    /// <summary>
+	    /// Function to compare this instance with another.
+	    /// </summary>
+	    /// <param name="other">The other instance to use for comparison.</param>
+	    /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+	    public bool Equals(in GorgonRangeD other) => (Minimum.EqualsEpsilon(other.Minimum)) && (Maximum.EqualsEpsilon(other.Maximum));
+
+	    /// <summary>
+	    /// Compares the current object with another object of the same type.
+	    /// </summary>
+	    /// <param name="other">An object to compare with this object.</param>
+	    /// <returns>
+	    /// A 32-bit signed integer that indicates the relative order of the objects being compared. The return value has the following meanings: Value Meaning Less than zero This object is less than the other parameter.Zero This object is equal to other. Greater than zero This object is greater than other.
+	    /// </returns>
+	    public int CompareTo(GorgonRangeD other)
+	    {
+	        return Range.CompareTo(other.Range);
+	    }
 		#endregion
 
-		#region Constructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonRangeD" /> struct.
-		/// </summary>
-		/// <param name="minMax">The min max value to copy.</param>
-		public GorgonRangeD(GorgonRangeD minMax)
-			: this(minMax.Minimum, minMax.Maximum)
-		{		
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonRangeD"/> struct.
-		/// </summary>
-		/// <param name="min">The minimum value.</param>
-		/// <param name="max">The maximum value.</param>
-		public GorgonRangeD(double min, double max)
-		{
-			if (min < max)
-			{
-				Minimum = min;
-				Maximum = max;
-			}
-			else
-			{
-				Maximum = min;
-				Minimum = max;
-			}
-		}
-		#endregion
 
 		#region Operators.
 		/// <summary>
@@ -426,7 +426,7 @@ namespace Gorgon.Core
 		/// <returns>The result of the operator.</returns>
 		public static GorgonRangeD operator +(GorgonRangeD left, GorgonRangeD right)
 		{
-			Add(ref left, ref right, out GorgonRangeD result);
+			Add(in left, in right, out GorgonRangeD result);
 			return result;
 		}
 
@@ -438,7 +438,7 @@ namespace Gorgon.Core
 		/// <returns>The result of the operator.</returns>
 		public static GorgonRangeD operator -(GorgonRangeD left, GorgonRangeD right)
 		{
-			Subtract(ref left, ref right, out GorgonRangeD result);
+			Subtract(in left, in right, out GorgonRangeD result);
 			return result;
 		}
 
@@ -450,7 +450,7 @@ namespace Gorgon.Core
 		/// <returns>The result of the operator.</returns>
 		public static GorgonRangeD operator *(GorgonRangeD left, GorgonRangeD right)
 		{
-			Multiply(ref left, ref right, out GorgonRangeD result);
+			Multiply(in left, in right, out GorgonRangeD result);
 			return result;
 		}
 
@@ -462,7 +462,7 @@ namespace Gorgon.Core
 		/// <returns>The result of the operator.</returns>
 		public static GorgonRangeD operator *(GorgonRangeD left, double scalar)
 		{
-			Multiply(ref left, scalar, out GorgonRangeD result);
+			Multiply(in left, scalar, out GorgonRangeD result);
 			return result;
 		}
 
@@ -474,7 +474,7 @@ namespace Gorgon.Core
 		/// <returns>The result of the operator.</returns>
 		public static GorgonRangeD operator *(double scalar, GorgonRangeD right)
 		{
-			Multiply(ref right, scalar, out GorgonRangeD result);
+			Multiply(in right, scalar, out GorgonRangeD result);
 			return result;
 		}
 
@@ -486,7 +486,7 @@ namespace Gorgon.Core
 		/// <returns>The result of the operator.</returns>
 		public static GorgonRangeD operator /(GorgonRangeD left, double scalar)
 		{
-			Divide(ref left, scalar, out GorgonRangeD result);
+			Divide(in left, scalar, out GorgonRangeD result);
 			return result;
 		}
 
@@ -535,30 +535,35 @@ namespace Gorgon.Core
         }
 		#endregion
 
-		#region IEquatable<GorgonMinMaxD> Members
+		#region Constructor.
 		/// <summary>
-		/// Indicates whether the current object is equal to another object of the same type.
+		/// Initializes a new instance of the <see cref="GorgonRangeD" /> struct.
 		/// </summary>
-		/// <param name="other">An object to compare with this object.</param>
-		/// <returns>
-		/// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
-		/// </returns>
-		public bool Equals(GorgonRangeD other) => (Minimum.EqualsEpsilon(other.Minimum)) && (Maximum.EqualsEpsilon(other.Maximum));
-		#endregion
+		/// <param name="minMax">The min max value to copy.</param>
+		public GorgonRangeD(GorgonRangeD minMax)
+			: this(minMax.Minimum, minMax.Maximum)
+		{		
+		}
 
-        #region IComparable<GorgonRangeD> Members
-        /// <summary>
-        /// Compares the current object with another object of the same type.
-        /// </summary>
-        /// <param name="other">An object to compare with this object.</param>
-        /// <returns>
-        /// A 32-bit signed integer that indicates the relative order of the objects being compared. The return value has the following meanings: Value Meaning Less than zero This object is less than the other parameter.Zero This object is equal to other. Greater than zero This object is greater than other.
-        /// </returns>
-        public int CompareTo(GorgonRangeD other)
-        {
-            return Range.CompareTo(other.Range);
-        }
-        #endregion
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonRangeD"/> struct.
+		/// </summary>
+		/// <param name="min">The minimum value.</param>
+		/// <param name="max">The maximum value.</param>
+		public GorgonRangeD(double min, double max)
+		{
+			if (min < max)
+			{
+				Minimum = min;
+				Maximum = max;
+			}
+			else
+			{
+				Maximum = min;
+				Minimum = max;
+			}
+		}
+		#endregion
     }
 	#endregion
 
@@ -571,8 +576,8 @@ namespace Gorgon.Core
 	/// values.
 	/// </remarks>
 	[StructLayout(LayoutKind.Sequential, Pack = 4)]
-	public struct GorgonRangeM
-		: IEquatable<GorgonRangeM>, IComparable<GorgonRangeM>
+	public readonly struct GorgonRangeM
+		: IGorgonEquatableByRef<GorgonRangeM>, IComparable<GorgonRangeM>
 	{
 		#region Variables.
 		/// <summary>
@@ -620,7 +625,7 @@ namespace Gorgon.Core
 		/// <param name="range">A <see cref="GorgonRangeM"/> to shrink.</param>
 		/// <param name="amount">The amount to shrink the <see cref="GorgonRangeM"/> by.</param>
 		/// <param name="result">A new <see cref="GorgonRangeM"/> value, decreased in size by <paramref name="amount"/>.</param>
-		public static void Shrink(ref GorgonRangeM range, decimal amount, out GorgonRangeM result)
+		public static void Shrink(in GorgonRangeM range, decimal amount, out GorgonRangeM result)
 		{
 			decimal min;
 			decimal max;
@@ -670,7 +675,7 @@ namespace Gorgon.Core
 		/// <param name="range">A <see cref="GorgonRangeM"/> to expand.</param>
 		/// <param name="amount">The amount to expand the <see cref="GorgonRangeM"/> by.</param>
 		/// <param name="result">A new <see cref="GorgonRangeM"/> value, increased in size by <paramref name="amount"/>.</param>
-		public static void Expand(ref GorgonRangeM range, decimal amount, out GorgonRangeM result)
+		public static void Expand(in GorgonRangeM range, decimal amount, out GorgonRangeM result)
 		{
 			decimal min;
 			decimal max;
@@ -720,7 +725,7 @@ namespace Gorgon.Core
 		/// <param name="left">The left <see cref="GorgonRangeM"/> value to add</param>
 		/// <param name="right">The right <see cref="GorgonRangeM"/> value to add.</param>
 		/// <param name="result">A new <see cref="GorgonRangeM"/> representing the total of both ranges.</param>
-		public static void Add(ref GorgonRangeM left, ref GorgonRangeM right, out GorgonRangeM result)
+		public static void Add(in GorgonRangeM left, in GorgonRangeM right, out GorgonRangeM result)
 		{
 			result = new GorgonRangeM(left.Minimum + right.Minimum, left.Maximum + right.Maximum);
 		}
@@ -742,7 +747,7 @@ namespace Gorgon.Core
 		/// <param name="left">The left <see cref="GorgonRangeM"/> value to subtract.</param>
 		/// <param name="right">The right <see cref="GorgonRangeM"/> value to subtract.</param>
 		/// <param name="result">A new <see cref="GorgonRangeM"/> value representing the difference of both ranges.</param>
-		public static void Subtract(ref GorgonRangeM left, ref GorgonRangeM right, out GorgonRangeM result)
+		public static void Subtract(in GorgonRangeM left, in GorgonRangeM right, out GorgonRangeM result)
 		{
 			result = new GorgonRangeM(left.Minimum - right.Minimum, left.Maximum - right.Maximum);
 		}
@@ -764,7 +769,7 @@ namespace Gorgon.Core
 		/// <param name="left">The left <see cref="GorgonRangeM"/> value to multiply.</param>
 		/// <param name="right">The right <see cref="GorgonRangeM"/> value to multiply.</param>
 		/// <param name="result">A new <see cref="GorgonRangeM"/> value representing the product of both ranges.</param>
-		public static void Multiply(ref GorgonRangeM left, ref GorgonRangeM right, out GorgonRangeM result)
+		public static void Multiply(in GorgonRangeM left, in GorgonRangeM right, out GorgonRangeM result)
 		{
 			result = new GorgonRangeM(left.Minimum * right.Minimum, left.Maximum * right.Maximum);
 		}
@@ -780,24 +785,24 @@ namespace Gorgon.Core
 			return new GorgonRangeM(left.Minimum * right.Minimum, left.Maximum * right.Maximum);
 		}
 
-		/// <summary>
-		/// Function to multiply a <see cref="GorgonRangeM"/> by a scalar <see cref="decimal"/> value.
-		/// </summary>
-		/// <param name="range"><see cref="Multiply(ref Gorgon.Core.GorgonRangeM,ref Gorgon.Core.GorgonRangeM,out Gorgon.Core.GorgonRangeM)"/></param>
-		/// <param name="scalar">The <see cref="decimal"/> scalar value to multiply.</param>
-		/// <param name="result">A new <see cref="GorgonRangeM"/> representing the product of the <paramref name="range"/> and the <paramref name="scalar"/>.</param>
-		public static void Multiply(ref GorgonRangeM range, decimal scalar, out GorgonRangeM result)
+        /// <summary>
+        /// Function to multiply a <see cref="GorgonRangeM"/> by a scalar <see cref="decimal"/> value.
+        /// </summary>
+        /// <param name="range">The range to multiply by.</param>
+        /// <param name="scalar">The <see cref="decimal"/> scalar value to multiply.</param>
+        /// <param name="result">A new <see cref="GorgonRangeM"/> representing the product of the <paramref name="range"/> and the <paramref name="scalar"/>.</param>
+        public static void Multiply(in GorgonRangeM range, decimal scalar, out GorgonRangeM result)
 		{
 			result = new GorgonRangeM(range.Minimum * scalar, range.Maximum * scalar);
 		}
 
-		/// <summary>
-		/// Function to multiply a <see cref="GorgonRangeM"/> by a scalar <see cref="decimal"/> value.
-		/// </summary>
-		/// <param name="range"><see cref="Multiply(ref Gorgon.Core.GorgonRangeM,ref Gorgon.Core.GorgonRangeM,out Gorgon.Core.GorgonRangeM)"/></param>
-		/// <param name="scalar">The <see cref="decimal"/> scalar value to multiply.</param>
-		/// <returns>A new <see cref="GorgonRangeM"/> representing the product of the <paramref name="range"/> and the <paramref name="scalar"/>.</returns>
-		public static GorgonRangeM Multiply(GorgonRangeM range, decimal scalar)
+        /// <summary>
+        /// Function to multiply a <see cref="GorgonRangeM"/> by a scalar <see cref="decimal"/> value.
+        /// </summary>
+        /// <param name="range">The range to multiply by.</param>
+        /// <param name="scalar">The <see cref="decimal"/> scalar value to multiply.</param>
+        /// <returns>A new <see cref="GorgonRangeM"/> representing the product of the <paramref name="range"/> and the <paramref name="scalar"/>.</returns>
+        public static GorgonRangeM Multiply(GorgonRangeM range, decimal scalar)
 		{
 			return new GorgonRangeM(range.Minimum * scalar, range.Minimum * scalar);
 		}
@@ -809,7 +814,7 @@ namespace Gorgon.Core
 		/// <param name="scalar">The <see cref="decimal"/> scalar value to divide by.</param>
 		/// <param name="result">A new <see cref="GorgonRangeM"/> representing the product of the <paramref name="range"/> and the <paramref name="scalar"/>.</param>
 		/// <exception cref="DivideByZeroException">Thrown if the <paramref name="scalar"/> value is zero.</exception>
-		public static void Divide(ref GorgonRangeM range, decimal scalar, out GorgonRangeM result)
+		public static void Divide(in GorgonRangeM range, decimal scalar, out GorgonRangeM result)
 		{
 			result = new GorgonRangeM(range.Minimum / scalar, range.Maximum / scalar);
 		}
@@ -864,37 +869,38 @@ namespace Gorgon.Core
 		{
 			return string.Format(Resources.GOR_TOSTR_GORGONRANGE, Minimum, Maximum, Range);
 		}
+
+	    /// <summary>
+	    /// Indicates whether the current object is equal to another object of the same type.
+	    /// </summary>
+	    /// <returns>
+	    /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
+	    /// </returns>
+	    /// <param name="other">An object to compare with this object.</param>
+	    public bool Equals(GorgonRangeM other) => Minimum == other.Minimum && Maximum == other.Maximum;
+
+	    /// <summary>
+	    /// Indicates whether the current object is equal to another object of the same type.
+	    /// </summary>
+	    /// <returns>
+	    /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
+	    /// </returns>
+	    /// <param name="other">An object to compare with this object.</param>
+	    public bool Equals(in GorgonRangeM other) => Minimum == other.Minimum && Maximum == other.Maximum;
+
+	    /// <summary>
+	    /// Compares the current object with another object of the same type.
+	    /// </summary>
+	    /// <param name="other">An object to compare with this object.</param>
+	    /// <returns>
+	    /// A 32-bit signed integer that indicates the relative order of the objects being compared. The return value has the following meanings: Value Meaning Less than zero This object is less than the other parameter.Zero This object is equal to other. Greater than zero This object is greater than other.
+	    /// </returns>
+	    public int CompareTo(GorgonRangeM other)
+	    {
+	        return Range.CompareTo(other.Range);
+	    }
 		#endregion
 
-		#region Constructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonRangeM" /> struct.
-		/// </summary>
-		/// <param name="minMax">The min max value to copy.</param>
-		public GorgonRangeM(GorgonRangeM minMax)
-			: this(minMax.Minimum, minMax.Maximum)
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonRangeM"/> struct.
-		/// </summary>
-		/// <param name="min">The minimum value.</param>
-		/// <param name="max">The maximum value.</param>
-		public GorgonRangeM(decimal min, decimal max)
-		{
-			if (min < max)
-			{
-				Minimum = min;
-				Maximum = max;
-			}
-			else
-			{
-				Maximum = min;
-				Minimum = max;
-			}
-		}
-		#endregion
 
 		#region Operators.
 		/// <summary>
@@ -957,7 +963,7 @@ namespace Gorgon.Core
 		/// <returns>The result of the operator.</returns>
 		public static GorgonRangeM operator +(GorgonRangeM left, GorgonRangeM right)
 		{
-			Add(ref left, ref right, out GorgonRangeM result);
+			Add(in left, in right, out GorgonRangeM result);
 			return result;
 		}
 
@@ -969,7 +975,7 @@ namespace Gorgon.Core
 		/// <returns>The result of the operator.</returns>
 		public static GorgonRangeM operator -(GorgonRangeM left, GorgonRangeM right)
 		{
-			Subtract(ref left, ref right, out GorgonRangeM result);
+			Subtract(in left, in right, out GorgonRangeM result);
 			return result;
 		}
 
@@ -981,7 +987,7 @@ namespace Gorgon.Core
 		/// <returns>The result of the operator.</returns>
 		public static GorgonRangeM operator *(GorgonRangeM left, GorgonRangeM right)
 		{
-			Multiply(ref left, ref right, out GorgonRangeM result);
+			Multiply(in left, in right, out GorgonRangeM result);
 			return result;
 		}
 
@@ -993,7 +999,7 @@ namespace Gorgon.Core
 		/// <returns>The result of the operator.</returns>
 		public static GorgonRangeM operator *(GorgonRangeM left, decimal scalar)
 		{
-			Multiply(ref left, scalar, out GorgonRangeM result);
+			Multiply(in left, scalar, out GorgonRangeM result);
 			return result;
 		}
 
@@ -1005,7 +1011,7 @@ namespace Gorgon.Core
 		/// <returns>The result of the operator.</returns>
 		public static GorgonRangeM operator *(decimal scalar, GorgonRangeM right)
 		{
-			Multiply(ref right, scalar, out GorgonRangeM result);
+			Multiply(in right, scalar, out GorgonRangeM result);
 			return result;
 		}
 
@@ -1017,7 +1023,7 @@ namespace Gorgon.Core
 		/// <returns>The result of the operator.</returns>
 		public static GorgonRangeM operator /(GorgonRangeM left, decimal scalar)
 		{
-			Divide(ref left, scalar, out GorgonRangeM result);
+			Divide(in left, scalar, out GorgonRangeM result);
 			return result;
 		}
 
@@ -1066,28 +1072,33 @@ namespace Gorgon.Core
 		}
 		#endregion
 
-		#region IEquatable<GorgonMinMaxD> Members
+		#region Constructor.
 		/// <summary>
-		/// Indicates whether the current object is equal to another object of the same type.
+		/// Initializes a new instance of the <see cref="GorgonRangeM" /> struct.
 		/// </summary>
-		/// <returns>
-		/// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
-		/// </returns>
-		/// <param name="other">An object to compare with this object.</param>
-		public bool Equals(GorgonRangeM other) => Minimum == other.Minimum && Maximum == other.Maximum;
-		#endregion
-
-		#region IComparable<GorgonRangeM> Members
-		/// <summary>
-		/// Compares the current object with another object of the same type.
-		/// </summary>
-		/// <param name="other">An object to compare with this object.</param>
-		/// <returns>
-		/// A 32-bit signed integer that indicates the relative order of the objects being compared. The return value has the following meanings: Value Meaning Less than zero This object is less than the other parameter.Zero This object is equal to other. Greater than zero This object is greater than other.
-		/// </returns>
-		public int CompareTo(GorgonRangeM other)
+		/// <param name="minMax">The min max value to copy.</param>
+		public GorgonRangeM(GorgonRangeM minMax)
+			: this(minMax.Minimum, minMax.Maximum)
 		{
-			return Range.CompareTo(other.Range);
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonRangeM"/> struct.
+		/// </summary>
+		/// <param name="min">The minimum value.</param>
+		/// <param name="max">The maximum value.</param>
+		public GorgonRangeM(decimal min, decimal max)
+		{
+			if (min < max)
+			{
+				Minimum = min;
+				Maximum = max;
+			}
+			else
+			{
+				Maximum = min;
+				Minimum = max;
+			}
 		}
 		#endregion
 	}
@@ -1102,8 +1113,8 @@ namespace Gorgon.Core
 	/// values.
 	/// </remarks>
 	[StructLayout(LayoutKind.Sequential, Pack = 4)]
-	public struct GorgonRangeF
-		: IEquatable<GorgonRangeF>, IComparable<GorgonRangeF>
+	public readonly struct GorgonRangeF
+		: IGorgonEquatableByRef<GorgonRangeF>, IComparable<GorgonRangeF>
 	{
 		#region Variables.
 		/// <summary>
@@ -1151,7 +1162,7 @@ namespace Gorgon.Core
 		/// <param name="range">A <see cref="GorgonRangeF"/> to shrink.</param>
 		/// <param name="amount">The amount to shrink the <see cref="GorgonRangeF"/> by.</param>
 		/// <param name="result">A new <see cref="GorgonRangeF"/> value, decreased in size by <paramref name="amount"/>.</param>
-		public static void Shrink(ref GorgonRangeF range, float amount, out GorgonRangeF result)
+		public static void Shrink(in GorgonRangeF range, float amount, out GorgonRangeF result)
 		{
 			float min;
 			float max;
@@ -1201,7 +1212,7 @@ namespace Gorgon.Core
 		/// <param name="range">A <see cref="GorgonRangeF"/> to expand.</param>
 		/// <param name="amount">The amount to expand the <see cref="GorgonRangeF"/> by.</param>
 		/// <param name="result">A new <see cref="GorgonRangeF"/> value, increased in size by <paramref name="amount"/>.</param>
-		public static void Expand(ref GorgonRangeF range, float amount, out GorgonRangeF result)
+		public static void Expand(in GorgonRangeF range, float amount, out GorgonRangeF result)
 		{
 			float min;
 			float max;
@@ -1251,7 +1262,7 @@ namespace Gorgon.Core
 		/// <param name="left">The left <see cref="GorgonRangeF"/> value to add</param>
 		/// <param name="right">The right <see cref="GorgonRangeF"/> value to add.</param>
 		/// <param name="result">A new <see cref="GorgonRangeF"/> representing the total of both ranges.</param>
-		public static void Add(ref GorgonRangeF left, ref GorgonRangeF right, out GorgonRangeF result)
+		public static void Add(in GorgonRangeF left, in GorgonRangeF right, out GorgonRangeF result)
 		{
 			result = new GorgonRangeF(left.Minimum + right.Minimum, left.Maximum + right.Maximum);
 		}
@@ -1273,7 +1284,7 @@ namespace Gorgon.Core
 		/// <param name="left">The left <see cref="GorgonRangeF"/> value to subtract.</param>
 		/// <param name="right">The right <see cref="GorgonRangeF"/> value to subtract.</param>
 		/// <param name="result">A new <see cref="GorgonRangeF"/> value representing the difference of both ranges.</param>
-		public static void Subtract(ref GorgonRangeF left, ref GorgonRangeF right, out GorgonRangeF result)
+		public static void Subtract(in GorgonRangeF left, in GorgonRangeF right, out GorgonRangeF result)
 		{
 			result = new GorgonRangeF(left.Minimum - right.Minimum, left.Maximum - right.Maximum);
 		}
@@ -1295,7 +1306,7 @@ namespace Gorgon.Core
 		/// <param name="left">The left <see cref="GorgonRangeF"/> value to multiply.</param>
 		/// <param name="right">The right <see cref="GorgonRangeF"/> value to multiply.</param>
 		/// <param name="result">A new <see cref="GorgonRangeF"/> value representing the product of both ranges.</param>
-		public static void Multiply(ref GorgonRangeF left, ref GorgonRangeF right, out GorgonRangeF result)
+		public static void Multiply(in GorgonRangeF left, in GorgonRangeF right, out GorgonRangeF result)
 		{
 			result = new GorgonRangeF(left.Minimum * right.Minimum, left.Maximum * right.Maximum);
 		}
@@ -1314,10 +1325,10 @@ namespace Gorgon.Core
 		/// <summary>
 		/// Function to multiply a <see cref="GorgonRangeF"/> by a scalar <see cref="float"/> value.
 		/// </summary>
-		/// <param name="range"><see cref="Multiply(ref Gorgon.Core.GorgonRangeF,ref Gorgon.Core.GorgonRangeF,out Gorgon.Core.GorgonRangeF)"/></param>
+		/// <param name="range">The range to multiply by.</param>
 		/// <param name="scalar">The <see cref="float"/> scalar value to multiply.</param>
 		/// <param name="result">A new <see cref="GorgonRangeF"/> representing the product of the <paramref name="range"/> and the <paramref name="scalar"/>.</param>
-		public static void Multiply(ref GorgonRangeF range, float scalar, out GorgonRangeF result)
+		public static void Multiply(in GorgonRangeF range, float scalar, out GorgonRangeF result)
 		{
 			result = new GorgonRangeF(range.Minimum * scalar, range.Maximum * scalar);
 		}
@@ -1325,7 +1336,7 @@ namespace Gorgon.Core
 		/// <summary>
 		/// Function to multiply a <see cref="GorgonRangeF"/> by a scalar <see cref="float"/> value.
 		/// </summary>
-		/// <param name="range"><see cref="Multiply(ref Gorgon.Core.GorgonRangeF,ref Gorgon.Core.GorgonRangeF,out Gorgon.Core.GorgonRangeF)"/></param>
+		/// <param name="range">The range to multiply by.</param>
 		/// <param name="scalar">The <see cref="float"/> scalar value to multiply.</param>
 		/// <returns>A new <see cref="GorgonRangeF"/> representing the product of the <paramref name="range"/> and the <paramref name="scalar"/>.</returns>
 		public static GorgonRangeF Multiply(GorgonRangeF range, float scalar)
@@ -1340,7 +1351,7 @@ namespace Gorgon.Core
 		/// <param name="scalar">The <see cref="float"/> scalar value to divide by.</param>
 		/// <param name="result">A new <see cref="GorgonRangeF"/> representing the product of the <paramref name="range"/> and the <paramref name="scalar"/>.</param>
 		/// <exception cref="DivideByZeroException">Thrown if the <paramref name="scalar"/> value is zero.</exception>
-		public static void Divide(ref GorgonRangeF range, float scalar, out GorgonRangeF result)
+		public static void Divide(in GorgonRangeF range, float scalar, out GorgonRangeF result)
 		{
 			result = new GorgonRangeF(range.Minimum / scalar, range.Maximum / scalar);
 		}
@@ -1395,6 +1406,36 @@ namespace Gorgon.Core
 		{
 			return string.Format(Resources.GOR_TOSTR_GORGONRANGE, Minimum, Maximum, Range);
 		}
+
+	    /// <summary>
+	    /// Compares the current object with another object of the same type.
+	    /// </summary>
+	    /// <param name="other">An object to compare with this object.</param>
+	    /// <returns>
+	    /// A 32-bit signed integer that indicates the relative order of the objects being compared. The return value has the following meanings: Value Meaning Less than zero This object is less than the other parameter.Zero This object is equal to other. Greater than zero This object is greater than other.
+	    /// </returns>
+	    public int CompareTo(GorgonRangeF other)
+	    {
+	        return Range.CompareTo(other.Range);
+	    }
+
+	    /// <summary>
+	    /// Indicates whether the current object is equal to another object of the same type.
+	    /// </summary>
+	    /// <param name="other">An object to compare with this object.</param>
+	    /// <returns>
+	    /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
+	    /// </returns>
+	    public bool Equals(GorgonRangeF other) => (Minimum.EqualsEpsilon(other.Minimum)) && (Maximum.EqualsEpsilon(other.Maximum));
+
+	    /// <summary>
+	    /// Indicates whether the current object is equal to another object of the same type.
+	    /// </summary>
+	    /// <param name="other">An object to compare with this object.</param>
+	    /// <returns>
+	    /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
+	    /// </returns>
+	    public bool Equals(in GorgonRangeF other) => (Minimum.EqualsEpsilon(other.Minimum)) && (Maximum.EqualsEpsilon(other.Maximum));
 		#endregion
 
 		#region Constructor.
@@ -1488,7 +1529,7 @@ namespace Gorgon.Core
 		/// <returns>The result of the operator.</returns>
 		public static GorgonRangeF operator +(GorgonRangeF left, GorgonRangeF right)
 		{
-			Add(ref left, ref right, out GorgonRangeF result);
+			Add(in left, in right, out GorgonRangeF result);
 			return result;
 		}
 
@@ -1500,7 +1541,7 @@ namespace Gorgon.Core
 		/// <returns>The result of the operator.</returns>
 		public static GorgonRangeF operator -(GorgonRangeF left, GorgonRangeF right)
 		{
-			Subtract(ref left, ref right, out GorgonRangeF result);
+			Subtract(in left, in right, out GorgonRangeF result);
 			return result;
 		}
 
@@ -1512,7 +1553,7 @@ namespace Gorgon.Core
 		/// <returns>The result of the operator.</returns>
 		public static GorgonRangeF operator *(GorgonRangeF left, GorgonRangeF right)
 		{
-			Multiply(ref left, ref right, out GorgonRangeF result);
+			Multiply(in left, in right, out GorgonRangeF result);
 			return result;
 		}
 
@@ -1524,7 +1565,7 @@ namespace Gorgon.Core
 		/// <returns>The result of the operator.</returns>
 		public static GorgonRangeF operator *(GorgonRangeF left, float scalar)
 		{
-			Multiply(ref left, scalar, out GorgonRangeF result);
+			Multiply(in left, scalar, out GorgonRangeF result);
 			return result;
 		}
 
@@ -1536,7 +1577,7 @@ namespace Gorgon.Core
 		/// <returns>The result of the operator.</returns>
 		public static GorgonRangeF operator *(float scalar, GorgonRangeF right)
 		{
-			Multiply(ref right, scalar, out GorgonRangeF result);
+			Multiply(in right, scalar, out GorgonRangeF result);
 			return result;
 		}
 
@@ -1548,7 +1589,7 @@ namespace Gorgon.Core
 		/// <returns>The result of the operator.</returns>
 		public static GorgonRangeF operator /(GorgonRangeF left, float scalar)
 		{
-			Divide(ref left, scalar, out GorgonRangeF result);
+			Divide(in left, scalar, out GorgonRangeF result);
 			return result;
 		}
 
@@ -1596,32 +1637,6 @@ namespace Gorgon.Core
 			return left.Range <= right.Range;
 		}
 		#endregion
-
-		#region IEquatable<GorgonMinMaxD> Members
-		/// <summary>
-		/// Indicates whether the current object is equal to another object of the same type.
-		/// </summary>
-		/// <param name="other">An object to compare with this object.</param>
-		/// <returns>
-		/// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
-		/// </returns>
-		public bool Equals(GorgonRangeF other) => (Minimum.EqualsEpsilon(other.Minimum)) && (Maximum.EqualsEpsilon(other.Maximum));
-
-		#endregion
-
-		#region IComparable<GorgonRangeF> Members
-		/// <summary>
-		/// Compares the current object with another object of the same type.
-		/// </summary>
-		/// <param name="other">An object to compare with this object.</param>
-		/// <returns>
-		/// A 32-bit signed integer that indicates the relative order of the objects being compared. The return value has the following meanings: Value Meaning Less than zero This object is less than the other parameter.Zero This object is equal to other. Greater than zero This object is greater than other.
-		/// </returns>
-		public int CompareTo(GorgonRangeF other)
-		{
-			return Range.CompareTo(other.Range);
-		}
-		#endregion
 	}
 	#endregion
 
@@ -1634,8 +1649,8 @@ namespace Gorgon.Core
 	/// values.
 	/// </remarks>
 	[StructLayout(LayoutKind.Sequential, Pack = 4)]
-	public struct GorgonRange
-		: IEquatable<GorgonRange>, IComparable<GorgonRange>
+	public readonly struct GorgonRange
+		: IGorgonEquatableByRef<GorgonRange>, IComparable<GorgonRange>
 	{
 		#region Variables.
 		/// <summary>
@@ -1683,7 +1698,7 @@ namespace Gorgon.Core
 		/// <param name="range">A <see cref="GorgonRange"/> to shrink.</param>
 		/// <param name="amount">The amount to shrink the <see cref="GorgonRange"/> by.</param>
 		/// <param name="result">A new <see cref="GorgonRange"/> value, decreased in size by <paramref name="amount"/>.</param>
-		public static void Shrink(ref GorgonRange range, int amount, out GorgonRange result)
+		public static void Shrink(in GorgonRange range, int amount, out GorgonRange result)
 		{
 			int min;
 			int max;
@@ -1733,7 +1748,7 @@ namespace Gorgon.Core
 		/// <param name="range">A <see cref="GorgonRange"/> to expand.</param>
 		/// <param name="amount">The amount to expand the <see cref="GorgonRange"/> by.</param>
 		/// <param name="result">A new <see cref="GorgonRange"/> value, increased in size by <paramref name="amount"/>.</param>
-		public static void Expand(ref GorgonRange range, int amount, out GorgonRange result)
+		public static void Expand(in GorgonRange range, int amount, out GorgonRange result)
 		{
 			int min;
 			int max;
@@ -1783,7 +1798,7 @@ namespace Gorgon.Core
 		/// <param name="left">The left <see cref="GorgonRange"/> value to add</param>
 		/// <param name="right">The right <see cref="GorgonRange"/> value to add.</param>
 		/// <param name="result">A new <see cref="GorgonRange"/> representing the total of both ranges.</param>
-		public static void Add(ref GorgonRange left, ref GorgonRange right, out GorgonRange result)
+		public static void Add(in GorgonRange left, in GorgonRange right, out GorgonRange result)
 		{
 			result = new GorgonRange(left.Minimum + right.Minimum, left.Maximum + right.Maximum);
 		}
@@ -1805,7 +1820,7 @@ namespace Gorgon.Core
 		/// <param name="left">The left <see cref="GorgonRange"/> value to subtract.</param>
 		/// <param name="right">The right <see cref="GorgonRange"/> value to subtract.</param>
 		/// <param name="result">A new <see cref="GorgonRange"/> value representing the difference of both ranges.</param>
-		public static void Subtract(ref GorgonRange left, ref GorgonRange right, out GorgonRange result)
+		public static void Subtract(in GorgonRange left, in GorgonRange right, out GorgonRange result)
 		{
 			result = new GorgonRange(left.Minimum - right.Minimum, left.Maximum - right.Maximum);
 		}
@@ -1827,7 +1842,7 @@ namespace Gorgon.Core
 		/// <param name="left">The left <see cref="GorgonRange"/> value to multiply.</param>
 		/// <param name="right">The right <see cref="GorgonRange"/> value to multiply.</param>
 		/// <param name="result">A new <see cref="GorgonRange"/> value representing the product of both ranges.</param>
-		public static void Multiply(ref GorgonRange left, ref GorgonRange right, out GorgonRange result)
+		public static void Multiply(in GorgonRange left, in GorgonRange right, out GorgonRange result)
 		{
 			result = new GorgonRange(left.Minimum * right.Minimum, left.Maximum * right.Maximum);
 		}
@@ -1846,10 +1861,10 @@ namespace Gorgon.Core
 		/// <summary>
 		/// Function to multiply a <see cref="GorgonRange"/> by a scalar <see cref="int"/> value.
 		/// </summary>
-		/// <param name="range"><see cref="Multiply(ref Gorgon.Core.GorgonRange,ref Gorgon.Core.GorgonRange,out Gorgon.Core.GorgonRange)"/></param>
+		/// <param name="range">The range to multiply by.</param>
 		/// <param name="scalar">The <see cref="int"/> scalar value to multiply.</param>
 		/// <param name="result">A new <see cref="GorgonRange"/> representing the product of the <paramref name="range"/> and the <paramref name="scalar"/>.</param>
-		public static void Multiply(ref GorgonRange range, int scalar, out GorgonRange result)
+		public static void Multiply(in GorgonRange range, int scalar, out GorgonRange result)
 		{
 			result = new GorgonRange(range.Minimum * scalar, range.Maximum * scalar);
 		}
@@ -1857,7 +1872,7 @@ namespace Gorgon.Core
 		/// <summary>
 		/// Function to multiply a <see cref="GorgonRange"/> by a scalar <see cref="int"/> value.
 		/// </summary>
-		/// <param name="range"><see cref="Multiply(ref Gorgon.Core.GorgonRange,ref Gorgon.Core.GorgonRange,out Gorgon.Core.GorgonRange)"/></param>
+		/// <param name="range">The range to multiply by.</param>
 		/// <param name="scalar">The <see cref="int"/> scalar value to multiply.</param>
 		/// <returns>A new <see cref="GorgonRange"/> representing the product of the <paramref name="range"/> and the <paramref name="scalar"/>.</returns>
 		public static GorgonRange Multiply(GorgonRange range, int scalar)
@@ -1872,7 +1887,7 @@ namespace Gorgon.Core
 		/// <param name="scalar">The <see cref="int"/> scalar value to divide by.</param>
 		/// <param name="result">A new <see cref="GorgonRange"/> representing the product of the <paramref name="range"/> and the <paramref name="scalar"/>.</param>
 		/// <exception cref="DivideByZeroException">Thrown if the <paramref name="scalar"/> value is zero.</exception>
-		public static void Divide(ref GorgonRange range, int scalar, out GorgonRange result)
+		public static void Divide(in GorgonRange range, int scalar, out GorgonRange result)
 		{
 			result = new GorgonRange(range.Minimum / scalar, range.Maximum / scalar);
 		}
@@ -1927,6 +1942,36 @@ namespace Gorgon.Core
 		{
 			return string.Format(Resources.GOR_TOSTR_GORGONRANGE, Minimum, Maximum, Range);
 		}
+
+	    /// <summary>
+	    /// Indicates whether the current object is equal to another object of the same type.
+	    /// </summary>
+	    /// <param name="other">An object to compare with this object.</param>
+	    /// <returns>
+	    /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
+	    /// </returns>
+	    public bool Equals(GorgonRange other) => Minimum == other.Minimum && Maximum == other.Maximum;
+
+	    /// <summary>
+	    /// Indicates whether the current object is equal to another object of the same type.
+	    /// </summary>
+	    /// <param name="other">An object to compare with this object.</param>
+	    /// <returns>
+	    /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
+	    /// </returns>
+	    public bool Equals(in GorgonRange other) => Minimum == other.Minimum && Maximum == other.Maximum;
+
+	    /// <summary>
+	    /// Compares the current object with another object of the same type.
+	    /// </summary>
+	    /// <param name="other">An object to compare with this object.</param>
+	    /// <returns>
+	    /// A 32-bit signed integer that indicates the relative order of the objects being compared. The return value has the following meanings: Value Meaning Less than zero This object is less than the other parameter.Zero This object is equal to other. Greater than zero This object is greater than other.
+	    /// </returns>
+	    public int CompareTo(GorgonRange other)
+	    {
+	        return Range.CompareTo(other.Range);
+	    }
 		#endregion
 
 		#region Constructor.
@@ -2021,7 +2066,7 @@ namespace Gorgon.Core
 		/// <returns>The result of the operator.</returns>
 		public static GorgonRange operator +(GorgonRange left, GorgonRange right)
 		{
-			Add(ref left, ref right, out GorgonRange result);
+			Add(in left, in right, out GorgonRange result);
 			return result;
 		}
 
@@ -2033,7 +2078,7 @@ namespace Gorgon.Core
 		/// <returns>The result of the operator.</returns>
 		public static GorgonRange operator -(GorgonRange left, GorgonRange right)
 		{
-			Subtract(ref left, ref right, out GorgonRange result);
+			Subtract(in left, in right, out GorgonRange result);
 			return result;
 		}
 
@@ -2045,7 +2090,7 @@ namespace Gorgon.Core
 		/// <returns>The result of the operator.</returns>
 		public static GorgonRange operator *(GorgonRange left, GorgonRange right)
 		{
-			Multiply(ref left, ref right, out GorgonRange result);
+			Multiply(in left, in right, out GorgonRange result);
 			return result;
 		}
 
@@ -2057,7 +2102,7 @@ namespace Gorgon.Core
 		/// <returns>The result of the operator.</returns>
 		public static GorgonRange operator *(GorgonRange left, int scalar)
 		{
-			Multiply(ref left, scalar, out GorgonRange result);
+			Multiply(in left, scalar, out GorgonRange result);
 			return result;
 		}
 
@@ -2069,7 +2114,7 @@ namespace Gorgon.Core
 		/// <returns>The result of the operator.</returns>
 		public static GorgonRange operator *(int scalar, GorgonRange right)
 		{
-			Multiply(ref right, scalar, out GorgonRange result);
+			Multiply(in right, scalar, out GorgonRange result);
 			return result;
 		}
 
@@ -2081,7 +2126,7 @@ namespace Gorgon.Core
 		/// <returns>The result of the operator.</returns>
 		public static GorgonRange operator /(GorgonRange left, int scalar)
 		{
-			Divide(ref left, scalar, out GorgonRange result);
+			Divide(in left, scalar, out GorgonRange result);
 			return result;
 		}
 
@@ -2127,31 +2172,6 @@ namespace Gorgon.Core
 		public static bool operator <=(GorgonRange left, GorgonRange right)
 		{
 			return left.Range <= right.Range;
-		}
-		#endregion
-
-		#region IEquatable<GorgonMinMaxD> Members
-		/// <summary>
-		/// Indicates whether the current object is equal to another object of the same type.
-		/// </summary>
-		/// <param name="other">An object to compare with this object.</param>
-		/// <returns>
-		/// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
-		/// </returns>
-		public bool Equals(GorgonRange other) => Minimum == other.Minimum && Maximum == other.Maximum;
-		#endregion
-
-		#region IComparable<GorgonRange> Members
-		/// <summary>
-		/// Compares the current object with another object of the same type.
-		/// </summary>
-		/// <param name="other">An object to compare with this object.</param>
-		/// <returns>
-		/// A 32-bit signed integer that indicates the relative order of the objects being compared. The return value has the following meanings: Value Meaning Less than zero This object is less than the other parameter.Zero This object is equal to other. Greater than zero This object is greater than other.
-		/// </returns>
-		public int CompareTo(GorgonRange other)
-		{
-			return Range.CompareTo(other.Range);
 		}
 		#endregion
 	}

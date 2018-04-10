@@ -24,6 +24,9 @@
 // 
 #endregion
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using DXGI = SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;
 using Gorgon.Collections;
@@ -124,7 +127,7 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Property to return the highest feature set that the hardware can support.
 		/// </summary>
-		public FeatureSet SupportedFeatureLevel
+		public FeatureSet FeatureSet
 		{
 			get;
 		}
@@ -139,7 +142,7 @@ namespace Gorgon.Graphics.Core
 		/// Property to return the outputs on this device.
 		/// </summary>
 		/// <remarks>The outputs are typically monitors attached to the device.</remarks>
-		public IGorgonNamedObjectReadOnlyList<IGorgonVideoOutputInfo> Outputs
+		public GorgonVideoAdapterOutputList Outputs
 		{
 			get;
 		}
@@ -173,7 +176,7 @@ namespace Gorgon.Graphics.Core
         public VideoAdapterInfo(int index,
 		                       DXGI.Adapter2 adapter,
 		                       FeatureSet featureSet,
-		                       IGorgonNamedObjectReadOnlyList<IGorgonVideoOutputInfo> outputs,
+		                       Dictionary<string, VideoOutputInfo> outputs,
 		                       VideoDeviceType deviceType)
 		{
 			_adapterDesc = adapter.Description2;
@@ -185,8 +188,19 @@ namespace Gorgon.Graphics.Core
 			Name = _adapterDesc.Description.Replace("\0", string.Empty);
 			Index = index;
 			VideoDeviceType = deviceType;
-			Outputs = outputs;
-			SupportedFeatureLevel = featureSet;
+
+            // Put a reference to the adapter on the output.
+            // This will be handy for backtracking later.  Also it allows us to validate the output so that we are certain it's applied on the correct 
+            // video adapter, allowin mixing & matching will likely end in tears.
+            var finalOutputs = new Dictionary<string, IGorgonVideoOutputInfo>(StringComparer.OrdinalIgnoreCase);
+		    foreach (KeyValuePair<string, VideoOutputInfo> output in outputs)
+		    {
+		        output.Value.Adapter = this;
+		        finalOutputs[output.Key] = output.Value;
+		    }
+
+            Outputs = new GorgonVideoAdapterOutputList(finalOutputs);
+			FeatureSet = featureSet;
 		}
 		#endregion
 	}

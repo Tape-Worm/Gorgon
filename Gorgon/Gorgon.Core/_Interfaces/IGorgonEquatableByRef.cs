@@ -51,7 +51,7 @@ namespace Gorgon.Core
 		/// </summary>
 		/// <param name="other">The other instance to use for comparison.</param>
 		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-		bool Equals(ref T other);
+		bool Equals(in T other);
 		#endregion
 	}
 }

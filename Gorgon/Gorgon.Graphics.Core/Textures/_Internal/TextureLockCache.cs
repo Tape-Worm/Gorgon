@@ -125,17 +125,26 @@ namespace Gorgon.Graphics.Core
 
         #region Variables.
 		// List of locks that are currently open on the resource.
-		private ConcurrentDictionary<LockCacheKey, GorgonTextureLockData> _locks;	
+		private ConcurrentDictionary<LockCacheKey, GorgonTextureLockData> _locks;
+        // The texture that owns this lock cache.
+        private readonly GorgonGraphicsResource _texture;
+        // The number of mip levels for the texture.
+        private readonly int _mipLevelCount;
+        // The width of the texture.
+        private readonly int _textureWidth;
+        // The height of the texture.
+        private readonly int _textureHeight;
+        // The depth of the texture.
+        private readonly int _textureDepth;
+        // The format of the texture.
+        private readonly BufferFormat _format;
 		#endregion
 
 		#region Properties.
-		/// <summary>
-		/// Property to return the texture that owns this lock cache.
-		/// </summary>
-	    public GorgonTexture Texture
-	    {
-		    get;
-	    }
+        /// <summary>
+        /// Property to return whether this texture has a lock against it or not.
+        /// </summary>
+        public bool HasLocks => _locks.Count > 0;
 		#endregion
 
 		#region Methods.
@@ -145,16 +154,16 @@ namespace Gorgon.Graphics.Core
         /// <param name="lockData">Lock data to remove.</param>
         public void Unlock(GorgonTextureLockData lockData)
         {
-            LockCacheKey key = new LockCacheKey(lockData.MipLevel, lockData.ArrayIndex);
+            var key = new LockCacheKey(lockData.MipLevel, lockData.ArrayIndex);
 
 			if (!_locks.TryRemove(key, out GorgonTextureLockData _))
 			{
 				return;
 			}
 
-			Texture.Graphics.D3DDeviceContext
-	               .UnmapSubresource(Texture.D3DResource,
-	                                 D3D11.Resource.CalculateSubResourceIndex(lockData.MipLevel, lockData.ArrayIndex, Texture.Info.MipLevels));
+			_texture.Graphics.D3DDeviceContext
+	               .UnmapSubresource(_texture.D3DResource,
+	                                 D3D11.Resource.CalculateSubResourceIndex(lockData.MipLevel, lockData.ArrayIndex, _mipLevelCount));
         }
 
 	    /// <summary>
@@ -164,32 +173,32 @@ namespace Gorgon.Graphics.Core
 	    /// <param name="mipLevel">Mip map level to lock.</param>
 	    /// <param name="arrayIndex">Array index to lock (1D/2D textures only).</param>
 	    /// <returns>A new <see cref="GorgonTextureLockData"/> containing the data from the lock.</returns>
-	    public GorgonTextureLockData Lock(LockMode lockFlags, int mipLevel, int arrayIndex)
+	    public GorgonTextureLockData Lock(D3D11.MapMode lockFlags, int mipLevel, int arrayIndex)
 	    {
-		    LockCacheKey key = new LockCacheKey(mipLevel, arrayIndex);
+		    var key = new LockCacheKey(mipLevel, arrayIndex);
 
 			if (_locks.TryGetValue(key, out GorgonTextureLockData result))
 			{
 				return result;
 			}
 
-			switch (Texture.ResourceType)
+			switch (_texture.ResourceType)
 		    {
 			    case GraphicsResourceType.Texture1D:
 			    case GraphicsResourceType.Texture2D:
 			    case GraphicsResourceType.Texture3D:
 
-			        DX.DataBox box = Texture.Graphics.D3DDeviceContext.MapSubresource(Texture.D3DResource,
-				                                                                      D3D11.Resource.CalculateSubResourceIndex(mipLevel, arrayIndex, Texture.Info.MipLevels),
-				                                                                      (D3D11.MapMode)lockFlags,
+			        DX.DataBox box = _texture.Graphics.D3DDeviceContext.MapSubresource(_texture.D3DResource,
+				                                                                      D3D11.Resource.CalculateSubResourceIndex(mipLevel, arrayIndex, _mipLevelCount),
+				                                                                      lockFlags,
 				                                                                      D3D11.MapFlags.None,
 				                                                                      out _);
 
-				    result = new GorgonTextureLockData(this, box, mipLevel, arrayIndex);
+			        result = new GorgonTextureLockData(this, box, _textureWidth, _textureHeight, _textureDepth, mipLevel, arrayIndex, _format);
 
 				    return _locks.GetOrAdd(key, result);
 			    default:
-				    throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_IMAGE_TYPE_UNSUPPORTED, Texture.ResourceType));
+				    throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_IMAGE_TYPE_UNSUPPORTED, _texture.ResourceType));
 		    }
 	    }
 
@@ -217,9 +226,15 @@ namespace Gorgon.Graphics.Core
 		/// Initializes a new instance of the <see cref="TextureLockCache"/> class.
 		/// </summary>
 		/// <param name="texture">Texture that will be locked.</param>
-		public TextureLockCache(GorgonTexture texture)
+		/// <param name="info">The information used to build the texture.</param>
+		public TextureLockCache(GorgonGraphicsResource texture, IGorgonTexture2DInfo info)
         {
-            Texture = texture;
+            _mipLevelCount = info.MipLevels;
+            _textureWidth = info.Width;
+            _textureHeight = info.Height;
+            _textureDepth = 1;
+            _format = info.Format;
+            _texture = texture;
             _locks = new ConcurrentDictionary<LockCacheKey, GorgonTextureLockData>();
         }
         #endregion

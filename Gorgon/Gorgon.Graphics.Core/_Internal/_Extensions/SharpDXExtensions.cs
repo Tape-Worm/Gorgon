@@ -35,6 +35,48 @@ namespace Gorgon.Graphics.Core
 	/// </summary>
 	internal static class SharpDXExtensions
 	{
+        /// <summary>
+        /// Function to convert a DXGI swap chain description to a <see cref="GorgonSwapChainInfo"/>.
+        /// </summary>
+        /// <param name="desc">The description to convert.</param>
+        /// <param name="name">The name of the swap chain.</param>
+        /// <param name="depthStencilFormat">The depth/stencil buffer format to use.</param>
+        /// <returns>A new <see cref="GorgonSwapChainInfo"/>.</returns>
+	    public static GorgonSwapChainInfo ToSwapChainInfo(this DXGI.SwapChainDescription1 desc, string name, BufferFormat depthStencilFormat)
+        {
+            return new GorgonSwapChainInfo(name)
+                   {
+                       Width = desc.Width,
+                       Height = desc.Height,
+                       Format = (BufferFormat)desc.Format,
+                       UseFlipMode = desc.SwapEffect == DXGI.SwapEffect.FlipSequential,
+                       DepthStencilFormat = depthStencilFormat,
+                       StretchBackBuffer = desc.Scaling != DXGI.Scaling.None
+                   };
+        }
+
+	    /// <summary>
+	    /// Function to convert a <see cref="IGorgonSwapChainInfo"/> to a DXGI swap chain description value.
+	    /// </summary>
+	    /// <param name="swapChainInfo">The swap chain info to convert.</param>
+	    /// <returns>A DXGI swap chain description.</returns>
+	    public static DXGI.SwapChainDescription1 ToSwapChainDesc(this IGorgonSwapChainInfo swapChainInfo)
+	    {
+	        return new DXGI.SwapChainDescription1
+	               {
+	                   BufferCount = 2,
+	                   AlphaMode = DXGI.AlphaMode.Unspecified,
+	                   Flags = DXGI.SwapChainFlags.AllowModeSwitch,
+	                   Format = (DXGI.Format)swapChainInfo.Format,
+	                   Width = swapChainInfo.Width,
+	                   Height = swapChainInfo.Height,
+	                   Scaling = swapChainInfo.StretchBackBuffer ? DXGI.Scaling.Stretch : DXGI.Scaling.None,
+	                   SampleDescription = ToSampleDesc(GorgonMultisampleInfo.NoMultiSampling),
+	                   SwapEffect = swapChainInfo.UseFlipMode ? DXGI.SwapEffect.FlipSequential : DXGI.SwapEffect.Discard,
+	                   Usage = DXGI.Usage.RenderTargetOutput
+	               };
+	    }
+
 		/// <summary>
 		/// Function to convert a <see cref="GorgonBox"/> to a D3D11 resource region.
 		/// </summary>
@@ -52,7 +94,7 @@ namespace Gorgon.Graphics.Core
 		/// <returns>A Gorgon rational number.</returns>
 		public static GorgonRationalNumber ToGorgonRational(this DXGI.Rational rational)
 		{
-			return new GorgonRationalNumber(rational.Numerator, rational.Denominator);
+		    return rational.Denominator == 0 ? GorgonRationalNumber.Empty : new GorgonRationalNumber(rational.Numerator, rational.Denominator);
 		}
 
 		/// <summary>
@@ -106,10 +148,10 @@ namespace Gorgon.Graphics.Core
 	    /// Function to convert a DXGI ModeDescription1 to a <see cref="GorgonVideoMode"/>.
 	    /// </summary>
 	    /// <param name="mode">ModeDescription1 to convert.</param>
-	    /// <returns>The new mode description.</returns>
-	    public static GorgonVideoMode ToGorgonVideoMode(this DXGI.ModeDescription1 mode)
+	    /// <param name="gorgonMode">The converted video mode.</param>
+	    public static void ToGorgonVideoMode(this DXGI.ModeDescription1 mode, out GorgonVideoMode gorgonMode)
 	    {
-	        return new GorgonVideoMode(mode);
+	        gorgonMode = new GorgonVideoMode(mode);
 	    }
 
         /// <summary>
@@ -167,137 +209,6 @@ namespace Gorgon.Graphics.Core
 		public static DXGI.SampleDescription ToSampleDesc(this GorgonMultisampleInfo samplingInfo)
 		{
 			return new DXGI.SampleDescription(samplingInfo.Count, samplingInfo.Quality);
-		}
-
-		/// <summary>
-		/// Function to convert a <see cref="IGorgonSwapChainInfo"/> to a DXGI swap chain description value.
-		/// </summary>
-		/// <param name="swapChainInfo">The swap chain info to convert.</param>
-		/// <returns>A DXGI swap chain description.</returns>
-		public static DXGI.SwapChainDescription1 ToSwapChainDesc(this GorgonSwapChainInfo swapChainInfo)
-		{
-			return new DXGI.SwapChainDescription1
-			       {
-				       BufferCount = 2,
-				       AlphaMode = DXGI.AlphaMode.Unspecified,
-				       Flags = DXGI.SwapChainFlags.AllowModeSwitch,
-				       Format = (DXGI.Format)swapChainInfo.Format,
-				       Width = swapChainInfo.Width,
-				       Height = swapChainInfo.Height,
-				       Scaling = swapChainInfo.StretchBackBuffer ? DXGI.Scaling.Stretch : DXGI.Scaling.None,
-					   SampleDescription = ToSampleDesc(GorgonMultisampleInfo.NoMultiSampling),
-					   SwapEffect = swapChainInfo.UseFlipMode ? DXGI.SwapEffect.FlipSequential : DXGI.SwapEffect.Discard,
-					   Usage = DXGI.Usage.RenderTargetOutput
-			       };
-		}
-
-		/// <summary>
-		/// Function to convert a gorgon vertex buffer binding to a D3D 11 vertex buffer binding.
-		/// </summary>
-		/// <param name="binding">The binding to convert.</param>
-		/// <returns>A new D3D 11 vertex buffer binding.</returns>
-		public static D3D11.VertexBufferBinding ToVertexBufferBinding(this GorgonVertexBufferBinding binding)
-		{
-			return new D3D11.VertexBufferBinding(binding.VertexBuffer?.NativeBuffer, binding.Stride, binding.Offset);
-		}
-
-		/// <summary>
-		/// Function to convert a gorgon raster state info to a D3D raster state desc.
-		/// </summary>
-		/// <param name="state">The state to convert.</param>
-		/// <returns>A new D3D 11 raster state desc.</returns>
-		public static D3D11.RasterizerStateDescription1 ToRasterStateDesc1(this GorgonRasterState state)
-		{
-			return new D3D11.RasterizerStateDescription1
-			       {
-						CullMode = (D3D11.CullMode)state.CullMode,
-						DepthBias = state.DepthBias,
-						IsFrontCounterClockwise = state.IsFrontCounterClockwise,
-						FillMode = (D3D11.FillMode)state.FillMode,
-						DepthBiasClamp = state.DepthBiasClamp,
-						SlopeScaledDepthBias = state.SlopeScaledDepthBias,
-						ForcedSampleCount = state.ForcedUavSampleCount,
-						IsAntialiasedLineEnabled = state.IsAntialiasedLineEnabled,
-						IsDepthClipEnabled = state.IsDepthClippingEnabled,
-						IsMultisampleEnabled = state.IsMultisamplingEnabled,
-						IsScissorEnabled = state.IsScissorClippingEnabled
-			       };
-		}
-
-		/// <summary>
-		/// Function to convert a gorgon sampler state info to a D3D sampler state desc.
-		/// </summary>
-		/// <param name="state">The state to convert.</param>
-		/// <returns>A new D3D 11 sampler state desc.</returns>
-		public static D3D11.SamplerStateDescription ToSamplerStateDesc(this GorgonSamplerState state)
-		{
-			return new D3D11.SamplerStateDescription
-			       {
-				       Filter = (D3D11.Filter)state.Filter,
-				       AddressU = (D3D11.TextureAddressMode)state.WrapU,
-				       AddressV = (D3D11.TextureAddressMode)state.WrapV,
-				       AddressW = (D3D11.TextureAddressMode)state.WrapW,
-				       BorderColor = state.BorderColor.ToRawColor4(),
-				       ComparisonFunction = (D3D11.Comparison)state.ComparisonFunction,
-				       MaximumAnisotropy = state.MaxAnisotropy,
-				       MaximumLod = state.MaximumLevelOfDetail,
-				       MinimumLod = state.MinimumLevelOfDetail,
-				       MipLodBias = state.MipLevelOfDetailBias
-			       };
-		}
-
-		/// <summary>
-		/// FUnction to convert a Gorgon render target blend state info to a D3D render target blend state 1 desc.
-		/// </summary>
-		/// <param name="state">The state convert.</param>
-		/// <returns>A new D3D blend state 1 description. </returns>
-		public static D3D11.RenderTargetBlendDescription1 ToRenderTargetBlendStateDesc1(this GorgonBlendState state)
-		{
-			return new D3D11.RenderTargetBlendDescription1
-			       {
-				       LogicOperation = (D3D11.LogicOperation)state.LogicOperation,
-				       SourceAlphaBlend = (D3D11.BlendOption)state.SourceAlphaBlend,
-				       AlphaBlendOperation = (D3D11.BlendOperation)state.AlphaBlendOperation,
-				       SourceBlend = (D3D11.BlendOption)state.SourceColorBlend,
-				       DestinationAlphaBlend = (D3D11.BlendOption)state.DestinationAlphaBlend,
-				       BlendOperation = (D3D11.BlendOperation)state.ColorBlendOperation,
-				       DestinationBlend = (D3D11.BlendOption)state.DestinationColorBlend,
-				       IsBlendEnabled = state.IsBlendingEnabled,
-				       IsLogicOperationEnabled = state.IsLogicalOperationEnabled,
-				       RenderTargetWriteMask = (D3D11.ColorWriteMaskFlags)state.WriteMask
-			       };
-		}
-
-		/// <summary>
-		/// Function to convert a gorgon depth/stencil state info to a D3D depth/stencil state desc.
-		/// </summary>
-		/// <param name="state">The state to convert.</param>
-		/// <returns>A new D3D 11 depth/stencil state desc.</returns>
-		public static D3D11.DepthStencilStateDescription ToDepthStencilStateDesc(this GorgonDepthStencilState state)
-		{
-			return new D3D11.DepthStencilStateDescription
-			       {
-				       StencilReadMask = state.StencilReadMask,
-				       DepthWriteMask = state.IsDepthWriteEnabled ? D3D11.DepthWriteMask.All : D3D11.DepthWriteMask.Zero,
-				       StencilWriteMask = state.StencilWriteMask,
-				       DepthComparison = (D3D11.Comparison)state.DepthComparison,
-				       IsStencilEnabled = state.IsStencilEnabled,
-				       IsDepthEnabled = state.IsDepthEnabled,
-				       BackFace = new D3D11.DepthStencilOperationDescription
-				                  {
-					                  Comparison = (D3D11.Comparison)state.BackFaceStencilOp.Comparison,
-					                  FailOperation = (D3D11.StencilOperation)state.BackFaceStencilOp.FailOperation,
-					                  PassOperation = (D3D11.StencilOperation)state.BackFaceStencilOp.PassOperation,
-					                  DepthFailOperation = (D3D11.StencilOperation)state.BackFaceStencilOp.DepthFailOperation
-				                  },
-				       FrontFace = new D3D11.DepthStencilOperationDescription
-				                   {
-					                   Comparison = (D3D11.Comparison)state.FrontFaceStencilOp.Comparison,
-					                   FailOperation = (D3D11.StencilOperation)state.FrontFaceStencilOp.FailOperation,
-					                   PassOperation = (D3D11.StencilOperation)state.FrontFaceStencilOp.PassOperation,
-					                   DepthFailOperation = (D3D11.StencilOperation)state.FrontFaceStencilOp.DepthFailOperation
-				                   }
-			       };
 		}
 	}
 }

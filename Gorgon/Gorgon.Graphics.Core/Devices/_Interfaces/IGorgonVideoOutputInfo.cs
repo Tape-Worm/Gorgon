@@ -76,6 +76,14 @@ namespace Gorgon.Graphics.Core
 			get;
 		}
 
+        /// <summary>
+        /// Property to return the adapter that owns this output.
+        /// </summary>
+	    IGorgonVideoAdapterInfo Adapter
+	    {
+	        get;
+	    }
+
 		/// <summary>
 		/// Property to return the handle to the monitor that is attached to the output.
 		/// </summary>

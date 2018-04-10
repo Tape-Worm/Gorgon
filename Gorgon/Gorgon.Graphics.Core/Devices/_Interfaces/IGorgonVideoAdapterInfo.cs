@@ -68,13 +68,9 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		Hardware = 0,
 		/// <summary>
-		/// Software video adapter (WARP).
+		/// Software video adapter.
 		/// </summary>
-		Software = 1,
-		/// <summary>
-		/// Reference rasterizer video adapter.
-		/// </summary>
-		ReferenceRasterizer = 2
+		Software = 1
 	}
 
 	/// <summary>
@@ -188,7 +184,7 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Property to return the highest feature set that the hardware can support.
 		/// </summary>
-		FeatureSet SupportedFeatureLevel
+		FeatureSet FeatureSet
 		{
 			get;
 		}
@@ -221,7 +217,7 @@ namespace Gorgon.Graphics.Core
 		/// Property to return the outputs on this device.
 		/// </summary>
 		/// <remarks>The outputs are typically monitors attached to the device.</remarks>
-		IGorgonNamedObjectReadOnlyList<IGorgonVideoOutputInfo> Outputs
+		GorgonVideoAdapterOutputList Outputs
 		{
 			get;
 		}

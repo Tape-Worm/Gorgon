@@ -32,8 +32,8 @@ namespace Gorgon.Core
 	/// <summary>
 	/// An error code message that is usually sent along with a <see cref="GorgonException"/>.
 	/// </summary>
-	public struct GorgonResult
-		: IGorgonNamedObject, IEquatable<GorgonResult>
+	public readonly struct GorgonResult
+		: IGorgonNamedObject, IGorgonEquatableByRef<GorgonResult>
 	{
 		#region Predefined error codes.
 		// Base error code.
@@ -105,13 +105,6 @@ namespace Gorgon.Core
 		public static GorgonResult CannotCompile => new GorgonResult(nameof(CannotCompile), ErrorBase + 11, Resources.GOR_RESULT_CANNOT_COMPILE);
 		#endregion
 
-		#region Variables.
-		// Description of th error.
-		// Error code.
-		// Name of the error.
-
-		#endregion
-
 		#region Properties.
 		/// <summary>
 		/// Property to set or return the error message to be sent along with the <see cref="GorgonException"/>.
@@ -137,6 +130,23 @@ namespace Gorgon.Core
 			get;
 		}
 
+	    /// <summary>
+	    /// Indicates whether the current object is equal to another object of the same type.
+	    /// </summary>
+	    /// <param name="other">An object to compare with this object.</param>
+	    /// <returns>
+	    /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
+	    /// </returns>
+	    public bool Equals(GorgonResult other) => Equals(in this, in other);
+
+	    /// <summary>
+	    /// Indicates whether the current object is equal to another object of the same type.
+	    /// </summary>
+	    /// <param name="other">An object to compare with this object.</param>
+	    /// <returns>
+	    /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
+	    /// </returns>
+	    public bool Equals(in GorgonResult other) => Equals(in this, in other);
 		#endregion
 
 		#region Methods.
@@ -253,14 +263,6 @@ namespace Gorgon.Core
 		#endregion
 
 		#region IEquatable<GorgonResult> Members
-		/// <summary>
-		/// Indicates whether the current object is equal to another object of the same type.
-		/// </summary>
-		/// <param name="other">An object to compare with this object.</param>
-		/// <returns>
-		/// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
-		/// </returns>
-		public bool Equals(GorgonResult other) => Equals(this, other);
 		#endregion
 	}
 }

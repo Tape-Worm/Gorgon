@@ -22,8 +22,6 @@ build/
 bld/
 Docs/Help/
 Gorgon/backup_*/
-Gorgon/OldAndBroken/
-Gorgon/__OBSOLETE__/
 Gorgon/*.txt
 Experiment_*/
 Test/*
@@ -32,6 +30,14 @@ Test/*
 Artifacts/
 Artifacts_Examples/
 Resources/__OLDE__/
+/Deploy.ps1
+/Deploy_Examples.ps1
+GorgonFull.snk
+/Docs/D3D11.1_Features.txt
+/Docs/D3D11.2_Features.txt
+/Docs/D3D11.3_Features.txt
+/Docs/D3D11.4_Features.txt
+/Gorgon/Gorgon.Graphics.Core/OLDE
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
@@ -217,10 +223,3 @@ UpgradeLog*.htm
 
 # Microsoft Fakes
 FakesAssemblies/
-/Deploy.ps1
-/Deploy_Examples.ps1
-GorgonFull.snk
-/Docs/D3D11.1_Features.txt
-/Docs/D3D11.2_Features.txt
-/Docs/D3D11.3_Features.txt
-/Docs/D3D11.4_Features.txt

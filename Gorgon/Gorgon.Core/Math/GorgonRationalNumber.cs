@@ -5,7 +5,7 @@
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
+// in the Software without restriction,cluding without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
@@ -33,7 +33,7 @@ namespace Gorgon.Math
 	/// <summary>
 	/// A representation of a rational number.
 	/// </summary>
-	public struct GorgonRationalNumber
+	public readonly struct GorgonRationalNumber
 		: IEquatable<GorgonRationalNumber>, IComparable<GorgonRationalNumber>
 	{
 		#region Variables.
@@ -60,7 +60,7 @@ namespace Gorgon.Math
 		/// <param name="left">Left instance to compare.</param>
 		/// <param name="right">Right instance to compare.</param>
 		/// <returns><b>true</b> if the instances are equal, <b>false</b> if not.</returns>
-		public static bool Equals(ref GorgonRationalNumber left, ref GorgonRationalNumber right)
+		public static bool Equals(GorgonRationalNumber left, GorgonRationalNumber right)
 		{
 			return left.Numerator == right.Numerator
 			       && left.Denominator == right.Denominator;
@@ -116,18 +116,18 @@ namespace Gorgon.Math
 		/// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
 		/// </returns>
 		/// <param name="other">An object to compare with this object.</param>
-		public bool Equals(GorgonRationalNumber other) => Equals(ref this, ref other);
+		public bool Equals(GorgonRationalNumber other) => Equals(this, other);
 
 		/// <summary>
 		/// Compares the current instance with another object of the same type and returns an integer that indicates whether the current instance precedes, follows, or occurs in the same position in the sort order as the other object. 
 		/// </summary>
 		/// <returns>
-		/// A value that indicates the relative order of the objects being compared. The return value has these meanings: Value Meaning Less than zero This instance precedes <paramref name="other"/> in the sort order.  Zero This instance occurs in the same position in the sort order as <paramref name="other"/>. Greater than zero This instance follows <paramref name="other"/> in the sort order. 
+		/// A value that indicates the relative order of the objects being compared. The return value has these meanings: Value Meaning Less than zero This instance precedes <paramref  name="other"/> in the sort order.  Zero This instance occurs in the same position in the sort order as <paramref  name="other"/>. Greater than zero This instance follows <paramref  name="other"/> in the sort order. 
 		/// </returns>
 		/// <param name="other">An object to compare with this instance. </param>
 		public int CompareTo(GorgonRationalNumber other)
 		{
-			if (Equals(ref this, ref other))
+			if (Equals(this, other))
 			{
 				return 0;
 			}
@@ -200,7 +200,7 @@ namespace Gorgon.Math
 		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
 		public static bool operator ==(GorgonRationalNumber left, GorgonRationalNumber right)
 		{
-			return Equals(ref left, ref right);
+			return Equals(left, right);
 		}
 
 		/// <summary>
@@ -211,7 +211,7 @@ namespace Gorgon.Math
 		/// <returns><b>true</b> if not equal, <b>false</b> if equal.</returns>
 		public static bool operator !=(GorgonRationalNumber left, GorgonRationalNumber right)
 		{
-			return !Equals(ref left, ref right);
+			return !Equals(left, right);
 		}
 
 		/// <summary>
@@ -219,7 +219,7 @@ namespace Gorgon.Math
 		/// </summary>
 		/// <param name="left">Left rational to compare.</param>
 		/// <param name="right">Right rational to compare.</param>
-		/// <returns><b>true</b> if the <paramref name="left"/> is less than the <paramref name="right"/>, <b>false</b> if not.</returns>
+		/// <returns><b>true</b> if the <paramref  name="left"/> is less than the <paramref  name="right"/>, <b>false</b> if not.</returns>
 		public static bool operator <(GorgonRationalNumber left, GorgonRationalNumber right)
 		{
 			decimal leftRational = left;
@@ -233,7 +233,7 @@ namespace Gorgon.Math
 		/// </summary>
 		/// <param name="left">Left rational to compare.</param>
 		/// <param name="right">Right rational to compare.</param>
-		/// <returns><b>true</b> if the <paramref name="left"/> is less than or equal to the <paramref name="right"/>, <b>false</b> if not.</returns>
+		/// <returns><b>true</b> if the <paramref  name="left"/> is less than or equal to the <paramref  name="right"/>, <b>false</b> if not.</returns>
 		public static bool operator <=(GorgonRationalNumber left, GorgonRationalNumber right)
 		{
 			decimal leftRational = left;
@@ -247,7 +247,7 @@ namespace Gorgon.Math
 		/// </summary>
 		/// <param name="left">Left rational to compare.</param>
 		/// <param name="right">Right rational to compare.</param>
-		/// <returns><b>true</b> if the <paramref name="left"/> is greater than the <paramref name="right"/>, <b>false</b> if not.</returns>
+		/// <returns><b>true</b> if the <paramref  name="left"/> is greater than the <paramref  name="right"/>, <b>false</b> if not.</returns>
 		public static bool operator >(GorgonRationalNumber left, GorgonRationalNumber right)
 		{
 			decimal leftRational = left;
@@ -261,7 +261,7 @@ namespace Gorgon.Math
 		/// </summary>
 		/// <param name="left">Left rational to compare.</param>
 		/// <param name="right">Right rational to compare.</param>
-		/// <returns><b>true</b> if the <paramref name="left"/> is greater than or equal to the <paramref name="right"/>, <b>false</b> if not.</returns>
+		/// <returns><b>true</b> if the <paramref  name="left"/> is greater than or equal to the <paramref  name="right"/>, <b>false</b> if not.</returns>
 		public static bool operator >=(GorgonRationalNumber left, GorgonRationalNumber right)
 		{
 			decimal leftRational = left;
@@ -277,7 +277,7 @@ namespace Gorgon.Math
 		/// </summary>
 		/// <param name="numerator">The numerator for the number.</param>
 		/// <param name="denominator">The denominator for the number.</param>
-		/// <exception cref="DivideByZeroException">Thrown when the <paramref name="denominator"/> is 0.</exception>
+		/// <exception cref="DivideByZeroException">Thrown when the <paramref  name="denominator"/> is 0.</exception>
 		public GorgonRationalNumber(int numerator, int denominator)
 		{
 			if (denominator == 0)

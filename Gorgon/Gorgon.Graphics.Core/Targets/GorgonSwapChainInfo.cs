@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using DXGI = SharpDX.DXGI;
 
 namespace Gorgon.Graphics.Core
 {
@@ -126,18 +127,47 @@ namespace Gorgon.Graphics.Core
 			get;
 			set;
 		}
-		#endregion
 
-		#region Constructor/Destructor.
+        /// <summary>
+        /// Property to return the name of the swap chain.
+        /// </summary>
+	    public string Name
+	    {
+	        get;
+	    }
+        #endregion
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonSwapChainInfo"/> class.
-		/// </summary>
-		/// <param name="info">A <see cref="IGorgonSwapChainInfo"/> to copy the settings from.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
-		public GorgonSwapChainInfo(IGorgonSwapChainInfo info)
-		{
-		    Format = info?.Format ?? throw new ArgumentNullException(nameof(info));
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonSwapChainInfo" /> class.
+        /// </summary>
+        /// <param name="desc">The DXGI swap chain description to copy from.</param>
+        /// <param name="name">[Optional] The name of the swap chain.</param>
+        internal GorgonSwapChainInfo(in DXGI.SwapChainDescription1 desc, string name = null)
+                    : this(name)
+        {
+            Format = (BufferFormat)desc.Format;
+            Width = desc.Width;
+            Height = desc.Height;
+            UseFlipMode = desc.SwapEffect == DXGI.SwapEffect.FlipSequential;
+            StretchBackBuffer = desc.Scaling != DXGI.Scaling.None;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonSwapChainInfo"/> class.
+        /// </summary>
+        /// <param name="info">A <see cref="IGorgonSwapChainInfo"/> to copy the settings from.</param>
+        /// <param name="newName">[Optional] A new name for the swap chain.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
+        public GorgonSwapChainInfo(IGorgonSwapChainInfo info, string newName = null)
+        {
+            if (info == null)
+            {
+                throw new ArgumentNullException(nameof(info));
+            }
+
+            Name = string.IsNullOrEmpty(newName) ? info.Name : newName;
+            Format = info.Format;
 			Height = info.Height;
 			StretchBackBuffer = info.StretchBackBuffer;
 			UseFlipMode = info.UseFlipMode;
@@ -148,8 +178,10 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonSwapChainInfo"/> class.
 		/// </summary>
-		public GorgonSwapChainInfo()
+		/// <param name="name">The name of the swap chain.</param>
+		public GorgonSwapChainInfo(string name = null)
 		{
+		    Name = string.IsNullOrEmpty(name) ? $"GorgonSwapChain_{Guid.NewGuid():N}" : name;
 			StretchBackBuffer = true;
 			Format = BufferFormat.R8G8B8A8_UNorm;
 		    DepthStencilFormat = BufferFormat.Unknown;

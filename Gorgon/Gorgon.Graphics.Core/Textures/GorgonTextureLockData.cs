@@ -36,14 +36,14 @@ namespace Gorgon.Graphics.Core
 	/// </summary>
 	/// <remarks>
 	/// <para>
-	/// A lock is used to modify a <see cref="GorgonTexture"/> from the CPU by returning a pointer to the texture location in memory. 
+	/// A lock is used to modify a texture from the CPU by returning a pointer to the texture location in memory. 
 	/// </para>
 	/// <para>
 	/// To unlock the lock, just call the <see cref="IDisposable.Dispose"/> method on this object and the changes made will be uploaded to the GPU. If the texture that owns this lock is disposed before this 
 	/// object is disposed, then this object will be invalid and disposed automatically.
 	/// </para>
 	/// <para>
-	/// Locks can only be placed on <see cref="GorgonTexture"/> objects that were created with a <see cref="ResourceUsage.Dynamic"/> or <see cref="ResourceUsage.Staging"/> <see cref="IGorgonTextureInfo.Usage"/>. If the usage for the texture is set to 
+	/// Locks can only be placed on texture objects that were created with a <see cref="ResourceUsage.Dynamic"/> or <see cref="ResourceUsage.Staging"/> usage. If the usage for the texture is set to 
 	/// <see cref="ResourceUsage.Staging"/>, then the lock can read the data in the texture, otherwise the lock will allow write-only access to the texture.
 	/// </para>
 	/// <para>
@@ -53,10 +53,10 @@ namespace Gorgon.Graphics.Core
 	/// </para>
 	/// </note>
 	/// </para>
-	/// <seealso cref="GorgonTexture.Lock"/>
+	/// <seealso cref="GorgonTexture2D.Lock"/>
 	/// </remarks>
 	public sealed class GorgonTextureLockData
-        : IGorgonImageBuffer, IDisposable 
+        : IDisposable 
     {
 		#region Variables.
 		// The cache that owns the lock.
@@ -64,11 +64,6 @@ namespace Gorgon.Graphics.Core
 		#endregion
 
 		#region Properties.
-		/// <summary>
-		/// Property to return the texture is locked.
-		/// </summary>
-		public GorgonTexture Texture => _lockCache.Texture;
-
 		/// <summary>
 		/// Property to return the format of the buffer.
 		/// </summary>
@@ -123,17 +118,9 @@ namespace Gorgon.Graphics.Core
 		}
 
 		/// <summary>
-		/// Property to return the depth slice index.
-		/// </summary>
-		/// <remarks>
-		/// For a lock, this value is always 0.
-		/// </remarks>
-		int IGorgonImageBuffer.DepthSliceIndex => 0;
-
-		/// <summary>
 		/// Property to return the data stream for the image data.
 		/// </summary>
-		public IGorgonPointer Data
+		public GorgonNativeBuffer<byte> Data
 		{
 			get;
 		}
@@ -149,23 +136,11 @@ namespace Gorgon.Graphics.Core
 
 		#region Methods.
 		/// <summary>
-		/// Function to copy the image buffer data from this buffer into another.
-		/// </summary>
-		/// <param name="buffer">The buffer to copy into.</param>
-		/// <param name="sourceRegion">[Optional] The region in the source to copy.</param>
-		/// <param name="destX">[Optional] Horizontal offset in the destination buffer.</param>
-		/// <param name="destY">[Optional] Vertical offset in the destination buffer.</param>
-		/// <exception cref="NotSupportedException">This method is not supported for locks.</exception>
-		void IGorgonImageBuffer.CopyTo(IGorgonImageBuffer buffer, DX.Rectangle? sourceRegion, int destX, int destY)
-		{
-			throw new NotSupportedException();
-		}
-
-		/// <summary>
 		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
 		/// </summary>
 		public void Dispose()
 		{
+            Data?.Dispose();
 			_lockCache?.Unlock(this);
 		}
 		#endregion
@@ -176,15 +151,19 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="cache">The cache containing the locks.</param>
 		/// <param name="data">The data returned from the lock.</param>
+		/// <param name="width">The width of the texture.</param>
+		/// <param name="height">The height of the texture.</param>
+		/// <param name="depth">The depth of the texture.</param>
+		/// <param name="format">The format of the texture.</param>
 		/// <param name="mipLevel">The mip level of the sub resource.</param>
 		/// <param name="arrayIndex">Array index of the sub resource.</param>
-		internal GorgonTextureLockData(TextureLockCache cache, DX.DataBox data, int mipLevel, int arrayIndex)
+		internal GorgonTextureLockData(TextureLockCache cache, DX.DataBox data, int width, int height, int depth, int mipLevel, int arrayIndex, BufferFormat format)
         {
             _lockCache = cache;
 
-            Width = Texture.Info.Width;
-            Height = Texture.Info.Height;
-            Depth = Texture.Info.Depth;
+            Width = width;
+            Height = height;
+            Depth = depth;
 
             // Calculate the current size at the given mip level.
             for (int mip = 0; mip < mipLevel; ++mip)
@@ -203,11 +182,14 @@ namespace Gorgon.Graphics.Core
                 }
             }
 
-			Format = Texture.Info.Format;
+			Format = format;
 			MipLevel = mipLevel;
-			ArrayIndex = Texture.Info.TextureType != TextureType.Texture3D ? arrayIndex : 0;
+			ArrayIndex = depth > 1 ? arrayIndex : 0;
 			PitchInformation = new GorgonPitchLayout(data.RowPitch, data.SlicePitch);
-            Data = new GorgonPointerAlias(data.DataPointer, data.SlicePitch);
+            unsafe
+            {
+                Data = new GorgonNativeBuffer<byte>((void *)data.DataPointer, data.SlicePitch);
+            }
         }
         #endregion
 	}

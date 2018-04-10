@@ -25,8 +25,9 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Threading;
 using Gorgon.Core;
-using Gorgon.Native;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
@@ -149,32 +150,32 @@ namespace Gorgon.Graphics.Core
     /// </para>
     /// </remarks>
     public abstract class GorgonGraphicsResource
-        : IGorgonNamedObject, IDisposable
+        : IGorgonNamedObject, IGorgonGraphicsObject, IDisposable
     {
+        #region Variables.
+        // Custom application data.
+        private readonly Dictionary<Guid, object> _appData = new Dictionary<Guid, object>();
+        // The Direct 3D 11 resource.
+        private D3D11.Resource _resource;
+        #endregion
+
         #region Properties.
         /// <summary>
         /// Property to return the Direct 3D resource object bound to this object.
         /// </summary>
         internal D3D11.Resource D3DResource
         {
-            get;
-            set;
+            get => _resource;
+            set => _resource = value;
         }
 
         /// <summary>
-        /// Property to return whether or not the resource can be used in an unordered access view.
+        /// Property to return the usage for the resource.
         /// </summary>
-        protected internal abstract bool IsUavResource
+        public ResourceUsage Usage
         {
             get;
-        }
-
-        /// <summary>
-        /// Property to return whether or not the resource can be bound as a shader resource.
-        /// </summary>
-        protected internal abstract bool IsShaderResource
-        {
-            get;
+            protected set;
         }
 
         /// <summary>
@@ -252,13 +253,15 @@ namespace Gorgon.Graphics.Core
             Justification = "I don't have a finalizer, plus, this method is completely overridable. Idiot.")]
         public virtual void Dispose()
         {
-            D3DResource?.Dispose();
+            D3D11.Resource resource = Interlocked.Exchange(ref _resource, null);
+
+            this.UnregisterDisposable(Graphics);
+            resource?.Dispose();
         }
 
         /// <summary>
         /// Function to set application specific data on the resource.
         /// </summary>
-        /// <typeparam name="T">Type of data to copy into the resource.  The data must be a value type.</typeparam>
         /// <param name="guid">GUID to associate with the data.</param>
         /// <param name="data">Data to set.</param>
         /// <remarks>
@@ -266,70 +269,32 @@ namespace Gorgon.Graphics.Core
         /// Set <paramref name="data"/> to <b>null</b> to remove the data from the resource.
         /// </para>
         /// </remarks>
-        public void SetApplicationData<T>(Guid guid, T? data)
-            where T : struct
+        public void SetApplicationData(Guid guid, object data)
         {
-            GorgonPointerTyped<T> dataPtr = null;
-
             if (D3DResource == null)
             {
                 return;
             }
 
-            try
+            if (data == null)
             {
-                if (data != null)
-                {
-                    dataPtr = new GorgonPointerTyped<T>();
-                    T value = data.Value;
-                    dataPtr.Write(ref value);
-                    D3DResource.SetPrivateData(guid, (int)dataPtr.Size, new IntPtr(dataPtr.Address));
-                }
-                else
-                {
-                    D3DResource.SetPrivateData(guid, 0, IntPtr.Zero);
-                }
+                _appData.Remove(guid);
+                return;
             }
-            finally
-            {
-                dataPtr?.Dispose();
-            }
+
+            _appData[guid] = data;
         }
 
         /// <summary>
         /// Function to return application specific data from the resource.
         /// </summary>
-        /// <typeparam name="T">Type of data to copy into the resource.  The data must be a value type.</typeparam>
         /// <param name="guid">GUID to associate with the data.</param>
-        /// <returns>The application specific data stored in the resource, or <b>null</b>.</returns>
-        public T? GetApplicationData<T>(Guid guid)
-            where T : struct
+        /// <returns>The data associated with the GUID.</returns>
+        public object GetApplicationData(Guid guid)
         {
-            GorgonPointerTyped<T> dataPtr = null;
+            _appData.TryGetValue(guid, out object result);
 
-            if (D3DResource == null)
-            {
-                return null;
-            }
-
-            try
-            {
-                dataPtr = new GorgonPointerTyped<T>();
-                int bytes = (int)dataPtr.Size;
-
-                D3DResource.GetPrivateData(guid, ref bytes, new IntPtr(dataPtr.Address));
-
-                if (bytes == 0)
-                {
-                    return null;
-                }
-
-                return dataPtr.Read<T>();
-            }
-            finally
-            {
-                dataPtr?.Dispose();
-            }
+            return result;
         }
         #endregion
 

@@ -39,7 +39,7 @@ namespace Gorgon.Graphics.Core
     public static class GorgonImageTextureExtensions
 	{
 	    /// <summary>
-	    /// Function to create a <see cref="GorgonTexture"/> from a GDI+ bitmap.
+	    /// Function to create a <see cref="GorgonTexture2D"/> from a GDI+ bitmap.
 	    /// </summary>
 	    /// <param name="gdiBitmap">The GDI+ bitmap used to create the texture.</param>
 	    /// <param name="name">The name of the texture.</param>
@@ -48,16 +48,16 @@ namespace Gorgon.Graphics.Core
 	    /// <param name="binding">[Optional] The allowed bindings for the texture.</param>
 	    /// <param name="multiSampleInfo">[Optional] Multisampling information to apply to the texture.</param>
 	    /// <param name="log">[Optional] The log interface used for debugging.</param>
-	    /// <returns>A new <see cref="GorgonTexture"/> containing the data from the <paramref name="gdiBitmap"/>.</returns>
+	    /// <returns>A new <see cref="GorgonTexture2D"/> containing the data from the <paramref name="gdiBitmap"/>.</returns>
 	    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="gdiBitmap"/>, <paramref name="graphics"/> or the <paramref name="name"/> parameter is <b>null</b>.</exception>
 	    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
 	    /// <remarks>
 	    /// <para>
 	    /// A GDI+ bitmap is useful to holding image data in memory, but it cannot be sent to the GPU for use as a texture. This method allows an application to convert the GDI+ bitmap into a 
-	    /// <see cref="GorgonTexture"/>. 
+	    /// <see cref="GorgonTexture2D"/>. 
 	    /// </para>
 	    /// <para>
-	    /// The resulting <see cref="GorgonTexture"/> will only contain a single mip level, and single array level. The only image type available will be 2D (i.e. image with a width and height). The GDI+ 
+	    /// The resulting <see cref="GorgonTexture2D"/> will only contain a single mip level, and single array level. The only image type available will be 2D (i.e. image with a width and height). The GDI+ 
 	    /// bitmap should have a 32bpp rgba format, or a 24bpp rgb format or else an exception will be thrown.
 	    /// </para>
 	    /// <para>
@@ -79,13 +79,13 @@ namespace Gorgon.Graphics.Core
 	    /// </list>
 	    /// </para>
 	    /// </remarks>
-	    public static GorgonTexture ToTexture(this Drawing.Bitmap gdiBitmap,
-	                                          string name,
-	                                          GorgonGraphics graphics,
-	                                          ResourceUsage usage = ResourceUsage.Default,
-	                                          TextureBinding binding = TextureBinding.ShaderResource,
-	                                          GorgonMultisampleInfo? multiSampleInfo = null,
-	                                          IGorgonLog log = null)
+	    public static GorgonTexture2D ToTexture(this Drawing.Bitmap gdiBitmap,
+	                                            string name,
+	                                            GorgonGraphics graphics,
+	                                            ResourceUsage usage = ResourceUsage.Default,
+	                                            TextureBinding binding = TextureBinding.ShaderResource,
+	                                            GorgonMultisampleInfo? multiSampleInfo = null,
+	                                            IGorgonLog log = null)
 	    {
 	        if (gdiBitmap == null)
 	        {
@@ -104,12 +104,12 @@ namespace Gorgon.Graphics.Core
 
 	        using (IGorgonImage image = gdiBitmap.ToGorgonImage())
 	        {
-	            return new GorgonTexture(name, graphics, image, usage, binding, multiSampleInfo ?? GorgonMultisampleInfo.NoMultiSampling, log);
+	            return new GorgonTexture2D(name, graphics, image, usage, binding, multiSampleInfo ?? GorgonMultisampleInfo.NoMultiSampling, log);
 	        }
 	    }
 
-        /// <summary>
-        /// Function to create a <see cref="GorgonTexture"/> from a <see cref="GorgonImage"/>.
+	    /// <summary>
+        /// Function to create a <see cref="GorgonTexture2D"/> from a <see cref="GorgonImage"/>.
         /// </summary>
         /// <param name="image">The image used to create the texture.</param>
         /// <param name="name">The name of the texture.</param>
@@ -118,18 +118,18 @@ namespace Gorgon.Graphics.Core
         /// <param name="binding">[Optional] The allowed bindings for the texture.</param>
         /// <param name="multiSampleInfo">[Optional] Multisampling information to apply to the texture.</param>
         /// <param name="log">[Optional] The log interface used for debugging.</param>
-        /// <returns>A new <see cref="GorgonTexture"/> containing the data from the <paramref name="image"/>.</returns>
+        /// <returns>A new <see cref="GorgonTexture2D"/> containing the data from the <paramref name="image"/>.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="image"/>, <paramref name="graphics"/> or the <paramref name="name"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
         /// <remarks>
         /// <para>
         /// A <see cref="GorgonImage"/> is useful to holding image data in memory, but it cannot be sent to the GPU for use as a texture. This method allows an application to convert the 
-        /// <see cref="GorgonImage"/> into a <see cref="GorgonTexture"/>. 
+        /// <see cref="GorgonImage"/> into a <see cref="GorgonTexture2D"/>. 
         /// </para>
         /// <para>
-        /// The resulting <see cref="GorgonTexture"/> will inherit the <see cref="ImageType"/> (converted to the appropriate <see cref="TextureType"/>), width, height (for 2D/3D images), depth (for 3D images), 
+        /// The resulting <see cref="GorgonTexture2D"/> will inherit the <see cref="ImageType"/> (converted to the appropriate <see cref="TextureType"/>), width, height (for 2D/3D images), depth (for 3D images), 
         /// mip map count, array count (for 1D/2D images), and depth count (for 3D images). If the <see cref="GorgonImage"/> being converted has an <see cref="ImageType"/> of <see cref="ImageType.ImageCube"/> 
-        /// then the resulting texture will be set to a <see cref="TextureType.Texture2D"/>, and it will have its <see cref="IGorgonTextureInfo.IsCubeMap"/> flag set to <b>true</b>.
+        /// then the resulting texture will be set to a <see cref="TextureType.Texture2D"/>, and it will have its <see cref="IGorgonTexture2DInfo.IsCubeMap"/> flag set to <b>true</b>.
         /// </para>
         /// <para>
         /// The optional parameters define how Gorgon and shaders should handle the texture:
@@ -150,7 +150,7 @@ namespace Gorgon.Graphics.Core
         /// </list>
         /// </para>
         /// </remarks>
-        public static GorgonTexture ToTexture(this IGorgonImage image,
+        public static GorgonTexture2D ToTexture(this IGorgonImage image,
 		                                      string name,
 											  GorgonGraphics graphics,
                                               ResourceUsage usage = ResourceUsage.Default,
@@ -173,7 +173,7 @@ namespace Gorgon.Graphics.Core
 		        throw new ArgumentNullException(nameof(graphics));
 		    }
 
-		    return new GorgonTexture(name, graphics, image, usage, binding, multiSampleInfo ?? GorgonMultisampleInfo.NoMultiSampling, log);
+		    return new GorgonTexture2D(name, graphics, image, usage, binding, multiSampleInfo ?? GorgonMultisampleInfo.NoMultiSampling, log);
 		}
 	}
 }

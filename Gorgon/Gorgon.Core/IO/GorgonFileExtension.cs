@@ -5,7 +5,7 @@
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
+// in the Software without restriction, cluding without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
@@ -31,278 +31,278 @@ using Gorgon.Properties;
 
 namespace Gorgon.IO
 {
-	/// <summary>
-	/// An extension and description for a file.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// This type allows for easy manipulation of file extensions and their descriptions when populating a <see cref="OpenFileDialog"/>, or <see cref="SaveFileDialog"/> extension list.
-	/// </para>
-	/// <para>
-	/// The file extensions can be compared to each other to determine uniqueness. When comparing file extensions, the comparison is done with a case-insensitive comparer.
-	/// </para>
-	/// </remarks>
-	public struct GorgonFileExtension
-		: IEquatable<GorgonFileExtension>, IComparable<GorgonFileExtension>, IEquatable<string>, IComparable<string>, IGorgonNamedObject
-	{
-		#region Variables.
-		/// <summary>
-		/// The file extension without the leading period.
-		/// </summary>
-		public readonly string Extension;
+    /// <summary>
+    /// An extension and description for a file.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This type allows for easy manipulation of file extensions and their descriptions when populating a <see cref="OpenFileDialog"/>, or <see cref="SaveFileDialog"/> extension list.
+    /// </para>
+    /// <para>
+    /// The file extensions can be compared to each other to determine uniqueness. When comparing file extensions, the comparison is done with a case-insensitive comparer.
+    /// </para>
+    /// </remarks>
+    public readonly struct GorgonFileExtension
+        : IEquatable<GorgonFileExtension>, IComparable<GorgonFileExtension>, IEquatable<string>, IComparable<string>, IGorgonNamedObject
+    {
+        #region Variables.
+        /// <summary>
+        /// The file extension without the leading period.
+        /// </summary>
+        public readonly string Extension;
 
-		/// <summary>
-		/// The description of the file type.
-		/// </summary>
-		public readonly string Description;
-		#endregion
+        /// <summary>
+        /// The description of the file type.
+        /// </summary>
+        public readonly string Description;
+        #endregion
 
-		#region Properties.
-	    /// <summary>
-	    /// Property to return the name of the object.
-	    /// </summary>
-	    string IGorgonNamedObject.Name => Extension;
+        #region Properties.
+        /// <summary>
+        /// Property to return the name of the object.
+        /// </summary>
+        string IGorgonNamedObject.Name => Extension;
 
-		/// <summary>
-		/// Property to return whether the extension is empty or not.
-		/// </summary>
-		public bool IsEmpty => string.IsNullOrWhiteSpace(Extension);
-		#endregion
+        /// <summary>
+        /// Property to return whether the extension is empty or not.
+        /// </summary>
+        public bool IsEmpty => string.IsNullOrWhiteSpace(Extension);
+        #endregion
 
-		#region Operators.
-		/// <summary>
-		/// Operator to return whether 2 instances are equal.
-		/// </summary>
-		/// <param name="left">Left instance to compare.</param>
-		/// <param name="right">Right instance to compare.</param>
-		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-		public static bool operator ==(GorgonFileExtension left, GorgonFileExtension right)
-		{
-			return Equals(ref left, ref right);
-		}
+        #region Operators.
+        /// <summary>
+        /// Operator to return whether 2 instances are equal.
+        /// </summary>
+        /// <param name="left">Left instance to compare.</param>
+        /// <param name="right">Right instance to compare.</param>
+        /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+        public static bool operator ==(GorgonFileExtension left, GorgonFileExtension right)
+        {
+            return Equals(left, right);
+        }
 
-		/// <summary>
-		/// Operator to return whether 2 instances are not equal.
-		/// </summary>
-		/// <param name="left">Left instance to compare.</param>
-		/// <param name="right">Right instance to compare.</param>
-		/// <returns><b>true</b> if not equal, <b>false</b> if equal.</returns>
-		public static bool operator !=(GorgonFileExtension left, GorgonFileExtension right)
-		{
-			return !Equals(ref left, ref right);
-		}
+        /// <summary>
+        /// Operator to return whether 2 instances are not equal.
+        /// </summary>
+        /// <param name="left">Left instance to compare.</param>
+        /// <param name="right">Right instance to compare.</param>
+        /// <returns><b>true</b> if not equal, <b>false</b> if equal.</returns>
+        public static bool operator !=(GorgonFileExtension left, GorgonFileExtension right)
+        {
+            return !Equals(left, right);
+        }
 
-		/// <summary>
-		/// Operator to return whether one instance is less or equal to the other.
-		/// </summary>
-		/// <param name="left">Left instance to compare.</param>
-		/// <param name="right">Right instance to compare.</param>
-		/// <returns><b>true</b> if less than or equal, <b>false</b> if not.</returns>
-		public static bool operator <=(GorgonFileExtension left, GorgonFileExtension right)
-		{
-			if (Equals(ref left, ref right))
-			{
-				return true;
-			}
+        /// <summary>
+        /// Operator to return whether one instance is less or equal to the other.
+        /// </summary>
+        /// <param name="left">Left instance to compare.</param>
+        /// <param name="right">Right instance to compare.</param>
+        /// <returns><b>true</b> if less than or equal, <b>false</b> if not.</returns>
+        public static bool operator <=(GorgonFileExtension left, GorgonFileExtension right)
+        {
+            if (Equals(left, right))
+            {
+                return true;
+            }
 
-			return string.Compare(left.Extension, right.Extension, StringComparison.OrdinalIgnoreCase) == -1;
-		}
+            return string.Compare(left.Extension, right.Extension, StringComparison.OrdinalIgnoreCase) == -1;
+        }
 
-		/// <summary>
-		/// Operator to return whether one instance is greater than or equal to the other.
-		/// </summary>
-		/// <param name="left">Left instance to compare.</param>
-		/// <param name="right">Right instance to compare.</param>
-		/// <returns><b>true</b> if greater or equal, <b>false</b> if not.</returns>
-		public static bool operator >=(GorgonFileExtension left, GorgonFileExtension right)
-		{
-			if (Equals(ref left, ref right))
-			{
-				return true;
-			}
+        /// <summary>
+        /// Operator to return whether one instance is greater than or equal to the other.
+        /// </summary>
+        /// <param name="left">Left instance to compare.</param>
+        /// <param name="right">Right instance to compare.</param>
+        /// <returns><b>true</b> if greater or equal, <b>false</b> if not.</returns>
+        public static bool operator >=(GorgonFileExtension left, GorgonFileExtension right)
+        {
+            if (Equals(left, right))
+            {
+                return true;
+            }
 
-			return string.Compare(left.Extension, right.Extension, StringComparison.OrdinalIgnoreCase) == 1;
-		}
+            return string.Compare(left.Extension, right.Extension, StringComparison.OrdinalIgnoreCase) == 1;
+        }
 
-		/// <summary>
-		/// Operator to return whether one instance is less than the other.
-		/// </summary>
-		/// <param name="left">Left instance to compare.</param>
-		/// <param name="right">Right instance to compare.</param>
-		/// <returns><b>true</b> if less than, <b>false</b> if not.</returns>
-		public static bool operator <(GorgonFileExtension left, GorgonFileExtension right)
-		{
-			return string.Compare(left.Extension, right.Extension, StringComparison.OrdinalIgnoreCase) == -1;
-		}
+        /// <summary>
+        /// Operator to return whether one instance is less than the other.
+        /// </summary>
+        /// <param name="left">Left instance to compare.</param>
+        /// <param name="right">Right instance to compare.</param>
+        /// <returns><b>true</b> if less than, <b>false</b> if not.</returns>
+        public static bool operator <(GorgonFileExtension left, GorgonFileExtension right)
+        {
+            return string.Compare(left.Extension, right.Extension, StringComparison.OrdinalIgnoreCase) == -1;
+        }
 
-		/// <summary>
-		/// Operator to return whether one instance is greater than the other.
-		/// </summary>
-		/// <param name="left">Left instance to compare.</param>
-		/// <param name="right">Right instance to compare.</param>
-		/// <returns><b>true</b> if greater than, <b>false</b> if not.</returns>
-		public static bool operator >(GorgonFileExtension left, GorgonFileExtension right)
-		{
-			return string.Compare(left.Extension, right.Extension, StringComparison.OrdinalIgnoreCase) == 1;
-		}
-		#endregion
+        /// <summary>
+        /// Operator to return whether one instance is greater than the other.
+        /// </summary>
+        /// <param name="left">Left instance to compare.</param>
+        /// <param name="right">Right instance to compare.</param>
+        /// <returns><b>true</b> if greater than, <b>false</b> if not.</returns>
+        public static bool operator >(GorgonFileExtension left, GorgonFileExtension right)
+        {
+            return string.Compare(left.Extension, right.Extension, StringComparison.OrdinalIgnoreCase) == 1;
+        }
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to return if instances are equal.
-		/// </summary>
-		/// <param name="left">Left instance to compare.</param>
-		/// <param name="right">Right instance to compare.</param>
-		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-		public static bool Equals(ref GorgonFileExtension left, ref GorgonFileExtension right)
-		{
-			return string.Equals(left.Extension, right.Extension, StringComparison.OrdinalIgnoreCase);
-		}
+        #region Methods.
+        /// <summary>
+        /// Function to return if instances are equal.
+        /// </summary>
+        /// <param name="left">Left instance to compare.</param>
+        /// <param name="right">Right instance to compare.</param>
+        /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+        public static bool Equals(GorgonFileExtension left, GorgonFileExtension right)
+        {
+            return string.Equals(left.Extension, right.Extension, StringComparison.OrdinalIgnoreCase);
+        }
 
-		/// <summary>
-		/// Determines whether the specified <see cref="System.Object"/>, is equal to this instance.
-		/// </summary>
-		/// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
-		/// <returns>
-		///   <b>true</b> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <b>false</b>.
-		/// </returns>
-		public override bool Equals(object obj)
-		{
-			if (obj is GorgonFileExtension ext)
-			{
-				return ext.Equals(this);
-			}
+        /// <summary>
+        /// Determines whether the specified <see cref="System.Object"/>, is equal to this instance.
+        /// </summary>
+        /// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
+        /// <returns>
+        ///   <b>true</b> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <b>false</b>.
+        /// </returns>
+        public override bool Equals(object obj)
+        {
+            if (obj is GorgonFileExtension ext)
+            {
+                return ext.Equals(this);
+            }
 
-			return base.Equals(obj);
-		}
+            return base.Equals(obj);
+        }
 
-		/// <summary>
-		/// Returns a hash code for this instance.
-		/// </summary>
-		/// <returns>
-		/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
-		/// </returns>
-		public override int GetHashCode()
-		{
-			return 281.GenerateHash(Extension.ToUpperInvariant());
-		}
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// </returns>
+        public override int GetHashCode()
+        {
+            return 281.GenerateHash(Extension.ToUpperInvariant());
+        }
 
-		/// <summary>
-		/// Returns a <see cref="System.String" /> that represents this instance.
-		/// </summary>
-		/// <returns>
-		/// A <see cref="System.String" /> that represents this instance.
-		/// </returns>
-		public override string ToString()
-		{
-			return string.Format(Resources.GOR_TOSTR_FILE_EXTENSION, Description, Extension);
-		}
+        /// <summary>
+        /// Returns a <see cref="string" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="string" /> that represents this instance.
+        /// </returns>
+        public override string ToString()
+        {
+            return string.Format(Resources.GOR_TOSTR_FILE_EXTENSION, Description, Extension);
+        }
 
-	    /// <summary>
-	    /// Indicates whether the current object is equal to another object of the same type.
-	    /// </summary>
-	    /// <param name="other">An object to compare with this object.</param>
-	    /// <returns>
-	    /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
-	    /// </returns>
-	    public bool Equals(GorgonFileExtension other)
-	    {
-	        return Equals(ref this, ref other);
-	    }
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
+        /// </returns>
+        public bool Equals(GorgonFileExtension other)
+        {
+            return Equals(this, other);
+        }
 
-	    /// <summary>
-	    /// Compares the current object with another object of the same type.
-	    /// </summary>
-	    /// <param name="other">An object to compare with this object.</param>
-	    /// <returns>
-	    /// A value that indicates the relative order of the objects being compared. The return value has the following meanings: Value Meaning Less than zero This object is less than the <paramref name="other" /> parameter.Zero This object is equal to <paramref name="other" />. Greater than zero This object is greater than <paramref name="other" />.
-	    /// </returns>
-	    public int CompareTo(GorgonFileExtension other)
-	    {
-	        return string.Compare(Extension, other.Extension, StringComparison.OrdinalIgnoreCase);
-	    }
+        /// <summary>
+        /// Compares the current object with another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// A value that indicates the relative order of the objects being compared. The return value has the following meanings: Value Meaning Less than zero This object is less than the <paramref name="other" /> parameter.Zero This object is equal to <paramref name="other" />. Greater than zero This object is greater than <paramref name="other" />.
+        /// </returns>
+        public int CompareTo(GorgonFileExtension other)
+        {
+            return string.Compare(Extension, other.Extension, StringComparison.OrdinalIgnoreCase);
+        }
 
-	    /// <summary>
-	    /// Indicates whether the current object is equal to another object of the same type.
-	    /// </summary>
-	    /// <param name="other">An object to compare with this object.</param>
-	    /// <returns>
-	    /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
-	    /// </returns>
-	    public bool Equals(string other)
-	    {
-	        if (string.IsNullOrWhiteSpace(other))
-	        {
-	            return false;
-	        }
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
+        /// </returns>
+        public bool Equals(string other)
+        {
+            if (string.IsNullOrWhiteSpace(other))
+            {
+                return false;
+            }
 
-	        if (other.StartsWith(".", StringComparison.Ordinal))
-	        {
-	            other = other.Substring(1);
-	        }
+            if (other.StartsWith(".", StringComparison.Ordinal))
+            {
+                other = other.Substring(1);
+            }
 
-	        return string.Equals(Extension, other, StringComparison.OrdinalIgnoreCase);
-	    }
+            return string.Equals(Extension, other, StringComparison.OrdinalIgnoreCase);
+        }
 
-	    /// <summary>
-	    /// Compares the current object with another object of the same type.
-	    /// </summary>
-	    /// <param name="other">An object to compare with this object.</param>
-	    /// <returns>
-	    /// A value that indicates the relative order of the objects being compared. The return value has the following meanings: Value Meaning Less than zero This object is less than the <paramref name="other" /> parameter.Zero This object is equal to <paramref name="other" />. Greater than zero This object is greater than <paramref name="other" />.
-	    /// </returns>
-	    /// <exception cref="System.NotImplementedException"></exception>
-	    public int CompareTo(string other)
-	    {
-	        if (string.IsNullOrWhiteSpace(other))
-	        {
-	            return -1;
-	        }
+        /// <summary>
+        /// Compares the current object with another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// A value that indicates the relative order of the objects being compared. The return value has the following meanings: Value Meaning Less than zero This object is less than the <paramref name="other" /> parameter.Zero This object is equal to <paramref name="other" />. Greater than zero This object is greater than <paramref name="other" />.
+        /// </returns>
+        /// <exception cref="System.NotImplementedException"></exception>
+        public int CompareTo(string other)
+        {
+            if (string.IsNullOrWhiteSpace(other))
+            {
+                return -1;
+            }
 
-	        if (other.StartsWith(".", StringComparison.Ordinal))
-	        {
-	            other = other.Substring(1);
-	        }
+            if (other.StartsWith(".", StringComparison.Ordinal))
+            {
+                other = other.Substring(1);
+            }
 
-	        return string.Compare(Extension, other, StringComparison.OrdinalIgnoreCase);
-	    }
-		#endregion
+            return string.Compare(Extension, other, StringComparison.OrdinalIgnoreCase);
+        }
+        #endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonFileExtension"/> struct.
-		/// </summary>
-		/// <param name="extension">The extension.</param>
-		/// <param name="description">The description.</param>
-		public GorgonFileExtension(string extension, string description)
-		{
-			if (extension == null)
-			{
-				throw new ArgumentNullException(nameof(extension));
-			}
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonFileExtension"/> struct.
+        /// </summary>
+        /// <param name="extension">The extension.</param>
+        /// <param name="description">The description.</param>
+        public GorgonFileExtension(string extension, string description)
+        {
+            if (extension == null)
+            {
+                throw new ArgumentNullException(nameof(extension));
+            }
 
-			if (extension.StartsWith(".", StringComparison.Ordinal))
-			{
-				extension = extension.Substring(1);
-			}
+            if (extension.StartsWith(".", StringComparison.Ordinal))
+            {
+                extension = extension.Substring(1);
+            }
 
-			if (string.IsNullOrWhiteSpace(extension))
-			{
-				throw new ArgumentEmptyException(nameof(extension));
-			}
+            if (string.IsNullOrWhiteSpace(extension))
+            {
+                throw new ArgumentEmptyException(nameof(extension));
+            }
 
-			Extension = extension;
-			Description = description;
-		}
+            Extension = extension;
+            Description = description;
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonFileExtension"/> struct.
         /// </summary>
         /// <param name="extension">The extension.</param>
-	    public GorgonFileExtension(string extension)
+        public GorgonFileExtension(string extension)
             : this(extension, string.Empty)
-	    {
-	    }
-		#endregion
-	}
+        {
+        }
+        #endregion
+    }
 }

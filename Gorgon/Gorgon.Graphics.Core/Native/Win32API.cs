@@ -107,24 +107,6 @@ namespace Gorgon.Native
 		    return VerifyVersionInfo(ref osInfoEx, typeMask, versionMask) != 0;
 		}
 
-		/// <summary>
-		/// Indicates if the current OS version matches, or is greater than, the Windows 7 with Service Pack 1 (SP1) version.
-		/// </summary>
-		/// <returns><b>true</b> if the current OS version matches, or is greater than Windows 7 with SP1; otherwise <b>false</b>.</returns>
-		public static bool IsWindows7SP1OrGreater()
-		{
-			return IsWindowsVersionOrGreater(6, 1, null, 1);
-		}
-
-		/// <summary>
-		/// Indicates if the current OS version matches, or is greater than, the Windows 8 version.
-		/// </summary>
-		/// <returns><b>true</b> if the current OS version matches, or is greater than Windows 8; otherwise <b>false</b>.</returns>
-		public static bool IsWindows8OrGreater()
-		{
-			return IsWindowsVersionOrGreater(6, 2, null, null);
-		}
-
         /// <summary>
         /// Indicates if the current OS version matches, or is greater than, Windows 10 with the specified build number.
         /// </summary>
@@ -142,22 +124,6 @@ namespace Gorgon.Native
 		/// <returns></returns>
 		[DllImport("user32.dll", CharSet=CharSet.Auto)]
 		public static extern IntPtr MonitorFromWindow(IntPtr hwnd, MonitorFlags flags);
-
-		/// <summary>
-		/// Function to enable or disable desktop composition.
-		/// </summary>
-		/// <param name="uCompositionAction">Composition action.</param>
-		/// <returns></returns>
-		[DllImport("Dwmapi.dll")]
-		public static extern int DwmEnableComposition(int uCompositionAction);
-
-		/// <summary>
-		/// Function to determine if desktop composition is enabled or not.
-		/// </summary>
-		/// <param name="pfEnabled"></param>
-		/// <returns></returns>
-		[DllImport("dwmapi.dll")]
-		public static extern int DwmIsCompositionEnabled([MarshalAs(UnmanagedType.Bool)] out bool pfEnabled);
 		#endregion
 
 		#region Constructor.

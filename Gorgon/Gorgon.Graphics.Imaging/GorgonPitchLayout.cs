@@ -53,7 +53,7 @@ namespace Gorgon.Graphics.Imaging
 	/// a single slice (i.e. <c>bytes in the width * height</c>).
 	/// </para>
 	/// </remarks>
-	public struct GorgonPitchLayout
+	public readonly struct GorgonPitchLayout
 		: IEquatable<GorgonPitchLayout>
 	{
 		#region Variables.
@@ -101,7 +101,7 @@ namespace Gorgon.Graphics.Imaging
 		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
 		public bool Equals(GorgonPitchLayout other)
 		{
-			return Equals(ref this, ref other);
+			return Equals(this, other);
 		}
 
 		/// <summary>
@@ -110,7 +110,7 @@ namespace Gorgon.Graphics.Imaging
 		/// <param name="left">Left instance to compare.</param>
 		/// <param name="right">Right instance to compare.</param>
 		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-		public static bool Equals(ref GorgonPitchLayout left, ref GorgonPitchLayout right)
+		public static bool Equals(GorgonPitchLayout left, GorgonPitchLayout right)
 		{
 			return ((left.RowPitch == right.RowPitch) && (left.SlicePitch == right.SlicePitch)
 			        && (left.HorizontalBlockCount == right.HorizontalBlockCount) && (left.VerticalBlockCount == right.VerticalBlockCount));
@@ -168,7 +168,7 @@ namespace Gorgon.Graphics.Imaging
 		/// <returns><b>true</b> if equal, <b>false</b> if not</returns>
 		public static bool operator ==(GorgonPitchLayout left, GorgonPitchLayout right)
 		{
-			return Equals(ref left, ref right);
+			return Equals(left, right);
 		}
 
 		/// <summary>
@@ -179,7 +179,7 @@ namespace Gorgon.Graphics.Imaging
 		/// <returns><b>true</b> if not equal, <b>false</b> if they are.</returns>
 		public static bool operator !=(GorgonPitchLayout left, GorgonPitchLayout right)
 		{
-			return !Equals(ref left, ref right);
+			return !Equals(left, right);
 		}
         #endregion
 
