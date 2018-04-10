@@ -58,6 +58,7 @@
       <Link>SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="BufferFormatSupport.cs" />
+    <Compile Include="Comparison.cs" />
     <Compile Include="ComputeShaderFormat.cs" />
     <Compile Include="CopyMode.cs" />
     <Compile Include="Devices\GorgonVideoAdapterOutputList.cs" />

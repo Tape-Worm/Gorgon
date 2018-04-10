@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using Gorgon.Graphics.Imaging;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
@@ -31,7 +32,7 @@ namespace Gorgon.Graphics.Core
     /// <summary>
     /// Defines the support given to a specific <see cref="BufferFormat"/>.
     /// </summary>
-    public class GorgonFormatSupportInfo
+    internal class FormatSupportInfo : IGorgonFormatSupportInfo
     {
         #region Properties.
         /// <summary>
@@ -51,6 +52,31 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
+        /// Property to return whether this format is suitable for use for presentation to the output device.
+        /// </summary>
+        public bool IsDisplayFormat => (FormatSupport & BufferFormatSupport.Display) == BufferFormatSupport.Display;
+
+        /// <summary>
+        /// Property to return whether this format is suitable for use as a render target.
+        /// </summary>
+        public bool IsRenderTargetFormat => (FormatSupport & BufferFormatSupport.RenderTarget) == BufferFormatSupport.RenderTarget;
+
+        /// <summary>
+        /// Property to return whether this format is suitable for use in a depth/stencil buffer.
+        /// </summary>
+        public bool IsDepthBufferFormat => (FormatSupport & BufferFormatSupport.DepthStencil) == BufferFormatSupport.DepthStencil;
+
+        /// <summary>
+        /// Property to return whether this format is suitable for use in a vertex buffer.
+        /// </summary>
+        public bool IsVertexBufferFormat => (FormatSupport & BufferFormatSupport.VertexBuffer) == BufferFormatSupport.VertexBuffer;
+
+        /// <summary>
+        /// Property to return whether this format is suitable for use in an index buffer.
+        /// </summary>
+        public bool IsIndexBufferFormat => (FormatSupport & BufferFormatSupport.VertexBuffer) == BufferFormatSupport.VertexBuffer;
+
+        /// <summary>
         /// Property to return the compute shader/uav support for a format.
         /// </summary>
         public ComputeShaderFormatSupport ComputeSupport
@@ -67,15 +93,40 @@ namespace Gorgon.Graphics.Core
         }
         #endregion
 
+        #region Methods.
+
+        /// <summary>
+        /// Function to determine if a format is suitable for the texture type specified by <see cref="ImageType"/>.
+        /// </summary>
+        /// <param name="imageType">The image type to evaluate.</param>
+        /// <returns><b>true</b> if suitable, <b>false</b> if not.</returns>
+        public bool IsTextureFormat(ImageType imageType)
+        {
+            switch (imageType)
+            {
+                case ImageType.Image1D:
+                    return (FormatSupport & BufferFormatSupport.Texture1D) == BufferFormatSupport.Texture1D;
+                case ImageType.Image2D:
+                    return (FormatSupport & BufferFormatSupport.Texture2D) == BufferFormatSupport.Texture2D;
+                case ImageType.Image3D:
+                    return (FormatSupport & BufferFormatSupport.Texture3D) == BufferFormatSupport.Texture3D;
+                case ImageType.ImageCube:
+                    return (FormatSupport & BufferFormatSupport.TextureCube) == BufferFormatSupport.TextureCube;
+                default:
+                    return false;
+            }
+        }
+        #endregion
+
         #region Constructor/Finalizer.
         /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonFormatSupportInfo"/> class.
+        /// Initializes a new instance of the <see cref="FormatSupportInfo"/> class.
         /// </summary>
         /// <param name="format">The format being queried.</param>
         /// <param name="formatSupport">The format support.</param>
         /// <param name="computeSupport">The compute support.</param>
         /// <param name="multisampleMax">The multisample maximum.</param>
-        internal GorgonFormatSupportInfo(BufferFormat format,
+        public FormatSupportInfo(BufferFormat format,
                                          D3D11.FormatSupport formatSupport,
                                          D3D11.ComputeShaderFormatSupport computeSupport,
                                          GorgonMultisampleInfo multisampleMax)
@@ -86,6 +137,5 @@ namespace Gorgon.Graphics.Core
             MaxMultisampleCountQuality = multisampleMax;
         }
         #endregion
-
     }
 }
