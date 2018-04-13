@@ -69,7 +69,7 @@ namespace Gorgon.Graphics.Core
     /// </remarks>
     /// <seealso cref="GorgonGraphics"/>
     /// <seealso cref="GorgonRenderTarget2DView"/>
-    public class GorgonSwapChain
+    public sealed class GorgonSwapChain
         : IGorgonGraphicsObject, IGorgonSwapChainInfo, IDisposable
     {
         #region Classes.
@@ -157,14 +157,8 @@ namespace Gorgon.Graphics.Core
         private DXGI.SwapChain4 _swapChain;
         // The textures used by the back buffer.
         private readonly GorgonTexture2D[] _backBufferTextures;
-        // The depth/stencil buffer texture.
-        private D3D11.Texture2D _depthStencilTexture;
-        // The depth/stencil view.
-        private D3D11.DepthStencilView _dsv;
         // The information used to create the swap chain.
         private readonly GorgonSwapChainInfo _info;
-        // The log used for debug messages.
-        private readonly IGorgonLog _log;
         // Information used when resizing the back buffers or performing a state transition.
         private readonly ResizeState _resizeState = new ResizeState();
         // The current full screen video mode.
@@ -175,13 +169,15 @@ namespace Gorgon.Graphics.Core
         private readonly WindowState _fullScreenBordlessState = new WindowState();
         // The render target view.
         private GorgonRenderTarget2DView _targetView;
+        // The depth/stencil view.
+        private GorgonDepthStencil2DView _dsv;
         #endregion
 
         #region Events.
         /// <summary>
         /// Event called before the swap chain has been resized.
         /// </summary>
-        public event EventHandler<GorgonBeforeSwapChainResizedEventArgs> BeforeSwapChainResized;
+        public event EventHandler<BeforeSwapChainResizedEventArgs> BeforeSwapChainResized;
         /// <summary>
         /// Event called after the swap chain has been resized.
         /// </summary>
@@ -197,9 +193,12 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the back buffer texture to use as a render target.
         /// </summary>
-        internal GorgonTexture2D InternalBackBufferTexture => (_backBufferTextures?.Length ?? 0) > 0 ? _backBufferTextures[0] : null;
+        internal GorgonTexture2D InternalBackBufferTexture => ((_backBufferTextures?.Length ?? 0) > 0) ? _backBufferTextures?[0] : null;
 
-        public object DepthStencilView => null;
+        /// <summary>
+        /// Property to return the default depth/stencil view for this swap chain.
+        /// </summary>
+        public GorgonDepthStencil2DView DepthStencilView => null;
 
         /// <summary>
         /// Property to return the default render target view for this swap chain.
@@ -391,7 +390,7 @@ namespace Gorgon.Graphics.Core
 			}
 			catch (Exception ex)
 			{
-				_log.LogException(ex);
+				Graphics.Log.LogException(ex);
 			}
 			finally
 			{
@@ -425,7 +424,7 @@ namespace Gorgon.Graphics.Core
 			}
 			catch (Exception ex)
 			{
-				_log.LogException(ex);
+				Graphics.Log.LogException(ex);
 			}
 		}
 
@@ -445,7 +444,7 @@ namespace Gorgon.Graphics.Core
 			}
 			catch (Exception ex)
 			{
-				_log.LogException(ex);
+				Graphics.Log.LogException(ex);
 			}
 			finally
 			{
@@ -504,7 +503,7 @@ namespace Gorgon.Graphics.Core
 			}
 			catch (Exception ex)
 			{
-				_log.LogException(ex);
+				Graphics.Log.LogException(ex);
 			    throw;
 			}
 			finally
@@ -519,15 +518,13 @@ namespace Gorgon.Graphics.Core
         /// <returns>A tuple containing the previous index of this swap chain's render target view, and a flag indicating whether or not the swap chain depth/stencil view was used.</returns>
         private (int TargetIndex, bool UsedDepthStencil) DestroyResources()
         {
-            _log.Print($"Destroying {Name} swap chain DXGI/D3D11 resources.", LoggingLevel.Simple);
+            Graphics.Log.Print($"Destroying {Name} swap chain DXGI/D3D11 resources.", LoggingLevel.Simple);
 
             GorgonRenderTarget2DView rtv = Interlocked.Exchange(ref _targetView, null);
-            D3D11.DepthStencilView dsv = Interlocked.Exchange(ref _dsv, null);
-            D3D11.Texture2D depthStencilTexture = Interlocked.Exchange(ref _depthStencilTexture, null);
+            GorgonDepthStencil2DView dsv = Interlocked.Exchange(ref _dsv, null);
             
             rtv?.Dispose();
             dsv?.Dispose();
-            depthStencilTexture?.Dispose();
 
             if (_backBufferTextures == null)
             {
@@ -558,17 +555,28 @@ namespace Gorgon.Graphics.Core
         {
             for (int i = 0; i < _backBufferTextures.Length; ++i)
             {
-                _backBufferTextures[i] = new GorgonTexture2D(this, i, _log);
+                _backBufferTextures[i] = new GorgonTexture2D(this, i);
             }
 
-            _log.Print($"SwapChain '{Name}': Created {_backBufferTextures.Length} D3D11 textures for back buffers.", LoggingLevel.Verbose);
+            Graphics.Log.Print($"SwapChain '{Name}': Created {_backBufferTextures.Length} D3D11 textures for back buffers.", LoggingLevel.Verbose);
 
-            _targetView = new GorgonRenderTarget2DView(_backBufferTextures[0], _backBufferTextures[0].Format, 0, 0, _backBufferTextures[0].ArrayCount, _log);
+            _targetView = new GorgonRenderTarget2DView(_backBufferTextures[0], _backBufferTextures[0].Format, 0, 0, _backBufferTextures[0].ArrayCount);
             _targetView.CreateNativeView();
 
-            _log.Print($"SwapChain '{Name}': Created swap chain render target view.", LoggingLevel.Verbose);
+            Graphics.Log.Print($"SwapChain '{Name}': Created swap chain render target view.", LoggingLevel.Verbose);
 
-            // TODO: Create depth/stencil resources.
+            if (_info.DepthStencilFormat == BufferFormat.Unknown)
+            {
+                return;
+            }
+
+            _dsv = GorgonDepthStencil2DView.CreateDepthStencil(Graphics, new GorgonTexture2DInfo(_backBufferTextures[0], $"Swap Chain '{Name}': Depth/Stencil Buffer.")
+                                                                         {
+                                                                             Format = _info.DepthStencilFormat,
+                                                                             Binding = TextureBinding.DepthStencil,
+                                                                         });
+
+            Graphics.Log.Print($"SwapChain '{Name}': Created swap chain depth/stencil view.", LoggingLevel.Verbose);
         }
 
         /// <summary>
@@ -650,7 +658,7 @@ namespace Gorgon.Graphics.Core
 			    _fullScreenBordlessState.FormWindowState = ParentForm.WindowState;
 			    _fullScreenBordlessState.ClientSize = ParentForm.ClientSize;
                 
-				_log.Print($"SwapChain '{Name}': Entering full screen borderless windowed mode.  Requested mode {videoMode} on output {output.Name}.", LoggingLevel.Verbose);
+				Graphics.Log.Print($"SwapChain '{Name}': Entering full screen borderless windowed mode.  Requested mode {videoMode} on output {output.Name}.", LoggingLevel.Verbose);
 
 			    // Bring the control up before attempting to switch to full screen.
 			    // Otherwise things get real weird, real fast.
@@ -683,7 +691,7 @@ namespace Gorgon.Graphics.Core
 				_info.Format = _fullScreenVideoMode.Value.Format;
 			    _isFullScreenBorderless = true;
 
-				_log.Print($"SwapChain '{Name}': Full screen borderless windowed mode was set.  Final mode: {FullScreenVideoMode}.  Swap chain back buffer size: {_info.Width}x{_info.Height}, Format: {_info.Format}",
+				Graphics.Log.Print($"SwapChain '{Name}': Full screen borderless windowed mode was set.  Final mode: {FullScreenVideoMode}.  Swap chain back buffer size: {_info.Width}x{_info.Height}, Format: {_info.Format}",
 				           LoggingLevel.Verbose);
 			}
 			catch (DX.SharpDXException sdEx)
@@ -691,7 +699,7 @@ namespace Gorgon.Graphics.Core
 				switch (sdEx.ResultCode.Code)
 				{
 					case (int)DXGI.DXGIStatus.ModeChangeInProgress:
-						_log.Print($"SwapChain '{Name}': Could not switch to full screen borderless windowed mode because the device was busy switching to full screen on another output.",
+						Graphics.Log.Print($"SwapChain '{Name}': Could not switch to full screen borderless windowed mode because the device was busy switching to full screen on another output.",
 								   LoggingLevel.All);
 						break;
 					default:
@@ -700,7 +708,7 @@ namespace Gorgon.Graphics.Core
 							throw;
 						}
 
-					    _log.Print($"SwapChain '{Name}': Could not switch to full screen boderless windowed rmode because the device is not currently available.",
+					    Graphics.Log.Print($"SwapChain '{Name}': Could not switch to full screen boderless windowed rmode because the device is not currently available.",
 					               LoggingLevel.All);
 						break;
 				}
@@ -765,7 +773,7 @@ namespace Gorgon.Graphics.Core
 
 			try
 			{
-				_log.Print($"SwapChain '{Name}': Entering full screen mode.  Requested mode {desiredMode} on output {output.Name}.", LoggingLevel.Verbose);
+				Graphics.Log.Print($"SwapChain '{Name}': Entering full screen mode.  Requested mode {desiredMode} on output {output.Name}.", LoggingLevel.Verbose);
 
 				dxgiOutput = Graphics.DXGIAdapter.GetOutput(output.Index);
 				dxgiOutput6 = dxgiOutput.QueryInterface<DXGI.Output6>();
@@ -807,7 +815,7 @@ namespace Gorgon.Graphics.Core
 				_info.Height = _fullScreenVideoMode.Value.Height;
 				_info.Format = _fullScreenVideoMode.Value.Format;
 
-				_log.Print($"SwapChain '{Name}': Full screen mode was set.  Final mode: {FullScreenVideoMode}.  Swap chain back buffer size: {_info.Width}x{_info.Height}, Format: {_info.Format}",
+				Graphics.Log.Print($"SwapChain '{Name}': Full screen mode was set.  Final mode: {FullScreenVideoMode}.  Swap chain back buffer size: {_info.Width}x{_info.Height}, Format: {_info.Format}",
 				           LoggingLevel.Verbose);
 			}
 			catch (DX.SharpDXException sdEx)
@@ -815,7 +823,7 @@ namespace Gorgon.Graphics.Core
 				switch (sdEx.ResultCode.Code)
 				{
 					case (int)DXGI.DXGIStatus.ModeChangeInProgress:
-						_log.Print($"SwapChain '{Name}': Could not switch to full screen mode because the device was busy switching to full screen on another output.",
+						Graphics.Log.Print($"SwapChain '{Name}': Could not switch to full screen mode because the device was busy switching to full screen on another output.",
 								   LoggingLevel.All);
 						break;
 					default:
@@ -824,7 +832,7 @@ namespace Gorgon.Graphics.Core
 							throw;
 						}
 
-					    _log.Print($"SwapChain '{Name}': Could not switch to full screen mode because the device is not currently available.",
+					    Graphics.Log.Print($"SwapChain '{Name}': Could not switch to full screen mode because the device is not currently available.",
 					               LoggingLevel.All);
 						break;
 				}
@@ -861,7 +869,7 @@ namespace Gorgon.Graphics.Core
 
 			try
 			{
-                _log.Print($"SwapChain '{Name}': Restoring windowed mode.", LoggingLevel.Verbose);
+                Graphics.Log.Print($"SwapChain '{Name}': Restoring windowed mode.", LoggingLevel.Verbose);
                 
                 _resizeState.IsScreenStateTransition = true;
 
@@ -889,11 +897,11 @@ namespace Gorgon.Graphics.Core
 				_info.Height = desc.Height;
 				_info.Format = (BufferFormat)desc.Format;
 
-				_log.Print($"SwapChain '{Name}': Windowed mode restored. Back buffer size: {_info.Width}x{_info.Height}, Format: {_info.Format}.", LoggingLevel.Verbose);
+				Graphics.Log.Print($"SwapChain '{Name}': Windowed mode restored. Back buffer size: {_info.Width}x{_info.Height}, Format: {_info.Format}.", LoggingLevel.Verbose);
 			}
 			catch (Exception ex)
 			{
-				_log.LogException(ex);
+				Graphics.Log.LogException(ex);
 				throw;
 			}
 			finally
@@ -931,10 +939,10 @@ namespace Gorgon.Graphics.Core
 				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_SWAP_BACKBUFFER_TOO_SMALL, newWidth, newHeight), nameof(newHeight));
 			}
 
-			_log.Print($"SwapChain '{Name}': Resizing back buffers.", LoggingLevel.Verbose);
+			Graphics.Log.Print($"SwapChain '{Name}': Resizing back buffers.", LoggingLevel.Verbose);
 
 			// Tell the application that this swap chain is going to be resized.
-			BeforeSwapChainResized?.Invoke(this, new GorgonBeforeSwapChainResizedEventArgs(new DX.Size2(_info.Width, _info.Height), new DX.Size2(newWidth, newHeight)));
+			BeforeSwapChainResized?.Invoke(this, new BeforeSwapChainResizedEventArgs(new DX.Size2(_info.Width, _info.Height), new DX.Size2(newWidth, newHeight)));
 
 			(int rtvIndex, bool depthStencilViewSet) = DestroyResources();
 
@@ -947,7 +955,7 @@ namespace Gorgon.Graphics.Core
 
 			AfterSwapChainResized?.Invoke(this, EventArgs.Empty);
 
-			_log.Print($"SwapChain '{Name}': Back buffers resized.", LoggingLevel.Verbose);
+			Graphics.Log.Print($"SwapChain '{Name}': Back buffers resized.", LoggingLevel.Verbose);
 		}
 
         /// <summary>
@@ -1093,7 +1101,6 @@ namespace Gorgon.Graphics.Core
         /// <param name="graphics">The graphics interface that created this object.</param>
         /// <param name="control">The control bound to the swap chain.</param>
         /// <param name="info">The information used to create the object.</param>
-        /// <param name="log">The log used for debug messages.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, <paramref name="info"/> or the <paramref name="control"/> parameter is <b>null</b>.</exception>
         /// <exception cref="GorgonException">Thrown if the <see cref="IGorgonSwapChainInfo.Format"/> is not a display format.
         /// <para>-or-</para>
@@ -1101,8 +1108,7 @@ namespace Gorgon.Graphics.Core
         /// </exception>
         public GorgonSwapChain(GorgonGraphics graphics,
                                Control control,
-                               GorgonSwapChainInfo info,
-                               IGorgonLog log = null)
+                               GorgonSwapChainInfo info)
         {
             Graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
             ValidateSwapChainInfo(info);
@@ -1111,11 +1117,9 @@ namespace Gorgon.Graphics.Core
 
             Debug.Assert(ParentForm != null, "No parent form found for control.");
 
-            this.RegisterDisposable(graphics);
-
-            _log = log ?? GorgonLog.NullLog;
-            
             DXGI.SwapChainDescription1 desc = info.ToSwapChainDesc();
+
+            this.RegisterDisposable(graphics);
 
             using (DXGI.SwapChain1 dxgiSwapChain = new DXGI.SwapChain1(Graphics.DXGIFactory, Graphics.D3DDevice, control.Handle, ref desc)
                                                    {
@@ -1145,6 +1149,7 @@ namespace Gorgon.Graphics.Core
             // Use these events to restore full screen or windowed state when the application regains or loses focus.
             ParentForm.Activated += ParentForm_Activated;
             ParentForm.Deactivate += ParentForm_Deactivated;
+            
         }
         #endregion
     }

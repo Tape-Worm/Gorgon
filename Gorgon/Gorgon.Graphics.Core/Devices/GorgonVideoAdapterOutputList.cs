@@ -27,7 +27,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using Gorgon.Collections;
 using Gorgon.Native;
@@ -37,7 +36,7 @@ namespace Gorgon.Graphics.Core
     /// <summary>
     /// A list of outputs on a video adapter.
     /// </summary>
-    public class GorgonVideoAdapterOutputList
+    public sealed class GorgonVideoAdapterOutputList
         : IGorgonNamedObjectReadOnlyDictionary<IGorgonVideoOutputInfo>
     {
         #region Variables.

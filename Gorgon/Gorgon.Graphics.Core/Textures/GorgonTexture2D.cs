@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using DX = SharpDX;
@@ -35,30 +36,40 @@ using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Graphics.Imaging;
+using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
 
 
 namespace Gorgon.Graphics.Core
 {
+    #error Need to consolidate update sub resource and map (Need methods called SetData<T> and SetValue<T>).
+    #error Need a way to read mapped data (GetData<T> and GetValue<T>).
     /// <summary>
     /// A texture used to project an image onto a graphic primitive such as a triangle.
     /// </summary>
-    public class GorgonTexture2D
+    public sealed class GorgonTexture2D
         : GorgonGraphicsResource, IGorgonTexture2DInfo
     {
+        #region Constants.
+        /// <summary>
+        /// The prefix used for generated names.
+        /// </summary>
+        internal const string NamePrefix = nameof(GorgonTexture2D);
+        #endregion
+
 		#region Variables.
+        // Default texture loading options.
+        private static readonly GorgonTextureLoadOptions _defaultLoadOptions = new GorgonTextureLoadOptions();
 		// The ID number of the texture.
 		private static int _textureID;
 	    // The list of cached texture unordered access views.
-	    //private readonly Dictionary<TextureViewKey, GorgonTextureUav> _cachedUavs = new Dictionary<TextureViewKey, GorgonTextureUav>();
+	    private Dictionary<TextureViewKey, GorgonTexture2DUav> _cachedUavs = new Dictionary<TextureViewKey, GorgonTexture2DUav>();
         // The list of cached texture shader resource views.
-        //private readonly Dictionary<TextureViewKey, GorgonTextureView> _cachedSrvs = new Dictionary<TextureViewKey, GorgonTextureView>();
+        private Dictionary<TextureViewKey, GorgonTexture2DView> _cachedSrvs = new Dictionary<TextureViewKey, GorgonTexture2DView>();
         // The list of cached render target resource views.
-        private Dictionary<TextureViewKey, WeakReference<GorgonRenderTarget2DView>> _cachedRtvs = new Dictionary<TextureViewKey, WeakReference<GorgonRenderTarget2DView>>();
+        private Dictionary<TextureViewKey, GorgonRenderTarget2DView> _cachedRtvs = new Dictionary<TextureViewKey, GorgonRenderTarget2DView>();
 	    // The list of cached depth/stencil resource views.
-	    //private readonly Dictionary<TextureViewKey, GorgonDepthStencilView> _cachedDsvs = new Dictionary<TextureViewKey, GorgonDepthStencilView>();
-		// The logging interface used for debug logging.
-        private readonly IGorgonLog _log;
+	    private Dictionary<TextureViewKey, GorgonDepthStencil2DView> _cachedDsvs = new Dictionary<TextureViewKey, GorgonDepthStencil2DView>();
 		// The information used to create the texture.
 		private readonly GorgonTexture2DInfo _info;
 		// The texture lock cache.
@@ -163,16 +174,6 @@ namespace Gorgon.Graphics.Core
         /// Property to return the format of the texture.
         /// </summary>
         public BufferFormat Format => _info.Format;
-
-        /// <summary>
-        /// Property to set or return the format for a depth buffer that will be associated with this render target texture.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// If the <see cref="Binding"/> is not set to <see cref="TextureBinding.RenderTarget"/> then this property will return <see cref="BufferFormat.Unknown"/>.
-        /// </para>
-        /// </remarks>
-        BufferFormat IGorgonTexture2DInfo.DepthStencilFormat => _info.DepthStencilFormat;
 
         /// <summary>
         /// Property to return the number of mip-map levels for the texture.
@@ -459,31 +460,31 @@ namespace Gorgon.Graphics.Core
 		        throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_TEXTURE_MULTISAMPLED);
 		    }
 
-		    D3D11.Texture2DDescription tex2DDesc = new D3D11.Texture2DDescription
-		                                           {
-		                                               Format = (DXGI.Format)Format,
-		                                               Width = Width,
-		                                               Height = Height,
-		                                               ArraySize = ArrayCount,
-		                                               Usage = (D3D11.ResourceUsage)Usage,
-		                                               BindFlags = (D3D11.BindFlags)Binding,
-		                                               CpuAccessFlags = cpuFlags,
-		                                               OptionFlags = IsCubeMap ? D3D11.ResourceOptionFlags.TextureCube : D3D11.ResourceOptionFlags.None,
-		                                               SampleDescription = MultisampleInfo.ToSampleDesc(),
-		                                               MipLevels = MipLevels
-		                                           };
+		    var tex2DDesc = new D3D11.Texture2DDescription1
+		                    {
+		                        Format = (DXGI.Format)Format,
+		                        Width = Width,
+		                        Height = Height,
+		                        ArraySize = ArrayCount,
+		                        Usage = (D3D11.ResourceUsage)Usage,
+		                        BindFlags = (D3D11.BindFlags)Binding,
+		                        CpuAccessFlags = cpuFlags,
+		                        OptionFlags = IsCubeMap ? D3D11.ResourceOptionFlags.TextureCube : D3D11.ResourceOptionFlags.None,
+		                        SampleDescription = MultisampleInfo.ToSampleDesc(),
+		                        MipLevels = MipLevels
+		                    };
 
 			if (image == null)
 			{
-				D3DResource = new D3D11.Texture2D(Graphics.D3DDevice, tex2DDesc)
+				D3DResource = new D3D11.Texture2D1(Graphics.D3DDevice, tex2DDesc)
 					            {
-					                DebugName = $"{Name}: Direct 3D 11 2D texture"
+					                DebugName = $"{Name}[{TextureID}]_ID3D11Texture2D1"
 					            };
 				return;
 			}
 
 			// Upload the data to the texture.
-			DX.DataBox[] dataBoxes = new DX.DataBox[GorgonImage.CalculateDepthSliceCount(1, MipLevels) * ArrayCount];
+			var dataBoxes = new DX.DataBox[GorgonImage.CalculateDepthSliceCount(1, MipLevels) * ArrayCount];
 
 		    unsafe
 		    {
@@ -498,108 +499,10 @@ namespace Gorgon.Graphics.Core
 		        }
 		    }
 
-			D3DResource = new D3D11.Texture2D(Graphics.D3DDevice, tex2DDesc, dataBoxes)
-				            {
-				                DebugName = $"{Name}: Direct 3D 11 2D texture"
-				            };
-		}
-
-		/// <summary>
-		/// Function to create the default views for the texture.
-		/// </summary>
-		private void InitializeDefaultViews()
-		{
-            
-			if (Usage == ResourceUsage.Staging)
-			{
-				return;
-			}
-            /*
-			if ((Binding & TextureBinding.ShaderResource) == TextureBinding.ShaderResource)
-			{
-				// For depth/stencil bindings that have a shader resource binding, find the correct depth/stencil format for the view.
-				if ((Binding & TextureBinding.DepthStencil) == TextureBinding.DepthStencil)
-				{
-					switch (Format)
-					{
-						case BufferFormat.R32G8X24_Typeless:
-							// We'll only default to the depth portion of the view, we'd need to create a separate view to read the stencil component.
-							DefaultShaderResourceView = GetShaderResourceView(BufferFormat.R32_Float_X8X24_Typeless);
-							DefaultDepthStencilView = GetDepthStencilView(BufferFormat.D32_Float_S8X24_UInt, 0, 0, 0, D3D11.DepthStencilViewFlags.ReadOnlyDepth);
-							break;
-						case BufferFormat.R24G8_Typeless:
-							// We'll only default to the depth portion of the view, we'd need to create a separate view to read the stencil component.
-							DefaultShaderResourceView = GetShaderResourceView(BufferFormat.R24_UNorm_X8_Typeless);
-							DefaultDepthStencilView = GetDepthStencilView(BufferFormat.D24_UNorm_S8_UInt, 0, 0, 0, D3D11.DepthStencilViewFlags.ReadOnlyDepth);
-							break;
-						case BufferFormat.R16_Typeless:
-							DefaultShaderResourceView = GetShaderResourceView(BufferFormat.R16_Float);
-							DefaultDepthStencilView = GetDepthStencilView(BufferFormat.D16_UNorm, 0, 0, 0, D3D11.DepthStencilViewFlags.ReadOnlyDepth);
-							break;
-						case BufferFormat.R32_Typeless:
-							DefaultShaderResourceView = GetShaderResourceView(BufferFormat.R32_Float);
-							DefaultDepthStencilView = GetDepthStencilView(BufferFormat.D32_Float, 0, 0, 0, D3D11.DepthStencilViewFlags.ReadOnlyDepth);
-							break;
-					}
-					return;
-				}
-
-                // If we don't have any format type, then we cannot retrieve a default view.
-			    if (!FormatInformation.IsTypeless)
-			    {
-			        DefaultShaderResourceView = GetShaderResourceView(Format);
-			    }
-			}
-
-			// Create the default depth/stencil view.
-			if ((Binding & TextureBinding.DepthStencil) == TextureBinding.DepthStencil)
-			{
-				DefaultDepthStencilView = GetDepthStencilView();
-			    return;
-			}
-
-			if ((Binding & TextureBinding.RenderTarget) != TextureBinding.RenderTarget)
-			{
-                _info.DepthStencilFormat = BufferFormat.Unknown;
-				return;
-			}
-
-		    if ((DepthStencilFormat != BufferFormat.Unknown) && (TextureType != TextureType.Texture3D))
-		    {
-		        _log.Print($"Creating associated [{DepthStencilFormat}] format depth buffer for the render target '{Name}'.", LoggingLevel.Verbose);
-
-		        if ((DepthStencilFormat != BufferFormat.D16_UNorm)
-		            && (DepthStencilFormat != BufferFormat.D24_UNorm_S8_UInt)
-		            && (DepthStencilFormat != BufferFormat.D32_Float)
-		            && (DepthStencilFormat != BufferFormat.D32_Float_S8X24_UInt))
-		        {
-		            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_DEPTHSTENCIL_FORMAT_INVALID, DepthStencilFormat));
-		        }
-
-		        _ownsDepthStencil = true;
-		        AssociatedDepthStencil = new GorgonTexture($"{Name}_RenderTarget_DepthStencil_{Guid.NewGuid():N}",
-		                                                   Graphics,
-		                                                   new GorgonTextureInfo(Info)
-		                                                   {
-		                                                       Format = DepthStencilFormat,
-		                                                       Binding = TextureBinding.DepthStencil,
-		                                                       Usage = ResourceUsage.Default,
-		                                                       DepthStencilFormat = BufferFormat.Unknown
-		                                                   });
-            }
-            else if (TextureType == TextureType.Texture3D)
-		    {
-		        _log.Print($"An associated depth buffer could not be created for the render target '{Name}' because it is a 3D texture.", LoggingLevel.Verbose);
-                _info.DepthStencilFormat = BufferFormat.Unknown;
-            }
-
-            // We cannot define a default render target view if we have no type for our format.
-		    if (FormatInformation.IsTypeless)
-		    {
-		        return;
-		    }
-
-		    DefaultRenderTargetView = GetRenderTargetView();*/
+		    D3DResource = new D3D11.Texture2D1(Graphics.D3DDevice, tex2DDesc, dataBoxes)
+		                  {
+		                      DebugName = $"{Name}[{TextureID}]_ID3D11Texture2D1"
+		                  };
 		}
 
 		/// <summary>
@@ -616,8 +519,6 @@ namespace Gorgon.Graphics.Core
 			FormatInformation = new GorgonFormatInfo(Format);
 
 			InitializeD3DTexture(image);
-
-			InitializeDefaultViews();
 		}
 
 	    /// <summary>
@@ -820,7 +721,7 @@ namespace Gorgon.Graphics.Core
 		/// Function to copy a texture subresource from another <see cref="GorgonTexture2D"/> into this texture.
 		/// </summary>
 		/// <param name="sourceTexture">The texture to copy.</param>
-		/// <param name="sourceBox">[Optional] The dimensions of the source area to copy.</param>
+		/// <param name="sourceRectangle">[Optional] The dimensions of the source area to copy.</param>
 		/// <param name="sourceArrayIndex">[Optional] The array index of the sub resource to copy (for 1D/2D textures only).</param>
 		/// <param name="sourceMipLevel">[Optional] The mip map level of the sub resource to copy.</param>
 		/// <param name="destX">[Optional] Horizontal offset into the destination texture to place the copied data.</param>
@@ -840,7 +741,7 @@ namespace Gorgon.Graphics.Core
 		/// <remarks>
 		/// <para>
 		/// Use this method to copy a specific sub resource of a <see cref="GorgonTexture2D"/> to another sub resource of this <see cref="GorgonTexture2D"/>, or to a different sub resource of the same texture.  
-		/// The <paramref name="sourceBox"/> coordinates must be inside of the destination, if it is not, then the source data will be clipped against the destination region. No stretching or filtering is 
+		/// The <paramref name="sourceRectangle"/> coordinates must be inside of the destination, if it is not, then the source data will be clipped against the destination region. No stretching or filtering is 
 		/// supported by this method. If the entire texture needs to be copied, then use the <see cref="CopyTo"/> method.
 		/// </para>
 		/// <para>
@@ -865,7 +766,7 @@ namespace Gorgon.Graphics.Core
 		/// </para>
 		/// </remarks>
 		/// <seealso cref="CopyTo"/>
-		public void CopySubResource(GorgonTexture2D sourceTexture, GorgonBox? sourceBox = null, int sourceArrayIndex = 0, int sourceMipLevel = 0, int destX = 0, int destY = 0, int destArrayIndex = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
+		public void CopySubResource(GorgonTexture2D sourceTexture, DX.Rectangle? sourceRectangle = null, int sourceArrayIndex = 0, int sourceMipLevel = 0, int destX = 0, int destY = 0, int destArrayIndex = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
 		{
 			sourceTexture.ValidateObject(nameof(sourceTexture));
 
@@ -876,32 +777,19 @@ namespace Gorgon.Graphics.Core
 				return;
 			}
 
-			GorgonBox box;
+			DX.Rectangle rect;
 
 			// If we didn't specify a box to copy from, then create one.
-			if (sourceBox == null)
+			if (sourceRectangle == null)
 			{
-				box = new GorgonBox
-				            {
-					            X = 0,
-					            Y = 0,
-					            Z = 0,
-					            Width = (sourceTexture.Width.Max(1)).Min(sourceTexture.Width),
-					            Height = (sourceTexture.Height.Max(1)).Min(sourceTexture.Height),
-					            Depth = 1
-				            };
+			    rect = new DX.Rectangle(0, 0, (sourceTexture.Width.Max(1)).Min(sourceTexture.Width), (sourceTexture.Height.Max(1)).Min(sourceTexture.Height));
 			}
 			else
 			{
-				box = new GorgonBox
-				      {
-					      Left = (sourceBox.Value.Left.Min(Height - 1).Max(0)).Min(sourceTexture.Width - 1),
-					      Top = (sourceBox.Value.Top.Min(Height - 1).Max(0)).Min(sourceTexture.Height - 1),
-					      Front = 0,
-					      Width = (sourceBox.Value.Width.Min(Width).Max(1)).Min(sourceTexture.Width),
-					      Height = (sourceBox.Value.Height.Min(Height).Max(1)).Min(sourceTexture.Height),
-					      Depth = 1
-				      };
+			    rect = new DX.Rectangle((sourceRectangle.Value.Left.Min(Height - 1).Max(0)).Min(sourceTexture.Width - 1),
+			                           (sourceRectangle.Value.Top.Min(Height - 1).Max(0)).Min(sourceTexture.Height - 1),
+			                           (sourceRectangle.Value.Width.Min(Width).Max(1)).Min(sourceTexture.Width),
+			                           (sourceRectangle.Value.Height.Min(Height).Max(1)).Min(sourceTexture.Height));
 			}
 
 			// Ensure the indices are clipped to our settings.
@@ -936,36 +824,40 @@ namespace Gorgon.Graphics.Core
 			// Clip off any overlap if the destination is outside of the destination texture.
 			if (destX < 0)
 			{
-				box.X -= destX;
-				box.Width += destX;
+				rect.X -= destX;
+				rect.Width += destX;
 			}
 
 			if (destY < 0)
 			{
-				box.Y -= destY;
-				box.Height += destY;
+				rect.Y -= destY;
+				rect.Height += destY;
 			}
 
 			// Clip source box.
-			int left = box.Left.Min(sourceTexture.Width - 1).Max(0);
-			int top = box.Top.Min(sourceTexture.Height - 1).Max(0);
-			int right = box.Right.Min(sourceTexture.Width + left).Max(1);
-			int bottom = box.Bottom.Min(sourceTexture.Height + top).Max(1);
+			int left = rect.Left.Min(sourceTexture.Width - 1).Max(0);
+			int top = rect.Top.Min(sourceTexture.Height - 1).Max(0);
+			int right = rect.Right.Min(sourceTexture.Width + left).Max(1);
+			int bottom = rect.Bottom.Min(sourceTexture.Height + top).Max(1);
 
-			box = GorgonBox.FromTLFRBB(left, top, 0, right, bottom, 1);
+			rect = new DX.Rectangle
+			       {
+			           Left = left, 
+			           Top = top,
+			           Right = right, 
+			           Bottom = bottom
+			       };
 
 			// Adjust source box to fit within our destination.
 			destX = destX.Min(Width - 1).Max(0);
 			destY = destY.Min(Height - 1).Max(0);
 
-			box.Width = (destX + box.Width).Min(Width - destX).Max(1);
-			box.Height = (destY + box.Height).Min(Height - destY).Max(1);
-			box.Depth = 1;
+			rect.Width = (destX + rect.Width).Min(Width - destX).Max(1);
+			rect.Height = (destY + rect.Height).Min(Height - destY).Max(1);
 
 			// Nothing to copy, so get out.
-			if ((box.Width == 0)
-				|| (box.Height == 0)
-				|| (box.Depth == 0))
+			if ((rect.Width == 0)
+				|| (rect.Height == 0))
 			{
 				return;
 			}
@@ -975,9 +867,9 @@ namespace Gorgon.Graphics.Core
 		                                                     destX,
 		                                                     destY,
 		                                                     0,
-		                                                     sourceTexture.D3DResource,
+                                                             sourceTexture.D3DResource,
 		                                                     sourceResource,
-		                                                     box.ToResourceRegion(),
+		                                                     new D3D11.ResourceRegion(rect.Left, rect.Top, 0, rect.Right, rect.Bottom, 1),
 		                                                     (int)copyMode);
 		}
 
@@ -1125,6 +1017,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="destBox">[Optional] A <see cref="GorgonBox"/> that will specify the region that will receive the data.</param>
 		/// <param name="destArrayIndex">[Optional] The array index that will receive the data (1D/2D textures only).</param>
 		/// <param name="destMipLevel">[Optional] The mip map level that will receive the data.</param>
+		/// <param name="copyMode">[Optional] Defines how data should be copied into the texture.</param>
 		/// <exception cref="NotSupportedException">Thrown when this texture has a <see cref="GorgonGraphicsResource.Usage"/> of <see cref="ResourceUsage.Dynamic"/> or <see cref="ResourceUsage.Immutable"/>.
 		/// <para>-or-</para>
 		/// <para>Thrown when this texture has <see cref="IGorgonTexture2DInfo.MultisampleInfo"/>.</para>
@@ -1149,6 +1042,9 @@ namespace Gorgon.Graphics.Core
 		/// <see cref="TextureBinding.DepthStencil"/> flag, then an exception will be thrown.
 		/// </para>
 		/// <para>
+		/// The <paramref name="copyMode"/> flag defines how data will be copied into this texture.  See the <see cref="CopyMode"/> enumeration for a description of the values.
+		/// </para>
+		/// <para>
 		/// <note type="caution">
 		/// <para>
 		/// For performance reasons, any exceptions thrown from this method will only be thrown when Gorgon is compiled as DEBUG.
@@ -1156,7 +1052,7 @@ namespace Gorgon.Graphics.Core
 		/// </note>
 		/// </para>
 		/// </remarks>
-		public void UpdateSubResource(IGorgonImageBuffer buffer, GorgonBox? destBox = null, int destArrayIndex = 0, int destMipLevel = 0)
+		public void UpdateSubResource(IGorgonImageBuffer buffer, GorgonBox? destBox = null, int destArrayIndex = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
 		{
 			buffer.ValidateObject(nameof(buffer));
 
@@ -1210,17 +1106,13 @@ namespace Gorgon.Graphics.Core
 
 		    unsafe
 		    {
-		        DX.DataBox boxPtr = new DX.DataBox
-		                            {
-		                                DataPointer = new IntPtr((void *)buffer.Data),
-		                                RowPitch = buffer.PitchInformation.RowPitch,
-		                                SlicePitch = buffer.PitchInformation.SlicePitch
-		                            };
-
-		        Graphics.D3DDeviceContext.UpdateSubresource(boxPtr,
-		                                                    D3DResource,
-		                                                    D3D11.Resource.CalculateSubResourceIndex(destMipLevel, destArrayIndex, MipLevels),
-		                                                    box.ToResourceRegion());
+		        Graphics.D3DDeviceContext.UpdateSubresource1(D3DResource,
+		                                                     D3D11.Resource.CalculateSubResourceIndex(destMipLevel, destArrayIndex, MipLevels),
+		                                                     box.ToResourceRegion(),
+		                                                     new IntPtr((void*)buffer.Data),
+		                                                     buffer.PitchInformation.RowPitch,
+		                                                     buffer.PitchInformation.SlicePitch,
+		                                                     (int)copyMode);
 		    }
 		}
 
@@ -1364,16 +1256,15 @@ namespace Gorgon.Graphics.Core
 			                         pixelCoordinates.Height / (float)Height);
 		}
 
-        /*
         /// <summary>
-        /// Function to create a new <see cref="GorgonTextureView"/> for this texture.
+        /// Function to create a new <see cref="GorgonTexture2DView"/> for this texture.
         /// </summary>
         /// <param name="format">[Optional] The format for the view.</param>
         /// <param name="firstMipLevel">[Optional] The first mip map level (slice) to start viewing from.</param>
         /// <param name="mipCount">[Optional] The number of mip map levels to view.</param>
         /// <param name="arrayIndex">[Optional] The array index to start viewing from.</param>
         /// <param name="arrayCount">[Optional] The number of array indices to view.</param>
-        /// <returns>A <see cref="GorgonTextureView"/> used to bind the texture to a shader.</returns>
+        /// <returns>A <see cref="GorgonTexture2DView"/> used to bind the texture to a shader.</returns>
         /// <exception cref="ArgumentException">Thrown when this texture does not have a <see cref="TextureBinding"/> of <see cref="TextureBinding.ShaderResource"/>.
         /// <para>-or-</para>
         /// <para>Thrown when this texture has a usage of <c>Staging</c>.</para>
@@ -1386,8 +1277,8 @@ namespace Gorgon.Graphics.Core
         /// This will create a view that makes a texture accessible to shaders. This allows viewing of the texture data in a different format, or even a subsection of the texture from within the shader.
         /// </para>
         /// <para>
-        /// The <paramref name="format"/> parameter is used present the texture data as another format type to the shader. If this value is left at the default of <c>Unknown</c>, then the format from the 
-        /// this texture is used. The <paramref name="format"/> must be castable to the format of this texture. If it is not, an exception will be thrown.
+        /// The <paramref name="format"/> parameter is used present the texture data as another format type to the shader. If this value is left at the default of <see cref="BufferFormat.Unknown"/>, then 
+        /// the format from the this texture is used. The <paramref name="format"/> must be castable to the format of this texture. If it is not, an exception will be thrown.
         /// </para>
         /// <para>
         /// The <paramref name="firstMipLevel"/> and <paramref name="mipCount"/> parameters define the starting mip level and the number of mip levels to allow access to within the shader. If these values fall 
@@ -1395,10 +1286,10 @@ namespace Gorgon.Graphics.Core
         /// </para>
         /// <para>
         /// The <paramref name="arrayIndex"/> and <paramref name="arrayCount"/> parameters define the starting array index and the number of array indices to allow access to within the shader. If these values 
-        /// are left at 0, then all array indices will be accessible. If this texture is a <see cref="TextureType.Texture3D"/> type, then these parameters are ignored since 3D textures cannot have array indices.
+        /// are left at 0, then all array indices will be accessible. 
         /// </para>
         /// </remarks>
-	    public GorgonTextureView GetShaderResourceView(BufferFormat format = BufferFormat.Unknown, int firstMipLevel = 0, int mipCount = 0, int arrayIndex = 0, int arrayCount = 0)
+	    public GorgonTexture2DView GetShaderResourceView(BufferFormat format = BufferFormat.Unknown, int firstMipLevel = 0, int mipCount = 0, int arrayIndex = 0, int arrayCount = 0)
 	    {
 	        if (format == BufferFormat.Unknown)
 	        {
@@ -1417,27 +1308,19 @@ namespace Gorgon.Graphics.Core
 
 	        if (arrayCount <= 0)
 	        {
-	            if (_info.TextureType == TextureType.Texture3D)
-	            {
-	                arrayIndex = 0;
-	                arrayCount = 1;
-	            }
-	            else
-	            {
-	                arrayCount = _info.ArrayCount - arrayIndex;
-	            }
+	            arrayCount = _info.ArrayCount - arrayIndex;
 	        }
 
 	        arrayCount = (arrayCount.Min(ArrayCount - arrayIndex)).Max(1);
 
             TextureViewKey key = new TextureViewKey(format, firstMipLevel, mipCount, arrayIndex, arrayCount);
 
-            if (_cachedSrvs.TryGetValue(key, out GorgonTextureView view))
+	        if (_cachedSrvs.TryGetValue(key, out GorgonTexture2DView view))
             {
                 return view;
             }
 
-            view = new GorgonTextureView(this, format, firstMipLevel, mipCount, arrayIndex, arrayCount, _log);
+            view = new GorgonTexture2DView(this, format, firstMipLevel, mipCount, arrayIndex, arrayCount);
 	        view.CreateNativeView();
 	        _cachedSrvs[key] = view;
             
@@ -1445,15 +1328,14 @@ namespace Gorgon.Graphics.Core
 	    }
 
         /// <summary>
-        /// Function to create a new <see cref="GorgonTextureUav"/> for this texture.
+        /// Function to create a new <see cref="GorgonTexture2DUav"/> for this texture.
         /// </summary>
         /// <param name="format">[Optional] The format for the view.</param>
         /// <param name="firstMipLevel">[Optional] The first mip map level (slice) to start viewing from.</param>
-        /// <param name="arrayOrDepthIndex">[Optional] The array index or depth slice to start viewing from.</param>
-        /// <param name="arrayOrDepthCount">[Optional] The number of array indices or depth slices to view.</param>
-        /// <returns>A <see cref="GorgonTextureUav"/> used to bind the texture to a shader.</returns>
-        /// <exception cref="GorgonException">Thrown if the video adapter does not support feature level 11 or better.
-        /// <para>-or-</para>
+        /// <param name="arrayIndex">[Optional] The array index or depth slice to start viewing from.</param>
+        /// <param name="arrayCount">[Optional] The number of array indices or depth slices to view.</param>
+        /// <returns>A <see cref="GorgonTexture2DUav"/> used to bind the texture to a shader.</returns>
+        /// <exception cref="GorgonException">
         /// <para>Thrown when this texture does not have a <see cref="TextureBinding"/> of <see cref="TextureBinding.UnorderedAccess"/>.</para>
         /// <para>-or-</para>
         /// <para>Thrown when this texture has a usage of <c>Staging</c>.</para>
@@ -1475,9 +1357,8 @@ namespace Gorgon.Graphics.Core
         /// clipped to the upper and lower bounds of the mip chain. If this value is left at 0, then only the first mip level is used.
         /// </para>
         /// <para>
-        /// The <paramref name="arrayOrDepthIndex"/> and <paramref name="arrayOrDepthCount"/> parameters define the starting array index and the number of array indices to allow access to within the shader. If 
-        /// these values are left at 0, then all array indices will be accessible. If this texture is a <see cref="TextureType.Texture3D"/> type, then these parameters represent the depth slices available 
-        /// within the texture.
+        /// The <paramref name="arrayIndex"/> and <paramref name="arrayCount"/> parameters define the starting array index and the number of array indices to allow access to within the shader. If 
+        /// these values are left at 0, then all array indices will be accessible. 
         /// </para>
         /// <para>
         /// <note type="important">
@@ -1487,13 +1368,8 @@ namespace Gorgon.Graphics.Core
         /// </note>
         /// </para>
         /// </remarks>
-        public GorgonTextureUav GetUnorderedAccessView(BufferFormat format = BufferFormat.Unknown, int firstMipLevel = 0, int arrayOrDepthIndex = 0, int arrayOrDepthCount = 0)
+        public GorgonTexture2DUav GetUnorderedAccessView(BufferFormat format = BufferFormat.Unknown, int firstMipLevel = 0, int arrayIndex = 0, int arrayCount = 0)
 	    {
-	        if (Graphics.VideoDevice.RequestedFeatureLevel < FeatureLevelSupport.Level_11_0)
-	        {
-	            throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_UAV_REQUIRES_SM5);
-	        }
-
 	        if ((Usage == ResourceUsage.Staging)
                 || ((Binding & TextureBinding.UnorderedAccess) != TextureBinding.UnorderedAccess))
 	        {
@@ -1510,16 +1386,15 @@ namespace Gorgon.Graphics.Core
 	            format = Format;
 	        }
 
-	        if ((Graphics.VideoDevice.GetBufferFormatSupport(format) & BufferFormatSupport.TypedUnorderedAccessView) !=
-	             BufferFormatSupport.TypedUnorderedAccessView)
+	        if ((Graphics.FormatSupport[format].FormatSupport & BufferFormatSupport.TypedUnorderedAccessView) != BufferFormatSupport.TypedUnorderedAccessView)
 	        {
 	            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_UAV_FORMAT_INVALID, format));
 	        }
 
 	        // Ensure the size of the data type fits the requested format.
-	        GorgonFormatInfo info = new GorgonFormatInfo(format);
+	        var info = new GorgonFormatInfo(format);
 
-	        if (((info.Group != BufferFormat.R32_Typeless) && (FormatInformation.Group != info.Group))
+	        if ((FormatInformation.Group != info.Group)
 	            || (info.SizeInBytes != FormatInformation.SizeInBytes))
 	        {
 	            throw new GorgonException(GorgonResult.CannotCreate,
@@ -1529,23 +1404,23 @@ namespace Gorgon.Graphics.Core
 	        }
 
 	        firstMipLevel = firstMipLevel.Max(0).Min(MipLevels - 1);
-            arrayOrDepthIndex = arrayOrDepthIndex.Max(0).Min(TextureType == TextureType.Texture3D ? (Depth - 1) : (ArrayCount - 1));
+            arrayIndex = arrayIndex.Max(0).Min(ArrayCount - 1);
 	        
-            if (arrayOrDepthCount <= 0)
+            if (arrayCount <= 0)
             {
-                arrayOrDepthCount = (_info.TextureType == TextureType.Texture3D ? _info.Depth : _info.ArrayCount) - arrayOrDepthIndex;
+                arrayCount = _info.ArrayCount - arrayIndex;
             }
 
-	        arrayOrDepthCount = arrayOrDepthCount.Min((TextureType == TextureType.Texture3D ? (Depth) : (ArrayCount)) - arrayOrDepthIndex).Max(1);
+	        arrayCount = arrayCount.Min(ArrayCount - arrayIndex).Max(1);
 
-	        TextureViewKey key = new TextureViewKey(format, firstMipLevel, _info.MipLevels, arrayOrDepthIndex, arrayOrDepthCount);
+	        TextureViewKey key = new TextureViewKey(format, firstMipLevel, _info.MipLevels, arrayIndex, arrayCount);
 
-	        if (_cachedUavs.TryGetValue(key, out GorgonTextureUav view))
+	        if (_cachedUavs.TryGetValue(key, out GorgonTexture2DUav view))
 	        {
 	            return view;
 	        }
 
-	        view = new GorgonTextureUav(this, format, info, firstMipLevel, arrayOrDepthIndex, arrayOrDepthCount, _log);
+	        view = new GorgonTexture2DUav(this, format, info, firstMipLevel, arrayIndex, arrayCount);
 	        view.CreateNativeView();
 	        _cachedUavs[key] = view;
 
@@ -1553,14 +1428,14 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Function to create a new <see cref="GorgonDepthStencilView"/> for this texture.
+        /// Function to create a new <see cref="GorgonDepthStencil2DView"/> for this texture.
         /// </summary>
         /// <param name="format">[Optional] The format for the view.</param>
         /// <param name="firstMipLevel">[Optional] The first mip map level (slice) to start viewing from.</param>
         /// <param name="arrayIndex">[Optional] The array or depth index to start viewing from.</param>
         /// <param name="arrayCount">[Optional] The number of array indices or depth slices to view.</param>
         /// <param name="flags">[Optional] Flags to define how this view should be accessed by the shader.</param>
-        /// <returns>A <see cref="GorgonTextureView"/> used to bind the texture to a shader.</returns>
+        /// <returns>A <see cref="GorgonDepthStencil2DView"/> used to bind the texture as a depth/stencil buffer.</returns>
         /// <exception cref="ArgumentException">Thrown when this texture does not have a <see cref="TextureBinding"/> of <see cref="TextureBinding.DepthStencil"/>.
         /// <para>-or-</para>
         /// <para>Thrown when this texture has a usage of <c>Staging</c>.</para>
@@ -1569,21 +1444,17 @@ namespace Gorgon.Graphics.Core
         /// <para>-or-</para>
         /// <para>Thrown when the <paramref name="arrayIndex"/> plus the <paramref name="arrayCount"/> is larger than the number of array indices/depth slices for this texture.</para>
         /// <para>-or-</para>
-        /// <para>Thrown if the <paramref name="flags"/> parameter was set to value other than <c>None</c>, and the current video adapter does not support feature level 11 or better.</para>
+        /// <para>Thrown if this texture has a <see cref="Binding"/> of <see cref="TextureBinding.ShaderResource"/>, but the texture format is not a typeless format.</para>
         /// </exception>
-        /// <exception cref="GorgonException">Thrown if this texture type is <see cref="TextureType.Texture3D"/>.</exception>
-        public GorgonDepthStencilView GetDepthStencilView(BufferFormat format = BufferFormat.Unknown, int firstMipLevel = 0, int arrayIndex = 0, int arrayCount = 0, D3D11.DepthStencilViewFlags flags = D3D11.DepthStencilViewFlags.None)
+        /// <remarks>
+        /// <para>
+        /// The depth/stencil views take a <see cref="DepthStencilViewFlags"/> parameter that determine how a shader can access the depth buffer when it is bound to the pipeline for reading. By specifying 
+        /// a single flag, the depth can write to the opposite plane (e.g. read only depth and write only stencil, write only depth and read only stencil) of the texture. This allows for multiple 
+        /// depth/stencil views to be bound to the pipeline for reading and writing.
+        /// </para>
+        /// </remarks>
+        public GorgonDepthStencil2DView GetDepthStencilView(BufferFormat format = BufferFormat.Unknown, int firstMipLevel = 0, int arrayIndex = 0, int arrayCount = 0, DepthStencilViewFlags flags = DepthStencilViewFlags.None)
 	    {
-	        if (_info.TextureType == TextureType.Texture3D)
-	        {
-	            throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_VIEW_DEPTH_STENCIL_NO_3D);
-	        }
-
-	        if ((flags != D3D11.DepthStencilViewFlags.None) && (Graphics.VideoDevice.RequestedFeatureLevel < FeatureLevelSupport.Level_11_0))
-	        {
-	            throw new ArgumentException(string.Format(Resources.GORGFX_ERR_REQUIRES_FEATURE_LEVEL, FeatureLevelSupport.Level_11_0), nameof(flags));
-	        }
-
 	        if (format == BufferFormat.Unknown)
 	        {
 	            format = _info.Format;
@@ -1626,40 +1497,40 @@ namespace Gorgon.Graphics.Core
             // Since we don't use the mip count, we can repurpose it to store the flag settings.
 	        TextureViewKey key = new TextureViewKey(format, firstMipLevel, (int)flags, arrayIndex, arrayCount);
 
-            if (_cachedDsvs.TryGetValue(key, out GorgonDepthStencilView view))
+	        if (_cachedDsvs.TryGetValue(key, out GorgonDepthStencil2DView view))
             {
                 return view;
             }
 
-            view = new GorgonDepthStencilView(this, format, firstMipLevel, arrayIndex, arrayCount, flags, _log);
+            view = new GorgonDepthStencil2DView(this, format, firstMipLevel, arrayIndex, arrayCount, flags);
 	        view.CreateNativeView();
 	        _cachedDsvs[key] = view;
 
 	        return view;
-	    }*/
+	    }
 
         /// <summary>
         /// Function to create a new <see cref="GorgonRenderTarget2DView"/> for this texture.
         /// </summary>
         /// <param name="format">[Optional] The format for the view.</param>
         /// <param name="firstMipLevel">[Optional] The first mip map level (slice) to start viewing from.</param>
-        /// <param name="arrayOrDepthIndex">[Optional] The array or depth index to start viewing from.</param>
-        /// <param name="arrayOrDepthCount">[Optional] The number of array indices or depth slices to view.</param>
-        /// <returns>A <see cref="GorgonTextureView"/> used to bind the texture to a shader.</returns>
+        /// <param name="arrayIndex">[Optional] The array or depth index to start viewing from.</param>
+        /// <param name="arrayCount">[Optional] The number of array indices or depth slices to view.</param>
+        /// <returns>A <see cref="GorgonTexture2DView"/> used to bind the texture to a shader.</returns>
         /// <exception cref="ArgumentException">Thrown when this texture does not have a <see cref="TextureBinding"/> of <see cref="TextureBinding.RenderTarget"/>.
         /// <para>-or-</para>
         /// <para>Thrown when this texture has a usage of <c>Staging</c>.</para>
         /// <para>-or-</para>
         /// <para>Thrown when the <paramref name="format"/> is typeless or cannot be determined from the this texture, or the <paramref name="format"/> is not in the same group as the texture format.</para>
         /// <para>-or-</para>
-        /// <para>Thrown when the <paramref name="arrayOrDepthIndex"/> plus the <paramref name="arrayOrDepthCount"/> is larger than the number of array indices/depth slices for this texture.</para>
+        /// <para>Thrown when the <paramref name="arrayIndex"/> plus the <paramref name="arrayCount"/> is larger than the number of array indices/depth slices for this texture.</para>
         /// </exception>
         /// <remarks>
         /// <para>
         /// This will create a view that allows a texture to become a render target. This allows rendering into texture data in a different format, or even a subsection of the texture.
         /// </para>
         /// <para>
-        /// The <paramref name="format"/> parameter is used present the texture data as another format type to the shader. If this value is left at the default of <c>Unknown</c>, then the format from the 
+        /// The <paramref name="format"/> parameter is used present the texture data as another format type to the shader. If this value is left at the default of <see cref="BufferFormat.Unknown"/>, then the format from the 
         /// this texture is used. The <paramref name="format"/> must be castable to the format of this texture. If it is not, an exception will be thrown.
         /// </para>
         /// <para>
@@ -1667,12 +1538,11 @@ namespace Gorgon.Graphics.Core
         /// value is left at 0, then only the top mip level is used.
         /// </para>
         /// <para>
-        /// The <paramref name="arrayOrDepthIndex"/> and <paramref name="arrayOrDepthCount"/> parameters will either indicate the array indices for a 1D/2D texture, or the depth slices for a 3D texture. These 
-        /// parameters define the starting array index/depth slice and the number of array indices/depth slices to render into. If these values are left at 0, then the entire array/depth is used to receive 
-        /// rendering data.
+        /// The <paramref name="arrayIndex"/> and <paramref name="arrayCount"/> parameters will define the starting array index/depth slice and the number of array indices/depth slices to render into. If 
+        /// these values are left at 0, then the entire array/depth is used to receive rendering data.
         /// </para>
         /// </remarks>
-        public GorgonRenderTarget2DView GetRenderTargetView(BufferFormat format = BufferFormat.Unknown, int firstMipLevel = 0, int arrayOrDepthIndex = 0, int arrayOrDepthCount = 0)
+        public GorgonRenderTarget2DView GetRenderTargetView(BufferFormat format = BufferFormat.Unknown, int firstMipLevel = 0, int arrayIndex = 0, int arrayCount = 0)
 	    {
 	        if (format == BufferFormat.Unknown)
 	        {
@@ -1680,36 +1550,186 @@ namespace Gorgon.Graphics.Core
 	        }
 
 	        firstMipLevel = firstMipLevel.Max(0).Min(MipLevels - 1);
-	        arrayOrDepthIndex = arrayOrDepthIndex.Max(0);
+	        arrayIndex = arrayIndex.Max(0);
 
-	        if (arrayOrDepthCount <= 0)
+	        if (arrayCount <= 0)
 	        {
-	            arrayOrDepthCount = _info.ArrayCount - arrayOrDepthIndex;
+	            arrayCount = _info.ArrayCount - arrayIndex;
 	        }
 
-	        arrayOrDepthCount = arrayOrDepthCount.Min(_info.ArrayCount - arrayOrDepthIndex).Max(1);
+	        arrayCount = arrayCount.Min(_info.ArrayCount - arrayIndex).Max(1);
 
-	        TextureViewKey key = new TextureViewKey(format, firstMipLevel, 1, arrayOrDepthIndex, arrayOrDepthCount);
-	        GorgonRenderTarget2DView view;
-            
-            if (_cachedRtvs.TryGetValue(key, out WeakReference<GorgonRenderTarget2DView> viewRef))
+	        TextureViewKey key = new TextureViewKey(format, firstMipLevel, 1, arrayIndex, arrayCount);
+
+	        if (_cachedRtvs.TryGetValue(key, out GorgonRenderTarget2DView view))
             {
-                if ((viewRef.TryGetTarget(out view))
-                    && (!view.IsDisposed))
-                {
-                    return view;
-                }
-
-                // The view is dead, recreate it.
-                _cachedRtvs.Remove(key);
+                return view;
             }
 
-            view = new GorgonRenderTarget2DView(this, format, firstMipLevel, arrayOrDepthIndex, arrayOrDepthCount, _log);
+            view = new GorgonRenderTarget2DView(this, format, firstMipLevel, arrayIndex, arrayCount);
 	        view.CreateNativeView();
-	        _cachedRtvs[key] = new WeakReference<GorgonRenderTarget2DView>(view);
+	        _cachedRtvs[key] = view;
 
 	        return view;
 	    }
+        
+        /// <summary>
+        /// Function to load a texture from a <see cref="Stream"/>.
+        /// </summary>
+        /// <param name="graphics">The graphics interface that will own the texture.</param>
+        /// <param name="stream">The stream containing the texture image data.</param>
+        /// <param name="codec">The codec that is used to decode the the data in the stream.</param>
+        /// <param name="size">[Optional] The size of the image in the stream, in bytes.</param>
+        /// <param name="options">[Optional] Options used to further define the texture.</param>
+        /// <returns>A new <see cref="GorgonTexture2D"/></returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, <paramref name="stream"/>, or the <paramref name="codec"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="IOException">Thrown if the <paramref name="stream"/> is write only.</exception>
+        /// <exception cref="EndOfStreamException">Thrown if reading the image would move beyond the end of the <paramref name="stream"/>.</exception>
+        /// <remarks>
+        /// <para>
+        /// This will load an <see cref="IGorgonImage"/> from a <paramref name="stream"/> and put it into a <see cref="GorgonTexture2D"/> object.
+        /// </para>
+        /// <para>
+        /// If the <paramref name="size"/> option is specified, then the method will read from the stream up to that number of bytes, so it is up to the user to provide an accurate size. If it is omitted 
+        /// then the <c>stream length - stream position</c> is used as the total size.
+        /// </para>
+        /// <para>
+        /// If specified, the <paramref name="options"/>parameter will define how Gorgon and shaders should handle the texture.  The <see cref="GorgonTextureLoadOptions"/> type contains the following:
+        /// <list type="bullet">
+        ///		<item>
+        ///			<term>Binding</term>
+        ///			<description>When defined, will indicate the <see cref="TextureBinding"/> that defines how the texture will be bound to the graphics pipeline. If it is omitted, then the binding will be 
+        ///         <see cref="TextureBinding.ShaderResource"/>.</description>
+        ///		</item>
+        ///		<item>
+        ///			<term>Usage</term>
+        ///			<description>When defined, will indicate the preferred usage for the texture. If it is omitted, then the usage will be set to <see cref="ResourceUsage.Default"/>.</description>
+        ///		</item>
+        ///		<item>
+        ///			<term>Multisample info</term>
+        ///			<description>When defined (i.e. not <b>null</b>), defines the multisampling to apply to the texture. If omitted, then the default is <see cref="GorgonMultisampleInfo.NoMultiSampling"/>.</description>
+        ///		</item>
+        /// </list>
+        /// </para>
+        /// </remarks>
+        public static GorgonTexture2D FromStream(GorgonGraphics graphics, Stream stream, IGorgonImageCodec codec, long? size = null, GorgonTextureLoadOptions options = null)
+        {
+            if (graphics == null)
+            {
+                throw new ArgumentNullException(nameof(graphics));
+            }
+
+            if (stream == null)
+            {
+                throw new ArgumentNullException(nameof(stream));
+            }
+
+            if (codec == null)
+            {
+                throw new ArgumentNullException(nameof(codec));
+            }
+
+            if (!stream.CanRead)
+            {
+                throw new IOException(Resources.GORGFX_ERR_STREAM_WRITE_ONLY);
+            }
+
+            if (size == null)
+            {
+                size = stream.Length - stream.Position;
+            }
+
+            if ((stream.Length - stream.Position) < size)
+            {
+                throw new EndOfStreamException();
+            }
+
+            if (options == null)
+            {
+                options = _defaultLoadOptions;
+            }
+
+            if (string.IsNullOrEmpty(options.Name))
+            {
+                options.Name = GenerateName(NamePrefix);
+            }
+
+            using (IGorgonImage image = codec.LoadFromStream(stream, size))
+            {
+                return new GorgonTexture2D(graphics, image, options);
+            }
+        }
+
+        /// <summary>
+        /// Function to load a texture from a file..
+        /// </summary>
+        /// <param name="graphics">The graphics interface that will own the texture.</param>
+        /// <param name="filePath">The path to the file.</param>
+        /// <param name="codec">The codec that is used to decode the the data in the stream.</param>
+        /// <param name="options">[Optional] Options used to further define the texture.</param>
+        /// <returns>A new <see cref="GorgonTexture2D"/></returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, <paramref name="filePath"/>, or the <paramref name="codec"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="filePath"/> parameter is empty.</exception>
+        /// <remarks>
+        /// <para>
+        /// This will load an <see cref="IGorgonImage"/> from a file on disk and put it into a <see cref="GorgonTexture2D"/> object.
+        /// </para>
+        /// <para>
+        /// If specified, the <paramref name="options"/>parameter will define how Gorgon and shaders should handle the texture.  The <see cref="GorgonTextureLoadOptions"/> type contains the following:
+        /// <list type="bullet">
+        ///		<item>
+        ///			<term>Binding</term>
+        ///			<description>When defined, will indicate the <see cref="TextureBinding"/> that defines how the texture will be bound to the graphics pipeline. If it is omitted, then the binding will be 
+        ///         <see cref="TextureBinding.ShaderResource"/>.</description>
+        ///		</item>
+        ///		<item>
+        ///			<term>Usage</term>
+        ///			<description>When defined, will indicate the preferred usage for the texture. If it is omitted, then the usage will be set to <see cref="ResourceUsage.Default"/>.</description>
+        ///		</item>
+        ///		<item>
+        ///			<term>Multisample info</term>
+        ///			<description>When defined (i.e. not <b>null</b>), defines the multisampling to apply to the texture. If omitted, then the default is <see cref="GorgonMultisampleInfo.NoMultiSampling"/>.</description>
+        ///		</item>
+        /// </list>
+        /// </para>
+        /// </remarks>
+        public static GorgonTexture2D FromFile(GorgonGraphics graphics, string filePath, IGorgonImageCodec codec, GorgonTextureLoadOptions options = null)
+        {
+            if (graphics == null)
+            {
+                throw new ArgumentNullException(nameof(graphics));
+            }
+
+            if (filePath == null)
+            {
+                throw new ArgumentNullException(nameof(filePath));
+            }
+
+            if (string.IsNullOrWhiteSpace(filePath))
+            {
+                throw new ArgumentEmptyException(nameof(filePath));
+            }
+
+            if (codec == null)
+            {
+                throw new ArgumentNullException(nameof(codec));
+            }
+
+            if (options == null)
+            {
+                options = _defaultLoadOptions;
+            }
+
+            if (string.IsNullOrEmpty(options.Name))
+            {
+                options.Name = GenerateName(NamePrefix);
+            }
+
+            using (IGorgonImage image = codec.LoadFromFile(filePath))
+            {
+                return new GorgonTexture2D(graphics, image, options);
+            }
+        }
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -1717,38 +1737,44 @@ namespace Gorgon.Graphics.Core
         public override void Dispose()
 		{
             // Destroy all cached views.
-            /*
-		    foreach (KeyValuePair<TextureViewKey, GorgonTextureView> view in _cachedSrvs)
-		    {
-		        view.Value.Dispose();
-		    }*/
+		    Dictionary<TextureViewKey, GorgonTexture2DView> cachedSrvs = Interlocked.Exchange(ref _cachedSrvs, null);
+		    Dictionary<TextureViewKey, GorgonRenderTarget2DView> cachedRtvs = Interlocked.Exchange(ref _cachedRtvs, null);
+		    Dictionary<TextureViewKey, GorgonDepthStencil2DView> cachedDsvs = Interlocked.Exchange(ref _cachedDsvs, null);
+		    Dictionary<TextureViewKey, GorgonTexture2DUav> cachedUavs = Interlocked.Exchange(ref _cachedUavs, null);
 
-		    Dictionary<TextureViewKey, WeakReference<GorgonRenderTarget2DView>> cachedRtvs = Interlocked.Exchange(ref _cachedRtvs, null);
-
-		    if (cachedRtvs != null)
+		    if (cachedSrvs != null)
 		    {
-		        foreach (KeyValuePair<TextureViewKey, WeakReference<GorgonRenderTarget2DView>> viewRef in cachedRtvs)
+		        foreach (KeyValuePair<TextureViewKey, GorgonTexture2DView> view in cachedSrvs)
 		        {
-		            if ((viewRef.Value.TryGetTarget(out GorgonRenderTarget2DView view))
-		                && (!view.IsDisposed))
-		            {
-		                view.Dispose();
-		            }
+		            view.Value.Dispose();
 		        }
 		    }
 
-		    /*
-            foreach (KeyValuePair<TextureViewKey, GorgonDepthStencilView> view in _cachedDsvs)
-            {
-                view.Value.Dispose();
-            }
+		    if (cachedRtvs != null)
+		    {
+		        foreach (KeyValuePair<TextureViewKey, GorgonRenderTarget2DView> view in cachedRtvs)
+		        {
+                    view.Value.Dispose();
+		        }
+		    }
 
-            foreach (KeyValuePair<TextureViewKey, GorgonTextureUav> view in _cachedUavs)
-            {
-                view.Value.Dispose();
-            }*/
+		    if (cachedDsvs != null)
+		    {
+		        foreach (KeyValuePair<TextureViewKey, GorgonDepthStencil2DView> view in cachedDsvs)
+		        {
+		            view.Value.Dispose();
+		        }
+		    }
 
-			_log.Print($"'{Name}': Destroying D3D11 Texture.", LoggingLevel.Simple);
+		    if (cachedUavs != null)
+		    {
+		        foreach (KeyValuePair<TextureViewKey, GorgonTexture2DUav> view in cachedUavs)
+		        {
+		            view.Value.Dispose();
+		        }
+		    }
+
+		    Graphics.Log.Print($"'{Name}': Destroying D3D11 Texture.", LoggingLevel.Simple);
             
 			base.Dispose();
 		}
@@ -1760,27 +1786,24 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="swapChain">The swap chain that holds the back buffers to retrieve.</param>
 		/// <param name="index">The index of the back buffer to retrieve.</param>
-		/// <param name="log">The log used for debug output.</param>
 		/// <remarks>
 		/// <para>
 		/// This constructor is used internally to create a render target texture from a swap chain.
 		/// </para>
 		/// </remarks>
-		internal GorgonTexture2D(GorgonSwapChain swapChain, int index, IGorgonLog log)
+		internal GorgonTexture2D(GorgonSwapChain swapChain, int index)
 			: base(swapChain.Graphics, $"Swap Chain '{swapChain.Name}': Back buffer texture #{index}.")
 		{
-			_log = log;
-
-			_log.Print($"Swap Chain '{swapChain.Name}': Creating texture from back buffer index {index}.", LoggingLevel.Simple);
+			swapChain.Graphics.Log.Print($"Swap Chain '{swapChain.Name}': Creating texture from back buffer index {index}.", LoggingLevel.Simple);
 			
 			D3D11.Texture2D texture;
 			
 			// Get the resource from the swap chain.
 			D3DResource = texture = D3D11.Resource.FromSwapChain<D3D11.Texture2D>(swapChain.DXGISwapChain, index);
-			D3DResource.DebugName = $"Swap Chain '{swapChain.Name}': Back buffer texture #{index}.";
+			D3DResource.DebugName = $"Swap Chain '{swapChain.Name}' BackBufferTexture_ID3D11Texture2D1 #{index}.";
 
 			// Get the info from the back buffer texture.
-			_info = new GorgonTexture2DInfo
+			_info = new GorgonTexture2DInfo(D3DResource.DebugName)
 			        {
 				        Format = (BufferFormat)texture.Description.Format,
 				        Width = texture.Description.Width,
@@ -1790,20 +1813,11 @@ namespace Gorgon.Graphics.Core
 				        MipLevels = texture.Description.MipLevels,
 				        IsCubeMap = false,
 				        MultisampleInfo = GorgonMultisampleInfo.NoMultiSampling,
-				        Binding = (TextureBinding)texture.Description.BindFlags,
-                        DepthStencilFormat = swapChain.DepthStencilFormat
+				        Binding = (TextureBinding)texture.Description.BindFlags
 			        };
 
 			FormatInformation = new GorgonFormatInfo(Format);
 			TextureID = Interlocked.Increment(ref _textureID);
-
-            // Only create an RTV on the first buffer.
-		    if (index == 0)
-		    {
-                // TODO: Fix
-		        //DefaultRenderTargetView = GetRenderTargetView();
-		    }
-
 		    SizeInBytes = CalculateSizeInBytes(_info);
 		    Usage = _info.Usage;
 		}
@@ -1811,41 +1825,37 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonTexture2D"/> class.
         /// </summary>
-        /// <param name="name">The name of the texture.</param>
         /// <param name="graphics">The graphics interface used to create this texture.</param>
         /// <param name="image">The image to copy into the texture.</param>
-        /// <param name="usage">The defined usage for the texture.</param>
-        /// <param name="binding">The allowed bindings for the texture.</param>
-        /// <param name="multiSampleInfo">The multisample level to apply.</param>
-        /// <param name="log">The log interface used for debugging.</param>
+        /// <param name="options">The options to use when loading the texture.</param>
         /// <remarks>
         /// <para>
         /// This constructor is used when converting an image to a texture.
         /// </para>
         /// </remarks>
-        internal GorgonTexture2D(string name, GorgonGraphics graphics, IGorgonImage image, ResourceUsage usage, TextureBinding binding, GorgonMultisampleInfo multiSampleInfo, IGorgonLog log)
-			: base(graphics, name)
+        internal GorgonTexture2D(GorgonGraphics graphics, IGorgonImage image, GorgonTextureLoadOptions options)
+			: base(graphics, options.Name)
 		{
-			_log = log ?? GorgonLog.NullLog;
-
-			_info = new GorgonTexture2DInfo
-			        {
-				        Format = image.Info.Format,
-				        Width = image.Info.Width,
-				        Height = image.Info.Height,
-				        Usage = usage,
-				        ArrayCount = image.Info.ArrayCount,
-				        Binding = binding,
-				        IsCubeMap = image.Info.ImageType == ImageType.ImageCube,
-				        MipLevels = image.Info.MipCount,
-				        MultisampleInfo = multiSampleInfo
-			        };
+		    _info = new GorgonTexture2DInfo(options.Name)
+		            {
+		                Format = image.Info.Format,
+		                Width = image.Info.Width,
+		                Height = image.Info.Height,
+		                Usage = options.Usage,
+		                ArrayCount = image.Info.ArrayCount,
+		                Binding = options.Binding,
+		                IsCubeMap = image.Info.ImageType == ImageType.ImageCube,
+		                MipLevels = image.Info.MipCount,
+		                MultisampleInfo = options.MultisampleInfo
+		            };
 
 			Initialize(image);
 			TextureID = Interlocked.Increment(ref _textureID);
 		    SizeInBytes = CalculateSizeInBytes(_info);
 		    _lockCache = new TextureLockCache(this, _info);
 		    Usage = _info.Usage;
+
+            this.RegisterDisposable(graphics);
         }
 
 		/// <summary>
@@ -1853,7 +1863,6 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="graphics">The <see cref="GorgonGraphics"/> interface that created this texture.</param>
 		/// <param name="textureInfo">A <see cref="IGorgonTexture2DInfo"/> object describing the properties of this texture.</param>
-		/// <param name="log">[Optional] The logging interface used for debugging.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, or the <paramref name="textureInfo"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <see cref="GorgonGraphicsResource.Usage"/> is set to <c>Immutable</c>.</exception>
 		/// <exception cref="GorgonException">Thrown when the texture could not be created due to misconfiguration.</exception>
@@ -1864,11 +1873,9 @@ namespace Gorgon.Graphics.Core
 		/// To use an immutable texture, use the <see cref="O:Gorgon.Graphics.Core.GorgonImageTextureExtensions.ToTexture"/> extension method on the <see cref="IGorgonImage"/> type.
 		/// </para>
 		/// </remarks>
-		public GorgonTexture2D(GorgonGraphics graphics, IGorgonTexture2DInfo textureInfo, IGorgonLog log = null)
+		public GorgonTexture2D(GorgonGraphics graphics, IGorgonTexture2DInfo textureInfo)
 			: base(graphics, textureInfo?.Name ?? throw new ArgumentNullException(nameof(textureInfo)))
 		{
-			_log = log ?? GorgonLog.NullLog;
-			
 			_info = new GorgonTexture2DInfo(textureInfo);
 
 			Initialize(null);

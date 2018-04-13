@@ -135,9 +135,6 @@ namespace Gorgon.Graphics.Core
         #endregion
 
         #region Variables.
-        // The log interface used to log debug messages.
-        private readonly IGorgonLog _log;
-
         // The video adapter to use for this graphics object.
         private readonly IGorgonVideoAdapterInfo _videoAdapter;
 
@@ -175,6 +172,14 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         internal DXGI.Factory5 DXGIFactory => _dxgiFactory;
         
+        /// <summary>
+        /// Property to return the logging interface used to write out debug messages.
+        /// </summary>
+        public IGorgonLog Log
+        {
+            get;
+        }
+
         /// <summary>
         /// Property to set or return the video adapter to use for this graphics interface.
         /// </summary>
@@ -296,7 +301,7 @@ namespace Gorgon.Graphics.Core
             }
             catch (DX.SharpDXException sdEx)
             {
-                _log.Print($"ERROR: Could not retrieve a multisample quality level max for format: [{format}]. Exception: {sdEx.Message}", LoggingLevel.Verbose);
+                Log.Print($"ERROR: Could not retrieve a multisample quality level max for format: [{format}]. Exception: {sdEx.Message}", LoggingLevel.Verbose);
             }
 
             return GorgonMultisampleInfo.NoMultiSampling;
@@ -307,9 +312,8 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="adapterInfo">The adapter to use.</param>
         /// <param name="requestedFeatureLevel">The requested feature set for the device.</param>
-        /// <param name="log">The log used for debug log messages.</param>
         /// <returns>A tuple containing the Direct3D device object, DXGI factory, DXGI video adapter, and actual feature set.</returns>
-        private static (D3D11.Device5, DXGI.Factory5, DXGI.Adapter4) CreateDevice(IGorgonVideoAdapterInfo adapterInfo, D3D.FeatureLevel requestedFeatureLevel, IGorgonLog log)
+        private (D3D11.Device5, DXGI.Factory5, DXGI.Adapter4) CreateDevice(IGorgonVideoAdapterInfo adapterInfo, D3D.FeatureLevel requestedFeatureLevel)
         {
             D3D11.DeviceCreationFlags flags = IsDebugEnabled ? D3D11.DeviceCreationFlags.Debug : D3D11.DeviceCreationFlags.None;
             DXGI.Factory5 resultFactory;
@@ -331,7 +335,7 @@ namespace Gorgon.Graphics.Core
                     {
                         resultDevice = device.QueryInterface<D3D11.Device5>();
 
-		                log.Print($"Direct 3D 11.4 device created for video adapter '{adapterInfo.Name}' at feature set [{(FeatureSet)resultDevice.FeatureLevel}]", LoggingLevel.Simple);
+		                Log.Print($"Direct 3D 11.4 device created for video adapter '{adapterInfo.Name}' at feature set [{(FeatureSet)resultDevice.FeatureLevel}]", LoggingLevel.Simple);
                     }
                 }
             }
@@ -420,7 +424,7 @@ namespace Gorgon.Graphics.Core
             this.DisposeAll();
 
             // Disconnect from the context.
-            _log.Print($"Destroying GorgonGraphics interface for device '{_videoAdapter.Name}'...", LoggingLevel.Simple);
+            Log.Print($"Destroying GorgonGraphics interface for device '{_videoAdapter.Name}'...", LoggingLevel.Simple);
 
             // Reset the state for the context. This will ensure we don't have anything bound to the pipeline when we shut down.
             context?.ClearState();
@@ -492,7 +496,7 @@ namespace Gorgon.Graphics.Core
                                IGorgonLog log = null)
         {
             _videoAdapter = videoAdapterInfo ?? throw new ArgumentNullException(nameof(videoAdapterInfo));
-            _log = log ?? GorgonLog.NullLog;
+            Log = log ?? GorgonLog.NullLog;
 
             // If we've not specified a feature level, or the feature level exceeds the requested device feature level, then 
             // fall back to the device feature level.
@@ -509,11 +513,11 @@ namespace Gorgon.Graphics.Core
 
             FeatureSet = featureSet.Value;
 
-            _log.Print("Gorgon Graphics initializing...", LoggingLevel.Simple);
-            _log.Print($"Using video adapter '{videoAdapterInfo.Name}' at feature set [{featureSet.Value}] for Direct 3D 11.4.", LoggingLevel.Simple);
+            Log.Print("Gorgon Graphics initializing...", LoggingLevel.Simple);
+            Log.Print($"Using video adapter '{videoAdapterInfo.Name}' at feature set [{featureSet.Value}] for Direct 3D 11.4.", LoggingLevel.Simple);
 
             // Build up the required device objects to pass in to the constructor.
-            (D3D11.Device5 device, DXGI.Factory5 factory, DXGI.Adapter4 adapter) = CreateDevice(videoAdapterInfo, (D3D.FeatureLevel)featureSet.Value, _log);
+            (D3D11.Device5 device, DXGI.Factory5 factory, DXGI.Adapter4 adapter) = CreateDevice(videoAdapterInfo, (D3D.FeatureLevel)featureSet.Value);
             _dxgiFactory = factory;
             _dxgiAdapter = adapter;
             _d3DDevice = device;
@@ -521,7 +525,7 @@ namespace Gorgon.Graphics.Core
             
             FormatSupport = EnumerateFormatSupport(_d3DDevice);
             
-            _log.Print("Gorgon Graphics initialized.", LoggingLevel.Simple);
+            Log.Print("Gorgon Graphics initialized.", LoggingLevel.Simple);
         }
 
         /// <summary>

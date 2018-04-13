@@ -29,7 +29,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using Gorgon.Core;
-using Gorgon.Graphics.Core.Properties;
 using DX = SharpDX;
 using D3D11 = SharpDX.Direct3D11;
 
@@ -45,7 +44,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// A key used to identify a lock.
         /// </summary>
-        private struct LockCacheKey
+        private readonly struct LockCacheKey
             : IEquatable<LockCacheKey>
         {
 			#region Variables.
@@ -62,7 +61,7 @@ namespace Gorgon.Graphics.Core
             /// <param name="left">Left key to compare.</param>
             /// <param name="right">Right key to compare.</param>
             /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-            private static bool Equals(ref LockCacheKey left, ref LockCacheKey right)
+            private static bool Equals(LockCacheKey left, LockCacheKey right)
             {
                 return (left._keyValue1 == right._keyValue1) && (left._keyValue2 == right._keyValue2);
             }
@@ -79,11 +78,11 @@ namespace Gorgon.Graphics.Core
             }
 
             /// <summary>
-            /// Determines whether the specified <see cref="System.Object" /> is equal to this instance.
+            /// Determines whether the specified <see cref="object" /> is equal to this instance.
             /// </summary>
-            /// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
+            /// <param name="obj">The <see cref="object" /> to compare with this instance.</param>
             /// <returns>
-            ///   <b>true</b> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <b>false</b>.
+            ///   <b>true</b> if the specified <see cref="object" /> is equal to this instance; otherwise, <b>false</b>.
             /// </returns>
             public override bool Equals(object obj)
             {
@@ -104,7 +103,7 @@ namespace Gorgon.Graphics.Core
 			/// </returns>
 			public bool Equals(LockCacheKey other)
 			{
-				return Equals(ref this, ref other);
+				return Equals(this, other);
 			}
 			#endregion
 
@@ -182,24 +181,15 @@ namespace Gorgon.Graphics.Core
 				return result;
 			}
 
-			switch (_texture.ResourceType)
-		    {
-			    case GraphicsResourceType.Texture1D:
-			    case GraphicsResourceType.Texture2D:
-			    case GraphicsResourceType.Texture3D:
+	        DX.DataBox box = _texture.Graphics.D3DDeviceContext.MapSubresource(_texture.D3DResource,
+	                                                                           D3D11.Resource.CalculateSubResourceIndex(mipLevel, arrayIndex, _mipLevelCount),
+	                                                                           lockFlags,
+	                                                                           D3D11.MapFlags.None,
+	                                                                           out _);
 
-			        DX.DataBox box = _texture.Graphics.D3DDeviceContext.MapSubresource(_texture.D3DResource,
-				                                                                      D3D11.Resource.CalculateSubResourceIndex(mipLevel, arrayIndex, _mipLevelCount),
-				                                                                      lockFlags,
-				                                                                      D3D11.MapFlags.None,
-				                                                                      out _);
+	        result = new GorgonTextureLockData(this, box, _textureWidth, _textureHeight, _textureDepth, mipLevel, arrayIndex, _format);
 
-			        result = new GorgonTextureLockData(this, box, _textureWidth, _textureHeight, _textureDepth, mipLevel, arrayIndex, _format);
-
-				    return _locks.GetOrAdd(key, result);
-			    default:
-				    throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_IMAGE_TYPE_UNSUPPORTED, _texture.ResourceType));
-		    }
+	        return _locks.GetOrAdd(key, result);
 	    }
 
 	    /// <summary>

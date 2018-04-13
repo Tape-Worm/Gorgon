@@ -1,7 +1,7 @@
 ﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2017 Michael Winsor
+// Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,50 +20,52 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: July 9, 2017 4:32:41 PM
+// Created: April 12, 2018 12:40:39 AM
 // 
 #endregion
-
-using System;
-using DX = SharpDX;
 
 namespace Gorgon.Graphics.Core
 {
     /// <summary>
-    /// Event arguments for the <see cref="GorgonSwapChain.BeforeSwapChainResized"/> event.
+    /// Options to pass when loading a texture from a stream or the file system.
     /// </summary>
-    public class GorgonBeforeSwapChainResizedEventArgs
-        : EventArgs
+    public class GorgonTextureLoadOptions
     {
-        #region Properties.
         /// <summary>
-        /// Property to return the old size of the swap chain backbuffers.
+        /// Property to set or return the name of the image.
         /// </summary>
-        public DX.Size2 OldSize
+        public string Name
         {
             get;
+            set;
         }
 
         /// <summary>
-        /// Property to return the new size of the swap chain backbuffers.
+        /// Property to set or return the intended usage for the texture.
         /// </summary>
-        public DX.Size2 NewSize
+        public ResourceUsage Usage
         {
             get;
-        }
-        #endregion
+            set;
+        } = ResourceUsage.Default;
 
-        #region Constructor/Finalizer.
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonBeforeSwapChainResizedEventArgs"/> class.
+        /// Property to set or return the allowed bindings for the texture.
         /// </summary>
-        /// <param name="oldSize">The old size.</param>
-        /// <param name="newSize">The new size.</param>
-        public GorgonBeforeSwapChainResizedEventArgs(DX.Size2 oldSize, DX.Size2 newSize)
+        public TextureBinding Binding
         {
-            OldSize = oldSize;
-            NewSize = newSize;
-        }
-        #endregion
-    }
+            get;
+            set;
+        } = TextureBinding.ShaderResource;
+
+        /// <summary>
+        /// Property to set or return the multisampling information to apply to the texture.
+        /// </summary>
+        public GorgonMultisampleInfo MultisampleInfo
+        {
+            get;
+            set;
+        } = GorgonMultisampleInfo.NoMultiSampling;
+   }
 }

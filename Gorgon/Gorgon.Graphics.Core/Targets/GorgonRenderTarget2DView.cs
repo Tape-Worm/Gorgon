@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -53,13 +52,11 @@ namespace Gorgon.Graphics.Core
     /// <seealso cref="GorgonSwapChain"/>
     /// <seealso cref="GorgonTexture2D"/>
     public sealed class GorgonRenderTarget2DView
-		: IDisposable
+		: IDisposable, IGorgonTexture2DInfo, IGorgonGraphicsObject
     {
 		#region Variables.
         // Flag to indicate that the view owns the texture (when called from CreateRenderTarget).
         private bool _ownsTexture;
-		// Log interface for debugging.
-	    private readonly IGorgonLog _log;
         // Clear rectangles.
         private RawRectangle[] _clearRects;
         // The D3D 11 render target view.
@@ -104,18 +101,16 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Property to return the number of array indices or depth slices to use in the view.
+        /// Property to return the number of array indices to use in the view.
         /// </summary>
-        /// <remarks>For a 1D/2D render target, this value indicates an array index.  For a 3D render target, this value indicates a depth slice.</remarks>
         public int ArrayCount
         {
             get;
         }
 
         /// <summary>
-        /// Property to return the first array index or depth slice to use in the view.
+        /// Property to return the first array index to use in the view.
         /// </summary>
-        /// <remarks>For a 1D/2D render target, this value indicates an array index.  For a 3D render target, this value indicates a depth slice.</remarks>
         public int ArrayIndex
         {
             get;
@@ -127,7 +122,7 @@ namespace Gorgon.Graphics.Core
         /// <remarks>
         /// This value is the full width of the first mip map level for the texture associated with the render target.
         /// </remarks>
-        public int Width => Texture.Width;
+        public int Width => Texture?.Width ?? 0;
 
         /// <summary>
         /// Property to return the height of the render target in pixels.
@@ -135,7 +130,7 @@ namespace Gorgon.Graphics.Core
         /// <remarks>
         /// This value is the full width of the first mip map level for the texture associated with the render target.
         /// </remarks>
-        public int Height => Texture.Height;
+        public int Height => Texture?.Height ?? 0;
 
         /// <summary>
         /// Property to return the width of the render target at the current <see cref="MipSlice"/> in pixels.
@@ -177,6 +172,41 @@ namespace Gorgon.Graphics.Core
         /// Property to return whether this view has been disposed or not.
         /// </summary>
         public bool IsDisposed => _view == null;
+
+        /// <summary>
+        /// Property to return the name of the texture.
+        /// </summary>
+        string IGorgonNamedObject.Name => Texture?.Name ?? string.Empty;
+
+        /// <summary>
+        /// Property to return whether the 2D texture is a cube map.
+        /// </summary>
+        public bool IsCubeMap => Texture?.IsCubeMap ?? false;
+
+        /// <summary>
+        /// Property to return the number of mip-map levels for the texture.
+        /// </summary>
+        int IGorgonTexture2DInfo.MipLevels => Texture?.MipLevels ?? 0;
+
+        /// <summary>
+        /// Property to return the multisample quality and count for the texture.
+        /// </summary>
+        public GorgonMultisampleInfo MultisampleInfo => Texture?.MultisampleInfo ?? GorgonMultisampleInfo.NoMultiSampling;
+
+        /// <summary>
+        /// Property to return the intended usage flags for the texture.
+        /// </summary>
+        public ResourceUsage Usage => Texture?.Usage ?? ResourceUsage.Default;
+
+        /// <summary>
+        /// Property to return the flags to determine how the texture will be bound with the pipeline when rendering.
+        /// </summary>
+        public TextureBinding Binding => Texture?.Binding ?? TextureBinding.None;
+
+        /// <summary>
+        /// Property to return the graphics interface that built the texture.
+        /// </summary>
+        public GorgonGraphics Graphics => Texture?.Graphics;
         #endregion
 
         #region Methods.
@@ -226,7 +256,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         internal void CreateNativeView()
         {
-            _log.Print($"Render Target View '{Texture.Name}': Creating D3D11 render target view.", LoggingLevel.Simple);
+            Graphics.Log.Print($"Render Target 2D View '{Texture.Name}': Creating D3D11 render target view.", LoggingLevel.Simple);
 
             D3D11.RenderTargetViewDescription1 desc = GetDesc2D(!Texture.MultisampleInfo.Equals(GorgonMultisampleInfo.NoMultiSampling));
 
@@ -240,13 +270,15 @@ namespace Gorgon.Graphics.Core
             
             Bounds = new DX.Rectangle(0, 0, Width, Height);
 
-	        _log.Print($"Render Target View '{Texture.Name}': {Texture.ResourceType} -> Mip slice: {MipSlice}, Array Index: {ArrayIndex}, Array Count: {ArrayCount}",
-	                   LoggingLevel.Verbose);
+            Graphics.Log.Print($"Render Target 2D View '{Texture.Name}': {Texture.ResourceType} -> Mip slice: {MipSlice}, Array Index: {ArrayIndex}, Array Count: {ArrayCount}",
+                               LoggingLevel.Verbose);
 
             _view = new D3D11.RenderTargetView1(Texture.Graphics.D3DDevice, Texture.D3DResource, desc)
                     {
-                        DebugName = $"'{Texture.Name}'_D3D11RenderTargetView_2D"
+                        DebugName = $"'{Texture.Name}'_D3D11RenderTargetView1_2D"
                     };
+
+            this.RegisterDisposable(Texture.Graphics);
         }
 
         /// <summary>
@@ -295,7 +327,7 @@ namespace Gorgon.Graphics.Core
 		        _clearRects[i] = rectangles[i];
 		    }
 
-		    Texture.Graphics.D3DDeviceContext.ClearView(D3DRenderTargetView, color.ToRawColor4(), _clearRects);
+		    Texture.Graphics.D3DDeviceContext.ClearView(D3DRenderTargetView, color.ToRawColor4(), _clearRects, rectangles.Length);
 		}
 
 		/// <summary>
@@ -310,25 +342,25 @@ namespace Gorgon.Graphics.Core
 		        return;
 		    }
 
+            this.UnregisterDisposable(Texture.Graphics);
+
 		    if (_ownsTexture)
 		    {
-		        _log.Print($"Render Target View '{Texture.Name}': Releasing D3D11 texture because it owns it.", LoggingLevel.Simple);
+		        Graphics.Log.Print($"Render Target View '{Texture.Name}': Releasing D3D11 texture because it owns it.", LoggingLevel.Simple);
 
 		        GorgonTexture2D texture = Interlocked.Exchange(ref _texture, null);
                 texture?.Dispose();
 		    }
 
-		    _log.Print($"Render Target View '{Texture.Name}': Releasing D3D11 render target view.", LoggingLevel.Simple);
+		    Graphics.Log.Print($"Render Target View '{Texture.Name}': Releasing D3D11 render target view.", LoggingLevel.Simple);
 		    view.Dispose();
 		}
 
         /// <summary>
-        /// Function to create a new render target.
+        /// Function to create a new render target that is bindable to the GPU.
         /// </summary>
         /// <param name="graphics">The graphics interface to use when creating the target.</param>
-        /// <param name="info">The information about the render target texture.</param>
-        /// <param name="shaderVisible">[Optional] <b>true</b> to make the backing texture visible to a shader, <b>false</b> to not allow the texture to be bound to the GPU pipeline.</param>
-        /// <param name="log">[Optional] The log used to log debug messages.</param>
+        /// <param name="info">The information about the texture.</param>
         /// <returns>A new <see cref="GorgonRenderTarget2DView"/>.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, or <paramref name="info"/> parameter is <b>null</b>.</exception>
         /// <remarks>
@@ -337,13 +369,13 @@ namespace Gorgon.Graphics.Core
         /// This helps simplify creation of a render target by executing some prerequisite steps on behalf of the user.
         /// </para>
         /// <para>
-        /// Since the <see cref="GorgonTexture2D"/> created by this method is linked to the <see cref="GorgonRenderTarget2DView"/> returned, dispose of either one will dispose of the other on your behalf. 
+        /// Since the <see cref="GorgonTexture2D"/> created by this method is linked to the <see cref="GorgonRenderTarget2DView"/> returned, disposal of either one will dispose of the other on your behalf. 
         /// If the user created a <see cref="GorgonRenderTarget2DView"/> from the <see cref="GorgonTexture2D.GetRenderTargetView"/> method on the <see cref="GorgonTexture2D"/>, then it's assumed the user 
         /// knows what they are doing and will handle the disposal of the texture and view on their own.
         /// </para>
         /// </remarks>
         /// <seealso cref="GorgonTexture2D"/>
-        public static GorgonRenderTarget2DView CreateRenderTarget(GorgonGraphics graphics, IGorgonTexture2DInfo info, bool shaderVisible = true, IGorgonLog log = null)
+        public static GorgonRenderTarget2DView CreateRenderTarget(GorgonGraphics graphics, IGorgonTexture2DInfo info)
         {
             if (graphics == null)
             {
@@ -357,19 +389,24 @@ namespace Gorgon.Graphics.Core
 
             TextureBinding binding = TextureBinding.RenderTarget;
 
-            if (shaderVisible)
+            if ((info.Binding & TextureBinding.ShaderResource) == TextureBinding.ShaderResource)
             {
                 binding |= TextureBinding.ShaderResource;
             }
 
+            if ((info.Binding & TextureBinding.ShaderResource) == TextureBinding.UnorderedAccess)
+            {
+                binding |= TextureBinding.UnorderedAccess;
+            }
+
             var newInfo = new GorgonTexture2DInfo(info)
                           {
+                              // Can't see a reason to use anything other than default for rtvs
                               Usage = ResourceUsage.Default,
-                              Binding = binding,
-                              DepthStencilFormat = BufferFormat.Unknown
+                              Binding = binding
                           };
 
-            var texture = new GorgonTexture2D(graphics, newInfo, log);
+            var texture = new GorgonTexture2D(graphics, newInfo);
             GorgonRenderTarget2DView result = texture.GetRenderTargetView();
             result._ownsTexture = true;
 
@@ -386,10 +423,8 @@ namespace Gorgon.Graphics.Core
         /// <param name="mipSlice">The mip slice to use in the view.</param>
         /// <param name="arrayIndex">The first array index to use in the view.</param>
         /// <param name="arrayCount">The number of array indices to use in the view.</param>
-        /// <param name="log">Logging interface for debugging.</param>
-        internal GorgonRenderTarget2DView(GorgonTexture2D texture, BufferFormat format, int mipSlice, int arrayIndex, int arrayCount, IGorgonLog log)
+        internal GorgonRenderTarget2DView(GorgonTexture2D texture, BufferFormat format, int mipSlice, int arrayIndex, int arrayCount)
         {
-	        _log = log ?? GorgonLog.NullLog;
             _texture = texture;
 
             if (format == BufferFormat.Unknown)
@@ -425,8 +460,6 @@ namespace Gorgon.Graphics.Core
             MipWidth = (Width << MipSlice).Max(1);
             MipHeight = (Height << MipSlice).Max(1);
             Bounds = new DX.Rectangle(0, 0, Width, Height);
-
-            this.RegisterDisposable(Texture.Graphics);
         }
         #endregion
     }

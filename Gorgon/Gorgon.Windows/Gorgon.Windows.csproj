@@ -174,7 +174,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
-      <Version>4.5.0-preview3-26409-05</Version>
+      <Version>4.5.0-preview3-26411-06</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

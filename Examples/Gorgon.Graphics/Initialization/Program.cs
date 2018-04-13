@@ -231,13 +231,19 @@ namespace Gorgon.Graphics.Example
 			// We must do this in order to tell Gorgon which video device we intend to use. Note that this method may be quite slow (particularly when running DEBUG versions of 
 			// Direct 3D). To counter this, this object and its Enumerate method are thread safe so this can be run in the background while keeping the main UI responsive.
             //
-		    // If no suitable device was found (no Direct 3D 11.4 support) in the computer, this method will throw an exception. However, if it succeeds, then the devices object 
-		    // will be populated with the IGorgonVideoDeviceInfo for each video device in the system.
+		    // If no suitable device was found (no Direct 3D 11.4 support) in the computer, this method will return an empty list. However, if it succeeds, then the devices list 
+		    // will be populated with an IGorgonVideoDeviceInfo for each suitable video device in the system.
 		    //
 		    // Using this method, we could also enumerate the WARP software rasterizer, and/of the D3D Reference device (only if the DEBUG functionality provided by the Windows 
 		    // SDK is installed). These devices are typically used to determine if there's a driver error, and can be terribly slow to render (reference moreso than WARP). It is 
 		    // recommended that these only be used in diagnostic scenarios only.
 		    IReadOnlyList<IGorgonVideoAdapterInfo> devices = GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log);
+
+		    if (devices.Count == 0)
+		    {
+                GorgonDialogs.ErrorBox(_mainForm, "This example requires a video adapter capable of feature set 12 or better.");
+		        return;
+		    }
 
 			// Now we create the main graphics interface with the first applicable video device.
 			_graphics = new GorgonGraphics(devices[0], log: GorgonApplication.Log);
@@ -251,7 +257,7 @@ namespace Gorgon.Graphics.Example
 		    // practice to check if the object you're creating supports the desired format.
 		    if (!_graphics.FormatSupport[BufferFormat.R8G8B8A8_UNorm].IsDisplayFormat)
 			{
-				// We should never see this unless you've performed some form of black magic.
+				// We should never see this unless you've got some very esoteric hardware.
 				GorgonDialogs.ErrorBox(_mainForm, "We should not see this error.");
 				return;
 			}
@@ -332,7 +338,7 @@ namespace Gorgon.Graphics.Example
 				// Always clean up when you're done.
 				// Since Gorgon uses Direct 3D 11.4, we must be careful to dispose of any objects that implement IDisposable. 
 			    // Failure to do so can lead to warnings from the Direct 3D runtime when running in DEBUG mode.
-				//_swap?.Dispose();
+				_swap?.Dispose();
 				_graphics?.Dispose();
 			}
 		}

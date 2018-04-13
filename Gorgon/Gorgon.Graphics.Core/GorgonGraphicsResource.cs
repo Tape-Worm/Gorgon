@@ -241,6 +241,16 @@ namespace Gorgon.Graphics.Core
 
         #region Methods.
         /// <summary>
+        /// Function to generate a new name for a resource.
+        /// </summary>
+        /// <param name="prefix">The prefix for the name.</param>
+        /// <returns>The generated name.</returns>
+        internal static string GenerateName(string prefix)
+        {
+            return $"{prefix}_{Guid.NewGuid():N}";
+        }
+
+        /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         /// <remarks>
@@ -248,15 +258,14 @@ namespace Gorgon.Graphics.Core
         /// Objects that override this method should be sure to call this base method or else a memory leak may occur.
         /// </para>
         /// </remarks>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage",
-            "CA1816:CallGCSuppressFinalizeCorrectly",
-            Justification = "I don't have a finalizer, plus, this method is completely overridable. Idiot.")]
         public virtual void Dispose()
         {
             D3D11.Resource resource = Interlocked.Exchange(ref _resource, null);
 
             this.UnregisterDisposable(Graphics);
             resource?.Dispose();
+
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>

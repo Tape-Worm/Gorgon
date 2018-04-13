@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using Gorgon.Core;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
@@ -139,15 +140,8 @@ namespace Gorgon.Graphics.Core
 	/// </para>
 	/// </remarks>
 	public interface IGorgonTexture2DInfo
+        : IGorgonNamedObject
 	{
-        /// <summary>
-        /// Property to return the name of the texture.
-        /// </summary>
-	    string Name
-	    {
-	        get;
-	    }
-
 		/// <summary>
 		/// Property to return the width of the texture, in pixels.
 		/// </summary>
@@ -220,30 +214,6 @@ namespace Gorgon.Graphics.Core
 		{
 			get;
 		}
-
-	    /// <summary>
-	    /// Property to set or return the format for a depth buffer that will be associated with this render target texture.
-	    /// </summary>
-	    /// <remarks>
-	    /// <para>
-	    /// If the <see cref="Binding"/> is not set to <see cref="TextureBinding.RenderTarget"/> or the <see cref="TextureType"/> is set to <see cref="Gorgon.Graphics.Core.TextureType.Texture3D"/>, then this 
-	    /// property will be ignored because only render targets and 1D/2D textures can have depth buffers.
-	    /// </para>
-	    /// <para>
-	    /// This value must be set to one of the depth formats (<see cref="BufferFormat.D16_UNorm"/>, <see cref="BufferFormat.D24_UNorm_S8_UInt"/>, <see cref="BufferFormat.D32_Float"/>, or <see cref="BufferFormat.D32_Float_S8X24_UInt"/>), or <see cref="BufferFormat.Unknown"/>. Any other value will cause 
-	    /// an exception when the swap chain is created. 
-	    /// </para>
-	    /// <para>
-	    /// If this value is set to <see cref="BufferFormat.Unknown"/>, then no depth buffer will be created for the render target.
-	    /// </para>
-	    /// <para>
-	    /// The default value <see cref="BufferFormat.Unknown"/>.
-	    /// </para>
-	    /// </remarks>
-	    BufferFormat DepthStencilFormat
-	    {
-	        get;
-	    }
 
 		/// <summary>
 		/// Property to return the number of mip-map levels for the texture.
