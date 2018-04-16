@@ -537,4 +537,19 @@ The current graphics object instance uses the adapter '{0}'. The output supplied
   <data name="GORGFX_ERR_RENDERTARGET_FORMAT_NOT_VALID" xml:space="preserve">
     <value>The format [{0}] is not valid for a render target.</value>
   </data>
+  <data name="GORGFX_ERR_FORMAT_MISMATCH" xml:space="preserve">
+    <value>Cannot copy image with format [{0}] into texture with format [{1}].</value>
+  </data>
+  <data name="GORGFX_ERR_DYN_TEXTURE_MUST_HAVE_1_ARRAY" xml:space="preserve">
+    <value>A texture with a usage of [Dynamic] must have an array size of 1.
+Current array size: {0}</value>
+  </data>
+  <data name="GORGFX_ERR_DYN_TEXTURE_MUST_HAVE_1_MIP" xml:space="preserve">
+    <value>A texture with a usage of [Dynamic] must have a mip count of 1.
+Current mip count: {0}</value>
+  </data>
+  <data name="GORGFX_ERR_TEXTURE_STAGING_NO_BINDINGS" xml:space="preserve">
+    <value>A texture with a usage of [Staging] must not have any bindings.
+Current binding: [{0}]</value>
+  </data>
 </root>

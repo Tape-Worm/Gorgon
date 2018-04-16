@@ -243,64 +243,10 @@ namespace Gorgon.IO
 	        where T : struct
 	    {
 	        result = default;
-	        ref byte resultRef = ref Unsafe.As<T, byte>(ref result);
-	        Read(ref resultRef, Unsafe.SizeOf<T>());
-	    }
-
-	    /// <summary>
-	    /// Function to read the bytes stored in the stream into the provided reference location.
-	    /// </summary>
-	    /// <param name="destination">The reference location to copy data into.</param>
-	    /// <param name="size">The number of bytes to copy.</param>
-	    /// <remarks>
-	    /// <para>
-	    /// This method will read the number of bytes specified by the <paramref name="size"/> parameter from the stream and copy it into the referenced location specified in <paramref name="destination"/>.
-	    /// </para>
-	    /// </remarks>
-	    public void Read(ref byte destination, int size)
-	    {
-	        if (size < 1)
+	        unsafe
 	        {
-	            return;
-	        }
-
-            int offset = 0;
-
-	        while (size > 0)
-	        {
-	            if (size >= sizeof(long))
-	            {
-	                ref long longRef = ref Unsafe.As<byte, long>(ref Unsafe.Add(ref destination, offset));
-	                longRef = ReadInt64();
-	                offset += sizeof(long);
-	                size -= sizeof(long);
-	            }
-
-	            if (size >= sizeof(int))
-	            {
-	                ref int intRef = ref Unsafe.As<byte, int>(ref Unsafe.Add(ref destination, offset));
-	                intRef = ReadInt32();
-	                offset += sizeof(int);
-	                size -= sizeof(int);
-	            }
-
-	            if (size >= sizeof(short))
-	            {
-	                ref short shortRef = ref Unsafe.As<byte, short>(ref Unsafe.Add(ref destination, offset));
-	                shortRef = ReadInt16();
-	                offset += sizeof(short);
-	                size -= sizeof(short);
-	            }
-
-	            if (size <= 0)
-	            {
-	                return;
-	            }
-
-	            ref byte byteRef = ref Unsafe.Add(ref destination, offset);
-	            byteRef = ReadByte();
-	            offset += sizeof(byte);
-	            size -= sizeof(byte);
+	            void *ptr = Unsafe.AsPointer(ref result);
+	            Read(ptr, Unsafe.SizeOf<T>());
 	        }
 	    }
 

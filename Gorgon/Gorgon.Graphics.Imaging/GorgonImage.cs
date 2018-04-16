@@ -43,9 +43,9 @@ namespace Gorgon.Graphics.Imaging
 	/// of representing standard 2D images, but can also represent 1D and 3D images. And, depending on the type of image, there is also support for mip map levels, and arrayed images.
 	/// </para>
 	/// <para>
-	/// Images can access their data directly through a <see cref="GorgonReadOnlyPointer"/> interface that allows safe access to raw, unmanaged memory where the image data is stored. In cases where images have 
+	/// Images can access their data directly through a <see cref="GorgonNativeBuffer{T}"/> interface that allows safe access to raw, unmanaged memory where the image data is stored. In cases where images have 
 	/// multiple parts like depth slices for a 3D image, or an array for 2D images, this object will provide access through a series of buffers that will point to the individual locations for depth slices, 
-	/// array indices, and mip map levels. These buffers will also provide their own <see cref="GorgonReadOnlyPointer"/> that will allow safe and direct access to the native memory where the buffer is located.
+	/// array indices, and mip map levels. These buffers will also provide their own <see cref="GorgonNativeBuffer{T}"/> that will allow safe and direct access to the native memory where the buffer is located.
 	/// </para>
 	/// <para>
 	/// Because this object stored data in native memory instead of on the heaps provided by .NET, this object should be disposed by calling its <see cref="IDisposable.Dispose"/> method when it is no 

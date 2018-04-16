@@ -153,7 +153,8 @@ namespace Gorgon.Graphics.Imaging
 		                                                                  mipWidth,
 		                                                                  mipHeight,
 		                                                                  mipDepth,
-		                                                                  _image.Info.Format);
+		                                                                  _image.Info.Format,
+		                                                                  _image.FormatInfo);
 
 		                    dataAddress += pitchInformation.SlicePitch;
 		                    bufferIndex++;

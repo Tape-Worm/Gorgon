@@ -50,6 +50,14 @@ namespace Gorgon.Graphics.Imaging
         }
 
         /// <summary>
+        /// Property to return the format information for the buffer.
+        /// </summary>
+        public GorgonFormatInfo FormatInformation
+        {
+            get;
+        }
+
+        /// <summary>
         /// Property to return the width for the current buffer.
         /// </summary>
         public int Width
@@ -67,7 +75,7 @@ namespace Gorgon.Graphics.Imaging
         }
 
         /// <summary>
-        /// Property to return the depth for the current buffer.
+        /// Property to return the total depth for the <see cref="IGorgonImage"/> that this buffer is associated with.
         /// </summary>
         /// <remarks>This is only valid for 3D images.</remarks>
         public int Depth
@@ -299,7 +307,17 @@ namespace Gorgon.Graphics.Imaging
         /// <param name="height">The height for the buffer.</param>
         /// <param name="depth">The depth for the buffer.</param>
         /// <param name="format">Format of the buffer.</param>
-        internal GorgonImageBuffer(GorgonNativeBuffer<byte> data, GorgonPitchLayout pitchInfo, int mipLevel, int arrayIndex, int sliceIndex, int width, int height, int depth, BufferFormat format)
+        /// <param name="formatInfo">Format information from the parent image.</param>
+        internal GorgonImageBuffer(GorgonNativeBuffer<byte> data,
+                                   GorgonPitchLayout pitchInfo,
+                                   int mipLevel,
+                                   int arrayIndex,
+                                   int sliceIndex,
+                                   int width,
+                                   int height,
+                                   int depth,
+                                   BufferFormat format,
+                                   GorgonFormatInfo formatInfo)
         {
             Data = data;
             PitchInformation = pitchInfo;
@@ -309,6 +327,35 @@ namespace Gorgon.Graphics.Imaging
             Width = width;
             Height = height;
             Depth = depth;
+            Format = format;
+            FormatInformation = formatInfo;
+        }
+        
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonImageBuffer" /> class.
+        /// </summary>
+        /// <param name="data">The aliased pointer to the data for this buffer.</param>
+        /// <param name="width">The width for the buffer.</param>
+        /// <param name="height">The height for the buffer.</param>
+        /// <param name="format">Format of the buffer.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="data"/> parameter is <b>null</b>.</exception>
+        public GorgonImageBuffer(GorgonNativeBuffer<byte> data, int width, int height, BufferFormat format)
+        {
+            Data = data ?? throw new ArgumentNullException(nameof(data));
+
+            if (format == BufferFormat.Unknown)
+            {
+                throw new ArgumentException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, format), nameof(format));
+            }
+
+            FormatInformation = new GorgonFormatInfo(format);
+            PitchInformation = FormatInformation.GetPitchForFormat(width, height);
+            MipLevel = 0;
+            ArrayIndex = 0;
+            DepthSliceIndex = 0;
+            Width = width;
+            Height = height;
+            Depth = 1;
             Format = format;
         }
         #endregion

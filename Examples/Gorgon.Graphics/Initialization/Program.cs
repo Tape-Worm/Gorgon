@@ -31,6 +31,8 @@ using System.Windows.Forms;
 using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Imaging;
+using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Timing;
 using Gorgon.UI;
 
@@ -250,8 +252,7 @@ namespace Gorgon.Graphics.Example
 
 			// Check to ensure that we can support the format required for our swap chain.
 			// If a video device can't support this format, then the odds are good it won't render anything. Since we're asking for a very common display format, this will 
-			// succeed nearly 100% of the time (unless you've somehow gotten an ancient video device to work with Direct 3D 11.4). Regardless, it's good form to the check for a 
-			// working display format prior to setting up the swap chain.
+			// succeed nearly 100% of the time. Regardless, it's good form to the check for a working display format prior to setting up the swap chain.
 			//
 			// This is also used to determine if a format can be used for other objects (e.g. a texture, render target, etc...) And like the swap chain format, it is also best 
 		    // practice to check if the object you're creating supports the desired format.
@@ -273,6 +274,26 @@ namespace Gorgon.Graphics.Example
 		                                    Width = _mainForm.ClientSize.Width,
 		                                    Height = _mainForm.ClientSize.Height
 		                                });
+
+            IGorgonImageCodec codec = new GorgonCodecPng();
+
+		    using (IGorgonImage image = codec.LoadFromFile(@"C:\Users\Mike\Pictures\Misc\Balls!_FB.png"))
+		    {
+		        using (var texture = new GorgonTexture2D(_graphics,
+		                                                 new GorgonTexture2DInfo
+		                                                 {
+		                                                     Binding = TextureBinding.None,
+		                                                     Format = BufferFormat.R8G8B8A8_UNorm,
+		                                                     Width = image.Info.Width,
+		                                                     Height = image.Info.Height,
+		                                                     Usage = ResourceUsage.Staging,
+		                                                     ArrayCount = 4,
+		                                                     MipLevels = 4
+		                                                 }))
+		        {
+		            texture.SetData(image.Buffers[0], new DX.Rectangle(40, 40, image.Info.Width, image.Info.Height), 2, 2);
+		        }
+		    }
 		}
 
         /// <summary>

@@ -390,6 +390,26 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A texture with a usage of [Dynamic] must have an array size of 1.
+        ///Current array size: {0}.
+        /// </summary>
+        internal static string GORGFX_ERR_DYN_TEXTURE_MUST_HAVE_1_ARRAY {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_DYN_TEXTURE_MUST_HAVE_1_ARRAY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A texture with a usage of [Dynamic] must have a mip count of 1.
+        ///Current mip count: {0}.
+        /// </summary>
+        internal static string GORGFX_ERR_DYN_TEXTURE_MUST_HAVE_1_MIP {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_DYN_TEXTURE_MUST_HAVE_1_MIP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The kernel size must be between 3 and 81 (inclusive)..
         /// </summary>
         internal static string GORGFX_ERR_EFFECT_GAUSS_BLUR_KERNEL_SIZE_INVALID {
@@ -431,6 +451,15 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_FILE_NOT_FOUND {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_FILE_NOT_FOUND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot copy image with format [{0}] into texture with format [{1}]..
+        /// </summary>
+        internal static string GORGFX_ERR_FORMAT_MISMATCH {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_FORMAT_MISMATCH", resourceCulture);
             }
         }
         
@@ -965,6 +994,16 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_TEXTURE_RESOLVE_SRC_DEST_NOT_SAME_GROUP {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_TEXTURE_RESOLVE_SRC_DEST_NOT_SAME_GROUP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A texture with a usage of [Staging] must not have any bindings.
+        ///Current binding: [{0}].
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_STAGING_NO_BINDINGS {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_STAGING_NO_BINDINGS", resourceCulture);
             }
         }
         

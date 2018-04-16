@@ -89,62 +89,6 @@ namespace Gorgon.IO
 		#endregion
 
 		#region Methods.
-        /// <summary>
-        /// Function to write the bytes stored at the provided reference location into the stream.
-        /// </summary>
-        /// <param name="sourceData">The reference location to copy data from.</param>
-        /// <param name="size">The number of bytes to copy.</param>
-        /// <remarks>
-        /// <para>
-        /// This method will write the number of bytes specified by the <paramref name="size"/> parameter from the data stored at the referenced location specified in <paramref name="sourceData"/>.
-        /// </para>
-        /// </remarks>
-	    public void Write(ref byte sourceData, int size)
-	    {
-	        if (size < 1)
-	        {
-	            return;
-	        }
-
-	        int offset = 0;
-
-	        while (size > 0)
-	        {
-	            if (size >= sizeof(long))
-	            {
-	                ref long longRef = ref Unsafe.As<byte, long>(ref Unsafe.Add(ref sourceData, offset));
-                    Write(longRef); 
-	                size -= sizeof(long);
-	                offset += sizeof(long);
-	            }
-
-	            if (size >= sizeof(int))
-	            {
-	                ref int intRef = ref Unsafe.As<byte, int>(ref Unsafe.Add(ref sourceData, offset));
-	                Write(intRef); 
-	                size -= sizeof(int);
-	                offset += sizeof(int);
-	            }
-
-	            if (size >= sizeof(short))
-	            {
-	                ref short shortRef = ref Unsafe.As<byte, short>(ref Unsafe.Add(ref sourceData, offset));
-                    Write(shortRef);
-	                size -= sizeof(short);
-	                offset += sizeof(short);
-	            }
-
-	            if (size <= 0)
-	            {
-	                return;
-	            }
-
-	            Write(Unsafe.Add(ref sourceData, sizeof(byte)));
-	            size -= sizeof(byte);
-	            offset += sizeof(byte);
-	        }
-	    }
-
 	    /// <summary>
 	    /// Function to write data from a <see cref="GorgonNativeBuffer{T}"/> to a stream.
 	    /// </summary>
@@ -186,9 +130,11 @@ namespace Gorgon.IO
 	            return;
 	        }
 
-	        for (int i = index; i < count.Value; ++i)
+	        unsafe
 	        {
-                WriteValue(ref buffer[i]);
+	            int typeSize = Unsafe.SizeOf<T>();
+	            void* ptr = (byte*)buffer + (typeSize * index);
+                Write(ptr, count.Value * typeSize);
 	        }
 	    }
 
@@ -272,9 +218,12 @@ namespace Gorgon.IO
         public void WriteValue<T>(ref T value)
 			where T : struct
         {
-            ref byte valueRef = ref Unsafe.As<T, byte>(ref value);
-            Write(ref valueRef, Unsafe.SizeOf<T>());
-		}
+            unsafe
+            {
+                void* ptr = Unsafe.AsPointer(ref value);
+                Write(ptr, Unsafe.SizeOf<T>());
+            }
+        }
 
         /// <summary>
         /// Function to write a range of generic values.

@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using Gorgon.Core;
 using Gorgon.Native;
 using DX = SharpDX;
 
@@ -43,6 +42,14 @@ namespace Gorgon.Graphics.Imaging
 		{
 			get;
 		}
+        
+	    /// <summary>
+	    /// Property to return the format information for the buffer.
+	    /// </summary>
+	    GorgonFormatInfo FormatInformation
+	    {
+	        get;
+	    }
 
 		/// <summary>
 		/// Property to return the width for the current buffer.
@@ -61,10 +68,10 @@ namespace Gorgon.Graphics.Imaging
 			get;
 		}
 
-		/// <summary>
-		/// Property to return the depth for the current buffer.
-		/// </summary>
-		/// <remarks>This is only valid for 3D images.</remarks>
+	    /// <summary>
+	    /// Property to return the total depth for the <see cref="IGorgonImage"/> that this buffer is associated with.
+	    /// </summary>
+	    /// <remarks>This is only valid for 3D images.</remarks>
 		int Depth
 		{
 			get;
