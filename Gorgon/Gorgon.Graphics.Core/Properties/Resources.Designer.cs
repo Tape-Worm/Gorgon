@@ -336,6 +336,15 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This texture type cannot be used as a depth/stencil buffer..
+        /// </summary>
+        internal static string GORGFX_ERR_DEPTH_STENCIL_NOT_SUPPORTED {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_DEPTH_STENCIL_NOT_SUPPORTED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The format [{0}] is not valid for a depth/stencil binding..
         /// </summary>
         internal static string GORGFX_ERR_DEPTHSTENCIL_FORMAT_INVALID {
@@ -605,6 +614,15 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_PASS_INDEX_OUT_OF_RANGE {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_PASS_INDEX_OUT_OF_RANGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This texture type cannot be used as a render target..
+        /// </summary>
+        internal static string GORGFX_ERR_RENDER_TARGET_NOT_SUPPORTED {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_RENDER_TARGET_NOT_SUPPORTED", resourceCulture);
             }
         }
         

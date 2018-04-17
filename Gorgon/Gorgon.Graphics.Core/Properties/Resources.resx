@@ -552,4 +552,10 @@ Current mip count: {0}</value>
     <value>A texture with a usage of [Staging] must not have any bindings.
 Current binding: [{0}]</value>
   </data>
+  <data name="GORGFX_ERR_DEPTH_STENCIL_NOT_SUPPORTED" xml:space="preserve">
+    <value>This texture type cannot be used as a depth/stencil buffer.</value>
+  </data>
+  <data name="GORGFX_ERR_RENDER_TARGET_NOT_SUPPORTED" xml:space="preserve">
+    <value>This texture type cannot be used as a render target.</value>
+  </data>
 </root>

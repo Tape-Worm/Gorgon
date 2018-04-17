@@ -31,8 +31,8 @@ namespace Gorgon.Graphics.Core
 	/// <summary>
 	/// Information used to create a texture object.
 	/// </summary>
-	public class GorgonTexture2DInfo 
-		: IGorgonTexture2DInfo
+	public class GorgonTexture1DInfo 
+		: IGorgonTexture1DInfo
 	{
 		#region Properties.
 	    /// <summary>
@@ -53,44 +53,17 @@ namespace Gorgon.Graphics.Core
 		}
 
         /// <summary>
-        /// Property to set or return the height of the texture, in pixels.
-        /// </summary>
-        public int Height
-		{
-			get;
-			set;
-		}
-
-        /// <summary>
-        /// Property to set or return the number of array levels for a 1D or 2D texture.
+        /// Property to set or return the number of array levels for a texture.
         /// </summary>
         /// <remarks>
         /// <para>
-        /// When this value is greater than 0, the texture will be used as a texture array. If the texture is supposed to be a cube map, then this value should be a multiple of 6 (1 for each face in the cube).
+        /// When this value is greater than 0, the texture will be used as a texture array. 
         /// </para>
         /// <para>
         /// This value is defaulted to 1.
         /// </para>
         /// </remarks>
         public int ArrayCount
-		{
-			get;
-			set;
-		}
-
-        /// <summary>
-        /// Property to set or return whether this 2D texture is a cube map.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// When this value is set to <b>true</b>, then the texture is defined as a cube map using the <see cref="ArrayCount"/> as the number of faces. Because of this, the <see cref="ArrayCount"/> value 
-        /// must be a multiple of 6. If it is not, then the array count will be adjusted to meet the requirement.
-        /// </para>
-        /// <para>
-        /// This value is defaulted to <b>false</b>.
-        /// </para>
-        /// </remarks>
-        public bool IsCubeMap
 		{
 			get;
 			set;
@@ -117,18 +90,6 @@ namespace Gorgon.Graphics.Core
 		/// </para>
 		/// </remarks>
 		public int MipLevels
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the multisample quality and count for this texture.
-		/// </summary>
-		/// <remarks>
-		/// This value is defaulted to <see cref="GorgonMultisampleInfo.NoMultiSampling"/>.
-		/// </remarks>
-		public GorgonMultisampleInfo MultisampleInfo
 		{
 			get;
 			set;
@@ -167,12 +128,12 @@ namespace Gorgon.Graphics.Core
 
 		#region Constructor/Finalizer.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonTexture2DInfo"/> class.
+		/// Initializes a new instance of the <see cref="GorgonTexture1DInfo"/> class.
 		/// </summary>
-		/// <param name="info">A <see cref="IGorgonTexture2DInfo"/> to copy settings from.</param>
+		/// <param name="info">A <see cref="IGorgonTexture1DInfo"/> to copy settings from.</param>
 		/// <param name="newName">[Optional] The new name for the texture.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
-		public GorgonTexture2DInfo(IGorgonTexture2DInfo info, string newName = null)
+		public GorgonTexture1DInfo(IGorgonTexture1DInfo info, string newName = null)
 		{
 		    if (info == null)
 		    {
@@ -183,24 +144,20 @@ namespace Gorgon.Graphics.Core
 		    Format = info.Format;
 			ArrayCount = info.ArrayCount;
 			Binding = info.Binding;
-			Height = info.Height;
-			IsCubeMap = info.IsCubeMap;
 			MipLevels = info.MipLevels;
-			MultisampleInfo = info.MultisampleInfo;
 			Usage = info.Usage;
 			Width = info.Width;
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonTexture2DInfo"/> class.
+		/// Initializes a new instance of the <see cref="GorgonTexture1DInfo"/> class.
 		/// </summary>
 		/// <param name="name">[Optional] The name of the texture.</param>
-		public GorgonTexture2DInfo(string name = null)
+		public GorgonTexture1DInfo(string name = null)
 		{
-		    Name = string.IsNullOrEmpty(name) ? GorgonGraphicsResource.GenerateName(GorgonTexture2D.NamePrefix) : name;
+		    Name = string.IsNullOrEmpty(name) ? GorgonGraphicsResource.GenerateName(GorgonTexture1D.NamePrefix) : name;
 			Binding = TextureBinding.ShaderResource;
 			Usage = ResourceUsage.Default;
-			MultisampleInfo = GorgonMultisampleInfo.NoMultiSampling;
 			MipLevels = 1;
 			ArrayCount = 1;
 		}

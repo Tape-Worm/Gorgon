@@ -31,25 +31,6 @@ using D3D11 = SharpDX.Direct3D11;
 namespace Gorgon.Graphics.Core
 {
 	/// <summary>
-	/// The type of texture.
-	/// </summary>
-	public enum TextureType
-	{
-		/// <summary>
-		/// The texture will only have a single dimension.
-		/// </summary>
-		Texture1D = 0,
-		/// <summary>
-		/// The texture will have 2 dimensions.
-		/// </summary>
-		Texture2D = 1,
-		/// <summary>
-		/// The texture will have 3 dimensions.
-		/// </summary>
-		Texture3D = 2
-	}
-
-	/// <summary>
 	/// Defines the flags that describe how the texture should be used.
 	/// </summary>
 	/// <remarks>
@@ -124,9 +105,6 @@ namespace Gorgon.Graphics.Core
 		/// <para>
 		/// Textures that are multisampled cannot use this flag and can only be bound to a pixel shader and/or compute shader.
 		/// </para>
-		/// <para>
-		/// This value is only supported on devices with a feature set of <see cref="FeatureSet.Level_12_0"/> or better. Any attempt to use this on a lesser device will throw an exception.
-		/// </para>
 		/// </summary>
 		UnorderedAccess = D3D11.BindFlags.UnorderedAccess
 	}
@@ -150,59 +128,43 @@ namespace Gorgon.Graphics.Core
 			get;
 		}
 
-		/// <summary>
-		/// Property to return the height of the texture, in pixels.
-		/// </summary>
-		/// <remarks>
-		/// For textures that have a <see cref="TextureType"/> of <see cref="Core.TextureType.Texture1D"/>, this value is ignored.
-		/// </remarks>
-		int Height
+        /// <summary>
+        /// Property to return the height of the texture, in pixels.
+        /// </summary>
+        int Height
 		{
 			get;
 		}
 
-		/// <summary>
-		/// Property to return the number of array levels for a 1D or 2D texture.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// When this value is greater than 0, the texture will be used as a texture array. If the texture is supposed to be a cube map, then this value should be a multiple of 6 (1 for each face in the cube).
-		/// </para>
-		/// <para>
-		/// For textures that have a <see cref="TextureType"/> of <see cref="Core.TextureType.Texture3D"/>, this value is ignored.
-		/// </para>
-		/// <para>
-		/// For video adapters with a feature set of <see cref="FeatureSet.Level_12_0"/>, there can only be a single cube map and thus this value must be set to 6 when creating a cube map texture.
-		/// </para>
-		/// <para>
-		/// This value is defaulted to 1.
-		/// </para>
-		/// </remarks>
-		int ArrayCount
+        /// <summary>
+        /// Property to return the number of array levels for a texture.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// When this value is greater than 0, the texture will be used as a texture array. If the texture is supposed to be a cube map, then this value should be a multiple of 6 (1 for each face in the cube).
+        /// </para>
+        /// <para>
+        /// This value is defaulted to 1.
+        /// </para>
+        /// </remarks>
+        int ArrayCount
 		{
 			get;
 		}
 
-		/// <summary>
-		/// Property to return whether this 2D texture is a cube map.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// When this value is set to <b>true</b>, then the texture is defined as a cube map using the <see cref="ArrayCount"/> as the number of faces. Because of this, the <see cref="ArrayCount"/> value 
-		/// must be a multiple of 6. If it is not, then the array count will be adjusted to meet the requirement.
-		/// </para>
-		/// <para>
-		/// For video adapters with a feature set of <see cref="FeatureSet.Level_12_0"/>, there can only be a single cube map and thus <see cref="ArrayCount"/> must be set to 6 when creating a cube map 
-		/// texture.
-		/// </para>
-		/// <para>
-		/// For textures that have a <see cref="TextureType"/> of <see cref="Core.TextureType.Texture1D"/> or <see cref="Core.TextureType.Texture3D"/>, this value is ignored.
-		/// </para>
-		/// <para>
-		/// This value is defaulted to <b>false</b>.
-		/// </para>
-		/// </remarks>
-		bool IsCubeMap
+        /// <summary>
+        /// Property to return whether this 2D texture is a cube map.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// When this value is set to <b>true</b>, then the texture is defined as a cube map using the <see cref="ArrayCount"/> as the number of faces. Because of this, the <see cref="ArrayCount"/> value 
+        /// must be a multiple of 6. If it is not, then the array count will be adjusted to meet the requirement.
+        /// </para>
+        /// <para>
+        /// This value is defaulted to <b>false</b>.
+        /// </para>
+        /// </remarks>
+        bool IsCubeMap
 		{
 			get;
 		}
