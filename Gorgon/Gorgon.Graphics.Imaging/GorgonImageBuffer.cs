@@ -155,7 +155,7 @@ namespace Gorgon.Graphics.Imaging
 		/// The destination buffer must be the same format as the source buffer.  If it is not, then an exception will be thrown.
 		/// </para>
 		/// </remarks>
-		public void CopyTo(IGorgonImageBuffer buffer, DX.Rectangle? sourceRegion = null, int destX = 0, int destY = 0)
+		public void CopyTo(IGorgonImageBuffer buffer, in DX.Rectangle? sourceRegion = null, int destX = 0, int destY = 0)
 		{
 			DX.Rectangle sourceBufferDims = new DX.Rectangle
 			                       {
@@ -292,6 +292,63 @@ namespace Gorgon.Graphics.Imaging
 				}
 			}
 		}
+
+        /// <summary>
+        /// Function to create a sub region from the current image data contained within this buffer.
+        /// </summary>
+        /// <param name="clipRegion">The region of the buffer to clip.</param>
+        /// <returns>A new <see cref="IGorgonImageBuffer"/> containing the sub region of this buffer, or <b>null</b> if the clipped region is empty.</returns> 
+        /// <remarks>
+        /// <para>
+        /// This method is used to create a smaller sub region from the current buffer based on the <paramref name="clipRegion"/> specified. This region value is clipped to the size of the buffer.
+        /// </para>
+        /// <para>
+        /// The resulting image buffer that is returned will share the same memory as the parent buffer (which, in turn, shares its buffer with the <see cref="IGorgonImage"/> it's created from). Because of
+        /// this, the <see cref="IGorgonImageBuffer.Format"/>, <see cref="IGorgonImageBuffer.MipLevel"/>, <see cref="IGorgonImageBuffer.ArrayIndex"/>, <see cref="IGorgonImageBuffer.DepthSliceIndex"/> and
+        /// the <see cref="IGorgonImageBuffer.Depth"/> will the be same as the buffer it was created from. 
+        /// </para>
+        /// <para>
+        /// Because this buffer references a subsection of the same memory as the parent buffer, care must be taken when accessing the memory directly. Even though the <see cref="GorgonNativeBuffer{T}"/>
+        /// object takes precautions to avoid out of bounds reads/writes on memory, it cannot address memory in a rectangular region like that of an image. If a write that extends beyond the width of the
+        /// buffer occurs, it will appear on the parent buffer, but may not appear on the resulting buffer. To handle accessing memory properly, use of the values in <see cref="PitchInformation"/> is
+        /// required so that data will be read and written within the region defined by the resulting buffer.
+        /// </para>
+        /// <para>
+        /// If the width and/or height of the clip region is 0, then the image is empty and this method will return <b>null</b>.
+        /// </para>
+        /// <para>
+        /// Please note that the returned buffer will <b>not</b> be appended to the list of <see cref="IGorgonImage.Buffers"/> in the <see cref="IGorgonImage"/>.
+        /// </para> 
+        /// </remarks>
+        /// <seealso cref="IGorgonImage"/>
+        public IGorgonImageBuffer GetRegion(in DX.Rectangle clipRegion)
+        {
+            DX.Rectangle finalRegion = DX.Rectangle.Intersect(clipRegion, new DX.Rectangle(0, 0, Width, Height));
+
+            if ((finalRegion.Width <= 0)
+                || (finalRegion.Height <= 0))
+            {
+                return null;
+            }
+
+            unsafe
+            {
+                byte* regionStart = ((byte*)Data) + (finalRegion.Top * PitchInformation.RowPitch) + (finalRegion.Left * FormatInformation.SizeInBytes);
+                byte* regionEnd = ((byte*)Data) + (finalRegion.Bottom * PitchInformation.RowPitch) + (finalRegion.Right * FormatInformation.SizeInBytes);
+                var pitch = new GorgonPitchLayout(PitchInformation.RowPitch, (int)(regionEnd - regionStart));
+
+                return new GorgonImageBuffer(new GorgonNativeBuffer<byte>(regionStart, pitch.SlicePitch),
+                                             pitch,
+                                             MipLevel,
+                                             ArrayIndex,
+                                             DepthSliceIndex,
+                                             finalRegion.Width,
+                                             finalRegion.Height,
+                                             Depth,
+                                             Format,
+                                             FormatInformation);
+            }
+        }
         #endregion
 
         #region Constructor/Destructor.

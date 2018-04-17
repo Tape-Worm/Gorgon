@@ -927,7 +927,12 @@ namespace Gorgon.Graphics.Core
         /// This will upload data from a <see cref="IGorgonImageBuffer"/> in a <see cref="IGorgonImage"/> to a sub section of the texture (e.g. a mip level, array index, etc...). The method will determine
         /// how to best upload the data depending on the <see cref="GorgonGraphicsResource.Usage"/> of the texture. For example, if the texture as a <see cref="GorgonGraphicsResource.Usage"/> of
         /// <see cref="ResourceUsage.Default"/>, then internally, this method will update to the GPU directly. Otherwise, if it is <see cref="ResourceUsage.Dynamic"/>, or <see cref="ResourceUsage.Staging"/>,
-        /// it will use a locking pattern which uses the CPU to write data to the texture.
+        /// it will use a locking pattern which uses the CPU to write data to the texture. The latter pattern is good if the texture has to change one or more times per frame, otherwise, the former is
+        /// better where the texture is updated less than once per frame (i.e. Dynamic is good for multiple times per frame, Default is good for once per frame or less).
+        /// </para>
+        /// <para>
+        /// Users who wish to capture a smaller portion of the source <paramref name="imageBuffer"/> can use the <see cref="IGorgonImageBuffer.GetRegion"/> method to extract a region from a buffer in a
+        /// <see cref="IGorgonImage"/>.
         /// </para>
         /// <para>
         /// If the user supplies a <paramref name="destRectangle"/>, then the data will be copied to the region in the texture specified by the parameter, otherwise if the parameter is omitted, the full
@@ -940,9 +945,9 @@ namespace Gorgon.Graphics.Core
         /// <para>
         /// The <paramref name="copyMode"/> parameter defines how the copy will be performed. If the texture has a <see cref="GorgonGraphicsResource.Usage"/> of <see cref="ResourceUsage.Dynamic"/> or
         /// <see cref="ResourceUsage.Default"/> and the <paramref name="copyMode"/> is set to <see cref="CopyMode.Discard"/> then the contents of the texture are discarded before updating, if it is set to
-        /// <see cref="CopyMode.NoOverwrite"/>, then the data will be copied to the destination by using a buffer renaming strategy which allows the GPU to update the texture while it is still in use. If
-        /// the <paramref name="copyMode"/> is set to <see cref="CopyMode.None"/>, then <see cref="CopyMode.Discard"/> is used. For textures created with a <see cref="GorgonGraphicsResource.Usage"/> of
-        /// <see cref="ResourceUsage.Staging"/>, the <see cref="CopyMode"/> will be ignored and act as though <see cref="CopyMode.None"/> were passed.
+        /// <see cref="CopyMode.NoOverwrite"/>, then the data will be copied to the destination if we know the GPU is not using the portion being updated. If the <paramref name="copyMode"/> is set to
+        /// <see cref="CopyMode.None"/>, then <see cref="CopyMode.Discard"/> is used. For textures created with a <see cref="GorgonGraphicsResource.Usage"/> of <see cref="ResourceUsage.Staging"/>, the
+        /// <see cref="CopyMode"/> will be ignored and act as though <see cref="CopyMode.None"/> were passed.
         /// </para>
         /// <para>
         /// Please note that no format conversion, or image manipulation (other than clipping against the <paramref name="destRectangle"/>) is performed by this method. So it is up to the user to ensure
@@ -958,6 +963,37 @@ namespace Gorgon.Graphics.Core
         /// <seealso cref="IGorgonImageBuffer"/>
         /// <seealso cref="BufferFormat"/>
         /// <seealso cref="CopyMode"/>
+        /// <example>
+        /// The following is an example showing how to upload an image into a texture using different techniques:
+        /// <code lang="csharp">
+        /// <![CDATA[
+        /// using DX = SharpDX;
+        ///
+        /// IGorgonImage image = ... // Load an image from a source.
+        /// var texture = new GorgonTexture2D(graphics, new GorgonTexture2DInfo
+        /// {
+        ///    Width = image.Info.Width,
+        ///    Height = image.Info.Height,
+        ///    Format = image.Info.Format,
+        ///    ArrayCount = 4,
+        ///    MipLevels = 4,
+        ///    // This will trigger a direct upload to the GPU, use Dynamic or Staging for CPU writable uploads.
+        ///    // Dynamic is useful if the texture needs updating once or more per frame.
+        ///    Usage = ResourceUsage.Default  
+        /// });
+        ///
+        /// // Set the image to the first array and mip level at the full size.
+        /// texture.SetData(image.Buffers[0]);
+        ///
+        /// // Set the image to the 2nd array index, and 2nd mip level, at position 10x10 on the texture, with and width and height of 50x50.
+        /// // Also, set it so that we're copying to another
+        /// texture.SetData(image.Buffers[0], new DX.Rectangle(10, 10, 50, 50), 2, 2, copyMode: CopyMode.NoOverwrite);
+        /// 
+        /// // Set a portion of the source image.
+        /// texture.SetData(image.Buffers[0].GetRegion(new DX.Rectangle(10, 10, 50, 50));
+        /// ]]>
+        /// </code>
+        /// </example>
         public void SetData(IGorgonImageBuffer imageBuffer, DX.Rectangle? destRectangle = null, int destArrayIndex = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
         {
             #if DEBUG
@@ -991,10 +1027,12 @@ namespace Gorgon.Graphics.Core
             int width = (Width >> destMipLevel).Max(1);
             int height = (Height >> destMipLevel).Max(1);
 
+            // Clip the destination rectangle against our texture size.
             DX.Rectangle destRect = destRectangle ?? new DX.Rectangle(0, 0, width, height);
             DX.Rectangle maxRect = new DX.Rectangle(0, 0, width, height);
+            DX.Rectangle.Intersect(ref destRect, ref maxRect, out DX.Rectangle destBounds);
 
-            DX.Rectangle.Intersect(ref destRect, ref maxRect, out DX.Rectangle finalBounds);
+            var finalBounds = new DX.Rectangle(destBounds.X, destBounds.Y, imageBuffer.Width.Min(destBounds.Width), imageBuffer.Height.Min(destBounds.Height));
 
             unsafe
             {

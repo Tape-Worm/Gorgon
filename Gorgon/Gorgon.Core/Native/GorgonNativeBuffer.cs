@@ -70,7 +70,7 @@ namespace Gorgon.Native
     /// The buffer can also be used to pin an array or value type and act on those items as native memory. Please note that the standard disclaimers about pinning still apply.
     /// </para>
     /// </remarks>
-    public unsafe class GorgonNativeBuffer<T>
+    public sealed unsafe class GorgonNativeBuffer<T>
         : IDisposable, IEquatable<GorgonNativeBuffer<T>>
         where T : struct
     {
