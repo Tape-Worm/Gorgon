@@ -213,68 +213,68 @@ namespace Gorgon.Graphics.Example
 			return true;
 		}
 
-		/// <summary>
-		/// Function to initialize the application.
-		/// </summary>
-		private static void Initialize()
-		{
-            // First, create our form.
-			_mainForm = new FormMain
-			            {
-				            ClientSize = new Size(640, 480)
-			            };
-            _mainForm.Show();
+	    /// <summary>
+	    /// Function to initialize the application.
+	    /// </summary>
+	    private static void Initialize()
+	    {
+	        // First, create our form.
+	        _mainForm = new FormMain
+	                    {
+	                        ClientSize = new Size(640, 480)
+	                    };
+	        _mainForm.Show();
 
-            _mainForm.KeyUp += MainForm_KeyUp;
+	        _mainForm.KeyUp += MainForm_KeyUp;
 
-			// Now we create and enumerate the list of video devices installed in the computer.
-			// We must do this in order to tell Gorgon which video device we intend to use. Note that this method may be quite slow (particularly when running DEBUG versions of 
-			// Direct 3D). To counter this, this object and its Enumerate method are thread safe so this can be run in the background while keeping the main UI responsive.
-            //
-		    // If no suitable device was found (no Direct 3D 11.4 support) in the computer, this method will return an empty list. However, if it succeeds, then the devices list 
-		    // will be populated with an IGorgonVideoDeviceInfo for each suitable video device in the system.
-		    //
-		    // Using this method, we could also enumerate the WARP software rasterizer, and/of the D3D Reference device (only if the DEBUG functionality provided by the Windows 
-		    // SDK is installed). These devices are typically used to determine if there's a driver error, and can be terribly slow to render (reference moreso than WARP). It is 
-		    // recommended that these only be used in diagnostic scenarios only.
-		    IReadOnlyList<IGorgonVideoAdapterInfo> devices = GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log);
+	        // Now we create and enumerate the list of video devices installed in the computer.
+	        // We must do this in order to tell Gorgon which video device we intend to use. Note that this method may be quite slow (particularly when running DEBUG versions of 
+	        // Direct 3D). To counter this, this object and its Enumerate method are thread safe so this can be run in the background while keeping the main UI responsive.
+	        //
+	        // If no suitable device was found (no Direct 3D 11.4 support) in the computer, this method will return an empty list. However, if it succeeds, then the devices list 
+	        // will be populated with an IGorgonVideoDeviceInfo for each suitable video device in the system.
+	        //
+	        // Using this method, we could also enumerate the WARP software rasterizer, and/of the D3D Reference device (only if the DEBUG functionality provided by the Windows 
+	        // SDK is installed). These devices are typically used to determine if there's a driver error, and can be terribly slow to render (reference moreso than WARP). It is 
+	        // recommended that these only be used in diagnostic scenarios only.
+	        IReadOnlyList<IGorgonVideoAdapterInfo> devices = GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log);
 
-		    if (devices.Count == 0)
-		    {
-                GorgonDialogs.ErrorBox(_mainForm, "This example requires a video adapter capable of feature set 12 or better.");
-		        return;
-		    }
+	        if (devices.Count == 0)
+	        {
+	            GorgonDialogs.ErrorBox(_mainForm, "This example requires a video adapter capable of feature set 12 or better.");
+	            return;
+	        }
 
-			// Now we create the main graphics interface with the first applicable video device.
-			_graphics = new GorgonGraphics(devices[0], log: GorgonApplication.Log);
+	        // Now we create the main graphics interface with the first applicable video device.
+	        _graphics = new GorgonGraphics(devices[0], log: GorgonApplication.Log);
 
-			// Check to ensure that we can support the format required for our swap chain.
-			// If a video device can't support this format, then the odds are good it won't render anything. Since we're asking for a very common display format, this will 
-			// succeed nearly 100% of the time. Regardless, it's good form to the check for a working display format prior to setting up the swap chain.
-			//
-			// This is also used to determine if a format can be used for other objects (e.g. a texture, render target, etc...) And like the swap chain format, it is also best 
-		    // practice to check if the object you're creating supports the desired format.
-		    if (!_graphics.FormatSupport[BufferFormat.R8G8B8A8_UNorm].IsDisplayFormat)
-			{
-				// We should never see this unless you've got some very esoteric hardware.
-				GorgonDialogs.ErrorBox(_mainForm, "We should not see this error.");
-				return;
-			}
+	        // Check to ensure that we can support the format required for our swap chain.
+	        // If a video device can't support this format, then the odds are good it won't render anything. Since we're asking for a very common display format, this will 
+	        // succeed nearly 100% of the time. Regardless, it's good form to the check for a working display format prior to setting up the swap chain.
+	        //
+	        // This is also used to determine if a format can be used for other objects (e.g. a texture, render target, etc...) And like the swap chain format, it is also best 
+	        // practice to check if the object you're creating supports the desired format.
+	        if (!_graphics.FormatSupport[BufferFormat.R8G8B8A8_UNorm].IsDisplayFormat)
+	        {
+	            // We should never see this unless you've got some very esoteric hardware.
+	            GorgonDialogs.ErrorBox(_mainForm, "We should not see this error.");
+	            return;
+	        }
 
-			// Finally, create a swap chain to display our output.
-			// In this case we're setting up our swap chain to bind with our main window, and we use its client size to determine the width/height of the swap chain back buffers.
-			// This width/height does not need to be the same size as the window, but, except for some scenarios, that would produce undesirable image quality.
-		    _swap = new GorgonSwapChain(_graphics,
-		                                _mainForm,
-		                                new GorgonSwapChainInfo("Main Swap Chain")
-		                                {
-		                                    Format = BufferFormat.R8G8B8A8_UNorm,
-		                                    Width = _mainForm.ClientSize.Width,
-		                                    Height = _mainForm.ClientSize.Height
-		                                });
-		}
+	        // Finally, create a swap chain to display our output.
+	        // In this case we're setting up our swap chain to bind with our main window, and we use its client size to determine the width/height of the swap chain back buffers.
+	        // This width/height does not need to be the same size as the window, but, except for some scenarios, that would produce undesirable image quality.
+	        _swap = new GorgonSwapChain(_graphics,
+	                                    _mainForm,
+	                                    new GorgonSwapChainInfo("Main Swap Chain")
+	                                    {
+	                                        Format = BufferFormat.R8G8B8A8_UNorm,
+	                                        Width = _mainForm.ClientSize.Width,
+	                                        Height = _mainForm.ClientSize.Height
+	                                    });
+	    }
 
-        /// <summary>
+	    /// <summary>
         /// Handles the KeyUp event of the MainForm control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>

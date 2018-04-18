@@ -162,23 +162,21 @@ namespace Gorgon.Graphics.Core
 		    try
 		    {
 		        byte* bufferPtr = (byte*)buffer.Data;
-		        byte* sourceData = (byte*)lockBox.DataPointer;
+		        byte* sourceData = (byte*)lockBox.DataPointer + (depthSlice * lockBox.SlicePitch);
 
 		        // If the strides don't match, then the texture is using padding, so copy one scanline at a time for each depth index.
 		        if ((lockBox.RowPitch != rowStride)
-		            || (lockBox.SlicePitch != sliceStride)
-		            || (sliceStride != 0))
+		            || (lockBox.SlicePitch != sliceStride))
 		        {
 		            for (int depth = 0; depth < depthCount; depth++)
 		            {
 		                // Restart at the padded slice size.
-		                byte* sourceDepthSlice = sourceData + (depthSlice * lockBox.SlicePitch);
 		                byte* destptr = bufferPtr + (depthSlice * sliceStride);
 
 		                for (int row = 0; row < height; row++)
 		                {
-		                    Unsafe.CopyBlock(destptr, sourceDepthSlice, (uint)rowStride.Min(lockBox.RowPitch));
-		                    sourceDepthSlice += lockBox.RowPitch;
+		                    Unsafe.CopyBlock(destptr, sourceData, (uint)rowStride.Min(lockBox.RowPitch));
+		                    sourceData += lockBox.RowPitch;
 		                    destptr += rowStride;
 		                }
 		            }
@@ -1113,7 +1111,7 @@ namespace Gorgon.Graphics.Core
             #endif
 
             destMipLevel = destMipLevel.Min(MipLevels - 1).Max(0);
-            destSlice = destSlice.Min(Depth - 1).Max(0);
+            destSlice = destSlice.Min((Depth >> destMipLevel).Max(1) - 1).Max(0);
 
             // Calculate mip width and height.
             int width = (Width >> destMipLevel).Max(1);
@@ -1178,8 +1176,7 @@ namespace Gorgon.Graphics.Core
                         && (finalBounds.Left == 0)
                         && (finalBounds.Top == 0)
                         && (finalBounds.Width == width)
-                        && (finalBounds.Height == height)
-                        && (destSlice == 0))
+                        && (finalBounds.Height == height))
                     {
                         Unsafe.CopyBlock(dest, src, (uint)imageBuffer.PitchInformation.SlicePitch);
                         return;
@@ -1187,7 +1184,7 @@ namespace Gorgon.Graphics.Core
 
                     // Copy per-scanline if the width and height do not match up.
                     uint bytesCopy = (uint)(finalBounds.Width * FormatInformation.SizeInBytes);
-                    int destOffset = finalBounds.Left + (mapBox.RowPitch / width);
+                    int destOffset = finalBounds.Left * (mapBox.RowPitch / width);
 
                     for (int y = finalBounds.Top; y < finalBounds.Bottom; ++y)
                     {

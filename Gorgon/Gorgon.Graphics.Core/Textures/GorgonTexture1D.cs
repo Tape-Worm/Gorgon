@@ -1012,7 +1012,7 @@ namespace Gorgon.Graphics.Core
                 try
                 {
                     // If we're copying the full size, then just copy the slice.
-                    if ((finalBounds.Left != 0) && (finalBounds.Width != width) && (mapBox.RowPitch == imageBuffer.PitchInformation.RowPitch))
+                    if ((finalBounds.Left == 0) && (finalBounds.Width == width) && (mapBox.RowPitch == imageBuffer.PitchInformation.RowPitch))
                     {
                         Unsafe.CopyBlock(dest, src, (uint)imageBuffer.PitchInformation.RowPitch);
                         return;
