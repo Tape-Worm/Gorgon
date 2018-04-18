@@ -50,7 +50,7 @@ namespace Gorgon.Graphics.Core
 		/// This flag is mutually exclusive, and supercedes any other flags.
 		/// </para>
 		/// <para>
-		/// If this flag is set, then this texture cannot be bound with the pipeline. And this is the only binding flag allowed with the texture has a <see cref="IGorgonTexture2DInfo.Usage"/> 
+		/// If this flag is set, then this texture cannot be bound with the pipeline. And this is the only binding flag allowed when the texture has a <see cref="IGorgonTexture2DInfo.Usage"/> 
 		/// of <see cref="ResourceUsage.Staging"/>.
 		/// </para>
 		/// </summary>
@@ -60,7 +60,14 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		ShaderResource = D3D11.BindFlags.ShaderResource,
 		/// <summary>
+		/// <para>
 		/// The texture is meant to be used as a render target.
+		/// </para>
+		/// <para>
+		/// <note type="important">
+		/// <see cref="GorgonTexture1D"/> types cannot have this as a binding. This restriction is imposed by Gorgon and may be lifted in the future.
+		/// </note>
+		/// </para>
 		/// </summary>
 		RenderTarget = D3D11.BindFlags.RenderTarget,
 		/// <summary>
@@ -95,6 +102,11 @@ namespace Gorgon.Graphics.Core
 		///			<term>R32G8X24_Typeless</term>
 		///		</item>
 		/// </list>
+		/// </para>
+		/// <para>
+		/// <note type="important">
+		/// <see cref="GorgonTexture1D"/> and <see cref="GorgonTexture3D"/> types cannot have this as a binding.
+		/// </note>
 		/// </para>
 		/// </summary>
 		DepthStencil = D3D11.BindFlags.DepthStencil,

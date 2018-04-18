@@ -26,7 +26,6 @@
 
 using System;
 using Drawing = System.Drawing;
-using Gorgon.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.GdiPlus;
 
@@ -104,6 +103,65 @@ namespace Gorgon.Graphics.Core
 	        {
 	            return new GorgonTexture2D(graphics, image, options);
 	        }
+	    }
+
+	    /// <summary>
+	    /// Function to create a <see cref="GorgonTexture3D"/> from a <see cref="GorgonImage"/>.
+	    /// </summary>
+	    /// <param name="image">The image used to create the texture.</param>
+	    /// <param name="graphics">The graphics interface used to create the texture.</param>
+	    /// <param name="options">[Optional] Options used to further define the texture.</param>
+	    /// <returns>A new <see cref="GorgonTexture3D"/> containing the data from the <paramref name="image"/>.</returns>
+	    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="image"/>, or the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
+	    /// <remarks>
+	    /// <para>
+	    /// A <see cref="GorgonImage"/> is useful to holding image data in memory, but it cannot be sent to the GPU for use as a texture. This method allows an application to convert the 
+	    /// <see cref="GorgonImage"/> into a <see cref="GorgonTexture3D"/>. 
+	    /// </para>
+	    /// <para>
+	    /// If specified, the <paramref name="options"/>parameter will define how Gorgon and shaders should handle the texture.  The <see cref="GorgonTextureLoadOptions"/> type contains the following:
+	    /// <list type="bullet">
+	    ///		<item>
+	    ///			<term>Binding</term>
+	    ///			<description>When defined, will indicate the <see cref="TextureBinding"/> that defines how the texture will be bound to the graphics pipeline. If it is omitted, then the binding will be 
+	    ///         <see cref="TextureBinding.ShaderResource"/>.</description>
+	    ///		</item>
+	    ///		<item>
+	    ///			<term>Usage</term>
+	    ///			<description>When defined, will indicate the preferred usage for the texture. If it is omitted, then the usage will be set to <see cref="ResourceUsage.Default"/>.</description>
+	    ///		</item>
+	    ///		<item>
+	    ///			<term>Multisample info</term>
+	    ///			<description>This is not available on 3D textures, and is ignored.</description>
+	    ///		</item>
+	    /// </list>
+	    /// </para>
+	    /// </remarks>
+	    public static GorgonTexture3D ToTexture3D(this IGorgonImage image,
+	                                              GorgonGraphics graphics,
+                                                  GorgonTextureLoadOptions options = null)
+	    {
+	        if (image == null)
+	        {
+	            throw new ArgumentNullException(nameof(image));
+	        }
+
+	        if (graphics == null)
+	        {
+	            throw new ArgumentNullException(nameof(graphics));
+	        }
+
+	        if (options == null)
+	        {
+                options = _defaultLoadOptions;
+	        }
+
+	        if (string.IsNullOrEmpty(options.Name))
+	        {
+	            options.Name = GorgonGraphicsResource.GenerateName(GorgonTexture3D.NamePrefix);
+	        }
+
+	        return new GorgonTexture3D(graphics, image, options);
 	    }
 
 	    /// <summary>
@@ -192,7 +250,7 @@ namespace Gorgon.Graphics.Core
 	    ///		</item>
 	    ///		<item>
 	    ///			<term>Multisample info</term>
-	    ///			<description>When defined (i.e. not <b>null</b>), defines the multisampling to apply to the texture. If omitted, then the default is <see cref="GorgonMultisampleInfo.NoMultiSampling"/>.</description>
+	    ///			<description>This is not available on 1D textures, and is ignored.</description>
 	    ///		</item>
 	    /// </list>
 	    /// </para>

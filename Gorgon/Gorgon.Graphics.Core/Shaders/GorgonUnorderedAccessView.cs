@@ -85,7 +85,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the native Direct 3D 11 view.
         /// </summary>
-        protected internal D3D11.UnorderedAccessView1 NativeView
+        protected internal D3D11.UnorderedAccessView1 Native
         {
             get => _view;
             set => _view = value;
@@ -100,6 +100,28 @@ namespace Gorgon.Graphics.Core
         /// Property to return the resource bound to the view.
         /// </summary>
         public GorgonGraphicsResource Resource => _resource;
+
+        /// <summary>
+        /// Property to return the usage flag(s) for the resource.
+        /// </summary>
+        public ResourceUsage Usage => _resource?.Usage ?? ResourceUsage.Default;
+
+
+        /// <summary>
+        /// Property to return the format used to interpret this view.
+        /// </summary>
+        public BufferFormat Format
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return information about the <see cref="Format"/> used by this view.
+        /// </summary>
+        public GorgonFormatInfo FormatInformation
+        {
+            get;
+        }
 
         /// <summary>
         /// Property to return the graphics interface that the underlying resource.
@@ -130,7 +152,7 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public void Clear(int value1, int value2, int value3, int value4)
         {
-            Resource.Graphics.D3DDeviceContext.ClearUnorderedAccessView(NativeView, new DX.Int4(value1, value2, value3, value4));
+            Resource.Graphics.D3DDeviceContext.ClearUnorderedAccessView(Native, new DX.Int4(value1, value2, value3, value4));
         }
 
         /// <summary>
@@ -147,7 +169,7 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public void Clear(int value)
         {
-            Resource.Graphics.D3DDeviceContext.ClearUnorderedAccessView(NativeView, new DX.Int4(value));
+            Resource.Graphics.D3DDeviceContext.ClearUnorderedAccessView(Native, new DX.Int4(value));
         }
 
         /// <summary>
@@ -167,7 +189,7 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public void Clear(float value1, float value2, float value3, float value4)
         {
-            Resource.Graphics.D3DDeviceContext.ClearUnorderedAccessView(NativeView, new DX.Vector4(value1, value2, value3, value4));
+            Resource.Graphics.D3DDeviceContext.ClearUnorderedAccessView(Native, new DX.Vector4(value1, value2, value3, value4));
         }
 
         /// <summary>
@@ -184,7 +206,7 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public void Clear(float value)
         {
-            Resource.Graphics.D3DDeviceContext.ClearUnorderedAccessView(NativeView, new DX.Vector4(value));
+            Resource.Graphics.D3DDeviceContext.ClearUnorderedAccessView(Native, new DX.Vector4(value));
         }
 
         /// <summary>
@@ -201,7 +223,7 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public void Clear(DX.Vector4 values)
         {
-            Resource.Graphics.D3DDeviceContext.ClearUnorderedAccessView(NativeView, new DX.Vector4(values.X, values.Y, values.Z, values.W));
+            Resource.Graphics.D3DDeviceContext.ClearUnorderedAccessView(Native, new DX.Vector4(values.X, values.Y, values.Z, values.W));
         }
 
         /// <summary>
@@ -237,10 +259,14 @@ namespace Gorgon.Graphics.Core
         /// Initializes a new instance of the <see cref="GorgonShaderResourceView"/> class.
         /// </summary>
         /// <param name="resource">The resource to bind to the view.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="resource"/> parameter is <b>null</b>.</exception>
-        protected GorgonUnorderedAccessView(GorgonGraphicsResource resource)
+        /// <param name="format">The format of the view.</param>
+        /// <param name="formatInfo">Information about the format.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="resource"/>, or the <paramref name="formatInfo"/> parameter is <b>null</b>.</exception>
+        protected GorgonUnorderedAccessView(GorgonGraphicsResource resource, BufferFormat format, GorgonFormatInfo formatInfo)
         {
             _resource = resource ?? throw new ArgumentNullException(nameof(resource));
+            Format = format;
+            FormatInformation = formatInfo ?? throw new ArgumentNullException(nameof(formatInfo));
         }
         #endregion
     }

@@ -96,11 +96,17 @@
     <Compile Include="Shaders\_Internal\ShaderProcessor.cs" />
     <Compile Include="Targets\BeforeSwapChainResizedEventArgs.cs" />
     <Compile Include="Targets\GorgonDepthStencil2DView.cs" />
+    <Compile Include="Targets\GorgonRenderTarget3DView.cs" />
     <Compile Include="Targets\GorgonRenderTarget2DView.cs" />
+    <Compile Include="Targets\GorgonRenderTargetView.cs" />
     <Compile Include="Targets\GorgonSwapChain.cs" />
     <Compile Include="Targets\GorgonSwapChainInfo.cs" />
     <Compile Include="Targets\_Interfaces\IGorgonSwapChainInfo.cs" />
     <Compile Include="Textures\GorgonTexture1D.cs" />
+    <Compile Include="Textures\GorgonTexture3DUav.cs" />
+    <Compile Include="Textures\GorgonTexture3DView.cs" />
+    <Compile Include="Textures\GorgonTexture3DInfo.cs" />
+    <Compile Include="Textures\GorgonTexture3D.cs" />
     <Compile Include="Textures\GorgonTexture2D.cs" />
     <Compile Include="Textures\GorgonTexture1DInfo.cs" />
     <Compile Include="Textures\GorgonTexture2DInfo.cs" />
@@ -112,6 +118,7 @@
     <Compile Include="Textures\TextureWrap.cs" />
     <Compile Include="Textures\_Extensions\GorgonImageTextureExtensions.cs" />
     <Compile Include="Textures\_Interfaces\IGorgonTexture1DInfo.cs" />
+    <Compile Include="Textures\_Interfaces\IGorgonTexture3DInfo.cs" />
     <Compile Include="Textures\_Interfaces\IGorgonTexture2DInfo.cs" />
     <Compile Include="Textures\_Internal\TextureViewKey.cs" />
     <Compile Include="_Extensions\GorgonCollectionExtensions.cs" />

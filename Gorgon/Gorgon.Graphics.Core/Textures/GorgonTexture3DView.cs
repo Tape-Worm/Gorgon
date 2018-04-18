@@ -44,19 +44,19 @@ namespace Gorgon.Graphics.Core
 	/// </summary>
 	/// <remarks>
 	/// <para>
-	/// This is a texture shader view to allow a <see cref="GorgonTexture2D"/> to be bound to the GPU pipeline as a shader resource.
+	/// This is a texture shader view to allow a <see cref="GorgonTexture3D"/> to be bound to the GPU pipeline as a shader resource.
 	/// </para>
 	/// <para>
 	/// Use a resource view to allow a shader access to the contents of a resource (or sub resource).  When the resource is created with a typeless format, this will allow the resource to be cast to any 
 	/// format within the same group.	
 	/// </para>
 	/// </remarks>
-	public sealed class GorgonTexture2DView
-		: GorgonShaderResourceView, IGorgonTexture2DInfo
+	public sealed class GorgonTexture3DView
+		: GorgonShaderResourceView, IGorgonTexture3DInfo
     {
         #region Variables.
         // The texture linked to this view.
-        private GorgonTexture2D _texture;
+        private GorgonTexture3D _texture;
         #endregion
 
         #region Properties.
@@ -64,66 +64,23 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Property to return the index of the first mip map in the resource to view.
 		/// </summary>
-		/// <remarks>
-		/// If the texture is multisampled, then this value will be set to 0.
-		/// </remarks>
 		public int MipSlice
 		{
 			get;
-		    private set;
 		}
 
 		/// <summary>
 		/// Property to return the number of mip maps in the resource to view.
 		/// </summary> 
-		/// <remarks>
-		/// If the texture is multisampled, then this value will be set to 1.
-		/// </remarks>
 		public int MipCount
 		{
 			get;
-		    private set;
 		}
-
-		/// <summary>
-		/// Property to return the first array index to use in the view.
-		/// </summary>
-		public int ArrayIndex
-		{
-			get;
-		}
-
-		/// <summary>
-		/// Property to return the number of array indices to use in the view.
-		/// </summary>
-		/// <remarks>
-		/// If the texture is a 2D texture cube, then this value will be a multiple of 6.
-		/// </remarks>
-		public int ArrayCount
-		{
-			get;
-		}
-
-        /// <summary>
-        /// Property to return whether the texture is a texture cube or not.
-        /// </summary>
-        public bool IsCubeMap => Texture?.IsCubeMap ?? false;
 
         /// <summary>
         /// Property to return the texture that is bound to this view.
         /// </summary>
-        public GorgonTexture2D Texture => _texture;
-
-        /// <summary>
-        /// Property to return the bounding rectangle for the view.
-        /// </summary>
-        /// <remarks>
-        /// This value is the full bounding rectangle of the first mip map level for the texture associated with the view.
-        /// </remarks>
-        public DX.Rectangle Bounds
-        {
-            get;
-        }
+        public GorgonTexture3D Texture => _texture;
 
         /// <summary>
         /// Property to return the width of the texture in pixels.
@@ -142,6 +99,11 @@ namespace Gorgon.Graphics.Core
         public int Height => Texture?.Height ?? 0;
 
         /// <summary>
+        /// Property to return the depth of the texture, in slices.
+        /// </summary>
+        public int Depth => Texture?.Depth ?? 0;
+
+        /// <summary>
         /// Property to return the name of the texture.
         /// </summary>
         string IGorgonNamedObject.Name => Texture?.Name ?? string.Empty;
@@ -149,12 +111,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the number of mip-map levels for the texture.
         /// </summary>
-        int IGorgonTexture2DInfo.MipLevels => Texture?.MipLevels ?? 0;
-
-        /// <summary>
-        /// Property to return the multisample quality and count for the texture.
-        /// </summary>
-        public GorgonMultisampleInfo MultisampleInfo => Texture?.MultisampleInfo ?? GorgonMultisampleInfo.NoMultiSampling;
+        int IGorgonTexture3DInfo.MipLevels => Texture?.MipLevels ?? 0;
 
         /// <summary>
         /// Property to return the flags to determine how the texture will be bound with the pipeline when rendering.
@@ -164,93 +121,20 @@ namespace Gorgon.Graphics.Core
 
         #region Methods.
 		/// <summary>
-		/// Function to retrieve the view description for a 2D texture.
-		/// </summary>
-		/// <returns>The shader view description.</returns>
-		private D3D11.ShaderResourceViewDescription1 GetDesc2D()
-		{
-			bool isMultisampled = ((Texture.MultisampleInfo.Count > 1)
-			                       || (Texture.MultisampleInfo.Quality > 0));
-
-			if (!isMultisampled)
-			{
-				return new D3D11.ShaderResourceViewDescription1
-				       {
-					       Format = (DXGI.Format)Format,
-					       Dimension = Texture.ArrayCount > 1
-						                   ? D3D.ShaderResourceViewDimension.Texture2DArray
-						                   : D3D.ShaderResourceViewDimension.Texture2D,
-					       Texture2DArray =
-					       {
-						       MipLevels = MipCount,
-						       MostDetailedMip = MipSlice,
-						       FirstArraySlice = ArrayIndex,
-						       ArraySize = ArrayCount,
-                               PlaneSlice = 0
-					       }
-				       };
-			}
-
-		    MipSlice = 0;
-		    MipCount = 1;
-
-			return new D3D11.ShaderResourceViewDescription1
-			       {
-				       Format = (DXGI.Format)Format,
-				       Dimension = Texture.ArrayCount > 1
-					                   ? D3D.ShaderResourceViewDimension.Texture2DMultisampledArray
-					                   : D3D.ShaderResourceViewDimension.Texture2DMultisampled,
-				       Texture2DMSArray =
-				       {
-					       ArraySize = ArrayCount,
-					       FirstArraySlice = ArrayIndex
-				       }
-			       };
-		}
-
-		/// <summary>
-        /// Function to retrieve the view description for a 2D texture cube.
-        /// </summary>
-	    private D3D11.ShaderResourceViewDescription1 GetDesc2DCube()
-	    {
-            bool isMultisampled = ((Texture.MultisampleInfo.Count > 1)
-                                   || (Texture.MultisampleInfo.Quality > 0));
-
-	        if (isMultisampled)
-	        {
-                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_CANNOT_MULTISAMPLE_CUBE);
-            }
-
-            if ((ArrayCount % 6) != 0)
-			{
-				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_VIEW_CUBE_ARRAY_SIZE_INVALID);
-			}
-
-			int cubeArrayCount = ArrayCount / 6;
-
-			return new D3D11.ShaderResourceViewDescription1
-			       {
-				       Format = (DXGI.Format)Format,
-				       Dimension =
-					       cubeArrayCount > 1
-						       ? D3D.ShaderResourceViewDimension.TextureCubeArray
-						       : D3D.ShaderResourceViewDimension.TextureCube,
-				       TextureCubeArray =
-				       {
-					       CubeCount = cubeArrayCount,
-					       First2DArrayFace = ArrayIndex,
-					       MipLevels = MipCount,
-					       MostDetailedMip = MipSlice
-				       }
-			       };
-	    }
-
-		/// <summary>
 		/// Function to initialize the shader resource view.
 		/// </summary>
 		protected internal override void CreateNativeView()
 		{
-			D3D11.ShaderResourceViewDescription1 desc = IsCubeMap ? GetDesc2DCube() : GetDesc2D();
+		    D3D11.ShaderResourceViewDescription1 desc = new D3D11.ShaderResourceViewDescription1
+		                                                {
+		                                                    Format = (DXGI.Format)Format,
+		                                                    Dimension = D3D.ShaderResourceViewDimension.Texture3D,
+		                                                    Texture3D =
+		                                                    {
+		                                                        MipLevels = MipCount,
+		                                                        MostDetailedMip = MipSlice
+		                                                    }
+		                                                };
 
 			try
 			{
@@ -259,10 +143,10 @@ namespace Gorgon.Graphics.Core
 				// Create our SRV.
 			    Native = new D3D11.ShaderResourceView1(Texture.Graphics.D3DDevice, Texture.D3DResource, desc)
 			                 {
-			                     DebugName = $"'{Texture.Name}'_D3D11ShaderResourceView1_2D"
+			                     DebugName = $"'{Texture.Name}'_D3D11ShaderResourceView1_3D"
 			                 };
 
-			    Graphics.Log.Print($"Shader Resource View '{Texture.Name}': {Texture.ResourceType} -> Mip slice: {MipSlice}, Array Index: {ArrayIndex}, Array Count: {ArrayCount}", LoggingLevel.Verbose);
+			    Graphics.Log.Print($"Shader Resource View '{Texture.Name}': {Texture.ResourceType} -> Mip slice: {MipSlice}", LoggingLevel.Verbose);
                 
 			    this.RegisterDisposable(Texture.Graphics);
 			}
@@ -311,25 +195,37 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
+        /// Function to return the depth of the texture at the current <see cref="MipSlice"/> in slices.
+        /// </summary>
+        /// <param name="mipLevel">The mip level to evaluate.</param>
+        /// <returns>The height of the mip map level assigned to <see cref="MipSlice"/> for the texture associated with the texture.</returns>
+        public int GetMipDepth(int mipLevel)
+        {
+            mipLevel = mipLevel.Min(MipCount + MipSlice).Max(MipSlice);
+
+            return Depth >> mipLevel;
+        }
+
+        /// <summary>
         /// Function to create a new texture that is bindable to the GPU.
         /// </summary>
         /// <param name="graphics">The graphics interface to use when creating the target.</param>
         /// <param name="info">The information about the texture.</param>
-        /// <returns>A new <see cref="GorgonTexture2DView"/>.</returns>
+        /// <returns>A new <see cref="GorgonTexture3DView"/>.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, or <paramref name="info"/> parameter is <b>null</b>.</exception>
         /// <remarks>
         /// <para>
-        /// This is a convenience method that will create a <see cref="GorgonTexture2D"/> and a <see cref="GorgonTexture2DView"/> as a single object that users can use to apply a texture as a shader 
+        /// This is a convenience method that will create a <see cref="GorgonTexture3D"/> and a <see cref="GorgonTexture3DView"/> as a single object that users can use to apply a texture as a shader 
         /// resource. This helps simplify creation of a texture by executing some prerequisite steps on behalf of the user.
         /// </para>
         /// <para>
-        /// Since the <see cref="GorgonTexture2D"/> created by this method is linked to the <see cref="GorgonTexture2DView"/> returned, disposal of either one will dispose of the other on your behalf. If 
-        /// the user created a <see cref="GorgonTexture2DView"/> from the <see cref="GorgonTexture2D.GetShaderResourceView"/> method on the <see cref="GorgonTexture2D"/>, then it's assumed the user knows 
+        /// Since the <see cref="GorgonTexture3D"/> created by this method is linked to the <see cref="GorgonTexture3DView"/> returned, disposal of either one will dispose of the other on your behalf. If 
+        /// the user created a <see cref="GorgonTexture3DView"/> from the <see cref="GorgonTexture3D.GetShaderResourceView"/> method on the <see cref="GorgonTexture3D"/>, then it's assumed the user knows 
         /// what they are doing and will handle the disposal of the texture and view on their own.
         /// </para>
         /// </remarks>
-        /// <seealso cref="GorgonTexture2D"/>
-        public static GorgonTexture2DView CreateTexture(GorgonGraphics graphics, IGorgonTexture2DInfo info)
+        /// <seealso cref="GorgonTexture3D"/>
+        public static GorgonTexture3DView CreateTexture(GorgonGraphics graphics, IGorgonTexture3DInfo info)
         {
             if (graphics == null)
             {
@@ -341,7 +237,7 @@ namespace Gorgon.Graphics.Core
                 throw new ArgumentNullException(nameof(info));
             }
 
-            var newInfo = new GorgonTexture2DInfo(info)
+            var newInfo = new GorgonTexture3DInfo(info)
                           {
                               Usage = info.Usage == ResourceUsage.Staging ? ResourceUsage.Default : info.Usage,
                               Binding = (info.Binding & TextureBinding.ShaderResource) != TextureBinding.ShaderResource
@@ -349,8 +245,8 @@ namespace Gorgon.Graphics.Core
                                             : info.Binding
                           };
 
-            var texture = new GorgonTexture2D(graphics, newInfo);
-            GorgonTexture2DView result = texture.GetShaderResourceView();
+            var texture = new GorgonTexture3D(graphics, newInfo);
+            GorgonTexture3DView result = texture.GetShaderResourceView();
             result.OwnsResource = true;
 
             return result;
@@ -364,13 +260,13 @@ namespace Gorgon.Graphics.Core
         /// <param name="codec">The codec that is used to decode the the data in the stream.</param>
         /// <param name="size">[Optional] The size of the image in the stream, in bytes.</param>
         /// <param name="options">[Optional] Options used to further define the texture.</param>
-        /// <returns>A new <see cref="GorgonTexture2DView"/></returns>
+        /// <returns>A new <see cref="GorgonTexture3DView"/></returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, <paramref name="stream"/>, or the <paramref name="codec"/> parameter is <b>null</b>.</exception>
         /// <exception cref="IOException">Thrown if the <paramref name="stream"/> is write only.</exception>
         /// <exception cref="EndOfStreamException">Thrown if reading the image would move beyond the end of the <paramref name="stream"/>.</exception>
         /// <remarks>
         /// <para>
-        /// This will load an <see cref="IGorgonImage"/> from a <paramref name="stream"/> and put it into a <see cref="GorgonTexture2D"/> object and return a <see cref="GorgonTexture2DView"/>.
+        /// This will load an <see cref="IGorgonImage"/> from a <paramref name="stream"/> and put it into a <see cref="GorgonTexture3D"/> object and return a <see cref="GorgonTexture3DView"/>.
         /// </para>
         /// <para>
         /// If the <paramref name="size"/> option is specified, then the method will read from the stream up to that number of bytes, so it is up to the user to provide an accurate size. If it is omitted 
@@ -395,12 +291,12 @@ namespace Gorgon.Graphics.Core
         /// </list>
         /// </para>
         /// <para>
-        /// Since the <see cref="GorgonTexture2D"/> created by this method is linked to the <see cref="GorgonTexture2DView"/> returned, disposal of either one will dispose of the other on your behalf. If 
-        /// the user created a <see cref="GorgonTexture2DView"/> from the <see cref="GorgonTexture2D.GetShaderResourceView"/> method on the <see cref="GorgonTexture2D"/>, then it's assumed the user knows 
+        /// Since the <see cref="GorgonTexture3D"/> created by this method is linked to the <see cref="GorgonTexture3DView"/> returned, disposal of either one will dispose of the other on your behalf. If 
+        /// the user created a <see cref="GorgonTexture3DView"/> from the <see cref="GorgonTexture3D.GetShaderResourceView"/> method on the <see cref="GorgonTexture3D"/>, then it's assumed the user knows 
         /// what they are doing and will handle the disposal of the texture and view on their own.
         /// </para>
         /// </remarks>
-        public static GorgonTexture2DView FromStream(GorgonGraphics graphics, Stream stream, IGorgonImageCodec codec, long? size = null, GorgonTextureLoadOptions options = null)
+        public static GorgonTexture3DView FromStream(GorgonGraphics graphics, Stream stream, IGorgonImageCodec codec, long? size = null, GorgonTextureLoadOptions options = null)
         {
             if (graphics == null)
             {
@@ -434,8 +330,8 @@ namespace Gorgon.Graphics.Core
 
             using (IGorgonImage image = codec.LoadFromStream(stream, size))
             {
-                GorgonTexture2D texture = image.ToTexture2D(graphics, options);
-                GorgonTexture2DView view =  texture.GetShaderResourceView();
+                GorgonTexture3D texture = image.ToTexture3D(graphics, options);
+                GorgonTexture3DView view =  texture.GetShaderResourceView();
                 view.OwnsResource = true;
                 return view;
             }
@@ -448,12 +344,12 @@ namespace Gorgon.Graphics.Core
         /// <param name="filePath">The path to the file.</param>
         /// <param name="codec">The codec that is used to decode the the data in the stream.</param>
         /// <param name="options">[Optional] Options used to further define the texture.</param>
-        /// <returns>A new <see cref="GorgonTexture2DView"/></returns>
+        /// <returns>A new <see cref="GorgonTexture3DView"/></returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, <paramref name="filePath"/>, or the <paramref name="codec"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="filePath"/> parameter is empty.</exception>
         /// <remarks>
         /// <para>
-        /// This will load an <see cref="IGorgonImage"/> from a file on disk and put it into a <see cref="GorgonTexture2D"/> object and return a <see cref="GorgonTexture2DView"/>.
+        /// This will load an <see cref="IGorgonImage"/> from a file on disk and put it into a <see cref="GorgonTexture3D"/> object and return a <see cref="GorgonTexture3DView"/>.
         /// </para>
         /// <para>
         /// If specified, the <paramref name="options"/>parameter will define how Gorgon and shaders should handle the texture.  The <see cref="GorgonTextureLoadOptions"/> type contains the following:
@@ -474,12 +370,12 @@ namespace Gorgon.Graphics.Core
         /// </list>
         /// </para>
         /// <para>
-        /// Since the <see cref="GorgonTexture2D"/> created by this method is linked to the <see cref="GorgonTexture2DView"/> returned, disposal of either one will dispose of the other on your behalf. If 
-        /// the user created a <see cref="GorgonTexture2DView"/> from the <see cref="GorgonTexture2D.GetShaderResourceView"/> method on the <see cref="GorgonTexture2D"/>, then it's assumed the user knows 
+        /// Since the <see cref="GorgonTexture3D"/> created by this method is linked to the <see cref="GorgonTexture3DView"/> returned, disposal of either one will dispose of the other on your behalf. If 
+        /// the user created a <see cref="GorgonTexture3DView"/> from the <see cref="GorgonTexture3D.GetShaderResourceView"/> method on the <see cref="GorgonTexture3D"/>, then it's assumed the user knows 
         /// what they are doing and will handle the disposal of the texture and view on their own.
         /// </para>
         /// </remarks>
-        public static GorgonTexture2DView FromFile(GorgonGraphics graphics, string filePath, IGorgonImageCodec codec, GorgonTextureLoadOptions options = null)
+        public static GorgonTexture3DView FromFile(GorgonGraphics graphics, string filePath, IGorgonImageCodec codec, GorgonTextureLoadOptions options = null)
         {
             if (graphics == null)
             {
@@ -503,8 +399,8 @@ namespace Gorgon.Graphics.Core
 
             using (IGorgonImage image = codec.LoadFromFile(filePath))
             {
-                GorgonTexture2D texture = image.ToTexture2D(graphics, options);
-                GorgonTexture2DView view = texture.GetShaderResourceView();
+                GorgonTexture3D texture = image.ToTexture3D(graphics, options);
+                GorgonTexture3DView view = texture.GetShaderResourceView();
                 view.OwnsResource = true;
                 return view;
             }
@@ -513,30 +409,23 @@ namespace Gorgon.Graphics.Core
 
 		#region Constructor/Destructor.
         /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonTexture2DView"/> class.
+        /// Initializes a new instance of the <see cref="GorgonTexture3DView"/> class.
         /// </summary>
-        /// <param name="texture">The <see cref="GorgonTexture2D"/> being viewed.</param>
+        /// <param name="texture">The <see cref="GorgonTexture3D"/> being viewed.</param>
         /// <param name="format">The format for the view.</param>
         /// <param name="formatInfo">The information about the view format.</param>
         /// <param name="firstMipLevel">The first mip level to view.</param>
         /// <param name="mipCount">The number of mip levels to view.</param>
-        /// <param name="arrayIndex">The first array index to view.</param>
-        /// <param name="arrayCount">The number of array indices to view.</param>
-        internal GorgonTexture2DView(GorgonTexture2D texture,
+        internal GorgonTexture3DView(GorgonTexture3D texture,
                                      BufferFormat format,
                                      GorgonFormatInfo formatInfo,
                                      int firstMipLevel,
-                                     int mipCount,
-                                     int arrayIndex,
-                                     int arrayCount)
+                                     int mipCount)
             : base(texture, format, formatInfo)
         {
             _texture = texture;
-            Bounds = new DX.Rectangle(0, 0, Width, Height);
             MipSlice = firstMipLevel;
             MipCount = mipCount;
-            ArrayIndex = arrayIndex;
-            ArrayCount = arrayCount;
         }
         #endregion
 	}

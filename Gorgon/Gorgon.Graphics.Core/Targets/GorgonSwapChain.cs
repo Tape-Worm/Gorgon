@@ -560,7 +560,12 @@ namespace Gorgon.Graphics.Core
 
             Graphics.Log.Print($"SwapChain '{Name}': Created {_backBufferTextures.Length} D3D11 textures for back buffers.", LoggingLevel.Verbose);
 
-            _targetView = new GorgonRenderTarget2DView(_backBufferTextures[0], _backBufferTextures[0].Format, 0, 0, _backBufferTextures[0].ArrayCount);
+            _targetView = new GorgonRenderTarget2DView(_backBufferTextures[0],
+                                                       _backBufferTextures[0].Format,
+                                                       new GorgonFormatInfo(_backBufferTextures[0].Format),
+                                                       0,
+                                                       0,
+                                                       _backBufferTextures[0].ArrayCount);
             _targetView.CreateNativeView();
 
             Graphics.Log.Print($"SwapChain '{Name}': Created swap chain render target view.", LoggingLevel.Verbose);

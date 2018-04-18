@@ -89,7 +89,7 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Property to return the first array index or depth slice to use in the view.
+        /// Property to return the first array index to use in the view.
         /// </summary>
         public int ArrayIndex
         {
@@ -113,22 +113,6 @@ namespace Gorgon.Graphics.Core
         /// Property to return the texture that is bound to this view.
         /// </summary>
         public GorgonTexture2D Texture => _texture;
-
-        /// <summary>
-        /// Property to return the format used to interpret this view.
-        /// </summary>
-        public BufferFormat Format
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return information about the <see cref="Format"/> used by this view.
-        /// </summary>
-        public GorgonFormatInfo FormatInformation
-        {
-            get;
-        }
 
         /// <summary>
         /// Property to return the bounding rectangle for the view.
@@ -167,12 +151,13 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         int IGorgonTexture2DInfo.MipLevels => Texture?.MipLevels ?? 0;
 
-        GorgonMultisampleInfo IGorgonTexture2DInfo.MultisampleInfo => GorgonMultisampleInfo.NoMultiSampling;
-
         /// <summary>
-        /// Property to return the intended usage flags for this texture.
+        /// Property to return the multisample quality and count for this texture.
         /// </summary>
-        public ResourceUsage Usage => Texture?.Usage ?? ResourceUsage.Default;
+        /// <remarks>
+        /// This value is defaulted to <see cref="GorgonMultisampleInfo.NoMultiSampling"/>.
+        /// </remarks>
+        GorgonMultisampleInfo IGorgonTexture2DInfo.MultisampleInfo => GorgonMultisampleInfo.NoMultiSampling;
 
         /// <summary>
         /// Property to return the flags to determine how the texture will be bound with the pipeline when rendering.
@@ -220,7 +205,7 @@ namespace Gorgon.Graphics.Core
                            LoggingLevel.Verbose);
 
                 // Create our SRV.
-                NativeView = new D3D11.UnorderedAccessView1(Resource.Graphics.D3DDevice, Resource.D3DResource, desc)
+                Native = new D3D11.UnorderedAccessView1(Resource.Graphics.D3DDevice, Resource.D3DResource, desc)
                              {
                                  DebugName = $"'{Texture.Name}'_D3D11UnorderedAccessView1_2D"
                              };
@@ -256,7 +241,7 @@ namespace Gorgon.Graphics.Core
         public int GetMipWidth(int mipLevel)
         {
             mipLevel = mipLevel.Min(Texture.MipLevels).Max(MipSlice);
-            return Width << mipLevel;
+            return Width >> mipLevel;
         }
 
         /// <summary>
@@ -268,7 +253,7 @@ namespace Gorgon.Graphics.Core
         {
             mipLevel = mipLevel.Min(Texture.MipLevels).Max(MipSlice);
 
-            return Height << mipLevel;
+            return Height >> mipLevel;
         }
 
         /// <summary>
@@ -306,7 +291,7 @@ namespace Gorgon.Graphics.Core
                 _clearRects[i] = rectangles[i];
             }
 
-            Resource.Graphics.D3DDeviceContext.ClearView(NativeView, color.ToRawColor4(), _clearRects, rectangles.Length);
+            Resource.Graphics.D3DDeviceContext.ClearView(Native, color.ToRawColor4(), _clearRects, rectangles.Length);
         }
 
         /// <summary>
@@ -345,7 +330,7 @@ namespace Gorgon.Graphics.Core
                               Usage = info.Usage == ResourceUsage.Staging ? ResourceUsage.Default : info.Usage,
                               Binding = (((info.Binding & TextureBinding.UnorderedAccess) != TextureBinding.UnorderedAccess)
                                              ? (info.Binding | TextureBinding.UnorderedAccess)
-                                             : info.Binding) & ~TextureBinding.DepthStencil // There's now way we can build a depth/stencil from this method.
+                                             : info.Binding) & ~TextureBinding.DepthStencil 
                           };
 
             var texture = new GorgonTexture2D(graphics, newInfo);
@@ -526,12 +511,9 @@ namespace Gorgon.Graphics.Core
                                   int firstMipLevel,
                                   int arrayIndex,
                                   int arrayCount)
-            : base(texture)
+            : base(texture, format, formatInfo)
         {
             _texture = texture;
-            Format = format;
-
-            FormatInformation = formatInfo;
 
             if (FormatInformation.IsTypeless)
             {

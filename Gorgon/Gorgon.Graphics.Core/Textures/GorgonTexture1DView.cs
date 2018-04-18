@@ -64,25 +64,17 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Property to return the index of the first mip map in the resource to view.
 		/// </summary>
-		/// <remarks>
-		/// If the texture is multisampled, then this value will be set to 0.
-		/// </remarks>
 		public int MipSlice
 		{
 			get;
-		    private set;
 		}
 
 		/// <summary>
 		/// Property to return the number of mip maps in the resource to view.
 		/// </summary> 
-		/// <remarks>
-		/// If the texture is multisampled, then this value will be set to 1.
-		/// </remarks>
 		public int MipCount
 		{
 			get;
-		    private set;
 		}
 
 		/// <summary>
@@ -96,9 +88,6 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Property to return the number of array indices to use in the view.
 		/// </summary>
-		/// <remarks>
-		/// If the texture is a 1D texture cube, then this value will be a multiple of 6.
-		/// </remarks>
 		public int ArrayCount
 		{
 			get;
@@ -108,22 +97,6 @@ namespace Gorgon.Graphics.Core
         /// Property to return the texture that is bound to this view.
         /// </summary>
         public GorgonTexture1D Texture => _texture;
-
-        /// <summary>
-        /// Property to return the format used to interpret this view.
-        /// </summary>
-        public BufferFormat Format
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return information about the <see cref="Format"/> used by this view.
-        /// </summary>
-        public GorgonFormatInfo FormatInformation
-        {
-            get;
-        }
 
         /// <summary>
         /// Property to return the bounding range for the view.
@@ -186,7 +159,7 @@ namespace Gorgon.Graphics.Core
 			    Graphics.Log.Print($"'{Texture.Name}': Creating D3D11 shader resource view.", LoggingLevel.Simple);
 
 				// Create our SRV.
-			    NativeView = new D3D11.ShaderResourceView1(Texture.Graphics.D3DDevice, Texture.D3DResource, desc)
+			    Native = new D3D11.ShaderResourceView1(Texture.Graphics.D3DDevice, Texture.D3DResource, desc)
 			                 {
 			                     DebugName = $"'{Texture.Name}'_D3D11ShaderResourceView1_1D"
 			                 };
@@ -426,67 +399,29 @@ namespace Gorgon.Graphics.Core
                 return view;
             }
         }
-		#endregion
+        #endregion
 
-		#region Constructor/Destructor.
+        #region Constructor/Destructor.
         /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonTexture1DView"/> class.
+        /// Initializes a new instance of the <see cref="GorgonTexture1DView" /> class.
         /// </summary>
-        /// <param name="texture">The <see cref="GorgonTexture1D"/> being viewed.</param>
+        /// <param name="texture">The <see cref="GorgonTexture1D" /> being viewed.</param>
         /// <param name="format">The format for the view..</param>
+        /// <param name="formatInfo">The format information.</param>
         /// <param name="firstMipLevel">The first mip level to view.</param>
         /// <param name="mipCount">The number of mip levels to view.</param>
         /// <param name="arrayIndex">The first array index to view.</param>
         /// <param name="arrayCount">The number of array indices to view.</param>
         internal GorgonTexture1DView(GorgonTexture1D texture,
                                      BufferFormat format,
+                                     GorgonFormatInfo formatInfo,
                                      int firstMipLevel,
                                      int mipCount,
                                      int arrayIndex,
                                      int arrayCount)
-            : base(texture)
+            : base(texture, format, formatInfo)
         {
             _texture = texture;
-
-            if (format == BufferFormat.Unknown)
-            {
-                format = texture.Format;
-            }
-
-            if ((texture.Usage == ResourceUsage.Staging)
-                || ((texture.Binding & TextureBinding.ShaderResource) != TextureBinding.ShaderResource))
-            {
-                throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TEXTURE_NOT_SHADER_RESOURCE, texture.Name), nameof(texture));
-            }
-
-            if (format == BufferFormat.Unknown)
-            {
-                throw new ArgumentException(string.Format(Resources.GORGFX_ERR_VIEW_UNKNOWN_FORMAT, BufferFormat.Unknown), nameof(texture));
-            }
-
-            if (firstMipLevel + mipCount > texture.MipLevels)
-            {
-                throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TEXTURE_VIEW_MIP_OUT_OF_RANGE, firstMipLevel, mipCount, texture.MipLevels));
-            }
-
-            if (arrayIndex + arrayCount > texture.ArrayCount)
-            {
-                throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TEXTURE_VIEW_ARRAY_OUT_OF_RANGE, arrayIndex, arrayCount, texture.ArrayCount));
-            }
-
-            FormatInformation = new GorgonFormatInfo(Format);
-
-            if (FormatInformation.IsTypeless)
-            {
-                throw new ArgumentException(Resources.GORGFX_ERR_VIEW_NO_TYPELESS, nameof(format));
-            }
-
-            if ((!texture.FormatInformation.IsTypeless) && ((texture.Binding & TextureBinding.DepthStencil) == TextureBinding.DepthStencil))
-            {
-                throw new ArgumentException(Resources.GORGFX_ERR_DEPTHSTENCIL_TYPED_SHADER_RESOURCE, nameof(texture));
-            }
-
-            Format = format;
             Bounds = new GorgonRange(0, Width);
             MipSlice = firstMipLevel;
             MipCount = mipCount;
@@ -494,5 +429,5 @@ namespace Gorgon.Graphics.Core
             ArrayCount = arrayCount;
         }
         #endregion
-	}
+    }
 }

@@ -62,7 +62,7 @@ namespace Gorgon.Graphics.Core
 	    /// <summary>
 	    /// Property to return the native Direct 3D 11 view.
 	    /// </summary>
-	    protected internal D3D11.ShaderResourceView1 NativeView
+	    protected internal D3D11.ShaderResourceView1 Native
 		{
 			get => _view;
 			protected set => _view = value;
@@ -82,6 +82,22 @@ namespace Gorgon.Graphics.Core
         /// Property to return the usage flag(s) for the resource.
         /// </summary>
 	    public ResourceUsage Usage => _resource?.Usage ?? ResourceUsage.Default;
+
+        /// <summary>
+        /// Property to return the format for the view.
+        /// </summary>
+	    public BufferFormat Format
+	    {
+	        get;
+	    }
+
+	    /// <summary>
+	    /// Property to return information about the <see cref="Format"/> used by this view.
+	    /// </summary>
+	    public GorgonFormatInfo FormatInformation
+	    {
+	        get;
+	    }
 
 	    /// <summary>
 	    /// Property to return the graphics interface that built this object.
@@ -128,10 +144,14 @@ namespace Gorgon.Graphics.Core
 		/// Initializes a new instance of the <see cref="GorgonShaderResourceView"/> class.
 		/// </summary>
 		/// <param name="resource">The resource to bind to the view.</param>
+		/// <param name="format">The format of the view.</param>
+		/// <param name="formatInfo">Information about the format.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="resource"/> parameter is <b>null</b>.</exception>
-		protected GorgonShaderResourceView(GorgonGraphicsResource resource)
+		protected GorgonShaderResourceView(GorgonGraphicsResource resource, BufferFormat format, GorgonFormatInfo formatInfo)
 		{
 		    _resource = resource ?? throw new ArgumentNullException(nameof(resource));
+		    Format = format;
+		    FormatInformation = formatInfo ?? throw new ArgumentNullException(nameof(formatInfo));
 		}
 		#endregion
 	}

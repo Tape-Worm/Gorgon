@@ -31,8 +31,6 @@ using System.Windows.Forms;
 using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
-using Gorgon.Graphics.Imaging;
-using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Timing;
 using Gorgon.UI;
 
@@ -274,51 +272,6 @@ namespace Gorgon.Graphics.Example
 		                                    Width = _mainForm.ClientSize.Width,
 		                                    Height = _mainForm.ClientSize.Height
 		                                });
-
-            IGorgonImageCodec codec = new GorgonCodecPng();
-
-		    using (IGorgonImage image = codec.LoadFromFile(@"C:\Users\Mike\Pictures\Misc\Balls!_FB.png"))
-		    {
-		        using (var texture = new GorgonTexture1D(_graphics,
-		                                                 new GorgonTexture1DInfo
-		                                                 {
-		                                                     Binding = TextureBinding.None,
-		                                                     Format = BufferFormat.R8G8B8A8_UNorm,
-		                                                     Width = image.Info.Width,
-		                                                     Usage = ResourceUsage.Staging,
-		                                                     ArrayCount = 4,
-		                                                     MipLevels = 4
-		                                                 }))
-		        {
-		            IGorgonImageBuffer subBuffer = image.Buffers[0].GetRegion(new DX.Rectangle(0, image.Info.Height / 2, image.Info.Width, 1));
-		            texture.SetData(subBuffer);//, new DX.Rectangle(50, 50, 256, 256), 0, 0);
-		            using (IGorgonImage saveImage = texture.ToImage())
-		            {
-                        codec = new GorgonCodecDds();
-                        codec.SaveToFile(saveImage, @"d:\unpak\TestRegions.dds");
-		            }
-
-		            using (var texture2 = new GorgonTexture2D(_graphics,
-		                                                      new GorgonTexture2DInfo
-		                                                      {
-		                                                          Width = texture.Width,
-                                                                  Height = 256,
-		                                                          ArrayCount = 1,
-		                                                          MipLevels = 1,
-		                                                          Binding = TextureBinding.ShaderResource,
-		                                                          Usage = ResourceUsage.Default,
-		                                                          Format = BufferFormat.R8G8B8A8_UNorm
-		                                                      }))
-		            {
-                        texture2.CopyFrom(texture, destY: 128);
-		                using (IGorgonImage saveImage = texture2.ToImage())
-		                {
-		                    codec = new GorgonCodecDds();
-		                    codec.SaveToFile(saveImage, @"d:\unpak\TestRegions2.dds");
-		                }
-		            }
-		        }
-		    }
 		}
 
         /// <summary>

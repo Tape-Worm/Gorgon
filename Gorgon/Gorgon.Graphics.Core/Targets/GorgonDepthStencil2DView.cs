@@ -546,45 +546,22 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <param name="texture">The resource to bind to the view.</param>
 		/// <param name="format">The format of the view.</param>
+		/// <param name="formatInfo">Information about the format.</param>
 		/// <param name="mipSlice">The mip level to use for the view.</param>
 		/// <param name="firstArrayIndex">The first array index to use for the view.</param>
 		/// <param name="arrayCount">The number of array indices to use for the view.</param>
 		/// <param name="flags">Depth/stencil view flags.</param>
 		internal GorgonDepthStencil2DView(GorgonTexture2D texture,
 		                              BufferFormat format,
+                                      GorgonFormatInfo formatInfo,
 		                              int mipSlice,
 		                              int firstArrayIndex,
 		                              int arrayCount,
 		                              DepthStencilViewFlags flags)
 		{
 		    _texture = texture ?? throw new ArgumentNullException(nameof(texture));
-
-		    if ((texture.Binding & TextureBinding.DepthStencil) != TextureBinding.DepthStencil)
-		    {
-		        throw new ArgumentException(string.Format(Resources.GORGFX_ERR_VIEW_RESOURCE_NOT_DEPTHSTENCIL, texture.Name), nameof(texture));
-		    }
-
-		    FormatInformation = new GorgonFormatInfo(format);
-
-		    if (FormatInformation.IsTypeless)
-		    {
-		        throw new ArgumentException(Resources.GORGFX_ERR_VIEW_NO_TYPELESS, nameof(format));
-		    }
-
-		    if (firstArrayIndex + arrayCount > texture.ArrayCount)
-		    {
-		        throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TEXTURE_VIEW_ARRAY_OUT_OF_RANGE,
-		                                                  firstArrayIndex,
-		                                                  arrayCount,
-		                                                  texture.ArrayCount));
-		    }
-
-		    if ((!texture.FormatInformation.IsTypeless) && ((texture.Binding & TextureBinding.ShaderResource) == TextureBinding.ShaderResource))
-		    {
-		        throw new ArgumentException(Resources.GORGFX_ERR_DEPTHSTENCIL_TYPED_SHADER_RESOURCE, nameof(texture));
-		    }
-
 		    Format = format;
+		    FormatInformation = formatInfo ?? throw new ArgumentNullException(nameof(formatInfo));
 
 		    MipSlice = texture.MipLevels <= 0 ? 0 : mipSlice.Max(0).Min(texture.MipLevels - 1);
             ArrayIndex = firstArrayIndex;
