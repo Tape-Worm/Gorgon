@@ -25,10 +25,8 @@
 #endregion
 
 using System;
-using System.Runtime.Remoting.Messaging;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
-using Gorgon.Graphics.Core.Properties;
 using D3D = SharpDX.Direct3D;
 using DXGI = SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;

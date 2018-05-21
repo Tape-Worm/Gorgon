@@ -25,12 +25,11 @@
 #endregion
 
 using System;
-using System.Runtime.CompilerServices;
-using DX = SharpDX;
+using System.Collections.Generic;
 using D3D11 = SharpDX.Direct3D11;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
-using Gorgon.Graphics.Core.Properties;
+using Gorgon.Math;
 using Gorgon.Native;
 
 namespace Gorgon.Graphics.Core
@@ -109,6 +108,8 @@ namespace Gorgon.Graphics.Core
 		#region Variables.
 		// The information used to create the buffer.
 		private readonly GorgonConstantBufferInfo _info;
+	    // A cache of unordered access views for the buffer.
+	    private Dictionary<BufferShaderViewKey, GorgonConstantBufferView> _cbvs = new Dictionary<BufferShaderViewKey, GorgonConstantBufferView>();
         #endregion
 
         #region Properties.
@@ -135,7 +136,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the number of floating point values that can be stored in this buffer.
         /// </summary>
-	    public int FloatElementCount
+	    public int TotalElementCount
 	    {
 	        get;
 	        private set;
@@ -152,7 +153,7 @@ namespace Gorgon.Graphics.Core
 			// If the buffer is not aligned to 16 bytes, then pad the size.
 			_info.SizeInBytes = (_info.SizeInBytes + 15) & ~15;
 
-		    FloatElementCount = _info.SizeInBytes / sizeof(float);
+		    TotalElementCount = _info.SizeInBytes / sizeof(float);
 
 			D3D11.CpuAccessFlags cpuFlags = GetCpuFlags(false, D3D11.BindFlags.ConstantBuffer);
 
@@ -197,62 +198,68 @@ namespace Gorgon.Graphics.Core
 	    }
 
 	    /// <summary>
-	    /// Function to copy the memory pointed at by a pointer to this buffer.
+	    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
 	    /// </summary>
-	    /// <param name="ptr">The pointer to the memory to read.</param>
-	    /// <param name="offset">The offset, in bytes, in the buffer to start writing into.</param>
-	    /// <param name="typeSize">The size of an element of data.</param>
-	    /// <param name="count">The number of elements to copy.</param>
-	    /// <param name="copyMode">The type of copying.</param>
-	    private unsafe void WritePtr(byte* ptr, int offset, int typeSize, int count, CopyMode copyMode)
+	    /// <remarks>
+	    /// <para>
+	    /// Objects that override this method should be sure to call this base method or else a memory leak may occur.
+	    /// </para>
+	    /// </remarks>
+	    public override void Dispose()
 	    {
-	        int totalSize = count * typeSize;
-
-	        if (Usage == ResourceUsage.Default)
+            // Clean up the cached views.
+	        foreach (KeyValuePair<BufferShaderViewKey, GorgonConstantBufferView> cbv in _cbvs)
 	        {
-	            Graphics.D3DDeviceContext.UpdateSubresource1(Native,
-	                                                         0,
-	                                                         new D3D11.ResourceRegion
-	                                                         {
-	                                                             Left = offset,
-	                                                             Top = 0,
-	                                                             Front = 0,
-	                                                             Right = offset + totalSize,
-	                                                             Bottom = 1,
-	                                                             Back = 1
-	                                                         },
-	                                                         new IntPtr(ptr),
-	                                                         totalSize,
-	                                                         totalSize,
-	                                                         (int)copyMode);
-	            return;
+	            cbv.Value.Dispose();
 	        }
 
-	        D3D11.MapMode mapMode = D3D11.MapMode.Write;
+            _cbvs.Clear();
+	        base.Dispose();
+	    }
 
-	        if (Usage == ResourceUsage.Dynamic)
+	    /// <summary>
+        /// Function to retrieve a view of the constant buffer to pass to a shader.
+        /// </summary>
+        /// <param name="startElement">[Optional] The index of the first element in the buffer to view.</param>
+        /// <param name="elementCount">[Optional] The number of elements to view.</param>
+        /// <returns>A new <see cref="GorgonConstantBufferView"/> used to map a portion of a constant buffer to a shader.</returns>
+        /// <remarks>
+        /// <para>
+        /// This will create a view of the buffer so that a shader can access a portion (or all, if the buffer is less than or equal to 4096 elements in size) of a constant buffer. Shaders can only access
+        /// up to 4096 elements in a constant buffer, and this allows us to bind a much larger buffer to the shader while still respecting the maximum element accessibility.
+        /// </para>
+        /// <para>
+        /// A constant buffer element is a single float4 value (4 floating point values). 
+        /// </para>
+        /// <para>
+        /// If provided, the <paramref name="startElement"/> parameter must be between 0 and the <seealso cref="TotalElementCount"/>-1.  If it is not it will be constrained to those values to ensure there
+        /// is no out of bounds access to the buffer.  
+        /// </para>
+        /// <para>
+        /// If the <paramref name="elementCount"/> parameter is omitted (or equal to or less than 0), then the remainder of the buffer is mapped to the view up to 4096 elements. If it is provided, then the
+        /// number of elements will be mapped to the view, up to a maximum of 4096 elements.  If the value exceeds 4096, then it will be constrained to 4096.
+        /// </para>
+        /// </remarks>
+	    public GorgonConstantBufferView GetView(int startElement = 0, int elementCount = 0)
+	    {
+	        startElement = startElement.Min(TotalElementCount - 1).Max(0);
+
+	        if (elementCount <= 0)
 	        {
-	            switch (copyMode)
-	            {
-	                case CopyMode.NoOverwrite:
-	                    mapMode = D3D11.MapMode.WriteNoOverwrite;
-	                    break;
-	                default:
-	                    mapMode = D3D11.MapMode.WriteDiscard;
-	                    break;
-	            }
+	            elementCount = TotalElementCount - startElement;
 	        }
 
-	        DX.DataBox mapData = Graphics.D3DDeviceContext.MapSubresource(Native, 0, mapMode, D3D11.MapFlags.None);
-	        try
+	        elementCount = elementCount.Min(4096).Max(1);
+            
+	        BufferShaderViewKey key = new BufferShaderViewKey(startElement, elementCount, BufferFormat.Unknown);
+	        if (_cbvs.TryGetValue(key, out GorgonConstantBufferView result))
 	        {
-	            byte* destPtr = (byte*)mapData.DataPointer + offset;
-	            Unsafe.CopyBlock(destPtr, ptr, (uint)totalSize);
+	            return result;
 	        }
-	        finally
-	        {
-	            Graphics.D3DDeviceContext.UnmapSubresource(Native, 0);
-	        }
+
+	        result = new GorgonConstantBufferView(this, startElement, elementCount, TotalElementCount);
+	        _cbvs[key] = result;
+	        return result;
 	    }
 
 	    /// <summary>

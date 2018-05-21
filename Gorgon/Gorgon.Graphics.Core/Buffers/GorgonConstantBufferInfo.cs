@@ -42,7 +42,7 @@ namespace Gorgon.Graphics.Core
 	{
 		#region Properties.
 		/// <summary>
-		/// Property to set or return the intended usage flags for this texture.
+		/// Property to set or return the intended usage flags for this buffer.
 		/// </summary>
 		/// <remarks>
 		/// This value is defaulted to <see cref="ResourceUsage.Default"/>.

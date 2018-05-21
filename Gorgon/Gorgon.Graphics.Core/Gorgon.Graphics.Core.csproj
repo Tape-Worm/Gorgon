@@ -67,6 +67,7 @@
     <Compile Include="Buffers\GorgonBufferViewCommon.cs" />
     <Compile Include="Buffers\GorgonConstantBuffer.cs" />
     <Compile Include="Buffers\GorgonConstantBufferInfo.cs" />
+    <Compile Include="Buffers\GorgonConstantBufferView.cs" />
     <Compile Include="Buffers\GorgonIndexBuffer.cs" />
     <Compile Include="Buffers\GorgonIndexBufferInfo.cs" />
     <Compile Include="Buffers\GorgonIndexBufferUav.cs" />

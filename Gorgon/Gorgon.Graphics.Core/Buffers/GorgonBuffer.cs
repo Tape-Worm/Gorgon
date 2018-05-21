@@ -37,7 +37,7 @@ namespace Gorgon.Graphics.Core
     /// <summary>
     /// A generic buffer for holding data to pass to shaders on the GPU.
     /// </summary>
-    public class GorgonBuffer
+    public sealed class GorgonBuffer
         : GorgonBufferCommon, IGorgonBufferInfo
     {
         #region Constants.
@@ -313,7 +313,7 @@ namespace Gorgon.Graphics.Core
                 {
                     D3DResource = Native = new D3D11.Buffer(Graphics.D3DDevice, new IntPtr((byte*)initialData), desc)
                                            {
-                                               DebugName = Name
+                                               DebugName = $"{Name}_ID3D11Buffer"
                                            };
                 }
             }
@@ -321,7 +321,7 @@ namespace Gorgon.Graphics.Core
             {
                 D3DResource = Native = new D3D11.Buffer(Graphics.D3DDevice, desc)
                                        {
-                                           DebugName = Name
+                                           DebugName = $"{Name}_ID3D11Buffer"
                                        };
             }
         }

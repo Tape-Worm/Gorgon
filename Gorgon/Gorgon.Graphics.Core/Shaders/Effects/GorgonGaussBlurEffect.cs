@@ -24,15 +24,7 @@
 // 
 #endregion
 
-using System;
-using System.Globalization;
-using Gorgon.Core;
-using Gorgon.Diagnostics;
 using DX = SharpDX;
-using Gorgon.Graphics.Core;
-using Gorgon.Graphics.Core.Properties;
-using Gorgon.Math;
-using Gorgon.Native;
 
 namespace Gorgon.Graphics.Example
 {

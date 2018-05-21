@@ -26,10 +26,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using DXGI = SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;
-using Gorgon.Collections;
 
 namespace Gorgon.Graphics.Core
 {

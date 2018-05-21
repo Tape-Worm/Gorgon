@@ -26,8 +26,6 @@
 
 using System;
 using DX = SharpDX;
-using Gorgon.Core;
-using Gorgon.Graphics.Core.Properties;
 
 namespace Gorgon.Graphics.Core
 {
