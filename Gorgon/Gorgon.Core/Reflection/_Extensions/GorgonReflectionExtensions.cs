@@ -447,7 +447,7 @@ namespace Gorgon.Reflection
 		/// The following conditions must be true for the type to be considered safe:
 		/// <list type="bullet">
 		///		<item>
-		///			<term>Must be a value type or primitive type.</term>
+		///			<term>Must be an unmanaged value type or primitive type.</term>
 		///			<description><c>struct</c> and primitive types (e.g. <see cref="int"/>, <see cref="byte"/>, etc...) are safe to use, but <c>class</c> types are not.</description>		
 		///		</item>
 		///		<item>
@@ -508,7 +508,7 @@ namespace Gorgon.Reflection
 		/// The following conditions must be true for the type to be considered safe:
 		/// <list type="bullet">
 		///		<item>
-		///			<term>Must be a value type or primitive type.</term>
+		///			<term>Must be an unmanaged value type or primitive type.</term>
 		///			<description><c>struct</c> and primitive types (e.g. <see cref="int"/>, <see cref="byte"/>, etc...) are safe to use, but <c>class</c> types are not.</description>		
 		///		</item>
 		///		<item>

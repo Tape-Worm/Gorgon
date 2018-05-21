@@ -73,36 +73,44 @@ namespace Gorgon.Graphics.Core
 			get;
 			set;
 		}
-		#endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to create a <see cref="IGorgonVertexBufferInfo"/> based on the type representing a vertex.
-		/// </summary>
-		/// <typeparam name="T">The type of data representing a vertex. This must be a value type.</typeparam>
-		/// <param name="count">The number of vertices to store in the buffer.</param>
-		/// <param name="usage">[Optional] The usage parameter for the vertex buffer.</param>
-		/// <returns>A new <see cref="IGorgonVertexBufferInfo"/> to use when creating a <see cref="GorgonVertexBuffer"/>.</returns>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="count"/> parameter is less than 1.</exception>
-		/// <exception cref="GorgonException">Thrown when the type specified by <typeparamref name="T"/> is not safe for use with native functions (see <see cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>).
-		/// <para>-or-</para>
-		/// <para>Thrown when the type specified by <typeparamref name="T"/> does not contain any public members.</para>
-		/// </exception>
-		/// <remarks>
-		/// <para>
-		/// This method is offered as a convenience to simplify the creation of the required info for a <see cref="GorgonVertexBuffer"/>. It will automatically determine the size of a vertex based on the size 
-		/// of a type specified by <typeparamref name="T"/> and fill in the <see cref="SizeInBytes"/> with the correct size.
-		/// </para>
-		/// <para>
-		/// This method requires that the type passed by <typeparamref name="T"/> have its members decorated with the <see cref="InputElementAttribute"/>. This is used to determine which members of the 
-		/// type are to be used in determining the size of the type.
-		/// </para>
-		/// </remarks>
-		/// <seealso cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>
-		/// <seealso cref="GorgonReflectionExtensions.IsSafeForNative(Type)"/>
-		/// <seealso cref="GorgonReflectionExtensions.IsSafeForNative(Type,out IReadOnlyList{FieldInfo})"/>
-		public static IGorgonVertexBufferInfo CreateFromType<T>(int count, ResourceUsage usage = ResourceUsage.Default)
-			where T : struct
+	    /// <summary>
+	    /// Property to return the name of this object.
+	    /// </summary>
+	    public string Name
+	    {
+	        get;
+	    }
+        #endregion
+
+        #region Methods.
+        /// <summary>
+        /// Function to create a <see cref="IGorgonVertexBufferInfo"/> based on the type representing a vertex.
+        /// </summary>
+        /// <typeparam name="T">The type of data representing a vertex. This must be an unmanaged value type.</typeparam>
+        /// <param name="count">The number of vertices to store in the buffer.</param>
+        /// <param name="usage">[Optional] The usage parameter for the vertex buffer.</param>
+        /// <returns>A new <see cref="IGorgonVertexBufferInfo"/> to use when creating a <see cref="GorgonVertexBuffer"/>.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="count"/> parameter is less than 1.</exception>
+        /// <exception cref="GorgonException">Thrown when the type specified by <typeparamref name="T"/> is not safe for use with native functions (see <see cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>).
+        /// <para>-or-</para>
+        /// <para>Thrown when the type specified by <typeparamref name="T"/> does not contain any public members.</para>
+        /// </exception>
+        /// <remarks>
+        /// <para>
+        /// This method is offered as a convenience to simplify the creation of the required info for a <see cref="GorgonVertexBuffer"/>. It will automatically determine the size of a vertex based on the size 
+        /// of a type specified by <typeparamref name="T"/> and fill in the <see cref="SizeInBytes"/> with the correct size.
+        /// </para>
+        /// <para>
+        /// This method requires that the type passed by <typeparamref name="T"/> have its members decorated with the <see cref="InputElementAttribute"/>. This is used to determine which members of the 
+        /// type are to be used in determining the size of the type.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>
+        /// <seealso cref="GorgonReflectionExtensions.IsSafeForNative(Type)"/>
+        /// <seealso cref="GorgonReflectionExtensions.IsSafeForNative(Type,out IReadOnlyList{FieldInfo})"/>
+        public static IGorgonVertexBufferInfo CreateFromType<T>(int count, ResourceUsage usage = ResourceUsage.Default)
+			where T : unmanaged
 		{
 			if (count < 1)
 			{
@@ -174,10 +182,17 @@ namespace Gorgon.Graphics.Core
 		/// Initializes a new instance of the <see cref="GorgonVertexBufferInfo"/> class.
 		/// </summary>
 		/// <param name="info">A <see cref="IGorgonVertexBufferInfo"/> to copy settings from.</param>
+		/// <param name="newName">[Optional] The new name for the buffer.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
-		public GorgonVertexBufferInfo(IGorgonVertexBufferInfo info)
+		public GorgonVertexBufferInfo(IGorgonVertexBufferInfo info, string newName = null)
 		{
-		    SizeInBytes = info?.SizeInBytes ?? throw new ArgumentNullException(nameof(info));
+		    if (info == null)
+		    {
+		        throw new ArgumentNullException(nameof(info));
+		    }
+
+		    Name = string.IsNullOrEmpty(newName) ? info.Name : newName;
+		    SizeInBytes = info.SizeInBytes;
 			Usage = info.Usage;
 		    Binding = info.Binding;
         }
@@ -185,8 +200,10 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonVertexBufferInfo"/> class.
 		/// </summary>
-		public GorgonVertexBufferInfo()
+		/// <param name="name">[Optional] The name of the buffer.</param>
+		public GorgonVertexBufferInfo(string name = null)
 		{
+		    Name = string.IsNullOrEmpty(name) ? GorgonGraphicsResource.GenerateName(GorgonVertexBuffer.NamePrefix) : name;
 			Usage = ResourceUsage.Default;
 		}
 		#endregion

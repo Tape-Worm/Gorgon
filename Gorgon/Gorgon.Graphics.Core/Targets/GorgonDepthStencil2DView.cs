@@ -28,7 +28,6 @@ using System;
 using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
-using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
 using SharpDX.Mathematics.Interop;
 using DX = SharpDX;

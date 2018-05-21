@@ -79,20 +79,11 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A staging buffer cannot be bound to the GPU as a shader resource, stream out resource, or as an unordered access resource..
+        ///   Looks up a localized string similar to Cannot update buffers with a usage of [Immutable]..
         /// </summary>
-        internal static string GORGFX_ERR_BUFFER_CANNOT_BE_BOUND_TO_GPU {
+        internal static string GORGFX_ERR_BUFFER_CANT_UPDATE_IMMUTABLE {
             get {
-                return ResourceManager.GetString("GORGFX_ERR_BUFFER_CANNOT_BE_BOUND_TO_GPU", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot update buffers with a usage of [Immutable] or [Dynamic]..
-        /// </summary>
-        internal static string GORGFX_ERR_BUFFER_CANT_UPDATE_IMMUTABLE_OR_DYNAMIC {
-            get {
-                return ResourceManager.GetString("GORGFX_ERR_BUFFER_CANT_UPDATE_IMMUTABLE_OR_DYNAMIC", resourceCulture);
+                return ResourceManager.GetString("GORGFX_ERR_BUFFER_CANT_UPDATE_IMMUTABLE", resourceCulture);
             }
         }
         
@@ -142,20 +133,11 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Immutable or staging buffers cannot be used for stream out..
+        ///   Looks up a localized string similar to The buffer does not have a [{0}] binding..
         /// </summary>
-        internal static string GORGFX_ERR_BUFFER_IMMUTABLE_STAGING_SO {
+        internal static string GORGFX_ERR_BUFFER_INCORRECT_BINDING {
             get {
-                return ResourceManager.GetString("GORGFX_ERR_BUFFER_IMMUTABLE_STAGING_SO", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Immutable or staging buffers cannot use unordered access views..
-        /// </summary>
-        internal static string GORGFX_ERR_BUFFER_IMMUTABLE_STAGING_UAV {
-            get {
-                return ResourceManager.GetString("GORGFX_ERR_BUFFER_IMMUTABLE_STAGING_UAV", resourceCulture);
+                return ResourceManager.GetString("GORGFX_ERR_BUFFER_INCORRECT_BINDING", resourceCulture);
             }
         }
         
@@ -187,6 +169,24 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Buffers with a usage of [{0}] cannot be used for stream out..
+        /// </summary>
+        internal static string GORGFX_ERR_BUFFER_NO_SO {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_BUFFER_NO_SO", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Buffers with a usage of [{0}] cannot be used for unordered access views..
+        /// </summary>
+        internal static string GORGFX_ERR_BUFFER_NO_UAV {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_BUFFER_NO_UAV", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A [{0}] buffer cannot use a binding of [None]..
         /// </summary>
         internal static string GORGFX_ERR_BUFFER_NON_STAGING_NEEDS_BINDING {
@@ -201,6 +201,15 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_BUFFER_SIZE_TOO_SMALL {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_BUFFER_SIZE_TOO_SMALL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A staging buffer cannot be bound to the GPU as a shader resource, stream out resource, or as an unordered access resource..
+        /// </summary>
+        internal static string GORGFX_ERR_BUFFER_STAGING_CANNOT_BE_BOUND_TO_GPU {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_BUFFER_STAGING_CANNOT_BE_BOUND_TO_GPU", resourceCulture);
             }
         }
         
@@ -273,6 +282,15 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The offset and the size of the type would exceed the total size of this buffer ({0})..
+        /// </summary>
+        internal static string GORGFX_ERR_CB_OFFSET_TYPE_TOO_LARGE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_CB_OFFSET_TYPE_TOO_LARGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot bind the &apos;{0}&apos; resource as a render target because it is already bound as an unordered access view at slot {1}..
         /// </summary>
         internal static string GORGFX_ERR_CONFLICT_RTV_UAV {
@@ -323,6 +341,15 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_CONSTANT_BUFFER_TOO_LARGE {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_CONSTANT_BUFFER_TOO_LARGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The count value must be greater than 0..
+        /// </summary>
+        internal static string GORGFX_ERR_COUNT_OUT_OF_RANGE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_COUNT_OUT_OF_RANGE", resourceCulture);
             }
         }
         
@@ -386,6 +413,15 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_DEPTHSTENCIL_VOLUME {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_DEPTHSTENCIL_VOLUME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The destination index and the count ({0}) is too large for the maximum size ({1})..
+        /// </summary>
+        internal static string GORGFX_ERR_DEST_INDEX_AND_COUNT_TOO_LARGE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_DEST_INDEX_AND_COUNT_TOO_LARGE", resourceCulture);
             }
         }
         
@@ -532,6 +568,15 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_LAYOUT_INVALID_ELEMENT_TYPE {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_LAYOUT_INVALID_ELEMENT_TYPE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The type &apos;{0}&apos; does not have a sequential or explicit layout..
+        /// </summary>
+        internal static string GORGFX_ERR_LAYOUT_NOT_SEQUENTIAL_EXPLICIT {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_LAYOUT_NOT_SEQUENTIAL_EXPLICIT", resourceCulture);
             }
         }
         
@@ -767,6 +812,24 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_SHADER_UNKNOWN_TYPE {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_SHADER_UNKNOWN_TYPE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The source index and the count ({0}) is too large for the maximum size ({1})..
+        /// </summary>
+        internal static string GORGFX_ERR_SOURCE_INDEX_AND_COUNT_TOO_LARGE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_SOURCE_INDEX_AND_COUNT_TOO_LARGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The resource &apos;{0}&apos; does not have an [Shader] binding..
+        /// </summary>
+        internal static string GORGFX_ERR_SRV_NOT_VALID {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_SRV_NOT_VALID", resourceCulture);
             }
         }
         

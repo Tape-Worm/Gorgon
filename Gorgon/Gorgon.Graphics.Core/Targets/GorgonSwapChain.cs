@@ -61,7 +61,7 @@ namespace Gorgon.Graphics.Core
     /// </para>	
     /// <para>
     /// If the swap chain is currently assigned to the <see cref="GorgonGraphics.RenderTargets"/> property, and it is resized, it will do its best to ensure it stays bound to the active render target list 
-    /// (this also includes its <see cref="DepthStencilView"/> if it was assigned to the <see cref="GorgonGraphics.DepthStencilView"/> property). This only applies to the default <see cref="RenderTargetView"/> 
+    /// (this also includes its <see cref="DepthStencilView"/> if it was assigned to the <see cref="DepthStencilView"/> property). This only applies to the default <see cref="RenderTargetView"/> 
     /// associated with the swap chain. If a user has created a custom <see cref="GorgonRenderTarget2DView"/> object for the swap chain, and assigned that view to the <see cref="GorgonGraphics.RenderTargets"/> 
     /// list, then it is their responsibility to ensure that the view is rebuilt and reassigned. Users may intercept a swap chain back buffer resize by hooking the <see cref="BeforeSwapChainResized"/> and 
     /// the <see cref="AfterSwapChainResized"/> events.

@@ -272,7 +272,30 @@ namespace Gorgon.Graphics.Example
 	                                        Width = _mainForm.ClientSize.Width,
 	                                        Height = _mainForm.ClientSize.Height
 	                                    });
+
+	        using (GorgonVertexBuffer buffer = new GorgonVertexBuffer(_graphics,
+	                                                                  new GorgonVertexBufferInfo
+	                                                                  {
+	                                                                      SizeInBytes = 1024,
+	                                                                      Binding = VertexIndexBufferBinding.UnorderedAccess,
+	                                                                      Usage = ResourceUsage.Default
+	                                                                  }))
+	        {
+                GorgonRangeF[] ranges = new GorgonRangeF[64];
+
+	            for (int i = 0; i < ranges.Length; ++i)
+	            {
+                    ranges[i] = new GorgonRangeF((i + 1), (i + 1) * (i + 1));
+	            }
+
+                buffer.SetData(ranges, 32, 16, 4);
+	            buffer.SetData(ranges);
+                Array.Clear(ranges, 0, ranges.Length);
+                buffer.GetData(ranges, 15, 4, 4);
+	        }
 	    }
+
+        private static readonly Random _rnd = new Random();
 
 	    /// <summary>
         /// Handles the KeyUp event of the MainForm control.

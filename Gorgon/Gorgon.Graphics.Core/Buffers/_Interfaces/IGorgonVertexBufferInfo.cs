@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using Gorgon.Core;
 
 namespace Gorgon.Graphics.Core
 {
@@ -37,15 +38,15 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// No binding to the GPU is used.
         /// </summary>
-        None = 0,
+        None = BufferBinding.None,
         /// <summary>
         /// The buffer can be used for stream output.
         /// </summary>
-        StreamOut = 1,
+        StreamOut = BufferBinding.StreamOut,
         /// <summary>
         /// The buffer can have unordered access views.
         /// </summary>
-        UnorderedAccess = 2
+        UnorderedAccess = BufferBinding.UnorderedAccess
     }
 
 	/// <summary>
@@ -57,6 +58,7 @@ namespace Gorgon.Graphics.Core
 	/// </para>
 	/// </remarks>
 	public interface IGorgonVertexBufferInfo 
+        : IGorgonNamedObject
 	{
 		/// <summary>
 		/// Property to return the intended usage for binding to the GPU.

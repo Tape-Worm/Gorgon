@@ -40,7 +40,7 @@ namespace Gorgon.Graphics.Core
 	/// </summary>
 	/// <remarks>
 	/// <para>
-	/// Use a index buffer to send indices to the GPU. These indices are used for allowing smaller vertex buffers and providing a faster means of finding vertices to draw on the GPU.
+	/// This buffer allows the use of indices to allow for smaller vertex buffers and providing a faster means of finding vertices to draw on the GPU.
 	/// </para>
 	/// <para>
 	/// To send indices to the GPU using a index buffer, an application can upload a value type values, representing the indices, to the buffer using one of the 
@@ -78,57 +78,88 @@ namespace Gorgon.Graphics.Core
 	/// </para>
 	/// </remarks>
 	public sealed class GorgonIndexBuffer
-        : GorgonBufferBase
+        : GorgonBufferCommon, IGorgonIndexBufferInfo
 	{
+	    #region Constants.
+	    /// <summary>
+	    /// The prefix to assign to a default name.
+	    /// </summary>
+	    internal const string NamePrefix = nameof(GorgonIndexBuffer);
+	    #endregion
+
 		#region Variables.
 		// The information used to create the buffer.
 		private readonly GorgonIndexBufferInfo _info;
-		// The size of an individual index.
-		private readonly int _indexSize;
         #endregion
 
         #region Properties.
 	    /// <summary>
-	    /// Property to return whether or not the resource can be bound as a shader resource.
+	    /// Property to return whether or not the buffer is directly readable by the CPU via one of the <see cref="O:Gorgon.Graphics.Core.GorgonBufferCommon.GetData{T}"/> methods.
 	    /// </summary>
-	    protected internal override bool IsShaderResource => false;
+	    /// <remarks>
+	    /// <para>
+	    /// Buffers must meet the following criteria in order to qualify for direct CPU read:
+	    /// <list type="bullet">
+	    ///     <item>Must have a <see cref="GorgonGraphicsResource.Usage"/> of <see cref="ResourceUsage.Default"/> (or <see cref="ResourceUsage.Staging"/>).</item>
+	    ///     <item>Must be bindable to a shader resource view (<see cref="ResourceUsage.Default"/> only).</item>
+	    /// </list>
+	    /// </para>
+	    /// <para>
+	    /// If this value is <b>false</b>, then the buffer can still be read, but it will take a slower path by copying to a staging buffer.
+	    /// </para>
+	    /// <para>
+	    /// <note type="information">
+	    /// Any buffer created with a <see cref="GorgonGraphicsResource.Usage"/> of <see cref="ResourceUsage.Staging"/> will always be directly readable by the CPU. Therefore, this value will always
+	    /// return <b>true</b> in that case.
+	    /// </note>
+	    /// </para>
+	    /// </remarks>
+	    /// <seealso cref="O:Gorgon.Graphics.Core.GorgonBufferCommon.GetData{T}"/>
+	    public override bool IsCpuReadable => Usage == ResourceUsage.Staging;
 
 	    /// <summary>
-        /// Property to return whether or not the resource can be used in an unordered access view.
-        /// </summary>
-        protected internal override bool IsUavResource => (_info.Binding & VertexIndexBufferBinding.UnorderedAccess) == VertexIndexBufferBinding.UnorderedAccess;
+	    /// Property to return the binding used to bind this buffer to the GPU.
+	    /// </summary>
+	    public VertexIndexBufferBinding Binding => _info.Binding;
 
+	    /// <summary>
+	    /// Property to return the number of indices to store.
+	    /// </summary>
+	    public int IndexCount => _info.IndexCount;
+
+	    /// <summary>
+	    /// Property to return whether to use 16 bit values for indices.
+	    /// </summary>
+	    public bool Use16BitIndices => _info.Use16BitIndices;
+
+	    /// <summary>
+	    /// Property to return the usage for the resource.
+	    /// </summary>
+	    public override ResourceUsage Usage => _info.Usage;
+
+	    /// <summary>
+	    /// Property to return the size, in bytes, of the resource.
+	    /// </summary>
+	    public override int SizeInBytes => IndexCount * (Use16BitIndices ? sizeof(short) : sizeof(int));
+
+	    /// <summary>
+	    /// Property to return the name of this object.
+	    /// </summary>
+	    public override string Name => _info.Name;
+        #endregion
+
+        #region Methods.
         /// <summary>
-        /// Property to return the usage flags for the buffer.
+        /// Function to initialize the buffer data.
         /// </summary>
-        internal override ResourceUsage Usage => _info.Usage;
-
-	    /// <summary>
-        /// Property to return the format of the buffer data when binding.
-        /// </summary>
-        internal BufferFormat IndexFormat => Info.Use16BitIndices ? BufferFormat.R16_UInt : BufferFormat.R32_UInt;
-
-	    /// <summary>
-	    /// Property to return whether or not the user has requested that the buffer be readable from the CPU.
-	    /// </summary>
-	    internal override bool RequestedCpuReadable => false;
-
-	    /// <summary>
-		/// Property used to return the information used to create this buffer.
-		/// </summary>
-		public IGorgonIndexBufferInfo Info => _info;
-		#endregion
-
-		#region Methods.
-		/// <summary>
-		/// Function to initialize the buffer data.
-		/// </summary>
-		/// <param name="initialData">The initial data used to populate the buffer.</param>
-		private void Initialize(IGorgonPointer initialData)
+        /// <param name="initialData">The initial data used to populate the buffer.</param>
+        private void Initialize(GorgonNativeBuffer<byte> initialData)
 		{
 			D3D11.CpuAccessFlags cpuFlags = GetCpuFlags(false, D3D11.BindFlags.IndexBuffer);
 
 			Log.Print($"{Name} Index Buffer: Creating D3D11 buffer. Size: {SizeInBytes} bytes", LoggingLevel.Simple);
+
+		    GorgonVertexBuffer.ValidateBufferBindings(_info.Usage, _info.Binding, 0);
 
 		    D3D11.BindFlags bindFlags = D3D11.BindFlags.IndexBuffer;
 
@@ -141,13 +172,10 @@ namespace Gorgon.Graphics.Core
 		    {
 		        bindFlags |= D3D11.BindFlags.UnorderedAccess;
 		    }
-
-		    // TODO:
-		    ValidateBufferBindings(_info.Usage, BufferBinding.None, 0);
             
             D3D11.BufferDescription desc  = new D3D11.BufferDescription
 			{
-				SizeInBytes = Info.IndexCount * _indexSize,
+				SizeInBytes = SizeInBytes,
 				Usage = (D3D11.ResourceUsage)_info.Usage,
 				BindFlags = bindFlags,
 				OptionFlags = D3D11.ResourceOptionFlags.None,
@@ -155,23 +183,52 @@ namespace Gorgon.Graphics.Core
 				StructureByteStride = 0
 			};
 
-			if ((initialData != null) && (initialData.Size > 0))
+			if ((initialData != null) && (initialData.Length > 0))
 			{
-			    D3DResource = NativeBuffer = new D3D11.Buffer(Graphics.D3DDevice, new IntPtr(initialData.Address), desc)
-			                              {
-			                                  DebugName = Name
-			                              };
+			    unsafe
+			    {
+			        D3DResource = Native = new D3D11.Buffer(Graphics.D3DDevice, new IntPtr((void *)initialData), desc)
+			                               {
+			                                   DebugName = Name
+			                               };
+			    }
 			}
 			else
 			{
-			    D3DResource = NativeBuffer = new D3D11.Buffer(Graphics.D3DDevice, desc)
+			    D3DResource = Native = new D3D11.Buffer(Graphics.D3DDevice, desc)
 			                              {
 			                                  DebugName = Name
 			                              };
 			}
-
-			SizeInBytes = desc.SizeInBytes;
 		}
+
+
+	    /// <summary>
+	    /// Function to retrieve a copy of this buffer as a staging resource.
+	    /// </summary>
+	    /// <returns>The staging buffer to retrieve.</returns>
+	    protected override GorgonBufferCommon GetStagingInternal()
+	    {
+	        return GetStaging();
+	    }
+
+	    /// <summary>
+	    /// Function to retrieve a copy of this buffer as a staging resource.
+	    /// </summary>
+	    /// <returns>The staging buffer to retrieve.</returns>
+	    public GorgonIndexBuffer GetStaging()
+	    {
+	        GorgonIndexBuffer buffer = new GorgonIndexBuffer(Graphics,
+	                                                         new GorgonIndexBufferInfo(_info, $"{Name}_Staging")
+	                                                         {
+	                                                             Binding = VertexIndexBufferBinding.None,
+	                                                             Usage = ResourceUsage.Staging
+	                                                         });
+
+	        CopyTo(buffer);
+
+	        return buffer;
+	    }
 
 	    /// <summary>
 	    /// Function to create a new <see cref="GorgonIndexBufferUav"/> for this buffer.
@@ -179,9 +236,7 @@ namespace Gorgon.Graphics.Core
 	    /// <param name="startElement">[Optional] The first element to start viewing from.</param>
 	    /// <param name="elementCount">[Optional] The number of elements to view.</param>
 	    /// <returns>A <see cref="GorgonIndexBufferUav"/> used to bind the buffer to a shader.</returns>
-	    /// <exception cref="GorgonException">Thrown if the video adapter does not support feature set 11 or better.
-	    /// <para>-or-</para>
-	    /// <para>Thrown when this buffer does not have a <see cref="VertexIndexBufferBinding"/> of <see cref="VertexIndexBufferBinding.UnorderedAccess"/>.</para>
+	    /// <exception cref="GorgonException">Thrown when this buffer does not have a <see cref="Binding"/> of <see cref="VertexIndexBufferBinding.UnorderedAccess"/>.
 	    /// <para>-or-</para>
 	    /// <para>Thrown when this buffer has a usage of <see cref="ResourceUsage.Staging"/>.</para>
 	    /// </exception>
@@ -198,63 +253,55 @@ namespace Gorgon.Graphics.Core
 	    /// will be clipped to the upper and lower bounds of the element range. If this value is left at 0, then first element is viewed.
 	    /// </para>
 	    /// <para>
-	    /// To determine how many elements are in a buffer, use the <see cref="IGorgonIndexBufferInfo.IndexCount"/> property on the <see cref="Info"/> property for this buffer.
+	    /// To determine how many elements are in a buffer, use the <see cref="IndexCount"/> property.
 	    /// </para>
 	    /// <para>
 	    /// The <paramref name="elementCount"/> parameter defines how many elements to allow access to inside of the view. If this value falls outside of the range of available elements, then it will be 
 	    /// clipped to the upper or lower bounds of the element range. If this value is left at 0, then the entire buffer is viewed.
 	    /// </para>
-	    /// <para>
-	    /// <note type="important">
-	    /// <para>
-	    /// This method requires a video adapter capable of supporting feature set 11 or better. If the current video adapter does not support feature set 11, an exception will be thrown.
-	    /// </para>
-	    /// </note>
-	    /// </para>
 	    /// </remarks>
 	    public GorgonIndexBufferUav GetUnorderedAccessView(int startElement = 0, int elementCount = 0)
 	    {
-	        if (Graphics.RequestedFeatureSet < FeatureSet.Level_12_0)
-	        {
-	            throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_UAV_REQUIRES_SM5);
-	        }
-
-	        if ((Info.Usage == ResourceUsage.Staging)
-	            || ((Info.Binding & VertexIndexBufferBinding.UnorderedAccess) != VertexIndexBufferBinding.UnorderedAccess))
+	        if ((Usage == ResourceUsage.Staging)
+	            || ((Binding & VertexIndexBufferBinding.UnorderedAccess) != VertexIndexBufferBinding.UnorderedAccess))
 	        {
 	            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_UAV_RESOURCE_NOT_VALID, Name));
 	        }
 
-	        if (!Graphics.FormatSupport.TryGetValue(IndexFormat, out GorgonFormatSupportInfo support))
+	        BufferFormat format = Use16BitIndices ? BufferFormat.R16_UInt : BufferFormat.R32_UInt;
+
+	        if (!Graphics.FormatSupport.TryGetValue(format, out IGorgonFormatSupportInfo support))
 	        {
-	            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_UAV_FORMAT_INVALID, IndexFormat));
+	            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_UAV_FORMAT_INVALID, format));
 	        }
 
-            if ((support.FormatSupport & BufferFormatSupport.TypedUnorderedAccessView) != BufferFormatSupport.TypedUnorderedAccessView)
+	        if ((support.FormatSupport & BufferFormatSupport.TypedUnorderedAccessView) != BufferFormatSupport.TypedUnorderedAccessView)
 	        {
-	            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_UAV_FORMAT_INVALID, IndexFormat));
+	            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_UAV_FORMAT_INVALID, format));
 	        }
 
 	        // Ensure the size of the data type fits the requested format.
-	        GorgonFormatInfo info = new GorgonFormatInfo(IndexFormat);
+	        var info = new GorgonFormatInfo(format);
 
-	        startElement = startElement.Min(_info.IndexCount - 1).Max(0);
+	        int totalElementCount = GetTotalElementCount(info);
+
+	        startElement = startElement.Min(totalElementCount - 1).Max(0);
 
 	        if (elementCount <= 0)
 	        {
-	            elementCount = _info.IndexCount - startElement;
+	            elementCount = totalElementCount - startElement;
 	        }
 
-	        elementCount = elementCount.Min(_info.IndexCount - startElement).Max(1);
+	        elementCount = elementCount.Min(totalElementCount - startElement).Max(1);
 
-	        BufferShaderViewKey key = new BufferShaderViewKey(startElement, elementCount, IndexFormat);
+	        BufferShaderViewKey key = new BufferShaderViewKey(startElement, elementCount, format);
 
 	        if (GetUav(key) is GorgonIndexBufferUav result)
 	        {
 	            return result;
 	        }
 
-	        result = new GorgonIndexBufferUav(this, startElement, elementCount, IndexFormat, info, Log);
+	        result = new GorgonIndexBufferUav(this, format, info, startElement, elementCount, totalElementCount);
 	        result.CreateNativeView();
 	        RegisterUav(key, result);
 
@@ -263,31 +310,19 @@ namespace Gorgon.Graphics.Core
 		#endregion
 
 		#region Constructor/Finalizer.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonIndexBuffer" /> class.
-		/// </summary>
-		/// <param name="name">Name of this buffer.</param>
-		/// <param name="graphics">The <see cref="GorgonGraphics"/> object used to create and manipulate the buffer.</param>
-		/// <param name="info">Information used to create the buffer.</param>
-		/// <param name="initialData">[Optional] The initial data used to populate the buffer.</param>
-		/// <param name="log">[Optional] The log interface used for debug logging.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, <paramref name="name"/>, or <paramref name="info"/> parameters are <b>null</b>.</exception>
-		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> is empty.</exception>
-		public GorgonIndexBuffer(string name, GorgonGraphics graphics, IGorgonIndexBufferInfo info, IGorgonPointer initialData = null, IGorgonLog log = null)
-			: base(name, graphics, log)
-		{
-			if (info == null)
-			{
-				throw new ArgumentNullException(nameof(info));
-			}
-
-            BufferType = BufferType.Index;
-		    
-			_info = new GorgonIndexBufferInfo(info);
-			_indexSize = _info.Use16BitIndices ? sizeof(ushort) : sizeof(uint);
-
-			Initialize(initialData);
-		}
+	    /// <summary>
+	    /// Initializes a new instance of the <see cref="GorgonIndexBuffer" /> class.
+	    /// </summary>
+	    /// <param name="graphics">The <see cref="GorgonGraphics"/> object used to create and manipulate the buffer.</param>
+	    /// <param name="info">Information used to create the buffer.</param>
+	    /// <param name="initialData">[Optional] The initial data used to populate the buffer.</param>
+	    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, or the <paramref name="info"/> parameters are <b>null</b>.</exception>
+	    public GorgonIndexBuffer(GorgonGraphics graphics, IGorgonIndexBufferInfo info, GorgonNativeBuffer<byte> initialData = null)
+	        : base(graphics)
+	    {
+	        _info = new GorgonIndexBufferInfo(info ?? throw new ArgumentNullException(nameof(info)));
+	        Initialize(initialData);
+	    }
 		#endregion
 	}
 }

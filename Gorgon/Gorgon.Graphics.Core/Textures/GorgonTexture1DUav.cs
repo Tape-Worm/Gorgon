@@ -66,13 +66,27 @@ namespace Gorgon.Graphics.Core
         : GorgonUnorderedAccessView, IGorgonTexture1DInfo
     {
         #region Variables.
-        // The texture bound to the view.
-        private GorgonTexture1D _texture;
         // Rectangles used for clearing the view.
         private RawRectangle[] _clearRects;
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to return the format used to interpret this view.
+        /// </summary>
+        public BufferFormat Format
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return information about the <see cref="Format"/> used by this view.
+        /// </summary>
+        public GorgonFormatInfo FormatInformation
+        {
+            get;
+        }
+
         /// <summary>
         /// Property to return the index of the first mip map in the resource to view.
         /// </summary>
@@ -100,7 +114,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the texture that is bound to this view.
         /// </summary>
-        public GorgonTexture1D Texture => _texture;
+        public GorgonTexture1D Texture { get; private set; }
 
         /// <summary>
         /// Property to return the bounding range for the view.
@@ -139,14 +153,15 @@ namespace Gorgon.Graphics.Core
 
         #region Methods.
         /// <summary>
-        /// Function to initialize the unordered access view.
+        /// Function to perform the creation of a specific kind of view.
         /// </summary>
-        protected internal override void CreateNativeView()
+        /// <returns>The view that was created.</returns>
+        private protected override D3D11.ResourceView OnCreateNativeView()
         {
             var desc = new D3D11.UnorderedAccessViewDescription1
                        {
                            Format = (DXGI.Format)Format,
-                           Dimension = _texture.ArrayCount > 1
+                           Dimension = Texture.ArrayCount > 1
                                            ? D3D11.UnorderedAccessViewDimension.Texture1DArray
                                            : D3D11.UnorderedAccessViewDimension.Texture1D,
                            Texture1DArray =
@@ -157,21 +172,18 @@ namespace Gorgon.Graphics.Core
                            }
                        };
             
-            Graphics.Log.Print($"Creating 1D texture unordered access view for {_texture.Name}.", LoggingLevel.Verbose);
+            Graphics.Log.Print($"Creating D3D11 1D texture unordered access view for {Texture.Name}.", LoggingLevel.Verbose);
 
             try
             {
-                Graphics.Log.Print("Unordered Access 1D view: Creating D3D 11 unordered access resource view.", LoggingLevel.Verbose);
-                Graphics.Log.Print($"Unordered Access 1D View '{Texture.Name}': {Texture.ResourceType} -> Mip slice: {MipSlice}, Array Index: {ArrayIndex}, Array Count: {ArrayCount}",
-                           LoggingLevel.Verbose);
-
                 // Create our SRV.
                 Native = new D3D11.UnorderedAccessView1(Resource.Graphics.D3DDevice, Resource.D3DResource, desc)
                              {
                                  DebugName = $"'{Texture.Name}'_D3D11UnorderedAccessView1_1D"
                              };
 
-                this.RegisterDisposable(_texture.Graphics);
+                Graphics.Log.Print($"Unordered Access 1D View '{Texture.Name}': {Texture.ResourceType} -> Mip slice: {MipSlice}, Array Index: {ArrayIndex}, Array Count: {ArrayCount}",
+                                   LoggingLevel.Verbose);
             }
             catch (DX.SharpDXException sDXEx)
             {
@@ -179,10 +191,14 @@ namespace Gorgon.Graphics.Core
                 {
                     throw new GorgonException(GorgonResult.CannotCreate,
                                               string.Format(Resources.GORGFX_ERR_VIEW_CANNOT_CAST_FORMAT,
-                                                            _texture.Format,
+                                                            Texture.Format,
                                                             Format));
                 }
+
+                throw;
             }
+
+            return Native;
         }
 
         /// <summary>
@@ -190,7 +206,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         public override void Dispose()
         {
-            _texture = null;
+            Texture = null;
             base.Dispose();
         }
 
@@ -248,6 +264,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="graphics">The graphics interface to use when creating the target.</param>
         /// <param name="info">The information about the texture.</param>
+        /// <param name="initialData">[Optional] Initial data used to populate the texture.</param>
         /// <returns>A new <see cref="GorgonTexture1DUav"/>.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, or <paramref name="info"/> parameter is <b>null</b>.</exception>
         /// <remarks>
@@ -260,9 +277,13 @@ namespace Gorgon.Graphics.Core
         /// the user created a <see cref="GorgonTexture1DUav"/> from the <see cref="GorgonTexture1D.GetUnorderedAccessView"/> method on the <see cref="GorgonTexture1D"/>, then it's assumed the user knows 
         /// what they are doing and will handle the disposal of the texture and view on their own.
         /// </para>
+        /// <para>
+        /// If an <paramref name="initialData"/> image is provided, and the width/height/depth is not the same as the values in the <paramref name="info"/> parameter, then the image data will be cropped to
+        /// match the values in the <paramref name="info"/> parameter. Things like array count, and mip levels will still be taken from the <paramref name="initialData"/> image parameter.
+        /// </para>
         /// </remarks>
         /// <seealso cref="GorgonTexture1D"/>
-        public static GorgonTexture1DUav CreateTexture(GorgonGraphics graphics, IGorgonTexture1DInfo info)
+        public static GorgonTexture1DUav CreateTexture(GorgonGraphics graphics, IGorgonTexture1DInfo info, IGorgonImage initialData = null)
         {
             if (graphics == null)
             {
@@ -279,10 +300,20 @@ namespace Gorgon.Graphics.Core
                               Usage = info.Usage == ResourceUsage.Staging ? ResourceUsage.Default : info.Usage,
                               Binding = (((info.Binding & TextureBinding.UnorderedAccess) != TextureBinding.UnorderedAccess)
                                              ? (info.Binding | TextureBinding.UnorderedAccess)
-                                             : info.Binding) & ~TextureBinding.DepthStencil 
+                                             : info.Binding) & ~(TextureBinding.DepthStencil | TextureBinding.RenderTarget)
                           };
 
-            var texture = new GorgonTexture1D(graphics, newInfo);
+            GorgonTexture1D texture = initialData == null
+                                          ? new GorgonTexture1D(graphics, newInfo)
+                                          : initialData.ToTexture1D(graphics,
+                                                                    new GorgonTextureLoadOptions
+                                                                    {
+                                                                        Usage = newInfo.Usage,
+                                                                        Binding = newInfo.Binding,
+                                                                        MultisampleInfo = GorgonMultisampleInfo.NoMultiSampling,
+                                                                        Name = newInfo.Name
+                                                                    });
+
             GorgonTexture1DUav result = texture.GetUnorderedAccessView();
             result.OwnsResource = true;
 
@@ -454,15 +485,18 @@ namespace Gorgon.Graphics.Core
         /// <param name="firstMipLevel">The first mip level to view.</param>
         /// <param name="arrayIndex">The first array index to view.</param>
         /// <param name="arrayCount">The number of array indices to view.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="texture"/>, or the <paramref name="formatInfo"/> parameter is <b>null</b>.</exception>
         internal GorgonTexture1DUav(GorgonTexture1D texture,
                                   BufferFormat format,
                                   GorgonFormatInfo formatInfo,
                                   int firstMipLevel,
                                   int arrayIndex,
                                   int arrayCount)
-            : base(texture, format, formatInfo)
+            : base(texture)
         {
-            _texture = texture;
+            FormatInformation = formatInfo ?? throw new ArgumentNullException(nameof(formatInfo));
+            Format = format;
+            Texture = texture;
             Bounds = new GorgonRange(0, Width);
             MipSlice = firstMipLevel;
             ArrayIndex = arrayIndex;

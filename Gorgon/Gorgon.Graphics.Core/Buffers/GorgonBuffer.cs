@@ -35,53 +35,128 @@ using D3D11 = SharpDX.Direct3D11;
 namespace Gorgon.Graphics.Core
 {
     /// <summary>
-    /// A generic buffer for holding unstructured data to pass to the GPU.
+    /// A generic buffer for holding data to pass to shaders on the GPU.
     /// </summary>
     public class GorgonBuffer
-        : GorgonBufferBase
+        : GorgonBufferCommon, IGorgonBufferInfo
     {
+        #region Constants.
+        /// <summary>
+        /// The prefix to assign to a default name.
+        /// </summary>
+        internal const string NamePrefix = nameof(GorgonBuffer);
+        #endregion
+
         #region Variables.
         // The information used to create the buffer.
-        private GorgonBufferInfo _info;
+        private readonly GorgonBufferInfo _info;
         #endregion
 
         #region Properties.
         /// <summary>
-        /// Property to return whether or not the resource can be bound as a shader resource.
+        /// Property to return the usage for the resource.
         /// </summary>
-        protected internal override bool IsShaderResource => (_info.Binding & BufferBinding.Shader) == BufferBinding.Shader;
+        public override ResourceUsage Usage => _info.Usage;
 
         /// <summary>
-        /// Property to return whether or not the resource can be used in an unordered access view.
+        /// Property to return the size, in bytes, of the resource.
         /// </summary>
-        protected internal override bool IsUavResource => (_info.Binding & BufferBinding.UnorderedAccess) == BufferBinding.UnorderedAccess;
+        public override int SizeInBytes => _info.SizeInBytes;
 
         /// <summary>
-        /// Property to return the usage flags for the buffer.
-        /// </summary>
-        internal override ResourceUsage Usage => _info.Usage;
-
-        /// <summary>
-        /// Property to return whether or not the user has requested that the buffer be readable from the CPU.
-        /// </summary>
-        internal override bool RequestedCpuReadable => _info.AllowCpuRead;
-
-        /// <summary>
-        /// Property to return the settings for the buffer.
-        /// </summary>
-        public IGorgonBufferInfo Info => _info;
-
-        /// <summary>
-        /// Property to return the default shader view.
+        /// Property to return the name of this object.
         /// </summary>
         /// <remarks>
-        /// This property is provided for convenience so that applications can immediately use a buffer in a shader without having to build a specialized <see cref="GorgonBufferView"/>.
+        /// For best practises, the name should only be set once during the lifetime of an object. Hence, this interface only provides a read-only implementation of this 
+        /// property.
         /// </remarks>
-        public GorgonBufferView DefaultShaderView
-        {
-            get;
-            private set;
-        }
+        public override string Name => _info.Name;
+
+        /// <summary>
+        /// Property to return whether or not the buffer is directly readable by the CPU via one of the <see cref="O:Gorgon.Graphics.Core.GorgonBufferCommon.GetData{T}"/> methods.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Buffers must meet the following criteria in order to qualify for direct CPU read:
+        /// <list type="bullet">
+        ///     <item>Must have a <see cref="GorgonGraphicsResource.Usage"/> of <see cref="ResourceUsage.Default"/> (or <see cref="ResourceUsage.Staging"/>).</item>
+        ///     <item>Must have a <see cref="Binding"/> of <see cref="BufferBinding.Shader"/> (if the buffer is not a <see cref="ResourceUsage.Staging"/> buffer).</item>
+        /// </list>
+        /// </para>
+        /// <para>
+        /// If this value is <b>false</b>, then the buffer can still be read, but it will take a slower path by copying to a staging buffer and reading that when calling the
+        /// <see cref="O:Gorgon.Graphics.Core.GorgonBufferCommon.GetData{T}"/> methods.
+        /// </para>
+        /// <para>
+        /// <note type="information">
+        /// Any buffer created with a <see cref="GorgonGraphicsResource.Usage"/> of <see cref="ResourceUsage.Staging"/> will always be directly readable by the CPU. Therefore, this value will always
+        /// return <b>true</b> in that case.
+        /// </note>
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="O:Gorgon.Graphics.Core.GorgonBufferCommon.GetData{T}"/>
+        public override bool IsCpuReadable =>
+            ((_info.AllowCpuRead) && (Usage == ResourceUsage.Default) && ((Binding & BufferBinding.Shader) == BufferBinding.Shader))
+            || (Usage == ResourceUsage.Staging);
+
+
+        /// <summary>
+        /// Property to set or return whether to allow the CPU read access to the buffer.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This value controls whether or not the CPU can directly access the buffer for reading. If this value is <b>false</b>, the buffer still can be read, but will be done through an intermediate
+        /// staging buffer, which is obviously less performant. 
+        /// </para>
+        /// <para>
+        /// This value is treated as <b>false</b> if the buffer does not have a <see cref="IGorgonBufferInfo.Binding"/> containing the <see cref="BufferBinding.Shader"/> flag, and does not have a <see cref="IGorgonBufferInfo.Usage"/> of
+        /// <see cref="ResourceUsage.Default"/>. This means any reads will be done through an intermediate staging buffer, impacting performance.
+        /// </para>
+        /// <para>
+        /// If the <see cref="IGorgonBufferInfo.Usage"/> property is set to <see cref="ResourceUsage.Staging"/>, then this value is treated as <b>true</b> because staging buffers are CPU only and as such, can be read
+        /// directly by the CPU regardless of this value.
+        /// </para>
+        /// <para>
+        /// The default for this value is <b>false</b>.
+        /// </para>
+        /// </remarks>
+        bool IGorgonBufferInfo.AllowCpuRead => _info.AllowCpuRead;
+
+        /// <summary>
+        /// Property to return the size, in bytes, of an individual structure in a structured buffer.
+        /// </summary>
+        /// <remarks>
+        /// If this value is greater than 0, then the buffer is treated as a structured buffer type on the GPU.
+        /// </remarks>
+        public int StructureSize => _info.StructureSize;
+
+        /// <summary>
+        /// Property to return whether to allow raw unordered views of the buffer.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// When this value is <b>true</b>, then unordered access views for this buffer can use byte addressing to read/write the buffer in a shader. If it is <b>false</b>, then the SRV format or 
+        /// <see cref="IGorgonBufferInfo.StructureSize"/> will determine how to address data in the buffer.
+        /// </para>
+        /// </remarks>
+        public bool AllowRawView => _info.AllowRawView;
+
+        /// <summary>
+        /// Property to return the type of binding for the GPU.
+        /// </summary>
+        public BufferBinding Binding => _info.Binding;
+
+        /// <summary>
+        /// Property to return whether the buffer will contain indirect argument data.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This flag only applies to buffers with a <see cref="Binding"/> of <see cref="BufferBinding.UnorderedAccess"/>, and/or <see cref="BufferBinding.Shader"/>. If the <see cref="Binding"/> does not
+        /// contain one of these flags, then this will always return <b>false</b>.
+        /// </para>
+        /// </remarks>
+        public bool IndirectArgs => (_info.IndirectArgs) && (((Binding & BufferBinding.Shader) == BufferBinding.Shader) ||
+                                                             ((Binding & BufferBinding.UnorderedAccess) == BufferBinding.UnorderedAccess));
         #endregion
 
         #region Methods.
@@ -124,6 +199,11 @@ namespace Gorgon.Graphics.Core
 
             // Round up to the nearest multiple of 4.
             bufferInfo.StructureSize = (bufferInfo.StructureSize + 3) & ~3;
+
+            if (bufferInfo.StructureSize > 2048)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_STRUCTURE_SIZE_INVALID, bufferInfo.StructureSize));
+            }
             
             if (bufferInfo.AllowRawView)
             {
@@ -156,7 +236,7 @@ namespace Gorgon.Graphics.Core
                        Usage = resourceUsage,
                        BindFlags = bindFlags,
                        OptionFlags = options,
-                       CpuAccessFlags = GetCpuFlags(bufferInfo.AllowCpuRead, bufferInfo.Usage, bufferInfo.Binding, bufferInfo.IndirectArgs),
+                       CpuAccessFlags = GetCpuFlags(bufferInfo.Usage, bufferInfo.Binding, bufferInfo.IndirectArgs),
                        StructureByteStride = bufferInfo.StructureSize
                    };
         }
@@ -164,18 +244,16 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Function to retrieve the appropriate CPU flags for the buffer.
         /// </summary>
-        /// <param name="requestReadAccess"><b>true</b> if the buffer needs direct read access, <b>false</b> if not.</param>
         /// <param name="usage">The intended usage for the buffer.</param>
         /// <param name="binding">The binding flags being used by the buffer.</param>
         /// <param name="useIndirectArgs"><b>true</b> if the buffer will contain indirect arguments, <b>false</b> if not.</param>
         /// <returns>The D3D11 CPU access flags.</returns>
-        private D3D11.CpuAccessFlags GetCpuFlags(bool requestReadAccess, ResourceUsage usage, BufferBinding binding, bool useIndirectArgs)
+        private D3D11.CpuAccessFlags GetCpuFlags(ResourceUsage usage, BufferBinding binding, bool useIndirectArgs)
         {
             D3D11.CpuAccessFlags result = D3D11.CpuAccessFlags.None;
 
             if (useIndirectArgs)
             {
-                IsCpuReadable = false;
                 return result;
             }
 
@@ -196,22 +274,23 @@ namespace Gorgon.Graphics.Core
                         break;
                     }
 
-                    result = requestReadAccess ? D3D11.CpuAccessFlags.Read : D3D11.CpuAccessFlags.None;
+                    result = _info.AllowCpuRead ? D3D11.CpuAccessFlags.Read : D3D11.CpuAccessFlags.None;
                     break;
             }
 
-            IsCpuReadable = (result & D3D11.CpuAccessFlags.Read) == D3D11.CpuAccessFlags.Read;
             return result;
         }
 
         /// <summary>
         /// Function used to initalize the buffer.
         /// </summary>
-        /// <param name="info">The information used to construct the buffer.</param>
         /// <param name="initialData">The data to copy into the buffer on creation.</param>
-        private void Initialize(IGorgonBufferInfo info, IGorgonPointer initialData)
+        private void Initialize(GorgonNativeBuffer<byte> initialData)
         {
-            _info = new GorgonBufferInfo(info);
+            if (_info.SizeInBytes < 1)
+            {
+                throw new ArgumentException(string.Format(Resources.GORGFX_ERR_BUFFER_SIZE_TOO_SMALL, 1));
+            }
 
             if ((_info.Usage == ResourceUsage.Immutable) && (initialData == null))
             {
@@ -225,33 +304,53 @@ namespace Gorgon.Graphics.Core
             {
                 _info.AllowCpuRead = true;
             }
-
-            SizeInBytes = _info.SizeInBytes;
-
+            
             Log.Print($"{Name} Generic Buffer: Creating D3D11 buffer. Size: {SizeInBytes} bytes", LoggingLevel.Simple);
 
-            if ((initialData != null) && (initialData.Size > 0))
+            if ((initialData != null) && (initialData.Length > 0))
             {
-                D3DResource = NativeBuffer = new D3D11.Buffer(Graphics.D3DDevice, new IntPtr(initialData.Address), desc)
-                                             {
-                                                 DebugName = Name
-                                             };
+                unsafe
+                {
+                    D3DResource = Native = new D3D11.Buffer(Graphics.D3DDevice, new IntPtr((byte*)initialData), desc)
+                                           {
+                                               DebugName = Name
+                                           };
+                }
             }
             else
             {
-                D3DResource = NativeBuffer = new D3D11.Buffer(Graphics.D3DDevice, desc)
-                                             {
-                                                 DebugName = Name
-                                             };
+                D3DResource = Native = new D3D11.Buffer(Graphics.D3DDevice, desc)
+                                       {
+                                           DebugName = Name
+                                       };
             }
+        }
 
-            if ((_info.DefaultShaderViewFormat == BufferFormat.Unknown)
-                || ((_info.Binding & BufferBinding.Shader) != BufferBinding.Shader))
-            {
-                return;
-            }
+        /// <summary>
+        /// Function to retrieve a copy of this buffer as a staging resource.
+        /// </summary>
+        /// <returns>The staging buffer to retrieve.</returns>
+        protected override GorgonBufferCommon GetStagingInternal()
+        {
+            return GetStaging();
+        }
 
-            DefaultShaderView = GetShaderResourceView(_info.DefaultShaderViewFormat);
+        /// <summary>
+        /// Function to retrieve a copy of this buffer as a staging resource.
+        /// </summary>
+        /// <returns>The staging buffer to retrieve.</returns>
+        public GorgonBuffer GetStaging()
+        {
+            GorgonBuffer buffer = new GorgonBuffer(Graphics,
+                                                   new GorgonBufferInfo(_info, $"{Name}_Staging")
+                                                   {
+                                                       Binding = BufferBinding.None,
+                                                       Usage = ResourceUsage.Staging
+                                                   });
+
+            CopyTo(buffer);
+
+            return buffer;
         }
 
         /// <summary>
@@ -273,14 +372,14 @@ namespace Gorgon.Graphics.Core
         /// <returns>The total number of structured elements.</returns>
         /// <remarks>
         /// <para>
-        /// Use this to retrieve the number of elements that will be passed to a <see cref="GorgonStructuredBufferView"/> or <see cref="GorgonStructuredBufferUav"/>.
+        /// Use this to retrieve the number of elements that will be passed to a <see cref="GorgonStructuredView"/> or <see cref="GorgonStructuredUav"/>.
         /// </para>
         /// <para>
         /// If this buffer has a <see cref="IGorgonBufferInfo.StructureSize"/> of 0, then this value will return 0 since it is not a structured buffer.
         /// </para>
         /// </remarks>
-        /// <seealso cref="GorgonStructuredBufferView"/>
-        /// <seealso cref="GorgonStructuredBufferUav"/>
+        /// <seealso cref="GorgonStructuredView"/>
+        /// <seealso cref="GorgonStructuredUav"/>
         public int GetTotalStructuredElementCount() => _info.StructureSize > 0 ? SizeInBytes / _info.StructureSize : 0;
 
         /// <summary>
@@ -289,11 +388,11 @@ namespace Gorgon.Graphics.Core
         /// <returns>The total number of raw elements.</returns>
         /// <remarks>
         /// <para>
-        /// Use this to retrieve the number of elements that will be passed to a <see cref="GorgonRawBufferUav"/> or <see cref="GorgonRawBufferView"/>.
+        /// Use this to retrieve the number of elements that will be passed to a <see cref="GorgonRawUav"/> or <see cref="GorgonRawView"/>.
         /// </para>
         /// </remarks>
-        /// <seealso cref="GorgonStructuredBufferView"/>
-        /// <seealso cref="GorgonStructuredBufferUav"/>
+        /// <seealso cref="GorgonStructuredView"/>
+        /// <seealso cref="GorgonStructuredUav"/>
         public int GetTotalRawElementCount() => SizeInBytes / 4;
 
         /// <summary>
@@ -303,19 +402,26 @@ namespace Gorgon.Graphics.Core
         /// <param name="startElement">[Optional] The starting element to begin viewing at.</param>
         /// <param name="elementCount">[Optional] The number of elements to view.</param>
         /// <returns>The <see cref="GorgonBufferView"/> requested for this buffer.</returns>
-        /// <exception cref="ArgumentException">Thrown if this buffer is a staging resource, or does not have a binding flag for shader access.
-        /// <para>-or-</para>
-        /// <para>Thrown if the <paramref name="format"/> is <see cref="BufferFormat.Unknown"/>.</para>
-        /// </exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="startElement"/> and the <paramref name="elementCount"/> are larger than the total number of elements.</exception>
+        /// <exception cref="GorgonException">Thrown if this buffer is a staging resource, or does not have a binding flag for shader access.</exception>
+        /// <exception cref="ArgumentException">Thrown if the <paramref name="format"/> is typeless.</exception>
         /// <remarks>
         /// <para>
-        /// To determine how many elements are in a buffer, use the <see cref="GetTotalElementCount"/> method.
+        /// This will create a shader resource view that makes a buffer accessible to shaders. This allows viewing of the buffer data in a different format, or even a subsection of the buffer from within 
+        /// the shader.
         /// </para>
         /// <para>
-        /// If the <paramref name="elementCount"/> is omitted (less than 1), then the entire buffer minus the <paramref name="startElement"/> will be available to the shader.
+        /// The <paramref name="format"/> parameter is used present the buffer data as a specific <see cref="BufferFormat"/> type to the shader. 
+        /// </para>
+        /// <para>
+        /// The <paramref name="startElement"/> parameter defines the starting data element to allow access to within the shader. If this value falls outside of the range of available elements, then it 
+        /// will be clipped to the upper and lower bounds of the element range. If this value is left at 0, then first element is viewed. 
+        /// </para>
+        /// <para>
+        /// The <paramref name="elementCount"/> parameter defines how many elements to allow access to inside of the view. If this value falls outside of the range of available elements, then it will be 
+        /// clipped to the upper or lower bounds of the element range. If this value is left at 0, then the entire buffer is viewed.
         /// </para>
         /// </remarks>
+        /// <seealso cref="BufferFormat"/>
         public GorgonBufferView GetShaderResourceView(BufferFormat format, int startElement = 0, int elementCount = 0)
         {
             if (format == BufferFormat.Unknown)
@@ -323,7 +429,23 @@ namespace Gorgon.Graphics.Core
                 throw new ArgumentException(Resources.GORGFX_ERR_VIEW_UNKNOWN_FORMAT, nameof(format));
             }
 
+            if (Usage == ResourceUsage.Staging)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_BUFFER_STAGING_CANNOT_BE_BOUND_TO_GPU);
+            }
+
+            if ((Binding & BufferBinding.Shader) != BufferBinding.Shader)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_INCORRECT_BINDING, BufferBinding.Shader));
+            }
+
             GorgonFormatInfo formatInfo = new GorgonFormatInfo(format);
+
+            if (formatInfo.IsTypeless)
+            {
+                throw new ArgumentException(string.Format(Resources.GORGFX_ERR_VIEW_NO_TYPELESS));
+            }
+
             int totalElementCount = GetTotalElementCount(formatInfo);
             startElement = startElement.Min(totalElementCount - 1).Max(0);
 
@@ -333,36 +455,53 @@ namespace Gorgon.Graphics.Core
                 elementCount = totalElementCount - startElement;
             }
 
+            elementCount = elementCount.Min(totalElementCount - startElement).Max(1);
+
             BufferShaderViewKey key = new BufferShaderViewKey(startElement, elementCount, format);
             if (GetView(key) is GorgonBufferView view)
             {
                 return view;
             }
             
-            view = new GorgonBufferView(this, format, startElement, elementCount, totalElementCount, formatInfo, Log);
+            view = new GorgonBufferView(this, format, formatInfo, startElement, elementCount, totalElementCount);
             view.CreateNativeView();
             RegisterView(key, view);
             return view;
         }
 
         /// <summary>
-        /// Function to create or retrieve a <see cref="GorgonStructuredBufferView"/> for this buffer.
+        /// Function to create or retrieve a <see cref="GorgonStructuredView"/> for this buffer.
         /// </summary>
         /// <param name="startElement">[Optional] The starting element to begin viewing at.</param>
         /// <param name="elementCount">[Optional] The number of elements to view.</param>
-        /// <returns>The <see cref="GorgonStructuredBufferView"/> requested for this buffer.</returns>
-        /// <exception cref="ArgumentException">Thrown if this buffer is a staging resource, or does not have a binding flag for shader access.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="startElement"/> and the <paramref name="elementCount"/> are larger than the total number of elements.</exception>
+        /// <returns>The <see cref="GorgonStructuredView"/> requested for this buffer.</returns>
+        /// <exception cref="GorgonException">Thrown if this buffer is a staging resource, or does not have a binding flag for shader access.</exception>
         /// <remarks>
         /// <para>
-        /// To determine how many elements are in a buffer, use the <see cref="GetTotalElementCount"/> method.
+        /// This will create a unordered access view that makes a buffer accessible to shaders. This allows viewing of the buffer data in a different format, or even a subsection of the buffer from within 
+        /// the shader.
         /// </para>
         /// <para>
-        /// If the <paramref name="elementCount"/> is omitted (less than 1), then the entire buffer minus the <paramref name="startElement"/> will be available to the shader.
+        /// The <paramref name="startElement"/> parameter defines the starting data element to allow access to within the shader. If this value falls outside of the range of available elements, then it 
+        /// will be clipped to the upper and lower bounds of the element range. If this value is left at 0, then first element is viewed. 
+        /// </para>
+        /// <para>
+        /// The <paramref name="elementCount"/> parameter defines how many elements to allow access to inside of the view. If this value falls outside of the range of available elements, then it will be 
+        /// clipped to the upper or lower bounds of the element range. If this value is left at 0, then the entire buffer is viewed.
         /// </para>
         /// </remarks>
-        public GorgonStructuredBufferView GetStructuredView(int startElement = 0, int elementCount = 0)
+        public GorgonStructuredView GetStructuredView(int startElement = 0, int elementCount = 0)
         {
+            if (Usage == ResourceUsage.Staging)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_BUFFER_STAGING_CANNOT_BE_BOUND_TO_GPU);
+            }
+
+            if ((Binding & BufferBinding.Shader) != BufferBinding.Shader)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_INCORRECT_BINDING, BufferBinding.Shader));
+            }
+
             int totalElementCount = GetTotalStructuredElementCount();
             startElement = startElement.Max(0);
 
@@ -372,14 +511,16 @@ namespace Gorgon.Graphics.Core
                 elementCount = totalElementCount - startElement;
             }
 
+            elementCount = elementCount.Min(totalElementCount- startElement).Max(1);
+
             BufferShaderViewKey key = new BufferShaderViewKey(startElement, elementCount, 0);
 
-            if (GetView(key) is GorgonStructuredBufferView view)
+            if (GetView(key) is GorgonStructuredView view)
             {
                 return view;
             }
 
-            view = new GorgonStructuredBufferView(this, startElement, elementCount, totalElementCount, Log);
+            view = new GorgonStructuredView(this, startElement, elementCount, totalElementCount);
             view.CreateNativeView();
             RegisterView(key, view);
             return view;
@@ -392,14 +533,12 @@ namespace Gorgon.Graphics.Core
         /// <param name="startElement">[Optional] The first element to start viewing from.</param>
         /// <param name="elementCount">[Optional] The number of elements to view.</param>
         /// <returns>A <see cref="GorgonBufferUav"/> used to bind the buffer to a shader.</returns>
-        /// <exception cref="GorgonException">Thrown if the video adapter does not support feature set 11 or better.
-        /// <para>-or-</para>
+        /// <exception cref="GorgonException">
         /// <para>Thrown when this buffer does not have a <see cref="BufferBinding"/> of <see cref="BufferBinding.UnorderedAccess"/>.</para>
         /// <para>-or-</para>
         /// <para>Thrown when this buffer has a usage of <see cref="ResourceUsage.Staging"/>.</para>
-        /// <para>-or-</para>
-        /// <para>Thrown when the <paramref name="format"/> is typeless or is not a supported format for unordered access views.</para>
         /// </exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="format"/> is typeless or is not a supported format for unordered access views.</exception>        
         /// <remarks>
         /// <para>
         /// This will create a unordered access view that makes a buffer accessible to compute shaders (or pixel shaders) using unordered access to the data. This allows viewing of the buffer data in a 
@@ -413,45 +552,32 @@ namespace Gorgon.Graphics.Core
         /// will be clipped to the upper and lower bounds of the element range. If this value is left at 0, then first element is viewed.
         /// </para>
         /// <para>
-        /// To determine how many elements are in a buffer, use the <see cref="GetTotalElementCount"/> method.
-        /// </para>
-        /// <para>
         /// The <paramref name="elementCount"/> parameter defines how many elements to allow access to inside of the view. If this value falls outside of the range of available elements, then it will be 
         /// clipped to the upper or lower bounds of the element range. If this value is left at 0, then the entire buffer is viewed.
-        /// </para>
-        /// <para>
-        /// <note type="important">
-        /// <para>
-        /// This method requires a video adapter capable of supporting feature set 11 or better. If the current video adapter does not support feature set 11, an exception will be thrown.
-        /// </para>
-        /// </note>
         /// </para>
         /// </remarks>
         public GorgonBufferUav GetUnorderedAccessView(BufferFormat format, int startElement = 0, int elementCount = 0)
         {
-            if (Graphics.RequestedFeatureSet < FeatureSet.Level_12_0)
-            {
-                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_UAV_REQUIRES_SM5);
-            }
-
-            if ((Info.Usage == ResourceUsage.Staging)
-                || ((Info.Binding & BufferBinding.UnorderedAccess) != BufferBinding.UnorderedAccess))
+            if ((Usage == ResourceUsage.Staging)
+                || ((Binding & BufferBinding.UnorderedAccess) != BufferBinding.UnorderedAccess))
             {
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_UAV_RESOURCE_NOT_VALID, Name));
             }
 
-            if (!Graphics.FormatSupport.TryGetValue(format, out GorgonFormatSupportInfo support))
+            if ((!Graphics.FormatSupport.TryGetValue(format, out IGorgonFormatSupportInfo support))
+                || ((support.FormatSupport & BufferFormatSupport.TypedUnorderedAccessView) != BufferFormatSupport.TypedUnorderedAccessView))
             {
-                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_UAV_FORMAT_INVALID, format));
-            }
-
-            if ((support.FormatSupport & BufferFormatSupport.TypedUnorderedAccessView) != BufferFormatSupport.TypedUnorderedAccessView)
-            {
-                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_UAV_FORMAT_INVALID, format));
+                throw new ArgumentException(string.Format(Resources.GORGFX_ERR_UAV_FORMAT_INVALID, format), nameof(format));
             }
 
             // Ensure the size of the data type fits the requested format.
-            GorgonFormatInfo info = new GorgonFormatInfo(format);
+            var info = new GorgonFormatInfo(format);
+
+            if (info.IsTypeless)
+            {
+                throw new ArgumentException(Resources.GORGFX_ERR_VIEW_NO_TYPELESS, nameof(format));
+            }
+
             int totalElementCount = GetTotalElementCount(format);
 
             startElement = startElement.Min(totalElementCount - 1).Max(0);
@@ -470,7 +596,7 @@ namespace Gorgon.Graphics.Core
                 return result;
             }
 
-            result = new GorgonBufferUav(this, startElement, elementCount, format, info, Log);
+            result = new GorgonBufferUav(this, format, info, startElement, elementCount, totalElementCount);
             result.CreateNativeView();
             RegisterUav(key, result);
 
@@ -478,15 +604,14 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Function to create a new <see cref="GorgonStructuredBufferUav"/> for this buffer.
+        /// Function to create a new <see cref="GorgonStructuredUav"/> for this buffer.
         /// </summary>
         /// <param name="startElement">[Optional] The first element to start viewing from.</param>
         /// <param name="elementCount">[Optional] The number of elements to view.</param>
         /// <param name="uavType">[Optional] The type of uav to create.</param>
-        /// <returns>A <see cref="GorgonStructuredBufferUav"/> used to bind the buffer to a shader.</returns>
-        /// <exception cref="GorgonException">Thrown if the video adapter does not support feature set 11 or better.
-        /// <para>-or-</para>
-        /// <para>Thrown when this buffer does not have a <see cref="BufferBinding"/> of <see cref="BufferBinding.UnorderedAccess"/>.</para>
+        /// <returns>A <see cref="GorgonStructuredUav"/> used to bind the buffer to a shader.</returns>
+        /// <exception cref="GorgonException">
+        /// Thrown when this buffer does not have a <see cref="BufferBinding"/> of <see cref="BufferBinding.UnorderedAccess"/>.
         /// <para>-or-</para>
         /// <para>Thrown when this buffer has a usage of <see cref="ResourceUsage.Staging"/>.</para>
         /// </exception>
@@ -496,37 +621,22 @@ namespace Gorgon.Graphics.Core
         /// different format, or even a subsection of the buffer from within the shader.
         /// </para>
         /// <para>
-        /// The <paramref name="uavType"/> parameter is used to define whether the view will be a counter, append/consume, or just a regular view. If omitted a standard view 
-        /// (<see cref="StructuredBufferUavType.None"/>) will be used.
-        /// </para>
-        /// <para>
         /// The <paramref name="startElement"/> parameter defines the starting data element to allow access to within the shader. If this value falls outside of the range of available elements, then it 
         /// will be clipped to the upper and lower bounds of the element range. If this value is left at 0, then first element is viewed.
-        /// </para>
-        /// <para>
-        /// To determine how many elements are in a buffer, use the <see cref="GetTotalElementCount"/> method.
         /// </para>
         /// <para>
         /// The <paramref name="elementCount"/> parameter defines how many elements to allow access to inside of the view. If this value falls outside of the range of available elements, then it will be 
         /// clipped to the upper or lower bounds of the element range. If this value is left at 0, then the entire buffer is viewed.
         /// </para>
         /// <para>
-        /// <note type="important">
-        /// <para>
-        /// This method requires a video adapter capable of supporting feature set 11 or better. If the current video adapter does not support feature set 11, an exception will be thrown.
-        /// </para>
-        /// </note>
+        /// The <paramref name="uavType"/> parameter specifies whether the buffer can be used as an <see cref="StructuredBufferUavType.Append"/>/Consume buffer or
+        /// <see cref="StructuredBufferUavType.Counter"/> by the shader.
         /// </para>
         /// </remarks>
-        public GorgonStructuredBufferUav GetStructuredUav(int startElement = 0, int elementCount = 0, StructuredBufferUavType uavType = StructuredBufferUavType.None)
+        public GorgonStructuredUav GetStructuredUav(int startElement = 0, int elementCount = 0, StructuredBufferUavType uavType = StructuredBufferUavType.None)
         {
-            if (Graphics.RequestedFeatureSet < FeatureSet.Level_12_0)
-            {
-                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_UAV_REQUIRES_SM5);
-            }
-
-            if ((Info.Usage == ResourceUsage.Staging)
-                || ((Info.Binding & BufferBinding.UnorderedAccess) != BufferBinding.UnorderedAccess))
+            if ((Usage == ResourceUsage.Staging)
+                || ((Binding & BufferBinding.UnorderedAccess) != BufferBinding.UnorderedAccess))
             {
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_UAV_RESOURCE_NOT_VALID, Name));
             }
@@ -545,12 +655,12 @@ namespace Gorgon.Graphics.Core
 
             BufferShaderViewKey key = new BufferShaderViewKey(startElement, elementCount, (int)uavType);
 
-            if (GetUav(key) is GorgonStructuredBufferUav result)
+            if (GetUav(key) is GorgonStructuredUav result)
             {
                 return result;
             }
 
-            result = new GorgonStructuredBufferUav(this, startElement, elementCount, uavType, Log);
+            result = new GorgonStructuredUav(this, uavType, startElement, elementCount, totalElementCount);
             result.CreateNativeView();
             RegisterUav(key, result);
 
@@ -558,24 +668,44 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Function to create or retrieve a <see cref="GorgonRawBufferView"/> for this buffer.
+        /// Function to create a new <see cref="GorgonRawView"/> for this buffer.
         /// </summary>
         /// <param name="elementType">The type of data to interpret elements within the buffer as.</param>
-        /// <param name="startElement">[Optional] The starting element to begin viewing at.</param>
+        /// <param name="startElement">[Optional] The first element to start viewing from.</param>
         /// <param name="elementCount">[Optional] The number of elements to view.</param>
-        /// <returns>The <see cref="GorgonRawBufferView"/> requested for this buffer.</returns>
-        /// <exception cref="ArgumentException">Thrown if this buffer is a staging resource, or does not have a binding flag for shader access.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="startElement"/> and the <paramref name="elementCount"/> are larger than the total number of elements.</exception>
+        /// <returns>A <see cref="GorgonRawUav"/> used to bind the buffer to a shader.</returns>
+        /// <exception cref="GorgonException">Thrown when this buffer does not have a <see cref="BufferBinding"/> of <see cref="BufferBinding.UnorderedAccess"/>.
+        /// <para>-or-</para>
+        /// <para>Thrown when this buffer has a usage of <see cref="ResourceUsage.Staging"/>.</para>
+        /// </exception>
         /// <remarks>
+        /// <para>
+        /// This will create a shader resource view that makes a buffer accessible to shaders. This allows viewing of the buffer data in a different format, or even a subsection of the buffer from within
+        /// the shader.
+        /// </para>
+        /// <para>
+        /// The <paramref name="elementType"/> parameter is used present the raw buffer data as another type to the shader. 
+        /// </para>
+        /// <para>
+        /// The <paramref name="startElement"/> parameter defines the starting data element to allow access to within the shader. If this value falls outside of the range of available elements, then it 
+        /// will be clipped to the upper and lower bounds of the element range. If this value is left at 0, then first element is viewed.
+        /// </para>
         /// <para>
         /// To determine how many elements are in a buffer, use the <see cref="GetTotalElementCount"/> method.
         /// </para>
         /// <para>
-        /// If the <paramref name="elementCount"/> is omitted (less than 1), then the entire buffer minus the <paramref name="startElement"/> will be available to the shader.
+        /// The <paramref name="elementCount"/> parameter defines how many elements to allow access to inside of the view. If this value falls outside of the range of available elements, then it will be 
+        /// clipped to the upper or lower bounds of the element range. If this value is left at 0, then the entire buffer is viewed.
         /// </para>
         /// </remarks>
-        public GorgonRawBufferView GetRawView(RawBufferElementType elementType, int startElement = 0, int elementCount = 0)
+        public GorgonRawView GetRawView(RawBufferElementType elementType, int startElement = 0, int elementCount = 0)
         {
+            if ((Usage == ResourceUsage.Staging)
+                || ((Binding & BufferBinding.Shader) != BufferBinding.Shader))
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_SRV_NOT_VALID, Name));
+            }
+
             int totalElementCount = GetTotalRawElementCount();
             startElement = startElement.Min(totalElementCount - 1).Max(0);
 
@@ -589,31 +719,27 @@ namespace Gorgon.Graphics.Core
 
             BufferShaderViewKey key = new BufferShaderViewKey(startElement, elementCount, elementType);
 
-            if (GetView(key) is GorgonRawBufferView view)
+            if (GetView(key) is GorgonRawView view)
             {
                 return view;
             }
-            
-            view = new GorgonRawBufferView(this, elementType, startElement, elementCount, totalElementCount, Log);
+
+            view = new GorgonRawView(this, elementType, startElement, elementCount, totalElementCount);
             view.CreateNativeView();
             RegisterView(key, view);
             return view;
         }
 
         /// <summary>
-        /// Function to create a new <see cref="GorgonRawBufferUav"/> for this buffer.
+        /// Function to create a new <see cref="GorgonRawUav"/> for this buffer.
         /// </summary>
         /// <param name="elementType">The type of data to interpret elements within the buffer as.</param>
         /// <param name="startElement">[Optional] The first element to start viewing from.</param>
         /// <param name="elementCount">[Optional] The number of elements to view.</param>
-        /// <returns>A <see cref="GorgonRawBufferUav"/> used to bind the buffer to a shader.</returns>
-        /// <exception cref="GorgonException">Thrown if the video adapter does not support feature set 11 or better.
-        /// <para>-or-</para>
-        /// <para>Thrown when this buffer does not have a <see cref="BufferBinding"/> of <see cref="BufferBinding.UnorderedAccess"/>.</para>
+        /// <returns>A <see cref="GorgonRawUav"/> used to bind the buffer to a shader.</returns>
+        /// <exception cref="GorgonException">Thrown when this buffer does not have a <see cref="BufferBinding"/> of <see cref="BufferBinding.UnorderedAccess"/>.
         /// <para>-or-</para>
         /// <para>Thrown when this buffer has a usage of <see cref="ResourceUsage.Staging"/>.</para>
-        /// <para>-or-</para>
-        /// <para>Thrown when the <paramref name="elementType"/> is not supported for unordered access views.</para>
         /// </exception>
         /// <remarks>
         /// <para>
@@ -634,23 +760,11 @@ namespace Gorgon.Graphics.Core
         /// The <paramref name="elementCount"/> parameter defines how many elements to allow access to inside of the view. If this value falls outside of the range of available elements, then it will be 
         /// clipped to the upper or lower bounds of the element range. If this value is left at 0, then the entire buffer is viewed.
         /// </para>
-        /// <para>
-        /// <note type="important">
-        /// <para>
-        /// This method requires a video adapter capable of supporting feature set 11 or better. If the current video adapter does not support feature set 11, an exception will be thrown.
-        /// </para>
-        /// </note>
-        /// </para>
         /// </remarks>
-        public GorgonRawBufferUav GetRawUav(RawBufferElementType elementType, int startElement = 0, int elementCount = 0)
+        public GorgonRawUav GetRawUav(RawBufferElementType elementType, int startElement = 0, int elementCount = 0)
         {
-            if (Graphics.RequestedFeatureSet < FeatureSet.Level_12_0)
-            {
-                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_UAV_REQUIRES_SM5);
-            }
-
-            if ((Info.Usage == ResourceUsage.Staging)
-                || ((Info.Binding & BufferBinding.UnorderedAccess) != BufferBinding.UnorderedAccess))
+            if ((Usage == ResourceUsage.Staging)
+                || ((Binding & BufferBinding.UnorderedAccess) != BufferBinding.UnorderedAccess))
             {
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_UAV_RESOURCE_NOT_VALID, Name));
             }
@@ -669,12 +783,12 @@ namespace Gorgon.Graphics.Core
 
             BufferShaderViewKey key = new BufferShaderViewKey(startElement, elementCount, elementType);
 
-            if (GetUav(key) is GorgonRawBufferUav result)
+            if (GetUav(key) is GorgonRawUav result)
             {
                 return result;
             }
 
-            result = new GorgonRawBufferUav(this, startElement, elementCount, elementType, Log);
+            result = new GorgonRawUav(this, startElement, elementCount,  totalElementCount, elementType);
             result.CreateNativeView();
             RegisterUav(key, result);
 
@@ -686,32 +800,21 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonBuffer" /> class.
         /// </summary>
-        /// <param name="name">Name of this buffer.</param>
         /// <param name="graphics">The <see cref="GorgonGraphics"/> object used to create and manipulate the buffer.</param>
         /// <param name="info">Information used to create the buffer.</param>
         /// <param name="initialData">[Optional] The initial data used to populate the buffer.</param>
-        /// <param name="log">[Optional] The log interface used for debug logging.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, <paramref name="name"/>, or <paramref name="info"/> parameters are <b>null</b>.</exception>
-        /// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> is empty.
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentException">Thrown if the size of the buffer is less than 1 byte.</exception>
+        /// <exception cref="GorgonException">Thrown if the buffer is created with a usage of <see cref="ResourceUsage.Immutable"/>, but the <paramref name="initialData"/> parameter is <b>null</b>.
         /// <para>-or-</para>
-        /// <para>Thrown if the size of the buffer is less than 1 byte.</para>
+        /// <para>A value on the <paramref name="info"/> parameter is incorrect.</para>
         /// </exception>
-        /// <exception cref="GorgonException">Thrown if the buffer is created with a usage of <see cref="ResourceUsage.Immutable"/>, but the <paramref name="initialData"/> parameter is <b>null</b>.</exception>
-        public GorgonBuffer(string name, GorgonGraphics graphics, IGorgonBufferInfo info, IGorgonPointer initialData = null, IGorgonLog log = null)
-            : base(name, graphics, log)
+        public GorgonBuffer(GorgonGraphics graphics, IGorgonBufferInfo info, GorgonNativeBuffer<byte> initialData = null)
+            : base(graphics)
         {
-            if (info == null)
-            {
-                throw new ArgumentNullException(nameof(info));
-            }
+            _info = new GorgonBufferInfo(info ?? throw new ArgumentNullException(nameof(info)));
 
-            if (info.SizeInBytes < 1)
-            {
-                throw new ArgumentException(string.Format(Resources.GORGFX_ERR_BUFFER_SIZE_TOO_SMALL, 1));
-            }
-
-            BufferType = BufferType.Generic;
-            Initialize(info, initialData);
+            Initialize(initialData);
         }
         #endregion
     }

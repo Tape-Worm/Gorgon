@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Diagnostics;
 using System.Threading;
 using Gorgon.Diagnostics;
 using D3D11 = SharpDX.Direct3D11;
@@ -69,10 +70,10 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the render target view.
         /// </summary>
-        protected internal D3D11.RenderTargetView1 Native
+        internal D3D11.RenderTargetView1 Native
         {
             get => _view;
-            protected set => _view = value;
+            set => _view = value;
         }
 
         /// <summary>
@@ -114,9 +115,21 @@ namespace Gorgon.Graphics.Core
 
         #region Methods.
         /// <summary>
-        /// Function to perform initialization of the view.
+        /// Function to create a native version of the render target view.
         /// </summary>
-        protected internal abstract void CreateNativeView();
+        private protected abstract void OnCreateNativeView();
+
+        /// <summary>
+        /// Function to create a native version of the render target view.
+        /// </summary>
+        internal void CreateNativeView()
+        {
+            OnCreateNativeView();
+
+            Debug.Assert(Native != null, "No view was created.");
+            
+            this.RegisterDisposable(Graphics);
+        }
 
         /// <summary>
         /// Function to clear the contents of the render target for this view.

@@ -58,8 +58,30 @@
       <Link>SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="BufferFormatSupport.cs" />
+    <Compile Include="Buffers\GorgonBuffer.cs" />
+    <Compile Include="Buffers\GorgonBufferCommon.cs" />
+    <Compile Include="Buffers\GorgonBufferInfo.cs" />
+    <Compile Include="Buffers\GorgonBufferUav.cs" />
+    <Compile Include="Buffers\GorgonBufferUavCommon.cs" />
+    <Compile Include="Buffers\GorgonBufferView.cs" />
+    <Compile Include="Buffers\GorgonBufferViewCommon.cs" />
+    <Compile Include="Buffers\GorgonConstantBuffer.cs" />
+    <Compile Include="Buffers\GorgonConstantBufferInfo.cs" />
+    <Compile Include="Buffers\GorgonIndexBuffer.cs" />
+    <Compile Include="Buffers\GorgonIndexBufferInfo.cs" />
+    <Compile Include="Buffers\GorgonIndexBufferUav.cs" />
+    <Compile Include="Buffers\GorgonRawUav.cs" />
+    <Compile Include="Buffers\GorgonRawView.cs" />
+    <Compile Include="Buffers\GorgonStructuredUav.cs" />
+    <Compile Include="Buffers\GorgonStructuredView.cs" />
+    <Compile Include="Buffers\GorgonVertexBuffer.cs" />
     <Compile Include="Buffers\GorgonVertexBufferInfo.cs" />
+    <Compile Include="Buffers\GorgonVertexBufferUav.cs" />
+    <Compile Include="Buffers\_Interfaces\IGorgonBufferInfo.cs" />
+    <Compile Include="Buffers\_Interfaces\IGorgonConstantBufferInfo.cs" />
+    <Compile Include="Buffers\_Interfaces\IGorgonIndexBufferInfo.cs" />
     <Compile Include="Buffers\_Interfaces\IGorgonVertexBufferInfo.cs" />
+    <Compile Include="Buffers\_Internal\ShaderViewKey.cs" />
     <Compile Include="Comparison.cs" />
     <Compile Include="ComputeShaderFormat.cs" />
     <Compile Include="CopyMode.cs" />
@@ -78,7 +100,8 @@
     <Compile Include="Geometry\GorgonStreamOutLayout.cs" />
     <Compile Include="Geometry\_Attributes\InputElementAttribute.cs" />
     <Compile Include="GorgonGraphicsResource.cs" />
-    <Compile Include="LockMode.cs" />
+    <Compile Include="GorgonResourceView.cs" />
+    <Compile Include="Pipeline\GorgonVertexBufferBinding.cs" />
     <Compile Include="Shaders\Effects\GorgonGaussBlurEffect.cs" />
     <Compile Include="Shaders\Effects\GorgonShaderEffect.cs" />
     <Compile Include="Shaders\GorgonComputeShader.cs" />
@@ -179,21 +202,18 @@
       <Version>4.0.1</Version>
     </PackageReference>
     <PackageReference Include="System.Buffers">
-      <Version>4.5.0-preview3-26416-01</Version>
-    </PackageReference>
-    <PackageReference Include="System.Memory">
-      <Version>4.5.0-preview3-26416-01</Version>
+      <Version>4.5.0-rtm-26508-03</Version>
     </PackageReference>
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
-      <Version>4.5.0-preview3-26416-01</Version>
+      <Version>4.5.0-rtm-26508-03</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Buffers\_Internal\" />
     <Folder Include="OLDE\" />
+    <Folder Include="Pipeline\_Interfaces\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

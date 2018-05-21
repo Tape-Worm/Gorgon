@@ -54,17 +54,27 @@ namespace Gorgon.Graphics.Core
 	public sealed class GorgonTexture3DView
 		: GorgonShaderResourceView, IGorgonTexture3DInfo
     {
-        #region Variables.
-        // The texture linked to this view.
-        private GorgonTexture3D _texture;
-        #endregion
-
         #region Properties.
+        /// <summary>
+        /// Property to return the format for the view.
+        /// </summary>
+        public BufferFormat Format
+        {
+            get;
+        }
 
-		/// <summary>
-		/// Property to return the index of the first mip map in the resource to view.
-		/// </summary>
-		public int MipSlice
+        /// <summary>
+        /// Property to return information about the <see cref="Format"/> used by this view.
+        /// </summary>
+        public GorgonFormatInfo FormatInformation
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the index of the first mip map in the resource to view.
+        /// </summary>
+        public int MipSlice
 		{
 			get;
 		}
@@ -80,7 +90,11 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the texture that is bound to this view.
         /// </summary>
-        public GorgonTexture3D Texture => _texture;
+        public GorgonTexture3D Texture 
+        { 
+            get; 
+            private set;
+        }
 
         /// <summary>
         /// Property to return the width of the texture in pixels.
@@ -120,10 +134,11 @@ namespace Gorgon.Graphics.Core
         #endregion
 
         #region Methods.
-		/// <summary>
-		/// Function to initialize the shader resource view.
-		/// </summary>
-		protected internal override void CreateNativeView()
+        /// <summary>
+        /// Function to perform the creation of a specific kind of view.
+        /// </summary>
+        /// <returns>The view that was created.</returns>
+        private protected override D3D11.ResourceView OnCreateNativeView()
 		{
 		    D3D11.ShaderResourceViewDescription1 desc = new D3D11.ShaderResourceViewDescription1
 		                                                {
@@ -136,30 +151,32 @@ namespace Gorgon.Graphics.Core
 		                                                    }
 		                                                };
 
-			try
-			{
-			    Graphics.Log.Print($"'{Texture.Name}': Creating D3D11 shader resource view.", LoggingLevel.Simple);
+		    try
+		    {
+		        Graphics.Log.Print($"Creating D3D11 3D texture shader resource view for {Texture.Name}.", LoggingLevel.Simple);
 
-				// Create our SRV.
-			    Native = new D3D11.ShaderResourceView1(Texture.Graphics.D3DDevice, Texture.D3DResource, desc)
-			                 {
-			                     DebugName = $"'{Texture.Name}'_D3D11ShaderResourceView1_3D"
-			                 };
+		        // Create our SRV.
+		        Native = new D3D11.ShaderResourceView1(Texture.Graphics.D3DDevice, Texture.D3DResource, desc)
+		                 {
+		                     DebugName = $"'{Texture.Name}'_D3D11ShaderResourceView1_3D"
+		                 };
 
-			    Graphics.Log.Print($"Shader Resource View '{Texture.Name}': {Texture.ResourceType} -> Mip slice: {MipSlice}", LoggingLevel.Verbose);
-                
-			    this.RegisterDisposable(Texture.Graphics);
-			}
-			catch (DX.SharpDXException sDXEx)
-			{
-				if ((uint)sDXEx.ResultCode.Code == 0x80070057)
-				{
-					throw new GorgonException(GorgonResult.CannotCreate,
-											  string.Format(Resources.GORGFX_ERR_VIEW_CANNOT_CAST_FORMAT,
-															Texture.Format,
-															Format));
-				}
-			}
+		        Graphics.Log.Print($"Shader Resource View '{Texture.Name}': {Texture.ResourceType} -> Mip slice: {MipSlice}", LoggingLevel.Verbose);
+		    }
+		    catch (DX.SharpDXException sDXEx)
+		    {
+		        if ((uint)sDXEx.ResultCode.Code == 0x80070057)
+		        {
+		            throw new GorgonException(GorgonResult.CannotCreate,
+		                                      string.Format(Resources.GORGFX_ERR_VIEW_CANNOT_CAST_FORMAT,
+		                                                    Texture.Format,
+		                                                    Format));
+		        }
+				
+		        throw;
+		    }
+
+		    return Native;
 		}
 
         /// <summary>
@@ -167,7 +184,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         public override void Dispose()
         {
-            _texture = null;
+            Texture = null;
             base.Dispose();
         }
 
@@ -211,6 +228,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="graphics">The graphics interface to use when creating the target.</param>
         /// <param name="info">The information about the texture.</param>
+        /// <param name="initialData">[Optional] Initial data used to populate the texture.</param>
         /// <returns>A new <see cref="GorgonTexture3DView"/>.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, or <paramref name="info"/> parameter is <b>null</b>.</exception>
         /// <remarks>
@@ -223,9 +241,13 @@ namespace Gorgon.Graphics.Core
         /// the user created a <see cref="GorgonTexture3DView"/> from the <see cref="GorgonTexture3D.GetShaderResourceView"/> method on the <see cref="GorgonTexture3D"/>, then it's assumed the user knows 
         /// what they are doing and will handle the disposal of the texture and view on their own.
         /// </para>
+        /// <para>
+        /// If an <paramref name="initialData"/> image is provided, and the width/height/depth is not the same as the values in the <paramref name="info"/> parameter, then the image data will be cropped to
+        /// match the values in the <paramref name="info"/> parameter. Things like array count, and mip levels will still be taken from the <paramref name="initialData"/> image parameter.
+        /// </para>
         /// </remarks>
         /// <seealso cref="GorgonTexture3D"/>
-        public static GorgonTexture3DView CreateTexture(GorgonGraphics graphics, IGorgonTexture3DInfo info)
+        public static GorgonTexture3DView CreateTexture(GorgonGraphics graphics, IGorgonTexture3DInfo info, IGorgonImage initialData = null)
         {
             if (graphics == null)
             {
@@ -245,7 +267,34 @@ namespace Gorgon.Graphics.Core
                                             : info.Binding
                           };
 
-            var texture = new GorgonTexture3D(graphics, newInfo);
+            if (initialData != null)
+            {
+                if ((initialData.Info.Width > info.Width)
+                    || (initialData.Info.Height > info.Height)
+                    || (initialData.Info.Depth > info.Depth))
+                {
+                    initialData = initialData.Expand(info.Width, info.Height, info.Depth);
+                }
+
+                if ((initialData.Info.Width < info.Width)
+                     || (initialData.Info.Height < info.Height)
+                     || (initialData.Info.Depth < info.Depth))
+                {
+                    initialData = initialData.Crop(new DX.Rectangle(0, 0, info.Width, info.Height), info.Depth);
+                }
+            }
+
+            GorgonTexture3D texture = initialData == null
+                                          ? new GorgonTexture3D(graphics, newInfo)
+                                          : initialData.ToTexture3D(graphics,
+                                                                    new GorgonTextureLoadOptions
+                                                                    {
+                                                                        Usage = newInfo.Usage,
+                                                                        Binding = newInfo.Binding,
+                                                                        MultisampleInfo = GorgonMultisampleInfo.NoMultiSampling,
+                                                                        Name = newInfo.Name
+                                                                    });
+
             GorgonTexture3DView result = texture.GetShaderResourceView();
             result.OwnsResource = true;
 
@@ -416,14 +465,17 @@ namespace Gorgon.Graphics.Core
         /// <param name="formatInfo">The information about the view format.</param>
         /// <param name="firstMipLevel">The first mip level to view.</param>
         /// <param name="mipCount">The number of mip levels to view.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="texture"/>, or the <paramref name="formatInfo"/> parameter is <b>null</b>.</exception>
         internal GorgonTexture3DView(GorgonTexture3D texture,
                                      BufferFormat format,
                                      GorgonFormatInfo formatInfo,
                                      int firstMipLevel,
                                      int mipCount)
-            : base(texture, format, formatInfo)
+            : base(texture)
         {
-            _texture = texture;
+            FormatInformation = formatInfo ?? throw new ArgumentNullException(nameof(formatInfo));
+            Format = format;
+            Texture = texture;
             MipSlice = firstMipLevel;
             MipCount = mipCount;
         }

@@ -156,6 +156,24 @@ namespace Gorgon.Graphics.Core
         /// staging textures do not support bindings of any kind. 
         /// </remarks>
         public TextureBinding Binding => _info.Binding;
+
+        /// <summary>
+        /// Property to return the size, in bytes, of the resource.
+        /// </summary>
+        public override int SizeInBytes
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the usage for the resource.
+        /// </summary>
+        public override ResourceUsage Usage => _info.Usage;
+
+        /// <summary>
+        /// Property to return the name of this object.
+        /// </summary>
+        public override string Name => _info.Name;
         #endregion
 
         #region Methods.
@@ -486,46 +504,6 @@ namespace Gorgon.Graphics.Core
 		                  };
 		}
 
-	    /// <summary>
-	    /// Function to calculate the size of a texture, in bytes with the given parameters.
-	    /// </summary>
-	    /// <param name="width">The width of the texture.</param>
-	    /// <param name="height">The height of the texture.</param>
-	    /// <param name="arrayCount">The number of array indices.</param>
-	    /// <param name="format">The format for the texture.</param>
-	    /// <param name="mipCount">The number of mip map levels.</param>
-	    /// <param name="isCubeMap"><b>true</b> if the texture is meant to be used as a cube map, or <b>false</b> if not.</param>
-	    /// <returns>The number of bytes for the texture.</returns>
-	    public static int CalculateSizeInBytes(int width, int height, int arrayCount, BufferFormat format, int mipCount, bool isCubeMap)
-	    {
-	        return GorgonImage.CalculateSizeInBytes(isCubeMap ? ImageType.ImageCube : ImageType.Image2D,
-	                                                width,
-	                                                height,
-	                                                arrayCount,
-	                                                format,
-	                                                mipCount);
-	    }
-
-	    /// <summary>
-	    /// Function to calculate the size of a texture, in bytes with the given parameters.
-	    /// </summary>
-	    /// <param name="info">The <see cref="IGorgonTexture2DInfo"/> used to define a texture.</param>
-	    /// <returns>The number of bytes for the texture.</returns>
-	    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
-	    public static int CalculateSizeInBytes(IGorgonTexture2DInfo info)
-	    {
-	        if (info == null)
-	        {
-	            throw new ArgumentNullException(nameof(info));
-	        }
-
-	        return CalculateSizeInBytes(info.Width,
-	                                    info.Height,
-	                                    info.ArrayCount,
-	                                    info.Format,
-	                                    info.MipLevels,
-	                                    info.IsCubeMap);
-	    }
 
         /// <summary>
         /// Function to copy this texture into another <see cref="GorgonTexture2D"/>.
@@ -570,11 +548,13 @@ namespace Gorgon.Graphics.Core
         /// </note>
         /// </para>
         /// </remarks>
-        /// <seealso cref="CopyFrom(GorgonTexture1D,GorgonRange?,int,int,int,int,int,int,CopyMode)"/>
-        /// <seealso cref="CopyFrom(GorgonTexture2D,DX.Rectangle?,int,int,int,int,int,int,CopyMode)"/>
-        /// <seealso cref="CopyFrom(GorgonTexture3D,DX.Rectangle?,int,int,int,int,int,int,CopyMode)"/>
-        public void CopyTo(GorgonTexture2D destTexture)
+        private void CopyResource(GorgonTexture2D destTexture)
 		{
+		    if (destTexture == this)
+		    {
+		        return;
+		    }
+
 			destTexture.ValidateObject(nameof(destTexture));
 
 #if DEBUG
@@ -608,29 +588,71 @@ namespace Gorgon.Graphics.Core
 			Graphics.D3DDeviceContext.CopyResource(D3DResource, destTexture.D3DResource);
 		}
 
+	    /// <summary>
+	    /// Function to calculate the size of a texture, in bytes with the given parameters.
+	    /// </summary>
+	    /// <param name="width">The width of the texture.</param>
+	    /// <param name="height">The height of the texture.</param>
+	    /// <param name="arrayCount">The number of array indices.</param>
+	    /// <param name="format">The format for the texture.</param>
+	    /// <param name="mipCount">The number of mip map levels.</param>
+	    /// <param name="isCubeMap"><b>true</b> if the texture is meant to be used as a cube map, or <b>false</b> if not.</param>
+	    /// <returns>The number of bytes for the texture.</returns>
+	    public static int CalculateSizeInBytes(int width, int height, int arrayCount, BufferFormat format, int mipCount, bool isCubeMap)
+	    {
+	        return GorgonImage.CalculateSizeInBytes(isCubeMap ? ImageType.ImageCube : ImageType.Image2D,
+	                                                width,
+	                                                height,
+	                                                arrayCount,
+	                                                format,
+	                                                mipCount);
+	    }
+
+	    /// <summary>
+	    /// Function to calculate the size of a texture, in bytes with the given parameters.
+	    /// </summary>
+	    /// <param name="info">The <see cref="IGorgonTexture2DInfo"/> used to define a texture.</param>
+	    /// <returns>The number of bytes for the texture.</returns>
+	    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
+	    public static int CalculateSizeInBytes(IGorgonTexture2DInfo info)
+	    {
+	        if (info == null)
+	        {
+	            throw new ArgumentNullException(nameof(info));
+	        }
+
+	        return CalculateSizeInBytes(info.Width,
+	                                    info.Height,
+	                                    info.ArrayCount,
+	                                    info.Format,
+	                                    info.MipLevels,
+	                                    info.IsCubeMap);
+	    }
+
 		/// <summary>
-		/// Function to copy a texture subresource from another <see cref="GorgonTexture1D"/> into this texture.
+		/// Function to copy this texture into a <see cref="GorgonTexture1D"/>.
 		/// </summary>
-		/// <param name="sourceTexture">The texture to copy.</param>
+		/// <param name="destinationTexture">The texture to copy into.</param>
 		/// <param name="sourceRange">[Optional] The dimensions of the source area to copy.</param>
+		/// <param name="sourceY">[Optional] The vertical position in the texture to copy.</param>
 		/// <param name="sourceArrayIndex">[Optional] The array index of the sub resource to copy.</param>
 		/// <param name="sourceMipLevel">[Optional] The mip map level of the sub resource to copy.</param>
 		/// <param name="destX">[Optional] Horizontal offset into the destination texture to place the copied data.</param>
-		/// <param name="destY">[Optional] Vertical offset into the destination texture to place the copied data.</param>
 		/// <param name="destArrayIndex">[Optional] The array index of the destination sub resource to copy into.</param>
 		/// <param name="destMipLevel">[Optional] The mip map level of the destination sub resource to copy into.</param>
 		/// <param name="copyMode">[Optional] Defines how data should be copied into the texture.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the texture parameter is <b>null</b>.</exception>
 		/// <exception cref="NotSupportedException">Thrown when the formats cannot be converted because they're not of the same group.
 		/// <para>-or-</para>
+		/// <para>Thrown when the <paramref name="destinationTexture"/> is the same as this texture, and the <paramref name="sourceArrayIndex"/>, <paramref name="destArrayIndex"/>, <paramref name="sourceMipLevel"/> and the <paramref name="destMipLevel"/> 
+		/// specified are pointing to the same subresource.</para>
+		/// <para>-or-</para>
 		/// <para>Thrown when this texture has a <see cref="GorgonGraphicsResource.Usage"/> of <see cref="ResourceUsage.Immutable"/>.</para>
 		/// </exception>
-		/// <exception cref="InvalidOperationException"></exception>
 		/// <remarks>
 		/// <para>
-		/// Use this method to copy a specific sub resource of a <see cref="GorgonTexture1D"/> to another sub resource of this <see cref="GorgonTexture1D"/>, or to a different sub resource of the same texture.  
-		/// The <paramref name="sourceRange"/> coordinates must be inside of the destination, if it is not, then the source data will be clipped against the destination region. No stretching or filtering is 
-		/// supported by this method. If the entire texture needs to be copied, then use the <see cref="CopyTo"/> method.
+		/// Use this method to copy a specific sub resource of this <see cref="GorgonTexture2D"/> to another sub resource of a <see cref="GorgonTexture1D"/>. The <paramref name="sourceRange"/> coordinates
+		/// must be inside of the destination, if it is not, then the source data will be clipped against the destination region. No stretching or filtering is supported by this method.
 		/// </para>
 		/// <para>
 		/// Limited format conversion will be performed if the two textures are within the same bit group (e.g. <see cref="BufferFormat.R8G8B8A8_SInt"/> is convertible to 
@@ -653,15 +675,14 @@ namespace Gorgon.Graphics.Core
 		/// </note>
 		/// </para>
 		/// </remarks>
-		/// <seealso cref="CopyTo"/>
-		public void CopyFrom(GorgonTexture1D sourceTexture, GorgonRange? sourceRange = null, int sourceArrayIndex = 0, int sourceMipLevel = 0, int destX = 0, int destY = 0, int destArrayIndex = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
+		public void CopyTo(GorgonTexture1D destinationTexture, GorgonRange? sourceRange = null, int sourceY = 0, int sourceArrayIndex = 0, int sourceMipLevel = 0, int destX = 0, int destArrayIndex = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
 		{
-			sourceTexture.ValidateObject(nameof(sourceTexture));
+			destinationTexture.ValidateObject(nameof(destinationTexture));
 
 			// If we're trying to place the image data outside of this texture, then leave.
-			if ((destX >= Width)
-			    || (destY < 0)
-			    || (destY >= Height))
+			if ((destX >= destinationTexture.Width)
+			    || (sourceY < 0)
+			    || (sourceY >= Height))
 			{
 				return;
 			}
@@ -671,35 +692,40 @@ namespace Gorgon.Graphics.Core
 			// If we didn't specify a box to copy from, then create one.
 			if (sourceRange == null)
 			{
-			    rect = new DX.Rectangle(0, 0, (sourceTexture.Width.Max(1)).Min(sourceTexture.Width), 1);
+			    rect = new DX.Rectangle(0, sourceY, Width.Min(destinationTexture.Width).Max(1), 1);
 			}
 			else
 			{
-			    rect = new DX.Rectangle((sourceRange.Value.Minimum.Min(Width - 1).Max(0)).Min(sourceTexture.Width - 1), 0,
-			                           (sourceRange.Value.Maximum.Min(Width).Max(1)).Min(sourceTexture.Width), 1);
+			    rect = new DX.Rectangle((sourceRange.Value.Minimum.Min(destinationTexture.Width - 1).Max(0)).Min(Width - 1), sourceY,
+			                           (sourceRange.Value.Maximum.Min(destinationTexture.Width).Max(1)).Min(Width), 1);
 			}
 
 			// Ensure the indices are clipped to our settings.
-			sourceArrayIndex = sourceArrayIndex.Min(sourceTexture.ArrayCount - 1).Max(0);
-			sourceMipLevel = sourceMipLevel.Min(sourceTexture.MipLevels - 1).Max(0);
-			destArrayIndex = destArrayIndex.Min(ArrayCount - 1).Max(0);
-			destMipLevel = destMipLevel.Min(MipLevels - 1).Max(0);
+			sourceArrayIndex = sourceArrayIndex.Min(ArrayCount - 1).Max(0);
+			sourceMipLevel = sourceMipLevel.Min(MipLevels - 1).Max(0);
+			destArrayIndex = destArrayIndex.Min(destinationTexture.ArrayCount - 1).Max(0);
+			destMipLevel = destMipLevel.Min(destinationTexture.MipLevels - 1).Max(0);
 
 			int sourceResource = D3D11.Resource.CalculateSubResourceIndex(sourceMipLevel, sourceArrayIndex, MipLevels);
-			int destResource = D3D11.Resource.CalculateSubResourceIndex(destMipLevel, destArrayIndex, MipLevels);
+			int destResource = D3D11.Resource.CalculateSubResourceIndex(destMipLevel, destArrayIndex, destinationTexture.MipLevels);
 
 #if DEBUG
 			// If the format is different, then check to see if the format group is the same.
-			if ((sourceTexture.Format != Format)
-				&& ((sourceTexture.FormatInformation.Group != FormatInformation.Group)))
+			if ((destinationTexture.Format != Format)
+				&& ((destinationTexture.FormatInformation.Group != FormatInformation.Group)))
 			{
-				throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_TEXTURE_COPY_CANNOT_CONVERT, sourceTexture.Format, Format));
+				throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_TEXTURE_COPY_CANNOT_CONVERT, destinationTexture.Format, Format));
 			}
 
 			if (Usage == ResourceUsage.Immutable)
 			{
 				throw new NotSupportedException(Resources.GORGFX_ERR_TEXTURE_IMMUTABLE);
 			}
+
+		    if (MultisampleInfo != GorgonMultisampleInfo.NoMultiSampling)
+		    {
+		        throw new NotSupportedException(Resources.GORGFX_ERR_TEXTURE_MULTISAMPLE_PARAMS_MISMATCH);
+		    }
 #endif
 
 			// Clip off any overlap if the destination is outside of the destination texture.
@@ -710,45 +736,43 @@ namespace Gorgon.Graphics.Core
 			}
 
 			// Clip source box.
-			int left = rect.Left.Min(sourceTexture.Width - 1).Max(0);
-			int right = rect.Right.Min(sourceTexture.Width + left).Max(1);
+			int left = rect.Left.Min(destinationTexture.Width - 1).Max(0);
+			int right = rect.Right.Min(destinationTexture.Width + left).Max(1);
 
 			rect = new DX.Rectangle
 			       {
 			           Left = left, 
-			           Top = 0,
+			           Top = sourceY,
 			           Right = right, 
-			           Bottom = 1
+			           Bottom = sourceY + 1
 			       };
 
 			// Adjust source box to fit within our destination.
-			destX = destX.Min(Width - 1).Max(0);
-			destY = destY.Min(Height - 1).Max(0);
+			destX = destX.Min(destinationTexture.Width - 1).Max(0);
 
-			rect.Width = (destX + rect.Width).Min(Width - destX).Max(1);
+			rect.Width = (destX + rect.Width).Min(destinationTexture.Width - destX).Max(1);
 
 			// Nothing to copy, so get out.
-			if ((rect.Width == 0)
-				|| (rect.Height == 0))
+			if (rect.Width <= 0)
 			{
 				return;
 			}
 
-		    Graphics.D3DDeviceContext.CopySubresourceRegion1(D3DResource,
+		    Graphics.D3DDeviceContext.CopySubresourceRegion1(destinationTexture.D3DResource,
 		                                                     destResource,
 		                                                     destX,
-		                                                     destY,
 		                                                     0,
-                                                             sourceTexture.D3DResource,
+		                                                     0,
+                                                             D3DResource,
 		                                                     sourceResource,
 		                                                     new D3D11.ResourceRegion(rect.Left, rect.Top, 0, rect.Right, rect.Bottom, 1),
 		                                                     (int)copyMode);
 		}
 
 		/// <summary>
-		/// Function to copy a texture subresource from another <see cref="GorgonTexture2D"/> into this texture.
+		/// Function to copy this texture into another <see cref="GorgonTexture2D"/>.
 		/// </summary>
-		/// <param name="sourceTexture">The texture to copy.</param>
+		/// <param name="destinationTexture">The texture to copy into.</param>
 		/// <param name="sourceRectangle">[Optional] The dimensions of the source area to copy.</param>
 		/// <param name="sourceArrayIndex">[Optional] The array index of the sub resource to copy.</param>
 		/// <param name="sourceMipLevel">[Optional] The mip map level of the sub resource to copy.</param>
@@ -760,17 +784,16 @@ namespace Gorgon.Graphics.Core
 		/// <exception cref="ArgumentNullException">Thrown when the texture parameter is <b>null</b>.</exception>
 		/// <exception cref="NotSupportedException">Thrown when the formats cannot be converted because they're not of the same group.
 		/// <para>-or-</para>
-		/// <para>Thrown when the <paramref name="sourceTexture"/> is the same as this texture, and the <paramref name="sourceArrayIndex"/>, <paramref name="destArrayIndex"/>, <paramref name="sourceMipLevel"/> and the <paramref name="destMipLevel"/> 
+		/// <para>Thrown when the <paramref name="destinationTexture"/> is the same as this texture, and the <paramref name="sourceArrayIndex"/>, <paramref name="destArrayIndex"/>, <paramref name="sourceMipLevel"/> and the <paramref name="destMipLevel"/> 
 		/// specified are pointing to the same subresource.</para>
 		/// <para>-or-</para>
 		/// <para>Thrown when this texture has a <see cref="GorgonGraphicsResource.Usage"/> of <see cref="ResourceUsage.Immutable"/>.</para>
 		/// </exception>
-		/// <exception cref="InvalidOperationException"></exception>
 		/// <remarks>
 		/// <para>
-		/// Use this method to copy a specific sub resource of a <see cref="GorgonTexture2D"/> to another sub resource of this <see cref="GorgonTexture2D"/>, or to a different sub resource of the same texture.  
+		/// Use this method to copy a specific sub resource of this <see cref="GorgonTexture2D"/> to another sub resource of a <see cref="GorgonTexture2D"/>, or to a different sub resource of the same texture.  
 		/// The <paramref name="sourceRectangle"/> coordinates must be inside of the destination, if it is not, then the source data will be clipped against the destination region. No stretching or filtering is 
-		/// supported by this method. If the entire texture needs to be copied, then use the <see cref="CopyTo"/> method.
+		/// supported by this method.
 		/// </para>
 		/// <para>
 		/// Limited format conversion will be performed if the two textures are within the same bit group (e.g. <see cref="BufferFormat.R8G8B8A8_SInt"/> is convertible to 
@@ -793,48 +816,58 @@ namespace Gorgon.Graphics.Core
 		/// </note>
 		/// </para>
 		/// </remarks>
-		/// <seealso cref="CopyTo"/>
-		public void CopyFrom(GorgonTexture2D sourceTexture, DX.Rectangle? sourceRectangle = null, int sourceArrayIndex = 0, int sourceMipLevel = 0, int destX = 0, int destY = 0, int destArrayIndex = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
+		public void CopyTo(GorgonTexture2D destinationTexture, DX.Rectangle? sourceRectangle = null, int sourceArrayIndex = 0, int sourceMipLevel = 0, int destX = 0, int destY = 0, int destArrayIndex = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
 		{
-			sourceTexture.ValidateObject(nameof(sourceTexture));
+			destinationTexture.ValidateObject(nameof(destinationTexture));
 
-			// If we're trying to place the image data outside of this texture, then leave.
-			if ((destX >= Width)
-				|| (destY >= Height))
+			// If we're trying to place the image data outside of the destination texture, then leave.
+			if ((destX >= destinationTexture.Width)
+				|| (destY >= destinationTexture.Height))
 			{
 				return;
 			}
 
-			DX.Rectangle rect;
+            // If we ask to copy the entire thing, and our texture has identical sizes and format, then just use the copy method.
+		    if ((sourceRectangle == null) && (sourceArrayIndex == 0) && (sourceMipLevel == 0) 
+		        && (destX == 0) && (destY == 0) && (destArrayIndex == 0) && (destMipLevel == 0) 
+		        && (destinationTexture.Width == Width) && (destinationTexture.Height == Height) && (destinationTexture.MipLevels == MipLevels)
+		        && (destinationTexture.ArrayCount == ArrayCount) && (MultisampleInfo == destinationTexture.MultisampleInfo) && 
+		        ((Format == destinationTexture.Format) || (FormatInformation.Group == destinationTexture.FormatInformation.Group)))
+		    {
+		        CopyResource(destinationTexture);
+		        return;
+		    }
+
+		    DX.Rectangle rect;
 
 			// If we didn't specify a box to copy from, then create one.
 			if (sourceRectangle == null)
 			{
-			    rect = new DX.Rectangle(0, 0, (sourceTexture.Width.Max(1)).Min(sourceTexture.Width), (sourceTexture.Height.Max(1)).Min(sourceTexture.Height));
+			    rect = new DX.Rectangle(0, 0, Width.Min(destinationTexture.Width).Max(1), Height.Min(destinationTexture.Height).Max(1));
 			}
 			else
 			{
-			    rect = new DX.Rectangle((sourceRectangle.Value.Left.Min(Width - 1).Max(0)).Min(sourceTexture.Width - 1),
-			                           (sourceRectangle.Value.Top.Min(Height - 1).Max(0)).Min(sourceTexture.Height - 1),
-			                           (sourceRectangle.Value.Width.Min(Width).Max(1)).Min(sourceTexture.Width),
-			                           (sourceRectangle.Value.Height.Min(Height).Max(1)).Min(sourceTexture.Height));
+			    rect = new DX.Rectangle((sourceRectangle.Value.Left.Min(destinationTexture.Width - 1).Max(0)).Min(Width - 1),
+			                           (sourceRectangle.Value.Top.Min(destinationTexture.Height - 1).Max(0)).Min(Height - 1),
+			                           (sourceRectangle.Value.Width.Min(destinationTexture.Width).Max(1)).Min(Width),
+			                           (sourceRectangle.Value.Height.Min(destinationTexture.Height).Max(1)).Min(Height));
 			}
 
 			// Ensure the indices are clipped to our settings.
-			sourceArrayIndex = sourceArrayIndex.Min(sourceTexture.ArrayCount - 1).Max(0);
-			sourceMipLevel = sourceMipLevel.Min(sourceTexture.MipLevels - 1).Max(0);
-			destArrayIndex = destArrayIndex.Min(ArrayCount - 1).Max(0);
-			destMipLevel = destMipLevel.Min(MipLevels - 1).Max(0);
+			sourceArrayIndex = sourceArrayIndex.Min(ArrayCount - 1).Max(0);
+			sourceMipLevel = sourceMipLevel.Min(MipLevels - 1).Max(0);
+			destArrayIndex = destArrayIndex.Min(destinationTexture.ArrayCount - 1).Max(0);
+			destMipLevel = destMipLevel.Min(destinationTexture.MipLevels - 1).Max(0);
 
 			int sourceResource = D3D11.Resource.CalculateSubResourceIndex(sourceMipLevel, sourceArrayIndex, MipLevels);
-			int destResource = D3D11.Resource.CalculateSubResourceIndex(destMipLevel, destArrayIndex, MipLevels);
+			int destResource = D3D11.Resource.CalculateSubResourceIndex(destMipLevel, destArrayIndex, destinationTexture.MipLevels);
 
 #if DEBUG
 			// If the format is different, then check to see if the format group is the same.
-			if ((sourceTexture.Format != Format)
-				&& ((sourceTexture.FormatInformation.Group != FormatInformation.Group)))
+			if ((destinationTexture.Format != Format)
+				&& ((destinationTexture.FormatInformation.Group != FormatInformation.Group)))
 			{
-				throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_TEXTURE_COPY_CANNOT_CONVERT, sourceTexture.Format, Format));
+				throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_TEXTURE_COPY_CANNOT_CONVERT, destinationTexture.Format, Format));
 			}
 
 			if (Usage == ResourceUsage.Immutable)
@@ -842,11 +875,15 @@ namespace Gorgon.Graphics.Core
 				throw new NotSupportedException(Resources.GORGFX_ERR_TEXTURE_IMMUTABLE);
 			}
 
-
-			if ((this == sourceTexture) && (sourceResource == destResource))
+			if ((this == destinationTexture) && (sourceResource == destResource))
 			{
 				throw new NotSupportedException(Resources.GORGFX_ERR_TEXTURE_CANNOT_COPY_SAME_SUBRESOURCE);
 			}
+
+		    if ((MultisampleInfo.Count != destinationTexture.MultisampleInfo.Count) || (MultisampleInfo.Quality != destinationTexture.MultisampleInfo.Quality))
+		    {
+		        throw new NotSupportedException(Resources.GORGFX_ERR_TEXTURE_MULTISAMPLE_PARAMS_MISMATCH);
+		    }
 #endif
 
 			// Clip off any overlap if the destination is outside of the destination texture.
@@ -863,10 +900,10 @@ namespace Gorgon.Graphics.Core
 			}
 
 			// Clip source box.
-			int left = rect.Left.Min(sourceTexture.Width - 1).Max(0);
-			int top = rect.Top.Min(sourceTexture.Height - 1).Max(0);
-			int right = rect.Right.Min(sourceTexture.Width + left).Max(1);
-			int bottom = rect.Bottom.Min(sourceTexture.Height + top).Max(1);
+			int left = rect.Left.Min(Width - 1).Max(0);
+			int top = rect.Top.Min(Height - 1).Max(0);
+			int right = rect.Right.Min(Width + left).Max(1);
+			int bottom = rect.Bottom.Min(Height + top).Max(1);
 
 			rect = new DX.Rectangle
 			       {
@@ -877,40 +914,41 @@ namespace Gorgon.Graphics.Core
 			       };
 
 			// Adjust source box to fit within our destination.
-			destX = destX.Min(Width - 1).Max(0);
-			destY = destY.Min(Height - 1).Max(0);
+			destX = destX.Min(destinationTexture.Width - 1).Max(0);
+			destY = destY.Min(destinationTexture.Height - 1).Max(0);
 
-			rect.Width = (destX + rect.Width).Min(Width - destX).Max(1);
-			rect.Height = (destY + rect.Height).Min(Height - destY).Max(1);
+			rect.Width = (destX + rect.Width).Min(destinationTexture.Width - destX).Max(1);
+			rect.Height = (destY + rect.Height).Min(destinationTexture.Height - destY).Max(1);
 
 			// Nothing to copy, so get out.
-			if ((rect.Width == 0)
-				|| (rect.Height == 0))
+			if ((rect.IsEmpty)
+			    || (rect.Width <= 0)
+				|| (rect.Height <= 0))
 			{
 				return;
 			}
 
-		    Graphics.D3DDeviceContext.CopySubresourceRegion1(D3DResource,
+		    Graphics.D3DDeviceContext.CopySubresourceRegion1(destinationTexture.D3DResource,
 		                                                     destResource,
 		                                                     destX,
 		                                                     destY,
 		                                                     0,
-                                                             sourceTexture.D3DResource,
+		                                                     D3DResource,
 		                                                     sourceResource,
 		                                                     new D3D11.ResourceRegion(rect.Left, rect.Top, 0, rect.Right, rect.Bottom, 1),
 		                                                     (int)copyMode);
 		}
 
 		/// <summary>
-		/// Function to copy a texture subresource from another <see cref="GorgonTexture3D"/> into this texture.
+		/// Function to copy this texture into a <see cref="GorgonTexture3D"/>.
 		/// </summary>
-		/// <param name="sourceTexture">The texture to copy.</param>
+		/// <param name="destinationTexture">The texture to copy into.</param>
 		/// <param name="sourceRectangle">[Optional] The dimensions of the source area to copy.</param>
-		/// <param name="sourceDepthSlice">[Optional] The source depth slice to use.</param>
+		/// <param name="sourceArrayIndex">[Optional] The array index of the sub resource to copy.</param>
 		/// <param name="sourceMipLevel">[Optional] The mip map level of the sub resource to copy.</param>
 		/// <param name="destX">[Optional] Horizontal offset into the destination texture to place the copied data.</param>
 		/// <param name="destY">[Optional] Vertical offset into the destination texture to place the copied data.</param>
-		/// <param name="destArrayIndex">[Optional] The array index of the destination sub resource to copy into.</param>
+		/// <param name="destZ">[Optional] Depth offset into the destination texture to place the copied data.</param>
 		/// <param name="destMipLevel">[Optional] The mip map level of the destination sub resource to copy into.</param>
 		/// <param name="copyMode">[Optional] Defines how data should be copied into the texture.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the texture parameter is <b>null</b>.</exception>
@@ -918,12 +956,10 @@ namespace Gorgon.Graphics.Core
 		/// <para>-or-</para>
 		/// <para>Thrown when this texture has a <see cref="GorgonGraphicsResource.Usage"/> of <see cref="ResourceUsage.Immutable"/>.</para>
 		/// </exception>
-		/// <exception cref="InvalidOperationException"></exception>
 		/// <remarks>
 		/// <para>
-		/// Use this method to copy a specific sub resource of a <see cref="GorgonTexture2D"/> to another sub resource of this <see cref="GorgonTexture2D"/>, or to a different sub resource of the same texture.  
-		/// The <paramref name="sourceRectangle"/> coordinates must be inside of the destination, if it is not, then the source data will be clipped against the destination region. No stretching or filtering is 
-		/// supported by this method. If the entire texture needs to be copied, then use the <see cref="CopyTo"/> method.
+		/// Use this method to copy a specific sub resource of this <see cref="GorgonTexture2D"/> to another sub resource of a <see cref="GorgonTexture3D"/>. The <paramref name="sourceRectangle"/>
+		/// coordinates must be inside of the destination, if it is not, then the source data will be clipped against the destination region. No stretching or filtering is supported by this method.
 		/// </para>
 		/// <para>
 		/// Limited format conversion will be performed if the two textures are within the same bit group (e.g. <see cref="BufferFormat.R8G8B8A8_SInt"/> is convertible to 
@@ -946,16 +982,15 @@ namespace Gorgon.Graphics.Core
 		/// </note>
 		/// </para>
 		/// </remarks>
-		/// <seealso cref="CopyTo"/>
-		public void CopyFrom(GorgonTexture3D sourceTexture, DX.Rectangle? sourceRectangle = null, int sourceDepthSlice = 0, int sourceMipLevel = 0, int destX = 0, int destY = 0, int destArrayIndex = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
+		public void CopyTo(GorgonTexture3D destinationTexture, DX.Rectangle? sourceRectangle = null, int sourceArrayIndex = 0, int sourceMipLevel = 0, int destX = 0, int destY = 0, int destZ = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
 		{
-			sourceTexture.ValidateObject(nameof(sourceTexture));
+			destinationTexture.ValidateObject(nameof(destinationTexture));
 
 			// If we're trying to place the image data outside of this texture, then leave.
-			if ((destX >= Width)
-				|| (destY >= Height)
-			    || (sourceDepthSlice < 0)
-			    || (sourceDepthSlice >= sourceTexture.Depth))
+			if ((destX >= destinationTexture.Width)
+				|| (destY >= destinationTexture.Height)
+			    || (destZ < 0)
+			    || (destZ >= destinationTexture.Depth))
 			{
 				return;
 			}
@@ -965,37 +1000,42 @@ namespace Gorgon.Graphics.Core
 			// If we didn't specify a box to copy from, then create one.
 			if (sourceRectangle == null)
 			{
-			    rect = new DX.Rectangle(0, 0, (sourceTexture.Width.Max(1)).Min(sourceTexture.Width), (sourceTexture.Height.Max(1)).Min(sourceTexture.Height));
+			    rect = new DX.Rectangle(0, 0, Width.Min(destinationTexture.Width).Max(1), Height.Min(destinationTexture.Height).Max(1));
 			}
 			else
 			{
-			    rect = new DX.Rectangle((sourceRectangle.Value.Left.Min(Width - 1).Max(0)).Min(sourceTexture.Width - 1),
-			                           (sourceRectangle.Value.Top.Min(Height - 1).Max(0)).Min(sourceTexture.Height - 1),
-			                           (sourceRectangle.Value.Width.Min(Width).Max(1)).Min(sourceTexture.Width),
-			                           (sourceRectangle.Value.Height.Min(Height).Max(1)).Min(sourceTexture.Height));
+			    rect = new DX.Rectangle((sourceRectangle.Value.Left.Min(destinationTexture.Width - 1).Max(0)).Min(Width - 1),
+			                           (sourceRectangle.Value.Top.Min(destinationTexture.Height - 1).Max(0)).Min(Height - 1),
+			                           (sourceRectangle.Value.Width.Min(destinationTexture.Width).Max(1)).Min(Width),
+			                           (sourceRectangle.Value.Height.Min(destinationTexture.Height).Max(1)).Min(Height));
 			}
 
 			// Ensure the indices are clipped to our settings.
-			sourceDepthSlice = sourceDepthSlice.Min(sourceTexture.Depth - 1).Max(0);
-			sourceMipLevel = sourceMipLevel.Min(sourceTexture.MipLevels - 1).Max(0);
-			destArrayIndex = destArrayIndex.Min(ArrayCount - 1).Max(0);
+			sourceMipLevel = sourceMipLevel.Min(MipLevels - 1).Max(0);
+			sourceArrayIndex = sourceArrayIndex.Min(ArrayCount - 1).Max(0);
 			destMipLevel = destMipLevel.Min(MipLevels - 1).Max(0);
+		    destZ = destZ.Min(destinationTexture.Depth - 1).Max(0);
 
-			int sourceResource = D3D11.Resource.CalculateSubResourceIndex(sourceMipLevel, 0, MipLevels);
-			int destResource = D3D11.Resource.CalculateSubResourceIndex(destMipLevel, destArrayIndex, MipLevels);
+			int sourceResource = D3D11.Resource.CalculateSubResourceIndex(sourceMipLevel, sourceArrayIndex, MipLevels);
+			int destResource = D3D11.Resource.CalculateSubResourceIndex(destMipLevel, 0, MipLevels);
 
 #if DEBUG
 			// If the format is different, then check to see if the format group is the same.
-			if ((sourceTexture.Format != Format)
-				&& ((sourceTexture.FormatInformation.Group != FormatInformation.Group)))
+			if ((destinationTexture.Format != Format)
+				&& ((destinationTexture.FormatInformation.Group != FormatInformation.Group)))
 			{
-				throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_TEXTURE_COPY_CANNOT_CONVERT, sourceTexture.Format, Format));
+				throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_TEXTURE_COPY_CANNOT_CONVERT, destinationTexture.Format, Format));
 			}
 
 			if (Usage == ResourceUsage.Immutable)
 			{
 				throw new NotSupportedException(Resources.GORGFX_ERR_TEXTURE_IMMUTABLE);
 			}
+
+		    if (MultisampleInfo != GorgonMultisampleInfo.NoMultiSampling)
+		    {
+		        throw new NotSupportedException(Resources.GORGFX_ERR_TEXTURE_MULTISAMPLE_PARAMS_MISMATCH);
+		    }
 #endif
 
 			// Clip off any overlap if the destination is outside of the destination texture.
@@ -1012,10 +1052,10 @@ namespace Gorgon.Graphics.Core
 			}
 
 			// Clip source box.
-			int left = rect.Left.Min(sourceTexture.Width - 1).Max(0);
-			int top = rect.Top.Min(sourceTexture.Height - 1).Max(0);
-			int right = rect.Right.Min(sourceTexture.Width + left).Max(1);
-			int bottom = rect.Bottom.Min(sourceTexture.Height + top).Max(1);
+			int left = rect.Left.Min(Width - 1).Max(0);
+			int top = rect.Top.Min(Height - 1).Max(0);
+			int right = rect.Right.Min(Width + left).Max(1);
+			int bottom = rect.Bottom.Min(Height + top).Max(1);
 
 			rect = new DX.Rectangle
 			       {
@@ -1026,27 +1066,28 @@ namespace Gorgon.Graphics.Core
 			       };
 
 			// Adjust source box to fit within our destination.
-			destX = destX.Min(Width - 1).Max(0);
-			destY = destY.Min(Height - 1).Max(0);
+			destX = destX.Min(destinationTexture.Width - 1).Max(0);
+			destY = destY.Min(destinationTexture.Height - 1).Max(0);
 
-			rect.Width = (destX + rect.Width).Min(Width - destX).Max(1);
-			rect.Height = (destY + rect.Height).Min(Height - destY).Max(1);
+			rect.Width = (destX + rect.Width).Min(destinationTexture.Width - destX).Max(1);
+			rect.Height = (destY + rect.Height).Min(destinationTexture.Height - destY).Max(1);
 
 			// Nothing to copy, so get out.
-			if ((rect.Width == 0)
-				|| (rect.Height == 0))
+			if ((rect.IsEmpty)
+			    || (rect.Width <= 0)
+				|| (rect.Height <= 0))
 			{
 				return;
 			}
 
-		    Graphics.D3DDeviceContext.CopySubresourceRegion1(D3DResource,
+		    Graphics.D3DDeviceContext.CopySubresourceRegion1(destinationTexture.D3DResource,
 		                                                     destResource,
 		                                                     destX,
 		                                                     destY,
-		                                                     0,
-                                                             sourceTexture.D3DResource,
+		                                                     destZ,
+		                                                     D3DResource,
 		                                                     sourceResource,
-		                                                     new D3D11.ResourceRegion(rect.Left, rect.Top, sourceDepthSlice, rect.Right, rect.Bottom, sourceDepthSlice + 1),
+		                                                     new D3D11.ResourceRegion(rect.Left, rect.Top, 0, rect.Right, rect.Bottom, 1),
 		                                                     (int)copyMode);
 		}
 
@@ -1201,7 +1242,7 @@ namespace Gorgon.Graphics.Core
         /// <remarks>
         /// <para>
         /// This will upload data from a <see cref="IGorgonImageBuffer"/> in a <see cref="IGorgonImage"/> to a sub section of the texture (e.g. a mip level, array index, etc...). The method will determine
-        /// how to best upload the data depending on the <see cref="GorgonGraphicsResource.Usage"/> of the texture. For example, if the texture as a <see cref="GorgonGraphicsResource.Usage"/> of
+        /// how to best upload the data depending on the <see cref="GorgonGraphicsResource.Usage"/> of the texture. For example, if the texture has a <see cref="GorgonGraphicsResource.Usage"/> of
         /// <see cref="ResourceUsage.Default"/>, then internally, this method will update to the GPU directly. Otherwise, if it is <see cref="ResourceUsage.Dynamic"/>, or <see cref="ResourceUsage.Staging"/>,
         /// it will use a locking pattern which uses the CPU to write data to the texture. The latter pattern is good if the texture has to change one or more times per frame, otherwise, the former is
         /// better where the texture is updated less than once per frame (i.e. Dynamic is good for multiple times per frame, Default is good for once per frame or less).
@@ -1710,10 +1751,9 @@ namespace Gorgon.Graphics.Core
         /// <para>-or-</para>
         /// <para>Thrown when this texture has a <see cref="GorgonGraphicsResource.Usage"/> of <see cref="ResourceUsage.Staging"/>.</para>
         /// <para>-or-</para>
-        /// <para>Thrown when the <paramref name="format"/> is typeless or is not a supported format for unordered access views.</para>
-        /// <para>-or-</para>
         /// <para>Thrown if the this texture uses multisampling.</para>
         /// </exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="format"/> is typeless or is not a supported format for unordered access views.</exception>
         /// <remarks>
         /// <para>
         /// This will create a unordered access view that makes a texture accessible to compute shaders (or pixel shaders) using unordered access to the data. This allows viewing of the texture data in a different 
@@ -1751,7 +1791,7 @@ namespace Gorgon.Graphics.Core
 
 	        if ((Graphics.FormatSupport[format].FormatSupport & BufferFormatSupport.TypedUnorderedAccessView) != BufferFormatSupport.TypedUnorderedAccessView)
 	        {
-	            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_UAV_FORMAT_INVALID, format));
+	            throw new ArgumentException(string.Format(Resources.GORGFX_ERR_UAV_FORMAT_INVALID, format), nameof(format));
 	        }
 
 	        // Ensure the size of the data type fits the requested format.
@@ -1759,16 +1799,15 @@ namespace Gorgon.Graphics.Core
 
 	        if (info.IsTypeless)
 	        {
-                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_VIEW_NO_TYPELESS);
+                throw new ArgumentException(Resources.GORGFX_ERR_VIEW_NO_TYPELESS, nameof(format));
 	        }
 
 	        if ((FormatInformation.Group != info.Group)
 	            || (info.SizeInBytes != FormatInformation.SizeInBytes))
 	        {
-	            throw new GorgonException(GorgonResult.CannotCreate,
-	                                      string.Format(Resources.GORGFX_ERR_VIEW_CANNOT_CAST_FORMAT,
+	            throw new ArgumentException(string.Format(Resources.GORGFX_ERR_VIEW_CANNOT_CAST_FORMAT,
 	                                                    Format,
-	                                                    format));
+	                                                    format), nameof(format));
 	        }
 
 	        firstMipLevel = firstMipLevel.Max(0).Min(MipLevels - 1);
@@ -1910,7 +1949,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="arrayIndex">[Optional] The array index start viewing from.</param>
         /// <param name="arrayCount">[Optional] The number of array indices to view.</param>
         /// <returns>A <see cref="GorgonTexture2DView"/> used to bind the texture to a shader.</returns>
-        /// <exception cref="ArgumentException">Thrown when the <paramref name="format"/> is typeless or cannot be determined from the this texture.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="format"/> is typeless.</exception>
         /// <exception cref="GorgonException">Thrown when this texture does not have a <see cref="TextureBinding"/> of <see cref="TextureBinding.RenderTarget"/>.
         /// <para>-or-</para>
         /// <para>Thrown when this texture has a <see cref="GorgonGraphicsResource.Usage"/> of <see cref="ResourceUsage.Staging"/>.</para>
@@ -2204,7 +2243,7 @@ namespace Gorgon.Graphics.Core
 		/// </para>
 		/// </remarks>
 		internal GorgonTexture2D(GorgonSwapChain swapChain, int index)
-			: base(swapChain.Graphics, $"Swap Chain '{swapChain.Name}': Back buffer texture #{index}.")
+			: base(swapChain.Graphics)
 		{
 			swapChain.Graphics.Log.Print($"Swap Chain '{swapChain.Name}': Creating texture from back buffer index {index}.", LoggingLevel.Simple);
 			
@@ -2231,7 +2270,6 @@ namespace Gorgon.Graphics.Core
 			FormatInformation = new GorgonFormatInfo(Format);
 			TextureID = Interlocked.Increment(ref _textureID);
 		    SizeInBytes = CalculateSizeInBytes(_info);
-		    Usage = _info.Usage;
 		}
 
         /// <summary>
@@ -2246,7 +2284,7 @@ namespace Gorgon.Graphics.Core
         /// </para>
         /// </remarks>
         internal GorgonTexture2D(GorgonGraphics graphics, IGorgonImage image, GorgonTextureLoadOptions options)
-			: base(graphics, options.Name)
+			: base(graphics)
 		{
 		    _info = new GorgonTexture2DInfo(options.Name)
 		            {
@@ -2264,7 +2302,6 @@ namespace Gorgon.Graphics.Core
 			Initialize(image);
 			TextureID = Interlocked.Increment(ref _textureID);
 		    SizeInBytes = CalculateSizeInBytes(_info);
-		    Usage = _info.Usage;
 
             this.RegisterDisposable(graphics);
         }
@@ -2285,11 +2322,10 @@ namespace Gorgon.Graphics.Core
 		/// </para>
 		/// </remarks>
 		public GorgonTexture2D(GorgonGraphics graphics, IGorgonTexture2DInfo textureInfo)
-			: base(graphics, textureInfo?.Name ?? throw new ArgumentNullException(nameof(textureInfo)))
+			: base(graphics)
 		{
-			_info = new GorgonTexture2DInfo(textureInfo);
-		    Usage = _info.Usage;
-
+			_info = new GorgonTexture2DInfo(textureInfo ?? throw new ArgumentNullException(nameof(textureInfo)));
+		    
 			Initialize(null);
 
 			TextureID = Interlocked.Increment(ref _textureID);

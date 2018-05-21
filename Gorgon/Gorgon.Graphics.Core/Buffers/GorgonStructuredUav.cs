@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using Gorgon.Core;
 using D3D11 = SharpDX.Direct3D11;
 using DXGI = SharpDX.DXGI;
 using Gorgon.Diagnostics;
@@ -32,7 +33,7 @@ using Gorgon.Diagnostics;
 namespace Gorgon.Graphics.Core
 {
     /// <summary>
-    /// The type of unordered access view for a <see cref="GorgonStructuredBufferUav"/>.
+    /// The type of unordered access view for a <see cref="GorgonStructuredUav"/>.
     /// </summary>
     [Flags]
     public enum StructuredBufferUavType
@@ -70,20 +71,24 @@ namespace Gorgon.Graphics.Core
     /// <para>
     /// <note type="warning">
     /// <para>
-    /// Unordered access views do not support multisampled <see cref="GorgonTexture"/>s.
+    /// Unordered access views do not support multisampled <see cref="GorgonTexture2D"/>s.
     /// </para>
     /// </note>
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonGraphicsResource"/>
-    /// <seealso cref="GorgonTexture"/>
     /// <seealso cref="GorgonComputeShader"/>
     /// <seealso cref="GorgonPixelShader"/>
     /// <seealso cref="GorgonDrawCallBase"/>
-    public sealed class GorgonStructuredBufferUav
-        : GorgonBufferUavBase<GorgonBuffer>
+    public sealed class GorgonStructuredUav
+        : GorgonBufferUavCommon<GorgonBuffer>, IGorgonBufferInfo
     {
         #region Properties.
+        /// <summary>
+        /// Property to return the size of an element, in bytes.
+        /// </summary>
+        public override int ElementSize => Buffer?.StructureSize ?? 0;
+
         /// <summary>
         /// Property to return the type of view.
         /// </summary>
@@ -93,35 +98,99 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Property to return the size of an element.
+        /// Property to set or return whether to allow the CPU read access to the buffer.
         /// </summary>
-        public override int ElementSize => Buffer.Info.StructureSize;
+        /// <remarks>
+        /// <para>
+        /// This value indicates whether or not the CPU can directly access the buffer for reading. If this value is <b>false</b>, the buffer still can be read, but will be done through an intermediate
+        /// staging buffer, which is obviously less performant. 
+        /// </para>
+        /// <para>
+        /// This value is treated as <b>false</b> if the buffer does not have a <see cref="IGorgonBufferInfo.Binding"/> containing the <see cref="BufferBinding.Shader"/> flag, and does not have a
+        /// <see cref="IGorgonBufferInfo.Usage"/> of <see cref="ResourceUsage.Default"/>. This means any reads will be done through an intermediate staging buffer, impacting performance.
+        /// </para>
+        /// <para>
+        /// If the <see cref="IGorgonBufferInfo.Usage"/> property is set to <see cref="ResourceUsage.Staging"/>, then this value is treated as <b>true</b> because staging buffers are CPU only and as such,
+        /// can be read directly by the CPU regardless of this value.
+        /// </para>
+        /// </remarks>
+        public bool AllowCpuRead => Buffer?.IsCpuReadable ?? false;
+
+        /// <summary>
+        /// Property to return the size, in bytes, of an individual structure in a structured buffer.
+        /// </summary>
+        /// <remarks>
+        /// This value will be rounded to the nearest multiple of 4.
+        /// </remarks>
+        public int StructureSize => Buffer?.StructureSize ?? 0;
+
+        /// <summary>
+        /// Property to return whether to allow raw unordered views of the buffer.
+        /// </summary>
+        /// <remarks>
+        /// This value is always <b>false</b> for this type of view.
+        /// </remarks>
+        bool IGorgonBufferInfo.AllowRawView => false;
+
+        /// <summary>
+        /// Property to return the type of binding for the GPU.
+        /// </summary>
+        public BufferBinding Binding => Buffer?.Binding ?? BufferBinding.None;
+
+        /// <summary>
+        /// Property to return whether the buffer will contain indirect argument data.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This flag only applies to buffers with a <see cref="IGorgonBufferInfo.Binding"/> of <see cref="BufferBinding.UnorderedAccess"/>, and/or <see cref="BufferBinding.Shader"/>. If the binding is set
+        /// to anything else, then this flag is treated as being set to <b>false</b>.
+        /// </para>
+        /// <para>
+        /// The default value is <b>false</b>.
+        /// </para>
+        /// </remarks>
+        public bool IndirectArgs => Buffer?.IndirectArgs ?? false;
+
+        /// <summary>
+        /// Property to return the size of the buffer, in bytes.
+        /// </summary>
+        int IGorgonBufferInfo.SizeInBytes => Buffer?.SizeInBytes ?? 0;
+
+        /// <summary>
+        /// Property to return the name of this object.
+        /// </summary>
+        string IGorgonNamedObject.Name => Buffer?.Name;
         #endregion
 
         #region Methods.
         /// <summary>
         /// Function to initialize the unordered access view.
         /// </summary>
-        protected internal override void CreateNativeView()
+        private protected override D3D11.ResourceView OnCreateNativeView()
         {
-            Log.Print("Creating structured buffer unordered access view for {0}.", LoggingLevel.Verbose, Resource.Name);
+            Graphics.Log.Print($"Creating D3D11 structured buffer unordered access view for {Buffer.Name}.", LoggingLevel.Verbose);
 
-            D3D11.UnorderedAccessViewDescription desc = new D3D11.UnorderedAccessViewDescription
+            var desc = new D3D11.UnorderedAccessViewDescription1
                        {
                            Dimension = D3D11.UnorderedAccessViewDimension.Buffer,
                            Buffer =
                            {
-                               FirstElement = ElementStart,
+                               FirstElement = StartElement,
                                ElementCount = ElementCount,
                                Flags = (D3D11.UnorderedAccessViewBufferFlags)UavType
                            },
                            Format = DXGI.Format.Unknown
                        };
 
-            NativeView = new D3D11.UnorderedAccessView(Resource.Graphics.D3DDevice, Resource.D3DResource, desc)
+            Native = new D3D11.UnorderedAccessView1(Resource.Graphics.D3DDevice, Resource.D3DResource, desc)
                          {
-                             DebugName = $"'{Buffer.Name}': D3D 11 Unordered access view"
+                             DebugName = $"'{Buffer.Name}'_D3D11UnorderedAccessView1_Structured"
                          };
+
+            Graphics.Log.Print($"Unordered Access Structured Buffer View '{Buffer.Name}': {Buffer.ResourceType} -> Start: {StartElement}, Count: {ElementCount}, Element Size: {ElementSize}, Type: {UavType}",
+                               LoggingLevel.Verbose);
+
+            return Native;
         }
 
         /// <summary>
@@ -129,8 +198,6 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="buffer">The buffer that will receive the data.</param>
         /// <param name="offset">[Optional] The offset, in bytes, within the buffer attached to this view to start reading from.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="buffer"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="offset"/> is less than 0, or not less than the size of the buffer minus 4 bytes.</exception>
         /// <remarks>
         /// <para>
         /// When the structure unordered access view is set up with a <see cref="StructuredBufferUavType.Append"/>, or <see cref="StructuredBufferUavType.Counter"/>, the values updated by these flags are 
@@ -148,30 +215,30 @@ namespace Gorgon.Graphics.Core
         /// </note>
         /// </para>
         /// </remarks>
-        public void CopyStructureCount(GorgonBufferBase buffer, int offset = 0)
+        public void CopyStructureCount(GorgonBufferCommon buffer, int offset = 0)
         {
             buffer.ValidateObject(nameof(buffer));
             offset.ValidateRange(nameof(offset), 0, Buffer.SizeInBytes - 4);
 
-            buffer.Graphics.D3DDeviceContext.CopyStructureCount(buffer.NativeBuffer, offset, NativeView);
+            buffer.Graphics.D3DDeviceContext.CopyStructureCount(buffer.Native, offset, Native);
         }
         #endregion
 
         #region Constructor/Finalizer.
         /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonStructuredBufferUav"/> class.
+        /// Initializes a new instance of the <see cref="GorgonStructuredUav"/> class.
         /// </summary>
         /// <param name="buffer">The buffer to assign to the view.</param>
         /// <param name="elementStart">The first element in the buffer to view.</param>
         /// <param name="elementCount">The number of elements in the view.</param>
+        /// <param name="totalElementCount">The total number of elements in the buffer.</param>
         /// <param name="uavType">Flags used to indicate the purpose of this view.</param>
-        /// <param name="log">The log used for debug information.</param>
-        internal GorgonStructuredBufferUav(GorgonBuffer buffer,
-                                           int elementStart,
-                                           int elementCount,
-                                           StructuredBufferUavType uavType,
-                                           IGorgonLog log)
-            : base(buffer, elementStart, elementCount, log)
+        internal GorgonStructuredUav(GorgonBuffer buffer,
+                                     StructuredBufferUavType uavType,
+                                     int elementStart,
+                                     int elementCount,
+                                     int totalElementCount)
+            : base(buffer, elementStart, elementCount, totalElementCount)
         {
             UavType = uavType;
         }

@@ -1,7 +1,7 @@
 ﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2016 Michael Winsor
+// Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: July 25, 2016 12:40:16 AM
+// Created: April 18, 2018 10:52:38 PM
 // 
 #endregion
 
@@ -61,7 +61,7 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// Specifying 16 bit indices can improve performance.
+		/// Specifying 16 bit indices might improve performance.
 		/// </para>
 		/// <para>
 		/// The default value is <b>true</b>.
@@ -85,6 +85,14 @@ namespace Gorgon.Graphics.Core
 	        get;
 	        set;
 	    }
+
+	    /// <summary>
+	    /// Property to return the name of this object.
+	    /// </summary>
+	    public string Name
+	    {
+	        get;
+	    }
         #endregion
 
         #region Constructor/Finalizer.
@@ -92,10 +100,17 @@ namespace Gorgon.Graphics.Core
         /// Initializes a new instance of the <see cref="GorgonIndexBufferInfo"/> class.
         /// </summary>
         /// <param name="info">A <see cref="IGorgonIndexBufferInfo"/> to copy settings from.</param>
+        /// <param name="newName">[Optional] The new name for the buffer.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
-        public GorgonIndexBufferInfo(IGorgonIndexBufferInfo info)
+        public GorgonIndexBufferInfo(IGorgonIndexBufferInfo info, string newName = null)
 		{
-		    Usage = info?.Usage ?? throw new ArgumentNullException(nameof(info));
+		    if (info == null)
+		    {
+		        throw new ArgumentNullException(nameof(info));
+		    }
+
+		    Name = string.IsNullOrEmpty(newName) ? info.Name : newName;
+		    Usage = info.Usage;
 			Use16BitIndices = info.Use16BitIndices;
 			IndexCount = info.IndexCount;
 		    Binding = info.Binding;
@@ -104,8 +119,10 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonIndexBufferInfo"/> class.
 		/// </summary>
-		public GorgonIndexBufferInfo()
+		/// <param name="name">[Optional] The name of the buffer.</param>
+		public GorgonIndexBufferInfo(string name = null)
 		{
+		    Name = string.IsNullOrEmpty(name) ? GorgonGraphicsResource.GenerateName(GorgonIndexBuffer.NamePrefix) : name;
 			Usage = ResourceUsage.Default;
 			Use16BitIndices = true;
 		}

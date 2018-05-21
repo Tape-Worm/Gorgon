@@ -1,7 +1,7 @@
 ﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2016 Michael Winsor
+// Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,10 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: July 28, 2016 10:48:32 PM
+// Created: April 18, 2018 10:52:47 PM
 // 
 #endregion
 
+using Gorgon.Core;
 
 namespace Gorgon.Graphics.Core
 {
@@ -36,6 +37,7 @@ namespace Gorgon.Graphics.Core
     /// </para>
     /// </remarks>
     public interface IGorgonIndexBufferInfo 
+        : IGorgonNamedObject
 	{
 	    /// <summary>
 	    /// Property to return the binding used to bind this buffer to the GPU.
@@ -69,7 +71,7 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// Specifying 16 bit indices can improve performance.
+		/// Specifying 16 bit indices might improve performance.
 		/// </para>
 		/// <para>
 		/// The default value is <b>true</b>.

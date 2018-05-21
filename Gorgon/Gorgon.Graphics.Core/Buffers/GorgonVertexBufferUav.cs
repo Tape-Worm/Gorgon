@@ -24,11 +24,11 @@
 // 
 #endregion
 
+using System;
 using DXGI = SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;
-using Gorgon.Core;
 using Gorgon.Diagnostics;
-using Gorgon.Graphics.Core.Properties;
+using Gorgon.Core;
 
 namespace Gorgon.Graphics.Core
 {
@@ -48,25 +48,17 @@ namespace Gorgon.Graphics.Core
     /// These types of views are most useful for <see cref="GorgonComputeShader"/> shaders, but can also be used by a <see cref="GorgonPixelShader"/> by passing a list of these views in to a 
     /// <see cref="GorgonDrawCallBase">draw call</see>.
     /// </para>
-    /// <para>
-    /// <note type="warning">
-    /// <para>
-    /// Unordered access views do not support multisampled <see cref="GorgonTexture"/>s.
-    /// </para>
-    /// </note>
-    /// </para>
     /// </remarks>
     /// <seealso cref="GorgonGraphicsResource"/>
-    /// <seealso cref="GorgonTexture"/>
     /// <seealso cref="GorgonComputeShader"/>
     /// <seealso cref="GorgonPixelShader"/>
     /// <seealso cref="GorgonDrawCallBase"/>
     public sealed class GorgonVertexBufferUav
-        : GorgonBufferUavBase<GorgonVertexBuffer>
+        : GorgonBufferUavCommon<GorgonVertexBuffer>, IGorgonVertexBufferInfo
     {
         #region Properties.
         /// <summary>
-        /// Property to return the format for the view.
+        /// Property to return the format used to interpret this view.
         /// </summary>
         public BufferFormat Format
         {
@@ -74,7 +66,7 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Property to return information about the <see cref="Format"/> assigned to this view.
+        /// Property to return information about the <see cref="Format"/> used by this view.
         /// </summary>
         public GorgonFormatInfo FormatInformation
         {
@@ -82,35 +74,56 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Property to return the size of an element.
+        /// Property to return the size of an element, in bytes.
         /// </summary>
         public override int ElementSize => FormatInformation.SizeInBytes;
+
+        /// <summary>
+        /// Property to return the size of the buffer, in bytes.
+        /// </summary>
+        int IGorgonVertexBufferInfo.SizeInBytes => Buffer?.SizeInBytes ?? 0;
+
+        /// <summary>
+        /// Property to return the binding used to bind this buffer to the GPU.
+        /// </summary>
+        public VertexIndexBufferBinding Binding => Buffer?.Binding ?? VertexIndexBufferBinding.None;
+
+        /// <summary>
+        /// Property to return the name of this object.
+        /// </summary>
+        string IGorgonNamedObject.Name => Buffer?.Name ?? string.Empty;
         #endregion
 
         #region Methods.
         /// <summary>
-        /// Function to initialize the unordered access view.
+        /// Function to perform the creation of a specific kind of view.
         /// </summary>
-        protected internal override void CreateNativeView()
+        /// <returns>The view that was created.</returns>
+        private protected override D3D11.ResourceView OnCreateNativeView()
         {
-            Log.Print("Creating buffer unordered access view for {0}.", LoggingLevel.Verbose, Resource.Name);
+            Graphics.Log.Print($"Creating D3D11 vertex buffer unordered access view for {Buffer.Name}.", LoggingLevel.Verbose);
 
-            D3D11.UnorderedAccessViewDescription desc = new D3D11.UnorderedAccessViewDescription
-                       {
-                           Dimension = D3D11.UnorderedAccessViewDimension.Buffer,
-                           Buffer =
-                           {
-                               FirstElement = ElementStart,
-                               ElementCount = ElementCount,
-                               Flags = D3D11.UnorderedAccessViewBufferFlags.None
-                           },
-                           Format = (DXGI.Format)Format
-                       };
+            D3D11.UnorderedAccessViewDescription1 desc = new D3D11.UnorderedAccessViewDescription1
+                                                         {
+                                                             Dimension = D3D11.UnorderedAccessViewDimension.Buffer,
+                                                             Buffer =
+                                                             {
+                                                                 FirstElement = StartElement,
+                                                                 ElementCount = ElementCount,
+                                                                 Flags = D3D11.UnorderedAccessViewBufferFlags.None
+                                                             },
+                                                             Format = (DXGI.Format)Format
+                                                         };
 
-            NativeView = new D3D11.UnorderedAccessView(Resource.Graphics.D3DDevice, Resource.D3DResource, desc)
-                         {
-                             DebugName = $"'{Buffer.Name}': D3D 11 Unordered access view"
-                         };
+            Native = new D3D11.UnorderedAccessView1(Resource.Graphics.D3DDevice, Resource.D3DResource, desc)
+                     {
+                         DebugName = $"'{Buffer.Name}'_D3D11UnorderedAccessView1"
+                     };
+
+            Graphics.Log.Print($"Unordered Access Vertex Buffer View '{Buffer.Name}': {Buffer.ResourceType} -> Start: {StartElement}, Count: {ElementCount}, Element Size: {ElementSize}",
+                               LoggingLevel.Verbose);
+
+            return Native;
         }
         #endregion
 
@@ -119,21 +132,17 @@ namespace Gorgon.Graphics.Core
         /// Initializes a new instance of the <see cref="GorgonVertexBufferUav"/> class.
         /// </summary>
         /// <param name="buffer">The buffer to assign to the view.</param>
-        /// <param name="elementStart">The first element in the buffer to view.</param>
-        /// <param name="elementCount">The number of elements in the view.</param>
         /// <param name="format">The format of the view.</param>
         /// <param name="formatInfo">Information about the format.</param>
-        /// <param name="log">The log used for debug information.</param>
-        internal GorgonVertexBufferUav(GorgonVertexBuffer buffer, int elementStart, int elementCount, BufferFormat format, GorgonFormatInfo formatInfo, IGorgonLog log)
-            : base(buffer, elementStart, elementCount, log)
+        /// <param name="elementStart">The first element in the buffer to view.</param>
+        /// <param name="elementCount">The number of elements in the view.</param>
+        /// <param name="totalElementCount">The total number of elements in the vertex buffer.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="buffer"/>, or the <paramref name="formatInfo"/> parameter is <b>null</b>.</exception>
+        internal GorgonVertexBufferUav(GorgonVertexBuffer buffer, BufferFormat format, GorgonFormatInfo formatInfo, int elementStart, int elementCount, int totalElementCount)
+            : base(buffer, elementStart, elementCount, totalElementCount)
         {
+            FormatInformation = formatInfo ?? throw new ArgumentNullException(nameof(formatInfo));
             Format = format;
-            FormatInformation = formatInfo;
-
-            if (FormatInformation.IsTypeless)
-            {
-                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_VIEW_NO_TYPELESS);
-            }
         }
         #endregion
     }

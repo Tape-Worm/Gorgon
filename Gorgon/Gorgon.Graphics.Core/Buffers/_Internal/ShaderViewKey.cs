@@ -32,7 +32,7 @@ namespace Gorgon.Graphics.Core
     /// <summary>
     /// A key used to uniquely identify a shader view.
     /// </summary>
-    internal struct BufferShaderViewKey
+    internal readonly struct BufferShaderViewKey
         : IEquatable<BufferShaderViewKey>
     {
         /// <summary>

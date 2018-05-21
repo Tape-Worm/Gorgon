@@ -25,8 +25,6 @@
 #endregion
 
 using System;
-using System.Threading;
-using Gorgon.Diagnostics;
 using DX = SharpDX;
 using D3D11 = SharpDX.Direct3D11;
 
@@ -63,78 +61,20 @@ namespace Gorgon.Graphics.Core
     /// <seealso cref="GorgonPixelShader"/>
     /// <seealso cref="GorgonDrawCallBase"/>
     public abstract class GorgonUnorderedAccessView
-        : IDisposable, IGorgonGraphicsObject
+        : GorgonResourceView
     {
-        #region Variables.
-        // The D3D11 shader resource view.
-        private D3D11.UnorderedAccessView1 _view;
-        // The resource to bind to the GPU.
-        private GorgonGraphicsResource _resource;
-        #endregion
-
         #region Properties.
-        /// <summary>
-        /// Property to set or return whether the view owns the attached resource or not.
-        /// </summary>
-        protected bool OwnsResource
-        {
-            get;
-            set;
-        }
-
         /// <summary>
         /// Property to return the native Direct 3D 11 view.
         /// </summary>
-        protected internal D3D11.UnorderedAccessView1 Native
+        internal D3D11.UnorderedAccessView1 Native
         {
-            get => _view;
-            set => _view = value;
+            get; 
+            set;
         }
-
-        /// <summary>
-        /// Property to return whether this view is disposed or not.
-        /// </summary>
-        public bool IsDisposed => _view == null;
-
-        /// <summary>
-        /// Property to return the resource bound to the view.
-        /// </summary>
-        public GorgonGraphicsResource Resource => _resource;
-
-        /// <summary>
-        /// Property to return the usage flag(s) for the resource.
-        /// </summary>
-        public ResourceUsage Usage => _resource?.Usage ?? ResourceUsage.Default;
-
-
-        /// <summary>
-        /// Property to return the format used to interpret this view.
-        /// </summary>
-        public BufferFormat Format
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return information about the <see cref="Format"/> used by this view.
-        /// </summary>
-        public GorgonFormatInfo FormatInformation
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the graphics interface that the underlying resource.
-        /// </summary>
-        public GorgonGraphics Graphics => _resource?.Graphics;
         #endregion
 
         #region Methods.
-        /// <summary>
-        /// Function to initialize the unordered access view.
-        /// </summary>
-        protected internal abstract void CreateNativeView();
-
         /// <summary>
         /// Function to clear the unordered access value with the specified values.
         /// </summary>
@@ -229,28 +169,10 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
-        public virtual void Dispose()
+        public override void Dispose()
         {
-            D3D11.UnorderedAccessView1 view = Interlocked.Exchange(ref _view, null);
-
-            if (view == null)
-            {
-                return;
-            }
-
-            this.UnregisterDisposable(Resource.Graphics);
-
-            if (OwnsResource)
-            {
-                Graphics.Log.Print($"Unordered Access View '{Resource.Name}': Releasing D3D11 Resource {Resource.ResourceType} because it owns it.", LoggingLevel.Simple);
-                GorgonGraphicsResource resource = Interlocked.Exchange(ref _resource, null);
-                resource?.Dispose();
-            }
-		    
-            Graphics.Log.Print($"Unordered Access View '{Resource.Name}': Releasing D3D11 unordered access view.", LoggingLevel.Simple);
-            view.Dispose();
-
-            GC.SuppressFinalize(this);
+            Native = null;
+            base.Dispose();
         }
         #endregion
 
@@ -259,14 +181,10 @@ namespace Gorgon.Graphics.Core
         /// Initializes a new instance of the <see cref="GorgonShaderResourceView"/> class.
         /// </summary>
         /// <param name="resource">The resource to bind to the view.</param>
-        /// <param name="format">The format of the view.</param>
-        /// <param name="formatInfo">Information about the format.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="resource"/>, or the <paramref name="formatInfo"/> parameter is <b>null</b>.</exception>
-        protected GorgonUnorderedAccessView(GorgonGraphicsResource resource, BufferFormat format, GorgonFormatInfo formatInfo)
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="resource"/> parameter is <b>null</b>.</exception>
+        protected GorgonUnorderedAccessView(GorgonGraphicsResource resource)
+            : base(resource)
         {
-            _resource = resource ?? throw new ArgumentNullException(nameof(resource));
-            Format = format;
-            FormatInformation = formatInfo ?? throw new ArgumentNullException(nameof(formatInfo));
         }
         #endregion
     }

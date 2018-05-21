@@ -92,7 +92,7 @@ namespace Gorgon.IO
 	    /// <summary>
 	    /// Function to write data from a <see cref="GorgonNativeBuffer{T}"/> to a stream.
 	    /// </summary>
-	    /// <typeparam name="T">The type of data in the buffer. Must be a value type.</typeparam>
+	    /// <typeparam name="T">The type of data in the buffer. Must be an unmanaged value type.</typeparam>
 	    /// <param name="buffer">The buffer to write to the stream.</param>
 	    /// <param name="index">[Optional] The index in the buffer to start copying from.</param>
 	    /// <param name="count">[Optional] The number of items in the buffer to copy.</param>
@@ -105,7 +105,7 @@ namespace Gorgon.IO
 	    /// </para>
 	    /// </remarks>
 	    public void WriteRange<T>(GorgonNativeBuffer<T> buffer, int index = 0, int? count = null)
-	        where T : struct
+	        where T : unmanaged
 	    {
 	        if (buffer == null)
 	        {
@@ -197,7 +197,7 @@ namespace Gorgon.IO
         /// <summary>
         /// Function to write a generic value to the stream.
         /// </summary>
-        /// <typeparam name="T">Type of value to write.  Must be a value or primitive type.</typeparam>
+        /// <typeparam name="T">Type of value to write.  Must be an unmanaged value type.</typeparam>
         /// <param name="value">Value to write to the stream.</param>
         /// <remarks>
         /// <para>
@@ -216,7 +216,7 @@ namespace Gorgon.IO
         /// </remarks>
         /// <exception cref="IOException">Thrown when the stream is read-only.</exception>
         public void WriteValue<T>(ref T value)
-			where T : struct
+			where T : unmanaged
         {
             unsafe
             {
@@ -228,7 +228,7 @@ namespace Gorgon.IO
         /// <summary>
         /// Function to write a range of generic values.
         /// </summary>
-        /// <typeparam name="T">Type of value to write.  Must be a value or primitive type.</typeparam>
+        /// <typeparam name="T">Type of value to write.  Must be an unmanaged value type.</typeparam>
         /// <param name="value">Array of values to write.</param>
         /// <param name="startIndex">[Optional] Starting index in the array.</param>
         /// <param name="count">[Optional] Number of array elements to copy.</param>
@@ -260,7 +260,7 @@ namespace Gorgon.IO
         /// </note>
         /// </remarks>
         public void WriteRange<T>(T[] value, int startIndex = 0, int? count = null)
-			where T : struct
+			where T : unmanaged
 		{
 			if (value == null)
 			{

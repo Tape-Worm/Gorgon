@@ -103,6 +103,11 @@ namespace Gorgon.Graphics
 		#region Variables.
 		// The number of bytes used by a single element of this format type.
 		private int _sizeInBytes;
+
+        /// <summary>
+        /// A default information type for the <see cref="BufferFormat.Unknown"/> format.
+        /// </summary>
+        public static readonly GorgonFormatInfo UnknownFormatInfo = new GorgonFormatInfo(BufferFormat.Unknown);
 		#endregion
 
 		#region Properties.

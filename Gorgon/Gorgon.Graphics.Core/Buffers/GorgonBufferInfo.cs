@@ -40,6 +40,14 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <remarks>
         /// <para>
+        /// This value controls whether or not the CPU can directly access the buffer for reading. If this value is <b>false</b>, the buffer still can be read, but will be done through an intermediate
+        /// staging buffer, which is obviously less performant. 
+        /// </para>
+        /// <para>
+        /// This value is treated as <b>false</b> if the buffer does not have a <see cref="Binding"/> containing the <see cref="BufferBinding.Shader"/> flag, and does not have a <see cref="Usage"/> of
+        /// <see cref="ResourceUsage.Default"/>. This means any reads will be done through an intermediate staging buffer, impacting performance.
+        /// </para>
+        /// <para>
         /// The default for this value is <b>false</b>.
         /// </para>
         /// </remarks>
@@ -90,45 +98,10 @@ namespace Gorgon.Graphics.Core
         /// when the buffer is created.
         /// </para>
         /// <para>
-        /// This value must be set to <see cref="BufferBinding.None"/> for constant buffers. If it is not, it will be reset to <see cref="BufferBinding.None"/> upon buffer creation.
-        /// </para>
-        /// <para>
-        /// The default value is <see cref="BufferBinding.Shader"/>
+        /// The default value is <see cref="BufferBinding.None"/>
         /// </para>
         /// </remarks>
         public BufferBinding Binding
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the format for the default shader view.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// Use this to define a default <see cref="GorgonBufferView"/> for the buffer. This default view will allow shaders to access the buffer without needing to create an additional view. If this 
-        /// value is set to <see cref="BufferFormat.Unknown"/>, then no default shader view will be created.
-        /// </para>
-        /// <para>
-        /// The default shader view will expose the entire buffer to the shader. To limit view to only a portion of the buffer, call the <see cref="GorgonBuffer.GetShaderResourceView"/> with the appropriate 
-        /// element constraints.
-        /// </para>
-        /// <para>
-        /// The format must not be typeless, if it is, an exception will be thrown on buffer creation.
-        /// </para>
-        /// <para>
-        /// <note type="important">
-        /// <para>
-        /// This property is only used if the <see cref="IGorgonBufferInfo.Binding"/> property has a <see cref="BufferBinding.Shader"/> flag.
-        /// </para>
-        /// </note>
-        /// </para>
-        /// <para>
-        /// The default value for this property is <see cref="BufferFormat.Unknown"/>.
-        /// </para>
-        /// </remarks>
-        public BufferFormat DefaultShaderViewFormat
         {
             get;
             set;
@@ -195,34 +168,53 @@ namespace Gorgon.Graphics.Core
             get;
             set;
         }
+
+        /// <summary>
+        /// Property to return the name of this object.
+        /// </summary>
+        /// <remarks>
+        /// For best practice, the name should only be set once during the lifetime of an object. Hence, this interface only provides a read-only implementation of this 
+        /// property.
+        /// </remarks>
+        public string Name
+        {
+            get;
+        }
         #endregion
 
         #region Constructor/Finalizer.
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonBufferInfo"/> class.
         /// </summary>
-        /// <param name="bufferInfo">The buffer information to copy.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="bufferInfo"/> parameter is <b>null</b>.</exception>
-        public GorgonBufferInfo(IGorgonBufferInfo bufferInfo)
+        /// <param name="info">The buffer information to copy.</param>
+        /// <param name="newName">[Optional] The new name for the buffer.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
+        public GorgonBufferInfo(IGorgonBufferInfo info, string newName = null)
         {
-            Usage = bufferInfo?.Usage ?? throw new ArgumentNullException(nameof(bufferInfo));
-            SizeInBytes = bufferInfo.SizeInBytes;
-            Binding = bufferInfo.Binding;
-            DefaultShaderViewFormat = bufferInfo.DefaultShaderViewFormat;
-            AllowCpuRead = bufferInfo.AllowCpuRead;
-            StructureSize = bufferInfo.StructureSize;
-            AllowRawView = bufferInfo.AllowRawView;
-            IndirectArgs = bufferInfo.IndirectArgs;
+            if (info == null)
+            {
+                throw new ArgumentNullException(nameof(info));
+            }
+            
+            Name = string.IsNullOrEmpty(newName) ? info.Name : newName;
+            Usage = info.Usage;
+            SizeInBytes = info.SizeInBytes;
+            Binding = info.Binding;
+            AllowCpuRead = info.AllowCpuRead;
+            StructureSize = info.StructureSize;
+            AllowRawView = info.AllowRawView;
+            IndirectArgs = info.IndirectArgs;
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonBufferInfo"/> class.
         /// </summary>
-        public GorgonBufferInfo()
+        /// <param name="name">[Optional] The name of the buffer.</param>
+        public GorgonBufferInfo(string name = null)
         {
+            Name = string.IsNullOrEmpty(name) ? GorgonGraphicsResource.GenerateName(GorgonBuffer.NamePrefix) : name;
             Usage = ResourceUsage.Default;
-            DefaultShaderViewFormat = BufferFormat.Unknown;
-            Binding = BufferBinding.Shader;
+            Binding = BufferBinding.None;
         }
         #endregion
     }

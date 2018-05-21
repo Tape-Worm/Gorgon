@@ -24,7 +24,7 @@
 // 
 #endregion
 
-using Gorgon.Diagnostics;
+using System;
 
 namespace Gorgon.Graphics.Core
 {
@@ -43,44 +43,29 @@ namespace Gorgon.Graphics.Core
     /// These types of views are most useful for <see cref="GorgonComputeShader"/> shaders, but can also be used by a <see cref="GorgonPixelShader"/> by passing a list of these views in to a 
     /// <see cref="GorgonDrawCallBase">draw call</see>.
     /// </para>
-    /// <para>
-    /// <note type="warning">
-    /// <para>
-    /// Unordered access views do not support multisampled <see cref="GorgonTexture"/>s.
-    /// </para>
-    /// </note>
-    /// </para>
     /// </remarks>
     /// <seealso cref="GorgonGraphicsResource"/>
-    /// <seealso cref="GorgonTexture"/>
     /// <seealso cref="GorgonComputeShader"/>
     /// <seealso cref="GorgonPixelShader"/>
     /// <seealso cref="GorgonDrawCallBase"/>
-    public abstract class GorgonBufferUavBase<T>
+    public abstract class GorgonBufferUavCommon<T>
         : GorgonUnorderedAccessView
-        where T : GorgonBufferBase
+        where T : GorgonBufferCommon
     {
         #region Properties.
-        /// <summary>
-        /// Property to return the log used for debug information.
-        /// </summary>
-        protected IGorgonLog Log
-        {
-            get;
-        }
-
         /// <summary>
         /// Property to return the buffer associated with this view.
         /// </summary>
         public T Buffer
         {
             get;
+            protected set;
         }
 
         /// <summary>
         /// Property to return the offset of the view from first element in the buffer.
         /// </summary>
-        public int ElementStart
+        public int StartElement
         {
             get;
         }
@@ -96,7 +81,10 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the total number of elements in the <see cref="Buffer"/>.
         /// </summary>
-        public int TotalElementCount => Buffer.SizeInBytes / ElementSize;
+        public int TotalElementCount
+        {
+            get;
+        }
 
         /// <summary>
         /// Property to return the size of an element.
@@ -107,23 +95,21 @@ namespace Gorgon.Graphics.Core
         }
         #endregion
 
-        #region Methods.
-        #endregion
-
         #region Constructor/Finalizer.
         /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonBufferUavBase{T}"/> class.
+        /// Initializes a new instance of the <see cref="GorgonBufferUavCommon{T}"/> class.
         /// </summary>
         /// <param name="buffer">The buffer to assign to the view.</param>
         /// <param name="elementStart">The first element in the buffer to view.</param>
         /// <param name="elementCount">The number of elements in the view.</param>
-        /// <param name="log">The log used for debug information.</param>
-        protected GorgonBufferUavBase(T buffer, int elementStart, int elementCount, IGorgonLog log)
+        /// <param name="totalElementCount">The total number of elements in the buffer.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="buffer"/> parameter is <b>null</b>.</exception>
+        protected GorgonBufferUavCommon(T buffer, int elementStart, int elementCount, int totalElementCount)
             : base(buffer)
         {
-            Log = log ?? GorgonLogDummy.DefaultInstance;
-            ElementStart = elementStart;
+            StartElement = elementStart;
             ElementCount = elementCount;
+            TotalElementCount = totalElementCount;
             Buffer = buffer;
         }
         #endregion

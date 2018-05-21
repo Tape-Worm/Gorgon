@@ -71,9 +71,13 @@ namespace Gorgon.Graphics.Core
     /// This defines how the resource should be used when rendering and whether or not it is CPU and/or GPU accessible.
     /// </para>
     /// </remarks>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue", Justification = "No. Fuck off.")]
     public enum ResourceUsage
     {
+        /// <summary>
+        /// No intended usage was defined for this resource.
+        /// </summary>
+        None = 0,
+
         /// <summary>
         /// <para>
         /// A resource that requires read and write access by the GPU. This is likely to be the most common usage choice.
@@ -100,7 +104,7 @@ namespace Gorgon.Graphics.Core
         /// A resource that supports data transfer (copy) from the GPU to the CPU.
         /// </para>
         /// </summary>
-        Staging = D3D11.ResourceUsage.Staging
+        Staging = D3D11.ResourceUsage.Staging,
     }
 
 
@@ -172,10 +176,9 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the usage for the resource.
         /// </summary>
-        public ResourceUsage Usage
+        public abstract ResourceUsage Usage
         {
             get;
-            protected set;
         }
 
         /// <summary>
@@ -220,10 +223,9 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the size, in bytes, of the resource.
         /// </summary>
-        public int SizeInBytes
+        public abstract int SizeInBytes
         {
             get;
-            protected set;
         }
 
         /// <summary>
@@ -233,7 +235,7 @@ namespace Gorgon.Graphics.Core
         /// For best practises, the name should only be set once during the lifetime of an object. Hence, this interface only provides a read-only implementation of this 
         /// property.
         /// </remarks>
-        public string Name
+        public abstract string Name
         {
             get;
         }
@@ -312,27 +314,14 @@ namespace Gorgon.Graphics.Core
         /// Initializes a new instance of the <see cref="GorgonGraphicsResource" /> class.
         /// </summary>
         /// <param name="graphics">The graphics interface used to create this resource.</param>
-        /// <param name="name">Name of this resource.</param>
         /// <remarks>
         /// <para>
         /// Names for the resource are required, but do not need to be unique. These are used to help with debugging and can be used for managing resources in an application.
         /// </para>
         /// </remarks>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception> 
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
-        protected GorgonGraphicsResource(GorgonGraphics graphics, string name)
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception> 
+        protected GorgonGraphicsResource(GorgonGraphics graphics)
         {
-            if (name == null)
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
-
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                throw new ArgumentEmptyException(nameof(name));
-            }
-
-            Name = name;
             Graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
         }
         #endregion

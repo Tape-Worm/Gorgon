@@ -25,6 +25,8 @@
 #endregion
 
 
+using Gorgon.Core;
+
 namespace Gorgon.Graphics.Core
 {
     /// <summary>
@@ -36,6 +38,7 @@ namespace Gorgon.Graphics.Core
     /// </para>
     /// </remarks>
     public interface IGorgonConstantBufferInfo 
+        : IGorgonNamedObject
 	{
 		/// <summary>
 		/// Property to return the intended usage flags for this texture.

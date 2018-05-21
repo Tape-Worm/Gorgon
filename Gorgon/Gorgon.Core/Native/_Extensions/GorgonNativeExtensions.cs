@@ -39,97 +39,9 @@ namespace Gorgon.Native
     public static class GorgonNativeExtensions
     {
         /// <summary>
-        /// Function to copy the contents of a span into a <see cref="GorgonNativeBuffer{T}"/>.
-        /// </summary>
-        /// <typeparam name="T">The type of value in the buffer.</typeparam>
-        /// <param name="span">The span containing the data to copy.</param>
-        /// <returns>A new <see cref="GorgonNativeBuffer{T}"/> containing the data from the span.</returns>
-        /// <exception cref="ArgumentEmptyException">Thrown is the span is empty.</exception>
-        public static GorgonNativeBuffer<T> ToNativeBuffer<T>(this Span<T> span)
-            where T : struct
-        {
-            if (span.IsEmpty)
-            {
-                throw new ArgumentEmptyException(nameof(span));
-            }
-
-            var buffer = new GorgonNativeBuffer<T>(span.Length);
-            Span<T> destSpan = buffer.ToSpan();
-
-            span.CopyTo(destSpan);
-            return buffer;
-        }
-
-        /// <summary>
-        /// Function to copy the contents of a read only span into a <see cref="GorgonNativeBuffer{T}"/>.
-        /// </summary>
-        /// <typeparam name="T">The type of value in the buffer.</typeparam>
-        /// <param name="span">The span containing the data to copy.</param>
-        /// <returns>A new <see cref="GorgonNativeBuffer{T}"/> containing the data from the span.</returns>
-        /// <exception cref="ArgumentEmptyException">Thrown is the span is empty.</exception>
-        public static GorgonNativeBuffer<T> ToNativeBuffer<T>(this ReadOnlySpan<T> span)
-            where T : struct
-        {
-            if (span.IsEmpty)
-            {
-                throw new ArgumentEmptyException(nameof(span));
-            }
-
-            var buffer = new GorgonNativeBuffer<T>(span.Length);
-            Span<T> destSpan = buffer.ToSpan();
-
-            span.CopyTo(destSpan);
-            return buffer;
-        }
-
-        /// <summary>
-        /// Function to copy the contents of a memory type into a <see cref="GorgonNativeBuffer{T}"/>.
-        /// </summary>
-        /// <typeparam name="T">The type of value in the buffer.</typeparam>
-        /// <param name="memory">The memory type containing the data to copy.</param>
-        /// <returns>A new <see cref="GorgonNativeBuffer{T}"/> containing the data from the span.</returns>
-        /// <exception cref="ArgumentEmptyException">Thrown is the span is empty.</exception>
-        public static GorgonNativeBuffer<T> ToNativeBuffer<T>(this Memory<T> memory)
-            where T : struct
-        {
-            if (memory.IsEmpty)
-            {
-                throw new ArgumentEmptyException(nameof(memory));
-            }
-
-            var buffer = new GorgonNativeBuffer<T>(memory.Length);
-            Span<T> destSpan = buffer.ToSpan();
-
-            memory.Span.CopyTo(destSpan);
-            return buffer;
-        }
-
-        /// <summary>
-        /// Function to copy the contents of a read only memory type into a <see cref="GorgonNativeBuffer{T}"/>.
-        /// </summary>
-        /// <typeparam name="T">The type of value in the buffer.</typeparam>
-        /// <param name="memory">The read only memory type containing the data to copy.</param>
-        /// <returns>A new <see cref="GorgonNativeBuffer{T}"/> containing the data from the span.</returns>
-        /// <exception cref="ArgumentEmptyException">Thrown is the span is empty.</exception>
-        public static GorgonNativeBuffer<T> ToNativeBuffer<T>(this ReadOnlyMemory<T> memory)
-            where T : struct
-        {
-            if (memory.IsEmpty)
-            {
-                throw new ArgumentEmptyException(nameof(memory));
-            }
-
-            var buffer = new GorgonNativeBuffer<T>(memory.Length);
-            Span<T> destSpan = buffer.ToSpan();
-
-            memory.Span.CopyTo(destSpan);
-            return buffer;
-        }
-
-        /// <summary>
         /// Function to copy the contents of a stream into a <see cref="GorgonNativeBuffer{T}"/>.
         /// </summary>
-        /// <typeparam name="T">The type of value in the buffer.</typeparam>
+        /// <typeparam name="T">The type of value in the buffer. Must be an unmanaged value type.</typeparam>
         /// <param name="stream">The stream to read from.</param>
         /// <param name="count">[Optional] The maximum number of items to read from the stream.</param>
         /// <returns>A <see cref="GorgonNativeBuffer{T}"/> containing the contents of the stream.</returns>
@@ -137,7 +49,7 @@ namespace Gorgon.Native
         /// <exception cref="EndOfStreamException">Thrown when the <paramref name="stream"/> is at its end.</exception>
         /// <exception cref="IOException">Thrown when the <paramref name="stream"/> is write only.</exception>
         public static GorgonNativeBuffer<T> ToNativeBuffer<T>(this Stream stream, int? count = null)
-            where T : struct
+            where T : unmanaged
         {
             if (stream == null)
             {
@@ -187,9 +99,71 @@ namespace Gorgon.Native
         }
 
         /// <summary>
+        /// Function to copy the contents of an array into a <see cref="GorgonNativeBuffer{T}"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of data in the array and buffer. Must be an unmanaged value type.</typeparam>
+        /// <param name="array">The array to copy from.</param>
+        /// <param name="buffer">The buffer that will receive the data.</param>
+        /// <param name="arrayIndex">[Optional] The index in the array to start copying from.</param>
+        /// <param name="count">[Optional] The number of items to copy.</param>
+        /// <param name="bufferIndex">[Optional] The index in the buffer to start writing into.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="array"/>, or <paramref name="buffer"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="arrayIndex"/>, or the <paramref name="bufferIndex"/> parameter is less than 0.</exception>
+        /// <exception cref="ArgumentException">
+        /// <para>Thrown when the <paramref name="arrayIndex"/> + <paramref name="count"/> is too big for the <paramref name="array"/>.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the <paramref name="bufferIndex"/> + <paramref name="count"/> is too big for the <paramref name="buffer"/>.</para>
+        /// </exception>
+        /// <remarks>
+        /// <para>
+        /// If the <paramref name="count"/> parameter is ommitted, then the full length of the source buffer, minus the <paramref name="arrayIndex"/> is used. Ensure that there is enough space in the 
+        /// <paramref name="buffer"/> to accomodate the amount of data required.
+        /// </para>
+        /// </remarks>
+        public static void CopyTo<T>(this T[] array, GorgonNativeBuffer<T> buffer, int arrayIndex = 0, int? count = null, int bufferIndex = 0)
+            where T : unmanaged
+        {
+            if (array == null)
+            {
+                throw new ArgumentNullException(nameof(array));
+            }
+
+            if (buffer == null)
+            {
+                throw new ArgumentNullException(nameof(buffer));
+            }
+
+            if (count == null)
+            {
+                count = array.Length - arrayIndex;
+            }
+
+            GorgonNativeBuffer<T>.ValidateArrayParams(array, arrayIndex, count.Value);
+            
+            if (bufferIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(bufferIndex), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
+            }
+
+            if (bufferIndex + count.Value > buffer.Length)
+            {
+                throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, bufferIndex, count));
+            }
+
+            unsafe
+            {
+                fixed (T* srcPtr = &array[arrayIndex])
+                fixed (T* destPtr = &buffer[bufferIndex])
+                {                    
+                    Unsafe.CopyBlock(destPtr, srcPtr, (uint)count.Value);
+                }
+            }
+        }
+
+        /// <summary>
         /// Function to convert an array into a <see cref="GorgonNativeBuffer{T}"/>.
         /// </summary>
-        /// <typeparam name="T">The type of data in the array. Must be a value type.</typeparam>
+        /// <typeparam name="T">The type of data in the array. Must be an unmanaged value type.</typeparam>
         /// <param name="array">The array to turn into a native buffer.</param>
         /// <param name="index">[Optional] The index in the array that represents the beginning of the native buffer.</param>
         /// <param name="count">[Optional] The number of items in the array that will be contained in the buffer.</param>
@@ -212,7 +186,7 @@ namespace Gorgon.Native
         /// </para>
         /// </remarks>
         public static GorgonNativeBuffer<T> ToNativeBuffer<T>(this T[] array, int index = 0, int? count = null)
-            where T : struct
+            where T : unmanaged
         {
             if (count == null)
             {
@@ -222,10 +196,14 @@ namespace Gorgon.Native
             GorgonNativeBuffer<T>.ValidateArrayParams(array, index, count.Value);
 
             var result = new GorgonNativeBuffer<T>(count.Value);
-            Span<T> bufferSpan = result.ToSpan();
-            var sourceSpan = new Span<T>(array, index, count.Value);
-
-            sourceSpan.CopyTo(bufferSpan);
+            
+            unsafe
+            {
+                fixed (T* srcPtr = &array[index])
+                {
+                    Unsafe.CopyBlock((T*)result, srcPtr, (uint)(Unsafe.SizeOf<T>() * count.Value));
+                }
+            }
 
             return result;
         }
@@ -233,7 +211,7 @@ namespace Gorgon.Native
         /// <summary>
         /// Function to pin an array and return a <see cref="GorgonNativeBuffer{T}"/> containing the pinned data.
         /// </summary>
-        /// <typeparam name="T">The type of data in the array. Must be a value type.</typeparam>
+        /// <typeparam name="T">The type of data in the array. Must be an unmanaged value type.</typeparam>
         /// <param name="array">The array to turn into a native buffer.</param>
         /// <param name="index">[Optional] The index in the array that represents the beginning of the native buffer.</param>
         /// <param name="count">[Optional] The number of items in the array that will be contained in the buffer.</param>
@@ -257,7 +235,7 @@ namespace Gorgon.Native
         /// </para>
         /// </remarks>
         public static GorgonNativeBuffer<T> ToPinned<T>(this T[] array, int index = 0, int? count = null)
-            where T : struct
+            where T : unmanaged
         {
             if (count == null)
             {

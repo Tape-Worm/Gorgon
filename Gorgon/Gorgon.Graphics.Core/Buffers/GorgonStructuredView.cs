@@ -20,61 +20,39 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: July 4, 2017 11:54:56 PM
+// Created: July 5, 2017 11:30:50 PM
 // 
 #endregion
 
-using System;
-using System.Runtime.Remoting.Messaging;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
-using Gorgon.Graphics.Core.Properties;
-using D3D = SharpDX.Direct3D;
 using DXGI = SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
 {
     /// <summary>
-    /// A shader resource view for a <see cref="GorgonBuffer"/>.
+    /// A shader resource view for <see cref="GorgonBuffer"/> containing structured data.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This is a generic view to allow a <see cref="GorgonBuffer"/> to be bound to the GPU pipeline as a buffer resource.
+    /// This is a generic view to allow a <see cref="GorgonBuffer"/> to be bound to the GPU pipeline as a structured buffer resource. The buffer must have been created with the <see cref="BufferBinding.Shader"/> 
+    /// flag in its <see cref="IGorgonBufferInfo.Binding"/> property, and have a <see cref="IGorgonBufferInfo.StructureSize"/> greater than 0.
     /// </para>
     /// <para>
-    /// Use a resource view to allow a shader access to the contents of a resource (or sub resource).  When the resource is created with a typeless format, this will allow the resource to be cast to any 
-    /// format within the same group.	
-    /// </para>
-    /// <para>
-    /// This type of view will allow shaders to access the data in the buffer by treating each data item as an "element".  The size of these elements depend on the view <see cref="Format"/>.  
+    /// This type of view will allow shaders to access the data in the buffer by treating each data item as an "element".  The size of these elements is depends on the size of an individual "structure" in 
+    /// the buffer (this structure size defined by the <see cref="IGorgonBufferInfo"/> type).  Each element can be between 1-2048 bytes and will be aligned to a 4-byte boundary. 
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonBuffer"/>
-    public sealed class GorgonBufferView
+    public sealed class GorgonStructuredView
         : GorgonBufferViewCommon, IGorgonBufferInfo
     {
         #region Properties.
         /// <summary>
-        /// Property to return the format for the view.
-        /// </summary>
-        public BufferFormat Format
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return information about the <see cref="Format"/> used by this view.
-        /// </summary>
-        public GorgonFormatInfo FormatInformation
-        {
-            get;
-        }
-
-        /// <summary>
         /// Property to return the size of an element, in bytes.
         /// </summary>
-        public override int ElementSize => FormatInformation.SizeInBytes;
+        public override int ElementSize => Buffer?.StructureSize ?? 0;
 
         /// <summary>
         /// Property to set or return whether to allow the CPU read access to the buffer.
@@ -99,9 +77,9 @@ namespace Gorgon.Graphics.Core
         /// Property to return the size, in bytes, of an individual structure in a structured buffer.
         /// </summary>
         /// <remarks>
-        /// This value is always 0 for this type of view.
+        /// This value will be rounded to the nearest multiple of 4.
         /// </remarks>
-        int IGorgonBufferInfo.StructureSize => 0;
+        public int StructureSize => Buffer?.StructureSize ?? 0;
 
         /// <summary>
         /// Property to return whether to allow raw unordered views of the buffer.
@@ -147,27 +125,27 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         private protected override D3D11.ResourceView OnCreateNativeView()
         {
-            Graphics.Log.Print($"Creating D3D11 buffer shader resource view for {Buffer.Name}.", LoggingLevel.Simple);
+            Graphics.Log.Print($"Creating D3D11 structured buffer shader resource view for {Buffer.Name}.", LoggingLevel.Simple);
 
             var desc = new D3D11.ShaderResourceViewDescription1
                        {
-                           Format = (DXGI.Format)Format,
-                           Dimension = D3D.ShaderResourceViewDimension.ExtendedBuffer,
+                           Format = DXGI.Format.Unknown,
+                           Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.ExtendedBuffer,
                            BufferEx = new D3D11.ShaderResourceViewDescription.ExtendedBufferResource
                                       {
-                                         FirstElement = StartElement,
-                                         ElementCount = ElementCount,
-                                         Flags = D3D11.ShaderResourceViewExtendedBufferFlags.None
+                                          FirstElement = StartElement,
+                                          ElementCount = ElementCount,
+                                          Flags = D3D11.ShaderResourceViewExtendedBufferFlags.None
                                       }
-                        };
+                       };
 
             // Create our SRV.
             Native = new D3D11.ShaderResourceView1(Buffer.Graphics.D3DDevice, Buffer.D3DResource, desc)
-                         {
-                             DebugName = $"'{Buffer.Name}'_D3D11ShaderResourceView1_Buffer"
-                         };
+                     {
+                         DebugName = $"'{Buffer.Name}'_D3D11ShaderResourceView1_Structured"
+                     };
 
-            Graphics.Log.Print($"Shader Resource Buffer View '{Buffer.Name}': {Buffer.ResourceType} -> Start: {StartElement}, Count: {ElementCount}, Element Size: {ElementSize}",
+            Graphics.Log.Print($"Shader Resource Structured Buffer View '{Buffer.Name}': {Buffer.ResourceType} -> Start: {StartElement}, Count: {ElementCount}, Element Size: {ElementSize}",
                                LoggingLevel.Verbose);
 
             return Native;
@@ -176,25 +154,18 @@ namespace Gorgon.Graphics.Core
 
         #region Constructor/Finalizer.
         /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonBufferView"/> class.
+        /// Initializes a new instance of the <see cref="GorgonStructuredView"/> class.
         /// </summary>
         /// <param name="buffer">The buffer to bind to the view.</param>
-        /// <param name="format">The format of the view into the buffer.</param>
-        /// <param name="formatInfo">The information about the format being used.</param>
         /// <param name="startingElement">The starting element in the buffer to view.</param>
         /// <param name="elementCount">The number of elements in the buffer to view.</param>
         /// <param name="totalElementCount">The total number of elements in the buffer.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="buffer"/>, or the <paramref name="formatInfo"/> parameter is <b>null</b>.</exception>
-        internal GorgonBufferView(GorgonBuffer buffer,
-                                      BufferFormat format,
-                                      GorgonFormatInfo formatInfo,
-                                      int startingElement,
-                                      int elementCount,
-                                      int totalElementCount)
+        internal GorgonStructuredView(GorgonBuffer buffer,
+                                            int startingElement,
+                                            int elementCount,
+                                            int totalElementCount)
             : base(buffer, startingElement, elementCount, totalElementCount)
         {
-            FormatInformation = formatInfo ?? throw new ArgumentNullException(nameof(formatInfo));
-            Format = format;
         }
         #endregion
     }

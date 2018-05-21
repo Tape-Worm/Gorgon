@@ -39,7 +39,7 @@ namespace Gorgon.Native
     /// <summary>
     /// Provides a buffer that uses native (unmanaged) memory to store its data.
     /// </summary>
-    /// <typeparam name="T">The type of data to store in the buffer. Must be a value type.</typeparam>
+    /// <typeparam name="T">The type of data to store in the buffer. Must be an unmanaged value type.</typeparam>
     /// <remarks>
     /// <para>
     /// This buffer works similarly to an array or span type, only it is backed by unmanaged memory. This allows applications to use it for things like interop between native and managed code, or to have 
@@ -72,7 +72,7 @@ namespace Gorgon.Native
     /// </remarks>
     public sealed unsafe class GorgonNativeBuffer<T>
         : IDisposable, IEquatable<GorgonNativeBuffer<T>>
-        where T : struct
+        where T : unmanaged
     {
         #region Variables.
         // The size, in bytes, of the data type stored in the buffer.
@@ -137,7 +137,7 @@ namespace Gorgon.Native
         /// <summary>
         /// Function to read a value from the buffer as the specified type.
         /// </summary>
-        /// <typeparam name="TCastType">The type to cast to. Must be a value type.</typeparam>
+        /// <typeparam name="TCastType">The type to cast to. Must be an unmanaged value type.</typeparam>
         /// <param name="index">The index of the item in buffer to cast.</param>
         /// <returns>The value in the buffer, casted to the required type.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> parameter is less than 0, or greater than/equal to <see cref="Length"/>.</exception>
@@ -213,62 +213,6 @@ namespace Gorgon.Native
         }
 
         /// <summary>
-        /// Function to return a span for this buffer.
-        /// </summary>
-        /// <param name="index">The index in the buffer to starting slicing at.</param>
-        /// <param name="count">The number of items to slice.</param>
-        /// <returns>A span type containing a slice into the buffer.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> parameter is less than 0.</exception>
-        /// <exception cref="ArgumentException">Thrown when the <paramref name="index"/> + <paramref name="count"/> is too big for this buffer.</exception>
-        public Span<T> ToSpan(int index = 0, int? count = null)
-        {
-            if (index < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(index), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
-            }
-
-            if (count == null)
-            {
-                count = Length - index;
-            }
-            
-            if (index + count.Value > Length)
-            {
-                throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, index, count.Value));
-            }
-
-            return new Span<T>((_memoryBlock + (index * _typeSize)), count.Value);
-        }
-
-        /// <summary>
-        /// Function to return a read only span for this buffer.
-        /// </summary>
-        /// <param name="index">The index in the buffer to starting slicing at.</param>
-        /// <param name="count">The number of items to slice.</param>
-        /// <returns>A read only span type containing a slice into the buffer.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> parameter is less than 0.</exception>
-        /// <exception cref="ArgumentException">Thrown when the <paramref name="index"/> + <paramref name="count"/> is too big for this buffer.</exception>
-        public ReadOnlySpan<T> ToReadOnlySpan(int index = 0, int? count = null)
-        {
-            if (index < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(index), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
-            }
-
-            if (count == null)
-            {
-                count = Length - index;
-            }
-            
-            if (index + count.Value > Length)
-            {
-                throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, index, count.Value));
-            }
-
-            return new ReadOnlySpan<T>((_memoryBlock + (index * _typeSize)), count.Value);
-        }
-
-        /// <summary>
         /// Function to copy the contents of this buffer into other.
         /// </summary>
         /// <param name="destination">The destination buffer that will receive the data.</param>
@@ -310,6 +254,11 @@ namespace Gorgon.Native
                 count = Length - sourceIndex;
             }
 
+            if (count < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(count), Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL);
+            }
+
             if (sourceIndex + count.Value > Length)
             {
                 throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, sourceIndex, count.Value));
@@ -320,9 +269,76 @@ namespace Gorgon.Native
                 throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, destIndex, count.Value));
             }
 
-            Span<T> destSpan = destination.ToSpan(destIndex, count.Value);
-            ReadOnlySpan<T> thisSpan = ToReadOnlySpan(sourceIndex, count.Value);
-            thisSpan.CopyTo(destSpan);
+            unsafe
+            {
+                Unsafe.CopyBlock(destination._memoryBlock + (destIndex * _typeSize), _memoryBlock + (sourceIndex * _typeSize), (uint)(count * _typeSize));
+            }
+        }
+
+        /// <summary>
+        /// Function to copy the contents of this buffer into an array of type <typeparamref name="T"/>.
+        /// </summary>
+        /// <param name="destination">The destination array that will receive the data.</param>
+        /// <param name="sourceIndex">[Optional] The first index to start copying from.</param>
+        /// <param name="count">[Optional] The number of items to copy.</param>
+        /// <param name="destIndex">[Optional] The destination index in the destination arrayto start copying into.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="destination"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="sourceIndex"/>, or the <paramref name="destIndex"/> parameter is less than 0.</exception>
+        /// <exception cref="ArgumentException">
+        /// <para>Thrown when the <paramref name="sourceIndex"/> + <paramref name="count"/> is too big for this buffer.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the <paramref name="destIndex"/> + <paramref name="count"/> is too big for the <paramref name="destination"/> buffer.</para>
+        /// </exception>
+        /// <remarks>
+        /// <para>
+        /// If the <paramref name="count"/> parameter is ommitted, then the full length of the source buffer, minus the <paramref name="sourceIndex"/> is used. Ensure that there is enough space in the 
+        /// <paramref name="destination"/> buffer to accomodate the amount of data required.
+        /// </para>
+        /// </remarks>
+        public void CopyTo(T[] destination, int sourceIndex = 0, int? count = null, int destIndex = 0)
+        {
+            if (destination == null)
+            {
+                throw new ArgumentNullException(nameof(destination));
+            }
+
+            if (sourceIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(sourceIndex), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
+            }
+
+            if (destIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(destIndex), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
+            }
+
+            if (count == null)
+            {
+                count = Length - sourceIndex;
+            }
+
+            if (count < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(count), Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL);
+            }
+
+            if (sourceIndex + count.Value > Length)
+            {
+                throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, sourceIndex, count.Value));
+            }
+
+            if (destIndex + count.Value > destination.Length)
+            {
+                throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, destIndex, count.Value));
+            }
+
+            unsafe
+            {
+                fixed (T* destPtr = &destination[destIndex])
+                {
+                    Unsafe.CopyBlock(destPtr, _memoryBlock + (sourceIndex * _typeSize), (uint)(count * _typeSize));
+                }                
+            }
         }
 
         /// <summary>
@@ -354,6 +370,11 @@ namespace Gorgon.Native
             {
                 count = Length - startIndex;
             }
+
+            if (count < 0)
+            {
+                throw new ArgumentException(nameof(count), Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL);
+            }
             
             if (startIndex + count.Value > Length)
             {
@@ -361,10 +382,14 @@ namespace Gorgon.Native
             }
 
             var result = new T[count.Value];
-            var resultSpan = new Span<T>(result, 0, result.Length);
-            var thisSpan = ToSpan(startIndex, count);
-
-            thisSpan.CopyTo(resultSpan);
+            
+            unsafe
+            {
+                fixed (T* destPtr = &result[0])
+                {
+                    Unsafe.CopyBlock(destPtr, _memoryBlock + (startIndex * _typeSize), (uint)(count * _typeSize));
+                }
+            }
 
             return result;
         }
@@ -443,6 +468,13 @@ namespace Gorgon.Native
         /// <exception cref="IOException">Thrown when the <paramref name="stream"/> is read only.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="startIndex"/> is less than 0.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="startIndex"/> + <paramref name="count"/> are equal to or greater than the <see cref="Length"/>.</exception>
+        /// <remarks>
+        /// <para>
+        /// If the <paramref name="count"/> parameter is ommitted, then the full length of the source buffer, minus the <paramref name="startIndex"/> is used. Ensure that there is enough space in the 
+        /// <paramref name="stream"/> to accomodate the amount of data required.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="ToStream(int, int?)"/>
         public void CopyTo(Stream stream, int startIndex = 0, int? count = null)
         {
             if (stream == null)
@@ -465,6 +497,12 @@ namespace Gorgon.Native
                 count = Length - startIndex;
             }
             
+
+            if (count < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(count), Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL);
+            }
+
             if (startIndex + count.Value > Length)
             {
                 throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, startIndex, count.Value));
@@ -482,7 +520,7 @@ namespace Gorgon.Native
         /// <summary>
         /// Function to cast the type in this buffer to another type.
         /// </summary>
-        /// <typeparam name="TCastType">The type to cast to. Must be a value type.</typeparam>
+        /// <typeparam name="TCastType">The type to cast to. Must be an unmanaged value type.</typeparam>
         /// <returns>A new <see cref="GorgonNativeBuffer{TCastType}"/> pointing at the same memory.</returns>
         /// <remarks>
         /// <para>
@@ -500,7 +538,7 @@ namespace Gorgon.Native
         /// </para>
         /// </remarks>
         public GorgonNativeBuffer<TCastType> Cast<TCastType>()
-            where TCastType : struct
+            where TCastType : unmanaged
         {
             return new GorgonNativeBuffer<TCastType>(_memoryBlock, SizeInBytes);
         }
@@ -554,7 +592,7 @@ namespace Gorgon.Native
         /// <summary>
         /// Explicit operator to return a <see cref="GorgonReadOnlyPointer"/> to the underlying data in the buffer.
         /// </summary>
-        /// <param name="buffer">The pointer to retrieve the native pointer from.</param>
+        /// <param name="buffer">The buffer to retrieve the native pointer from.</param>
         /// <returns>The void pointer to the underlying data in the buffer.</returns>
         /// <remarks>
         /// <para>
@@ -564,6 +602,36 @@ namespace Gorgon.Native
         public static explicit operator GorgonReadOnlyPointer(GorgonNativeBuffer<T> buffer)
         {
             return buffer._memoryBlock == null ? GorgonReadOnlyPointer.Null : new GorgonReadOnlyPointer(buffer._memoryBlock, buffer.SizeInBytes);
+        }
+
+        /// <summary>
+        /// Explicit operator to convert this buffer into a byte buffer.
+        /// </summary>
+        /// <param name="buffer">The buffer to convert.</param>
+        /// <remarks>
+        /// <para>
+        /// This will <b>not</b> make a copy of the data in the, but merely cast it to a buffer with the type of byte as its element. Disposing of the source <paramref name="buffer"/> will invalidate the
+        /// buffer returned by this cast.
+        /// </para>
+        /// </remarks>
+        public static explicit operator GorgonNativeBuffer<byte>(GorgonNativeBuffer<T> buffer)
+        {
+            return buffer == null ? null : new GorgonNativeBuffer<byte>((byte *)buffer, buffer.SizeInBytes);
+        }
+
+        /// <summary>
+        /// Explicit operator to convert a byte buffer into a typed buffer.
+        /// </summary>
+        /// <param name="buffer">The buffer to convert.</param>
+        /// <remarks>
+        /// <para>
+        /// This will <b>not</b> make a copy of the data in the, but merely cast it to a buffer with the type of <typeparamref name="T"/> as its element. Disposing of the source <paramref name="buffer"/>
+        /// will invalidate the buffer returned by this cast.
+        /// </para>
+        /// </remarks>
+        public static explicit operator GorgonNativeBuffer<T>(GorgonNativeBuffer<byte> buffer)
+        {
+            return buffer == null ? null : new GorgonNativeBuffer<T>((byte *)buffer, buffer.SizeInBytes);
         }
         
         /// <summary>
@@ -599,6 +667,54 @@ namespace Gorgon.Native
         public void Fill(byte clearValue)
         {
             Unsafe.InitBlock(_memoryBlock, clearValue, (uint)SizeInBytes);
+        }
+
+        /// <summary>
+        /// Function to return a stream wrapping this buffer.
+        /// </summary>
+        /// <param name="index">[Optional] The index in the buffer to map to the beginning of the stream.</param>
+        /// <param name="count">[Optional] The number of items to wrap in the stream.</param>
+        /// <returns>A new <see cref="Stream"/> which will wrap the contents of the buffer.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/>, or the <paramref name="count"/> parameter is less than 0.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="index"/> plus the <paramref name="count"/> exceeds the size of the buffer.</exception>
+        /// <remarks>
+        /// <para>
+        /// This method takes the unmanaged memory used by the buffer and wraps it in a <see cref="Stream"/>. The stream returned is not a copy of the memory used by the buffer, so it is important to 
+        /// ensure that the stream lifetime is managed in conjunction with the lifetime of the buffer. Disposing of the buffer and using the returned stream will result in undefined behavior and potential 
+        /// memory access violations.
+        /// </para>
+        /// <para>
+        /// A portion of the buffer can be wrapped by the stream by supplying a value for <paramref name="index"/> and/or <paramref name="count"/>.  If the count is omitted, all data from 
+        /// <paramref name="index"/> up to the end of the buffer is wrapped by the stream.  Likewise, if <paramref name="index"/> is omitted, all data from the beginning of the buffer up to the 
+        /// <paramref name="count"/> is wrapped. If no parameters are supplied, then the entire buffer is wrapped.
+        /// </para>
+        /// </remarks>        
+        public Stream ToStream(int index = 0, int? count = null)
+        {
+            if (index < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(index), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
+            }
+
+            if (count == null)
+            {
+                count = Length - index;
+            }
+
+            if (count < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(count), Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL);
+            }
+
+            if (index + count.Value > Length)
+            {
+                throw new ArgumentException(Resources.GOR_ERR_DATABUFF_BUFFER_OVERRUN);
+            }
+
+            count = count * _typeSize;
+            index = index * _typeSize;
+
+            return new UnmanagedMemoryStream(_memoryBlock + index, count.Value, count.Value, FileAccess.ReadWrite);
         }
         #endregion
 

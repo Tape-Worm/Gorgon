@@ -216,31 +216,29 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Function to perform initialization of the view.
         /// </summary>
-        protected internal override void CreateNativeView()
+        private protected override void OnCreateNativeView()
         {
             Graphics.Log.Print($"Render Target 2D View '{Texture.Name}': Creating D3D11 render target view.", LoggingLevel.Simple);
 
             D3D11.RenderTargetViewDescription1 desc = GetDesc2D(!Texture.MultisampleInfo.Equals(GorgonMultisampleInfo.NoMultiSampling));
 
-			if (desc.Dimension == D3D11.RenderTargetViewDimension.Unknown)
+            if (desc.Dimension == D3D11.RenderTargetViewDimension.Unknown)
             {
                 throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_VIEW_CANNOT_BIND_UNKNOWN_RESOURCE);
             }
-            
+
             MipWidth = (Width >> MipSlice).Max(1);
             MipHeight = (Height >> MipSlice).Max(1);
-            
+
             Bounds = new DX.Rectangle(0, 0, Width, Height);
 
             Graphics.Log.Print($"Render Target 2D View '{Texture.Name}': {Texture.ResourceType} -> Mip slice: {MipSlice}, Array Index: {ArrayIndex}, Array Count: {ArrayCount}",
                                LoggingLevel.Verbose);
 
             Native = new D3D11.RenderTargetView1(Texture.Graphics.D3DDevice, Texture.D3DResource, desc)
-                                  {
-                                      DebugName = $"'{Texture.Name}'_D3D11RenderTargetView1_2D"
-                                  };
-
-            this.RegisterDisposable(Texture.Graphics);
+                     {
+                         DebugName = $"'{Texture.Name}'_D3D11RenderTargetView1_2D"
+                     };
         }
 
         /// <summary>

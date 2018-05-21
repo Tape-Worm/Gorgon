@@ -92,7 +92,7 @@ namespace Gorgon.IO
 	    /// <summary>
 	    /// Function to read data from a stream into a <see cref="GorgonNativeBuffer{T}"/>.
 	    /// </summary>
-	    /// <typeparam name="T">The type of data in the buffer. Must be a value type.</typeparam>
+	    /// <typeparam name="T">The type of data in the buffer. Must be an unmanaged value type.</typeparam>
 	    /// <param name="buffer">The buffer that will receive the contents of the stream.</param>
 	    /// <param name="index">[Optional] The index in the buffer to start copying data into.</param>
 	    /// <param name="count">[Optional] The number of items to copy into the buffer.</param>
@@ -105,7 +105,7 @@ namespace Gorgon.IO
 	    /// </para>
 	    /// </remarks>
 	    public void ReadRange<T>(GorgonNativeBuffer<T> buffer, int index = 0, int? count = null)
-	        where T : struct
+	        where T : unmanaged
 	    {
 	        if (buffer == null)
 	        {
@@ -195,7 +195,7 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Function to read a generic value from the stream.
 		/// </summary>
-		/// <typeparam name="T">Type of value to read.  Must be a value or primitive type.</typeparam>
+		/// <typeparam name="T">Type of value to read.  Must be an unmanaged value type.</typeparam>
 		/// <returns>The value in the stream.</returns>
 		/// <remarks>
 		/// <para>
@@ -212,7 +212,7 @@ namespace Gorgon.IO
 		/// </note>
 		/// </remarks>
 		public T ReadValue<T>()
-			where T : struct
+			where T : unmanaged
 		{
 		    ReadValue(out T result);
 
@@ -222,7 +222,7 @@ namespace Gorgon.IO
 	    /// <summary>
 	    /// Function to read a generic value from the stream.
 	    /// </summary>
-	    /// <typeparam name="T">Type of value to read.  Must be a value or primitive type.</typeparam>
+	    /// <typeparam name="T">Type of value to read.  Must be an unmanaged value type.</typeparam>
 	    /// <param name="result">The value from the stream.</param>
 	    /// <returns>The value in the stream.</returns>
 	    /// <remarks>
@@ -240,7 +240,7 @@ namespace Gorgon.IO
 	    /// </note>
 	    /// </remarks>
 	    public void ReadValue<T>(out T result)
-	        where T : struct
+	        where T : unmanaged
 	    {
 	        result = default;
 	        unsafe
@@ -253,7 +253,7 @@ namespace Gorgon.IO
         /// <summary>
         /// Function to read a range of generic values.
         /// </summary>
-        /// <typeparam name="T">Type of value to read.  Must be a value or primitive type.</typeparam>
+        /// <typeparam name="T">Type of value to read.  Must be an unmanaged value type.</typeparam>
         /// <param name="value">Array of values to read.</param>
         /// <param name="startIndex">[Optional] Starting index in the array.</param>
         /// <param name="count">[Optional] Number of array elements to copy.</param>
@@ -281,7 +281,7 @@ namespace Gorgon.IO
         /// </note>
         /// </remarks>
         public void ReadRange<T>(T[] value, int startIndex = 0, int? count = null)
-			where T : struct
+			where T : unmanaged
 		{
 			if (value == null)
 			{
@@ -350,7 +350,7 @@ namespace Gorgon.IO
         /// <summary>
         /// Function to read a range of generic values.
         /// </summary>
-        /// <typeparam name="T">Type of value to read.  Must be a value or primitive type.</typeparam>
+        /// <typeparam name="T">Type of value to read.  Must be an unmanaged value type.</typeparam>
         /// <param name="count">Number of array elements to copy.</param>
         /// <returns>An array filled with values of type <typeparamref name="T"/>.</returns>
         /// <remarks>
@@ -374,7 +374,7 @@ namespace Gorgon.IO
         /// </remarks>
         /// <exception cref="IOException">Thrown when the stream is write-only.</exception>
         public T[] ReadRange<T>(int count)
-			where T : struct
+			where T : unmanaged
 		{
 			var array = new T[count];
 

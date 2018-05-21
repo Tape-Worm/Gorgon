@@ -27,9 +27,9 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
-using Gorgon.Native;
 using Gorgon.Reflection;
 
 namespace Gorgon.Graphics.Core
@@ -73,40 +73,52 @@ namespace Gorgon.Graphics.Core
 			get;
 			set;
 		}
-		#endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to create a <see cref="IGorgonConstantBufferInfo"/> based on the type representing a vertex.
-		/// </summary>
-		/// <typeparam name="T">The type of data representing a constant. This must be a value type.</typeparam>
-		/// <param name="count">[Optional] The number of items to store in the buffer.</param>
-		/// <param name="usage">[Optional] The usage parameter for the vertex buffer.</param>
-		/// <returns>A new <see cref="IGorgonConstantBufferInfo"/> to use when creating a <see cref="GorgonConstantBuffer"/>.</returns>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="count"/> parameter is less than 1.</exception>
-		/// <exception cref="GorgonException">Thrown when the type specified by <typeparamref name="T"/> is not safe for use with native functions (see <see cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>).
-		/// <para>-or-</para>
-		/// <para>Thrown when the type specified by <typeparamref name="T"/> does not contain any public members.</para>
-		/// </exception>
-		/// <remarks>
-		/// <para>
-		/// This method is offered as a convenience to simplify the creation of the required info for a <see cref="GorgonConstantBuffer"/>. It will automatically determine the size of the constant based on the 
-		/// size of a type specified by <typeparamref name="T"/> and fill in the <see cref="SizeInBytes"/> with the correct size.
-		/// </para>
-		/// <para>
-		/// A constant buffer must have its size rounded to the nearest multiple of 16. If the type specified by <typeparamref name="T"/> does not have a size that is a multiple of 16, then the 
-		/// <see cref="SizeInBytes"/> returned will be rounded up to the nearest multiple of 16.
-		/// </para>
-		/// <para>
-		/// This method requires that the type passed by <typeparamref name="T"/> have its members decorated with the <see cref="InputElementAttribute"/>. This is used to determine which members of the 
-		/// type are to be used in determining the size of the type.
-		/// </para>
-		/// </remarks>
-		/// <seealso cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>
-		/// <seealso cref="GorgonReflectionExtensions.IsSafeForNative(Type)"/>
-		/// <seealso cref="GorgonReflectionExtensions.IsSafeForNative(Type,out IReadOnlyList{FieldInfo})"/>
-		public static IGorgonConstantBufferInfo CreateFromType<T>(int count = 1, ResourceUsage usage = ResourceUsage.Default)
-			where T : struct
+	    /// <summary>
+	    /// Property to return the name of this object.
+	    /// </summary>
+	    public string Name
+	    {
+	        get;
+	    }
+        #endregion
+
+        #region Methods.
+        /// <summary>
+        /// Function to create a <see cref="IGorgonConstantBufferInfo"/> based on the type representing a vertex.
+        /// </summary>
+        /// <typeparam name="T">The type of data representing a constant. This must be an unmanaged value type.</typeparam>
+        /// <param name="name">[Optional] The name of this constant buffer.</param>
+        /// <param name="count">[Optional] The number of items to store in the buffer.</param>
+        /// <param name="usage">[Optional] The usage parameter for the vertex buffer.</param>
+        /// <returns>A new <see cref="IGorgonConstantBufferInfo"/> to use when creating a <see cref="GorgonConstantBuffer"/>.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="count"/> parameter is less than 1.</exception>
+        /// <exception cref="GorgonException">Thrown when the type specified by <typeparamref name="T"/> is not safe for use with native functions (see <see cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>).
+        /// <para>-or-</para>
+        /// <para>Thrown when the type specified by <typeparamref name="T"/> does not contain any public members.</para>
+        /// </exception>
+        /// <remarks>
+        /// <para>
+        /// This method is offered as a convenience to simplify the creation of the required info for a <see cref="GorgonConstantBuffer"/>. It will automatically determine the size of the constant based on the 
+        /// size of a type specified by <typeparamref name="T"/> and fill in the <see cref="SizeInBytes"/> with the correct size.
+        /// </para>
+        /// <para>
+        /// A constant buffer must have its size rounded to the nearest multiple of 16. If the type specified by <typeparamref name="T"/> does not have a size that is a multiple of 16, then the 
+        /// <see cref="SizeInBytes"/> returned will be rounded up to the nearest multiple of 16.
+        /// </para>
+        /// <para>
+        /// This method requires that the type passed by <typeparamref name="T"/> have its members decorated with the <see cref="InputElementAttribute"/>. This is used to determine which members of the 
+        /// type are to be used in determining the size of the type.
+        /// </para>
+        /// <para>
+        /// If the <paramref name="name"/> parameter is <b>null</b> or empty, then the fully qualified name of the type specified by <typeparamref name="T"/> is used.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>
+        /// <seealso cref="GorgonReflectionExtensions.IsSafeForNative(Type)"/>
+        /// <seealso cref="GorgonReflectionExtensions.IsSafeForNative(Type,out IReadOnlyList{FieldInfo})"/>
+        public static IGorgonConstantBufferInfo CreateFromType<T>(string name = null, int count = 1, ResourceUsage usage = ResourceUsage.Default)
+			where T : unmanaged
 		{
 			if (count < 1)
 			{
@@ -117,10 +129,10 @@ namespace Gorgon.Graphics.Core
 
 			if (dataType.IsSafeForNative(out IReadOnlyList<FieldInfo> badFields))
 			{
-				return new GorgonConstantBufferInfo
+				return new GorgonConstantBufferInfo(string.IsNullOrEmpty(dataType.Name) ? dataType.FullName : name)
 				{
 					Usage = usage,
-					SizeInBytes = ((count * DirectAccess.SizeOf<T>()) + 15) & ~15
+					SizeInBytes = ((count * Unsafe.SizeOf<T>()) + 15) & ~15
 				};
 			}
 
@@ -138,18 +150,27 @@ namespace Gorgon.Graphics.Core
 		/// Initializes a new instance of the <see cref="GorgonConstantBufferInfo"/> class.
 		/// </summary>
 		/// <param name="info">A <see cref="IGorgonConstantBufferInfo"/> to copy settings from.</param>
+		/// <param name="newName">[Optional] The new name for the buffer.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
-		public GorgonConstantBufferInfo(IGorgonConstantBufferInfo info)
+		public GorgonConstantBufferInfo(IGorgonConstantBufferInfo info, string newName = null)
 		{
-		    SizeInBytes = info?.SizeInBytes ?? throw new ArgumentNullException(nameof(info));
+		    if (info == null)
+		    {
+                throw new ArgumentNullException(nameof(info));
+		    }
+            
+		    Name = string.IsNullOrEmpty(newName) ? info.Name : newName;
+		    SizeInBytes = info.SizeInBytes;
 			Usage = info.Usage;
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonConstantBufferInfo"/> class.
 		/// </summary>
-		public GorgonConstantBufferInfo()
+		/// <param name="name">[Optional] The name of the constant buffer.</param>
+		public GorgonConstantBufferInfo(string name = null)
 		{
+		    Name = string.IsNullOrEmpty(name) ? GorgonGraphicsResource.GenerateName(GorgonConstantBuffer.NamePrefix) : name;
 			Usage = ResourceUsage.Default;
 		}
 		#endregion

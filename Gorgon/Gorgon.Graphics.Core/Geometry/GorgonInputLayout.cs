@@ -285,7 +285,7 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Function to build an input layout using the fields from a value type.
 		/// </summary>
-		/// <typeparam name="T">The type to evaluate. This must be a value type.</typeparam>
+		/// <typeparam name="T">The type to evaluate. This must be an unmanaged value type.</typeparam>
 		/// <param name="graphics">The graphics interface used to create the input layout.</param>
 		/// <param name="shader">Vertex shader to bind the layout with.</param>
 		/// <returns>A new <see cref="GorgonInputLayout"/> for the type passed to <typeparamref name="T"/>.</returns>
@@ -294,6 +294,8 @@ namespace Gorgon.Graphics.Core
 		/// <exception cref="GorgonException">Thrown when the type specified by <typeparamref name="T"/> is not safe for use with native functions (see <see cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>).
 		/// <para>-or-</para>
 		/// <para>Thrown when the type specified by <typeparamref name="T"/> does not contain any public members.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown if the type specified by <typeparamref name="T"/> does not have a <see cref="LayoutKind"/> of <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/>.</para>
 		/// </exception>
 		/// <remarks>
 		/// <para>
@@ -301,7 +303,7 @@ namespace Gorgon.Graphics.Core
 		/// <see cref="InputElementAttribute"/>. If a member is not decorated with this attribute, then it will be ignored.
 		/// </para>
 		/// <para>
-		/// The type parameter <typeparamref name="T"/> must be a value type (<c>struct</c>), reference types are not supported. The members of the type must also be public fields. Properties are not 
+		/// The type parameter <typeparamref name="T"/> must be an unmanaged value type (<c>struct</c>), reference types are not supported. The members of the type must also be public fields. Properties are not 
 		/// supported. Futhermore, the struct must be decorated with a <see cref="StructLayoutAttribute"/> that defines a <see cref="LayoutKind"/> of <see cref="LayoutKind.Sequential"/> or 
 		/// <see cref="LayoutKind.Explicit"/>. This is necessary to ensure that the member of the value type are in the correct order when writing to a <see cref="GorgonVertexBuffer"/> or when 
 		/// generating a <see cref="GorgonInputLayout"/> from a type.
@@ -359,10 +361,8 @@ namespace Gorgon.Graphics.Core
 		/// </para>
 		/// </remarks>
 		/// <seealso cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>
-		/// <seealso cref="GorgonReflectionExtensions.IsSafeForNative(Type)"/>
-		/// <seealso cref="GorgonReflectionExtensions.IsSafeForNative(Type,out IReadOnlyList{FieldInfo})"/>
 		public static GorgonInputLayout CreateUsingType<T>(GorgonGraphics graphics, GorgonVertexShader shader)
-			where T : struct
+			where T : unmanaged
 		{
 		    return CreateUsingType(graphics, typeof(T), shader);
 		}
@@ -375,7 +375,10 @@ namespace Gorgon.Graphics.Core
         /// <param name="shader">Vertex shader to bind the layout with.</param>
         /// <returns>A new <see cref="GorgonInputLayout"/> for the type passed to <paramref name="type"/>.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, <paramref name="type"/> or the <paramref name="shader"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentException">Thrown when an element with the same context, slot and index appears more than once in the members of the <paramref name="type"/>.</exception>
+        /// <exception cref="ArgumentException">Thrown when an element with the same context, slot and index appears more than once in the members of the <paramref name="type"/>.
+        /// <para>-or-</para>
+        /// <para>Thrown if the <paramref name="type"/> does not have a <see cref="LayoutKind"/> of <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/>.</para>
+        /// </exception>
         /// <exception cref="GorgonException">Thrown when the type specified by <paramref name="type"/> is not safe for use with native functions (see <see cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>).
         /// <para>-or-</para>
         /// <para>Thrown when the type specified by <paramref name="type"/> does not contain any public members.</para>
@@ -386,7 +389,7 @@ namespace Gorgon.Graphics.Core
         /// <see cref="InputElementAttribute"/>. If a member is not decorated with this attribute, then it will be ignored.
         /// </para>
         /// <para>
-        /// The <paramref name="type"/> parameter must be a value type (<c>struct</c>), reference types are not supported. The members of the type must also be public fields. Properties are not 
+        /// The <paramref name="type"/> parameter must be an unmanaged value type (<c>struct</c>), reference types are not supported. The members of the type must also be public fields. Properties are not 
         /// supported. Futhermore, the struct must be decorated with a <see cref="StructLayoutAttribute"/> that defines a <see cref="LayoutKind"/> of <see cref="LayoutKind.Sequential"/> or 
         /// <see cref="LayoutKind.Explicit"/>. This is necessary to ensure that the member of the value type are in the correct order when writing to a <see cref="GorgonVertexBuffer"/> or when 
         /// generating a <see cref="GorgonInputLayout"/> from a type.
@@ -444,8 +447,6 @@ namespace Gorgon.Graphics.Core
         /// </para>
         /// </remarks>
         /// <seealso cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>
-        /// <seealso cref="GorgonReflectionExtensions.IsSafeForNative(Type)"/>
-        /// <seealso cref="GorgonReflectionExtensions.IsSafeForNative(Type,out IReadOnlyList{FieldInfo})"/>
         public static GorgonInputLayout CreateUsingType(GorgonGraphics graphics, Type type, GorgonVertexShader shader)
 	    {
 	        if (graphics == null)
@@ -456,6 +457,11 @@ namespace Gorgon.Graphics.Core
 	        if (type == null)
 	        {
 	            throw new ArgumentNullException(nameof(type));
+	        }
+
+	        if ((type.IsAutoLayout) || ((!type.IsLayoutSequential) && (!type.IsExplicitLayout)))
+	        {
+                throw new ArgumentException(string.Format(Resources.GORGFX_ERR_LAYOUT_NOT_SEQUENTIAL_EXPLICIT, type.FullName));
 	        }
 
 	        if (shader == null)
@@ -497,7 +503,7 @@ namespace Gorgon.Graphics.Core
 	            byteOffset += element.SizeInBytes;
 	        }
 
-	        return new GorgonInputLayout(type.Name, graphics, shader, elements);
+	        return new GorgonInputLayout(graphics, type.Name, shader, elements);
 	    }
 
         /// <summary>
@@ -624,14 +630,14 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonInputLayout"/> class.
 		/// </summary>
-		/// <param name="name">Name of the object.</param>
 		/// <param name="graphics">The video adapter interface used to create this input layout.</param>
+		/// <param name="name">Name of the object.</param>
 		/// <param name="shader">Vertex shader to bind the layout with.</param>
 		/// <param name="elements">The input elements to assign to this layout.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/>, <paramref name="graphics"/>, <paramref name="shader"/>, or the <paramref name="elements"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/>, or the <paramref name="elements"/> parameter is empty.</exception>
 		/// <exception cref="ArgumentException">Thrown when an element with the same context, slot and index appears more than once in the <paramref name="elements"/> parameter.</exception>
-		public GorgonInputLayout(string name, GorgonGraphics graphics, GorgonVertexShader shader, IEnumerable<GorgonInputElement> elements)
+		public GorgonInputLayout(GorgonGraphics graphics, string name, GorgonVertexShader shader, IEnumerable<GorgonInputElement> elements)
 		{
 			if (name == null)
 			{

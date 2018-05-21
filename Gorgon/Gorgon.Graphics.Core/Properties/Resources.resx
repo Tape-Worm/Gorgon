@@ -117,8 +117,8 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="GORGFX_ERR_BUFFER_CANT_UPDATE_IMMUTABLE_OR_DYNAMIC" xml:space="preserve">
-    <value>Cannot update buffers with a usage of [Immutable] or [Dynamic].</value>
+  <data name="GORGFX_ERR_BUFFER_CANT_UPDATE_IMMUTABLE" xml:space="preserve">
+    <value>Cannot update buffers with a usage of [Immutable].</value>
   </data>
   <data name="GORGFX_ERR_INVALID_OS" xml:space="preserve">
     <value>The Gorgon Graphics interface requires Windows 10 (Build {0}) or better.</value>
@@ -425,7 +425,7 @@ Errors:
 
 The width must be a value between 1-{2}, and the height must be a value between 1-{3}.</value>
   </data>
-  <data name="GORGFX_ERR_BUFFER_CANNOT_BE_BOUND_TO_GPU" xml:space="preserve">
+  <data name="GORGFX_ERR_BUFFER_STAGING_CANNOT_BE_BOUND_TO_GPU" xml:space="preserve">
     <value>A staging buffer cannot be bound to the GPU as a shader resource, stream out resource, or as an unordered access resource.</value>
   </data>
   <data name="GORGFX_ERR_BUFFER_NON_STAGING_NEEDS_BINDING" xml:space="preserve">
@@ -497,11 +497,11 @@ The width must be a value between 1-{2}, and the height must be a value between 
   <data name="GORGFX_ERR_BUFFER_DYNAMIC_UAV" xml:space="preserve">
     <value>Cannot use unordered access views with dynamic buffers.</value>
   </data>
-  <data name="GORGFX_ERR_BUFFER_IMMUTABLE_STAGING_SO" xml:space="preserve">
-    <value>Immutable or staging buffers cannot be used for stream out.</value>
+  <data name="GORGFX_ERR_BUFFER_NO_SO" xml:space="preserve">
+    <value>Buffers with a usage of [{0}] cannot be used for stream out.</value>
   </data>
-  <data name="GORGFX_ERR_BUFFER_IMMUTABLE_STAGING_UAV" xml:space="preserve">
-    <value>Immutable or staging buffers cannot use unordered access views.</value>
+  <data name="GORGFX_ERR_BUFFER_NO_UAV" xml:space="preserve">
+    <value>Buffers with a usage of [{0}] cannot be used for unordered access views.</value>
   </data>
   <data name="GORGFX_ERR_INDEX_BUFFER_TYPE_MISMATCH" xml:space="preserve">
     <value>This buffer uses {0} bit indices. {1} bit indices cannot be written to it.</value>
@@ -557,5 +557,26 @@ Current binding: [{0}]</value>
   </data>
   <data name="GORGFX_ERR_RENDER_TARGET_NOT_SUPPORTED" xml:space="preserve">
     <value>This texture type cannot be used as a render target.</value>
+  </data>
+  <data name="GORGFX_ERR_COUNT_OUT_OF_RANGE" xml:space="preserve">
+    <value>The count value must be greater than 0.</value>
+  </data>
+  <data name="GORGFX_ERR_DEST_INDEX_AND_COUNT_TOO_LARGE" xml:space="preserve">
+    <value>The destination index and the count ({0}) is too large for the maximum size ({1}).</value>
+  </data>
+  <data name="GORGFX_ERR_LAYOUT_NOT_SEQUENTIAL_EXPLICIT" xml:space="preserve">
+    <value>The type '{0}' does not have a sequential or explicit layout.</value>
+  </data>
+  <data name="GORGFX_ERR_SOURCE_INDEX_AND_COUNT_TOO_LARGE" xml:space="preserve">
+    <value>The source index and the count ({0}) is too large for the maximum size ({1}).</value>
+  </data>
+  <data name="GORGFX_ERR_CB_OFFSET_TYPE_TOO_LARGE" xml:space="preserve">
+    <value>The offset and the size of the type would exceed the total size of this buffer ({0}).</value>
+  </data>
+  <data name="GORGFX_ERR_BUFFER_INCORRECT_BINDING" xml:space="preserve">
+    <value>The buffer does not have a [{0}] binding.</value>
+  </data>
+  <data name="GORGFX_ERR_SRV_NOT_VALID" xml:space="preserve">
+    <value>The resource '{0}' does not have an [Shader] binding.</value>
   </data>
 </root>

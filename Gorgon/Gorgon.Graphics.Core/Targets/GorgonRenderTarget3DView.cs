@@ -164,7 +164,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Function to perform initialization of the view.
         /// </summary>
-        protected internal override void CreateNativeView()
+        private protected override void OnCreateNativeView()
         {
             Graphics.Log.Print($"Render Target 3D View '{Texture.Name}': Creating D3D11 render target view.", LoggingLevel.Simple);
 
@@ -180,11 +180,6 @@ namespace Gorgon.Graphics.Core
                                                           }
                                                       };
 
-            if (desc.Dimension == D3D11.RenderTargetViewDimension.Unknown)
-            {
-                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_VIEW_CANNOT_BIND_UNKNOWN_RESOURCE);
-            }
-
             MipWidth = (Width >> MipSlice).Max(1);
             MipHeight = (Height >> MipSlice).Max(1);
 
@@ -197,11 +192,9 @@ namespace Gorgon.Graphics.Core
                      {
                          DebugName = $"'{Texture.Name}'_D3D11RenderTargetView1_3D"
                      };
-
-            this.RegisterDisposable(Texture.Graphics);
         }
 
-		/// <summary>
+        /// <summary>
 		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
 		/// </summary>
 		public override void Dispose()

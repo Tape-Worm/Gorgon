@@ -25,39 +25,24 @@
 #endregion
 
 using System;
-using Gorgon.Diagnostics;
-using Gorgon.Graphics.Core.Properties;
-using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
 {
     /// <summary>
     /// The base class for buffer shader views.
     /// </summary>
-    public abstract class GorgonBufferViewBase
+    public abstract class GorgonBufferViewCommon
         : GorgonShaderResourceView
     {
         #region Properties.
-        /// <summary>
-        /// Property to return the logging interface for debug logging.
-        /// </summary>
-        protected IGorgonLog Log
-        {
-            get;
-        }
-
         /// <summary>
         /// Property to return the buffer associated with the view.
         /// </summary>
         public GorgonBuffer Buffer
         {
             get;
+            protected set;
         }
-
-        /// <summary>
-        /// Property to return the size of the buffer, in bytes.
-        /// </summary>
-        public int BufferSizeInBytes => Buffer.SizeInBytes;
 
         /// <summary>
         /// Property to return the starting element.
@@ -84,7 +69,7 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Property to return the size of an element.
+        /// Property to return the size of an element, in bytes.
         /// </summary>
         public abstract int ElementSize
         {
@@ -92,36 +77,29 @@ namespace Gorgon.Graphics.Core
         }
         #endregion
 
+        #region Methods.
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public override void Dispose()
+        {
+            Buffer = null;
+            base.Dispose();
+        }
+        #endregion
+
         #region Constructor/Finalizer.
         /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonBufferViewBase"/> class.
+        /// Initializes a new instance of the <see cref="GorgonBufferViewCommon"/> class.
         /// </summary>
         /// <param name="buffer">The buffer to bind to the view.</param>
         /// <param name="startingElement">The starting element in the buffer to view.</param>
         /// <param name="elementCount">The number of elements in the buffer to view.</param>
         /// <param name="totalElementCount">The total number of elements in the buffer.</param>
-        /// <param name="log">The logging interface used for debug logging.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="buffer"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentException">Thrown when the <paramref name="buffer"/> is a staging resource, or does not have a binding flag for shader access.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="startingElement"/> and the <paramref name="elementCount"/> are larger than the total number of elements.</exception>
-        protected GorgonBufferViewBase(GorgonBuffer buffer, int startingElement, int elementCount, int totalElementCount, IGorgonLog log)
+        protected GorgonBufferViewCommon(GorgonBuffer buffer, int startingElement, int elementCount, int totalElementCount)
             : base(buffer)
         {
-            Log = log ?? GorgonLogDummy.DefaultInstance;
-            Buffer = buffer ?? throw new ArgumentNullException(nameof(buffer));
-
-            if ((buffer.NativeBuffer.Description.Usage == D3D11.ResourceUsage.Staging)
-                || ((buffer.NativeBuffer.Description.BindFlags & D3D11.BindFlags.ShaderResource) != D3D11.BindFlags.ShaderResource))
-            {
-                throw new ArgumentException(Resources.GORGFX_ERR_BUFFER_CANNOT_BE_BOUND_TO_GPU, nameof(buffer));
-            }
-
-            // Ensure that the elements are within the total size of the buffer.
-            if (startingElement + elementCount > totalElementCount)
-            {
-                throw new ArgumentOutOfRangeException(string.Format(Resources.GORGFX_ERR_BUFFER_VIEW_START_COUNT_OUT_OF_RANGE, startingElement, elementCount, totalElementCount));
-            }
-
             TotalElementCount = totalElementCount;
             StartElement = startingElement;
             ElementCount = elementCount;

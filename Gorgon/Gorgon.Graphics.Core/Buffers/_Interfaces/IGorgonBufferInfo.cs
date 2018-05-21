@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using Gorgon.Core;
 
 namespace Gorgon.Graphics.Core
 {
@@ -107,11 +108,24 @@ namespace Gorgon.Graphics.Core
     /// </para>
     /// </remarks>
     public interface IGorgonBufferInfo
+        : IGorgonNamedObject
     {
         /// <summary>
         /// Property to set or return whether to allow the CPU read access to the buffer.
         /// </summary>
         /// <remarks>
+        /// <para>
+        /// This value controls whether or not the CPU can directly access the buffer for reading. If this value is <b>false</b>, the buffer still can be read, but will be done through an intermediate
+        /// staging buffer, which is obviously less performant. 
+        /// </para>
+        /// <para>
+        /// This value is treated as <b>false</b> if the buffer does not have a <see cref="Binding"/> containing the <see cref="BufferBinding.Shader"/> flag, and does not have a <see cref="Usage"/> of
+        /// <see cref="ResourceUsage.Default"/>. This means any reads will be done through an intermediate staging buffer, impacting performance.
+        /// </para>
+        /// <para>
+        /// If the <see cref="Usage"/> property is set to <see cref="ResourceUsage.Staging"/>, then this value is treated as <b>true</b> because staging buffers are CPU only and as such, can be read
+        /// directly by the CPU regardless of this value.
+        /// </para>
         /// <para>
         /// The default for this value is <b>false</b>.
         /// </para>
@@ -199,10 +213,7 @@ namespace Gorgon.Graphics.Core
         /// is created.
         /// </para>
         /// <para>
-        /// This value must be set to <see cref="BufferBinding.None"/> for constant buffers. If it is not, it will be reset to <see cref="BufferBinding.None"/> upon buffer creation.
-        /// </para>
-        /// <para>
-        /// The default value is <see cref="BufferBinding.Shader"/>
+        /// The default value is <see cref="BufferBinding.None"/>
         /// </para>
         /// </remarks>
         BufferBinding Binding
@@ -216,44 +227,13 @@ namespace Gorgon.Graphics.Core
         /// <remarks>
         /// <para>
         /// This flag only applies to buffers with a <see cref="Binding"/> of <see cref="BufferBinding.UnorderedAccess"/>, and/or <see cref="BufferBinding.Shader"/>. If the binding is set to anything else, 
-        /// then this flag is ignored.
+        /// then this flag is treated as being set to <b>false</b>.
         /// </para>
         /// <para>
         /// The default value is <b>false</b>.
         /// </para>
         /// </remarks>
         bool IndirectArgs
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the format for the default shader view.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// Use this to define a default <see cref="GorgonBufferView"/> for the buffer. This default view will allow shaders to access the buffer without needing to create an additional view. If this 
-        /// value is set to <see cref="BufferFormat.Unknown"/>, then no default shader view will be created.
-        /// </para>
-        /// <para>
-        /// The default shader view will expose the entire buffer to the shader. To limit view to only a portion of the buffer, call the <see cref="GorgonBuffer.GetShaderResourceView"/> with the appropriate 
-        /// element constraints.
-        /// </para>
-        /// <para>
-        /// The format must not be typeless, if it is, an exception will be thrown on buffer creation.
-        /// </para>
-        /// <para>
-        /// <note type="important">
-        /// <para>
-        /// This property is only used if the <see cref="Binding"/> property has a <see cref="BufferBinding.Shader"/> flag.
-        /// </para>
-        /// </note>
-        /// </para>
-        /// <para>
-        /// The default value for this property is <see cref="BufferFormat.Unknown"/>.
-        /// </para>
-        /// </remarks>
-        BufferFormat DefaultShaderViewFormat
         {
             get;
         }

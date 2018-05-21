@@ -86,9 +86,10 @@ namespace Gorgon.Native
         /// <summary>
         /// Function to read a value from the memory pointed at by this pointer.
         /// </summary>
-        /// <typeparam name="T">The type of data to return.</typeparam>
+        /// <typeparam name="T">The type of data to return. Must be an unmanaged value type.</typeparam>
         /// <param name="index">The index of the item in the pointer.</param>
         /// <returns>The value at the index.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> parameter is less than 0.</exception>
         /// <exception cref="IndexOutOfRangeException">Thrown when the <paramref name="index"/> exceeds the <see cref="SizeInBytes"/>.</exception>
         /// <remarks>
         /// <para>
@@ -106,12 +107,17 @@ namespace Gorgon.Native
         /// </para>
         /// </remarks>
         public T Read<T>(int index)
-            where T : struct
+            where T : unmanaged
         {
             int typeSize = Unsafe.SizeOf<T>();
             int byteOffset = typeSize * index;
 
-            if (typeSize > SizeInBytes)
+            if (byteOffset < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(index));
+            }
+
+            if (typeSize + byteOffset > SizeInBytes)
             {
                 throw new IndexOutOfRangeException(Resources.GOR_ERR_DATABUFF_BUFFER_OVERRUN);
             }
@@ -291,16 +297,6 @@ namespace Gorgon.Native
         }
 
         /// <summary>
-        /// Explicit operator to convert a pointer into a read only span type.
-        /// </summary>
-        /// <param name="pointer">The pointer to convert.</param>
-        /// <returns>A new read only span type.</returns>
-        public static explicit operator ReadOnlySpan<byte>(GorgonReadOnlyPointer pointer)
-        {
-            return new ReadOnlySpan<byte>(pointer._data, pointer.SizeInBytes);
-        }
-
-        /// <summary>
         /// Function to return this pointer as a read only reference.
         /// </summary>
         /// <returns>A read only byte reference to the memory pointed at by this pointer.</returns>
@@ -324,11 +320,11 @@ namespace Gorgon.Native
         /// <summary>
         /// Function to copy the contents of the memory pointed at by this pointer into a <see cref="GorgonNativeBuffer{T}"/>.
         /// </summary>
-        /// <typeparam name="T">The type of data in the buffer. Must be a value type.</typeparam>
+        /// <typeparam name="T">The type of data in the buffer. Must be an unmanaged value type.</typeparam>
         /// <param name="buffer">The buffer to populate.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="buffer"/> parameter is <b>null</b>.</exception>
         public void CopyTo<T>(GorgonNativeBuffer<T> buffer)
-            where T : struct
+            where T : unmanaged
         {
             Unsafe.CopyBlock((byte *)buffer, _data, (uint)SizeInBytes);
         }

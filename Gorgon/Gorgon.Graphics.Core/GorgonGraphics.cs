@@ -114,7 +114,6 @@ namespace Gorgon.Graphics.Core
     /// </para>
     /// </remarks>
     /// <seealso cref="IGorgonVideoAdapterInfo"/>
-    /// <seealso cref="IGorgonVideoDeviceList"/>
     /// <seealso cref="GorgonDrawCall"/>
     /// <seealso cref="GorgonDrawIndexedCall"/>
     /// <seealso cref="GorgonDrawInstancedCall"/>
