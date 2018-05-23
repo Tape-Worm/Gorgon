@@ -412,15 +412,22 @@ namespace Gorgon.Graphics.Core
 
             if (!map)
             {
+                D3D11.ResourceRegion? region = null;
+                if (copyMode != CopyMode.None)
+                {
+                    region = new D3D11.ResourceRegion
+                             {
+                                 Left = destStart,
+                                 Right = destStart + count,
+                                 Back = 1,
+                                 Bottom = 1
+                             };
+                }
+
                 Graphics.D3DDeviceContext.UpdateSubresource1(Native,
                                                              0,
-                                                             new D3D11.ResourceRegion
-                                                             {
-                                                                 Left = destStart,
-                                                                 Right = destStart + count,
-                                                                 Back = 1,
-                                                                 Bottom = 1
-                                                             }, new IntPtr(srcPtr), count, count, (int)copyMode);
+                                                             region,
+                                                             new IntPtr(srcPtr), count, count, (int)copyMode);
                 return;
             }
 
@@ -484,7 +491,8 @@ namespace Gorgon.Graphics.Core
         /// <see cref="ResourceUsage.Default"/> and the <paramref name="copyMode"/> is set to <see cref="CopyMode.Discard"/> then the contents of the buffer are discarded before updating, if it is set to
         /// <see cref="CopyMode.NoOverwrite"/>, then the data will be copied to the destination if we know the GPU is not using the portion being updated. If the <paramref name="copyMode"/> is set to
         /// <see cref="CopyMode.None"/>, then <see cref="CopyMode.Discard"/> is used. For buffers created with a <see cref="GorgonGraphicsResource.Usage"/> of <see cref="ResourceUsage.Staging"/>, the
-        /// <see cref="CopyMode"/> will be ignored and act as though <see cref="CopyMode.None"/> were passed.
+        /// <see cref="CopyMode"/> will be ignored and act as though <see cref="CopyMode.None"/> were passed. If the mode is set to <see cref="CopyMode.None"/>, then the <paramref name="destIndex"/> 
+        /// parameter is ignored.
         /// </para>
         /// <note type="caution">
         /// <para>
@@ -575,7 +583,7 @@ namespace Gorgon.Graphics.Core
             int typeSize = Unsafe.SizeOf<T>();
 
 #if DEBUG            
-            ValidateGetSetData(sourceIndex, destIndex, count.Value, data.Length, (int)((double)SizeInBytes / typeSize).FastFloor());
+            ValidateGetSetData(sourceIndex, copyMode == CopyMode.None ? 0 :  destIndex, count.Value, data.Length, (int)((double)SizeInBytes / typeSize).FastFloor());
 #endif
 
             unsafe
@@ -618,7 +626,8 @@ namespace Gorgon.Graphics.Core
         /// <see cref="ResourceUsage.Default"/> and the <paramref name="copyMode"/> is set to <see cref="CopyMode.Discard"/> then the contents of the buffer are discarded before updating, if it is set to
         /// <see cref="CopyMode.NoOverwrite"/>, then the data will be copied to the destination if we know the GPU is not using the portion being updated. If the <paramref name="copyMode"/> is set to
         /// <see cref="CopyMode.None"/>, then <see cref="CopyMode.Discard"/> is used. For buffers created with a <see cref="GorgonGraphicsResource.Usage"/> of <see cref="ResourceUsage.Staging"/>, the
-        /// <see cref="CopyMode"/> will be ignored and act as though <see cref="CopyMode.None"/> were passed.
+        /// <see cref="CopyMode"/> will be ignored and act as though <see cref="CopyMode.None"/> were passed. If the mode is set to <see cref="CopyMode.None"/>, then the <paramref name="destOffset"/> 
+        /// parameter is ignored.
         /// </para>
         /// <note type="caution">
         /// <para>
@@ -712,7 +721,7 @@ namespace Gorgon.Graphics.Core
             }
 
 #if DEBUG            
-            ValidateGetSetData(sourceOffset, destOffset, size, data.SizeInBytes, SizeInBytes);
+            ValidateGetSetData(sourceOffset, copyMode == CopyMode.None ? 0 :  destOffset, size, data.SizeInBytes, SizeInBytes);
 #endif
             unsafe
             {
@@ -752,7 +761,8 @@ namespace Gorgon.Graphics.Core
         /// <see cref="ResourceUsage.Default"/> and the <paramref name="copyMode"/> is set to <see cref="CopyMode.Discard"/> then the contents of the buffer are discarded before updating, if it is set to
         /// <see cref="CopyMode.NoOverwrite"/>, then the data will be copied to the destination if we know the GPU is not using the portion being updated. If the <paramref name="copyMode"/> is set to
         /// <see cref="CopyMode.None"/>, then <see cref="CopyMode.Discard"/> is used. For buffers created with a <see cref="GorgonGraphicsResource.Usage"/> of <see cref="ResourceUsage.Staging"/>, the
-        /// <see cref="CopyMode"/> will be ignored and act as though <see cref="CopyMode.None"/> were passed.
+        /// <see cref="CopyMode"/> will be ignored and act as though <see cref="CopyMode.None"/> were passed. If the mode is set to <see cref="CopyMode.None"/>, then the <paramref name="destIndex"/> 
+        /// parameter is ignored.
         /// </para>
         /// <note type="caution">
         /// <para>
@@ -844,7 +854,7 @@ namespace Gorgon.Graphics.Core
             int typeSize = Unsafe.SizeOf<T>();
 
 #if DEBUG            
-            ValidateGetSetData(sourceIndex, destIndex, count.Value, data.Length, (int)((double)SizeInBytes / typeSize).FastFloor());
+            ValidateGetSetData(sourceIndex, copyMode == CopyMode.None ? 0 :  destIndex, count.Value, data.Length, (int)((double)SizeInBytes / typeSize).FastFloor());
 #endif
 
             unsafe
@@ -881,7 +891,8 @@ namespace Gorgon.Graphics.Core
         /// <see cref="ResourceUsage.Default"/> and the <paramref name="copyMode"/> is set to <see cref="CopyMode.Discard"/> then the contents of the buffer are discarded before updating, if it is set to
         /// <see cref="CopyMode.NoOverwrite"/>, then the data will be copied to the destination if we know the GPU is not using the portion being updated. If the <paramref name="copyMode"/> is set to
         /// <see cref="CopyMode.None"/>, then <see cref="CopyMode.Discard"/> is used. For buffers created with a <see cref="GorgonGraphicsResource.Usage"/> of <see cref="ResourceUsage.Staging"/>, the
-        /// <see cref="CopyMode"/> will be ignored and act as though <see cref="CopyMode.None"/> were passed.
+        /// <see cref="CopyMode"/> will be ignored and act as though <see cref="CopyMode.None"/> were passed. If the mode is set to <see cref="CopyMode.None"/>, then the <paramref name="destIndex"/> 
+        /// parameter is ignored.
         /// </para>
         /// <note type="caution">
         /// <para>
@@ -938,7 +949,7 @@ namespace Gorgon.Graphics.Core
             int typeSize = Unsafe.SizeOf<T>();
 
 #if DEBUG            
-            ValidateGetSetData(0, destIndex, 1, 1, (int)((double)SizeInBytes / typeSize).FastFloor());
+            ValidateGetSetData(0, copyMode == CopyMode.None ? 0 :  destIndex, 1, 1, (int)((double)SizeInBytes / typeSize).FastFloor());
 #endif
 
             unsafe

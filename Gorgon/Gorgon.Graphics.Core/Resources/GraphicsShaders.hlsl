@@ -29,7 +29,8 @@ GorgonBltVertex GorgonBltVertexShader(GorgonBltVertex vertex)
 // Our pixel shader for blitting textures.
 float4 GorgonBltPixelShader(GorgonBltVertex vertex) : SV_Target
 {
-	return _bltTexture.Sample(_bltSampler, vertex.uv) * vertex.color;
+	//return _bltTexture.Sample(_bltSampler, vertex.uv) * vertex.color;
+	return vertex.color;
 }
 
 #ifdef GAUSS_BLUR_EFFECT

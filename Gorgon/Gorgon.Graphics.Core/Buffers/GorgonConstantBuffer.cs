@@ -45,8 +45,7 @@ namespace Gorgon.Graphics.Core
 	/// </para>
 	/// <para>
 	/// A constant buffer must be a minimum of 16 bytes in size (4 float values), and be aligned to 16 bytes. The maximum size of the buffer is limited to 134,217,728 elements (one element = 4x 32 bit float
-	/// values). However, the GPU can only address 4096 (64K) of these elements at a time. As such the buffer will have to be bound to the GPU using a range via the <see cref="TODO No idea yet"/> if its size
-	/// exceeds 4096 elements. 
+	/// values). However, the GPU can only address 4096 (64K) of these elements at a time. As such the buffer will have to be bound to the GPU using a range defined by a <see cref="GorgonConstantBufferView"/>. 
 	/// </para>
 	/// <para>
 	/// If the <see cref="IGorgonConstantBufferInfo"/> <see cref="IGorgonConstantBufferInfo.SizeInBytes"/> value is less than 16 bytes, or is not aligned to 16 bytes, it will be adjusted before buffer
@@ -94,7 +93,7 @@ namespace Gorgon.Graphics.Core
 	/// </example>
 	/// </para>
 	/// </remarks>
-	/// <seealso cref="O:Gorgon.Graphics.GorgonBufferCommon.SetData{T}"/>
+	/// <seealso cref="GorgonConstantBufferView"/>
 	public sealed class GorgonConstantBuffer
 		: GorgonBufferCommon, IGorgonConstantBufferInfo
 	{
@@ -109,7 +108,7 @@ namespace Gorgon.Graphics.Core
 		// The information used to create the buffer.
 		private readonly GorgonConstantBufferInfo _info;
 	    // A cache of unordered access views for the buffer.
-	    private Dictionary<BufferShaderViewKey, GorgonConstantBufferView> _cbvs = new Dictionary<BufferShaderViewKey, GorgonConstantBufferView>();
+	    private readonly Dictionary<BufferShaderViewKey, GorgonConstantBufferView> _cbvs = new Dictionary<BufferShaderViewKey, GorgonConstantBufferView>();
         #endregion
 
         #region Properties.

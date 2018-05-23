@@ -99,7 +99,7 @@ namespace Gorgon.Graphics.Core
         /// <remarks>
         /// This value is the full width of the first mip map level for the texture associated with the render target.
         /// </remarks>
-        public int Width => Texture?.Width ?? 0;
+        public override int Width => Texture?.Width ?? 0;
 
         /// <summary>
         /// Property to return the height of the render target in pixels.
@@ -107,7 +107,7 @@ namespace Gorgon.Graphics.Core
         /// <remarks>
         /// This value is the full width of the first mip map level for the texture associated with the render target.
         /// </remarks>
-        public int Height => Texture?.Height ?? 0;
+        public override int Height => Texture?.Height ?? 0;
 
         /// <summary>
         /// Property to return the width of the render target at the current <see cref="MipSlice"/> in pixels.
@@ -168,7 +168,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the flags to determine how the texture will be bound with the pipeline when rendering.
         /// </summary>
-        public TextureBinding Binding => Texture?.Binding ?? TextureBinding.None;
+        public override TextureBinding Binding => Texture?.Binding ?? TextureBinding.None;
         #endregion
 
         #region Methods.

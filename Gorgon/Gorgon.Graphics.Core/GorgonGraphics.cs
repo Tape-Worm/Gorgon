@@ -30,7 +30,9 @@ using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
+using Gorgon.Math;
 using Gorgon.Native;
+using SharpDX.Mathematics.Interop;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D;
 using D3D11 = SharpDX.Direct3D11;
@@ -102,9 +104,9 @@ namespace Gorgon.Graphics.Core
     /// <para>
     /// This object requires a minimum of:
     /// <list type="bullet">
-    ///     <item>C# 7.2 (Visual Studio 2017 v15.6.x) or better - All libraries in Gorgon.</item>
+    ///     <item>C# 7.3 (Visual Studio 2017 v15.7.2) or better - All libraries in Gorgon.</item>
     ///     <item>.NET 4.7.1 - All libraries in Gorgon.</item>
-    ///     <item><b>Windows 10 v1703, Build 15603 (aka Creators Update)</b>.</item>
+    ///     <item>Windows 10 v1703, Build 15603 (aka Creators Update).</item>
     ///     <item>Direct 3D 11.4 or better.</item>
     /// </list>
     /// </para>
@@ -127,12 +129,10 @@ namespace Gorgon.Graphics.Core
         /// The name of the shader file data used for include files that wish to use the include shader.
         /// </summary>
         public const string BlitterShaderIncludeFileName = "__Gorgon_TextureBlitter_Shader__";
+
         #endregion
 
         #region Variables.
-        // The video adapter to use for this graphics object.
-        private readonly IGorgonVideoAdapterInfo _videoAdapter;
-
         // The D3D 11.4 device context.
         private D3D11.DeviceContext4 _d3DDeviceContext;
 
@@ -144,6 +144,18 @@ namespace Gorgon.Graphics.Core
 
         // The DXGI factory
         private DXGI.Factory5 _dxgiFactory;
+
+        // The render targets currently bound to the pipeline.
+        private readonly GorgonRenderTargetView[] _renderTargets = new GorgonRenderTargetView[D3D11.OutputMergerStage.SimultaneousRenderTargetCount];
+
+        // The Native render targets.
+        private readonly D3D11.RenderTargetView[] _d3DRtvs = new D3D11.RenderTargetView[D3D11.OutputMergerStage.SimultaneousRenderTargetCount];
+
+        // The viewports used to define the area to render into.
+        private readonly DX.ViewportF[] _viewports = new DX.ViewportF[16];
+
+        // The flag used to determine if a render target and/or depth/stencil is updated.
+        private (bool RtvsChanged, bool DepthViewChanged) _isTargetUpdated;
         #endregion
 
         #region Properties.
@@ -176,9 +188,28 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
+        /// Property to return the current depth/stencil view.
+        /// </summary>
+        public GorgonDepthStencil2DView DepthStencilView
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Property to return the currently assigned render targets.
+        /// </summary>
+        public IReadOnlyList<GorgonRenderTargetView> RenderTargets => _renderTargets;
+
+        /// <summary>
+        /// Property to return the list of currently assigned viewports.
+        /// </summary>
+        public IReadOnlyList<DX.ViewportF> Viewports => _viewports;
+
+        /// <summary>
         /// Property to set or return the video adapter to use for this graphics interface.
         /// </summary>
-        public IGorgonVideoAdapterInfo VideoAdapter => _videoAdapter;
+        public IGorgonVideoAdapterInfo VideoAdapter { get; }
 
         /// <summary>
         /// Property to return the support available to each format.
@@ -267,7 +298,6 @@ namespace Gorgon.Graphics.Core
         public FeatureSet FeatureSet
         {
             get;
-            private set;
         }
         #endregion
 
@@ -364,6 +394,79 @@ namespace Gorgon.Graphics.Core
             return result;
         }
 
+
+        /// <summary>
+        /// Function to unbind a render target that is bound as a shader input.
+        /// </summary>
+        private void UnbindShaderInputs(int rtvCount)
+        {
+            // This can happen quite easily due to how we're handling draw calls (i.e. stateless).  So we won't log anything here and we'll just unbind for the time being.
+            // This may have a small performance penalty.
+            /*
+            for (int i = 0; i < rtvCount; ++i)
+            {
+                GorgonRenderTargetView view = _renderTargets[i];
+
+                if ((view == null) || (view.Binding & TextureBinding.ShaderResource) != TextureBinding.ShaderResource)
+                {
+                    continue;
+                }
+                
+                UnbindFromShader(view.Resource, ref _lastDrawCall.VertexShaderResourceViews.GetDirtyItems());
+                UnbindFromShader(view.Resource, ref _lastDrawCall.PixelShaderResourceViews.GetDirtyItems());
+            }
+
+            void UnbindFromShader(GorgonTexture renderTarget, ref (int Start, int Count, GorgonShaderResourceView[] Bindings) bindings)
+            {
+                for (int i = bindings.Start; i < bindings.Start + bindings.Count; ++i)
+                {
+                    GorgonShaderResourceView srv = bindings.Bindings[i];
+                    
+                    if ((srv == null) || (renderTarget != srv.Resource))
+                    {
+                        continue;
+                    }
+                    
+                    _lastDrawCall.PixelShaderResourceViews[i] = null;
+                    SetShaderResourceViews(ShaderType.Pixel, _lastDrawCall.PixelShaderResourceViews);
+                }
+            }
+            */
+        }
+
+        /// <summary>
+        /// Function to assign the render targets.
+        /// </summary>
+        /// <param name="rtvCount">The number of render targets to update.</param>
+        private void SetRenderTargetAndDepthViews(int rtvCount)
+        {
+            if ((!_isTargetUpdated.RtvsChanged) && (!_isTargetUpdated.DepthViewChanged))
+            {
+                return;
+            }
+
+#if DEBUG
+            //GorgonRenderTargetViews.ValidateDepthStencilView(DepthStencilView, RenderTargets.FirstOrDefault(item => item != null));
+#endif
+
+            UnbindShaderInputs(rtvCount);
+
+            if (rtvCount == 0)
+            {
+                Array.Clear(_d3DRtvs, 0, _d3DRtvs.Length);
+            }
+            else
+            {
+                for (int i = 0; i < rtvCount; ++i)
+                {
+                    _d3DRtvs[i] = _renderTargets[i]?.Native;
+                }
+            }
+
+            D3DDeviceContext.OutputMerger.SetTargets(DepthStencilView?.Native, rtvCount, _d3DRtvs);
+            _isTargetUpdated = (false, false);
+        }
+
         /// <summary>
         /// Function to check for the minimum windows 10 build that Gorgon Graphics supports.
         /// </summary>
@@ -372,6 +475,236 @@ namespace Gorgon.Graphics.Core
             if (!Win32API.IsWindows10OrGreater(MinWin10Build))
             {
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_INVALID_OS, MinWin10Build));
+            }
+        }
+
+        /// <summary>
+        /// Function to assign a single render target to the first slot.
+        /// </summary>
+        /// <param name="renderTarget">The render target view to assign.</param>
+        /// <param name="depthStencil">[Optional] The depth/stencil to assign with the render target.</param>
+        /// <remarks>
+        /// <para>
+        /// This will assign a render target in slot 0 of the <see cref="RenderTargets"/> list. All other render targets bound in other slots will be unbound. If multiple render targets need to be set,
+        /// then call the <see cref="SetRenderTargets"/> method.
+        /// </para>
+        /// <para>
+        /// If the <paramref name="depthStencil"/> parameter is used, then a <see cref="GorgonDepthStencil2DView"/> is assigned in conjunction with the render target. This depth/stencil have the same 
+        /// dimensions, array size, and multisample values as the render target. When specifying a depth/stencil, the render targets must be a <see cref="GorgonTexture2D"/>.
+        /// </para>
+        /// <para>
+        /// When a render target is set, the first viewport in the <see cref="Viewports"/> list will be reset to the size of the render target. The user is responsible for restoring these to their intended
+        /// values after assigning the target if a different viewport region is required.
+        /// </para>
+        /// <note type="caution">
+        /// <para>
+        /// For performance reasons, any exceptions thrown from this method will only be thrown when Gorgon is compiled as DEBUG.
+        /// </para>
+        /// </note>
+        /// </remarks>
+        /// <seealso cref="GorgonDepthStencil2DView"/>
+        /// <seealso cref="GorgonTexture2D"/>
+        public void SetRenderTarget(GorgonRenderTargetView renderTarget, GorgonDepthStencil2DView depthStencil = null)
+        {
+            if ((_renderTargets[0] == renderTarget) && (depthStencil == DepthStencilView))
+            {
+                return;
+            }
+
+            _isTargetUpdated = (_renderTargets[0] != renderTarget, DepthStencilView != depthStencil);
+
+            if (_isTargetUpdated.RtvsChanged)
+            {
+                Array.Clear(_renderTargets, 1, _renderTargets.Length - 1);
+                _renderTargets[0] = renderTarget;
+
+                DX.ViewportF viewport = default;
+                if (_renderTargets[0] != null)
+                {
+                    viewport = new DX.ViewportF(0, 0, _renderTargets[0].Width, _renderTargets[0].Height);
+                    SetViewport(ref viewport);
+                }
+                else
+                {
+                    SetViewport(ref viewport);
+                }
+            }
+
+            DepthStencilView = depthStencil;
+            SetRenderTargetAndDepthViews(1);
+        }
+
+        /// <summary>
+        /// Function to assign multiple render targets to the first slot and a custom depth/stencil view.
+        /// </summary>
+        /// <param name="renderTargets">The list of render target views to assign.</param>
+        /// <param name="depthStencil">The depth/stencil view to assign.</param>
+        /// <remarks>
+        /// <para>
+        /// This will assign multiple render targets to the corresponding slots in the <see cref="RenderTargets"/> list. 
+        /// </para>
+        /// <para>
+        /// If the <paramref name="depthStencil"/> parameter is used, then a <see cref="GorgonDepthStencil2DView"/> is assigned in conjunction with the render target. This depth/stencil have the same 
+        /// dimensions, array size, and multisample values as the render target. When specifying a depth/stencil, the render targets must be a <see cref="GorgonTexture2D"/>.
+        /// </para>
+        /// <para>
+        /// If the <see cref="GorgonRenderTargetView">GorgonRenderTargetViews</see> are attached to resources with multisampling enabled through <see cref="GorgonMultisampleInfo"/>, then the 
+        /// <see cref="GorgonMultisampleInfo"/> of the resource attached to the <see cref="GorgonDepthStencil2DView"/> being assigned must match, or an exception will be thrown.
+        /// </para>
+        /// <para>
+        /// The format for the <paramref name="renderTargets"/> and <paramref name="depthStencil"/> may differ from the formats of other views passed in.
+        /// </para>
+        /// <para>
+        /// When a render target is set, the first viewport in the <see cref="Viewports"/> list will be reset to the size of the render target. The user is responsible for restoring these to their intended
+        /// values after assigning the target if a different viewport region is required.
+        /// </para>
+        /// <para>
+        /// <note type="information">
+        /// <para>
+        /// The exceptions raised when validating a view against other views in this list are only thrown when Gorgon is compiled as <b>DEBUG</b>.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="GorgonDepthStencil2DView"/>
+        /// <seealso cref="GorgonTexture2D"/>
+        public void SetRenderTargets(GorgonRenderTargetView[] renderTargets, GorgonDepthStencil2DView depthStencil = null)
+        {
+            if ((renderTargets == null)
+                || (renderTargets.Length == 0))
+            {
+                Array.Clear(_renderTargets, 0, _renderTargets.Length);
+                DepthStencilView = depthStencil;
+                SetRenderTargetAndDepthViews(0);
+                return;
+            }
+
+            int rtvCount = renderTargets.Length.Min(_renderTargets.Length);
+
+            for (int i = 0; i < rtvCount; ++i)
+            {
+                if (_renderTargets[i] == renderTargets[i])
+                {
+                    continue;
+                }
+                
+                _renderTargets[i] = renderTargets[i];
+                _isTargetUpdated = (true, depthStencil != DepthStencilView);
+            }
+
+            if ((!_isTargetUpdated.DepthViewChanged) && (!_isTargetUpdated.RtvsChanged))
+            {
+                return;
+            }
+
+            if (_isTargetUpdated.RtvsChanged)
+            {
+                DX.ViewportF viewport = default;
+
+                if (_renderTargets[0] != null)
+                {
+                    viewport = new DX.ViewportF(0, 0, renderTargets[0].Width, renderTargets[0].Height);
+                    SetViewport(ref viewport);
+                }
+                else
+                {
+                    SetViewport(ref viewport);
+                }
+
+                if (rtvCount < _renderTargets.Length)
+                {
+                    Array.Clear(_renderTargets, rtvCount, _renderTargets.Length - rtvCount);
+                }
+            }
+
+            DepthStencilView = depthStencil;
+
+            SetRenderTargetAndDepthViews(rtvCount);
+        }
+
+        /// <summary>
+        /// Function to set a viewport to define the area to render on the <see cref="RenderTargets"/>.
+        /// </summary>
+        /// <param name="viewport">The viewport to assign.</param>
+        /// <remarks>
+        /// <para>
+        /// This will define the area to render into on the current <see cref="RenderTargets"/>. This method will set the first viewport at index 0 only, any other viewports assigned will be unassigned.
+        /// </para>
+        /// </remarks>
+        public void SetViewport(ref DX.ViewportF viewport)
+        {
+            ref DX.ViewportF firstViewport = ref _viewports[0];
+
+            if ((firstViewport.Width.EqualsEpsilon(viewport.Width))
+                && (firstViewport.Height.EqualsEpsilon(viewport.Height))
+                && (firstViewport.X.EqualsEpsilon(viewport.X))
+                && (firstViewport.Y.EqualsEpsilon(viewport.Y))
+                && (firstViewport.MinDepth.EqualsEpsilon(viewport.MinDepth))
+                && (firstViewport.MaxDepth.EqualsEpsilon(viewport.MaxDepth)))
+            {
+                return;
+            }
+
+            _viewports[0] = viewport;
+            Array.Clear(_viewports, 1, _viewports.Length - 1);
+            D3DDeviceContext.Rasterizer.SetViewport(viewport.X, viewport.Y, viewport.Width, viewport.Height, viewport.MinDepth, viewport.MaxDepth);
+        }
+
+        /// <summary>
+        /// Function to set multiple viewports to define the area to render on the <see cref="RenderTargets"/>.
+        /// </summary>
+        /// <param name="viewports">The viewports to assign.</param>
+        /// <remarks>
+        /// <para>
+        /// This will define the area to render into on the current <see cref="RenderTargets"/>. This method will set the first viewport at index 0 only, any other viewports assigned will be unassigned.
+        /// </para>
+        /// </remarks>
+        public void SetViewports(DX.ViewportF[] viewports)
+        {
+            if (viewports == null)
+            {
+                Array.Clear(_viewports, 0, _viewports.Length);
+                D3DDeviceContext.Rasterizer.SetViewport(0, 0, 1, 1);
+                return;
+            }
+
+            bool isChanged = false;
+            int viewportCount = viewports.Length.Min(_viewports.Length);
+
+            unsafe
+            {
+                RawViewportF* viewportPtr = stackalloc RawViewportF[viewportCount];
+
+                if (viewportCount < _viewports.Length)
+                {
+                    Array.Clear(_viewports, viewportCount, _viewports.Length - viewportCount);
+                }
+
+                for (int i = 0; i < viewportCount; ++i)
+                {
+                    ref DX.ViewportF cachedViewport = ref _viewports[i];
+                    ref DX.ViewportF newViewport = ref viewports[i];
+
+                    if ((cachedViewport.Width.EqualsEpsilon(newViewport.Width))
+                        && (cachedViewport.Height.EqualsEpsilon(newViewport.Height))
+                        && (cachedViewport.X.EqualsEpsilon(newViewport.X))
+                        && (cachedViewport.Y.EqualsEpsilon(newViewport.Y))
+                        && (cachedViewport.MinDepth.EqualsEpsilon(newViewport.MinDepth))
+                        && (cachedViewport.MaxDepth.EqualsEpsilon(newViewport.MaxDepth)))
+                    {
+                        continue;
+                    }
+
+                    viewportPtr[i] = _viewports[i] = viewports[i];
+                    isChanged = true;
+                }
+
+                if (!isChanged)
+                {
+                    return;
+                }
+
+                D3DDeviceContext.Rasterizer.SetViewports(viewportPtr, viewportCount);
             }
         }
 
@@ -396,11 +729,121 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public static IReadOnlyList<IGorgonVideoAdapterInfo> EnumerateAdapters(bool includeSoftwareDevice = false, IGorgonLog log = null) => VideoAdapterEnumerator.Enumerate(includeSoftwareDevice, log);
 
+        #region Crap Code.
+        private D3D11.RasterizerState2 rState;
+        private D3D11.DepthStencilState dState;
+        private D3D11.BlendState1 bState;
+
+        [Obsolete("This method is here to set up native functionality not yet available to the core library.")]
+        private void DoDispose()
+        {
+            rState?.Dispose();
+            dState?.Dispose();
+            bState?.Dispose();
+        }
+
+        [Obsolete("This method is here to set up native functionality not yet available to the core library.")]
+        public void DoInit()
+        {
+            rState = new D3D11.RasterizerState2(D3DDevice, new D3D11.RasterizerStateDescription2
+                                                           {
+                                                               ConservativeRasterizationMode = D3D11.ConservativeRasterizationMode.Off,
+                                                               FillMode = D3D11.FillMode.Solid,
+                                                               CullMode = D3D11.CullMode.None,
+                                                               IsFrontCounterClockwise = false,
+                                                               DepthBias = 0,
+                                                               SlopeScaledDepthBias = 0.0f,
+                                                               DepthBiasClamp = 0.0f,
+                                                               IsDepthClipEnabled = true,
+                                                               IsScissorEnabled = false,
+                                                               IsMultisampleEnabled = false,
+                                                               IsAntialiasedLineEnabled = false,
+                                                               ForcedSampleCount = 0
+                                                           });
+
+            dState = new D3D11.DepthStencilState(D3DDevice,
+                                                 new D3D11.DepthStencilStateDescription
+                                                 {
+                                                     IsDepthEnabled = true,
+                                                     DepthWriteMask = D3D11.DepthWriteMask.All,
+                                                     DepthComparison = D3D11.Comparison.Less,
+                                                     IsStencilEnabled = false,
+                                                     StencilReadMask = 0xff,
+                                                     StencilWriteMask = 0xff,
+                                                     FrontFace = new D3D11.DepthStencilOperationDescription
+                                                                 {
+                                                                     Comparison = D3D11.Comparison.Always,
+                                                                     DepthFailOperation = D3D11.StencilOperation.Keep,
+                                                                     FailOperation = D3D11.StencilOperation.Keep,
+                                                                     PassOperation = D3D11.StencilOperation.Keep
+                                                                 },
+                                                     BackFace = new D3D11.DepthStencilOperationDescription
+                                                                {
+                                                                    Comparison = D3D11.Comparison.Always,
+                                                                    DepthFailOperation = D3D11.StencilOperation.Keep,
+                                                                    PassOperation = D3D11.StencilOperation.Keep,
+                                                                    FailOperation = D3D11.StencilOperation.Keep
+                                                                }
+                                                 });
+
+            bState = new D3D11.BlendState1(D3DDevice,
+                                           new D3D11.BlendStateDescription1
+                                           {
+                                               AlphaToCoverageEnable = false,
+                                               IndependentBlendEnable = false,
+                                               RenderTarget =
+                                               {
+                                                   [0] = new D3D11.RenderTargetBlendDescription1
+                                                         {
+                                                             IsBlendEnabled = true,
+                                                             IsLogicOperationEnabled = false,
+                                                             SourceBlend = D3D11.BlendOption.SourceAlpha,
+                                                             DestinationBlend = D3D11.BlendOption.InverseSourceAlpha,
+                                                             AlphaBlendOperation = D3D11.BlendOperation.Add,
+                                                             BlendOperation = D3D11.BlendOperation.Add,
+                                                             SourceAlphaBlend = D3D11.BlendOption.One,
+                                                             DestinationAlphaBlend = D3D11.BlendOption.Zero,
+                                                             LogicOperation = D3D11.LogicOperation.Noop,
+                                                             RenderTargetWriteMask = D3D11.ColorWriteMaskFlags.All
+                                                         }
+                                               }
+                                           });
+        }
+
+        private bool _stateSet;
+
+        [Obsolete("This method is here to set up native functionality not yet available to the core library.")]
+        public void DoStuff(GorgonInputLayout layout, GorgonVertexShader vShader, GorgonPixelShader pShader, GorgonConstantBuffer vsCb, GorgonVertexBufferBinding vBuffer, GorgonIndexBuffer ibuffer)
+        {
+            if (!_stateSet)
+            {
+                D3DDeviceContext.InputAssembler.InputLayout = layout.D3DInputLayout;
+                D3DDeviceContext.InputAssembler.SetIndexBuffer(ibuffer.Native, ibuffer.Use16BitIndices ? DXGI.Format.R16_UInt : DXGI.Format.R32_UInt, 0);
+                D3DDeviceContext.InputAssembler.SetVertexBuffers(0, vBuffer.ToVertexBufferBinding());
+                D3DDeviceContext.InputAssembler.PrimitiveTopology = D3D.PrimitiveTopology.TriangleList;
+
+                D3DDeviceContext.OutputMerger.DepthStencilState = dState;
+                D3DDeviceContext.OutputMerger.BlendState = bState;
+
+                D3DDeviceContext.Rasterizer.State = rState;
+
+                D3DDeviceContext.VertexShader.Set(vShader.NativeShader);
+                D3DDeviceContext.PixelShader.Set(pShader.NativeShader);
+                D3DDeviceContext.VertexShader.SetConstantBuffer(0, vsCb.Native);
+                _stateSet = true;
+            }
+
+            D3DDeviceContext.DrawIndexed(ibuffer.IndexCount, 0, 0);
+        }
+
+        #endregion
+
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         public void Dispose()
         {
+            DoDispose();
             D3D11.DeviceContext4 context = Interlocked.Exchange(ref _d3DDeviceContext, null);
             D3D11.Device5 device = Interlocked.Exchange(ref _d3DDevice, null);
             DXGI.Adapter4 adapter = Interlocked.Exchange(ref _dxgiAdapter, null);
@@ -419,7 +862,7 @@ namespace Gorgon.Graphics.Core
             this.DisposeAll();
 
             // Disconnect from the context.
-            Log.Print($"Destroying GorgonGraphics interface for device '{_videoAdapter.Name}'...", LoggingLevel.Simple);
+            Log.Print($"Destroying GorgonGraphics interface for device '{VideoAdapter.Name}'...", LoggingLevel.Simple);
 
             // Reset the state for the context. This will ensure we don't have anything bound to the pipeline when we shut down.
             context?.ClearState();
@@ -490,7 +933,7 @@ namespace Gorgon.Graphics.Core
                                FeatureSet? featureSet = null,
                                IGorgonLog log = null)
         {
-            _videoAdapter = videoAdapterInfo ?? throw new ArgumentNullException(nameof(videoAdapterInfo));
+            VideoAdapter = videoAdapterInfo ?? throw new ArgumentNullException(nameof(videoAdapterInfo));
             Log = log ?? GorgonLog.NullLog;
 
             // If we've not specified a feature level, or the feature level exceeds the requested device feature level, then 

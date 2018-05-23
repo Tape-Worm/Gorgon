@@ -264,6 +264,7 @@ namespace Gorgon.Graphics.Core
 
 		    if (byteCode == null)
 		    {
+		        this.UnregisterDisposable(Graphics);
 		        GC.SuppressFinalize(this);
 		        return;
 		    }

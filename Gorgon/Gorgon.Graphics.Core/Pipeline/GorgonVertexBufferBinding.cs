@@ -99,7 +99,7 @@ namespace Gorgon.Graphics.Core
 	            throw new ArgumentNullException(nameof(info));
 	        }
 
-	        var buffer = new GorgonVertexBuffer(graphics, info, initialData as GorgonNativeBuffer<byte>);
+	        var buffer = new GorgonVertexBuffer(graphics, info, initialData?.Cast<byte>());
 	        int vertexSize = Unsafe.SizeOf<T>();
 
 	        return new GorgonVertexBufferBinding(buffer, vertexSize, bindingIndex * vertexSize);

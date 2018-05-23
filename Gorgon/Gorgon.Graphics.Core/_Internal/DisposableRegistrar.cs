@@ -126,10 +126,11 @@ namespace Gorgon.Graphics.Core
                     return;
                 }
 
-                for (int i = 0; i < disposables.Count; ++i)
+                while (disposables.Count > 0)
                 {
-                    if (!disposables[i].TryGetTarget(out IDisposable disposeRef))
+                    if (!disposables[0].TryGetTarget(out IDisposable disposeRef))
                     {
+                        disposables.RemoveAt(0);
                         continue;
                     }
 

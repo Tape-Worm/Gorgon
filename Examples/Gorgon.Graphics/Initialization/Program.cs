@@ -27,10 +27,15 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
+using Gorgon.Math;
+using Gorgon.Native;
 using Gorgon.Timing;
 using Gorgon.UI;
 
@@ -203,7 +208,9 @@ namespace Gorgon.Graphics.Example
 			        _clearPattern = 0;
 			    }
 			}
-            
+
+            TestDrawing();
+
 			// Now we flip our buffers on the swap chain.  
 			// We need to this or we won't see anything at all except the standard window background color. Clearly, we don't want that. 
 			// This method will take the current frame back buffer and flip it to the front buffer (the window). If we had more than one swap chain tied to multiple 
@@ -212,6 +219,136 @@ namespace Gorgon.Graphics.Example
 			
 			return true;
 		}
+
+        #region Bad Stuff.
+	    /// <summary>
+	    /// The vertex of the blitter used to blit textures to the current render target.
+	    /// </summary>
+	    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+	    internal struct BltVertex
+	    {
+	        /// <summary>
+	        /// The size of the vertex, in bytes.
+	        /// </summary>
+	        public static readonly int Size = Unsafe.SizeOf<BltVertex>();
+
+	        /// <summary>
+	        /// The position of the vertex.
+	        /// </summary>
+	        [InputElement(0, "SV_POSITION")]
+	        public DX.Vector4 Position;
+
+	        /// <summary>
+	        /// The texture coordinate for the vertex.
+	        /// </summary>
+	        [InputElement(1, "TEXCOORD")]
+	        public DX.Vector2 Uv;
+
+	        /// <summary>
+	        /// The color of the vertex.
+	        /// </summary>
+	        [InputElement(2, "COLOR")]
+	        public GorgonColor Color;
+	    }
+
+	    private static GorgonVertexShader _vShader;
+	    private static GorgonPixelShader _pShader;
+	    private static GorgonInputLayout _layout;
+	    private static GorgonVertexBufferBinding _vbBinding;
+	    private static GorgonIndexBuffer _iBuffer;
+	    private static GorgonConstantBuffer _cBuffer;
+	    private static DX.Matrix _projMatrix = DX.Matrix.Identity;
+	    private static DX.Matrix _worldMatrix = DX.Matrix.Identity;
+	    private static float _yRot;
+            
+        #warning Get rid of me.
+	    private static void TestDrawing()
+	    {
+	        DX.Matrix.RotationY(_yRot.ToRadians(), out _worldMatrix);
+            _worldMatrix.Row4 = new DX.Vector4(0, 0, 1.0f, 1.0f);
+	        DX.Matrix.Multiply(ref _worldMatrix, ref _projMatrix, out DX.Matrix wProj);
+            
+            _cBuffer.SetData(ref wProj);
+
+	        _graphics.DoStuff(_layout, _vShader, _pShader, _cBuffer, _vbBinding, _iBuffer);
+
+	        _yRot += GorgonTiming.Delta * 45.0f;
+
+	        if (_yRot > 360.0f)
+	        {
+	            _yRot = _yRot - 360.0f;
+	        }
+	    }
+
+	    private static void TestInit()
+	    {
+	        using (StreamReader reader = new StreamReader(@"..\..\..\..\..\Gorgon\Gorgon.Graphics.Core\Resources\GraphicsShaders.hlsl"))
+	        {
+	            string shaderCode = reader.ReadToEnd();
+	            _vShader = GorgonShaderFactory.Compile<GorgonVertexShader>(_graphics, shaderCode, "GorgonBltVertexShader", true);
+	            _pShader = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics, shaderCode, "GorgonBltPixelShader", true);
+	        }
+
+            _cBuffer = new GorgonConstantBuffer(_graphics, new GorgonConstantBufferInfo
+                                                           {
+                                                               Usage = ResourceUsage.Default,
+                                                               SizeInBytes = Unsafe.SizeOf<DX.Matrix>()
+                                                           });
+
+	        DX.Matrix.PerspectiveFovLH((65.0f).ToRadians(), (float)_swap.Width / _swap.Height, 0.125f, 1000.0f, out _projMatrix);
+	        _cBuffer.SetData(ref _projMatrix);
+
+	        _layout = GorgonInputLayout.CreateUsingType<BltVertex>(_graphics, _vShader);
+
+	        using (var vertexData = new GorgonNativeBuffer<BltVertex>(3))
+	        using (var indexData = new GorgonNativeBuffer<ushort>(3))
+	        {
+	            vertexData[0] = new BltVertex
+	                            {
+	                                Color = new GorgonColor(1.0f, 0, 0),
+	                                Position = new DX.Vector4(0, 0.5f, 0.0f, 1.0f),
+	                                Uv = new DX.Vector2(0, 0)
+	                            };
+	            vertexData[1] = new BltVertex
+	                            {
+	                                Color = new GorgonColor(0.0f, 1.0f, 0),
+	                                Position = new DX.Vector4(0.5f, -0.5f, 0.0f, 1.0f),
+	                                Uv = new DX.Vector2(0, 0)
+	                            };
+	            vertexData[2] = new BltVertex
+	                            {
+	                                Color = new GorgonColor(0.0f, 0, 1.0f),
+	                                Position = new DX.Vector4(-0.5f, -0.5f, 0.0f, 1.0f),
+	                                Uv = new DX.Vector2(0, 0)
+	                            };
+	            indexData[0] = 0;
+	            indexData[1] = 1;
+	            indexData[2] = 2;
+
+	            _vbBinding = GorgonVertexBufferBinding.CreateVertexBuffer(_graphics,
+	                                                                      new GorgonVertexBufferInfo
+	                                                                      {
+	                                                                          Usage = ResourceUsage.Default,
+	                                                                          SizeInBytes = vertexData.SizeInBytes,
+	                                                                          Binding = VertexIndexBufferBinding.None
+	                                                                      },
+	                                                                      vertexData);
+
+	            _iBuffer = new GorgonIndexBuffer(_graphics,
+	                                             new GorgonIndexBufferInfo
+	                                             {
+	                                                 Usage = ResourceUsage.Default,
+	                                                 Binding = VertexIndexBufferBinding.None,
+	                                                 Use16BitIndices = true,
+	                                                 IndexCount = 3
+	                                             }, indexData.Cast<byte>());
+	        }
+
+            _graphics.SetRenderTarget(_swap.RenderTargetView);
+
+            _graphics.DoInit();
+	    }
+        #endregion
 
 	    /// <summary>
 	    /// Function to initialize the application.
@@ -273,29 +410,8 @@ namespace Gorgon.Graphics.Example
 	                                        Height = _mainForm.ClientSize.Height
 	                                    });
 
-	        using (GorgonVertexBuffer buffer = new GorgonVertexBuffer(_graphics,
-	                                                                  new GorgonVertexBufferInfo
-	                                                                  {
-	                                                                      SizeInBytes = 1024,
-	                                                                      Binding = VertexIndexBufferBinding.UnorderedAccess,
-	                                                                      Usage = ResourceUsage.Default
-	                                                                  }))
-	        {
-                GorgonRangeF[] ranges = new GorgonRangeF[64];
-
-	            for (int i = 0; i < ranges.Length; ++i)
-	            {
-                    ranges[i] = new GorgonRangeF((i + 1), (i + 1) * (i + 1));
-	            }
-
-                buffer.SetData(ranges, 32, 16, 4);
-	            buffer.SetData(ranges);
-                Array.Clear(ranges, 0, ranges.Length);
-                buffer.GetData(ranges, 15, 4, 4);
-	        }
+	        TestInit();
 	    }
-
-        private static readonly Random _rnd = new Random();
 
 	    /// <summary>
         /// Handles the KeyUp event of the MainForm control.

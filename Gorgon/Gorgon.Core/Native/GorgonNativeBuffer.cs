@@ -603,36 +603,6 @@ namespace Gorgon.Native
         {
             return buffer._memoryBlock == null ? GorgonReadOnlyPointer.Null : new GorgonReadOnlyPointer(buffer._memoryBlock, buffer.SizeInBytes);
         }
-
-        /// <summary>
-        /// Explicit operator to convert this buffer into a byte buffer.
-        /// </summary>
-        /// <param name="buffer">The buffer to convert.</param>
-        /// <remarks>
-        /// <para>
-        /// This will <b>not</b> make a copy of the data in the, but merely cast it to a buffer with the type of byte as its element. Disposing of the source <paramref name="buffer"/> will invalidate the
-        /// buffer returned by this cast.
-        /// </para>
-        /// </remarks>
-        public static explicit operator GorgonNativeBuffer<byte>(GorgonNativeBuffer<T> buffer)
-        {
-            return buffer == null ? null : new GorgonNativeBuffer<byte>((byte *)buffer, buffer.SizeInBytes);
-        }
-
-        /// <summary>
-        /// Explicit operator to convert a byte buffer into a typed buffer.
-        /// </summary>
-        /// <param name="buffer">The buffer to convert.</param>
-        /// <remarks>
-        /// <para>
-        /// This will <b>not</b> make a copy of the data in the, but merely cast it to a buffer with the type of <typeparamref name="T"/> as its element. Disposing of the source <paramref name="buffer"/>
-        /// will invalidate the buffer returned by this cast.
-        /// </para>
-        /// </remarks>
-        public static explicit operator GorgonNativeBuffer<T>(GorgonNativeBuffer<byte> buffer)
-        {
-            return buffer == null ? null : new GorgonNativeBuffer<T>((byte *)buffer, buffer.SizeInBytes);
-        }
         
         /// <summary>
         /// Explicit operator to return the pointer to the underlying data in the buffer.

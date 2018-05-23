@@ -77,7 +77,6 @@ namespace Gorgon.Graphics.Core
 		        Graphics.Log.Print($"Destroying {ShaderType} '{Name}' ({ID})", LoggingLevel.Verbose);
 
 		        shader.Dispose();
-		        return;
 		    }
 
 			base.Dispose();

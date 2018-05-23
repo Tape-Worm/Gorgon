@@ -34,6 +34,7 @@ using DX = SharpDX;
 using DXGI = SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;
 using Gorgon.Core;
+using Gorgon.Core.Collections;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
@@ -61,10 +62,9 @@ namespace Gorgon.Graphics.Core
     /// </para>	
     /// <para>
     /// If the swap chain is currently assigned to the <see cref="GorgonGraphics.RenderTargets"/> property, and it is resized, it will do its best to ensure it stays bound to the active render target list 
-    /// (this also includes its <see cref="DepthStencilView"/> if it was assigned to the <see cref="DepthStencilView"/> property). This only applies to the default <see cref="RenderTargetView"/> 
-    /// associated with the swap chain. If a user has created a custom <see cref="GorgonRenderTarget2DView"/> object for the swap chain, and assigned that view to the <see cref="GorgonGraphics.RenderTargets"/> 
-    /// list, then it is their responsibility to ensure that the view is rebuilt and reassigned. Users may intercept a swap chain back buffer resize by hooking the <see cref="BeforeSwapChainResized"/> and 
-    /// the <see cref="AfterSwapChainResized"/> events.
+    /// (this also includes the current <see cref="GorgonGraphics.DepthStencilView"/>. This only applies to the default <see cref="RenderTargetView"/> associated with the swap chain. If a user has created a
+    /// custom <see cref="GorgonRenderTarget2DView"/> object for the swap chain, and assigned that view to the <see cref="GorgonGraphics.RenderTargets"/> list, then it is their responsibility to ensure that the
+    /// view is rebuilt and reassigned. Users may intercept a swap chain back buffer resize by hooking the <see cref="BeforeSwapChainResized"/> and the <see cref="AfterSwapChainResized"/> events.
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonGraphics"/>
@@ -169,8 +169,8 @@ namespace Gorgon.Graphics.Core
         private readonly WindowState _fullScreenBordlessState = new WindowState();
         // The render target view.
         private GorgonRenderTarget2DView _targetView;
-        // The depth/stencil view.
-        private GorgonDepthStencil2DView _dsv;
+        // The previously assigned render target views captured when using flip mode.
+        private readonly GorgonRenderTargetView[] _previousViews = new GorgonRenderTargetView[D3D11.OutputMergerStage.SimultaneousRenderTargetCount];
         #endregion
 
         #region Events.
@@ -194,11 +194,6 @@ namespace Gorgon.Graphics.Core
         /// Property to return the back buffer texture to use as a render target.
         /// </summary>
         internal GorgonTexture2D InternalBackBufferTexture => ((_backBufferTextures?.Length ?? 0) > 0) ? _backBufferTextures?[0] : null;
-
-        /// <summary>
-        /// Property to return the default depth/stencil view for this swap chain.
-        /// </summary>
-        public GorgonDepthStencil2DView DepthStencilView => null;
 
         /// <summary>
         /// Property to return the default render target view for this swap chain.
@@ -263,11 +258,6 @@ namespace Gorgon.Graphics.Core
         /// Property to return the format of the swap chain back buffer.
         /// </summary>
         public BufferFormat Format => _info.Format;
-
-        /// <summary>
-        /// Property to return the format for a depth buffer that will be associated with the swap chain.
-        /// </summary>
-        public BufferFormat DepthStencilFormat => _info.DepthStencilFormat;
 
         /// <summary>
         /// Property to return the width of the swap chain back buffer.
@@ -515,20 +505,25 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Function to destroy the resources for the swap chain.
         /// </summary>
-        /// <returns>A tuple containing the previous index of this swap chain's render target view, and a flag indicating whether or not the swap chain depth/stencil view was used.</returns>
-        private (int TargetIndex, bool UsedDepthStencil) DestroyResources()
+        /// <returns>The previous index of this swap chain's render target view.</returns>
+        private int DestroyResources()
         {
             Graphics.Log.Print($"Destroying {Name} swap chain DXGI/D3D11 resources.", LoggingLevel.Simple);
+            int renderTargetViewIndex = Graphics.RenderTargets.IndexOf(RenderTargetView);
+
+            // Unbind this render target before removing the resources.
+            if (renderTargetViewIndex != -1)
+            {
+                GorgonRenderTargetView[] currentViews = Graphics.RenderTargets.Select(item => item == RenderTargetView ? null : item).ToArray();
+                Graphics.SetRenderTargets(currentViews, Graphics.DepthStencilView);
+            }
 
             GorgonRenderTarget2DView rtv = Interlocked.Exchange(ref _targetView, null);
-            GorgonDepthStencil2DView dsv = Interlocked.Exchange(ref _dsv, null);
-            
             rtv?.Dispose();
-            dsv?.Dispose();
 
             if (_backBufferTextures == null)
             {
-                return (-1, false);
+                return renderTargetViewIndex;
             }
 
             for (int i = 0; i < _backBufferTextures.Length; ++i)
@@ -537,21 +532,20 @@ namespace Gorgon.Graphics.Core
                 backBufferTexture?.Dispose();
             }
 
-            return (-1, false);
+            return renderTargetViewIndex;
         }
 
         /// <summary>
         /// Function called after a back buffer resize to refresh the resources
         /// </summary>
         /// <param name="targetIndex">The previous index of the swap chain's render target view.</param>
-        /// <param name="useDepthStencilView"><b>true</b> if the depth stencil view was used before reset, or <b>false</b> if not.</param>
         /// <remarks>
         /// <para>
         /// The <paramref name="targetIndex"/> parameter indicates the index this swap chain's render target view was assigned to in the output stage prior to a resize event. If this swap chain was not 
-        /// assigned to the output stage, then this value will be -1.  Likewise, the <paramref name="useDepthStencilView"/> parameter indicates the same, only for the depth/stencil view.
+        /// assigned to the output stage, then this value will be -1.  
         /// </para>
         /// </remarks>
-        private void CreateResources(int targetIndex, bool useDepthStencilView)
+        private void CreateResources(int targetIndex)
         {
             for (int i = 0; i < _backBufferTextures.Length; ++i)
             {
@@ -570,18 +564,54 @@ namespace Gorgon.Graphics.Core
 
             Graphics.Log.Print($"SwapChain '{Name}': Created swap chain render target view.", LoggingLevel.Verbose);
 
-            if (_info.DepthStencilFormat == BufferFormat.Unknown)
+            if (targetIndex == -1)
             {
                 return;
             }
 
-            _dsv = GorgonDepthStencil2DView.CreateDepthStencil(Graphics, new GorgonTexture2DInfo(_backBufferTextures[0], $"Swap Chain '{Name}': Depth/Stencil Buffer.")
-                                                                         {
-                                                                             Format = _info.DepthStencilFormat,
-                                                                             Binding = TextureBinding.DepthStencil,
-                                                                         });
+            // Restore the render target if we resize.
+            GorgonRenderTargetView[] rtvs = Graphics.RenderTargets.ToArray();
+            rtvs[targetIndex] = _targetView;
+            Graphics.SetRenderTargets(rtvs, Graphics.DepthStencilView);
+        }
 
-            Graphics.Log.Print($"SwapChain '{Name}': Created swap chain depth/stencil view.", LoggingLevel.Verbose);
+        /// <summary>
+        /// Function to retrieve which targets are set when in flip mode.
+        /// </summary>
+        /// <returns>A tuple containing the first target index, and the total number of targets.</returns>
+        private (int FirstIndex, int TargetCount) GetCurrentTargets()
+        {
+            // Record our current render targets so we can restore them -after- the present flip.
+            bool thisTargetIsSet = false;
+            int firstTarget = -1;
+            int targetCount = 0;
+
+            for (int i = 0; i < Graphics.RenderTargets.Count; ++i)
+            {
+                GorgonRenderTargetView view = Graphics.RenderTargets[i];
+                _previousViews[i] = view;
+
+                // Skip null entries, we don't care about these.
+                if (view == null)
+                {
+                    continue;
+                }
+
+                if (view == RenderTargetView)
+                {
+                    thisTargetIsSet = true;
+                }
+
+                // Make note if which render target index was first used so we can be a little more efficent below.
+                if (firstTarget == -1)
+                {
+                    firstTarget = i;
+                }
+                ++targetCount;
+            }
+            
+            // Unbind the render targets.
+            return thisTargetIsSet ? (firstTarget == -1 ? 0 : firstTarget, targetCount) : (0, 0);
         }
 
         /// <summary>
@@ -603,11 +633,6 @@ namespace Gorgon.Graphics.Core
             // Constrain sizes.
             info.Width = info.Width.Min(Graphics.VideoAdapter.MaxTextureWidth).Max(1);
             info.Height = info.Height.Min(Graphics.VideoAdapter.MaxTextureHeight).Max(1);
-
-            if ((info.DepthStencilFormat != BufferFormat.Unknown) && (!Graphics.FormatSupport[info.DepthStencilFormat].IsDepthBufferFormat))
-            {
-                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_DEPTHSTENCIL_FORMAT_INVALID, info.DepthStencilFormat));
-            }
         }
 
         /// <summary>
@@ -949,14 +974,14 @@ namespace Gorgon.Graphics.Core
 			// Tell the application that this swap chain is going to be resized.
 			BeforeSwapChainResized?.Invoke(this, new BeforeSwapChainResizedEventArgs(new DX.Size2(_info.Width, _info.Height), new DX.Size2(newWidth, newHeight)));
 
-			(int rtvIndex, bool depthStencilViewSet) = DestroyResources();
+			int rtvIndex = DestroyResources();
 
 			DXGISwapChain.ResizeBuffers(IsWindowed ? 2 : 3, newWidth, newHeight, (DXGI.Format)Format, DXGI.SwapChainFlags.AllowModeSwitch);
 
 			_info.Width = newWidth;
 			_info.Height = newHeight;
 
-            CreateResources(rtvIndex, depthStencilViewSet);
+            CreateResources(rtvIndex);
 
 			AfterSwapChainResized?.Invoke(this, EventArgs.Empty);
 
@@ -989,44 +1014,36 @@ namespace Gorgon.Graphics.Core
 			{
 				IsInStandBy = false;
 			    
-			    (int FirstIndex, int TargetCount) = (0, 0);
-
-			    //GorgonDepthStencilView prevDepthStencil = null;
+			    (int FirstIndex, int TargetCount) prevTargetRange = (0, 0);
+			    GorgonDepthStencil2DView prevDepthStencil = null;
 
                 // In flip modes, we have to unbind the render targets before presenting.
 			    if (_info.UseFlipMode)
 			    {
-			        //prevDepthStencil = Graphics.DepthStencilView;
-			        //prevTargetRange = GetCurrentTargets();
+			        prevDepthStencil = Graphics.DepthStencilView;
+			        prevTargetRange = GetCurrentTargets();
 
                     // If we had previous targets (and we are part of that list), then reset the targets before presenting (the runtime will do it for us anyway, but this will just 
                     // get rid of that annoying warning in the debug spew).
-			        //if (prevTargetRange.TargetCount != 0)
+			        if (prevTargetRange.TargetCount != 0)
 			        {
-			            //Graphics.SetRenderTarget(null);
+			            Graphics.SetRenderTarget(null);
 			        }
 			    }
 
 			    _swapChain.Present(interval, flags);
 
-			    if (TargetCount == 0)
+			    if (prevTargetRange.TargetCount == 0)
 			    {
 			        return;
 			    }
 
                 // The typical use case is that we have only a single rtv set when we present.  So, rather than restoring everything
                 // we should just restore the single rtv.
-			    if (TargetCount < 2)
-			    {
-			        //Graphics.SetRenderTarget(_previousViews[prevTargetRange.FirstIndex], prevDepthStencil);
-                }
-			    else
-			    {
-			        //Graphics.SetRenderTargets(_previousViews, prevDepthStencil);
-                }
+			    Graphics.SetRenderTargets(_previousViews, prevDepthStencil);
 
                 // Remove all items from the list so we don't hang on to them.
-			    //Array.Clear(_previousViews, prevTargetRange.FirstIndex, prevTargetRange.TargetCount);
+			    Array.Clear(_previousViews, prevTargetRange.FirstIndex, prevTargetRange.TargetCount);
 			}
 			catch (DX.SharpDXException sdex)
 			{
@@ -1107,10 +1124,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="control">The control bound to the swap chain.</param>
         /// <param name="info">The information used to create the object.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, <paramref name="info"/> or the <paramref name="control"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="GorgonException">Thrown if the <see cref="IGorgonSwapChainInfo.Format"/> is not a display format.
-        /// <para>-or-</para>
-        /// <para>Thrown if the <see cref="IGorgonSwapChainInfo.DepthStencilFormat"/> is not a supported depth/stencil format.</para>
-        /// </exception>
+        /// <exception cref="GorgonException">Thrown if the <see cref="IGorgonSwapChainInfo.Format"/> is not a display format.</exception>
         public GorgonSwapChain(GorgonGraphics graphics,
                                Control control,
                                GorgonSwapChainInfo info)
@@ -1134,15 +1148,12 @@ namespace Gorgon.Graphics.Core
                 _swapChain = dxgiSwapChain.QueryInterface<DXGI.SwapChain4>();
             }
 
-            _info = new GorgonSwapChainInfo(in desc)
-                    {
-                        DepthStencilFormat = info.DepthStencilFormat
-                    };
+            _info = new GorgonSwapChainInfo(in desc);
             _backBufferTextures = new GorgonTexture2D[_info.UseFlipMode ? 2 : 1];
 
             Graphics.DXGIFactory.MakeWindowAssociation(control.Handle, DXGI.WindowAssociationFlags.IgnoreAll);
             
-            CreateResources(-1, false);
+            CreateResources(-1);
 
             Window.Resize += Window_Resize;
 

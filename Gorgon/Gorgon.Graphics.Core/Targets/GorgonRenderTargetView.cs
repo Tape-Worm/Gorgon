@@ -28,6 +28,7 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 using Gorgon.Diagnostics;
+using DX = SharpDX;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
@@ -77,6 +78,14 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
+        /// Property to return the flags to determine how the texture will be bound with the pipeline when rendering.
+        /// </summary>
+        public abstract TextureBinding Binding
+        {
+            get;
+        }
+
+        /// <summary>
         /// Property to return whether or not the object is disposed.
         /// </summary>
         public bool IsDisposed => _resource == null;
@@ -111,6 +120,22 @@ namespace Gorgon.Graphics.Core
         /// Property to return the graphics interface that built the texture.
         /// </summary>
         public GorgonGraphics Graphics => _resource?.Graphics;
+
+        /// <summary>
+        /// Property to return the width of the render target view.
+        /// </summary>
+        public abstract int Width
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the height of the render target view.
+        /// </summary>
+        public abstract int Height
+        {
+            get;
+        }
         #endregion
 
         #region Methods.

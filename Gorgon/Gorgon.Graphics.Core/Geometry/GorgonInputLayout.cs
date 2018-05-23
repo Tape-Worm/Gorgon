@@ -623,6 +623,8 @@ namespace Gorgon.Graphics.Core
 		{
 			D3D11.InputLayout layout = Interlocked.Exchange(ref _d3DInputLayout, null);
 			layout?.Dispose();
+
+            this.UnregisterDisposable(Graphics);
 		}
 		#endregion
 
@@ -672,6 +674,8 @@ namespace Gorgon.Graphics.Core
 
 			UpdateVertexSize();
 			BuildD3DLayout();
+
+            this.RegisterDisposable(graphics);
 		}
 		#endregion
 	}

@@ -40,9 +40,8 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="desc">The description to convert.</param>
         /// <param name="name">The name of the swap chain.</param>
-        /// <param name="depthStencilFormat">The depth/stencil buffer format to use.</param>
         /// <returns>A new <see cref="GorgonSwapChainInfo"/>.</returns>
-	    public static GorgonSwapChainInfo ToSwapChainInfo(this DXGI.SwapChainDescription1 desc, string name, BufferFormat depthStencilFormat)
+	    public static GorgonSwapChainInfo ToSwapChainInfo(this DXGI.SwapChainDescription1 desc, string name)
         {
             return new GorgonSwapChainInfo(name)
                    {
@@ -50,7 +49,6 @@ namespace Gorgon.Graphics.Core
                        Height = desc.Height,
                        Format = (BufferFormat)desc.Format,
                        UseFlipMode = desc.SwapEffect == DXGI.SwapEffect.FlipSequential,
-                       DepthStencilFormat = depthStencilFormat,
                        StretchBackBuffer = desc.Scaling != DXGI.Scaling.None
                    };
         }
@@ -200,6 +198,16 @@ namespace Gorgon.Graphics.Core
 				       Stereo = false
 			       };
 		}
+
+        /// <summary>
+        /// Function to convert a GorgonVertexBufferBinding to a D3D11 vertex buffer binding.
+        /// </summary>
+        /// <param name="binding">The binding to convert.</param>
+        /// <returns>The D3D11 vertex buffer binding.</returns>
+	    public static D3D11.VertexBufferBinding ToVertexBufferBinding(this GorgonVertexBufferBinding binding)
+	    {
+            return new D3D11.VertexBufferBinding(binding.VertexBuffer?.Native, binding.Stride, binding.Offset);
+	    }
 
 		/// <summary>
 		/// Function to convert a <see cref="GorgonMultisampleInfo"/> to a DXGI multi sample description.
