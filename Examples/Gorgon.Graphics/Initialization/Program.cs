@@ -34,10 +34,12 @@ using System.Windows.Forms;
 using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
 using Gorgon.Native;
 using Gorgon.Timing;
 using Gorgon.UI;
+using SharpDX.Direct3D;
 
 namespace Gorgon.Graphics.Example
 {
@@ -257,7 +259,9 @@ namespace Gorgon.Graphics.Example
 	    private static GorgonVertexBufferBinding _vbBinding;
 	    private static GorgonIndexBuffer _iBuffer;
 	    private static GorgonConstantBuffer _cBuffer;
-	    private static DX.Matrix _projMatrix = DX.Matrix.Identity;
+	    private static GorgonTexture2DView _texture;
+	    private static GorgonDrawIndexCall _drawCall;
+        private static DX.Matrix _projMatrix = DX.Matrix.Identity;
 	    private static DX.Matrix _worldMatrix = DX.Matrix.Identity;
 	    private static float _yRot;
             
@@ -270,7 +274,9 @@ namespace Gorgon.Graphics.Example
             
             _cBuffer.SetData(ref wProj);
 
-	        _graphics.DoStuff(_layout, _vShader, _pShader, _cBuffer, _vbBinding, _iBuffer);
+	        _graphics.DoStuff(_vShader, _pShader, _cBuffer, _texture);
+
+            _graphics.Submit(_drawCall);
 
 	        _yRot += GorgonTiming.Delta * 45.0f;
 
@@ -282,6 +288,7 @@ namespace Gorgon.Graphics.Example
 
 	    private static void TestInit()
 	    {
+            _texture = GorgonTexture2DView.FromFile(_graphics, @"..\..\..\..\..\Resources\Textures\MiniTri\Gorgon.MiniTri.png", new GorgonCodecPng());
 	        using (StreamReader reader = new StreamReader(@"..\..\..\..\..\Gorgon\Gorgon.Graphics.Core\Resources\GraphicsShaders.hlsl"))
 	        {
 	            string shaderCode = reader.ReadToEnd();
@@ -307,19 +314,19 @@ namespace Gorgon.Graphics.Example
 	                            {
 	                                Color = new GorgonColor(1.0f, 0, 0),
 	                                Position = new DX.Vector4(0, 0.5f, 0.0f, 1.0f),
-	                                Uv = new DX.Vector2(0, 0)
+	                                Uv = new DX.Vector2(0.5f, 0)
 	                            };
 	            vertexData[1] = new BltVertex
 	                            {
 	                                Color = new GorgonColor(0.0f, 1.0f, 0),
 	                                Position = new DX.Vector4(0.5f, -0.5f, 0.0f, 1.0f),
-	                                Uv = new DX.Vector2(0, 0)
+	                                Uv = new DX.Vector2(1.0f, 1.0f)
 	                            };
 	            vertexData[2] = new BltVertex
 	                            {
 	                                Color = new GorgonColor(0.0f, 0, 1.0f),
 	                                Position = new DX.Vector4(-0.5f, -0.5f, 0.0f, 1.0f),
-	                                Uv = new DX.Vector2(0, 0)
+	                                Uv = new DX.Vector2(0, 1.0f)
 	                            };
 	            indexData[0] = 0;
 	            indexData[1] = 1;
@@ -345,6 +352,13 @@ namespace Gorgon.Graphics.Example
 	        }
 
             _graphics.SetRenderTarget(_swap.RenderTargetView);
+
+            var builder = new GorgonDrawIndexCallBuilder();
+	        _drawCall = builder.VertexBufferBindings(_layout, _vbBinding)
+	                           .IndexBuffer(_iBuffer)
+	                           .PrimitiveTopology(PrimitiveTopology.TriangleList)
+	                           .IndexRange(0, 3)
+	                           .Build();
 
             _graphics.DoInit();
 	    }

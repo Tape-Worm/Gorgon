@@ -85,7 +85,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArgumentEmptyException.cs" />
+    <Compile Include="Collections\GorgonArray.cs" />
     <Compile Include="Collections\_Extensions\GorgonIReadOnlyListExtensions.cs" />
+    <Compile Include="Collections\_Interfaces\IGorgonReadOnlyArray.cs" />
     <Compile Include="Configuration\GorgonOption.cs" />
     <Compile Include="Configuration\GorgonOptionBag.cs" />
     <Compile Include="Collections\Specialized\GorgonConcurrentDictionary.cs" />

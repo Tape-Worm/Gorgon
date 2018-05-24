@@ -579,4 +579,19 @@ Current binding: [{0}]</value>
   <data name="GORGFX_ERR_SRV_NOT_VALID" xml:space="preserve">
     <value>The resource '{0}' does not have an [Shader] binding.</value>
   </data>
+  <data name="GORGFX_ERR_INDEX_COUNT_TOO_SMALL" xml:space="preserve">
+    <value>The index count must be at least 1.</value>
+  </data>
+  <data name="GORGFX_ERR_INDEX_TOO_SMALL" xml:space="preserve">
+    <value>The index must be 0 or greater.</value>
+  </data>
+  <data name="GORGFX_ERR_RTV_UNSUPPORTED_RESOURCE" xml:space="preserve">
+    <value>The resource type [{0}] is not supported as a render target view.</value>
+  </data>
+  <data name="GORGFX_ERR_VERTEX_COUNT_TOO_SMALL" xml:space="preserve">
+    <value>The vertex count must be at least 1.</value>
+  </data>
+  <data name="GORGFX_ERR_VERTEX_INDEX_TOO_SMALL" xml:space="preserve">
+    <value>The vertex index must be 0 or greater.</value>
+  </data>
 </root>

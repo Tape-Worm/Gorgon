@@ -26,6 +26,8 @@
 
 
 using System;
+using System.Collections.Generic;
+using Gorgon.Math;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
@@ -39,7 +41,7 @@ namespace Gorgon.Graphics.Core
 	/// </para>
 	/// </remarks>
 	public sealed class GorgonVertexBufferBindings
-		: GorgonMonitoredValueTypeArray<GorgonVertexBufferBinding>
+        : GorgonArray<GorgonVertexBufferBinding>
 	{
 		#region Constants.
 		/// <summary>
@@ -72,16 +74,25 @@ namespace Gorgon.Graphics.Core
 
 		#region Methods.
 	    /// <summary>
-	    /// Function to store the native item at the given index.
+	    /// Function called when a dirty item is found and added.
 	    /// </summary>
-	    /// <param name="nativeItemIndex">The index of the item in the native array.</param>
-	    /// <param name="value">The value containing the native item.</param>
-	    protected override void OnStoreNativeItem(int nativeItemIndex, GorgonVertexBufferBinding value)
+	    /// <param name="dirtyIndex">The index that is considered dirty.</param>
+	    /// <param name="value">The dirty value.</param>
+	    protected override void OnDirtyItemAdded(int dirtyIndex, GorgonVertexBufferBinding value)
 	    {
-	        Native[nativeItemIndex] = value.ToVertexBufferBinding();
+	        Native[dirtyIndex] = value.ToVertexBufferBinding();
 	    }
 
-		/// <summary>
+	    /// <summary>
+	    /// Function called when a dirty item was not found, and is removed from the dirty list.
+	    /// </summary>
+	    /// <param name="dirtyIndex">The index that is considered dirty.</param>
+	    protected override void OnDirtyItemCleaned(int dirtyIndex)
+	    {
+	        Native[dirtyIndex] = default;
+	    }
+
+	    /// <summary>
 		/// Function called when the array is cleared.
 		/// </summary>
 		protected override void OnClear()
@@ -91,17 +102,28 @@ namespace Gorgon.Graphics.Core
 		#endregion
 
 		#region Constructor
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonVertexBufferBindings"/> class.
-		/// </summary>
-		/// <param name="inputLayout">The input layout that describes the arrangement of the vertex data within the buffers being bound.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="inputLayout"/> parameter is <b>null</b>.</exception>
-		public GorgonVertexBufferBindings(GorgonInputLayout inputLayout)
-			: base(MaximumVertexBufferCount)
-		{
-			InputLayout = inputLayout ?? throw new ArgumentNullException(nameof(inputLayout));
-			Native = new D3D11.VertexBufferBinding[MaximumVertexBufferCount];
-		}
+	    /// <summary>
+	    /// Initializes a new instance of the <see cref="GorgonVertexBufferBindings"/> class.
+	    /// </summary>
+	    /// <param name="inputLayout">The input layout that describes the arrangement of the vertex data within the buffers being bound.</param>
+	    /// <param name="bindings">[Optional] A list of vertex buffers to apply.</param>
+	    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="inputLayout"/> parameter is <b>null</b>.</exception>
+	    public GorgonVertexBufferBindings(GorgonInputLayout inputLayout, IReadOnlyList<GorgonVertexBufferBinding> bindings = null)
+	        : base(MaximumVertexBufferCount)
+	    {
+	        InputLayout = inputLayout ?? throw new ArgumentNullException(nameof(inputLayout));
+	        Native = new D3D11.VertexBufferBinding[MaximumVertexBufferCount];
+
+	        if (bindings == null)
+	        {
+	            return;
+	        }
+
+            for (int i = 0; i < bindings.Count.Min(MaximumVertexBufferCount); ++i)
+            {
+                this[i] = bindings[i];
+            }
+	    }
 		#endregion
 	}
 }

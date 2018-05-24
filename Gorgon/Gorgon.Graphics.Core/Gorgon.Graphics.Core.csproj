@@ -102,7 +102,15 @@
     <Compile Include="Geometry\_Attributes\InputElementAttribute.cs" />
     <Compile Include="GorgonGraphicsResource.cs" />
     <Compile Include="GorgonResourceView.cs" />
+    <Compile Include="Pipeline\GorgonDrawCallBuilderCommon.cs" />
+    <Compile Include="Pipeline\GorgonDrawIndexCallBuilder.cs" />
+    <Compile Include="Pipeline\GorgonDrawIndexCall.cs" />
+    <Compile Include="Pipeline\GorgonDrawCall.cs" />
+    <Compile Include="Pipeline\GorgonDrawCallBuilder.cs" />
+    <Compile Include="Pipeline\GorgonDrawCallCommon.cs" />
     <Compile Include="Pipeline\GorgonVertexBufferBinding.cs" />
+    <Compile Include="Pipeline\GorgonVertexBufferBindings.cs" />
+    <Compile Include="Pipeline\_Internal\D3DState.cs" />
     <Compile Include="Shaders\Effects\GorgonGaussBlurEffect.cs" />
     <Compile Include="Shaders\Effects\GorgonShaderEffect.cs" />
     <Compile Include="Shaders\GorgonComputeShader.cs" />
@@ -214,7 +222,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="OLDE\" />
-    <Folder Include="Pipeline\_Interfaces\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

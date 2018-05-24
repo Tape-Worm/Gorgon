@@ -26,13 +26,17 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
+using System.Windows.Forms.VisualStyles;
 using Gorgon.Core;
+using Gorgon.Core.Collections;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
 using Gorgon.Native;
 using SharpDX.Mathematics.Interop;
+using SharpDX.WIC;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D;
 using D3D11 = SharpDX.Direct3D11;
@@ -156,6 +160,21 @@ namespace Gorgon.Graphics.Core
 
         // The flag used to determine if a render target and/or depth/stencil is updated.
         private (bool RtvsChanged, bool DepthViewChanged) _isTargetUpdated;
+
+        // The current changes in 
+        private DrawCallChanges _prevDrawCallChanges = DrawCallChanges.All;
+
+        // The state of the previous draw call.
+        private readonly D3DState _lastState = new D3DState
+                                               {
+                                                   Topology = D3D.PrimitiveTopology.Undefined
+                                               };
+
+        // The current state.
+        private readonly D3DState _currentState = new D3DState();
+
+        // A cache for holding vertex bindings.
+        private D3D11.VertexBufferBinding[] _vertexBindingCache = new D3D11.VertexBufferBinding[1];
         #endregion
 
         #region Properties.
@@ -394,6 +413,101 @@ namespace Gorgon.Graphics.Core
             return result;
         }
 
+		/// <summary>
+		/// Function to validate the depth/stencil view.
+		/// </summary>
+		/// <param name="view">The depth/stencil view to evaluate.</param>
+		/// <param name="firstTarget">The first non-null target.</param>
+		private void ValidateRtvAndDsv(GorgonDepthStencil2DView view, GorgonRenderTargetView firstTarget)
+		{
+			if ((firstTarget == null)
+			    && (view == null))
+			{
+				return;
+			}
+            
+            if (firstTarget != null)
+		    {
+		        // Ensure that we are only bound once to the pipeline.
+		        if (RenderTargets.Count(item => item == firstTarget) > 1)
+		        {
+		            throw new GorgonException(GorgonResult.CannotBind, Resources.GORGFX_ERR_RTV_ALREADY_BOUND);
+		        }
+
+                // Ensure our dimensions match, and multi-sample settings match.
+		        foreach (GorgonRenderTargetView rtv in RenderTargets.Where(item => (item != null) && (item != firstTarget)))
+		        {
+		            if (rtv.Resource.ResourceType != firstTarget.Resource.ResourceType)
+		            {
+		                throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_RTV_NOT_SAME_TYPE, firstTarget.Resource.ResourceType));
+		            }
+
+		            switch (firstTarget.Resource.ResourceType)
+		            {
+		                case GraphicsResourceType.Texture2D:
+		                    var left2D = (GorgonRenderTarget2DView)firstTarget;
+		                    var right2D = (GorgonRenderTarget2DView)rtv;
+
+		                    if ((left2D.Width != right2D.Width) && (left2D.Height != right2D.Height) && (left2D.ArrayCount != right2D.ArrayCount))
+		                    {
+                                throw new GorgonException(GorgonResult.CannotBind, Resources.GORGFX_ERR_RTV_RESOURCE_MISMATCH);
+		                    }
+
+		                    if (!left2D.MultisampleInfo.Equals(right2D.MultisampleInfo))
+		                    {
+                                throw new GorgonException(GorgonResult.CannotBind, Resources.GORGFX_ERR_RTV_MULTISAMPLE_MISMATCH);
+		                    }
+		                    break;
+		                case GraphicsResourceType.Texture3D:
+		                    var left3D = (GorgonRenderTarget3DView)firstTarget;
+		                    var right3D = (GorgonRenderTarget3DView)rtv;
+
+		                    if ((left3D.Width != right3D.Width) && (left3D.Height != right3D.Height) && (left3D.Depth != right3D.Depth))
+		                    {
+		                        throw new GorgonException(GorgonResult.CannotBind, Resources.GORGFX_ERR_RTV_RESOURCE_MISMATCH);
+		                    }
+		                    break;
+		                default:
+		                    throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_RTV_UNSUPPORTED_RESOURCE, firstTarget.Resource.ResourceType));
+		            }
+		        }
+		    }
+
+		    if ((firstTarget == null)
+		        || (view == null))
+		    {
+		        return;
+		    }
+
+            // Ensure all resources are the same type.
+			if (view.Texture.ResourceType != firstTarget.Resource.ResourceType)
+			{
+				throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_RTV_DEPTHSTENCIL_TYPE_MISMATCH, view.Texture.ResourceType));
+			}
+
+		    var rtv2D = (GorgonRenderTarget2DView)firstTarget;
+            
+			// Ensure the depth stencil array/depth counts match for all resources.
+			if (view.ArrayCount != rtv2D.ArrayCount)
+			{
+				throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_RTV_DEPTHSTENCIL_ARRAYCOUNT_MISMATCH, view.Texture.Name));
+			}
+
+			// Check to ensure that multisample info matches.
+			if (!view.Texture.MultisampleInfo.Equals(rtv2D.MultisampleInfo))
+			{
+				throw new GorgonException(GorgonResult.CannotBind,
+				                          string.Format(Resources.GORGFX_ERR_RTV_DEPTHSTENCIL_MULTISAMPLE_MISMATCH,
+				                                        view.MultisampleInfo.Quality,
+				                                        view.MultisampleInfo.Count));
+			}
+
+			if ((view.Width != rtv2D.Width)
+			    || (view.Height != rtv2D.Height))
+			{
+				throw new GorgonException(GorgonResult.CannotBind, Resources.GORGFX_ERR_RTV_DEPTHSTENCIL_RESOURCE_MISMATCH);
+			}
+		}
 
         /// <summary>
         /// Function to unbind a render target that is bound as a shader input.
@@ -446,7 +560,7 @@ namespace Gorgon.Graphics.Core
             }
 
 #if DEBUG
-            //GorgonRenderTargetViews.ValidateDepthStencilView(DepthStencilView, RenderTargets.FirstOrDefault(item => item != null));
+            ValidateRtvAndDsv(DepthStencilView, RenderTargets.FirstOrDefault(item => item != null));
 #endif
 
             UnbindShaderInputs(rtvCount);
@@ -454,6 +568,7 @@ namespace Gorgon.Graphics.Core
             if (rtvCount == 0)
             {
                 Array.Clear(_d3DRtvs, 0, _d3DRtvs.Length);
+                rtvCount = _d3DRtvs.Length;
             }
             else
             {
@@ -476,6 +591,44 @@ namespace Gorgon.Graphics.Core
             {
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_INVALID_OS, MinWin10Build));
             }
+        }
+
+        /// <summary>
+        /// Function to clear the states for the graphics object.
+        /// </summary>
+        /// <param name="flush">[Optional] <b>true</b> to flush the queued graphics object commands, <b>false</b> to leave as is.</param>
+        /// <remarks>
+        /// <para>
+        /// This method will reset all current states to an uninitialized state.
+        /// </para>
+        /// <para>
+        /// If the <paramref name="flush"/> parameter is set to <b>true</b>, then any commands on the GPU that are pending will be flushed.
+        /// </para>
+        /// <para>
+        /// <note type="warning">
+        /// <para>
+        /// This method will cause a significant performance hit if the <paramref name="flush"/> parameter is set to <b>true</b>, so its use is generally discouraged in performance sensitive situations.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        public void ClearState(bool flush = false)
+        {
+            // Reset state on the device context.
+            D3DDeviceContext.ClearState();
+
+            if (flush)
+            {
+                D3DDeviceContext.Flush();
+            }
+
+            Array.Clear(_renderTargets, 0, _renderTargets.Length);
+            Array.Clear(_viewports, 0, _viewports.Length);
+            Array.Clear(_vertexBindingCache, 0, _vertexBindingCache.Length);
+
+            _lastState.VertexBuffers = null;
+            _lastState.IndexBuffer = null;
+            _lastState.Topology = D3D.PrimitiveTopology.Undefined;
         }
 
         /// <summary>
@@ -522,12 +675,8 @@ namespace Gorgon.Graphics.Core
                 if (_renderTargets[0] != null)
                 {
                     viewport = new DX.ViewportF(0, 0, _renderTargets[0].Width, _renderTargets[0].Height);
-                    SetViewport(ref viewport);
                 }
-                else
-                {
-                    SetViewport(ref viewport);
-                }
+                SetViewport(ref viewport);
             }
 
             DepthStencilView = depthStencil;
@@ -599,26 +748,22 @@ namespace Gorgon.Graphics.Core
 
             if (_isTargetUpdated.RtvsChanged)
             {
+                if (rtvCount < _renderTargets.Length)
+                {
+                    Array.Clear(_renderTargets, rtvCount, _renderTargets.Length - rtvCount);
+                }
+
                 DX.ViewportF viewport = default;
 
                 if (_renderTargets[0] != null)
                 {
                     viewport = new DX.ViewportF(0, 0, renderTargets[0].Width, renderTargets[0].Height);
-                    SetViewport(ref viewport);
-                }
-                else
-                {
-                    SetViewport(ref viewport);
                 }
 
-                if (rtvCount < _renderTargets.Length)
-                {
-                    Array.Clear(_renderTargets, rtvCount, _renderTargets.Length - rtvCount);
-                }
+                SetViewport(ref viewport);
             }
 
             DepthStencilView = depthStencil;
-
             SetRenderTargetAndDepthViews(rtvCount);
         }
 
@@ -635,12 +780,7 @@ namespace Gorgon.Graphics.Core
         {
             ref DX.ViewportF firstViewport = ref _viewports[0];
 
-            if ((firstViewport.Width.EqualsEpsilon(viewport.Width))
-                && (firstViewport.Height.EqualsEpsilon(viewport.Height))
-                && (firstViewport.X.EqualsEpsilon(viewport.X))
-                && (firstViewport.Y.EqualsEpsilon(viewport.Y))
-                && (firstViewport.MinDepth.EqualsEpsilon(viewport.MinDepth))
-                && (firstViewport.MaxDepth.EqualsEpsilon(viewport.MaxDepth)))
+            if (firstViewport.Equals(ref viewport))
             {
                 return;
             }
@@ -685,17 +825,12 @@ namespace Gorgon.Graphics.Core
                     ref DX.ViewportF cachedViewport = ref _viewports[i];
                     ref DX.ViewportF newViewport = ref viewports[i];
 
-                    if ((cachedViewport.Width.EqualsEpsilon(newViewport.Width))
-                        && (cachedViewport.Height.EqualsEpsilon(newViewport.Height))
-                        && (cachedViewport.X.EqualsEpsilon(newViewport.X))
-                        && (cachedViewport.Y.EqualsEpsilon(newViewport.Y))
-                        && (cachedViewport.MinDepth.EqualsEpsilon(newViewport.MinDepth))
-                        && (cachedViewport.MaxDepth.EqualsEpsilon(newViewport.MaxDepth)))
+                    if (cachedViewport.Equals(ref newViewport))
                     {
                         continue;
                     }
 
-                    viewportPtr[i] = _viewports[i] = viewports[i];
+                    viewportPtr[i] = cachedViewport = newViewport;
                     isChanged = true;
                 }
 
@@ -729,14 +864,129 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public static IReadOnlyList<IGorgonVideoAdapterInfo> EnumerateAdapters(bool includeSoftwareDevice = false, IGorgonLog log = null) => VideoAdapterEnumerator.Enumerate(includeSoftwareDevice, log);
 
+        /// <summary>
+        /// Function to bind a Direct3D index buffer to the pipeline.
+        /// </summary>
+        /// <param name="bindings">The vertex bindings.</param>
+        private void BindVertexBuffers(GorgonVertexBufferBindings bindings)
+        {
+            if (bindings == null)
+            {
+                Array.Clear(_vertexBindingCache, 0, _vertexBindingCache.Length);
+                D3DDeviceContext.InputAssembler.SetVertexBuffers(0, _vertexBindingCache);
+                return;
+            }
+
+            (int start, int count) = bindings.GetDirtyItems();
+
+            if (count == 0)
+            {
+                Array.Clear(_vertexBindingCache, 0, _vertexBindingCache.Length);
+                D3DDeviceContext.InputAssembler.SetVertexBuffers(0, _vertexBindingCache);
+                return;
+            }
+
+            if (_vertexBindingCache.Length != count)
+            {
+                Array.Resize(ref _vertexBindingCache, count);
+            }
+
+            for (int i = 0; i < count; ++i)
+            {
+                _vertexBindingCache[i] = bindings.Native[i];
+            }
+
+            D3DDeviceContext.InputAssembler.SetVertexBuffers(start, _vertexBindingCache);
+        }
+
+        /// <summary>
+        /// Function to bind resources to the pipeline.
+        /// </summary>
+        /// <param name="currentState">The current state to bind.</param>
+        private void BindResources(D3DState currentState)
+        {
+            DrawCallChanges changes = _lastState.GetDifference(currentState);
+
+            if (changes == DrawCallChanges.None)
+            {
+                return;
+            }
+
+            if ((changes & DrawCallChanges.Topology) == DrawCallChanges.Topology)
+            {
+                D3DDeviceContext.InputAssembler.PrimitiveTopology = currentState.Topology;
+            }
+
+            if ((changes & DrawCallChanges.InputLayout) == DrawCallChanges.InputLayout)
+            {
+                D3DDeviceContext.InputAssembler.InputLayout = currentState.InputLayout.D3DInputLayout;
+            }
+
+            if ((changes & DrawCallChanges.VertexBuffers) == DrawCallChanges.VertexBuffers)
+            {
+                BindVertexBuffers(currentState.VertexBuffers);
+            }
+
+            if ((changes & DrawCallChanges.IndexBuffer) == DrawCallChanges.IndexBuffer)
+            {
+                if (currentState.IndexBuffer != null)
+                {
+                    D3DDeviceContext.InputAssembler.SetIndexBuffer(currentState.IndexBuffer.Native, currentState.IndexBuffer.Use16BitIndices ? DXGI.Format.R16_UInt : DXGI.Format.R32_UInt, 0);
+                }
+                else
+                {
+                    D3DDeviceContext.InputAssembler.SetIndexBuffer(null, DXGI.Format.Unknown, 0);
+                }
+            }
+
+            if (currentState == null)
+            {
+                return;
+            }
+
+            _lastState.VertexBuffers = currentState.VertexBuffers;
+            _lastState.IndexBuffer = currentState.IndexBuffer;
+            _lastState.Topology = currentState.Topology;
+        }
+
+        /// <summary>
+        /// Function to submit a basic draw call to the GPU.
+        /// </summary>
+        /// <param name="drawCall">The draw call to execute.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawCall"/> parameter is <b>null</b>.</exception>
+        public void Submit(GorgonDrawCall drawCall)
+        {
+            drawCall.ValidateObject(nameof(drawCall));
+            
+            BindResources(drawCall.D3DState);
+            
+            D3DDeviceContext.Draw(drawCall.VertexCount, drawCall.VertexStartIndex);
+        }
+
+        /// <summary>
+        /// Function to submit a draw call with indices to the GPU.
+        /// </summary>
+        /// <param name="drawIndexCall">The draw call to execute.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawIndexCall"/> parameter is <b>null</b>.</exception>
+        public void Submit(GorgonDrawIndexCall drawIndexCall)
+        {
+            drawIndexCall.ValidateObject(nameof(drawIndexCall));
+
+            BindResources(drawIndexCall.D3DState);
+
+            D3DDeviceContext.DrawIndexed(drawIndexCall.IndexCount, drawIndexCall.IndexStart, drawIndexCall.BaseVertexIndex);
+        }
+
         #region Crap Code.
         private D3D11.RasterizerState2 rState;
         private D3D11.DepthStencilState dState;
         private D3D11.BlendState1 bState;
+        private D3D11.SamplerState sampleState;
 
         [Obsolete("This method is here to set up native functionality not yet available to the core library.")]
         private void DoDispose()
         {
+            sampleState?.Dispose();
             rState?.Dispose();
             dState?.Dispose();
             bState?.Dispose();
@@ -745,6 +995,21 @@ namespace Gorgon.Graphics.Core
         [Obsolete("This method is here to set up native functionality not yet available to the core library.")]
         public void DoInit()
         {
+            sampleState = new D3D11.SamplerState(D3DDevice,
+                                                 new D3D11.SamplerStateDescription
+                                                 {
+                                                     AddressU = D3D11.TextureAddressMode.Wrap,
+                                                     AddressV = D3D11.TextureAddressMode.Wrap,
+                                                     AddressW = D3D11.TextureAddressMode.Wrap,
+                                                     BorderColor = GorgonColor.Transparent.ToRawColor4(),
+                                                     ComparisonFunction = D3D11.Comparison.Always,
+                                                     Filter = D3D11.Filter.MaximumMinMagMipLinear,
+                                                     MaximumAnisotropy = 0,
+                                                     MaximumLod = float.MaxValue,
+                                                     MinimumLod = 0,
+                                                     MipLodBias = 0
+                                                 });
+
             rState = new D3D11.RasterizerState2(D3DDevice, new D3D11.RasterizerStateDescription2
                                                            {
                                                                ConservativeRasterizationMode = D3D11.ConservativeRasterizationMode.Off,
@@ -764,7 +1029,7 @@ namespace Gorgon.Graphics.Core
             dState = new D3D11.DepthStencilState(D3DDevice,
                                                  new D3D11.DepthStencilStateDescription
                                                  {
-                                                     IsDepthEnabled = true,
+                                                     IsDepthEnabled = false,
                                                      DepthWriteMask = D3D11.DepthWriteMask.All,
                                                      DepthComparison = D3D11.Comparison.Less,
                                                      IsStencilEnabled = false,
@@ -813,15 +1078,10 @@ namespace Gorgon.Graphics.Core
         private bool _stateSet;
 
         [Obsolete("This method is here to set up native functionality not yet available to the core library.")]
-        public void DoStuff(GorgonInputLayout layout, GorgonVertexShader vShader, GorgonPixelShader pShader, GorgonConstantBuffer vsCb, GorgonVertexBufferBinding vBuffer, GorgonIndexBuffer ibuffer)
+        public void DoStuff(GorgonVertexShader vShader, GorgonPixelShader pShader, GorgonConstantBuffer vsCb, GorgonTexture2DView texture)
         {
             if (!_stateSet)
             {
-                D3DDeviceContext.InputAssembler.InputLayout = layout.D3DInputLayout;
-                D3DDeviceContext.InputAssembler.SetIndexBuffer(ibuffer.Native, ibuffer.Use16BitIndices ? DXGI.Format.R16_UInt : DXGI.Format.R32_UInt, 0);
-                D3DDeviceContext.InputAssembler.SetVertexBuffers(0, vBuffer.ToVertexBufferBinding());
-                D3DDeviceContext.InputAssembler.PrimitiveTopology = D3D.PrimitiveTopology.TriangleList;
-
                 D3DDeviceContext.OutputMerger.DepthStencilState = dState;
                 D3DDeviceContext.OutputMerger.BlendState = bState;
 
@@ -829,11 +1089,11 @@ namespace Gorgon.Graphics.Core
 
                 D3DDeviceContext.VertexShader.Set(vShader.NativeShader);
                 D3DDeviceContext.PixelShader.Set(pShader.NativeShader);
+                D3DDeviceContext.PixelShader.SetSampler(0, sampleState);
+                D3DDeviceContext.PixelShader.SetShaderResource(0, texture.Native);
                 D3DDeviceContext.VertexShader.SetConstantBuffer(0, vsCb.Native);
                 _stateSet = true;
             }
-
-            D3DDeviceContext.DrawIndexed(ibuffer.IndexCount, 0, 0);
         }
 
         #endregion

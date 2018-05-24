@@ -545,6 +545,24 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The index count must be at least 1..
+        /// </summary>
+        internal static string GORGFX_ERR_INDEX_COUNT_TOO_SMALL {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_INDEX_COUNT_TOO_SMALL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The index must be 0 or greater..
+        /// </summary>
+        internal static string GORGFX_ERR_INDEX_TOO_SMALL {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_INDEX_TOO_SMALL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The Gorgon Graphics interface requires Windows 10 (Build {0}) or better..
         /// </summary>
         internal static string GORGFX_ERR_INVALID_OS {
@@ -776,6 +794,15 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_RTV_RESOURCE_MISMATCH {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_RTV_RESOURCE_MISMATCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The resource type [{0}] is not supported as a render target view..
+        /// </summary>
+        internal static string GORGFX_ERR_RTV_UNSUPPORTED_RESOURCE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_RTV_UNSUPPORTED_RESOURCE", resourceCulture);
             }
         }
         
@@ -1229,6 +1256,24 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_VALUE_OUT_OF_RANGE_COUNT {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_VALUE_OUT_OF_RANGE_COUNT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The vertex count must be at least 1..
+        /// </summary>
+        internal static string GORGFX_ERR_VERTEX_COUNT_TOO_SMALL {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_VERTEX_COUNT_TOO_SMALL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The vertex index must be 0 or greater..
+        /// </summary>
+        internal static string GORGFX_ERR_VERTEX_INDEX_TOO_SMALL {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_VERTEX_INDEX_TOO_SMALL", resourceCulture);
             }
         }
         

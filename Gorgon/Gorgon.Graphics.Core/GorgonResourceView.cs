@@ -78,7 +78,10 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the graphics interface that built this object.
         /// </summary>
-        public GorgonGraphics Graphics => Resource?.Graphics;
+        public GorgonGraphics Graphics
+        {
+            get;
+        }
         #endregion
 
         #region Methods.
@@ -105,23 +108,27 @@ namespace Gorgon.Graphics.Core
         public virtual void Dispose()
         {
             D3D11.ResourceView view = Interlocked.Exchange(ref _view, null);
+            GorgonGraphicsResource resource = Interlocked.Exchange(ref _resource, null);
 
-            if (view == null)
+            if ((view == null) && (resource == null))
             {
                 return;
             }
 
-            this.UnregisterDisposable(Resource.Graphics);
-
-            if (OwnsResource)
+            this.UnregisterDisposable(Graphics);
+            
+            if (resource != null)
             {
-                Log.Print($"Shader Resource View '{Resource.Name}': Releasing D3D11 Resource {Resource.ResourceType} because it owns it.", LoggingLevel.Simple);
-                GorgonGraphicsResource resource = Interlocked.Exchange(ref _resource, null);
-                resource?.Dispose();
+                Log.Print($"Resource View '{resource.Name}': Releasing D3D11 resource view.", LoggingLevel.Simple);
+
+                if (OwnsResource)
+                {
+                    Log.Print($"Resource View '{resource.Name}': Releasing D3D11 Resource {resource.ResourceType} because it owns it.", LoggingLevel.Simple);
+                    resource.Dispose();
+                }
             }
 
-            Log.Print($"Shader Resource View '{Resource.Name}': Releasing D3D11 shader resource view.", LoggingLevel.Simple);
-            view.Dispose();
+            view?.Dispose();
 
             GC.SuppressFinalize(this);
         }
@@ -136,6 +143,7 @@ namespace Gorgon.Graphics.Core
         protected GorgonResourceView(GorgonGraphicsResource resource)
         {
             _resource = resource ?? throw new ArgumentNullException(nameof(resource));
+            Graphics = _resource.Graphics;
         }
         #endregion
     }

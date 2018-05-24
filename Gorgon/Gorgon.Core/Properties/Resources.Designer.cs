@@ -115,6 +115,15 @@ namespace Gorgon.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The array is read only..
+        /// </summary>
+        internal static string GOR_ERR_ARRAY_READ_ONLY {
+            get {
+                return ResourceManager.GetString("GOR_ERR_ARRAY_READ_ONLY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The chunk ID at offset 0x{0} does not match the chunk ID of 0x{1}..
         /// </summary>
         internal static string GOR_ERR_CHUNK_FILE_CHUNK_MISMATCH {
