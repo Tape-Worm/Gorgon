@@ -37,26 +37,90 @@ namespace Gorgon.Graphics.Core
     {
         #region Methods.
         /// <summary>
+        /// Function to create a new draw call.
+        /// </summary>
+        /// <returns>A new draw call.</returns>
+        protected override GorgonDrawIndexCall OnCreate()
+        {
+            return new GorgonDrawIndexCall();
+        }
+
+        /// <summary>
+        /// Function to reset the properties of the draw call to the draw call passed in.
+        /// </summary>
+        /// <param name="drawCall">The draw call to copy from.</param>
+        /// <returns>The fluent builder interface.</returns>
+        protected override GorgonDrawIndexCallBuilder OnReset(GorgonDrawIndexCall drawCall)
+        {
+            DrawCall.BaseVertexIndex = drawCall.BaseVertexIndex;
+            DrawCall.IndexStart = drawCall.IndexStart;
+            DrawCall.IndexCount = drawCall.IndexCount;
+            DrawCall.IndexBuffer = drawCall.IndexBuffer;
+            return this;
+        }
+
+        /// <summary>
+        /// Function to clear the draw call.
+        /// </summary>
+        /// <returns>The fluent builder interface.</returns>
+        protected override GorgonDrawIndexCallBuilder OnClear()
+        {
+            DrawCall.IndexBuffer = null;
+            DrawCall.BaseVertexIndex = 0;
+            DrawCall.IndexStart = 0;
+            DrawCall.IndexCount = 0;
+            return this;
+        }
+
+        /// <summary>
         /// Function to update the properties of the draw call from the working copy to the final copy.
         /// </summary>
         /// <param name="finalCopy">The object representing the finalized copy.</param>
         /// <returns></returns>
-        protected override void Update(GorgonDrawIndexCall finalCopy)
+        protected override void OnUpdate(GorgonDrawIndexCall finalCopy)
         {
-            finalCopy.BaseVertexIndex = WorkingDrawCall.BaseVertexIndex;
-            finalCopy.IndexStart = WorkingDrawCall.IndexStart;
-            finalCopy.IndexCount = WorkingDrawCall.IndexCount;
-            finalCopy.IndexBuffer = WorkingDrawCall.IndexBuffer;
+            finalCopy.BaseVertexIndex = DrawCall.BaseVertexIndex;
+            finalCopy.IndexStart = DrawCall.IndexStart;
+            finalCopy.IndexCount = DrawCall.IndexCount;
+            finalCopy.IndexBuffer = DrawCall.IndexBuffer;
         }
 
         /// <summary>
         /// Function to assign an index buffer to the draw call.
         /// </summary>
         /// <param name="buffer">The buffer to assign.</param>
+        /// <param name="indexStart">The first index in the index buffer to render.</param>
+        /// <param name="indexCount">The number of indices to render.</param>
         /// <returns>The fluent builder interface.</returns>
-        public GorgonDrawIndexCallBuilder IndexBuffer(GorgonIndexBuffer buffer)
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="indexStart"/> parameter is less than 0.
+        /// <para>-or-</para>
+        /// <para>Thrown when the <paramref name="indexCount"/> parameter is less than 1.</para>
+        /// </exception>
+        /// <remarks>
+        /// <para>
+        /// <note type="caution">
+        /// <para>
+        /// For performance reasons, any exceptions thrown from this method will only be thrown when Gorgon is compiled as DEBUG.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        public GorgonDrawIndexCallBuilder IndexBuffer(GorgonIndexBuffer buffer, int indexStart, int indexCount)
         {
-            WorkingDrawCall.IndexBuffer = buffer;
+#if DEBUG
+            if (indexStart < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(indexStart), Resources.GORGFX_ERR_INDEX_TOO_SMALL);
+            }
+
+            if (indexCount < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(indexCount), Resources.GORGFX_ERR_INDEX_COUNT_TOO_SMALL);
+            }
+#endif
+            DrawCall.IndexStart = indexStart;
+            DrawCall.IndexCount = indexCount;
+            DrawCall.IndexBuffer = buffer;
             return this;
         }
 
@@ -92,8 +156,8 @@ namespace Gorgon.Graphics.Core
                 throw new ArgumentOutOfRangeException(nameof(indexCount), Resources.GORGFX_ERR_INDEX_COUNT_TOO_SMALL);
             }
 #endif
-            WorkingDrawCall.IndexStart = indexStart;
-            WorkingDrawCall.IndexCount = indexCount;
+            DrawCall.IndexStart = indexStart;
+            DrawCall.IndexCount = indexCount;
             return this;
         }
 
@@ -119,33 +183,20 @@ namespace Gorgon.Graphics.Core
                 throw new ArgumentOutOfRangeException(nameof(baseVertexIndex), Resources.GORGFX_ERR_VERTEX_INDEX_TOO_SMALL);
             }
 #endif
-            WorkingDrawCall.BaseVertexIndex = baseVertexIndex;
+            DrawCall.BaseVertexIndex = baseVertexIndex;
 
-            return this;
-        }
-
-        /// <summary>
-        /// Function to reset the builder to a default state.
-        /// </summary>
-        /// <returns>The fluent builder interface.</returns>
-        public override GorgonDrawIndexCallBuilder Reset()
-        {
-            WorkingDrawCall.IndexBuffer = null;
-            WorkingDrawCall.BaseVertexIndex = 0;
-            WorkingDrawCall.IndexStart = 0;
-            WorkingDrawCall.IndexCount = 0;
             return this;
         }
         #endregion
 
-        #region Constructor/Finalizer.
+        #region Constructor.
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonDrawIndexCallBuilder"/> class.
         /// </summary>
-        /// <param name="callToUpdate">[Optional] A previously created draw call to update.</param>
-        public GorgonDrawIndexCallBuilder(GorgonDrawIndexCall callToUpdate = null)
-            : base(callToUpdate)
+        public GorgonDrawIndexCallBuilder()
+            : base(new GorgonDrawIndexCall())
         {
+
         }
         #endregion
     }

@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System;
 using System.Collections.Generic;
 
 namespace Gorgon.Collections
@@ -32,8 +33,8 @@ namespace Gorgon.Collections
     /// Defines an array that is read only.
     /// </summary>
     /// <typeparam name="T">The type of data in the array.</typeparam>
-    public interface IGorgonReadOnlyArray<out T>
-        : IReadOnlyList<T>
+    public interface IGorgonReadOnlyArray<T>
+        : IReadOnlyList<T>, IEquatable<IReadOnlyList<T>>
     {
         #region Properties.
         /// <summary>

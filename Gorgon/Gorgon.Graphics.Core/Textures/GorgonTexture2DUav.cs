@@ -53,7 +53,7 @@ namespace Gorgon.Graphics.Core
     /// </para>
     /// <para>
     /// These types of views are most useful for <see cref="GorgonComputeShader"/> shaders, but can also be used by a <see cref="GorgonPixelShader"/> by passing a list of these views in to a 
-    /// <see cref="GorgonDrawCallBase">draw call</see>.
+    /// <see cref="GorgonDrawCallCommon">draw call</see>.
     /// </para>
     /// <para>
     /// <note type="warning">
@@ -67,7 +67,7 @@ namespace Gorgon.Graphics.Core
     /// <seealso cref="GorgonTexture2D"/>
     /// <seealso cref="GorgonComputeShader"/>
     /// <seealso cref="GorgonPixelShader"/>
-    /// <seealso cref="GorgonDrawCallBase"/>
+    /// <seealso cref="GorgonDrawCallCommon"/>
     /// <seealso cref="GorgonMultisampleInfo"/>
     public sealed class GorgonTexture2DUav
         : GorgonUnorderedAccessView, IGorgonTexture2DInfo

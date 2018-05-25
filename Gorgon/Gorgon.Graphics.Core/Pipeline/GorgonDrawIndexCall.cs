@@ -42,12 +42,12 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Property to return the base vertex index in the vertex buffer to use when drawing.
+        /// Property to set or return the base vertex index in the vertex buffer to use when drawing.
         /// </summary>
         public int BaseVertexIndex
         {
             get;
-            internal set;
+            set;
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace Gorgon.Graphics.Core
         public int IndexStart
         {
             get;
-            internal set;
+            set;
         }
 
         /// <summary>
@@ -65,7 +65,15 @@ namespace Gorgon.Graphics.Core
         public int IndexCount
         {
             get;
-            internal set;
+            set;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonDrawIndexCall"/> class.
+        /// </summary>
+        internal GorgonDrawIndexCall()
+        {
+            // We need to create this through a builder.
         }
     }
 }

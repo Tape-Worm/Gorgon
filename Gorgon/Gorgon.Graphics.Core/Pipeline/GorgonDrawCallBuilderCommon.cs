@@ -25,14 +25,7 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using D3D = SharpDX.Direct3D;
-using Gorgon.Collections;
-using Gorgon.Core;
-using Gorgon.Math;
+using Gorgon.Graphics.Core.Properties;
 
 namespace Gorgon.Graphics.Core
 {
@@ -43,18 +36,13 @@ namespace Gorgon.Graphics.Core
     /// <typeparam name="TDc">The type of draw call.</typeparam>
     public abstract class GorgonDrawCallBuilderCommon<TB, TDc>
         where TB : GorgonDrawCallBuilderCommon<TB, TDc>
-        where TDc : GorgonDrawCallCommon, new()
+        where TDc : GorgonDrawCallCommon
     {
-        #region Variables.
-        // The final call object to return.
-        private TDc _finalCall;
-        #endregion
-
         #region Properties.
         /// <summary>
         /// Property to return the draw call being edited.
         /// </summary>
-        protected TDc WorkingDrawCall
+        protected TDc DrawCall
         {
             get;
         }
@@ -62,19 +50,97 @@ namespace Gorgon.Graphics.Core
 
         #region Methods.
         /// <summary>
+        /// Function to create a new draw call.
+        /// </summary>
+        /// <returns>A new draw call.</returns>
+        protected abstract TDc OnCreate();
+
+        /// <summary>
         /// Function to update the properties of the draw call from the working copy to the final copy.
         /// </summary>
         /// <param name="finalCopy">The object representing the finalized copy.</param>
-        /// <returns></returns>
-        protected abstract void Update(TDc finalCopy);
+        protected abstract void OnUpdate(TDc finalCopy);
+
+        /// <summary>
+        /// Function to reset the properties of the draw call to the draw call passed in.
+        /// </summary>
+        /// <param name="drawCall">The draw call to copy from.</param>
+        /// <returns>The fluent builder interface.</returns>
+        protected abstract TB OnReset(TDc drawCall);
+
+        /// <summary>
+        /// Function to clear the draw call.
+        /// </summary>
+        /// <returns>The fluent builder interface.</returns>
+        protected abstract TB OnClear();
+
+        /// <summary>
+        /// Function to set the pipeline state for this draw call.
+        /// </summary>
+        /// <param name="pipelineState">The pipeline state to assign.</param>
+        /// <returns>The fluent builder interface.</returns>
+        public TB PipelineState(GorgonPipelineState pipelineState)
+        {
+            if (pipelineState == null)
+            {
+                DrawCall.PipelineState.Clear();
+            }
+            else
+            {
+                pipelineState.CopyTo(DrawCall.PipelineState);
+            }
+
+            return (TB)this;
+        }
+
+        /// <summary>
+        /// Function to set the pipeline state for this draw call.
+        /// </summary>
+        /// <param name="pipelineState">The pipeline state to assign.</param>
+        /// <returns>The fluent builder interface.</returns>
+        public TB PipelineState(GorgonPipelineStateBuilder pipelineState)
+        {
+            return PipelineState(pipelineState?.Build());
+        }
 
         /// <summary>
         /// Function to set primitive topology for the draw call.
         /// </summary>
+        /// <param name="primitiveType">The type of primitive to render.</param>
         /// <returns>The fluent builder interface.</returns>
-        public TB PrimitiveTopology(D3D.PrimitiveTopology topology)
+        public TB PrimitiveType(PrimitiveType primitiveType)
         {
-            WorkingDrawCall.PrimitiveTopology = topology;
+            DrawCall.PrimitiveType = primitiveType;
+            return (TB)this;
+        }
+
+        /// <summary>
+        /// Function to set a vertex buffer binding for the draw call.
+        /// </summary>
+        /// <param name="layout">The input layout to use.</param>
+        /// <param name="binding">The vertex buffer binding to set.</param>
+        /// <param name="slot">[Optional] The slot for the binding.</param>
+        /// <returns>The fluent builder interface.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="slot"/> parameter is less than 0, or greater than/equal to <see cref="GorgonVertexBufferBindings.MaximumVertexBufferCount"/>.</exception>
+        /// <remarks>
+        /// <para>
+        /// <note type="caution">
+        /// <para>
+        /// For performance reasons, any exceptions thrown from this method will only be thrown when Gorgon is compiled as DEBUG.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        public TB VertexBuffer(GorgonInputLayout layout, in GorgonVertexBufferBinding binding, int slot = 0)
+        {
+            #if DEBUG
+            if ((slot < 0) || (slot >= GorgonVertexBufferBindings.MaximumVertexBufferCount))
+            {
+                throw new ArgumentOutOfRangeException(nameof(slot), string.Format(Resources.GORGFX_ERR_INVALID_VERTEXBUFFER_SLOT, GorgonVertexBufferBindings.MaximumVertexBufferCount));
+            }
+            #endif
+
+            DrawCall.UpdateVertexBufferBinding(layout, in binding, slot);
             return (TB)this;
         }
 
@@ -84,9 +150,9 @@ namespace Gorgon.Graphics.Core
         /// <param name="layout">The input layout to use.</param>
         /// <param name="bindings">The vertex buffer bindings to set.</param>
         /// <returns>The fluent builder interface.</returns>
-        public TB VertexBufferBindings(GorgonInputLayout layout, params GorgonVertexBufferBinding[] bindings)
+        public TB VertexBufferBindings(GorgonInputLayout layout, GorgonVertexBufferBindings bindings)
         {
-            WorkingDrawCall.UpdateVertexBufferBindings(layout, bindings);
+            DrawCall.UpdateVertexBufferBindings(layout, bindings);
             return (TB)this;
         }
 
@@ -96,28 +162,46 @@ namespace Gorgon.Graphics.Core
         /// <returns>The draw call created or updated by this builder.</returns>
         public TDc Build()
         {
-            if (_finalCall == null)
-            {
-                _finalCall = new TDc();
-            }
+            TDc final = OnCreate();
+            final.UpdateVertexBufferBindings(DrawCall.InputLayout, DrawCall.VertexBufferBindings);
+            final.PrimitiveType = DrawCall.PrimitiveType;
+            DrawCall.PipelineState.CopyTo(final.PipelineState);
 
-            _finalCall.UpdateVertexBufferBindings(WorkingDrawCall.InputLayout, WorkingDrawCall.VertexBufferBindings);
-            _finalCall.PrimitiveTopology = WorkingDrawCall.PrimitiveTopology;
+            OnUpdate(final);
 
-            Update(_finalCall);
-
-            return _finalCall;
+            return final;
         }
 
         /// <summary>
-        /// Function to reset the builder to a default state.
+        /// Function to reset the builder to the specified draw call state.
+        /// </summary>
+        /// <param name="drawCall">[Optional] The specified draw call state to copy.</param>
+        /// <returns>The fluent builder interface.</returns>
+        public TB Reset(TDc drawCall = null)
+        {
+            if (drawCall == null)
+            {
+                return Clear();
+            }
+
+            DrawCall.PrimitiveType = drawCall.PrimitiveType;
+            DrawCall.UpdateVertexBufferBindings(drawCall.InputLayout, drawCall.VertexBufferBindings);
+            drawCall.PipelineState.CopyTo(drawCall.PipelineState);
+
+            return OnReset(drawCall);
+        }
+
+        /// <summary>
+        /// Function to clear the builder to a default state.
         /// </summary>
         /// <returns>The fluent builder interface.</returns>
-        public virtual TB Reset()
+        public TB Clear()
         {
-            WorkingDrawCall.UpdateVertexBufferBindings(null, null);
-            WorkingDrawCall.PrimitiveTopology = D3D.PrimitiveTopology.TriangleList;
-            return (TB)this;
+            DrawCall.UpdateVertexBufferBindings(null, null);
+            DrawCall.PrimitiveType = Core.PrimitiveType.TriangleList;
+            DrawCall.PipelineState.Clear();
+
+            return OnClear();
         }
         #endregion
 
@@ -125,15 +209,11 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonDrawCallBuilder"/> class.
         /// </summary>
-        /// <param name="callToUpdate">[Optional] A previous draw call to update.</param>
-        protected GorgonDrawCallBuilderCommon(TDc callToUpdate = null)
+        /// <param name="drawCall">The worker draw call.</param>
+        private protected GorgonDrawCallBuilderCommon(TDc drawCall)
         {
-            WorkingDrawCall = new TDc
-                              {
-                                  PrimitiveTopology = D3D.PrimitiveTopology.TriangleList
-                              };
-
-            _finalCall = callToUpdate;
+            DrawCall = drawCall;
+            drawCall.PrimitiveType = Core.PrimitiveType.TriangleList;
         }
         #endregion
     }

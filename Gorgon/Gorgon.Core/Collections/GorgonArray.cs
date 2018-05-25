@@ -29,7 +29,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Gorgon.Collections;
-using Gorgon.Properties;
+using Gorgon.Math;
 
 namespace Gorgon.Graphics.Core
 {
@@ -71,13 +71,9 @@ namespace Gorgon.Graphics.Core
         /// </summary>
 	    public int Length => BackingArray.Length;
 
-	    /// <summary>Gets or sets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</summary>
+	    /// <summary>Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</summary>
 	    /// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only; otherwise, false.</returns>
-	    public bool IsReadOnly
-	    {
-	        get;
-	        set;
-	    }
+	    bool ICollection<T>.IsReadOnly => false;
 
 		/// <summary>
 		/// Property to return whether or not the list is dirty.
@@ -91,11 +87,6 @@ namespace Gorgon.Graphics.Core
 			get => BackingArray[index];
 			set
 			{
-			    if (IsReadOnly)
-			    {
-                    throw new NotSupportedException(Resources.GOR_ERR_ARRAY_READ_ONLY);
-			    }
-
 			    if (((value == null) && (BackingArray[index] == null))
                     || ((BackingArray[index] != null) && (value != null) && (value.Equals(BackingArray[index]))))
 			    {
@@ -279,6 +270,38 @@ namespace Gorgon.Graphics.Core
 			return IndexOf(item) != -1;
 		}
 
+        /// <summary>
+        /// Function to copy the dirty entries for this array into the specified array.
+        /// </summary>
+        /// <param name="array">The array that will receive the dirty entries.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="array"/> parameter is <b>null</b>.</exception>
+	    public void CopyDirty(GorgonArray<T> array)
+        {
+            if (array == null)
+            {
+                throw new ArgumentNullException(nameof(array));
+            }
+
+            // Nothing to copy.
+            if (_dirtyIndices == 0)
+            {
+                return;
+            }
+
+            // Find all the dirty entries (if we haven't already).
+            if (_dirtyItems.Count == 0)
+            {
+                GetDirtyItems(true);
+            }
+
+            int end = (_dirtyItems.Count + _dirtyItems.Start).Min(array.Length);
+
+            for (int i = _dirtyItems.Start; i < end; ++i)
+            {
+                array[i] = BackingArray[i];
+            }
+        }
+
 		/// <summary>Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1" /> to an <see cref="T:System.Array" />, starting at a particular <see cref="T:System.Array" /> index.</summary>
 		/// <param name="array">The one-dimensional <see cref="T:System.Array" /> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1" />. The <see cref="T:System.Array" /> must have zero-based indexing.</param>
 		/// <param name="arrayIndex">The zero-based index in <paramref name="array" /> at which copying begins.</param>
@@ -318,16 +341,9 @@ namespace Gorgon.Graphics.Core
 				destIndex = array.Length - 1;
 			}
 
-			for (int i = 0; i < Length; ++i)
+			for (int j = destIndex, i = 0; j < array.Length && i < Length; ++i, ++j)
 			{
-				int index = i + destIndex;
-
-				if (index >= array.Length)
-				{
-					break;
-				}
-
-				array[destIndex] = this[i];
+				array[j] = this[i];
 			}
 		}
 
@@ -335,11 +351,6 @@ namespace Gorgon.Graphics.Core
 		/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only. </exception>
 		public void Clear()
 		{
-		    if (IsReadOnly)
-		    {
-		        throw new NotSupportedException(Resources.GOR_ERR_ARRAY_READ_ONLY);
-		    }
-
 		    OnClear();
 
 			Array.Clear(BackingArray, 0, BackingArray.Length);
@@ -367,6 +378,111 @@ namespace Gorgon.Graphics.Core
 		{
 			return BackingArray.GetEnumerator();
 		}
+
+	    /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+	    /// <param name="other">An object to compare with this object.</param>
+	    /// <returns>
+	    /// <see langword="true" /> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <see langword="false" />.</returns>
+	    public bool Equals(IReadOnlyList<T> other)
+        {
+            if (other == null)
+            {
+                return false;
+            }
+
+            if (other.Count != Length)
+            {
+                return false;
+            }
+
+            if (other == this)
+            {
+                return true;
+            }
+
+            for (int i = 0; i < Length; ++i)
+            {
+                T left = this[i];
+                T right = other[i];
+
+                if ((left == null) || (right == null) || (!left.Equals(right)))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns><see langword="true" /> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <see langword="false" />.</returns>
+        public bool DirtyEquals(GorgonArray<T> other)
+        {
+            if (other == null)
+            {
+                return false;
+            }
+
+            if (other.Length != Length)
+            {
+                return false;
+            }
+
+            if (other == this)
+            {
+                return true;
+            }
+
+            // If the dirty state has already been updated for both arrays, then just check that.
+            if ((_dirtyIndices == 0) && (other._dirtyIndices == 0) && (_dirtyItems.Start == other._dirtyItems.Start) && (_dirtyItems.Count == other._dirtyItems.Count))
+            {
+                for (int i = _dirtyItems.Start; i < _dirtyItems.Start + _dirtyItems.Count; ++i)
+                {
+                    if (!BackingArray[i].Equals(other[i]))
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            int leftDirtyState = _dirtyIndices;
+            int rightDirtyState = other._dirtyIndices;
+
+            // Otherwise, walk through until dirty items are exhausted.
+            for (int i = 0; ((leftDirtyState > 0) || (rightDirtyState > 0)); ++i)
+            {
+                int dirtyMask = 1 << i;
+
+                // If no sides are dirty, mode on (i.e. they're equal).
+                if (((leftDirtyState & dirtyMask) != dirtyMask)
+                        && ((rightDirtyState & dirtyMask) != dirtyMask))
+                {
+                    continue;
+                }
+
+                if (!BackingArray[i].Equals(other.BackingArray[i]))
+                {
+                    return false;
+                }
+
+                if ((leftDirtyState & dirtyMask) == dirtyMask)
+                {
+                    leftDirtyState &= ~dirtyMask;
+                }
+
+                if ((rightDirtyState & dirtyMask) == dirtyMask)
+                {
+                    rightDirtyState &= ~dirtyMask;
+                }
+            }
+
+            return true;
+        }
         #endregion
 
         #region Constructor/Finalizer.

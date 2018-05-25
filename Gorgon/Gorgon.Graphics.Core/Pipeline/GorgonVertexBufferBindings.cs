@@ -68,8 +68,8 @@ namespace Gorgon.Graphics.Core
 		public GorgonInputLayout InputLayout
 		{
 			get;
-			internal set;
-		}
+	        internal set;
+	    }
 		#endregion
 
 		#region Methods.
@@ -99,21 +99,29 @@ namespace Gorgon.Graphics.Core
 		{
 			Array.Clear(Native, 0, Native.Length);
 		}
-		#endregion
+        #endregion
 
-		#region Constructor
-	    /// <summary>
-	    /// Initializes a new instance of the <see cref="GorgonVertexBufferBindings"/> class.
-	    /// </summary>
-	    /// <param name="inputLayout">The input layout that describes the arrangement of the vertex data within the buffers being bound.</param>
-	    /// <param name="bindings">[Optional] A list of vertex buffers to apply.</param>
-	    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="inputLayout"/> parameter is <b>null</b>.</exception>
-	    public GorgonVertexBufferBindings(GorgonInputLayout inputLayout, IReadOnlyList<GorgonVertexBufferBinding> bindings = null)
-	        : base(MaximumVertexBufferCount)
+        #region Constructor
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonVertexBufferBindings" /> class.
+        /// </summary>
+        internal GorgonVertexBufferBindings()
+            : base(MaximumVertexBufferCount)
+        {
+            Native = new D3D11.VertexBufferBinding[MaximumVertexBufferCount];
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonVertexBufferBindings"/> class.
+        /// </summary>
+        /// <param name="inputLayout">The input layout that describes the arrangement of the vertex data within the buffers being bound.</param>
+        /// <param name="bindings">[Optional] A list of vertex buffers to apply.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="inputLayout"/> parameter is <b>null</b>.</exception>
+        public GorgonVertexBufferBindings(GorgonInputLayout inputLayout, IReadOnlyList<GorgonVertexBufferBinding> bindings = null)
+	        : this()
 	    {
 	        InputLayout = inputLayout ?? throw new ArgumentNullException(nameof(inputLayout));
-	        Native = new D3D11.VertexBufferBinding[MaximumVertexBufferCount];
-
+	        
 	        if (bindings == null)
 	        {
 	            return;

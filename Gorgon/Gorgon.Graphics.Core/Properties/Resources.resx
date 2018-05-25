@@ -594,4 +594,10 @@ Current binding: [{0}]</value>
   <data name="GORGFX_ERR_VERTEX_INDEX_TOO_SMALL" xml:space="preserve">
     <value>The vertex index must be 0 or greater.</value>
   </data>
+  <data name="GORGFX_ERR_INVALID_VERTEXBUFFER_SLOT" xml:space="preserve">
+    <value>The vertex buffer binding slot must be 0 or less than {1}.</value>
+  </data>
+  <data name="GORGFX_ERR_INVALID_SAMPLER_INDEX" xml:space="preserve">
+    <value>The sampler index must be 0 or less than {1}.</value>
+  </data>
 </root>

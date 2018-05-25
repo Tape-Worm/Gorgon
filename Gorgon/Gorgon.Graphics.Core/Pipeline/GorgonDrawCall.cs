@@ -24,12 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Gorgon.Graphics.Core
 {
     /// <summary>
@@ -39,21 +33,29 @@ namespace Gorgon.Graphics.Core
         : GorgonDrawCallCommon
     {
         /// <summary>
-        /// Property to return the vertex index to start at within the vertex buffer.
+        /// Property to set or return the vertex index to start at within the vertex buffer.
         /// </summary>
         public int VertexStartIndex
         {
             get;
-            internal set;
+            set;
         }
 
         /// <summary>
-        /// Property to return the number of vertices to draw.
+        /// Property to set or return the number of vertices to draw.
         /// </summary>
         public int VertexCount
         {
             get;
-            internal set;
+            set;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonDrawCall"/> class.
+        /// </summary>
+        internal GorgonDrawCall()
+        {
+            // We need to create this through a builder.
         }
     }
 }

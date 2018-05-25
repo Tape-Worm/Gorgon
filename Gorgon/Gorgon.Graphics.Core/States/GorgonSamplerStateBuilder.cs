@@ -1,0 +1,227 @@
+﻿#region MIT
+// 
+// Gorgon.
+// Copyright (C) 2016 Michael Winsor
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+// 
+// Created: July 28, 2016 11:49:51 PM
+// 
+#endregion
+
+using System;
+
+namespace Gorgon.Graphics.Core
+{
+	/// <summary>
+	/// A builder for a <see cref="GorgonSamplerState"/>.
+	/// </summary>
+	public class GorgonSamplerStateBuilder
+        : GorgonStateBuilderCommon<GorgonSamplerStateBuilder, GorgonSamplerState>, IGorgonGraphicsObject
+	{
+        #region Properties.
+	    /// <summary>
+	    /// Property to return the graphics interface that built this object.
+	    /// </summary>
+	    public GorgonGraphics Graphics
+	    {
+	        get;
+	    }
+        #endregion
+
+        #region Methods.
+        /// <summary>
+        /// Function to update the properties of the state from the working copy to the final copy.
+        /// </summary>
+        /// <returns>The new render state.</returns>
+        protected override GorgonSamplerState OnUpdate()
+        {
+            return Graphics.CacheSamplerState(WorkingState);
+        }
+
+	    /// <summary>
+	    /// Function to reset the builder to the specified state.
+	    /// </summary>
+	    /// <param name="state">The state to copy from.</param>
+	    /// <returns>The fluent builder interface.</returns>
+	    protected override GorgonSamplerStateBuilder OnResetState(GorgonSamplerState state)
+	    {
+	        state.CopyTo(WorkingState);
+	        return this;
+	    }
+
+	    /// <summary>
+	    /// Function to clear the working state for the builder.
+	    /// </summary>
+	    /// <returns>The fluent builder interface.</returns>
+	    protected override GorgonSamplerStateBuilder OnClearState()
+	    {
+            GorgonSamplerState.Default.CopyTo(WorkingState);
+	        return this;
+	    }
+
+	    /// <summary>
+	    /// Function to copy this sampler state into another sampler state.
+	    /// </summary>
+	    /// <param name="state">A <see cref="GorgonSamplerState"/> to copy the settings from.</param>
+	    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="state"/> parameter is <b>null</b>.</exception>
+	    internal void CopyTo(GorgonSamplerState state)
+	    {
+	        WorkingState.Filter = state.Filter;
+	        WorkingState.WrapU = state.WrapU;
+	        WorkingState.WrapV = state.WrapV;
+	        WorkingState.WrapW = state.WrapW;
+	        WorkingState.MaxAnisotropy = state.MaxAnisotropy;
+	        WorkingState.BorderColor = state.BorderColor;
+	        WorkingState.MinimumLevelOfDetail = state.MinimumLevelOfDetail;
+	        WorkingState.MaximumLevelOfDetail = state.MaximumLevelOfDetail;
+	        WorkingState.ComparisonFunction = state.ComparisonFunction;
+	        WorkingState.MipLevelOfDetailBias = state.MipLevelOfDetailBias;
+	    }
+
+	    /// <summary>
+        /// Function to set the type of filtering to apply to the texture.
+        /// </summary>
+        /// <param name="filter">The filter to apply.</param>
+        /// <returns>The fluent builder interface.</returns>
+        public GorgonSamplerStateBuilder Filter(SampleFilter filter)
+        {
+            WorkingState.Filter = filter;
+            return this;
+        }
+
+	    /// <summary>
+	    /// Function to set the wrapping mode for a texture.
+	    /// </summary>
+	    /// <param name="wrapU">[Optional] The horizontal wrapping type.</param>
+	    /// <param name="wrapV">[Optional] The vertical wrapping type.</param>
+	    /// <param name="wrapW">[Optional] The depth wrapping type.</param>
+	    /// <param name="borderColor">[Optional] The color of the border when the wrapping type for any axis is set to <see cref="TextureWrap.Border"/>.</param>
+	    /// <returns>The fluent builder interface.</returns>
+	    /// <remarks>
+	    /// <para>
+	    /// If all parameters are set to <b>null</b> (i.e. omitted), then the corresponding values will be reset to their defaults.
+	    /// </para>
+	    /// </remarks>
+	    public GorgonSamplerStateBuilder Wrapping(TextureWrap? wrapU = null, TextureWrap? wrapV = null, TextureWrap? wrapW = null, GorgonColor? borderColor = null)
+	    {
+	        if ((wrapW == null) && (wrapU == null) && (wrapV == null) && (borderColor == null))
+	        {
+	            WorkingState.WrapU = WorkingState.WrapV = WorkingState.WrapW = TextureWrap.Clamp;
+	            WorkingState.BorderColor = GorgonColor.Transparent;
+	            return this;
+	        }
+
+	        if (wrapU != null)
+	        {
+	            WorkingState.WrapU = wrapU.Value;
+	        }
+
+	        if (wrapV != null)
+	        {
+	            WorkingState.WrapV = wrapV.Value;
+	        }
+
+	        if (wrapW != null)
+	        {
+	            WorkingState.WrapW = wrapW.Value;
+	        }
+
+	        if (borderColor != null)
+	        {
+	            WorkingState.BorderColor = borderColor.Value;
+	        }
+	        return this;
+	    }
+
+	    /// <summary>
+	    /// Function to set the value used to clamp an anisotropic texture filter.
+	    /// </summary>
+	    /// <param name="maxAnisotropy">The maximum anisotropy value.</param>
+	    /// <returns>The fluent builder interface.</returns>
+	    public GorgonSamplerStateBuilder MaxAnisotropy(int maxAnisotropy)
+	    {
+	        WorkingState.MaxAnisotropy = maxAnisotropy;
+	        return this;
+	    }
+
+	    /// <summary>
+	    /// Function to set the function to compare sampled data.
+	    /// </summary>
+	    /// <param name="compare">The function used for comparison.</param>
+	    /// <returns>The fluent builder interface.</returns>
+	    public GorgonSamplerStateBuilder ComparisonFunction(Comparison compare)
+	    {
+	        WorkingState.ComparisonFunction = compare;
+	        return this;
+	    }
+
+        /// <summary>
+        /// Function to set the minimum/maximum mip level of detail to use.
+        /// </summary>
+        /// <param name="min">[Optional] The lower end of the mip map range to clamp access to</param>
+        /// <param name="max">[Optional] the higher end of the mip map range to clamp access to</param>
+        /// <param name="mipLodBias">[Optional] The mip map level of detail bias value.</param>
+        /// <returns>The fluent builder interface.</returns>
+        /// <remarks>
+        /// <para>
+        /// If all parameters are set to <b>null</b> (i.e. omitted), then the corresponding values will be reset to their defaults.
+        /// </para>
+        /// </remarks>
+	    public GorgonSamplerStateBuilder MipLevelOfDetail(float? min = null, float? max = null, float? mipLodBias = null)
+        {
+            if ((min == null) && (max == null) && (mipLodBias == null))
+            {
+                WorkingState.MinimumLevelOfDetail = float.MinValue;
+                WorkingState.MaximumLevelOfDetail = float.MaxValue;
+                WorkingState.MipLevelOfDetailBias = 0;
+                return this;
+            }
+
+            if (min != null)
+            {
+                WorkingState.MinimumLevelOfDetail = min.Value;
+            }
+
+            if (max != null)
+            {
+                WorkingState.MaximumLevelOfDetail = max.Value;
+            }
+
+            if (mipLodBias != null)
+            {
+                WorkingState.MipLevelOfDetailBias = mipLodBias.Value;
+            }
+
+            return this;
+        }
+        #endregion
+
+        #region Constructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonSamplerStateBuilder" /> class.
+        /// </summary>
+        /// <param name="graphics">The graphics interface used to build sampler states.</param>
+        public GorgonSamplerStateBuilder(GorgonGraphics graphics)
+            : base(new GorgonSamplerState())
+        {
+            Graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
+        }
+        #endregion
+    }
+}

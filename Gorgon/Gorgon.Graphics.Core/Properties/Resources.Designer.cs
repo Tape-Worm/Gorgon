@@ -572,6 +572,24 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The sampler index must be 0 or less than {1}..
+        /// </summary>
+        internal static string GORGFX_ERR_INVALID_SAMPLER_INDEX {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_INVALID_SAMPLER_INDEX", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The vertex buffer binding slot must be 0 or less than {1}..
+        /// </summary>
+        internal static string GORGFX_ERR_INVALID_VERTEXBUFFER_SLOT {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_INVALID_VERTEXBUFFER_SLOT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The offset [{0}] or context &apos;{1}&apos; is in use by another item with the same index or slot..
         /// </summary>
         internal static string GORGFX_ERR_LAYOUT_ELEMENT_IN_USE {

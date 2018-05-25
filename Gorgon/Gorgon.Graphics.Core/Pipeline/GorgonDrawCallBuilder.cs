@@ -25,13 +25,7 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Gorgon.Graphics.Core.Properties;
-using Gorgon.Math;
-using D3D = SharpDX.Direct3D;
 
 namespace Gorgon.Graphics.Core
 {
@@ -43,14 +37,45 @@ namespace Gorgon.Graphics.Core
     {
         #region Methods.
         /// <summary>
+        /// Function to create a new draw call.
+        /// </summary>
+        /// <returns>A new draw call.</returns>
+        protected override GorgonDrawCall OnCreate()
+        {
+            return new GorgonDrawCall();
+        }
+
+        /// <summary>
+        /// Function to reset the properties of the draw call to the draw call passed in.
+        /// </summary>
+        /// <param name="drawCall">The draw call to copy from.</param>
+        /// <returns>The fluent builder interface.</returns>
+        protected override GorgonDrawCallBuilder OnReset(GorgonDrawCall drawCall)
+        {
+            DrawCall.VertexStartIndex = drawCall.VertexStartIndex;
+            DrawCall.VertexCount = drawCall.VertexCount;
+            return this;
+        }
+
+        /// <summary>
+        /// Function to clear the builder to a default state.
+        /// </summary>
+        /// <returns>The fluent builder interface.</returns>
+        protected override GorgonDrawCallBuilder OnClear()
+        {
+            DrawCall.VertexStartIndex = DrawCall.VertexCount = 0;
+            return this;
+        }
+
+        /// <summary>
         /// Function to update the properties of the draw call from the working copy to the final copy.
         /// </summary>
         /// <param name="finalCopy">The object representing the finalized copy.</param>
         /// <returns></returns>
-        protected override void Update(GorgonDrawCall finalCopy)
+        protected override void OnUpdate(GorgonDrawCall finalCopy)
         {
-            finalCopy.VertexCount = WorkingDrawCall.VertexCount;
-            finalCopy.VertexStartIndex = WorkingDrawCall.VertexStartIndex;
+            finalCopy.VertexCount = DrawCall.VertexCount;
+            finalCopy.VertexStartIndex = DrawCall.VertexStartIndex;
         }
 
         /// <summary>
@@ -85,31 +110,20 @@ namespace Gorgon.Graphics.Core
                 throw new ArgumentOutOfRangeException(nameof(count), Resources.GORGFX_ERR_VERTEX_COUNT_TOO_SMALL);
             }
 #endif
-            WorkingDrawCall.VertexStartIndex = index;
-            WorkingDrawCall.VertexCount = count;
-            return this;
-        }
-
-        /// <summary>
-        /// Function to reset the builder to a default state.
-        /// </summary>
-        /// <returns>The fluent builder interface.</returns>
-        public override GorgonDrawCallBuilder Reset()
-        {
-            base.Reset();
-            WorkingDrawCall.VertexStartIndex = WorkingDrawCall.VertexCount = 0;
+            DrawCall.VertexStartIndex = index;
+            DrawCall.VertexCount = count;
             return this;
         }
         #endregion
 
-        #region Constructor/Finalizer.
+        #region Constructor.
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonDrawCallBuilder"/> class.
         /// </summary>
-        /// <param name="callToUpdate">[Optional] A previously created draw call to update.</param>
-        public GorgonDrawCallBuilder(GorgonDrawCall callToUpdate = null)
-            : base(callToUpdate)
+        public GorgonDrawCallBuilder()  
+            : base(new GorgonDrawCall())
         {
+
         }
         #endregion
     }

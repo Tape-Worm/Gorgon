@@ -261,6 +261,7 @@ namespace Gorgon.Graphics.Example
 	    private static GorgonConstantBuffer _cBuffer;
 	    private static GorgonTexture2DView _texture;
 	    private static GorgonDrawIndexCall _drawCall;
+	    private static GorgonDrawIndexCall _drawCall2;
         private static DX.Matrix _projMatrix = DX.Matrix.Identity;
 	    private static DX.Matrix _worldMatrix = DX.Matrix.Identity;
 	    private static float _yRot;
@@ -277,6 +278,13 @@ namespace Gorgon.Graphics.Example
 	        _graphics.DoStuff(_vShader, _pShader, _cBuffer, _texture);
 
             _graphics.Submit(_drawCall);
+
+	        _worldMatrix.Row4 = new DX.Vector4(0.5f, 0, 1.0f, 1.0f);
+	        DX.Matrix.Multiply(ref _worldMatrix, ref _projMatrix, out wProj);
+
+	        _cBuffer.SetData(ref wProj);
+
+            _graphics.Submit(_drawCall2);
 
 	        _yRot += GorgonTiming.Delta * 45.0f;
 
@@ -354,11 +362,24 @@ namespace Gorgon.Graphics.Example
             _graphics.SetRenderTarget(_swap.RenderTargetView);
 
             var builder = new GorgonDrawIndexCallBuilder();
-	        _drawCall = builder.VertexBufferBindings(_layout, _vbBinding)
-	                           .IndexBuffer(_iBuffer)
-	                           .PrimitiveTopology(PrimitiveTopology.TriangleList)
-	                           .IndexRange(0, 3)
+            var rsBuilder = new GorgonRasterStateBuilder();
+	        var sampleBuilder = new GorgonSamplerStateBuilder(_graphics);
+            var psoBuilder = new GorgonPipelineStateBuilder(_graphics);
+
+	        _drawCall = builder.VertexBuffer(_layout, _vbBinding)
+	                           .IndexBuffer(_iBuffer, 0, 3)
+	                           .PrimitiveType(PrimitiveType.TriangleList)
+	                           .PipelineState(psoBuilder
+	                                          .RasterState(rsBuilder.CullMode(CullingMode.None))
+	                                          .SamplerState(ShaderType.Pixel, sampleBuilder.Filter(SampleFilter.MinMagMipPoint)))
 	                           .Build();
+
+	        _drawCall2 = builder.VertexBuffer(_layout, _vbBinding)
+	                            .IndexBuffer(_iBuffer, 0, 3)
+	                            .PrimitiveType(PrimitiveType.TriangleList)
+	                            .PipelineState(psoBuilder.RasterState(rsBuilder.CullMode(CullingMode.Front))
+	                                                     .SamplerState(ShaderType.Pixel, sampleBuilder.Filter(SampleFilter.MinMagMipPoint)))
+	                            .Build();
 
             _graphics.DoInit();
 	    }

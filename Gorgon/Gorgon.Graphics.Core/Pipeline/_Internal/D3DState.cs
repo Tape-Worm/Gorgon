@@ -30,7 +30,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using D3D = SharpDX.Direct3D;
-using Gorgon.Collections;
+using D3D11 = SharpDX.Direct3D11;
 
 
 namespace Gorgon.Graphics.Core
@@ -63,9 +63,60 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         Topology = 0x8,
         /// <summary>
+        /// The rasterizer state was modified.
+        /// </summary>
+        RasterState = 0x40,
+        /// <summary>
+        /// The pixel shader was changed.
+        /// </summary>
+        PixelShader = 0x80,
+        /// <summary>
+        /// Sampler state has changed, combined with <see cref="PixelShaderMask"/>.
+        /// </summary>
+        Samplers = 0x0100_0000,
+        /// <summary>
+        /// Mask for pixel shader states.
+        /// </summary>
+        PixelShaderMask = 0x1FF_0000_0000_0000,
+        /// <summary>
+        /// Mask for vertex shader states.
+        /// </summary>
+        VertexShaderMask = 0x2FF_0000_0000_0000,
+        /// <summary>
+        /// Mask for geometry shader states.
+        /// </summary>
+        GeometryShaderMask = 0x3FF_0000_0000_0000,
+        /// <summary>
+        /// Mask for hull shader states.
+        /// </summary>
+        HullShaderMask = 0x4FF_0000_0000_0000,
+        /// <summary>
+        /// Mask for domain shader states.
+        /// </summary>
+        DomainShaderMask = 0x5FF_0000_0000_0000,
+        /// <summary>
+        /// Mask for compute shader states.
+        /// </summary>
+        ComputeShaderMask = 0x6FF_0000_0000_0000,
+        /// <summary>
+        /// All pipeline states.
+        /// </summary>
+        AllPipelineState = RasterState 
+                           | PixelShader  
+                           | (PixelShaderMask | Samplers) 
+                           | (VertexShaderMask | Samplers) 
+                           | (GeometryShaderMask | Samplers) 
+                           | (HullShaderMask | Samplers) 
+                           | (DomainShaderMask | Samplers) 
+                           | (ComputeShaderMask | Samplers),
+        /// <summary>
         /// Everything changed.
         /// </summary>
-        All = VertexBuffers | InputLayout | IndexBuffer | Topology
+        All = VertexBuffers 
+              | InputLayout 
+              | IndexBuffer 
+              | Topology 
+              | AllPipelineState
     }
 
     /// <summary>
@@ -75,13 +126,13 @@ namespace Gorgon.Graphics.Core
     {
         #region Properties.
         /// <summary>
-        /// Property to set or return the current list of vertex buffers.
+        /// Property to return the current list of vertex buffers.
         /// </summary>
         public GorgonVertexBufferBindings VertexBuffers
         {
             get;
             set;
-        }
+        } = new GorgonVertexBufferBindings();
 
         /// <summary>
         /// Property to set or return the index buffer.
@@ -93,13 +144,21 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Property to return the current primitive topology.
+        /// Property to set or return the current primitive topology.
         /// </summary>
         public D3D.PrimitiveTopology Topology
         {
             get;
             set;
         }
+
+        /// <summary>
+        /// Property to return the current rasterizer state.
+        /// </summary>
+        public GorgonPipelineState PipelineState
+        {
+            get;
+        } = new GorgonPipelineState();
 
         /// <summary>
         /// Property to return the current input layout.
@@ -109,40 +168,15 @@ namespace Gorgon.Graphics.Core
 
         #region Methods.
         /// <summary>
-        /// Function to determine what the difference is between two sets of state.
+        /// Function to copy this state into another state object.
         /// </summary>
-        /// <param name="state">The state to compare.</param>
-        /// <returns>A <see cref="DrawCallChanges"/> containing the states that have been changed</returns>
-        public DrawCallChanges GetDifference(D3DState state)
+        /// <param name="state">The state to copy into.</param>
+        public void CopyTo(D3DState state)
         {
-            if (state == null)
-            {
-                return DrawCallChanges.All;
-            }
-
-            DrawCallChanges changes = DrawCallChanges.None;
-
-            if (Topology != state.Topology)
-            {
-                changes |= DrawCallChanges.Topology;
-            }
-
-            if (VertexBuffers != state.VertexBuffers)
-            {
-                changes |= DrawCallChanges.VertexBuffers;
-            }
-
-            if (InputLayout != state.InputLayout)
-            {
-                changes |= DrawCallChanges.InputLayout;
-            }
-
-            if (IndexBuffer != state.IndexBuffer)
-            {
-                changes |= DrawCallChanges.IndexBuffer;
-            }
-
-            return changes;
+            state.IndexBuffer = IndexBuffer;
+            state.Topology = Topology;
+            VertexBuffers.CopyTo(state.VertexBuffers);
+            PipelineState.CopyTo(state.PipelineState);
         }
         #endregion
     }
