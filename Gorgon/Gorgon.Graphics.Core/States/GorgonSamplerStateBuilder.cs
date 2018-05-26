@@ -46,6 +46,25 @@ namespace Gorgon.Graphics.Core
 
         #region Methods.
         /// <summary>
+        /// Function to copy the values of one state into another.
+        /// </summary>
+        /// <param name="dest">The destination state.</param>
+        /// <param name="src">The state to copy.</param>
+	    private static void CopyState(GorgonSamplerState dest, GorgonSamplerState src)
+	    {
+	        dest.Filter = src.Filter;
+	        dest.WrapU = src.WrapU;
+	        dest.WrapV = src.WrapV;
+	        dest.WrapW = src.WrapW;
+	        dest.MaxAnisotropy = src.MaxAnisotropy;
+	        dest.BorderColor = src.BorderColor;
+	        dest.MinimumLevelOfDetail = src.MinimumLevelOfDetail;
+	        dest.MaximumLevelOfDetail = src.MaximumLevelOfDetail;
+	        dest.ComparisonFunction = src.ComparisonFunction;
+	        dest.MipLevelOfDetailBias = src.MipLevelOfDetailBias;
+	    }
+
+        /// <summary>
         /// Function to update the properties of the state from the working copy to the final copy.
         /// </summary>
         /// <returns>The new render state.</returns>
@@ -61,7 +80,7 @@ namespace Gorgon.Graphics.Core
 	    /// <returns>The fluent builder interface.</returns>
 	    protected override GorgonSamplerStateBuilder OnResetState(GorgonSamplerState state)
 	    {
-	        state.CopyTo(WorkingState);
+            CopyState(WorkingState, state);
 	        return this;
 	    }
 
@@ -71,7 +90,7 @@ namespace Gorgon.Graphics.Core
 	    /// <returns>The fluent builder interface.</returns>
 	    protected override GorgonSamplerStateBuilder OnClearState()
 	    {
-            GorgonSamplerState.Default.CopyTo(WorkingState);
+	        CopyState(WorkingState, GorgonSamplerState.Default);
 	        return this;
 	    }
 

@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using D3D = SharpDX.Direct3D;
 using Gorgon.Collections;
 
 namespace Gorgon.Graphics.Core
@@ -34,7 +33,6 @@ namespace Gorgon.Graphics.Core
     /// </summary>
     public abstract class GorgonDrawCallCommon
     {
-        #region Properties.
         /// <summary>
         /// Property to return the internal D3D state.
         /// </summary>
@@ -46,11 +44,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the pipeline state for this draw call.
         /// </summary>
-        public GorgonPipelineState PipelineState
-        {
-            get => D3DState.PipelineState;
-            internal set => value.CopyTo(D3DState.PipelineState);
-        }
+        public GorgonPipelineState PipelineState => D3DState.PipelineState;
 
         /// <summary>
         /// Property to return the vertex buffers bound to the draw call.
@@ -63,67 +57,11 @@ namespace Gorgon.Graphics.Core
         /// <remarks>
         /// This is derived from the <see cref="VertexBufferBindings"/> passed to the call.
         /// </remarks>
-        public GorgonInputLayout InputLayout => D3DState.InputLayout;
+        public GorgonInputLayout InputLayout => D3DState.VertexBuffers.InputLayout;
 
         /// <summary>
         /// Property to return the topology for a primitive.
         /// </summary>
-        public PrimitiveType PrimitiveType
-        {
-            get => (PrimitiveType)D3DState.Topology;
-            internal set => D3DState.Topology = (D3D.PrimitiveTopology)value;
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to update a single vertex buffer binding.
-        /// </summary>
-        /// <param name="inputLayout">The input layout for the vertex buffers.</param>
-        /// <param name="binding">The bindings to use.</param>
-        /// <param name="slot">The slot to use.</param>
-        internal void UpdateVertexBufferBinding(GorgonInputLayout inputLayout, in GorgonVertexBufferBinding binding, int slot)
-        {
-            if (D3DState.VertexBuffers[slot].Equals(in binding))
-            {
-                return;
-            }
-
-            if (D3DState.InputLayout != inputLayout)
-            {
-                D3DState.VertexBuffers.InputLayout = inputLayout;
-            }
-
-            D3DState.VertexBuffers.Clear();
-            D3DState.VertexBuffers[slot] = binding;
-        }
-
-        /// <summary>
-        /// Function to update the vertex buffer bindings.
-        /// </summary>
-        /// <param name="inputLayout">The input layout for the vertex buffers.</param>
-        /// <param name="bindings">The bindings to use.</param>
-        internal void UpdateVertexBufferBindings(GorgonInputLayout inputLayout, IGorgonReadOnlyArray<GorgonVertexBufferBinding> bindings)
-        {
-            (int start, int count) = bindings.GetDirtyItems();
-            
-            for (int i = start; i < start + count; ++i)
-            {
-                if (D3DState.VertexBuffers[i].Equals(bindings[i]))
-                {
-                    continue;
-                }
-
-                D3DState.VertexBuffers[i] = bindings[i];
-            }
-
-            if (D3DState.InputLayout == inputLayout)
-            {
-                return;
-            }
-
-            D3DState.VertexBuffers.InputLayout = inputLayout;
-        }
-        #endregion
+        public PrimitiveType PrimitiveType => (PrimitiveType)D3DState.Topology;
     }
 }

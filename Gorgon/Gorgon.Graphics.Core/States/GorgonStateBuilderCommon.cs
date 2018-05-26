@@ -37,7 +37,7 @@ namespace Gorgon.Graphics.Core
     {
         #region Properties.
         /// <summary>
-        /// Property to return the state being edited.
+        /// Property to set or return the state being edited.
         /// </summary>
         protected TRs WorkingState
         {

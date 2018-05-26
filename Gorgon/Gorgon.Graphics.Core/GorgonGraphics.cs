@@ -165,14 +165,13 @@ namespace Gorgon.Graphics.Core
         private readonly D3DState _lastState = new D3DState
                                                {
                                                    Topology = D3D.PrimitiveTopology.Undefined,
-                                                   VertexBuffers = null,
-                                                   PipelineState =
-                                                   {
-                                                       PixelShader =
-                                                       {
-                                                           RwSamplers = null
-                                                       }
-                                                   }
+                                                   PipelineState = new GorgonPipelineState
+                                                                   {
+                                                                       PixelShader = new ShaderStates<GorgonPixelShader>
+                                                                                     {
+                                                                                         RwSamplers = new GorgonSamplerStates()
+                                                                                     }
+                                                                   }
                                                };
 
         // A cache for holding vertex bindings.
@@ -397,31 +396,6 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Function to build a merged render state.
-        /// </summary>
-        /// <param name="currentState">The current state.</param>
-        /// <returns>A set of changes that need to be applied to the pipeline.</returns>
-        private DrawCallChanges BuildStateChanges(GorgonPipelineState currentState)
-        {
-            GorgonPipelineState lastState = _lastState.PipelineState;
-            DrawCallChanges changes = DrawCallChanges.None;
-
-            if (ChangeBuilder(lastState.RasterState == currentState.RasterState, DrawCallChanges.RasterState, ref changes))
-            {
-                _lastState.PipelineState.RasterState = currentState.RasterState;
-            }
-
-            if (ChangeBuilder(currentState.PixelShader.RwSamplers.DirtyEquals(lastState.PixelShader.RwSamplers),
-                              DrawCallChanges.PixelShaderMask | DrawCallChanges.Samplers,
-                              ref changes))
-            {
-                lastState.PixelShader.RwSamplers = lastState.PixelShader.RwSamplers;
-            }
-
-            return changes;
-        }
-
-        /// <summary>
         /// Function to assign sampler states to a shader
         /// </summary>
         /// <param name="shaderStage">The shader stage to use.</param>
@@ -458,7 +432,7 @@ namespace Gorgon.Graphics.Core
 
             if ((changes & DrawCallChanges.PixelShader) == DrawCallChanges.PixelShader)
             {
-                // TODO: Assign pixel shader.
+                D3DDeviceContext.PixelShader.Set(currentState.PixelShader.Current?.NativeShader);
             }
 
             // Perform pixel shader state updates.
@@ -476,33 +450,30 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Function to build a merged draw state.
+        /// Function to build a merged render state.
         /// </summary>
         /// <param name="currentState">The current state.</param>
         /// <returns>A set of changes that need to be applied to the pipeline.</returns>
-        private DrawCallChanges BuildDrawCallResources(D3DState currentState)
+        private DrawCallChanges BuildStateChanges(GorgonPipelineState currentState)
         {
+            GorgonPipelineState lastState = _lastState.PipelineState;
             DrawCallChanges changes = DrawCallChanges.None;
 
-            // Ensure we have an input layout.
-            ChangeBuilder(_lastState.InputLayout == currentState.InputLayout, DrawCallChanges.InputLayout, ref changes);
-
-            if ((ChangeBuilder(currentState.VertexBuffers.DirtyEquals(_lastState.VertexBuffers), DrawCallChanges.VertexBuffers, ref changes))
-                || ((changes & DrawCallChanges.InputLayout) == DrawCallChanges.InputLayout))
+            if (ChangeBuilder(lastState.D3DRasterState == currentState.D3DRasterState, DrawCallChanges.RasterState, ref changes))
             {
-                Debug.Assert(currentState.VertexBuffers != null, "VertexBuffers on current draw state is null - This is not allowed.");
-
-                _lastState.VertexBuffers = currentState.VertexBuffers;
+                _lastState.PipelineState.D3DRasterState = currentState.D3DRasterState;
             }
 
-            if (ChangeBuilder(_lastState.IndexBuffer == currentState.IndexBuffer, DrawCallChanges.IndexBuffer, ref changes))
+            if (ChangeBuilder(lastState.PixelShader.Current == currentState.PixelShader.Current, DrawCallChanges.PixelShader, ref changes))
             {
-                _lastState.IndexBuffer = currentState.IndexBuffer;
+                _lastState.PipelineState.PixelShader.Current = currentState.PixelShader.Current;
             }
 
-            if (ChangeBuilder(_lastState.Topology == currentState.Topology, DrawCallChanges.Topology, ref changes))
+            if (ChangeBuilder(currentState.PixelShader.RwSamplers.DirtyEquals(lastState.PixelShader.RwSamplers),
+                              DrawCallChanges.PixelShaderMask | DrawCallChanges.Samplers,
+                              ref changes))
             {
-                _lastState.Topology = currentState.Topology;
+                lastState.PixelShader.RwSamplers = currentState.PixelShader.RwSamplers;
             }
 
             return changes;
@@ -538,6 +509,39 @@ namespace Gorgon.Graphics.Core
             {
                 BindIndexBuffer(_lastState.IndexBuffer);
             }
+        }
+
+        /// <summary>
+        /// Function to build a merged draw state.
+        /// </summary>
+        /// <param name="currentState">The current state.</param>
+        /// <returns>A set of changes that need to be applied to the pipeline.</returns>
+        private DrawCallChanges BuildDrawCallResources(D3DState currentState)
+        {
+            DrawCallChanges changes = DrawCallChanges.None;
+
+            // Ensure we have an input layout.
+            ChangeBuilder(_lastState.InputLayout == currentState.InputLayout, DrawCallChanges.InputLayout, ref changes);
+
+            if ((ChangeBuilder(currentState.VertexBuffers.DirtyEquals(_lastState.VertexBuffers), DrawCallChanges.VertexBuffers, ref changes))
+                || ((changes & DrawCallChanges.InputLayout) == DrawCallChanges.InputLayout))
+            {
+                Debug.Assert(currentState.VertexBuffers != null, "VertexBuffers on current draw state is null - This is not allowed.");
+
+                _lastState.VertexBuffers = currentState.VertexBuffers;
+            }
+
+            if (ChangeBuilder(_lastState.IndexBuffer == currentState.IndexBuffer, DrawCallChanges.IndexBuffer, ref changes))
+            {
+                _lastState.IndexBuffer = currentState.IndexBuffer;
+            }
+
+            if (ChangeBuilder(_lastState.Topology == currentState.Topology, DrawCallChanges.Topology, ref changes))
+            {
+                _lastState.Topology = currentState.Topology;
+            }
+
+            return changes;
         }
 
         /// <summary>
@@ -894,9 +898,10 @@ namespace Gorgon.Graphics.Core
                 }
 
                 // We didn't find what we wanted, so create a new one.
-                var resultState = new GorgonSamplerState();
-                newState.CopyTo(resultState);
-                resultState.ID = _cachedSamplers.Count;
+                var resultState = new GorgonSamplerState(newState)
+                                  {
+                                      ID = _cachedSamplers.Count
+                                  };
                 resultState.BuildD3D11SamplerState(D3DDevice);
                 _cachedSamplers.Add(resultState);
                 
@@ -924,32 +929,6 @@ namespace Gorgon.Graphics.Core
                     int blendStateEqualCount = 0;
                     DrawCallChanges inheritedState = DrawCallChanges.None;
                     GorgonPipelineState cachedState = _cachedPipelineStates[i];
-
-                    if (cachedState.PixelShader.Current == newState.PixelShader.Current)
-                    {
-                        inheritedState |= DrawCallChanges.PixelShader;
-                    }
-    
-                    /*
-                    if (cachedStateInfo.VertexShader == newStateInfo.VertexShader)
-                    {
-                        inheritedState |= PipelineStateChange.VertexShader;
-                    }
-    
-                    if (cachedStateInfo.GeometryShader == newStateInfo.GeometryShader)
-                    {
-                        inheritedState |= PipelineStateChange.GeometryShader;
-                    }
-    
-                    if (cachedStateInfo.HullShader == newStateInfo.HullShader)
-                    {
-                        inheritedState |= PipelineStateChange.HullShader;
-                    }
-    
-                    if (cachedStateInfo.DomainShader == newStateInfo.DomainShader)
-                    {
-                        inheritedState |= PipelineStateChange.DomainShader;
-                    }*/
     
                     if (cachedState.RasterState.Equals(newState.RasterState))
                     {
@@ -1001,8 +980,7 @@ namespace Gorgon.Graphics.Core
                 }
 
                 // Setup any uninitialized states.
-                var resultState = new GorgonPipelineState();
-                newState.CopyTo(resultState);
+                var resultState = new GorgonPipelineState(newState);
                 InitializePipelineState(resultState, blendState, depthStencilState, rasterState);
                 resultState.ID = _cachedPipelineStates.Count;
                 _cachedPipelineStates.Add(resultState);
@@ -1043,9 +1021,10 @@ namespace Gorgon.Graphics.Core
             Array.Clear(_viewports, 0, _viewports.Length);
             Array.Clear(_vertexBindingCache, 0, _vertexBindingCache.Length);
 
-            //_lastState.VertexBuffers = null;
-            //_lastState.IndexBuffer = null;
-            //_lastState.Topology = D3D.PrimitiveTopology.Undefined;
+            _lastState.VertexBuffers = null;
+            _lastState.IndexBuffer = null;
+            _lastState.Topology = D3D.PrimitiveTopology.Undefined;
+            _lastState.PipelineState = null;
         }
 
         /// <summary>
@@ -1353,7 +1332,7 @@ namespace Gorgon.Graphics.Core
             DrawCallChanges stateChanges = BuildStateChanges(drawIndexCall.D3DState.PipelineState);
 
             BindResources(changes);
-            ApplyState(drawIndexCall.D3DState.PipelineState, stateChanges);
+            ApplyState(_lastState.PipelineState, stateChanges);
 
             D3DDeviceContext.DrawIndexed(drawIndexCall.IndexCount, drawIndexCall.IndexStart, drawIndexCall.BaseVertexIndex);
         }
@@ -1361,12 +1340,10 @@ namespace Gorgon.Graphics.Core
         #region Crap Code.
         private D3D11.DepthStencilState dState;
         private D3D11.BlendState1 bState;
-        private D3D11.SamplerState sampleState;
 
         [Obsolete("This method is here to set up native functionality not yet available to the core library.")]
         private void DoDispose()
         {
-            sampleState?.Dispose();
             dState?.Dispose();
             bState?.Dispose();
         }
@@ -1374,21 +1351,6 @@ namespace Gorgon.Graphics.Core
         [Obsolete("This method is here to set up native functionality not yet available to the core library.")]
         public void DoInit()
         {
-            sampleState = new D3D11.SamplerState(D3DDevice,
-                                                 new D3D11.SamplerStateDescription
-                                                 {
-                                                     AddressU = D3D11.TextureAddressMode.Wrap,
-                                                     AddressV = D3D11.TextureAddressMode.Wrap,
-                                                     AddressW = D3D11.TextureAddressMode.Wrap,
-                                                     BorderColor = GorgonColor.Transparent.ToRawColor4(),
-                                                     ComparisonFunction = D3D11.Comparison.Always,
-                                                     Filter = D3D11.Filter.MaximumMinMagMipLinear,
-                                                     MaximumAnisotropy = 0,
-                                                     MaximumLod = float.MaxValue,
-                                                     MinimumLod = 0,
-                                                     MipLodBias = 0
-                                                 });
-
             dState = new D3D11.DepthStencilState(D3DDevice,
                                                  new D3D11.DepthStencilStateDescription
                                                  {
@@ -1441,7 +1403,7 @@ namespace Gorgon.Graphics.Core
         private bool _stateSet;
 
         [Obsolete("This method is here to set up native functionality not yet available to the core library.")]
-        public void DoStuff(GorgonVertexShader vShader, GorgonPixelShader pShader, GorgonConstantBuffer vsCb, GorgonTexture2DView texture)
+        public void DoStuff(GorgonVertexShader vShader, GorgonConstantBuffer vsCb, GorgonTexture2DView texture)
         {
             if (!_stateSet)
             {
@@ -1449,8 +1411,6 @@ namespace Gorgon.Graphics.Core
                 D3DDeviceContext.OutputMerger.BlendState = bState;
 
                 D3DDeviceContext.VertexShader.Set(vShader.NativeShader);
-                D3DDeviceContext.PixelShader.Set(pShader.NativeShader);
-                D3DDeviceContext.PixelShader.SetSampler(0, sampleState);
                 D3DDeviceContext.PixelShader.SetShaderResource(0, texture.Native);
                 D3DDeviceContext.VertexShader.SetConstantBuffer(0, vsCb.Native);
                 _stateSet = true;

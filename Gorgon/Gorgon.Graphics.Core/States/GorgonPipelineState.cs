@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using Gorgon.Diagnostics;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
@@ -134,7 +135,7 @@ namespace Gorgon.Graphics.Core
 	    {
 	        get;
             internal set;
-        } = new GorgonRasterState();
+        }
 
         /// <summary>
         /// Property to return the states for the pixel shader.
@@ -142,38 +143,30 @@ namespace Gorgon.Graphics.Core
 	    public ShaderStates<GorgonPixelShader> PixelShader
 	    {
 	        get;
-	    } = new ShaderStates<GorgonPixelShader>();
-		#endregion
+            internal set;
+        }
+        #endregion
 
-	    #region Methods.
+        #region Constructor.
         /// <summary>
-        /// Function to clear the state.
+        /// Initializes a new instance of the <see cref="GorgonPipelineState"/> class.
         /// </summary>
-	    internal void Clear()
+        /// <param name="state">The state copy.</param>
+        internal GorgonPipelineState(GorgonPipelineState state)
         {
-            ID = 0;
-            GorgonRasterState.Default.CopyTo(RasterState);
-            PixelShader.Clear();
+            RasterState = state.RasterState;
+            PixelShader = new ShaderStates<GorgonPixelShader>
+                          {
+                              Current = state.PixelShader.Current
+                          };
+            state.PixelShader.RwSamplers.CopyTo(PixelShader.RwSamplers);
         }
 
-        /// <summary>
-        /// Function to copy this pipeline state to another.
-        /// </summary>
-        /// <param name="pipelineState">The pipeline state that will receive the state information.</param>
-	    internal void CopyTo(GorgonPipelineState pipelineState)
-        {
-            RasterState.CopyTo(pipelineState.RasterState);
-            PixelShader.CopyTo(pipelineState.PixelShader);
-	    }
-	    #endregion
-
-		#region Constructor.
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonPipelineState" /> class.
 		/// </summary>
 		internal GorgonPipelineState()
 		{
-            GorgonRasterState.Default.CopyTo(RasterState);
 		}
 		#endregion
 	}

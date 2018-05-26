@@ -436,52 +436,30 @@ namespace Gorgon.Graphics.Core
                 return true;
             }
 
-            // If the dirty state has already been updated for both arrays, then just check that.
-            if ((_dirtyIndices == 0) && (other._dirtyIndices == 0) && (_dirtyItems.Start == other._dirtyItems.Start) && (_dirtyItems.Count == other._dirtyItems.Count))
+            if (IsDirty)
             {
-                for (int i = _dirtyItems.Start; i < _dirtyItems.Start + _dirtyItems.Count; ++i)
-                {
-                    if (!BackingArray[i].Equals(other[i]))
-                    {
-                        return false;
-                    }
-                }
-
-                return true;
+                // Update the dirty item state on this instance so we can cut down on some checking.
+                GetDirtyItems();
             }
 
-            int leftDirtyState = _dirtyIndices;
-            int rightDirtyState = other._dirtyIndices;
-
-            // Otherwise, walk through until dirty items are exhausted.
-            for (int i = 0; ((leftDirtyState > 0) || (rightDirtyState > 0)); ++i)
+            // If the dirty state has already been updated for both arrays, then just check that.
+            if (((_dirtyIndices != 0) || (other._dirtyIndices != 0)) &&
+                ((_dirtyItems.Start != other._dirtyItems.Start) || (_dirtyItems.Count != other._dirtyItems.Count)))
             {
-                int dirtyMask = 1 << i;
+                return false;
+            }
 
-                // If no sides are dirty, mode on (i.e. they're equal).
-                if (((leftDirtyState & dirtyMask) != dirtyMask)
-                        && ((rightDirtyState & dirtyMask) != dirtyMask))
-                {
-                    continue;
-                }
-
-                if (!BackingArray[i].Equals(other.BackingArray[i]))
+            for (int i = _dirtyItems.Start; i < _dirtyItems.Start + _dirtyItems.Count; ++i)
+            {
+                if (!BackingArray[i].Equals(other[i]))
                 {
                     return false;
-                }
-
-                if ((leftDirtyState & dirtyMask) == dirtyMask)
-                {
-                    leftDirtyState &= ~dirtyMask;
-                }
-
-                if ((rightDirtyState & dirtyMask) == dirtyMask)
-                {
-                    rightDirtyState &= ~dirtyMask;
                 }
             }
 
             return true;
+
+            // We have different dirty states, so this array is different than the other one.
         }
         #endregion
 

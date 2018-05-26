@@ -301,25 +301,6 @@ namespace Gorgon.Graphics.Core
             Native = new D3D11.SamplerState(device, desc);
 	    }
 
-	    /// <summary>
-	    /// Function to copy this sampler state into another sampler state.
-	    /// </summary>
-	    /// <param name="state">A <see cref="GorgonSamplerState"/> to copy the settings from.</param>
-	    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="state"/> parameter is <b>null</b>.</exception>
-	    internal void CopyTo(GorgonSamplerState state)
-	    {
-	        state.Filter = Filter;
-	        state.WrapU = WrapU;
-	        state.WrapV = WrapV;
-	        state.WrapW = WrapW;
-	        state.MaxAnisotropy = MaxAnisotropy;
-	        state.BorderColor = BorderColor;
-	        state.MinimumLevelOfDetail = MinimumLevelOfDetail;
-	        state.MaximumLevelOfDetail = MaximumLevelOfDetail;
-	        state.ComparisonFunction = ComparisonFunction;
-	        state.MipLevelOfDetailBias = MipLevelOfDetailBias;
-	    }
-
 	    /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
 	    /// <param name="other">An object to compare with this object.</param>
 	    /// <returns>
@@ -341,6 +322,24 @@ namespace Gorgon.Graphics.Core
         #endregion
 
         #region Constructor/Finalizer.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonSamplerState"/> class.
+        /// </summary>
+        /// <param name="state">The state to copy.</param>
+        internal GorgonSamplerState(GorgonSamplerState state)
+	    {
+	        Filter = state.Filter;
+	        WrapU = state.WrapU;
+	        WrapV = state.WrapV;
+	        WrapW = state.WrapW;
+	        MaxAnisotropy = state.MaxAnisotropy;
+	        BorderColor = state.BorderColor;
+	        MinimumLevelOfDetail = state.MinimumLevelOfDetail;
+	        MaximumLevelOfDetail = state.MaximumLevelOfDetail;
+	        ComparisonFunction = state.ComparisonFunction;
+	        MipLevelOfDetailBias = state.MipLevelOfDetailBias;
+	    }
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonSamplerState"/> class.
 		/// </summary>

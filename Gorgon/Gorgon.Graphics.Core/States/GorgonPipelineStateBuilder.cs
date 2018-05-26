@@ -25,8 +25,9 @@
 #endregion
 
 using System;
-using Gorgon.Collections;
+using System.Collections.Generic;
 using Gorgon.Graphics.Core.Properties;
+using Gorgon.Math;
 
 namespace Gorgon.Graphics.Core
 {
@@ -38,7 +39,11 @@ namespace Gorgon.Graphics.Core
     {
         #region Variables.
         // The working state.
-        private readonly GorgonPipelineState _workState = new GorgonPipelineState();
+        private readonly GorgonPipelineState _workState = new GorgonPipelineState
+                                                          {
+                                                              RasterState = GorgonRasterState.Default,
+                                                              PixelShader = new ShaderStates<GorgonPixelShader>()
+                                                          };
         #endregion
 
         #region Properties.
@@ -52,6 +57,27 @@ namespace Gorgon.Graphics.Core
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to copy samplers.
+        /// </summary>
+        /// <param name="destStates">The destination sampler states.</param>
+        /// <param name="srcStates">The sampler states to copy.</param>
+        private static void CopySamplers(GorgonSamplerStates destStates, IReadOnlyList<GorgonSamplerState> srcStates)
+        {
+            if (srcStates == null)
+            {
+                destStates.Clear();
+                return;
+            }
+
+            int count = destStates.Length.Min(srcStates.Count);
+
+            for (int i = 0; i < count; ++i)
+            {
+                destStates[i] = srcStates[i];
+            }
+        }
+
         /// <summary>
         /// Function to add a rasterizer state to this pipeline state.
         /// </summary>
@@ -69,15 +95,7 @@ namespace Gorgon.Graphics.Core
         /// <returns>The fluent interface for this builder.</returns>
         public GorgonPipelineStateBuilder RasterState(GorgonRasterState state)
         {
-            if (state != null)
-            {
-                state.CopyTo(_workState.RasterState);
-            }
-            else
-            {
-                GorgonRasterState.Default.CopyTo(_workState.RasterState);
-            }
-
+            _workState.RasterState = state ?? GorgonRasterState.Default;
             return this;
         }
 
@@ -87,13 +105,19 @@ namespace Gorgon.Graphics.Core
         /// <param name="shaderType">The type of shader to update.</param>
         /// <param name="samplers">The samplers to assign.</param>
         /// <returns>The fluent interface for this builder.</returns>
-        public GorgonPipelineStateBuilder SamplerStates(ShaderType shaderType, IGorgonReadOnlyArray<GorgonSamplerState> samplers)
+        public GorgonPipelineStateBuilder SamplerStates(ShaderType shaderType, IReadOnlyList<GorgonSamplerState> samplers)
         {
             switch (shaderType)
             {
                 case ShaderType.Pixel:
-                    _workState.PixelShader.UpdateSamplers(samplers);
+                    CopySamplers(_workState.PixelShader.RwSamplers, samplers);
                     break;
+                case ShaderType.Vertex:
+                case ShaderType.Geometry:
+                case ShaderType.Domain:
+                case ShaderType.Hull:
+                case ShaderType.Compute:
+                    throw new NotImplementedException();
             }
 
             return this;
@@ -112,20 +136,30 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
+        /// Function to set the current pixel shader on the pipeline.
+        /// </summary>
+        /// <param name="pixelShader">The pixel shader to assign.</param>
+        /// <returns>The fluent interface for this builder.</returns>
+        public GorgonPipelineStateBuilder PixelShader(GorgonPixelShader pixelShader)
+        {
+            _workState.PixelShader.Current = pixelShader;
+            return this;
+        }
+
+        /// <summary>
         /// Function to assign a sampler to a shader on the pipeline.
         /// </summary>
         /// <param name="shaderType">The type of shader to update.</param>
         /// <param name="sampler">The sampler to assign.</param>
         /// <param name="index">[Optional] The index of the sampler.</param>
         /// <returns>The fluent interface for this builder.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="index"/> parameter is less than 0, or greater than/equal to <see cref="GorgonSamplerStates.MaximumSamplerStateCount"/>.</exception>
         public GorgonPipelineStateBuilder SamplerState(ShaderType shaderType, GorgonSamplerState sampler, int index = 0)
         {
-#if DEBUG
             if ((index < 0) || (index >= GorgonSamplerStates.MaximumSamplerStateCount))
             {
                 throw new ArgumentOutOfRangeException(nameof(index), string.Format(Resources.GORGFX_ERR_INVALID_SAMPLER_INDEX, GorgonSamplerStates.MaximumSamplerStateCount));
             }
-#endif
 
             switch (shaderType)
             {
@@ -149,8 +183,11 @@ namespace Gorgon.Graphics.Core
                 Clear();
                 return this;
             }
+
+            _workState.RasterState = pipeState.RasterState;
+            _workState.PixelShader.Current = pipeState.PixelShader.Current;
+            CopySamplers(_workState.PixelShader.RwSamplers, pipeState.PixelShader.Samplers);
             
-            pipeState.CopyTo(_workState);
             return this;
         }
 
@@ -160,7 +197,9 @@ namespace Gorgon.Graphics.Core
         /// <returns>The fluent interface for the builder.</returns>
         public GorgonPipelineStateBuilder Clear()
         {
-            GorgonRasterState.Default.CopyTo(_workState.RasterState);
+            _workState.RasterState = GorgonRasterState.Default;
+            _workState.PixelShader.Current = null;
+            _workState.PixelShader.RwSamplers.Clear();
             return this;
         }
 

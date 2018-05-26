@@ -153,20 +153,7 @@ namespace Gorgon.Graphics.Core
             };
         #endregion
 
-        #region Variables.
-        // The state ID.
-        private static long _stateID;
-        #endregion
-
         #region Properties.
-        /// <summary>
-        /// Property to return the state ID.
-        /// </summary>
-        public long ID
-        {
-            get;
-        }
-
         /// <summary>
         /// Property to return the current culling mode.
         /// </summary>
@@ -386,26 +373,6 @@ namespace Gorgon.Graphics.Core
 
         #region Methods.
         /// <summary>
-        /// Function to copy the contents of this <see cref="GorgonRasterState"/> into another one.
-        /// </summary>
-        /// <param name="destState">The state that will receive the contents of this state.</param>
-        internal void CopyTo(GorgonRasterState destState)
-        {
-            destState.IsDepthClippingEnabled = IsDepthClippingEnabled;
-            destState.IsAntialiasedLineEnabled = IsAntialiasedLineEnabled;
-            destState.CullMode = CullMode;
-            destState.DepthBias = DepthBias;
-            destState.DepthBiasClamp = DepthBiasClamp;
-            destState.FillMode = FillMode;
-            destState.ForcedUavSampleCount = ForcedUavSampleCount;
-            destState.IsFrontCounterClockwise = IsFrontCounterClockwise;
-            destState.IsMultisamplingEnabled = IsMultisamplingEnabled;
-            destState.IsScissorClippingEnabled = IsScissorClippingEnabled;
-            destState.SlopeScaledDepthBias = SlopeScaledDepthBias;
-            destState.UseConservativeRasterization = UseConservativeRasterization;
-        }
-
-        /// <summary>
         /// Function to retrieve the Direct 3D 11 rasterizer state object.
         /// </summary>
         /// <param name="device">The direct 3D device.</param>
@@ -436,22 +403,23 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
-        /// <returns>true if the current object is equal to the <paramref name="info" /> parameter; otherwise, false.</returns>
-        /// <param name="info">An object to compare with this object.</param>
-        public bool Equals(GorgonRasterState info)
+        /// <returns>true if the current object is equal to the <paramref name="state" /> parameter; otherwise, false.</returns>
+        /// <param name="state">An object to compare with this object.</param>
+        public bool Equals(GorgonRasterState state)
         {
-            return (this == info) || (info != null
-                                      && IsAntialiasedLineEnabled == info.IsAntialiasedLineEnabled
-                                      && CullMode == info.CullMode
-                                      && DepthBias == info.DepthBias
-                                      && DepthBiasClamp.EqualsEpsilon(info.DepthBiasClamp)
-                                      && IsDepthClippingEnabled == info.IsDepthClippingEnabled
-                                      && FillMode == info.FillMode
-                                      && ForcedUavSampleCount == info.ForcedUavSampleCount
-                                      && IsFrontCounterClockwise == info.IsFrontCounterClockwise
-                                      && IsMultisamplingEnabled == info.IsMultisamplingEnabled
-                                      && IsScissorClippingEnabled == info.IsScissorClippingEnabled
-                                      && SlopeScaledDepthBias.EqualsEpsilon(info.SlopeScaledDepthBias));
+            return (this == state) || ((state != null)
+                                       && (IsAntialiasedLineEnabled == state.IsAntialiasedLineEnabled)
+                                       && (CullMode == state.CullMode)
+                                       && (DepthBias == state.DepthBias)
+                                       && (DepthBiasClamp.EqualsEpsilon(state.DepthBiasClamp))
+                                       && (IsDepthClippingEnabled == state.IsDepthClippingEnabled)
+                                       && (FillMode == state.FillMode)
+                                       && (ForcedUavSampleCount == state.ForcedUavSampleCount)
+                                       && (IsFrontCounterClockwise == state.IsFrontCounterClockwise)
+                                       && (IsMultisamplingEnabled == state.IsMultisamplingEnabled)
+                                       && (IsScissorClippingEnabled == state.IsScissorClippingEnabled)
+                                       && (SlopeScaledDepthBias.EqualsEpsilon(state.SlopeScaledDepthBias))
+                                       && (UseConservativeRasterization == state.UseConservativeRasterization));
         }
         #endregion
 
@@ -459,9 +427,28 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonRasterState"/> class.
         /// </summary>
+        /// <param name="state">The state to copy.</param>
+        internal GorgonRasterState(GorgonRasterState state)
+        {
+            IsAntialiasedLineEnabled = state.IsAntialiasedLineEnabled;
+            CullMode = state.CullMode;
+            DepthBias = state.DepthBias;
+            DepthBiasClamp = state.DepthBiasClamp;
+            IsDepthClippingEnabled = state.IsDepthClippingEnabled;
+            FillMode = state.FillMode;
+            ForcedUavSampleCount = state.ForcedUavSampleCount;
+            IsFrontCounterClockwise = state.IsFrontCounterClockwise;
+            IsMultisamplingEnabled = state.IsMultisamplingEnabled;
+            IsScissorClippingEnabled = state.IsScissorClippingEnabled;
+            SlopeScaledDepthBias = state.SlopeScaledDepthBias;
+            UseConservativeRasterization = state.UseConservativeRasterization;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonRasterState"/> class.
+        /// </summary>
         internal GorgonRasterState()
         {
-            ID = Interlocked.Increment(ref _stateID);
             IsScissorClippingEnabled = false;
             CullMode = CullingMode.Back;
             FillMode = FillMode.Solid;

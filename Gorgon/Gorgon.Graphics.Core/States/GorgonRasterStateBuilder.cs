@@ -34,13 +34,32 @@ namespace Gorgon.Graphics.Core
     {
         #region Methods.
         /// <summary>
+        /// Function to copy the state settings from the source state into the destination.
+        /// </summary>
+        /// <param name="dest">The destination state.</param>
+        /// <param name="src">The state to copy.</param>
+        private static void CopyState(GorgonRasterState dest, GorgonRasterState src)
+        {
+            dest.IsAntialiasedLineEnabled = src.IsAntialiasedLineEnabled;
+            dest.CullMode = src.CullMode;
+            dest.DepthBias = src.DepthBias;
+            dest.DepthBiasClamp = src.DepthBiasClamp;
+            dest.IsDepthClippingEnabled = src.IsDepthClippingEnabled;
+            dest.FillMode = src.FillMode;
+            dest.ForcedUavSampleCount = src.ForcedUavSampleCount;
+            dest.IsFrontCounterClockwise = src.IsFrontCounterClockwise;
+            dest.IsMultisamplingEnabled = src.IsMultisamplingEnabled;
+            dest.IsScissorClippingEnabled = src.IsScissorClippingEnabled;
+            dest.SlopeScaledDepthBias = src.SlopeScaledDepthBias;
+            dest.UseConservativeRasterization = src.UseConservativeRasterization;
+        }
+
+        /// <summary>
         /// Function to update the properties of the state from the working copy to the final copy.
         /// </summary>
         protected override GorgonRasterState OnUpdate()
         {
-            var result = new GorgonRasterState();
-            WorkingState.CopyTo(result);
-            return result;
+            return new GorgonRasterState(WorkingState);
         }
 
         /// <summary>
@@ -49,7 +68,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="state">The state to copy from.</param>
         protected override GorgonRasterStateBuilder OnResetState(GorgonRasterState state)
         {
-            state.CopyTo(WorkingState);
+            CopyState(WorkingState, state);
             return this;
         }
 
@@ -58,7 +77,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         protected override GorgonRasterStateBuilder OnClearState()
         {
-            GorgonRasterState.Default.CopyTo(WorkingState);
+            CopyState(WorkingState, GorgonRasterState.Default);
             return this;
         }
 

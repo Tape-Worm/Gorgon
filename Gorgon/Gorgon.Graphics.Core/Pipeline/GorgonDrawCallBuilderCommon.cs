@@ -25,7 +25,10 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using Gorgon.Graphics.Core.Properties;
+using Gorgon.Math;
+using D3D = SharpDX.Direct3D;
 
 namespace Gorgon.Graphics.Core
 {
@@ -49,6 +52,38 @@ namespace Gorgon.Graphics.Core
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to copy vertex buffer bindings from one draw call to another
+        /// </summary>
+        /// <param name="destBindings">The bindings to update.</param>
+        /// <param name="srcBindings">The bindings to copy.</param>
+        /// <param name="layout">The input layout.</param>
+        private static void CopyVertexBuffers(GorgonVertexBufferBindings destBindings, IReadOnlyList<GorgonVertexBufferBinding> srcBindings, GorgonInputLayout layout)
+        {
+            if (destBindings == null)
+            {
+                destBindings = new GorgonVertexBufferBindings();
+            }
+            else
+            {
+                destBindings.Clear();
+            }
+
+            destBindings.InputLayout = layout;
+
+            if (srcBindings == null)
+            {
+                return;
+            }
+
+            int count = srcBindings.Count.Min(GorgonVertexBufferBindings.MaximumVertexBufferCount);
+            
+            for (int i = 0; i < count; ++i)
+            {
+                destBindings[i] = srcBindings[i];
+            }
+        }
+
         /// <summary>
         /// Function to create a new draw call.
         /// </summary>
@@ -79,17 +114,10 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="pipelineState">The pipeline state to assign.</param>
         /// <returns>The fluent builder interface.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pipelineState"/> parameter is <b>null</b>.</exception>
         public TB PipelineState(GorgonPipelineState pipelineState)
         {
-            if (pipelineState == null)
-            {
-                DrawCall.PipelineState.Clear();
-            }
-            else
-            {
-                pipelineState.CopyTo(DrawCall.PipelineState);
-            }
-
+            DrawCall.D3DState.PipelineState = pipelineState ?? throw new ArgumentNullException(nameof(pipelineState));
             return (TB)this;
         }
 
@@ -110,7 +138,7 @@ namespace Gorgon.Graphics.Core
         /// <returns>The fluent builder interface.</returns>
         public TB PrimitiveType(PrimitiveType primitiveType)
         {
-            DrawCall.PrimitiveType = primitiveType;
+            DrawCall.D3DState.Topology = (D3D.PrimitiveTopology)primitiveType;
             return (TB)this;
         }
 
@@ -121,26 +149,22 @@ namespace Gorgon.Graphics.Core
         /// <param name="binding">The vertex buffer binding to set.</param>
         /// <param name="slot">[Optional] The slot for the binding.</param>
         /// <returns>The fluent builder interface.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="layout"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="slot"/> parameter is less than 0, or greater than/equal to <see cref="GorgonVertexBufferBindings.MaximumVertexBufferCount"/>.</exception>
-        /// <remarks>
-        /// <para>
-        /// <note type="caution">
-        /// <para>
-        /// For performance reasons, any exceptions thrown from this method will only be thrown when Gorgon is compiled as DEBUG.
-        /// </para>
-        /// </note>
-        /// </para>
-        /// </remarks>
         public TB VertexBuffer(GorgonInputLayout layout, in GorgonVertexBufferBinding binding, int slot = 0)
         {
-            #if DEBUG
             if ((slot < 0) || (slot >= GorgonVertexBufferBindings.MaximumVertexBufferCount))
             {
                 throw new ArgumentOutOfRangeException(nameof(slot), string.Format(Resources.GORGFX_ERR_INVALID_VERTEXBUFFER_SLOT, GorgonVertexBufferBindings.MaximumVertexBufferCount));
             }
-            #endif
 
-            DrawCall.UpdateVertexBufferBinding(layout, in binding, slot);
+            if (DrawCall.D3DState.VertexBuffers == null)
+            {
+                DrawCall.D3DState.VertexBuffers = new GorgonVertexBufferBindings();
+            }
+
+            DrawCall.D3DState.VertexBuffers[slot] = binding;
+            DrawCall.D3DState.VertexBuffers.InputLayout = layout ?? throw new ArgumentNullException(nameof(layout));
             return (TB)this;
         }
 
@@ -150,9 +174,10 @@ namespace Gorgon.Graphics.Core
         /// <param name="layout">The input layout to use.</param>
         /// <param name="bindings">The vertex buffer bindings to set.</param>
         /// <returns>The fluent builder interface.</returns>
-        public TB VertexBufferBindings(GorgonInputLayout layout, GorgonVertexBufferBindings bindings)
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="layout"/> parameter is <b>null</b>.</exception>
+        public TB VertexBufferBindings(GorgonInputLayout layout, IReadOnlyList<GorgonVertexBufferBinding> bindings)
         {
-            DrawCall.UpdateVertexBufferBindings(layout, bindings);
+            CopyVertexBuffers(DrawCall.D3DState.VertexBuffers, bindings, layout ?? throw new ArgumentNullException(nameof(layout)));
             return (TB)this;
         }
 
@@ -163,9 +188,15 @@ namespace Gorgon.Graphics.Core
         public TDc Build()
         {
             TDc final = OnCreate();
-            final.UpdateVertexBufferBindings(DrawCall.InputLayout, DrawCall.VertexBufferBindings);
-            final.PrimitiveType = DrawCall.PrimitiveType;
-            DrawCall.PipelineState.CopyTo(final.PipelineState);
+
+            if (final.D3DState.VertexBuffers == null)
+            {
+                final.D3DState.VertexBuffers = new GorgonVertexBufferBindings();
+            }
+            
+            CopyVertexBuffers(final.D3DState.VertexBuffers, DrawCall.VertexBufferBindings, DrawCall.InputLayout);
+            final.D3DState.Topology = (D3D.PrimitiveTopology)DrawCall.PrimitiveType;
+            final.D3DState.PipelineState = DrawCall.PipelineState;
 
             OnUpdate(final);
 
@@ -184,9 +215,10 @@ namespace Gorgon.Graphics.Core
                 return Clear();
             }
 
-            DrawCall.PrimitiveType = drawCall.PrimitiveType;
-            DrawCall.UpdateVertexBufferBindings(drawCall.InputLayout, drawCall.VertexBufferBindings);
-            drawCall.PipelineState.CopyTo(drawCall.PipelineState);
+            DrawCall.D3DState.Topology = (D3D.PrimitiveTopology)drawCall.PrimitiveType;
+            
+            VertexBufferBindings(drawCall.InputLayout, drawCall.VertexBufferBindings);
+            DrawCall.D3DState.PipelineState = new GorgonPipelineState(DrawCall.PipelineState);
 
             return OnReset(drawCall);
         }
@@ -197,9 +229,11 @@ namespace Gorgon.Graphics.Core
         /// <returns>The fluent builder interface.</returns>
         public TB Clear()
         {
-            DrawCall.UpdateVertexBufferBindings(null, null);
-            DrawCall.PrimitiveType = Core.PrimitiveType.TriangleList;
-            DrawCall.PipelineState.Clear();
+            DrawCall.D3DState.VertexBuffers.Clear();
+            DrawCall.D3DState.Topology = D3D.PrimitiveTopology.TriangleList;
+            DrawCall.D3DState.PipelineState.RasterState = null;
+            DrawCall.D3DState.PipelineState.PixelShader.Current = null;
+            DrawCall.D3DState.PipelineState.PixelShader.RwSamplers.Clear();
 
             return OnClear();
         }
@@ -213,7 +247,9 @@ namespace Gorgon.Graphics.Core
         private protected GorgonDrawCallBuilderCommon(TDc drawCall)
         {
             DrawCall = drawCall;
-            drawCall.PrimitiveType = Core.PrimitiveType.TriangleList;
+            DrawCall.D3DState.VertexBuffers = new GorgonVertexBufferBindings();
+            DrawCall.D3DState.PipelineState = new GorgonPipelineState();
+            DrawCall.D3DState.Topology = D3D.PrimitiveTopology.TriangleList;
         }
         #endregion
     }

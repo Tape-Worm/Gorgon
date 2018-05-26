@@ -25,13 +25,7 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using D3D = SharpDX.Direct3D;
-using D3D11 = SharpDX.Direct3D11;
-
 
 namespace Gorgon.Graphics.Core
 {
@@ -124,7 +118,6 @@ namespace Gorgon.Graphics.Core
     /// </summary>
     class D3DState
     {
-        #region Properties.
         /// <summary>
         /// Property to return the current list of vertex buffers.
         /// </summary>
@@ -132,7 +125,7 @@ namespace Gorgon.Graphics.Core
         {
             get;
             set;
-        } = new GorgonVertexBufferBindings();
+        }
 
         /// <summary>
         /// Property to set or return the index buffer.
@@ -153,31 +146,17 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Property to return the current rasterizer state.
+        /// Property to set or return the current pipeline state.
         /// </summary>
         public GorgonPipelineState PipelineState
         {
             get;
-        } = new GorgonPipelineState();
+            set;
+        }
 
         /// <summary>
         /// Property to return the current input layout.
         /// </summary>
         public GorgonInputLayout InputLayout => VertexBuffers?.InputLayout;
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to copy this state into another state object.
-        /// </summary>
-        /// <param name="state">The state to copy into.</param>
-        public void CopyTo(D3DState state)
-        {
-            state.IndexBuffer = IndexBuffer;
-            state.Topology = Topology;
-            VertexBuffers.CopyTo(state.VertexBuffers);
-            PipelineState.CopyTo(state.PipelineState);
-        }
-        #endregion
     }
 }
