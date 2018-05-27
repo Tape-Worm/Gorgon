@@ -109,6 +109,7 @@
     <Compile Include="Pipeline\GorgonDrawCallBuilder.cs" />
     <Compile Include="Pipeline\GorgonDrawCallCommon.cs" />
     <Compile Include="PrimitiveType.cs" />
+    <Compile Include="Shaders\GorgonShaderResourceViews.cs" />
     <Compile Include="States\GorgonConstantBuffers.cs" />
     <Compile Include="States\GorgonPipelineStateBuilder.cs" />
     <Compile Include="Pipeline\GorgonVertexBufferBinding.cs" />
@@ -137,7 +138,7 @@
     <Compile Include="States\GorgonRasterState.cs" />
     <Compile Include="States\GorgonRasterStateBuilder.cs" />
     <Compile Include="States\SampleFilter.cs" />
-    <Compile Include="States\ShaderStates.cs" />
+    <Compile Include="States\ShaderResource.cs" />
     <Compile Include="Targets\BeforeSwapChainResizedEventArgs.cs" />
     <Compile Include="Targets\GorgonDepthStencil2DView.cs" />
     <Compile Include="Targets\GorgonRenderTarget3DView.cs" />

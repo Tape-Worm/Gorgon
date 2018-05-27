@@ -59,16 +59,11 @@ namespace Gorgon.Graphics.Core
         /// This is derived from the <see cref="VertexBufferBindings"/> passed to the call.
         /// </remarks>
         public GorgonInputLayout InputLayout => D3DState.VertexBuffers.InputLayout;
-
-        /// <summary>
-        /// Property to return the topology for a primitive.
-        /// </summary>
-        public PrimitiveType PrimitiveType => (PrimitiveType)D3DState.Topology;
         
         /// <summary>
         /// Property to return the resources for the pixel shader.
         /// </summary>
-        public ShaderStates<GorgonPixelShader> PixelShader
+        public ShaderResource PixelShader
         {
             get;
         }
@@ -76,7 +71,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the resources for the vertex shader.
         /// </summary>
-        public ShaderStates<GorgonVertexShader> VertexShader
+        public ShaderResource VertexShader
         {
             get;
         }
@@ -84,7 +79,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the resources for the geometry shader.
         /// </summary>
-        public ShaderStates<GorgonGeometryShader> GeometryShader
+        public ShaderResource GeometryShader
         {
             get;
         }
@@ -92,7 +87,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the resources for the domain shader.
         /// </summary>
-        public ShaderStates<GorgonDomainShader> DomainShader
+        public ShaderResource DomainShader
         {
             get;
         }
@@ -100,7 +95,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the resources for the hull shader.
         /// </summary>
-        public ShaderStates<GorgonHullShader> HullShader
+        public ShaderResource HullShader
         {
             get;
         }
@@ -108,7 +103,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the resources for the compute shader.
         /// </summary>
-        public ShaderStates<GorgonComputeShader> ComputeShader
+        public ShaderResource ComputeShader
         {
             get;
         }
@@ -120,7 +115,12 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         internal void SetupViews()
         {
-            // TODO:
+            VertexShader.ShaderResources = D3DState.VsSrvs = new GorgonShaderResourceViews();
+            PixelShader.ShaderResources = D3DState.PsSrvs = new GorgonShaderResourceViews();
+            GeometryShader.ShaderResources = D3DState.GsSrvs = new GorgonShaderResourceViews();
+            DomainShader.ShaderResources = D3DState.DsSrvs = new GorgonShaderResourceViews();
+            HullShader.ShaderResources = D3DState.HsSrvs = new GorgonShaderResourceViews();
+            ComputeShader.ShaderResources = D3DState.CsSrvs = new GorgonShaderResourceViews();
         }
 
         /// <summary>
@@ -156,12 +156,12 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         protected GorgonDrawCallCommon()
         {
-            PixelShader = new ShaderStates<GorgonPixelShader>();
-            VertexShader = new ShaderStates<GorgonVertexShader>();
-            GeometryShader = new ShaderStates<GorgonGeometryShader>();
-            DomainShader = new ShaderStates<GorgonDomainShader>();
-            HullShader = new ShaderStates<GorgonHullShader>();
-            ComputeShader = new ShaderStates<GorgonComputeShader>();
+            PixelShader = new ShaderResource();
+            VertexShader = new ShaderResource();
+            GeometryShader = new ShaderResource();
+            DomainShader = new ShaderResource();
+            HullShader = new ShaderResource();
+            ComputeShader = new ShaderResource();
         }
         #endregion
     }

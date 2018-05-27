@@ -606,4 +606,13 @@ Current binding: [{0}]</value>
   <data name="GORGFX_ERR_SCISSOR_INDEX_INVALID" xml:space="preserve">
     <value>The scissor index must be 0 or less than 16.</value>
   </data>
+  <data name="GORGFX_ERR_VIEW_ALREADY_BOUND" xml:space="preserve">
+    <value>The resource view at index {0} is already bound elsewhere on the pipeline.</value>
+  </data>
+  <data name="GORGFX_ERR_VIEW_RESOURCE_ALREADY_BOUND" xml:space="preserve">
+    <value>The resource '{0}' at index {1} already has a view bound elsewhere on the pipeline.</value>
+  </data>
+  <data name="GORGFX_ERR_SRV_SLOT_INVALID" xml:space="preserve">
+    <value>The shader resource slot must be 0 or less than {0}.</value>
+  </data>
 </root>

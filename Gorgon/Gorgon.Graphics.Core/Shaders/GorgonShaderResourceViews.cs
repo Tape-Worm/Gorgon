@@ -1,7 +1,7 @@
 ﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2017 Michael Winsor
+// Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: April 2, 2017 2:04:59 PM
+// Created: July 4, 2016 1:05:13 AM
 // 
 #endregion
 
@@ -28,137 +28,134 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using Gorgon.Collections;
+using Gorgon.Core;
+using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
+using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
 {
 	/// <summary>
-	/// A special array type that is used to monitor and track changes to itself.
+	/// A list of shader resource views to apply to the pipeline.
 	/// </summary>
-	/// <returns>
+	/// <remarks>
 	/// <para>
-	/// Due to how the array determines dirty indices, the maximum size of the the array is 64 items.
+	/// The shader resource view list is used to bind resources like textures and structured buffers to the GPU pipeline so that shaders can make use of them.
 	/// </para>
-	/// </returns>
-	public class GorgonArray<T>
-		: IList<T>, IGorgonReadOnlyArray<T>
-		where T : IEquatable<T>
+	/// <para>
+	/// If a resource being bound is bound to the <see cref="GorgonGraphics.RenderTargets"/> list, then the render target view will be unbound from the pipeline and rebound as a shader resource. This is
+	/// because the render target cannot be used as a shader resource and a render target at the same time.
+	/// </para>
+	/// </remarks>
+	public sealed class GorgonShaderResourceViews
+	    : IList<GorgonShaderResourceView>, IGorgonReadOnlyArray<GorgonShaderResourceView>
 	{
-		#region Variables.
-	    // The indices that are dirty.
-		private int _dirtyIndices;
-
-		// The last set of dirty items.
-		private (int Start, int Count) _dirtyItems;
+		#region Constants.
+		/// <summary>
+		/// The maximum number of allowed shader resources that can be bound at the same time.
+		/// </summary>
+		public const int MaximumShaderResourceViewCount = D3D11.CommonShaderStage.InputResourceSlotCount;
 		#endregion
+
+        #region Variables.
+	    // The last set of dirty items.
+	    private (int Start, int Count) _dirtyItems;
+
+        // The backing array for this array.
+	    private readonly GorgonShaderResourceView[] _backingArray = new GorgonShaderResourceView[MaximumShaderResourceViewCount];
+
+        // The list of changed indices.
+	    private readonly List<int> _changedIndices = new List<int>(MaximumShaderResourceViewCount);
+        #endregion
 
 		#region Properties.
 		/// <summary>
-		/// Property to return the backing store to objects that need it.
+		/// Property to return the native shader resource views.
 		/// </summary>
-		protected T[] BackingArray
+		internal D3D11.ShaderResourceView[] Native
 		{
 		    get;
-	    }
+		} = new D3D11.ShaderResourceView[MaximumShaderResourceViewCount];
 
-        /// <summary>
-        /// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.
-        /// </summary>
-        int IReadOnlyCollection<T>.Count => Length;
+	    /// <summary>
+	    /// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.
+	    /// </summary>
+	    int IReadOnlyCollection<GorgonShaderResourceView>.Count => Length;
 
 	    /// <summary>Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
-		/// <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
-		int ICollection<T>.Count => Length;
+	    /// <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
+	    int ICollection<GorgonShaderResourceView>.Count => Length;
 
-        /// <summary>
-        /// Property to return the length of the array.
-        /// </summary>
-	    public int Length => BackingArray.Length;
+	    /// <summary>
+	    /// Property to return the length of the array.
+	    /// </summary>
+	    public int Length => _backingArray.Length;
 
 	    /// <summary>Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</summary>
 	    /// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only; otherwise, false.</returns>
-	    bool ICollection<T>.IsReadOnly => false;
+	    bool ICollection<GorgonShaderResourceView>.IsReadOnly => false;
 
-		/// <summary>
-		/// Property to return whether or not the list is dirty.
-		/// </summary>
-		public bool IsDirty => _dirtyIndices != 0;
+	    /// <summary>
+	    /// Property to return whether or not the list is dirty.
+	    /// </summary>
+	    public bool IsDirty => _changedIndices.Count > 0;
 
-		/// <summary>Gets or sets the element at the specified index.</summary>
-		/// <returns>The element at the specified index.</returns>
-		public T this[int index]
-		{
-			get => BackingArray[index];
-			set
-			{
-			    if (((value == null) && (BackingArray[index] == null))
-                    || ((BackingArray[index] != null) && (value != null) && (value.Equals(BackingArray[index]))))
-			    {
-			        return;
-			    }
+	    /// <summary>Gets or sets the element at the specified index.</summary>
+	    /// <returns>The element at the specified index.</returns>
+	    public GorgonShaderResourceView this[int index]
+	    {
+	        get => _backingArray[index];
+	        set
+	        {
+	            if (value == _backingArray[index])
+	            {
+	                return;
+	            }
 
-			    T oldValue = BackingArray[index];
-                BackingArray[index] = value;
-				_dirtyIndices |= 1 << index;
-
-				OnItemSet(index, value, oldValue);
-			}
-		}
-        #endregion
+	            _backingArray[index] = value;
+                _changedIndices.Add(index);
+	        }
+	    }
+	    #endregion
 
         #region Methods.
-        /// <summary>
-        /// Function called when a dirty item is found and added.
-        /// </summary>
-        /// <param name="dirtyIndex">The index that is considered dirty.</param>
-        /// <param name="value">The dirty value.</param>
-	    protected virtual void OnDirtyItemAdded(int dirtyIndex, T value)
+	    /// <summary>
+	    /// Function to perform validation on this list prior to applying it.
+	    /// </summary>
+	    [Conditional("DEBUG")]
+	    internal void Validate()
 	    {
-	    }
-
-        /// <summary>
-        /// Function called when a dirty item was not found, and is removed from the dirty list.
-        /// </summary>
-        /// <param name="dirtyIndex">The index that is considered dirty.</param>
-	    protected virtual void OnDirtyItemCleaned(int dirtyIndex)
-	    {
-	    }
-
-        /// <summary>
-        /// Function called when an item is assigned to an index.
-        /// </summary>
-        /// <param name="index">The index of the item that was assigned.</param>
-        /// <param name="value">The value that was assigned.</param>
-        /// <param name="oldItem">The previous item in the slot.</param>
-        protected virtual void OnItemSet(int index, T value, T oldItem)
-		{
-		}
-
-		/// <summary>
-		/// Function called when the array is cleared.
-		/// </summary>
-		protected virtual void OnClear()
-		{
-		}
-
-		/// <summary>
-		/// Function to validate an item being assigned to a slot.
-		/// </summary>
-		protected virtual void OnValidate()
-		{
-		}
-
-		/// <summary>
-		/// Function to perform validation on this list prior to applying it.
-		/// </summary>
-		[Conditional("DEBUG")]
-		internal void Validate()
-		{
 #if DEBUG
-			OnValidate();
+	        for (int i = 0; i < _backingArray.Length; ++i)
+	        {
+	            GorgonShaderResourceView view = _backingArray[i];
+
+	            if (view == null)
+	            {
+                    continue;
+	            }
+
+	            GorgonGraphicsResource resource = view.Resource;
+	            int bindCount = _backingArray.Count(item => item == view);
+
+	            if (bindCount > 1)
+	            {
+	                throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_VIEW_ALREADY_BOUND, i));
+	            }
+
+	            bindCount = _backingArray.Count(item => ((resource != item.Resource) && (item != view)));
+
+	            if (bindCount <= 1)
+	            {
+                    continue;
+	            }
+
+	            throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_VIEW_RESOURCE_ALREADY_BOUND, resource.Name, i));
+	        }
 #endif
-		}
+	    }
 
 		/// <summary>
 		/// Function to retrieve the dirty items in this list.
@@ -175,49 +172,29 @@ namespace Gorgon.Graphics.Core
 		/// </remarks>
 		public ref readonly (int Start, int Count) GetDirtyItems(bool peek = false)
 		{
-		    int startSlot = -1;
-		    int count = 0;
-
-		    if (_dirtyIndices == 0)
+		    if (_changedIndices.Count == 0)
 		    {
 		        return ref _dirtyItems;
 		    }
 
-		    int dirtyState = _dirtyIndices;
-		    int dirtyIndex = 0;
-
-		    for (int i = 0; dirtyState != 0 && i < BackingArray.Length; ++i)
+		    int start = 0;
+		    
+            // Find the lowest start value.
+		    for (int i = 0; i < _changedIndices.Count; ++i)
 		    {
-		        int dirtyMask = 1 << i;
+		        int index = _changedIndices[i];
 
-		        if ((dirtyState & dirtyMask) != dirtyMask)
-		        {
-		            if (startSlot > -1)
-		            {
-		                OnDirtyItemCleaned(dirtyIndex++);
-		            }
-		            continue;
-		        }
-
-		        if (startSlot == -1)
-		        {
-		            startSlot = i;
-		        }
-
-                OnDirtyItemAdded(dirtyIndex++, BackingArray[i]);
-
-		        ++count;
-
-		        // Remove this bit.
-		        dirtyState &= ~dirtyMask;
+		        Native[index] = _backingArray[index]?.Native;
+		        start = index.Min(start);
 		    }
+
+		    _dirtyItems = (start, _changedIndices.Count);
 
 		    if (!peek)
 		    {
-		        _dirtyIndices = dirtyState;
+                _changedIndices.Clear();
 		    }
-
-		    _dirtyItems = (startSlot == -1 ? 0 : startSlot, count);
+            
 		    return ref _dirtyItems;
 		}
 
@@ -226,7 +203,7 @@ namespace Gorgon.Graphics.Core
 		/// <exception cref="T:System.ArgumentOutOfRangeException">
 		/// <paramref name="index" /> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1" />.</exception>
 		/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IList`1" /> is read-only.</exception>
-		void IList<T>.RemoveAt(int index)
+		void IList<GorgonShaderResourceView>.RemoveAt(int index)
 		{
 			throw new NotSupportedException();
 		}
@@ -234,7 +211,7 @@ namespace Gorgon.Graphics.Core
 		/// <summary>Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
 		/// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
 		/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</exception>
-		void ICollection<T>.Add(T item)
+		void ICollection<GorgonShaderResourceView>.Add(GorgonShaderResourceView item)
 		{
 			throw new NotSupportedException();
 		}
@@ -245,7 +222,7 @@ namespace Gorgon.Graphics.Core
 		/// <exception cref="T:System.ArgumentOutOfRangeException">
 		/// <paramref name="index" /> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1" />.</exception>
 		/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IList`1" /> is read-only.</exception>
-		void IList<T>.Insert(int index, T item)
+		void IList<GorgonShaderResourceView>.Insert(int index, GorgonShaderResourceView item)
 		{
 			throw new NotSupportedException();
 		}
@@ -254,7 +231,7 @@ namespace Gorgon.Graphics.Core
 		/// <returns>true if <paramref name="item" /> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
 		/// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
 		/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</exception>
-		bool ICollection<T>.Remove(T item)
+		bool ICollection<GorgonShaderResourceView>.Remove(GorgonShaderResourceView item)
 		{
 			throw new NotSupportedException();
 		}
@@ -262,15 +239,15 @@ namespace Gorgon.Graphics.Core
 		/// <summary>Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1" />.</summary>
 		/// <returns>The index of <paramref name="item" /> if found in the list; otherwise, -1.</returns>
 		/// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.IList`1" />.</param>
-		public int IndexOf(T item)
+		public int IndexOf(GorgonShaderResourceView item)
 		{
-			return Array.IndexOf(BackingArray, item);
+			return Array.IndexOf(_backingArray, item);
 		}
 
 		/// <summary>Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.</summary>
 		/// <returns>true if <paramref name="item" /> is found in the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false.</returns>
 		/// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
-		public bool Contains(T item)
+		public bool Contains(GorgonShaderResourceView item)
 		{
 			return IndexOf(item) != -1;
 		}
@@ -280,7 +257,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="array">The array that will receive the dirty entries.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="array"/> parameter is <b>null</b>.</exception>
-	    public void CopyDirty(GorgonArray<T> array)
+	    public void CopyDirty(GorgonShaderResourceViews array)
         {
             if (array == null)
             {
@@ -288,7 +265,7 @@ namespace Gorgon.Graphics.Core
             }
 
             // Nothing to copy.
-            if (_dirtyIndices == 0)
+            if (_changedIndices.Count == 0)
             {
                 return;
             }
@@ -303,7 +280,7 @@ namespace Gorgon.Graphics.Core
 
             for (int i = _dirtyItems.Start; i < end; ++i)
             {
-                array[i] = BackingArray[i];
+                array[i] = _backingArray[i];
             }
         }
 
@@ -315,16 +292,16 @@ namespace Gorgon.Graphics.Core
 		/// <exception cref="T:System.ArgumentOutOfRangeException">
 		/// <paramref name="arrayIndex" /> is less than 0.</exception>
 		/// <exception cref="T:System.ArgumentException">The number of elements in the source <see cref="T:System.Collections.Generic.ICollection`1" /> is greater than the available space from <paramref name="arrayIndex" /> to the end of the destination <paramref name="array" />.</exception>
-		public void CopyTo(T[] array, int arrayIndex)
+		public void CopyTo(GorgonShaderResourceView[] array, int arrayIndex)
 		{
-			BackingArray.CopyTo(array, arrayIndex);
+			_backingArray.CopyTo(array, arrayIndex);
 		}
 		
 		/// <summary>Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1" /> to an <see cref="T:System.Array" />, starting at a particular <see cref="T:System.Array" /> index.</summary>
 		/// <param name="array">The one-dimensional <see cref="T:System.Array" /> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1" />. The <see cref="T:System.Array" /> must have zero-based indexing.</param>
 		/// <param name="destIndex">[Optional] The destination index in this array to start writing into.</param>
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="array" /> is null.</exception>
-		public void CopyTo(GorgonArray<T> array, int destIndex = 0)
+		public void CopyTo(GorgonShaderResourceViews array, int destIndex = 0)
 		{
 			if (array == null)
 			{
@@ -356,23 +333,21 @@ namespace Gorgon.Graphics.Core
 		/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only. </exception>
 		public void Clear()
 		{
-		    OnClear();
-
-			Array.Clear(BackingArray, 0, BackingArray.Length);
-			
-			_dirtyIndices = 0;
+            Array.Clear(Native, 0, Native.Length);
+			Array.Clear(_backingArray, 0, _backingArray.Length);
+			_changedIndices.Clear();
 			_dirtyItems = (0, 0);
 		}
 		
 		/// <summary>Returns an enumerator that iterates through the collection.</summary>
 		/// <returns>An enumerator that can be used to iterate through the collection.</returns>
 		/// <filterpriority>1</filterpriority>
-		public IEnumerator<T> GetEnumerator()
+		public IEnumerator<GorgonShaderResourceView> GetEnumerator()
 		{
 			// ReSharper disable once ForCanBeConvertedToForeach
-			for (int i = 0; i < BackingArray.Length; ++i)
+			for (int i = 0; i < _backingArray.Length; ++i)
 			{
-				yield return BackingArray[i];
+				yield return _backingArray[i];
 			}
 		}
 
@@ -381,14 +356,14 @@ namespace Gorgon.Graphics.Core
 		/// <filterpriority>2</filterpriority>
 		IEnumerator IEnumerable.GetEnumerator()
 		{
-			return BackingArray.GetEnumerator();
+			return _backingArray.GetEnumerator();
 		}
 
 	    /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
 	    /// <param name="other">An object to compare with this object.</param>
 	    /// <returns>
 	    /// <see langword="true" /> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <see langword="false" />.</returns>
-	    public bool Equals(IReadOnlyList<T> other)
+	    public bool Equals(IReadOnlyList<GorgonShaderResourceView> other)
         {
             if (other == null)
             {
@@ -407,10 +382,7 @@ namespace Gorgon.Graphics.Core
 
             for (int i = 0; i < Length; ++i)
             {
-                T left = this[i];
-                T right = other[i];
-
-                if ((left == null) || (right == null) || (!left.Equals(right)))
+                if (_backingArray[i] != other)
                 {
                     return false;
                 }
@@ -424,7 +396,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="other">An object to compare with this object.</param>
         /// <returns><see langword="true" /> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <see langword="false" />.</returns>
-        public bool DirtyEquals(GorgonArray<T> other)
+        public bool DirtyEquals(GorgonShaderResourceViews other)
         {
             if (other == null)
             {
@@ -448,7 +420,7 @@ namespace Gorgon.Graphics.Core
             }
 
             // If the dirty state has already been updated for both arrays, then just check that.
-            if (((_dirtyIndices != 0) || (other._dirtyIndices != 0)) &&
+            if (((_changedIndices.Count != 0) || (other._changedIndices.Count != 0)) &&
                 ((_dirtyItems.Start != other._dirtyItems.Start) || (_dirtyItems.Count != other._dirtyItems.Count)))
             {
                 return false;
@@ -456,7 +428,7 @@ namespace Gorgon.Graphics.Core
 
             for (int i = _dirtyItems.Start; i < _dirtyItems.Start + _dirtyItems.Count; ++i)
             {
-                if (!BackingArray[i].Equals(other[i]))
+                if (_backingArray[i] != other[i])
                 {
                     return false;
                 }
@@ -466,23 +438,14 @@ namespace Gorgon.Graphics.Core
 
             // We have different dirty states, so this array is different than the other one.
         }
-        #endregion
+		#endregion
 
-        #region Constructor/Finalizer.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonArray{T}"/> class.
-        /// </summary>
-        /// <param name="maxSize">The maximum size.</param>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="maxSize"/> is less than 1.</exception>
-        public GorgonArray(int maxSize)
+		#region Constructor/Finalizer.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonShaderResourceViews"/> class.
+		/// </summary>
+		internal GorgonShaderResourceViews()
 		{
-		    if ((maxSize < 1) || (maxSize > 64))
-		    {
-		        throw new ArgumentOutOfRangeException(nameof(maxSize));
-		    }
-
-			BackingArray = new T[maxSize];
-		    _dirtyItems = (0, 0);
 		}
 		#endregion
 	}

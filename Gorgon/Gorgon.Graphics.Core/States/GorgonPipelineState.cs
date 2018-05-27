@@ -135,6 +135,16 @@ namespace Gorgon.Graphics.Core
 	        get;
             internal set;
         }
+
+
+	    /// <summary>
+	    /// Property to return the topology for a primitive.
+	    /// </summary>
+	    public PrimitiveType PrimitiveType
+	    {
+	        get;
+	        internal set;
+	    }
         #endregion
 
         #region Methods.
@@ -150,6 +160,7 @@ namespace Gorgon.Graphics.Core
             DomainShader = null;
             HullShader = null;
             ComputeShader = null;
+            PrimitiveType = PrimitiveType.TriangleList;
         }
         #endregion
 
@@ -167,6 +178,7 @@ namespace Gorgon.Graphics.Core
             DomainShader = state.DomainShader;
             HullShader = state.HullShader;
             ComputeShader = state.ComputeShader;
+            PrimitiveType = state.PrimitiveType;
         }
 
 		/// <summary>

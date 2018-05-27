@@ -140,6 +140,18 @@ namespace Gorgon.Graphics.Core
             return this;
         }
 
+
+        /// <summary>
+        /// Function to set primitive topology for the draw call.
+        /// </summary>
+        /// <param name="primitiveType">The type of primitive to render.</param>
+        /// <returns>The fluent builder interface.</returns>
+        public GorgonPipelineStateBuilder PrimitiveType(PrimitiveType primitiveType)
+        {
+            _workState.PrimitiveType = primitiveType;
+            return this;
+        }
+
         /// <summary>
         /// Function to reset the pipeline state to the specified state passed in to the method.
         /// </summary>
@@ -160,6 +172,7 @@ namespace Gorgon.Graphics.Core
             _workState.DomainShader = pipeState.DomainShader;
             _workState.HullShader = pipeState.HullShader;
             _workState.ComputeShader = pipeState.ComputeShader;
+            _workState.PrimitiveType = pipeState.PrimitiveType;
             
             return this;
         }
@@ -170,6 +183,7 @@ namespace Gorgon.Graphics.Core
         /// <returns>The fluent interface for the builder.</returns>
         public GorgonPipelineStateBuilder Clear()
         {
+            _workState.PrimitiveType = Core.PrimitiveType.TriangleList;
             _workState.RasterState = GorgonRasterState.Default;
             _workState.PixelShader = null;
             _workState.VertexShader = null;

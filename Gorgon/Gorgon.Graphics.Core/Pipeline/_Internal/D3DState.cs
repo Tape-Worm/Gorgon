@@ -287,6 +287,60 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
+        /// Property to set or return resource views for a pixel shader.
+        /// </summary>
+        public GorgonShaderResourceViews PsSrvs
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return resource views for a vertex shader.
+        /// </summary>
+        public GorgonShaderResourceViews VsSrvs
+        {
+            get;
+            set;
+        }
+        
+        /// <summary>
+        /// Property to set or return resource views for a geometry shader.
+        /// </summary>
+        public GorgonShaderResourceViews GsSrvs
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return resource views for a hull shader.
+        /// </summary>
+        public GorgonShaderResourceViews HsSrvs
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return resource views for a domain shader.
+        /// </summary>
+        public GorgonShaderResourceViews DsSrvs
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return resource views for a compute shader.
+        /// </summary>
+        public GorgonShaderResourceViews CsSrvs
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Property to return the current list of vertex buffers.
         /// </summary>
         public GorgonVertexBufferBindings VertexBuffers
@@ -299,15 +353,6 @@ namespace Gorgon.Graphics.Core
         /// Property to set or return the index buffer.
         /// </summary>
         public GorgonIndexBuffer IndexBuffer
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the current primitive topology.
-        /// </summary>
-        public D3D.PrimitiveTopology Topology
         {
             get;
             set;

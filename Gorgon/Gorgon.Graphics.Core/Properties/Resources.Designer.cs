@@ -897,6 +897,15 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The shader resource slot must be 0 or less than {0}..
+        /// </summary>
+        internal static string GORGFX_ERR_SRV_SLOT_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_SRV_SLOT_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The {0} has been assigned and is now in a read only state..
         /// </summary>
         internal static string GORGFX_ERR_STATE_IMMUTABLE {
@@ -1332,6 +1341,15 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The resource view at index {0} is already bound elsewhere on the pipeline..
+        /// </summary>
+        internal static string GORGFX_ERR_VIEW_ALREADY_BOUND {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_VIEW_ALREADY_BOUND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot bind the view to the resource, the resource type is not known..
         /// </summary>
         internal static string GORGFX_ERR_VIEW_CANNOT_BIND_UNKNOWN_RESOURCE {
@@ -1373,6 +1391,15 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_VIEW_NO_TYPELESS {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_VIEW_NO_TYPELESS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The resource &apos;{0}&apos; at index {1} already has a view bound elsewhere on the pipeline..
+        /// </summary>
+        internal static string GORGFX_ERR_VIEW_RESOURCE_ALREADY_BOUND {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_VIEW_RESOURCE_ALREADY_BOUND", resourceCulture);
             }
         }
         

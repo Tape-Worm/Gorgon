@@ -53,6 +53,29 @@ namespace Gorgon.Graphics.Core
 
         #region Methods.
         /// <summary>
+        /// Function to copy shader resource views.
+        /// </summary>
+        /// <param name="destStates">The destination shader resource views.</param>
+        /// <param name="srcStates">The shader resource views to copy.</param>
+        /// <param name="startSlot">The slot to start copying into.</param>
+        private static void CopySrvs(GorgonShaderResourceViews destStates, IReadOnlyList<GorgonShaderResourceView> srcStates, int startSlot)
+        {
+            destStates.Clear();
+
+            if (srcStates == null)
+            {
+                return;
+            }
+
+            int length = srcStates.Count.Min(GorgonShaderResourceViews.MaximumShaderResourceViewCount - startSlot);
+
+            for (int i = 0; i < length; ++i)
+            {
+                destStates[i + startSlot] = srcStates[i];
+            }
+        }
+
+        /// <summary>
         /// Function to copy samplers.
         /// </summary>
         /// <param name="destStates">The destination sampler states.</param>
@@ -247,17 +270,6 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Function to set primitive topology for the draw call.
-        /// </summary>
-        /// <param name="primitiveType">The type of primitive to render.</param>
-        /// <returns>The fluent builder interface.</returns>
-        public TB PrimitiveType(PrimitiveType primitiveType)
-        {
-            DrawCall.D3DState.Topology = (D3D.PrimitiveTopology)primitiveType;
-            return (TB)this;
-        }
-
-        /// <summary>
         /// Function to set a vertex buffer binding for the draw call.
         /// </summary>
         /// <param name="layout">The input layout to use.</param>
@@ -348,7 +360,7 @@ namespace Gorgon.Graphics.Core
         {
             if ((startSlot < 0) || (startSlot >= GorgonConstantBuffers.MaximumConstantBufferCount))
             {
-                throw new ArgumentOutOfRangeException(nameof(startSlot), string.Format(Resources.GORGFX_ERR_CBUFFER_SLOT_INVALID, 0));
+                throw new ArgumentOutOfRangeException(nameof(startSlot), string.Format(Resources.GORGFX_ERR_CBUFFER_SLOT_INVALID, GorgonConstantBuffers.MaximumConstantBufferCount));
             }
 
             switch (shaderType)
@@ -370,6 +382,86 @@ namespace Gorgon.Graphics.Core
                     break;
                 case ShaderType.Compute:
                     CopyConstantBuffers(DrawCall.D3DState.CsConstantBuffers, constantBuffers, startSlot);
+                    break;
+            }
+
+            return (TB)this;
+        }
+
+        /// <summary>
+        /// Function to assign a single shader resource view to the draw call.
+        /// </summary>
+        /// <param name="shaderType">The shader stage to use.</param>
+        /// <param name="resourceView">The shader resource view to assign.</param>
+        /// <param name="slot">[Optional] The slot used to asign the view.</param>
+        /// <returns>The fluent builder interface.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="slot"/> is less than 0, or greater than/equal to <see cref="GorgonShaderResourceViews.MaximumShaderResourceViewCount"/>.</exception>
+        public TB ShaderResource(ShaderType shaderType, GorgonShaderResourceView resourceView, int slot = 0)
+        {
+            if ((slot < 0) || (slot >= GorgonShaderResourceViews.MaximumShaderResourceViewCount))
+            {
+                throw new ArgumentOutOfRangeException(nameof(slot), string.Format(Resources.GORGFX_ERR_SRV_SLOT_INVALID, GorgonShaderResourceViews.MaximumShaderResourceViewCount));
+            }
+
+            switch (shaderType)
+            {
+                case ShaderType.Pixel:
+                    DrawCall.D3DState.PsSrvs[slot] = resourceView;
+                    break;
+                case ShaderType.Vertex:
+                    DrawCall.D3DState.VsSrvs[slot] = resourceView;
+                    break;
+                case ShaderType.Geometry:
+                    DrawCall.D3DState.GsSrvs[slot] = resourceView;
+                    break;
+                case ShaderType.Domain:
+                    DrawCall.D3DState.DsSrvs[slot] = resourceView;
+                    break;
+                case ShaderType.Hull:
+                    DrawCall.D3DState.HsSrvs[slot] = resourceView;
+                    break;
+                case ShaderType.Compute:
+                    DrawCall.D3DState.CsSrvs[slot] = resourceView;
+                    break;
+            }
+
+            return (TB)this;
+        }
+
+        /// <summary>
+        /// Function to assign the list of shader resource views to the draw call.
+        /// </summary>
+        /// <param name="shaderType">The shader stage to use.</param>
+        /// <param name="resourceViews">The shader resource views to copy.</param>
+        /// <param name="startSlot">[Optional] The starting slot to use when copying the list.</param>
+        /// <returns>The fluent builder interface .</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="startSlot"/> is less than 0, or greater than/equal to <see cref="GorgonShaderResourceViews.MaximumShaderResourceViewCount"/>.</exception>
+        public TB ShaderResources(ShaderType shaderType, IReadOnlyList<GorgonShaderResourceView> resourceViews, int startSlot = 0)
+        {
+            if ((startSlot < 0) || (startSlot >= GorgonShaderResourceViews.MaximumShaderResourceViewCount))
+            {
+                throw new ArgumentOutOfRangeException(nameof(startSlot), string.Format(Resources.GORGFX_ERR_SRV_SLOT_INVALID, GorgonShaderResourceViews.MaximumShaderResourceViewCount));
+            }
+
+            switch (shaderType)
+            {
+                case ShaderType.Pixel:
+                    CopySrvs(DrawCall.D3DState.PsSrvs, resourceViews, startSlot);
+                    break;
+                case ShaderType.Vertex:
+                    CopySrvs(DrawCall.D3DState.VsSrvs, resourceViews, startSlot);
+                    break;
+                case ShaderType.Geometry:
+                    CopySrvs(DrawCall.D3DState.GsSrvs, resourceViews, startSlot);
+                    break;
+                case ShaderType.Domain:
+                    CopySrvs(DrawCall.D3DState.DsSrvs, resourceViews, startSlot);
+                    break;
+                case ShaderType.Hull:
+                    CopySrvs(DrawCall.D3DState.HsSrvs, resourceViews, startSlot);
+                    break;
+                case ShaderType.Compute:
+                    CopySrvs(DrawCall.D3DState.CsSrvs, resourceViews, startSlot);
                     break;
             }
 
@@ -410,7 +502,14 @@ namespace Gorgon.Graphics.Core
             CopySamplers(final.D3DState.HsSamplers, DrawCall.D3DState.HsSamplers);
             CopySamplers(final.D3DState.CsSamplers, DrawCall.D3DState.CsSamplers);
 
-            final.D3DState.Topology = (D3D.PrimitiveTopology)DrawCall.PrimitiveType;
+            // Copy over shader resource views.
+            CopySrvs(final.D3DState.PsSrvs, DrawCall.D3DState.PsSrvs, 0);
+            CopySrvs(final.D3DState.VsSrvs, DrawCall.D3DState.VsSrvs, 0);
+            CopySrvs(final.D3DState.GsSrvs, DrawCall.D3DState.GsSrvs, 0);
+            CopySrvs(final.D3DState.DsSrvs, DrawCall.D3DState.DsSrvs, 0);
+            CopySrvs(final.D3DState.HsSrvs, DrawCall.D3DState.HsSrvs, 0);
+            CopySrvs(final.D3DState.CsSrvs, DrawCall.D3DState.CsSrvs, 0);
+
             final.D3DState.PipelineState = DrawCall.PipelineState;
 
             OnUpdate(final);
@@ -429,8 +528,6 @@ namespace Gorgon.Graphics.Core
             {
                 return Clear();
             }
-
-            DrawCall.D3DState.Topology = (D3D.PrimitiveTopology)drawCall.PrimitiveType;
             
             VertexBufferBindings(drawCall.InputLayout, drawCall.VertexBufferBindings);
 
@@ -441,7 +538,7 @@ namespace Gorgon.Graphics.Core
             ConstantBuffers(ShaderType.Domain, drawCall.D3DState.DsConstantBuffers);
             ConstantBuffers(ShaderType.Hull, drawCall.D3DState.HsConstantBuffers);
             ConstantBuffers(ShaderType.Compute, drawCall.D3DState.CsConstantBuffers);
-
+            
             SamplerStates(ShaderType.Pixel, drawCall.D3DState.PsSamplers);
             SamplerStates(ShaderType.Vertex, drawCall.D3DState.VsSamplers);
             SamplerStates(ShaderType.Geometry, drawCall.D3DState.GsSamplers);
@@ -460,7 +557,6 @@ namespace Gorgon.Graphics.Core
         /// <returns>The fluent builder interface.</returns>
         public TB Clear()
         {
-            DrawCall.D3DState.Topology = D3D.PrimitiveTopology.TriangleList;
             DrawCall.D3DState.VertexBuffers.Clear();
             
             DrawCall.D3DState.PsConstantBuffers.Clear();
@@ -476,6 +572,13 @@ namespace Gorgon.Graphics.Core
             DrawCall.D3DState.DsSamplers.Clear();
             DrawCall.D3DState.HsSamplers.Clear();
             DrawCall.D3DState.CsSamplers.Clear();
+
+            DrawCall.D3DState.PsSrvs.Clear();
+            DrawCall.D3DState.VsSrvs.Clear();
+            DrawCall.D3DState.GsSrvs.Clear();
+            DrawCall.D3DState.DsSrvs.Clear();
+            DrawCall.D3DState.HsSrvs.Clear();
+            DrawCall.D3DState.CsSrvs.Clear();
 
             DrawCall.D3DState.PipelineState.Clear();
 
@@ -496,7 +599,6 @@ namespace Gorgon.Graphics.Core
             drawCall.SetupViews();
             DrawCall.D3DState.VertexBuffers = new GorgonVertexBufferBindings();
             DrawCall.D3DState.PipelineState = new GorgonPipelineState();
-            DrawCall.D3DState.Topology = D3D.PrimitiveTopology.TriangleList;
         }
         #endregion
     }

@@ -29,10 +29,9 @@ using Gorgon.Collections;
 namespace Gorgon.Graphics.Core
 {
     /// <summary>
-    /// A grouping of states for a shader.
+    /// A grouping of resource states for a shader.
     /// </summary>
-    public sealed class ShaderStates<T>
-        where T : GorgonShader
+    public sealed class ShaderResource
     {
         #region Properties.
         /// <summary>
@@ -52,13 +51,22 @@ namespace Gorgon.Graphics.Core
             get;
             internal set;
         }
+
+        /// <summary>
+        /// Property to return the list of shader resources for the shader.
+        /// </summary>
+        public IGorgonReadOnlyArray<GorgonShaderResourceView> ShaderResources
+        {
+            get;
+            internal set;
+        }
         #endregion
 
         #region Constructor.
         /// <summary>
-        /// Initializes a new instance of the <see cref="ShaderStates{T}"/> class.
+        /// Initializes a new instance of the <see cref="ShaderResource"/> class.
         /// </summary>
-        internal ShaderStates()
+        internal ShaderResource()
         {
         }
         #endregion

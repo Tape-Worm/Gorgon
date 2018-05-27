@@ -60,15 +60,15 @@ namespace Gorgon.Graphics.Core
 		    Native = null;
             base.Dispose();
 		}
-		#endregion
+        #endregion
 
-		#region Constructor/Finalizer.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonShaderResourceView"/> class.
-		/// </summary>
-		/// <param name="resource">The resource to bind to the view.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="resource"/> parameter is <b>null</b>.</exception>
-		protected GorgonShaderResourceView(GorgonGraphicsResource resource)
+        #region Constructor/Finalizer.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonShaderResourceView"/> class.
+        /// </summary>
+        /// <param name="resource">The resource to bind to the view.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="resource"/> parameter is <b>null</b>.</exception>
+        protected GorgonShaderResourceView(GorgonGraphicsResource resource)
             : base(resource)
 		{
 		}

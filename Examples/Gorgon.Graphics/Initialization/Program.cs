@@ -261,6 +261,7 @@ namespace Gorgon.Graphics.Example
 	    private static GorgonIndexBuffer _iBuffer;
 	    private static GorgonConstantBufferView _cBuffer;
 	    private static GorgonTexture2DView _texture;
+	    private static GorgonTexture2DView _texture2;
 	    private static GorgonDrawIndexCall _drawCall;
 	    private static GorgonDrawIndexCall _drawCall2;
         private static DX.Matrix _projMatrix = DX.Matrix.Identity;
@@ -276,7 +277,7 @@ namespace Gorgon.Graphics.Example
             
             _cBuffer.Buffer.SetData(ref wProj);
 
-	        _graphics.DoStuff(_texture);
+	        _graphics.DoStuff();
 
             _graphics.Submit(_drawCall2);
 
@@ -298,6 +299,7 @@ namespace Gorgon.Graphics.Example
 	    private static void TestInit()
 	    {
             _texture = GorgonTexture2DView.FromFile(_graphics, @"..\..\..\..\..\Resources\Textures\MiniTri\Gorgon.MiniTri.png", new GorgonCodecPng());
+	        _texture2 = GorgonTexture2DView.FromFile(_graphics, @"..\..\..\..\..\Resources\Textures\GlassCube\Glass.png", new GorgonCodecPng());
 	        using (StreamReader reader = new StreamReader(@"..\..\..\..\..\Gorgon\Gorgon.Graphics.Core\Resources\GraphicsShaders.hlsl"))
 	        {
 	            string shaderCode = reader.ReadToEnd();
@@ -364,10 +366,11 @@ namespace Gorgon.Graphics.Example
 
 	        _drawCall = builder.VertexBuffer(_layout, _vbBinding)
 	                           .IndexBuffer(_iBuffer, 0, 3)
-	                           .PrimitiveType(PrimitiveType.TriangleList)
 	                           .ConstantBuffer(ShaderType.Vertex, _cBuffer)
 	                           .SamplerState(ShaderType.Pixel, sampleBuilder.Filter(SampleFilter.MinMagMipPoint))
+	                           .ShaderResource(ShaderType.Pixel, _texture)
 	                           .PipelineState(psoBuilder
+	                                          .PrimitiveType(PrimitiveType.TriangleList)
 	                                          .PixelShader(_pShader)
 	                                          .VertexShader(_vShader)
 	                                          .RasterState(rsBuilder.CullMode(CullingMode.None)
@@ -376,10 +379,11 @@ namespace Gorgon.Graphics.Example
 
 	        _drawCall2 = builder.VertexBuffer(_layout, _vbBinding)
 	                            .IndexBuffer(_iBuffer, 0, 3)
-	                            .PrimitiveType(PrimitiveType.TriangleList)
 	                            .ConstantBuffer(ShaderType.Vertex, _cBuffer)
+	                            .ShaderResource(ShaderType.Pixel, _texture)
 	                            .SamplerState(ShaderType.Pixel, sampleBuilder.Filter(SampleFilter.MinMagMipPoint))
-	                            .PipelineState(psoBuilder.PixelShader(_pShader2)
+	                            .PipelineState(psoBuilder.PrimitiveType(PrimitiveType.TriangleList)
+	                                                     .PixelShader(_pShader2)
 	                                                     .VertexShader(_vShader)
 	                                                     .RasterState(rsBuilder.Clear()
 	                                                                           .CullMode(CullingMode.Front)))
