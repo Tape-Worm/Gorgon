@@ -600,4 +600,10 @@ Current binding: [{0}]</value>
   <data name="GORGFX_ERR_INVALID_SAMPLER_INDEX" xml:space="preserve">
     <value>The sampler index must be 0 or less than {1}.</value>
   </data>
+  <data name="GORGFX_ERR_CBUFFER_SLOT_INVALID" xml:space="preserve">
+    <value>The constant buffer slot must be 0 or less than {0}.</value>
+  </data>
+  <data name="GORGFX_ERR_SCISSOR_INDEX_INVALID" xml:space="preserve">
+    <value>The scissor index must be 0 or less than 16.</value>
+  </data>
 </root>

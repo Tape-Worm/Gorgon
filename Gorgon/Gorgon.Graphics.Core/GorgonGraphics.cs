@@ -156,6 +156,9 @@ namespace Gorgon.Graphics.Core
         // The viewports used to define the area to render into.
         private readonly DX.ViewportF[] _viewports = new DX.ViewportF[16];
 
+        // The viewports used to define the area to render into.
+        private DX.Rectangle[] _scissors = new DX.Rectangle[1];
+
         // The flag used to determine if a render target and/or depth/stencil is updated.
         private (bool RtvsChanged, bool DepthViewChanged) _isTargetUpdated;
 
@@ -165,13 +168,7 @@ namespace Gorgon.Graphics.Core
         private readonly D3DState _lastState = new D3DState
                                                {
                                                    Topology = D3D.PrimitiveTopology.Undefined,
-                                                   PipelineState = new GorgonPipelineState
-                                                                   {
-                                                                       PixelShader = new ShaderStates<GorgonPixelShader>
-                                                                                     {
-                                                                                         RwSamplers = new GorgonSamplerStates()
-                                                                                     }
-                                                                   }
+                                                   PipelineState = new GorgonPipelineState()
                                                };
 
         // A cache for holding vertex bindings.
@@ -400,7 +397,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="shaderStage">The shader stage to use.</param>
         /// <param name="samplers">The samplers to apply.</param>
-        private static void SetSamplers(D3D11.CommonShaderStage shaderStage, GorgonSamplerStates samplers)
+        private static void BindSamplers(D3D11.CommonShaderStage shaderStage, GorgonSamplerStates samplers)
         {
             if (samplers == null)
             {
@@ -411,6 +408,65 @@ namespace Gorgon.Graphics.Core
             (int start, int count) = samplers.GetDirtyItems();
 
             shaderStage.SetSamplers(start, count, samplers.Native);
+        }
+
+
+        /// <summary>
+        /// Function to set the current list of scissor rectangles.
+        /// </summary>
+        /// <param name="rectangles">The list of scissor rectangles to apply.</param>
+        private void SetScissors(IReadOnlyList<DX.Rectangle> rectangles)
+        {
+            if ((rectangles == null) || (rectangles.Count == 0))
+            {
+                D3DDeviceContext.Rasterizer.SetScissorRectangles((DX.Rectangle[])null);
+                return;
+            }
+
+            if (_scissors.Length != rectangles.Count)
+            {
+                _scissors = new DX.Rectangle[rectangles.Count];
+            }
+
+            for (int i = 0; i < rectangles.Count; ++i)
+            {
+                _scissors[i] = rectangles[i];
+            }
+
+            D3DDeviceContext.Rasterizer.SetScissorRectangles(_scissors);
+        }
+
+        /// <summary>
+        /// Function to compare the two list of scissor rectangle lists for equality.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        private bool CompareScissorRects(IReadOnlyList<DX.Rectangle> left, IReadOnlyList<DX.Rectangle> right)
+        {
+            if (left == right)
+            {
+                return true;
+            }
+
+            if (((left == null) && (right != null)) || (left == null))
+            {
+                return false;
+            }
+
+            if (left.Count != right.Count)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < left.Count; ++i)
+            {
+                if (!left[i].Equals(right[i]))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -430,22 +486,39 @@ namespace Gorgon.Graphics.Core
                 D3DDeviceContext.Rasterizer.State = currentState.D3DRasterState;
             }
 
-            if ((changes & DrawCallChanges.PixelShader) == DrawCallChanges.PixelShader)
+            if ((changes & DrawCallChanges.Scissors) == DrawCallChanges.Scissors)
             {
-                D3DDeviceContext.PixelShader.Set(currentState.PixelShader.Current?.NativeShader);
+                SetScissors(currentState.RasterState.ScissorRectangles);
             }
 
-            // Perform pixel shader state updates.
-            DrawCallChanges psSampler = (DrawCallChanges.PixelShaderMask | DrawCallChanges.Samplers);
-            DrawCallChanges vsSampler = (DrawCallChanges.VertexShaderMask | DrawCallChanges.Samplers);
-            DrawCallChanges gsSampler = (DrawCallChanges.GeometryShaderMask | DrawCallChanges.Samplers);
-            DrawCallChanges hsSampler = (DrawCallChanges.HullShaderMask | DrawCallChanges.Samplers);
-            DrawCallChanges dsSampler = (DrawCallChanges.DomainShaderMask | DrawCallChanges.Samplers);
-            DrawCallChanges csSampler = (DrawCallChanges.ComputeShaderMask | DrawCallChanges.Samplers);
-
-            if ((changes & psSampler) == psSampler)
+            if ((changes & DrawCallChanges.PixelShader) == DrawCallChanges.PixelShader)
             {
-                SetSamplers(D3DDeviceContext.PixelShader, currentState.PixelShader.RwSamplers);
+                D3DDeviceContext.PixelShader.Set(currentState.PixelShader?.NativeShader);
+            }
+
+            if ((changes & DrawCallChanges.VertexShader) == DrawCallChanges.VertexShader)
+            {
+                D3DDeviceContext.VertexShader.Set(currentState.VertexShader?.NativeShader);
+            }
+
+            if ((changes & DrawCallChanges.GeometryShader) == DrawCallChanges.GeometryShader)
+            {
+                D3DDeviceContext.GeometryShader.Set(currentState.GeometryShader?.NativeShader);
+            }
+
+            if ((changes & DrawCallChanges.DomainShader) == DrawCallChanges.DomainShader)
+            {
+                D3DDeviceContext.DomainShader.Set(currentState.DomainShader?.NativeShader);
+            }
+
+            if ((changes & DrawCallChanges.HullShader) == DrawCallChanges.HullShader)
+            {
+                D3DDeviceContext.HullShader.Set(currentState.HullShader?.NativeShader);
+            }
+
+            if ((changes & DrawCallChanges.ComputeShader) == DrawCallChanges.ComputeShader)
+            {
+                D3DDeviceContext.ComputeShader.Set(currentState.ComputeShader?.NativeShader);
             }
         }
 
@@ -464,19 +537,100 @@ namespace Gorgon.Graphics.Core
                 _lastState.PipelineState.D3DRasterState = currentState.D3DRasterState;
             }
 
-            if (ChangeBuilder(lastState.PixelShader.Current == currentState.PixelShader.Current, DrawCallChanges.PixelShader, ref changes))
+            if (ChangeBuilder(CompareScissorRects(lastState.RasterState?.ScissorRectangles, currentState.RasterState.ScissorRectangles), DrawCallChanges.Scissors, ref changes))
             {
-                _lastState.PipelineState.PixelShader.Current = currentState.PixelShader.Current;
+                _lastState.PipelineState.RasterState = currentState.RasterState;
             }
 
-            if (ChangeBuilder(currentState.PixelShader.RwSamplers.DirtyEquals(lastState.PixelShader.RwSamplers),
-                              DrawCallChanges.PixelShaderMask | DrawCallChanges.Samplers,
-                              ref changes))
+            if (ChangeBuilder(lastState.VertexShader == currentState.VertexShader, DrawCallChanges.VertexShader, ref changes))
             {
-                lastState.PixelShader.RwSamplers = currentState.PixelShader.RwSamplers;
+                _lastState.PipelineState.VertexShader = currentState.VertexShader;
+            }
+
+            if (ChangeBuilder(lastState.PixelShader == currentState.PixelShader, DrawCallChanges.PixelShader, ref changes))
+            {
+                _lastState.PipelineState.PixelShader = currentState.PixelShader;
+            }
+
+            if (ChangeBuilder(lastState.GeometryShader == currentState.GeometryShader, DrawCallChanges.GeometryShader, ref changes))
+            {
+                _lastState.PipelineState.GeometryShader = currentState.GeometryShader;
+            }
+
+            if (ChangeBuilder(lastState.DomainShader == currentState.DomainShader, DrawCallChanges.DomainShader, ref changes))
+            {
+                _lastState.PipelineState.DomainShader = currentState.DomainShader;
+            }
+
+            if (ChangeBuilder(lastState.HullShader == currentState.HullShader, DrawCallChanges.HullShader, ref changes))
+            {
+                _lastState.PipelineState.HullShader = currentState.HullShader;
+            }
+
+            if (ChangeBuilder(lastState.ComputeShader == currentState.ComputeShader, DrawCallChanges.ComputeShader, ref changes))
+            {
+                _lastState.PipelineState.ComputeShader = currentState.ComputeShader;
             }
 
             return changes;
+        }
+
+        /// <summary>
+        /// Function to bind the constant buffers to a specific shader stage.
+        /// </summary>
+        /// <param name="shaderType">The shader stage.</param>
+        /// <param name="constantBuffers">The constant buffers to bind.</param>
+        private void BindConstantBuffers(ShaderType shaderType, GorgonConstantBuffers constantBuffers)
+        {
+            if (constantBuffers == null)
+            {
+                switch (shaderType)
+                {
+                    case ShaderType.Vertex:
+                        D3DDeviceContext.VSSetConstantBuffers1(0, 0, (D3D11.Buffer[])null, null, null);
+                        break;
+                    case ShaderType.Pixel:
+                        D3DDeviceContext.PSSetConstantBuffers1(0, 0, (D3D11.Buffer[])null, null, null);
+                        break;
+                    case ShaderType.Geometry:
+                        D3DDeviceContext.GSSetConstantBuffers1(0, 0, (D3D11.Buffer[])null, null, null);
+                        break;
+                    case ShaderType.Domain:
+                        D3DDeviceContext.DSSetConstantBuffers1(0, 0, (D3D11.Buffer[])null, null, null);
+                        break;
+                    case ShaderType.Hull:
+                        D3DDeviceContext.HSSetConstantBuffers1(0, 0, (D3D11.Buffer[])null, null, null);
+                        break;
+                    case ShaderType.Compute:
+                        D3DDeviceContext.CSSetConstantBuffers1(0, 0, (D3D11.Buffer[])null, null, null);
+                        break;
+                }
+                return;
+            }
+
+            (int start, int count) = constantBuffers.GetDirtyItems();
+            
+            switch (shaderType)
+            {
+                case ShaderType.Vertex:
+                    D3DDeviceContext.VSSetConstantBuffers1(start, count, constantBuffers.Native, constantBuffers.ViewStart, constantBuffers.ViewCount);
+                    break;
+                case ShaderType.Pixel:
+                    D3DDeviceContext.PSSetConstantBuffers1(start, count, constantBuffers.Native, constantBuffers.ViewStart, constantBuffers.ViewCount);
+                    break;
+                case ShaderType.Geometry:
+                    D3DDeviceContext.GSSetConstantBuffers1(start, count, constantBuffers.Native, constantBuffers.ViewStart, constantBuffers.ViewCount);
+                    break;
+                case ShaderType.Domain:
+                    D3DDeviceContext.DSSetConstantBuffers1(start, count, constantBuffers.Native, constantBuffers.ViewStart, constantBuffers.ViewCount);
+                    break;
+                case ShaderType.Hull:
+                    D3DDeviceContext.HSSetConstantBuffers1(start, count, constantBuffers.Native, constantBuffers.ViewStart, constantBuffers.ViewCount);
+                    break;
+                case ShaderType.Compute:
+                    D3DDeviceContext.CSSetConstantBuffers1(start, count, constantBuffers.Native, constantBuffers.ViewStart, constantBuffers.ViewCount);
+                    break;
+            }
         }
 
         /// <summary>
@@ -509,6 +663,82 @@ namespace Gorgon.Graphics.Core
             {
                 BindIndexBuffer(_lastState.IndexBuffer);
             }
+
+            // Perform pixel shader state updates.
+            DrawCallChanges psSampler = (DrawCallChanges.PixelShaderMask | DrawCallChanges.Samplers);
+            DrawCallChanges vsSampler = (DrawCallChanges.VertexShaderMask | DrawCallChanges.Samplers);
+            DrawCallChanges gsSampler = (DrawCallChanges.GeometryShaderMask | DrawCallChanges.Samplers);
+            DrawCallChanges hsSampler = (DrawCallChanges.HullShaderMask | DrawCallChanges.Samplers);
+            DrawCallChanges dsSampler = (DrawCallChanges.DomainShaderMask | DrawCallChanges.Samplers);
+            DrawCallChanges csSampler = (DrawCallChanges.ComputeShaderMask | DrawCallChanges.Samplers);
+
+            if ((resourceChanges & psSampler) == psSampler)
+            {
+                BindSamplers(D3DDeviceContext.PixelShader, _lastState.PsSamplers);
+            }
+
+            if ((resourceChanges & vsSampler) == vsSampler)
+            {
+                BindSamplers(D3DDeviceContext.VertexShader, _lastState.VsSamplers);
+            }
+
+            if ((resourceChanges & gsSampler) == gsSampler)
+            {
+                BindSamplers(D3DDeviceContext.GeometryShader, _lastState.GsSamplers);
+            }
+
+            if ((resourceChanges & dsSampler) == dsSampler)
+            {
+                BindSamplers(D3DDeviceContext.DomainShader, _lastState.DsSamplers);
+            }
+
+            if ((resourceChanges & hsSampler) == hsSampler)
+            {
+                BindSamplers(D3DDeviceContext.HullShader, _lastState.HsSamplers);
+            }
+
+            if ((resourceChanges & csSampler) == csSampler)
+            {
+                BindSamplers(D3DDeviceContext.ComputeShader, _lastState.CsSamplers);
+            }
+
+            DrawCallChanges psConstants = DrawCallChanges.PixelShaderMask | DrawCallChanges.Constants;
+            DrawCallChanges vsConstants = DrawCallChanges.VertexShaderMask | DrawCallChanges.Constants;
+            DrawCallChanges gsConstants = DrawCallChanges.GeometryShaderMask | DrawCallChanges.Constants;
+            DrawCallChanges dsConstants = DrawCallChanges.DomainShaderMask | DrawCallChanges.Constants;
+            DrawCallChanges hsConstants = DrawCallChanges.HullShaderMask | DrawCallChanges.Constants;
+            DrawCallChanges csConstants = DrawCallChanges.ComputeShaderMask | DrawCallChanges.Constants;
+
+
+            if ((resourceChanges & vsConstants) == vsConstants)
+            {
+                BindConstantBuffers(ShaderType.Vertex, _lastState.VsConstantBuffers);
+            }
+
+            if ((resourceChanges & psConstants) == psConstants)
+            {
+                BindConstantBuffers(ShaderType.Pixel, _lastState.PsConstantBuffers);
+            }
+
+            if ((resourceChanges & gsConstants) == gsConstants)
+            {
+                BindConstantBuffers(ShaderType.Geometry, _lastState.GsConstantBuffers);
+            }
+
+            if ((resourceChanges & dsConstants) == dsConstants)
+            {
+                BindConstantBuffers(ShaderType.Domain, _lastState.DsConstantBuffers);
+            }
+
+            if ((resourceChanges & hsConstants) == hsConstants)
+            {
+                BindConstantBuffers(ShaderType.Hull, _lastState.HsConstantBuffers);
+            }
+
+            if ((resourceChanges & csConstants) == csConstants)
+            {
+                BindConstantBuffers(ShaderType.Compute, _lastState.CsConstantBuffers);
+            }
         }
 
         /// <summary>
@@ -539,6 +769,102 @@ namespace Gorgon.Graphics.Core
             if (ChangeBuilder(_lastState.Topology == currentState.Topology, DrawCallChanges.Topology, ref changes))
             {
                 _lastState.Topology = currentState.Topology;
+            }
+
+            if (ChangeBuilder(currentState.PsSamplers.DirtyEquals(_lastState.PsSamplers),
+                              DrawCallChanges.PixelShaderMask | DrawCallChanges.Samplers,
+                              ref changes))
+            {
+                Debug.Assert(currentState.PsSamplers != null, "PixelShader samplers is null - This is not allowed.");
+                _lastState.PsSamplers = currentState.PsSamplers;
+            }
+
+            if (ChangeBuilder(currentState.VsSamplers.DirtyEquals(_lastState.VsSamplers),
+                              DrawCallChanges.VertexShaderMask | DrawCallChanges.Samplers,
+                              ref changes))
+            {
+                Debug.Assert(currentState.VsSamplers != null, "VertexShader samplers is null - This is not allowed.");
+                _lastState.VsSamplers = currentState.VsSamplers;
+            }
+
+            if (ChangeBuilder(currentState.GsSamplers.DirtyEquals(_lastState.GsSamplers),
+                              DrawCallChanges.GeometryShaderMask | DrawCallChanges.Samplers,
+                              ref changes))
+            {
+                Debug.Assert(currentState.GsSamplers != null, "GeometryShader samplers is null - This is not allowed.");
+                _lastState.GsSamplers = currentState.GsSamplers;
+            }
+
+            if (ChangeBuilder(currentState.DsSamplers.DirtyEquals(_lastState.DsSamplers),
+                              DrawCallChanges.DomainShaderMask | DrawCallChanges.Samplers,
+                              ref changes))
+            {
+                Debug.Assert(currentState.DsSamplers != null, "DomainShader samplers is null - This is not allowed.");
+                _lastState.DsSamplers = currentState.DsSamplers;
+            }
+
+            if (ChangeBuilder(currentState.HsSamplers.DirtyEquals(_lastState.HsSamplers),
+                              DrawCallChanges.HullShaderMask | DrawCallChanges.Samplers,
+                              ref changes))
+            {
+                Debug.Assert(currentState.HsSamplers != null, "HullShader samplers is null - This is not allowed.");
+                _lastState.HsSamplers = currentState.HsSamplers;
+            }
+
+            if (ChangeBuilder(currentState.CsSamplers.DirtyEquals(_lastState.CsSamplers),
+                              DrawCallChanges.ComputeShaderMask | DrawCallChanges.Samplers,
+                              ref changes))
+            {
+                Debug.Assert(currentState.CsSamplers != null, "ComputeShader samplers is null - This is not allowed.");
+                _lastState.CsSamplers = currentState.CsSamplers;
+            }
+
+            if (ChangeBuilder(currentState.VsConstantBuffers.DirtyEquals(_lastState.VsConstantBuffers),
+                              DrawCallChanges.VertexShaderMask | DrawCallChanges.Constants,
+                              ref changes))
+            {
+                Debug.Assert(currentState.VsConstantBuffers != null, "VertexShader constants is null - This is now allowed.");
+                _lastState.VsConstantBuffers = currentState.VsConstantBuffers;
+            }
+
+            if (ChangeBuilder(currentState.PsConstantBuffers.DirtyEquals(_lastState.PsConstantBuffers),
+                              DrawCallChanges.VertexShaderMask | DrawCallChanges.Constants,
+                              ref changes))
+            {
+                Debug.Assert(currentState.PsConstantBuffers != null, "PixelShader constants is null - This is now allowed.");
+                _lastState.PsConstantBuffers = currentState.PsConstantBuffers;
+            }
+
+            if (ChangeBuilder(currentState.GsConstantBuffers.DirtyEquals(_lastState.GsConstantBuffers),
+                              DrawCallChanges.GeometryShaderMask | DrawCallChanges.Constants,
+                              ref changes))
+            {
+                Debug.Assert(currentState.GsConstantBuffers != null, "GeometryShader constants is null - This is now allowed.");
+                _lastState.GsConstantBuffers = currentState.GsConstantBuffers;
+            }
+
+            if (ChangeBuilder(currentState.DsConstantBuffers.DirtyEquals(_lastState.DsConstantBuffers),
+                              DrawCallChanges.DomainShaderMask | DrawCallChanges.Constants,
+                              ref changes))
+            {
+                Debug.Assert(currentState.DsConstantBuffers != null, "DomainShader constants is null - This is now allowed.");
+                _lastState.DsConstantBuffers = currentState.DsConstantBuffers;
+            }
+
+            if (ChangeBuilder(currentState.HsConstantBuffers.DirtyEquals(_lastState.HsConstantBuffers),
+                              DrawCallChanges.HullShaderMask | DrawCallChanges.Constants,
+                              ref changes))
+            {
+                Debug.Assert(currentState.HsConstantBuffers != null, "HullShader constants is null - This is now allowed.");
+                _lastState.HsConstantBuffers = currentState.HsConstantBuffers;
+            }
+
+            if (ChangeBuilder(currentState.HsConstantBuffers.DirtyEquals(_lastState.CsConstantBuffers),
+                              DrawCallChanges.ComputeShaderMask | DrawCallChanges.Constants,
+                              ref changes))
+            {
+                Debug.Assert(currentState.CsConstantBuffers != null, "ComputeShader constants is null - This is now allowed.");
+                _lastState.CsConstantBuffers = currentState.CsConstantBuffers;
             }
 
             return changes;
@@ -829,6 +1155,26 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
+        /// Function clear the binding state for render target resources.
+        /// </summary>
+        /// <param name="start">The starting index.</param>
+        /// <param name="count">The number of items.</param>
+        private void ClearRenderTargetBindings(int start, int count)
+        {
+            for (int i = start; i < count; ++i)
+            {
+                ref GorgonRenderTargetView view = ref _renderTargets[i];
+
+                if (view != null)
+                {
+                    view.Resource.BindState = BindState.None;
+                }
+
+                view = null;
+            }
+        }
+
+        /// <summary>
         /// Function to assign the render targets.
         /// </summary>
         /// <param name="rtvCount">The number of render targets to update.</param>
@@ -854,11 +1200,24 @@ namespace Gorgon.Graphics.Core
             {
                 for (int i = 0; i < rtvCount; ++i)
                 {
+                    GorgonRenderTargetView view = _renderTargets[i];
+
                     _d3DRtvs[i] = _renderTargets[i]?.Native;
+
+                    if (view != null)
+                    {
+                        _renderTargets[i].Resource.BindState = BindState.Rtv;
+                    }
                 }
             }
 
             D3DDeviceContext.OutputMerger.SetTargets(DepthStencilView?.Native, rtvCount, _d3DRtvs);
+
+            if (DepthStencilView != null)
+            {
+                DepthStencilView.Texture.BindState = BindState.Dsv;
+            }
+
             _isTargetUpdated = (false, false);
         }
 
@@ -1020,11 +1379,24 @@ namespace Gorgon.Graphics.Core
             Array.Clear(_renderTargets, 0, _renderTargets.Length);
             Array.Clear(_viewports, 0, _viewports.Length);
             Array.Clear(_vertexBindingCache, 0, _vertexBindingCache.Length);
-
+            Array.Clear(_scissors, 0, _scissors.Length);
+            
             _lastState.VertexBuffers = null;
             _lastState.IndexBuffer = null;
             _lastState.Topology = D3D.PrimitiveTopology.Undefined;
-            _lastState.PipelineState = null;
+            _lastState.PipelineState.Clear();
+            _lastState.PsSamplers = null;
+            _lastState.VsSamplers = null;
+            _lastState.GsSamplers = null;
+            _lastState.DsSamplers = null;
+            _lastState.HsSamplers = null;
+            _lastState.CsSamplers = null;
+            _lastState.VsConstantBuffers = null;
+            _lastState.PsConstantBuffers = null;
+            _lastState.GsConstantBuffers = null;
+            _lastState.DsConstantBuffers = null;
+            _lastState.HsConstantBuffers = null;
+            _lastState.CsConstantBuffers = null;
         }
 
         /// <summary>
@@ -1064,7 +1436,7 @@ namespace Gorgon.Graphics.Core
 
             if (_isTargetUpdated.RtvsChanged)
             {
-                Array.Clear(_renderTargets, 1, _renderTargets.Length - 1);
+                ClearRenderTargetBindings(1, _renderTargets.Length);
                 _renderTargets[0] = renderTarget;
 
                 DX.ViewportF viewport = default;
@@ -1118,7 +1490,13 @@ namespace Gorgon.Graphics.Core
             if ((renderTargets == null)
                 || (renderTargets.Length == 0))
             {
-                Array.Clear(_renderTargets, 0, _renderTargets.Length);
+                ClearRenderTargetBindings(0, _renderTargets.Length);
+
+                if (DepthStencilView != null)
+                {
+                    DepthStencilView.Texture.BindState = BindState.None;
+                }
+
                 DepthStencilView = depthStencil;
                 SetRenderTargetAndDepthViews(0);
                 return;
@@ -1128,12 +1506,19 @@ namespace Gorgon.Graphics.Core
 
             for (int i = 0; i < rtvCount; ++i)
             {
-                if (_renderTargets[i] == renderTargets[i])
+                ref GorgonRenderTargetView view = ref _renderTargets[i];
+
+                if (view == renderTargets[i])
                 {
                     continue;
                 }
-                
-                _renderTargets[i] = renderTargets[i];
+
+                if (view != null)
+                {
+                    view.Resource.BindState = BindState.None;
+                }
+
+                view = renderTargets[i];
                 _isTargetUpdated = (true, depthStencil != DepthStencilView);
             }
 
@@ -1146,7 +1531,7 @@ namespace Gorgon.Graphics.Core
             {
                 if (rtvCount < _renderTargets.Length)
                 {
-                    Array.Clear(_renderTargets, rtvCount, _renderTargets.Length - rtvCount);
+                    ClearRenderTargetBindings(rtvCount, _renderTargets.Length);
                 }
 
                 DX.ViewportF viewport = default;
@@ -1157,6 +1542,11 @@ namespace Gorgon.Graphics.Core
                 }
 
                 SetViewport(ref viewport);
+            }
+
+            if (DepthStencilView != null)
+            {
+                DepthStencilView.Resource.BindState = BindState.None;
             }
 
             DepthStencilView = depthStencil;
@@ -1403,16 +1793,14 @@ namespace Gorgon.Graphics.Core
         private bool _stateSet;
 
         [Obsolete("This method is here to set up native functionality not yet available to the core library.")]
-        public void DoStuff(GorgonVertexShader vShader, GorgonConstantBuffer vsCb, GorgonTexture2DView texture)
+        public void DoStuff(GorgonTexture2DView texture)
         {
             if (!_stateSet)
             {
                 D3DDeviceContext.OutputMerger.DepthStencilState = dState;
                 D3DDeviceContext.OutputMerger.BlendState = bState;
-
-                D3DDeviceContext.VertexShader.Set(vShader.NativeShader);
+                
                 D3DDeviceContext.PixelShader.SetShaderResource(0, texture.Native);
-                D3DDeviceContext.VertexShader.SetConstantBuffer(0, vsCb.Native);
                 _stateSet = true;
             }
         }

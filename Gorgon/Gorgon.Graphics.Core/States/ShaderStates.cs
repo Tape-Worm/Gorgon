@@ -36,103 +36,21 @@ namespace Gorgon.Graphics.Core
     {
         #region Properties.
         /// <summary>
-        /// Property to return the sampler states as a read/write property.
+        /// Property to return the samplers for the shader.
         /// </summary>
-        internal GorgonSamplerStates RwSamplers
-        {
-            get; 
-            set;
-        } = new GorgonSamplerStates();
-
-        /// <summary>
-        /// Property to return the currently active shader.
-        /// </summary>
-        public T Current
+        public IGorgonReadOnlyArray<GorgonSamplerState> Samplers
         {
             get;
             internal set;
         }
 
         /// <summary>
-        /// Property to return the samplers for the shader.
+        /// Property to return the constant buffers for the shader.
         /// </summary>
-        public IGorgonReadOnlyArray<GorgonSamplerState> Samplers => RwSamplers;
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to copy the shader states into another shader state.
-        /// </summary>
-        /// <param name="states">The states to copy.</param>
-        internal void CopyTo(ShaderStates<T> states)
+        public IGorgonReadOnlyArray<GorgonConstantBufferView> ConstantBuffers
         {
-            states.Current = Current;
-            RwSamplers.CopyTo(states.RwSamplers);
-        }
-
-        /// <summary>
-        /// Function to clear the state.
-        /// </summary>
-        internal void Clear()
-        {
-            Current = null;
-            RwSamplers.Clear();
-        }
-
-        /// <summary>
-        /// Function to update the sampler list with a single sampler.
-        /// </summary>
-        /// <param name="sampler">The sampler to assign.</param>
-        /// <param name="slot">The slot for the sampler.</param>
-        internal void UpdateSampler(GorgonSamplerState sampler, int slot)
-        {
-            if (RwSamplers[slot]?.Equals(sampler) ?? false)
-            {
-                return;
-            }
-
-            RwSamplers.Clear();
-            RwSamplers[slot] = sampler;
-        }
-
-        /// <summary>
-        /// Function to update the sampler list.
-        /// </summary>
-        /// <param name="samplers">The samplers to copy.</param>
-        internal void UpdateSamplersByRef(GorgonSamplerStates samplers)
-        {
-            if (samplers == null)
-            {
-                RwSamplers.Clear();
-                return;
-            }
-
-            RwSamplers = samplers;
-        }
-
-        /// <summary>
-        /// Function to update the sampler list.
-        /// </summary>
-        /// <param name="samplers">The samplers to copy.</param>
-        internal void UpdateSamplers(IGorgonReadOnlyArray<GorgonSamplerState> samplers)
-        {
-            if (samplers == null)
-            {
-                RwSamplers.Clear();
-                return;
-            }
-
-            (int start, int count) = samplers.GetDirtyItems();
-            
-            for (int i = start; i < start + count; ++i)
-            {
-                if (RwSamplers[i]?.Equals(samplers[i]) ?? false)
-                {
-                    continue;
-                }
-
-                RwSamplers[i] = samplers[i];
-            }
+            get;
+            internal set;
         }
         #endregion
 
@@ -142,7 +60,6 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         internal ShaderStates()
         {
-            // We need to create this through a builder.
         }
         #endregion
     }

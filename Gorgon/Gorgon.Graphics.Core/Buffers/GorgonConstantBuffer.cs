@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using D3D11 = SharpDX.Direct3D11;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -108,7 +109,7 @@ namespace Gorgon.Graphics.Core
 		// The information used to create the buffer.
 		private readonly GorgonConstantBufferInfo _info;
 	    // A cache of unordered access views for the buffer.
-	    private readonly Dictionary<BufferShaderViewKey, GorgonConstantBufferView> _cbvs = new Dictionary<BufferShaderViewKey, GorgonConstantBufferView>();
+	    private Dictionary<BufferShaderViewKey, GorgonConstantBufferView> _cbvs = new Dictionary<BufferShaderViewKey, GorgonConstantBufferView>();
         #endregion
 
         #region Properties.
@@ -206,13 +207,20 @@ namespace Gorgon.Graphics.Core
 	    /// </remarks>
 	    public override void Dispose()
 	    {
-            // Clean up the cached views.
-	        foreach (KeyValuePair<BufferShaderViewKey, GorgonConstantBufferView> cbv in _cbvs)
+	        Dictionary<BufferShaderViewKey, GorgonConstantBufferView> cbvs = Interlocked.Exchange(ref _cbvs, null);
+
+	        if (cbvs == null)
+	        {
+                base.Dispose();
+                return;
+	        }
+
+	        // Clean up the cached views.
+	        foreach (KeyValuePair<BufferShaderViewKey, GorgonConstantBufferView> cbv in cbvs)
 	        {
 	            cbv.Value.Dispose();
 	        }
-
-            _cbvs.Clear();
+	        
 	        base.Dispose();
 	    }
 

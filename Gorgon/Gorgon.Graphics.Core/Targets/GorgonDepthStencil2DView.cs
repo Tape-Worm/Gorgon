@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Math;
@@ -80,36 +79,33 @@ namespace Gorgon.Graphics.Core
     /// </remarks>
     /// <seealso cref="GorgonTexture2D"/>
     public sealed class GorgonDepthStencil2DView
-        : IDisposable, IGorgonTexture2DInfo, IGorgonGraphicsObject
+        : GorgonResourceView, IGorgonTexture2DInfo
     {
 		#region Variables.
-        // The texture linked to the view.
-        private GorgonTexture2D _texture;
-        // The D3D11 depth stencil view.
-        private D3D11.DepthStencilView _view;
         // Clear rectangles.
         private RawRectangle[] _clearRects;
-        // Flag to indicate that the view owns the texture resource.
-        private bool _ownsTexture;
 		#endregion
 
 		#region Properties.
         /// <summary>
-        /// Property to return the Direct3D depth/stencil view.
+        /// Property to return the native D3D depth/stencil view.
         /// </summary>
-        internal D3D11.DepthStencilView Native => _view;
-
-        /// <summary>
-        /// Property to return whether this object is disposed or not.
-        /// </summary>
-        public bool IsDisposed => _view == null;
+        internal D3D11.DepthStencilView Native
+        {
+            get;
+            private set;
+        }
 
         /// <summary>
         /// Property to return the texture bound to this view.
         /// </summary>
-        public GorgonTexture2D Texture => _texture;
+        public GorgonTexture2D Texture
+        {
+            get;
+            private set;
+        }
 
-		/// <summary>
+        /// <summary>
 		/// Property to return the format for this view.
 		/// </summary>
 		public BufferFormat Format
@@ -236,19 +232,9 @@ namespace Gorgon.Graphics.Core
         public GorgonMultisampleInfo MultisampleInfo => Texture?.MultisampleInfo ?? GorgonMultisampleInfo.NoMultiSampling;
 
         /// <summary>
-        /// Property to return the intended usage flags for the texture.
-        /// </summary>
-        public ResourceUsage Usage => Texture?.Usage ?? ResourceUsage.Default;
-
-        /// <summary>
         /// Property to return the flags to determine how the texture will be bound with the pipeline when rendering.
         /// </summary>
         public TextureBinding Binding => Texture?.Binding ?? TextureBinding.None;
-
-        /// <summary>
-        /// Property to return the graphics interface that built the texture.
-        /// </summary>
-        public GorgonGraphics Graphics => Texture?.Graphics;
         #endregion
 
         #region Methods.
@@ -291,10 +277,10 @@ namespace Gorgon.Graphics.Core
 			};
 		}
 
-		/// <summary>
+        /// <summary>
 		/// Function to perform initialization of the view.
 		/// </summary>
-		internal void CreateNativeView()
+		private protected override D3D11.ResourceView OnCreateNativeView()
 		{
 			D3D11.DepthStencilViewDescription desc = GetDesc2D();
 
@@ -303,12 +289,12 @@ namespace Gorgon.Graphics.Core
 		    Graphics.Log.Print($"Depth/Stencil View '{Texture.Name}': {Texture.ResourceType} -> Mip slice: {MipSlice}, Array Index: {ArrayIndex}, Array Count: {ArrayCount}",
 					   LoggingLevel.Verbose);
 
-		    _view = new D3D11.DepthStencilView(Texture.Graphics.D3DDevice, Texture.D3DResource, desc)
-		            {
-		                DebugName = $"'{Texture.Name}'_D3D11DepthStencilView1_2D"
-		            };
+		    Native = new D3D11.DepthStencilView(Texture.Graphics.D3DDevice, Texture.D3DResource, desc)
+		             {
+		                 DebugName = $"'{Texture.Name}'_D3D11DepthStencilView1_2D"
+		             };
 
-            this.RegisterDisposable(Texture.Graphics);
+		    return Native;
 		}
 
 		/// <summary>
@@ -336,7 +322,7 @@ namespace Gorgon.Graphics.Core
 				clearFlags |= D3D11.DepthStencilClearFlags.Stencil;
 			}
 
-			Texture.Graphics.D3DDeviceContext.ClearDepthStencilView(Native, clearFlags, depthValue, stencilValue);
+            Texture.Graphics.D3DDeviceContext.ClearDepthStencilView(Native, clearFlags, depthValue, stencilValue);
 		}
 
 		/// <summary>
@@ -413,7 +399,7 @@ namespace Gorgon.Graphics.Core
                 _clearRects[i] = rectangles[i];
             }
 
-            Texture.Graphics.D3DDeviceContext.ClearView(_view, new DX.Color4(depthValue), _clearRects, rectangles.Length);
+            Texture.Graphics.D3DDeviceContext.ClearView(Native, new DX.Color4(depthValue), _clearRects, rectangles.Length);
         }
 
         /// <summary>
@@ -506,7 +492,7 @@ namespace Gorgon.Graphics.Core
 
             var texture = new GorgonTexture2D(graphics, newInfo);
             GorgonDepthStencil2DView result = texture.GetDepthStencilView(depthStencilFormat, flags: viewFlags);
-            result._ownsTexture = true;
+            result.OwnsResource = true;
 
             return result;
         }
@@ -514,27 +500,10 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
-        public void Dispose()
+        public override void Dispose()
         {
-            D3D11.DepthStencilView view = Interlocked.Exchange(ref _view, null);
-
-            if (view == null)
-            {
-                return;
-            }
-
-            this.UnregisterDisposable(Texture.Graphics);
-
-            if (_ownsTexture)
-            {
-                Graphics.Log.Print($"Depth/Stencil View '{Texture.Name}': Releasing D3D11 texture because it owns it.", LoggingLevel.Simple);
-
-                GorgonTexture2D texture = Interlocked.Exchange(ref _texture, null);
-                texture?.Dispose();
-            }
-		    
-            Graphics.Log.Print($"Destroying depth/stencil view for {Texture.Name}.", LoggingLevel.Simple);
-			view.Dispose();
+            Texture = null;
+            base.Dispose();
 		}
 		#endregion
 
@@ -557,8 +526,9 @@ namespace Gorgon.Graphics.Core
 		                              int firstArrayIndex,
 		                              int arrayCount,
 		                              DepthStencilViewFlags flags)
+            : base(texture)
 		{
-		    _texture = texture ?? throw new ArgumentNullException(nameof(texture));
+		    Texture = texture ?? throw new ArgumentNullException(nameof(texture));
 		    Format = format;
 		    FormatInformation = formatInfo ?? throw new ArgumentNullException(nameof(formatInfo));
 

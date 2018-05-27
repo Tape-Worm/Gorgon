@@ -291,6 +291,15 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The constant buffer slot must be 0 or less than {0}..
+        /// </summary>
+        internal static string GORGFX_ERR_CBUFFER_SLOT_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_CBUFFER_SLOT_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot bind the &apos;{0}&apos; resource as a render target because it is already bound as an unordered access view at slot {1}..
         /// </summary>
         internal static string GORGFX_ERR_CONFLICT_RTV_UAV {
@@ -821,6 +830,15 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_RTV_UNSUPPORTED_RESOURCE {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_RTV_UNSUPPORTED_RESOURCE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The scissor index must be 0 or less than 16..
+        /// </summary>
+        internal static string GORGFX_ERR_SCISSOR_INDEX_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_SCISSOR_INDEX_INVALID", resourceCulture);
             }
         }
         

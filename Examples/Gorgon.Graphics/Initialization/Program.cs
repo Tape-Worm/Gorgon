@@ -255,10 +255,11 @@ namespace Gorgon.Graphics.Example
 
 	    private static GorgonVertexShader _vShader;
 	    private static GorgonPixelShader _pShader;
+	    private static GorgonPixelShader _pShader2;
 	    private static GorgonInputLayout _layout;
 	    private static GorgonVertexBufferBinding _vbBinding;
 	    private static GorgonIndexBuffer _iBuffer;
-	    private static GorgonConstantBuffer _cBuffer;
+	    private static GorgonConstantBufferView _cBuffer;
 	    private static GorgonTexture2DView _texture;
 	    private static GorgonDrawIndexCall _drawCall;
 	    private static GorgonDrawIndexCall _drawCall2;
@@ -270,21 +271,21 @@ namespace Gorgon.Graphics.Example
 	    private static void TestDrawing()
 	    {
 	        DX.Matrix.RotationY(_yRot.ToRadians(), out _worldMatrix);
-            _worldMatrix.Row4 = new DX.Vector4(0, 0, 1.0f, 1.0f);
+            _worldMatrix.Row4 = new DX.Vector4(0.5f, 0, 1.0f, 1.0f);
 	        DX.Matrix.Multiply(ref _worldMatrix, ref _projMatrix, out DX.Matrix wProj);
             
-            _cBuffer.SetData(ref wProj);
+            _cBuffer.Buffer.SetData(ref wProj);
 
-	        _graphics.DoStuff(_vShader, _cBuffer, _texture);
-
-            _graphics.Submit(_drawCall);
-
-	        _worldMatrix.Row4 = new DX.Vector4(0.5f, 0, 1.0f, 1.0f);
-	        DX.Matrix.Multiply(ref _worldMatrix, ref _projMatrix, out wProj);
-
-	        _cBuffer.SetData(ref wProj);
+	        _graphics.DoStuff(_texture);
 
             _graphics.Submit(_drawCall2);
+
+	        _worldMatrix.Row4 = new DX.Vector4(0, 0, 1.0f, 1.0f);
+	        DX.Matrix.Multiply(ref _worldMatrix, ref _projMatrix, out wProj);
+
+	        _cBuffer.Buffer.SetData(ref wProj);
+
+            _graphics.Submit(_drawCall);
 
 	        _yRot += GorgonTiming.Delta * 45.0f;
 
@@ -302,16 +303,11 @@ namespace Gorgon.Graphics.Example
 	            string shaderCode = reader.ReadToEnd();
 	            _vShader = GorgonShaderFactory.Compile<GorgonVertexShader>(_graphics, shaderCode, "GorgonBltVertexShader", true);
 	            _pShader = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics, shaderCode, "GorgonBltPixelShader", true);
+	            _pShader2 = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics, shaderCode, "GorgonBltPixelShaderBwTest", true);
 	        }
 
-            _cBuffer = new GorgonConstantBuffer(_graphics, new GorgonConstantBufferInfo
-                                                           {
-                                                               Usage = ResourceUsage.Default,
-                                                               SizeInBytes = Unsafe.SizeOf<DX.Matrix>()
-                                                           });
-
 	        DX.Matrix.PerspectiveFovLH((65.0f).ToRadians(), (float)_swap.Width / _swap.Height, 0.125f, 1000.0f, out _projMatrix);
-	        _cBuffer.SetData(ref _projMatrix);
+            _cBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics, ref _projMatrix);
 
 	        _layout = GorgonInputLayout.CreateUsingType<BltVertex>(_graphics, _vShader);
 
@@ -369,18 +365,24 @@ namespace Gorgon.Graphics.Example
 	        _drawCall = builder.VertexBuffer(_layout, _vbBinding)
 	                           .IndexBuffer(_iBuffer, 0, 3)
 	                           .PrimitiveType(PrimitiveType.TriangleList)
+	                           .ConstantBuffer(ShaderType.Vertex, _cBuffer)
+	                           .SamplerState(ShaderType.Pixel, sampleBuilder.Filter(SampleFilter.MinMagMipPoint))
 	                           .PipelineState(psoBuilder
 	                                          .PixelShader(_pShader)
-	                                          .RasterState(rsBuilder.CullMode(CullingMode.None))
-	                                          .SamplerState(ShaderType.Pixel, sampleBuilder.Filter(SampleFilter.MinMagMipPoint)))
+	                                          .VertexShader(_vShader)
+	                                          .RasterState(rsBuilder.CullMode(CullingMode.None)
+	                                                                .ScissorRectangle(new DX.Rectangle(160, 120, 320, 240))))
 	                           .Build();
 
 	        _drawCall2 = builder.VertexBuffer(_layout, _vbBinding)
 	                            .IndexBuffer(_iBuffer, 0, 3)
 	                            .PrimitiveType(PrimitiveType.TriangleList)
-	                            .PipelineState(psoBuilder.PixelShader(_pShader)
-	                                                     .RasterState(rsBuilder.CullMode(CullingMode.Front))
-	                                                     .SamplerState(ShaderType.Pixel, sampleBuilder.Filter(SampleFilter.MinMagMipPoint)))
+	                            .ConstantBuffer(ShaderType.Vertex, _cBuffer)
+	                            .SamplerState(ShaderType.Pixel, sampleBuilder.Filter(SampleFilter.MinMagMipPoint))
+	                            .PipelineState(psoBuilder.PixelShader(_pShader2)
+	                                                     .VertexShader(_vShader)
+	                                                     .RasterState(rsBuilder.Clear()
+	                                                                           .CullMode(CullingMode.Front)))
 	                            .Build();
 
             _graphics.DoInit();

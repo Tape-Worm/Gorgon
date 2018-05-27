@@ -57,52 +57,94 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         Topology = 0x8,
         /// <summary>
-        /// The rasterizer state was modified.
+        /// The vertex shader was changed.
         /// </summary>
-        RasterState = 0x40,
+        VertexShader = 0x10,
         /// <summary>
         /// The pixel shader was changed.
         /// </summary>
-        PixelShader = 0x80,
+        PixelShader = 0x20,
         /// <summary>
-        /// Sampler state has changed, combined with <see cref="PixelShaderMask"/>.
+        /// The geometry shader was changed.
+        /// </summary>
+        GeometryShader = 0x40,
+        /// <summary>
+        /// The domain shader was changed.
+        /// </summary>
+        DomainShader = 0x80,
+        /// <summary>
+        /// The hull shader was changed.
+        /// </summary>
+        HullShader = 0x100,
+        /// <summary>
+        /// The compute shader was changed.
+        /// </summary>
+        ComputeShader = 0x200,
+        /// <summary>
+        /// The rasterizer state was modified.
+        /// </summary>
+        RasterState = 0x400,
+        /// <summary>
+        /// The depth/stencil state was modified.
+        /// </summary>
+        DepthStencilState = 0x800,
+        /// <summary>
+        /// The blend state was modified.
+        /// </summary>
+        BlendState = 0x1000,
+        /// <summary>
+        /// Scissor rectangles were modified.
+        /// </summary>
+        Scissors = 0x2000,
+        /// <summary>
+        /// Sampler state has changed, combined with one of the shader mask values.
         /// </summary>
         Samplers = 0x0100_0000,
         /// <summary>
+        /// Constant buffers have changed, combined with one of the shader mask values.
+        /// </summary>
+        Constants = 0x0200_0000,
+        /// <summary>
+        /// Resource views have changed, combined with one of the shader mask values.
+        /// </summary>
+        ResourceViews = 0x0400_0000,
+        /// <summary>
         /// Mask for pixel shader states.
         /// </summary>
-        PixelShaderMask = 0x1FF_0000_0000_0000,
+        PixelShaderMask = 0x100_0000_0000_0000,
         /// <summary>
         /// Mask for vertex shader states.
         /// </summary>
-        VertexShaderMask = 0x2FF_0000_0000_0000,
+        VertexShaderMask = 0x200_0000_0000_0000,
         /// <summary>
         /// Mask for geometry shader states.
         /// </summary>
-        GeometryShaderMask = 0x3FF_0000_0000_0000,
+        GeometryShaderMask = 0x400_0000_0000_0000,
         /// <summary>
         /// Mask for hull shader states.
         /// </summary>
-        HullShaderMask = 0x4FF_0000_0000_0000,
+        HullShaderMask = 0x800_0000_0000_0000,
         /// <summary>
         /// Mask for domain shader states.
         /// </summary>
-        DomainShaderMask = 0x5FF_0000_0000_0000,
+        DomainShaderMask = 0x1000_0000_0000_0000,
         /// <summary>
         /// Mask for compute shader states.
         /// </summary>
-        ComputeShaderMask = 0x6FF_0000_0000_0000,
+        ComputeShaderMask = 0x2000_0000_0000_0000,
         /// <summary>
         /// All pipeline states.
         /// </summary>
         AllPipelineState = RasterState 
-                           | PixelShader  
-                           | (PixelShaderMask | Samplers) 
-                           | (VertexShaderMask | Samplers) 
-                           | (GeometryShaderMask | Samplers) 
-                           | (HullShaderMask | Samplers) 
-                           | (DomainShaderMask | Samplers) 
-                           | (ComputeShaderMask | Samplers),
+                           | DepthStencilState
+                           | BlendState
+                           | PixelShader
+                           | VertexShader
+                           | GeometryShader
+                           | DomainShader
+                           | HullShader
+                           | ComputeShader
+                           | Scissors,
         /// <summary>
         /// Everything changed.
         /// </summary>
@@ -110,6 +152,24 @@ namespace Gorgon.Graphics.Core
               | InputLayout 
               | IndexBuffer 
               | Topology 
+              | (PixelShaderMask | Samplers) 
+              | (VertexShaderMask | Samplers) 
+              | (GeometryShaderMask | Samplers) 
+              | (HullShaderMask | Samplers) 
+              | (DomainShaderMask | Samplers) 
+              | (ComputeShaderMask | Samplers)
+              | (PixelShaderMask | Constants) 
+              | (VertexShaderMask | Constants) 
+              | (GeometryShaderMask | Constants) 
+              | (HullShaderMask | Constants) 
+              | (DomainShaderMask | Constants) 
+              | (ComputeShaderMask | Constants)
+              | (PixelShaderMask | ResourceViews) 
+              | (VertexShaderMask | ResourceViews) 
+              | (GeometryShaderMask | ResourceViews) 
+              | (HullShaderMask | ResourceViews) 
+              | (DomainShaderMask | ResourceViews) 
+              | (ComputeShaderMask | ResourceViews)
               | AllPipelineState
     }
 
@@ -118,6 +178,114 @@ namespace Gorgon.Graphics.Core
     /// </summary>
     class D3DState
     {
+        /// <summary>
+        /// Property to return the pixel shader sampler states.
+        /// </summary>
+        public GorgonSamplerStates PsSamplers
+        {
+            get; 
+            set;
+        }
+
+        /// <summary>
+        /// Property to return the vertex shader sampler states.
+        /// </summary>
+        public GorgonSamplerStates VsSamplers
+        {
+            get; 
+            set;
+        }
+
+        /// <summary>
+        /// Property to return the geometry shader sampler states.
+        /// </summary>
+        public GorgonSamplerStates GsSamplers
+        {
+            get; 
+            set;
+        }
+
+        /// <summary>
+        /// Property to return the domain shader sampler states.
+        /// </summary>
+        public GorgonSamplerStates DsSamplers
+        {
+            get; 
+            set;
+        }
+
+        /// <summary>
+        /// Property to return the hull shader sampler states.
+        /// </summary>
+        public GorgonSamplerStates HsSamplers
+        {
+            get; 
+            set;
+        }
+
+        /// <summary>
+        /// Property to return the compute shader sampler states.
+        /// </summary>
+        public GorgonSamplerStates CsSamplers
+        {
+            get; 
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return constant buffers for a pixel shader.
+        /// </summary>
+        public GorgonConstantBuffers PsConstantBuffers
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return constant buffers for a vertex shader.
+        /// </summary>
+        public GorgonConstantBuffers VsConstantBuffers
+        {
+            get;
+            set;
+        }
+        
+        /// <summary>
+        /// Property to set or return constant buffers for a geometry shader.
+        /// </summary>
+        public GorgonConstantBuffers GsConstantBuffers
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return constant buffers for a hull shader.
+        /// </summary>
+        public GorgonConstantBuffers HsConstantBuffers
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return constant buffers for a domain shader.
+        /// </summary>
+        public GorgonConstantBuffers DsConstantBuffers
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return constant buffers for a compute shader.
+        /// </summary>
+        public GorgonConstantBuffers CsConstantBuffers
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// Property to return the current list of vertex buffers.
         /// </summary>

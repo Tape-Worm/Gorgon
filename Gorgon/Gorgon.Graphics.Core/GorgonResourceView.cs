@@ -98,8 +98,6 @@ namespace Gorgon.Graphics.Core
         {
             _view = OnCreateNativeView();
             Debug.Assert(_view != null, "No view was created.");
-
-            this.RegisterDisposable(Graphics);
         }
 
         /// <summary>
@@ -114,8 +112,6 @@ namespace Gorgon.Graphics.Core
             {
                 return;
             }
-
-            this.UnregisterDisposable(Graphics);
             
             if (resource != null)
             {

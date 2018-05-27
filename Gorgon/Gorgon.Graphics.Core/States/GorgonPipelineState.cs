@@ -24,65 +24,10 @@
 // 
 #endregion
 
-using System;
-using Gorgon.Diagnostics;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
 {
-	/// <summary>
-	/// Flags to indicate what part of the pipeline has been modified within a <see cref="GorgonPipelineState"/>.
-	/// </summary>
-	[Flags]
-	internal enum PipelineStateChange
-		: ulong
-	{
-		/// <summary>
-		/// No state has been modified.
-		/// </summary>
-		None = 0,
-		/// <summary>
-		/// The vertex shader state has been modified.
-		/// </summary>
-		VertexShader = 0x1,
-		/// <summary>
-		/// The pixel shader state has been modified.
-		/// </summary>
-		PixelShader = 0x2,
-		/// <summary>
-		/// The geometry shader state has been modified.
-		/// </summary>
-		GeometryShader = 0x4,
-		/// <summary>
-		/// The hull shader state has been modified.
-		/// </summary>
-		HullShader = 0x8,
-		/// <summary>
-		/// The domain shader state has been modified.
-		/// </summary>
-		DomainShader = 0x10,
-		/// <summary>
-		/// The compute shader state has been modified.
-		/// </summary>
-		ComputeShader = 0x20,
-		/// <summary>
-		/// The rasterizer state was modified.
-		/// </summary>
-		RasterState = 0x40,
-		/// <summary>
-		/// The depth/stencil state has been updated.
-		/// </summary>
-		DepthStencilState = 0x80,
-		/// <summary>
-		/// The blending state has been updated.
-		/// </summary>
-		BlendState = 0x100,
-		/// <summary>
-		/// All states have changed.
-		/// </summary>
-		All = VertexShader | PixelShader | GeometryShader | HullShader | DomainShader | ComputeShader | RasterState | BlendState | DepthStencilState
-	}
-
 	/// <summary>
 	/// A pipeline state object used to set up the complete graphics pipeline for Gorgon.
 	/// </summary>
@@ -127,6 +72,60 @@ namespace Gorgon.Graphics.Core
 	        get;
 	        internal set;
 	    } = int.MinValue;
+
+        /// <summary>
+        /// Property to return the pixel shader.
+        /// </summary>
+	    public GorgonPixelShader PixelShader
+	    {
+	        get;
+	        internal set;
+	    }
+
+	    /// <summary>
+	    /// Property to return the vertex shader.
+	    /// </summary>
+	    public GorgonVertexShader VertexShader
+	    {
+	        get;
+	        internal set;
+	    }
+
+	    /// <summary>
+	    /// Property to return the geometry shader.
+	    /// </summary>
+	    public GorgonGeometryShader GeometryShader
+	    {
+	        get;
+	        internal set;
+	    }
+
+	    /// <summary>
+	    /// Property to return the domain shader.
+	    /// </summary>
+	    public GorgonDomainShader DomainShader
+	    {
+	        get;
+	        internal set;
+	    }
+
+	    /// <summary>
+	    /// Property to return the hull shader.
+	    /// </summary>
+	    public GorgonHullShader HullShader
+	    {
+	        get;
+	        internal set;
+	    }
+
+	    /// <summary>
+	    /// Property to return the compute shader.
+	    /// </summary>
+	    public GorgonComputeShader ComputeShader
+	    {
+	        get;
+	        internal set;
+	    }
         
         /// <summary>
         /// Property to return the rasterizer state for the pipeline.
@@ -136,14 +135,21 @@ namespace Gorgon.Graphics.Core
 	        get;
             internal set;
         }
+        #endregion
 
+        #region Methods.
         /// <summary>
-        /// Property to return the states for the pixel shader.
+        /// Function to clear the pipeline state.
         /// </summary>
-	    public ShaderStates<GorgonPixelShader> PixelShader
-	    {
-	        get;
-            internal set;
+	    internal void Clear()
+        {
+            RasterState = null;
+            PixelShader = null;
+            VertexShader = null;
+            GeometryShader = null;
+            DomainShader = null;
+            HullShader = null;
+            ComputeShader = null;
         }
         #endregion
 
@@ -155,11 +161,12 @@ namespace Gorgon.Graphics.Core
         internal GorgonPipelineState(GorgonPipelineState state)
         {
             RasterState = state.RasterState;
-            PixelShader = new ShaderStates<GorgonPixelShader>
-                          {
-                              Current = state.PixelShader.Current
-                          };
-            state.PixelShader.RwSamplers.CopyTo(PixelShader.RwSamplers);
+            PixelShader = state.PixelShader;
+            VertexShader = state.VertexShader;
+            GeometryShader = state.GeometryShader;
+            DomainShader = state.DomainShader;
+            HullShader = state.HullShader;
+            ComputeShader = state.ComputeShader;
         }
 
 		/// <summary>
