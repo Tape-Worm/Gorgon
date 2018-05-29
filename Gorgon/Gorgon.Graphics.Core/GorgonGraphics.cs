@@ -622,6 +622,21 @@ namespace Gorgon.Graphics.Core
             }
 
             (int start, int count) = constantBuffers.GetDirtyItems();
+
+            // Ensure that we pick up changes to the constant buffers view range.
+            for (int i = 0; i < count; ++i)
+            {
+                GorgonConstantBufferView view = constantBuffers[i + start];
+
+                if (!view.ViewAdjusted)
+                {
+                    continue;
+                }
+
+                view.ViewAdjusted = false;
+                constantBuffers.ViewStart[i] = view.StartElement * 16;
+                constantBuffers.ViewCount[i] = (view.ElementCount + 15) & ~15;
+            }
             
             switch (shaderType)
             {
@@ -730,116 +745,92 @@ namespace Gorgon.Graphics.Core
                 BindIndexBuffer(_lastState.IndexBuffer);
             }
 
-            // Perform pixel shader state updates.
-            DrawCallChanges psSampler = (DrawCallChanges.PixelShaderMask | DrawCallChanges.Samplers);
-            DrawCallChanges vsSampler = (DrawCallChanges.VertexShaderMask | DrawCallChanges.Samplers);
-            DrawCallChanges gsSampler = (DrawCallChanges.GeometryShaderMask | DrawCallChanges.Samplers);
-            DrawCallChanges hsSampler = (DrawCallChanges.HullShaderMask | DrawCallChanges.Samplers);
-            DrawCallChanges dsSampler = (DrawCallChanges.DomainShaderMask | DrawCallChanges.Samplers);
-            DrawCallChanges csSampler = (DrawCallChanges.ComputeShaderMask | DrawCallChanges.Samplers);
-
-            if ((resourceChanges & psSampler) == psSampler)
+            if ((resourceChanges & DrawCallChanges.PsSamplers) == DrawCallChanges.PsSamplers)
             {
                 BindSamplers(D3DDeviceContext.PixelShader, _lastState.PsSamplers);
             }
 
-            if ((resourceChanges & vsSampler) == vsSampler)
+            if ((resourceChanges & DrawCallChanges.VsSamplers) == DrawCallChanges.VsSamplers)
             {
                 BindSamplers(D3DDeviceContext.VertexShader, _lastState.VsSamplers);
             }
 
-            if ((resourceChanges & gsSampler) == gsSampler)
+            if ((resourceChanges & DrawCallChanges.GsSamplers) == DrawCallChanges.GsSamplers)
             {
                 BindSamplers(D3DDeviceContext.GeometryShader, _lastState.GsSamplers);
             }
 
-            if ((resourceChanges & dsSampler) == dsSampler)
+            if ((resourceChanges & DrawCallChanges.DsSamplers) == DrawCallChanges.DsSamplers)
             {
                 BindSamplers(D3DDeviceContext.DomainShader, _lastState.DsSamplers);
             }
 
-            if ((resourceChanges & hsSampler) == hsSampler)
+            if ((resourceChanges & DrawCallChanges.HsSamplers) == DrawCallChanges.HsSamplers)
             {
                 BindSamplers(D3DDeviceContext.HullShader, _lastState.HsSamplers);
             }
 
-            if ((resourceChanges & csSampler) == csSampler)
+            if ((resourceChanges & DrawCallChanges.CsSamplers) == DrawCallChanges.CsSamplers)
             {
                 BindSamplers(D3DDeviceContext.ComputeShader, _lastState.CsSamplers);
             }
 
-            DrawCallChanges psConstants = DrawCallChanges.PixelShaderMask | DrawCallChanges.Constants;
-            DrawCallChanges vsConstants = DrawCallChanges.VertexShaderMask | DrawCallChanges.Constants;
-            DrawCallChanges gsConstants = DrawCallChanges.GeometryShaderMask | DrawCallChanges.Constants;
-            DrawCallChanges dsConstants = DrawCallChanges.DomainShaderMask | DrawCallChanges.Constants;
-            DrawCallChanges hsConstants = DrawCallChanges.HullShaderMask | DrawCallChanges.Constants;
-            DrawCallChanges csConstants = DrawCallChanges.ComputeShaderMask | DrawCallChanges.Constants;
-
-
-            if ((resourceChanges & vsConstants) == vsConstants)
+            if ((resourceChanges & DrawCallChanges.VsConstants) == DrawCallChanges.VsConstants)
             {
                 BindConstantBuffers(ShaderType.Vertex, _lastState.VsConstantBuffers);
             }
 
-            if ((resourceChanges & psConstants) == psConstants)
+            if ((resourceChanges & DrawCallChanges.PsConstants) == DrawCallChanges.PsConstants)
             {
                 BindConstantBuffers(ShaderType.Pixel, _lastState.PsConstantBuffers);
             }
 
-            if ((resourceChanges & gsConstants) == gsConstants)
+            if ((resourceChanges & DrawCallChanges.GsConstants) == DrawCallChanges.GsConstants)
             {
                 BindConstantBuffers(ShaderType.Geometry, _lastState.GsConstantBuffers);
             }
 
-            if ((resourceChanges & dsConstants) == dsConstants)
+            if ((resourceChanges & DrawCallChanges.DsConstants) == DrawCallChanges.DsConstants)
             {
                 BindConstantBuffers(ShaderType.Domain, _lastState.DsConstantBuffers);
             }
 
-            if ((resourceChanges & hsConstants) == hsConstants)
+            if ((resourceChanges & DrawCallChanges.HsConstants) == DrawCallChanges.HsConstants)
             {
                 BindConstantBuffers(ShaderType.Hull, _lastState.HsConstantBuffers);
             }
 
-            if ((resourceChanges & csConstants) == csConstants)
+            if ((resourceChanges & DrawCallChanges.CsConstants) == DrawCallChanges.CsConstants)
             {
                 BindConstantBuffers(ShaderType.Compute, _lastState.CsConstantBuffers);
             }
 
-            DrawCallChanges psSrvs = DrawCallChanges.PixelShaderMask | DrawCallChanges.ResourceViews;
-            DrawCallChanges vsSrvs = DrawCallChanges.VertexShaderMask | DrawCallChanges.ResourceViews;
-            DrawCallChanges gsSrvs = DrawCallChanges.GeometryShaderMask | DrawCallChanges.ResourceViews;
-            DrawCallChanges dsSrvs = DrawCallChanges.DomainShaderMask | DrawCallChanges.ResourceViews;
-            DrawCallChanges hsSrvs = DrawCallChanges.HullShaderMask | DrawCallChanges.ResourceViews;
-            DrawCallChanges csSrvs = DrawCallChanges.ComputeShaderMask | DrawCallChanges.ResourceViews;
-
-
-            if ((resourceChanges & vsSrvs) == vsSrvs)
+            if ((resourceChanges & DrawCallChanges.VsResourceViews) == DrawCallChanges.VsResourceViews)
             {
                 BindSrvs(ShaderType.Vertex, _lastState.VsSrvs);
             }
 
-            if ((resourceChanges & psSrvs) == psSrvs)
+            if ((resourceChanges & DrawCallChanges.PsResourceViews) == DrawCallChanges.PsResourceViews)
             {
                 BindSrvs(ShaderType.Pixel, _lastState.PsSrvs);
             }
 
-            if ((resourceChanges & gsSrvs) == gsSrvs)
+            if ((resourceChanges & DrawCallChanges.GsResourceViews) == DrawCallChanges.GsResourceViews)
             {
                 BindSrvs(ShaderType.Geometry, _lastState.GsSrvs);
             }
 
-            if ((resourceChanges & dsSrvs) == dsSrvs)
+            if ((resourceChanges & DrawCallChanges.DsResourceViews) == DrawCallChanges.DsResourceViews)
             {
                 BindSrvs(ShaderType.Domain, _lastState.DsSrvs);
             }
 
-            if ((resourceChanges & hsSrvs) == hsSrvs)
+            if ((resourceChanges & DrawCallChanges.HsResourceViews) == DrawCallChanges.HsResourceViews)
             {
                 BindSrvs(ShaderType.Hull, _lastState.HsSrvs);
             }
 
-            if ((resourceChanges & csSrvs) == csSrvs)
+            if ((resourceChanges & DrawCallChanges.CsResourceViews) == DrawCallChanges.CsResourceViews)
             {
                 BindSrvs(ShaderType.Compute, _lastState.CsSrvs);
             }
@@ -871,7 +862,7 @@ namespace Gorgon.Graphics.Core
             }
 
             if (ChangeBuilder(currentState.PsSamplers.DirtyEquals(_lastState.PsSamplers),
-                              DrawCallChanges.PixelShaderMask | DrawCallChanges.Samplers,
+                              DrawCallChanges.PsSamplers,
                               ref changes))
             {
                 Debug.Assert(currentState.PsSamplers != null, "PixelShader samplers is null - This is not allowed.");
@@ -879,7 +870,7 @@ namespace Gorgon.Graphics.Core
             }
 
             if (ChangeBuilder(currentState.VsSamplers.DirtyEquals(_lastState.VsSamplers),
-                              DrawCallChanges.VertexShaderMask | DrawCallChanges.Samplers,
+                              DrawCallChanges.VsSamplers,
                               ref changes))
             {
                 Debug.Assert(currentState.VsSamplers != null, "VertexShader samplers is null - This is not allowed.");
@@ -887,7 +878,7 @@ namespace Gorgon.Graphics.Core
             }
 
             if (ChangeBuilder(currentState.GsSamplers.DirtyEquals(_lastState.GsSamplers),
-                              DrawCallChanges.GeometryShaderMask | DrawCallChanges.Samplers,
+                              DrawCallChanges.GsSamplers,
                               ref changes))
             {
                 Debug.Assert(currentState.GsSamplers != null, "GeometryShader samplers is null - This is not allowed.");
@@ -895,7 +886,7 @@ namespace Gorgon.Graphics.Core
             }
 
             if (ChangeBuilder(currentState.DsSamplers.DirtyEquals(_lastState.DsSamplers),
-                              DrawCallChanges.DomainShaderMask | DrawCallChanges.Samplers,
+                              DrawCallChanges.DsSamplers,
                               ref changes))
             {
                 Debug.Assert(currentState.DsSamplers != null, "DomainShader samplers is null - This is not allowed.");
@@ -903,7 +894,7 @@ namespace Gorgon.Graphics.Core
             }
 
             if (ChangeBuilder(currentState.HsSamplers.DirtyEquals(_lastState.HsSamplers),
-                              DrawCallChanges.HullShaderMask | DrawCallChanges.Samplers,
+                              DrawCallChanges.HsSamplers,
                               ref changes))
             {
                 Debug.Assert(currentState.HsSamplers != null, "HullShader samplers is null - This is not allowed.");
@@ -911,7 +902,7 @@ namespace Gorgon.Graphics.Core
             }
 
             if (ChangeBuilder(currentState.CsSamplers.DirtyEquals(_lastState.CsSamplers),
-                              DrawCallChanges.ComputeShaderMask | DrawCallChanges.Samplers,
+                              DrawCallChanges.CsSamplers,
                               ref changes))
             {
                 Debug.Assert(currentState.CsSamplers != null, "ComputeShader samplers is null - This is not allowed.");
@@ -919,7 +910,7 @@ namespace Gorgon.Graphics.Core
             }
 
             if (ChangeBuilder(currentState.VsConstantBuffers.DirtyEquals(_lastState.VsConstantBuffers),
-                              DrawCallChanges.VertexShaderMask | DrawCallChanges.Constants,
+                              DrawCallChanges.VsConstants,
                               ref changes))
             {
                 Debug.Assert(currentState.VsConstantBuffers != null, "VertexShader constants is null - This is now allowed.");
@@ -927,7 +918,7 @@ namespace Gorgon.Graphics.Core
             }
 
             if (ChangeBuilder(currentState.PsConstantBuffers.DirtyEquals(_lastState.PsConstantBuffers),
-                              DrawCallChanges.PixelShaderMask | DrawCallChanges.Constants,
+                              DrawCallChanges.PsConstants,
                               ref changes))
             {
                 Debug.Assert(currentState.PsConstantBuffers != null, "PixelShader constants is null - This is now allowed.");
@@ -935,7 +926,7 @@ namespace Gorgon.Graphics.Core
             }
 
             if (ChangeBuilder(currentState.GsConstantBuffers.DirtyEquals(_lastState.GsConstantBuffers),
-                              DrawCallChanges.GeometryShaderMask | DrawCallChanges.Constants,
+                              DrawCallChanges.GsConstants,
                               ref changes))
             {
                 Debug.Assert(currentState.GsConstantBuffers != null, "GeometryShader constants is null - This is now allowed.");
@@ -943,7 +934,7 @@ namespace Gorgon.Graphics.Core
             }
 
             if (ChangeBuilder(currentState.DsConstantBuffers.DirtyEquals(_lastState.DsConstantBuffers),
-                              DrawCallChanges.DomainShaderMask | DrawCallChanges.Constants,
+                              DrawCallChanges.DsConstants,
                               ref changes))
             {
                 Debug.Assert(currentState.DsConstantBuffers != null, "DomainShader constants is null - This is now allowed.");
@@ -951,7 +942,7 @@ namespace Gorgon.Graphics.Core
             }
 
             if (ChangeBuilder(currentState.HsConstantBuffers.DirtyEquals(_lastState.HsConstantBuffers),
-                              DrawCallChanges.HullShaderMask | DrawCallChanges.Constants,
+                              DrawCallChanges.HsConstants,
                               ref changes))
             {
                 Debug.Assert(currentState.HsConstantBuffers != null, "HullShader constants is null - This is now allowed.");
@@ -959,7 +950,7 @@ namespace Gorgon.Graphics.Core
             }
 
             if (ChangeBuilder(currentState.HsConstantBuffers.DirtyEquals(_lastState.CsConstantBuffers),
-                              DrawCallChanges.ComputeShaderMask | DrawCallChanges.Constants,
+                              DrawCallChanges.CsConstants,
                               ref changes))
             {
                 Debug.Assert(currentState.CsConstantBuffers != null, "ComputeShader constants is null - This is now allowed.");
@@ -967,7 +958,7 @@ namespace Gorgon.Graphics.Core
             }
 
             if (ChangeBuilder(currentState.VsSrvs.DirtyEquals(_lastState.VsSrvs),
-                              DrawCallChanges.VertexShaderMask | DrawCallChanges.ResourceViews,
+                              DrawCallChanges.VsResourceViews,
                               ref changes))
             {
                 Debug.Assert(currentState.VsSrvs != null, "VertexShader srvs are null - This is now allowed.");
@@ -975,7 +966,7 @@ namespace Gorgon.Graphics.Core
             }
 
             if (ChangeBuilder(currentState.PsSrvs.DirtyEquals(_lastState.PsSrvs),
-                              DrawCallChanges.PixelShaderMask | DrawCallChanges.ResourceViews,
+                              DrawCallChanges.PsResourceViews,
                               ref changes))
             {
                 Debug.Assert(currentState.PsSrvs != null, "PixelShader srvs are null - This is now allowed.");
@@ -983,7 +974,7 @@ namespace Gorgon.Graphics.Core
             }
 
             if (ChangeBuilder(currentState.GsSrvs.DirtyEquals(_lastState.GsSrvs),
-                              DrawCallChanges.GeometryShaderMask | DrawCallChanges.ResourceViews,
+                              DrawCallChanges.GsResourceViews,
                               ref changes))
             {
                 Debug.Assert(currentState.GsSrvs != null, "GeometryShader srvs are null - This is now allowed.");
@@ -991,7 +982,7 @@ namespace Gorgon.Graphics.Core
             }
 
             if (ChangeBuilder(currentState.DsSrvs.DirtyEquals(_lastState.DsSrvs),
-                              DrawCallChanges.DomainShaderMask | DrawCallChanges.ResourceViews,
+                              DrawCallChanges.DsResourceViews,
                               ref changes))
             {
                 Debug.Assert(currentState.DsSrvs != null, "DomainShader srvs are null - This is now allowed.");
@@ -999,7 +990,7 @@ namespace Gorgon.Graphics.Core
             }
 
             if (ChangeBuilder(currentState.HsSrvs.DirtyEquals(_lastState.HsSrvs),
-                              DrawCallChanges.HullShaderMask | DrawCallChanges.ResourceViews,
+                              DrawCallChanges.HsResourceViews,
                               ref changes))
             {
                 Debug.Assert(currentState.HsSrvs != null, "HullShader srvs are null - This is now allowed.");
@@ -1007,7 +998,7 @@ namespace Gorgon.Graphics.Core
             }
 
             if (ChangeBuilder(currentState.HsSrvs.DirtyEquals(_lastState.CsSrvs),
-                              DrawCallChanges.ComputeShaderMask | DrawCallChanges.ResourceViews,
+                              DrawCallChanges.CsResourceViews,
                               ref changes))
             {
                 Debug.Assert(currentState.CsSrvs != null, "ComputeShader srvs are null - This is now allowed.");

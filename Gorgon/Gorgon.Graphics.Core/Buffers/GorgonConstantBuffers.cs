@@ -83,8 +83,8 @@ namespace Gorgon.Graphics.Core
 	    protected override void OnDirtyItemAdded(int dirtyIndex, GorgonConstantBufferView value)
 	    {
 	        Native[dirtyIndex] = value?.Buffer.Native;
-	        ViewStart[dirtyIndex] = value?.StartElement ?? 0;
-	        ViewCount[dirtyIndex] = value?.ElementCount ?? 0;
+	        ViewStart[dirtyIndex] = value?.StartElement * 16 ?? 0;
+	        ViewCount[dirtyIndex] = value?.ElementCount * 16 ?? 0;
 	    }
 
 	    /// <summary>

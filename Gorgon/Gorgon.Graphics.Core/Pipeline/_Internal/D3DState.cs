@@ -97,41 +97,77 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         Scissors = 0x2000,
         /// <summary>
-        /// Sampler state has changed, combined with one of the shader mask values.
+        /// Sampler state has changed.
         /// </summary>
-        Samplers = 0x0100_0000,
+        PsSamplers = 0x1000_0000_0000,
         /// <summary>
-        /// Constant buffers have changed, combined with one of the shader mask values.
+        /// Constant buffers have changed.
         /// </summary>
-        Constants = 0x0200_0000,
+        PsConstants = 0x2000_0000_0000,
         /// <summary>
-        /// Resource views have changed, combined with one of the shader mask values.
+        /// Resource views have changed.
         /// </summary>
-        ResourceViews = 0x0400_0000,
+        PsResourceViews = 0x4000_0000_0000,
         /// <summary>
-        /// Mask for pixel shader states.
+        /// Sampler state has changed.
         /// </summary>
-        PixelShaderMask = 0x100_0000_0000_0000,
+        VsSamplers = 0x8000_0000_0000,
         /// <summary>
-        /// Mask for vertex shader states.
+        /// Constant buffers have changed.
         /// </summary>
-        VertexShaderMask = 0x200_0000_0000_0000,
+        VsConstants = 0x1_0000_0000_0000,
         /// <summary>
-        /// Mask for geometry shader states.
+        /// Resource views have changed.
         /// </summary>
-        GeometryShaderMask = 0x400_0000_0000_0000,
+        VsResourceViews = 0x2_0000_0000_0000,
         /// <summary>
-        /// Mask for hull shader states.
+        /// Sampler state has changed.
         /// </summary>
-        HullShaderMask = 0x800_0000_0000_0000,
+        GsSamplers = 0x4_0000_0000_0000,
         /// <summary>
-        /// Mask for domain shader states.
+        /// Constant buffers have changed.
         /// </summary>
-        DomainShaderMask = 0x1000_0000_0000_0000,
+        GsConstants = 0x8_0000_0000_0000,
         /// <summary>
-        /// Mask for compute shader states.
+        /// Resource views have changed.
         /// </summary>
-        ComputeShaderMask = 0x2000_0000_0000_0000,
+        GsResourceViews = 0x10_0000_0000_0000,
+        /// <summary>
+        /// Sampler state has changed.
+        /// </summary>
+        DsSamplers = 0x20_0000_0000_0000,
+        /// <summary>
+        /// Constant buffers have changed.
+        /// </summary>
+        DsConstants = 0x40_0000_0000_0000,
+        /// <summary>
+        /// Resource views have changed.
+        /// </summary>
+        DsResourceViews = 0x80_0000_0000_0000,
+        /// <summary>
+        /// Sampler state has changed.
+        /// </summary>
+        HsSamplers = 0x100_0000_0000_0000,
+        /// <summary>
+        /// Constant buffers have changed.
+        /// </summary>
+        HsConstants = 0x200_0000_0000_0000,
+        /// <summary>
+        /// Resource views have changed.
+        /// </summary>
+        HsResourceViews = 0x400_0000_0000_0000,
+        /// <summary>
+        /// Sampler state has changed.
+        /// </summary>
+        CsSamplers = 0x800_0000_0000_0000,
+        /// <summary>
+        /// Constant buffers have changed.
+        /// </summary>
+        CsConstants = 0x1000_0000_0000_0000,
+        /// <summary>
+        /// Resource views have changed.
+        /// </summary>
+        CsResourceViews = 0x2000_0000_0000_0000,
         /// <summary>
         /// All pipeline states.
         /// </summary>
@@ -152,24 +188,24 @@ namespace Gorgon.Graphics.Core
               | InputLayout 
               | IndexBuffer 
               | Topology 
-              | (PixelShaderMask | Samplers) 
-              | (VertexShaderMask | Samplers) 
-              | (GeometryShaderMask | Samplers) 
-              | (HullShaderMask | Samplers) 
-              | (DomainShaderMask | Samplers) 
-              | (ComputeShaderMask | Samplers)
-              | (PixelShaderMask | Constants) 
-              | (VertexShaderMask | Constants) 
-              | (GeometryShaderMask | Constants) 
-              | (HullShaderMask | Constants) 
-              | (DomainShaderMask | Constants) 
-              | (ComputeShaderMask | Constants)
-              | (PixelShaderMask | ResourceViews) 
-              | (VertexShaderMask | ResourceViews) 
-              | (GeometryShaderMask | ResourceViews) 
-              | (HullShaderMask | ResourceViews) 
-              | (DomainShaderMask | ResourceViews) 
-              | (ComputeShaderMask | ResourceViews)
+              | PsSamplers
+              | VsSamplers
+              | GsSamplers
+              | DsSamplers
+              | HsSamplers
+              | CsSamplers
+              | PsConstants
+              | VsConstants
+              | GsConstants
+              | DsConstants
+              | HsConstants
+              | CsConstants
+              | PsResourceViews
+              | VsResourceViews
+              | GsResourceViews
+              | DsResourceViews
+              | HsResourceViews
+              | CsResourceViews              
               | AllPipelineState
     }
 

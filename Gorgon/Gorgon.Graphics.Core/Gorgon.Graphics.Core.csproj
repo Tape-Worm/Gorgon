@@ -110,7 +110,7 @@
     <Compile Include="Pipeline\GorgonDrawCallCommon.cs" />
     <Compile Include="PrimitiveType.cs" />
     <Compile Include="Shaders\GorgonShaderResourceViews.cs" />
-    <Compile Include="States\GorgonConstantBuffers.cs" />
+    <Compile Include="Buffers\GorgonConstantBuffers.cs" />
     <Compile Include="States\GorgonPipelineStateBuilder.cs" />
     <Compile Include="Pipeline\GorgonVertexBufferBinding.cs" />
     <Compile Include="Pipeline\GorgonVertexBufferBindings.cs" />

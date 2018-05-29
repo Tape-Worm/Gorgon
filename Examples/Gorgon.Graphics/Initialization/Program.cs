@@ -223,6 +223,7 @@ namespace Gorgon.Graphics.Example
 		}
 
         #region Bad Stuff.
+#warning Get rid of me.
 	    /// <summary>
 	    /// The vertex of the blitter used to blit textures to the current render target.
 	    /// </summary>
@@ -265,29 +266,42 @@ namespace Gorgon.Graphics.Example
 	    private static GorgonDrawIndexCall _drawCall;
 	    private static GorgonDrawIndexCall _drawCall2;
         private static DX.Matrix _projMatrix = DX.Matrix.Identity;
-	    private static DX.Matrix _worldMatrix = DX.Matrix.Identity;
 	    private static float _yRot;
+	    private static int _cbufferOffset = 0;
+	    private static int _viewOffset = 0;
+
+	    private static void Transform(float xoffset)
+	    {
+	        if (_cbufferOffset >= _cBuffer.Buffer.SizeInBytes)
+	        {
+	            _viewOffset = 0;
+	            _cbufferOffset = 0;
+	        }
             
-        #warning Get rid of me.
+	        DX.Matrix.RotationY(_yRot.ToRadians(), out DX.Matrix worldMatrix);
+	        worldMatrix.Row4 = new DX.Vector4(xoffset, 0, 1.0f, 1.0f);
+	        DX.Matrix.Multiply(ref worldMatrix, ref _projMatrix, out DX.Matrix wProj);
+
+	        _cBuffer.Buffer.SetData(ref wProj, _cbufferOffset, _cbufferOffset == 0 ? CopyMode.Discard : CopyMode.NoOverwrite);
+	        //_cBuffer.Buffer.SetData(ref wProj);
+
+	        _cbufferOffset += 256;
+	    }
+        
 	    private static void TestDrawing()
 	    {
-	        DX.Matrix.RotationY(_yRot.ToRadians(), out _worldMatrix);
-            _worldMatrix.Row4 = new DX.Vector4(0.5f, 0, 1.0f, 1.0f);
-	        DX.Matrix.Multiply(ref _worldMatrix, ref _projMatrix, out DX.Matrix wProj);
-            
-            _cBuffer.Buffer.SetData(ref wProj);
-
 	        _graphics.DoStuff();
 
-            _graphics.Submit(_drawCall2);
 
-	        _worldMatrix.Row4 = new DX.Vector4(0, 0, 1.0f, 1.0f);
-	        DX.Matrix.Multiply(ref _worldMatrix, ref _projMatrix, out wProj);
-
-	        _cBuffer.Buffer.SetData(ref wProj);
-
+	        Transform(0.5f);
+            _cBuffer.AdjustView(_viewOffset, 1);
+	        _graphics.Submit(_drawCall2);
+	        Transform(0);
+	        _cBuffer.AdjustView((_viewOffset + 1), 1);
             _graphics.Submit(_drawCall);
 
+	        _viewOffset += 2;
+	        
 	        _yRot += GorgonTiming.Delta * 45.0f;
 
 	        if (_yRot > 360.0f)
@@ -309,7 +323,12 @@ namespace Gorgon.Graphics.Example
 	        }
 
 	        DX.Matrix.PerspectiveFovLH((65.0f).ToRadians(), (float)_swap.Width / _swap.Height, 0.125f, 1000.0f, out _projMatrix);
-            _cBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics, ref _projMatrix);
+            _cBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics, new GorgonConstantBufferInfo
+                                                                                {
+                                                                                    SizeInBytes = 6 * (DX.Matrix.SizeInBytes * 4),
+                                                                                    Usage = ResourceUsage.Dynamic
+                                                                                }, 0, 1);
+            _cBuffer.Buffer.SetData(ref _projMatrix);
 
 	        _layout = GorgonInputLayout.CreateUsingType<BltVertex>(_graphics, _vShader);
 
@@ -380,13 +399,13 @@ namespace Gorgon.Graphics.Example
 	        _drawCall2 = builder.VertexBuffer(_layout, _vbBinding)
 	                            .IndexBuffer(_iBuffer, 0, 3)
 	                            .ConstantBuffer(ShaderType.Vertex, _cBuffer)
-	                            .ShaderResource(ShaderType.Pixel, _texture)
+	                            .ShaderResource(ShaderType.Pixel, _texture2)
 	                            .SamplerState(ShaderType.Pixel, sampleBuilder.Filter(SampleFilter.MinMagMipPoint))
 	                            .PipelineState(psoBuilder.PrimitiveType(PrimitiveType.TriangleList)
 	                                                     .PixelShader(_pShader2)
 	                                                     .VertexShader(_vShader)
 	                                                     .RasterState(rsBuilder.Clear()
-	                                                                           .CullMode(CullingMode.Front)))
+	                                                                           .CullMode(CullingMode.Back)))
 	                            .Build();
 
             _graphics.DoInit();

@@ -30,7 +30,6 @@ using System.Threading;
 using D3D11 = SharpDX.Direct3D11;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
-using Gorgon.Math;
 using Gorgon.Native;
 
 namespace Gorgon.Graphics.Core
@@ -108,8 +107,8 @@ namespace Gorgon.Graphics.Core
 		#region Variables.
 		// The information used to create the buffer.
 		private readonly GorgonConstantBufferInfo _info;
-	    // A cache of unordered access views for the buffer.
-	    private Dictionary<BufferShaderViewKey, GorgonConstantBufferView> _cbvs = new Dictionary<BufferShaderViewKey, GorgonConstantBufferView>();
+        // A list of constant buffer views.
+        private List<GorgonConstantBufferView> _cbvs = new List<GorgonConstantBufferView>();
         #endregion
 
         #region Properties.
@@ -134,9 +133,9 @@ namespace Gorgon.Graphics.Core
 	    public override string Name => _info.Name;
 
         /// <summary>
-        /// Property to return the number of floating point values that can be stored in this buffer.
+        /// Property to return the number of 4 component floating point values (16 bytes) that can be stored in this buffer.
         /// </summary>
-	    public int TotalElementCount
+	    public int TotalConstantCount
 	    {
 	        get;
 	        private set;
@@ -153,7 +152,7 @@ namespace Gorgon.Graphics.Core
 			// If the buffer is not aligned to 16 bytes, then pad the size.
 			_info.SizeInBytes = (_info.SizeInBytes + 15) & ~15;
 
-		    TotalElementCount = _info.SizeInBytes / sizeof(float);
+		    TotalConstantCount = _info.SizeInBytes / (sizeof(float) * 4);
 
 			D3D11.CpuAccessFlags cpuFlags = GetCpuFlags(false, D3D11.BindFlags.ConstantBuffer);
 
@@ -207,7 +206,7 @@ namespace Gorgon.Graphics.Core
 	    /// </remarks>
 	    public override void Dispose()
 	    {
-	        Dictionary<BufferShaderViewKey, GorgonConstantBufferView> cbvs = Interlocked.Exchange(ref _cbvs, null);
+	        List<GorgonConstantBufferView> cbvs = Interlocked.Exchange(ref _cbvs, null);
 
 	        if (cbvs == null)
 	        {
@@ -216,56 +215,54 @@ namespace Gorgon.Graphics.Core
 	        }
 
 	        // Clean up the cached views.
-	        foreach (KeyValuePair<BufferShaderViewKey, GorgonConstantBufferView> cbv in cbvs)
+	        foreach (GorgonConstantBufferView cbv in cbvs)
 	        {
-	            cbv.Value.Dispose();
+	            cbv.Dispose();
 	        }
 	        
 	        base.Dispose();
 	    }
 
 	    /// <summary>
-        /// Function to retrieve a view of the constant buffer to pass to a shader.
+        /// Function to retrieve a view of the constant buffer elements to pass to a shader.
         /// </summary>
-        /// <param name="startElement">[Optional] The index of the first element in the buffer to view.</param>
+        /// <param name="firstElement">[Optional] The index of the first element in the buffer to view.</param>
         /// <param name="elementCount">[Optional] The number of elements to view.</param>
         /// <returns>A new <see cref="GorgonConstantBufferView"/> used to map a portion of a constant buffer to a shader.</returns>
         /// <remarks>
         /// <para>
-        /// This will create a view of the buffer so that a shader can access a portion (or all, if the buffer is less than or equal to 4096 elements in size) of a constant buffer. Shaders can only access
-        /// up to 4096 elements in a constant buffer, and this allows us to bind a much larger buffer to the shader while still respecting the maximum element accessibility.
+        /// This will create a view of the buffer so that a shader can access a portion (or all, if the buffer is less than or equal to 4096 constants in size) of a constant buffer. Shaders can only access
+        /// up to 4096 constants in a constant buffer, and this allows us to bind and use a much larger buffer to the shader while still respecting the maximum constant accessibility.
         /// </para>
         /// <para>
-        /// A constant buffer element is a single float4 value (4 floating point values). 
+        /// A single constant buffer constant is a float4 value (4 floating point values, or 16 bytes). 
         /// </para>
-        /// <para>
-        /// If provided, the <paramref name="startElement"/> parameter must be between 0 and the <seealso cref="TotalElementCount"/>-1.  If it is not it will be constrained to those values to ensure there
-        /// is no out of bounds access to the buffer.  
-        /// </para>
-        /// <para>
-        /// If the <paramref name="elementCount"/> parameter is omitted (or equal to or less than 0), then the remainder of the buffer is mapped to the view up to 4096 elements. If it is provided, then the
-        /// number of elements will be mapped to the view, up to a maximum of 4096 elements.  If the value exceeds 4096, then it will be constrained to 4096.
-        /// </para>
+	    /// <para>
+	    /// The <paramref name="firstElement"/> parameter must be between 0 and the total element count (minus one) of the buffer.  If it is not it will be constrained to those values to ensure there is no 
+	    /// out of bounds access to the buffer.  
+	    /// </para>
+	    /// <para>
+	    /// If the <paramref name="elementCount"/> parameter is omitted (or less than 1), then the remainder of the buffer is mapped to the view up to 256 elements (4096 constants, or 65536 bytes). If it 
+	    /// is provided, then the number of elements will be mapped to the view, up to a maximum of 256 elements.  If the value exceeds 256, then it will be constrained to 256.
+	    /// </para>
+	    /// <para>
+	    /// <note type="important">
+	    /// <para>
+	    /// Due to the nature of constant buffers on GPU hardware, these views are not aligned to a constant (which is a float4, or 16 bytes), but rather aligned to 16 constants (16 float4 values, or 256 
+	    /// bytes). This requires that your buffer be set up to be a multiple of 256 bytes in its <see cref="IGorgonConstantBufferInfo.SizeInBytes"/>.  This makes each element in the view the same as 16 float4
+	    /// values (or 256 bytes). That means when an offset of 2, and a count of 4 is set in the view, it is actually at an offset of 32 float4 values (512 bytes), and covers a range of 64 float4 values
+	    /// (1024 bytes). Because of this, care should be taken to ensure the buffer matches this alignment if constant buffer offsets/counts are to be used in your application.
+	    /// </para>
+	    /// <para>
+	    /// If no offsetting into the buffer is required, then the above information is not applicable and the method can be called with its default parameters (i.e. no parameters).
+	    /// </para>
+	    /// </note>
+	    /// </para>
         /// </remarks>
-	    public GorgonConstantBufferView GetView(int startElement = 0, int elementCount = 0)
+	    public GorgonConstantBufferView GetView(int firstElement = 0, int elementCount = 0)
 	    {
-	        startElement = startElement.Min(TotalElementCount - 1).Max(0);
-
-	        if (elementCount <= 0)
-	        {
-	            elementCount = TotalElementCount - startElement;
-	        }
-
-	        elementCount = elementCount.Min(4096).Max(1);
-            
-	        BufferShaderViewKey key = new BufferShaderViewKey(startElement, elementCount, BufferFormat.Unknown);
-	        if (_cbvs.TryGetValue(key, out GorgonConstantBufferView result))
-	        {
-	            return result;
-	        }
-
-	        result = new GorgonConstantBufferView(this, startElement, elementCount, TotalElementCount);
-	        _cbvs[key] = result;
+	        var result = new GorgonConstantBufferView(this, firstElement, elementCount);
+            _cbvs.Add(result);
 	        return result;
 	    }
 

@@ -301,41 +301,41 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Function to validate the parameters for the Get/SetData methods.
         /// </summary>
-        /// <param name="sourceIndex">The source index.</param>
-        /// <param name="destIndex">The destination index.</param>
-        /// <param name="count">The number of items.</param>
-        /// <param name="sourceSize">The total size of the source data.</param>
-        /// <param name="destSize">The total size of the destination.</param>
-        private void ValidateGetSetData(int sourceIndex, int destIndex, int count, int sourceSize, int destSize)
+        /// <param name="sourceOffset">The source offset, in bytes..</param>
+        /// <param name="destOffset">The destination offset, in bytes.</param>
+        /// <param name="copySize">The total amount of data to copy, in bytes.</param>
+        /// <param name="sourceSize">The total size of the source data, in bytes.</param>
+        /// <param name="destSize">The total size of the destination, in bytes.</param>        
+        private void ValidateGetSetData(int sourceOffset, int destOffset, int copySize, int sourceSize, int destSize)
         {
             if (Usage == ResourceUsage.Immutable)
             {
                 throw new GorgonException(GorgonResult.CannotWrite, Resources.GORGFX_ERR_BUFFER_CANT_UPDATE_IMMUTABLE);
             }
 
-            if (sourceIndex < 0)
+            if (sourceOffset < 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(sourceIndex), string.Format(Resources.GORGFX_ERR_VALUE_OUT_OF_RANGE, sourceSize));
+                throw new ArgumentOutOfRangeException(nameof(sourceOffset), string.Format(Resources.GORGFX_ERR_VALUE_OUT_OF_RANGE, sourceSize));
             }
 
-            if (count < 0)
+            if (copySize < 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(count), Resources.GORGFX_ERR_COUNT_OUT_OF_RANGE);
+                throw new ArgumentOutOfRangeException(nameof(copySize), Resources.GORGFX_ERR_COUNT_OUT_OF_RANGE);
             }
 
-            if (sourceIndex + count > sourceSize)
+            if (sourceOffset + copySize > sourceSize)
             {
-                throw new ArgumentException(string.Format(Resources.GORGFX_ERR_SOURCE_INDEX_AND_COUNT_TOO_LARGE, (sourceIndex + count), sourceSize));
+                throw new ArgumentException(string.Format(Resources.GORGFX_ERR_SOURCE_INDEX_AND_COUNT_TOO_LARGE, (sourceOffset + copySize), sourceSize));
             }
 
-            if (destIndex < 0)
+            if (destOffset < 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(destIndex), string.Format(Resources.GORGFX_ERR_VALUE_OUT_OF_RANGE, destSize));
+                throw new ArgumentOutOfRangeException(nameof(destOffset), string.Format(Resources.GORGFX_ERR_VALUE_OUT_OF_RANGE, destSize));
             }
 
-            if ((destIndex + count) > destSize)
+            if ((destOffset + copySize) > destSize)
             {
-                throw new ArgumentException(string.Format(Resources.GORGFX_ERR_DEST_INDEX_AND_COUNT_TOO_LARGE, (destIndex + count), destSize));
+                throw new ArgumentException(string.Format(Resources.GORGFX_ERR_DEST_INDEX_AND_COUNT_TOO_LARGE, (destOffset + copySize), destSize));
             }
         }
 
@@ -346,20 +346,17 @@ namespace Gorgon.Graphics.Core
         /// <typeparam name="T">The type of data to copy. Must be an unmanaged value type.</typeparam>
         /// <param name="destPtr">The pointer pointing at the memory that will receive the data.</param>
         /// <param name="typeSize">The size, in bytes, of an element of data.</param>
-        /// <param name="srcIndex">The starting index within this buffer to start reading from.</param>
-        /// <param name="count">The number of bytes to read/write.</param>
-        private unsafe void GetDataPtr<T>(T* destPtr, int typeSize, int srcIndex, int count)
+        /// <param name="srcOffset">The offset within this buffer, in bytes, to start reading from.</param>
+        /// <param name="size">The number of bytes to read/write.</param>
+        private unsafe void GetDataPtr<T>(T* destPtr, int typeSize, int srcOffset, int size)
             where T : unmanaged
         {
-            if (count == 0)
+            if (size == 0)
             {
                 return;
             }
 
             GorgonBufferCommon stage = this;
-
-            srcIndex = srcIndex * typeSize;
-            count = count * typeSize;
 
             // If we cannot read default usage buffers directly, then we need to make a copy.
             if ((!IsCpuReadable) || ((Usage != ResourceUsage.Default) && (Usage != ResourceUsage.Staging)))
@@ -371,9 +368,9 @@ namespace Gorgon.Graphics.Core
 
             try
             {
-                byte* srcPtr = (byte*)dataBox.DataPointer + srcIndex;
+                byte* srcPtr = (byte*)dataBox.DataPointer + srcOffset;
 
-                Unsafe.CopyBlock(destPtr, srcPtr, (uint)count);
+                Unsafe.CopyBlock(destPtr, srcPtr, (uint)size);
             }
             finally
             {
@@ -393,11 +390,11 @@ namespace Gorgon.Graphics.Core
         /// <param name="srcPtr">The pointer to the data to upload.</param>
         /// <param name="typeSize">The size of an element in the buffer.</param>
         /// <param name="srcSize">The total element size of the upload data.</param>
-        /// <param name="destStart">The destination index in the destination buffer to write into.</param>
+        /// <param name="destOffset">The destination offset, in bytes, in the destination buffer to write into.</param>
         /// <param name="count">The number of elements to write.</param>
         /// <param name="map"><b>true</b> to use mapping, or <b>false</b> to use a direct upload.</param>
         /// <param name="copyMode">The mode used to determine how to copy the data.</param>
-        private unsafe void SetDataPtr<T>(T* srcPtr, int typeSize, int srcSize, int destStart, int count, bool map, CopyMode copyMode)
+        private unsafe void SetDataPtr<T>(T* srcPtr, int typeSize, int srcSize, int destOffset, int count, bool map, CopyMode copyMode)
             where T : unmanaged
         {
             if ((count == 0)
@@ -407,7 +404,6 @@ namespace Gorgon.Graphics.Core
                 return;
             }
 
-            destStart = destStart * typeSize;
             count = count * typeSize;
 
             if (!map)
@@ -417,8 +413,8 @@ namespace Gorgon.Graphics.Core
                 {
                     region = new D3D11.ResourceRegion
                              {
-                                 Left = destStart,
-                                 Right = destStart + count,
+                                 Left = destOffset,
+                                 Right = destOffset + count,
                                  Back = 1,
                                  Bottom = 1
                              };
@@ -450,7 +446,7 @@ namespace Gorgon.Graphics.Core
 
             try
             {
-                byte* destPtr = (byte*)mapData.DataPointer + destStart;
+                byte* destPtr = (byte*)mapData.DataPointer + destOffset;
                 Unsafe.CopyBlock(destPtr, srcPtr, (uint)count);
             }
             finally
@@ -466,13 +462,13 @@ namespace Gorgon.Graphics.Core
         /// <param name="data">The array to upload into the buffer.</param>
         /// <param name="sourceIndex">[Optional] The index within the source array to start copying from.</param>
         /// <param name="count">[Optional] The number of items in the array to copy.</param>
-        /// <param name="destIndex">[Optional] The element index in this buffer to start copying into.</param>
+        /// <param name="destOffset">[Optional] The offset, in bytes, within this buffer to start copying into.</param>
         /// <param name="copyMode">[Optional] Flags to indicate how to copy the data.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="data"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="sourceIndex"/>, <paramref name="destIndex"/>, or the <paramref name="count"/> parameter is less than zero.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="sourceIndex"/>, <paramref name="destOffset"/>, or the <paramref name="count"/> parameter is less than zero.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="sourceIndex"/> + <paramref name="count"/> exceeds the size of the <paramref name="data"/> array.
         /// <para>-or-</para>
-        /// <para>Thrown when the <paramref name="destIndex"/> + <paramref name="count"/> exceeds the size of the destination buffer.</para>
+        /// <para>Thrown when the <paramref name="destOffset"/> + <paramref name="count"/> exceeds the size of the destination buffer.</para>
         /// </exception>
         /// <remarks>
         /// <para>
@@ -483,15 +479,15 @@ namespace Gorgon.Graphics.Core
         /// is good for once per frame or less).
         /// </para>
         /// <para>
-        /// If the user supplies a one of the <paramref name="sourceIndex"/>, <paramref name="destIndex"/> or <paramref name="count"/> parameters, then a portion of the data will be copied to the buffer at
-        /// the offset provided by <paramref name="destIndex"/>. 
+        /// If the user supplies a one of the <paramref name="sourceIndex"/>, <paramref name="destOffset"/> or <paramref name="count"/> parameters, then a portion of the data will be copied to the buffer at
+        /// the offset provided by <paramref name="destOffset"/>. 
         /// </para>
         /// <para>
         /// The <paramref name="copyMode"/> parameter defines how the copy will be performed. If the buffer has a <see cref="GorgonGraphicsResource.Usage"/> of <see cref="ResourceUsage.Dynamic"/> or
         /// <see cref="ResourceUsage.Default"/> and the <paramref name="copyMode"/> is set to <see cref="CopyMode.Discard"/> then the contents of the buffer are discarded before updating, if it is set to
         /// <see cref="CopyMode.NoOverwrite"/>, then the data will be copied to the destination if we know the GPU is not using the portion being updated. If the <paramref name="copyMode"/> is set to
         /// <see cref="CopyMode.None"/>, then <see cref="CopyMode.Discard"/> is used. For buffers created with a <see cref="GorgonGraphicsResource.Usage"/> of <see cref="ResourceUsage.Staging"/>, the
-        /// <see cref="CopyMode"/> will be ignored and act as though <see cref="CopyMode.None"/> were passed. If the mode is set to <see cref="CopyMode.None"/>, then the <paramref name="destIndex"/> 
+        /// <see cref="CopyMode"/> will be ignored and act as though <see cref="CopyMode.None"/> were passed. If the mode is set to <see cref="CopyMode.None"/>, then the <paramref name="destOffset"/> 
         /// parameter is ignored.
         /// </para>
         /// <note type="caution">
@@ -530,10 +526,10 @@ namespace Gorgon.Graphics.Core
         ///     _vertexBuffer.SetData<MyVertex>(_vertices, 5, 25);
         ///
         ///		// Copy our data to the vertex buffer, using the 5th index in the vertex array, 25 vertices, and storing at index 2 in the vertex buffer.
-        ///     _vertexBuffer.SetData<MyVertex>(_vertices, 5, 25, 2);
+        ///     _vertexBuffer.SetData<MyVertex>(_vertices, 5, 25, 2 * Unsafe.SizeOf<MyVertex>());
         ///
         ///     // Copy our data to the vertex buffer, using the 5th index in the native buffer, 25 vertices, and storing at index 2 in the vertex buffer, using a copy mode.
-        ///     _vertexBuffer.SetData(vertices, 5, 25, 2, CopyMode.NoOverWrite);
+        ///     _vertexBuffer.SetData(vertices, 5, 25, 2 * Unsafe.SizeOf<MyVertex>(), CopyMode.NoOverWrite);
         /// 
         ///     // Copy our data from a GorgonNativeBuffer.
         ///     using (GorgonNativeBuffer<MyVertex> vertices = new GorgonNativeBuffer<MyVertex>(100))
@@ -544,28 +540,28 @@ namespace Gorgon.Graphics.Core
         ///        _vertexBuffer.SetData(vertices);
         /// 
         ///        // Copy our data to the vertex buffer, using the 5th index in the native buffer, 25 vertices, and storing at index 2 in the vertex buffer.
-        ///        _vertexBuffer.SetData(vertices, 5, 25, 2);
+        ///        _vertexBuffer.SetData(vertices, 5, 25, 2 * Unsafe.SizeOf<MyVertex>());
         ///
         ///        // Copy our data to the vertex buffer, using the 5th index in the native buffer, 25 vertices, and storing at index 2 in the vertex buffer, using a copy mode.
-        ///        _vertexBuffer.SetData(vertices, 5, 25, 2, CopyMode.NoOverWrite);
+        ///        _vertexBuffer.SetData(vertices, 5, 25, 2 * Unsafe.SizeOf<MyVertex>(), CopyMode.NoOverWrite);
         ///
         ///        // Get the data back out from the buffer, using index 5 and up to 10 vertices, storing at index 2 of the native buffer.
-        ///        _vertexBuffer.GetData<MyVertex>(vertices, 5, 10, 2); 
+        ///        _vertexBuffer.GetData<MyVertex>(vertices, 5 * Unsafe.SizeOf<MyVertex>(), 10 * Unsafe.SizeOf<MyVertex>(), 2); 
         ///     }
         ///
         ///     // Get the data back out from the buffer.
         ///     MyVertex[] readBack = _vertexBuffer.GetData<MyVertex>();
         ///
         ///     // Get the data back out from the buffer, starting at index 5 and a count of 10 vertices.
-        ///     readBack = _vertexBuffer.GetData<MyVertex>(5, 10);
+        ///     readBack = _vertexBuffer.GetData<MyVertex>(5 * Unsafe.SizeOf<MyVertex>(), 10 * Unsafe.SizeOf<MyVertex>());
         ///
         ///     // Get the data back out from the buffer, using index 5 and up to 10 vertices, storing at index 2.
-        ///     _vertexBuffer.GetData<MyVertex>(readBack, 5, 10, 2);
+        ///     _vertexBuffer.GetData<MyVertex>(readBack, 5 * Unsafe.SizeOf<MyVertex>(), 10 * Unsafe.SizeOf<MyVertex>(), 2);
         /// }
         /// ]]>
         /// </code>
         /// </example>
-        public void SetData<T>(T[] data, int sourceIndex = 0, int? count = null, int destIndex = 0, CopyMode copyMode = CopyMode.None)
+        public void SetData<T>(T[] data, int sourceIndex = 0, int? count = null, int destOffset = 0, CopyMode copyMode = CopyMode.None)
             where T : unmanaged
         {
             data.ValidateObject(nameof(data));
@@ -583,14 +579,14 @@ namespace Gorgon.Graphics.Core
             int typeSize = Unsafe.SizeOf<T>();
 
 #if DEBUG            
-            ValidateGetSetData(sourceIndex, copyMode == CopyMode.None ? 0 :  destIndex, count.Value, data.Length, (int)((double)SizeInBytes / typeSize).FastFloor());
+            ValidateGetSetData(sourceIndex * typeSize, copyMode == CopyMode.None ? 0 :  destOffset, count.Value * typeSize, data.Length * typeSize, SizeInBytes);
 #endif
 
             unsafe
             {
                 fixed (T* srcPtr = &data[sourceIndex])
                 {
-                    SetDataPtr<T>(srcPtr, typeSize, data.Length, destIndex, count.Value, Usage != ResourceUsage.Default, copyMode);
+                    SetDataPtr<T>(srcPtr, typeSize, data.Length, destOffset, count.Value, Usage != ResourceUsage.Default, copyMode);
                 }
             }
         }
@@ -665,10 +661,10 @@ namespace Gorgon.Graphics.Core
         ///     _vertexBuffer.SetData<MyVertex>(_vertices, 5, 25);
         ///
         ///		// Copy our data to the vertex buffer, using the 5th index in the vertex array, 25 vertices, and storing at index 2 in the vertex buffer.
-        ///     _vertexBuffer.SetData<MyVertex>(_vertices, 5, 25, 2);
+        ///     _vertexBuffer.SetData<MyVertex>(_vertices, 5, 25, 2 * Unsafe.SizeOf<MyVertex>());
         ///
         ///     // Copy our data to the vertex buffer, using the 5th index in the native buffer, 25 vertices, and storing at index 2 in the vertex buffer, using a copy mode.
-        ///     _vertexBuffer.SetData(vertices, 5, 25, 2, CopyMode.NoOverWrite);
+        ///     _vertexBuffer.SetData(vertices, 5, 25, 2 * Unsafe.SizeOf<MyVertex>(), CopyMode.NoOverWrite);
         /// 
         ///     // Copy our data from a GorgonNativeBuffer.
         ///     using (GorgonNativeBuffer<MyVertex> vertices = new GorgonNativeBuffer<MyVertex>(100))
@@ -679,23 +675,23 @@ namespace Gorgon.Graphics.Core
         ///        _vertexBuffer.SetData(vertices);
         /// 
         ///        // Copy our data to the vertex buffer, using the 5th index in the native buffer, 25 vertices, and storing at index 2 in the vertex buffer.
-        ///        _vertexBuffer.SetData(vertices, 5, 25, 2);
+        ///        _vertexBuffer.SetData(vertices, 5, 25, 2 * Unsafe.SizeOf<MyVertex>());
         ///
         ///        // Copy our data to the vertex buffer, using the 5th index in the native buffer, 25 vertices, and storing at index 2 in the vertex buffer, using a copy mode.
-        ///        _vertexBuffer.SetData(vertices, 5, 25, 2, CopyMode.NoOverWrite);
+        ///        _vertexBuffer.SetData(vertices, 5, 25, 2 * Unsafe.SizeOf<MyVertex>(), CopyMode.NoOverWrite);
         ///
         ///        // Get the data back out from the buffer, using index 5 and up to 10 vertices, storing at index 2 of the native buffer.
-        ///        _vertexBuffer.GetData<MyVertex>(vertices, 5, 10, 2); 
+        ///        _vertexBuffer.GetData<MyVertex>(vertices, 5 * Unsafe.SizeOf<MyVertex>(), 10 * Unsafe.SizeOf<MyVertex>(), 2); 
         ///     }
         ///
         ///     // Get the data back out from the buffer.
         ///     MyVertex[] readBack = _vertexBuffer.GetData<MyVertex>();
         ///
         ///     // Get the data back out from the buffer, starting at index 5 and a count of 10 vertices.
-        ///     readBack = _vertexBuffer.GetData<MyVertex>(5, 10);
+        ///     readBack = _vertexBuffer.GetData<MyVertex>(5 * Unsafe.SizeOf<MyVertex>(), 10 * Unsafe.SizeOf<MyVertex>());
         ///
         ///     // Get the data back out from the buffer, using index 5 and up to 10 vertices, storing at index 2.
-        ///     _vertexBuffer.GetData<MyVertex>(readBack, 5, 10, 2);
+        ///     _vertexBuffer.GetData<MyVertex>(readBack, 5 * Unsafe.SizeOf<MyVertex>(), 10 * Unsafe.SizeOf<MyVertex>(), 2);
         /// }
         /// ]]>
         /// </code>
@@ -736,13 +732,13 @@ namespace Gorgon.Graphics.Core
         /// <param name="data">The native buffer to upload into the buffer.</param>
         /// <param name="sourceIndex">[Optional] The index within the source buffer to start copying from.</param>
         /// <param name="count">[Optional] The number of items in the buffer to copy.</param>
-        /// <param name="destIndex">[Optional] The element index in this buffer to start copying into.</param>
+        /// <param name="destOffset">[Optional] The offset, in bytes, in this buffer to start copying into.</param>
         /// <param name="copyMode">[Optional] Flags to indicate how to copy the data.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="data"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="sourceIndex"/>, <paramref name="destIndex"/>, or the <paramref name="count"/> parameter is less than zero.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="sourceIndex"/>, <paramref name="destOffset"/>, or the <paramref name="count"/> parameter is less than zero.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="sourceIndex"/> + <paramref name="count"/> exceeds the size of the <see cref="GorgonNativeBuffer{T}"/>.
         /// <para>-or-</para>
-        /// <para>Thrown when the <paramref name="destIndex"/> + <paramref name="count"/> exceeds the size of the destination buffer.</para>
+        /// <para>Thrown when the <paramref name="destOffset"/> + <paramref name="count"/> exceeds the size of the destination buffer.</para>
         /// </exception>
         /// <remarks>
         /// <para>
@@ -753,15 +749,15 @@ namespace Gorgon.Graphics.Core
         /// per frame, Default is good for once per frame or less).
         /// </para>
         /// <para>
-        /// If the user supplies a one of the <paramref name="sourceIndex"/>, <paramref name="destIndex"/> or <paramref name="count"/> parameters, then a portion of the data will be copied to the buffer at
-        /// the offset provided by <paramref name="destIndex"/>. 
+        /// If the user supplies a one of the <paramref name="sourceIndex"/>, <paramref name="destOffset"/> or <paramref name="count"/> parameters, then a portion of the data will be copied to the buffer at
+        /// the offset provided by <paramref name="destOffset"/>. 
         /// </para>
         /// <para>
         /// The <paramref name="copyMode"/> parameter defines how the copy will be performed. If the buffer has a <see cref="GorgonGraphicsResource.Usage"/> of <see cref="ResourceUsage.Dynamic"/> or
         /// <see cref="ResourceUsage.Default"/> and the <paramref name="copyMode"/> is set to <see cref="CopyMode.Discard"/> then the contents of the buffer are discarded before updating, if it is set to
         /// <see cref="CopyMode.NoOverwrite"/>, then the data will be copied to the destination if we know the GPU is not using the portion being updated. If the <paramref name="copyMode"/> is set to
         /// <see cref="CopyMode.None"/>, then <see cref="CopyMode.Discard"/> is used. For buffers created with a <see cref="GorgonGraphicsResource.Usage"/> of <see cref="ResourceUsage.Staging"/>, the
-        /// <see cref="CopyMode"/> will be ignored and act as though <see cref="CopyMode.None"/> were passed. If the mode is set to <see cref="CopyMode.None"/>, then the <paramref name="destIndex"/> 
+        /// <see cref="CopyMode"/> will be ignored and act as though <see cref="CopyMode.None"/> were passed. If the mode is set to <see cref="CopyMode.None"/>, then the <paramref name="destOffset"/> 
         /// parameter is ignored.
         /// </para>
         /// <note type="caution">
@@ -800,10 +796,10 @@ namespace Gorgon.Graphics.Core
         ///     _vertexBuffer.SetData<MyVertex>(_vertices, 5, 25);
         ///
         ///		// Copy our data to the vertex buffer, using the 5th index in the vertex array, 25 vertices, and storing at index 2 in the vertex buffer.
-        ///     _vertexBuffer.SetData<MyVertex>(_vertices, 5, 25, 2);
+        ///     _vertexBuffer.SetData<MyVertex>(_vertices, 5, 25, 2 * Unsafe.SizeOf<MyVertex>());
         ///
         ///     // Copy our data to the vertex buffer, using the 5th index in the native buffer, 25 vertices, and storing at index 2 in the vertex buffer, using a copy mode.
-        ///     _vertexBuffer.SetData(vertices, 5, 25, 2, CopyMode.NoOverWrite);
+        ///     _vertexBuffer.SetData(vertices, 5, 25, 2 * Unsafe.SizeOf<MyVertex>(), CopyMode.NoOverWrite);
         /// 
         ///     // Copy our data from a GorgonNativeBuffer.
         ///     using (GorgonNativeBuffer<MyVertex> vertices = new GorgonNativeBuffer<MyVertex>(100))
@@ -814,29 +810,29 @@ namespace Gorgon.Graphics.Core
         ///        _vertexBuffer.SetData(vertices);
         /// 
         ///        // Copy our data to the vertex buffer, using the 5th index in the native buffer, 25 vertices, and storing at index 2 in the vertex buffer.
-        ///        _vertexBuffer.SetData(vertices, 5, 25, 2);
+        ///        _vertexBuffer.SetData(vertices, 5, 25, 2 * Unsafe.SizeOf<MyVertex>());
         ///
         ///        // Copy our data to the vertex buffer, using the 5th index in the native buffer, 25 vertices, and storing at index 2 in the vertex buffer, using a copy mode.
-        ///        _vertexBuffer.SetData(vertices, 5, 25, 2, CopyMode.NoOverWrite);
+        ///        _vertexBuffer.SetData(vertices, 5, 25, 2 * Unsafe.SizeOf<MyVertex>(), CopyMode.NoOverWrite);
         ///
         ///        // Get the data back out from the buffer, using index 5 and up to 10 vertices, storing at index 2 of the native buffer.
-        ///        _vertexBuffer.GetData<MyVertex>(vertices, 5, 10, 2); 
+        ///        _vertexBuffer.GetData<MyVertex>(vertices, 5 * Unsafe.SizeOf<MyVertex>(), 10 * Unsafe.SizeOf<MyVertex>(), 2); 
         ///     }
         ///
         ///     // Get the data back out from the buffer.
         ///     MyVertex[] readBack = _vertexBuffer.GetData<MyVertex>();
         ///
         ///     // Get the data back out from the buffer, starting at index 5 and a count of 10 vertices.
-        ///     readBack = _vertexBuffer.GetData<MyVertex>(5, 10);
+        ///     readBack = _vertexBuffer.GetData<MyVertex>(5 * Unsafe.SizeOf<MyVertex>(), 10 * Unsafe.SizeOf<MyVertex>());
         ///
         ///     // Get the data back out from the buffer, using index 5 and up to 10 vertices, storing at index 2.
-        ///     _vertexBuffer.GetData<MyVertex>(readBack, 5, 10, 2);
+        ///     _vertexBuffer.GetData<MyVertex>(readBack, 5 * Unsafe.SizeOf<MyVertex>(), 10 * Unsafe.SizeOf<MyVertex>(), 2);
         /// }
         /// ]]>
         /// </code>
         /// </example>
         /// <seealso cref="GorgonNativeBuffer{T}"/>
-        public void SetData<T>(GorgonNativeBuffer<T> data, int sourceIndex = 0, int? count = null, int destIndex = 0, CopyMode copyMode = CopyMode.None)
+        public void SetData<T>(GorgonNativeBuffer<T> data, int sourceIndex = 0, int? count = null, int destOffset = 0, CopyMode copyMode = CopyMode.None)
             where T : unmanaged
         {
             data.ValidateObject(nameof(data));
@@ -854,14 +850,14 @@ namespace Gorgon.Graphics.Core
             int typeSize = Unsafe.SizeOf<T>();
 
 #if DEBUG            
-            ValidateGetSetData(sourceIndex, copyMode == CopyMode.None ? 0 :  destIndex, count.Value, data.Length, (int)((double)SizeInBytes / typeSize).FastFloor());
+            ValidateGetSetData(sourceIndex * typeSize, copyMode == CopyMode.None ? 0 :  destOffset, count.Value * typeSize, data.SizeInBytes, SizeInBytes);
 #endif
 
             unsafe
             {
                 fixed(T* dataPtr = &data[sourceIndex])
                 {
-                    SetDataPtr<T>(dataPtr, typeSize, data.Length, destIndex, count.Value, Usage != ResourceUsage.Default, copyMode);
+                    SetDataPtr<T>(dataPtr, typeSize, data.Length, destOffset, count.Value, Usage != ResourceUsage.Default, copyMode);
                 }
             }
         }
@@ -871,10 +867,10 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <typeparam name="T">The type of value, must be an unmanaged value type.</typeparam>
         /// <param name="value">The value to write.</param>
-        /// <param name="destIndex">[Optional] The index from the beginning in the buffer to start writing into.</param>
+        /// <param name="destOffset">[Optional] The offset, in bytes, from the beginning in the buffer to start writing into.</param>
         /// <param name="copyMode">[Optional] Flags to indicate how to copy the data.</param>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="destIndex"/> parameter is less than zero.</exception>
-        /// <exception cref="ArgumentException">Thrown when the <paramref name="destIndex"/> + size of <typeparamref name="T"/> (in bytes) exceeds the size of the destination buffer.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="destOffset"/> parameter is less than zero.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="destOffset"/> + size of <typeparamref name="T"/> (in bytes) exceeds the size of the destination buffer.</exception>
         /// <remarks>
         /// <para>
         /// This will upload the specified <paramref name="value"/> to this buffer. The method will determine how to best upload the data depending on the <see cref="GorgonGraphicsResource.Usage"/> of the
@@ -884,14 +880,14 @@ namespace Gorgon.Graphics.Core
         /// per frame, Default is good for once per frame or less).
         /// </para>
         /// <para>
-        /// If the user supplies a <paramref name="destIndex"/> the data will be copied to the buffer at the offset provided by <paramref name="destIndex"/>. 
+        /// If the user supplies a <paramref name="destOffset"/> the data will be copied to the buffer at the offset provided by <paramref name="destOffset"/>. 
         /// </para>
         /// <para>
         /// The <paramref name="copyMode"/> parameter defines how the copy will be performed. If the buffer has a <see cref="GorgonGraphicsResource.Usage"/> of <see cref="ResourceUsage.Dynamic"/> or
         /// <see cref="ResourceUsage.Default"/> and the <paramref name="copyMode"/> is set to <see cref="CopyMode.Discard"/> then the contents of the buffer are discarded before updating, if it is set to
         /// <see cref="CopyMode.NoOverwrite"/>, then the data will be copied to the destination if we know the GPU is not using the portion being updated. If the <paramref name="copyMode"/> is set to
         /// <see cref="CopyMode.None"/>, then <see cref="CopyMode.Discard"/> is used. For buffers created with a <see cref="GorgonGraphicsResource.Usage"/> of <see cref="ResourceUsage.Staging"/>, the
-        /// <see cref="CopyMode"/> will be ignored and act as though <see cref="CopyMode.None"/> were passed. If the mode is set to <see cref="CopyMode.None"/>, then the <paramref name="destIndex"/> 
+        /// <see cref="CopyMode"/> will be ignored and act as though <see cref="CopyMode.None"/> were passed. If the mode is set to <see cref="CopyMode.None"/>, then the <paramref name="destOffset"/> 
         /// parameter is ignored.
         /// </para>
         /// <note type="caution">
@@ -901,7 +897,7 @@ namespace Gorgon.Graphics.Core
         /// </note>
         /// </remarks>
         /// <example>
-        /// The following is an example showing how to upload vertices into a vertex buffer using different techniques:
+        /// The following is an example showing how to upload data into a constant buffer using different techniques:
         /// <code language="csharp">
         /// <![CDATA[
         /// // Our constant buffer data.  A matrix and a 4 component vector.
@@ -925,7 +921,7 @@ namespace Gorgon.Graphics.Core
         ///     };
         ///
         ///     // Create the constant buffer.
-        ///		_constantBuffer = new GorgonConstantBuffer(graphics, GorgonConstantBufferInfo.CreateFromType<MyVertex>() * 4);
+        ///		_constantBuffer = new GorgonConstantBuffer(graphics, GorgonConstantBufferInfo.CreateFromType<MyCBData>(count: 4));
         /// 
         ///		// Copy our data to the constant buffer.
         ///     _constantBuffer.SetData<MyCBData>(ref _cbData);
@@ -937,26 +933,26 @@ namespace Gorgon.Graphics.Core
         ///     };
         ///
         ///     // Write these constants to the 2nd index.  
-        ///     _constantBuffer.SetData<MyCBData>(ref _cbData, 2);
+        ///     _constantBuffer.SetData<MyCBData>(ref _cbData, 2 * Unsafe.SizeOf<MyCBData>());
         /// }
         /// ]]>
         /// </code>
         /// </example>
-	    public void SetData<T>(ref T value, int destIndex = 0, CopyMode copyMode = CopyMode.None)
+	    public void SetData<T>(ref T value, int destOffset = 0, CopyMode copyMode = CopyMode.None)
             where T : unmanaged
         {
             // Actual byte offset in the buffer.
             int typeSize = Unsafe.SizeOf<T>();
 
 #if DEBUG            
-            ValidateGetSetData(0, copyMode == CopyMode.None ? 0 :  destIndex, 1, 1, (int)((double)SizeInBytes / typeSize).FastFloor());
+            ValidateGetSetData(0, copyMode == CopyMode.None ? 0 :  destOffset, typeSize, typeSize, SizeInBytes);
 #endif
 
             unsafe
             {
                 fixed (T* valuePtr = &value)
                 {
-                    SetDataPtr<T>(valuePtr, typeSize, 1, destIndex, 1, Usage != ResourceUsage.Default, copyMode);
+                    SetDataPtr<T>(valuePtr, typeSize, 1, destOffset, 1, Usage != ResourceUsage.Default, copyMode);
                 }
             }
         }
@@ -965,11 +961,11 @@ namespace Gorgon.Graphics.Core
         /// Function to return the contents of this buffer into an array.
         /// </summary>
         /// <typeparam name="T">The type of data in the array, must be an unmanaged value type.</typeparam>
-        /// <param name="sourceIndex">The index within this buffer to start reading from.</param>
-        /// <param name="count">The number of items to read.</param>
+        /// <param name="sourceOffset">The offset, in bytes, within this buffer to start reading from.</param>
+        /// <param name="size">The number of bytes to read from this buffer.</param>
         /// <returns>An array with a copy of the data in this buffer.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="sourceIndex"/>, or the <paramref name="count"/> parameter is less than zero.</exception>
-        /// <exception cref="ArgumentException">Thrown when the <paramref name="sourceIndex"/> + <paramref name="count"/> exceeds the size of this buffer.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="sourceOffset"/>, or the <paramref name="size"/> parameter is less than zero.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="sourceOffset"/> + <paramref name="size"/> exceeds the size of this buffer.</exception>
         /// <remarks>
         /// <para>
         /// This will retrieve the data from this buffer and copy it into an array which is returned back to the caller as the type specified by <typeparamref name="T"/>. If the <see cref="IsCpuReadable"/>
@@ -987,8 +983,8 @@ namespace Gorgon.Graphics.Core
         /// </list>
         /// </para>
         /// <para>
-        /// If the user supplies a one of the <paramref name="sourceIndex"/>, or <paramref name="count"/> parameters, then a portion of the data will be copied from the buffer at the index provided by
-        /// <paramref name="sourceIndex"/>. 
+        /// If the user supplies a one of the <paramref name="sourceOffset"/>, or <paramref name="size"/> parameters, then a portion of the data will be copied from the buffer at the index provided by
+        /// <paramref name="sourceOffset"/>. 
         /// </para>
         /// <note type="caution">
         /// <para>
@@ -1027,10 +1023,10 @@ namespace Gorgon.Graphics.Core
         ///     _vertexBuffer.SetData<MyVertex>(_vertices, 5, 25);
         ///
         ///		// Copy our data to the vertex buffer, using the 5th index in the vertex array, 25 vertices, and storing at index 2 in the vertex buffer.
-        ///     _vertexBuffer.SetData<MyVertex>(_vertices, 5, 25, 2);
+        ///     _vertexBuffer.SetData<MyVertex>(_vertices, 5, 25, 2 * Unsafe.SizeOf<MyVertex>());
         ///
         ///     // Copy our data to the vertex buffer, using the 5th index in the native buffer, 25 vertices, and storing at index 2 in the vertex buffer, using a copy mode.
-        ///     _vertexBuffer.SetData(vertices, 5, 25, 2, CopyMode.NoOverWrite);
+        ///     _vertexBuffer.SetData(vertices, 5, 25, 2 * Unsafe.SizeOf<MyVertex>(), CopyMode.NoOverWrite);
         /// 
         ///     // Copy our data from a GorgonNativeBuffer.
         ///     using (GorgonNativeBuffer<MyVertex> vertices = new GorgonNativeBuffer<MyVertex>(100))
@@ -1041,48 +1037,50 @@ namespace Gorgon.Graphics.Core
         ///        _vertexBuffer.SetData(vertices);
         /// 
         ///        // Copy our data to the vertex buffer, using the 5th index in the native buffer, 25 vertices, and storing at index 2 in the vertex buffer.
-        ///        _vertexBuffer.SetData(vertices, 5, 25, 2);
+        ///        _vertexBuffer.SetData(vertices, 5, 25, 2 * Unsafe.SizeOf<MyVertex>());
         ///
         ///        // Copy our data to the vertex buffer, using the 5th index in the native buffer, 25 vertices, and storing at index 2 in the vertex buffer, using a copy mode.
-        ///        _vertexBuffer.SetData(vertices, 5, 25, 2, CopyMode.NoOverWrite);
+        ///        _vertexBuffer.SetData(vertices, 5, 25, 2 * Unsafe.SizeOf<MyVertex>(), CopyMode.NoOverWrite);
         ///
         ///        // Get the data back out from the buffer, using index 5 and up to 10 vertices, storing at index 2 of the native buffer.
-        ///        _vertexBuffer.GetData<MyVertex>(vertices, 5, 10, 2); 
+        ///        _vertexBuffer.GetData<MyVertex>(vertices, 5 * Unsafe.SizeOf<MyVertex>(), 10 * Unsafe.SizeOf<MyVertex>(), 2); 
         ///     }
         ///
         ///     // Get the data back out from the buffer.
         ///     MyVertex[] readBack = _vertexBuffer.GetData<MyVertex>();
         ///
         ///     // Get the data back out from the buffer, starting at index 5 and a count of 10 vertices.
-        ///     readBack = _vertexBuffer.GetData<MyVertex>(5, 10);
+        ///     readBack = _vertexBuffer.GetData<MyVertex>(5 * Unsafe.SizeOf<MyVertex>(), 10 * Unsafe.SizeOf<MyVertex>());
         ///
         ///     // Get the data back out from the buffer, using index 5 and up to 10 vertices, storing at index 2.
-        ///     _vertexBuffer.GetData<MyVertex>(readBack, 5, 10, 2);
+        ///     _vertexBuffer.GetData<MyVertex>(readBack, 5 * Unsafe.SizeOf<MyVertex>(), 10 * Unsafe.SizeOf<MyVertex>(), 2);
         /// }
         /// ]]>
         /// </code>
         /// </example>
-        public T[] GetData<T>(int sourceIndex = 0, int? count = null)
+        public T[] GetData<T>(int sourceOffset = 0, int? size = null)
             where T : unmanaged
         {
             int typeSize = Unsafe.SizeOf<T>();
 
-            if (count == null)
+            if (size == null)
             {
-                count = (int)((double)SizeInBytes / typeSize).FastFloor();
+                size = SizeInBytes - sourceOffset;
             }
 
+            int arraySize = (int)(((float)size.Value)/ typeSize).FastFloor();
+
 #if DEBUG            
-            ValidateGetSetData(sourceIndex, 0, count.Value, (int)((double)SizeInBytes / typeSize).FastFloor(), count.Value);
+            ValidateGetSetData(sourceOffset, 0, size.Value, SizeInBytes, size.Value);
 #endif
 
-            var result = new T[count.Value];
+            var result = new T[arraySize];
 
             unsafe
             {
                 fixed (T* resultPtr = &result[0])
                 {
-                    GetDataPtr<T>(resultPtr, typeSize, sourceIndex, count.Value);
+                    GetDataPtr<T>(resultPtr, typeSize, sourceOffset, size.Value);
                 }
             }
 
@@ -1094,15 +1092,15 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <typeparam name="T">The type of data in the array, must be an unmanaged value type.</typeparam>
         /// <param name="destination">The <see cref="GorgonNativeBuffer{T}"/> that will receive the data.</param>
-        /// <param name="sourceIndex">The index within this buffer to start reading from.</param>
-        /// <param name="count">The number of items to read.</param>
+        /// <param name="sourceOffset">The offset, in bytes, within this buffer to start reading from.</param>
+        /// <param name="size">The number of bytes to read from this buffer.</param>
         /// <param name="destIndex">The index in the native buffer to start copying data into.</param>
         /// <returns>An array with a copy of the data in this buffer.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="destination"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="sourceIndex"/>, <paramref name="destIndex"/>, or the <paramref name="count"/> parameter is less than zero.</exception>
-        /// <exception cref="ArgumentException">Thrown when the <paramref name="sourceIndex"/> + <paramref name="count"/> exceeds the size of this buffer.
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="sourceOffset"/>, <paramref name="destIndex"/>, or the <paramref name="size"/> parameter is less than zero.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="sourceOffset"/> + <paramref name="size"/> exceeds the size of this buffer.
         /// <para>-or-</para>
-        /// <para>Thrown when the <paramref name="destIndex"/> + <paramref name="count"/> exceeds the size of the <paramref name="destination"/> <see cref="GorgonNativeBuffer{T}"/>.</para>
+        /// <para>Thrown when the <paramref name="destIndex"/> + <paramref name="size"/> exceeds the size of the <paramref name="destination"/> <see cref="GorgonNativeBuffer{T}"/>.</para>
         /// </exception>
         /// <remarks>
         /// <para>
@@ -1121,8 +1119,8 @@ namespace Gorgon.Graphics.Core
         /// </list>
         /// </para>
         /// <para>
-        /// If the user supplies a one of the <paramref name="sourceIndex"/>, <paramref name="destIndex"/>, or <paramref name="count"/> parameters, then a portion of the data will be copied from the
-        /// buffer at the index provided by <paramref name="sourceIndex"/>, and written into the array at the <paramref name="destIndex"/>. 
+        /// If the user supplies a one of the <paramref name="sourceOffset"/>, <paramref name="destIndex"/>, or <paramref name="size"/> parameters, then a portion of the data will be copied from the
+        /// buffer at the index provided by <paramref name="sourceOffset"/>, and written into the array at the <paramref name="destIndex"/>. 
         /// </para>
         /// <note type="caution">
         /// <para>
@@ -1162,10 +1160,10 @@ namespace Gorgon.Graphics.Core
         ///     _vertexBuffer.SetData<MyVertex>(_vertices, 5, 25);
         ///
         ///		// Copy our data to the vertex buffer, using the 5th index in the vertex array, 25 vertices, and storing at index 2 in the vertex buffer.
-        ///     _vertexBuffer.SetData<MyVertex>(_vertices, 5, 25, 2);
+        ///     _vertexBuffer.SetData<MyVertex>(_vertices, 5, 25, 2 * Unsafe.SizeOf<MyVertex>());
         ///
         ///     // Copy our data to the vertex buffer, using the 5th index in the native buffer, 25 vertices, and storing at index 2 in the vertex buffer, using a copy mode.
-        ///     _vertexBuffer.SetData(vertices, 5, 25, 2, CopyMode.NoOverWrite);
+        ///     _vertexBuffer.SetData(vertices, 5, 25, 2 * Unsafe.SizeOf<MyVertex>(), CopyMode.NoOverWrite);
         /// 
         ///     // Copy our data from a GorgonNativeBuffer.
         ///     using (GorgonNativeBuffer<MyVertex> vertices = new GorgonNativeBuffer<MyVertex>(100))
@@ -1176,48 +1174,48 @@ namespace Gorgon.Graphics.Core
         ///        _vertexBuffer.SetData(vertices);
         /// 
         ///        // Copy our data to the vertex buffer, using the 5th index in the native buffer, 25 vertices, and storing at index 2 in the vertex buffer.
-        ///        _vertexBuffer.SetData(vertices, 5, 25, 2);
+        ///        _vertexBuffer.SetData(vertices, 5, 25, 2 * Unsafe.SizeOf<MyVertex>());
         ///
         ///        // Copy our data to the vertex buffer, using the 5th index in the native buffer, 25 vertices, and storing at index 2 in the vertex buffer, using a copy mode.
-        ///        _vertexBuffer.SetData(vertices, 5, 25, 2, CopyMode.NoOverWrite);
+        ///        _vertexBuffer.SetData(vertices, 5, 25, 2 * Unsafe.SizeOf<MyVertex>(), CopyMode.NoOverWrite);
         ///
         ///        // Get the data back out from the buffer, using index 5 and up to 10 vertices, storing at index 2 of the native buffer.
-        ///        _vertexBuffer.GetData<MyVertex>(vertices, 5, 10, 2); 
+        ///        _vertexBuffer.GetData<MyVertex>(vertices, 5 * Unsafe.SizeOf<MyVertex>(), 10 * Unsafe.SizeOf<MyVertex>(), 2); 
         ///     }
         ///
         ///     // Get the data back out from the buffer.
         ///     MyVertex[] readBack = _vertexBuffer.GetData<MyVertex>();
         ///
         ///     // Get the data back out from the buffer, starting at index 5 and a count of 10 vertices.
-        ///     readBack = _vertexBuffer.GetData<MyVertex>(5, 10);
+        ///     readBack = _vertexBuffer.GetData<MyVertex>(5 * Unsafe.SizeOf<MyVertex>(), 10 * Unsafe.SizeOf<MyVertex>());
         ///
         ///     // Get the data back out from the buffer, using index 5 and up to 10 vertices, storing at index 2.
-        ///     _vertexBuffer.GetData<MyVertex>(readBack, 5, 10, 2);
+        ///     _vertexBuffer.GetData<MyVertex>(readBack, 5 * Unsafe.SizeOf<MyVertex>(), 10 * Unsafe.SizeOf<MyVertex>(), 2);
         /// }
         /// ]]>
         /// </code>
         /// </example>
-        public void GetData<T>(GorgonNativeBuffer<T> destination, int sourceIndex = 0, int? count = null, int destIndex = 0)
+        public void GetData<T>(GorgonNativeBuffer<T> destination, int sourceOffset = 0, int? size = null, int destIndex = 0)
             where T : unmanaged
         {
             destination.ValidateObject(nameof(destination));
 
             int typeSize = Unsafe.SizeOf<T>();
 
-            if (count == null)
+            if (size == null)
             {
-                count = (int)((double)SizeInBytes / typeSize).FastFloor() - sourceIndex;
+                size = SizeInBytes - sourceOffset;
             }
             
 #if DEBUG            
-            ValidateGetSetData(sourceIndex, destIndex, count.Value, (int)((double)SizeInBytes / typeSize).FastFloor(), destination.Length);
+            ValidateGetSetData(sourceOffset, destIndex * typeSize, size.Value, SizeInBytes, destination.SizeInBytes);
 #endif
 
             unsafe
             {
                 fixed(T* destPtr = &destination[destIndex])
                 {
-                    GetDataPtr<T>(destPtr, typeSize, sourceIndex, count.Value);
+                    GetDataPtr<T>(destPtr, typeSize, sourceOffset, size.Value);
                 }
             }
         }
@@ -1227,15 +1225,15 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <typeparam name="T">The type of data in the array, must be an unmanaged value type.</typeparam>
         /// <param name="destination">The array that will receive the data.</param>
-        /// <param name="sourceIndex">The index within this buffer to start reading from.</param>
-        /// <param name="count">The number of items to read.</param>
+        /// <param name="sourceOffset">The offset, in bytes, within this buffer to start reading from.</param>
+        /// <param name="size">The number of bytes to read from this buffer.</param>
         /// <param name="destIndex">The index in the array to start copying data into.</param>
         /// <returns>An array with a copy of the data in this buffer.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="destination"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="sourceIndex"/>, <paramref name="destIndex"/>, or the <paramref name="count"/> parameter is less than zero.</exception>
-        /// <exception cref="ArgumentException">Thrown when the <paramref name="sourceIndex"/> + <paramref name="count"/> exceeds the size of this buffer.
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="sourceOffset"/>, <paramref name="destIndex"/>, or the <paramref name="size"/> parameter is less than zero.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="sourceOffset"/> + <paramref name="size"/> exceeds the size of this buffer.
         /// <para>-or-</para>
-        /// <para>Thrown when the <paramref name="destIndex"/> + <paramref name="count"/> exceeds the size of the <paramref name="destination"/> array.</para>
+        /// <para>Thrown when the <paramref name="destIndex"/> + <paramref name="size"/> exceeds the size of the <paramref name="destination"/> array.</para>
         /// </exception>
         /// <remarks>
         /// <para>
@@ -1253,8 +1251,8 @@ namespace Gorgon.Graphics.Core
         /// </list>
         /// </para>
         /// <para>
-        /// If the user supplies a one of the <paramref name="sourceIndex"/>, <paramref name="destIndex"/>, or <paramref name="count"/> parameters, then a portion of the data will be copied from the
-        /// buffer at the index provided by <paramref name="sourceIndex"/>, and written into the array at the <paramref name="destIndex"/>. 
+        /// If the user supplies a one of the <paramref name="sourceOffset"/>, <paramref name="destIndex"/>, or <paramref name="size"/> parameters, then a portion of the data will be copied from the
+        /// buffer at the index provided by <paramref name="sourceOffset"/>, and written into the array at the <paramref name="destIndex"/>. 
         /// </para>
         /// <note type="caution">
         /// <para>
@@ -1293,10 +1291,10 @@ namespace Gorgon.Graphics.Core
         ///     _vertexBuffer.SetData<MyVertex>(_vertices, 5, 25);
         ///
         ///		// Copy our data to the vertex buffer, using the 5th index in the vertex array, 25 vertices, and storing at index 2 in the vertex buffer.
-        ///     _vertexBuffer.SetData<MyVertex>(_vertices, 5, 25, 2);
+        ///     _vertexBuffer.SetData<MyVertex>(_vertices, 5, 25, 2 * Unsafe.SizeOf<MyVertex>());
         ///
         ///     // Copy our data to the vertex buffer, using the 5th index in the native buffer, 25 vertices, and storing at index 2 in the vertex buffer, using a copy mode.
-        ///     _vertexBuffer.SetData(vertices, 5, 25, 2, CopyMode.NoOverWrite);
+        ///     _vertexBuffer.SetData(vertices, 5, 25, 2 * Unsafe.SizeOf<MyVertex>(), CopyMode.NoOverWrite);
         /// 
         ///     // Copy our data from a GorgonNativeBuffer.
         ///     using (GorgonNativeBuffer<MyVertex> vertices = new GorgonNativeBuffer<MyVertex>(100))
@@ -1307,48 +1305,48 @@ namespace Gorgon.Graphics.Core
         ///        _vertexBuffer.SetData(vertices);
         /// 
         ///        // Copy our data to the vertex buffer, using the 5th index in the native buffer, 25 vertices, and storing at index 2 in the vertex buffer.
-        ///        _vertexBuffer.SetData(vertices, 5, 25, 2);
+        ///        _vertexBuffer.SetData(vertices, 5, 25, 2 * Unsafe.SizeOf<MyVertex>());
         ///
         ///        // Copy our data to the vertex buffer, using the 5th index in the native buffer, 25 vertices, and storing at index 2 in the vertex buffer, using a copy mode.
-        ///        _vertexBuffer.SetData(vertices, 5, 25, 2, CopyMode.NoOverWrite);
+        ///        _vertexBuffer.SetData(vertices, 5, 25, 2 * Unsafe.SizeOf<MyVertex>(), CopyMode.NoOverWrite);
         ///
         ///        // Get the data back out from the buffer, using index 5 and up to 10 vertices, storing at index 2 of the native buffer.
-        ///        _vertexBuffer.GetData<MyVertex>(vertices, 5, 10, 2); 
+        ///        _vertexBuffer.GetData<MyVertex>(vertices, 5 * Unsafe.SizeOf<MyVertex>(), 10 * Unsafe.SizeOf<MyVertex>(), 2); 
         ///     }
         ///
         ///     // Get the data back out from the buffer.
         ///     MyVertex[] readBack = _vertexBuffer.GetData<MyVertex>();
         ///
         ///     // Get the data back out from the buffer, starting at index 5 and a count of 10 vertices.
-        ///     readBack = _vertexBuffer.GetData<MyVertex>(5, 10);
+        ///     readBack = _vertexBuffer.GetData<MyVertex>(5 * Unsafe.SizeOf<MyVertex>(), 10 * Unsafe.SizeOf<MyVertex>());
         ///
         ///     // Get the data back out from the buffer, using index 5 and up to 10 vertices, storing at index 2.
-        ///     _vertexBuffer.GetData<MyVertex>(readBack, 5, 10, 2);
+        ///     _vertexBuffer.GetData<MyVertex>(readBack, 5 * Unsafe.SizeOf<MyVertex>(), 10 * Unsafe.SizeOf<MyVertex>(), 2);
         /// }
         /// ]]>
         /// </code>
         /// </example>
-        public void GetData<T>(T[] destination, int sourceIndex = 0, int? count = null, int destIndex = 0)
+        public void GetData<T>(T[] destination, int sourceOffset = 0, int? size = null, int destIndex = 0)
             where T : unmanaged
         {
             destination.ValidateObject(nameof(destination));
 
             int typeSize = Unsafe.SizeOf<T>();
 
-            if (count == null)
+            if (size == null)
             {
-                count = (int)((double)SizeInBytes / typeSize).FastFloor() - sourceIndex;
+                size = SizeInBytes - sourceOffset;
             }
             
 #if DEBUG            
-            ValidateGetSetData(sourceIndex, destIndex, count.Value, (int)((double)SizeInBytes / typeSize).FastFloor(), destination.Length);
+            ValidateGetSetData(sourceOffset, destIndex * typeSize, size.Value, SizeInBytes, destination.Length * typeSize);
 #endif
 
             unsafe
             {
                 fixed(T* destPtr = &destination[destIndex])
                 {
-                    GetDataPtr<T>(destPtr, typeSize, sourceIndex, count.Value);
+                    GetDataPtr<T>(destPtr, typeSize, sourceOffset, size.Value);
                 }
             }
         }
@@ -1358,9 +1356,9 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <typeparam name="T">The type of value, must be an unmanaged value type.</typeparam>
         /// <param name="value">The value to write.</param>
-        /// <param name="sourceIndex">[Optional] The index from the beginning in the buffer to start reading from.</param>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="sourceIndex"/> parameter is less than zero.</exception>
-        /// <exception cref="ArgumentException">Thrown when the <paramref name="sourceIndex"/> + size of <typeparamref name="T"/> (in bytes) exceeds the size of the destination buffer.</exception>
+        /// <param name="sourceOffset">[Optional] The offset, in bytes, from the beginning in the buffer to start reading from.</param>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="sourceOffset"/> parameter is less than zero.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="sourceOffset"/> + size of <typeparamref name="T"/> (in bytes) exceeds the size of the destination buffer.</exception>
         /// <remarks>
         /// <para>
         /// This will upload the specified <paramref name="value"/> to this buffer. The method will determine how to best upload the data depending on the <see cref="GorgonGraphicsResource.Usage"/> of the
@@ -1370,7 +1368,7 @@ namespace Gorgon.Graphics.Core
         /// per frame, Default is good for once per frame or less).
         /// </para>
         /// <para>
-        /// If the user supplies a <paramref name="sourceIndex"/> the data will be copied to the buffer at the offset provided by <paramref name="sourceIndex"/>. 
+        /// If the user supplies a <paramref name="sourceOffset"/> the data will be copied to the buffer at the offset provided by <paramref name="sourceOffset"/>. 
         /// </para>
         /// <note type="caution">
         /// <para>
@@ -1382,52 +1380,75 @@ namespace Gorgon.Graphics.Core
         /// The following is an example showing how to upload vertices into a vertex buffer using different techniques:
         /// <code language="csharp">
         /// <![CDATA[
-        /// // Our constant buffer data.  A matrix and a 4 component vector.
+        /// // Our vertex, with a position and color component.
         /// [StructLayout(LayoutKind = LayoutKind.Sequential)] 
-        /// struct MyCBData
+        /// struct MyVertex
         /// {
-        ///		public Matrix ConstantValue1;
-        ///		public Vector4 ConstantValue2;
+        ///		public Vector4 Position;
+        ///		public Vector4 Color;
         /// }
         /// 
         /// GorgonGraphics graphics;
-        /// MyCBData _cbData;
-        /// GorgonConstantBuffer _constantBuffer;
+        /// MyVertex[] _vertices = new MyVertex[100];
+        /// GorgonVertexBuffer _vertexBuffer;
         /// 
-        /// void InitializeConstantBuffer()
+        /// void InitializeVertexBuffer()
         /// {
-        ///		_cbData = new MyCBData
-        ///     {
-        ///         ConstantValue1 = WorldMatrix,
-        ///         ConstantValue2 = AVector4
-        ///     };
-        ///
-        ///     // Create the constant buffer.
-        ///		_constantBuffer = new GorgonConstantBuffer(graphics, GorgonConstantBufferInfo.CreateFromType<MyVertex>() * 4);
+        ///		_vertices = ... // Fill your vertex array here.
         /// 
-        ///		// Copy our data to the constant buffer.
-        ///     _constantBuffer.SetData<MyCBData>(ref _cbData);
+        ///		// Create the vertex buffer large enough so that it'll hold 100 vertices.
+        ///		_vertexBuffer = new GorgonVertexBuffer(graphics, GorgonVertexBufferInfo.CreateFromType<MyVertex>(_vertices.Length, Usage.Default));
+        /// 
+        ///		// Copy our data to the vertex buffer.
+        ///     _vertexBuffer.SetData<MyVertex>(_vertices);
+        /// 
+        ///		// Copy our data to the vertex buffer, using the 5th index in the vertex array, and 25 vertices.
+        ///     _vertexBuffer.SetData<MyVertex>(_vertices, 5, 25);
         ///
-        ///     _cbData = new MyCBData
+        ///		// Copy our data to the vertex buffer, using the 5th index in the vertex array, 25 vertices, and storing at index 2 in the vertex buffer.
+        ///     _vertexBuffer.SetData<MyVertex>(_vertices, 5, 25, 2 * Unsafe.SizeOf<MyVertex>());
+        ///
+        ///     // Copy our data to the vertex buffer, using the 5th index in the native buffer, 25 vertices, and storing at index 2 in the vertex buffer, using a copy mode.
+        ///     _vertexBuffer.SetData(vertices, 5, 25, 2 * Unsafe.SizeOf<MyVertex>(), CopyMode.NoOverWrite);
+        /// 
+        ///     // Copy our data from a GorgonNativeBuffer.
+        ///     using (GorgonNativeBuffer<MyVertex> vertices = new GorgonNativeBuffer<MyVertex>(100))
         ///     {
-        ///         ConstantValue1 = ProjectionMatrix,
-        ///         ConstantValue2 = Vector4.One
-        ///     };
+        ///        // Copy vertices into the native buffer here....
         ///
-        ///     // Write these constants to the 2nd index.  
-        ///     _constantBuffer.SetData<MyCBData>(ref _cbData, 2);
+        ///        // Copy everything.
+        ///        _vertexBuffer.SetData(vertices);
+        /// 
+        ///        // Copy our data to the vertex buffer, using the 5th index in the native buffer, 25 vertices, and storing at index 2 in the vertex buffer.
+        ///        _vertexBuffer.SetData(vertices, 5, 25, 2 * Unsafe.SizeOf<MyVertex>());
+        ///
+        ///        // Copy our data to the vertex buffer, using the 5th index in the native buffer, 25 vertices, and storing at index 2 in the vertex buffer, using a copy mode.
+        ///        _vertexBuffer.SetData(vertices, 5, 25, 2 * Unsafe.SizeOf<MyVertex>(), CopyMode.NoOverWrite);
+        ///
+        ///        // Get the data back out from the buffer, using index 5 and up to 10 vertices, storing at index 2 of the native buffer.
+        ///        _vertexBuffer.GetData<MyVertex>(vertices, 5 * Unsafe.SizeOf<MyVertex>(), 10 * Unsafe.SizeOf<MyVertex>(), 2); 
+        ///     }
+        ///
+        ///     // Get the data back out from the buffer.
+        ///     MyVertex[] readBack = _vertexBuffer.GetData<MyVertex>();
+        ///
+        ///     // Get the data back out from the buffer, starting at index 5 and a count of 10 vertices.
+        ///     readBack = _vertexBuffer.GetData<MyVertex>(5 * Unsafe.SizeOf<MyVertex>(), 10 * Unsafe.SizeOf<MyVertex>());
+        ///
+        ///     // Get the data back out from the buffer, using index 5 and up to 10 vertices, storing at index 2.
+        ///     _vertexBuffer.GetData<MyVertex>(readBack, 5 * Unsafe.SizeOf<MyVertex>(), 10 * Unsafe.SizeOf<MyVertex>(), 2);
         /// }
         /// ]]>
         /// </code>
         /// </example>
-	    public void GetData<T>(out T value, int sourceIndex = 0)
+	    public void GetData<T>(out T value, int sourceOffset = 0)
             where T : unmanaged
         {
             // Actual byte offset in the buffer.
             int typeSize = Unsafe.SizeOf<T>();
            
 #if DEBUG            
-            ValidateGetSetData(sourceIndex, 0, 1, (int)((double)SizeInBytes / typeSize).FastFloor(), 1);
+            ValidateGetSetData(sourceOffset, 0, typeSize, SizeInBytes, typeSize);
 #endif
             value = default;
 
@@ -1435,7 +1456,7 @@ namespace Gorgon.Graphics.Core
             {
                 fixed(T* valuePtr = &value)
                 {
-                    GetDataPtr<T>(valuePtr, typeSize, sourceIndex, 1);
+                    GetDataPtr<T>(valuePtr, typeSize, sourceOffset, 1);
                 }
             }
         }

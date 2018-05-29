@@ -436,11 +436,6 @@ namespace Gorgon.Graphics.Core
                 return false;
             }
 
-            if (other == this)
-            {
-                return true;
-            }
-
             if (IsDirty)
             {
                 // Update the dirty item state on this instance so we can cut down on some checking.

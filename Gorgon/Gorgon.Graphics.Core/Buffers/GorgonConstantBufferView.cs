@@ -11,8 +11,21 @@ namespace Gorgon.Graphics.Core
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This type of view will allow applications to access a <see cref="GorgonConstantBuffer"/> that may be larger than the 4096 float4 limit. This is performed by offering a "window" into the constant
+    /// This type of view will allow applications to access a <see cref="GorgonConstantBuffer"/> that may be larger than the 4096 constant limit. This is performed by offering a "window" into the constant
     /// buffer data that can be used to tell a shader which portion of the buffer to access at any given time.
+    /// </para>
+    /// <para>
+    /// <note type="important">
+    /// <para>
+    /// Due to the nature of constant buffers on GPU hardware, these views are not aligned to a constant (which is a float4, or 16 bytes), but rather aligned to 16 constants (16 float4 values, or 256 
+    /// bytes). This requires that your buffer be set up to be a multiple of 256 bytes in its <see cref="IGorgonConstantBufferInfo.SizeInBytes"/>.  This makes each element in the view the same as 16 float4
+    /// values (or 256 bytes). That means when an offset of 2, and a count of 4 is set in the view, it is actually at an offset of 32 float4 values (512 bytes), and covers a range of 64 float4 values
+    /// (1024 bytes). Because of this, care should be taken to ensure the buffer matches this alignment if constant buffer offsets/counts are to be used in your application.
+    /// </para>
+    /// <para>
+    /// If no offsetting into the buffer is required, then the above information is not applicable.
+    /// </para>
+    /// </note>
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonConstantBuffer"/>
@@ -28,6 +41,15 @@ namespace Gorgon.Graphics.Core
 
         #region Properties.
         /// <summary>
+        /// Property to set or return whether the view constant range has been adjusted
+        /// </summary>
+        internal bool ViewAdjusted
+        {
+            get;
+            set;
+        } = true;
+
+        /// <summary>
         /// Property to return the buffer associated with this view.
         /// </summary>
         public GorgonConstantBuffer Buffer => _buffer;
@@ -35,10 +57,12 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the size of a single element in the buffer, in bytes.
         /// </summary>
-        /// <remarks>
-        /// An element is a single float4 value (4 floating point values).
-        /// </remarks>
-        public int ElementSize => 16;
+        public int ElementSize => 256;
+
+        /// <summary>
+        /// Property to return the size of a single float4 constant in the buffer, in bytes.
+        /// </summary>
+        public int ConstantSize => 16;
 
         /// <summary>
         /// Property to return the intended usage flags for this texture.
@@ -61,11 +85,20 @@ namespace Gorgon.Graphics.Core
         public GorgonGraphics Graphics => Buffer?.Graphics;
 
         /// <summary>
-        /// Property to return the total number of elements in the buffer.
+        /// Property to return the total number of constants in the buffer.
         /// </summary>
         /// <remarks>
-        /// An element is a single float4 value inside of the buffer. 
+        /// A constant is a single float4 value (16 bytes). 
         /// </remarks>
+        public int TotalConstantCount => Buffer?.TotalConstantCount ?? 0;
+
+        /// <summary>
+        /// Property to return the total number of elements in the buffer.
+        /// </summary>
+        /// <returns>
+        /// An element is equal to 16 constants, or 256 bytes.
+        /// </returns>
+        /// <seealso cref="ElementSize"/>
         public int TotalElementCount
         {
             get;
@@ -75,7 +108,8 @@ namespace Gorgon.Graphics.Core
         /// Property to return the index of the first element in the buffer to view.
         /// </summary>
         /// <remarks>
-        /// An element is a single float4 value inside of the buffer. 
+        /// An element refers to a group fo 16 constants (where a constant is a single float4, or 16 bytes).  If the start element is set to 2, then the offset in the buffer will be 512 bytes 
+        /// (or 32 constants).
         /// </remarks>
         public int StartElement
         {
@@ -87,7 +121,7 @@ namespace Gorgon.Graphics.Core
         /// Property to return the number of elements to view.
         /// </summary>
         /// <remarks>
-        /// An element is a single float4 value inside of the buffer. 
+        /// An element refers to a group fo 16 constants (where a constant is a single float4, or 16 bytes).  If the element count is set to 4, then the view will cover 1024 bytes (or 64 constants).
         /// </remarks>
         public int ElementCount
         {
@@ -98,34 +132,36 @@ namespace Gorgon.Graphics.Core
 
         #region Methods.
         /// <summary>
-        /// Function to change the view "window" into the buffer.
+        /// Function to change the view element range in the associated constant buffer.
         /// </summary>
-        /// <param name="startElement">The index of the first element in the buffer to view.</param>
-        /// <param name="elementCount">[Optional] The number of elements to view.</param>
+        /// <param name="firstElement">The index of the first element in the buffer to view.</param>
+        /// <param name="elementCount">[Optional] The number of constants to view.</param>
         /// <remarks>
         /// <para>
-        /// This will adjust the <see cref="StartElement"/>, and <see cref="ElementCount"/> to allow an application to change the "window" of data in the constant buffer. This allows applications to update
-        /// the range of the view for a shader.
+        /// This will adjust the <see cref="StartElement"/>, and <see cref="ElementCount"/> to allow an application to change the area in the buffer being viewed by a shader. This allows applications to 
+        /// move the range of viewed constants around on demand.
         /// </para>
         /// <para>
-        /// The <paramref name="startElement"/> parameter must be between 0 and the <seealso cref="TotalElementCount"/>-1.  If it is not it will be constrained to those values to ensure there is no out of
+        /// The <paramref name="firstElement"/> parameter must be between 0 and <seealso cref="TotalElementCount"/> - 1.  If it is not it will be constrained to those values to ensure there is no out of
         /// bounds access to the buffer.  
         /// </para>
         /// <para>
-        /// If the <paramref name="elementCount"/> parameter is omitted (or equal to or less than 0), then the remainder of the buffer is mapped to the view up to 4096 elements. If it is provided, then the
-        /// number of elements will be mapped to the view, up to a maximum of 4096 elements.  If the value exceeds 4096, then it will be constrained to 4096.
+        /// If the <paramref name="elementCount"/> parameter is omitted (or less than 1), then the remainder of the buffer is mapped to the view up to 256 elements (4096 constants, or 65536 bytes). If it
+        /// is provided, then the number of elements will be mapped to the view, up to a maximum of 256 elements.  If the value exceeds 256, then it will be constrained to 256.
         /// </para>
         /// </remarks>
-        public void AdjustView(int startElement, int elementCount = 0)
+        public void AdjustView(int firstElement, int elementCount = 0)
         {
-            StartElement = startElement.Min(TotalElementCount - 1).Max(0);
+            StartElement = firstElement.Min(TotalElementCount - 1).Max(0);
 
             if (elementCount <= 0)
             {
-                ElementCount = TotalElementCount - StartElement;
+                elementCount = TotalConstantCount - StartElement;
             }
 
-            ElementCount = ElementCount.Min(4096).Max(1);
+            ElementCount = elementCount.Min(256).Max(1);
+
+            ViewAdjusted = true;
         }
 
         /// <summary>
@@ -148,8 +184,8 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="graphics">The graphics interface to use when creating the target.</param>
         /// <param name="info">The information about the texture.</param>
-        /// <param name="startElement">[Optional] The index of the first element within the buffer to view.</param>
-        /// <param name="elementCount">[Optional] The number of elements in the buffer to view.</param>
+        /// <param name="startConstant">[Optional] The index of the first constant within the buffer to view.</param>
+        /// <param name="constantCount">[Optional] The number of constants in the buffer to view.</param>
         /// <returns>A new <see cref="GorgonConstantBufferView"/>.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, or <paramref name="info"/> parameter is <b>null</b>.</exception>
         /// <remarks>
@@ -163,19 +199,19 @@ namespace Gorgon.Graphics.Core
         /// user knows what they are doing and will handle the disposal of the buffer and view on their own.
         /// </para>
         /// <para>
-        /// If provided, the <paramref name="startElement"/> parameter must be between 0 and the total number of elements in the buffer.  If it is not it will be constrained to those values to ensure there 
+        /// If provided, the <paramref name="startConstant"/> parameter must be between 0 and the total number of constants in the buffer.  If it is not it will be constrained to those values to ensure there 
         /// is no out of bounds access to the buffer.  
         /// </para>
         /// <para>
-        /// If the <paramref name="elementCount"/> parameter is omitted (or equal to or less than 0), then the remainder of the buffer is mapped to the view up to 4096 elements. If it is provided, then the 
-        /// number of elements will be mapped to the view, up to a maximum of 4096 elements.  If the value exceeds 4096, then it will be constrained to 4096.
+        /// If the <paramref name="constantCount"/> parameter is omitted (or equal to or less than 0), then the remainder of the buffer is mapped to the view up to 4096 constants. If it is provided, then the 
+        /// number of constants will be mapped to the view, up to a maximum of 4096 constants.  If the value exceeds 4096, then it will be constrained to 4096.
         /// </para>
         /// <para>
-        /// A constant buffer element is a single float4 value (4 floating point values). 
+        /// A constant buffer constant is a single float4 value (4 floating point values). 
         /// </para>
         /// </remarks>
         /// <seealso cref="GorgonConstantBuffer"/>
-        public static GorgonConstantBufferView CreateConstantBuffer(GorgonGraphics graphics, IGorgonConstantBufferInfo info, int startElement = 0, int elementCount = 0)
+        public static GorgonConstantBufferView CreateConstantBuffer(GorgonGraphics graphics, IGorgonConstantBufferInfo info, int startConstant = 0, int constantCount = 0)
         {
             if (graphics == null)
             {
@@ -188,7 +224,7 @@ namespace Gorgon.Graphics.Core
             }
 
             var buffer = new GorgonConstantBuffer(graphics, info);
-            GorgonConstantBufferView view = buffer.GetView(startElement, elementCount);
+            GorgonConstantBufferView view = buffer.GetView(startConstant, constantCount);
             view._ownsBuffer = true;
             return view;
         }
@@ -201,8 +237,8 @@ namespace Gorgon.Graphics.Core
         /// <param name="value">The value to store in the buffer.</param>
         /// <param name="name">[Optional] The name of the buffer.</param>
         /// <param name="usage">[Optional] The intended usage of the buffer.</param>
-        /// <param name="startElement">[Optional] The index of the first element within the buffer to view.</param>
-        /// <param name="elementCount">[Optional] The number of elements in the buffer to view.</param>
+        /// <param name="firstElement">[Optional] The index of the first constant within the buffer to view.</param>
+        /// <param name="elementCount">[Optional] The number of constants in the buffer to view.</param>
         /// <returns>A new <see cref="GorgonConstantBufferView"/>.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
         /// <remarks>
@@ -217,22 +253,22 @@ namespace Gorgon.Graphics.Core
         /// user knows what they are doing and will handle the disposal of the buffer and view on their own.
         /// </para>
         /// <para>
-        /// If provided, the <paramref name="startElement"/> parameter must be between 0 and the total number of elements in the buffer.  If it is not it will be constrained to those values to ensure there 
-        /// is no out of bounds access to the buffer.  
+        /// The <paramref name="firstElement"/> parameter must be between 0 and <seealso cref="TotalElementCount"/> - 1.  If it is not it will be constrained to those values to ensure there is no out of
+        /// bounds access to the buffer.  
         /// </para>
         /// <para>
-        /// If the <paramref name="elementCount"/> parameter is omitted (or equal to or less than 0), then the remainder of the buffer is mapped to the view up to 4096 elements. If it is provided, then the 
-        /// number of elements will be mapped to the view, up to a maximum of 4096 elements.  If the value exceeds 4096, then it will be constrained to 4096.
+        /// If the <paramref name="elementCount"/> parameter is omitted (or less than 1), then the remainder of the buffer is mapped to the view up to 256 elements (4096 constants, or 65536 bytes). If it
+        /// is provided, then the number of elements will be mapped to the view, up to a maximum of 256 elements.  If the value exceeds 256, then it will be constrained to 256.
         /// </para>
         /// <para>
         /// The <paramref name="usage"/> parameter defines where the GPU should place the resource for best performance.
         /// </para>
         /// <para>
-        /// A constant buffer element is a single float4 value (4 floating point values). 
+        /// A constant buffer constant is a single float4 value (4 floating point values). 
         /// </para>
         /// </remarks>
         /// <seealso cref="GorgonConstantBuffer"/>
-        public static GorgonConstantBufferView CreateConstantBuffer<T>(GorgonGraphics graphics, ref T value, string name = null, ResourceUsage usage = ResourceUsage.Default, int startElement = 0, int elementCount = 0)
+        public static GorgonConstantBufferView CreateConstantBuffer<T>(GorgonGraphics graphics, ref T value, string name = null, ResourceUsage usage = ResourceUsage.Default, int firstElement = 0, int elementCount = 0)
             where T : unmanaged
         {
             if (graphics == null)
@@ -246,7 +282,7 @@ namespace Gorgon.Graphics.Core
                                                                 SizeInBytes = Unsafe.SizeOf<T>()
                                                             });
             buffer.SetData(ref value);
-            GorgonConstantBufferView view = buffer.GetView(startElement, elementCount);
+            GorgonConstantBufferView view = buffer.GetView(firstElement, elementCount);
             view._ownsBuffer = true;
             return view;
         }
@@ -259,8 +295,8 @@ namespace Gorgon.Graphics.Core
         /// <param name="value">The array of values to store in the buffer.</param>
         /// <param name="name">[Optional] The name of the buffer.</param>
         /// <param name="usage">[Optional] The intended usage of the buffer.</param>
-        /// <param name="startElement">[Optional] The index of the first element within the buffer to view.</param>
-        /// <param name="elementCount">[Optional] The number of elements in the buffer to view.</param>
+        /// <param name="firstElement">[Optional] The index of the first constant within the buffer to view.</param>
+        /// <param name="elementCount">[Optional] The number of constants in the buffer to view.</param>
         /// <returns>A new <see cref="GorgonConstantBufferView"/>.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
         /// <remarks>
@@ -275,22 +311,22 @@ namespace Gorgon.Graphics.Core
         /// user knows what they are doing and will handle the disposal of the buffer and view on their own.
         /// </para>
         /// <para>
-        /// If provided, the <paramref name="startElement"/> parameter must be between 0 and the total number of elements in the buffer.  If it is not it will be constrained to those values to ensure there 
-        /// is no out of bounds access to the buffer.  
+        /// The <paramref name="firstElement"/> parameter must be between 0 and <seealso cref="TotalElementCount"/> - 1.  If it is not it will be constrained to those values to ensure there is no out of
+        /// bounds access to the buffer.  
         /// </para>
         /// <para>
-        /// If the <paramref name="elementCount"/> parameter is omitted (or equal to or less than 0), then the remainder of the buffer is mapped to the view up to 4096 elements. If it is provided, then the 
-        /// number of elements will be mapped to the view, up to a maximum of 4096 elements.  If the value exceeds 4096, then it will be constrained to 4096.
+        /// If the <paramref name="elementCount"/> parameter is omitted (or less than 1), then the remainder of the buffer is mapped to the view up to 256 elements (4096 constants, or 65536 bytes). If it
+        /// is provided, then the number of elements will be mapped to the view, up to a maximum of 256 elements.  If the value exceeds 256, then it will be constrained to 256.
         /// </para>
         /// <para>
         /// The <paramref name="usage"/> parameter defines where the GPU should place the resource for best performance.
         /// </para>
         /// <para>
-        /// A constant buffer element is a single float4 value (4 floating point values). 
+        /// A constant buffer constant is a single float4 value (4 floating point values). 
         /// </para>
         /// </remarks>
         /// <seealso cref="GorgonConstantBuffer"/>
-        public static GorgonConstantBufferView CreateConstantBuffer<T>(GorgonGraphics graphics, T[] value, string name = null, ResourceUsage usage = ResourceUsage.Default, int startElement = 0, int elementCount = 0)
+        public static GorgonConstantBufferView CreateConstantBuffer<T>(GorgonGraphics graphics, T[] value, string name = null, ResourceUsage usage = ResourceUsage.Default, int firstElement = 0, int elementCount = 0)
             where T : unmanaged
         {
             if (graphics == null)
@@ -309,7 +345,7 @@ namespace Gorgon.Graphics.Core
                                                                 SizeInBytes = Unsafe.SizeOf<T>() * value.Length
                                                             });
             buffer.SetData(value);
-            GorgonConstantBufferView view = buffer.GetView(startElement, elementCount);
+            GorgonConstantBufferView view = buffer.GetView(firstElement, elementCount);
             view._ownsBuffer = true;
             return view;
         }
@@ -321,7 +357,7 @@ namespace Gorgon.Graphics.Core
         /// <returns><see langword="true" /> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <see langword="false" />.</returns>
         public bool Equals(GorgonConstantBufferView other)
         {
-            return this == other;
+            return (ReferenceEquals(this, other)) && (!ViewAdjusted);
         }
         #endregion
 
@@ -330,16 +366,14 @@ namespace Gorgon.Graphics.Core
         /// Initializes a new instance of the <see cref="GorgonConstantBufferView"/> class.
         /// </summary>
         /// <param name="buffer">The constant buffer to view.</param>
-        /// <param name="startElement">The index of the first element in the buffer to view.</param>
+        /// <param name="firstElement">The index of the first element in the buffer to view.</param>
         /// <param name="elementCount">The number of elements to view.</param>
-        /// <param name="totalElementCount">The total element count for the buffer.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="buffer"/> parameter is <b>null</b>.</exception>
-        internal GorgonConstantBufferView(GorgonConstantBuffer buffer, int startElement, int elementCount, int totalElementCount)
+        internal GorgonConstantBufferView(GorgonConstantBuffer buffer, int firstElement, int elementCount)
         {
             _buffer = buffer ?? throw new ArgumentNullException(nameof(buffer));
-            StartElement = startElement;
-            ElementCount = elementCount;
-            TotalElementCount = totalElementCount;
+            TotalElementCount = (int)(buffer.SizeInBytes / 256.0f).FastFloor();
+            AdjustView(firstElement, elementCount);
         }
         #endregion
     }
