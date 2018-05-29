@@ -116,8 +116,8 @@ namespace Gorgon.Graphics.Core
     /// <seealso cref="IGorgonVideoAdapterInfo"/>
     /// <seealso cref="GorgonDrawCall"/>
     /// <seealso cref="GorgonDrawIndexCall"/>
-    /// <seealso cref="GorgonDrawInstancedCall"/>
-    /// <seealso cref="GorgonDrawIndexedInstancedCall"/>
+    /// <seealso cref="GorgonDrawInstanceCall"/>
+    /// <seealso cref="GorgonDrawIndexInstanceCall"/>
     public sealed class GorgonGraphics
         : IDisposable
     {
@@ -1925,6 +1925,21 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
+        /// Function to submit a basic, instanced, draw call to the GPU.
+        /// </summary>
+        /// <param name="drawCall">The draw call to execute.</param>
+        /// <param name="blendFactor">[Optional] The factor used to modulate the pixel shader, render target or both.</param>
+        /// <param name="blendSampleMask">[Optional] The mask used to define which samples get updated in the active render targets.</param>
+        /// <param name="depthStencilReference">[Optional] The depth/stencil reference value used when performing a depth/stencil test.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawCall"/> parameter is <b>null</b>.</exception>
+        public void Submit(GorgonDrawInstanceCall drawCall, GorgonColor? blendFactor = null, int blendSampleMask = int.MinValue, int depthStencilReference = 0)
+        {
+            drawCall.ValidateObject(nameof(drawCall));
+            SetDrawStates(drawCall.D3DState, blendFactor ?? GorgonColor.White, blendSampleMask, depthStencilReference);
+            D3DDeviceContext.DrawInstanced(drawCall.VertexCountPerInstance, drawCall.InstanceCount, drawCall.VertexStartIndex, drawCall.StartInstanceIndex);
+        }
+
+        /// <summary>
         /// Function to submit a draw call with indices to the GPU.
         /// </summary>
         /// <param name="drawIndexCall">The draw call to execute.</param>
@@ -1940,6 +1955,28 @@ namespace Gorgon.Graphics.Core
             drawIndexCall.ValidateObject(nameof(drawIndexCall));
             SetDrawStates(drawIndexCall.D3DState, blendFactor ?? GorgonColor.White, blendSampleMask, depthStencilReference);
             D3DDeviceContext.DrawIndexed(drawIndexCall.IndexCount, drawIndexCall.IndexStart, drawIndexCall.BaseVertexIndex);
+        }
+
+        /// <summary>
+        /// Function to submit a draw call with indices to the GPU.
+        /// </summary>
+        /// <param name="drawIndexCall">The draw call to execute.</param>
+        /// <param name="blendFactor">[Optional] The factor used to modulate the pixel shader, render target or both.</param>
+        /// <param name="blendSampleMask">[Optional] The mask used to define which samples get updated in the active render targets.</param>
+        /// <param name="depthStencilReference">[Optional] The depth/stencil reference value used when performing a depth/stencil test.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawIndexCall"/> parameter is <b>null</b>.</exception>
+        public void Submit(GorgonDrawIndexInstanceCall drawIndexCall,
+                           GorgonColor? blendFactor = null,
+                           int blendSampleMask = int.MinValue,
+                           int depthStencilReference = 0)
+        {
+            drawIndexCall.ValidateObject(nameof(drawIndexCall));
+            SetDrawStates(drawIndexCall.D3DState, blendFactor ?? GorgonColor.White, blendSampleMask, depthStencilReference);
+            D3DDeviceContext.DrawIndexedInstanced(drawIndexCall.IndexCountPerInstance,
+                                                  drawIndexCall.InstanceCount,
+                                                  drawIndexCall.IndexStart,
+                                                  drawIndexCall.BaseVertexIndex,
+                                                  drawIndexCall.IndexStart);
         }
 
         /// <summary>

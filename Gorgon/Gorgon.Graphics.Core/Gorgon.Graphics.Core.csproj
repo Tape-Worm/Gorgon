@@ -102,12 +102,16 @@
     <Compile Include="Geometry\_Attributes\InputElementAttribute.cs" />
     <Compile Include="GorgonGraphicsResource.cs" />
     <Compile Include="GorgonResourceView.cs" />
+    <Compile Include="Pipeline\GorgonDrawInstanceCallBuilder.cs" />
     <Compile Include="Pipeline\GorgonDrawCallBuilderCommon.cs" />
+    <Compile Include="Pipeline\GorgonDrawIndexInstanceCallBuilder.cs" />
     <Compile Include="Pipeline\GorgonDrawIndexCallBuilder.cs" />
     <Compile Include="Pipeline\GorgonDrawIndexCall.cs" />
     <Compile Include="Pipeline\GorgonDrawCall.cs" />
     <Compile Include="Pipeline\GorgonDrawCallBuilder.cs" />
     <Compile Include="Pipeline\GorgonDrawCallCommon.cs" />
+    <Compile Include="Pipeline\GorgonDrawIndexInstanceCall.cs" />
+    <Compile Include="Pipeline\GorgonDrawInstanceCall.cs" />
     <Compile Include="PrimitiveType.cs" />
     <Compile Include="Shaders\GorgonShaderResourceViews.cs" />
     <Compile Include="Buffers\GorgonConstantBuffers.cs" />

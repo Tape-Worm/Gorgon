@@ -32,17 +32,17 @@ namespace Gorgon.Graphics.Core
     /// <summary>
     /// A builder class used to create or update draw calls using fluent calls.
     /// </summary>
-    public class GorgonDrawIndexCallBuilder
-        : GorgonDrawCallBuilderCommon<GorgonDrawIndexCallBuilder, GorgonDrawIndexCall>
+    public class GorgonDrawIndexInstanceCallBuilder
+        : GorgonDrawCallBuilderCommon<GorgonDrawIndexInstanceCallBuilder, GorgonDrawIndexInstanceCall>
     {
         #region Methods.
         /// <summary>
         /// Function to create a new draw call.
         /// </summary>
         /// <returns>A new draw call.</returns>
-        protected override GorgonDrawIndexCall OnCreate()
+        protected override GorgonDrawIndexInstanceCall OnCreate()
         {
-            return new GorgonDrawIndexCall();
+            return new GorgonDrawIndexInstanceCall();
         }
 
         /// <summary>
@@ -50,12 +50,13 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="drawCall">The draw call to copy from.</param>
         /// <returns>The fluent builder interface.</returns>
-        protected override GorgonDrawIndexCallBuilder OnResetTo(GorgonDrawIndexCall drawCall)
+        protected override GorgonDrawIndexInstanceCallBuilder OnResetTo(GorgonDrawIndexInstanceCall drawCall)
         {
-            DrawCall.IndexBuffer = drawCall.IndexBuffer;
-            DrawCall.BaseVertexIndex = drawCall.BaseVertexIndex;
             DrawCall.IndexStart = drawCall.IndexStart;
-            DrawCall.IndexCount = drawCall.IndexCount;
+            DrawCall.BaseVertexIndex = drawCall.BaseVertexIndex;
+            DrawCall.IndexCountPerInstance = drawCall.IndexCountPerInstance;
+            DrawCall.StartInstanceIndex = drawCall.StartInstanceIndex;
+            DrawCall.InstanceCount = drawCall.InstanceCount;
             DrawCall.IndexBuffer = drawCall.IndexBuffer;
             return this;
         }
@@ -64,12 +65,14 @@ namespace Gorgon.Graphics.Core
         /// Function to clear the draw call.
         /// </summary>
         /// <returns>The fluent builder interface.</returns>
-        protected override GorgonDrawIndexCallBuilder OnClear()
+        protected override GorgonDrawIndexInstanceCallBuilder OnClear()
         {
-            DrawCall.IndexBuffer = null;
-            DrawCall.BaseVertexIndex = 0;
             DrawCall.IndexStart = 0;
-            DrawCall.IndexCount = 0;
+            DrawCall.BaseVertexIndex = 0;
+            DrawCall.IndexCountPerInstance = 0;
+            DrawCall.StartInstanceIndex = 0;
+            DrawCall.InstanceCount = 0;
+            DrawCall.IndexBuffer = null;
             return this;
         }
 
@@ -78,11 +81,13 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="finalCopy">The object representing the finalized copy.</param>
         /// <returns></returns>
-        protected override void OnUpdate(GorgonDrawIndexCall finalCopy)
+        protected override void OnUpdate(GorgonDrawIndexInstanceCall finalCopy)
         {
-            finalCopy.BaseVertexIndex = DrawCall.BaseVertexIndex;
             finalCopy.IndexStart = DrawCall.IndexStart;
-            finalCopy.IndexCount = DrawCall.IndexCount;
+            finalCopy.BaseVertexIndex = DrawCall.BaseVertexIndex;
+            finalCopy.IndexCountPerInstance = DrawCall.IndexCountPerInstance;
+            finalCopy.StartInstanceIndex = DrawCall.StartInstanceIndex;
+            finalCopy.InstanceCount = DrawCall.InstanceCount;
             finalCopy.IndexBuffer = DrawCall.IndexBuffer;
         }
 
@@ -91,26 +96,26 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="buffer">The buffer to assign.</param>
         /// <param name="indexStart">The first index in the index buffer to render.</param>
-        /// <param name="indexCount">The number of indices to render.</param>
+        /// <param name="indexCountPerInstance">The number of indices to render, per instance.</param>
         /// <returns>The fluent builder interface.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="indexStart"/> parameter is less than 0.
         /// <para>-or-</para>
-        /// <para>Thrown when the <paramref name="indexCount"/> parameter is less than 1.</para>
+        /// <para>Thrown when the <paramref name="indexCountPerInstance"/> parameter is less than 1.</para>
         /// </exception>
-        public GorgonDrawIndexCallBuilder IndexBuffer(GorgonIndexBuffer buffer, int indexStart, int indexCount)
+        public GorgonDrawIndexInstanceCallBuilder IndexBuffer(GorgonIndexBuffer buffer, int indexStart, int indexCountPerInstance)
         {
             if (indexStart < 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(indexStart), Resources.GORGFX_ERR_INDEX_TOO_SMALL);
             }
 
-            if (indexCount < 1)
+            if (indexCountPerInstance < 1)
             {
-                throw new ArgumentOutOfRangeException(nameof(indexCount), Resources.GORGFX_ERR_INDEX_COUNT_TOO_SMALL);
+                throw new ArgumentOutOfRangeException(nameof(indexCountPerInstance), Resources.GORGFX_ERR_INDEX_COUNT_TOO_SMALL);
             }
 
             DrawCall.IndexStart = indexStart;
-            DrawCall.IndexCount = indexCount;
+            DrawCall.IndexCountPerInstance = indexCountPerInstance;
             DrawCall.IndexBuffer = buffer;
             return this;
         }
@@ -119,26 +124,26 @@ namespace Gorgon.Graphics.Core
         /// Function to set the first index, and the number of indices to render in the draw call.
         /// </summary>
         /// <param name="indexStart">The first index in the index buffer to render.</param>
-        /// <param name="indexCount">The number of indices to render.</param>
+        /// <param name="indexCountPerInstance">The number of indices to render, per instance.</param>
         /// <returns>The fluent builder interface.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="indexStart"/> parameter is less than 0.
         /// <para>-or-</para>
-        /// <para>Thrown when the <paramref name="indexCount"/> parameter is less than 1.</para>
+        /// <para>Thrown when the <paramref name="indexCountPerInstance"/> parameter is less than 1.</para>
         /// </exception>
-        public GorgonDrawIndexCallBuilder IndexRange(int indexStart, int indexCount)
+        public GorgonDrawIndexInstanceCallBuilder IndexRange(int indexStart, int indexCountPerInstance)
         {
             if (indexStart < 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(indexStart), Resources.GORGFX_ERR_INDEX_TOO_SMALL);
             }
 
-            if (indexCount < 1)
+            if (indexCountPerInstance < 1)
             {
-                throw new ArgumentOutOfRangeException(nameof(indexCount), Resources.GORGFX_ERR_INDEX_COUNT_TOO_SMALL);
+                throw new ArgumentOutOfRangeException(nameof(indexCountPerInstance), Resources.GORGFX_ERR_INDEX_COUNT_TOO_SMALL);
             }
 
             DrawCall.IndexStart = indexStart;
-            DrawCall.IndexCount = indexCount;
+            DrawCall.IndexCountPerInstance = indexCountPerInstance;
             return this;
         }
 
@@ -147,7 +152,8 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="baseVertexIndex">The base vertex index to set.</param>
         /// <returns>The fluent builder interface.</returns>
-        public GorgonDrawIndexCallBuilder BaseVertexIndex(int baseVertexIndex)
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="baseVertexIndex"/> parameter is less than 0.</exception>
+        public GorgonDrawIndexInstanceCallBuilder BaseVertexIndex(int baseVertexIndex)
         {
             if (baseVertexIndex < -1)
             {
@@ -158,14 +164,41 @@ namespace Gorgon.Graphics.Core
 
             return this;
         }
+
+        /// <summary>
+        /// Function to set the starting instance index, and the number of instances to draw.
+        /// </summary>
+        /// <param name="startInstanceIndex">The starting index for the the first instance.</param>
+        /// <param name="instanceCount">The number of instances to draw.</param>
+        /// <returns>The fluent builder interface.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="startInstanceIndex"/> parameter is less than 0.
+        /// <para>-or-</para>
+        /// <para>Thrown when the <paramref name="instanceCount"/> parameter is less than 1.</para>
+        /// </exception>
+        public GorgonDrawIndexInstanceCallBuilder InstanceRange(int startInstanceIndex, int instanceCount)
+        {
+            if (startInstanceIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(startInstanceIndex), Resources.GORGFX_ERR_INSTANCE_START_INVALID);
+            }
+
+            if (instanceCount < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(instanceCount), Resources.GORGFX_ERR_INSTANCE_COUNT_INVALID);
+            }
+
+            DrawCall.StartInstanceIndex = startInstanceIndex;
+            DrawCall.InstanceCount = instanceCount;
+            return this;
+        }
         #endregion
 
         #region Constructor.
         /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonDrawIndexCallBuilder"/> class.
+        /// Initializes a new instance of the <see cref="GorgonDrawIndexInstanceCallBuilder"/> class.
         /// </summary>
-        public GorgonDrawIndexCallBuilder()
-            : base(new GorgonDrawIndexCall())
+        public GorgonDrawIndexInstanceCallBuilder()
+            : base(new GorgonDrawIndexInstanceCall())
         {
 
         }

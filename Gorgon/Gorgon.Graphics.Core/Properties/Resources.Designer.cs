@@ -581,6 +581,24 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The instance count must be greater than 0..
+        /// </summary>
+        internal static string GORGFX_ERR_INSTANCE_COUNT_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_INSTANCE_COUNT_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The instance start must be 0 or greater..
+        /// </summary>
+        internal static string GORGFX_ERR_INSTANCE_START_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_INSTANCE_START_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The Gorgon Graphics interface requires Windows 10 (Build {0}) or better..
         /// </summary>
         internal static string GORGFX_ERR_INVALID_OS {

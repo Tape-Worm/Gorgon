@@ -618,4 +618,10 @@ Current binding: [{0}]</value>
   <data name="GORGFX_ERR_BLEND_SLOT_INVALID" xml:space="preserve">
     <value>The blending slot must be 0 and less than {0}.</value>
   </data>
+  <data name="GORGFX_ERR_INSTANCE_COUNT_INVALID" xml:space="preserve">
+    <value>The instance count must be greater than 0.</value>
+  </data>
+  <data name="GORGFX_ERR_INSTANCE_START_INVALID" xml:space="preserve">
+    <value>The instance start must be 0 or greater.</value>
+  </data>
 </root>

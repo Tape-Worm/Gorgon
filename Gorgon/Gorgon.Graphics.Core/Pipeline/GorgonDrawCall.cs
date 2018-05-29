@@ -33,7 +33,7 @@ namespace Gorgon.Graphics.Core
         : GorgonDrawCallCommon
     {
         /// <summary>
-        /// Property to set or return the vertex index to start at within the vertex buffer.
+        /// Property to return the vertex index to start at within the vertex buffer.
         /// </summary>
         public int VertexStartIndex
         {
@@ -42,7 +42,7 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Property to set or return the number of vertices to draw.
+        /// Property to return the number of vertices to draw.
         /// </summary>
         public int VertexCount
         {
