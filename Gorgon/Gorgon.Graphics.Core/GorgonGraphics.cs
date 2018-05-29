@@ -218,7 +218,7 @@ namespace Gorgon.Graphics.Core
         /// Property to return the DXGI factory used to create DXGI objects.
         /// </summary>
         internal DXGI.Factory5 DXGIFactory => _dxgiFactory;
-        
+
         /// <summary>
         /// Property to return the logging interface used to write out debug messages.
         /// </summary>
@@ -249,7 +249,10 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to set or return the video adapter to use for this graphics interface.
         /// </summary>
-        public IGorgonVideoAdapterInfo VideoAdapter { get; }
+        public IGorgonVideoAdapterInfo VideoAdapter
+        {
+            get;
+        }
 
         /// <summary>
         /// Property to return the support available to each format.
@@ -378,7 +381,9 @@ namespace Gorgon.Graphics.Core
         {
             if (indexBuffer != null)
             {
-                D3DDeviceContext.InputAssembler.SetIndexBuffer(indexBuffer.Native, indexBuffer.Use16BitIndices ? DXGI.Format.R16_UInt : DXGI.Format.R32_UInt, 0);
+                D3DDeviceContext.InputAssembler.SetIndexBuffer(indexBuffer.Native,
+                                                               indexBuffer.Use16BitIndices ? DXGI.Format.R16_UInt : DXGI.Format.R32_UInt,
+                                                               0);
             }
             else
             {
@@ -452,7 +457,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
-        private bool CompareScissorRects(IReadOnlyList<DX.Rectangle> left, IReadOnlyList<DX.Rectangle> right)
+        private static bool CompareScissorRects(IReadOnlyList<DX.Rectangle> left, IReadOnlyList<DX.Rectangle> right)
         {
             if (left == right)
             {
@@ -500,6 +505,11 @@ namespace Gorgon.Graphics.Core
             if ((changes & DrawCallChanges.RasterState) == DrawCallChanges.RasterState)
             {
                 D3DDeviceContext.Rasterizer.State = currentState.D3DRasterState;
+            }
+
+            if ((changes & DrawCallChanges.DepthStencilState) == DrawCallChanges.DepthStencilState)
+            {
+                D3DDeviceContext.OutputMerger.DepthStencilState = currentState.D3DDepthStencilState;
             }
 
             if ((changes & DrawCallChanges.BlendState) == DrawCallChanges.BlendState)
@@ -571,7 +581,15 @@ namespace Gorgon.Graphics.Core
                 _lastState.PipelineState.D3DBlendState = currentState.D3DBlendState;
             }
 
-            if (ChangeBuilder(CompareScissorRects(lastState.RasterState?.ScissorRectangles, currentState.RasterState.ScissorRectangles), DrawCallChanges.Scissors, ref changes))
+            if (ChangeBuilder(lastState.D3DDepthStencilState == currentState.D3DDepthStencilState, DrawCallChanges.DepthStencilState, ref changes))
+            {
+                _lastState.PipelineState.D3DDepthStencilState = currentState.D3DDepthStencilState;
+            }
+
+            if (((changes & DrawCallChanges.RasterState) != DrawCallChanges.RasterState)
+                && (ChangeBuilder(CompareScissorRects(lastState.RasterState?.ScissorRectangles, currentState.RasterState.ScissorRectangles),
+                                  DrawCallChanges.Scissors,
+                                  ref changes)))
             {
                 _lastState.PipelineState.RasterState = currentState.RasterState;
             }
@@ -639,6 +657,7 @@ namespace Gorgon.Graphics.Core
                         D3DDeviceContext.CSSetConstantBuffers1(0, 0, (D3D11.Buffer[])null, null, null);
                         break;
                 }
+
                 return;
             }
 
@@ -658,7 +677,7 @@ namespace Gorgon.Graphics.Core
                 constantBuffers.ViewStart[i] = view.StartElement * 16;
                 constantBuffers.ViewCount[i] = (view.ElementCount + 15) & ~15;
             }
-            
+
             switch (shaderType)
             {
                 case ShaderType.Vertex:
@@ -712,11 +731,12 @@ namespace Gorgon.Graphics.Core
                         D3DDeviceContext.ComputeShader.SetShaderResources(0, 0, (D3D11.ShaderResourceView[])null);
                         break;
                 }
+
                 return;
             }
 
             (int start, int count) = srvs.GetDirtyItems();
-            
+
             switch (shaderType)
             {
                 case ShaderType.Vertex:
@@ -760,7 +780,7 @@ namespace Gorgon.Graphics.Core
             {
                 BindVertexBuffers(_lastState.VertexBuffers);
             }
-            
+
             if ((resourceChanges & DrawCallChanges.IndexBuffer) == DrawCallChanges.IndexBuffer)
             {
                 BindIndexBuffer(_lastState.IndexBuffer);
@@ -1018,13 +1038,15 @@ namespace Gorgon.Graphics.Core
                 _lastState.HsSrvs = currentState.HsSrvs;
             }
 
-            if (ChangeBuilder(currentState.HsSrvs.DirtyEquals(_lastState.CsSrvs),
-                              DrawCallChanges.CsResourceViews,
-                              ref changes))
+            if (!ChangeBuilder(currentState.HsSrvs.DirtyEquals(_lastState.CsSrvs),
+                               DrawCallChanges.CsResourceViews,
+                               ref changes))
             {
-                Debug.Assert(currentState.CsSrvs != null, "ComputeShader srvs are null - This is now allowed.");
-                _lastState.CsSrvs = currentState.CsSrvs;
+                return changes;
             }
+
+            Debug.Assert(currentState.CsSrvs != null, "ComputeShader srvs are null - This is now allowed.");
+            _lastState.CsSrvs = currentState.CsSrvs;
 
             return changes;
         }
@@ -1076,25 +1098,29 @@ namespace Gorgon.Graphics.Core
             {
                 resultFactory = factory2.QueryInterface<DXGI.Factory5>();
 
-                using (DXGI.Adapter adapter = (adapterInfo.VideoDeviceType == VideoDeviceType.Hardware ? resultFactory.GetAdapter1(adapterInfo.Index) : resultFactory.GetWarpAdapter()))
+                using (DXGI.Adapter adapter = (adapterInfo.VideoDeviceType == VideoDeviceType.Hardware
+                                                   ? resultFactory.GetAdapter1(adapterInfo.Index)
+                                                   : resultFactory.GetWarpAdapter()))
                 {
                     resultAdapter = adapter.QueryInterface<DXGI.Adapter4>();
 
                     using (D3D11.Device device = new D3D11.Device(resultAdapter, flags, requestedFeatureLevel)
                                                  {
-                                                     DebugName = $"'{adapterInfo.Name}' D3D11.4 {(adapterInfo.VideoDeviceType == VideoDeviceType.Software ? "Software Adapter" : "Adapter")}"
+                                                     DebugName =
+                                                         $"'{adapterInfo.Name}' D3D11.4 {(adapterInfo.VideoDeviceType == VideoDeviceType.Software ? "Software Adapter" : "Adapter")}"
                                                  })
                     {
                         resultDevice = device.QueryInterface<D3D11.Device5>();
 
-		                Log.Print($"Direct 3D 11.4 device created for video adapter '{adapterInfo.Name}' at feature set [{(FeatureSet)resultDevice.FeatureLevel}]", LoggingLevel.Simple);
+                        Log.Print($"Direct 3D 11.4 device created for video adapter '{adapterInfo.Name}' at feature set [{(FeatureSet)resultDevice.FeatureLevel}]",
+                                  LoggingLevel.Simple);
                     }
                 }
             }
 
             return (resultDevice, resultFactory, resultAdapter);
         }
-        
+
         /// <summary>
         /// Function to enumerate format support for all <see cref="BufferFormat"/> values.
         /// </summary>
@@ -1121,101 +1147,106 @@ namespace Gorgon.Graphics.Core
             return result;
         }
 
-		/// <summary>
-		/// Function to validate the depth/stencil view.
-		/// </summary>
-		/// <param name="view">The depth/stencil view to evaluate.</param>
-		/// <param name="firstTarget">The first non-null target.</param>
-		private void ValidateRtvAndDsv(GorgonDepthStencil2DView view, GorgonRenderTargetView firstTarget)
-		{
-			if ((firstTarget == null)
-			    && (view == null))
-			{
-				return;
-			}
-            
+        /// <summary>
+        /// Function to validate the depth/stencil view.
+        /// </summary>
+        /// <param name="view">The depth/stencil view to evaluate.</param>
+        /// <param name="firstTarget">The first non-null target.</param>
+        private void ValidateRtvAndDsv(GorgonDepthStencil2DView view, GorgonRenderTargetView firstTarget)
+        {
+            if ((firstTarget == null)
+                && (view == null))
+            {
+                return;
+            }
+
             if (firstTarget != null)
-		    {
-		        // Ensure that we are only bound once to the pipeline.
-		        if (RenderTargets.Count(item => item == firstTarget) > 1)
-		        {
-		            throw new GorgonException(GorgonResult.CannotBind, Resources.GORGFX_ERR_RTV_ALREADY_BOUND);
-		        }
+            {
+                // Ensure that we are only bound once to the pipeline.
+                if (RenderTargets.Count(item => item == firstTarget) > 1)
+                {
+                    throw new GorgonException(GorgonResult.CannotBind, Resources.GORGFX_ERR_RTV_ALREADY_BOUND);
+                }
 
                 // Ensure our dimensions match, and multi-sample settings match.
-		        foreach (GorgonRenderTargetView rtv in RenderTargets.Where(item => (item != null) && (item != firstTarget)))
-		        {
-		            if (rtv.Resource.ResourceType != firstTarget.Resource.ResourceType)
-		            {
-		                throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_RTV_NOT_SAME_TYPE, firstTarget.Resource.ResourceType));
-		            }
+                foreach (GorgonRenderTargetView rtv in RenderTargets.Where(item => (item != null) && (item != firstTarget)))
+                {
+                    if (rtv.Resource.ResourceType != firstTarget.Resource.ResourceType)
+                    {
+                        throw new GorgonException(GorgonResult.CannotBind,
+                                                  string.Format(Resources.GORGFX_ERR_RTV_NOT_SAME_TYPE, firstTarget.Resource.ResourceType));
+                    }
 
-		            switch (firstTarget.Resource.ResourceType)
-		            {
-		                case GraphicsResourceType.Texture2D:
-		                    var left2D = (GorgonRenderTarget2DView)firstTarget;
-		                    var right2D = (GorgonRenderTarget2DView)rtv;
+                    switch (firstTarget.Resource.ResourceType)
+                    {
+                        case GraphicsResourceType.Texture2D:
+                            var left2D = (GorgonRenderTarget2DView)firstTarget;
+                            var right2D = (GorgonRenderTarget2DView)rtv;
 
-		                    if ((left2D.Width != right2D.Width) && (left2D.Height != right2D.Height) && (left2D.ArrayCount != right2D.ArrayCount))
-		                    {
+                            if ((left2D.Width != right2D.Width) && (left2D.Height != right2D.Height) && (left2D.ArrayCount != right2D.ArrayCount))
+                            {
                                 throw new GorgonException(GorgonResult.CannotBind, Resources.GORGFX_ERR_RTV_RESOURCE_MISMATCH);
-		                    }
+                            }
 
-		                    if (!left2D.MultisampleInfo.Equals(right2D.MultisampleInfo))
-		                    {
+                            if (!left2D.MultisampleInfo.Equals(right2D.MultisampleInfo))
+                            {
                                 throw new GorgonException(GorgonResult.CannotBind, Resources.GORGFX_ERR_RTV_MULTISAMPLE_MISMATCH);
-		                    }
-		                    break;
-		                case GraphicsResourceType.Texture3D:
-		                    var left3D = (GorgonRenderTarget3DView)firstTarget;
-		                    var right3D = (GorgonRenderTarget3DView)rtv;
+                            }
 
-		                    if ((left3D.Width != right3D.Width) && (left3D.Height != right3D.Height) && (left3D.Depth != right3D.Depth))
-		                    {
-		                        throw new GorgonException(GorgonResult.CannotBind, Resources.GORGFX_ERR_RTV_RESOURCE_MISMATCH);
-		                    }
-		                    break;
-		                default:
-		                    throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_RTV_UNSUPPORTED_RESOURCE, firstTarget.Resource.ResourceType));
-		            }
-		        }
-		    }
+                            break;
+                        case GraphicsResourceType.Texture3D:
+                            var left3D = (GorgonRenderTarget3DView)firstTarget;
+                            var right3D = (GorgonRenderTarget3DView)rtv;
 
-		    if ((firstTarget == null)
-		        || (view == null))
-		    {
-		        return;
-		    }
+                            if ((left3D.Width != right3D.Width) && (left3D.Height != right3D.Height) && (left3D.Depth != right3D.Depth))
+                            {
+                                throw new GorgonException(GorgonResult.CannotBind, Resources.GORGFX_ERR_RTV_RESOURCE_MISMATCH);
+                            }
+
+                            break;
+                        default:
+                            throw new GorgonException(GorgonResult.CannotBind,
+                                                      string.Format(Resources.GORGFX_ERR_RTV_UNSUPPORTED_RESOURCE, firstTarget.Resource.ResourceType));
+                    }
+                }
+            }
+
+            if ((firstTarget == null)
+                || (view == null))
+            {
+                return;
+            }
 
             // Ensure all resources are the same type.
-			if (view.Texture.ResourceType != firstTarget.Resource.ResourceType)
-			{
-				throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_RTV_DEPTHSTENCIL_TYPE_MISMATCH, view.Texture.ResourceType));
-			}
+            if (view.Texture.ResourceType != firstTarget.Resource.ResourceType)
+            {
+                throw new GorgonException(GorgonResult.CannotBind,
+                                          string.Format(Resources.GORGFX_ERR_RTV_DEPTHSTENCIL_TYPE_MISMATCH, view.Texture.ResourceType));
+            }
 
-		    var rtv2D = (GorgonRenderTarget2DView)firstTarget;
-            
-			// Ensure the depth stencil array/depth counts match for all resources.
-			if (view.ArrayCount != rtv2D.ArrayCount)
-			{
-				throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_RTV_DEPTHSTENCIL_ARRAYCOUNT_MISMATCH, view.Texture.Name));
-			}
+            var rtv2D = (GorgonRenderTarget2DView)firstTarget;
 
-			// Check to ensure that multisample info matches.
-			if (!view.Texture.MultisampleInfo.Equals(rtv2D.MultisampleInfo))
-			{
-				throw new GorgonException(GorgonResult.CannotBind,
-				                          string.Format(Resources.GORGFX_ERR_RTV_DEPTHSTENCIL_MULTISAMPLE_MISMATCH,
-				                                        view.MultisampleInfo.Quality,
-				                                        view.MultisampleInfo.Count));
-			}
+            // Ensure the depth stencil array/depth counts match for all resources.
+            if (view.ArrayCount != rtv2D.ArrayCount)
+            {
+                throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_RTV_DEPTHSTENCIL_ARRAYCOUNT_MISMATCH, view.Texture.Name));
+            }
 
-			if ((view.Width != rtv2D.Width)
-			    || (view.Height != rtv2D.Height))
-			{
-				throw new GorgonException(GorgonResult.CannotBind, Resources.GORGFX_ERR_RTV_DEPTHSTENCIL_RESOURCE_MISMATCH);
-			}
-		}
+            // Check to ensure that multisample info matches.
+            if (!view.Texture.MultisampleInfo.Equals(rtv2D.MultisampleInfo))
+            {
+                throw new GorgonException(GorgonResult.CannotBind,
+                                          string.Format(Resources.GORGFX_ERR_RTV_DEPTHSTENCIL_MULTISAMPLE_MISMATCH,
+                                                        view.MultisampleInfo.Quality,
+                                                        view.MultisampleInfo.Count));
+            }
+
+            if ((view.Width != rtv2D.Width)
+                || (view.Height != rtv2D.Height))
+            {
+                throw new GorgonException(GorgonResult.CannotBind, Resources.GORGFX_ERR_RTV_DEPTHSTENCIL_RESOURCE_MISMATCH);
+            }
+        }
 
         /// <summary>
         /// Function to unbind a render target that is bound as a shader input.
@@ -1265,27 +1296,23 @@ namespace Gorgon.Graphics.Core
         /// <param name="rasterState">An existing rasterizer state to use.</param>
         /// <returns>A new <see cref="GorgonPipelineState"/>.</returns>
         private void InitializePipelineState(GorgonPipelineState pipelineState,
-                                                            D3D11.BlendState1 blendState,
-                                                            D3D11.DepthStencilState depthStencilState,
-                                                            D3D11.RasterizerState1 rasterState)
+                                             D3D11.BlendState1 blendState,
+                                             D3D11.DepthStencilState depthStencilState,
+                                             D3D11.RasterizerState1 rasterState)
         {
             pipelineState.D3DRasterState = rasterState;
             pipelineState.D3DBlendState = blendState;
             pipelineState.D3DDepthStencilState = depthStencilState;
-            
+
             if ((rasterState == null) && (pipelineState.RasterState != null))
             {
                 pipelineState.D3DRasterState = pipelineState.RasterState.GetD3D11RasterState(_d3DDevice);
             }
 
-            /*
             if ((depthStencilState == null) && (pipelineState.DepthStencilState != null))
             {
-                result.D3DDepthStencilState = new D3D11.DepthStencilState(_d3DDevice, pipelineState.DepthStencilState.ToDepthStencilStateDesc())
-                                              {
-                                                  DebugName = "Gorgon D3D11DepthStencilState"
-                                              };
-            }*/
+                pipelineState.D3DDepthStencilState = pipelineState.DepthStencilState.GetD3D11DepthStencilState(_d3DDevice);
+            }
 
             if (blendState == null)
             {
@@ -1386,7 +1413,7 @@ namespace Gorgon.Graphics.Core
                 _depthStencilReference = depthStencilReference;
                 D3DDeviceContext.OutputMerger.DepthStencilReference = _depthStencilReference;
             }
-            
+
             DrawCallChanges changes = BuildDrawCallResources(state);
             DrawCallChanges stateChanges = BuildStateChanges(state.PipelineState);
 
@@ -1436,7 +1463,7 @@ namespace Gorgon.Graphics.Core
                                   };
                 resultState.BuildD3D11SamplerState(D3DDevice);
                 _cachedSamplers.Add(resultState);
-                
+
                 return resultState;
             }
         }
@@ -1458,7 +1485,6 @@ namespace Gorgon.Graphics.Core
                 // ReSharper disable once ForCanBeConvertedToForeach
                 for (int i = 0; i < _cachedPipelineStates.Count; ++i)
                 {
-                    int blendStateEqualCount = 0;
                     DrawCallChanges inheritedState = DrawCallChanges.None;
                     GorgonPipelineState cachedState = _cachedPipelineStates[i];
 
@@ -1481,7 +1507,7 @@ namespace Gorgon.Graphics.Core
                     {
                         inheritedState |= DrawCallChanges.GeometryShader;
                     }
-    
+
                     if (cachedState.DomainShader == newState.DomainShader)
                     {
                         inheritedState |= DrawCallChanges.DomainShader;
@@ -1496,7 +1522,7 @@ namespace Gorgon.Graphics.Core
                     {
                         inheritedState |= DrawCallChanges.PixelShader;
                     }
-                    
+
                     if (cachedState.RasterState.Equals(newState.RasterState))
                     {
                         rasterState = cachedState.D3DRasterState;
@@ -1505,20 +1531,18 @@ namespace Gorgon.Graphics.Core
 
                     if ((cachedState.RwBlendStates.Equals(newState.RwBlendStates))
                         && (cachedState.IsAlphaToCoverageEnabled == newState.IsAlphaToCoverageEnabled)
-                            && (cachedState.IsIndependentBlendingEnabled == newState.IsIndependentBlendingEnabled))
+                        && (cachedState.IsIndependentBlendingEnabled == newState.IsIndependentBlendingEnabled))
                     {
                         blendState = cachedState.D3DBlendState;
                         inheritedState |= DrawCallChanges.BlendState;
                     }
-                    
-                    /*
-                    if ((cachedStateInfo.DepthStencilState != null) &&
-                        (cachedStateInfo.DepthStencilState.Equals(newStateInfo.DepthStencilState)))
+
+                    if ((cachedState.DepthStencilState != null) &&
+                        (cachedState.DepthStencilState.Equals(newState.DepthStencilState)))
                     {
                         depthStencilState = cachedState.D3DDepthStencilState;
-                        inheritedState |= PipelineStateChange.DepthStencilState;
+                        inheritedState |= DrawCallChanges.DepthStencilState;
                     }
-                    */
 
                     // We've copied all the states, so just return the existing pipeline state.
                     // ReSharper disable once InvertIf
@@ -1570,7 +1594,7 @@ namespace Gorgon.Graphics.Core
             Array.Clear(_viewports, 0, _viewports.Length);
             Array.Clear(_vertexBindingCache, 0, _vertexBindingCache.Length);
             Array.Clear(_scissors, 0, _scissors.Length);
-            
+
             _lastState.VertexBuffers = null;
             _lastState.IndexBuffer = null;
             _lastState.PipelineState.Clear();
@@ -1633,6 +1657,7 @@ namespace Gorgon.Graphics.Core
                 {
                     viewport = new DX.ViewportF(0, 0, _renderTargets[0].Width, _renderTargets[0].Height);
                 }
+
                 SetViewport(ref viewport);
             }
 
@@ -1837,7 +1862,8 @@ namespace Gorgon.Graphics.Core
         /// this adapter can be helpful in debugging scenarios where issues with the hardware device driver may be causing incorrect rendering.
         /// </para>
         /// </remarks>
-        public static IReadOnlyList<IGorgonVideoAdapterInfo> EnumerateAdapters(bool includeSoftwareDevice = false, IGorgonLog log = null) => VideoAdapterEnumerator.Enumerate(includeSoftwareDevice, log);
+        public static IReadOnlyList<IGorgonVideoAdapterInfo> EnumerateAdapters(bool includeSoftwareDevice = false, IGorgonLog log = null) =>
+            VideoAdapterEnumerator.Enumerate(includeSoftwareDevice, log);
 
         /// <summary>
         /// Function to clear the cached pipeline states.
@@ -1906,98 +1932,21 @@ namespace Gorgon.Graphics.Core
         /// <param name="blendSampleMask">[Optional] The mask used to define which samples get updated in the active render targets.</param>
         /// <param name="depthStencilReference">[Optional] The depth/stencil reference value used when performing a depth/stencil test.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawIndexCall"/> parameter is <b>null</b>.</exception>
-        public void Submit(GorgonDrawIndexCall drawIndexCall, GorgonColor? blendFactor = null, int blendSampleMask = int.MinValue, int depthStencilReference = 0)
+        public void Submit(GorgonDrawIndexCall drawIndexCall,
+                           GorgonColor? blendFactor = null,
+                           int blendSampleMask = int.MinValue,
+                           int depthStencilReference = 0)
         {
             drawIndexCall.ValidateObject(nameof(drawIndexCall));
             SetDrawStates(drawIndexCall.D3DState, blendFactor ?? GorgonColor.White, blendSampleMask, depthStencilReference);
             D3DDeviceContext.DrawIndexed(drawIndexCall.IndexCount, drawIndexCall.IndexStart, drawIndexCall.BaseVertexIndex);
         }
 
-        #region Crap Code.
-        private D3D11.DepthStencilState dState;
-        private D3D11.BlendState1 bState;
-
-        [Obsolete("This method is here to set up native functionality not yet available to the core library.")]
-        private void DoDispose()
-        {
-            dState?.Dispose();
-            bState?.Dispose();
-        }
-
-        [Obsolete("This method is here to set up native functionality not yet available to the core library.")]
-        public void DoInit()
-        {
-            dState = new D3D11.DepthStencilState(D3DDevice,
-                                                 new D3D11.DepthStencilStateDescription
-                                                 {
-                                                     IsDepthEnabled = false,
-                                                     DepthWriteMask = D3D11.DepthWriteMask.All,
-                                                     DepthComparison = D3D11.Comparison.Less,
-                                                     IsStencilEnabled = false,
-                                                     StencilReadMask = 0xff,
-                                                     StencilWriteMask = 0xff,
-                                                     FrontFace = new D3D11.DepthStencilOperationDescription
-                                                                 {
-                                                                     Comparison = D3D11.Comparison.Always,
-                                                                     DepthFailOperation = D3D11.StencilOperation.Keep,
-                                                                     FailOperation = D3D11.StencilOperation.Keep,
-                                                                     PassOperation = D3D11.StencilOperation.Keep
-                                                                 },
-                                                     BackFace = new D3D11.DepthStencilOperationDescription
-                                                                {
-                                                                    Comparison = D3D11.Comparison.Always,
-                                                                    DepthFailOperation = D3D11.StencilOperation.Keep,
-                                                                    PassOperation = D3D11.StencilOperation.Keep,
-                                                                    FailOperation = D3D11.StencilOperation.Keep
-                                                                }
-                                                 });
-
-            bState = new D3D11.BlendState1(D3DDevice,
-                                           new D3D11.BlendStateDescription1
-                                           {
-                                               AlphaToCoverageEnable = false,
-                                               IndependentBlendEnable = false,
-                                               RenderTarget =
-                                               {
-                                                   [0] = new D3D11.RenderTargetBlendDescription1
-                                                         {
-                                                             IsBlendEnabled = true,
-                                                             IsLogicOperationEnabled = false,
-                                                             SourceBlend = D3D11.BlendOption.SourceAlpha,
-                                                             DestinationBlend = D3D11.BlendOption.InverseSourceAlpha,
-                                                             AlphaBlendOperation = D3D11.BlendOperation.Add,
-                                                             BlendOperation = D3D11.BlendOperation.Add,
-                                                             SourceAlphaBlend = D3D11.BlendOption.One,
-                                                             DestinationAlphaBlend = D3D11.BlendOption.Zero,
-                                                             LogicOperation = D3D11.LogicOperation.Noop,
-                                                             RenderTargetWriteMask = D3D11.ColorWriteMaskFlags.All
-                                                         }
-                                               }
-                                           });
-        }
-
-        private bool _stateSet;
-
-        [Obsolete("This method is here to set up native functionality not yet available to the core library.")]
-        public void DoStuff()
-        {
-            if (!_stateSet)
-            {
-                D3DDeviceContext.OutputMerger.DepthStencilState = dState;
-                D3DDeviceContext.OutputMerger.BlendState = bState;
-
-                _stateSet = true;
-            }
-        }
-
-        #endregion
-
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         public void Dispose()
         {
-            DoDispose();
             D3D11.DeviceContext4 context = Interlocked.Exchange(ref _d3DDeviceContext, null);
             D3D11.Device5 device = Interlocked.Exchange(ref _d3DDevice, null);
             DXGI.Adapter4 adapter = Interlocked.Exchange(ref _dxgiAdapter, null);
@@ -2086,8 +2035,8 @@ namespace Gorgon.Graphics.Core
         /// </example>
         /// <seealso cref="IGorgonVideoAdapterInfo"/>
         public GorgonGraphics(IGorgonVideoAdapterInfo videoAdapterInfo,
-                               FeatureSet? featureSet = null,
-                               IGorgonLog log = null)
+                              FeatureSet? featureSet = null,
+                              IGorgonLog log = null)
         {
             VideoAdapter = videoAdapterInfo ?? throw new ArgumentNullException(nameof(videoAdapterInfo));
             Log = log ?? GorgonLog.NullLog;
@@ -2116,9 +2065,9 @@ namespace Gorgon.Graphics.Core
             _dxgiAdapter = adapter;
             _d3DDevice = device;
             _d3DDeviceContext = device.ImmediateContext.QueryInterface<D3D11.DeviceContext4>();
-            
+
             FormatSupport = EnumerateFormatSupport(_d3DDevice);
-            
+
             Log.Print("Gorgon Graphics initialized.", LoggingLevel.Simple);
         }
 

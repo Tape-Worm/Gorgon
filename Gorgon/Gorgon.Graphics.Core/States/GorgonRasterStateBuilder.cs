@@ -76,7 +76,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="state">The state to copy from.</param>
         /// <returns>The fluent builder interface.</returns>
-        protected override GorgonRasterStateBuilder OnResetState(GorgonRasterState state)
+        protected override GorgonRasterStateBuilder OnResetTo(GorgonRasterState state)
         {
             CopyState(WorkingState, state);
             return this;

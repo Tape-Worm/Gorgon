@@ -169,7 +169,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="drawCall">The draw call to copy from.</param>
         /// <returns>The fluent builder interface.</returns>
-        protected abstract TB OnReset(TDc drawCall);
+        protected abstract TB OnResetTo(TDc drawCall);
 
         /// <summary>
         /// Function to clear the draw call.
@@ -522,7 +522,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="drawCall">[Optional] The specified draw call state to copy.</param>
         /// <returns>The fluent builder interface.</returns>
-        public TB Reset(TDc drawCall = null)
+        public TB ResetTo(TDc drawCall = null)
         {
             if (drawCall == null)
             {
@@ -548,7 +548,7 @@ namespace Gorgon.Graphics.Core
 
             DrawCall.D3DState.PipelineState = new GorgonPipelineState(DrawCall.PipelineState);
 
-            return OnReset(drawCall);
+            return OnResetTo(drawCall);
         }
 
         /// <summary>

@@ -57,7 +57,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="state">The state to copy from.</param>
         /// <returns>The fluent builder interface.</returns>
-        protected abstract TB OnResetState(TRs state);
+        protected abstract TB OnResetTo(TRs state);
 
         /// <summary>
         /// Function to clear the working state for the builder.
@@ -79,9 +79,9 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="state">[Optional] The specified state to copy.</param>
         /// <returns>The fluent builder interface.</returns>
-        public TB Reset(TRs state = null)
+        public TB ResetTo(TRs state = null)
         {
-            return state == null ? Clear() : OnResetState(state);
+            return state == null ? Clear() : OnResetTo(state);
         }
 
         /// <summary>

@@ -33,61 +33,11 @@ using Gorgon.Math;
 namespace Gorgon.Graphics.Core
 {
     /// <summary>
-    /// Defines how a triangle primitive should be rendered.
-    /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue")]
-    public enum FillMode
-    {
-        /// <summary>
-        /// <para>
-        /// Draw lines connecting the vertices. Adjacent vertices are not drawn.
-        /// </para>
-        /// </summary>
-        Wireframe = D3D11.FillMode.Wireframe,
-        /// <summary>
-        /// <para>
-        /// Fill the triangles formed by the vertices. Adjacent vertices are not drawn.
-        /// </para>
-        /// </summary>
-        Solid = D3D11.FillMode.Solid
-    }
-
-    /// <summary>
-    /// Defines how a triangle primitive should be culled from rendering.
-    /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue")]
-    public enum CullingMode
-    {
-        /// <summary>
-        /// <para>
-        /// Always draw all triangles.
-        /// </para>
-        /// </summary>
-        None = D3D11.CullMode.None,
-        /// <summary>
-        /// <para>
-        /// Do not draw triangles that are front-facing.
-        /// </para>
-        /// </summary>
-        Front = D3D11.CullMode.Front,
-        /// <summary>
-        /// <para>
-        /// Do not draw triangles that are back-facing.
-        /// </para>
-        /// </summary>
-        Back = D3D11.CullMode.Back
-    }
-
-    /// <summary>
     /// Describes how primitive data (i.e. triangles, lines, etc...) are rasterized by the GPU.
     /// </summary>
     /// <remarks>
     /// <para>
     /// This will define how a triangle, line, point, etc... is rasterized by the GPU when rendering. Clipping, vertex ordering, culling, etc... are all affected by this state.
-    /// </para>
-    /// <para>
-    /// This type is mutable until it is consumed in a <see cref="GorgonPipelineState"/>. After it is assigned, it is immutable and will throw an exception if any changes are made to the state after 
-    /// it has been used.
     /// </para>
     /// <para>
     /// The rasterizer state contains 4 common raster states used by applications: <see cref="Default"/> (backface culling, solid fill, etc...), <see cref="WireFrameNoCulling"/> (no culling, wireframe fill, 

@@ -50,7 +50,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="drawCall">The draw call to copy from.</param>
         /// <returns>The fluent builder interface.</returns>
-        protected override GorgonDrawCallBuilder OnReset(GorgonDrawCall drawCall)
+        protected override GorgonDrawCallBuilder OnResetTo(GorgonDrawCall drawCall)
         {
             DrawCall.VertexStartIndex = drawCall.VertexStartIndex;
             DrawCall.VertexCount = drawCall.VertexCount;

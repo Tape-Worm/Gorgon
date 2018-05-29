@@ -102,6 +102,27 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
+        /// Function to add a depth/stencil state to this pipeline state.
+        /// </summary>
+        /// <param name="state">The depth/stencil state to apply.</param>
+        /// <returns>The fluent interface for this builder.</returns>
+        public GorgonPipelineStateBuilder DepthStencilState(GorgonDepthStencilStateBuilder state)
+        {
+            return DepthStencilState(state?.Build());
+        }
+
+        /// <summary>
+        /// Function to add a depth/stencil state to this pipeline state.
+        /// </summary>
+        /// <param name="state">The depth/stencil state to apply.</param>
+        /// <returns>The fluent interface for this builder.</returns>
+        public GorgonPipelineStateBuilder DepthStencilState(GorgonDepthStencilState state)
+        {
+            _workState.DepthStencilState = state ?? GorgonDepthStencilState.Default;
+            return this;
+        }
+
+        /// <summary>
         /// Function to set the current pixel shader on the pipeline.
         /// </summary>
         /// <param name="pixelShader">The pixel shader to assign.</param>
@@ -260,7 +281,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="pipeState">The pipeline state to copy.</param>
         /// <returns>The fluent interface for the builder.</returns>
-        public GorgonPipelineStateBuilder Reset(GorgonPipelineState pipeState)
+        public GorgonPipelineStateBuilder ResetTo(GorgonPipelineState pipeState)
         {
             if (pipeState == null)
             {
@@ -269,6 +290,7 @@ namespace Gorgon.Graphics.Core
             }
 
             _workState.RasterState = pipeState.RasterState;
+            _workState.DepthStencilState = pipeState.DepthStencilState;
             _workState.PixelShader = pipeState.PixelShader;
             _workState.VertexShader = pipeState.VertexShader;
             _workState.GeometryShader = pipeState.GeometryShader;
@@ -290,7 +312,6 @@ namespace Gorgon.Graphics.Core
         public GorgonPipelineStateBuilder Clear()
         {
             _workState.Clear();
-
             return this;
         }
 
@@ -314,6 +335,8 @@ namespace Gorgon.Graphics.Core
         {
             Graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
             _workState.RwBlendStates[0] = GorgonBlendState.Default;
+            _workState.RasterState = GorgonRasterState.Default;
+            _workState.DepthStencilState = GorgonDepthStencilState.Default;
         }
         #endregion
     }

@@ -20,47 +20,65 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: May 29, 2018 8:51:04 AM
+// Created: May 29, 2018 8:51:25 AM
 // 
 #endregion
 
 namespace Gorgon.Graphics.Core
 {
     /// <summary>
-    /// Defines the type of operation to perform while blending colors.
+    /// Defines a type of operation to perform when masking using the stencil buffer.
     /// </summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue")]
-    public enum BlendOperation
+    public enum StencilOperation
     {
         /// <summary>
         /// <para>
-        /// Add source 1 and source 2.
+        /// Keep the existing stencil data.
         /// </para>
         /// </summary>
-        Add = SharpDX.Direct3D11.BlendOperation.Add,
+        Keep = SharpDX.Direct3D11.StencilOperation.Keep,
         /// <summary>
         /// <para>
-        /// Subtract source 1 from source 2.
+        /// Set the stencil data to 0.
         /// </para>
         /// </summary>
-        Subtract = SharpDX.Direct3D11.BlendOperation.Subtract,
+        Zero = SharpDX.Direct3D11.StencilOperation.Zero,
         /// <summary>
         /// <para>
-        /// Subtract source 2 from source 1.
+        /// Set the stencil data to the reference value set by calling ID3D11DeviceContext::OMSetDepthStencilState.
         /// </para>
         /// </summary>
-        ReverseSubtract = SharpDX.Direct3D11.BlendOperation.ReverseSubtract,
+        Replace = SharpDX.Direct3D11.StencilOperation.Replace,
         /// <summary>
         /// <para>
-        /// Find the minimum of source 1 and source 2.
+        /// Increment the stencil value by 1, and clamp the result.
         /// </para>
         /// </summary>
-        Minimum = SharpDX.Direct3D11.BlendOperation.Minimum,
+        IncrementClamp = SharpDX.Direct3D11.StencilOperation.IncrementAndClamp,
         /// <summary>
         /// <para>
-        /// Find the maximum of source 1 and source 2.
+        /// Decrement the stencil value by 1, and clamp the result.
         /// </para>
         /// </summary>
-        Maximum = SharpDX.Direct3D11.BlendOperation.Maximum
+        DecrementClamp = SharpDX.Direct3D11.StencilOperation.DecrementAndClamp,
+        /// <summary>
+        /// <para>
+        /// Invert the stencil data.
+        /// </para>
+        /// </summary>
+        Invert = SharpDX.Direct3D11.StencilOperation.Invert,
+        /// <summary>
+        /// <para>
+        /// Increment the stencil value by 1, and wrap the result if necessary.
+        /// </para>
+        /// </summary>
+        Increment = SharpDX.Direct3D11.StencilOperation.Increment,
+        /// <summary>
+        /// <para>
+        /// Decrement the stencil value by 1, and wrap the result if necessary.
+        /// </para>
+        /// </summary>
+        Decrement = SharpDX.Direct3D11.StencilOperation.Decrement
     }
 }

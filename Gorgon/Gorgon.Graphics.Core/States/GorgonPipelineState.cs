@@ -146,6 +146,14 @@ namespace Gorgon.Graphics.Core
             internal set;
         }
 
+        /// <summary>
+        /// Property to return the depth/stencil state for the pipeline.
+        /// </summary>
+	    public GorgonDepthStencilState DepthStencilState
+	    {
+	        get;
+	        internal set;
+	    }
 
 	    /// <summary>
 	    /// Property to return the topology for a primitive.
@@ -238,7 +246,10 @@ namespace Gorgon.Graphics.Core
 	                                   };
 	        }
 
-	        D3DBlendState = new D3D11.BlendState1(device, desc);
+	        D3DBlendState = new D3D11.BlendState1(device, desc)
+	                        {
+	                            DebugName = nameof(GorgonBlendState)
+	                        };
 	    }
 
         /// <summary>
@@ -247,6 +258,7 @@ namespace Gorgon.Graphics.Core
 	    internal void Clear()
         {
             RasterState = null;
+            DepthStencilState = null;
             IsIndependentBlendingEnabled = false;
             IsAlphaToCoverageEnabled = false;
             PixelShader = null;
@@ -268,6 +280,7 @@ namespace Gorgon.Graphics.Core
         internal GorgonPipelineState(GorgonPipelineState state)
         {
             RasterState = state.RasterState;
+            DepthStencilState = state.DepthStencilState;
             IsIndependentBlendingEnabled = state.IsIndependentBlendingEnabled;
             IsAlphaToCoverageEnabled = state.IsAlphaToCoverageEnabled;
             PixelShader = state.PixelShader;

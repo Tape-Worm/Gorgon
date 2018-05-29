@@ -20,47 +20,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: May 29, 2018 8:51:04 AM
+// Created: May 29, 2018 8:51:10 AM
 // 
 #endregion
 
 namespace Gorgon.Graphics.Core
 {
     /// <summary>
-    /// Defines the type of operation to perform while blending colors.
+    /// Defines how a triangle primitive should be rendered.
     /// </summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue")]
-    public enum BlendOperation
+    public enum FillMode
     {
         /// <summary>
         /// <para>
-        /// Add source 1 and source 2.
+        /// Draw lines connecting the vertices. Adjacent vertices are not drawn.
         /// </para>
         /// </summary>
-        Add = SharpDX.Direct3D11.BlendOperation.Add,
+        Wireframe = SharpDX.Direct3D11.FillMode.Wireframe,
         /// <summary>
         /// <para>
-        /// Subtract source 1 from source 2.
+        /// Fill the triangles formed by the vertices. Adjacent vertices are not drawn.
         /// </para>
         /// </summary>
-        Subtract = SharpDX.Direct3D11.BlendOperation.Subtract,
-        /// <summary>
-        /// <para>
-        /// Subtract source 2 from source 1.
-        /// </para>
-        /// </summary>
-        ReverseSubtract = SharpDX.Direct3D11.BlendOperation.ReverseSubtract,
-        /// <summary>
-        /// <para>
-        /// Find the minimum of source 1 and source 2.
-        /// </para>
-        /// </summary>
-        Minimum = SharpDX.Direct3D11.BlendOperation.Minimum,
-        /// <summary>
-        /// <para>
-        /// Find the maximum of source 1 and source 2.
-        /// </para>
-        /// </summary>
-        Maximum = SharpDX.Direct3D11.BlendOperation.Maximum
+        Solid = SharpDX.Direct3D11.FillMode.Solid
     }
 }

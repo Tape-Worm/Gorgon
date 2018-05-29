@@ -264,6 +264,7 @@ namespace Gorgon.Graphics.Example
 	    private static GorgonConstantBufferView _cBuffer;
 	    private static GorgonTexture2DView _texture;
 	    private static GorgonTexture2DView _texture2;
+	    private static GorgonDepthStencil2DView _depth;
 	    private static GorgonDrawIndexCall _drawCall;
 	    private static GorgonDrawIndexCall _drawCall2;
         private static DX.Matrix _projMatrix = DX.Matrix.Identity;
@@ -287,8 +288,7 @@ namespace Gorgon.Graphics.Example
         
 	    private static void TestDrawing()
 	    {
-	        _graphics.DoStuff();
-
+            _depth.Clear(1.0f, 0);
 
 	        Transform(0.5f);
 	        _graphics.Submit(_drawCall2);
@@ -308,6 +308,14 @@ namespace Gorgon.Graphics.Example
 
 	    private static void TestInit()
 	    {
+            _depth = GorgonDepthStencil2DView.CreateDepthStencil(_graphics, new GorgonTexture2DInfo
+                                                                            {
+                                                                                Format = BufferFormat.D24_UNorm_S8_UInt,
+                                                                                Binding = TextureBinding.DepthStencil,
+                                                                                Usage = ResourceUsage.Default,
+                                                                                Width = _swap.Width,
+                                                                                Height = _swap.Height
+                                                                            });
             _texture = GorgonTexture2DView.FromFile(_graphics, @"..\..\..\..\..\Resources\Textures\MiniTri\Gorgon.MiniTri.png", new GorgonCodecPng());
 	        _texture2 = GorgonTexture2DView.FromFile(_graphics, @"..\..\..\..\..\Resources\Textures\GlassCube\Glass.png", new GorgonCodecPng());
 	        using (StreamReader reader = new StreamReader(@"..\..\..\..\..\Gorgon\Gorgon.Graphics.Core\Resources\GraphicsShaders.hlsl"))
@@ -372,7 +380,7 @@ namespace Gorgon.Graphics.Example
 	                                             }, indexData.Cast<byte>());
 	        }
 
-            _graphics.SetRenderTarget(_swap.RenderTargetView);
+            _graphics.SetRenderTarget(_swap.RenderTargetView, _depth);
 
             var builder = new GorgonDrawIndexCallBuilder();
             var rsBuilder = new GorgonRasterStateBuilder();
@@ -385,6 +393,7 @@ namespace Gorgon.Graphics.Example
 	                           .SamplerState(ShaderType.Pixel, sampleBuilder.Filter(SampleFilter.MinMagMipPoint))
 	                           .ShaderResource(ShaderType.Pixel, _texture)
 	                           .PipelineState(psoBuilder
+	                                          .DepthStencilState(GorgonDepthStencilState.DepthEnabled)
 	                                          .BlendState(GorgonBlendState.NoBlending)
 	                                          .PrimitiveType(PrimitiveType.TriangleList)
 	                                          .PixelShader(_pShader)
@@ -393,10 +402,7 @@ namespace Gorgon.Graphics.Example
 	                           .Build();
 
 	        _drawCall2 = builder.ShaderResource(ShaderType.Pixel, _texture2)
-	                            //.PipelineState(psoBuilder.BlendState(GorgonBlendState.Additive))
 	                            .Build();
-
-            _graphics.DoInit();
 	    }
         #endregion
 

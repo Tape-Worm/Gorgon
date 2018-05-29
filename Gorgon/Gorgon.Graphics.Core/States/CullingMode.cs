@@ -20,47 +20,35 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: May 29, 2018 8:51:04 AM
+// Created: May 29, 2018 8:51:07 AM
 // 
 #endregion
 
 namespace Gorgon.Graphics.Core
 {
     /// <summary>
-    /// Defines the type of operation to perform while blending colors.
+    /// Defines how a triangle primitive should be culled from rendering.
     /// </summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue")]
-    public enum BlendOperation
+    public enum CullingMode
     {
         /// <summary>
         /// <para>
-        /// Add source 1 and source 2.
+        /// Always draw all triangles.
         /// </para>
         /// </summary>
-        Add = SharpDX.Direct3D11.BlendOperation.Add,
+        None = SharpDX.Direct3D11.CullMode.None,
         /// <summary>
         /// <para>
-        /// Subtract source 1 from source 2.
+        /// Do not draw triangles that are front-facing.
         /// </para>
         /// </summary>
-        Subtract = SharpDX.Direct3D11.BlendOperation.Subtract,
+        Front = SharpDX.Direct3D11.CullMode.Front,
         /// <summary>
         /// <para>
-        /// Subtract source 2 from source 1.
+        /// Do not draw triangles that are back-facing.
         /// </para>
         /// </summary>
-        ReverseSubtract = SharpDX.Direct3D11.BlendOperation.ReverseSubtract,
-        /// <summary>
-        /// <para>
-        /// Find the minimum of source 1 and source 2.
-        /// </para>
-        /// </summary>
-        Minimum = SharpDX.Direct3D11.BlendOperation.Minimum,
-        /// <summary>
-        /// <para>
-        /// Find the maximum of source 1 and source 2.
-        /// </para>
-        /// </summary>
-        Maximum = SharpDX.Direct3D11.BlendOperation.Maximum
+        Back = SharpDX.Direct3D11.CullMode.Back
     }
 }

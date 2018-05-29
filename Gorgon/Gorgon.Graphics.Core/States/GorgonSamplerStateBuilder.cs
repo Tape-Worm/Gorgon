@@ -78,7 +78,7 @@ namespace Gorgon.Graphics.Core
 	    /// </summary>
 	    /// <param name="state">The state to copy from.</param>
 	    /// <returns>The fluent builder interface.</returns>
-	    protected override GorgonSamplerStateBuilder OnResetState(GorgonSamplerState state)
+	    protected override GorgonSamplerStateBuilder OnResetTo(GorgonSamplerState state)
 	    {
             CopyState(WorkingState, state);
 	        return this;
