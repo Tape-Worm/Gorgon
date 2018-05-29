@@ -187,6 +187,15 @@ namespace Gorgon.Graphics.Core
 
         // A syncrhonization lock for multiple thread when dealing with the sampler cache.
         private readonly object _samplerLock = new object();
+
+        // The previous depth/stencil reference value.
+        private int _depthStencilReference;
+
+        // The previous blend sample mask.
+        private int _blendSampleMask = int.MinValue;
+
+        // The previous blend factor.
+        private GorgonColor _blendFactor = GorgonColor.White;
         #endregion
 
         #region Properties.
@@ -493,6 +502,11 @@ namespace Gorgon.Graphics.Core
                 D3DDeviceContext.Rasterizer.State = currentState.D3DRasterState;
             }
 
+            if ((changes & DrawCallChanges.BlendState) == DrawCallChanges.BlendState)
+            {
+                D3DDeviceContext.OutputMerger.BlendState = currentState.D3DBlendState;
+            }
+
             if ((changes & DrawCallChanges.Scissors) == DrawCallChanges.Scissors)
             {
                 SetScissors(currentState.RasterState.ScissorRectangles);
@@ -548,6 +562,13 @@ namespace Gorgon.Graphics.Core
             if (ChangeBuilder(lastState.D3DRasterState == currentState.D3DRasterState, DrawCallChanges.RasterState, ref changes))
             {
                 _lastState.PipelineState.D3DRasterState = currentState.D3DRasterState;
+            }
+
+            if (ChangeBuilder(lastState.D3DBlendState == currentState.D3DBlendState, DrawCallChanges.BlendState, ref changes))
+            {
+                _lastState.PipelineState.IsAlphaToCoverageEnabled = currentState.IsAlphaToCoverageEnabled;
+                _lastState.PipelineState.IsIndependentBlendingEnabled = currentState.IsIndependentBlendingEnabled;
+                _lastState.PipelineState.D3DBlendState = currentState.D3DBlendState;
             }
 
             if (ChangeBuilder(CompareScissorRects(lastState.RasterState?.ScissorRectangles, currentState.RasterState.ScissorRectangles), DrawCallChanges.Scissors, ref changes))
@@ -1264,32 +1285,12 @@ namespace Gorgon.Graphics.Core
                                               {
                                                   DebugName = "Gorgon D3D11DepthStencilState"
                                               };
-            }
+            }*/
 
-            
-            if ((blendState != null) || (pipelineState.BlendStates == null) || (pipelineState.BlendStates.Count == 0))
+            if (blendState == null)
             {
-                return result;
+                pipelineState.BuildD3D11BlendState(D3DDevice);
             }
-
-            int maxStates = pipelineState.BlendStates.Count.Min(D3D11.OutputMergerStage.SimultaneousRenderTargetCount);
-
-            D3D11.BlendStateDescription1 desc = new D3D11.BlendStateDescription1
-                       {
-                           IndependentBlendEnable = pipelineState.IsIndependentBlendingEnabled,
-                           AlphaToCoverageEnable = pipelineState.IsAlphaToCoverageEnabled
-                       };
-
-            for (int i = 0; i < maxStates; ++i)
-            {
-                desc.RenderTarget[i] = pipelineState.BlendStates[i].ToRenderTargetBlendStateDesc1();
-            }
-
-            result.D3DBlendState = new D3D11.BlendState1(_d3DDevice, desc)
-                                   {
-                                       DebugName = "Gorgon D3D11BlendState"
-                                   };
-                                   */
         }
 
         /// <summary>
@@ -1357,6 +1358,40 @@ namespace Gorgon.Graphics.Core
             }
 
             _isTargetUpdated = (false, false);
+        }
+
+        /// <summary>
+        /// Function to set up drawing states.
+        /// </summary>
+        /// <param name="state">The state to evaluate and apply.</param>
+        /// <param name="factor">The current blend factor.</param>
+        /// <param name="blendSampleMask">The blend sample mask.</param>
+        /// <param name="depthStencilReference">The depth stencil reference.</param>
+        private void SetDrawStates(D3DState state, GorgonColor factor, int blendSampleMask, int depthStencilReference)
+        {
+            if (!factor.Equals(in _blendFactor))
+            {
+                _blendFactor = factor;
+                D3DDeviceContext.OutputMerger.BlendFactor = factor.ToRawColor4();
+            }
+
+            if (blendSampleMask != _blendSampleMask)
+            {
+                _blendFactor = _blendSampleMask;
+                D3DDeviceContext.OutputMerger.BlendSampleMask = blendSampleMask;
+            }
+
+            if (depthStencilReference != _depthStencilReference)
+            {
+                _depthStencilReference = depthStencilReference;
+                D3DDeviceContext.OutputMerger.DepthStencilReference = _depthStencilReference;
+            }
+            
+            DrawCallChanges changes = BuildDrawCallResources(state);
+            DrawCallChanges stateChanges = BuildStateChanges(state.PipelineState);
+
+            BindResources(changes);
+            ApplyState(_lastState.PipelineState, stateChanges);
         }
 
         /// <summary>
@@ -1467,6 +1502,14 @@ namespace Gorgon.Graphics.Core
                         rasterState = cachedState.D3DRasterState;
                         inheritedState |= DrawCallChanges.RasterState;
                     }
+
+                    if ((cachedState.RwBlendStates.Equals(newState.RwBlendStates))
+                        && (cachedState.IsAlphaToCoverageEnabled == newState.IsAlphaToCoverageEnabled)
+                            && (cachedState.IsIndependentBlendingEnabled == newState.IsIndependentBlendingEnabled))
+                    {
+                        blendState = cachedState.D3DBlendState;
+                        inheritedState |= DrawCallChanges.BlendState;
+                    }
                     
                     /*
                     if ((cachedStateInfo.DepthStencilState != null) &&
@@ -1475,34 +1518,8 @@ namespace Gorgon.Graphics.Core
                         depthStencilState = cachedState.D3DDepthStencilState;
                         inheritedState |= PipelineStateChange.DepthStencilState;
                     }
-    
-                    if (ReferenceEquals(newStateInfo.BlendStates, cachedStateInfo.BlendStates))
-                    {
-                        blendState = cachedState.D3DBlendState;
-                        inheritedState |= PipelineStateChange.BlendState;
-                    }
-                    else
-                    {
-                        if ((newStateInfo.BlendStates != null)
-                            && (cachedStateInfo.BlendStates != null)
-                            && (newStateInfo.BlendStates.Count == cachedStateInfo.BlendStates.Count))
-                        {
-                            for (int j = 0; j < newStateInfo.BlendStates.Count; ++j)
-                            {
-                                if (cachedStateInfo.BlendStates[j]?.Equals(newStateInfo.BlendStates[j]) ?? false)
-                                {
-                                    blendStateEqualCount++;
-                                }
-                            }
-    
-                            if (blendStateEqualCount == newStateInfo.BlendStates.Count)
-                            {
-                                blendState = cachedState.D3DBlendState;
-                                inheritedState |= PipelineStateChange.BlendState;
-                            }
-                        }
-                    }
                     */
+
                     // We've copied all the states, so just return the existing pipeline state.
                     // ReSharper disable once InvertIf
                     if (inheritedState == DrawCallChanges.AllPipelineState)
@@ -1865,19 +1882,19 @@ namespace Gorgon.Graphics.Core
             }
         }
 
+
         /// <summary>
         /// Function to submit a basic draw call to the GPU.
         /// </summary>
         /// <param name="drawCall">The draw call to execute.</param>
+        /// <param name="blendFactor">[Optional] The factor used to modulate the pixel shader, render target or both.</param>
+        /// <param name="blendSampleMask">[Optional] The mask used to define which samples get updated in the active render targets.</param>
+        /// <param name="depthStencilReference">[Optional] The depth/stencil reference value used when performing a depth/stencil test.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawCall"/> parameter is <b>null</b>.</exception>
-        public void Submit(GorgonDrawCall drawCall)
+        public void Submit(GorgonDrawCall drawCall, GorgonColor? blendFactor = null, int blendSampleMask = int.MinValue, int depthStencilReference = 0)
         {
             drawCall.ValidateObject(nameof(drawCall));
-
-            DrawCallChanges changes = BuildDrawCallResources(drawCall.D3DState);
-
-            BindResources(changes);
-            
+            SetDrawStates(drawCall.D3DState, blendFactor ?? GorgonColor.White, blendSampleMask, depthStencilReference);
             D3DDeviceContext.Draw(drawCall.VertexCount, drawCall.VertexStartIndex);
         }
 
@@ -1885,17 +1902,14 @@ namespace Gorgon.Graphics.Core
         /// Function to submit a draw call with indices to the GPU.
         /// </summary>
         /// <param name="drawIndexCall">The draw call to execute.</param>
+        /// <param name="blendFactor">[Optional] The factor used to modulate the pixel shader, render target or both.</param>
+        /// <param name="blendSampleMask">[Optional] The mask used to define which samples get updated in the active render targets.</param>
+        /// <param name="depthStencilReference">[Optional] The depth/stencil reference value used when performing a depth/stencil test.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawIndexCall"/> parameter is <b>null</b>.</exception>
-        public void Submit(GorgonDrawIndexCall drawIndexCall)
+        public void Submit(GorgonDrawIndexCall drawIndexCall, GorgonColor? blendFactor = null, int blendSampleMask = int.MinValue, int depthStencilReference = 0)
         {
             drawIndexCall.ValidateObject(nameof(drawIndexCall));
-
-            DrawCallChanges changes = BuildDrawCallResources(drawIndexCall.D3DState);
-            DrawCallChanges stateChanges = BuildStateChanges(drawIndexCall.D3DState.PipelineState);
-
-            BindResources(changes);
-            ApplyState(_lastState.PipelineState, stateChanges);
-
+            SetDrawStates(drawIndexCall.D3DState, blendFactor ?? GorgonColor.White, blendSampleMask, depthStencilReference);
             D3DDeviceContext.DrawIndexed(drawIndexCall.IndexCount, drawIndexCall.IndexStart, drawIndexCall.BaseVertexIndex);
         }
 

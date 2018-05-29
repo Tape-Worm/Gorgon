@@ -211,13 +211,14 @@ namespace Gorgon.Graphics.Example
 			    }
 			}
 
+		    _mainForm.Text = $"FPS: {GorgonTiming.AverageFPS:#0.0} DT: {GorgonTiming.Delta:#0.000}ms";
             TestDrawing();
 
 			// Now we flip our buffers on the swap chain.  
 			// We need to this or we won't see anything at all except the standard window background color. Clearly, we don't want that. 
 			// This method will take the current frame back buffer and flip it to the front buffer (the window). If we had more than one swap chain tied to multiple 
 			// windows, then we'd need to do this for every swap chain.
-            _swap.Present(1);
+            _swap.Present();
 			
 			return true;
 		}
@@ -267,25 +268,21 @@ namespace Gorgon.Graphics.Example
 	    private static GorgonDrawIndexCall _drawCall2;
         private static DX.Matrix _projMatrix = DX.Matrix.Identity;
 	    private static float _yRot;
-	    private static int _cbufferOffset = 0;
-	    private static int _viewOffset = 0;
 
 	    private static void Transform(float xoffset)
 	    {
-	        if (_cbufferOffset >= _cBuffer.Buffer.SizeInBytes)
-	        {
-	            _viewOffset = 0;
-	            _cbufferOffset = 0;
-	        }
-            
+            var position = new DX.Vector4(xoffset, 0, 1.0f, 1.0f);
+                /*new DX.Vector4(GorgonRandom.RandomSingle(-1.0f, 1.0f), 
+                                          GorgonRandom.RandomSingle(-1.0f, 1.0f), 
+                                          GorgonRandom.RandomSingle(1.0f, 2.0f),
+                                          1.0f);*/
+
 	        DX.Matrix.RotationY(_yRot.ToRadians(), out DX.Matrix worldMatrix);
-	        worldMatrix.Row4 = new DX.Vector4(xoffset, 0, 1.0f, 1.0f);
+	        worldMatrix.Row4 = position;
 	        DX.Matrix.Multiply(ref worldMatrix, ref _projMatrix, out DX.Matrix wProj);
 
-	        _cBuffer.Buffer.SetData(ref wProj, _cbufferOffset, _cbufferOffset == 0 ? CopyMode.Discard : CopyMode.NoOverwrite);
+	        _cBuffer.Buffer.SetData(ref wProj);
 	        //_cBuffer.Buffer.SetData(ref wProj);
-
-	        _cbufferOffset += 256;
 	    }
         
 	    private static void TestDrawing()
@@ -294,14 +291,13 @@ namespace Gorgon.Graphics.Example
 
 
 	        Transform(0.5f);
-            _cBuffer.AdjustView(_viewOffset, 1);
 	        _graphics.Submit(_drawCall2);
-	        Transform(0);
-	        _cBuffer.AdjustView((_viewOffset + 1), 1);
-            _graphics.Submit(_drawCall);
+	        //for (int i = 0; i < 100000; ++i)
+	        //{
+	            Transform(0);
+	            _graphics.Submit(_drawCall);
+	        //}
 
-	        _viewOffset += 2;
-	        
 	        _yRot += GorgonTiming.Delta * 45.0f;
 
 	        if (_yRot > 360.0f)
@@ -325,7 +321,7 @@ namespace Gorgon.Graphics.Example
 	        DX.Matrix.PerspectiveFovLH((65.0f).ToRadians(), (float)_swap.Width / _swap.Height, 0.125f, 1000.0f, out _projMatrix);
             _cBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics, new GorgonConstantBufferInfo
                                                                                 {
-                                                                                    SizeInBytes = 6 * (DX.Matrix.SizeInBytes * 4),
+                                                                                    SizeInBytes = DX.Matrix.SizeInBytes,
                                                                                     Usage = ResourceUsage.Dynamic
                                                                                 }, 0, 1);
             _cBuffer.Buffer.SetData(ref _projMatrix);
@@ -339,19 +335,19 @@ namespace Gorgon.Graphics.Example
 	                            {
 	                                Color = new GorgonColor(1.0f, 0, 0),
 	                                Position = new DX.Vector4(0, 0.5f, 0.0f, 1.0f),
-	                                Uv = new DX.Vector2(0.5f, 0)
+	                                Uv = _texture.Texture.ToTexel(new DX.Point(128, 3))
 	                            };
 	            vertexData[1] = new BltVertex
 	                            {
 	                                Color = new GorgonColor(0.0f, 1.0f, 0),
 	                                Position = new DX.Vector4(0.5f, -0.5f, 0.0f, 1.0f),
-	                                Uv = new DX.Vector2(1.0f, 1.0f)
+	                                Uv = _texture.Texture.ToTexel(new DX.Point(230, 252))
 	                            };
 	            vertexData[2] = new BltVertex
 	                            {
 	                                Color = new GorgonColor(0.0f, 0, 1.0f),
 	                                Position = new DX.Vector4(-0.5f, -0.5f, 0.0f, 1.0f),
-	                                Uv = new DX.Vector2(0, 1.0f)
+	                                Uv = _texture.Texture.ToTexel(new DX.Point(23, 252))
 	                            };
 	            indexData[0] = 0;
 	            indexData[1] = 1;
@@ -389,23 +385,15 @@ namespace Gorgon.Graphics.Example
 	                           .SamplerState(ShaderType.Pixel, sampleBuilder.Filter(SampleFilter.MinMagMipPoint))
 	                           .ShaderResource(ShaderType.Pixel, _texture)
 	                           .PipelineState(psoBuilder
+	                                          .BlendState(GorgonBlendState.NoBlending)
 	                                          .PrimitiveType(PrimitiveType.TriangleList)
 	                                          .PixelShader(_pShader)
 	                                          .VertexShader(_vShader)
-	                                          .RasterState(rsBuilder.CullMode(CullingMode.None)
-	                                                                .ScissorRectangle(new DX.Rectangle(160, 120, 320, 240))))
+	                                          .RasterState(GorgonRasterState.NoCulling))
 	                           .Build();
 
-	        _drawCall2 = builder.VertexBuffer(_layout, _vbBinding)
-	                            .IndexBuffer(_iBuffer, 0, 3)
-	                            .ConstantBuffer(ShaderType.Vertex, _cBuffer)
-	                            .ShaderResource(ShaderType.Pixel, _texture2)
-	                            .SamplerState(ShaderType.Pixel, sampleBuilder.Filter(SampleFilter.MinMagMipPoint))
-	                            .PipelineState(psoBuilder.PrimitiveType(PrimitiveType.TriangleList)
-	                                                     .PixelShader(_pShader2)
-	                                                     .VertexShader(_vShader)
-	                                                     .RasterState(rsBuilder.Clear()
-	                                                                           .CullMode(CullingMode.Back)))
+	        _drawCall2 = builder.ShaderResource(ShaderType.Pixel, _texture2)
+	                            //.PipelineState(psoBuilder.BlendState(GorgonBlendState.Additive))
 	                            .Build();
 
             _graphics.DoInit();

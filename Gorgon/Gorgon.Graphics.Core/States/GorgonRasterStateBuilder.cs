@@ -65,6 +65,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Function to update the properties of the state from the working copy to the final copy.
         /// </summary>
+        /// <returns>The fluent builder interface.</returns>
         protected override GorgonRasterState OnUpdate()
         {
             return new GorgonRasterState(WorkingState);
@@ -74,6 +75,7 @@ namespace Gorgon.Graphics.Core
         /// Function to reset the builder to the specified state.
         /// </summary>
         /// <param name="state">The state to copy from.</param>
+        /// <returns>The fluent builder interface.</returns>
         protected override GorgonRasterStateBuilder OnResetState(GorgonRasterState state)
         {
             CopyState(WorkingState, state);
@@ -83,6 +85,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Function to clear the working state for the builder.
         /// </summary>
+        /// <returns>The fluent builder interface.</returns>
         protected override GorgonRasterStateBuilder OnClearState()
         {
             CopyState(WorkingState, GorgonRasterState.Default);

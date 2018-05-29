@@ -25,6 +25,10 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+using D3D11 = SharpDX.Direct3D11;
+using Gorgon.Graphics.Core.Properties;
+using Gorgon.Math;
 
 namespace Gorgon.Graphics.Core
 {
@@ -53,6 +57,29 @@ namespace Gorgon.Graphics.Core
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to copy a list of blend states to the list provided.
+        /// </summary>
+        /// <param name="dest">The destination list.</param>
+        /// <param name="src">The source list.</param>
+        /// <param name="startSlot">The starting index.</param>
+        private static void CopyBlendStates(GorgonArray<GorgonBlendState> dest, IReadOnlyList<GorgonBlendState> src, int startSlot)
+        {
+            dest.Clear();
+
+            if (src == null)
+            {
+                return;
+            }
+
+            int length = src.Count.Min(D3D11.OutputMergerStage.SimultaneousRenderTargetCount - startSlot);
+
+            for (int i = 0; i < length; ++i)
+            {
+                dest[i + startSlot] = src[i];
+            }
+        }
+
         /// <summary>
         /// Function to add a rasterizer state to this pipeline state.
         /// </summary>
@@ -153,6 +180,82 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
+        /// Function to enable alpha coverage for blending.
+        /// </summary>
+        /// <returns>The fluent builder interface.</returns>
+        public GorgonPipelineStateBuilder EnableAlphaCoverage()
+        {
+            _workState.IsAlphaToCoverageEnabled = true;
+            return this;
+        }
+
+        /// <summary>
+        /// Function to disable alpha coverage for blending.
+        /// </summary>
+        /// <returns>The fluent builder interface.</returns>
+        public GorgonPipelineStateBuilder DisableAlphaCoverage()
+        {
+            _workState.IsAlphaToCoverageEnabled = false;
+            return this;
+        }
+
+        /// <summary>
+        /// Function to enable independent render target blending.
+        /// </summary>
+        /// <returns>The fluent builder interface.</returns>
+        public GorgonPipelineStateBuilder EnableIndependentBlending()
+        {
+            _workState.IsIndependentBlendingEnabled = true;
+            return this;
+        }
+
+        /// <summary>
+        /// Function to disable independent render target blending
+        /// </summary>
+        /// <returns>The fluent builder interface.</returns>
+        public GorgonPipelineStateBuilder DisableIndependentBlending()
+        {
+            _workState.IsIndependentBlendingEnabled = false;
+            return this;
+        }
+
+        /// <summary>
+        /// Function to assign a <see cref="GorgonBlendState"/> to the pipeline.
+        /// </summary>
+        /// <param name="state">The state to apply to the pipeline</param>
+        /// <param name="slot">[Optional] The slot to assign the states into.</param>
+        /// <returns>The fluent builder interface.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="slot"/> is less than 0, or greater than/equal to 8.</exception>
+        public GorgonPipelineStateBuilder BlendState(GorgonBlendState state, int slot = 0)
+        {
+            if ((slot < 0) || (slot >= D3D11.OutputMergerStage.SimultaneousRenderTargetCount))
+            {
+                throw new ArgumentOutOfRangeException(nameof(slot), string.Format(Resources.GORGFX_ERR_BLEND_SLOT_INVALID, D3D11.OutputMergerStage.SimultaneousRenderTargetCount));
+            }
+
+            _workState.RwBlendStates[slot] = state;
+            return this;
+        }
+
+        /// <summary>
+        /// Function to assign a list of <see cref="GorgonBlendState"/> objects to the pipeline.
+        /// </summary>
+        /// <param name="states">The states to apply to the pipeline</param>
+        /// <param name="startSlot">[Optional] The first slot to assign the states into.</param>
+        /// <returns>The fluent builder interface.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="startSlot"/> is less than 0, or greater than/equal to 8.</exception>
+        public GorgonPipelineStateBuilder BlendStates(IReadOnlyList<GorgonBlendState> states, int startSlot = 0)
+        {
+            if ((startSlot < 0) || (startSlot >= D3D11.OutputMergerStage.SimultaneousRenderTargetCount))
+            {
+                throw new ArgumentOutOfRangeException(nameof(startSlot), string.Format(Resources.GORGFX_ERR_BLEND_SLOT_INVALID, D3D11.OutputMergerStage.SimultaneousRenderTargetCount));
+            }
+
+            CopyBlendStates(_workState.RwBlendStates, states, startSlot);
+            return this;
+        }
+
+        /// <summary>
         /// Function to reset the pipeline state to the specified state passed in to the method.
         /// </summary>
         /// <param name="pipeState">The pipeline state to copy.</param>
@@ -173,6 +276,9 @@ namespace Gorgon.Graphics.Core
             _workState.HullShader = pipeState.HullShader;
             _workState.ComputeShader = pipeState.ComputeShader;
             _workState.PrimitiveType = pipeState.PrimitiveType;
+            _workState.IsIndependentBlendingEnabled = pipeState.IsIndependentBlendingEnabled;
+            _workState.IsAlphaToCoverageEnabled = pipeState.IsAlphaToCoverageEnabled;
+            pipeState.RwBlendStates.CopyTo(_workState.RwBlendStates);
             
             return this;
         }
@@ -183,14 +289,8 @@ namespace Gorgon.Graphics.Core
         /// <returns>The fluent interface for the builder.</returns>
         public GorgonPipelineStateBuilder Clear()
         {
-            _workState.PrimitiveType = Core.PrimitiveType.TriangleList;
-            _workState.RasterState = GorgonRasterState.Default;
-            _workState.PixelShader = null;
-            _workState.VertexShader = null;
-            _workState.GeometryShader = null;
-            _workState.DomainShader = null;
-            _workState.HullShader = null;
-            _workState.ComputeShader = null;
+            _workState.Clear();
+
             return this;
         }
 
@@ -213,6 +313,7 @@ namespace Gorgon.Graphics.Core
         public GorgonPipelineStateBuilder(GorgonGraphics graphics)
         {
             Graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
+            _workState.RwBlendStates[0] = GorgonBlendState.Default;
         }
         #endregion
     }

@@ -24,6 +24,8 @@
 // 
 #endregion
 
+using System.Diagnostics;
+using Gorgon.Collections;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
@@ -60,6 +62,14 @@ namespace Gorgon.Graphics.Core
 			get;
 			set;
 		}
+
+        /// <summary>
+        /// Property to return the readable/writable list of blending states for each render target.
+        /// </summary>
+	    internal GorgonArray<GorgonBlendState> RwBlendStates
+	    {
+	        get;
+	    } = new GorgonArray<GorgonBlendState>(D3D11.OutputMergerStage.SimultaneousRenderTargetCount);
 
 	    /// <summary>
 	    /// Property to return the ID of the pipeline state.
@@ -145,15 +155,100 @@ namespace Gorgon.Graphics.Core
 	        get;
 	        internal set;
 	    }
+
+	    /// <summary>
+	    /// Property to return whether alpha to coverage is enabled or not for blending.
+	    /// </summary>
+	    /// <remarks>
+	    /// <para>
+	    /// This will use alpha to coverage as a multisampling technique when writing a pixel to a render target. Alpha to coverage is useful in situations where there are multiple overlapping polygons 
+	    /// that use transparency to define edges.
+	    /// </para>
+	    /// <para>
+	    /// The default value is <b>false</b>.
+	    /// </para>
+	    /// </remarks>
+	    public bool IsAlphaToCoverageEnabled
+	    {
+	        get;
+	        internal set;
+	    }
+
+	    /// <summary>
+	    /// Property to return whether independent render target blending is enabled or not.
+	    /// </summary>
+	    /// <remarks>
+	    /// <para>
+	    /// This will specify whether to use different blending states for each render target. When this value is set to <b>true</b>, each render target blend state will be independent of other render 
+	    /// target blend states. When this value is set to <b>false</b>, then only the blend state of the first render target is used.
+	    /// </para>
+	    /// <para>
+	    /// The default value is <b>false</b>.
+	    /// </para>
+	    /// </remarks>
+	    public bool IsIndependentBlendingEnabled
+	    {
+	        get;
+	        internal set;
+	    }
+
+	    /// <summary>
+	    /// Property to return the list of blending states for each render target.
+	    /// </summary>
+	    public IGorgonReadOnlyArray<GorgonBlendState> BlendStates => RwBlendStates;
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to build the D3D11 blend state.
+        /// </summary>
+        /// <param name="device">The device used to create the blend state.</param>
+	    internal void BuildD3D11BlendState(D3D11.Device5 device)
+	    {
+            Debug.Assert(D3DBlendState == null, "D3D Blend state already assigned to this pipeline state.");
+
+	        (int start, int count) = RwBlendStates.GetDirtyItems();
+	        var desc = new D3D11.BlendStateDescription1
+	                   {
+	                       AlphaToCoverageEnable = IsAlphaToCoverageEnabled,
+	                       IndependentBlendEnable = IsIndependentBlendingEnabled
+	                   };
+
+	        for (int i = 0; i < count; ++i)
+	        {
+	            GorgonBlendState state = RwBlendStates[start + i];
+	            
+	            if (state == null)
+	            {
+	                continue;
+	            }
+
+	            desc.RenderTarget[i] = new D3D11.RenderTargetBlendDescription1
+	                                   {
+	                                       AlphaBlendOperation = (D3D11.BlendOperation)state.AlphaBlendOperation,
+	                                       BlendOperation = (D3D11.BlendOperation)state.ColorBlendOperation,
+	                                       IsLogicOperationEnabled = state.LogicOperation != LogicOperation.Noop,
+	                                       IsBlendEnabled = state.IsBlendingEnabled,
+	                                       RenderTargetWriteMask = (D3D11.ColorWriteMaskFlags)state.WriteMask,
+	                                       LogicOperation = (D3D11.LogicOperation)state.LogicOperation,
+	                                       SourceAlphaBlend = (D3D11.BlendOption)state.SourceAlphaBlend,
+	                                       SourceBlend = (D3D11.BlendOption)state.SourceColorBlend,
+	                                       DestinationAlphaBlend = (D3D11.BlendOption)state.DestinationAlphaBlend,
+	                                       DestinationBlend = (D3D11.BlendOption)state.DestinationColorBlend
+	                                   };
+	        }
+
+	        D3DBlendState = new D3D11.BlendState1(device, desc);
+	    }
+
         /// <summary>
         /// Function to clear the pipeline state.
         /// </summary>
 	    internal void Clear()
         {
             RasterState = null;
+            IsIndependentBlendingEnabled = false;
+            IsAlphaToCoverageEnabled = false;
             PixelShader = null;
             VertexShader = null;
             GeometryShader = null;
@@ -161,6 +256,7 @@ namespace Gorgon.Graphics.Core
             HullShader = null;
             ComputeShader = null;
             PrimitiveType = PrimitiveType.TriangleList;
+            RwBlendStates.Clear();
         }
         #endregion
 
@@ -172,6 +268,8 @@ namespace Gorgon.Graphics.Core
         internal GorgonPipelineState(GorgonPipelineState state)
         {
             RasterState = state.RasterState;
+            IsIndependentBlendingEnabled = state.IsIndependentBlendingEnabled;
+            IsAlphaToCoverageEnabled = state.IsAlphaToCoverageEnabled;
             PixelShader = state.PixelShader;
             VertexShader = state.VertexShader;
             GeometryShader = state.GeometryShader;
@@ -179,6 +277,7 @@ namespace Gorgon.Graphics.Core
             HullShader = state.HullShader;
             ComputeShader = state.ComputeShader;
             PrimitiveType = state.PrimitiveType;
+            state.RwBlendStates.CopyTo(RwBlendStates);
         }
 
 		/// <summary>

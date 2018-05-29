@@ -26,7 +26,7 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <CodeAnalysisRuleSet>..\NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>true</RunCodeAnalysis>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -41,7 +41,7 @@
     <UseVSHostingProcess>true</UseVSHostingProcess>
     <CodeAnalysisRuleSet>
     </CodeAnalysisRuleSet>
-    <LangVersion>7.2</LangVersion>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
@@ -111,6 +111,9 @@
     <Compile Include="PrimitiveType.cs" />
     <Compile Include="Shaders\GorgonShaderResourceViews.cs" />
     <Compile Include="Buffers\GorgonConstantBuffers.cs" />
+    <Compile Include="States\Blend.cs" />
+    <Compile Include="States\BlendOperation.cs" />
+    <Compile Include="States\GorgonBlendState.cs" />
     <Compile Include="States\GorgonPipelineStateBuilder.cs" />
     <Compile Include="Pipeline\GorgonVertexBufferBinding.cs" />
     <Compile Include="Pipeline\GorgonVertexBufferBindings.cs" />
@@ -131,14 +134,17 @@
     <Compile Include="Shaders\GorgonVertexShader.cs" />
     <Compile Include="Shaders\_Internal\ShaderProcessor.cs" />
     <Compile Include="States\GorgonPipelineState.cs" />
+    <Compile Include="States\GorgonBlendStateBuilder.cs" />
     <Compile Include="States\GorgonSamplerStateBuilder.cs" />
     <Compile Include="States\GorgonSamplerState.cs" />
     <Compile Include="States\GorgonSamplerStates.cs" />
     <Compile Include="States\GorgonStateBuilderCommon.cs" />
     <Compile Include="States\GorgonRasterState.cs" />
     <Compile Include="States\GorgonRasterStateBuilder.cs" />
+    <Compile Include="States\LogicOperation.cs" />
     <Compile Include="States\SampleFilter.cs" />
     <Compile Include="States\ShaderResource.cs" />
+    <Compile Include="States\WriteMask.cs" />
     <Compile Include="Targets\BeforeSwapChainResizedEventArgs.cs" />
     <Compile Include="Targets\GorgonDepthStencil2DView.cs" />
     <Compile Include="Targets\GorgonRenderTarget3DView.cs" />

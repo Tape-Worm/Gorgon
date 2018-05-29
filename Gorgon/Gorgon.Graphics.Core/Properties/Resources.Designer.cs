@@ -70,6 +70,15 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The blending slot must be 0 and less than {0}..
+        /// </summary>
+        internal static string GORGFX_ERR_BLEND_SLOT_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_BLEND_SLOT_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The buffer is already locked..
         /// </summary>
         internal static string GORGFX_ERR_BUFFER_ALREADY_LOCKED {
