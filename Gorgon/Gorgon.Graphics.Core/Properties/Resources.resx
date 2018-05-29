@@ -624,4 +624,7 @@ Current binding: [{0}]</value>
   <data name="GORGFX_ERR_INSTANCE_START_INVALID" xml:space="preserve">
     <value>The instance start must be 0 or greater.</value>
   </data>
+  <data name="GORGFX_ERR_BUFFER_NOT_INDIRECTARGS" xml:space="preserve">
+    <value>The buffer '{0}' was configured for indirect arguments.</value>
+  </data>
 </root>

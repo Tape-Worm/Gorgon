@@ -205,6 +205,15 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The buffer &apos;{0}&apos; was configured for indirect arguments..
+        /// </summary>
+        internal static string GORGFX_ERR_BUFFER_NOT_INDIRECTARGS {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_BUFFER_NOT_INDIRECTARGS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The buffer requires at least {0} byte(s)..
         /// </summary>
         internal static string GORGFX_ERR_BUFFER_SIZE_TOO_SMALL {
