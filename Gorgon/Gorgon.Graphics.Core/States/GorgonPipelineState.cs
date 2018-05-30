@@ -279,8 +279,8 @@ namespace Gorgon.Graphics.Core
         /// <param name="state">The state copy.</param>
         internal GorgonPipelineState(GorgonPipelineState state)
         {
-            RasterState = state.RasterState;
-            DepthStencilState = state.DepthStencilState;
+            RasterState = new GorgonRasterState(state.RasterState);
+            DepthStencilState = new GorgonDepthStencilState(state.DepthStencilState);
             IsIndependentBlendingEnabled = state.IsIndependentBlendingEnabled;
             IsAlphaToCoverageEnabled = state.IsAlphaToCoverageEnabled;
             PixelShader = state.PixelShader;

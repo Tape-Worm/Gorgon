@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using D3D = SharpDX.Direct3D;
 
 namespace Gorgon.Graphics.Core
 {
@@ -96,6 +95,10 @@ namespace Gorgon.Graphics.Core
         /// Scissor rectangles were modified.
         /// </summary>
         Scissors = 0x2000,
+        /// <summary>
+        /// Stream out buffers were modified.
+        /// </summary>
+        StreamOutBuffers = 0x4000,
         /// <summary>
         /// Sampler state has changed.
         /// </summary>
@@ -214,6 +217,15 @@ namespace Gorgon.Graphics.Core
     /// </summary>
     class D3DState
     {
+        /// <summary>
+        /// Property to return the stream out bindings.
+        /// </summary>
+        public GorgonStreamOutBindings StreamOutBindings
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// Property to return the pixel shader sampler states.
         /// </summary>

@@ -41,10 +41,6 @@ namespace Gorgon.Graphics.Core
     /// This defines the layout of a piece of data within a stream out buffer. The layout is defined by a list of <see cref="GorgonStreamOutElement"/> values that determine 
     /// how the data within the layout is arranged.
     /// </para>
-    /// <para>
-    /// Users may create a layout manually, or, derive it from a value type (<c>struct</c>). If deriving from a value type, then the members of the value type must be decorated with a 
-    /// <see cref="InputElementAttribute"/> to define where the member is located within the layout data structure.
-    /// </para>
     /// </remarks>
     public sealed class GorgonStreamOutLayout
         : GorgonNamedObject

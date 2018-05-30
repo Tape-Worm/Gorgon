@@ -112,11 +112,13 @@ namespace Gorgon.Graphics.Core
 	                                      {
 	                                          DebugName = $"{Name}_ID3D11GeometryShader (SO)"
 	                                      };
-	        return new GorgonGeometryShader(Graphics, Name + " (SO)", IsDebug, byteCode)
-	               {
-	                   _shader = shader,
-	                   StreamOutLayout = streamOutLayout
-	               };
+	        var result = new GorgonGeometryShader(Graphics, Name + " (SO)", IsDebug, byteCode, shader)
+	                     {
+	                         StreamOutLayout = streamOutLayout
+	                     };
+            result.RegisterDisposable(Graphics);
+
+	        return result;
 	    }
 
 		/// <summary>
@@ -137,6 +139,21 @@ namespace Gorgon.Graphics.Core
 		#endregion
 
 		#region Constructor/Destructor.
+	    /// <summary>
+	    /// Initializes a new instance of the <see cref="GorgonGeometryShader" /> class.
+	    /// </summary>
+	    /// <param name="graphics">The graphics interface that owns this object.</param>
+	    /// <param name="name">The name for this shader.</param>
+	    /// <param name="isDebug"><b>true</b> if debug information is included in the byte code, <b>false</b> if not.</param>
+	    /// <param name="byteCode">The byte code for the shader.</param>
+	    /// <param name="soShader">The stream out shader.</param>
+	    private GorgonGeometryShader(GorgonGraphics graphics, string name, bool isDebug, D3DCompiler.ShaderBytecode byteCode, D3D11.GeometryShader soShader)
+	        : base(graphics, name, isDebug, byteCode)
+	    {
+	        graphics.Log.Print($"Creating {ShaderType} '{name}' ({ID})", LoggingLevel.Verbose);
+	        _shader = soShader;
+	    }
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonGeometryShader" /> class.
 		/// </summary>

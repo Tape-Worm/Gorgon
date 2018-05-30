@@ -102,6 +102,7 @@
     <Compile Include="Geometry\_Attributes\InputElementAttribute.cs" />
     <Compile Include="GorgonGraphicsResource.cs" />
     <Compile Include="GorgonResourceView.cs" />
+    <Compile Include="Pipeline\GorgonStreamOutCallBuilder.cs" />
     <Compile Include="Pipeline\GorgonDrawInstanceCallBuilder.cs" />
     <Compile Include="Pipeline\GorgonDrawCallBuilderCommon.cs" />
     <Compile Include="Pipeline\GorgonDrawIndexInstanceCallBuilder.cs" />
@@ -112,6 +113,10 @@
     <Compile Include="Pipeline\GorgonDrawCallCommon.cs" />
     <Compile Include="Pipeline\GorgonDrawIndexInstanceCall.cs" />
     <Compile Include="Pipeline\GorgonDrawInstanceCall.cs" />
+    <Compile Include="Pipeline\GorgonStreamOutBinding.cs" />
+    <Compile Include="Pipeline\GorgonStreamOutBindings.cs" />
+    <Compile Include="Pipeline\GorgonStreamOutCall.cs" />
+    <Compile Include="Pipeline\_Internal\StateCopy.cs" />
     <Compile Include="PrimitiveType.cs" />
     <Compile Include="Shaders\GorgonShaderResourceViews.cs" />
     <Compile Include="Buffers\GorgonConstantBuffers.cs" />
@@ -121,6 +126,7 @@
     <Compile Include="States\FillMode.cs" />
     <Compile Include="States\GorgonBlendState.cs" />
     <Compile Include="States\GorgonDepthStencilState.cs" />
+    <Compile Include="States\GorgonStreamOutPipelineStateBuilder .cs" />
     <Compile Include="States\GorgonPipelineStateBuilder.cs" />
     <Compile Include="Pipeline\GorgonVertexBufferBinding.cs" />
     <Compile Include="Pipeline\GorgonVertexBufferBindings.cs" />
@@ -150,6 +156,7 @@
     <Compile Include="States\GorgonRasterState.cs" />
     <Compile Include="States\GorgonRasterStateBuilder.cs" />
     <Compile Include="States\GorgonStencilOperation.cs" />
+    <Compile Include="States\GorgonStreamOutPipelineState.cs" />
     <Compile Include="States\LogicOperation.cs" />
     <Compile Include="States\SampleFilter.cs" />
     <Compile Include="States\ShaderResource.cs" />

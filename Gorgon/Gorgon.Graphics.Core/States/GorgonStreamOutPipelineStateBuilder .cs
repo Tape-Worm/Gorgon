@@ -34,12 +34,15 @@ namespace Gorgon.Graphics.Core
     /// <summary>
     /// A builder used to create pipeline render state objects.
     /// </summary>
-    public class GorgonPipelineStateBuilder
+    public class GorgonStreamOutPipelineStateBuilder
         : IGorgonGraphicsObject
     {
         #region Variables.
         // The working state.
-        private readonly GorgonPipelineState _workState = new GorgonPipelineState();
+        private readonly GorgonStreamOutPipelineState _workState = new GorgonStreamOutPipelineState(new GorgonPipelineState
+                                                                                                    {
+                                                                                                        PrimitiveType = Core.PrimitiveType.TriangleList
+                                                                                                    });
         #endregion
 
         #region Properties.
@@ -54,11 +57,22 @@ namespace Gorgon.Graphics.Core
 
         #region Methods.
         /// <summary>
+        /// Function to set primitive topology for the draw call.
+        /// </summary>
+        /// <param name="primitiveType">The type of primitive to render.</param>
+        /// <returns>The fluent builder interface.</returns>
+        public GorgonStreamOutPipelineStateBuilder PrimitiveType(PrimitiveType primitiveType)
+        {
+            _workState.PipelineState.PrimitiveType = primitiveType;
+            return this;
+        }
+
+        /// <summary>
         /// Function to add a rasterizer state to this pipeline state.
         /// </summary>
         /// <param name="state">The rasterizer state to apply.</param>
         /// <returns>The fluent interface for this builder.</returns>
-        public GorgonPipelineStateBuilder RasterState(GorgonRasterStateBuilder state)
+        public GorgonStreamOutPipelineStateBuilder RasterState(GorgonRasterStateBuilder state)
         {
             return RasterState(state?.Build());
         }
@@ -68,9 +82,9 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="state">The rasterizer state to apply.</param>
         /// <returns>The fluent interface for this builder.</returns>
-        public GorgonPipelineStateBuilder RasterState(GorgonRasterState state)
+        public GorgonStreamOutPipelineStateBuilder RasterState(GorgonRasterState state)
         {
-            _workState.RasterState = state ?? GorgonRasterState.Default;
+            _workState.PipelineState.RasterState = state ?? GorgonRasterState.Default;
             return this;
         }
 
@@ -79,7 +93,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="state">The depth/stencil state to apply.</param>
         /// <returns>The fluent interface for this builder.</returns>
-        public GorgonPipelineStateBuilder DepthStencilState(GorgonDepthStencilStateBuilder state)
+        public GorgonStreamOutPipelineStateBuilder DepthStencilState(GorgonDepthStencilStateBuilder state)
         {
             return DepthStencilState(state?.Build());
         }
@@ -89,9 +103,9 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="state">The depth/stencil state to apply.</param>
         /// <returns>The fluent interface for this builder.</returns>
-        public GorgonPipelineStateBuilder DepthStencilState(GorgonDepthStencilState state)
+        public GorgonStreamOutPipelineStateBuilder DepthStencilState(GorgonDepthStencilState state)
         {
-            _workState.DepthStencilState = state ?? GorgonDepthStencilState.Default;
+            _workState.PipelineState.DepthStencilState = state ?? GorgonDepthStencilState.Default;
             return this;
         }
 
@@ -100,9 +114,9 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="pixelShader">The pixel shader to assign.</param>
         /// <returns>The fluent interface for this builder.</returns>
-        public GorgonPipelineStateBuilder PixelShader(GorgonPixelShader pixelShader)
+        public GorgonStreamOutPipelineStateBuilder PixelShader(GorgonPixelShader pixelShader)
         {
-            _workState.PixelShader = pixelShader;
+            _workState.PipelineState.PixelShader = pixelShader;
             return this;
         }
 
@@ -111,65 +125,9 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="vertexShader">The vertex shader to assign.</param>
         /// <returns>The fluent interface for this builder.</returns>
-        public GorgonPipelineStateBuilder VertexShader(GorgonVertexShader vertexShader)
+        public GorgonStreamOutPipelineStateBuilder VertexShader(GorgonVertexShader vertexShader)
         {
-            _workState.VertexShader = vertexShader;
-            return this;
-        }
-
-        /// <summary>
-        /// Function to set the current geometry shader on the pipeline.
-        /// </summary>
-        /// <param name="geometryShader">The geometry shader to assign.</param>
-        /// <returns>The fluent interface for this builder.</returns>
-        public GorgonPipelineStateBuilder GeometryShader(GorgonGeometryShader geometryShader)
-        {
-            _workState.GeometryShader = geometryShader;
-            return this;
-        }
-
-        /// <summary>
-        /// Function to set the current domain shader on the pipeline.
-        /// </summary>
-        /// <param name="domainShader">The domain shader to assign.</param>
-        /// <returns>The fluent interface for this builder.</returns>
-        public GorgonPipelineStateBuilder DomainShader(GorgonDomainShader domainShader)
-        {
-            _workState.DomainShader = domainShader;
-            return this;
-        }
-
-        /// <summary>
-        /// Function to set the current hull shader on the pipeline.
-        /// </summary>
-        /// <param name="hullShader">The domain shader to assign.</param>
-        /// <returns>The fluent interface for this builder.</returns>
-        public GorgonPipelineStateBuilder HullShader(GorgonHullShader hullShader)
-        {
-            _workState.HullShader = hullShader;
-            return this;
-        }
-
-        /// <summary>
-        /// Function to set the current compute shader on the pipeline.
-        /// </summary>
-        /// <param name="computeShader">The compute shader to assign.</param>
-        /// <returns>The fluent interface for this builder.</returns>
-        public GorgonPipelineStateBuilder ComputeShader(GorgonComputeShader computeShader)
-        {
-            _workState.ComputeShader = computeShader;
-            return this;
-        }
-
-
-        /// <summary>
-        /// Function to set primitive topology for the draw call.
-        /// </summary>
-        /// <param name="primitiveType">The type of primitive to render.</param>
-        /// <returns>The fluent builder interface.</returns>
-        public GorgonPipelineStateBuilder PrimitiveType(PrimitiveType primitiveType)
-        {
-            _workState.PrimitiveType = primitiveType;
+            _workState.PipelineState.VertexShader = vertexShader;
             return this;
         }
 
@@ -177,9 +135,9 @@ namespace Gorgon.Graphics.Core
         /// Function to enable alpha coverage for blending.
         /// </summary>
         /// <returns>The fluent builder interface.</returns>
-        public GorgonPipelineStateBuilder EnableAlphaCoverage()
+        public GorgonStreamOutPipelineStateBuilder EnableAlphaCoverage()
         {
-            _workState.IsAlphaToCoverageEnabled = true;
+            _workState.PipelineState.IsAlphaToCoverageEnabled = true;
             return this;
         }
 
@@ -187,9 +145,9 @@ namespace Gorgon.Graphics.Core
         /// Function to disable alpha coverage for blending.
         /// </summary>
         /// <returns>The fluent builder interface.</returns>
-        public GorgonPipelineStateBuilder DisableAlphaCoverage()
+        public GorgonStreamOutPipelineStateBuilder DisableAlphaCoverage()
         {
-            _workState.IsAlphaToCoverageEnabled = false;
+            _workState.PipelineState.IsAlphaToCoverageEnabled = false;
             return this;
         }
 
@@ -197,9 +155,9 @@ namespace Gorgon.Graphics.Core
         /// Function to enable independent render target blending.
         /// </summary>
         /// <returns>The fluent builder interface.</returns>
-        public GorgonPipelineStateBuilder EnableIndependentBlending()
+        public GorgonStreamOutPipelineStateBuilder EnableIndependentBlending()
         {
-            _workState.IsIndependentBlendingEnabled = true;
+            _workState.PipelineState.IsIndependentBlendingEnabled = true;
             return this;
         }
 
@@ -207,9 +165,9 @@ namespace Gorgon.Graphics.Core
         /// Function to disable independent render target blending
         /// </summary>
         /// <returns>The fluent builder interface.</returns>
-        public GorgonPipelineStateBuilder DisableIndependentBlending()
+        public GorgonStreamOutPipelineStateBuilder DisableIndependentBlending()
         {
-            _workState.IsIndependentBlendingEnabled = false;
+            _workState.PipelineState.IsIndependentBlendingEnabled = false;
             return this;
         }
 
@@ -220,14 +178,14 @@ namespace Gorgon.Graphics.Core
         /// <param name="slot">[Optional] The slot to assign the states into.</param>
         /// <returns>The fluent builder interface.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="slot"/> is less than 0, or greater than/equal to 8.</exception>
-        public GorgonPipelineStateBuilder BlendState(GorgonBlendState state, int slot = 0)
+        public GorgonStreamOutPipelineStateBuilder BlendState(GorgonBlendState state, int slot = 0)
         {
             if ((slot < 0) || (slot >= D3D11.OutputMergerStage.SimultaneousRenderTargetCount))
             {
                 throw new ArgumentOutOfRangeException(nameof(slot), string.Format(Resources.GORGFX_ERR_BLEND_SLOT_INVALID, D3D11.OutputMergerStage.SimultaneousRenderTargetCount));
             }
 
-            _workState.RwBlendStates[slot] = state;
+            _workState.PipelineState.RwBlendStates[slot] = state;
             return this;
         }
 
@@ -238,14 +196,14 @@ namespace Gorgon.Graphics.Core
         /// <param name="startSlot">[Optional] The first slot to assign the states into.</param>
         /// <returns>The fluent builder interface.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="startSlot"/> is less than 0, or greater than/equal to 8.</exception>
-        public GorgonPipelineStateBuilder BlendStates(IReadOnlyList<GorgonBlendState> states, int startSlot = 0)
+        public GorgonStreamOutPipelineStateBuilder BlendStates(IReadOnlyList<GorgonBlendState> states, int startSlot = 0)
         {
             if ((startSlot < 0) || (startSlot >= D3D11.OutputMergerStage.SimultaneousRenderTargetCount))
             {
                 throw new ArgumentOutOfRangeException(nameof(startSlot), string.Format(Resources.GORGFX_ERR_BLEND_SLOT_INVALID, D3D11.OutputMergerStage.SimultaneousRenderTargetCount));
             }
 
-            StateCopy.CopyBlendStates(_workState.RwBlendStates, states, startSlot);
+            StateCopy.CopyBlendStates(_workState.PipelineState.RwBlendStates, states, startSlot);
             return this;
         }
 
@@ -254,7 +212,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="pipeState">The pipeline state to copy.</param>
         /// <returns>The fluent interface for the builder.</returns>
-        public GorgonPipelineStateBuilder ResetTo(GorgonPipelineState pipeState)
+        public GorgonStreamOutPipelineStateBuilder ResetTo(GorgonStreamOutPipelineState pipeState)
         {
             if (pipeState == null)
             {
@@ -262,18 +220,14 @@ namespace Gorgon.Graphics.Core
                 return this;
             }
 
-            _workState.RasterState = pipeState.RasterState;
-            _workState.DepthStencilState = pipeState.DepthStencilState;
-            _workState.PixelShader = pipeState.PixelShader;
-            _workState.VertexShader = pipeState.VertexShader;
-            _workState.GeometryShader = pipeState.GeometryShader;
-            _workState.DomainShader = pipeState.DomainShader;
-            _workState.HullShader = pipeState.HullShader;
-            _workState.ComputeShader = pipeState.ComputeShader;
-            _workState.PrimitiveType = pipeState.PrimitiveType;
-            _workState.IsIndependentBlendingEnabled = pipeState.IsIndependentBlendingEnabled;
-            _workState.IsAlphaToCoverageEnabled = pipeState.IsAlphaToCoverageEnabled;
-            StateCopy.CopyBlendStates(_workState.RwBlendStates, pipeState.RwBlendStates, 0);
+            _workState.PipelineState.PrimitiveType = pipeState.PrimitiveType;
+            _workState.PipelineState.RasterState = pipeState.RasterState;
+            _workState.PipelineState.DepthStencilState = pipeState.DepthStencilState;
+            _workState.PipelineState.PixelShader = pipeState.PixelShader;
+            _workState.PipelineState.VertexShader = pipeState.VertexShader;
+            _workState.PipelineState.IsIndependentBlendingEnabled = pipeState.IsIndependentBlendingEnabled;
+            _workState.PipelineState.IsAlphaToCoverageEnabled = pipeState.IsAlphaToCoverageEnabled;
+            pipeState.PipelineState.RwBlendStates.CopyTo(_workState.PipelineState.RwBlendStates);
             
             return this;
         }
@@ -282,9 +236,9 @@ namespace Gorgon.Graphics.Core
         /// Function to clear the current pipeline state.
         /// </summary>
         /// <returns>The fluent interface for the builder.</returns>
-        public GorgonPipelineStateBuilder Clear()
+        public GorgonStreamOutPipelineStateBuilder Clear()
         {
-            _workState.Clear();
+            _workState.PipelineState.Clear();
             return this;
         }
 
@@ -292,24 +246,25 @@ namespace Gorgon.Graphics.Core
         /// Function to build a pipeline state.
         /// </summary>
         /// <returns>A new pipeline state.</returns>
-        public GorgonPipelineState Build()
+        public GorgonStreamOutPipelineState Build()
         {
             // Build the actual state.
-            return Graphics.CachePipelineState(_workState);
+            return new GorgonStreamOutPipelineState(Graphics.CachePipelineState(_workState.PipelineState));
         }
         #endregion
 
         #region Constructor.
         /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonPipelineStateBuilder"/> class.
+        /// Initializes a new instance of the <see cref="GorgonStreamOutPipelineStateBuilder"/> class.
         /// </summary>
         /// <param name="graphics">The graphics object that will build the pipeline state.</param>
-        public GorgonPipelineStateBuilder(GorgonGraphics graphics)
+        public GorgonStreamOutPipelineStateBuilder(GorgonGraphics graphics)
         {
             Graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
-            _workState.RwBlendStates[0] = GorgonBlendState.Default;
-            _workState.RasterState = GorgonRasterState.Default;
-            _workState.DepthStencilState = GorgonDepthStencilState.Default;
+            
+            _workState.PipelineState.RasterState = GorgonRasterState.Default;
+            _workState.PipelineState.RwBlendStates[0] = GorgonBlendState.Default;
+            _workState.PipelineState.DepthStencilState = GorgonDepthStencilState.Default;
         }
         #endregion
     }

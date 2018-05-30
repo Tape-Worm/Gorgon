@@ -915,6 +915,15 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The stream output slot must be 0 or less than {0}..
+        /// </summary>
+        internal static string GORGFX_ERR_SO_SLOT_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_SO_SLOT_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The source index and the count ({0}) is too large for the maximum size ({1})..
         /// </summary>
         internal static string GORGFX_ERR_SOURCE_INDEX_AND_COUNT_TOO_LARGE {

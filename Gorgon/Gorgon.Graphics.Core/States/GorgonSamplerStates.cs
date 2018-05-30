@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using Gorgon.Math;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
@@ -86,9 +87,19 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonSamplerStates"/> class.
         /// </summary>
-        internal GorgonSamplerStates()
+        /// <param name="states">[Optional] The list of sampler states to copy into this list.</param>
+        public GorgonSamplerStates(IReadOnlyList<GorgonSamplerState> states = null)
 			: base(MaximumSamplerStateCount)
 		{
+		    if (states == null)
+		    {
+		        return;
+		    }
+
+		    for (int i = 0; i < states.Count.Min(MaximumSamplerStateCount); ++i)
+		    {
+		        this[i] = states[i];
+		    }
 		}
 		#endregion
 	}

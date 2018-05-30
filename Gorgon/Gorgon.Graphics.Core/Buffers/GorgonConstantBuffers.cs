@@ -25,6 +25,8 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+using Gorgon.Math;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
@@ -113,9 +115,19 @@ namespace Gorgon.Graphics.Core
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonConstantBuffers"/> class.
 		/// </summary>
-		internal GorgonConstantBuffers()
+		/// <param name="bufferViews">[Optional] A list of buffer views to copy into the the list.</param>
+		public GorgonConstantBuffers(IReadOnlyList<GorgonConstantBufferView> bufferViews = null)
 			: base(MaximumConstantBufferCount)
 		{
+		    if (bufferViews == null)
+		    {
+		        return;
+		    }
+
+		    for (int i = 0; i < bufferViews.Count.Min(Length); ++i)
+		    {
+		        this[i] = bufferViews[i];
+		    }
 		}
 		#endregion
 	}

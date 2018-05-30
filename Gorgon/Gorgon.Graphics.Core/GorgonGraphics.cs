@@ -176,6 +176,9 @@ namespace Gorgon.Graphics.Core
         // A cache for holding vertex bindings.
         private D3D11.VertexBufferBinding[] _vertexBindingCache = new D3D11.VertexBufferBinding[1];
 
+        // A cache for holding stream output bindings.
+        private D3D11.StreamOutputBufferBinding[] _streamOutBindingCache = new D3D11.StreamOutputBufferBinding[1];
+
         // A list of cached pipeline states.
         private readonly List<GorgonPipelineState> _cachedPipelineStates = new List<GorgonPipelineState>();
 
@@ -346,7 +349,63 @@ namespace Gorgon.Graphics.Core
 
         #region Methods.
         /// <summary>
-        /// Function to bind a Direct3D index buffer to the pipeline.
+        /// Function to initialize the cached sampler states with the predefined states provided on the sampler state class.
+        /// </summary>
+        private void InitializeCachedSamplers()
+        {
+            lock (_samplerLock)
+            {
+                GorgonSamplerState.Default.BuildD3D11SamplerState(_d3DDevice);
+                GorgonSamplerState.AnisotropicFiltering.BuildD3D11SamplerState(_d3DDevice);
+                GorgonSamplerState.PointFiltering.BuildD3D11SamplerState(_d3DDevice);
+
+                _cachedSamplers.Add(GorgonSamplerState.Default);
+                _cachedSamplers.Add(GorgonSamplerState.AnisotropicFiltering);
+                _cachedSamplers.Add(GorgonSamplerState.PointFiltering);
+            }
+        }
+
+        /// <summary>
+        /// Function to clear the state cache for the pipeline states and sampler states.
+        /// </summary>
+        /// <param name="rebuildPredefinedSamplers"><b>true</b> to rebuild our predefined sampler states, <b>false</b> to leave cleared.</param>
+        private void ClearStateCache(bool rebuildPredefinedSamplers)
+        {
+            lock (_samplerLock)
+            {
+                // ReSharper disable once ForCanBeConvertedToForeach
+                for (int i = 0; i < _cachedSamplers.Count; ++i)
+                {
+                    _cachedSamplers[i].ID = int.MinValue;
+                    _cachedSamplers[i].Native?.Dispose();
+                }
+
+                _cachedSamplers.Clear();
+            }
+
+            if (rebuildPredefinedSamplers)
+            {
+                InitializeCachedSamplers();
+            }
+
+            lock (_stateLock)
+            {
+                // Wipe out the state cache.
+                // ReSharper disable once ForCanBeConvertedToForeach
+                for (int i = 0; i < _cachedPipelineStates.Count; ++i)
+                {
+                    _cachedPipelineStates[i].ID = int.MinValue;
+                    _cachedPipelineStates[i].D3DRasterState?.Dispose();
+                    _cachedPipelineStates[i].D3DDepthStencilState?.Dispose();
+                    _cachedPipelineStates[i].D3DBlendState?.Dispose();
+                }
+
+                _cachedPipelineStates.Clear();
+            }
+        }
+
+        /// <summary>
+        /// Function to bind a list of Direct3D vertex buffers to the pipeline.
         /// </summary>
         /// <param name="bindings">The vertex bindings.</param>
         private void BindVertexBuffers(GorgonVertexBufferBindings bindings)
@@ -371,6 +430,34 @@ namespace Gorgon.Graphics.Core
             }
 
             D3DDeviceContext.InputAssembler.SetVertexBuffers(start, _vertexBindingCache);
+        }
+
+        /// <summary>
+        /// Function to bind a list of Direct3D stream out buffers to the pipeline.
+        /// </summary>
+        /// <param name="bindings">The vertex bindings.</param>
+        private void BindStreamOutBuffers(GorgonStreamOutBindings bindings)
+        {
+            (int _, int count) = bindings.GetDirtyItems();
+
+            if (count == 0)
+            {
+                Array.Clear(_streamOutBindingCache, 0, _streamOutBindingCache.Length);
+                D3DDeviceContext.StreamOutput.SetTargets(null);
+                return;
+            }
+
+            if (_streamOutBindingCache.Length != count)
+            {
+                Array.Resize(ref _streamOutBindingCache, count);
+            }
+
+            for (int i = 0; i < count; ++i)
+            {
+                _streamOutBindingCache[i] = bindings.Native[i];
+            }
+
+            D3DDeviceContext.StreamOutput.SetTargets(bindings.Native);
         }
 
         /// <summary>
@@ -425,7 +512,6 @@ namespace Gorgon.Graphics.Core
 
             shaderStage.SetSamplers(start, count, samplers.Native);
         }
-
 
         /// <summary>
         /// Function to set the current list of scissor rectangles.
@@ -776,6 +862,11 @@ namespace Gorgon.Graphics.Core
                 D3DDeviceContext.InputAssembler.InputLayout = _lastState.InputLayout.D3DInputLayout;
             }
 
+            if ((resourceChanges & DrawCallChanges.StreamOutBuffers) == DrawCallChanges.StreamOutBuffers)
+            {
+                BindStreamOutBuffers(_lastState.StreamOutBindings);
+            }
+
             if ((resourceChanges & DrawCallChanges.VertexBuffers) == DrawCallChanges.VertexBuffers)
             {
                 BindVertexBuffers(_lastState.VertexBuffers);
@@ -900,6 +991,11 @@ namespace Gorgon.Graphics.Core
             if (ChangeBuilder(_lastState.IndexBuffer == currentState.IndexBuffer, DrawCallChanges.IndexBuffer, ref changes))
             {
                 _lastState.IndexBuffer = currentState.IndexBuffer;
+            }
+
+            if (ChangeBuilder(currentState.StreamOutBindings.DirtyEquals(_lastState.StreamOutBindings), DrawCallChanges.StreamOutBuffers, ref changes))
+            {
+                _lastState.StreamOutBindings = currentState.StreamOutBindings;
             }
 
             if (ChangeBuilder(currentState.PsSamplers.DirtyEquals(_lastState.PsSamplers),
@@ -1415,9 +1511,16 @@ namespace Gorgon.Graphics.Core
             }
 
             DrawCallChanges changes = BuildDrawCallResources(state);
-            DrawCallChanges stateChanges = BuildStateChanges(state.PipelineState);
-
+            
             BindResources(changes);
+
+            // If the pipeline is the same as last time, then don't even bother with changing states.
+            if (_lastState.PipelineState == state.PipelineState)
+            {
+                return;
+            }
+
+            DrawCallChanges stateChanges = BuildStateChanges(state.PipelineState);
             ApplyState(_lastState.PipelineState, stateChanges);
         }
 
@@ -1544,6 +1647,11 @@ namespace Gorgon.Graphics.Core
                         inheritedState |= DrawCallChanges.DepthStencilState;
                     }
 
+                    if ((CompareScissorRects(cachedState.RasterState.ScissorRectangles, newState.RasterState.ScissorRectangles)))
+                    {
+                        inheritedState |= DrawCallChanges.Scissors;
+                    }
+
                     // We've copied all the states, so just return the existing pipeline state.
                     // ReSharper disable once InvertIf
                     if (inheritedState == DrawCallChanges.AllPipelineState)
@@ -1593,9 +1701,11 @@ namespace Gorgon.Graphics.Core
             Array.Clear(_renderTargets, 0, _renderTargets.Length);
             Array.Clear(_viewports, 0, _viewports.Length);
             Array.Clear(_vertexBindingCache, 0, _vertexBindingCache.Length);
+            Array.Clear(_streamOutBindingCache, 0, _streamOutBindingCache.Length);
             Array.Clear(_scissors, 0, _scissors.Length);
 
             _lastState.VertexBuffers = null;
+            _lastState.StreamOutBindings = null;
             _lastState.IndexBuffer = null;
             _lastState.PipelineState.Clear();
             _lastState.PsSamplers = null;
@@ -1866,11 +1976,11 @@ namespace Gorgon.Graphics.Core
             VideoAdapterEnumerator.Enumerate(includeSoftwareDevice, log);
 
         /// <summary>
-        /// Function to clear the cached pipeline states.
+        /// Function to clear the cached pipeline states and sampler states
         /// </summary>
         /// <remarks>
         /// <para>
-        /// This will destroy any previously cached pipeline states.
+        /// This will destroy any previously cached pipeline states and sampler states.
         /// </para>
         /// </remarks>
         public void ClearStateCache()
@@ -1880,34 +1990,8 @@ namespace Gorgon.Graphics.Core
                 ClearState();
             }
 
-            lock (_samplerLock)
-            {
-                // ReSharper disable once ForCanBeConvertedToForeach
-                for (int i = 0; i < _cachedSamplers.Count; ++i)
-                {
-                    _cachedSamplers[i].ID = int.MinValue;
-                    _cachedSamplers[i].Native?.Dispose();
-                }
-
-                _cachedSamplers.Clear();
-            }
-
-            lock (_stateLock)
-            {
-                // Wipe out the state cache.
-                // ReSharper disable once ForCanBeConvertedToForeach
-                for (int i = 0; i < _cachedPipelineStates.Count; ++i)
-                {
-                    _cachedPipelineStates[i].ID = int.MinValue;
-                    _cachedPipelineStates[i].D3DRasterState?.Dispose();
-                    _cachedPipelineStates[i].D3DDepthStencilState?.Dispose();
-                    _cachedPipelineStates[i].D3DBlendState?.Dispose();
-                }
-
-                _cachedPipelineStates.Clear();
-            }
+            ClearStateCache(true);
         }
-
 
         /// <summary>
         /// Function to submit a basic draw call to the GPU.
@@ -2066,6 +2150,40 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
+        /// Function to submit a <see cref="GorgonDrawCallCommon"/> to the GPU.
+        /// </summary>
+        /// <param name="drawCall">The draw call to submit.</param>
+        /// <param name="blendFactor">[Optional] The factor used to modulate the pixel shader, render target or both.</param>
+        /// <param name="blendSampleMask">[Optional] The mask used to define which samples get updated in the active render targets.</param>
+        /// <param name="depthStencilReference">[Optional] The depth/stencil reference value used when performing a depth/stencil test.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawCall"/> parameter is <b>null</b>.</exception>
+        /// <remarks>
+        /// <para>
+        /// This method sends a series of state changes and resource bindings to the GPU. However, unlike the <see cref="O:Gorgon.Graphics.Core.GorgonGraphics.Submit"/> commands, this command uses 
+        /// pre-processed data from the vertex and stream out stages. This means that the <see cref="GorgonVertexBuffer"/> attached to the draw call must have been assigned to the  previous
+        /// <see cref="GorgonDrawCallCommon.StreamOutBufferBindings"/> and had data deposited into it from the stream out stage. After that, it should be be assigned to a <see cref="GorgonStreamOutCall"/>
+        /// passed to this method.
+        /// </para>
+        /// <para>
+        /// To render data with this method, the <see cref="GorgonVertexBufferBinding"/> being rendered must have been be created with the <see cref="VertexIndexBufferBinding.StreamOut"/> flag set.
+        /// </para>
+        /// <para>
+        /// <note type="caution">
+        /// <para>
+        /// For performance reasons, any exceptions thrown from this method will only be thrown when Gorgon is compiled as DEBUG.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        public void SubmitStreamOut(GorgonStreamOutCall drawCall, GorgonColor? blendFactor = null, int blendSampleMask = int.MinValue, int depthStencilReference = 0)
+        {
+            drawCall.ValidateObject(nameof(drawCall));
+
+            SetDrawStates(drawCall.D3DState, _blendFactor, _blendSampleMask, _depthStencilReference);
+            D3DDeviceContext.DrawAuto();
+        }
+
+        /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         public void Dispose()
@@ -2084,7 +2202,7 @@ namespace Gorgon.Graphics.Core
                 return;
             }
 
-            ClearStateCache();
+            ClearStateCache(false);
 
             // Dispose all objects created from this interface.
             this.DisposeAll();
@@ -2190,6 +2308,8 @@ namespace Gorgon.Graphics.Core
             _d3DDeviceContext = device.ImmediateContext.QueryInterface<D3D11.DeviceContext4>();
 
             FormatSupport = EnumerateFormatSupport(_d3DDevice);
+
+            InitializeCachedSamplers();
 
             Log.Print("Gorgon Graphics initialized.", LoggingLevel.Simple);
         }

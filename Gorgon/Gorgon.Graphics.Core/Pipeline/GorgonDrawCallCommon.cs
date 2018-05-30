@@ -53,6 +53,11 @@ namespace Gorgon.Graphics.Core
         public IGorgonReadOnlyArray<GorgonVertexBufferBinding> VertexBufferBindings => D3DState.VertexBuffers;
 
         /// <summary>
+        /// Property to return the stream out buffers bound to the draw call.
+        /// </summary>
+        public IGorgonReadOnlyArray<GorgonStreamOutBinding> StreamOutBufferBindings => D3DState.StreamOutBindings;
+
+        /// <summary>
         /// Property to return the input layout for the draw call.
         /// </summary>
         /// <remarks>

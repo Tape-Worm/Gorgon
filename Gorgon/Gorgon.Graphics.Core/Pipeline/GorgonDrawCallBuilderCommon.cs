@@ -27,8 +27,6 @@
 using System;
 using System.Collections.Generic;
 using Gorgon.Graphics.Core.Properties;
-using Gorgon.Math;
-using D3D = SharpDX.Direct3D;
 
 namespace Gorgon.Graphics.Core
 {
@@ -52,106 +50,6 @@ namespace Gorgon.Graphics.Core
         #endregion
 
         #region Methods.
-        /// <summary>
-        /// Function to copy shader resource views.
-        /// </summary>
-        /// <param name="destStates">The destination shader resource views.</param>
-        /// <param name="srcStates">The shader resource views to copy.</param>
-        /// <param name="startSlot">The slot to start copying into.</param>
-        private static void CopySrvs(GorgonShaderResourceViews destStates, IReadOnlyList<GorgonShaderResourceView> srcStates, int startSlot)
-        {
-            destStates.Clear();
-
-            if (srcStates == null)
-            {
-                return;
-            }
-
-            int length = srcStates.Count.Min(GorgonShaderResourceViews.MaximumShaderResourceViewCount - startSlot);
-
-            for (int i = 0; i < length; ++i)
-            {
-                destStates[i + startSlot] = srcStates[i];
-            }
-        }
-
-        /// <summary>
-        /// Function to copy samplers.
-        /// </summary>
-        /// <param name="destStates">The destination sampler states.</param>
-        /// <param name="srcStates">The sampler states to copy.</param>
-        private static void CopySamplers(GorgonSamplerStates destStates, IReadOnlyList<GorgonSamplerState> srcStates)
-        {
-            destStates.Clear();
-
-            if (srcStates == null)
-            {
-                return;
-            }
-
-            int count = destStates.Length.Min(srcStates.Count);
-
-            for (int i = 0; i < count; ++i)
-            {
-                destStates[i] = srcStates[i];
-            }
-        }
-
-        /// <summary>
-        /// Function to copy a list of constant buffers to the list provided.
-        /// </summary>
-        /// <param name="dest">The destination list.</param>
-        /// <param name="src">The source list.</param>
-        /// <param name="startSlot">The starting index.</param>
-        private static void CopyConstantBuffers(GorgonConstantBuffers dest, IReadOnlyList<GorgonConstantBufferView> src, int startSlot)
-        {
-            dest.Clear();
-
-            if (src == null)
-            {
-                return;
-            }
-
-            int length = src.Count.Min(GorgonConstantBuffers.MaximumConstantBufferCount - startSlot);
-
-            for (int i = 0; i < length; ++i)
-            {
-                dest[i + startSlot] = src[i];
-            }
-        }
-
-        /// <summary>
-        /// Function to copy vertex buffer bindings from one draw call to another
-        /// </summary>
-        /// <param name="destBindings">The bindings to update.</param>
-        /// <param name="srcBindings">The bindings to copy.</param>
-        /// <param name="layout">The input layout.</param>
-        private static void CopyVertexBuffers(GorgonVertexBufferBindings destBindings, IReadOnlyList<GorgonVertexBufferBinding> srcBindings, GorgonInputLayout layout)
-        {
-            if (destBindings == null)
-            {
-                destBindings = new GorgonVertexBufferBindings();
-            }
-            else
-            {
-                destBindings.Clear();
-            }
-
-            destBindings.InputLayout = layout;
-
-            if (srcBindings == null)
-            {
-                return;
-            }
-
-            int count = srcBindings.Count.Min(GorgonVertexBufferBindings.MaximumVertexBufferCount);
-            
-            for (int i = 0; i < count; ++i)
-            {
-                destBindings[i] = srcBindings[i];
-            }
-        }
-
         /// <summary>
         /// Function to create a new draw call.
         /// </summary>
@@ -188,22 +86,22 @@ namespace Gorgon.Graphics.Core
             switch (shaderType)
             {
                 case ShaderType.Pixel:
-                    CopySamplers(DrawCall.D3DState.PsSamplers, samplers);
+                    StateCopy.CopySamplers(DrawCall.D3DState.PsSamplers, samplers);
                     break;
                 case ShaderType.Vertex:
-                    CopySamplers(DrawCall.D3DState.VsSamplers, samplers);
+                    StateCopy.CopySamplers(DrawCall.D3DState.VsSamplers, samplers);
                     break;
                 case ShaderType.Geometry:
-                    CopySamplers(DrawCall.D3DState.GsSamplers, samplers);
+                    StateCopy.CopySamplers(DrawCall.D3DState.GsSamplers, samplers);
                     break;
                 case ShaderType.Domain:
-                    CopySamplers(DrawCall.D3DState.DsSamplers, samplers);
+                    StateCopy.CopySamplers(DrawCall.D3DState.DsSamplers, samplers);
                     break;
                 case ShaderType.Hull:
-                    CopySamplers(DrawCall.D3DState.VsSamplers, samplers);
+                    StateCopy.CopySamplers(DrawCall.D3DState.VsSamplers, samplers);
                     break;
                 case ShaderType.Compute:
-                    CopySamplers(DrawCall.D3DState.CsSamplers, samplers);
+                    StateCopy.CopySamplers(DrawCall.D3DState.CsSamplers, samplers);
                     break;
             }
 
@@ -242,6 +140,21 @@ namespace Gorgon.Graphics.Core
                 case ShaderType.Pixel:
                     DrawCall.D3DState.PsSamplers[index] = sampler;
                     break;
+                case ShaderType.Vertex:
+                    DrawCall.D3DState.VsSamplers[index] = sampler;
+                    break;
+                case ShaderType.Geometry:
+                    DrawCall.D3DState.GsSamplers[index] = sampler;
+                    break;
+                case ShaderType.Domain:
+                    DrawCall.D3DState.DsSamplers[index] = sampler;
+                    break;
+                case ShaderType.Hull:
+                    DrawCall.D3DState.HsSamplers[index] = sampler;
+                    break;
+                case ShaderType.Compute:
+                    DrawCall.D3DState.CsSamplers[index] = sampler;
+                    break;
             }
 
             return (TB)this;
@@ -255,7 +168,7 @@ namespace Gorgon.Graphics.Core
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pipelineState"/> parameter is <b>null</b>.</exception>
         public TB PipelineState(GorgonPipelineState pipelineState)
         {
-            DrawCall.D3DState.PipelineState = pipelineState ?? throw new ArgumentNullException(nameof(pipelineState));
+            DrawCall.D3DState.PipelineState = new GorgonPipelineState(pipelineState ?? throw new ArgumentNullException(nameof(pipelineState)));
             return (TB)this;
         }
 
@@ -267,6 +180,60 @@ namespace Gorgon.Graphics.Core
         public TB PipelineState(GorgonPipelineStateBuilder pipelineState)
         {
             return PipelineState(pipelineState?.Build());
+        }
+
+        /// <summary>
+        /// Function to set a stream out binding for the draw call.
+        /// </summary>
+        /// <param name="binding">The stream out binding to use.</param>
+        /// <param name="slot">[Optional] The slot for the binding.</param>
+        /// <returns>The fluent builder interface.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="slot"/> parameter is less than 0, or greater than/equal to <see cref="GorgonStreamOutBindings.MaximumStreamOutCount"/>.</exception>
+        public TB StreamOutBuffer(in GorgonStreamOutBinding binding, int slot = 0)
+        {
+            if ((slot < 0) || (slot >= GorgonStreamOutBindings.MaximumStreamOutCount))
+            {
+                throw new ArgumentOutOfRangeException(nameof(slot), string.Format(Resources.GORGFX_ERR_SO_SLOT_INVALID, GorgonStreamOutBindings.MaximumStreamOutCount));
+            }
+
+            if (DrawCall.D3DState.StreamOutBindings == null)
+            {
+                DrawCall.D3DState.StreamOutBindings = new GorgonStreamOutBindings();
+            }
+
+            DrawCall.D3DState.StreamOutBindings[slot] = binding;
+            return (TB)this;
+        }
+
+        /// <summary>
+        /// Function to set a list of stream out bindings for the draw call.
+        /// </summary>
+        /// <param name="bindings">The stream out bindings to use.</param>
+        /// <returns>The fluent builder interface.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="bindings"/> parameter is larger than the <see cref="GorgonStreamOutBindings.MaximumStreamOutCount"/>.</exception>
+        public TB StreamOutBuffers(IReadOnlyList<GorgonStreamOutBinding> bindings)
+        {
+            if (bindings.Count > 4)
+            {
+                throw new ArgumentOutOfRangeException(nameof(bindings), string.Format(Resources.GORGFX_ERR_SO_SLOT_INVALID, GorgonStreamOutBindings.MaximumStreamOutCount));
+            }
+
+            if (DrawCall.D3DState.StreamOutBindings == null)
+            {
+                DrawCall.D3DState.StreamOutBindings = new GorgonStreamOutBindings();
+            }
+
+            DrawCall.D3DState.StreamOutBindings.Clear();
+            if (bindings.Count == 0)
+            {
+                return (TB)this;
+            }
+
+            for (int i = 0; i < bindings.Count; ++i)
+            {
+                DrawCall.D3DState.StreamOutBindings[i] = bindings[i];
+            }
+            return (TB)this;
         }
 
         /// <summary>
@@ -304,7 +271,7 @@ namespace Gorgon.Graphics.Core
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="layout"/> parameter is <b>null</b>.</exception>
         public TB VertexBufferBindings(GorgonInputLayout layout, IReadOnlyList<GorgonVertexBufferBinding> bindings)
         {
-            CopyVertexBuffers(DrawCall.D3DState.VertexBuffers, bindings, layout ?? throw new ArgumentNullException(nameof(layout)));
+            StateCopy.CopyVertexBuffers(DrawCall.D3DState.VertexBuffers, bindings, layout ?? throw new ArgumentNullException(nameof(layout)));
             return (TB)this;
         }
 
@@ -366,22 +333,22 @@ namespace Gorgon.Graphics.Core
             switch (shaderType)
             {
                 case ShaderType.Pixel:
-                    CopyConstantBuffers(DrawCall.D3DState.PsConstantBuffers, constantBuffers, startSlot);
+                    StateCopy.CopyConstantBuffers(DrawCall.D3DState.PsConstantBuffers, constantBuffers, startSlot);
                     break;
                 case ShaderType.Vertex:
-                    CopyConstantBuffers(DrawCall.D3DState.VsConstantBuffers, constantBuffers, startSlot);
+                    StateCopy.CopyConstantBuffers(DrawCall.D3DState.VsConstantBuffers, constantBuffers, startSlot);
                     break;
                 case ShaderType.Geometry:
-                    CopyConstantBuffers(DrawCall.D3DState.GsConstantBuffers, constantBuffers, startSlot);
+                    StateCopy.CopyConstantBuffers(DrawCall.D3DState.GsConstantBuffers, constantBuffers, startSlot);
                     break;
                 case ShaderType.Domain:
-                    CopyConstantBuffers(DrawCall.D3DState.DsConstantBuffers, constantBuffers, startSlot);
+                    StateCopy.CopyConstantBuffers(DrawCall.D3DState.DsConstantBuffers, constantBuffers, startSlot);
                     break;
                 case ShaderType.Hull:
-                    CopyConstantBuffers(DrawCall.D3DState.HsConstantBuffers, constantBuffers, startSlot);
+                    StateCopy.CopyConstantBuffers(DrawCall.D3DState.HsConstantBuffers, constantBuffers, startSlot);
                     break;
                 case ShaderType.Compute:
-                    CopyConstantBuffers(DrawCall.D3DState.CsConstantBuffers, constantBuffers, startSlot);
+                    StateCopy.CopyConstantBuffers(DrawCall.D3DState.CsConstantBuffers, constantBuffers, startSlot);
                     break;
             }
 
@@ -446,22 +413,22 @@ namespace Gorgon.Graphics.Core
             switch (shaderType)
             {
                 case ShaderType.Pixel:
-                    CopySrvs(DrawCall.D3DState.PsSrvs, resourceViews, startSlot);
+                    StateCopy.CopySrvs(DrawCall.D3DState.PsSrvs, resourceViews, startSlot);
                     break;
                 case ShaderType.Vertex:
-                    CopySrvs(DrawCall.D3DState.VsSrvs, resourceViews, startSlot);
+                    StateCopy.CopySrvs(DrawCall.D3DState.VsSrvs, resourceViews, startSlot);
                     break;
                 case ShaderType.Geometry:
-                    CopySrvs(DrawCall.D3DState.GsSrvs, resourceViews, startSlot);
+                    StateCopy.CopySrvs(DrawCall.D3DState.GsSrvs, resourceViews, startSlot);
                     break;
                 case ShaderType.Domain:
-                    CopySrvs(DrawCall.D3DState.DsSrvs, resourceViews, startSlot);
+                    StateCopy.CopySrvs(DrawCall.D3DState.DsSrvs, resourceViews, startSlot);
                     break;
                 case ShaderType.Hull:
-                    CopySrvs(DrawCall.D3DState.HsSrvs, resourceViews, startSlot);
+                    StateCopy.CopySrvs(DrawCall.D3DState.HsSrvs, resourceViews, startSlot);
                     break;
                 case ShaderType.Compute:
-                    CopySrvs(DrawCall.D3DState.CsSrvs, resourceViews, startSlot);
+                    StateCopy.CopySrvs(DrawCall.D3DState.CsSrvs, resourceViews, startSlot);
                     break;
             }
 
@@ -483,34 +450,40 @@ namespace Gorgon.Graphics.Core
             {
                 final.D3DState.VertexBuffers = new GorgonVertexBufferBindings();
             }
+
+            if (final.D3DState.StreamOutBindings == null)
+            {
+                final.D3DState.StreamOutBindings = new GorgonStreamOutBindings();
+            }
             
-            CopyVertexBuffers(final.D3DState.VertexBuffers, DrawCall.VertexBufferBindings, DrawCall.InputLayout);
+            StateCopy.CopyVertexBuffers(final.D3DState.VertexBuffers, DrawCall.VertexBufferBindings, DrawCall.InputLayout);
+            StateCopy.CopyStreamOutBuffers(final.D3DState.StreamOutBindings, DrawCall.StreamOutBufferBindings);
 
             // Copy over the available constants.
-            CopyConstantBuffers(final.D3DState.PsConstantBuffers, DrawCall.D3DState.PsConstantBuffers, 0);
-            CopyConstantBuffers(final.D3DState.VsConstantBuffers, DrawCall.D3DState.VsConstantBuffers, 0);
-            CopyConstantBuffers(final.D3DState.GsConstantBuffers, DrawCall.D3DState.GsConstantBuffers, 0);
-            CopyConstantBuffers(final.D3DState.HsConstantBuffers, DrawCall.D3DState.HsConstantBuffers, 0);
-            CopyConstantBuffers(final.D3DState.DsConstantBuffers, DrawCall.D3DState.DsConstantBuffers, 0);
-            CopyConstantBuffers(final.D3DState.CsConstantBuffers, DrawCall.D3DState.CsConstantBuffers, 0);
+            StateCopy.CopyConstantBuffers(final.D3DState.PsConstantBuffers, DrawCall.D3DState.PsConstantBuffers, 0);
+            StateCopy.CopyConstantBuffers(final.D3DState.VsConstantBuffers, DrawCall.D3DState.VsConstantBuffers, 0);
+            StateCopy.CopyConstantBuffers(final.D3DState.GsConstantBuffers, DrawCall.D3DState.GsConstantBuffers, 0);
+            StateCopy.CopyConstantBuffers(final.D3DState.HsConstantBuffers, DrawCall.D3DState.HsConstantBuffers, 0);
+            StateCopy.CopyConstantBuffers(final.D3DState.DsConstantBuffers, DrawCall.D3DState.DsConstantBuffers, 0);
+            StateCopy.CopyConstantBuffers(final.D3DState.CsConstantBuffers, DrawCall.D3DState.CsConstantBuffers, 0);
 
             // Copy over samplers.
-            CopySamplers(final.D3DState.PsSamplers, DrawCall.D3DState.PsSamplers);
-            CopySamplers(final.D3DState.VsSamplers, DrawCall.D3DState.VsSamplers);
-            CopySamplers(final.D3DState.GsSamplers, DrawCall.D3DState.GsSamplers);
-            CopySamplers(final.D3DState.DsSamplers, DrawCall.D3DState.DsSamplers);
-            CopySamplers(final.D3DState.HsSamplers, DrawCall.D3DState.HsSamplers);
-            CopySamplers(final.D3DState.CsSamplers, DrawCall.D3DState.CsSamplers);
+            StateCopy.CopySamplers(final.D3DState.PsSamplers, DrawCall.D3DState.PsSamplers);
+            StateCopy.CopySamplers(final.D3DState.VsSamplers, DrawCall.D3DState.VsSamplers);
+            StateCopy.CopySamplers(final.D3DState.GsSamplers, DrawCall.D3DState.GsSamplers);
+            StateCopy.CopySamplers(final.D3DState.DsSamplers, DrawCall.D3DState.DsSamplers);
+            StateCopy.CopySamplers(final.D3DState.HsSamplers, DrawCall.D3DState.HsSamplers);
+            StateCopy.CopySamplers(final.D3DState.CsSamplers, DrawCall.D3DState.CsSamplers);
 
             // Copy over shader resource views.
-            CopySrvs(final.D3DState.PsSrvs, DrawCall.D3DState.PsSrvs, 0);
-            CopySrvs(final.D3DState.VsSrvs, DrawCall.D3DState.VsSrvs, 0);
-            CopySrvs(final.D3DState.GsSrvs, DrawCall.D3DState.GsSrvs, 0);
-            CopySrvs(final.D3DState.DsSrvs, DrawCall.D3DState.DsSrvs, 0);
-            CopySrvs(final.D3DState.HsSrvs, DrawCall.D3DState.HsSrvs, 0);
-            CopySrvs(final.D3DState.CsSrvs, DrawCall.D3DState.CsSrvs, 0);
+            StateCopy.CopySrvs(final.D3DState.PsSrvs, DrawCall.D3DState.PsSrvs, 0);
+            StateCopy.CopySrvs(final.D3DState.VsSrvs, DrawCall.D3DState.VsSrvs, 0);
+            StateCopy.CopySrvs(final.D3DState.GsSrvs, DrawCall.D3DState.GsSrvs, 0);
+            StateCopy.CopySrvs(final.D3DState.DsSrvs, DrawCall.D3DState.DsSrvs, 0);
+            StateCopy.CopySrvs(final.D3DState.HsSrvs, DrawCall.D3DState.HsSrvs, 0);
+            StateCopy.CopySrvs(final.D3DState.CsSrvs, DrawCall.D3DState.CsSrvs, 0);
 
-            final.D3DState.PipelineState = DrawCall.PipelineState;
+            final.D3DState.PipelineState = new GorgonPipelineState(DrawCall.PipelineState);
 
             OnUpdate(final);
 
@@ -530,6 +503,7 @@ namespace Gorgon.Graphics.Core
             }
             
             VertexBufferBindings(drawCall.InputLayout, drawCall.VertexBufferBindings);
+            StreamOutBuffers(drawCall.StreamOutBufferBindings);
 
             // Copy over the available constants.
             ConstantBuffers(ShaderType.Pixel, drawCall.D3DState.PsConstantBuffers);
@@ -546,6 +520,13 @@ namespace Gorgon.Graphics.Core
             SamplerStates(ShaderType.Hull, drawCall.D3DState.HsSamplers);
             SamplerStates(ShaderType.Compute, drawCall.D3DState.CsSamplers);
 
+            ShaderResources(ShaderType.Pixel, drawCall.D3DState.PsSrvs);
+            ShaderResources(ShaderType.Vertex, drawCall.D3DState.VsSrvs);
+            ShaderResources(ShaderType.Geometry, drawCall.D3DState.GsSrvs);
+            ShaderResources(ShaderType.Domain, drawCall.D3DState.DsSrvs);
+            ShaderResources(ShaderType.Hull, drawCall.D3DState.HsSrvs);
+            ShaderResources(ShaderType.Compute, drawCall.D3DState.CsSrvs);
+
             DrawCall.D3DState.PipelineState = new GorgonPipelineState(DrawCall.PipelineState);
 
             return OnResetTo(drawCall);
@@ -558,6 +539,7 @@ namespace Gorgon.Graphics.Core
         public TB Clear()
         {
             DrawCall.D3DState.VertexBuffers.Clear();
+            DrawCall.D3DState.StreamOutBindings.Clear();
             
             DrawCall.D3DState.PsConstantBuffers.Clear();
             DrawCall.D3DState.VsConstantBuffers.Clear();
@@ -598,6 +580,7 @@ namespace Gorgon.Graphics.Core
             drawCall.SetupSamplers();
             drawCall.SetupViews();
             DrawCall.D3DState.VertexBuffers = new GorgonVertexBufferBindings();
+            DrawCall.D3DState.StreamOutBindings = new GorgonStreamOutBindings();
             DrawCall.D3DState.PipelineState = new GorgonPipelineState();
         }
         #endregion

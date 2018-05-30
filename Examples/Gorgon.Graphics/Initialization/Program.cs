@@ -256,17 +256,23 @@ namespace Gorgon.Graphics.Example
 	    }
 
 	    private static GorgonVertexShader _vShader;
+	    private static GorgonVertexShader _passThru;
 	    private static GorgonPixelShader _pShader;
 	    private static GorgonPixelShader _pShader2;
+	    private static GorgonGeometryShader _gsSo;
 	    private static GorgonInputLayout _layout;
 	    private static GorgonVertexBufferBinding _vbBinding;
+	    private static GorgonVertexBufferBinding _vbBinding2;
+	    private static GorgonStreamOutBinding _soBinding;
 	    private static GorgonIndexBuffer _iBuffer;
 	    private static GorgonConstantBufferView _cBuffer;
 	    private static GorgonTexture2DView _texture;
 	    private static GorgonTexture2DView _texture2;
 	    private static GorgonDepthStencil2DView _depth;
 	    private static GorgonDrawIndexCall _drawCall;
+	    private static GorgonDrawIndexCall _drawCallSo;
 	    private static GorgonDrawIndexCall _drawCall2;
+	    private static GorgonStreamOutCall _soCall;
         private static DX.Matrix _projMatrix = DX.Matrix.Identity;
 	    private static float _yRot;
 
@@ -298,6 +304,10 @@ namespace Gorgon.Graphics.Example
 	            _graphics.Submit(_drawCall);
 	        //}
 
+	        // Send data into the output buffers.
+	        _graphics.Submit(_drawCallSo);
+            _graphics.SubmitStreamOut(_soCall);
+
 	        _yRot += GorgonTiming.Delta * 45.0f;
 
 	        if (_yRot > 360.0f)
@@ -324,6 +334,7 @@ namespace Gorgon.Graphics.Example
 	            _vShader = GorgonShaderFactory.Compile<GorgonVertexShader>(_graphics, shaderCode, "GorgonBltVertexShader", true);
 	            _pShader = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics, shaderCode, "GorgonBltPixelShader", true);
 	            _pShader2 = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics, shaderCode, "GorgonBltPixelShaderBwTest", true);
+	            _passThru = GorgonShaderFactory.Compile<GorgonVertexShader>(_graphics, shaderCode, "PassThruVS", true);
 	        }
 
 	        DX.Matrix.PerspectiveFovLH((65.0f).ToRadians(), (float)_swap.Width / _swap.Height, 0.125f, 1000.0f, out _projMatrix);
@@ -380,7 +391,46 @@ namespace Gorgon.Graphics.Example
 	                                             }, indexData.Cast<byte>());
 	        }
 
-            _graphics.SetRenderTarget(_swap.RenderTargetView, _depth);
+	        _vbBinding2 = GorgonVertexBufferBinding.CreateVertexBuffer<BltVertex>(_graphics,
+	                                                                              new GorgonVertexBufferInfo("SO_Vtx_Buffer")
+	                                                                              {
+	                                                                                  SizeInBytes = 3 * Unsafe.SizeOf<BltVertex>(),
+	                                                                                  Usage = ResourceUsage.Default,
+	                                                                                  Binding = VertexIndexBufferBinding.StreamOut
+	                                                                              });
+            _soBinding = new GorgonStreamOutBinding(_vbBinding2.VertexBuffer);
+
+	        using (var baseGsShader = GorgonShaderFactory.Compile<GorgonGeometryShader>(_graphics,
+	                                                                                    @"
+                                                                                        struct DS_OUTPUT
+                                                                                        {
+	                                                                                        float4 position : SV_Position;
+                                                                                            float2 uv : TEXCOORD;
+	                                                                                        float4 colour : COLOR;
+                                                                                        };
+
+                                                                                        [maxvertexcount(3)]
+                                                                                        void GsMain( triangle DS_OUTPUT input[3], inout TriangleStream<DS_OUTPUT> TriangleOutputStream )
+                                                                                        {
+                                                                                            for (int i = 0; i < 3; ++i)
+                                                                                            {
+                                                                                                DS_OUTPUT newPoint = input[i];
+                                                                                                newPoint.colour = float4(1, 1, 1, 0.5f);
+                                                                                                
+                                                                                                TriangleOutputStream.Append( newPoint );
+                                                                                            }
+
+                                                                                            TriangleOutputStream.RestartStrip();
+                                                                                        }
+                                                                                        ",
+	                                                                                    "GsMain",
+	                                                                                    true))
+	        {
+	            _gsSo = baseGsShader.ToStreamOut(_layout.ToStreamOutLayout());
+	        }
+
+
+	        _graphics.SetRenderTarget(_swap.RenderTargetView, _depth);
 
             var builder = new GorgonDrawIndexCallBuilder();
             var rsBuilder = new GorgonRasterStateBuilder();
@@ -403,6 +453,28 @@ namespace Gorgon.Graphics.Example
 
 	        _drawCall2 = builder.ShaderResource(ShaderType.Pixel, _texture2)
 	                            .Build();
+
+	        _drawCallSo = builder.PipelineState(psoBuilder.PixelShader(null)
+	                                                      .GeometryShader(_gsSo)
+	                                                      .RasterState(GorgonRasterState.Default))
+	                             .ConstantBuffer(ShaderType.Vertex, null)
+	                             .ShaderResource(ShaderType.Pixel, null)
+	                             .StreamOutBuffer(in _soBinding)
+	                             .Build();
+            
+	        var soCallBuilder = new GorgonStreamOutCallBuilder();
+	        var soPsoBuilder = new GorgonStreamOutPipelineStateBuilder(_graphics);
+
+	        _soCall = soCallBuilder.PipelineState(soPsoBuilder.BlendState(GorgonBlendState.Default)
+	                                                          .DepthStencilState(GorgonDepthStencilState.DepthEnabled)
+	                                                          .RasterState(GorgonRasterState.Default)
+	                                                          .VertexShader(_vShader)
+	                                                          .PixelShader(_pShader))
+	                               .ConstantBuffer(ShaderType.Vertex, _cBuffer)
+	                               .VertexBuffer(_layout, _vbBinding2)
+	                               .SamplerState(GorgonSamplerState.Default)
+	                               .ShaderResource(_texture2)
+	                               .Build();
 	    }
         #endregion
 

@@ -26,6 +26,12 @@ GorgonBltVertex GorgonBltVertexShader(GorgonBltVertex vertex)
 	return output;
 }
 
+// Our vertex shader for blitting textures.
+GorgonBltVertex PassThruVS(GorgonBltVertex vertex)
+{
+	return vertex;
+}
+
 // Our pixel shader for blitting textures.
 float4 GorgonBltPixelShader(GorgonBltVertex vertex) : SV_Target
 {
