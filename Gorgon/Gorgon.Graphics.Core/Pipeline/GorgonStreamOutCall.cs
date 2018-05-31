@@ -92,6 +92,11 @@ namespace Gorgon.Graphics.Core
         {
             get;
         }
+
+        /// <summary>
+        /// Property to return the list of unordered access views for the shader.
+        /// </summary>
+        public IGorgonReadOnlyArray<GorgonReadWriteViewBinding> ReadWriteViews => D3DState.ReadWriteViews;
         #endregion
 
         #region Methods.
@@ -101,7 +106,10 @@ namespace Gorgon.Graphics.Core
         internal void SetupViews()
         {
             PixelShader.ShaderResources = D3DState.PsSrvs = new GorgonShaderResourceViews();
+            D3DState.ReadWriteViews = new GorgonReadWriteViewBindings();
+            D3DState.CsReadWriteViews = new GorgonReadWriteViewBindings();
             D3DState.DsSrvs = D3DState.HsSrvs = D3DState.VsSrvs = D3DState.GsSrvs = D3DState.CsSrvs = new GorgonShaderResourceViews();
+            
         }
 
         /// <summary>

@@ -1387,6 +1387,7 @@ namespace Gorgon.Graphics.Core
             Debug.Assert(currentState.VsSamplers != null, "VertexShader samplers is null - This is not allowed.");
             Debug.Assert(currentState.VsSrvs != null, "VertexShader srvs are null - This is not allowed.");
             Debug.Assert(currentState.VsConstantBuffers != null, "VertexShader constants is null - This is not allowed.");
+            Debug.Assert(currentState.ReadWriteViews!= null, "Read/write views is null - This is not allowed.");
             Debug.Assert(currentState.StreamOutBindings!= null, "StreamOut bindings on current draw state is null - This is not allowed.");
             Debug.Assert(currentState.VertexBuffers != null, "VertexBuffers on current draw state is null - This is not allowed.");
 
