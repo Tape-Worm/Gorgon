@@ -902,10 +902,23 @@ namespace Gorgon.Graphics.Core
                 return;
             }
 
+            if (rectangles.Count == 1)
+            {
+                if (_scissors.Length < 1)
+                {
+                    _scissors = new DX.Rectangle[1];
+                }
+
+                _scissors[0] = rectangles[0];
+                D3DDeviceContext.Rasterizer.SetScissorRectangle(rectangles[0].Left, rectangles[0].Top, rectangles[0].Right, rectangles[0].Bottom);
+                return;
+            }
+
             if (_scissors.Length != rectangles.Count)
             {
                 _scissors = new DX.Rectangle[rectangles.Count];
             }
+
 
             for (int i = 0; i < rectangles.Count; ++i)
             {
