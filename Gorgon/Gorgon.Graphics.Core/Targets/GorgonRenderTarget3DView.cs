@@ -240,9 +240,9 @@ namespace Gorgon.Graphics.Core
                 binding |= TextureBinding.ShaderResource;
             }
 
-            if ((info.Binding & TextureBinding.ShaderResource) == TextureBinding.UnorderedAccess)
+            if ((info.Binding & TextureBinding.ShaderResource) == TextureBinding.ReadWriteView)
             {
-                binding |= TextureBinding.UnorderedAccess;
+                binding |= TextureBinding.ReadWriteView;
             }
 
             var newInfo = new GorgonTexture3DInfo(info)

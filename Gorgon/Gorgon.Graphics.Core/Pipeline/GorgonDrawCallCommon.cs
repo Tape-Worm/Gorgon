@@ -68,7 +68,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the resources for the pixel shader.
         /// </summary>
-        public ShaderResource PixelShader
+        public GorgonShaderResources PixelShader
         {
             get;
         }
@@ -76,7 +76,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the resources for the vertex shader.
         /// </summary>
-        public ShaderResource VertexShader
+        public GorgonShaderResources VertexShader
         {
             get;
         }
@@ -84,7 +84,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the resources for the geometry shader.
         /// </summary>
-        public ShaderResource GeometryShader
+        public GorgonShaderResources GeometryShader
         {
             get;
         }
@@ -92,7 +92,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the resources for the domain shader.
         /// </summary>
-        public ShaderResource DomainShader
+        public GorgonShaderResources DomainShader
         {
             get;
         }
@@ -100,7 +100,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the resources for the hull shader.
         /// </summary>
-        public ShaderResource HullShader
+        public GorgonShaderResources HullShader
         {
             get;
         }
@@ -108,10 +108,15 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the resources for the compute shader.
         /// </summary>
-        public ShaderResource ComputeShader
+        public GorgonComputeShaderResources ComputeShader
         {
             get;
         }
+
+        /// <summary>
+        /// Property to return the list of unordered access views for the shader.
+        /// </summary>
+        public IGorgonReadOnlyArray<GorgonReadWriteViewBinding> ReadWriteViews => D3DState.ReadWriteViews;
         #endregion
 
         #region Methods.
@@ -126,6 +131,8 @@ namespace Gorgon.Graphics.Core
             DomainShader.ShaderResources = D3DState.DsSrvs = new GorgonShaderResourceViews();
             HullShader.ShaderResources = D3DState.HsSrvs = new GorgonShaderResourceViews();
             ComputeShader.ShaderResources = D3DState.CsSrvs = new GorgonShaderResourceViews();
+            D3DState.ReadWriteViews = new GorgonReadWriteViewBindings();
+            ComputeShader.ReadWriteViews = D3DState.CsReadWriteViews = new GorgonReadWriteViewBindings();
         }
 
         /// <summary>
@@ -161,12 +168,12 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         protected GorgonDrawCallCommon()
         {
-            PixelShader = new ShaderResource();
-            VertexShader = new ShaderResource();
-            GeometryShader = new ShaderResource();
-            DomainShader = new ShaderResource();
-            HullShader = new ShaderResource();
-            ComputeShader = new ShaderResource();
+            PixelShader = new GorgonShaderResources();
+            VertexShader = new GorgonShaderResources();
+            GeometryShader = new GorgonShaderResources();
+            DomainShader = new GorgonShaderResources();
+            HullShader = new GorgonShaderResources();
+            ComputeShader = new GorgonComputeShaderResources();
         }
         #endregion
     }

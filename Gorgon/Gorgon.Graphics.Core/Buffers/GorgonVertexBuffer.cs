@@ -132,6 +132,11 @@ namespace Gorgon.Graphics.Core
 
         #region Properties.
 	    /// <summary>
+	    /// Property to return the bind flags used for the D3D 11 resource.
+	    /// </summary>
+	    internal override D3D11.BindFlags BindFlags => Native?.Description.BindFlags ?? D3D11.BindFlags.None;
+
+	    /// <summary>
 	    /// Property to return the binding used to bind this buffer to the GPU.
 	    /// </summary>
 	    public VertexIndexBufferBinding Binding => _info.Binding;
@@ -295,12 +300,12 @@ namespace Gorgon.Graphics.Core
 	    public int GetTotalElementCount(BufferFormat format) => format == BufferFormat.Unknown ? 0 : GetTotalElementCount(new GorgonFormatInfo(format));
 
         /// <summary>
-        /// Function to create a new <see cref="GorgonVertexBufferUav"/> for this buffer.
+        /// Function to create a new <see cref="GorgonVertexBufferReadWriteView"/> for this buffer.
         /// </summary>
         /// <param name="format">The format for the view.</param>
         /// <param name="startElement">[Optional] The first element to start viewing from.</param>
         /// <param name="elementCount">[Optional] The number of elements to view.</param>
-        /// <returns>A <see cref="GorgonVertexBufferUav"/> used to bind the buffer to a shader.</returns>
+        /// <returns>A <see cref="GorgonVertexBufferReadWriteView"/> used to bind the buffer to a shader.</returns>
         /// <exception cref="GorgonException">Thrown when this buffer does not have a <see cref="Binding"/> of <see cref="VertexIndexBufferBinding.UnorderedAccess"/>.
         /// <para>-or-</para>
         /// <para>Thrown when this buffer has a usage of <see cref="ResourceUsage.Staging"/>.</para>
@@ -308,7 +313,7 @@ namespace Gorgon.Graphics.Core
         /// <exception cref="ArgumentException">Thrown when the <paramref name="format"/> is typeless or is not a supported format for unordered access views.</exception>
         /// <remarks>
         /// <para>
-        /// This will create a unordered access view that makes a buffer accessible to compute shaders (or pixel shaders) using unordered access to the data. This allows viewing of the buffer data in a 
+        /// This will create an unordered access view that makes a buffer accessible to shaders using unordered access to the data. This allows viewing of the buffer data in a 
         /// different format, or even a subsection of the buffer from within the shader.
         /// </para>
         /// <para>
@@ -323,7 +328,7 @@ namespace Gorgon.Graphics.Core
         /// clipped to the upper or lower bounds of the element range. If this value is left at 0, then the entire buffer is viewed.
         /// </para>
         /// </remarks>
-        public GorgonVertexBufferUav GetUnorderedAccessView(BufferFormat format, int startElement = 0, int elementCount = 0)
+        public GorgonVertexBufferReadWriteView GetReadWriteView(BufferFormat format, int startElement = 0, int elementCount = 0)
 	    {
 	        if ((Usage == ResourceUsage.Staging)
 	            || ((Binding & VertexIndexBufferBinding.UnorderedAccess) != VertexIndexBufferBinding.UnorderedAccess))
@@ -362,14 +367,14 @@ namespace Gorgon.Graphics.Core
 
 	        BufferShaderViewKey key = new BufferShaderViewKey(startElement, elementCount, format);
 
-	        if (GetUav(key) is GorgonVertexBufferUav result)
+	        if (GetReadWriteView(key) is GorgonVertexBufferReadWriteView result)
 	        {
 	            return result;
 	        }
 
-	        result = new GorgonVertexBufferUav(this, format, info, startElement, elementCount, totalElementCount);
+	        result = new GorgonVertexBufferReadWriteView(this, format, info, startElement, elementCount, totalElementCount);
 	        result.CreateNativeView();
-	        RegisterUav(key, result);
+	        RegisterReadWriteView(key, result);
 
 	        return result;
 	    }

@@ -109,6 +109,28 @@ namespace Gorgon.Graphics.Core
             Array.Clear(ViewStart, 0, ViewStart.Length);
 	        Array.Clear(ViewCount, 0, ViewCount.Length);
 	    }
+
+        /// <summary>
+        /// Function to find the index of the resource in the array.
+        /// </summary>
+        /// <param name="resource">The resource to look up.</param>
+        /// <returns>The index, if found. -1 if not.</returns>
+	    internal int IndexOf(GorgonGraphicsResource resource)
+        {
+            (int start, int count) = GetDirtyItems(true);
+
+            for (int i = 0; i < count; ++i)
+            {
+                GorgonConstantBuffer buffer = BackingArray[i + start]?.Buffer;
+
+                if (buffer == resource)
+                {
+                    return i + start;
+                }
+            }
+
+            return -1;
+        }
 	    #endregion
 
 		#region Constructor

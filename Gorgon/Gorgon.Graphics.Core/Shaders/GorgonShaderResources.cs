@@ -31,7 +31,7 @@ namespace Gorgon.Graphics.Core
     /// <summary>
     /// A grouping of resource states for a shader.
     /// </summary>
-    public sealed class ShaderResource
+    public sealed class GorgonShaderResources
     {
         #region Properties.
         /// <summary>
@@ -64,9 +64,9 @@ namespace Gorgon.Graphics.Core
 
         #region Constructor.
         /// <summary>
-        /// Initializes a new instance of the <see cref="ShaderResource"/> class.
+        /// Initializes a new instance of the <see cref="GorgonShaderResources"/> class.
         /// </summary>
-        internal ShaderResource()
+        internal GorgonShaderResources()
         {
         }
         #endregion

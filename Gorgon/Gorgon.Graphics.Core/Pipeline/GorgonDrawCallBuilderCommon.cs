@@ -104,7 +104,7 @@ namespace Gorgon.Graphics.Core
                     StateCopy.CopySamplers(DrawCall.D3DState.CsSamplers, samplers);
                     break;
             }
-
+            
             return (TB)this;
         }
 
@@ -436,6 +436,42 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
+        /// Function to assign a single read/write (unordered access) view to the draw call.
+        /// </summary>
+        /// <param name="resourceView">The shader resource view to assign.</param>
+        /// <param name="slot">[Optional] The slot used to asign the view.</param>
+        /// <returns>The fluent builder interface.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="slot"/> is less than 0, or greater than/equal to <see cref="GorgonShaderResourceViews.MaximumShaderResourceViewCount"/>.</exception>
+        public TB ReadWriteView(in GorgonReadWriteViewBinding resourceView, int slot = 0)
+        {
+            if ((slot < 0) || (slot >= GorgonShaderResourceViews.MaximumShaderResourceViewCount))
+            {
+                throw new ArgumentOutOfRangeException(nameof(slot), string.Format(Resources.GORGFX_ERR_SRV_SLOT_INVALID, GorgonShaderResourceViews.MaximumShaderResourceViewCount));
+            }
+
+            DrawCall.D3DState.ReadWriteViews[slot] = resourceView;
+            return (TB)this;
+        }
+
+        /// <summary>
+        /// Function to assign the list of read/write (unordered access) views to the draw call.
+        /// </summary>
+        /// <param name="resourceViews">The shader resource views to copy.</param>
+        /// <param name="startSlot">[Optional] The starting slot to use when copying the list.</param>
+        /// <returns>The fluent builder interface .</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="startSlot"/> is less than 0, or greater than/equal to <see cref="GorgonShaderResourceViews.MaximumShaderResourceViewCount"/>.</exception>
+        public TB ReadWriteViews(IReadOnlyList<GorgonReadWriteViewBinding> resourceViews, int startSlot = 0)
+        {
+            if ((startSlot < 0) || (startSlot >= GorgonShaderResourceViews.MaximumShaderResourceViewCount))
+            {
+                throw new ArgumentOutOfRangeException(nameof(startSlot), string.Format(Resources.GORGFX_ERR_SRV_SLOT_INVALID, GorgonShaderResourceViews.MaximumShaderResourceViewCount));
+            }
+
+            StateCopy.CopyReadWriteViews(DrawCall.D3DState.ReadWriteViews, resourceViews, startSlot);
+            return (TB)this;
+        }
+
+        /// <summary>
         /// Function to return the draw call.
         /// </summary>
         /// <returns>The draw call created or updated by this builder.</returns>
@@ -483,6 +519,9 @@ namespace Gorgon.Graphics.Core
             StateCopy.CopySrvs(final.D3DState.HsSrvs, DrawCall.D3DState.HsSrvs, 0);
             StateCopy.CopySrvs(final.D3DState.CsSrvs, DrawCall.D3DState.CsSrvs, 0);
 
+            // Copy over unordered access views.
+            StateCopy.CopyReadWriteViews(final.D3DState.ReadWriteViews, DrawCall.D3DState.ReadWriteViews, 0);
+
             final.D3DState.PipelineState = new GorgonPipelineState(DrawCall.PipelineState);
 
             OnUpdate(final);
@@ -527,6 +566,8 @@ namespace Gorgon.Graphics.Core
             ShaderResources(ShaderType.Hull, drawCall.D3DState.HsSrvs);
             ShaderResources(ShaderType.Compute, drawCall.D3DState.CsSrvs);
 
+            ReadWriteViews(drawCall.D3DState.ReadWriteViews);
+
             DrawCall.D3DState.PipelineState = new GorgonPipelineState(DrawCall.PipelineState);
 
             return OnResetTo(drawCall);
@@ -561,6 +602,8 @@ namespace Gorgon.Graphics.Core
             DrawCall.D3DState.DsSrvs.Clear();
             DrawCall.D3DState.HsSrvs.Clear();
             DrawCall.D3DState.CsSrvs.Clear();
+
+            DrawCall.D3DState.ReadWriteViews.Clear();
 
             DrawCall.D3DState.PipelineState.Clear();
 

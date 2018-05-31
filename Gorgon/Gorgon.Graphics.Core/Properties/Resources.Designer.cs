@@ -345,7 +345,7 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The resource &apos;{0}&apos; is already bound as a unordered access view in slot {1}. Please unbind the unordered access view before assigning it to a {2}..
+        ///   Looks up a localized string similar to The resource &apos;{0}&apos; is already bound as an unordered access view in slot {1}. Please unbind the unordered access view before assigning it to a {2}..
         /// </summary>
         internal static string GORGFX_ERR_CONFLICT_SRV_UAV {
             get {
@@ -1530,7 +1530,7 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unordered access view binding.  Offset: {0}, Uav Resource: {1}.
+        ///   Looks up a localized string similar to Unordered access view binding.  Offset: {0}, ReadWriteView Resource: {1}.
         /// </summary>
         internal static string GORGFX_TOSTR_UAV_BINDING {
             get {

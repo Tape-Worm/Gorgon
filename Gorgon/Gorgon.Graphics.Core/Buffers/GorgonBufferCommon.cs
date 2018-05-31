@@ -113,7 +113,7 @@ namespace Gorgon.Graphics.Core
         // A cache of shader views for the buffer.
         private Dictionary<BufferShaderViewKey, GorgonShaderResourceView> _shaderViews = new Dictionary<BufferShaderViewKey, GorgonShaderResourceView>();
         // A cache of unordered access views for the buffer.
-        private Dictionary<BufferShaderViewKey, GorgonUnorderedAccessView> _uavs = new Dictionary<BufferShaderViewKey, GorgonUnorderedAccessView>();
+        private Dictionary<BufferShaderViewKey, GorgonReadWriteView> _uavs = new Dictionary<BufferShaderViewKey, GorgonReadWriteView>();
         #endregion
 
         #region Properties.
@@ -195,7 +195,7 @@ namespace Gorgon.Graphics.Core
                         throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_NO_SO, usage));
                     }
 
-                    if ((binding & BufferBinding.UnorderedAccess) == BufferBinding.UnorderedAccess)
+                    if ((binding & BufferBinding.ReadWriteView) == BufferBinding.ReadWriteView)
                     {
                         throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_NO_UAV, usage));
                     }
@@ -283,9 +283,9 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="key">The key associated with the view.</param>
         /// <returns>The shader resource view for the buffer, or <b>null</b> if no resource view is registered.</returns>
-        internal GorgonUnorderedAccessView GetUav(BufferShaderViewKey key)
+        internal GorgonReadWriteView GetReadWriteView(BufferShaderViewKey key)
         {
-            return _uavs.TryGetValue(key, out GorgonUnorderedAccessView view) ? view : null;
+            return _uavs.TryGetValue(key, out GorgonReadWriteView view) ? view : null;
         }
 
         /// <summary>
@@ -293,7 +293,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="key">The unique key for the shader view.</param>
         /// <param name="view">The view to register.</param>
-        internal void RegisterUav(BufferShaderViewKey key, GorgonUnorderedAccessView view)
+        internal void RegisterReadWriteView(BufferShaderViewKey key, GorgonReadWriteView view)
         {
             _uavs[key] = view;
         }
@@ -1578,7 +1578,7 @@ namespace Gorgon.Graphics.Core
         public override void Dispose()
         {
             Dictionary<BufferShaderViewKey, GorgonShaderResourceView> shaderViews = Interlocked.Exchange(ref _shaderViews, null);
-            Dictionary<BufferShaderViewKey, GorgonUnorderedAccessView> unorderedViews = Interlocked.Exchange(ref _uavs, null);
+            Dictionary<BufferShaderViewKey, GorgonReadWriteView> unorderedViews = Interlocked.Exchange(ref _uavs, null);
 
             if (shaderViews != null)
             {
@@ -1591,7 +1591,7 @@ namespace Gorgon.Graphics.Core
 
             if (unorderedViews != null)
             {
-                foreach (KeyValuePair<BufferShaderViewKey, GorgonUnorderedAccessView> view in unorderedViews)
+                foreach (KeyValuePair<BufferShaderViewKey, GorgonReadWriteView> view in unorderedViews)
                 {
                     view.Value.Dispose();
                 }

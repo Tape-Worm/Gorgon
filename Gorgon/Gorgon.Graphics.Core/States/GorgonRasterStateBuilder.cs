@@ -53,7 +53,7 @@ namespace Gorgon.Graphics.Core
             dest.DepthBiasClamp = src.DepthBiasClamp;
             dest.IsDepthClippingEnabled = src.IsDepthClippingEnabled;
             dest.FillMode = src.FillMode;
-            dest.ForcedUavSampleCount = src.ForcedUavSampleCount;
+            dest.ForcedReadWriteViewSampleCount = src.ForcedReadWriteViewSampleCount;
             dest.IsFrontCounterClockwise = src.IsFrontCounterClockwise;
             dest.IsMultisamplingEnabled = src.IsMultisamplingEnabled;
             dest.RwScissorRectangles.Clear();
@@ -210,9 +210,9 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="sampleCount">The sample count to set.</param>
         /// <returns>The fluent interface for this builder.</returns>
-        public GorgonRasterStateBuilder ForcedUavSampleCount(int sampleCount)
+        public GorgonRasterStateBuilder ForcedReadWriteViewSampleCount(int sampleCount)
         {
-            WorkingState.ForcedUavSampleCount = sampleCount;
+            WorkingState.ForcedReadWriteViewSampleCount = sampleCount;
             return this;
         }
 

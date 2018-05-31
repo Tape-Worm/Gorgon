@@ -54,6 +54,11 @@ namespace Gorgon.Graphics.Core
 
         #region Properties.
         /// <summary>
+        /// Property to return the bind flags used for the D3D 11 resource.
+        /// </summary>
+        internal override D3D11.BindFlags BindFlags => Native?.Description.BindFlags ?? D3D11.BindFlags.None;
+
+        /// <summary>
         /// Property to return the usage for the resource.
         /// </summary>
         public override ResourceUsage Usage => _info.Usage;
@@ -151,12 +156,12 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <remarks>
         /// <para>
-        /// This flag only applies to buffers with a <see cref="Binding"/> of <see cref="BufferBinding.UnorderedAccess"/>, and/or <see cref="BufferBinding.Shader"/>. If the <see cref="Binding"/> does not
+        /// This flag only applies to buffers with a <see cref="Binding"/> of <see cref="BufferBinding.ReadWriteView"/>, and/or <see cref="BufferBinding.Shader"/>. If the <see cref="Binding"/> does not
         /// contain one of these flags, then this will always return <b>false</b>.
         /// </para>
         /// </remarks>
         public bool IndirectArgs => (_info.IndirectArgs) && (((Binding & BufferBinding.Shader) == BufferBinding.Shader) ||
-                                                             ((Binding & BufferBinding.UnorderedAccess) == BufferBinding.UnorderedAccess));
+                                                             ((Binding & BufferBinding.ReadWriteView) == BufferBinding.ReadWriteView));
         #endregion
 
         #region Methods.
@@ -174,7 +179,7 @@ namespace Gorgon.Graphics.Core
                 bindFlags |= D3D11.BindFlags.ShaderResource;
             }
 
-            if ((binding & BufferBinding.UnorderedAccess) == BufferBinding.UnorderedAccess)
+            if ((binding & BufferBinding.ReadWriteView) == BufferBinding.ReadWriteView)
             {
                 bindFlags |= D3D11.BindFlags.UnorderedAccess;
             }
@@ -268,8 +273,8 @@ namespace Gorgon.Graphics.Core
                     break;
                 case ResourceUsage.Default:
                     if ((binding != BufferBinding.Shader) 
-                        && (binding != BufferBinding.UnorderedAccess)
-                        && (binding != (BufferBinding.Shader | BufferBinding.UnorderedAccess)))
+                        && (binding != BufferBinding.ReadWriteView)
+                        && (binding != (BufferBinding.Shader | BufferBinding.ReadWriteView)))
                     {
                         break;
                     }
@@ -372,14 +377,14 @@ namespace Gorgon.Graphics.Core
         /// <returns>The total number of structured elements.</returns>
         /// <remarks>
         /// <para>
-        /// Use this to retrieve the number of elements that will be passed to a <see cref="GorgonStructuredView"/> or <see cref="GorgonStructuredUav"/>.
+        /// Use this to retrieve the number of elements that will be passed to a <see cref="GorgonStructuredView"/> or <see cref="GorgonStructuredReadWriteView"/>.
         /// </para>
         /// <para>
         /// If this buffer has a <see cref="IGorgonBufferInfo.StructureSize"/> of 0, then this value will return 0 since it is not a structured buffer.
         /// </para>
         /// </remarks>
         /// <seealso cref="GorgonStructuredView"/>
-        /// <seealso cref="GorgonStructuredUav"/>
+        /// <seealso cref="GorgonStructuredReadWriteView"/>
         public int GetTotalStructuredElementCount() => _info.StructureSize > 0 ? SizeInBytes / _info.StructureSize : 0;
 
         /// <summary>
@@ -388,11 +393,11 @@ namespace Gorgon.Graphics.Core
         /// <returns>The total number of raw elements.</returns>
         /// <remarks>
         /// <para>
-        /// Use this to retrieve the number of elements that will be passed to a <see cref="GorgonRawUav"/> or <see cref="GorgonRawView"/>.
+        /// Use this to retrieve the number of elements that will be passed to a <see cref="GorgonRawReadWriteView"/> or <see cref="GorgonRawView"/>.
         /// </para>
         /// </remarks>
         /// <seealso cref="GorgonStructuredView"/>
-        /// <seealso cref="GorgonStructuredUav"/>
+        /// <seealso cref="GorgonStructuredReadWriteView"/>
         public int GetTotalRawElementCount() => SizeInBytes / 4;
 
         /// <summary>
@@ -478,7 +483,7 @@ namespace Gorgon.Graphics.Core
         /// <exception cref="GorgonException">Thrown if this buffer is a staging resource, or does not have a binding flag for shader access.</exception>
         /// <remarks>
         /// <para>
-        /// This will create a unordered access view that makes a buffer accessible to shaders. This allows viewing of the buffer data in a different format, or even a subsection of the buffer from within 
+        /// This will create an unordered access view that makes a buffer accessible to shaders. This allows viewing of the buffer data in a different format, or even a subsection of the buffer from within 
         /// the shader.
         /// </para>
         /// <para>
@@ -527,21 +532,21 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Function to create a new <see cref="GorgonBufferUav"/> for this buffer.
+        /// Function to create a new <see cref="GorgonBufferReadWriteView"/> for this buffer.
         /// </summary>
         /// <param name="format">The format for the view.</param>
         /// <param name="startElement">[Optional] The first element to start viewing from.</param>
         /// <param name="elementCount">[Optional] The number of elements to view.</param>
-        /// <returns>A <see cref="GorgonBufferUav"/> used to bind the buffer to a shader.</returns>
+        /// <returns>A <see cref="GorgonBufferReadWriteView"/> used to bind the buffer to a shader.</returns>
         /// <exception cref="GorgonException">
-        /// <para>Thrown when this buffer does not have a <see cref="BufferBinding"/> of <see cref="BufferBinding.UnorderedAccess"/>.</para>
+        /// <para>Thrown when this buffer does not have a <see cref="BufferBinding"/> of <see cref="BufferBinding.ReadWriteView"/>.</para>
         /// <para>-or-</para>
         /// <para>Thrown when this buffer has a usage of <see cref="ResourceUsage.Staging"/>.</para>
         /// </exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="format"/> is typeless or is not a supported format for unordered access views.</exception>        
         /// <remarks>
         /// <para>
-        /// This will create a unordered access view that makes a buffer accessible to compute shaders (or pixel shaders) using unordered access to the data. This allows viewing of the buffer data in a 
+        /// This will create an unordered access view that makes a buffer accessible to shaders using unordered access to the data. This allows viewing of the buffer data in a 
         /// different format, or even a subsection of the buffer from within the shader.
         /// </para>
         /// <para>
@@ -556,10 +561,10 @@ namespace Gorgon.Graphics.Core
         /// clipped to the upper or lower bounds of the element range. If this value is left at 0, then the entire buffer is viewed.
         /// </para>
         /// </remarks>
-        public GorgonBufferUav GetUnorderedAccessView(BufferFormat format, int startElement = 0, int elementCount = 0)
+        public GorgonBufferReadWriteView GetReadWriteView(BufferFormat format, int startElement = 0, int elementCount = 0)
         {
             if ((Usage == ResourceUsage.Staging)
-                || ((Binding & BufferBinding.UnorderedAccess) != BufferBinding.UnorderedAccess))
+                || ((Binding & BufferBinding.ReadWriteView) != BufferBinding.ReadWriteView))
             {
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_UAV_RESOURCE_NOT_VALID, Name));
             }
@@ -591,33 +596,33 @@ namespace Gorgon.Graphics.Core
 
             BufferShaderViewKey key = new BufferShaderViewKey(startElement, elementCount, format);
 
-            if (GetUav(key) is GorgonBufferUav result)
+            if (GetReadWriteView(key) is GorgonBufferReadWriteView result)
             {
                 return result;
             }
 
-            result = new GorgonBufferUav(this, format, info, startElement, elementCount, totalElementCount);
+            result = new GorgonBufferReadWriteView(this, format, info, startElement, elementCount, totalElementCount);
             result.CreateNativeView();
-            RegisterUav(key, result);
+            RegisterReadWriteView(key, result);
 
             return result;
         }
 
         /// <summary>
-        /// Function to create a new <see cref="GorgonStructuredUav"/> for this buffer.
+        /// Function to create a new <see cref="GorgonStructuredReadWriteView"/> for this buffer.
         /// </summary>
         /// <param name="startElement">[Optional] The first element to start viewing from.</param>
         /// <param name="elementCount">[Optional] The number of elements to view.</param>
         /// <param name="uavType">[Optional] The type of uav to create.</param>
-        /// <returns>A <see cref="GorgonStructuredUav"/> used to bind the buffer to a shader.</returns>
+        /// <returns>A <see cref="GorgonStructuredReadWriteView"/> used to bind the buffer to a shader.</returns>
         /// <exception cref="GorgonException">
-        /// Thrown when this buffer does not have a <see cref="BufferBinding"/> of <see cref="BufferBinding.UnorderedAccess"/>.
+        /// Thrown when this buffer does not have a <see cref="BufferBinding"/> of <see cref="BufferBinding.ReadWriteView"/>.
         /// <para>-or-</para>
         /// <para>Thrown when this buffer has a usage of <see cref="ResourceUsage.Staging"/>.</para>
         /// </exception>
         /// <remarks>
         /// <para>
-        /// This will create a unordered access view that makes a buffer accessible to compute shaders (or pixel shaders) using unordered access to the data. This allows viewing of the buffer data in a 
+        /// This will create an unordered access view that makes a buffer accessible to shaders using unordered access to the data. This allows viewing of the buffer data in a 
         /// different format, or even a subsection of the buffer from within the shader.
         /// </para>
         /// <para>
@@ -629,14 +634,14 @@ namespace Gorgon.Graphics.Core
         /// clipped to the upper or lower bounds of the element range. If this value is left at 0, then the entire buffer is viewed.
         /// </para>
         /// <para>
-        /// The <paramref name="uavType"/> parameter specifies whether the buffer can be used as an <see cref="StructuredBufferUavType.Append"/>/Consume buffer or
-        /// <see cref="StructuredBufferUavType.Counter"/> by the shader.
+        /// The <paramref name="uavType"/> parameter specifies whether the buffer can be used as an <see cref="StructuredBufferReadWriteViewType.Append"/>/Consume buffer or
+        /// <see cref="StructuredBufferReadWriteViewType.Counter"/> by the shader.
         /// </para>
         /// </remarks>
-        public GorgonStructuredUav GetStructuredUav(int startElement = 0, int elementCount = 0, StructuredBufferUavType uavType = StructuredBufferUavType.None)
+        public GorgonStructuredReadWriteView GetStructuredReadWriteView(int startElement = 0, int elementCount = 0, StructuredBufferReadWriteViewType uavType = StructuredBufferReadWriteViewType.None)
         {
             if ((Usage == ResourceUsage.Staging)
-                || ((Binding & BufferBinding.UnorderedAccess) != BufferBinding.UnorderedAccess))
+                || ((Binding & BufferBinding.ReadWriteView) != BufferBinding.ReadWriteView))
             {
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_UAV_RESOURCE_NOT_VALID, Name));
             }
@@ -655,14 +660,14 @@ namespace Gorgon.Graphics.Core
 
             BufferShaderViewKey key = new BufferShaderViewKey(startElement, elementCount, (int)uavType);
 
-            if (GetUav(key) is GorgonStructuredUav result)
+            if (GetReadWriteView(key) is GorgonStructuredReadWriteView result)
             {
                 return result;
             }
 
-            result = new GorgonStructuredUav(this, uavType, startElement, elementCount, totalElementCount);
+            result = new GorgonStructuredReadWriteView(this, uavType, startElement, elementCount, totalElementCount);
             result.CreateNativeView();
-            RegisterUav(key, result);
+            RegisterReadWriteView(key, result);
 
             return result;
         }
@@ -673,8 +678,8 @@ namespace Gorgon.Graphics.Core
         /// <param name="elementType">The type of data to interpret elements within the buffer as.</param>
         /// <param name="startElement">[Optional] The first element to start viewing from.</param>
         /// <param name="elementCount">[Optional] The number of elements to view.</param>
-        /// <returns>A <see cref="GorgonRawUav"/> used to bind the buffer to a shader.</returns>
-        /// <exception cref="GorgonException">Thrown when this buffer does not have a <see cref="BufferBinding"/> of <see cref="BufferBinding.UnorderedAccess"/>.
+        /// <returns>A <see cref="GorgonRawReadWriteView"/> used to bind the buffer to a shader.</returns>
+        /// <exception cref="GorgonException">Thrown when this buffer does not have a <see cref="BufferBinding"/> of <see cref="BufferBinding.ReadWriteView"/>.
         /// <para>-or-</para>
         /// <para>Thrown when this buffer has a usage of <see cref="ResourceUsage.Staging"/>.</para>
         /// </exception>
@@ -731,19 +736,19 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Function to create a new <see cref="GorgonRawUav"/> for this buffer.
+        /// Function to create a new <see cref="GorgonRawReadWriteView"/> for this buffer.
         /// </summary>
         /// <param name="elementType">The type of data to interpret elements within the buffer as.</param>
         /// <param name="startElement">[Optional] The first element to start viewing from.</param>
         /// <param name="elementCount">[Optional] The number of elements to view.</param>
-        /// <returns>A <see cref="GorgonRawUav"/> used to bind the buffer to a shader.</returns>
-        /// <exception cref="GorgonException">Thrown when this buffer does not have a <see cref="BufferBinding"/> of <see cref="BufferBinding.UnorderedAccess"/>.
+        /// <returns>A <see cref="GorgonRawReadWriteView"/> used to bind the buffer to a shader.</returns>
+        /// <exception cref="GorgonException">Thrown when this buffer does not have a <see cref="BufferBinding"/> of <see cref="BufferBinding.ReadWriteView"/>.
         /// <para>-or-</para>
         /// <para>Thrown when this buffer has a usage of <see cref="ResourceUsage.Staging"/>.</para>
         /// </exception>
         /// <remarks>
         /// <para>
-        /// This will create a unordered access view that makes a buffer accessible to compute shaders (or pixel shaders) using unordered access to the data. This allows viewing of the buffer data in a 
+        /// This will create an unordered access view that makes a buffer accessible to shaders using unordered access to the data. This allows viewing of the buffer data in a 
         /// different format, or even a subsection of the buffer from within the shader.
         /// </para>
         /// <para>
@@ -761,10 +766,10 @@ namespace Gorgon.Graphics.Core
         /// clipped to the upper or lower bounds of the element range. If this value is left at 0, then the entire buffer is viewed.
         /// </para>
         /// </remarks>
-        public GorgonRawUav GetRawUav(RawBufferElementType elementType, int startElement = 0, int elementCount = 0)
+        public GorgonRawReadWriteView GetRawReadWriteView(RawBufferElementType elementType, int startElement = 0, int elementCount = 0)
         {
             if ((Usage == ResourceUsage.Staging)
-                || ((Binding & BufferBinding.UnorderedAccess) != BufferBinding.UnorderedAccess))
+                || ((Binding & BufferBinding.ReadWriteView) != BufferBinding.ReadWriteView))
             {
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_UAV_RESOURCE_NOT_VALID, Name));
             }
@@ -783,14 +788,14 @@ namespace Gorgon.Graphics.Core
 
             BufferShaderViewKey key = new BufferShaderViewKey(startElement, elementCount, elementType);
 
-            if (GetUav(key) is GorgonRawUav result)
+            if (GetReadWriteView(key) is GorgonRawReadWriteView result)
             {
                 return result;
             }
 
-            result = new GorgonRawUav(this, startElement, elementCount,  totalElementCount, elementType);
+            result = new GorgonRawReadWriteView(this, startElement, elementCount,  totalElementCount, elementType);
             result.CreateNativeView();
-            RegisterUav(key, result);
+            RegisterReadWriteView(key, result);
 
             return result;
         }

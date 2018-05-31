@@ -308,7 +308,7 @@ namespace Gorgon.Graphics.Core
         /// </note>
         /// </para>
         /// </remarks>
-        public int ForcedUavSampleCount
+        public int ForcedReadWriteViewSampleCount
         {
             get;
             internal set;
@@ -334,7 +334,7 @@ namespace Gorgon.Graphics.Core
                            IsAntialiasedLineEnabled = IsAntialiasedLineEnabled,
                            IsFrontCounterClockwise = IsFrontCounterClockwise,
                            SlopeScaledDepthBias = SlopeScaledDepthBias,
-                           ForcedSampleCount = ForcedUavSampleCount,
+                           ForcedSampleCount = ForcedReadWriteViewSampleCount,
                            IsScissorEnabled = ScissorRectangles.Count > 0,
                            IsDepthClipEnabled = IsDepthClippingEnabled,
                            IsMultisampleEnabled = IsMultisamplingEnabled
@@ -358,7 +358,7 @@ namespace Gorgon.Graphics.Core
                                        && (DepthBiasClamp.EqualsEpsilon(state.DepthBiasClamp))
                                        && (IsDepthClippingEnabled == state.IsDepthClippingEnabled)
                                        && (FillMode == state.FillMode)
-                                       && (ForcedUavSampleCount == state.ForcedUavSampleCount)
+                                       && (ForcedReadWriteViewSampleCount == state.ForcedReadWriteViewSampleCount)
                                        && (IsFrontCounterClockwise == state.IsFrontCounterClockwise)
                                        && (IsMultisamplingEnabled == state.IsMultisamplingEnabled)
                                        && (HasScissors == state.HasScissors)
@@ -380,7 +380,7 @@ namespace Gorgon.Graphics.Core
             DepthBiasClamp = state.DepthBiasClamp;
             IsDepthClippingEnabled = state.IsDepthClippingEnabled;
             FillMode = state.FillMode;
-            ForcedUavSampleCount = state.ForcedUavSampleCount;
+            ForcedReadWriteViewSampleCount = state.ForcedReadWriteViewSampleCount;
             IsFrontCounterClockwise = state.IsFrontCounterClockwise;
             IsMultisamplingEnabled = state.IsMultisamplingEnabled;
             RwScissorRectangles.AddRange(state.ScissorRectangles);

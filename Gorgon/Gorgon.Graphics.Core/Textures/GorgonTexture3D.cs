@@ -61,7 +61,7 @@ namespace Gorgon.Graphics.Core
 		// The ID number of the texture.
 		private static int _textureID;
 	    // The list of cached texture unordered access views.
-	    private Dictionary<TextureViewKey, GorgonTexture3DUav> _cachedUavs = new Dictionary<TextureViewKey, GorgonTexture3DUav>();
+	    private Dictionary<TextureViewKey, GorgonTexture3DReadWriteView> _cachedReadWriteViews = new Dictionary<TextureViewKey, GorgonTexture3DReadWriteView>();
         // The list of cached texture shader resource views.
         private Dictionary<TextureViewKey, GorgonTexture3DView> _cachedSrvs = new Dictionary<TextureViewKey, GorgonTexture3DView>();
         // The list of cached render target resource views.
@@ -71,6 +71,11 @@ namespace Gorgon.Graphics.Core
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to return the bind flags used for the D3D 11 resource.
+        /// </summary>
+        internal override D3D11.BindFlags BindFlags => (D3D11.BindFlags)Binding;
+
 		/// <summary>
 		/// Property to return the ID for this texture.
 		/// </summary>
@@ -223,7 +228,7 @@ namespace Gorgon.Graphics.Core
 		// ReSharper disable once UnusedParameter.Local
 		private void ValidateUnorderedAccess(BufferFormatSupport support)
 		{
-			if ((Binding & TextureBinding.UnorderedAccess) != TextureBinding.UnorderedAccess)
+			if ((Binding & TextureBinding.ReadWriteView) != TextureBinding.ReadWriteView)
 			{
 				return;
 			}
@@ -1481,22 +1486,22 @@ namespace Gorgon.Graphics.Core
 	    }
 
         /// <summary>
-        /// Function to create a new <see cref="GorgonTexture3DUav"/> for this texture.
+        /// Function to create a new <see cref="GorgonTexture3DReadWriteView"/> for this texture.
         /// </summary>
         /// <param name="format">[Optional] The format for the view.</param>
         /// <param name="firstMipLevel">[Optional] The first mip map level (slice) to start viewing from.</param>
         /// <param name="startDepthSlice">[Optional] The array index or depth slice to start viewing from.</param>
         /// <param name="depthSliceCount">[Optional] The number of array indices or depth slices to view.</param>
-        /// <returns>A <see cref="GorgonTexture3DUav"/> used to bind the texture to a shader.</returns>
+        /// <returns>A <see cref="GorgonTexture3DReadWriteView"/> used to bind the texture to a shader.</returns>
         /// <exception cref="GorgonException">
-        /// <para>Thrown when this texture does not have a <see cref="TextureBinding"/> of <see cref="TextureBinding.UnorderedAccess"/>.</para>
+        /// <para>Thrown when this texture does not have a <see cref="TextureBinding"/> of <see cref="TextureBinding.ReadWriteView"/>.</para>
         /// <para>-or-</para>
         /// <para>Thrown when this texture has a <see cref="GorgonGraphicsResource.Usage"/> of <see cref="ResourceUsage.Staging"/>.</para>
         /// </exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="format"/> is typeless or is not a supported format for unordered access views.</exception>
         /// <remarks>
         /// <para>
-        /// This will create a unordered access view that makes a texture accessible to compute shaders (or pixel shaders) using unordered access to the data. This allows viewing of the texture data in a
+        /// This will create an unordered access view that makes a texture accessible to shaders using unordered access to the data. This allows viewing of the texture data in a
         /// different format, or even a subsection of the texture from within the shader.
         /// </para>
         /// <para>
@@ -1511,10 +1516,10 @@ namespace Gorgon.Graphics.Core
         /// values are left at 0, then all array indices will be accessible. 
         /// </para>
         /// </remarks>
-        public GorgonTexture3DUav GetUnorderedAccessView(BufferFormat format = BufferFormat.Unknown, int firstMipLevel = 0, int startDepthSlice = 0, int depthSliceCount = 0)
+        public GorgonTexture3DReadWriteView GetReadWriteView(BufferFormat format = BufferFormat.Unknown, int firstMipLevel = 0, int startDepthSlice = 0, int depthSliceCount = 0)
 	    {
 	        if ((Usage == ResourceUsage.Staging)
-                || ((Binding & TextureBinding.UnorderedAccess) != TextureBinding.UnorderedAccess))
+                || ((Binding & TextureBinding.ReadWriteView) != TextureBinding.ReadWriteView))
 	        {
 	            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_UAV_RESOURCE_NOT_VALID, Name));
 	        }
@@ -1557,14 +1562,14 @@ namespace Gorgon.Graphics.Core
 
 	        TextureViewKey key = new TextureViewKey(format, firstMipLevel, _info.MipLevels, startDepthSlice, depthSliceCount);
 
-	        if (_cachedUavs.TryGetValue(key, out GorgonTexture3DUav view))
+	        if (_cachedReadWriteViews.TryGetValue(key, out GorgonTexture3DReadWriteView view))
 	        {
 	            return view;
 	        }
 
-	        view = new GorgonTexture3DUav(this, format, info, firstMipLevel, startDepthSlice, depthSliceCount);
+	        view = new GorgonTexture3DReadWriteView(this, format, info, firstMipLevel, startDepthSlice, depthSliceCount);
 	        view.CreateNativeView();
-	        _cachedUavs[key] = view;
+	        _cachedReadWriteViews[key] = view;
 
 	        return view;
         }
@@ -1818,7 +1823,7 @@ namespace Gorgon.Graphics.Core
             // Destroy all cached views.
 		    Dictionary<TextureViewKey, GorgonTexture3DView> cachedSrvs = Interlocked.Exchange(ref _cachedSrvs, null);
 		    Dictionary<TextureViewKey, GorgonRenderTarget3DView> cachedRtvs = Interlocked.Exchange(ref _cachedRtvs, null);
-		    Dictionary<TextureViewKey, GorgonTexture3DUav> cachedUavs = Interlocked.Exchange(ref _cachedUavs, null);
+		    Dictionary<TextureViewKey, GorgonTexture3DReadWriteView> cachedReadWriteViews = Interlocked.Exchange(ref _cachedReadWriteViews, null);
 
 		    if (cachedSrvs != null)
 		    {
@@ -1836,9 +1841,9 @@ namespace Gorgon.Graphics.Core
 		        }
 		    }
 
-		    if (cachedUavs != null)
+		    if (cachedReadWriteViews != null)
 		    {
-		        foreach (KeyValuePair<TextureViewKey, GorgonTexture3DUav> view in cachedUavs)
+		        foreach (KeyValuePair<TextureViewKey, GorgonTexture3DReadWriteView> view in cachedReadWriteViews)
 		        {
 		            view.Value.Dispose();
 		        }

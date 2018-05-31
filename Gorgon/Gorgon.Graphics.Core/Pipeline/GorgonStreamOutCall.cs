@@ -88,7 +88,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the resources for the pixel shader.
         /// </summary>
-        public ShaderResource PixelShader
+        public GorgonShaderResources PixelShader
         {
             get;
         }
@@ -129,7 +129,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         internal GorgonStreamOutCall()
         {
-            PixelShader = new ShaderResource();
+            PixelShader = new GorgonShaderResources();
             D3DState.StreamOutBindings = new GorgonStreamOutBindings();
         }
         #endregion

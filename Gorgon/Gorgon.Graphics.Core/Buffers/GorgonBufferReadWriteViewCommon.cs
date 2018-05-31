@@ -29,11 +29,11 @@ using System;
 namespace Gorgon.Graphics.Core
 {
     /// <summary>
-    /// Provides an unordered access view for a <see cref="GorgonBuffer"/>, <see cref="GorgonVertexBuffer"/> or a <see cref="GorgonIndexBuffer"/>.
+    /// Provides a read/write (unordered access) view for a <see cref="GorgonBuffer"/>, <see cref="GorgonVertexBuffer"/> or a <see cref="GorgonIndexBuffer"/>.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This type of view allows for unordered access to a buffer. The buffer must have been created with the <see cref="BufferBinding.UnorderedAccess"/> flag in its binding property.
+    /// This type of view allows for unordered access to a buffer. The buffer must have been created with the <see cref="BufferBinding.ReadWriteView"/> flag in its binding property.
     /// </para>
     /// <para>
     /// The unordered access allows a shader to read/write any part of a <see cref="GorgonGraphicsResource"/> by multiple threads without memory contention. This is done through the use of 
@@ -48,8 +48,8 @@ namespace Gorgon.Graphics.Core
     /// <seealso cref="GorgonComputeShader"/>
     /// <seealso cref="GorgonPixelShader"/>
     /// <seealso cref="GorgonDrawCallCommon"/>
-    public abstract class GorgonBufferUavCommon<T>
-        : GorgonUnorderedAccessView
+    public abstract class GorgonBufferReadWriteViewCommon<T>
+        : GorgonReadWriteView
         where T : GorgonBufferCommon
     {
         #region Properties.
@@ -97,14 +97,14 @@ namespace Gorgon.Graphics.Core
 
         #region Constructor/Finalizer.
         /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonBufferUavCommon{T}"/> class.
+        /// Initializes a new instance of the <see cref="GorgonBufferReadWriteViewCommon{T}"/> class.
         /// </summary>
         /// <param name="buffer">The buffer to assign to the view.</param>
         /// <param name="elementStart">The first element in the buffer to view.</param>
         /// <param name="elementCount">The number of elements in the view.</param>
         /// <param name="totalElementCount">The total number of elements in the buffer.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="buffer"/> parameter is <b>null</b>.</exception>
-        protected GorgonBufferUavCommon(T buffer, int elementStart, int elementCount, int totalElementCount)
+        protected GorgonBufferReadWriteViewCommon(T buffer, int elementStart, int elementCount, int totalElementCount)
             : base(buffer)
         {
             StartElement = elementStart;

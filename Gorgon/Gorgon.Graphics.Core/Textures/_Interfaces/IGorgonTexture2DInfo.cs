@@ -112,13 +112,13 @@ namespace Gorgon.Graphics.Core
 		DepthStencil = D3D11.BindFlags.DepthStencil,
 		/// <summary>
 		/// <para>
-		/// The texture is meant to be used with an unordered access view.
+		/// The texture is meant to be used with a read/write (unordered access) view.
 		/// </para>
 		/// <para>
-		/// Textures that are multisampled cannot use this flag and can only be bound to a pixel shader and/or compute shader.
+		/// Textures that are multisampled cannot use this flag.
 		/// </para>
 		/// </summary>
-		UnorderedAccess = D3D11.BindFlags.UnorderedAccess
+		ReadWriteView = D3D11.BindFlags.UnorderedAccess
 	}
 
 	/// <summary>

@@ -33,33 +33,6 @@ using D3D11 = SharpDX.Direct3D11;
 namespace Gorgon.Graphics.Core
 {
     /// <summary>
-    /// The current binding state for the resource.
-    /// </summary>
-    internal enum BindState
-    {
-        /// <summary>
-        /// Not bound.
-        /// </summary>
-        None = 0,
-        /// <summary>
-        /// Bound as render target.
-        /// </summary>
-        Rtv = 1,
-        /// <summary>
-        /// Bound as shader resource view.
-        /// </summary>
-        Srv = 2,
-        /// <summary>
-        /// Bound as depth/stencil view.
-        /// </summary>
-        Dsv = 3,
-        /// <summary>
-        /// Bound as unordered access view.
-        /// </summary>
-        Uav = 4
-    }
-
-    /// <summary>
     /// The type of data in the resource.
     /// </summary>
     public enum GraphicsResourceType
@@ -201,12 +174,11 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Property to set or return the current binding state for the resource.
+        /// Property to return the bind flags used for the D3D 11 resource.
         /// </summary>
-        internal BindState BindState
+        internal abstract D3D11.BindFlags BindFlags
         {
             get;
-            set;
         }
 
         /// <summary>

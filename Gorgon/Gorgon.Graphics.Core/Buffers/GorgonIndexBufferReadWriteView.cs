@@ -33,11 +33,11 @@ using Gorgon.Core;
 namespace Gorgon.Graphics.Core
 {
     /// <summary>
-    /// Provides an unordered access view for a <see cref="GorgonIndexBuffer"/>.
+    /// Provides a read/write (unordered access) view for a <see cref="GorgonIndexBuffer"/>.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This type of view allows for unordered access to a <see cref="GorgonIndexBuffer"/>. The buffer must have been created with the <see cref="BufferBinding.UnorderedAccess"/> flag in its 
+    /// This type of view allows for unordered access to a <see cref="GorgonIndexBuffer"/>. The buffer must have been created with the <see cref="BufferBinding.ReadWriteView"/> flag in its 
     /// <see cref="IGorgonIndexBufferInfo.Binding"/> property.
     /// </para>
     /// <para>
@@ -53,8 +53,8 @@ namespace Gorgon.Graphics.Core
     /// <seealso cref="GorgonComputeShader"/>
     /// <seealso cref="GorgonPixelShader"/>
     /// <seealso cref="GorgonDrawCallCommon"/>
-    public sealed class GorgonIndexBufferUav
-        : GorgonBufferUavCommon<GorgonIndexBuffer>, IGorgonIndexBufferInfo
+    public sealed class GorgonIndexBufferReadWriteView
+        : GorgonBufferReadWriteViewCommon<GorgonIndexBuffer>, IGorgonIndexBufferInfo
     {
         #region Properties.
         /// <summary>
@@ -133,7 +133,7 @@ namespace Gorgon.Graphics.Core
 
         #region Constructor/Finalizer.
         /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonIndexBufferUav"/> class.
+        /// Initializes a new instance of the <see cref="GorgonIndexBufferReadWriteView"/> class.
         /// </summary>
         /// <param name="buffer">The buffer to assign to the view.</param>
         /// <param name="format">The format of an element of data in the view.</param>
@@ -142,7 +142,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="elementCount">The number of elements in the view.</param>
         /// <param name="totalElementCount">The total number of elements in the buffer.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="buffer"/>, or the <paramref name="formatInfo"/> parameter is <b>null</b>.</exception>
-        internal GorgonIndexBufferUav(GorgonIndexBuffer buffer, BufferFormat format, GorgonFormatInfo formatInfo, int elementStart, int elementCount, int totalElementCount)
+        internal GorgonIndexBufferReadWriteView(GorgonIndexBuffer buffer, BufferFormat format, GorgonFormatInfo formatInfo, int elementStart, int elementCount, int totalElementCount)
             : base(buffer, elementStart, elementCount, totalElementCount)
         {
             FormatInformation = formatInfo ?? throw new ArgumentNullException(nameof(formatInfo));

@@ -474,7 +474,7 @@ The width must be a value between 1-{2}, and the height must be a value between 
     <value>The resource '{0}' does not have an [UnorderedAccess] binding.</value>
   </data>
   <data name="GORGFX_TOSTR_UAV_BINDING" xml:space="preserve">
-    <value>Unordered access view binding.  Offset: {0}, Uav Resource: {1}</value>
+    <value>Unordered access view binding.  Offset: {0}, ReadWriteView Resource: {1}</value>
   </data>
   <data name="GORGFX_ERR_BUFFER_CONSTANT_NO_SO" xml:space="preserve">
     <value>Constant buffers cannot be used as stream out buffers.</value>
@@ -519,7 +519,7 @@ The width must be a value between 1-{2}, and the height must be a value between 
     <value>The resource '{0}' is already bound as a render target in slot {j}. Please unbind the render target before assigning it to a {1}.</value>
   </data>
   <data name="GORGFX_ERR_CONFLICT_SRV_UAV" xml:space="preserve">
-    <value>The resource '{0}' is already bound as a unordered access view in slot {1}. Please unbind the unordered access view before assigning it to a {2}.</value>
+    <value>The resource '{0}' is already bound as an unordered access view in slot {1}. Please unbind the unordered access view before assigning it to a {2}.</value>
   </data>
   <data name="GORGFX_ERR_CONFLICT_UAV_RTV" xml:space="preserve">
     <value>Cannot bind the '{0}' resource as an unordered access view because it is already bound as a render target view at slot {1}.</value>

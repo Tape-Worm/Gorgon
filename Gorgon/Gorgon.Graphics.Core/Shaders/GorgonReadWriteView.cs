@@ -31,7 +31,7 @@ using D3D11 = SharpDX.Direct3D11;
 namespace Gorgon.Graphics.Core
 {
     /// <summary>
-    /// An unordered access view for a <see cref="GorgonGraphicsResource"/>.
+    /// An readable and writable (unordered access) view for a <see cref="GorgonGraphicsResource"/>.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -60,7 +60,7 @@ namespace Gorgon.Graphics.Core
     /// <seealso cref="GorgonComputeShader"/>
     /// <seealso cref="GorgonPixelShader"/>
     /// <seealso cref="GorgonDrawCallCommon"/>
-    public abstract class GorgonUnorderedAccessView
+    public abstract class GorgonReadWriteView
         : GorgonResourceView
     {
         #region Properties.
@@ -182,7 +182,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="resource">The resource to bind to the view.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="resource"/> parameter is <b>null</b>.</exception>
-        protected GorgonUnorderedAccessView(GorgonGraphicsResource resource)
+        protected GorgonReadWriteView(GorgonGraphicsResource resource)
             : base(resource)
         {
         }

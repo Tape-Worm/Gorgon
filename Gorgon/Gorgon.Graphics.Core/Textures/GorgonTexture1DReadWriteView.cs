@@ -40,11 +40,11 @@ using D3D11 = SharpDX.Direct3D11;
 namespace Gorgon.Graphics.Core
 {
     /// <summary>
-    /// Provides an unordered access view for a <see cref="GorgonTexture1D"/>.
+    /// Provides a read/write (unordered access) view for a <see cref="GorgonTexture1D"/>.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This type of view allows for unordered access to a <see cref="GorgonTexture1D"/>. The texture must have been created with the <see cref="TextureBinding.UnorderedAccess"/> flag in its 
+    /// This type of view allows for unordered access to a <see cref="GorgonTexture1D"/>. The texture must have been created with the <see cref="TextureBinding.ReadWriteView"/> flag in its 
     /// <see cref="IGorgonTexture1DInfo.Binding"/> property.
     /// </para>
     /// <para>
@@ -62,8 +62,8 @@ namespace Gorgon.Graphics.Core
     /// <seealso cref="GorgonPixelShader"/>
     /// <seealso cref="GorgonDrawCallCommon"/>
     /// <seealso cref="GorgonMultisampleInfo"/>
-    public sealed class GorgonTexture1DUav
-        : GorgonUnorderedAccessView, IGorgonTexture1DInfo
+    public sealed class GorgonTexture1DReadWriteView
+        : GorgonReadWriteView, IGorgonTexture1DInfo
     {
         #region Variables.
         // Rectangles used for clearing the view.
@@ -265,16 +265,16 @@ namespace Gorgon.Graphics.Core
         /// <param name="graphics">The graphics interface to use when creating the target.</param>
         /// <param name="info">The information about the texture.</param>
         /// <param name="initialData">[Optional] Initial data used to populate the texture.</param>
-        /// <returns>A new <see cref="GorgonTexture1DUav"/>.</returns>
+        /// <returns>A new <see cref="GorgonTexture1DReadWriteView"/>.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, or <paramref name="info"/> parameter is <b>null</b>.</exception>
         /// <remarks>
         /// <para>
-        /// This is a convenience method that will create a <see cref="GorgonTexture1D"/> and a <see cref="GorgonTexture1DUav"/> as a single object that users can use to apply a texture as an unordered  
+        /// This is a convenience method that will create a <see cref="GorgonTexture1D"/> and a <see cref="GorgonTexture1DReadWriteView"/> as a single object that users can use to apply a texture as an unordered  
         /// access resource. This helps simplify creation of a texture by executing some prerequisite steps on behalf of the user.
         /// </para>
         /// <para>
-        /// Since the <see cref="GorgonTexture1D"/> created by this method is linked to the <see cref="GorgonTexture1DUav"/> returned, disposal of either one will dispose of the other on your behalf. If 
-        /// the user created a <see cref="GorgonTexture1DUav"/> from the <see cref="GorgonTexture1D.GetUnorderedAccessView"/> method on the <see cref="GorgonTexture1D"/>, then it's assumed the user knows 
+        /// Since the <see cref="GorgonTexture1D"/> created by this method is linked to the <see cref="GorgonTexture1DReadWriteView"/> returned, disposal of either one will dispose of the other on your behalf. If 
+        /// the user created a <see cref="GorgonTexture1DReadWriteView"/> from the <see cref="GorgonTexture1D.GetReadWriteView"/> method on the <see cref="GorgonTexture1D"/>, then it's assumed the user knows 
         /// what they are doing and will handle the disposal of the texture and view on their own.
         /// </para>
         /// <para>
@@ -283,7 +283,7 @@ namespace Gorgon.Graphics.Core
         /// </para>
         /// </remarks>
         /// <seealso cref="GorgonTexture1D"/>
-        public static GorgonTexture1DUav CreateTexture(GorgonGraphics graphics, IGorgonTexture1DInfo info, IGorgonImage initialData = null)
+        public static GorgonTexture1DReadWriteView CreateTexture(GorgonGraphics graphics, IGorgonTexture1DInfo info, IGorgonImage initialData = null)
         {
             if (graphics == null)
             {
@@ -298,8 +298,8 @@ namespace Gorgon.Graphics.Core
             var newInfo = new GorgonTexture1DInfo(info)
                           {
                               Usage = info.Usage == ResourceUsage.Staging ? ResourceUsage.Default : info.Usage,
-                              Binding = (((info.Binding & TextureBinding.UnorderedAccess) != TextureBinding.UnorderedAccess)
-                                             ? (info.Binding | TextureBinding.UnorderedAccess)
+                              Binding = (((info.Binding & TextureBinding.ReadWriteView) != TextureBinding.ReadWriteView)
+                                             ? (info.Binding | TextureBinding.ReadWriteView)
                                              : info.Binding) & ~(TextureBinding.DepthStencil | TextureBinding.RenderTarget)
                           };
 
@@ -314,7 +314,7 @@ namespace Gorgon.Graphics.Core
                                                                         Name = newInfo.Name
                                                                     });
 
-            GorgonTexture1DUav result = texture.GetUnorderedAccessView();
+            GorgonTexture1DReadWriteView result = texture.GetReadWriteView();
             result.OwnsResource = true;
 
             return result;
@@ -328,13 +328,13 @@ namespace Gorgon.Graphics.Core
         /// <param name="codec">The codec that is used to decode the the data in the stream.</param>
         /// <param name="size">[Optional] The size of the image in the stream, in bytes.</param>
         /// <param name="options">[Optional] Options used to further define the texture.</param>
-        /// <returns>A new <see cref="GorgonTexture1DUav"/></returns>
+        /// <returns>A new <see cref="GorgonTexture1DReadWriteView"/></returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, <paramref name="stream"/>, or the <paramref name="codec"/> parameter is <b>null</b>.</exception>
         /// <exception cref="IOException">Thrown if the <paramref name="stream"/> is write only.</exception>
         /// <exception cref="EndOfStreamException">Thrown if reading the image would move beyond the end of the <paramref name="stream"/>.</exception>
         /// <remarks>
         /// <para>
-        /// This will load an <see cref="IGorgonImage"/> from a <paramref name="stream"/> and put it into a <see cref="GorgonTexture1D"/> object and return a <see cref="GorgonTexture1DUav"/>.
+        /// This will load an <see cref="IGorgonImage"/> from a <paramref name="stream"/> and put it into a <see cref="GorgonTexture1D"/> object and return a <see cref="GorgonTexture1DReadWriteView"/>.
         /// </para>
         /// <para>
         /// If the <paramref name="size"/> option is specified, then the method will read from the stream up to that number of bytes, so it is up to the user to provide an accurate size. If it is omitted 
@@ -359,12 +359,12 @@ namespace Gorgon.Graphics.Core
         /// </list>
         /// </para>
         /// <para>
-        /// Since the <see cref="GorgonTexture1D"/> created by this method is linked to the <see cref="GorgonTexture1DUav"/> returned, disposal of either one will dispose of the other on your behalf. If 
-        /// the user created a <see cref="GorgonTexture1DUav"/> from the <see cref="GorgonTexture1D.GetShaderResourceView"/> method on the <see cref="GorgonTexture1D"/>, then it's assumed the user knows 
+        /// Since the <see cref="GorgonTexture1D"/> created by this method is linked to the <see cref="GorgonTexture1DReadWriteView"/> returned, disposal of either one will dispose of the other on your behalf. If 
+        /// the user created a <see cref="GorgonTexture1DReadWriteView"/> from the <see cref="GorgonTexture1D.GetShaderResourceView"/> method on the <see cref="GorgonTexture1D"/>, then it's assumed the user knows 
         /// what they are doing and will handle the disposal of the texture and view on their own.
         /// </para>
         /// </remarks>
-        public static GorgonTexture1DUav FromStream(GorgonGraphics graphics, Stream stream, IGorgonImageCodec codec, long? size = null, GorgonTextureLoadOptions options = null)
+        public static GorgonTexture1DReadWriteView FromStream(GorgonGraphics graphics, Stream stream, IGorgonImageCodec codec, long? size = null, GorgonTextureLoadOptions options = null)
         {
             if (graphics == null)
             {
@@ -399,7 +399,7 @@ namespace Gorgon.Graphics.Core
             using (IGorgonImage image = codec.LoadFromStream(stream, size))
             {
                 GorgonTexture1D texture = image.ToTexture1D(graphics, options);
-                GorgonTexture1DUav view =  texture.GetUnorderedAccessView();
+                GorgonTexture1DReadWriteView view =  texture.GetReadWriteView();
                 view.OwnsResource = true;
                 return view;
             }
@@ -412,12 +412,12 @@ namespace Gorgon.Graphics.Core
         /// <param name="filePath">The path to the file.</param>
         /// <param name="codec">The codec that is used to decode the the data in the stream.</param>
         /// <param name="options">[Optional] Options used to further define the texture.</param>
-        /// <returns>A new <see cref="GorgonTexture1DUav"/></returns>
+        /// <returns>A new <see cref="GorgonTexture1DReadWriteView"/></returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, <paramref name="filePath"/>, or the <paramref name="codec"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="filePath"/> parameter is empty.</exception>
         /// <remarks>
         /// <para>
-        /// This will load an <see cref="IGorgonImage"/> from a file on disk and put it into a <see cref="GorgonTexture1D"/> object and return a <see cref="GorgonTexture1DUav"/>.
+        /// This will load an <see cref="IGorgonImage"/> from a file on disk and put it into a <see cref="GorgonTexture1D"/> object and return a <see cref="GorgonTexture1DReadWriteView"/>.
         /// </para>
         /// <para>
         /// If specified, the <paramref name="options"/>parameter will define how Gorgon and shaders should handle the texture.  The <see cref="GorgonTextureLoadOptions"/> type contains the following:
@@ -438,12 +438,12 @@ namespace Gorgon.Graphics.Core
         /// </list>
         /// </para>
         /// <para>
-        /// Since the <see cref="GorgonTexture1D"/> created by this method is linked to the <see cref="GorgonTexture1DUav"/> returned, disposal of either one will dispose of the other on your behalf. If 
-        /// the user created a <see cref="GorgonTexture1DUav"/> from the <see cref="GorgonTexture1D.GetShaderResourceView"/> method on the <see cref="GorgonTexture1D"/>, then it's assumed the user knows 
+        /// Since the <see cref="GorgonTexture1D"/> created by this method is linked to the <see cref="GorgonTexture1DReadWriteView"/> returned, disposal of either one will dispose of the other on your behalf. If 
+        /// the user created a <see cref="GorgonTexture1DReadWriteView"/> from the <see cref="GorgonTexture1D.GetShaderResourceView"/> method on the <see cref="GorgonTexture1D"/>, then it's assumed the user knows 
         /// what they are doing and will handle the disposal of the texture and view on their own.
         /// </para>
         /// </remarks>
-        public static GorgonTexture1DUav FromFile(GorgonGraphics graphics, string filePath, IGorgonImageCodec codec, GorgonTextureLoadOptions options = null)
+        public static GorgonTexture1DReadWriteView FromFile(GorgonGraphics graphics, string filePath, IGorgonImageCodec codec, GorgonTextureLoadOptions options = null)
         {
             if (graphics == null)
             {
@@ -468,7 +468,7 @@ namespace Gorgon.Graphics.Core
             using (IGorgonImage image = codec.LoadFromFile(filePath))
             {
                 GorgonTexture1D texture = image.ToTexture1D(graphics, options);
-                GorgonTexture1DUav view = texture.GetUnorderedAccessView();
+                GorgonTexture1DReadWriteView view = texture.GetReadWriteView();
                 view.OwnsResource = true;
                 return view;
             }
@@ -477,7 +477,7 @@ namespace Gorgon.Graphics.Core
 
         #region Constructor/Finalizer.
         /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonTexture1DUav"/> class.
+        /// Initializes a new instance of the <see cref="GorgonTexture1DReadWriteView"/> class.
         /// </summary>
         /// <param name="texture">The texture to view.</param>
         /// <param name="format">The format for the view.</param>
@@ -486,7 +486,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="arrayIndex">The first array index to view.</param>
         /// <param name="arrayCount">The number of array indices to view.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="texture"/>, or the <paramref name="formatInfo"/> parameter is <b>null</b>.</exception>
-        internal GorgonTexture1DUav(GorgonTexture1D texture,
+        internal GorgonTexture1DReadWriteView(GorgonTexture1D texture,
                                   BufferFormat format,
                                   GorgonFormatInfo formatInfo,
                                   int firstMipLevel,

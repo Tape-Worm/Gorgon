@@ -86,6 +86,35 @@ namespace Gorgon.Graphics.Core
 		{
 			Array.Clear(Native, 0, Native.Length);
 		}
+
+        /// <summary>
+        /// Function to find the index of a <see cref="GorgonStreamOutBinding"/> with the specified buffer.
+        /// </summary>
+        /// <param name="buffer">The buffer to look up.</param>
+        /// <returns>The index of the <see cref="GorgonStreamOutBinding"/>, or -1 if not found.</returns>
+        /// <remarks>
+        /// <para>
+        /// For the sake of efficiency, this checks the dirty items in the list only.
+        /// </para>
+        /// </remarks>
+	    internal int IndexOf(GorgonGraphicsResource buffer)
+        {
+            (int start, int count) = GetDirtyItems(true);
+            
+            for (int i = 0; i < count; ++i)
+            {
+                GorgonStreamOutBinding binding = BackingArray[i + start];
+
+                if (binding.Buffer != buffer)
+                {
+                    continue;
+                }
+
+                return i + start;
+            }
+
+            return -1;
+        }
 		#endregion
 
 		#region Constructor

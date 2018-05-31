@@ -299,14 +299,14 @@ namespace Gorgon.Graphics.Example
 	        Transform(0.5f);
 	        _graphics.Submit(_drawCall2);
 	        //for (int i = 0; i < 100000; ++i)
-	        //{
+	        {
 	            Transform(0);
 	            _graphics.Submit(_drawCall);
-	        //}
+	        }
 
 	        // Send data into the output buffers.
 	        _graphics.Submit(_drawCallSo);
-            _graphics.SubmitStreamOut(_soCall);
+	        _graphics.SubmitStreamOut(_soCall);
 
 	        _yRot += GorgonTiming.Delta * 45.0f;
 

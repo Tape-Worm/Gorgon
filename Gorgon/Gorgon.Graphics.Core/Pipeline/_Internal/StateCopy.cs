@@ -82,6 +82,29 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
+        /// Function to copy unordered access resource views.
+        /// </summary>
+        /// <param name="destStates">The destination unordered access views.</param>
+        /// <param name="srcStates">The unordered access views to copy.</param>
+        /// <param name="startSlot">The slot to start copying into.</param>
+        public static void CopyReadWriteViews(GorgonReadWriteViewBindings destStates, IReadOnlyList<GorgonReadWriteViewBinding> srcStates, int startSlot)
+        {
+            destStates.Clear();
+
+            if (srcStates == null)
+            {
+                return;
+            }
+
+            int length = srcStates.Count.Min(GorgonReadWriteViewBindings.MaximumReadWriteViewCount - startSlot);
+
+            for (int i = 0; i < length; ++i)
+            {
+                destStates[i + startSlot] = srcStates[i];
+            }
+        }
+
+        /// <summary>
         /// Function to copy samplers.
         /// </summary>
         /// <param name="destStates">The destination sampler states.</param>

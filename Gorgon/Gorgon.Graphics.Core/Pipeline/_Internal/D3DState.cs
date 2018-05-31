@@ -100,6 +100,10 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         StreamOutBuffers = 0x4000,
         /// <summary>
+        /// General unordered access views were modified.
+        /// </summary>
+        Uavs = 0x8000,
+        /// <summary>
         /// Sampler state has changed.
         /// </summary>
         PsSamplers = 0x1000_0000_0000,
@@ -172,6 +176,10 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         CsResourceViews = 0x2000_0000_0000_0000,
         /// <summary>
+        /// Unordered access views have changed.
+        /// </summary>
+        CsUavs = 0x4000_0000_0000_0000,
+        /// <summary>
         /// All pipeline states.
         /// </summary>
         AllPipelineState = RasterState 
@@ -191,6 +199,7 @@ namespace Gorgon.Graphics.Core
               | InputLayout 
               | IndexBuffer 
               | Topology 
+              | Uavs
               | PsSamplers
               | VsSamplers
               | GsSamplers
@@ -208,7 +217,8 @@ namespace Gorgon.Graphics.Core
               | GsResourceViews
               | DsResourceViews
               | HsResourceViews
-              | CsResourceViews              
+              | CsResourceViews
+              | CsUavs
               | AllPipelineState
     }
 
@@ -221,6 +231,24 @@ namespace Gorgon.Graphics.Core
         /// Property to return the stream out bindings.
         /// </summary>
         public GorgonStreamOutBindings StreamOutBindings
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to return the unordered access views.
+        /// </summary>
+        public GorgonReadWriteViewBindings ReadWriteViews
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to return the compute shader unordered access views.
+        /// </summary>
+        public GorgonReadWriteViewBindings CsReadWriteViews
         {
             get;
             set;

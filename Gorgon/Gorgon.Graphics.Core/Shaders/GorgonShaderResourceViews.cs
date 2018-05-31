@@ -253,35 +253,29 @@ namespace Gorgon.Graphics.Core
 		}
 
         /// <summary>
-        /// Function to copy the dirty entries for this array into the specified array.
+        /// Function to find the index of the resource bound to a shader resource view.
         /// </summary>
-        /// <param name="array">The array that will receive the dirty entries.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="array"/> parameter is <b>null</b>.</exception>
-	    public void CopyDirty(GorgonShaderResourceViews array)
+        /// <param name="resource">The resource to look up.</param>
+        /// <returns>The index of the shader resource view, or -1 if not found.</returns>
+        internal int IndexOf(GorgonGraphicsResource resource)
         {
-            if (array == null)
-            {
-                throw new ArgumentNullException(nameof(array));
-            }
-
-            // Nothing to copy.
             if (_changedIndices.Count == 0)
             {
-                return;
+                return -1;
             }
 
-            // Find all the dirty entries (if we haven't already).
-            if (_dirtyItems.Count == 0)
+            for (int i = 0; i < _changedIndices.Count; ++i)
             {
-                GetDirtyItems(true);
+                int index = _changedIndices[i];
+                GorgonGraphicsResource viewResource = _backingArray[index]?.Resource;
+
+                if (viewResource == resource)
+                {
+                    return index;
+                }
             }
 
-            int end = (_dirtyItems.Count + _dirtyItems.Start).Min(array.Length);
-
-            for (int i = _dirtyItems.Start; i < end; ++i)
-            {
-                array[i] = _backingArray[i];
-            }
+            return -1;
         }
 
 		/// <summary>Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1" /> to an <see cref="T:System.Array" />, starting at a particular <see cref="T:System.Array" /> index.</summary>

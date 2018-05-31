@@ -113,6 +113,11 @@ namespace Gorgon.Graphics.Core
 
         #region Properties.
 	    /// <summary>
+	    /// Property to return the bind flags used for the D3D 11 resource.
+	    /// </summary>
+	    internal override D3D11.BindFlags BindFlags => Native?.Description.BindFlags ?? D3D11.BindFlags.None;
+
+	    /// <summary>
 	    /// Property to return whether or not the user has requested that the buffer be readable from the CPU.
 	    /// </summary>
 	    public override bool IsCpuReadable => Usage == ResourceUsage.Staging;
