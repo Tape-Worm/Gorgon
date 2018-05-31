@@ -27,7 +27,7 @@
 namespace Gorgon.Graphics.Core
 {
 	/// <summary>
-	/// A draw call that submits data from a vertex buffer and uses indexing from an index buffer to reference the vertices.
+	/// A instanced draw call that submits data from a vertex buffer and uses indexing from an index buffer to reference the vertices.
 	/// </summary>
 	/// <remarks>
 	/// <para>
@@ -38,7 +38,7 @@ namespace Gorgon.Graphics.Core
 	/// This type supports instancing which allows the GPU to draw the same item multiple times using an instance buffer.
 	/// </para>
 	/// </remarks>
-	public class GorgonDrawIndexInstanceCall
+	public class GorgonInstancedIndexCall
 		: GorgonDrawCallCommon
 	{
 	    /// <summary>
@@ -96,9 +96,9 @@ namespace Gorgon.Graphics.Core
 		}
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonDrawIndexInstanceCall"/> class.
+        /// Initializes a new instance of the <see cref="GorgonInstancedIndexCall"/> class.
         /// </summary>
-        internal GorgonDrawIndexInstanceCall()
+        internal GorgonInstancedIndexCall()
 	    {
             // Create from builder.
 	    }

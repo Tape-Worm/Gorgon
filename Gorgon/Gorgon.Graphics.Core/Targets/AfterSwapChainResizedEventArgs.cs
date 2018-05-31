@@ -1,7 +1,7 @@
 ﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,44 +20,40 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: May 31, 2018 1:14:58 PM
+// Created: July 9, 2017 4:32:41 PM
 // 
 #endregion
 
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using Gorgon.Graphics.Core;
+using System;
 using DX = SharpDX;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
-	/// <summary>
-	/// The vertex of the blitter used to blit textures to the current render target.
-	/// </summary>
-	[StructLayout(LayoutKind.Sequential, Pack = 1)]
-	internal struct BltVertex
-	{
-		/// <summary>
-		/// The size of the vertex, in bytes.
-		/// </summary>
-		public static readonly int Size = Unsafe.SizeOf<BltVertex>();
-
-		/// <summary>
-		/// The position of the vertex.
-		/// </summary>
-		[InputElement(0, "SV_POSITION")]
-		public DX.Vector4 Position;
-
+    /// <summary>
+    /// Event arguments for the <see cref="GorgonSwapChain.AfterSwapChainResized"/> event.
+    /// </summary>
+    public class AfterSwapChainResizedEventArgs
+        : EventArgs
+    {
+        #region Properties.
         /// <summary>
-        /// The color of the vertex.
+        /// Property to return the size of the swap chain backbuffers.
         /// </summary>
-        [InputElement(2, "COLOR")]
-	    public GorgonColor Color;
+        public DX.Size2 Size
+        {
+            get;
+        }
+        #endregion
 
-	    /// <summary>
-	    /// The texture coordinate for the vertex.
-	    /// </summary>
-	    [InputElement(1, "TEXCOORD")]
-	    public DX.Vector2 Uv;
-	}
+        #region Constructor/Finalizer.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BeforeSwapChainResizedEventArgs"/> class.
+        /// </summary>
+        /// <param name="newSize">The new size.</param>
+        public AfterSwapChainResizedEventArgs(DX.Size2 newSize)
+        {
+            Size = newSize;
+        }
+        #endregion
+    }
 }

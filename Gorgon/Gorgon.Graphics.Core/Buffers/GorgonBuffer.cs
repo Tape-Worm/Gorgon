@@ -595,8 +595,9 @@ namespace Gorgon.Graphics.Core
             elementCount = elementCount.Min(totalElementCount - startElement).Max(1);
 
             BufferShaderViewKey key = new BufferShaderViewKey(startElement, elementCount, format);
+            GorgonBufferReadWriteView result = GetReadWriteView<GorgonBufferReadWriteView>(key);
 
-            if (GetReadWriteView(key) is GorgonBufferReadWriteView result)
+            if (result != null)
             {
                 return result;
             }
@@ -659,8 +660,9 @@ namespace Gorgon.Graphics.Core
             elementCount = elementCount.Min(totalElementCount - startElement).Max(1);
 
             BufferShaderViewKey key = new BufferShaderViewKey(startElement, elementCount, (int)uavType);
+            GorgonStructuredReadWriteView result = GetReadWriteView<GorgonStructuredReadWriteView>(key);
 
-            if (GetReadWriteView(key) is GorgonStructuredReadWriteView result)
+            if (result != null)
             {
                 return result;
             }
@@ -787,8 +789,9 @@ namespace Gorgon.Graphics.Core
             elementCount = elementCount.Min(totalElementCount - startElement).Max(1);
 
             BufferShaderViewKey key = new BufferShaderViewKey(startElement, elementCount, elementType);
+            GorgonRawReadWriteView result = GetReadWriteView<GorgonRawReadWriteView>(key);
 
-            if (GetReadWriteView(key) is GorgonRawReadWriteView result)
+            if (result != null)
             {
                 return result;
             }

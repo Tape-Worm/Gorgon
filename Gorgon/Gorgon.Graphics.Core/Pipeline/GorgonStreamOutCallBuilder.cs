@@ -31,8 +31,9 @@ using Gorgon.Graphics.Core.Properties;
 namespace Gorgon.Graphics.Core
 {
     /// <summary>
-    /// A builder used to create <see cref="GorgonStreamOutCall"/> objects.
+    /// A builder used to create stream out draw call objects.
     /// </summary>
+    /// <seealso cref="GorgonStreamOutCall"/>
     public sealed class GorgonStreamOutCallBuilder
     {
         #region Variables.
@@ -235,10 +236,20 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Function to return the draw call.
         /// </summary>
+        /// <param name="allocator">[Optional] The allocator used to create an instance of the object</param>
         /// <returns>The draw call created or updated by this builder.</returns>
-        public GorgonStreamOutCall Build()
+        /// <remarks>
+        /// <para>
+        /// Using an <paramref name="allocator"/> can provide different strategies when building draw calls.  If omitted, the draw call will be created using the standard <see langword="new"/> keyword.
+        /// </para>
+        /// <para>
+        /// A custom allocator can be beneficial because it allows us to use a pool for allocating the objects, and thus allows for recycling of objects. This keeps the garbage collector happy by keeping objects
+        /// around for as long as we need them, instead of creating objects that can potentially end up in the large object heap or in Gen 2.
+        /// </para>
+        /// </remarks>
+        public GorgonStreamOutCall Build(GorgonStreamOutCallPoolAllocator allocator = null)
         {
-            var final = new GorgonStreamOutCall();
+            var final = allocator == null ? new GorgonStreamOutCall() : allocator.Allocate();
             final.SetupConstantBuffers();
             final.SetupSamplers();
             final.SetupViews();
@@ -263,7 +274,16 @@ namespace Gorgon.Graphics.Core
             // Copy over uavs.
             StateCopy.CopyReadWriteViews(final.D3DState.ReadWriteViews, _workerCall.D3DState.ReadWriteViews, 0);
 
-            final.PipelineState = new GorgonStreamOutPipelineState(_workerCall.PipelineState);
+            // If we didn't specify an allocator, or we didn't initialize the pipeline state, then create a new copy.
+            // Otherwise, it'd defeat the purpose of the allocator if we just created a new state every time.
+            if ((allocator == null) || (final.PipelineState == null))
+            {
+                final.PipelineState = new GorgonStreamOutPipelineState(_workerCall.D3DState.PipelineState);
+            }
+            else
+            {
+                _workerCall.D3DState.PipelineState.CopyTo(final.D3DState.PipelineState);
+            }
 
             return final;
         }

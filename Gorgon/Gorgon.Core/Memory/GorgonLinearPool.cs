@@ -50,8 +50,6 @@ namespace Gorgon.Memory
 		where T : class
 	{
 		#region Variables.
-        // The callback method used to allocate an object in the pool.
-	    private readonly Func<T> _itemAllocator;
 		// The most current item in the heap.
 		private int _currentItem = -1;
         // The items in the pool.
@@ -59,6 +57,15 @@ namespace Gorgon.Memory
 		#endregion
 
 		#region Properties.
+	    /// <summary>
+	    /// Property to set or return the allocator to use when creating new instances of an object.
+	    /// </summary>
+	    protected Func<T> ItemAllocator
+	    {
+	        get;
+	        set;
+	    }
+
 		/// <summary>
 		/// Property to return the number of items available to the allocator.
 		/// </summary>
@@ -110,9 +117,9 @@ namespace Gorgon.Memory
 
 		    T item = _items[nextIndex];
 
-		    if ((_itemAllocator != null) && (item == null))
+		    if ((ItemAllocator != null) && (item == null))
 		    {
-		        item = _items[nextIndex] = _itemAllocator();
+		        item = _items[nextIndex] = ItemAllocator();
 		    }
 
 		    if (item != null)
@@ -174,7 +181,7 @@ namespace Gorgon.Memory
 
 			TotalSize = objectCount;
 			_items = new T[objectCount];
-		    _itemAllocator = allocator;
+		    ItemAllocator = allocator;
 		}
 		#endregion
 	}

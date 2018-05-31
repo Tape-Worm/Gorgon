@@ -252,6 +252,70 @@ namespace Gorgon.Graphics.Core
 	                        };
 	    }
 
+	    /// <summary>
+	    /// Function to copy the contents of a pipeline state to another pipeline state.
+	    /// </summary>
+	    /// <param name="pipelineState">The pipeline state to copy.</param>
+	    internal void CopyTo(GorgonPipelineState pipelineState)
+	    {
+	        if (RasterState != null)
+	        {
+	            if (pipelineState.RasterState == null)
+	            {
+	                pipelineState.RasterState = new GorgonRasterState();
+	            }
+
+	            pipelineState.RasterState.IsAntialiasedLineEnabled = RasterState.IsAntialiasedLineEnabled;
+	            pipelineState.RasterState.CullMode = RasterState.CullMode;
+	            pipelineState.RasterState.DepthBias = RasterState.DepthBias;
+	            pipelineState.RasterState.DepthBiasClamp = RasterState.DepthBiasClamp;
+	            pipelineState.RasterState.IsDepthClippingEnabled = RasterState.IsDepthClippingEnabled;
+	            pipelineState.RasterState.FillMode = RasterState.FillMode;
+	            pipelineState.RasterState.ForcedReadWriteViewSampleCount = RasterState.ForcedReadWriteViewSampleCount;
+	            pipelineState.RasterState.IsFrontCounterClockwise = RasterState.IsFrontCounterClockwise;
+	            pipelineState.RasterState.IsMultisamplingEnabled = RasterState.IsMultisamplingEnabled;
+	            pipelineState.RasterState.RwScissorRectangles.AddRange(RasterState.RwScissorRectangles);
+	            pipelineState.RasterState.SlopeScaledDepthBias = RasterState.SlopeScaledDepthBias;
+	            pipelineState.RasterState.UseConservativeRasterization = RasterState.UseConservativeRasterization;
+	        }
+
+	        if (DepthStencilState != null)
+	        {
+	            if (pipelineState.DepthStencilState == null)
+	            {
+	                pipelineState.DepthStencilState = new GorgonDepthStencilState();
+	            }
+
+	            pipelineState.DepthStencilState.BackFaceStencilOp.Comparison = DepthStencilState.BackFaceStencilOp.Comparison;
+	            pipelineState.DepthStencilState.BackFaceStencilOp.DepthFailOperation = DepthStencilState.BackFaceStencilOp.DepthFailOperation;
+	            pipelineState.DepthStencilState.BackFaceStencilOp.FailOperation = DepthStencilState.BackFaceStencilOp.FailOperation;
+	            pipelineState.DepthStencilState.BackFaceStencilOp.PassOperation = DepthStencilState.BackFaceStencilOp.PassOperation;
+
+	            pipelineState.DepthStencilState.FrontFaceStencilOp.Comparison = DepthStencilState.FrontFaceStencilOp.Comparison;
+	            pipelineState.DepthStencilState.FrontFaceStencilOp.DepthFailOperation = DepthStencilState.FrontFaceStencilOp.DepthFailOperation;
+	            pipelineState.DepthStencilState.FrontFaceStencilOp.FailOperation = DepthStencilState.FrontFaceStencilOp.FailOperation;
+	            pipelineState.DepthStencilState.FrontFaceStencilOp.PassOperation = DepthStencilState.FrontFaceStencilOp.PassOperation;
+
+	            pipelineState.DepthStencilState.DepthComparison = DepthStencilState.DepthComparison;
+	            pipelineState.DepthStencilState.IsDepthWriteEnabled = DepthStencilState.IsDepthWriteEnabled;
+	            pipelineState.DepthStencilState.IsDepthEnabled = DepthStencilState.IsDepthEnabled;
+	            pipelineState.DepthStencilState.IsStencilEnabled = DepthStencilState.IsStencilEnabled;
+	            pipelineState.DepthStencilState.StencilReadMask = DepthStencilState.StencilReadMask;
+	            pipelineState.DepthStencilState.StencilWriteMask = DepthStencilState.StencilWriteMask;
+	        }
+
+	        pipelineState.IsIndependentBlendingEnabled = IsIndependentBlendingEnabled;
+	        pipelineState.IsAlphaToCoverageEnabled = IsAlphaToCoverageEnabled;
+	        pipelineState.PixelShader = PixelShader;
+	        pipelineState.VertexShader = VertexShader;
+	        pipelineState.GeometryShader = GeometryShader;
+	        pipelineState.DomainShader = DomainShader;
+	        pipelineState.HullShader = HullShader;
+	        pipelineState.ComputeShader = ComputeShader;
+	        pipelineState.PrimitiveType = PrimitiveType;
+            RwBlendStates.CopyTo(pipelineState.RwBlendStates);
+	    }
+
         /// <summary>
         /// Function to clear the pipeline state.
         /// </summary>

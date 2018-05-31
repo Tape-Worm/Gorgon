@@ -27,7 +27,7 @@
 namespace Gorgon.Graphics.Core
 {
 	/// <summary>
-	/// A basic draw call that submits data from a vertex buffer.
+	/// A basic instanced draw call that submits data from a vertex buffer.
 	/// </summary>
 	/// <remarks>
 	/// <para>
@@ -41,7 +41,7 @@ namespace Gorgon.Graphics.Core
 	/// This type does not support index buffers.
 	/// </para>
 	/// </remarks>
-	public class GorgonDrawInstanceCall
+	public class GorgonInstancedCall
 		: GorgonDrawCallCommon
 	{
 		/// <summary>
@@ -81,9 +81,9 @@ namespace Gorgon.Graphics.Core
 		}
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonDrawInstanceCall"/> class.
+        /// Initializes a new instance of the <see cref="GorgonInstancedCall"/> class.
         /// </summary>
-        internal GorgonDrawInstanceCall()
+        internal GorgonInstancedCall()
 	    {
             // Create from builder.
 	    }

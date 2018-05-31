@@ -300,8 +300,9 @@ namespace Gorgon.Graphics.Core
 	        elementCount = elementCount.Min(totalElementCount - startElement).Max(1);
 
 	        BufferShaderViewKey key = new BufferShaderViewKey(startElement, elementCount, format);
+	        GorgonIndexBufferReadWriteView result = GetReadWriteView<GorgonIndexBufferReadWriteView>(key);
 
-	        if (GetReadWriteView(key) is GorgonIndexBufferReadWriteView result)
+	        if (result != null)
 	        {
 	            return result;
 	        }

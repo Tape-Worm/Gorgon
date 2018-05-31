@@ -1331,10 +1331,16 @@ namespace Gorgon.Graphics.Core
 
             TextureViewKey key = new TextureViewKey(format, firstMipLevel, mipCount, arrayIndex, arrayCount);
 
-	        if (_cachedSrvs.TryGetValue(key, out GorgonTexture1DView view))
+	        if ((_cachedSrvs.TryGetValue(key, out GorgonTexture1DView view))
+                && (view.Native != null))
             {
                 return view;
             }
+
+	        if (view != null)
+	        {
+	            _cachedSrvs.Remove(key);
+	        }
 
             view = new GorgonTexture1DView(this, format, formatInfo, firstMipLevel, mipCount, arrayIndex, arrayCount);
 	        view.CreateNativeView();
@@ -1420,12 +1426,19 @@ namespace Gorgon.Graphics.Core
 
 	        TextureViewKey key = new TextureViewKey(format, firstMipLevel, _info.MipLevels, arrayIndex, arrayCount);
 
-	        if (_cachedReadWriteViews.TryGetValue(key, out GorgonTexture1DReadWriteView view))
+	        if ((_cachedReadWriteViews.TryGetValue(key, out GorgonTexture1DReadWriteView view))
+                && (view.Native != null))
 	        {
 	            return view;
 	        }
 
+	        if (view != null)
+	        {
+	            _cachedReadWriteViews.Remove(key);
+	        }
+
 	        view = new GorgonTexture1DReadWriteView(this, format, info, firstMipLevel, arrayIndex, arrayCount);
+
 	        view.CreateNativeView();
 	        _cachedReadWriteViews[key] = view;
 

@@ -116,6 +116,13 @@ namespace Gorgon.Graphics.Core
         {
             PipelineState = pipelineState;
         }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonStreamOutPipelineState"/> class.
+        /// </summary>
+        internal GorgonStreamOutPipelineState()
+        {
+        }
         #endregion
     }
 }

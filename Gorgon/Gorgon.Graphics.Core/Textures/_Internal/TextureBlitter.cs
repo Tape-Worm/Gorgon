@@ -25,9 +25,9 @@
 #endregion
 
 using System;
+using System.Threading;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Core.Properties;
-using Gorgon.Native;
 using DX = SharpDX;
 
 namespace Gorgon.Graphics
@@ -35,14 +35,9 @@ namespace Gorgon.Graphics
     /// <summary>
     /// Provides functionality for blitting a texture to the currently active <see cref="GorgonGraphics.RenderTargets">render target</see>.
     /// </summary>
-    internal class TextureBlitter
+    public class TextureBlitter
 		: IDisposable
 	{
-        #region Constants.
-        // The name for the blitter pipeline state cache group.
-	    private const string BlitterGroupName = "$$__GORGON_BLITTER_STATE_CACHE__$$xXx420XxXN00b";
-        #endregion
-
         #region Variables.
         // The graphics interface that owns this instance.
 	    private readonly GorgonGraphics _graphics;
@@ -57,19 +52,25 @@ namespace Gorgon.Graphics
 		// The bindings for the vertex buffer.
 		private GorgonVertexBufferBindings _vertexBufferBindings;
 		// World/view/projection matrix.
-		private GorgonConstantBuffer _wvpBuffer;
+		private GorgonConstantBufferView _wvpBuffer;
 		// Flag used to determine if the blitter is initialized or not.
-		private bool _initializedFlag;
+		private int _initializedFlag;
 		// The draw call used to blit the texture.
-		private readonly GorgonDrawCall _drawCall;
+		private GorgonDrawCall _drawCall;
+        // The builder used to create a draw call.
+	    private readonly GorgonDrawCallBuilder _drawCallBuilder = new GorgonDrawCallBuilder();
+	    // The builder used to create a draw call.
+	    private readonly GorgonPipelineStateBuilder _pipeStateBuilder;
+        // The allocator used to create/recycle draw calls.
+	    private readonly GorgonDrawCallPoolAllocator<GorgonDrawCall> _drawAllocator = new GorgonDrawCallPoolAllocator<GorgonDrawCall>(128);
+        // The allocator used to create/recycle pipeline states.
+        private readonly GorgonPipelineStatePoolAllocator _stateAllocator = new GorgonPipelineStatePoolAllocator(4096);
 		// Flag to indicate that the world/view/projection needs updating.
 		private bool _needsWvpUpdate = true;
         // The bounds of the most recent target.
 	    private DX.Rectangle? _targetBounds;
-	    // The default pipeline state if no custom pipeline state was set by the user.
-	    private GorgonPipelineStateInfo _pipelineStateInfo;
-        // The previously used states by this blitter.
-	    private readonly IGorgonPipelineStateGroup _cachedStates;
+        // The default pipeline state.
+	    private GorgonPipelineState _pipelineState;
 	    #endregion
 
         #region Methods.
@@ -94,83 +95,116 @@ namespace Gorgon.Graphics
 						   1.0f,
 						   out DX.Matrix projectionMatrix);
             
-            _graphics.SetValue(ref projectionMatrix, _wvpBuffer);
+            _wvpBuffer.Buffer.SetData(ref projectionMatrix);
 
-		    _targetBounds = target.Bounds;
+		    _targetBounds = new DX.Rectangle(0, 0, target.Width, target.Height);
             _needsWvpUpdate = false;
 		}
-
-        /// <summary>
-        /// Function to update the pipeline state for the blitter.
-        /// </summary>
-        /// <param name="pixelShader">The pixel shader used to override the default pixel shader.</param>
-        /// <param name="blendState">The blend state to apply.</param>
-	    private void UpdateState(GorgonPixelShader pixelShader, GorgonBlendState blendState)
-	    {
-            // Generate a key to pull the pipeline state from a local cache.
-	        long key = ((pixelShader.ID & 0xffff) << 12) | (blendState.ID & 0xfff);
-
-	        if (!_cachedStates.TryGetValue(key, out GorgonPipelineState state))
-	        {
-                // We don't have this guy cached, so pull it from the root cache.
-                state = _graphics.GetPipelineState(_pipelineStateInfo);
-                _cachedStates.Cache(key, state);
-            }
-
-	        _drawCall.PipelineState = state; 
-	    }
 
 		/// <summary>
 		/// Function to initialize the blitter.
 		/// </summary>
-		private void Initialize()
+		public void Initialize()
 		{
-			// We've been initialized, so leave.
-			if (_initializedFlag)
-			{
-				return;
-			}
+			try
+		    {
+		        // We've been initialized, so leave.
+		        if ((_vertexShader != null) || (Interlocked.Increment(ref _initializedFlag) > 1))
+		        {
+                    // Trap other threads until we're done initializing and then release them.
+		            while ((_vertexShader == null) && (_initializedFlag > 0))
+		            {
+                        var wait = new SpinWait();
+                        wait.SpinOnce();
+		            }
 
-			_vertexShader = GorgonShaderFactory.Compile<GorgonVertexShader>(_graphics, Resources.GraphicsShaders, "GorgonBltVertexShader", GorgonGraphics.IsDebugEnabled);
-			_pixelShader = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics, Resources.GraphicsShaders, "GorgonBltPixelShader", GorgonGraphics.IsDebugEnabled);
+                    return;
+		        }
 
-			_inputLayout = GorgonInputLayout.CreateUsingType<BltVertex>(_graphics, _vertexShader);
 
-			_vertexBufferBindings = new GorgonVertexBufferBindings(_inputLayout)
-				                    {
-					                    [0] = new GorgonVertexBufferBinding(new GorgonVertexBuffer("Gorgon Blitter Vertex Buffer",
-					                                                                                _graphics,
-					                                                                                new GorgonVertexBufferInfo
-					                                                                                {
-						                                                                                Usage = ResourceUsage.Dynamic,
-						                                                                                SizeInBytes = BltVertex.Size * 4
-					                                                                                }), BltVertex.Size)
-				                    };
+		        _vertexShader = GorgonShaderFactory.Compile<GorgonVertexShader>(_graphics,
+		                                                                        Resources.GraphicsShaders,
+		                                                                        "GorgonBltVertexShader",
+		                                                                        GorgonGraphics.IsDebugEnabled);
+		        _pixelShader = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics,
+		                                                                      Resources.GraphicsShaders,
+		                                                                      "GorgonBltPixelShader",
+		                                                                      GorgonGraphics.IsDebugEnabled);
 
-			_wvpBuffer = new GorgonConstantBuffer("Gorgon Blitter WVP Buffer", _graphics, new GorgonConstantBufferInfo
-				                                                                            {
-					                                                                            Usage = ResourceUsage.Dynamic,
-																								SizeInBytes = DX.Matrix.SizeInBytes
-				                                                                            });
+		        _inputLayout = GorgonInputLayout.CreateUsingType<BltVertex>(_graphics, _vertexShader);
 
-			// Finish initalizing the draw call.
-			_drawCall.VertexBuffers = _vertexBufferBindings;
-			_drawCall.VertexShaderConstantBuffers[0] = _wvpBuffer;
+		        _vertexBufferBindings = new GorgonVertexBufferBindings(_inputLayout)
+		                                {
+		                                    [0] = GorgonVertexBufferBinding.CreateVertexBuffer<BltVertex>(_graphics,
+		                                                                                                  4,
+		                                                                                                  ResourceUsage.Dynamic,
+		                                                                                                  bufferName: "Gorgon Blitter Vertex Buffer")
+		                                };
 
-			_pipelineStateInfo = new GorgonPipelineStateInfo
-			                        {
-			                            VertexShader = _vertexShader,
-			                            PixelShader = _pixelShader,
-			                            BlendStates = new[]
-			                                        {
-			                                            GorgonBlendState.NoBlending
-			                                        }
-			                        };
+		        _wvpBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics,
+		                                                                   new GorgonConstantBufferInfo("Gorgon Blitter WVP Buffer")
+		                                                                   {
+		                                                                       Usage = ResourceUsage.Dynamic,
+		                                                                       SizeInBytes = DX.Matrix.SizeInBytes
+		                                                                   });
 
-            UpdateState(_pixelShader, GorgonBlendState.NoBlending);
+		        // Finish initalizing the draw call.
+		        _pipelineState = _pipeStateBuilder.VertexShader(_vertexShader)
+		                                          .BlendState(GorgonBlendState.NoBlending)
+		                                          .DepthStencilState(GorgonDepthStencilState.Default)
+		                                          .PrimitiveType(PrimitiveType.TriangleStrip)
+		                                          .RasterState(GorgonRasterState.Default)
+		                                          .PixelShader(_pixelShader)
+		                                          .Build(_stateAllocator);
+                                 
+		        _drawCallBuilder.VertexBufferBindings(_inputLayout, _vertexBufferBindings)
+		                        .VertexRange(0, 4)
+		                        .SamplerState(ShaderType.Pixel, GorgonSamplerState.Default)
+		                        .PipelineState(_pipelineState)
+		                        .ConstantBuffer(ShaderType.Vertex, _wvpBuffer);
 
-			_initializedFlag = true;
+		    }
+		    finally
+		    {
+		        Interlocked.Decrement(ref _initializedFlag);
+		    }
 		}
+
+        /// <summary>
+        /// Function to return the appropriate draw call based on the states provided.
+        /// </summary>
+        /// <param name="texture">The texture to display.</param>
+        /// <param name="blendState">The blending state for the texture.</param>
+        /// <param name="samplerState">The sampler state for the texture.</param>
+        /// <param name="shader">The pixel shader to use.</param>
+        /// <param name="constantBuffers">Constant buffers for the pixel shader, if required.</param>
+	    private void GetDrawCall(GorgonTexture2DView texture, GorgonBlendState blendState, GorgonSamplerState samplerState, GorgonPixelShader shader, GorgonConstantBuffers constantBuffers)
+	    {
+	        if ((_drawCall != null) 
+	            && (_drawCall.PixelShader.ConstantBuffers.Equals(constantBuffers))
+                && (shader == _pixelShader)
+                && (_drawCall.PixelShader.Samplers[0].Equals(samplerState))
+                && (_pipelineState.BlendStates[0].Equals(blendState))
+	            && (_drawCall.PixelShader.ShaderResources[0] == texture))
+	        {
+                // This draw call hasn't changed, so return the previous one.
+	            return;
+	        }
+
+	        if (!_pipelineState.BlendStates[0].Equals(blendState))
+	        {
+	            _pipelineState = _pipeStateBuilder
+	                             .BlendState(blendState)
+	                             .Build(_stateAllocator);
+
+	            _drawCallBuilder.PipelineState(_pipelineState);
+	        }
+
+	        _drawCall = _drawCallBuilder.ConstantBuffers(ShaderType.Pixel, constantBuffers)
+	                                    .SamplerState(ShaderType.Pixel, samplerState)
+	                                    .ShaderResource(ShaderType.Pixel, texture)
+	                                    .Build(_drawAllocator);
+	    }
 
 	    /// <summary>
 	    /// Function to blit the texture to the specified render target.
@@ -184,7 +218,7 @@ namespace Gorgon.Graphics
 	    /// <param name="samplerState">The sampler state to apply.</param>
 	    /// <param name="pixelShader">The pixel shader used to override the default pixel shader.</param>
 	    /// <param name="pixelShaderConstants">The pixel shader constant buffers to use.</param>
-	    public void Blit(GorgonTextureView texture,
+	    public void Blit(GorgonTexture2DView texture,
 	                     DX.Rectangle destRect,
 	                     DX.Point sourceOffset,
 	                     GorgonColor color,
@@ -212,11 +246,7 @@ namespace Gorgon.Graphics
 
 	        UpdateProjection();
 
-	        // Apply the states.
-	        _drawCall.PixelShaderResourceViews[0] = texture;
-	        _drawCall.PixelShaderSamplers[0] = samplerState ?? GorgonSamplerState.Default;
-
-	        // Apply the correct pipeline state.
+	        // Set to default states if not provided.
 	        if (blendState == null)
 	        {
 	            blendState = GorgonBlendState.NoBlending;
@@ -227,28 +257,12 @@ namespace Gorgon.Graphics
 	            pixelShader = _pixelShader;
 	        }
 
-	        if ((_pipelineStateInfo.PixelShader != pixelShader)
-	            || (_pipelineStateInfo.BlendStates[0] != blendState))
+	        if (samplerState == null)
 	        {
-	            _pipelineStateInfo.PixelShader = pixelShader;
-	            _pipelineStateInfo.BlendStates[0] = blendState;
-	            UpdateState(_pipelineStateInfo.PixelShader, _pipelineStateInfo.BlendStates[0]);
+                samplerState = GorgonSamplerState.Default;
 	        }
 
-	        // Apply pixel shader constants as needed.
-	        if ((pixelShaderConstants != null) && (_pixelShader != _pipelineStateInfo.PixelShader))
-	        {
-	            ref (int Start, int Count) buffers = ref pixelShaderConstants.GetDirtyItems();
-
-	            for (int i = buffers.Start; i < buffers.Start + buffers.Count; ++i)
-	            {
-	                _drawCall.PixelShaderConstantBuffers[i] = pixelShaderConstants[i];
-	            }
-	        }
-	        else
-	        {
-	            _drawCall.PixelShaderConstantBuffers.Clear();
-	        }
+	        GetDrawCall(texture, blendState, samplerState, pixelShader, pixelShaderConstants);
 
 	        // Calculate position on the texture.
 	        DX.Vector2 topLeft = texture.Texture.ToTexel(sourceOffset);
@@ -281,7 +295,7 @@ namespace Gorgon.Graphics
 	                       };
 
 	        // Copy to the vertex buffer.
-            _graphics.SetDataRange(_vertices, _vertexBufferBindings[0].VertexBuffer);
+            _vertexBufferBindings[0].VertexBuffer.SetData(_vertices);
 	        _graphics.Submit(_drawCall);
 	    }
 
@@ -307,20 +321,7 @@ namespace Gorgon.Graphics
 		public TextureBlitter(GorgonGraphics graphics)
 		{
 			_graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
-
-		    _cachedStates = _graphics.GetPipelineStateGroup(BlitterGroupName);
-
-			_drawCall = new GorgonDrawCall
-			            {
-				            PrimitiveType = PrimitiveType.TriangleStrip,
-				            VertexCount = _vertices.Length,
-				            PixelShaderSamplers =
-				            {
-					            [0] = GorgonSamplerState.Default
-				            }
-			            };
-
-		    Initialize();
+            _pipeStateBuilder = new GorgonPipelineStateBuilder(_graphics);
         }
 	    #endregion
 	}

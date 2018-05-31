@@ -265,7 +265,18 @@ namespace Gorgon.Graphics.Core
         /// <returns>The shader resource view for the buffer, or <b>null</b> if no resource view is registered.</returns>
         internal GorgonShaderResourceView GetView(BufferShaderViewKey key)
         {
-            return _shaderViews.TryGetValue(key, out GorgonShaderResourceView view) ? view : null;
+            if ((_shaderViews.TryGetValue(key, out GorgonShaderResourceView view))
+                && (view.Native != null))
+            {
+                return view;
+            }
+
+            if (view != null)
+            {
+                _shaderViews.Remove(key);
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -283,9 +294,21 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="key">The key associated with the view.</param>
         /// <returns>The shader resource view for the buffer, or <b>null</b> if no resource view is registered.</returns>
-        internal GorgonReadWriteView GetReadWriteView(BufferShaderViewKey key)
+        internal T GetReadWriteView<T>(BufferShaderViewKey key)
+            where T : GorgonReadWriteView
         {
-            return _uavs.TryGetValue(key, out GorgonReadWriteView view) ? view : null;
+            if ((_uavs.TryGetValue(key, out GorgonReadWriteView view))
+                && (view.Native != null))
+            {
+                return view as T;
+            }
+
+            if (view != null)
+            {
+                _uavs.Remove(key);
+            }
+
+            return null;
         }
 
         /// <summary>

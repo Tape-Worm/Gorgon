@@ -20,44 +20,31 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: May 31, 2018 1:14:58 PM
+// Created: May 31, 2018 1:37:08 PM
 // 
 #endregion
 
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using Gorgon.Graphics.Core;
-using DX = SharpDX;
+using System;
+using Gorgon.Memory;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Graphics.Core
 {
-	/// <summary>
-	/// The vertex of the blitter used to blit textures to the current render target.
-	/// </summary>
-	[StructLayout(LayoutKind.Sequential, Pack = 1)]
-	internal struct BltVertex
-	{
-		/// <summary>
-		/// The size of the vertex, in bytes.
-		/// </summary>
-		public static readonly int Size = Unsafe.SizeOf<BltVertex>();
-
-		/// <summary>
-		/// The position of the vertex.
-		/// </summary>
-		[InputElement(0, "SV_POSITION")]
-		public DX.Vector4 Position;
-
+    /// <summary>
+    /// An allocator used to retrieve draw calls from a pool.
+    /// </summary>
+    public class GorgonStreamOutCallPoolAllocator
+        : GorgonRingPool<GorgonStreamOutCall>
+    {
+        #region Constructor/Finalizer.
         /// <summary>
-        /// The color of the vertex.
+        /// Initializes a new instance of the <see cref="GorgonLinearPool{T}"/> class.
         /// </summary>
-        [InputElement(2, "COLOR")]
-	    public GorgonColor Color;
-
-	    /// <summary>
-	    /// The texture coordinate for the vertex.
-	    /// </summary>
-	    [InputElement(1, "TEXCOORD")]
-	    public DX.Vector2 Uv;
-	}
+        /// <param name="objectCount">The number of total objects available to the allocator.</param>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="objectCount"/> parameter is less than 1.</exception>
+        public GorgonStreamOutCallPoolAllocator(int objectCount)
+            : base(objectCount, () => new GorgonStreamOutCall())
+        {
+        }
+        #endregion
+    }
 }

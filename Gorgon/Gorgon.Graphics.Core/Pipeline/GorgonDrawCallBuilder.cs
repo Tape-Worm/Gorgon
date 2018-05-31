@@ -26,12 +26,14 @@
 
 using System;
 using Gorgon.Graphics.Core.Properties;
+using Gorgon.Memory;
 
 namespace Gorgon.Graphics.Core
 {
     /// <summary>
-    /// A builder class used to create or update draw calls using fluent calls.
+    /// A builder class used to create basic draw calls using fluent calls.
     /// </summary>
+    /// <seealso cref="GorgonDrawCall"/>
     public class GorgonDrawCallBuilder
         : GorgonDrawCallBuilderCommon<GorgonDrawCallBuilder, GorgonDrawCall>
     {
@@ -39,10 +41,11 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Function to create a new draw call.
         /// </summary>
+        /// <param name="allocator">The allocator to use when creating draw call objects.</param>
         /// <returns>A new draw call.</returns>
-        protected override GorgonDrawCall OnCreate()
+        protected override GorgonDrawCall OnCreate(GorgonRingPool<GorgonDrawCall> allocator)
         {
-            return new GorgonDrawCall();
+            return allocator == null ? new GorgonDrawCall() : allocator.Allocate();
         }
 
         /// <summary>

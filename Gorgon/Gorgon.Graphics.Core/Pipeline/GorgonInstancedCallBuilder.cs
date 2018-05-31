@@ -26,23 +26,26 @@
 
 using System;
 using Gorgon.Graphics.Core.Properties;
+using Gorgon.Memory;
 
 namespace Gorgon.Graphics.Core
 {
     /// <summary>
-    /// A builder class used to create or update draw calls using fluent calls.
-    /// </summary>
-    public class GorgonDrawInstanceCallBuilder
-        : GorgonDrawCallBuilderCommon<GorgonDrawInstanceCallBuilder, GorgonDrawInstanceCall>
+    /// A builder class used to create instanced draw calls using fluent calls.
+    /// </summary
+    /// <seealso cref="GorgonInstancedCall"/>
+    public class GorgonInstancedCallBuilder
+        : GorgonDrawCallBuilderCommon<GorgonInstancedCallBuilder, GorgonInstancedCall>
     {
         #region Methods.
         /// <summary>
         /// Function to create a new draw call.
         /// </summary>
+        /// <param name="allocator">The allocator to use when creating draw call objects.</param>
         /// <returns>A new draw call.</returns>
-        protected override GorgonDrawInstanceCall OnCreate()
+        protected override GorgonInstancedCall OnCreate(GorgonRingPool<GorgonInstancedCall> allocator)
         {
-            return new GorgonDrawInstanceCall();
+            return allocator == null ? new GorgonInstancedCall() : allocator.Allocate();
         }
 
         /// <summary>
@@ -50,7 +53,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="drawCall">The draw call to copy from.</param>
         /// <returns>The fluent builder interface.</returns>
-        protected override GorgonDrawInstanceCallBuilder OnResetTo(GorgonDrawInstanceCall drawCall)
+        protected override GorgonInstancedCallBuilder OnResetTo(GorgonInstancedCall drawCall)
         {
             DrawCall.VertexStartIndex = drawCall.VertexStartIndex;
             DrawCall.VertexCountPerInstance = drawCall.VertexCountPerInstance;
@@ -63,7 +66,7 @@ namespace Gorgon.Graphics.Core
         /// Function to clear the builder to a default state.
         /// </summary>
         /// <returns>The fluent builder interface.</returns>
-        protected override GorgonDrawInstanceCallBuilder OnClear()
+        protected override GorgonInstancedCallBuilder OnClear()
         {
             DrawCall.StartInstanceIndex = DrawCall.InstanceCount = DrawCall.VertexStartIndex = DrawCall.VertexCountPerInstance = 0;
             return this;
@@ -74,7 +77,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="finalCopy">The object representing the finalized copy.</param>
         /// <returns></returns>
-        protected override void OnUpdate(GorgonDrawInstanceCall finalCopy)
+        protected override void OnUpdate(GorgonInstancedCall finalCopy)
         {
             finalCopy.VertexStartIndex = DrawCall.VertexStartIndex;
             finalCopy.VertexCountPerInstance = DrawCall.VertexCountPerInstance;
@@ -92,7 +95,7 @@ namespace Gorgon.Graphics.Core
         /// <para>-or-</para>
         /// <para>Thrown when the <paramref name="countPerInstance"/> parameter is less than 1.</para>
         /// </exception>
-        public GorgonDrawInstanceCallBuilder VertexRange(int index, int countPerInstance)
+        public GorgonInstancedCallBuilder VertexRange(int index, int countPerInstance)
         {
             if (index < 0)
             {
@@ -119,7 +122,7 @@ namespace Gorgon.Graphics.Core
         /// <para>-or-</para>
         /// <para>Thrown when the <paramref name="instanceCount"/> parameter is less than 1.</para>
         /// </exception>
-        public GorgonDrawInstanceCallBuilder InstanceRange(int startInstanceIndex, int instanceCount)
+        public GorgonInstancedCallBuilder InstanceRange(int startInstanceIndex, int instanceCount)
         {
             if (startInstanceIndex < 0)
             {
@@ -139,10 +142,10 @@ namespace Gorgon.Graphics.Core
 
         #region Constructor.
         /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonDrawInstanceCallBuilder"/> class.
+        /// Initializes a new instance of the <see cref="GorgonInstancedCallBuilder"/> class.
         /// </summary>
-        public GorgonDrawInstanceCallBuilder()  
-            : base(new GorgonDrawInstanceCall())
+        public GorgonInstancedCallBuilder()  
+            : base(new GorgonInstancedCall())
         {
 
         }

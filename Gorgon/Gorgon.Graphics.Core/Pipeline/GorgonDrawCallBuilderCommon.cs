@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using Gorgon.Graphics.Core.Properties;
+using Gorgon.Memory;
 
 namespace Gorgon.Graphics.Core
 {
@@ -53,8 +54,9 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Function to create a new draw call.
         /// </summary>
+        /// <param name="allocator">The allocator to use when creating draw call objects.</param>
         /// <returns>A new draw call.</returns>
-        protected abstract TDc OnCreate();
+        protected abstract TDc OnCreate(GorgonRingPool<TDc> allocator);
 
         /// <summary>
         /// Function to update the properties of the draw call from the working copy to the final copy.
@@ -474,10 +476,20 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Function to return the draw call.
         /// </summary>
+        /// <param name="allocator">[Optional] The allocator used to create an instance of the object</param>
         /// <returns>The draw call created or updated by this builder.</returns>
-        public TDc Build()
+        /// <remarks>
+        /// <para>
+        /// Using an <paramref name="allocator"/> can provide different strategies when building draw calls.  If omitted, the draw call will be created using the standard <see langword="new"/> keyword.
+        /// </para>
+        /// <para>
+        /// A custom allocator can be beneficial because it allows us to use a pool for allocating the objects, and thus allows for recycling of objects. This keeps the garbage collector happy by keeping objects
+        /// around for as long as we need them, instead of creating objects that can potentially end up in the large object heap or in Gen 2.
+        /// </para>
+        /// </remarks>
+        public TDc Build(GorgonRingPool<TDc> allocator = null)
         {
-            TDc final = OnCreate();
+            TDc final = OnCreate(allocator);
             final.SetupConstantBuffers();
             final.SetupSamplers();
             final.SetupViews();
@@ -522,7 +534,16 @@ namespace Gorgon.Graphics.Core
             // Copy over unordered access views.
             StateCopy.CopyReadWriteViews(final.D3DState.ReadWriteViews, DrawCall.D3DState.ReadWriteViews, 0);
 
-            final.D3DState.PipelineState = new GorgonPipelineState(DrawCall.PipelineState);
+            // If we didn't specify an allocator, or we didn't initialize the pipeline state, then create a new copy.
+            // Otherwise, it'd defeat the purpose of the allocator if we just created a new state every time.
+            if ((allocator == null) || (final.D3DState.PipelineState == null))
+            {
+                final.D3DState.PipelineState = new GorgonPipelineState(DrawCall.PipelineState);
+            }
+            else
+            {
+                DrawCall.PipelineState.CopyTo(final.D3DState.PipelineState);
+            }
 
             OnUpdate(final);
 

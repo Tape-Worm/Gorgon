@@ -26,23 +26,26 @@
 
 using System;
 using Gorgon.Graphics.Core.Properties;
+using Gorgon.Memory;
 
 namespace Gorgon.Graphics.Core
 {
     /// <summary>
-    /// A builder class used to create or update draw calls using fluent calls.
+    /// A builder class used to create instanced, indexed draw calls using fluent calls.
     /// </summary>
-    public class GorgonDrawIndexInstanceCallBuilder
-        : GorgonDrawCallBuilderCommon<GorgonDrawIndexInstanceCallBuilder, GorgonDrawIndexInstanceCall>
+    /// <seealso cref="GorgonInstancedIndexCall"/>
+    public class GorgonInstancedIndexedCallBuilder
+        : GorgonDrawCallBuilderCommon<GorgonInstancedIndexedCallBuilder, GorgonInstancedIndexCall>
     {
         #region Methods.
         /// <summary>
         /// Function to create a new draw call.
         /// </summary>
+        /// <param name="allocator">The allocator to use when creating draw call objects.</param>
         /// <returns>A new draw call.</returns>
-        protected override GorgonDrawIndexInstanceCall OnCreate()
+        protected override GorgonInstancedIndexCall OnCreate(GorgonRingPool<GorgonInstancedIndexCall> allocator)
         {
-            return new GorgonDrawIndexInstanceCall();
+            return allocator == null ? new GorgonInstancedIndexCall() : allocator.Allocate();
         }
 
         /// <summary>
@@ -50,7 +53,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="drawCall">The draw call to copy from.</param>
         /// <returns>The fluent builder interface.</returns>
-        protected override GorgonDrawIndexInstanceCallBuilder OnResetTo(GorgonDrawIndexInstanceCall drawCall)
+        protected override GorgonInstancedIndexedCallBuilder OnResetTo(GorgonInstancedIndexCall drawCall)
         {
             DrawCall.IndexStart = drawCall.IndexStart;
             DrawCall.BaseVertexIndex = drawCall.BaseVertexIndex;
@@ -65,7 +68,7 @@ namespace Gorgon.Graphics.Core
         /// Function to clear the draw call.
         /// </summary>
         /// <returns>The fluent builder interface.</returns>
-        protected override GorgonDrawIndexInstanceCallBuilder OnClear()
+        protected override GorgonInstancedIndexedCallBuilder OnClear()
         {
             DrawCall.IndexStart = 0;
             DrawCall.BaseVertexIndex = 0;
@@ -81,7 +84,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="finalCopy">The object representing the finalized copy.</param>
         /// <returns></returns>
-        protected override void OnUpdate(GorgonDrawIndexInstanceCall finalCopy)
+        protected override void OnUpdate(GorgonInstancedIndexCall finalCopy)
         {
             finalCopy.IndexStart = DrawCall.IndexStart;
             finalCopy.BaseVertexIndex = DrawCall.BaseVertexIndex;
@@ -102,7 +105,7 @@ namespace Gorgon.Graphics.Core
         /// <para>-or-</para>
         /// <para>Thrown when the <paramref name="indexCountPerInstance"/> parameter is less than 1.</para>
         /// </exception>
-        public GorgonDrawIndexInstanceCallBuilder IndexBuffer(GorgonIndexBuffer buffer, int indexStart, int indexCountPerInstance)
+        public GorgonInstancedIndexedCallBuilder IndexBuffer(GorgonIndexBuffer buffer, int indexStart, int indexCountPerInstance)
         {
             if (indexStart < 0)
             {
@@ -130,7 +133,7 @@ namespace Gorgon.Graphics.Core
         /// <para>-or-</para>
         /// <para>Thrown when the <paramref name="indexCountPerInstance"/> parameter is less than 1.</para>
         /// </exception>
-        public GorgonDrawIndexInstanceCallBuilder IndexRange(int indexStart, int indexCountPerInstance)
+        public GorgonInstancedIndexedCallBuilder IndexRange(int indexStart, int indexCountPerInstance)
         {
             if (indexStart < 0)
             {
@@ -153,7 +156,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="baseVertexIndex">The base vertex index to set.</param>
         /// <returns>The fluent builder interface.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="baseVertexIndex"/> parameter is less than 0.</exception>
-        public GorgonDrawIndexInstanceCallBuilder BaseVertexIndex(int baseVertexIndex)
+        public GorgonInstancedIndexedCallBuilder BaseVertexIndex(int baseVertexIndex)
         {
             if (baseVertexIndex < -1)
             {
@@ -175,7 +178,7 @@ namespace Gorgon.Graphics.Core
         /// <para>-or-</para>
         /// <para>Thrown when the <paramref name="instanceCount"/> parameter is less than 1.</para>
         /// </exception>
-        public GorgonDrawIndexInstanceCallBuilder InstanceRange(int startInstanceIndex, int instanceCount)
+        public GorgonInstancedIndexedCallBuilder InstanceRange(int startInstanceIndex, int instanceCount)
         {
             if (startInstanceIndex < 0)
             {
@@ -195,10 +198,10 @@ namespace Gorgon.Graphics.Core
 
         #region Constructor.
         /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonDrawIndexInstanceCallBuilder"/> class.
+        /// Initializes a new instance of the <see cref="GorgonInstancedIndexedCallBuilder"/> class.
         /// </summary>
-        public GorgonDrawIndexInstanceCallBuilder()
-            : base(new GorgonDrawIndexInstanceCall())
+        public GorgonInstancedIndexedCallBuilder()
+            : base(new GorgonInstancedIndexCall())
         {
 
         }

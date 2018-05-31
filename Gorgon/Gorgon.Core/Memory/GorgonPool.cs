@@ -57,13 +57,20 @@ namespace Gorgon.Memory
 		#region Variables.
         // The list of items that are free for use.
 	    private readonly ConcurrentStack<T> _freeList;
-        // The allocator used for creating a pool item.
-	    private readonly Func<T> _itemAllocator;
         // The number of available slots.
 	    private int _availableSlots;
 	    #endregion
 
 		#region Properties.
+	    /// <summary>
+	    /// Property to set or return the allocator to use when creating new instances of an object.
+	    /// </summary>
+	    protected Func<T> ItemAllocator
+	    {
+	        get;
+	        set;
+	    }
+
 		/// <summary>
 		/// Property to return the number of items available to the allocator.
 		/// </summary>
@@ -110,7 +117,7 @@ namespace Gorgon.Memory
 		    if ((_freeList.Count == 0)
                 || (!_freeList.TryPop(out T item)))
 		    {
-		        item = _itemAllocator();
+		        item = ItemAllocator();
 		    }
 
             initializer?.Invoke(item);
@@ -194,7 +201,7 @@ namespace Gorgon.Memory
 				throw new ArgumentOutOfRangeException(nameof(objectCount), Resources.GOR_ERR_ALLOCATOR_SIZE_TOO_SMALL);
 			}
 
-		    _itemAllocator = allocator ?? throw new ArgumentNullException(nameof(allocator));
+		    ItemAllocator = allocator ?? throw new ArgumentNullException(nameof(allocator));
 		    _availableSlots = TotalSize = objectCount;
             _freeList = new ConcurrentStack<T>();
 		}

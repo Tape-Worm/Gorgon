@@ -256,7 +256,6 @@ namespace Gorgon.Graphics.Example
 	    }
 
 	    private static GorgonVertexShader _vShader;
-	    private static GorgonVertexShader _passThru;
 	    private static GorgonPixelShader _pShader;
 	    private static GorgonPixelShader _pShader2;
 	    private static GorgonGeometryShader _gsSo;
@@ -275,6 +274,7 @@ namespace Gorgon.Graphics.Example
 	    private static GorgonStreamOutCall _soCall;
         private static DX.Matrix _projMatrix = DX.Matrix.Identity;
 	    private static float _yRot;
+	    private static TextureBlitter _blitter;
 
 	    private static void Transform(float xoffset)
 	    {
@@ -308,6 +308,8 @@ namespace Gorgon.Graphics.Example
 	        _graphics.Submit(_drawCallSo);
 	        _graphics.SubmitStreamOut(_soCall);
 
+            _blitter.Blit(_texture2, new DX.Rectangle(160, 120, 320, 240), DX.Point.Zero, GorgonColor.White, false, null, null, null, null);
+            
 	        _yRot += GorgonTiming.Delta * 45.0f;
 
 	        if (_yRot > 360.0f)
@@ -334,8 +336,7 @@ namespace Gorgon.Graphics.Example
 	            _vShader = GorgonShaderFactory.Compile<GorgonVertexShader>(_graphics, shaderCode, "GorgonBltVertexShader", true);
 	            _pShader = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics, shaderCode, "GorgonBltPixelShader", true);
 	            _pShader2 = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics, shaderCode, "GorgonBltPixelShaderBwTest", true);
-	            _passThru = GorgonShaderFactory.Compile<GorgonVertexShader>(_graphics, shaderCode, "PassThruVS", true);
-	        }
+	            }
 
 	        DX.Matrix.PerspectiveFovLH((65.0f).ToRadians(), (float)_swap.Width / _swap.Height, 0.125f, 1000.0f, out _projMatrix);
             _cBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics, new GorgonConstantBufferInfo
@@ -405,8 +406,8 @@ namespace Gorgon.Graphics.Example
                                                                                         struct DS_OUTPUT
                                                                                         {
 	                                                                                        float4 position : SV_Position;
-                                                                                            float2 uv : TEXCOORD;
 	                                                                                        float4 colour : COLOR;
+                                                                                            float2 uv : TEXCOORD;
                                                                                         };
 
                                                                                         [maxvertexcount(3)]
@@ -475,6 +476,30 @@ namespace Gorgon.Graphics.Example
 	                               .SamplerState(GorgonSamplerState.Default)
 	                               .ShaderResource(_texture2)
 	                               .Build();
+
+            _blitter = new TextureBlitter(_graphics);
+            _blitter.Initialize();
+
+	        _swap.BeforeSwapChainResized += (sender, args) =>
+	                                        {
+                                                _graphics.SetDepthStencil(null);
+	                                        };
+
+	        _swap.AfterSwapChainResized += (sender, args) =>
+	                                       {
+                                               // Recreate the depth/stencil.
+	                                           _depth.Dispose();
+	                                           _depth = GorgonDepthStencil2DView.CreateDepthStencil(_graphics,
+	                                                                                                new GorgonTexture2DInfo
+	                                                                                                {
+	                                                                                                    Format = BufferFormat.D24_UNorm_S8_UInt,
+	                                                                                                    Width = args.Size.Width,
+	                                                                                                    Height = args.Size.Height,
+	                                                                                                    Binding = TextureBinding.DepthStencil,
+	                                                                                                    Usage = ResourceUsage.Default
+	                                                                                                });
+	                                           _graphics.SetDepthStencil(_depth);
+	                                       };
 	    }
         #endregion
 

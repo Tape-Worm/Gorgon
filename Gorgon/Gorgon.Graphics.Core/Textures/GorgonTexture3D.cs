@@ -1473,10 +1473,16 @@ namespace Gorgon.Graphics.Core
 
             TextureViewKey key = new TextureViewKey(format, firstMipLevel, mipCount, 0, 0);
 
-	        if (_cachedSrvs.TryGetValue(key, out GorgonTexture3DView view))
+	        if ((_cachedSrvs.TryGetValue(key, out GorgonTexture3DView view))
+                && (view.Native != null))
             {
                 return view;
             }
+
+	        if (view != null)
+	        {
+	            _cachedSrvs.Remove(key);
+	        }
 
             view = new GorgonTexture3DView(this, format, formatInfo, firstMipLevel, mipCount);
 	        view.CreateNativeView();
@@ -1562,9 +1568,15 @@ namespace Gorgon.Graphics.Core
 
 	        TextureViewKey key = new TextureViewKey(format, firstMipLevel, _info.MipLevels, startDepthSlice, depthSliceCount);
 
-	        if (_cachedReadWriteViews.TryGetValue(key, out GorgonTexture3DReadWriteView view))
+	        if ((_cachedReadWriteViews.TryGetValue(key, out GorgonTexture3DReadWriteView view))
+                && (view.Native != null))
 	        {
 	            return view;
+	        }
+
+	        if (view != null)
+	        {
+	            _cachedReadWriteViews.Remove(key);
 	        }
 
 	        view = new GorgonTexture3DReadWriteView(this, format, info, firstMipLevel, startDepthSlice, depthSliceCount);
@@ -1645,10 +1657,16 @@ namespace Gorgon.Graphics.Core
 
 	        TextureViewKey key = new TextureViewKey(format, firstMipLevel, 1, startDepthSlice, depthSliceCount);
 
-	        if (_cachedRtvs.TryGetValue(key, out GorgonRenderTarget3DView view))
+	        if ((_cachedRtvs.TryGetValue(key, out GorgonRenderTarget3DView view))
+                && (view.Native != null))
             {
                 return view;
             }
+
+	        if (view != null)
+	        {
+	            _cachedRtvs.Remove(key);
+	        }
 
             view = new GorgonRenderTarget3DView(this, format, formatInfo, firstMipLevel, startDepthSlice, depthSliceCount);
 	        view.CreateNativeView();

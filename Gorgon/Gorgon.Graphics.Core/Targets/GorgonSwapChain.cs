@@ -181,7 +181,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Event called after the swap chain has been resized.
         /// </summary>
-        public event EventHandler AfterSwapChainResized;
+        public event EventHandler<AfterSwapChainResizedEventArgs> AfterSwapChainResized;
         #endregion
 
         #region Properties.
@@ -570,9 +570,24 @@ namespace Gorgon.Graphics.Core
             }
 
             // Restore the render target if we resize.
+            GorgonDepthStencil2DView dsv = null;
+            if (Graphics.DepthStencilView != null)
+            {
+                dsv = ((_info.Width == Graphics.DepthStencilView.Width) && (_info.Height == Graphics.DepthStencilView.Height))
+                          ? Graphics.DepthStencilView
+                          : null;
+
+                if (dsv == null)
+                {
+                    // Log a warning here because we didn't unbind our depth/stencil.
+                    Graphics.Log.Print($"Warning: Depth/Stencil view for resource '{Graphics.DepthStencilView.Texture.Name}' ({Graphics.DepthStencilView.Width}x{Graphics.DepthStencilView.Height}) does not match the size of the swap chain ({_info.Width}x{_info.Height}). Therefore, the depth/stencil view will be unbound from the pipeline.",
+                                       LoggingLevel.Verbose);
+                }
+            }
+
             GorgonRenderTargetView[] rtvs = Graphics.RenderTargets.ToArray();
             rtvs[targetIndex] = _targetView;
-            Graphics.SetRenderTargets(rtvs, Graphics.DepthStencilView);
+            Graphics.SetRenderTargets(rtvs, dsv);
         }
 
         /// <summary>
@@ -983,7 +998,7 @@ namespace Gorgon.Graphics.Core
 
             CreateResources(rtvIndex);
 
-			AfterSwapChainResized?.Invoke(this, EventArgs.Empty);
+			AfterSwapChainResized?.Invoke(this, new AfterSwapChainResizedEventArgs(new DX.Size2(newWidth, newHeight)));
 
 			Graphics.Log.Print($"SwapChain '{Name}': Back buffers resized.", LoggingLevel.Verbose);
 		}

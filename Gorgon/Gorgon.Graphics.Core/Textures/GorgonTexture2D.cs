@@ -1731,10 +1731,16 @@ namespace Gorgon.Graphics.Core
 
             TextureViewKey key = new TextureViewKey(format, firstMipLevel, mipCount, arrayIndex, arrayCount);
 
-	        if (_cachedSrvs.TryGetValue(key, out GorgonTexture2DView view))
+	        if ((_cachedSrvs.TryGetValue(key, out GorgonTexture2DView view))
+                && (view.Native != null))
             {
                 return view;
             }
+
+	        if (view != null)
+	        {
+	            _cachedSrvs.Remove(key);
+	        }
 
             view = new GorgonTexture2DView(this, format, formatInfo, firstMipLevel, mipCount, arrayIndex, arrayCount);
 	        view.CreateNativeView();
@@ -1827,9 +1833,15 @@ namespace Gorgon.Graphics.Core
 
 	        TextureViewKey key = new TextureViewKey(format, firstMipLevel, _info.MipLevels, arrayIndex, arrayCount);
 
-	        if (_cachedReadWriteViews.TryGetValue(key, out GorgonTexture2DReadWriteView view))
+	        if ((_cachedReadWriteViews.TryGetValue(key, out GorgonTexture2DReadWriteView view))
+                && (view.Native != null))
 	        {
 	            return view;
+	        }
+
+	        if (view != null)
+	        {
+	            _cachedReadWriteViews.Remove(key);
 	        }
 
 	        view = new GorgonTexture2DReadWriteView(this, format, info, firstMipLevel, arrayIndex, arrayCount);
@@ -1934,10 +1946,16 @@ namespace Gorgon.Graphics.Core
             // Since we don't use the mip count, we can repurpose it to store the flag settings.
 	        TextureViewKey key = new TextureViewKey(format, firstMipLevel, (int)flags, arrayIndex, arrayCount);
 
-	        if (_cachedDsvs.TryGetValue(key, out GorgonDepthStencil2DView view))
+	        if ((_cachedDsvs.TryGetValue(key, out GorgonDepthStencil2DView view))
+                && (view.Native != null))
             {
                 return view;
             }
+
+	        if (view != null)
+	        {
+	            _cachedDsvs.Remove(key);
+	        }
 
             view = new GorgonDepthStencil2DView(this, format, formatInfo, firstMipLevel, arrayIndex, arrayCount, flags);
 	        view.CreateNativeView();
@@ -2017,10 +2035,16 @@ namespace Gorgon.Graphics.Core
 
 	        TextureViewKey key = new TextureViewKey(format, firstMipLevel, 1, arrayIndex, arrayCount);
 
-	        if (_cachedRtvs.TryGetValue(key, out GorgonRenderTarget2DView view))
+	        if ((_cachedRtvs.TryGetValue(key, out GorgonRenderTarget2DView view))
+                && (view.Native != null))
             {
                 return view;
             }
+
+	        if (view != null)
+	        {
+	            _cachedRtvs.Remove(key);
+	        }
 
             view = new GorgonRenderTarget2DView(this, format, formatInfo, firstMipLevel, arrayIndex, arrayCount);
 	        view.CreateNativeView();

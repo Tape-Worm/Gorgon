@@ -116,8 +116,8 @@ namespace Gorgon.Graphics.Core
     /// <seealso cref="IGorgonVideoAdapterInfo"/>
     /// <seealso cref="GorgonDrawCall"/>
     /// <seealso cref="GorgonDrawIndexCall"/>
-    /// <seealso cref="GorgonDrawInstanceCall"/>
-    /// <seealso cref="GorgonDrawIndexInstanceCall"/>
+    /// <seealso cref="GorgonInstancedCall"/>
+    /// <seealso cref="GorgonInstancedIndexCall"/>
     public sealed class GorgonGraphics
         : IDisposable
     {
@@ -723,10 +723,25 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
+        /// Function to clear the resource caches.
+        /// </summary>
+        private void ClearResourceCaches()
+        {
+            Array.Clear(_renderTargets, 0, _renderTargets.Length);
+            Array.Clear(_scissors, 0, _scissors.Length);
+            Array.Clear(_viewports, 0, _viewports.Length);
+            Array.Clear(_vertexBindingCache, 0, _vertexBindingCache.Length);
+            Array.Clear(_streamOutBindingCache, 0, _streamOutBindingCache.Length);
+            Array.Clear(_d3DRtvs, 0, _d3DRtvs.Length);
+            Array.Clear(_d3DUavs.Item1, 0, _d3DUavs.Item1.Length);
+            Array.Clear(_d3DUavs.Item2, 0, _d3DUavs.Item2.Length);
+        }
+
+        /// <summary>
         /// Function to clear the state cache for the pipeline states and sampler states.
         /// </summary>
-        /// <param name="rebuildPredefinedSamplers"><b>true</b> to rebuild our predefined sampler states, <b>false</b> to leave cleared.</param>
-        private void ClearStateCache(bool rebuildPredefinedSamplers)
+        /// <param name="userCall"><b>true</b> if called by the user, <b>false</b> if called by Dispose.</param>
+        private void ClearStateCache(bool userCall)
         {
             lock (_samplerLock)
             {
@@ -740,7 +755,7 @@ namespace Gorgon.Graphics.Core
                 _cachedSamplers.Clear();
             }
 
-            if (rebuildPredefinedSamplers)
+            if (userCall)
             {
                 InitializeCachedSamplers();
             }
@@ -758,6 +773,11 @@ namespace Gorgon.Graphics.Core
                 }
 
                 _cachedPipelineStates.Clear();
+            }
+
+            if (userCall)
+            {
+                ClearState();
             }
         }
 
@@ -1918,18 +1938,21 @@ namespace Gorgon.Graphics.Core
             ValidateRtvAndDsv(DepthStencilView, RenderTargets.FirstOrDefault(item => item != null));
 #endif
 
-            UnbindShaderInputs(rtvCount);
+            if (_isTargetUpdated.RtvsChanged)
+            {
+                UnbindShaderInputs(rtvCount);
 
-            if (rtvCount == 0)
-            {
-                Array.Clear(_d3DRtvs, 0, _d3DRtvs.Length);
-                rtvCount = _d3DRtvs.Length;
-            }
-            else
-            {
-                for (int i = 0; i < rtvCount; ++i)
+                if (rtvCount == 0)
                 {
-                    _d3DRtvs[i] = _renderTargets[i]?.Native;
+                    Array.Clear(_d3DRtvs, 0, _d3DRtvs.Length);
+                    rtvCount = _d3DRtvs.Length;
+                }
+                else
+                {
+                    for (int i = 0; i < rtvCount; ++i)
+                    {
+                        _d3DRtvs[i] = _renderTargets[i]?.Native;
+                    }
                 }
             }
 
@@ -2028,8 +2051,9 @@ namespace Gorgon.Graphics.Core
         /// Function to build up a <see cref="GorgonPipelineState"/> object with Direct 3D 11 state objects by either creating new objects, or inheriting previous ones.
         /// </summary>
         /// <param name="newState">The new state to initialize.</param>
+        /// <param name="allocator">The allocator to use when creating the pipeline state object.</param>
         /// <returns>If the pipeline state matches a cached pipeline state, then the cached state is returned, otherwise a copy of the <paramref name="newState"/> is returned.</returns>
-        internal GorgonPipelineState CachePipelineState(GorgonPipelineState newState)
+        internal GorgonPipelineState CachePipelineState(GorgonPipelineState newState, GorgonPipelineStatePoolAllocator allocator)
         {
             // Existing states.
             D3D11.DepthStencilState depthStencilState = null;
@@ -2114,7 +2138,13 @@ namespace Gorgon.Graphics.Core
                 }
 
                 // Setup any uninitialized states.
-                var resultState = new GorgonPipelineState(newState);
+                var resultState = allocator != null ? allocator.Allocate() : new GorgonPipelineState(newState);
+                
+                if (allocator != null)
+                {
+                    newState.CopyTo(resultState);
+                }
+
                 InitializePipelineState(resultState, blendState, depthStencilState, rasterState);
                 resultState.ID = _cachedPipelineStates.Count;
                 _cachedPipelineStates.Add(resultState);
@@ -2151,28 +2181,60 @@ namespace Gorgon.Graphics.Core
                 D3DDeviceContext.Flush();
             }
 
-            Array.Clear(_renderTargets, 0, _renderTargets.Length);
-            Array.Clear(_viewports, 0, _viewports.Length);
-            Array.Clear(_vertexBindingCache, 0, _vertexBindingCache.Length);
-            Array.Clear(_streamOutBindingCache, 0, _streamOutBindingCache.Length);
-            Array.Clear(_scissors, 0, _scissors.Length);
-
+            ClearResourceCaches();
+            
             _lastState.VertexBuffers = null;
             _lastState.StreamOutBindings = null;
             _lastState.IndexBuffer = null;
             _lastState.PipelineState.Clear();
+            _lastState.ReadWriteViews = null;
             _lastState.PsSamplers = null;
             _lastState.VsSamplers = null;
             _lastState.GsSamplers = null;
             _lastState.DsSamplers = null;
             _lastState.HsSamplers = null;
             _lastState.CsSamplers = null;
+            _lastState.VsSrvs = null;
+            _lastState.PsSrvs = null;
+            _lastState.GsSrvs = null;
+            _lastState.DsSrvs = null;
+            _lastState.HsSrvs = null;
+            _lastState.CsSrvs = null;
             _lastState.VsConstantBuffers = null;
             _lastState.PsConstantBuffers = null;
             _lastState.GsConstantBuffers = null;
             _lastState.DsConstantBuffers = null;
             _lastState.HsConstantBuffers = null;
             _lastState.CsConstantBuffers = null;
+            _lastState.CsReadWriteViews = null;
+        }
+
+        /// <summary>
+        /// Function to assign a depth/stencil view.
+        /// </summary>
+        /// <param name="depthStencil">The depth/stencil to assign.</param>
+        /// <remarks>
+        /// <para>
+        /// This depth/stencil have the same dimensions, array size, and multisample values as the currently assigned <see cref="RenderTargets"/>. 
+        /// </para>
+        /// <note type="caution">
+        /// <para>
+        /// For performance reasons, any exceptions thrown from this method will only be thrown when Gorgon is compiled as DEBUG.
+        /// </para>
+        /// </note>
+        /// </remarks>
+        /// <seealso cref="GorgonDepthStencil2DView"/>
+        /// <seealso cref="GorgonTexture2D"/>
+        public void SetDepthStencil(GorgonDepthStencil2DView depthStencil)
+        {
+            if (depthStencil == DepthStencilView)
+            {
+                return;
+            }
+
+            _isTargetUpdated = (false, true);
+            DepthStencilView = depthStencil;
+            SetRenderTargetAndDepthViews(_renderTargets.Length);
         }
 
         /// <summary>
@@ -2456,7 +2518,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="blendSampleMask">[Optional] The mask used to define which samples get updated in the active render targets.</param>
         /// <param name="depthStencilReference">[Optional] The depth/stencil reference value used when performing a depth/stencil test.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawCall"/> parameter is <b>null</b>.</exception>
-        public void Submit(GorgonDrawInstanceCall drawCall, GorgonColor? blendFactor = null, int blendSampleMask = int.MinValue, int depthStencilReference = 0)
+        public void Submit(GorgonInstancedCall drawCall, GorgonColor? blendFactor = null, int blendSampleMask = int.MinValue, int depthStencilReference = 0)
         {
             drawCall.ValidateObject(nameof(drawCall));
             SetDrawStates(drawCall.D3DState, blendFactor ?? GorgonColor.White, blendSampleMask, depthStencilReference);
@@ -2489,7 +2551,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="blendSampleMask">[Optional] The mask used to define which samples get updated in the active render targets.</param>
         /// <param name="depthStencilReference">[Optional] The depth/stencil reference value used when performing a depth/stencil test.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawIndexCall"/> parameter is <b>null</b>.</exception>
-        public void Submit(GorgonDrawIndexInstanceCall drawIndexCall,
+        public void Submit(GorgonInstancedIndexCall drawIndexCall,
                            GorgonColor? blendFactor = null,
                            int blendSampleMask = int.MinValue,
                            int depthStencilReference = 0)
@@ -2504,7 +2566,7 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Function to submit a <see cref="GorgonDrawIndexInstanceCall"/> to the GPU using a <see cref="GorgonBuffer"/> to pass in variable sized arguments.
+        /// Function to submit a <see cref="GorgonInstancedIndexCall"/> to the GPU using a <see cref="GorgonBuffer"/> to pass in variable sized arguments.
         /// </summary>
         /// <param name="drawIndexCall">The draw call to submit.</param>
         /// <param name="indirectArgs">The buffer containing the draw call arguments to pass.</param>
@@ -2514,7 +2576,7 @@ namespace Gorgon.Graphics.Core
         /// <exception cref="GorgonException">Thrown if the <paramref name="indirectArgs"/> was not created with the <see cref="IGorgonBufferInfo.IndirectArgs"/> flag set to <b>true</b>.</exception>
         /// <remarks>
         /// <para>
-        /// This allows submitting a <see cref="GorgonDrawIndexInstanceCall"/> with variable arguments without having to perform a read back of that data from the GPU and therefore avoid a stall. 
+        /// This allows submitting a <see cref="GorgonInstancedIndexCall"/> with variable arguments without having to perform a read back of that data from the GPU and therefore avoid a stall. 
         /// </para>
         /// <para>
         /// Like the <see cref="SubmitStreamOut"/> method, this is useful when a shader generates an arbitrary amount of data within a buffer. To get the size, or the data itself out of the buffer will 
@@ -2529,8 +2591,8 @@ namespace Gorgon.Graphics.Core
         /// </note>
         /// </para>
         /// </remarks>
-        /// <seealso cref="GorgonDrawIndexInstanceCall"/>
-        public void SubmitIndirect(GorgonDrawIndexInstanceCall drawIndexCall, GorgonBuffer indirectArgs, int argumentOffset = 0)
+        /// <seealso cref="GorgonInstancedIndexCall"/>
+        public void SubmitIndirect(GorgonInstancedIndexCall drawIndexCall, GorgonBuffer indirectArgs, int argumentOffset = 0)
         {
             drawIndexCall.ValidateObject(nameof(drawIndexCall));
             indirectArgs.ValidateObject(nameof(indirectArgs));
@@ -2547,7 +2609,7 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Function to submit a <see cref="GorgonDrawInstanceCall"/> to the GPU using a <see cref="GorgonBuffer"/> to pass in variable sized arguments.
+        /// Function to submit a <see cref="GorgonInstancedCall"/> to the GPU using a <see cref="GorgonBuffer"/> to pass in variable sized arguments.
         /// </summary>
         /// <param name="drawCall">The draw call to submit.</param>
         /// <param name="indirectArgs">The buffer containing the draw call arguments to pass.</param>
@@ -2557,7 +2619,7 @@ namespace Gorgon.Graphics.Core
         /// <exception cref="GorgonException">Thrown if the <paramref name="indirectArgs"/> was not created with the <see cref="IGorgonBufferInfo.IndirectArgs"/> flag set to <b>true</b>.</exception>
         /// <remarks>
         /// <para>
-        /// This allows submitting a <see cref="GorgonDrawInstanceCall"/> with variable arguments without having to perform a read back of that data from the GPU and therefore avoid a stall. 
+        /// This allows submitting a <see cref="GorgonInstancedCall"/> with variable arguments without having to perform a read back of that data from the GPU and therefore avoid a stall. 
         /// </para>
         /// <para>
         /// Like the <see cref="SubmitStreamOut"/> method, this is useful when a shader generates an arbitrary amount of data within a buffer. To get the size, or the data itself out of the buffer will 
@@ -2572,8 +2634,8 @@ namespace Gorgon.Graphics.Core
         /// </note>
         /// </para>
         /// </remarks>
-        /// <seealso cref="GorgonDrawInstanceCall"/>
-        public void SubmitIndirect(GorgonDrawInstanceCall drawCall, GorgonBuffer indirectArgs, int argumentOffset = 0)
+        /// <seealso cref="GorgonInstancedCall"/>
+        public void SubmitIndirect(GorgonInstancedCall drawCall, GorgonBuffer indirectArgs, int argumentOffset = 0)
         {
             drawCall.ValidateObject(nameof(drawCall));
             indirectArgs.ValidateObject(nameof(indirectArgs));
