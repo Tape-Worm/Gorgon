@@ -33,7 +33,6 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Example;
 using Gorgon.Graphics.Example.Properties;
-using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
 using Gorgon.Timing;
@@ -59,15 +58,19 @@ namespace GorgonLibrary.Example
 		// The layout for a cube vertex.
 	    private GorgonInputLayout _inputLayout;
 		// The constant buffer that will hold our world/view/projection matrix.
-	    private GorgonConstantBuffer _wvpBuffer;
+	    private GorgonConstantBufferView _wvpBuffer;
 		// The pixel shader used to draw to the swap chain target.
 	    private GorgonPixelShader _pixelShader;
 		// The vertex shader used to transform the vertices.
 	    private GorgonVertexShader _vertexShader;
 		// The texture to apply to the cube.
-	    private GorgonTexture _texture;
-		// The draw call used to submit data to the GPU.
-		private GorgonDrawIndexedCall _drawCall;
+	    private GorgonTexture2DView _texture;
+		// The draw call used to submit data to the GPU, using a pixellated texture look.
+		private GorgonDrawIndexCall _drawCallPixel;
+        // The draw call used to submit data to the GPU, using a smooth look.
+        private GorgonDrawIndexCall _drawCallSmooth;
+        // The current draw call.
+        private GorgonDrawIndexCall _drawCall;
 		// The cube to draw.
 		private Cube _cube;
 		// The view matrix that acts as the camera.
@@ -95,7 +98,6 @@ namespace GorgonLibrary.Example
         /// </remarks>
         private void UpdateWVP(ref DX.Matrix world)
 		{
-
 			// Build our world/view/projection matrix to send to
 			// the shader.
 			DX.Matrix.Multiply(ref world, ref _viewMatrix, out DX.Matrix temp);
@@ -106,7 +108,7 @@ namespace GorgonLibrary.Example
 			DX.Matrix.Transpose(ref wvp, out wvp);
 
 			// Update the constant buffer.
-		    _graphics.SetValue(ref wvp, _wvpBuffer);
+            _wvpBuffer.Buffer.SetData(ref wvp);
 		}
 
 		/// <summary>
@@ -176,9 +178,10 @@ namespace GorgonLibrary.Example
 		        _accumulator -= TargetDelta;
 	        }
 
-	        _cube.GetWorldMatrix(out DX.Matrix worldMatrix);
+            ref DX.Matrix matrix = ref _cube.WorldMatrix;
+
 			// Send our world matrix to the constant buffer so the vertex shader can update the vertices.
-			UpdateWVP(ref worldMatrix);
+			UpdateWVP(ref matrix);
 
             // And, as always, send the cube to the GPU for rendering.
 			_graphics.Submit(_drawCall);
@@ -197,13 +200,9 @@ namespace GorgonLibrary.Example
             GorgonGraphics.IsDebugEnabled = true;
             GorgonGraphics.IsObjectTrackingEnabled = true;
 #endif
-            IGorgonImageCodec pngCodec = new GorgonCodecPng();
-
 			// Load the texture.
-	        using (IGorgonImage image = pngCodec.LoadFromFile(Program.GetResourcePath(@"Textures\GlassCube\Glass.png")).ConvertToFormat(BufferFormat.R8G8B8A8_UNorm))
-	        {
-		        _texture = image.ToTexture("GlassCube Texture", _graphics);
-	        }
+            _texture = GorgonTexture2DView.FromFile(_graphics, Program.GetResourcePath(@"Textures\GlassCube\Glass.png"), new GorgonCodecPng());
+
             // Create our shaders.
             _vertexShader = GorgonShaderFactory.Compile<GorgonVertexShader>(_graphics, Resources.GlassCubeShaders, "GlassCubeVS");
 	        _pixelShader = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics, Resources.GlassCubeShaders, "GlassCubePS");
@@ -211,26 +210,17 @@ namespace GorgonLibrary.Example
 			// Create the input layout for a cube vertex.
 			_inputLayout = GorgonInputLayout.CreateUsingType<GlassCubeVertex>(_graphics, _vertexShader);
 
-			// Create our constant buffer so we can send our transformation information to the shader.
-	        _wvpBuffer = new GorgonConstantBuffer("GlassCube WVP Constant Buffer",
-	                                              _graphics,
-	                                              new GorgonConstantBufferInfo
-	                                              {
-		                                              Usage = ResourceUsage.Default,
-		                                              SizeInBytes = DX.Matrix.SizeInBytes
-	                                              });
+            // We use this as our initial world transform.
+            // Since it's an identity, it will put the cube in the default orientation defined by the vertices.
+            DX.Matrix dummyMatrix = DX.Matrix.Identity;
 
-			// We use this as our initial world transform.
-			// Since it's an identity, it will put the cube in the default orientation defined by the vertices.
-	        DX.Matrix dummyMatrix = DX.Matrix.Identity;
+			// Create our constant buffer so we can send our transformation information to the shader.
+            _wvpBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics, ref dummyMatrix, "GlassCube WVP Constant Buffer");
 	        
 			// Create a new projection matrix so we can transform from 3D to 2D space.
 			DX.Matrix.PerspectiveFovLH(60.0f.ToRadians(), (float)ClientSize.Width / ClientSize.Height, 0.1f, 1000.0f, out _projectionMatrix);
 			// Pull the camera back 1.5 units on the Z axis. Otherwise, we'd end up inside of the cube.
 			DX.Matrix.Translation(0, 0, 1.5f, out _viewMatrix);
-			
-			// Initialize the constant buffer.
-			UpdateWVP(ref dummyMatrix);
 
 	        _cube = new Cube(_graphics, _inputLayout);
 
@@ -238,36 +228,22 @@ namespace GorgonLibrary.Example
             _graphics.SetRenderTarget(_swap.RenderTargetView);
 
 			// Set up the pipeline to draw the cube.
-            _drawCall = new GorgonDrawIndexedCall
-                        {
-                            PrimitiveType = PrimitiveType.TriangleList,
-                            IndexBuffer = _cube.IndexBuffer,
-                            VertexBuffers = _cube.VertexBuffer,
-                            PixelShaderResourceViews =
-                            {
-                                [0] = _texture.DefaultShaderResourceView
-                            },
-                            PixelShaderSamplers =
-                            {
-                                // Start with bilinear filtering on the cube texture.
-                                // This will smooth out the appearance of the texture as it is scaled closer or further away 
-                                // from our view.
-                                [0] = GorgonSamplerState.Default
-                            },
-                            VertexShaderConstantBuffers =
-                            {
-                                [0] = _wvpBuffer
-                            },
-                            IndexStart = 0,
-                            IndexCount = _cube.IndexBuffer.Info.IndexCount,
-                            PipelineState = _graphics.GetPipelineState(new GorgonPipelineStateInfo
-                                                                       {
-                                                                           PixelShader = _pixelShader,
-                                                                           VertexShader = _vertexShader,
-                                                                           // We turn off culling so we can see through the cube.
-                                                                           RasterState = GorgonRasterState.NoCulling
-                                                                       })
-                        };
+            var drawCallBuilder = new GorgonDrawIndexCallBuilder();
+            var stateBuilder = new GorgonPipelineStateBuilder(_graphics);
+
+            // This draw call will use point filtering on the texture.
+            _drawCall = _drawCallPixel = drawCallBuilder.VertexBuffer(_inputLayout, _cube.VertexBuffer[0])
+                                                        .IndexBuffer(_cube.IndexBuffer, 0, _cube.IndexBuffer.IndexCount)
+                                                        .ShaderResource(ShaderType.Pixel, _texture)
+                                                        .ConstantBuffer(ShaderType.Vertex, _wvpBuffer)
+                                                        .SamplerState(ShaderType.Pixel, GorgonSamplerState.PointFiltering)
+                                                        .PipelineState(stateBuilder.PixelShader(_pixelShader)
+                                                                                   .VertexShader(_vertexShader)
+                                                                                   .RasterState(GorgonRasterState.NoCulling))
+                                                        .Build();
+
+            // And this one will use bilinear filtering.
+            _drawCallSmooth = drawCallBuilder.SamplerState(ShaderType.Pixel, GorgonSamplerState.Default).Build();
         }
 
         /// <summary>
@@ -289,14 +265,7 @@ namespace GorgonLibrary.Example
 		        return;
 	        }
 
-			if (_drawCall.PixelShaderSamplers[0] == GorgonSamplerState.Default)
-	        {
-		        _drawCall.PixelShaderSamplers[0] = GorgonSamplerState.PointFiltering;
-	        }
-	        else
-	        {
-		        _drawCall.PixelShaderSamplers[0] = GorgonSamplerState.Default;
-	        }
+			_drawCall = _drawCall == _drawCallPixel ? _drawCallSmooth : _drawCallPixel;
         }
 
         /// <summary>
@@ -342,15 +311,18 @@ namespace GorgonLibrary.Example
                 _graphics = new GorgonGraphics(deviceList[0]);
                 
 				// Build our swap chain.
-				_swap = new GorgonSwapChain("GlassCube SwapChain", _graphics, this, new GorgonSwapChainInfo
-				                                                                    {
-					                                                                    Format = BufferFormat.R8G8B8A8_UNorm,
-																						Width = ClientSize.Width,
-																						Height = ClientSize.Height,
-																						// We don't need this, as it's the default, but it's included for 
-																						// completeness.
-																						StretchBackBuffer = true
-				                                                                    });
+                _swap = new GorgonSwapChain(_graphics,
+                                            this,
+                                            new GorgonSwapChainInfo("GlassCube SwapChain")
+                                            {
+                                                Format = BufferFormat.R8G8B8A8_UNorm,
+                                                Width = ClientSize.Width,
+                                                Height = ClientSize.Height,
+                                                // We don't need this, as it's the default, but it's included for 
+                                                // completeness.
+                                                StretchBackBuffer = true
+                                            });
+
 				// Register an event to tell us when the swap chain was resized.
 				// We need to do this in order to resize our projection matrix & viewport to match our client area.
 				// Also, when a swap chain is resized, it is unbound from the pipeline, and needs to be reassigned to the draw call.

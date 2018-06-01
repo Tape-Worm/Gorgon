@@ -76,7 +76,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// No intended usage was defined for this resource.
         /// </summary>
-        None = 0,
+        None = 0xffffff,
 
         /// <summary>
         /// <para>

@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 
-namespace Gorgon.Core.Design
+namespace Gorgon.Design
 {
 	/// <summary>
 	/// A base class used to define an object as frozen when accessing its members for writing.

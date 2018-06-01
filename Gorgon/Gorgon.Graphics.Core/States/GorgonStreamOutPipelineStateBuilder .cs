@@ -282,6 +282,7 @@ namespace Gorgon.Graphics.Core
             _workState.PipelineState.RasterState = GorgonRasterState.Default;
             _workState.PipelineState.RwBlendStates[0] = GorgonBlendState.Default;
             _workState.PipelineState.DepthStencilState = GorgonDepthStencilState.Default;
+            _workState.PipelineState.PrimitiveType = Core.PrimitiveType.TriangleList;
         }
         #endregion
     }

@@ -73,6 +73,11 @@
       <Name>Example004</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
+      <Version>4.5.0</Version>
+    </PackageReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy "$(TargetPath)" "$(ProjectDir)..\..\$(OutDir)"</PostBuildEvent>

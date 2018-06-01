@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Gorgon.Core.Collections
+namespace Gorgon.Collections
 {
 	/// <summary>
 	/// Extension methods for items that were inexplicably omitted from the <see cref="IReadOnlyList{T}"/> interface.

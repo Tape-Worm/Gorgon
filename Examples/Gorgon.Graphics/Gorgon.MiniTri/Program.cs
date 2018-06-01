@@ -73,10 +73,10 @@ namespace Gorgon.Graphics.Example
 		// The layout defining how a single vertex is laid out in memory.
 		private static GorgonInputLayout _inputLayout;
 		// The vertex buffer that will hold our vertices.
-		private static GorgonVertexBuffer _vertexBuffer;
+		private static GorgonVertexBufferBinding _vertexBuffer;
 		// The buffer used to send data over to our shaders when rendering.
 		// In this case, we will be sending a projection matrix so we know to project the vertices from a 3D space into a 2D space.
-		private static GorgonConstantBuffer _constantBuffer;
+		private static GorgonConstantBufferView _constantBuffer;
 		// This defines the data to send to the GPU.  
 		// A draw call tells the GPU what to draw, and what special states to apply when rendering. This will be submitted to our GorgonGraphics object so that the 
 		// GPU can queue up the data for rendering.
@@ -135,14 +135,15 @@ namespace Gorgon.Graphics.Example
 			//
 			// This will be responsible for sending vertex data to the GPU. The buffer size is specified in bytes, so we need to ensure it has enough room to hold all 
 			// 3 vertices.
-			_vertexBuffer = new GorgonVertexBuffer("MiniTri Vertex Buffer", _graphics, new GorgonVertexBufferInfo
-			                                                                           {
-				                                                                           Usage = ResourceUsage.Default,
-																						   SizeInBytes = MiniTriVertex.SizeInBytes * vertices.Length
-			                                                                           });
+		    _vertexBuffer = GorgonVertexBufferBinding.CreateVertexBuffer<MiniTriVertex>(_graphics,
+		                                                                 new GorgonVertexBufferInfo("MiniTri Vertex Buffer")
+		                                                                 {
+		                                                                     Usage = ResourceUsage.Default,
+		                                                                     SizeInBytes = MiniTriVertex.SizeInBytes * vertices.Length
+		                                                                 });
 
 			// Send the vertex data into the buffer.
-            _graphics.SetDataRange(vertices, _vertexBuffer);
+            _vertexBuffer.VertexBuffer.SetData(vertices);
 		}
 
 		/// <summary>
@@ -161,12 +162,7 @@ namespace Gorgon.Graphics.Example
 			// Create our constant buffer.
 			//
 			// The data we pass into here will apply the projection transformation to our vertex data so we can transform from 3D space into 2D space.
-			_constantBuffer = new GorgonConstantBuffer("MiniTri WVP Constant Buffer", _graphics, new GorgonConstantBufferInfo
-			                                                                                     {
-				                                                                                     Usage = ResourceUsage.Default,
-																									 SizeInBytes = DX.Matrix.SizeInBytes
-			                                                                                     });
-            _graphics.SetValue(ref projectionMatrix, _constantBuffer);
+			_constantBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics, ref projectionMatrix, "MiniTri WVP Constant Buffer");            
 		}
 
 		/// <summary>
@@ -217,10 +213,9 @@ namespace Gorgon.Graphics.Example
 			// Finally, create a swap chain to display our output.
 			// In this case we're setting up our swap chain to bind with our main window, and we use its client size to determine the width/height of the swap chain back buffers.
 			// This width/height does not need to be the same size as the window, but, except for some scenarios, that would produce undesirable image quality.
-			_swap = new GorgonSwapChain("Main Swap Chain",
-			                            _graphics,
+			_swap = new GorgonSwapChain(_graphics,
 			                            _mainForm,
-			                            new GorgonSwapChainInfo
+			                            new GorgonSwapChainInfo("Main Swap Chain")
 			                            {
 				                            Format = BufferFormat.R8G8B8A8_UNorm,
 				                            Width = _mainForm.ClientSize.Width,
@@ -255,35 +250,23 @@ namespace Gorgon.Graphics.Example
 			// Create our draw call.
 			//
 			// This will pass all the necessary information to the GPU to render the triangle
-			_drawCall = new GorgonDrawCall
-			            {
-				            // This defines what type of primitive data to render. 
-				            // For this, and most other examples, this will be a list of individual triangles. However, this could also be a strip of joined triangles, 
-				            //lines, points, etc...
-				            PrimitiveType = PrimitiveType.TriangleList,
-				            // Our triangle has 3 points, obviously.
-				            VertexCount = 3,
-				            // This will bind the vertex buffer to the GPU so it can be read from when rendering.
-				            VertexBuffers = new GorgonVertexBufferBindings(_inputLayout)
-				                            {
-					                            [0] = new GorgonVertexBufferBinding(_vertexBuffer, MiniTriVertex.SizeInBytes)
-				                            },
-				            // Bind the constant buffer with our projection matrix to the GPU.
-				            VertexShaderConstantBuffers =
-				            {
-					            [0] = _constantBuffer
-				            },
-				            // Define the current state of the rendering pipeline.
-				            // This will tell the GPU how to render the data. Here we assign the shaders we created, but we could assign things like 
-				            // blending information, depth information, etc...
-				            PipelineState = _graphics.GetPipelineState(new GorgonPipelineStateInfo
-				                                               {
-					                                               PixelShader = _pixelShader,
-					                                               VertexShader = _vertexShader,
-					                                               // For items facing away from us, always render.
-					                                               RasterState = GorgonRasterState.NoCulling
-				                                               })
-			            };
+            //
+            // Since draw calls are immutable objects, we use builders to create them (and any pipeline state). Once a draw
+            // call is built, it cannot be changed (except for the vertex, and if applicable, index, and instance ranges).
+            //
+            // Builders work on a fluent interface.  Much like LINQ and can be used to create multiple draw calls from the same 
+            // builder.
+            var drawCallBuilder = new GorgonDrawCallBuilder();
+            var pipelineStateBuilder = new GorgonPipelineStateBuilder(_graphics);
+
+		    _drawCall = drawCallBuilder.VertexBuffer(_inputLayout, _vertexBuffer)
+		                               .VertexRange(0, 3)
+		                               .ConstantBuffer(ShaderType.Vertex, _constantBuffer)
+		                               .PipelineState(pipelineStateBuilder
+		                                              .PixelShader(_pixelShader)
+		                                              .VertexShader(_vertexShader)
+		                                              .RasterState(GorgonRasterState.NoCulling))
+		                               .Build();
 		}
 		#endregion
 
@@ -311,10 +294,10 @@ namespace Gorgon.Graphics.Example
 			finally
 			{
 				// Always clean up when you're done.
-				// Since Gorgon uses Direct 3D 11.1, which allocate objects that use native memory and COM objects, we must be careful to dispose of any objects that implement 
+				// Since Gorgon uses Direct 3D 11.x, which allocate objects that use native memory and COM objects, we must be careful to dispose of any objects that implement 
 				// IDisposable. Failure to do so can lead to warnings from the Direct 3D runtime when running in DEBUG mode.
 				_constantBuffer?.Dispose();
-				_vertexBuffer?.Dispose();
+				_vertexBuffer.VertexBuffer?.Dispose();
 				_inputLayout?.Dispose();
 				_vertexShader?.Dispose();
 				_pixelShader?.Dispose();

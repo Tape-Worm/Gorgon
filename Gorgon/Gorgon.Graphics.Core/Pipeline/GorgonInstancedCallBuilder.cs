@@ -32,7 +32,7 @@ namespace Gorgon.Graphics.Core
 {
     /// <summary>
     /// A builder class used to create instanced draw calls using fluent calls.
-    /// </summary
+    /// </summary>
     /// <seealso cref="GorgonInstancedCall"/>
     public class GorgonInstancedCallBuilder
         : GorgonDrawCallBuilderCommon<GorgonInstancedCallBuilder, GorgonInstancedCall>

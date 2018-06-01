@@ -33,7 +33,6 @@ using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Example.Properties;
-using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 using Gorgon.Math;
@@ -75,12 +74,12 @@ namespace Gorgon.Graphics.Example
 		// The layout defining how a single vertex is laid out in memory.
 		private static GorgonInputLayout _inputLayout;
 		// The vertex buffer that will hold our vertices.
-		private static GorgonVertexBuffer _vertexBuffer;
+		private static GorgonVertexBufferBinding _vertexBuffer;
 		// The buffer used to send data over to our shaders when rendering.
 		// In this case, we will be sending a projection matrix so we know to project the vertices from a 3D space into a 2D space.
-		private static GorgonConstantBuffer _constantBuffer;
+		private static GorgonConstantBufferView _constantBuffer;
 		// The texture to apply to the triangle.
-		private static GorgonTexture _texture;
+		private static GorgonTexture2DView _texture;
 		// This defines the data to send to the GPU.  
 		// A draw call tells the GPU what to draw, and what special states to apply when rendering. This will be submitted to our GorgonGraphics object so that the 
 		// GPU can queue up the data for rendering.
@@ -163,23 +162,24 @@ namespace Gorgon.Graphics.Example
 			MiniTriVertex[] vertices = {
 							   // Note that we're assigning the texture coordinates in pixel space. The ToTexel function on the texture will convert these into 
 							   // texel space for us.
-				               new MiniTriVertex(new DX.Vector3(0, 0.5f, 1.0f), _texture.ToTexel(new DX.Point(128, 3))),
-				               new MiniTriVertex(new DX.Vector3(0.5f, -0.5f, 1.0f), _texture.ToTexel(new DX.Point(230, 252))),
-				               new MiniTriVertex(new DX.Vector3(-0.5f, -0.5f, 1.0f), _texture.ToTexel(new DX.Point(23, 252)))
+				               new MiniTriVertex(new DX.Vector3(0, 0.5f, 1.0f), _texture.Texture.ToTexel(new DX.Point(128, 3))),
+				               new MiniTriVertex(new DX.Vector3(0.5f, -0.5f, 1.0f), _texture.Texture.ToTexel(new DX.Point(230, 252))),
+				               new MiniTriVertex(new DX.Vector3(-0.5f, -0.5f, 1.0f), _texture.Texture.ToTexel(new DX.Point(23, 252)))
 			               };
 
 			// Create the vertex buffer.
 			//
 			// This will be responsible for sending vertex data to the GPU. The buffer size is specified in bytes, so we need to ensure it has enough room to hold all 
 			// 3 vertices.
-			_vertexBuffer = new GorgonVertexBuffer("MiniTri Vertex Buffer", _graphics, new GorgonVertexBufferInfo
-			                                                                           {
-				                                                                           Usage = ResourceUsage.Default,
-																						   SizeInBytes = MiniTriVertex.SizeInBytes * vertices.Length
-			                                                                           });
+		    _vertexBuffer = GorgonVertexBufferBinding.CreateVertexBuffer<MiniTriVertex>(_graphics,
+		                                                                                new GorgonVertexBufferInfo("MiniTri Vertex Buffer")
+		                                                                                {
+		                                                                                    Usage = ResourceUsage.Default,
+		                                                                                    SizeInBytes = MiniTriVertex.SizeInBytes * vertices.Length
+		                                                                                });
 
 			// Send the vertex data into the buffer.
-            _graphics.SetDataRange(vertices, _vertexBuffer);
+            _vertexBuffer.VertexBuffer.SetData(vertices);
 		}
 
 		/// <summary>
@@ -198,29 +198,7 @@ namespace Gorgon.Graphics.Example
 			// Create our constant buffer.
 			//
 			// The data we pass into here will apply the projection transformation to our vertex data so we can transform from 3D space into 2D space.
-			_constantBuffer = new GorgonConstantBuffer("MiniTri WVP Constant Buffer", _graphics, new GorgonConstantBufferInfo
-			                                                                                     {
-				                                                                                     Usage = ResourceUsage.Default,
-																									 SizeInBytes = DX.Matrix.SizeInBytes
-			                                                                                     });
-
-		    _graphics.SetValue(ref projectionMatrix, _constantBuffer);
-		}
-
-		/// <summary>
-		/// Function to load the texture to apply to the triangle.
-		/// </summary>
-		private static void LoadTexture()
-		{
-			// In order to load the texture, we must first load it as image data using a PNG codec.
-			// This allows us to manipulate the image data in memory prior to uploading it to the GPU as a texture.
-			IGorgonImageCodec pngCodec = new GorgonCodecPng();
-
-			using (IGorgonImage image = pngCodec.LoadFromFile(GetResourcePath(@"Textures\MiniTri\Gorgon.MiniTri.png")))
-			{
-				// Upload the image data into the texture.
-				_texture = image.ToTexture("Gorgon.MiniTri.Texture", _graphics);
-			}
+			_constantBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics, ref projectionMatrix, "MiniTri WVP Constant Buffer");
 		}
 
 		/// <summary>
@@ -271,10 +249,9 @@ namespace Gorgon.Graphics.Example
 			// Finally, create a swap chain to display our output.
 			// In this case we're setting up our swap chain to bind with our main window, and we use its client size to determine the width/height of the swap chain back buffers.
 			// This width/height does not need to be the same size as the window, but, except for some scenarios, that would produce undesirable image quality.
-			_swap = new GorgonSwapChain("Main Swap Chain",
-			                            _graphics,
+			_swap = new GorgonSwapChain(_graphics,
 			                            _mainForm,
-			                            new GorgonSwapChainInfo
+			                            new GorgonSwapChainInfo("Main Swap Chain")
 			                            {
 				                            Format = BufferFormat.R8G8B8A8_UNorm,
 				                            Width = _mainForm.ClientSize.Width,
@@ -298,7 +275,7 @@ namespace Gorgon.Graphics.Example
 			// Load our texture so that we can apply it to our triangle.
 			//
 			// We load this first so we can use some functionality present on the texture to calculate the texture space coordinates required to render with the texture.
-			LoadTexture();
+		    _texture = GorgonTexture2DView.FromFile(_graphics, GetResourcePath(@"Textures\MiniTri\Gorgon.MiniTri.png"), new GorgonCodecPng());
 
 			// Set up the triangle vertices.
 			CreateVertexBuffer();
@@ -311,54 +288,27 @@ namespace Gorgon.Graphics.Example
 		    // This defines where to send the pixel data when rendering. For now, this goes to our swap chain.
             _graphics.SetRenderTarget(_swap.RenderTargetView);
 
-			// Create our draw call.
-			//
-			// This will pass all the necessary information to the GPU to render the triangle
-			_drawCall = new GorgonDrawCall
-			            {
-				            // This defines what type of primitive data to render. 
-				            // For this, and most other examples, this will be a list of individual triangles. However, this could also be a strip of joined triangles, 
-				            //lines, points, etc...
-				            PrimitiveType = PrimitiveType.TriangleList,
-				            // Our triangle has 3 points, obviously.
-				            VertexCount = 3,
-				            // This will bind the vertex buffer to the GPU so it can be read from when rendering.
-				            VertexBuffers = new GorgonVertexBufferBindings(_inputLayout)
-				                            {
-					                            [0] = new GorgonVertexBufferBinding(_vertexBuffer, MiniTriVertex.SizeInBytes)
-				                            },
-				            // Bind the constant buffer with our projection matrix to the GPU.
-				            VertexShaderConstantBuffers =
-				            {
-					            [0] = _constantBuffer
-				            },
-				            // Bind the texture to this draw call.
-				            // We put this texture in slot 0, and this must be synchronized with the 
-				            // pixel shader. Hence why the declaration of the texture in the shader 
-				            // has a t0 semantic.
-				            PixelShaderResourceViews =
-				            {
-					            [0] = _texture.DefaultShaderResourceView
-				            },
-				            // Bind the texture sampler to this draw call.
-				            PixelShaderSamplers =
-				            {
-					            // Like a texture resource, we have to assign this to the slot referenced in the 
-					            // pixel shader.
-					            [0] = GorgonSamplerState.Default
-				            },
+		    // Create our draw call.
+		    //
+		    // This will pass all the necessary information to the GPU to render the triangle
+		    //
+		    // Since draw calls are immutable objects, we use builders to create them (and any pipeline state). Once a draw
+		    // call is built, it cannot be changed (except for the vertex, and if applicable, index, and instance ranges).
+		    //
+		    // Builders work on a fluent interface.  Much like LINQ and can be used to create multiple draw calls from the same 
+		    // builder.
+		    var drawCallBuilder = new GorgonDrawCallBuilder();
+		    var pipelineStateBuilder = new GorgonPipelineStateBuilder(_graphics);
 
-				            // Define the current state of the rendering pipeline.
-				            // This will tell the GPU how to render the data. Here we assign the shaders we created, but we could assign things like 
-				            // blending information, depth information, etc...
-				            PipelineState = _graphics.GetPipelineState(new GorgonPipelineStateInfo
-				                                               {
-					                                               PixelShader = _pixelShader,
-					                                               VertexShader = _vertexShader,
-					                                               // For items facing away from us, always render.
-					                                               RasterState = GorgonRasterState.NoCulling
-				                                               })
-			            };
+		    _drawCall = drawCallBuilder.VertexBuffer(_inputLayout, _vertexBuffer)
+		                               .VertexRange(0, 3)
+		                               .ConstantBuffer(ShaderType.Vertex, _constantBuffer)
+		                               .ShaderResource(ShaderType.Pixel, _texture)
+		                               .PipelineState(pipelineStateBuilder
+		                                              .PixelShader(_pixelShader)
+		                                              .VertexShader(_vertexShader)
+		                                              .RasterState(GorgonRasterState.NoCulling))
+		                               .Build();
 		}
 		#endregion
 
@@ -390,7 +340,7 @@ namespace Gorgon.Graphics.Example
 				// IDisposable. Failure to do so can lead to warnings from the Direct 3D runtime when running in DEBUG mode.
 				_texture?.Dispose();
 				_constantBuffer?.Dispose();
-				_vertexBuffer?.Dispose();
+				_vertexBuffer.VertexBuffer?.Dispose();
 				_inputLayout?.Dispose();
 				_vertexShader?.Dispose();
 				_pixelShader?.Dispose();

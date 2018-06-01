@@ -24,9 +24,9 @@
 // 
 #endregion
 
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Graphics.Core;
-using Gorgon.Native;
 using DX = SharpDX;
 
 namespace Gorgon.Graphics.Example
@@ -45,7 +45,7 @@ namespace Gorgon.Graphics.Example
 		/// 
 		/// We'll need this to tell Direct 3D how many vertices are stored in a vertex buffer.
 		/// </summary>
-		public static int SizeInBytes = DirectAccess.SizeOf<MiniTriVertex>();
+		public static int SizeInBytes = Unsafe.SizeOf<MiniTriVertex>();
 
 		/// <summary>
 		/// This will be the position of the vertex in object space.

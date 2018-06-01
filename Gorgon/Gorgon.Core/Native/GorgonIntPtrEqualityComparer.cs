@@ -27,7 +27,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Gorgon.Core.Native
+namespace Gorgon.Native
 {
 	/// <summary>
 	/// An equality comparer for the <see cref="IntPtr"/> type.

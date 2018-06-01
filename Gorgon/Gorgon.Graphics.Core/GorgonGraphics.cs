@@ -354,7 +354,7 @@ namespace Gorgon.Graphics.Core
         #endregion
 
         #region Methods.
-        #region Resource Reset Code.  Adds 10ms/frame.  Needs work.
+        #region Resource Reset Code.  Adds 10ms/frame (for 100,000 draw calls).  Needs work.
         /// <summary>
         /// Function to unbind the resource from stream out resources.
         /// </summary>
@@ -1424,7 +1424,7 @@ namespace Gorgon.Graphics.Core
             Debug.Assert(currentState.StreamOutBindings!= null, "StreamOut bindings on current draw state is null - This is not allowed.");
             Debug.Assert(currentState.VertexBuffers != null, "VertexBuffers on current draw state is null - This is not allowed.");
 
-            // TODO: This adds about 10ms of time to each frame. 
+            // TODO: This adds about 10ms (for 100,000 draw calls) of time to each frame. 
             //UnbindInUseResources(currentState);
 
             // Ensure we have an input layout.
@@ -1985,13 +1985,13 @@ namespace Gorgon.Graphics.Core
             if (!factor.Equals(in _blendFactor))
             {
                 _blendFactor = factor;
-                D3DDeviceContext.OutputMerger.BlendFactor = factor.ToRawColor4();
+                D3DDeviceContext.OutputMerger.BlendFactor = _blendFactor.ToRawColor4();
             }
 
             if (blendSampleMask != _blendSampleMask)
             {
-                _blendFactor = _blendSampleMask;
-                D3DDeviceContext.OutputMerger.BlendSampleMask = blendSampleMask;
+                _blendSampleMask = blendSampleMask;
+                D3DDeviceContext.OutputMerger.BlendSampleMask = _blendSampleMask;
             }
 
             if (depthStencilReference != _depthStencilReference)

@@ -90,7 +90,7 @@ namespace Gorgon.Graphics.Core
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pipelineState"/> parameter is <b>null</b>.</exception>
         public GorgonStreamOutCallBuilder PipelineState(GorgonStreamOutPipelineState pipelineState)
         {
-            _workerCall.PipelineState = new GorgonStreamOutPipelineState(pipelineState ?? throw new ArgumentNullException(nameof(pipelineState)));
+            _workerCall.PipelineState = pipelineState ?? throw new ArgumentNullException(nameof(pipelineState));
             return this;
         }
 
@@ -274,16 +274,7 @@ namespace Gorgon.Graphics.Core
             // Copy over uavs.
             StateCopy.CopyReadWriteViews(final.D3DState.ReadWriteViews, _workerCall.D3DState.ReadWriteViews, 0);
 
-            // If we didn't specify an allocator, or we didn't initialize the pipeline state, then create a new copy.
-            // Otherwise, it'd defeat the purpose of the allocator if we just created a new state every time.
-            if ((allocator == null) || (final.PipelineState == null))
-            {
-                final.PipelineState = new GorgonStreamOutPipelineState(_workerCall.D3DState.PipelineState);
-            }
-            else
-            {
-                _workerCall.D3DState.PipelineState.CopyTo(final.D3DState.PipelineState);
-            }
+            final.PipelineState = _workerCall.PipelineState;
 
             return final;
         }

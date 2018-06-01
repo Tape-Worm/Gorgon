@@ -39,7 +39,6 @@ using Gorgon.Math;
 using Gorgon.Native;
 using Gorgon.Timing;
 using Gorgon.UI;
-using SharpDX.Direct3D;
 
 namespace Gorgon.Graphics.Example
 {
@@ -460,7 +459,7 @@ namespace Gorgon.Graphics.Example
 	                                                      .RasterState(GorgonRasterState.Default))
 	                             .ConstantBuffer(ShaderType.Vertex, null)
 	                             .ShaderResource(ShaderType.Pixel, null)
-	                             .StreamOutBuffer(in _soBinding)
+	                             .StreamOutBuffer(_soBinding)
 	                             .Build();
             
 	        var soCallBuilder = new GorgonStreamOutCallBuilder();

@@ -170,7 +170,7 @@ namespace Gorgon.Graphics.Core
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pipelineState"/> parameter is <b>null</b>.</exception>
         public TB PipelineState(GorgonPipelineState pipelineState)
         {
-            DrawCall.D3DState.PipelineState = new GorgonPipelineState(pipelineState ?? throw new ArgumentNullException(nameof(pipelineState)));
+            DrawCall.D3DState.PipelineState = pipelineState ?? throw new ArgumentNullException(nameof(pipelineState));
             return (TB)this;
         }
 
@@ -191,7 +191,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="slot">[Optional] The slot for the binding.</param>
         /// <returns>The fluent builder interface.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="slot"/> parameter is less than 0, or greater than/equal to <see cref="GorgonStreamOutBindings.MaximumStreamOutCount"/>.</exception>
-        public TB StreamOutBuffer(in GorgonStreamOutBinding binding, int slot = 0)
+        public TB StreamOutBuffer(GorgonStreamOutBinding binding, int slot = 0)
         {
             if ((slot < 0) || (slot >= GorgonStreamOutBindings.MaximumStreamOutCount))
             {
@@ -247,7 +247,7 @@ namespace Gorgon.Graphics.Core
         /// <returns>The fluent builder interface.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="layout"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="slot"/> parameter is less than 0, or greater than/equal to <see cref="GorgonVertexBufferBindings.MaximumVertexBufferCount"/>.</exception>
-        public TB VertexBuffer(GorgonInputLayout layout, in GorgonVertexBufferBinding binding, int slot = 0)
+        public TB VertexBuffer(GorgonInputLayout layout, GorgonVertexBufferBinding binding, int slot = 0)
         {
             if ((slot < 0) || (slot >= GorgonVertexBufferBindings.MaximumVertexBufferCount))
             {
@@ -444,7 +444,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="slot">[Optional] The slot used to asign the view.</param>
         /// <returns>The fluent builder interface.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="slot"/> is less than 0, or greater than/equal to <see cref="GorgonShaderResourceViews.MaximumShaderResourceViewCount"/>.</exception>
-        public TB ReadWriteView(in GorgonReadWriteViewBinding resourceView, int slot = 0)
+        public TB ReadWriteView(GorgonReadWriteViewBinding resourceView, int slot = 0)
         {
             if ((slot < 0) || (slot >= GorgonShaderResourceViews.MaximumShaderResourceViewCount))
             {
@@ -534,16 +534,12 @@ namespace Gorgon.Graphics.Core
             // Copy over unordered access views.
             StateCopy.CopyReadWriteViews(final.D3DState.ReadWriteViews, DrawCall.D3DState.ReadWriteViews, 0);
 
-            // If we didn't specify an allocator, or we didn't initialize the pipeline state, then create a new copy.
-            // Otherwise, it'd defeat the purpose of the allocator if we just created a new state every time.
-            if ((allocator == null) || (final.D3DState.PipelineState == null))
-            {
-                final.D3DState.PipelineState = new GorgonPipelineState(DrawCall.PipelineState);
-            }
-            else
-            {
-                DrawCall.PipelineState.CopyTo(final.D3DState.PipelineState);
-            }
+            final.D3DState.PipelineState = DrawCall.PipelineState;
+
+            // Copy the cached states.
+            final.PipelineState.D3DBlendState = DrawCall.PipelineState.D3DBlendState;
+            final.PipelineState.D3DDepthStencilState = DrawCall.PipelineState.D3DDepthStencilState;
+            final.PipelineState.D3DRasterState = DrawCall.PipelineState.D3DRasterState;
 
             OnUpdate(final);
 
@@ -643,6 +639,7 @@ namespace Gorgon.Graphics.Core
             drawCall.SetupConstantBuffers();
             drawCall.SetupSamplers();
             drawCall.SetupViews();
+            drawCall.D3DState.PsSamplers[0] = GorgonSamplerState.Default;
             DrawCall.D3DState.VertexBuffers = new GorgonVertexBufferBindings();
             DrawCall.D3DState.StreamOutBindings = new GorgonStreamOutBindings();
             DrawCall.D3DState.PipelineState = new GorgonPipelineState();

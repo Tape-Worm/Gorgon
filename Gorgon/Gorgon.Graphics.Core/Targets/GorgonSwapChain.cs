@@ -34,7 +34,7 @@ using DX = SharpDX;
 using DXGI = SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;
 using Gorgon.Core;
-using Gorgon.Core.Collections;
+using Gorgon.Collections;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
