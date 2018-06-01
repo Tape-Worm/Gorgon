@@ -27,7 +27,6 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using Gorgon.Native;
 
 namespace Gorgon.Graphics.Imaging.Codecs
 {

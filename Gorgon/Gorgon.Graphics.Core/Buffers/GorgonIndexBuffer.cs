@@ -158,7 +158,8 @@ namespace Gorgon.Graphics.Core
         /// Function to initialize the buffer data.
         /// </summary>
         /// <param name="initialData">The initial data used to populate the buffer.</param>
-        private void Initialize(GorgonNativeBuffer<byte> initialData)
+        private void Initialize<T>(GorgonNativeBuffer<T> initialData)
+            where T : unmanaged
 		{
 			D3D11.CpuAccessFlags cpuFlags = GetCpuFlags(false, D3D11.BindFlags.IndexBuffer);
 
@@ -321,13 +322,77 @@ namespace Gorgon.Graphics.Core
 	    /// </summary>
 	    /// <param name="graphics">The <see cref="GorgonGraphics"/> object used to create and manipulate the buffer.</param>
 	    /// <param name="info">Information used to create the buffer.</param>
-	    /// <param name="initialData">[Optional] The initial data used to populate the buffer.</param>
 	    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, or the <paramref name="info"/> parameters are <b>null</b>.</exception>
-	    public GorgonIndexBuffer(GorgonGraphics graphics, IGorgonIndexBufferInfo info, GorgonNativeBuffer<byte> initialData = null)
+	    public GorgonIndexBuffer(GorgonGraphics graphics, IGorgonIndexBufferInfo info)
 	        : base(graphics)
 	    {
 	        _info = new GorgonIndexBufferInfo(info ?? throw new ArgumentNullException(nameof(info)));
-	        Initialize(initialData);
+	        Initialize<byte>(null);
+	    }
+
+	    /// <summary>
+	    /// Initializes a new instance of the <see cref="GorgonIndexBuffer" /> class, initialized with <see cref="byte"/> values. 
+	    /// </summary>
+	    /// <param name="graphics">The <see cref="GorgonGraphics"/> object used to create and manipulate the buffer.</param>
+	    /// <param name="info">Information used to create the buffer.</param>
+	    /// <param name="initialData">The initial data used to populate the buffer.</param>
+	    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, <paramref name="info"/> or the <paramref name="initialData"/> parameters are <b>null</b>.</exception>
+	    public GorgonIndexBuffer(GorgonGraphics graphics, IGorgonIndexBufferInfo info, GorgonNativeBuffer<byte> initialData)
+	        : this(graphics, info)
+	    {
+	        Initialize(initialData ?? throw new ArgumentNullException(nameof(initialData)));
+	    }
+
+	    /// <summary>
+	    /// Initializes a new instance of the <see cref="GorgonIndexBuffer" /> class, initialized with <see cref="ushort"/> values for 16 bit index buffers. 
+	    /// </summary>
+	    /// <param name="graphics">The <see cref="GorgonGraphics"/> object used to create and manipulate the buffer.</param>
+	    /// <param name="info">Information used to create the buffer.</param>
+	    /// <param name="initialData">The initial data used to populate the buffer.</param>
+	    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, <paramref name="info"/> or the <paramref name="initialData"/> parameters are <b>null</b>.</exception>
+	    public GorgonIndexBuffer(GorgonGraphics graphics, IGorgonIndexBufferInfo info, GorgonNativeBuffer<ushort> initialData)
+	        : this(graphics, info)
+	    {
+	        Initialize(initialData ?? throw new ArgumentNullException(nameof(initialData)));
+	    }
+
+	    /// <summary>
+	    /// Initializes a new instance of the <see cref="GorgonIndexBuffer" /> class, initialized with <see cref="short"/> values for 16 bit index buffers.
+	    /// </summary>
+	    /// <param name="graphics">The <see cref="GorgonGraphics"/> object used to create and manipulate the buffer.</param>
+	    /// <param name="info">Information used to create the buffer.</param>
+	    /// <param name="initialData">The initial data used to populate the buffer.</param>
+	    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, <paramref name="info"/> or the <paramref name="initialData"/> parameters are <b>null</b>.</exception>
+	    public GorgonIndexBuffer(GorgonGraphics graphics, IGorgonIndexBufferInfo info, GorgonNativeBuffer<short> initialData = null)
+	        : this(graphics, info)
+	    {
+	        Initialize(initialData ?? throw new ArgumentNullException(nameof(initialData)));
+	    }
+
+	    /// <summary>
+	    /// Initializes a new instance of the <see cref="GorgonIndexBuffer" /> class, initialized with <see cref="uint"/> values for 32 bit index buffers.
+	    /// </summary>
+	    /// <param name="graphics">The <see cref="GorgonGraphics"/> object used to create and manipulate the buffer.</param>
+	    /// <param name="info">Information used to create the buffer.</param>
+	    /// <param name="initialData">The initial data used to populate the buffer.</param>
+	    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, <paramref name="info"/> or the <paramref name="initialData"/> parameters are <b>null</b>.</exception>
+	    public GorgonIndexBuffer(GorgonGraphics graphics, IGorgonIndexBufferInfo info, GorgonNativeBuffer<uint> initialData = null)
+	        : this(graphics, info)
+	    {
+	        Initialize(initialData ?? throw new ArgumentNullException(nameof(initialData)));
+	    }
+
+	    /// <summary>
+	    /// Initializes a new instance of the <see cref="GorgonIndexBuffer" /> class, initialized with <see cref="int"/> values for 32 bit index buffers.
+	    /// </summary>
+	    /// <param name="graphics">The <see cref="GorgonGraphics"/> object used to create and manipulate the buffer.</param>
+	    /// <param name="info">Information used to create the buffer.</param>
+	    /// <param name="initialData">The initial data used to populate the buffer.</param>
+	    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, <paramref name="info"/> or the <paramref name="initialData"/> parameters are <b>null</b>.</exception>
+	    public GorgonIndexBuffer(GorgonGraphics graphics, IGorgonIndexBufferInfo info, GorgonNativeBuffer<int> initialData = null)
+	        : this(graphics, info)
+	    {
+	        Initialize(initialData ?? throw new ArgumentNullException(nameof(initialData)));
 	    }
 		#endregion
 	}

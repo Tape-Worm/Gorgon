@@ -196,7 +196,7 @@ namespace GorgonLibrary.Example
 		                                                IndexCount = indices.Length,
 		                                                Use16BitIndices = true
 		                                            },
-		                                            indexPtr.Cast<byte>());
+		                                            indexPtr);
 
 		        VertexBuffer = new GorgonVertexBufferBindings(inputLayout)
 		                       {
