@@ -45,7 +45,7 @@ namespace Gorgon.IO.Providers
 	/// file types.
 	/// </para>
 	/// <para>
-	/// File system providers are plug ins, and should have their assemblies loaded by the <see cref="GorgonPluginAssemblyCache"/> before using this method and a <see cref="GorgonPluginService"/> should be 
+	/// File system providers are plug ins, and should have their assemblies loaded by the <see cref="GorgonMefPluginCache"/> before using this method and a <see cref="IGorgonPluginService"/> should be 
 	/// created in order to pass it to this factory.
 	/// </para>
 	/// </remarks>
@@ -84,7 +84,7 @@ namespace Gorgon.IO.Providers
 		// A plugin service where instances of the provider plugins can be found.
 		private readonly IGorgonPluginService _pluginService;
 		// The application log file.
-		private readonly IGorgonLog _log = GorgonLogDummy.DefaultInstance;
+		private readonly IGorgonLog _log;
 		#endregion
 
 		#region Methods.
@@ -137,7 +137,7 @@ namespace Gorgon.IO.Providers
 		/// <returns>A list of file system providers</returns>
 		/// <remarks>
 		/// When the <paramref name="pluginAssembly"/> parameter is set to <b>null</b>, then only the file system providers within that assembly will 
-		/// be loaded. Otherwise, all file system providers available in the <see cref="GorgonPluginService"/> passed to the object constructor will be created (or have 
+		/// be loaded. Otherwise, all file system providers available in the <see cref="IGorgonPluginService"/> passed to the object constructor will be created (or have 
 		/// a previously created instance returned).
 		/// </remarks>
 		public IReadOnlyList<GorgonFileSystemProvider> CreateProviders(AssemblyName pluginAssembly = null)
@@ -158,11 +158,7 @@ namespace Gorgon.IO.Providers
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginService"/> parameter is <b>null</b>.</exception>
 		public GorgonFileSystemProviderFactory(IGorgonPluginService pluginService, IGorgonLog log = null)
 		{
-			if (log != null)
-			{
-				_log = log;
-			}
-
+		    _log = log ?? GorgonLog.NullLog;
 			_pluginService = pluginService ?? throw new ArgumentNullException(nameof(pluginService));
 		}
 		#endregion

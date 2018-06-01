@@ -28,6 +28,7 @@ using System;
 using System.IO;
 using System.Windows.Forms;
 using Gorgon.Core;
+using Gorgon.Diagnostics;
 using Gorgon.Examples.Properties;
 using Gorgon.IO;
 using Gorgon.UI;
@@ -40,6 +41,26 @@ namespace Gorgon.Examples
 	/// <remarks>To see a description of this example, look in formMain.cs</remarks>
 	internal static class Program
 	{
+	    #region Properties.
+        /// <summary>
+        /// Property to return the application log file.
+        /// </summary>
+	    public static IGorgonLog Log
+	    {
+	        get;
+            private set;
+        }
+
+        /// <summary>
+        /// Property to return the directory where we'll be writing into.
+        /// </summary>
+	    public static DirectoryInfo WriteDirectory
+        {
+            get;
+            private set;
+        }
+	    #endregion
+
 		#region Methods.
 		/// <summary>
 		/// Property to return the path to the resources for the example.
@@ -78,16 +99,33 @@ namespace Gorgon.Examples
 		[STAThread]
 		private static void Main()
 		{
-			try
-			{
-				Application.EnableVisualStyles();
-				Application.SetCompatibleTextRenderingDefault(false);
-				Application.Run(new formMain());
-			}
-			catch (Exception ex)
-			{
-				ex.Catch(_ => GorgonDialogs.ErrorBox(null, _), GorgonApplication.Log);
-			}
+            Log = new GorgonLog("Writing", "Tape_Worm");
+            
+            Log.LogStart();
+
+		    try
+		    {
+                Application.EnableVisualStyles();
+		        Application.SetCompatibleTextRenderingDefault(false);
+
+                WriteDirectory = new DirectoryInfo(Path.Combine(Path.GetTempPath(), "Writing"));
+
+		        if (!WriteDirectory.Exists)
+		        {
+                    WriteDirectory.Create();
+                    WriteDirectory.Refresh();
+		        }
+
+		        Application.Run(new formMain());
+		    }
+		    catch (Exception ex)
+		    {
+		        ex.Catch(_ => GorgonDialogs.ErrorBox(null, _), Log);
+		    }
+		    finally
+		    {
+                Log.LogEnd();
+		    }
 		}
 		#endregion
 	}

@@ -64,7 +64,8 @@ namespace Gorgon.Examples
     /// as a stream (OpenStream) or an array of bytes (ReadFile).  Please note that writing to these file systems is not
     /// supported and can only be done when a write directory is set.  This will be covered in another example.
 	/// </remarks>
-	public partial class formMain : Form
+	public partial class formMain 
+	    : GorgonFlatForm
 	{
 		#region Variables.
 		// Our file system.
@@ -150,7 +151,7 @@ namespace Gorgon.Examples
 			}
 			catch (Exception ex)
 			{
-				ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), GorgonApplication.Log);
+				ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), Program.Log);
 				splitFileSystem.Panel2.Controls.Add(_instructions);
 			}
 		}
@@ -176,7 +177,7 @@ namespace Gorgon.Examples
 			}
 			catch (Exception ex)
 			{
-				ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), GorgonApplication.Log);
+				ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), Program.Log);
 			}
 		}
 
@@ -199,7 +200,7 @@ namespace Gorgon.Examples
 			}
 			catch (Exception ex)
 			{
-				ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), GorgonApplication.Log);
+				ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), Program.Log);
 			}
 		}
 
@@ -208,23 +209,21 @@ namespace Gorgon.Examples
 		/// </summary>
 		private void LoadZipFileSystemProvider()
 		{
-			// Location of our zip file provider assembly.
-			string zipProviderDLL = Program.PlugInPath + @"\Gorgon.FileSystem.Zip.DLL";
 			// Name of our zip provider plugin.
 			const string zipProviderPluginName = "Gorgon.IO.Zip.ZipProvider";
 
 			// We can load the objects we need and discard the plugin system after.
 			// This works because we keep the references to the objects that our 
 			// plugin creates, even after the plugin is gone.
-			using (GorgonPluginAssemblyCache pluginAssemblies = new GorgonPluginAssemblyCache(GorgonApplication.Log))
+			using (GorgonMefPluginCache pluginAssemblies = new GorgonMefPluginCache(Program.Log))
 			{
-				pluginAssemblies.Load(zipProviderDLL);
+				pluginAssemblies.LoadPluginAssemblies(Program.PlugInPath, "Gorgon.FileSystem.Zip.DLL");
 
 				GorgonFileSystemProviderFactory providerFactory = new GorgonFileSystemProviderFactory(
-					new GorgonPluginService(pluginAssemblies, GorgonApplication.Log),
-					GorgonApplication.Log);
+					new GorgonMefPluginService(pluginAssemblies, Program.Log),
+					Program.Log);
 
-				_fileSystem = new GorgonFileSystem(providerFactory.CreateProvider(zipProviderPluginName), GorgonApplication.Log);
+				_fileSystem = new GorgonFileSystem(providerFactory.CreateProvider(zipProviderPluginName), Program.Log);
 			}
 		}
 
@@ -380,60 +379,66 @@ namespace Gorgon.Examples
 			}
 			catch (Exception ex)
 			{
-				ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), GorgonApplication.Log);
+				ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), Program.Log);
 			}
 		}
 
-		/// <summary>
-		/// Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.
-		/// </summary>
-		/// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
-		protected override void OnLoad(EventArgs e)
-		{
-			base.OnLoad(e);
+	    /// <summary>
+	    /// Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.
+	    /// </summary>
+	    /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
+	    protected override void OnLoad(EventArgs e)
+	    {
+	        base.OnLoad(e);
 
-			try
-			{
-				// Picture box.
-				_picture = new PictureBox {Name = "pictureImage"};
+	        try
+	        {
+	            // Picture box.
+	            _picture = new PictureBox
+	                       {
+	                           Name = "pictureImage"
+	                       };
 
-			    // Text display.
-				_textDisplay = new TextBox {Name = "textDisplay"};
-			    _textFont = new Font("Consolas", 10.0f, FontStyle.Regular, GraphicsUnit.Point);
-				_textDisplay.Font = _textFont;
+	            // Text display.
+	            _textDisplay = new TextBox
+	                           {
+	                               Name = "textDisplay"
+	                           };
+	            _textFont = new Font("Consolas", 10.0f, FontStyle.Regular, GraphicsUnit.Point);
+	            _textDisplay.Font = _textFont;
 
-				_instructions = new Label
-				    {
-				        Name = "labelInstructions",
-				        Text = "Double click on a file node in the tree to display it.",
-				        AutoSize = false,
-				        TextAlign = ContentAlignment.MiddleCenter,
-				        Dock = DockStyle.Fill,
-				        Font = Font
-				    };
+	            _instructions = new Label
+	                            {
+	                                Name = "labelInstructions",
+	                                Text = "Double click on a file node in the tree to display it.",
+	                                AutoSize = false,
+	                                TextAlign = ContentAlignment.MiddleCenter,
+	                                Dock = DockStyle.Fill,
+	                                Font = Font
+	                            };
 
-			    // Add the instructions.
-				splitFileSystem.Panel2.Controls.Add(_instructions);
+	            // Add the instructions.
+	            splitFileSystem.Panel2.Controls.Add(_instructions);
 
-				// Get the zip file provider.
-				LoadZipFileSystemProvider();
+	            // Get the zip file provider.
+	            LoadZipFileSystemProvider();
 
-				// Mount the physical file system directory.
-				_fileSystem.Mount(Program.GetResourcePath(@"VFSRoot\"));
+	            // Mount the physical file system directory.
+	            _fileSystem.Mount(Program.GetResourcePath(@"VFSRoot\"));
 
-				// Mount the zip file into a sub directory.
-				_fileSystem.Mount(Program.GetResourcePath("VFSRoot.zip"), "/ZipFile");
+	            // Mount the zip file into a sub directory.
+	            _fileSystem.Mount(Program.GetResourcePath("VFSRoot.zip"), "/ZipFile");
 
-				// Fill the root of the tree.
-				FillTree(null);
-			}
-			catch (Exception ex)
-			{
-				ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), GorgonApplication.Log);
-				Application.Exit();
-			}
-		}
-		#endregion
+	            // Fill the root of the tree.
+	            FillTree(null);
+	        }
+	        catch (Exception ex)
+	        {
+	            ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), Program.Log);
+	            GorgonApplication.Quit();
+	        }
+	    }
+	    #endregion
 
 		#region Constructor/Destructor.
 		/// <summary>

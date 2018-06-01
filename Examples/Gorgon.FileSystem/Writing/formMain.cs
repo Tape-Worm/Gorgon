@@ -29,7 +29,6 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using Gorgon.Core;
-using Gorgon.Diagnostics;
 using Gorgon.IO;
 using Gorgon.UI;
 
@@ -55,15 +54,14 @@ namespace Gorgon.Examples
 	/// Here, we do exactly this.  We take the file from the root of the directory and read it in.  By assigning the write directory
 	/// after we can then load in the modified version of the file (if it exists).
 	/// </remarks>
-	public partial class formMain : Form
+	public partial class formMain 
+	    : GorgonFlatForm
 	{
 		#region Variables.
 		// Our file system.
 		private GorgonFileSystem _fileSystem;
 		// The file system writer.
 		private GorgonFileSystemWriter _writer;
-		// Write path.
-		private string _writePath = string.Empty;
 		// Original text.
 		private string _originalText = string.Empty;
 		// Changed text.
@@ -110,7 +108,7 @@ namespace Gorgon.Examples
 			}
 			catch (Exception ex)
 			{
-				ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), GorgonApplication.Log);
+				ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), Program.Log);
 			}
 			finally
 			{
@@ -134,7 +132,7 @@ namespace Gorgon.Examples
 			}
 			catch (Exception ex)
 			{
-				ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), GorgonApplication.Log);
+				ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), Program.Log);
 			}
 			finally
 			{
@@ -158,7 +156,7 @@ namespace Gorgon.Examples
 			}
 			catch (Exception ex)
 			{
-				ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), GorgonApplication.Log);
+				ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), Program.Log);
 			}
 			finally
 			{
@@ -186,7 +184,7 @@ namespace Gorgon.Examples
         {
 	        labelInfo.Text = string.Equals(_originalText, textDisplay.Text, StringComparison.CurrentCulture)
 		                         ? $"Using original text from {Program.GetResourcePath(@"FolderSystem\").Ellipses(100, true)}"
-		                         : $"Using modified text from {_writePath.Ellipses(100, true)}";
+		                         : $"Using modified text from {Program.WriteDirectory.FullName.Ellipses(100, true)}";
         }
 
 		/// <summary>
@@ -238,25 +236,23 @@ namespace Gorgon.Examples
 		{
 			base.OnLoad(e);
 
-			GorgonLogFile logFile = (GorgonLogFile)GorgonApplication.Log;
-
 			try
 			{
-				_writePath = Path.GetDirectoryName(logFile.LogPath) + @"\Examples\FileSystem.Writing\";
+			    stripCommands.Renderer = Theme;
 
 				// Create our virtual file system.
-				_fileSystem = new GorgonFileSystem(GorgonApplication.Log);
-				_writer = new GorgonFileSystemWriter(_fileSystem, _writePath);
+				_fileSystem = new GorgonFileSystem(Program.Log);
+				_writer = new GorgonFileSystemWriter(_fileSystem, Program.WriteDirectory.FullName);
 
 				LoadText();
 
 				labelFileSystem.Text = $"{Program.GetResourcePath(@"FolderSystem\").Ellipses(100, true)} mounted as '/'.";
-				labelWriteLocation.Text = $"{_writePath.Ellipses(100, true)} mounted as '/'";
+				labelWriteLocation.Text = $"{Program.WriteDirectory.FullName.Ellipses(100, true)} mounted as '/'";
 			}
 			catch (Exception ex)
 			{
-				ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), GorgonApplication.Log);
-				Application.Exit();
+				ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), Program.Log);
+				GorgonApplication.Quit();
 			}
 			finally
 			{

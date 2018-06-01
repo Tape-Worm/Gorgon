@@ -28,13 +28,12 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using Gorgon.Core;
+using Gorgon.Diagnostics;
 using Gorgon.Examples.Properties;
 using Gorgon.IO;
 using Gorgon.IO.Providers;
 using Gorgon.Plugins;
-using Gorgon.UI;
 
 namespace Gorgon.Examples
 {
@@ -67,11 +66,13 @@ namespace Gorgon.Examples
 
         #region Variables.
 		// The plugin assemblies.
-		private static GorgonPluginAssemblyCache _pluginAssemblies;
+		private static GorgonMefPluginCache _pluginAssemblies;
 		// The plugin service.
-		private static GorgonPluginService _pluginService;
+		private static IGorgonPluginService _pluginService;
 		// File system.
         private static GorgonFileSystem _fileSystem;
+        // The log file used for debug logging.
+        private static IGorgonLog _log;
         #endregion
 
         #region Properties.
@@ -141,13 +142,13 @@ namespace Gorgon.Examples
         /// <returns><b>true</b> if successfully loaded, <b>false</b> if not.</returns>
         private static bool LoadZipProviderPlugin()
         {
-            string zipProviderPath = PluginPath + "Gorgon.FileSystem.Zip.dll";
+            FileInfo zipProviderFile = new FileInfo(Path.Combine(PluginPath.FormatDirectory(Path.DirectorySeparatorChar), "Gorgon.FileSystem.Zip.dll"));
 
 			// Check to see if the file exists.
-            if (!File.Exists(zipProviderPath))
+            if (!zipProviderFile.Exists)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Could not find the plugin assembly file:\n'{0}'.", zipProviderPath);
+                Console.WriteLine("Could not find the plugin assembly file:\n'{0}'.", zipProviderFile.FullName);
                 Console.ResetColor();
 #if DEBUG
                 Console.ReadKey();
@@ -156,11 +157,10 @@ namespace Gorgon.Examples
             }
 
             // Load the plugin assembly.
-	        AssemblyName assemblyName = AssemblyName.GetAssemblyName(zipProviderPath);
-	        _pluginAssemblies.Load(assemblyName);
+            _pluginAssemblies.LoadPluginAssemblies(zipProviderFile.Directory?.FullName, zipProviderFile.Name);
 
 			// Create our file system provider factory so we can retrieve the zip file provider.
-	        GorgonFileSystemProviderFactory providerFactory = new GorgonFileSystemProviderFactory(_pluginService, GorgonApplication.Log);
+	        GorgonFileSystemProviderFactory providerFactory = new GorgonFileSystemProviderFactory(_pluginService, _log);
 
 			// Get our zip file provider.
 	        GorgonFileSystemProvider provider;
@@ -180,7 +180,7 @@ namespace Gorgon.Examples
 			    return false;
 	        }
 
-	        _fileSystem = new GorgonFileSystem(provider, GorgonApplication.Log);
+	        _fileSystem = new GorgonFileSystem(provider, _log);
 
             Console.WriteLine("\nThe zip file file system provider was loaded successfully.");
             return true;
@@ -191,10 +191,13 @@ namespace Gorgon.Examples
 	    /// </summary>
 	    private static void Main()
 		{
+            _log = new GorgonLog("ZipFileSystem", "Tape_Worm");
+            _log.LogStart();
+
 			// Create the plugin assembly cache.
-			_pluginAssemblies = new GorgonPluginAssemblyCache(GorgonApplication.Log);
+			_pluginAssemblies = new GorgonMefPluginCache(_log);
 			// Create the plugin service.
-			_pluginService = new GorgonPluginService(_pluginAssemblies, GorgonApplication.Log);
+			_pluginService = new GorgonMefPluginService(_pluginAssemblies, _log);
 
 		    try
 		    {
@@ -292,6 +295,7 @@ namespace Gorgon.Examples
 		    {
 				// Always dispose the cache to clean up the temporary app domain it creates.
 			    _pluginAssemblies.Dispose();
+                _log.LogEnd();
 		    }
         }
         #endregion

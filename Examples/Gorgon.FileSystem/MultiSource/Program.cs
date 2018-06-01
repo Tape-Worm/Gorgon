@@ -28,6 +28,7 @@ using System;
 using System.IO;
 using System.Windows.Forms;
 using Gorgon.Core;
+using Gorgon.Diagnostics;
 using Gorgon.Examples.Properties;
 using Gorgon.IO;
 using Gorgon.UI;
@@ -40,7 +41,16 @@ namespace Gorgon.Examples
 	/// <remarks>To see a description of this example, look in formMain.cs</remarks>
 	internal static class Program
 	{
-		#region Properties.
+        #region Properties.
+        /// <summary>
+        /// Property to return the log used for debug log messages.
+        /// </summary>
+	    public static IGorgonLog Log
+	    {
+	        get;
+	        private set;
+	    }
+
 		/// <summary>
 		/// Property to return the path to the plug-ins.
 		/// </summary>
@@ -107,16 +117,23 @@ namespace Gorgon.Examples
 		[STAThread]
 		private static void Main()
 		{
-			try
-			{
-				Application.EnableVisualStyles();
-				Application.SetCompatibleTextRenderingDefault(false);
-				Application.Run(new formMain());
-			}
-			catch (Exception ex)
-			{
-				ex.Catch(_ => GorgonDialogs.ErrorBox(null, _), GorgonApplication.Log);
-			}
+            Log = new GorgonLog("MultiSource", "Tape_Worm");
+            Log.LogStart();
+
+		    try
+		    {
+		        Application.EnableVisualStyles();
+		        Application.SetCompatibleTextRenderingDefault(false);
+		        Application.Run(new formMain());
+		    }
+		    catch (Exception ex)
+		    {
+		        ex.Catch(_ => GorgonDialogs.ErrorBox(null, _), Log);
+		    }
+		    finally
+		    {
+                Log.LogEnd();
+		    }
 		}
 		#endregion
 	}

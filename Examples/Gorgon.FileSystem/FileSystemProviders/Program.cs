@@ -25,13 +25,14 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Gorgon.Core;
+using Gorgon.Diagnostics;
 using Gorgon.Examples.Properties;
 using Gorgon.IO.Providers;
 using Gorgon.Plugins;
-using Gorgon.UI;
 
 namespace Gorgon.Examples
 {
@@ -64,11 +65,13 @@ namespace Gorgon.Examples
     {
         #region Variables.
 		// The providers that were loaded.
-		private static GorgonFileSystemProvider[] _providers;
+		private static IReadOnlyList<GorgonFileSystemProvider> _providers;
 		// The cache that will hold the assemblies where our plugins will live.
-		private static GorgonPluginAssemblyCache _pluginAssemblies;
+		private static GorgonMefPluginCache _pluginAssemblies;
 		// The plugin service.
-		private static GorgonPluginService _pluginService;
+		private static IGorgonPluginService _pluginService;
+        // The log used for debug logging.
+        private static IGorgonLog _log;
         #endregion
 
         #region Properties.
@@ -107,34 +110,17 @@ namespace Gorgon.Examples
         /// <returns>The number of file system provider plug-ins.</returns>
         private static int LoadFileSystemProviders()
         {
-            string[] files = Directory.GetFiles(PlugInPath, "*.dll", SearchOption.TopDirectoryOnly);
-            
-            // Load each assembly.
-	        foreach (string file in files)
-	        {
-		        // Determine if this file is a plugin assembly.
-		        // We use this to ensure that the file is a valid .NET assembly and that it has plugins to load.
-		        if (!_pluginAssemblies.IsPluginAssembly(file))
-		        {
-			        continue;
-		        }
-
-		        // Load the assembly DLL.
-		        // This will load the assembly DLL into the application domain (if it's not already loaded). If 
-				// we did not perform the IsPluginAssembly check above, this method would throw an exception if 
-				// the file was not a valid .NET assembly or did not contain any plugins.
-		        _pluginAssemblies.Load(file);
-	        }
-			
+            _pluginAssemblies.LoadPluginAssemblies(PlugInPath);
+		
 			// Get the file system provider factory so we can retrieve our newly loaded providers.
-			GorgonFileSystemProviderFactory providerFactory = new GorgonFileSystemProviderFactory(_pluginService, GorgonApplication.Log);
+			IGorgonFileSystemProviderFactory providerFactory = new GorgonFileSystemProviderFactory(_pluginService, _log);
 
 			// Get all the providers.
 			// We could limit this to a single provider, or to a single plugin assembly if we choose.  But for 
 			// this example, we'll get everything we've got.
-	        _providers = providerFactory.CreateProviders().ToArray();
+	        _providers = providerFactory.CreateProviders();
 
-	        return _providers.Length;
+	        return _providers.Count;
         }
 
 	    /// <summary>
@@ -142,10 +128,13 @@ namespace Gorgon.Examples
 	    /// </summary>
 	    private static void Main()
 		{
+            _log = new GorgonLog("FileSystemProviders", "Tape_Worm");
+            _log.LogStart();
+		    
 			// Create a plugin assembly cache to hold our plugin assemblies.
-			_pluginAssemblies = new GorgonPluginAssemblyCache(GorgonApplication.Log);
+			_pluginAssemblies = new GorgonMefPluginCache(_log);
 			// Create the plugin service.
-			_pluginService = new GorgonPluginService(_pluginAssemblies, GorgonApplication.Log);
+			_pluginService = new GorgonMefPluginService(_pluginAssemblies, _log);
 
 		    try
 		    {
@@ -163,7 +152,7 @@ namespace Gorgon.Examples
 			    Console.WriteLine("Found {0} external file system plug-ins.\n", LoadFileSystemProviders());
 
 			    // Loop through each provider and print some info.
-			    for (int i = 0; i < _providers.Length; ++i)
+			    for (int i = 0; i < _providers.Count; ++i)
 			    {
 				    // Print some info about the file system provider.
 				    Console.ForegroundColor = ConsoleColor.Cyan;
@@ -203,7 +192,7 @@ namespace Gorgon.Examples
 				             Console.ForegroundColor = ConsoleColor.Red;
 				             Console.WriteLine("Exception:\n{0}\n\nStack Trace:{1}", _.Message, _.StackTrace);
 			             },
-			             GorgonApplication.Log);
+			             _log);
 			    Console.ResetColor();
 #if DEBUG
 			    Console.ReadKey();
@@ -213,6 +202,8 @@ namespace Gorgon.Examples
 		    {
 				// Always call dispose so we can unload our temporary application domain.
 			    _pluginAssemblies.Dispose();
+
+                _log.LogEnd();
 		    }
         }
         #endregion
