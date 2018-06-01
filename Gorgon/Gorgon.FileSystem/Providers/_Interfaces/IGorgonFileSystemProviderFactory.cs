@@ -42,7 +42,7 @@ namespace Gorgon.IO.Providers
 	/// file types.
 	/// </para>
 	/// <para>
-	/// File system providers are plug ins, and should have their assemblies loaded by the <see cref="GorgonPluginAssemblyCache"/> before using this method and a <see cref="GorgonPluginService"/> should be 
+	/// File system providers are plug ins, and should have their assemblies loaded by the <see cref="GorgonMefPluginCache"/> before using this method and a <see cref="IGorgonPluginService"/> should be 
 	/// created in order to pass it to this factory.
 	/// </para>
 	/// </remarks>
@@ -93,7 +93,7 @@ namespace Gorgon.IO.Providers
 		/// <returns>A list of file system providers</returns>
 		/// <remarks>
 		/// When the <paramref name="pluginAssembly"/> parameter is set to <b>null</b>, then only the file system providers within that assembly will 
-		/// be loaded. Otherwise, all file system providers available in the <see cref="GorgonPluginService"/> passed to the object constructor will be created (or have 
+		/// be loaded. Otherwise, all file system providers available in the <see cref="IGorgonPluginService"/> passed to the object constructor will be created (or have 
 		/// a previously created instance returned).
 		/// </remarks>
 		IReadOnlyList<GorgonFileSystemProvider> CreateProviders(AssemblyName pluginAssembly = null);

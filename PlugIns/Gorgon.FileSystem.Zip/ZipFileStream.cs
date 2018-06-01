@@ -34,7 +34,7 @@ namespace Gorgon.IO.Zip
 	/// <summary>
 	/// A stream used to read zip files.
 	/// </summary>
-	public class ZipFileStream
+	internal class ZipFileStream
 		: GorgonFileSystemStream 
 	{
 		#region Variables.

@@ -25,19 +25,18 @@
 #endregion
 
 using Gorgon.Core;
-using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
 {
-	/// <summary>
-	/// Information used to create a 1D texture object.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// This provides an immutable view of the texture information so that it cannot be modified after the texture is created.
-	/// </para>
-	/// </remarks>
-	public interface IGorgonTexture1DInfo
+    /// <summary>
+    /// Information used to create a 1D texture object.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This provides an immutable view of the texture information so that it cannot be modified after the texture is created.
+    /// </para>
+    /// </remarks>
+    public interface IGorgonTexture1DInfo
         : IGorgonNamedObject
 	{
 		/// <summary>

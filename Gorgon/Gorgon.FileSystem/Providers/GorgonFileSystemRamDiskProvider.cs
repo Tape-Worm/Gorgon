@@ -72,7 +72,6 @@ namespace Gorgon.IO.Providers
 	/// Because this provider stores file data in memory, it is not recommended for use with a large amount of file data.
 	/// </para>
 	/// </remarks>
-	[ExcludeAsPlugin]
 	public class GorgonFileSystemRamDiskProvider
 		: GorgonPlugin, IGorgonFileSystemProvider
 	{

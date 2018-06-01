@@ -36,20 +36,19 @@ using Gorgon.Reflection;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D;
 using D3DCompiler = SharpDX.D3DCompiler;
-using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
 {
-	/// <summary>
-	/// A factory used to create various <see cref="GorgonShader"/> based types.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// This factory is used to compile from source code or load shaders from a stream or file. Shaders such as the <see cref="GorgonPixelShader"/> cannot be created by using the <c>new</c> keyword and 
-	/// must be instantiated via this factory.
-	/// </para>
-	/// </remarks>
-	public static class GorgonShaderFactory
+    /// <summary>
+    /// A factory used to create various <see cref="GorgonShader"/> based types.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This factory is used to compile from source code or load shaders from a stream or file. Shaders such as the <see cref="GorgonPixelShader"/> cannot be created by using the <c>new</c> keyword and 
+    /// must be instantiated via this factory.
+    /// </para>
+    /// </remarks>
+    public static class GorgonShaderFactory
 	{
 		#region Constants.
 		/// <summary>

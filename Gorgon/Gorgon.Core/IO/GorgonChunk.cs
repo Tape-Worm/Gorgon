@@ -98,12 +98,12 @@ namespace Gorgon.IO
 			return Equals(in this, in other);
 		}
 
-		/// <summary>
-		/// Determines whether the specified <see cref="System.Object" /> is equal to this instance.
-		/// </summary>
-		/// <param name="obj">The object to compare with the current instance.</param>
-		/// <returns><b>true</b> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <b>false</b>.</returns>
-		public override bool Equals(object obj)
+        /// <summary>
+        /// Determines whether the specified <see cref="object" /> is equal to this instance.
+        /// </summary>
+        /// <param name="obj">The object to compare with the current instance.</param>
+        /// <returns><b>true</b> if the specified <see cref="object" /> is equal to this instance; otherwise, <b>false</b>.</returns>
+        public override bool Equals(object obj)
 		{
 			if (obj is GorgonChunk chunk)
 			{

@@ -68,7 +68,6 @@ namespace Gorgon.IO.Providers
 	/// This type allows the mounting of a directory so that data can be read from the native operating system file system. This is the default provider for any <see cref="IGorgonFileSystem"/>.
 	/// </para>
 	/// </remarks>
-	[ExcludeAsPlugin]
 	public class GorgonFileSystemProvider
 		: GorgonPlugin, IGorgonFileSystemProvider
 	{

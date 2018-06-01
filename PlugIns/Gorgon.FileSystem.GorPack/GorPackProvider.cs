@@ -30,20 +30,19 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Xml.Linq;
-using Gorgon.Core;
 using Gorgon.IO.GorPack.Properties;
 using Gorgon.IO.Providers;
 using ICSharpCode.SharpZipLib.BZip2;
 
 namespace Gorgon.IO.GorPack
 {
-	/// <summary>
-	/// A file system provider for Gorgon BZip2 compressed packed files.
-	/// </summary>
-	/// <remarks>
-	/// The BZip2 compressed pack files are written by an older (1.x) version of Gorgon.  This provider will enable the new file system interface to be able to read these files.
-	/// </remarks>
-	internal class GorPackProvider
+    /// <summary>
+    /// A file system provider for Gorgon BZip2 compressed packed files.
+    /// </summary>
+    /// <remarks>
+    /// The BZip2 compressed pack files are written by an older (1.x) version of Gorgon.  This provider will enable the new file system interface to be able to read these files.
+    /// </remarks>
+    internal class GorPackProvider
 		: GorgonFileSystemProvider
 	{
 		#region Constants.

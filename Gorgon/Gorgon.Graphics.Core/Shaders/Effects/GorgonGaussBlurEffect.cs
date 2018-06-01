@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using DX = SharpDX;
 
 namespace Gorgon.Graphics.Example
 {

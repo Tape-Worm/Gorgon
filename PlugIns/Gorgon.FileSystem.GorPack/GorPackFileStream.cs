@@ -34,7 +34,7 @@ namespace Gorgon.IO.GorPack
 	/// <summary>
 	/// A stream used to read Gorgon bzip2 pack files.
 	/// </summary>
-	public class GorPackFileStream
+	internal class GorPackFileStream
 		: GorgonFileSystemStream 
 	{
 		#region Variables.

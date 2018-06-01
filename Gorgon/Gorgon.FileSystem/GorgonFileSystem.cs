@@ -1241,7 +1241,7 @@ namespace Gorgon.IO
 
 			DefaultProvider = new GorgonFileSystemProvider();
 
-			InternalRootDirectory = new VirtualDirectory(default(GorgonFileSystemMountPoint), this, null, "/");
+			InternalRootDirectory = new VirtualDirectory(default, this, null, "/");
 		}
 		#endregion
 	}

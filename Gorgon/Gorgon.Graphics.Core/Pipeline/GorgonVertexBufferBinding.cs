@@ -189,14 +189,14 @@ namespace Gorgon.Graphics.Core
 		               : 281.GenerateHash(Stride).GenerateHash(Offset).GenerateHash(VertexBuffer.GetHashCode());
 		}
 
-	    /// <summary>
-		/// Determines whether the specified <see cref="System.Object"/> is equal to this instance.
-		/// </summary>
-		/// <param name="obj">The <see cref="System.Object"/> to compare with this instance.</param>
-		/// <returns>
-		/// 	<b>true</b> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <b>false</b>.
-		/// </returns>
-		public override bool Equals(object obj)
+        /// <summary>
+        /// Determines whether the specified <see cref="object"/> is equal to this instance.
+        /// </summary>
+        /// <param name="obj">The <see cref="object"/> to compare with this instance.</param>
+        /// <returns>
+        /// 	<b>true</b> if the specified <see cref="object"/> is equal to this instance; otherwise, <b>false</b>.
+        /// </returns>
+        public override bool Equals(object obj)
 		{
 		    if (obj is GorgonVertexBufferBinding binding)
 		    {

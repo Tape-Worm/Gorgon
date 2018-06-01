@@ -102,7 +102,6 @@ namespace Gorgon.IO
 	/// ]]>
 	/// </code>
 	/// </example>
-	[ExcludeAsPlugin]
 	public class GorgonFileSystemRamDiskWriter
 		: GorgonPlugin, IGorgonFileSystemWriter<Stream>
 	{

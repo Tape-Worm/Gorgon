@@ -114,7 +114,7 @@ namespace Gorgon.Examples
 		
 			// Get the file system provider factory so we can retrieve our newly loaded providers.
 			IGorgonFileSystemProviderFactory providerFactory = new GorgonFileSystemProviderFactory(_pluginService, _log);
-
+            
 			// Get all the providers.
 			// We could limit this to a single provider, or to a single plugin assembly if we choose.  But for 
 			// this example, we'll get everything we've got.

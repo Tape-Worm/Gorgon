@@ -30,14 +30,13 @@ using System.Collections.Generic;
 using Gorgon.Diagnostics;
 using Gorgon.Math;
 using Gorgon.Native;
-using DX = SharpDX;
 
 namespace Gorgon.Graphics.Imaging
 {
-	/// <summary>
-	/// A container for a list of image buffers.
-	/// </summary>
-	class ImageBufferList
+    /// <summary>
+    /// A container for a list of image buffers.
+    /// </summary>
+    class ImageBufferList
 		: IGorgonImageBufferList
 	{
 		#region Variables.

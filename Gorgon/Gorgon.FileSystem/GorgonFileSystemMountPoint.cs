@@ -34,8 +34,8 @@ namespace Gorgon.IO
 	/// <summary>
 	/// A mount point for the virtual file system.
 	/// </summary>
-	public struct GorgonFileSystemMountPoint
-		: IEquatable<GorgonFileSystemMountPoint>
+	public readonly struct GorgonFileSystemMountPoint
+		: IGorgonEquatableByRef<GorgonFileSystemMountPoint>
 	{
 		#region Variables.
 		/// <summary>
@@ -65,7 +65,7 @@ namespace Gorgon.IO
 		/// <param name="left">Left instance to compare.</param>
 		/// <param name="right">Right instance to compare.</param>
 		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-		public static bool Equals(ref GorgonFileSystemMountPoint left, ref GorgonFileSystemMountPoint right)
+		public static bool Equals(in GorgonFileSystemMountPoint left, in GorgonFileSystemMountPoint right)
 		{
 			return (left.Provider == right.Provider)
 					&& (left.IsFakeMount == right.IsFakeMount)
@@ -73,14 +73,14 @@ namespace Gorgon.IO
 					&& (string.Equals(left.PhysicalPath, right.PhysicalPath, StringComparison.OrdinalIgnoreCase));
 		}
 
-		/// <summary>
-		/// Determines whether the specified <see cref="System.Object" /> is equal to this instance.
-		/// </summary>
-		/// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
-		/// <returns>
-		///   <b>true</b> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <b>false</b>.
-		/// </returns>
-		public override bool Equals(object obj)
+        /// <summary>
+        /// Determines whether the specified <see cref="object" /> is equal to this instance.
+        /// </summary>
+        /// <param name="obj">The <see cref="object" /> to compare with this instance.</param>
+        /// <returns>
+        ///   <b>true</b> if the specified <see cref="object" /> is equal to this instance; otherwise, <b>false</b>.
+        /// </returns>
+        public override bool Equals(object obj)
 		{
 			if (obj is GorgonFileSystemMountPoint mountPoint)
 			{
@@ -90,13 +90,34 @@ namespace Gorgon.IO
 			return base.Equals(obj);
 		}
 
-		/// <summary>
-		/// Returns a <see cref="System.String" /> that represents this instance.
-		/// </summary>
-		/// <returns>
-		/// A <see cref="System.String" /> that represents this instance.
-		/// </returns>
-		public override string ToString()
+	    /// <summary>
+	    /// Function to determine if this instance is equal to another instance.
+	    /// </summary>
+	    /// <param name="other">The other instance to compare.</param>
+	    /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+	    public bool Equals(in GorgonFileSystemMountPoint other)
+	    {
+	        return Equals(in this, in other);
+	    }
+
+	    /// <summary>
+	    /// Function to compare this instance with another.
+	    /// </summary>
+	    /// <param name="other">The other instance to use for comparison.</param>
+	    /// <returns>
+	    ///   <b>true</b> if equal, <b>false</b> if not.</returns>
+	    public bool Equals(GorgonFileSystemMountPoint other)
+	    {
+	        return Equals(in this, in other);
+	    }
+
+        /// <summary>
+        /// Returns a <see cref="string" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="string" /> that represents this instance.
+        /// </returns>
+        public override string ToString()
 		{
 			return string.Format(Resources.GORFS_TOSTR_MOUNTPOINT, MountLocation, PhysicalPath);
 		}
@@ -123,9 +144,9 @@ namespace Gorgon.IO
 		/// <param name="left">Left instance to compare.</param>
 		/// <param name="right">Right instance to compare.</param>
 		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-		public static bool operator ==(GorgonFileSystemMountPoint left, GorgonFileSystemMountPoint right)
+		public static bool operator ==(in GorgonFileSystemMountPoint left, in GorgonFileSystemMountPoint right)
 		{
-			return Equals(ref left, ref right);
+			return Equals(in left, in right);
 		}
 
 		/// <summary>
@@ -134,9 +155,9 @@ namespace Gorgon.IO
 		/// <param name="left">Left instance to compare.</param>
 		/// <param name="right">Right instance to compare.</param>
 		/// <returns><b>true</b> if not equal, <b>false</b> if equal.</returns>
-		public static bool operator !=(GorgonFileSystemMountPoint left, GorgonFileSystemMountPoint right)
+		public static bool operator !=(in GorgonFileSystemMountPoint left, in GorgonFileSystemMountPoint right)
 		{
-			return !Equals(ref left, ref right);
+			return !Equals(in left, in right);
 		}
 		#endregion
 
@@ -178,17 +199,5 @@ namespace Gorgon.IO
 			IsFakeMount = isFakeMountPoint;
 		}
 		#endregion
-
-		#region IEquatable<MountPoint> Members
-		/// <summary>
-		/// Function to determine if this instance is equal to another instance.
-		/// </summary>
-		/// <param name="other">The other instance to compare.</param>
-		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-		public bool Equals(GorgonFileSystemMountPoint other)
-		{
-			return Equals(ref this, ref other);
-		}
-		#endregion
-	}
+    }
 }

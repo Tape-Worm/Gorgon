@@ -28,7 +28,6 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 using Gorgon.Diagnostics;
-using DX = SharpDX;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core

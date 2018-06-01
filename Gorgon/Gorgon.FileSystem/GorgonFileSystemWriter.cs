@@ -104,7 +104,6 @@ namespace Gorgon.IO
 	/// ]]>
 	/// </code>
 	/// </example>
-	[ExcludeAsPlugin]
 	public class GorgonFileSystemWriter
 		: GorgonPlugin, IGorgonFileSystemWriter<FileStream>
 	{

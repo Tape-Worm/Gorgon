@@ -84,17 +84,17 @@ namespace Gorgon.Graphics
 		/// The Alpha channel component.
 		/// </summary>
         public readonly float Alpha;
-		#endregion
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Determines whether the specified <see cref="System.Object"/> is equal to this instance.
-		/// </summary>
-		/// <param name="obj">The <see cref="System.Object"/> to compare with this instance.</param>
-		/// <returns>
-		/// 	<b>true</b> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <b>false</b>.
-		/// </returns>
-		public override bool Equals(object obj)
+        #region Methods.
+        /// <summary>
+        /// Determines whether the specified <see cref="object"/> is equal to this instance.
+        /// </summary>
+        /// <param name="obj">The <see cref="object"/> to compare with this instance.</param>
+        /// <returns>
+        /// 	<b>true</b> if the specified <see cref="object"/> is equal to this instance; otherwise, <b>false</b>.
+        /// </returns>
+        public override bool Equals(object obj)
 		{
 		    if (obj is GorgonColor color)
 		    {

@@ -31,53 +31,52 @@ using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
 using Gorgon.Native;
-using DX = SharpDX;
 
 namespace Gorgon.Graphics.Core
 {
-	/// <summary>
-	/// A buffer for indices used to look up vertices within a <see cref="GorgonVertexBuffer"/>.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// This buffer allows the use of indices to allow for smaller vertex buffers and providing a faster means of finding vertices to draw on the GPU.
-	/// </para>
-	/// <para>
-	/// To send indices to the GPU using a index buffer, an application can upload a value type values, representing the indices, to the buffer using one of the 
-	/// <see cref="O:Gorgon.Graphics.GorgonIndexBuffer.Update{T}(ref T)">Update&lt;T&gt;</see> overloads. For best performance, it is recommended to upload index data only once, or rarely. However, in 
-	/// some scenarios, and with the correct <see cref="IGorgonIndexBufferInfo.Usage"/> flag, indices can be updated regularly for things like dynamic tesselation of surface.
-	/// </para>
-	/// <para> 
-	/// <example language="csharp">
-	/// For example, to send a list of indices to a index buffer:
-	/// <code language="csharp">
-	/// <![CDATA[
-	/// GorgonGraphics graphics;
-	/// ushort[] _indices = new ushort[100];
-	/// GorgonIndexBuffer _indexBuffer;
-	/// 
-	/// void InitializeIndexBuffer()
-	/// {
-	///		_indices = ... // Fill your index array here.
-	/// 
-	///		// Create the index buffer large enough so that it'll hold all 100 indices.
-	///     // Unlike other buffers, we're passing the number of indices instead of bytes. 
-	///     // This is because we can determine the number of bytes by whether we're using 
-	///     // 16 bit indices (we are) and the index count.
-	///		_indexBuffer = new GorgonIndexBuffer("MyIB", graphics, new GorgonIndexBufferInfo
-	///	                                                               {
-	///		                                                              IndexCount = _indices.Length
-	///                                                                });
-	/// 
-	///		// Copy our data to the index buffer.
-	///     graphics.SetData<ushort>(_indices);
-	/// }
-	/// ]]>
-	/// </code>
-	/// </example>
-	/// </para>
-	/// </remarks>
-	public sealed class GorgonIndexBuffer
+    /// <summary>
+    /// A buffer for indices used to look up vertices within a <see cref="GorgonVertexBuffer"/>.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This buffer allows the use of indices to allow for smaller vertex buffers and providing a faster means of finding vertices to draw on the GPU.
+    /// </para>
+    /// <para>
+    /// To send indices to the GPU using a index buffer, an application can upload a value type values, representing the indices, to the buffer using one of the 
+    /// <see cref="O:Gorgon.Graphics.GorgonIndexBuffer.Update{T}(ref T)">Update&lt;T&gt;</see> overloads. For best performance, it is recommended to upload index data only once, or rarely. However, in 
+    /// some scenarios, and with the correct <see cref="IGorgonIndexBufferInfo.Usage"/> flag, indices can be updated regularly for things like dynamic tesselation of surface.
+    /// </para>
+    /// <para> 
+    /// <example language="csharp">
+    /// For example, to send a list of indices to a index buffer:
+    /// <code language="csharp">
+    /// <![CDATA[
+    /// GorgonGraphics graphics;
+    /// ushort[] _indices = new ushort[100];
+    /// GorgonIndexBuffer _indexBuffer;
+    /// 
+    /// void InitializeIndexBuffer()
+    /// {
+    ///		_indices = ... // Fill your index array here.
+    /// 
+    ///		// Create the index buffer large enough so that it'll hold all 100 indices.
+    ///     // Unlike other buffers, we're passing the number of indices instead of bytes. 
+    ///     // This is because we can determine the number of bytes by whether we're using 
+    ///     // 16 bit indices (we are) and the index count.
+    ///		_indexBuffer = new GorgonIndexBuffer("MyIB", graphics, new GorgonIndexBufferInfo
+    ///	                                                               {
+    ///		                                                              IndexCount = _indices.Length
+    ///                                                                });
+    /// 
+    ///		// Copy our data to the index buffer.
+    ///     graphics.SetData<ushort>(_indices);
+    /// }
+    /// ]]>
+    /// </code>
+    /// </example>
+    /// </para>
+    /// </remarks>
+    public sealed class GorgonIndexBuffer
         : GorgonBufferCommon, IGorgonIndexBufferInfo
 	{
 	    #region Constants.

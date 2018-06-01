@@ -23,21 +23,20 @@
 // Created: Monday, June 27, 2011 9:33:12 AM
 // 
 #endregion
-using System;
+
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Gorgon.Core;
 using Gorgon.IO.Providers;
 using Gorgon.IO.Zip.Properties;
 using ICSharpCode.SharpZipLib.Zip;
 
 namespace Gorgon.IO.Zip
 {
-	/// <summary>
-	/// A file system provider for zip files.
-	/// </summary>
-	internal class ZipProvider
+    /// <summary>
+    /// A file system provider for zip files.
+    /// </summary>
+    internal class ZipProvider
 		: GorgonFileSystemProvider
     {
 		#region Variables.

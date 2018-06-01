@@ -89,16 +89,6 @@ namespace Gorgon.IO.Providers
 
 		#region Methods.
 		/// <summary>
-		/// Function to retrieve all the file system providers from the plugin service.
-		/// </summary>
-		/// <returns>A list of file system providers.</returns>
-		private IReadOnlyList<GorgonFileSystemProvider> GetAllProviders()
-		{
-			return _pluginService.GetPlugins<GorgonFileSystemProvider>()
-			                     .ToArray();
-		}
-
-		/// <summary>
 		/// Function to create a new file system provider.
 		/// </summary>
 		/// <param name="providerPluginName">The fully qualified type name of the plugin that contains the file system provider.</param>
@@ -143,7 +133,8 @@ namespace Gorgon.IO.Providers
 		public IReadOnlyList<GorgonFileSystemProvider> CreateProviders(AssemblyName pluginAssembly = null)
 		{
 			return pluginAssembly == null
-				       ? GetAllProviders()
+				       ? _pluginService.GetPlugins<GorgonFileSystemProvider>()
+				                       .ToArray()
 				       : _pluginService.GetPlugins<GorgonFileSystemProvider>(pluginAssembly)
 									   .ToArray();
 		}
