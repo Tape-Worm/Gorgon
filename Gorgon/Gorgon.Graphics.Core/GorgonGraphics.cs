@@ -1265,6 +1265,23 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
+        /// Function to validate the resource state for a draw call.
+        /// </summary>
+        /// <param name="state">The state to validate.</param>
+        private static void ValidateDrawCall(D3DState state)
+        {
+            if (state.InputLayout == null)
+            {
+                throw new GorgonException(GorgonResult.CannotBind, Resources.GORGFX_ERR_NO_INPUT_LAYOUT);
+            }
+
+            if (state.PipelineState.VertexShader == null)
+            {
+                throw new GorgonException(GorgonResult.CannotBind, Resources.GORGFX_ERR_NO_VERTEX_SHADER);
+            }
+        }
+
+        /// <summary>
         /// Function to bind resources to the pipeline.
         /// </summary>
         /// <param name="resourceChanges">The changes for the resources.</param>
@@ -2519,6 +2536,11 @@ namespace Gorgon.Graphics.Core
         public void Submit(GorgonDrawCall drawCall, GorgonColor? blendFactor = null, int blendSampleMask = int.MinValue, int depthStencilReference = 0)
         {
             drawCall.ValidateObject(nameof(drawCall));
+
+#if DEBUG
+            ValidateDrawCall(drawCall.D3DState);
+#endif
+
             SetDrawStates(drawCall.D3DState, blendFactor ?? GorgonColor.White, blendSampleMask, depthStencilReference);
             D3DDeviceContext.Draw(drawCall.VertexCount, drawCall.VertexStartIndex);
         }
@@ -2534,6 +2556,11 @@ namespace Gorgon.Graphics.Core
         public void Submit(GorgonInstancedCall drawCall, GorgonColor? blendFactor = null, int blendSampleMask = int.MinValue, int depthStencilReference = 0)
         {
             drawCall.ValidateObject(nameof(drawCall));
+
+#if DEBUG
+            ValidateDrawCall(drawCall.D3DState);
+#endif
+
             SetDrawStates(drawCall.D3DState, blendFactor ?? GorgonColor.White, blendSampleMask, depthStencilReference);
             D3DDeviceContext.DrawInstanced(drawCall.VertexCountPerInstance, drawCall.InstanceCount, drawCall.VertexStartIndex, drawCall.StartInstanceIndex);
         }
@@ -2552,6 +2579,11 @@ namespace Gorgon.Graphics.Core
                            int depthStencilReference = 0)
         {
             drawIndexCall.ValidateObject(nameof(drawIndexCall));
+
+#if DEBUG
+            ValidateDrawCall(drawIndexCall.D3DState);
+#endif
+
             SetDrawStates(drawIndexCall.D3DState, blendFactor ?? GorgonColor.White, blendSampleMask, depthStencilReference);
             D3DDeviceContext.DrawIndexed(drawIndexCall.IndexCount, drawIndexCall.IndexStart, drawIndexCall.BaseVertexIndex);
         }
@@ -2570,6 +2602,11 @@ namespace Gorgon.Graphics.Core
                            int depthStencilReference = 0)
         {
             drawIndexCall.ValidateObject(nameof(drawIndexCall));
+
+#if DEBUG
+            ValidateDrawCall(drawIndexCall.D3DState);
+#endif
+
             SetDrawStates(drawIndexCall.D3DState, blendFactor ?? GorgonColor.White, blendSampleMask, depthStencilReference);
             D3DDeviceContext.DrawIndexedInstanced(drawIndexCall.IndexCountPerInstance,
                                                   drawIndexCall.InstanceCount,
@@ -2611,6 +2648,8 @@ namespace Gorgon.Graphics.Core
             indirectArgs.ValidateObject(nameof(indirectArgs));
 
 #if DEBUG
+            ValidateDrawCall(drawIndexCall.D3DState);
+
             if (!indirectArgs.IndirectArgs)
             {
                 throw new GorgonException(GorgonResult.AccessDenied, string.Format(Resources.GORGFX_ERR_BUFFER_NOT_INDIRECTARGS, indirectArgs.Name));
@@ -2654,6 +2693,8 @@ namespace Gorgon.Graphics.Core
             indirectArgs.ValidateObject(nameof(indirectArgs));
 
 #if DEBUG
+            ValidateDrawCall(drawCall.D3DState);
+
             if (!indirectArgs.IndirectArgs)
             {
                 throw new GorgonException(GorgonResult.AccessDenied, string.Format(Resources.GORGFX_ERR_BUFFER_NOT_INDIRECTARGS, indirectArgs.Name));
@@ -2693,6 +2734,10 @@ namespace Gorgon.Graphics.Core
         public void SubmitStreamOut(GorgonStreamOutCall drawCall, GorgonColor? blendFactor = null, int blendSampleMask = int.MinValue, int depthStencilReference = 0)
         {
             drawCall.ValidateObject(nameof(drawCall));
+
+#if DEBUG
+            ValidateDrawCall(drawCall.D3DState);
+#endif
 
             SetDrawStates(drawCall.D3DState, _blendFactor, _blendSampleMask, _depthStencilReference);
             D3DDeviceContext.DrawAuto();

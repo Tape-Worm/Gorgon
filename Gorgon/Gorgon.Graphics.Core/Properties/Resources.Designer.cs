@@ -707,6 +707,24 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A draw call requires an input layout before it can be used..
+        /// </summary>
+        internal static string GORGFX_ERR_NO_INPUT_LAYOUT {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_NO_INPUT_LAYOUT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Draw calls require a vertex shader..
+        /// </summary>
+        internal static string GORGFX_ERR_NO_VERTEX_SHADER {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_NO_VERTEX_SHADER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There is no video adapter with the name &apos;{0}&apos;..
         /// </summary>
         internal static string GORGFX_ERR_NO_VIDEO_DEVICE_WITH_NAME {
@@ -1568,6 +1586,25 @@ namespace Gorgon.Graphics.Core.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to // Texture and sampler for blitting a texture.
+        ///Texture2D _bltTexture : register(t0);
+        ///SamplerState _bltSampler : register(s0);
+        ///
+        ///// Our default blitting vertex.
+        ///struct GorgonBltVertex
+        ///{
+        ///   float4 position : SV_POSITION;
+        ///   float4 color : COLOR;
+        ///   float2 uv : TEXCOORD;
+        ///};
+        ///
+        ///// The transformation matrices (for vertex shader).
+        ///cbuffer GorgonBltWorldViewProjection : register(b0)
+        ///{
+        ///	float4x4 WorldViewProjection;
+        ///}
+        ///
+        ///// Our vertex shader for blitting textures.
+        ///GorgonBltVertex GorgonBltVertexShader [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string GraphicsShaders {
             get {

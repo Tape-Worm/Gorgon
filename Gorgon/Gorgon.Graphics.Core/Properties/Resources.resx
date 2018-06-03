@@ -630,4 +630,10 @@ Current binding: [{0}]</value>
   <data name="GORGFX_ERR_SO_SLOT_INVALID" xml:space="preserve">
     <value>The stream output slot must be 0 or less than {0}.</value>
   </data>
+  <data name="GORGFX_ERR_NO_INPUT_LAYOUT" xml:space="preserve">
+    <value>A draw call requires an input layout before it can be used.</value>
+  </data>
+  <data name="GORGFX_ERR_NO_VERTEX_SHADER" xml:space="preserve">
+    <value>Draw calls require a vertex shader.</value>
+  </data>
 </root>

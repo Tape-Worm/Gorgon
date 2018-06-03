@@ -374,7 +374,7 @@ namespace Gorgon.Diagnostics
 
 		        foreach (string line in formattedLines)
 		        {
-		            lines.Add($"[{DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}] {string.Format(line, arguments)}");
+		            lines.Add($"[{DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}] {string.Format(line.Replace("{", "{{").Replace("}","}}"), arguments)}");
 		        }
 		    }
 
