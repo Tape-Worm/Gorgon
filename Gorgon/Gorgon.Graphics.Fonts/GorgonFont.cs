@@ -26,9 +26,11 @@
 
 using System;
 using System.Collections.Generic;
-using Drawing = System.Drawing;
+using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
@@ -57,7 +59,7 @@ namespace Gorgon.Graphics.Fonts
 	{
         #region Variables.
 		// A list of internal textures created by the font generator.
-		private readonly List<GorgonTexture> _internalTextures;
+		private readonly List<GorgonTexture2D> _internalTextures;
 		// The information used to generate the font.
 		private readonly GorgonFontInfo _info;
 		#endregion
@@ -169,9 +171,9 @@ namespace Gorgon.Graphics.Fonts
 		/// <param name="bitmap">Bitmap to copy.</param>
 		/// <param name="image">Image to receive the data.</param>
 		/// <param name="arrayIndex">The index in the bitmap array to copy from.</param>
-		private unsafe void CopyBitmap(Drawing.Bitmap bitmap, GorgonImage image, int arrayIndex)
+		private unsafe void CopyBitmap(Bitmap bitmap, GorgonImage image, int arrayIndex)
 		{
-			BitmapData sourcePixels = bitmap.LockBits(new Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+			BitmapData sourcePixels = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
 
 			try
 			{
@@ -190,7 +192,7 @@ namespace Gorgon.Graphics.Fonts
 						// So, we must convert to ABGR even though the DXGI format is RGBA. The memory layout is from lowest 
 						// (R at byte 0) to the highest byte (A at byte 3).
 						// Thus, R is the lowest byte, and A is the highest: A(24), B(16), G(8), R(0).
-						GorgonColor color = new GorgonColor(*offset);
+						var color = new GorgonColor(*offset);
 
 						if (Info.UsePremultipliedTextures)
 						{
@@ -198,7 +200,8 @@ namespace Gorgon.Graphics.Fonts
 							color = new GorgonColor(color.Red * color.Alpha, color.Green * color.Alpha, color.Blue * color.Alpha, color.Alpha);
 						}
 
-						image.Buffers[0, arrayIndex].Data.Write(destOffset, color.ToABGR());
+					    int* destBuffer = (int *)(Unsafe.AsPointer(ref image.Buffers[0, arrayIndex].Data[destOffset]));
+					    *destBuffer = color.ToABGR();
 						offset++;
 						destOffset += image.FormatInfo.SizeInBytes;
 					}
@@ -216,7 +219,7 @@ namespace Gorgon.Graphics.Fonts
 		/// <param name="graphics">The GDI graphics interface.</param>
 		/// <param name="font">The GDI font.</param>
 		/// <param name="allowedCharacters">The list of characters available to the font.</param>
-		private Dictionary<char, ABC> GetKerningInformation(Drawing.Graphics graphics, Drawing.Font font, IList<char> allowedCharacters)
+		private Dictionary<char, ABC> GetKerningInformation(System.Drawing.Graphics graphics, Font font, IList<char> allowedCharacters)
 		{
 			Dictionary<char, ABC> advancementInfo;
 			KerningPairs.Clear();
@@ -236,7 +239,7 @@ namespace Gorgon.Graphics.Fonts
 
 				foreach (KERNINGPAIR pair in kerningPairs.Where(item => item.KernAmount != 0))
 				{
-					GorgonKerningPair newPair = new GorgonKerningPair(Convert.ToChar(pair.First), Convert.ToChar(pair.Second));
+					var newPair = new GorgonKerningPair(Convert.ToChar(pair.First), Convert.ToChar(pair.Second));
 
 					if ((!allowedCharacters.Contains(newPair.LeftCharacter)) ||
 						(!allowedCharacters.Contains(newPair.RightCharacter)))
@@ -282,8 +285,8 @@ namespace Gorgon.Graphics.Fonts
 		/// </summary>
 		/// <param name="glyphData">The glyph data, grouped by packed bitmap.</param>
 		/// <returns>A dictionary of characters associated with a texture.</returns>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
-		private void GenerateTextures(Dictionary<Drawing.Bitmap, IEnumerable<GlyphInfo>> glyphData)
+		[SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
+		private void GenerateTextures(Dictionary<Bitmap, IEnumerable<GlyphInfo>> glyphData)
 		{
 			var imageSettings = new GorgonImageInfo(ImageType.Image2D, BufferFormat.R8G8B8A8_UNorm)
 			{
@@ -291,13 +294,11 @@ namespace Gorgon.Graphics.Fonts
 				Height = Info.TextureHeight,
 				Depth = 1
 			};
-			var textureSettings = new GorgonTextureInfo
+			var textureSettings = new GorgonTexture2DInfo
 			{
 				Format = BufferFormat.R8G8B8A8_UNorm,
 				Width = Info.TextureWidth,
 				Height = Info.TextureHeight,
-				Depth = 1,
-				TextureType = TextureType.Texture2D,
 				Usage = ResourceUsage.Default,
 				Binding = TextureBinding.ShaderResource,
 				IsCubeMap = false,
@@ -306,7 +307,7 @@ namespace Gorgon.Graphics.Fonts
 			};
 
 			GorgonImage image = null;
-			GorgonTexture texture = null;
+			GorgonTexture2D texture = null;
 			int arrayIndex = 0;
 			int bitmapCount = glyphData.Count;
 
@@ -315,7 +316,7 @@ namespace Gorgon.Graphics.Fonts
 				// We copy each bitmap into a texture array index until we've hit the max texture array size, and then 
 				// we move to a new texture.  This will keep our glyph textures inside of a single texture object until 
 				// it is absolutely necessary to change and should improve performance when rendering.
-				foreach (KeyValuePair<Drawing.Bitmap, IEnumerable<GlyphInfo>> glyphBitmap in glyphData)
+				foreach (KeyValuePair<Bitmap, IEnumerable<GlyphInfo>> glyphBitmap in glyphData)
 				{
 					if ((image == null) || (arrayIndex >= Graphics.VideoAdapter.MaxTextureArrayCount))
 					{
@@ -325,14 +326,17 @@ namespace Gorgon.Graphics.Fonts
 						image?.Dispose();
 						image = new GorgonImage(imageSettings);
 
-						texture = image.ToTexture($"GorgonFont_Internal_Texture_{Guid.NewGuid():N}", Graphics);
+						texture = image.ToTexture2D(Graphics, new GorgonTextureLoadOptions
+						                                      {
+                                                                  Name = $"GorgonFont_Internal_Texture_{Guid.NewGuid():N}"
+						                                      });
 						_internalTextures.Add(texture);
 					}
 
 					CopyBitmap(glyphBitmap.Key, image, arrayIndex);
 
 					// Send to our texture.
-					texture.Update(image.Buffers[0, arrayIndex], null, arrayIndex);
+                    texture.SetData(image.Buffers[0, arrayIndex], destArrayIndex: arrayIndex);
 
 					foreach (GlyphInfo info in glyphBitmap.Value)
 					{
@@ -376,7 +380,7 @@ namespace Gorgon.Graphics.Fonts
 					continue;
 				}
 
-				GorgonGlyph newGlyph = new GorgonGlyph(glyph.Key, advance)
+				var newGlyph = new GorgonGlyph(glyph.Key, advance)
 				               {
 					               Offset = glyph.Value.Offset,
 					               OutlineOffset = HasOutline ? glyph.Value.OutlineOffset : DX.Point.Zero
@@ -449,7 +453,7 @@ namespace Gorgon.Graphics.Fonts
 					continue;
 				}
 
-				GorgonKerningPair kerning = new GorgonKerningPair(character, line[i + 1]);
+				var kerning = new GorgonKerningPair(character, line[i + 1]);
 
 				if (KerningPairs.TryGetValue(kerning, out int kernAmount))
 				{
@@ -516,7 +520,7 @@ namespace Gorgon.Graphics.Fonts
 				return text;
 			}
 
-			StringBuilder wordText = new StringBuilder(text);
+			var wordText = new StringBuilder(text);
 
 			if (!Glyphs.TryGetValue(Info.DefaultCharacter, out GorgonGlyph defaultGlyph))
 			{
@@ -756,7 +760,7 @@ namespace Gorgon.Graphics.Fonts
 			// Get rid of this font from its factory cache when its disposed. Otherwise it'll live on in a half initialized state.
 			Factory?.UnregisterFont(this);
 
-			foreach (GorgonTexture texture in _internalTextures)
+			foreach (GorgonTexture2D texture in _internalTextures)
 			{
 				texture?.Dispose();
 			}
@@ -788,19 +792,19 @@ namespace Gorgon.Graphics.Fonts
 		/// </exception>
 		internal void GenerateFont()
 		{
-			Drawing.Bitmap setupBitmap = null;
-			Drawing.Graphics graphics = null;
-			GdiFontData fontData = default(GdiFontData);
-			Dictionary<Drawing.Bitmap, IEnumerable<GlyphInfo>> groupedByBitmap = null;
+			Bitmap setupBitmap = null;
+			System.Drawing.Graphics graphics = null;
+			GdiFontData fontData = default;
+			Dictionary<Bitmap, IEnumerable<GlyphInfo>> groupedByBitmap = null;
 
 			try
 			{
 				// Temporary bitmap used to gather a graphics context.				
-				setupBitmap = new Drawing.Bitmap(2, 2, PixelFormat.Format32bppArgb);
+				setupBitmap = new Bitmap(2, 2, PixelFormat.Format32bppArgb);
 				
 				// Get a context for the rasterizing surface.
-				graphics = Drawing.Graphics.FromImage(setupBitmap);
-				graphics.PageUnit = Drawing.GraphicsUnit.Pixel;
+				graphics = System.Drawing.Graphics.FromImage(setupBitmap);
+				graphics.PageUnit = GraphicsUnit.Pixel;
 
 				// Build up the information using a GDI+ font.
 				fontData = GdiFontData.GetFontData(graphics, Info);
@@ -809,7 +813,7 @@ namespace Gorgon.Graphics.Fonts
 				List<char> availableCharacters = GetAvailableCharacters();
 				
 				// Set up the code to draw glyphs to bitmaps.
-				GlyphDraw glyphDraw = new GlyphDraw(Info, fontData);
+				var glyphDraw = new GlyphDraw(Info, fontData);
 
 				// Gather the boundaries for each glyph character.
 				Dictionary<char, GlyphRegions> glyphBounds = glyphDraw.GetGlyphRegions(availableCharacters, HasOutline);
@@ -851,7 +855,7 @@ namespace Gorgon.Graphics.Fonts
 
 				if (groupedByBitmap != null)
 				{
-					foreach (Drawing.Bitmap glyphBitmap in groupedByBitmap.Keys)
+					foreach (Bitmap glyphBitmap in groupedByBitmap.Keys)
 					{
 						glyphBitmap.Dispose();
 					}
@@ -882,7 +886,7 @@ namespace Gorgon.Graphics.Fonts
 		                    float ascent,
 		                    float descent,
 		                    IReadOnlyList<GorgonGlyph> glyphs,
-		                    IReadOnlyList<GorgonTexture> textures,
+		                    IReadOnlyList<GorgonTexture2D> textures,
 		                    IReadOnlyDictionary<GorgonKerningPair, int> kerningPairs)
 			: base(name)
 		{
@@ -895,7 +899,7 @@ namespace Gorgon.Graphics.Fonts
 			Descent = descent;
 			Glyphs = new GorgonGlyphCollection(glyphs);
 			KerningPairs = kerningPairs?.ToDictionary(k => k.Key, v => v.Value) ?? new Dictionary<GorgonKerningPair, int>();
-			_internalTextures = new List<GorgonTexture>(textures);
+			_internalTextures = new List<GorgonTexture2D>(textures);
 		}
 
 		/// <summary>
@@ -910,7 +914,7 @@ namespace Gorgon.Graphics.Fonts
 			Factory = factory;
 			Graphics = Factory.Graphics;
 			_info = new GorgonFontInfo(info);
-			_internalTextures = new List<GorgonTexture>();
+			_internalTextures = new List<GorgonTexture2D>();
 			Glyphs = new GorgonGlyphCollection();
 			KerningPairs = new Dictionary<GorgonKerningPair, int>();
 		}

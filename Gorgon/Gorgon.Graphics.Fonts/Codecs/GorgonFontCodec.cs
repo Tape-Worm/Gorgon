@@ -147,7 +147,6 @@ namespace Gorgon.Graphics.Fonts.Codecs
 		/// <summary>
 		/// Function to build the font from the data provided.
 		/// </summary>
-		/// <param name="name">The name of the font.</param>
 		/// <param name="info">The font information used to generate the font.</param>
 		/// <param name="fontHeight">The height of the font, in pixels.</param>
 		/// <param name="lineHeight">The height of a line, in pixels.</param>
@@ -157,8 +156,8 @@ namespace Gorgon.Graphics.Fonts.Codecs
 		/// <param name="glyphs">The glyphs associated with the font.</param>
 		/// <param name="kerningValues">The kerning values, if any, associated with the font.</param>
 		/// <returns>A new <seealso cref="GorgonFont"/>.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/>, <paramref name="info"/>, <paramref name="textures"/>, or the <paramref name="glyphs"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/>, <paramref name="textures"/>, or the <paramref name="glyphs"/> parameter is empty.</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/>, <paramref name="textures"/>, or the <paramref name="glyphs"/> parameter is <b>null</b>.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="textures"/>, or the <paramref name="glyphs"/> parameter is empty.</exception>
 		/// <remarks>
 		/// <para>
 		/// Codec implementors should call this method once all information has been gathered for the font. This will load the font data into the <seealso cref="GorgonFont"/>, and store that font in the 
@@ -168,26 +167,15 @@ namespace Gorgon.Graphics.Fonts.Codecs
 		/// This method must be called because an application will not be able to create a <seealso cref="GorgonFont"/> directly.
 		/// </para>
 		/// </remarks>
-		protected GorgonFont BuildFont(string name,
-									   IGorgonFontInfo info,
+		protected GorgonFont BuildFont(IGorgonFontInfo info,
 									   float fontHeight,
 									   float lineHeight,
 									   float ascent,
 									   float descent,
-									   IReadOnlyList<GorgonTexture> textures,
+									   IReadOnlyList<GorgonTexture2D> textures,
 									   IReadOnlyList<GorgonGlyph> glyphs,
 									   IReadOnlyDictionary<GorgonKerningPair, int> kerningValues)
 		{
-			if (name == null)
-			{
-				throw new ArgumentNullException(nameof(name));
-			}
-
-			if (string.IsNullOrWhiteSpace(name))
-			{
-				throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
-			}
-
 			if (info == null)
 			{
 				throw new ArgumentNullException(nameof(info));
@@ -216,7 +204,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
 			GorgonFont result = null;
 			try
 			{
-				result = new GorgonFont(name, Factory, info, fontHeight, lineHeight, ascent, descent, glyphs, textures, kerningValues);
+				result = new GorgonFont(info.Name, Factory, info, fontHeight, lineHeight, ascent, descent, glyphs, textures, kerningValues);
 
 				// Register with the factory font cache.
 				Factory.RegisterFont(result);
@@ -325,8 +313,8 @@ namespace Gorgon.Graphics.Fonts.Codecs
 		/// <summary>
 		/// Function to load an font from a stream.
 		/// </summary>
-		/// <param name="name">The name of the font.</param>
 		/// <param name="stream">The stream containing the font data to read.</param>
+		/// <param name="name">[Optional] The name of the font.</param>
 		/// <returns>A <see cref="GorgonFont"/> containing the font data from the stream.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/>, or the <paramref name="name"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="stream"/> is write only.
@@ -334,18 +322,8 @@ namespace Gorgon.Graphics.Fonts.Codecs
 		/// <para>Thrown when the <paramref name="name"/> parameter is empty.</para>
 		/// </exception>
 		/// <exception cref="EndOfStreamException">Thrown when the amount of data requested exceeds the size of the stream minus its current position.</exception>
-		public GorgonFont LoadFromStream(string name, Stream stream)
+		public GorgonFont LoadFromStream(Stream stream, string name = null)
 		{
-			if (name == null)
-			{
-				throw new ArgumentNullException(nameof(name));
-			}
-
-			if (string.IsNullOrWhiteSpace(name))
-			{
-				throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
-			}
-
 			if (stream == null)
 			{
 				throw new ArgumentNullException(nameof(stream));
@@ -383,7 +361,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
 
 			if (string.IsNullOrWhiteSpace(filePath))
 			{
-				throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(filePath));
+				throw new ArgumentEmptyException(nameof(filePath));
 			}
 
 			try
@@ -433,31 +411,15 @@ namespace Gorgon.Graphics.Fonts.Codecs
 		/// <summary>
 		/// Function to load an font from a file on the physical file system.
 		/// </summary>
-		/// <param name="name">The name of the font.</param>
 		/// <param name="filePath">Path to the file to load.</param>
+		/// <param name="name">[Optional] The name of the font.</param>
 		/// <returns>A <see cref="GorgonFont"/> containing the font data from the stream.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath"/>, or the <paramref name="name"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
-		public GorgonFont LoadFromFile(string name, string filePath)
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath"/> parameter is <b>null</b>.</exception>
+		public GorgonFont LoadFromFile(string filePath, string name = null)
 		{
-			if (name == null)
-			{
-				throw new ArgumentNullException(nameof(name));
-			}
-
-			if (string.IsNullOrWhiteSpace(name))
-			{
-				throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
-			}
-
-			if (filePath == null)
-			{
-				throw new ArgumentNullException(nameof(filePath));
-			}
-
 			if (string.IsNullOrWhiteSpace(filePath))
 			{
-				throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(filePath));
+				throw new ArgumentEmptyException(nameof(filePath));
 			}
 
 			using (FileStream stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))

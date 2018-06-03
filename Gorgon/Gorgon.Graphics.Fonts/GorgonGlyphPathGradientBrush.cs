@@ -28,8 +28,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
-using DX = SharpDX;
 using Gorgon.Math;
+using DX = SharpDX;
 
 namespace Gorgon.Graphics.Fonts
 {
@@ -140,13 +140,13 @@ namespace Gorgon.Graphics.Fonts
 		/// </returns>
 		internal override Brush ToGDIBrush()
 		{
-			PathGradientBrush result = new PathGradientBrush(Points.Select(item => new PointF(item.X, item.Y)).ToArray(), (WrapMode)WrapMode);
+			var result = new PathGradientBrush(Points.Select(item => new PointF(item.X, item.Y)).ToArray(), (WrapMode)WrapMode);
 
-			Blend blend = new Blend(BlendFactors.Count.Max(BlendPositions.Count).Max(1));
+			var blend = new Blend(BlendFactors.Count.Max(BlendPositions.Count).Max(1));
 			
 			if (Interpolation.Count > 2)
 			{
-				ColorBlend interpolationColors = new ColorBlend(Interpolation.Count);
+				var interpolationColors = new ColorBlend(Interpolation.Count);
 
 				for (int i = 0; i < Interpolation.Count; i++)
 				{

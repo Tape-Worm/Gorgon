@@ -23,8 +23,8 @@
 // Created: February 15, 2017 9:07:03 PM
 // 
 #endregion
+using System.Drawing;
 using Gorgon.Graphics.Core;
-using Drawing = System.Drawing;
 using DX = SharpDX;
 
 namespace Gorgon.Graphics.Fonts
@@ -38,7 +38,7 @@ namespace Gorgon.Graphics.Fonts
 		/// <summary>
 		/// Property to return the packed bitmap associated with the glyph.
 		/// </summary>
-		public Drawing.Bitmap GlyphBitmap
+		public Bitmap GlyphBitmap
 		{
 			get;
 		}
@@ -78,7 +78,7 @@ namespace Gorgon.Graphics.Fonts
 		/// <summary>
 		/// Property to set or return the texture assigned to the glyph.
 		/// </summary>
-		public GorgonTexture Texture
+		public GorgonTexture2D Texture
 		{
 			get;
 			set;
@@ -103,7 +103,7 @@ namespace Gorgon.Graphics.Fonts
 		/// <param name="offset">The offset.</param>
 		/// <param name="outlineRegion">The outline region.</param>
 		/// <param name="outlineOffset">The outline offset.</param>
-		public GlyphInfo(Drawing.Bitmap glyphBitmap, DX.Rectangle region, DX.Point offset, DX.Rectangle outlineRegion, DX.Point outlineOffset)
+		public GlyphInfo(Bitmap glyphBitmap, DX.Rectangle region, DX.Point offset, DX.Rectangle outlineRegion, DX.Point outlineOffset)
 		{
 			GlyphBitmap = glyphBitmap;
 			Region = region;

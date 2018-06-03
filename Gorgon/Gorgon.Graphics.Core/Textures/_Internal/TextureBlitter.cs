@@ -71,6 +71,8 @@ namespace Gorgon.Graphics
 	    private DX.Rectangle? _targetBounds;
         // The default pipeline state.
 	    private GorgonPipelineState _pipelineState;
+        // Constant buffers for the pixel shader
+	    private static readonly GorgonConstantBuffers _emptyPsConstants = new GorgonConstantBuffers();
 	    #endregion
 
         #region Methods.
@@ -162,7 +164,6 @@ namespace Gorgon.Graphics
 		                        .SamplerState(ShaderType.Pixel, GorgonSamplerState.Default)
 		                        .PipelineState(_pipelineState)
 		                        .ConstantBuffer(ShaderType.Vertex, _wvpBuffer);
-
 		    }
 		    finally
 		    {
@@ -179,19 +180,19 @@ namespace Gorgon.Graphics
         /// <param name="shader">The pixel shader to use.</param>
         /// <param name="constantBuffers">Constant buffers for the pixel shader, if required.</param>
 	    private void GetDrawCall(GorgonTexture2DView texture, GorgonBlendState blendState, GorgonSamplerState samplerState, GorgonPixelShader shader, GorgonConstantBuffers constantBuffers)
-	    {
+        {
 	        if ((_drawCall != null) 
-	            && (_drawCall.PixelShader.ConstantBuffers.Equals(constantBuffers))
                 && (shader == _pixelShader)
-                && (_drawCall.PixelShader.Samplers[0].Equals(samplerState))
-                && (_pipelineState.BlendStates[0].Equals(blendState))
-	            && (_drawCall.PixelShader.ShaderResources[0] == texture))
+                && (_drawCall.PixelShader.Samplers[0] == samplerState)
+                && (_pipelineState.BlendStates[0] == blendState)
+	            && (_drawCall.PixelShader.ShaderResources[0] == texture)
+	            && (_drawCall.PixelShader.ConstantBuffers.DirtyEquals(constantBuffers)))
 	        {
                 // This draw call hasn't changed, so return the previous one.
 	            return;
 	        }
 
-	        if (!_pipelineState.BlendStates[0].Equals(blendState))
+	        if (_pipelineState.BlendStates[0] != blendState)
 	        {
 	            _pipelineState = _pipeStateBuilder
 	                             .BlendState(blendState)
@@ -262,11 +263,21 @@ namespace Gorgon.Graphics
                 samplerState = GorgonSamplerState.Default;
 	        }
 
+	        if (pixelShaderConstants == null)
+	        {
+	            pixelShaderConstants = _emptyPsConstants;
+	        }
+
 	        GetDrawCall(texture, blendState, samplerState, pixelShader, pixelShaderConstants);
 
 	        // Calculate position on the texture.
 	        DX.Vector2 topLeft = texture.Texture.ToTexel(sourceOffset);
-	        DX.Vector2 bottomRight = texture.Texture.ToTexel(clip ? new DX.Point(destRect.Width, destRect.Height) : new DX.Point(texture.Width, texture.Height));
+	        DX.Vector2 bottomRight = texture.Texture.ToTexel(clip ? new DX.Vector2(destRect.Width, destRect.Height) : new DX.Point(texture.Width, texture.Height));
+
+	        if (clip)
+	        {
+                DX.Vector2.Add(ref bottomRight, ref topLeft, out bottomRight);
+	        }
 
 	        // Update the vertices.
 	        _vertices[0] = new BltVertex

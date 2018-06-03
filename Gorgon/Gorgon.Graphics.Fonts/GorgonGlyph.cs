@@ -26,11 +26,11 @@
 
 using System;
 using System.Globalization;
-using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts.Properties;
 using Gorgon.Math;
+using DX = SharpDX;
 
 namespace Gorgon.Graphics.Fonts
 {
@@ -38,7 +38,7 @@ namespace Gorgon.Graphics.Fonts
 	/// A glyph used to define a character in a <see cref="GorgonFont"/>.
 	/// </summary>
 	public sealed class GorgonGlyph
-		: IGorgonNamedObject
+		: IGorgonNamedObject, IEquatable<GorgonGlyph>
 	{
 		#region Properties.
 		/// <summary>
@@ -57,7 +57,7 @@ namespace Gorgon.Graphics.Fonts
 		/// <summary>
 		/// Property to return the texture that the glyph can be found on.
 		/// </summary>
-		public GorgonTextureView TextureView
+		public GorgonTexture2DView TextureView
 		{
 			get;
 			private set;
@@ -173,7 +173,7 @@ namespace Gorgon.Graphics.Fonts
 		/// </exception>
 		/// <remarks>
 		/// <para>
-		/// This allows an application to point a glyph at a new <see cref="GorgonTexture"/> for custom bitmap glyphs, or allows the region on the texture that contains the glyph to be modified. This 
+		/// This allows an application to point a glyph at a new <see cref="GorgonTexture2D"/> for custom bitmap glyphs, or allows the region on the texture that contains the glyph to be modified. This 
 		/// allows applications to create custom characters in fonts that the font generation code cannot produce.
 		/// </para>
 		/// <para>
@@ -184,14 +184,14 @@ namespace Gorgon.Graphics.Fonts
 		/// If the <see cref="GorgonFont"/> for this glyph does not have an outline, then the <paramref name="outlineCoordinates"/> will be set to empty.
 		/// </para>
 		/// </remarks>
-		public void UpdateTexture(GorgonTexture texture, DX.Rectangle glyphCoordinates, DX.Rectangle outlineCoordinates, int textureArrayIndex)
+		public void UpdateTexture(GorgonTexture2D texture, DX.Rectangle glyphCoordinates, DX.Rectangle outlineCoordinates, int textureArrayIndex)
 		{
 			if (texture == null)
 			{
 				throw new ArgumentNullException(nameof(texture));
 			}
 
-			if ((texture.DefaultShaderResourceView == TextureView)
+			if ((texture == TextureView?.Texture)
 			    && (glyphCoordinates == GlyphCoordinates)
 				&& (outlineCoordinates == OutlineCoordinates)
 				&& (TextureIndex == textureArrayIndex))
@@ -199,50 +199,33 @@ namespace Gorgon.Graphics.Fonts
 				return;
 			}
 
-			if (texture.DefaultShaderResourceView != TextureView)
+			if (texture != TextureView?.Texture)
 			{
-				if (texture.Info.TextureType != TextureType.Texture2D)
-				{
-					throw new ArgumentException(Resources.GORGFX_ERR_FONT_GLYPH_IMAGE_NOT_2D, nameof(texture));
-				}
-
-				if ((texture.Info.Format != BufferFormat.R8G8B8A8_UNorm)
-				    && (texture.Info.Format != BufferFormat.R8G8B8A8_UNorm_SRgb)
-				    && (texture.Info.Format != BufferFormat.B8G8R8A8_UNorm)
-				    && (texture.Info.Format != BufferFormat.B8G8R8A8_UNorm_SRgb))
+				if ((texture.Format != BufferFormat.R8G8B8A8_UNorm)
+				    && (texture.Format != BufferFormat.R8G8B8A8_UNorm_SRgb)
+				    && (texture.Format != BufferFormat.B8G8R8A8_UNorm)
+				    && (texture.Format != BufferFormat.B8G8R8A8_UNorm_SRgb))
 				{
 					throw new ArgumentException(Resources.GORGFX_ERR_GLYPH_TEXTURE_FORMAT_INVALID, nameof(texture));
 				}
 
-				TextureView = texture.DefaultShaderResourceView;
+				TextureView = texture.GetShaderResourceView();
 			}
 
 			// Ensure that this index is valid.
-			textureArrayIndex = textureArrayIndex.Max(0).Min(TextureView?.Texture.Info.ArrayCount - 1 ?? 0);
+			textureArrayIndex = textureArrayIndex.Max(0).Min(TextureView?.Texture.ArrayCount - 1 ?? 0);
 
 			TextureIndex = textureArrayIndex;
 			GlyphCoordinates = glyphCoordinates;
 			OutlineCoordinates = outlineCoordinates;
-			TextureCoordinates = new DX.RectangleF
-			{
-				Left = glyphCoordinates.Left / (float)texture.Info.Width,
-				Top = glyphCoordinates.Top / (float)texture.Info.Height,
-				Right = glyphCoordinates.Right / (float)texture.Info.Width,
-				Bottom = glyphCoordinates.Bottom / (float)texture.Info.Height
-			};
+		    TextureCoordinates = texture.ToTexel(glyphCoordinates);
 
 			if (OutlineCoordinates.IsEmpty)
 			{
 				return;
 			}
 
-			OutlineTextureCoordinates = new DX.RectangleF
-			                            {
-				                            Left = outlineCoordinates.Left / (float)texture.Info.Width,
-				                            Top = outlineCoordinates.Top / (float)texture.Info.Height,
-				                            Right = outlineCoordinates.Right / (float)texture.Info.Width,
-				                            Bottom = outlineCoordinates.Bottom / (float)texture.Info.Height
-			                            };
+			OutlineTextureCoordinates = texture.ToTexel(outlineCoordinates);
 		}
 
 		/// <summary>
@@ -266,20 +249,35 @@ namespace Gorgon.Graphics.Fonts
 		{
 			return string.Format(Resources.GORGFX_TOSTR_FONT_GLYPH, Character);
 		}
-		#endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonGlyph"/> class.
-		/// </summary>
-		/// <param name="character">The character that the glyph represents.</param>
-		/// <param name="advance">Advancement width for the glyph.</param>
-		/// <remarks>
-		/// <para>
-		/// This is used by the font generation routine to populate glyph data first, and assign a texture after.
-		/// </para>
-		/// </remarks>
-		internal GorgonGlyph(char character, int advance)
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns><see langword="true" /> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <see langword="false" />.</returns>
+        public bool Equals(GorgonGlyph other)
+        {
+            if (other == null)
+            {
+                return false;
+            }
+
+            return (Character == other.Character);
+        }
+        #endregion
+
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonGlyph"/> class.
+        /// </summary>
+        /// <param name="character">The character that the glyph represents.</param>
+        /// <param name="advance">Advancement width for the glyph.</param>
+        /// <remarks>
+        /// <para>
+        /// This is used by the font generation routine to populate glyph data first, and assign a texture after.
+        /// </para>
+        /// </remarks>
+        internal GorgonGlyph(char character, int advance)
 		{
 			Character = character;
 			Advance = advance;

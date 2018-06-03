@@ -25,7 +25,7 @@
 #endregion
 
 using System;
-using Drawing = System.Drawing;
+using System.Drawing;
 
 namespace Gorgon.Graphics.Fonts
 {
@@ -39,7 +39,7 @@ namespace Gorgon.Graphics.Fonts
 		/// <summary>
 		/// Property to return the font used to draw the glyphs.
 		/// </summary>
-		public Drawing.Font Font
+		public Font Font
 		{
 			get;
 			private set;
@@ -48,7 +48,7 @@ namespace Gorgon.Graphics.Fonts
 		/// <summary>
 		/// Property to return the string format used when performing glyph measuring.
 		/// </summary>
-		public Drawing.StringFormat StringFormat
+		public StringFormat StringFormat
 		{
 			get;
 			private set;
@@ -60,7 +60,7 @@ namespace Gorgon.Graphics.Fonts
 		/// <remarks>
 		/// This used because some glyphs are being clipped when they have overhang on the left boundary.
 		/// </remarks>
-		public Drawing.StringFormat DrawFormat
+		public StringFormat DrawFormat
 		{
 			get;
 			private set;
@@ -98,26 +98,26 @@ namespace Gorgon.Graphics.Fonts
 		/// <param name="graphics">The graphics context to use.</param>
 		/// <param name="fontInfo">The information used to generate the font.</param>
 		/// <returns>A new <see cref="GdiFontData"/> object.</returns>
-		public static GdiFontData GetFontData(Drawing.Graphics graphics, IGorgonFontInfo fontInfo)
+		public static GdiFontData GetFontData(System.Drawing.Graphics graphics, IGorgonFontInfo fontInfo)
 		{
-			GdiFontData result = new GdiFontData();
+			var result = new GdiFontData();
 
-			Drawing.CharacterRange[] range = {
-				            new Drawing.CharacterRange(0, 1)
+			CharacterRange[] range = {
+				            new CharacterRange(0, 1)
 			            };
 
-			Drawing.FontStyle style = Drawing.FontStyle.Regular;
+			var style = System.Drawing.FontStyle.Regular;
 
 			switch (fontInfo.FontStyle)
 			{
 				case FontStyle.Bold:
-					style = Drawing.FontStyle.Bold;
+					style = System.Drawing.FontStyle.Bold;
 					break;
 				case FontStyle.Italics:
-					style = Drawing.FontStyle.Italic;
+					style = System.Drawing.FontStyle.Italic;
 					break;
 				case FontStyle.BoldItalics:
-					style = Drawing.FontStyle.Bold | Drawing.FontStyle.Italic;
+					style = System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic;
 					break;
 			}
 
@@ -125,33 +125,33 @@ namespace Gorgon.Graphics.Fonts
 			if (fontInfo.FontHeightMode == FontHeightMode.Points)
 			{
 				// Convert the internal font to pixel size.
-				result.Font = new Drawing.Font(fontInfo.FontFamilyName,
+				result.Font = new Font(fontInfo.FontFamilyName,
 				                               (fontInfo.Size * graphics.DpiY) / 72.0f,
 				                               style,
-				                               Drawing.GraphicsUnit.Pixel);
+				                               GraphicsUnit.Pixel);
 			}
 			else
 			{
-				result.Font = new Drawing.Font(fontInfo.FontFamilyName, fontInfo.Size, style, Drawing.GraphicsUnit.Pixel);
+				result.Font = new Font(fontInfo.FontFamilyName, fontInfo.Size, style, GraphicsUnit.Pixel);
 			}
 
 			result.FontHeight = result.Font.GetHeight(graphics);
 
-			result.StringFormat = new Drawing.StringFormat(Drawing.StringFormat.GenericTypographic)
+			result.StringFormat = new StringFormat(StringFormat.GenericTypographic)
 			                      {
-				                      FormatFlags = Drawing.StringFormatFlags.NoFontFallback | Drawing.StringFormatFlags.MeasureTrailingSpaces,
-				                      Alignment = Drawing.StringAlignment.Near,
-				                      LineAlignment = Drawing.StringAlignment.Near
+				                      FormatFlags = StringFormatFlags.NoFontFallback | StringFormatFlags.MeasureTrailingSpaces,
+				                      Alignment = StringAlignment.Near,
+				                      LineAlignment = StringAlignment.Near
 			                      };
 			result.StringFormat.SetMeasurableCharacterRanges(range);
 
 			// Create a separate drawing format because some glyphs are being clipped when they have overhang
 			// on the left boundary.
-			result.DrawFormat = new Drawing.StringFormat(Drawing.StringFormat.GenericDefault)
+			result.DrawFormat = new StringFormat(StringFormat.GenericDefault)
 			                    {
-				                    FormatFlags = Drawing.StringFormatFlags.NoFontFallback | Drawing.StringFormatFlags.MeasureTrailingSpaces,
-				                    Alignment = Drawing.StringAlignment.Near,
-				                    LineAlignment = Drawing.StringAlignment.Near
+				                    FormatFlags = StringFormatFlags.NoFontFallback | StringFormatFlags.MeasureTrailingSpaces,
+				                    Alignment = StringAlignment.Near,
+				                    LineAlignment = StringAlignment.Near
 			                    };
 			result.DrawFormat.SetMeasurableCharacterRanges(range);
 

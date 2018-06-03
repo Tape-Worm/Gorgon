@@ -225,6 +225,37 @@ namespace Gorgon.IO
             }
         }
 
+	    /// <summary>
+	    /// Function to write a generic value to the stream.
+	    /// </summary>
+	    /// <typeparam name="T">Type of value to write.  Must be an unmanaged value type.</typeparam>
+	    /// <param name="value">Value to write to the stream.</param>
+	    /// <remarks>
+	    /// <para>
+	    /// This method will write the data to the binary stream from the <paramref name="value"/> of type <typeparamref name="T"/>. The amount of data written will be dependant upon the size of 
+	    /// <typeparamref name="T"/>, and any packing rules applied.
+	    /// </para>
+	    /// <note type="important">
+	    /// <para>
+	    /// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
+	    /// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
+	    /// </para>
+	    /// <para>
+	    /// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
+	    /// </para>
+	    /// </note>
+	    /// </remarks>
+	    /// <exception cref="IOException">Thrown when the stream is read-only.</exception>
+	    public void WriteValue<T>(T value)
+	        where T : unmanaged
+	    {
+	        unsafe
+	        {
+	            void* ptr = Unsafe.AsPointer(ref value);
+	            Write(ptr, Unsafe.SizeOf<T>());
+	        }
+	    }
+
         /// <summary>
         /// Function to write a range of generic values.
         /// </summary>

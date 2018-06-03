@@ -28,9 +28,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Gorgon.Core;
-using DX = SharpDX;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts.Properties;
+using DX = SharpDX;
 
 namespace Gorgon.Graphics.Fonts
 {
@@ -409,15 +409,23 @@ namespace Gorgon.Graphics.Fonts
 			get;
 			set;
 		}
-		#endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonFontInfo"/> class.
-		/// </summary>
-		/// <param name="fontInfo">The font information to copy.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="fontInfo"/> parameter is <b>null</b>.</exception>
-		public GorgonFontInfo(IGorgonFontInfo fontInfo)
+        /// <summary>
+        /// Property to return the name of the font object.
+        /// </summary>
+	    public string Name
+	    {
+	        get;
+	    }
+        #endregion
+
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonFontInfo"/> class.
+        /// </summary>
+        /// <param name="fontInfo">The font information to copy.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="fontInfo"/> parameter is <b>null</b>.</exception>
+        public GorgonFontInfo(IGorgonFontInfo fontInfo)
 		{
 		    FontHeightMode = fontInfo?.FontHeightMode ?? throw new ArgumentNullException(nameof(fontInfo));
 			AntiAliasingMode = fontInfo.AntiAliasingMode;
@@ -443,10 +451,11 @@ namespace Gorgon.Graphics.Fonts
 		/// <param name="fontFamily">The name of the font family to derive the font from.</param>
 		/// <param name="size">The height of the font.</param>
 		/// <param name="heightMode">[Optional] The type of units to express the font height in.</param>
+		/// <param name="name">[Optional] The name of the font.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="fontFamily"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="fontFamily"/> parameter is empty.</exception>
 		/// <exception cref="ArgumentException">The <paramref name="size"/> parameter is less than or equal to 0.</exception>
-		public GorgonFontInfo(string fontFamily, float size, FontHeightMode heightMode = FontHeightMode.Pixels)
+		public GorgonFontInfo(string fontFamily, float size, FontHeightMode heightMode = FontHeightMode.Pixels, string name = null)
 		{
 			if (fontFamily == null)
 			{
@@ -463,6 +472,7 @@ namespace Gorgon.Graphics.Fonts
 				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_FONT_SIZE_TOO_SMALL, size), nameof(size));
 			}
 
+		    Name = name ?? $"{fontFamily} {size}{heightMode}";
 			UseKerningPairs = true;
 			_characters = Enumerable.Range(32, 224).
 			                         Select(Convert.ToChar).

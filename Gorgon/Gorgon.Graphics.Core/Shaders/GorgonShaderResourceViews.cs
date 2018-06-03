@@ -385,6 +385,55 @@ namespace Gorgon.Graphics.Core
             return true;
         }
 
+	    /// <summary>
+	    /// Indicates whether the current object is equal to another object of the same type.
+	    /// </summary>
+	    /// <param name="other">An object to compare with this object.</param>
+	    /// <returns><see langword="true" /> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <see langword="false" />.</returns>
+	    public bool DirtyEquals(IGorgonReadOnlyArray<GorgonShaderResourceView> other)
+	    {
+	        if (other == null)
+	        {
+	            return false;
+	        }
+
+	        if (other.Length != Length)
+	        {
+	            return false;
+	        }
+
+	        if (other == this)
+	        {
+	            return true;
+	        }
+
+	        if (IsDirty)
+	        {
+	            // Update the dirty item state on this instance so we can cut down on some checking.
+	            GetDirtyItems();
+	        }
+
+            ref readonly (int otherStart, int otherCount) otherRange = ref other.GetDirtyItems();
+
+	        // If the dirty state has already been updated for both arrays, then just check that.
+	        if ((_dirtyItems.Start != otherRange.otherStart) || (_dirtyItems.Count != otherRange.otherCount))
+	        {
+	            return false;
+	        }
+
+	        for (int i = _dirtyItems.Start; i < _dirtyItems.Start + _dirtyItems.Count; ++i)
+	        {
+	            if (_backingArray[i] != other[i])
+	            {
+	                return false;
+	            }
+	        }
+
+	        return true;
+
+	        // We have different dirty states, so this array is different than the other one.
+	    }
+
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
         /// </summary>

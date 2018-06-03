@@ -56,6 +56,13 @@ namespace Gorgon.Collections
 
         #region Methods.
         /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns><see langword="true" /> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <see langword="false" />.</returns>
+        bool DirtyEquals(IGorgonReadOnlyArray<T> other);
+
+        /// <summary>
         /// Function to retrieve the dirty items in this list.
         /// </summary>
         /// <param name="peek">[Optional] <b>true</b> if the dirty state should not be modified by calling this method, or <b>false</b> if it should be.</param>

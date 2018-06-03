@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System;
 using Gorgon.Core;
 using Gorgon.Graphics.Fonts.Properties;
 
@@ -34,8 +33,8 @@ namespace Gorgon.Graphics.Fonts
 	/// A kerning pair value.
 	/// </summary>
 	/// <remarks>Kerning pairs are used to offset a pair of characters when they are next to each other.</remarks>
-	public struct GorgonKerningPair
-		: IEquatable<GorgonKerningPair>
+	public readonly struct GorgonKerningPair
+		: IGorgonEquatableByRef<GorgonKerningPair>
 	{
 		#region Variables.
 		/// <summary>
@@ -55,7 +54,7 @@ namespace Gorgon.Graphics.Fonts
 		/// <param name="left">Left kerning pair to compare.</param>
 		/// <param name="right">Right kerning pair to compare.</param>
 		/// <returns><b>true</b> if the same, <b>false</b> if not.</returns>
-		public static bool Equals(ref GorgonKerningPair left, ref GorgonKerningPair right)
+		public static bool Equals(in GorgonKerningPair left, in GorgonKerningPair right)
 		{
 			return ((left.LeftCharacter == right.LeftCharacter) && (left.RightCharacter == right.RightCharacter));
 		}
@@ -107,9 +106,9 @@ namespace Gorgon.Graphics.Fonts
 		/// <returns>
 		/// The result of the operator.
 		/// </returns>
-		public static bool operator ==(GorgonKerningPair left, GorgonKerningPair right)
+		public static bool operator ==(in GorgonKerningPair left, in GorgonKerningPair right)
 		{
-			return Equals(ref left, ref right);
+			return Equals(in left, in right);
 		}
 
 		/// <summary>
@@ -120,37 +119,46 @@ namespace Gorgon.Graphics.Fonts
 		/// <returns>
 		/// The result of the operator.
 		/// </returns>
-		public static bool operator !=(GorgonKerningPair left, GorgonKerningPair right)
+		public static bool operator !=(in GorgonKerningPair left, in GorgonKerningPair right)
 		{
-			return !Equals(ref left, ref right);
+			return !Equals(in left, in right);
 		}
-		#endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonKerningPair"/> struct.
-		/// </summary>
-		/// <param name="leftChar">The left char.</param>
-		/// <param name="rightChar">The right char.</param>
-		public GorgonKerningPair(char leftChar, char rightChar)
+	    /// <summary>
+	    /// Indicates whether the current object is equal to another object of the same type.
+	    /// </summary>
+	    /// <param name="other">An object to compare with this object.</param>
+	    /// <returns>
+	    /// true if the current object is equal to the <paramin name="other"/> parameter; otherwise, false.
+	    /// </returns>
+	    public bool Equals(GorgonKerningPair other)
+	    {
+	        return Equals(in this, in other);
+	    }
+
+        /// <summary>
+        /// Function to compare this instance with another.
+        /// </summary>
+        /// <param name="other">The other instance to use for comparison.</param>
+        /// <returns>
+        ///   <b>true</b> if equal, <b>false</b> if not.</returns>
+        public bool Equals(in GorgonKerningPair other)
+        {
+            return Equals(in this, in other);
+        }
+        #endregion
+
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonKerningPair"/> struct.
+        /// </summary>
+        /// <param name="leftChar">The left char.</param>
+        /// <param name="rightChar">The right char.</param>
+        public GorgonKerningPair(char leftChar, char rightChar)
 		{
 			LeftCharacter = leftChar;
 			RightCharacter = rightChar;
 		}
 		#endregion
-
-		#region IEquatable<GorgonKerningPair> Members
-		/// <summary>
-		/// Indicates whether the current object is equal to another object of the same type.
-		/// </summary>
-		/// <param name="other">An object to compare with this object.</param>
-		/// <returns>
-		/// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
-		/// </returns>
-		public bool Equals(GorgonKerningPair other)
-		{
-			return Equals(ref this, ref other);
-		}
-		#endregion
-	}
+    }
 }

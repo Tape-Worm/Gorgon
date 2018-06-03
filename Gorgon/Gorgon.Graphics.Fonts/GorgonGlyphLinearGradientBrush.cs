@@ -79,7 +79,7 @@ namespace Gorgon.Graphics.Fonts
 			}
 			set
 			{
-				GorgonGlyphBrushInterpolator newValue = new GorgonGlyphBrushInterpolator(0, value);
+				var newValue = new GorgonGlyphBrushInterpolator(0, value);
 
 				if (Interpolation.Count == 0)
 				{
@@ -114,7 +114,7 @@ namespace Gorgon.Graphics.Fonts
 			}
 			set
 			{
-				GorgonGlyphBrushInterpolator newValue = new GorgonGlyphBrushInterpolator(1, value);
+				var newValue = new GorgonGlyphBrushInterpolator(1, value);
 
 				switch (Interpolation.Count)
 				{
@@ -177,7 +177,7 @@ namespace Gorgon.Graphics.Fonts
 		/// </returns>
 		internal override Brush ToGDIBrush()
 		{
-			LinearGradientBrush result = new LinearGradientBrush(new Rectangle(GradientRegion.X, GradientRegion.Y, GradientRegion.Width, GradientRegion.Height),
+			var result = new LinearGradientBrush(new Rectangle(GradientRegion.X, GradientRegion.Y, GradientRegion.Width, GradientRegion.Height),
 			                                     StartColor,
 			                                     EndColor,
 			                                     Angle,
@@ -186,7 +186,7 @@ namespace Gorgon.Graphics.Fonts
 				             GammaCorrection = GammaCorrection
 			             };
 
-			ColorBlend interpolationColors = new ColorBlend(Interpolation.Count);
+			var interpolationColors = new ColorBlend(Interpolation.Count);
 
 			for (int i = 0; i < Interpolation.Count; i++)
 			{

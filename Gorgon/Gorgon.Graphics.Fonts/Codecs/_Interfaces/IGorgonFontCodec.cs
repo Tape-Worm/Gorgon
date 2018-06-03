@@ -107,29 +107,28 @@ namespace Gorgon.Graphics.Fonts.Codecs
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Function to load an font from a stream.
-		/// </summary>
-		/// <param name="name">The name of the font.</param>
-		/// <param name="stream">The stream containing the font data to read.</param>
-		/// <returns>A <see cref="GorgonFont"/> containing the font data from the stream.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/>, or the <paramref name="name"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="stream"/> is write only.
-		/// <para>-or-</para>
-		/// <para>Thrown when the <paramref name="name"/> parameter is empty.</para>
-		/// </exception>
-		/// <exception cref="EndOfStreamException">Thrown when the amount of data requested exceeds the size of the stream minus its current position.</exception>
-		GorgonFont LoadFromStream(string name, Stream stream);
+	    /// <summary>
+	    /// Function to load an font from a stream.
+	    /// </summary>
+	    /// <param name="stream">The stream containing the font data to read.</param>
+	    /// <param name="name">[Optional] The name of the font.</param>
+	    /// <returns>A <see cref="GorgonFont"/> containing the font data from the stream.</returns>
+	    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/>, or the <paramref name="name"/> parameter is <b>null</b>.</exception>
+	    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="stream"/> is write only.
+	    /// <para>-or-</para>
+	    /// <para>Thrown when the <paramref name="name"/> parameter is empty.</para>
+	    /// </exception>
+	    /// <exception cref="EndOfStreamException">Thrown when the amount of data requested exceeds the size of the stream minus its current position.</exception>
+	    GorgonFont LoadFromStream(Stream stream, string name = null);
 
 		/// <summary>
 		/// Function to load an font from a file on the physical file system.
 		/// </summary>
-		/// <param name="name">The name of the font.</param>
 		/// <param name="filePath">Path to the file to load.</param>
+		/// <param name="name">[Optional] The name of the font.</param>
 		/// <returns>A <see cref="GorgonFont"/> containing the font data from the stream.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath"/>, or the <paramref name="name"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
-		GorgonFont LoadFromFile(string name, string filePath);
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath"/> parameter is <b>null</b>.</exception>
+		GorgonFont LoadFromFile(string filePath, string name = null);
 
 		/// <summary>
 		/// Function to persist a <see cref="GorgonFont"/> to a stream.

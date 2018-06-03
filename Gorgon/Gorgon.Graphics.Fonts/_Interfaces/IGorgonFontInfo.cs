@@ -24,6 +24,7 @@
 // 
 #endregion
 using System.Collections.Generic;
+using Gorgon.Core;
 using Gorgon.Graphics.Core;
 
 namespace Gorgon.Graphics.Fonts
@@ -90,6 +91,7 @@ namespace Gorgon.Graphics.Fonts
 	/// </para>
 	/// </remarks>
 	public interface IGorgonFontInfo
+        : IGorgonNamedObject
 	{
 		/// <summary>
 		/// Property to return whether the font height is in pixels or in points.

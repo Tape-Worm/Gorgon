@@ -29,12 +29,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts.Properties;
 using Gorgon.Graphics.Imaging;
 using Gorgon.IO;
+using DX = SharpDX;
 
 namespace Gorgon.Graphics.Fonts.Codecs
 {
@@ -107,25 +107,26 @@ namespace Gorgon.Graphics.Fonts.Codecs
 		/// Function to read the chunk containing the font information.
 		/// </summary>
 		/// <param name="fontFile">The chunk file reader containing the font data.</param>
+		/// <param name="name">Used defined name for the font.</param>
 		/// <returns>A new <seealso cref="IGorgonFontInfo"/> containing information about the font.</returns>
-		private static IGorgonFontInfo GetFontInfo(GorgonChunkFileReader fontFile)
+		private static IGorgonFontInfo GetFontInfo(GorgonChunkFileReader fontFile, string name)
 		{
 			GorgonBinaryReader reader = fontFile.OpenChunk(FontInfoChunk);
-			GorgonFontInfo info = new GorgonFontInfo(reader.ReadString(), reader.ReadSingle(), reader.ReadValue<FontHeightMode>())
-			{
-				FontStyle = reader.ReadValue<FontStyle>(),
-				DefaultCharacter = reader.ReadChar(),
-				Characters = reader.ReadString(),
-				AntiAliasingMode = reader.ReadValue<FontAntiAliasMode>(),
-				OutlineColor1 = new GorgonColor(reader.ReadInt32()),
-				OutlineColor2 = new GorgonColor(reader.ReadInt32()),
-				OutlineSize = reader.ReadInt32(),
-				PackingSpacing = reader.ReadInt32(),
-				TextureWidth = reader.ReadInt32(),
-				TextureHeight = reader.ReadInt32(),
-				UsePremultipliedTextures = reader.ReadValue<bool>(),
-				UseKerningPairs = reader.ReadBoolean()
-			};
+		    var info = new GorgonFontInfo(reader.ReadString(), reader.ReadSingle(), reader.ReadValue<FontHeightMode>(), name)
+		               {
+		                   FontStyle = reader.ReadValue<FontStyle>(),
+		                   DefaultCharacter = reader.ReadChar(),
+		                   Characters = reader.ReadString(),
+		                   AntiAliasingMode = reader.ReadValue<FontAntiAliasMode>(),
+		                   OutlineColor1 = new GorgonColor(reader.ReadInt32()),
+		                   OutlineColor2 = new GorgonColor(reader.ReadInt32()),
+		                   OutlineSize = reader.ReadInt32(),
+		                   PackingSpacing = reader.ReadInt32(),
+		                   TextureWidth = reader.ReadInt32(),
+		                   TextureHeight = reader.ReadInt32(),
+		                   UsePremultipliedTextures = reader.ReadValue<bool>(),
+		                   UseKerningPairs = reader.ReadBoolean()
+		               };
 			fontFile.CloseChunk();
 
 			return info;
@@ -158,7 +159,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
 		/// <param name="fontData">The font data to write.</param>
 		/// <param name="textures">The textures for the glyphs.</param>
 		/// <param name="fontFile">Font file to read.</param>
-		private static void WriteGlyphs(GorgonFont fontData, IReadOnlyDictionary<GorgonTexture, IReadOnlyList<GorgonGlyph>> textures, GorgonChunkFileWriter fontFile)
+		private static void WriteGlyphs(GorgonFont fontData, IReadOnlyDictionary<GorgonTexture2D, IReadOnlyList<GorgonGlyph>> textures, GorgonChunkFileWriter fontFile)
 		{
 			// Write glyph data.
 			GorgonBinaryWriter writer = fontFile.OpenChunk(GlyphDataChunk);
@@ -178,7 +179,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
 			// Glyphs are grouped by associated texture.
 			writer.Write(textures.Count);
 
-			foreach (KeyValuePair<GorgonTexture, IReadOnlyList<GorgonGlyph>> glyphGroup in textures)
+			foreach (KeyValuePair<GorgonTexture2D, IReadOnlyList<GorgonGlyph>> glyphGroup in textures)
 			{
 				writer.Write(glyphGroup.Key.Name);
 				writer.Write(glyphGroup.Value.Count);
@@ -211,30 +212,35 @@ namespace Gorgon.Graphics.Fonts.Codecs
 		/// </summary>
 		/// <param name="textures">The textures for the font.</param>
 		/// <param name="fontFile">The font file that is being persisted.</param>
-		private static void WriteInternalTextures(IReadOnlyDictionary<GorgonTexture, IReadOnlyList<GorgonGlyph>> textures, GorgonChunkFileWriter fontFile)
+		private static void WriteInternalTextures(IReadOnlyDictionary<GorgonTexture2D, IReadOnlyList<GorgonGlyph>> textures, GorgonChunkFileWriter fontFile)
 		{
 			GorgonBinaryWriter writer = fontFile.OpenChunk(TextureChunk);
 
 			// Write out how many textures to expect.
 			writer.Write(textures.Count);
 
-			foreach (GorgonTexture texture in textures.Keys)
+			foreach (GorgonTexture2D texture in textures.Keys)
 			{
 				writer.Write(texture.Name);
 
 				// Ensure that we know how many array indices there are.
-				writer.Write(texture.Info.ArrayCount);
+				writer.Write(texture.ArrayCount);
 
 				// Compress and store the backing textures for this font.
-				using (IGorgonImage imageData = texture.ToImage())
-				using (GorgonDataStream memoryStream = new GorgonDataStream(imageData.ImageData))
-				using (GZipStream streamData = new GZipStream(writer.BaseStream, CompressionLevel.Optimal, true))
-				{
-					memoryStream.CopyTo(streamData, 80000);
+			    using (IGorgonImage imageData = texture.ToImage())
+			    {
+			        unsafe
+			        {
+			            using (var memoryStream = new UnmanagedMemoryStream((byte *)imageData.ImageData, imageData.SizeInBytes))
+			            using (var streamData = new GZipStream(writer.BaseStream, CompressionLevel.Optimal, true))
+			            {
+			                memoryStream.CopyTo(streamData, 80000);
 
-					// Ensure the remainder gets pumped into the base stream.
-					streamData.Flush();
-				}
+			                // Ensure the remainder gets pumped into the base stream.
+			                streamData.Flush();
+			            }
+			        }
+			    }
 			}
 
 			fontFile.CloseChunk();
@@ -246,12 +252,12 @@ namespace Gorgon.Graphics.Fonts.Codecs
 		/// <param name="fontFile">Font file reader.</param>
 		/// <param name="width">The width of the texture, in pixels.</param>
 		/// <param name="height">The height of the texture, in pixels.</param>
-		private IReadOnlyList<GorgonTexture> ReadInternalTextures(GorgonChunkFileReader fontFile, int width, int height)
+		private IReadOnlyList<GorgonTexture2D> ReadInternalTextures(GorgonChunkFileReader fontFile, int width, int height)
 		{
 			IGorgonImage image = null;
 			GorgonBinaryReader reader = fontFile.OpenChunk(TextureChunk);
-			List<GorgonTexture> result = new List<GorgonTexture>();
-			GorgonDataStream memoryStream = null;
+			List<GorgonTexture2D> result = new List<GorgonTexture2D>();
+			UnmanagedMemoryStream memoryStream = null;
 			GZipStream textureStream = null;
 
 			try
@@ -278,12 +284,19 @@ namespace Gorgon.Graphics.Fonts.Codecs
 					}
 
 					// Decompress the image data into our image buffer.
-					memoryStream = new GorgonDataStream(image.ImageData);
-					textureStream = new GZipStream(reader.BaseStream, CompressionMode.Decompress, true);
-					textureStream.CopyTo(memoryStream, 80000);
+				    unsafe
+				    {
+				        memoryStream = new UnmanagedMemoryStream((byte *)image.ImageData, image.SizeInBytes);
+				        textureStream = new GZipStream(reader.BaseStream, CompressionMode.Decompress, true);
+				        textureStream.CopyTo(memoryStream, 80000);
+				    }
 
-					// Convert to a texture and add that texture to our internal list.
-					result.Add(image.ToTexture(textureName, Factory.Graphics));
+				    // Convert to a texture and add that texture to our internal list.
+				    result.Add(image.ToTexture2D(Factory.Graphics,
+				                                 new GorgonTextureLoadOptions
+				                                 {
+				                                     Name = textureName
+				                                 }));
 					image.Dispose();
 					image = null;
 				}
@@ -305,7 +318,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
 		/// </summary>
 		/// <param name="fontFile">Font file to read.</param>
 		/// <param name="textures">The textures for the glyphs.</param>
-		private IReadOnlyList<GorgonGlyph> ReadGlyphs(GorgonChunkFileReader fontFile, IReadOnlyList<GorgonTexture> textures)
+		private IReadOnlyList<GorgonGlyph> ReadGlyphs(GorgonChunkFileReader fontFile, IReadOnlyList<GorgonTexture2D> textures)
 		{
 			List<GorgonGlyph> result = new List<GorgonGlyph>();
 
@@ -330,7 +343,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
 				int glyphCount = reader.ReadInt32();
 
 				// Locate the texture in our texture cache.
-				GorgonTexture texture = textures.FirstOrDefault(item => string.Equals(textureName, item.Name, StringComparison.OrdinalIgnoreCase));
+				GorgonTexture2D texture = textures.FirstOrDefault(item => string.Equals(textureName, item.Name, StringComparison.OrdinalIgnoreCase));
 
 				// The associated texture was not found, thus the file is corrupt.
 				if (texture == null)
@@ -342,10 +355,10 @@ namespace Gorgon.Graphics.Fonts.Codecs
 				for (int j = 0; j < glyphCount; j++)
 				{
 					char glyphChar = reader.ReadChar();
-					DX.Rectangle glyphRect = new DX.Rectangle(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32());
-					DX.Point offset = new DX.Point(reader.ReadInt32(), reader.ReadInt32());
-					DX.Rectangle outlineRect = new DX.Rectangle(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32());
-					DX.Point outlineOffset = new DX.Point(reader.ReadInt32(), reader.ReadInt32());
+					var glyphRect = new DX.Rectangle(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32());
+					var offset = new DX.Point(reader.ReadInt32(), reader.ReadInt32());
+					var outlineRect = new DX.Rectangle(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32());
+					var outlineOffset = new DX.Point(reader.ReadInt32(), reader.ReadInt32());
 					int advance = reader.ReadInt32();
 					int textureIndex = reader.ReadInt32();
 
@@ -388,7 +401,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
 
 			for (int i = 0; i < kernCount; ++i)
 			{
-				GorgonKerningPair kernPair = new GorgonKerningPair(reader.ReadChar(), reader.ReadChar());
+				var kernPair = new GorgonKerningPair(reader.ReadChar(), reader.ReadChar());
 				result[kernPair] = reader.ReadInt32();
 			}
 
@@ -409,7 +422,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
 		/// </remarks>
 		protected override void OnWriteFontData(GorgonFont fontData, Stream stream)
 		{
-			GorgonChunkFileWriter fontFile = new GorgonChunkFileWriter(stream, FileHeader.ChunkID());
+			var fontFile = new GorgonChunkFileWriter(stream, FileHeader.ChunkID());
 			IGorgonFontInfo fontInfo = fontData.Info;
 
 			try
@@ -442,7 +455,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
 				writer.Write(fontData.Descent);
 				fontFile.CloseChunk();
 
-				IReadOnlyDictionary<GorgonTexture, IReadOnlyList<GorgonGlyph>> textureGlyphs = fontData.Glyphs.GetGlyphsByTexture();
+				IReadOnlyDictionary<GorgonTexture2D, IReadOnlyList<GorgonGlyph>> textureGlyphs = fontData.Glyphs.GetGlyphsByTexture();
 
 				WriteInternalTextures(textureGlyphs, fontFile);
 
@@ -479,7 +492,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
 				                                     });
 				fontFile.Open();
 
-				return GetFontInfo(fontFile);
+				return GetFontInfo(fontFile, null);
 			}
 			finally
 			{
@@ -495,7 +508,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
 		/// <returns>A new <seealso cref="GorgonFont"/>, or, an existing font from the <seealso cref="GorgonFontFactory"/> cache.</returns>
 		protected override GorgonFont OnLoadFromStream(string name, Stream stream)
 		{
-			GorgonChunkFileReader fontFile = new GorgonChunkFileReader(stream,
+			var fontFile = new GorgonChunkFileReader(stream,
 			                                         new[]
 			                                         {
 				                                         FileHeader.ChunkID()
@@ -505,12 +518,12 @@ namespace Gorgon.Graphics.Fonts.Codecs
 			{
 				fontFile.Open();
 
-				IGorgonFontInfo fontInfo = GetFontInfo(fontFile);
+				IGorgonFontInfo fontInfo = GetFontInfo(fontFile, name);
 
 				// If the font is already loaded, then just reuse it.
-				if (Factory.HasFont(name, fontInfo))
+				if (Factory.HasFont(fontInfo))
 				{
-					return Factory.GetFont(name, fontInfo);
+					return Factory.GetFont(fontInfo);
 				}
 
 				GorgonBinaryReader reader = fontFile.OpenChunk(FontHeightChunk);
@@ -523,7 +536,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
 				fontFile.CloseChunk();
 
 				// Read textures.
-				IReadOnlyList<GorgonTexture> textures = ReadInternalTextures(fontFile, fontInfo.TextureWidth, fontInfo.TextureHeight);
+				IReadOnlyList<GorgonTexture2D> textures = ReadInternalTextures(fontFile, fontInfo.TextureWidth, fontInfo.TextureHeight);
 				// Get glyphs and bind to textures.
 				IReadOnlyList<GorgonGlyph> glyphs = ReadGlyphs(fontFile, textures);
 
@@ -536,7 +549,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
 				}
 
 				// Finally, assign the font information to the actual font.
-				return BuildFont(name, fontInfo, fontHeight, lineHeight, ascent, descent, textures, glyphs, kerningPairs);
+				return BuildFont(fontInfo, fontHeight, lineHeight, ascent, descent, textures, glyphs, kerningPairs);
 			}
 			finally
 			{
@@ -582,7 +595,7 @@ namespace Gorgon.Graphics.Fonts.Codecs
 			}
 
 			long position = stream.Position;
-			GorgonBinaryReader reader = new GorgonBinaryReader(stream, true);
+			var reader = new GorgonBinaryReader(stream, true);
 
 			try
 			{

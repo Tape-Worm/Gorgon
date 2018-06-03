@@ -193,9 +193,9 @@ namespace Gorgon.Graphics.Fonts
 		/// This will only return glyphs that are associated with a texture. Glyphs that do not have a texture (e.g. the glyph representing a space character) will not be included in this list.
 		/// </para>
 		/// </remarks>
-		public IReadOnlyDictionary<GorgonTexture, IReadOnlyList<GorgonGlyph>> GetGlyphsByTexture()
+		public IReadOnlyDictionary<GorgonTexture2D, IReadOnlyList<GorgonGlyph>> GetGlyphsByTexture()
 		{
-			IEnumerable<IGrouping<GorgonTexture, GorgonGlyph>> groupedGlyphs = from glyph in this
+			IEnumerable<IGrouping<GorgonTexture2D, GorgonGlyph>> groupedGlyphs = from glyph in this
 			                    where glyph.TextureView != null
 			                    group glyph by glyph.TextureView.Texture;
 

@@ -241,33 +241,21 @@ namespace Gorgon.Graphics.Fonts
 		/// <summary>
 		/// Function to determine if the font cache contains a font with the specified name, and the specified font information.
 		/// </summary>
-		/// <param name="name">The name of the font to find.</param>
 		/// <param name="fontInfo">The information about the font to find.</param>
 		/// <returns><b>true</b> if found, <b>false</b> if not.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/>, or the <paramref name="fontInfo"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="fontInfo"/> parameter is <b>null</b>.</exception>
 		/// <remarks>
 		/// <para>
-		/// The <paramref name="name"/> parameter is used in caching, and is user defined. It is not necessary to have it share the same name as the font family name in the <paramref name="fontInfo"/> parameter, 
-		/// however it is best practice to indicate the font family name in the name for ease of use. 
+		/// The <see cref="IGorgonNamedObject.Name"/> value on the <paramref name="fontInfo"/> parameter is used in caching, and is user defined. It is not necessary to have it share the same name as the font family name in the
+		/// <paramref name="fontInfo"/> parameter, however it is best practice to indicate the font family name in the name for ease of use. By default, this parameter is set to the font family, height and unit of measure.
 		/// </para>
 		/// <para>
 		/// If a font with the same name was previously created by this factory, then this method will return <b>true</b> if the <paramref name="fontInfo"/> is the same as the cached version. If no font with the 
 		/// same name or the <paramref name="fontInfo"/> is different, then this method will return <b>false</b>.
 		/// </para>
 		/// </remarks>
-		public bool HasFont(string name, IGorgonFontInfo fontInfo)
+		public bool HasFont(IGorgonFontInfo fontInfo)
 		{
-			if (name == null)
-			{
-				throw new ArgumentNullException(nameof(name));
-			}
-
-			if (string.IsNullOrWhiteSpace(name))
-			{
-				throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
-			}
-
 			if (fontInfo == null)
 			{
 				throw new ArgumentNullException(nameof(fontInfo));
@@ -276,22 +264,19 @@ namespace Gorgon.Graphics.Fonts
 			lock (_syncLock)
 			{
 
-				return ((_fontCache.TryGetValue(name, out GorgonFont result))
-						&& (!IsFontDifferent(fontInfo, result.Info)));
+			    return ((_fontCache.TryGetValue(fontInfo.Name, out GorgonFont result))
+			            && (!IsFontDifferent(fontInfo, result.Info)));
 			}
 		}
 
 		/// <summary>
 		/// Function to return or create a new <see cref="GorgonFont"/>.
 		/// </summary>
-		/// <param name="name">The name of the font.</param>
 		/// <param name="fontInfo">The information used to create the font.</param>
 		/// <returns>A new or existing <see cref="GorgonFont"/>.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/>, or the <paramref name="fontInfo"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.
-		/// <para>-or-</para>
-		/// <para>Thrown when the <see cref="IGorgonFontInfo.TextureWidth"/> or <see cref="IGorgonFontInfo.TextureHeight"/> parameters exceed the <see cref="IGorgonVideoAdapterInfo.MaxTextureWidth"/> or 
-		/// <see cref="IGorgonVideoAdapterInfo.MaxTextureHeight"/> available for the current <see cref="FeatureSet"/>.</para>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="fontInfo"/> parameter is <b>null</b>.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the <see cref="IGorgonFontInfo.TextureWidth"/> or <see cref="IGorgonFontInfo.TextureHeight"/> parameters exceed the <see cref="IGorgonVideoAdapterInfo.MaxTextureWidth"/> or 
+		/// <see cref="IGorgonVideoAdapterInfo.MaxTextureHeight"/> available for the current <see cref="FeatureSet"/>.
 		/// <para>-or-</para>
 		/// <para>Thrown if the <see cref="IGorgonFontInfo.Characters"/> list does not contain the <see cref="IGorgonFontInfo.DefaultCharacter"/> character.</para>
 		/// </exception>
@@ -301,26 +286,16 @@ namespace Gorgon.Graphics.Fonts
 		/// Kerning information (the proper spacing for a glyph), advances, etc... are all included for the glyphs with font.
 		/// </para>
 		/// <para>
-		/// The <paramref name="name"/> parameter is used in caching, and is user defined. It is not necessary to have it share the same name as the font family name in the <paramref name="fontInfo"/> parameter, 
-		/// however it is best practice to indicate the font family name in the name for ease of use. 
+		/// The <see cref="IGorgonNamedObject.Name"/> value on the <paramref name="fontInfo"/> parameter is used in caching, and is user defined. It is not necessary to have it share the same name as the font family name in the
+		/// <paramref name="fontInfo"/> parameter, however it is best practice to indicate the font family name in the name for ease of use. By default, this parameter is set to the font family, height and unit of measure.
 		/// </para>
 		/// <para>
 		/// If a font with the same name was previously created by this factory, then that font will be returned if the <paramref name="fontInfo"/> is the same as the cached version. If no font with the same 
 		/// name or the <paramref name="fontInfo"/> is different, then a new font is generated. If the names are the same, then the new font will replace the old.
 		/// </para>
 		/// </remarks>
-		public GorgonFont GetFont(string name, IGorgonFontInfo fontInfo)
+		public GorgonFont GetFont(IGorgonFontInfo fontInfo)
 		{
-			if (name == null)
-			{
-				throw new ArgumentNullException(nameof(name));
-			}
-
-			if (string.IsNullOrWhiteSpace(name))
-			{
-				throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
-			}
-
 			if (fontInfo == null)
 			{
 				throw new ArgumentNullException(nameof(fontInfo));
@@ -330,7 +305,7 @@ namespace Gorgon.Graphics.Fonts
 			{
 
 				// Check the cache for a font with the same name.
-				if ((_fontCache.TryGetValue(name, out GorgonFont result))
+				if ((_fontCache.TryGetValue(fontInfo.Name, out GorgonFont result))
 					&& (!IsFontDifferent(fontInfo, result.Info)))
 				{
 					return result;
@@ -359,7 +334,7 @@ namespace Gorgon.Graphics.Fonts
 				result?.Dispose();
 
 				// If not found, then create a new font and cache it.
-				_fontCache[name] = result = new GorgonFont(name, this, fontInfo);
+				_fontCache[fontInfo.Name] = result = new GorgonFont(fontInfo.Name, this, fontInfo);
 				result.GenerateFont();
 
 				return result;

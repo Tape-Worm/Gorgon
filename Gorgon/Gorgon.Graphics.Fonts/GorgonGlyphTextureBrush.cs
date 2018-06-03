@@ -27,13 +27,11 @@
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using Gorgon.Graphics.Core;
-using Gorgon.Graphics.Imaging;
 using DX = SharpDX;
+using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts.Properties;
-using Gorgon.Math;
-using Gorgon.Native;
+using Gorgon.Graphics.Imaging;
+using Gorgon.Graphics.Imaging.GdiPlus;
 
 namespace Gorgon.Graphics.Fonts
 {
@@ -72,7 +70,7 @@ namespace Gorgon.Graphics.Fonts
 	/// This will paint glyphs using the <see cref="IGorgonImage"/> provided to the constructor. 
 	/// </para>
 	/// <para>
-	/// The texture used by this brush is a <see cref="IGorgonImage"/> and not a <see cref="GorgonTexture"/>, and must be a 2D image, and have a format of <c>R8G8B8A8_UNorm_SRgb</c>,
+	/// The texture used by this brush is a <see cref="IGorgonImage"/> and not a <see cref="GorgonTexture2D"/>, and must be a 2D image, and have a format of <c>R8G8B8A8_UNorm_SRgb</c>,
 	/// <c>BufferFormat.R8G8B8A8_UNorm</c>, <c>BufferFormat.B8G8R8A8_UNorm</c>, or <c>BufferFormat.B8G8R8A8_UNorm_SRgb</c>.
 	/// </para>
 	/// </remarks>
@@ -121,74 +119,6 @@ namespace Gorgon.Graphics.Fonts
 
 		#region Methods.
 		/// <summary>
-		/// Function to convert the associated image texture to a GDI+ bitmap type.
-		/// </summary>
-		/// <returns>A new GDI+ bitmap containing the image.</returns>
-		private Bitmap ConvertImageToGdiBitmap()
-		{
-			IGorgonImage image = null;
-			Bitmap result = null;
-			BitmapData lockData = null;
-
-			try
-			{
-				// We have to convert to BGRA in order to use the image data with GDI+.
-				if (Image.Info.Format != BufferFormat.B8G8R8A8_UNorm)
-				{
-					image = Image.Clone();
-					image.ConvertToFormat(BufferFormat.B8G8R8A8_UNorm);
-				}
-				else
-				{
-					image = Image;
-				}
-
-				result = new Bitmap(image.Info.Width, image.Info.Height, PixelFormat.Format32bppArgb);
-
-				lockData = result.LockBits(new Rectangle(0, 0, image.Info.Width, image.Info.Height), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
-
-				// Copy the image data into the GDI+ bitmap.
-				int srcPitch = image.Buffers[0].PitchInformation.RowPitch;
-				int destPitch = lockData.Stride;
-				int srcOffset = 0;
-				int destOffset = 0;
-				IGorgonPointer srcPtr = image.Buffers[0].Data;
-				IGorgonPointer destPtr = new GorgonPointerAlias(lockData.Scan0, lockData.Stride * lockData.Height);
-
-				// Copy a single scan line at a time if the pitches mismatch.
-				if (srcPitch != destPitch)
-				{
-					for (int y = 0; y < image.Info.Height; ++y)
-					{
-						srcPtr.CopyTo(destPtr, srcOffset, srcPitch.Min(destPitch), destOffset);
-						srcOffset += srcPitch;
-						destOffset += destPitch;
-					}
-				}
-				else
-				{
-					// Otherwise, just copy everything in one shot.
-					destPtr.CopyTo(srcPtr, (int)srcPtr.Size);
-				}
-
-				return result;
-			}
-			finally
-			{
-				if (lockData != null)
-				{
-					result.UnlockBits(lockData);
-				}
-
-				// If we made a copy, then destroy the copy.
-				if (image != Image)
-				{
-					image?.Dispose();
-				}
-			}
-		}
-
-		/// <summary>
 		/// Function to convert this brush to the equivalent GDI+ brush type.
 		/// </summary>
 		/// <returns>
@@ -206,10 +136,10 @@ namespace Gorgon.Graphics.Fonts
 			try
 			{
 				// Clone the image data and convert it into a GDI+ compatible bitmap so we can use it as a brush.
-				brushBitmap = ConvertImageToGdiBitmap();
+			    brushBitmap = Image.Buffers[0].ToBitmap();
 
-				RectangleF textureRect = new RectangleF(0, 0, Image.Info.Width, Image.Info.Height);
-				RectangleF imageRect = new RectangleF(TextureRegion.X * textureRect.Width,
+				var textureRect = new RectangleF(0, 0, Image.Info.Width, Image.Info.Height);
+				var imageRect = new RectangleF(TextureRegion.X * textureRect.Width,
 				                               TextureRegion.Y * textureRect.Height,
 				                               TextureRegion.Width * textureRect.Width,
 				                               TextureRegion.Height * textureRect.Height);

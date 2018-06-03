@@ -117,7 +117,7 @@ namespace Gorgon.Graphics.Fonts
 			Right = new GlyphNode(this);
 
 			// Subdivide.
-			Size delta = new Size(Region.Width - dimensions.Width, Region.Height - dimensions.Height);
+			var delta = new Size(Region.Width - dimensions.Width, Region.Height - dimensions.Height);
 
 			if (delta.Width > delta.Height)
 			{
