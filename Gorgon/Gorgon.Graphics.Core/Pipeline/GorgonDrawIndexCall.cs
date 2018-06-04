@@ -29,6 +29,22 @@ namespace Gorgon.Graphics.Core
     /// <summary>
     /// A draw call that draws using an index buffer.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A draw call is an immutable object that contains all of the state required to render mesh information. For each mesh an application needs to render, an single draw call should be issued via the
+    /// <see cref="O:Gorgon.Graphics.Core.GorgonGraphics.Submit"/> methods.  
+    /// </para>
+    /// <para>
+    /// State management is handled internally by Gorgon so that duplicate states are not set and thus, performance is not impacted by redundant states.
+    /// </para>
+    /// <para>
+    /// Because a draw call is immutable, it is not possible to modify a draw call after it's been created. However, a copy of a draw call can be created using the
+    /// <see cref="GorgonDrawCallBuilderCommon{TB,TDc}.ResetTo"/> method on the <see cref="GorgonDrawIndexCallBuilder"/> object. Or, the builder can be modified after the creation of your draw call that
+    /// needs to be updated and a new call may be built then.
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="GorgonGraphics"/>
+    /// <seealso cref="GorgonDrawIndexCallBuilder"/>
     public class GorgonDrawIndexCall
         : GorgonDrawCallCommon
     {

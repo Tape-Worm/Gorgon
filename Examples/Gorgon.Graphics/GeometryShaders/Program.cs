@@ -29,16 +29,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using Drawing = System.Drawing;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Gorgon.Core;
 using DX = SharpDX;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Example.Properties;
 using Gorgon.Graphics.Imaging.Codecs;
-using Gorgon.IO;
 using Gorgon.Math;
 using Gorgon.Timing;
 using Gorgon.UI;
@@ -46,9 +43,13 @@ using Gorgon.UI;
 namespace Gorgon.Graphics.Example
 {
     /// <summary>
-    /// TODO: A description of what we're showing.
+    /// This example shows how to use a geometry shader with the Gorgon core graphics library.
     ///
-    /// 
+    /// A geometry shader is used to generate primitive data based on incoming primitive vertices (e.g. a set of vertices for a triangle, a single point, etc...). Using this, 
+    /// we can dynamically build geometry on the GPU.
+    ///
+    /// This example will take a single triangle, and build a fully 3D pyramid along with some animation in the geometry shader. It will also show how an application can build
+    /// geometry without using an input layout, or vertex buffer.
     /// </summary>
     static class Program
     {
@@ -96,9 +97,15 @@ namespace Gorgon.Graphics.Example
         /// <param name="angle">The angle of rotation, in degrees.</param>
         private static void UpdatedWorldProjection()
         {
+            // Update the animated offset for the center point.  We need to put this into a Vector4 because our data needs to be 
+            // aligned to a 16 byte boundary for constant buffers.
             DX.Vector4 offset = new DX.Vector4(_heightOffset, 0, 0, 0);
+            
             DX.Matrix.RotationY(_angle.ToRadians(), out _worldMatrix);
             _worldMatrix.Row4 = new DX.Vector4(0, 0, 2.0f, 1.0f);
+
+            // We've put our world matrix and center point offset inside of the same buffer since they're both updated once per
+            // frame.
             _vsConstants.Buffer.SetData(ref _worldMatrix, 64, CopyMode.NoOverwrite);
             _vsConstants.Buffer.SetData(ref offset, 128, CopyMode.NoOverwrite);
         }
@@ -110,6 +117,7 @@ namespace Gorgon.Graphics.Example
         /// <param name="e">The <see cref="AfterSwapChainResizedEventArgs"/> instance containing the event data.</param>
         private static void Swap_AfterSwapChainResized(object sender, AfterSwapChainResizedEventArgs e)
         {
+            // We need to recreate the depth/stencil here to match the updated size of the render target (the depth/stencil and render targets must be the same size).
             _depthStencil = GorgonDepthStencil2DView.CreateDepthStencil(_graphics,
                                                                         new GorgonTexture2DInfo
                                                                         {
@@ -121,6 +129,7 @@ namespace Gorgon.Graphics.Example
                                                                         });
             _graphics.SetDepthStencil(_depthStencil);
 
+            // When we resize, the projection matrix will go out of date, so we need to update our constant buffer with an updated projection.
             DX.Matrix.PerspectiveFovLH((65.0f).ToRadians(), (float)_swap.Width / _swap.Height, 0.125f, 1000.0f, out _projection);
             _vsConstants.Buffer.SetData(ref _projection);
         }
@@ -132,6 +141,8 @@ namespace Gorgon.Graphics.Example
         /// <param name="e">The <see cref="BeforeSwapChainResizedEventArgs"/> instance containing the event data.</param>
         private static void Swap_BeforeSwapChainResized(object sender, BeforeSwapChainResizedEventArgs e)
         {
+            // Before we go about resizing the render target, we need to ensure the depth stencil is removed so that we don't end up with a depth/stencil still 
+            // attached that's not matched to the size of the render target.
             _graphics.SetDepthStencil(null);
             _depthStencil?.Dispose();
         }
@@ -161,6 +172,7 @@ namespace Gorgon.Graphics.Example
         /// <returns><b>true</b> to continue processing, <b>false</b> to stop.</returns>
         private static bool Idle()
         {
+            // Rotate our pyramid.
             _angle += 45.0f * GorgonTiming.Delta;
 
             if (_angle > 360.0f)
@@ -169,9 +181,10 @@ namespace Gorgon.Graphics.Example
             }
 
 
+            // This will allow us to animate the center point of our pyramid.
             _heightOffset = _angle.ToRadians().FastSin().Abs();
 
-            // Send the new angle into the shader.
+            // Send the animated variables to their respective shaders.
             UpdatedWorldProjection();
 
             // Clear our render target.
@@ -252,6 +265,14 @@ namespace Gorgon.Graphics.Example
                 _swap.BeforeSwapChainResized += Swap_BeforeSwapChainResized;
                 _swap.AfterSwapChainResized += Swap_AfterSwapChainResized;
 
+                // We'll need a depth buffer for this example, or else our pyramid will look weird when rotating as back faces will appear through front faces.
+                // So, first we should check for support of a proper depth/stencil format.  That said, if we don't have this format, then we're likely not running hardware from the last decade or more.
+                if (!_graphics.FormatSupport[BufferFormat.D24_UNorm_S8_UInt].IsDepthBufferFormat)
+                {
+                    GorgonDialogs.ErrorBox(_mainForm, "A 24 bit depth buffer is required for this example.");
+                    return;
+                }
+                
                 _depthStencil = GorgonDepthStencil2DView.CreateDepthStencil(_graphics,
                                                                             new GorgonTexture2DInfo
                                                                             {
@@ -286,13 +307,12 @@ namespace Gorgon.Graphics.Example
                                             .PipelineState(_pipeStateBuilder.PixelShader(_pixelShader)
                                                                             .VertexShader(_bufferless)
                                                                             .GeometryShader(_geometryShader)
-                                                                            .RasterState(GorgonRasterState.NoCulling)
                                                                             .DepthStencilState(GorgonDepthStencilState.DepthEnabled))
                                             .ShaderResource(ShaderType.Pixel, _texture)
                                             .ConstantBuffer(ShaderType.Vertex, _vsConstants)
                                             .ConstantBuffer(ShaderType.Geometry, _vsConstants)
                                             .Build();
-
+                // Finally set our swap chain as the active rendering target and the depth/stencil buffer.
                 _graphics.SetRenderTarget(_swap.RenderTargetView, _depthStencil);
             }
             finally

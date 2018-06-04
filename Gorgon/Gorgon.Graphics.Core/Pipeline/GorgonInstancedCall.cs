@@ -31,8 +31,16 @@ namespace Gorgon.Graphics.Core
 	/// </summary>
 	/// <remarks>
 	/// <para>
-	/// A draw call is used to submit vertex (and potentially index and instance) data to the GPU pipeline or an output buffer. This type will contain all the necessary information used to set the state of the 
-	/// pipeline prior to rendering any data.
+	/// A draw call is an immutable object that contains all of the state required to render mesh information. For each mesh an application needs to render, an single draw call should be issued via the
+	/// <see cref="O:Gorgon.Graphics.Core.GorgonGraphics.Submit"/> methods.  
+	/// </para>
+	/// <para>
+	/// State management is handled internally by Gorgon so that duplicate states are not set and thus, performance is not impacted by redundant states.
+	/// </para>
+	/// <para>
+	/// Because a draw call is immutable, it is not possible to modify a draw call after it's been created. However, a copy of a draw call can be created using the
+	/// <see cref="GorgonDrawCallBuilderCommon{TB,TDc}.ResetTo"/> method on the <see cref="GorgonInstancedCallBuilder"/> object. Or, the builder can be modified after the creation of your draw call that 
+	/// needs to be updated and a new call may be built then.
 	/// </para>
 	/// <para>
 	/// This type supports instancing which allows the GPU to draw the same item multiple times using an instance buffer.
@@ -41,6 +49,8 @@ namespace Gorgon.Graphics.Core
 	/// This type does not support index buffers.
 	/// </para>
 	/// </remarks>
+	/// <seealso cref="GorgonGraphics"/>
+	/// <seealso cref="GorgonDrawIndexCallBuilder"/>
 	public class GorgonInstancedCall
 		: GorgonDrawCallCommon
 	{
