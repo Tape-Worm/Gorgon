@@ -274,7 +274,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="allocator">[Optional] The allocator used to create an instance of the object</param>
         /// <returns>The draw call created or updated by this builder.</returns>
-        /// <exception cref="GorgonException">Thrown if a <see cref="GorgonVertexShader"/> is not assigned to the <see cref="GorgonPipelineState.VertexShader"/> property with the <see cref="PipelineState(Gorgon.Graphics.Core.GorgonPipelineStateBuilder)"/> command.</exception>
+        /// <exception cref="GorgonException">Thrown if a <see cref="GorgonVertexShader"/> is not assigned to the <see cref="GorgonPipelineState.VertexShader"/> property with the <see cref="PipelineState(GorgonStreamOutPipelineState)"/> command.</exception>
         /// <remarks>
         /// <para>
         /// Using an <paramref name="allocator"/> can provide different strategies when building draw calls.  If omitted, the draw call will be created using the standard <see langword="new"/> keyword.

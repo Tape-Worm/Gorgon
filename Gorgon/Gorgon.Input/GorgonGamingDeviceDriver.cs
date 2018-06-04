@@ -56,7 +56,7 @@ namespace Gorgon.Input
 	/// </para>
 	/// </remarks>
 	/// <example>
-	/// <see cref="GorgonPluginAssemblyCache.Load(string)"/>
+	/// <see cref="GorgonMefPluginCache.LoadPluginAssemblies"/>
 	/// The following shows how to load a <see cref="IGorgonGamingDeviceDriver"/> and enumerate the devices:
 	/// <code language="csharp">
 	/// <![CDATA[
@@ -182,7 +182,7 @@ namespace Gorgon.Input
 		protected GorgonGamingDeviceDriver(string description)
 			: base(description)
 		{
-			Log = GorgonLogDummy.DefaultInstance;
+			Log = GorgonLog.NullLog;
 		}
 		#endregion
 

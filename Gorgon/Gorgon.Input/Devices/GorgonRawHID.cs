@@ -47,7 +47,7 @@ namespace Gorgon.Input
 	{
 		#region Variables.
 		// Pre parsed data for this device.
-		private GorgonPointer _preParsedData;
+		private GorgonNativeBuffer<byte> _preParsedData;
 		// Synchronization for multiple threads.
 		private readonly object _syncLock = new object();
 		#endregion
@@ -86,7 +86,7 @@ namespace Gorgon.Input
 		/// <summary>
 		/// Property to return a pointer to the block of memory that stores the HID data.
 		/// </summary>
-		public GorgonPointerAlias Data
+		public GorgonNativeBuffer<byte> Data
 		{
 			get;
 			private set;
@@ -113,7 +113,7 @@ namespace Gorgon.Input
 		/// <summary>
 		/// Property to return the pre-parsed data for this HID.
 		/// </summary>
-		public GorgonPointer PreParsedData
+		public GorgonNativeBuffer<byte> PreParsedData
 		{
 			get
 			{

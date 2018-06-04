@@ -45,7 +45,7 @@ namespace Gorgon.Input
 		/// <summary>
 		/// A pointer to the device data received from Raw Input.
 		/// </summary>
-		public GorgonPointerAlias HidData;
+		public GorgonNativeBuffer<byte> HidData;
 
 		/// <summary>
 		/// The number of HID inputs contained within the data.

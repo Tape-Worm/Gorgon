@@ -27,6 +27,7 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Windows.Forms;
@@ -129,9 +130,9 @@ namespace Gorgon.Native
 		{
 			unsafe
 			{
-				CURSORINFO cursorInfo = new CURSORINFO
+				var cursorInfo = new CURSORINFO
 				                 {
-					                 cbSize = DirectAccess.SizeOf<CURSORINFO>(),
+					                 cbSize = Unsafe.SizeOf<CURSORINFO>(),
 					                 flags = CursorInfoFlags.CursorHidden,
 					                 hCursor = IntPtr.Zero,
 					                 ptScreenPos = new POINT

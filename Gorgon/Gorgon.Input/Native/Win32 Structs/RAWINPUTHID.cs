@@ -34,7 +34,7 @@ namespace Gorgon.Native
 	/// Value type for raw input from a HID.
 	/// </summary>	
 	[StructLayout(LayoutKind.Explicit)]
-	internal struct RAWINPUTHID
+	internal unsafe struct RAWINPUTHID
 	{
 		/// <summary>Size of the HID data in bytes.</summary>
 		[FieldOffset(0)]

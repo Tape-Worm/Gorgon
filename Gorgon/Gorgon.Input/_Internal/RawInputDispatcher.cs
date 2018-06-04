@@ -47,14 +47,17 @@ namespace Gorgon.Input
 				return;
 			}
 
-			GorgonRawHIDData data = new GorgonRawHIDData
-			           {
-				           HidData = new GorgonPointerAlias(rawData.Data, rawData.Size * rawData.Count),
-				           ItemCount = rawData.Count,
-						   HIDDataSize = rawData.Size
-			           };
+		    unsafe
+		    {
+		        var data = new GorgonRawHIDData
+		                   {
+		                       HidData = new GorgonNativeBuffer<byte>(rawData.Data.ToPointer(), rawData.Size * rawData.Count),
+		                       ItemCount = rawData.Count,
+		                       HIDDataSize = rawData.Size
+		                   };
 
-			deviceProcessor.ProcessData(ref data);
+		        deviceProcessor.ProcessData(ref data);
+		    }
 		}
 
 		/// <summary>

@@ -396,7 +396,7 @@ namespace Gorgon.Input
 		/// </remarks>
 		public GorgonRawInput(Control applicationWindow, IGorgonLog log = null)
 		{
-		    _log = log ?? GorgonLogDummy.DefaultInstance;
+		    _log = log ?? GorgonLog.NullLog;
 			_applicationWindow = applicationWindow?.Handle ?? throw new ArgumentNullException(nameof(applicationWindow));
 			_devices = new Dictionary<DeviceKey, IGorgonRawInputDevice>();
 		}
@@ -422,7 +422,7 @@ namespace Gorgon.Input
 				throw new ArgumentNullException(nameof(windowHandle));
 			}
 
-			_log = log ?? GorgonLogDummy.DefaultInstance;
+			_log = log ?? GorgonLog.NullLog;
 			_applicationWindow = windowHandle;
 			_devices = new Dictionary<DeviceKey, IGorgonRawInputDevice>();
 			_useNativeHook = true;

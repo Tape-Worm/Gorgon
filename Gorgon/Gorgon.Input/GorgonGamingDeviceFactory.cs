@@ -98,7 +98,7 @@ namespace Gorgon.Input
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="plugInService"/> is <b>null</b>.</exception>
 		public GorgonGamingDeviceDriverFactory(IGorgonPluginService plugInService, IGorgonLog log = null)
 		{
-			_log = log ?? GorgonLogDummy.DefaultInstance;
+			_log = log ?? GorgonLog.NullLog;
 			_plugInService = plugInService;
 		}
 		#endregion

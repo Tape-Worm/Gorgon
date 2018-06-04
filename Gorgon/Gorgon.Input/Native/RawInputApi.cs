@@ -25,8 +25,11 @@
 #endregion
 
 using System;
+using System.Buffers;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Core;
 using Gorgon.Input;
@@ -262,7 +265,7 @@ namespace Gorgon.Native
 	{
 		#region Variables.
 		// The size of the raw input data header.
-		private static readonly int _headerSize = DirectAccess.SizeOf<RAWINPUTHEADER>();
+		private static readonly int _headerSize = Unsafe.SizeOf<RAWINPUTHEADER>();
 		#endregion
 
 		#region Constants.
@@ -293,7 +296,7 @@ namespace Gorgon.Native
 		/// <param name="cbSize">Size of the raw input device struct.</param>
 		/// <returns>0 if successful, otherwise an error code.</returns>
 		[DllImport("user32.dll")]
-		private static extern int GetRawInputDeviceList(IntPtr pRawInputDeviceList, ref int puiNumDevices, int cbSize);
+		private static extern unsafe int GetRawInputDeviceList(RAWINPUTDEVICELIST* pRawInputDeviceList, ref int puiNumDevices, int cbSize);
 
 		/// <summary>
 		/// Function to retrieve information about a raw input device.
@@ -304,7 +307,7 @@ namespace Gorgon.Native
 		/// <param name="pcbSize">Size of the data to return.</param>
 		/// <returns>0 if successful, otherwise an error code.</returns>
 		[DllImport("user32.dll", CharSet = CharSet.Unicode)]
-		private static extern int GetRawInputDeviceInfo(IntPtr hDevice, RawInputCommand uiCommand, IntPtr pData, ref int pcbSize);
+		private static extern unsafe int GetRawInputDeviceInfo(IntPtr hDevice, RawInputCommand uiCommand, void* pData, ref int pcbSize);
 
 		/// <summary>
 		/// Function to register a raw input device.
@@ -335,7 +338,7 @@ namespace Gorgon.Native
 		/// <param name="cbSizeHeader">Size of the raw input header value.</param>
 		/// <returns>0 if successful, -1 if not.</returns>
 		[DllImport("user32.dll")]
-		private static extern unsafe int GetRawInputBuffer(RAWINPUT* pData, uint* pcbSize, uint cbSizeHeader);
+		private static extern unsafe int GetRawInputBuffer(RAWINPUT* pData, int* pcbSize, int cbSizeHeader);
 
 
 		/// <summary>
@@ -343,31 +346,34 @@ namespace Gorgon.Native
 		/// </summary>
 		/// <param name="deviceHandle">The handle to the device.</param>
 		/// <returns>A pointer to the block of memory holding the HID preparsed data.</returns>
-		public static GorgonPointer GetPreparsedDeviceInfoData(IntPtr deviceHandle)
+		public static GorgonNativeBuffer<byte> GetPreparsedDeviceInfoData(IntPtr deviceHandle)
 		{
 			int dataSize = 0;
 			int win32Error;
 
-			// Get pre-parsed joystick data.
-			if (GetRawInputDeviceInfo(deviceHandle, RawInputCommand.PreparsedData, IntPtr.Zero, ref dataSize) != 0)
-			{
-				win32Error = Marshal.GetLastWin32Error();
-				throw new Win32Exception(string.Format(Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA, win32Error));
-			}
+		    unsafe
+		    {
+			    // Get pre-parsed joystick data.
+			    if (GetRawInputDeviceInfo(deviceHandle, RawInputCommand.PreparsedData, null, ref dataSize) != 0)
+			    {
+				    win32Error = Marshal.GetLastWin32Error();
+				    throw new Win32Exception(string.Format(Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA, win32Error));
+			    }
 
-			if (dataSize == 0)
-			{
-				return null;
-			}
+			    if (dataSize == 0)
+			    {
+				    return null;
+			    }
 
-			GorgonPointer result = new GorgonPointer(dataSize);
+			    var result = new GorgonNativeBuffer<byte>(dataSize);
 
-			if (GetRawInputDeviceInfo(deviceHandle, RawInputCommand.PreparsedData, new IntPtr(result.Address), ref dataSize) >= 0)
-			{
-				return result;
-			}
+		        if (GetRawInputDeviceInfo(deviceHandle, RawInputCommand.PreparsedData, (void*)result, ref dataSize) >= 0)
+		        {
+		            return result;
+		        }
+		    }
 
-			win32Error = Marshal.GetLastWin32Error();
+		    win32Error = Marshal.GetLastWin32Error();
 			throw new Win32Exception(string.Format(Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA, win32Error));
 		}
 
@@ -377,10 +383,9 @@ namespace Gorgon.Native
 		/// <returns>An array of raw input data structures.</returns>
 		public static RAWINPUT[] GetBufferedInput()
 		{
-			RAWINPUT[] result;
-			uint headerSize = (uint)DirectAccess.SizeOf<RAWINPUTHEADER>();
-			uint rawInputSize = (uint)DirectAccess.SizeOf<RAWINPUT>();
-            uint bufferSize = 0;
+		    int headerSize = Unsafe.SizeOf<RAWINPUTHEADER>();
+			int rawInputSize = Unsafe.SizeOf<RAWINPUT>();
+            int bufferSize = 0;
 
 			unsafe
 			{
@@ -394,26 +399,21 @@ namespace Gorgon.Native
 					return new RAWINPUT[0];
 				}
 
-				uint resultLength = bufferSize / rawInputSize;
+				int resultLength = (bufferSize / rawInputSize);
 				bufferSize *= 8;
 
-				using (GorgonPointer data = new GorgonPointer(bufferSize, 8))
+			    RAWINPUT[] result = ArrayPool<RAWINPUT>.Shared.Rent(resultLength);
+
+                fixed(RAWINPUT *resultPtr = &result[0])
 				{
-					if (GetRawInputBuffer((RAWINPUT*)data.Address, &bufferSize, headerSize) == -1)
+					if (GetRawInputBuffer(resultPtr, &bufferSize, headerSize) == -1)
 					{
 						throw new Win32Exception(Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA);
 					}
 
-					result = new RAWINPUT[resultLength];
-
-					for (int i = 0; i < resultLength; ++i)
-					{
-						result[i] = data.Read<RAWINPUT>(i * rawInputSize);
-					}
+				    return result;
 				}
 			}
-
-			return result;
 		}
 
 		/// <summary>
@@ -434,7 +434,7 @@ namespace Gorgon.Native
 				              }
 			              };
 
-			if (!RegisterRawInputDevices(devices, devices.Length, DirectAccess.SizeOf<RAWINPUTDEVICE>()))
+			if (!RegisterRawInputDevices(devices, devices.Length, Unsafe.SizeOf<RAWINPUTDEVICE>()))
 			{
 				throw new GorgonException(GorgonResult.DriverError, Resources.GORINP_RAW_ERR_CANNOT_REGISTER);
 			}
@@ -448,7 +448,7 @@ namespace Gorgon.Native
 		public static RAWINPUTDEVICE? GetDeviceRegistration(HIDUsage usage)
 		{
 			uint deviceCount = 0;
-			uint structSize = (uint)DirectAccess.SizeOf<RAWINPUTDEVICE>();
+			uint structSize = (uint)Unsafe.SizeOf<RAWINPUTDEVICE>();
 
 			unsafe
 			{
@@ -492,7 +492,7 @@ namespace Gorgon.Native
 				              }
 			              };
 
-			if (!RegisterRawInputDevices(devices, devices.Length, DirectAccess.SizeOf<RAWINPUTDEVICE>()))
+			if (!RegisterRawInputDevices(devices, devices.Length, Unsafe.SizeOf<RAWINPUTDEVICE>()))
 			{
 				throw new GorgonException(GorgonResult.DriverError, Resources.GORINP_RAW_ERR_CANNOT_REGISTER);
 			}
@@ -506,145 +506,117 @@ namespace Gorgon.Native
 		public static RAWINPUTDEVICELIST[] EnumerateRawInputDevices(RawInputType deviceType)
 		{
 			int deviceCount = 0;
-			int structSize = DirectAccess.SizeOf<RAWINPUTDEVICELIST>();
+			int structSize = Unsafe.SizeOf<RAWINPUTDEVICELIST>();
 
-			// Define how large the buffer needs to be.
-			if (GetRawInputDeviceList(IntPtr.Zero, ref deviceCount, structSize) < 0)
-			{
-				int win32Error = Marshal.GetLastWin32Error();
-				throw new Win32Exception(string.Format(Resources.GORINP_RAW_ERR_CANNOT_ENUMERATE_WIN32_ERR, win32Error));
-			}
+		    unsafe
+		    {
+		        // Define how large the buffer needs to be.
+		        if (GetRawInputDeviceList(null, ref deviceCount, structSize) < 0)
+		        {
+		            int win32Error = Marshal.GetLastWin32Error();
+		            throw new Win32Exception(string.Format(Resources.GORINP_RAW_ERR_CANNOT_ENUMERATE_WIN32_ERR, win32Error));
+		        }
 
-			if (deviceCount == 0)
-			{
-				return new RAWINPUTDEVICELIST[0];
-			}
+		        if (deviceCount == 0)
+		        {
+		            return new RAWINPUTDEVICELIST[0];
+		        }
 
-			unsafe
-			{
-				RAWINPUTDEVICELIST* deviceListPtr = stackalloc RAWINPUTDEVICELIST[deviceCount];
+		        RAWINPUTDEVICELIST[] deviceList = ArrayPool<RAWINPUTDEVICELIST>.Shared.Rent(deviceCount);
 
-				if (GetRawInputDeviceList((IntPtr)deviceListPtr, ref deviceCount, structSize) < 0)
-				{
-					int win32Error = Marshal.GetLastWin32Error();
-					throw new Win32Exception(string.Format(Resources.GORINP_RAW_ERR_CANNOT_ENUMERATE_WIN32_ERR, win32Error));
-				}
+		        fixed (RAWINPUTDEVICELIST* deviceListPtr = &deviceList[0])
+		        {
+		            if (GetRawInputDeviceList(deviceListPtr, ref deviceCount, structSize) < 0)
+		            {
+		                int win32Error = Marshal.GetLastWin32Error();
+		                throw new Win32Exception(string.Format(Resources.GORINP_RAW_ERR_CANNOT_ENUMERATE_WIN32_ERR, win32Error));
+		            }
+		        }
 
-				int resultCount = 0;
-
-				// Find out how many devices of the specified type exist.
-				for (int i = 0; i < deviceCount; ++i)
-				{
-					if (deviceListPtr[i].DeviceType != deviceType)
-					{
-						continue;
-					}
-
-					++resultCount;
-				}
-
-				if (resultCount == 0)
-				{
-					return new RAWINPUTDEVICELIST[0];
-				}
-
-				// Send back a copy of our stack array.
-				RAWINPUTDEVICELIST[] result = new RAWINPUTDEVICELIST[resultCount];
-
-				resultCount = 0;
-				for (int i = 0; i < deviceCount; ++i)
-				{
-					if (deviceListPtr[i].DeviceType != deviceType)
-					{
-						continue;
-					}
-
-					result[resultCount++] = deviceListPtr[i];
-				}
-
-				return result;
-			}
+		        return deviceList.Where(item => item.DeviceType == deviceType).ToArray();
+		    }
 		}
 
-		/// <summary>
-		/// Function to retrieve information about a specific device.
-		/// </summary>
-		/// <param name="device">The device to retrieve information about.</param>
-		/// <returns>The device information for the device.</returns>
-		public static RID_DEVICE_INFO GetDeviceInfo(ref RAWINPUTDEVICELIST device)
-		{
-			int dataSize = 0;
-			int errCode = GetRawInputDeviceInfo(device.Device, RawInputCommand.DeviceInfo, IntPtr.Zero, ref dataSize);
+	    /// <summary>
+	    /// Function to retrieve information about a specific device.
+	    /// </summary>
+	    /// <param name="device">The device to retrieve information about.</param>
+	    /// <returns>The device information for the device.</returns>
+	    public static RID_DEVICE_INFO GetDeviceInfo(ref RAWINPUTDEVICELIST device)
+	    {
+	        int dataSize = 0;
 
-			if ((errCode != -1) && (errCode != 0))
-			{
-				int win32Error = Marshal.GetLastWin32Error();
-				throw new Win32Exception(string.Format(Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA, win32Error));
-			}
+	        unsafe
+	        {
+	            int errCode = GetRawInputDeviceInfo(device.Device, RawInputCommand.DeviceInfo, null, ref dataSize);
 
-			if (errCode == -1)
-			{
-				throw new InternalBufferOverflowException(string.Format(Resources.GORINP_RAW_ERR_BUFFER_TOO_SMALL, dataSize));
-			}
+	            if ((errCode != -1) && (errCode != 0))
+	            {
+	                int win32Error = Marshal.GetLastWin32Error();
+	                throw new Win32Exception(string.Format(Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA, win32Error));
+	            }
 
-			unsafe
-			{
-				byte* data = stackalloc byte[dataSize];
-				errCode = GetRawInputDeviceInfo(device.Device, RawInputCommand.DeviceInfo, (IntPtr)data, ref dataSize);
+	            if (errCode == -1)
+	            {
+	                throw new InternalBufferOverflowException(string.Format(Resources.GORINP_RAW_ERR_BUFFER_TOO_SMALL, dataSize));
+	            }
 
-				if (errCode < -1)
-				{
-					int win32Error = Marshal.GetLastWin32Error();
-					throw new Win32Exception(string.Format(Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA, win32Error));
-				}
+	            RID_DEVICE_INFO result = default;
+	            errCode = GetRawInputDeviceInfo(device.Device, RawInputCommand.DeviceInfo, &result, ref dataSize);
 
-				if (errCode == -1)
-				{
-					throw new InternalBufferOverflowException(string.Format(Resources.GORINP_RAW_ERR_BUFFER_TOO_SMALL, dataSize));
-				}
+	            if (errCode < -1)
+	            {
+	                int win32Error = Marshal.GetLastWin32Error();
+	                throw new Win32Exception(string.Format(Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA, win32Error));
+	            }
 
-				return *((RID_DEVICE_INFO*)data);
-			}
-		}
+	            if (errCode == -1)
+	            {
+	                throw new InternalBufferOverflowException(string.Format(Resources.GORINP_RAW_ERR_BUFFER_TOO_SMALL, dataSize));
+	            }
 
-		/// <summary>
-		/// Function to retrieve the name for the specified device.
-		/// </summary>
-		/// <param name="device">Device to retrieve the name for.</param>
-		/// <returns>A string containing the device name.</returns>
-		public static string GetDeviceName(ref RAWINPUTDEVICELIST device)
-		{
-			int dataSize = 0;
+	            return result;
+	        }
+	    }
 
-			if (GetRawInputDeviceInfo(device.Device, RawInputCommand.DeviceName, IntPtr.Zero, ref dataSize) < 0)
-			{
-				int win32Error = Marshal.GetLastWin32Error();
-				throw new Win32Exception(string.Format(Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA, win32Error));
-			}
+	    /// <summary>
+	    /// Function to retrieve the name for the specified device.
+	    /// </summary>
+	    /// <param name="device">Device to retrieve the name for.</param>
+	    /// <returns>A string containing the device name.</returns>
+	    public static string GetDeviceName(ref RAWINPUTDEVICELIST device)
+	    {
+	        unsafe
+	        {
+	            int dataSize = 0;
 
-			// Do nothing if we have no data.
-			if (dataSize < 4)
-			{
-				return null;
-			}
+	            if (GetRawInputDeviceInfo(device.Device, RawInputCommand.DeviceName, null, ref dataSize) < 0)
+	            {
+	                int win32Error = Marshal.GetLastWin32Error();
+	                throw new Win32Exception(string.Format(Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA, win32Error));
+	            }
 
-			unsafe
-			{
-				char* data = stackalloc char[dataSize];
+	            // Do nothing if we have no data.
+	            if (dataSize < 4)
+	            {
+	                return null;
+	            }
 
-				// ReSharper disable once InvertIf
-				if (GetRawInputDeviceInfo(device.Device, RawInputCommand.DeviceName, (IntPtr)data, ref dataSize) < 0)
-				{
-					int win32Error = Marshal.GetLastWin32Error();
-					throw new Win32Exception(string.Format(Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA, win32Error));
-				}
+	            char* data = stackalloc char[dataSize];
 
-				// The strings that come back from native land will end with a null terminator, so crop that off.
-				return new string(data, 0, dataSize - 1);
-			}
-		}
+	            // ReSharper disable once InvertIf
+	            if (GetRawInputDeviceInfo(device.Device, RawInputCommand.DeviceName, data, ref dataSize) < 0)
+	            {
+	                int win32Error = Marshal.GetLastWin32Error();
+	                throw new Win32Exception(string.Format(Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA, win32Error));
+	            }
 
-		/// <summary>
+	            // The strings that come back from native land will end with a null terminator, so crop that off.
+	            return new string(data, 0, dataSize - 1);
+	        }
+	    }
+
+	    /// <summary>
 		/// Function to retrieve data for the raw input device message.
 		/// </summary>
 		/// <param name="rawInputStructHandle">Handle to a HRAWINPUT structure..</param>

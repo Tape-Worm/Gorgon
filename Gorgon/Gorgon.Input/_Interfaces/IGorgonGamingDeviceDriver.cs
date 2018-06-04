@@ -56,12 +56,12 @@ namespace Gorgon.Input
 	/// </para>
 	/// </remarks>
 	/// <example>
-	/// <see cref="GorgonPluginAssemblyCache.Load(string)"/>
+	/// <see cref="GorgonMefPluginCache.LoadPluginAssemblies"/>
 	/// The following shows how to load a <see cref="IGorgonGamingDeviceDriver"/> and enumerate the devices:
 	/// <code language="csharp">
 	/// <![CDATA[
 	/// IReadOnlyList<GorgonGamingDeviceInfo> joysticks = null;
-	/// 
+	/// TODO: This needs fixing.
 	/// using (var assemblies = new GorgonPluginAssemblyCache())
 	/// {
 	///		var plugInService = new GorgonPluginService(assemblies);

@@ -35,7 +35,7 @@ namespace Gorgon.Input
 		/// <summary>
 		/// Property to return a pointer to the block of memory that stores the HID data.
 		/// </summary>
-		GorgonPointerAlias Data
+		GorgonNativeBuffer<byte> Data
 		{
 			get;
 		}
@@ -59,7 +59,7 @@ namespace Gorgon.Input
 		/// <summary>
 		/// Property to return the pre-parsed data for this HID.
 		/// </summary>
-		GorgonPointer PreParsedData
+		GorgonNativeBuffer<byte> PreParsedData
 		{
 			get;
 		}

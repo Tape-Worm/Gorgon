@@ -39,7 +39,7 @@ namespace Gorgon.Input
 		/// <summary>
 		/// Property to return the data buffer storing the HID data.
 		/// </summary>
-		public GorgonPointerAlias Data
+		public GorgonNativeBuffer<byte> Data
 		{
 			get;
 		}
@@ -68,7 +68,7 @@ namespace Gorgon.Input
 		/// <param name="data">The HID data.</param>
 		/// <param name="size">The size of an individual HID input.</param>
 		/// <param name="count">The number of HID inputs.</param>
-		public GorgonHIDEventArgs(GorgonPointerAlias data, int size, int count)
+		public GorgonHIDEventArgs(GorgonNativeBuffer<byte> data, int size, int count)
 		{
 			Data = data;
 			HIDSize = size;
