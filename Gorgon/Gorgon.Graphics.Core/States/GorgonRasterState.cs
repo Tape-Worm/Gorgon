@@ -43,8 +43,13 @@ namespace Gorgon.Graphics.Core
     /// The rasterizer state contains 4 common raster states used by applications: <see cref="Default"/> (backface culling, solid fill, etc...), <see cref="WireFrameNoCulling"/> (no culling, wireframe fill, 
     /// etc...), <see cref="CullFrontFace"/> (front face culling, solid fill, etc...), and <see cref="NoCulling"/> (no culling, solid fill, etc...).
     /// </para>
+    /// <para>
+    /// A raster state is an immutable object, and as such can only be created by using a <see cref="GorgonRasterStateBuilder"/>.
+    /// </para>
     /// </remarks>
+    /// <seealso cref="GorgonGraphics"/>
     /// <seealso cref="GorgonPipelineState"/>
+    /// <seealso cref="GorgonRasterStateBuilder"/>
     public class GorgonRasterState
         : IEquatable<GorgonRasterState>
     {

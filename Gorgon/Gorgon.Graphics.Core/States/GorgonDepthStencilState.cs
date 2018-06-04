@@ -41,8 +41,13 @@ namespace Gorgon.Graphics.Core
     /// enabled, full write enabled), <see cref="DepthStencilEnabledNoWrite"/> (both depth and stencil enabled, no writing allowed), <see cref="DepthEnabledNoWrite"/> (depth enabled, no writing allowed), 
     /// <see cref="DepthEnabled"/> (depth enabled, stencil disabled), and <see cref="StencilEnabled"/> (stencil enabled, depth disabled). 
     /// </para>
+    /// <para>
+    /// A depth/stencil state is an immutable object, and as such can only be created by using a <see cref="GorgonDepthStencilStateBuilder"/>.
+    /// </para>
     /// </remarks>
+    /// <seealso cref="GorgonGraphics"/>
     /// <seealso cref="GorgonPipelineState"/>
+    /// <seealso cref="GorgonDepthStencilStateBuilder"/>
     public class GorgonDepthStencilState
         : IEquatable<GorgonDepthStencilState>
     {

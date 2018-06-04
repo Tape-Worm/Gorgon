@@ -31,6 +31,20 @@ namespace Gorgon.Graphics.Core
 	/// <summary>
 	/// A builder for a <see cref="GorgonSamplerState"/>.
 	/// </summary>
+	/// <remarks>
+	/// <para>
+	/// Use this builder to create a new immutable <see cref="GorgonSamplerState"/> to pass to a <see cref="GorgonPipelineState"/>. This object provides a fluent interface to help build up a sampler state.
+	/// </para>
+	/// <para>
+	/// This will define how a texture is sampled inside of a shader when rendering. Filtering, addressing, etc... are all defined in this state.
+	/// </para>
+	/// <para>
+	/// A sampler state is an immutable object, and as such can only be created by using this object.
+	/// </para>
+	/// </remarks>
+	/// <seealso cref="GorgonGraphics"/>
+	/// <seealso cref="GorgonPipelineState"/>
+	/// <seealso cref="GorgonSamplerState"/>
 	public class GorgonSamplerStateBuilder
         : GorgonStateBuilderCommon<GorgonSamplerStateBuilder, GorgonSamplerState>, IGorgonGraphicsObject
 	{

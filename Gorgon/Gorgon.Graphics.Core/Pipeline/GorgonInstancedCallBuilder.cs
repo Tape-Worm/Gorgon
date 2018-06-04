@@ -33,6 +33,28 @@ namespace Gorgon.Graphics.Core
     /// <summary>
     /// A builder class used to create instanced draw calls using fluent calls.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The draw call builder object allow applications to build the immutable draw call objects needed to send data and state information to the GPU.
+    /// </para>
+    /// <para>
+    /// A draw call is an immutable object that contains all of the state required to render mesh information. For each mesh an application needs to render, an single draw call should be issued via the
+    /// <see cref="O:Gorgon.Graphics.Core.GorgonGraphics.Submit"/> methods.  
+    /// </para>
+    /// <para>
+    /// State management is handled internally by Gorgon so that duplicate states are not set and thus, performance is not impacted by redundant states.
+    /// </para>
+    /// <para>
+    /// Because a draw call is immutable, it is not possible to modify a draw call after it's been created. However, a copy of a draw call can be created using the
+    /// <see cref="GorgonDrawCallBuilderCommon{TB,TDc}.ResetTo"/> method on the this object. Or, the builder can be modified after the creation of your draw call that needs to be updated and a new call may
+    /// be built then.
+    /// </para>
+    /// <para>
+    /// This builder type uses a fluent interface to assemble the draw call, its resources and its <see cref="GorgonPipelineState"/>. 
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="GorgonGraphics"/>
+    /// <seealso cref="GorgonPipelineState"/>
     /// <seealso cref="GorgonInstancedCall"/>
     public class GorgonInstancedCallBuilder
         : GorgonDrawCallBuilderCommon<GorgonInstancedCallBuilder, GorgonInstancedCall>

@@ -28,13 +28,48 @@ using System;
 using System.Collections.Generic;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
+using SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
 {
     /// <summary>
     /// A builder used to create stream out draw call objects.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The draw call builder object allow applications to build the immutable draw call objects needed to send data and state information to the GPU.
+    /// </para>
+    /// <para>
+    /// A draw call is an immutable object that contains all of the state required to render mesh information. For each mesh an application needs to render, an single draw call should be issued via the
+    /// <see cref="O:Gorgon.Graphics.Core.GorgonGraphics.Submit"/> methods.  
+    /// </para>
+    /// <para>
+    /// State management is handled internally by Gorgon so that duplicate states are not set and thus, performance is not impacted by redundant states.
+    /// </para>
+    /// <para>
+    /// Because a draw call is immutable, it is not possible to modify a draw call after it's been created. However, a copy of a draw call can be created using the
+    /// <see cref="GorgonDrawCallBuilderCommon{TB,TDc}.ResetTo"/> method on this object. Or, the builder can be modified after the creation of your draw call that needs to be updated and a new call may be
+    /// built then.
+    /// </para>
+    /// <para>
+    /// This draw call type sends a series of state changes and resource bindings to the GPU. However, unlike the various <see cref="GorgonDrawCallCommon"/> objects, this object uses pre-processed data from 
+    /// the vertex and stream out stages. This means that the <see cref="GorgonVertexBuffer"/> attached to the a previous draw call must have been assigned to the 
+    /// <see cref="GorgonDrawCallCommon.StreamOutBufferBindings"/> and had data deposited into it from the stream out stage. After that, it should be removed from the 
+    /// <see cref="GorgonDrawCallCommon.StreamOutBufferBindings"/> and assigned to the <see cref="VertexBufferBinding"/> .
+    /// </para>
+    /// <para>
+    /// <note type="warning">
+    /// <para>
+    /// The <see cref="GorgonVertexBuffer"/> being rendered must have been created with the <see cref="VertexIndexBufferBinding.StreamOut"/> flag set.
+    /// </para>
+    /// </note>
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="GorgonGraphics"/>
+    /// <seealso cref="GorgonPipelineState"/>
     /// <seealso cref="GorgonStreamOutCall"/>
+    /// <seealso cref="GorgonVertexBuffer"/>
+    /// <seealso cref="VertexBufferBinding"/>
     public sealed class GorgonStreamOutCallBuilder
     {
         #region Variables.

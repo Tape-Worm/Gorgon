@@ -33,6 +33,24 @@ namespace Gorgon.Graphics.Core
 	/// <summary>
 	/// A pipeline state object used to set up the complete graphics pipeline for Gorgon.
 	/// </summary>
+	/// <remarks>
+	/// <para>
+	/// A pipeline state object is used to define the state of the pipeline prior to drawing anything. It can be used to assign shaders, and various other states that will affect how data is rasterized on 
+	/// the GPU.
+	/// </para>
+	/// <para>
+	/// The pipeline state object is immutable, and as such cannot be changed directly. To create a new pipeline state object, a <see cref="GorgonPipelineStateBuilder"/> must be used.
+	/// </para>
+	/// <para>
+	/// Pipeline states are assigned to a draw call via one of the draw call builders.
+	/// </para>
+	/// </remarks>
+	/// <seealso cref="GorgonPipelineStateBuilder"/>
+	/// <seealso cref="GorgonDrawCall"/>
+	/// <seealso cref="GorgonDrawIndexCall"/>
+	/// <seealso cref="GorgonInstancedCall"/>
+	/// <seealso cref="GorgonInstancedIndexCall"/>
+	/// <seealso cref="GorgonStreamOutCall"/>
 	public class GorgonPipelineState
 	{
 		#region Properties.

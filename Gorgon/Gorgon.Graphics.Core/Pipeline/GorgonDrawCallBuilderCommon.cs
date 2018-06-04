@@ -37,6 +37,19 @@ namespace Gorgon.Graphics.Core
     /// </summary>
     /// <typeparam name="TB">The type of builder.</typeparam>
     /// <typeparam name="TDc">The type of draw call.</typeparam>
+    /// <remarks>
+    /// <para>
+    /// A draw call is an immutable object that contains all of the state required to render mesh information. For each mesh an application needs to render, an single draw call should be issued via the
+    /// <see cref="O:Gorgon.Graphics.Core.GorgonGraphics.Submit"/> methods.  
+    /// </para>
+    /// <para>
+    /// State management is handled internally by Gorgon so that duplicate states are not set and thus, performance is not impacted by redundant states.
+    /// </para>
+    /// <para>
+    /// This builder type uses a fluent interface to assemble the draw call, its resources and its <see cref="GorgonPipelineState"/>. 
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="GorgonGraphics"/>
     public abstract class GorgonDrawCallBuilderCommon<TB, TDc>
         where TB : GorgonDrawCallBuilderCommon<TB, TDc>
         where TDc : GorgonDrawCallCommon

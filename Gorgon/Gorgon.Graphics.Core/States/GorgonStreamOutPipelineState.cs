@@ -31,6 +31,25 @@ namespace Gorgon.Graphics.Core
     /// <summary>
     /// A pipeline state for stream out buffers.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A pipeline state object is used to define the state of the pipeline prior to drawing anything. It can be used to assign shaders, and various other states that will affect how data is rasterized on 
+    /// the GPU.
+    /// </para>
+    /// <para>
+    /// This pipeline state is similar to a <see cref="GorgonPipelineState"/>, except that it only contains the necessary states that it can use when rendering a stream out buffer.
+    /// </para>
+    /// <para>
+    /// The pipeline state object is immutable, and as such cannot be changed directly. To create a new pipeline state object, a <see cref="GorgonStreamOutPipelineStateBuilder"/> must be used.
+    /// </para>
+    /// <para>
+    /// Pipeline states are assigned to a <see cref="GorgonStreamOutCall"/>.
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="GorgonPipelineStateBuilder"/>
+    /// <seealso cref="GorgonPipelineState"/>
+    /// <seealso cref="GorgonStreamOutCall"/>
+    /// <seealso cref="GorgonStreamOutPipelineStateBuilder"/>
     public class GorgonStreamOutPipelineState
     {
         #region Properties.

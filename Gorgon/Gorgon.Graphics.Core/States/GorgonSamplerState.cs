@@ -40,13 +40,16 @@ namespace Gorgon.Graphics.Core
 	/// This will define how a texture is sampled inside of a shader when rendering. Filtering, addressing, etc... are all defined in this state.
 	/// </para>
 	/// <para>
-	/// Because of the state locking and for performance, it is best practice to pre-create the required states ahead of time.
-	/// </para>
-	/// <para>
 	/// The sampler state contains 3 common samplers used by applications: <see cref="Default"/> (bilinear filtering), <see cref="PointFiltering"/> (point or "pixelated" filtering), and 
 	/// <see cref="AnisotropicFiltering"/>. 
 	/// </para>
+	/// <para>
+	/// A sampler state is an immutable object, and as such can only be created by using a <see cref="GorgonSamplerStateBuilder"/>.
+	/// </para>
 	/// </remarks>
+	/// <seealso cref="GorgonGraphics"/>
+	/// <seealso cref="GorgonPipelineState"/>
+	/// <seealso cref="GorgonSamplerStateBuilder"/>
 	public class GorgonSamplerState
         : IEquatable<GorgonSamplerState>
 	{

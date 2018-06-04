@@ -36,6 +36,21 @@ namespace Gorgon.Graphics.Core
     /// <summary>
     /// A builder for a <see cref="GorgonRasterState"/> object.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Use this builder to create a new immutable <see cref="GorgonRasterState"/> to pass to a <see cref="GorgonPipelineState"/>. This object provides a fluent interface to help build up a 
+    /// raster state.
+    /// </para>
+    /// <para>
+    /// This will define how a triangle, line, point, etc... is rasterized by the GPU when rendering. Clipping, vertex ordering, culling, etc... are all affected by this state.
+    /// </para>
+    /// <para>
+    /// A raster state is an immutable object, and as such can only be created by using this object.
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="GorgonGraphics"/>
+    /// <seealso cref="GorgonPipelineState"/>
+    /// <seealso cref="GorgonRasterState"/>
     public class GorgonRasterStateBuilder
         : GorgonStateBuilderCommon<GorgonRasterStateBuilder, GorgonRasterState>
     {

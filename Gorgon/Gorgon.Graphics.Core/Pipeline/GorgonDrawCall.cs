@@ -39,11 +39,12 @@ namespace Gorgon.Graphics.Core
     /// </para>
     /// <para>
     /// Because a draw call is immutable, it is not possible to modify a draw call after it's been created. However, a copy of a draw call can be created using the
-    /// <see cref="GorgonDrawCallBuilderCommon{TB,TDc}.ResetTo"/> method on the <see cref="GorgonDrawCallBuilder"/> object. Or, the builder can be modified after the creation of your draw call that needs
-    /// to be updated and a new call may be built then.
+    /// <see cref="GorgonDrawCallBuilderCommon{TB,TDc}.ResetTo"/> method on this object. Or, the builder can be modified after the creation of your draw call that needs to be updated and a new call may be 
+    /// built then.
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonGraphics"/>
+    /// <seealso cref="GorgonPipelineState"/>
     /// <seealso cref="GorgonDrawCallBuilder"/>
     public class GorgonDrawCall
         : GorgonDrawCallCommon

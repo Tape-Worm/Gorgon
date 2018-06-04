@@ -38,13 +38,17 @@ namespace Gorgon.Graphics.Core
     /// <see cref="GorgonPipelineState.IsIndependentBlendingEnabled"/> flag on the <see cref="GorgonPipelineState"/> object.
     /// </para>
     /// <para>
-    /// The rasterizer state contains 5 common blend states used by applications: <see cref="Default"/> (blending enabled for the first render target, using modulated blending), <see cref="NoBlending"/> 
+    /// The blend state contains 5 common blend states used by applications: <see cref="Default"/> (blending enabled for the first render target, using modulated blending), <see cref="NoBlending"/> 
     /// (no blending at all), <see cref="Additive"/> (blending enabled on the first render target, using additive ops for source and dest), <see cref="Premultiplied"/> (blending enabled on the first render 
     /// target, with premultiplied blending ops for source and dest), and <see cref="Inverted"/> (blending enabled on the first render target, with inverted ops for source and dest). 
+    /// </para>
+    /// <para>
+    /// A blend state is an immutable object, and as such can only be created by using a <see cref="GorgonBlendStateBuilder"/>.
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonGraphics"/>
     /// <seealso cref="GorgonPipelineState"/>
+    /// <seealso cref="GorgonBlendStateBuilder"/>
     public class GorgonBlendState
         : IEquatable<GorgonBlendState>
     {

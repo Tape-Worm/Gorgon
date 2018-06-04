@@ -29,6 +29,22 @@ namespace Gorgon.Graphics.Core
     /// <summary>
     /// A builder for a <see cref="GorgonBlendState"/> object.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Use this builder to create a new immutable <see cref="GorgonBlendState"/> to pass to a <see cref="GorgonPipelineState"/>. This object provides a fluent interface to help build up a blend state.
+    /// </para>
+    /// <para>
+    /// A blend state will define how rasterized data is blended with the current render target(s). The ability to disable blending, define how blending operations are performed, etc... are all done through 
+    /// this state. This state also defines how blending is performed between adjacent render target(s) in the <see cref="GorgonGraphics.RenderTargets"/>. This is controlled by the 
+    /// <see cref="GorgonPipelineState.IsIndependentBlendingEnabled"/> flag on the <see cref="GorgonPipelineState"/> object.
+    /// </para>
+    /// <para>
+    /// A blend state is an immutable object, and as such can only be created by using this object.
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="GorgonGraphics"/>
+    /// <seealso cref="GorgonPipelineState"/>
+    /// <seealso cref="GorgonBlendState"/>
     public class GorgonBlendStateBuilder
         : GorgonStateBuilderCommon<GorgonBlendStateBuilder, GorgonBlendState>
     {

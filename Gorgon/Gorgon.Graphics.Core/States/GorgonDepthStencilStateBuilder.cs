@@ -44,6 +44,21 @@ namespace Gorgon.Graphics.Core
     /// <summary>
     /// A builder for a <see cref="GorgonDepthStencilState"/> object.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Use this builder to create a new immutable <see cref="GorgonDepthStencilState"/> to pass to a <see cref="GorgonPipelineState"/>. This object provides a fluent interface to help build up a 
+    /// depth/stencil state.
+    /// </para>
+    /// <para>
+    /// This will define how rasterized primitive data is clipped against a depth/stencil buffer. Depth reading, writing, and stencil operations are affected by this state.
+    /// </para>
+    /// <para>
+    /// A depth/stencil state is an immutable object, and as such can only be created by using this object.
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="GorgonGraphics"/>
+    /// <seealso cref="GorgonPipelineState"/>
+    /// <seealso cref="GorgonDepthStencilState"/>
     public class GorgonDepthStencilStateBuilder
         : GorgonStateBuilderCommon<GorgonDepthStencilStateBuilder, GorgonDepthStencilState>
     {
