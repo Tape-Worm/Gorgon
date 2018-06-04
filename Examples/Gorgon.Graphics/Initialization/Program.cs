@@ -241,7 +241,7 @@ namespace Gorgon.Graphics.Example
 
 	        if (devices.Count == 0)
 	        {
-	            GorgonDialogs.ErrorBox(_mainForm, "This example requires a video adapter capable of feature set 12 or better.");
+	            GorgonDialogs.ErrorBox(_mainForm, "This example requires a video adapter that supports Direct3D 11.4 or better.");
 	            return;
 	        }
 

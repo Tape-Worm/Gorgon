@@ -32,15 +32,6 @@ float4 GorgonBltPixelShader(GorgonBltVertex vertex) : SV_Target
 	return _bltTexture.Sample(_bltSampler, vertex.uv) * vertex.color;	
 }
 
-// Our pixel shader for blitting textures.
-float4 GorgonBltPixelShaderBwTest(GorgonBltVertex vertex) : SV_Target
-{
-	float4 color = _bltTexture.Sample(_bltSampler, vertex.uv) * vertex.color;	
-	float grayValue = color.r * 0.3f + color.g * 0.59f + color.b * 0.11f;
-	return float4(grayValue, grayValue, grayValue, color.a);
-}
-
-
 #ifdef GAUSS_BLUR_EFFECT
 
 // Gaussian blur effect starts here.

@@ -636,4 +636,7 @@ Current binding: [{0}]</value>
   <data name="GORGFX_ERR_NO_VERTEX_SHADER" xml:space="preserve">
     <value>Draw calls require a vertex shader.</value>
   </data>
+  <data name="GORGFX_ERR_PARAMETER_LESS_THAN_ZERO" xml:space="preserve">
+    <value>The value must be greater than, or equal to 0.</value>
+  </data>
 </root>

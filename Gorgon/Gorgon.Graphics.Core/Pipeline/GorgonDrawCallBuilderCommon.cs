@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Memory;
 
@@ -478,6 +479,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="allocator">[Optional] The allocator used to create an instance of the object</param>
         /// <returns>The draw call created or updated by this builder.</returns>
+        /// <exception cref="GorgonException">Thrown if a <see cref="GorgonVertexShader"/> is not assigned to the <see cref="GorgonPipelineState.VertexShader"/> property with the <see cref="PipelineState(Gorgon.Graphics.Core.GorgonPipelineStateBuilder)"/> command.</exception>
         /// <remarks>
         /// <para>
         /// Using an <paramref name="allocator"/> can provide different strategies when building draw calls.  If omitted, the draw call will be created using the standard <see langword="new"/> keyword.
@@ -485,6 +487,9 @@ namespace Gorgon.Graphics.Core
         /// <para>
         /// A custom allocator can be beneficial because it allows us to use a pool for allocating the objects, and thus allows for recycling of objects. This keeps the garbage collector happy by keeping objects
         /// around for as long as we need them, instead of creating objects that can potentially end up in the large object heap or in Gen 2.
+        /// </para>
+        /// <para>
+        /// A draw call requires that at least a vertex shader be bound. If none is present, then the method will throw an exception.
         /// </para>
         /// </remarks>
         public TDc Build(GorgonRingPool<TDc> allocator = null)
@@ -542,6 +547,11 @@ namespace Gorgon.Graphics.Core
             final.PipelineState.D3DRasterState = DrawCall.PipelineState.D3DRasterState;
 
             OnUpdate(final);
+
+            if (final.PipelineState.VertexShader == null)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_NO_VERTEX_SHADER);
+            }
 
             return final;
         }

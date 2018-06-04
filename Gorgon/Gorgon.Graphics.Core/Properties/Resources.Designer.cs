@@ -753,6 +753,15 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The value must be greater than, or equal to 0..
+        /// </summary>
+        internal static string GORGFX_ERR_PARAMETER_LESS_THAN_ZERO {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_PARAMETER_LESS_THAN_ZERO", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The effect pass index ({0}) must be 0 or less than {1}..
         /// </summary>
         internal static string GORGFX_ERR_PASS_INDEX_OUT_OF_RANGE {
