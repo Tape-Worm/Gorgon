@@ -90,8 +90,7 @@ namespace CodecPlugIn
 			// Find the position.
 			DX.Rectangle bounds = new DX.Rectangle((int)(windowSize.Width / 2 - size.Width / 2), (int)(windowSize.Height / 2 - size.Height / 2), size.Width, size.Height);
 
-            #warning Needs fixing.
-			//_graphics.DrawTexture(_texture.DefaultShaderResourceView, bounds);
+            _graphics.DrawTexture(_texture, bounds);
 
 			_swap.Present(1);
 

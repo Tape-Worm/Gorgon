@@ -205,6 +205,9 @@ namespace Gorgon.Graphics.Core
 
         // The previous blend factor.
         private GorgonColor _blendFactor = GorgonColor.White;
+
+        // The texture blitter used to draw 2D textures to the render target.
+        private Lazy<TextureBlitter> _textureBlitter;
         #endregion
 
         #region Properties.
@@ -704,6 +707,7 @@ namespace Gorgon.Graphics.Core
             }
         }
         #endregion
+
 
         /// <summary>
         /// Function to initialize the cached sampler states with the predefined states provided on the sampler state class.
@@ -2703,6 +2707,39 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
+        /// Function to draw a texture to the current render target.
+        /// </summary>
+        /// <param name="texture">The texture to draw.</param>
+        /// <param name="destinationRectangle">The location on the target to draw into, and the size of the area to draw.</param>
+        /// <param name="sourceOffset">[Optional] The offset into the texture to start drawing from.</param>
+        /// <param name="clipRectangle">[Optional] <b>true</b> to clip the contents of the texture if the size does not match, or <b>false</b> to stretch.</param>
+        /// <param name="color">[Optional] The color to apply to the texture when drawing.</param>
+        /// <param name="blendState">[Optional] The type of blending to perform.</param>
+        /// <param name="samplerState">[Optional] The sampler state used to define how to sample the texture.</param>
+        /// <param name="pixelShader">[Optional] A pixel shader used to apply effects to the texture.</param>
+        /// <param name="psConstantBuffers">[Optional] A list of constant buffers for the pixel shader if they're required.</param>
+        public void DrawTexture(GorgonTexture2DView texture,
+                                DX.Rectangle destinationRectangle,
+                                DX.Point sourceOffset = default,
+                                bool clipRectangle = false,
+                                GorgonColor? color = null,
+                                GorgonBlendState blendState = null,
+                                GorgonSamplerState samplerState = null,
+                                GorgonPixelShader pixelShader = null,
+                                GorgonConstantBuffers psConstantBuffers = null)
+        {
+            _textureBlitter.Value.Blit(texture,
+                                       destinationRectangle,
+                                       sourceOffset,
+                                       color ?? GorgonColor.White,
+                                       clipRectangle,
+                                       blendState,
+                                       samplerState,
+                                       pixelShader,
+                                       psConstantBuffers);
+        }
+
+        /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         public void Dispose()
@@ -2711,14 +2748,21 @@ namespace Gorgon.Graphics.Core
             D3D11.Device5 device = Interlocked.Exchange(ref _d3DDevice, null);
             DXGI.Adapter4 adapter = Interlocked.Exchange(ref _dxgiAdapter, null);
             DXGI.Factory5 factory = Interlocked.Exchange(ref _dxgiFactory, null);
+            Lazy<TextureBlitter> blitter = Interlocked.Exchange(ref _textureBlitter, null);
 
             // If these are all gone, then we've already disposed.
             if ((factory == null)
                 && (adapter == null)
                 && (device == null)
-                && (context == null))
+                && (context == null)
+                && (blitter == null))
             {
                 return;
+            }
+
+            if (blitter.IsValueCreated)
+            {
+                blitter.Value.Dispose();
             }
 
             ClearStateCache(false);
@@ -2829,6 +2873,13 @@ namespace Gorgon.Graphics.Core
             FormatSupport = EnumerateFormatSupport(_d3DDevice);
 
             InitializeCachedSamplers();
+
+            _textureBlitter = new Lazy<TextureBlitter>(() =>
+                                                       {
+                                                           var blitter = new TextureBlitter(this);
+                                                           blitter.Initialize();
+                                                           return blitter;
+                                                       });
 
             Log.Print("Gorgon Graphics initialized.", LoggingLevel.Simple);
         }

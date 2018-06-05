@@ -265,6 +265,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\White_2x2.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="OLDE\" />

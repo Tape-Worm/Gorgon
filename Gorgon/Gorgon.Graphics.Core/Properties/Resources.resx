@@ -639,4 +639,7 @@ Current binding: [{0}]</value>
   <data name="GORGFX_ERR_PARAMETER_LESS_THAN_ZERO" xml:space="preserve">
     <value>The value must be greater than, or equal to 0.</value>
   </data>
+  <data name="White_2x2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\White_2x2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

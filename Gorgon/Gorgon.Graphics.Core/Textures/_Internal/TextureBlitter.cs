@@ -28,6 +28,7 @@ using System;
 using System.Threading;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Core.Properties;
+using Gorgon.Math;
 using DX = SharpDX;
 
 namespace Gorgon.Graphics
@@ -35,7 +36,7 @@ namespace Gorgon.Graphics
     /// <summary>
     /// Provides functionality for blitting a texture to the currently active <see cref="GorgonGraphics.RenderTargets">render target</see>.
     /// </summary>
-    public class TextureBlitter
+    internal class TextureBlitter
 		: IDisposable
 	{
         #region Variables.
@@ -72,7 +73,9 @@ namespace Gorgon.Graphics
         // The default pipeline state.
 	    private GorgonPipelineState _pipelineState;
         // Constant buffers for the pixel shader
-	    private static readonly GorgonConstantBuffers _emptyPsConstants = new GorgonConstantBuffers();
+	    private readonly GorgonConstantBuffers _emptyPsConstants = new GorgonConstantBuffers();
+        // The default texture.
+	    private GorgonTexture2DView _defaultTexture;
 	    #endregion
 
         #region Methods.
@@ -164,6 +167,15 @@ namespace Gorgon.Graphics
 		                        .SamplerState(ShaderType.Pixel, GorgonSamplerState.Default)
 		                        .PipelineState(_pipelineState)
 		                        .ConstantBuffer(ShaderType.Vertex, _wvpBuffer);
+
+
+		        _defaultTexture = Resources.White_2x2.ToTexture2D(_graphics,
+		                                                          new GorgonTextureLoadOptions
+		                                                          {
+		                                                              Name = "Gorgon_Default_White_Texture",
+		                                                              Usage = ResourceUsage.Immutable,
+		                                                              Binding = TextureBinding.ShaderResource
+		                                                          }).GetShaderResourceView();
 		    }
 		    finally
 		    {
@@ -229,10 +241,15 @@ namespace Gorgon.Graphics
 	                     GorgonPixelShader pixelShader,
 	                     GorgonConstantBuffers pixelShaderConstants)
 	    {
-	        if ((texture == null)
-	            || (_graphics.RenderTargets[0] == null))
+	        if ((_graphics.RenderTargets[0] == null)
+                || (color.Alpha.EqualsEpsilon(0)))
 	        {
 	            return;
+	        }
+
+	        if (texture == null)
+	        {
+	            texture = _defaultTexture;
 	        }
 
 	        GorgonRenderTargetView currentView = _graphics.RenderTargets[0];
@@ -315,6 +332,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		public void Dispose()
 		{
+            _defaultTexture?.Texture?.Dispose();
             _wvpBuffer?.Dispose();
 			_vertexBufferBindings?[0].VertexBuffer?.Dispose();
 			_inputLayout?.Dispose();

@@ -1620,5 +1620,15 @@ namespace Gorgon.Graphics.Core.Properties {
                 return ResourceManager.GetString("GraphicsShaders", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap White_2x2 {
+            get {
+                object obj = ResourceManager.GetObject("White_2x2", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
     }
 }
