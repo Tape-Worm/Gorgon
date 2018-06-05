@@ -93,6 +93,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TvImageCodec", "Examples\Go
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodecPlugIn", "Examples\Gorgon.Graphics\CodecPlugIn\CodecPlugIn.csproj", "{9524F1F2-8260-4203-AF0A-5457053F6BEE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Primitives", "Examples\Gorgon.Graphics\Primitives\Primitives.csproj", "{834D4440-7007-49BF-8B2E-F35F19FF0D58}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -322,6 +324,12 @@ Global
 		{9524F1F2-8260-4203-AF0A-5457053F6BEE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9524F1F2-8260-4203-AF0A-5457053F6BEE}.ReleaseAndDeploy|Any CPU.ActiveCfg = ReleaseAndDeploy|Any CPU
 		{9524F1F2-8260-4203-AF0A-5457053F6BEE}.ReleaseAndDeploy|Any CPU.Build.0 = ReleaseAndDeploy|Any CPU
+		{834D4440-7007-49BF-8B2E-F35F19FF0D58}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{834D4440-7007-49BF-8B2E-F35F19FF0D58}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{834D4440-7007-49BF-8B2E-F35F19FF0D58}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{834D4440-7007-49BF-8B2E-F35F19FF0D58}.Release|Any CPU.Build.0 = Release|Any CPU
+		{834D4440-7007-49BF-8B2E-F35F19FF0D58}.ReleaseAndDeploy|Any CPU.ActiveCfg = Release|Any CPU
+		{834D4440-7007-49BF-8B2E-F35F19FF0D58}.ReleaseAndDeploy|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -360,6 +368,7 @@ Global
 		{256CC806-B7DC-4125-A350-F78F520D9742} = {C421D2F1-B2C4-4136-A33E-52A17B0E907C}
 		{58398BDA-7076-410A-B73C-928E79EAE8A9} = {C421D2F1-B2C4-4136-A33E-52A17B0E907C}
 		{9524F1F2-8260-4203-AF0A-5457053F6BEE} = {C421D2F1-B2C4-4136-A33E-52A17B0E907C}
+		{834D4440-7007-49BF-8B2E-F35F19FF0D58} = {C421D2F1-B2C4-4136-A33E-52A17B0E907C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BA39288E-AC40-4B74-8AE3-AB6E94D02D77}

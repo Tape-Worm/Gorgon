@@ -49,10 +49,11 @@ namespace Gorgon.Graphics.Example
         /// <param name="textureCoordinates">The texture coordinates to apply to the plane.</param>
         /// <param name="columns">The number of columns to subdivide by.</param>
         /// <param name="rows">The number of rows to subdivide by.</param>
-        private unsafe void GetVertices(Vertex3D*buffer, DX.Vector2 size, RectangleF textureCoordinates, int columns, int rows)
+        private void GetVertices(GorgonNativeBuffer<Vertex3D> buffer, DX.Vector2 size, RectangleF textureCoordinates, int columns, int rows)
         {
             float columnWidth = 1.0f / columns;
             float columnHeight = 1.0f / rows;
+            int offset = 0;
 
             DX.Vector3 vertexNormal = -DX.Vector3.UnitZ;
             DX.Vector3.TransformNormal(ref vertexNormal, ref _orientation, out vertexNormal);
@@ -67,15 +68,15 @@ namespace Gorgon.Graphics.Example
 
                     DX.Vector3.TransformCoordinate(ref vertexPos, ref _orientation, out vertexPos);
 
-                    *(buffer++) = new Vertex3D
-                                  {
-                                      Position =
-                                          new DX.Vector4(vertexPos,
-                                                         1.0f),
-                                      Normal = vertexNormal,
-                                      UV = new DX.Vector2((x * (textureCoordinates.Width / columns)) + textureCoordinates.X,
-                                                          (1.0f - (y * (textureCoordinates.Height / rows))) + textureCoordinates.Y)
-                                  };
+                    buffer[offset++] = new Vertex3D
+                                       {
+                                           Position =
+                                               new DX.Vector4(vertexPos,
+                                                              1.0f),
+                                           Normal = vertexNormal,
+                                           UV = new DX.Vector2((x * (textureCoordinates.Width / columns)) + textureCoordinates.X,
+                                                               (1.0f - (y * (textureCoordinates.Height / rows))) + textureCoordinates.Y)
+                                       };
                 }
             }
         }
@@ -86,26 +87,27 @@ namespace Gorgon.Graphics.Example
         /// <param name="buffer">Buffer to populate.</param>
         /// <param name="columns">Number of columns for the plane.</param>
         /// <param name="rows">Number of rows for the plane.</param>
-        private static unsafe void GetIndices(int*buffer, int columns, int rows)
+        private static void GetIndices(GorgonNativeBuffer<int> buffer, int columns, int rows)
         {
+            int offset = 0;
             int columnWrap = columns + 1;
 
             for (int row = 0; row < rows; ++row)
             {
                 for (int column = 0; column < columns; ++column)
                 {
-                    *(buffer++) = column + (row * columnWrap);
-                    *(buffer++) = column + ((row + 1) * columnWrap);
-                    *(buffer++) = (column + 1) + (row * columnWrap);
+                    buffer[offset++] = column + (row * columnWrap);
+                    buffer[offset++] = column + ((row + 1) * columnWrap);
+                    buffer[offset++] = (column + 1) + (row * columnWrap);
 
-                    *(buffer++) = column + ((row + 1) * columnWrap);
-                    *(buffer++) = (column + 1) + (row * columnWrap);
-                    *(buffer++) = (column + 1) + ((row + 1) * columnWrap);
+                    buffer[offset++] = column + ((row + 1) * columnWrap);
+                    buffer[offset++] = (column + 1) + (row * columnWrap);
+                    buffer[offset++] = (column + 1) + ((row + 1) * columnWrap);
                 }
 
                 if (row < rows - 1)
                 {
-                    *(buffer++) = unchecked((int)0xffffffff);
+                    buffer[offset++] = unchecked((int)0xffffffff);
                 }
             }
         }
@@ -132,35 +134,30 @@ namespace Gorgon.Graphics.Example
             DX.Quaternion.RotationYawPitchRoll(angle.Y.ToRadians(), angle.X.ToRadians(), angle.Z.ToRadians(), out DX.Quaternion orientation);
             DX.Matrix.RotationQuaternion(ref orientation, out _orientation);
 
-            unsafe
+            using (var vertexData = new GorgonNativeBuffer<Vertex3D>(VertexCount))
+            using (var indexData = new GorgonNativeBuffer<int>(IndexCount))
             {
-                using (IGorgonPointer vertexData = new GorgonPointerTyped<Vertex3D>(VertexCount))
-                    using (IGorgonPointer indexData = new GorgonPointerTyped<int>(IndexCount))
-                    {
-                        GetVertices((Vertex3D*)vertexData.Address, size, textureCoordinates, columns, rows);
-                        GetIndices((int*)indexData.Address, columns, rows);
+                GetVertices(vertexData, size, textureCoordinates, columns, rows);
+                GetIndices(indexData, columns, rows);
 
-                        CalculateTangents((Vertex3D*)vertexData.Address, (int*)indexData.Address);
+                CalculateTangents(vertexData, indexData);
 
-                        VertexBuffer = new GorgonVertexBuffer("PlaneVB",
-                                                              graphics,
-                                                              new GorgonVertexBufferInfo
-                                                              {
-                                                                  Usage = ResourceUsage.Immutable,
-                                                                  SizeInBytes = (int)vertexData.Size
-                                                              },
-                                                              vertexData);
+                VertexBuffer = new GorgonVertexBuffer(graphics,
+                                                      new GorgonVertexBufferInfo("PlaneVB")
+                                                      {
+                                                          Usage = ResourceUsage.Immutable,
+                                                          SizeInBytes = vertexData.SizeInBytes
+                                                      },
+                                                      vertexData.Cast<byte>());
 
-                        IndexBuffer = new GorgonIndexBuffer("PlaneIB",
-                                                            graphics,
-                                                            new GorgonIndexBufferInfo
-                                                            {
-                                                                Usage = ResourceUsage.Immutable,
-                                                                Use16BitIndices = false,
-                                                                IndexCount = IndexCount
-                                                            },
-                                                            indexData);
-                    }
+                IndexBuffer = new GorgonIndexBuffer(graphics,
+                                                    new GorgonIndexBufferInfo
+                                                    {
+                                                        Usage = ResourceUsage.Immutable,
+                                                        Use16BitIndices = false,
+                                                        IndexCount = IndexCount
+                                                    },
+                                                    indexData);
             }
         }
         #endregion

@@ -29,11 +29,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using DX = SharpDX;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
-using Gorgon.Native;
 
 namespace Gorgon.Graphics.Example
 {
@@ -52,7 +52,7 @@ namespace Gorgon.Graphics.Example
         /// <summary>
         /// View/projection matrices.
         /// </summary>
-        [StructLayout(LayoutKind.Sequential, Size = 208)]
+        [StructLayout(LayoutKind.Sequential, Size = 192)]
         private struct ViewProjectionData
         {
             /// <summary>
@@ -147,29 +147,29 @@ namespace Gorgon.Graphics.Example
         // The graphics interface to use.
         private readonly GorgonGraphics _graphics;
         // A constant buffer for holding the projection*view matrix.
-        private GorgonConstantBuffer _viewProjectionBuffer;
+        private GorgonConstantBufferView _viewProjectionBuffer;
         // A constant buffer for holding the world transformation matrix.
-        private GorgonConstantBuffer _worldBuffer;
+        private GorgonConstantBufferView _worldBuffer;
         // A constant buffer for holding the vectors used for the camera.
-        private GorgonConstantBuffer _cameraBuffer;
+        private GorgonConstantBufferView _cameraBuffer;
         // A constant buffer for holding light information.
-        private GorgonConstantBuffer _lightBuffer;
+        private GorgonConstantBufferView _lightBuffer;
         // A constant buffer for holding material information.
-        private GorgonConstantBuffer _materialBuffer;
+        private GorgonConstantBufferView _materialBuffer;
         // The light data to send to the constant buffer.
         private readonly LightData[] _lightData = new LightData[MaxLights];
         // The list of meshes to render.
         private readonly ObservableCollection<Mesh> _meshes = new ObservableCollection<Mesh>();
         // The draw calls for the available meshes.
-        private readonly List<GorgonDrawIndexedCall> _drawCalls = new List<GorgonDrawIndexedCall>();
+        private readonly List<GorgonDrawIndexCall> _drawCalls = new List<GorgonDrawIndexCall>();
         // The layout of a vertex.
         private GorgonInputLayout _vertexLayout;
         // The default sampler state.
-        private readonly GorgonSamplerState _defaultSampler = new GorgonSamplerState(GorgonSamplerState.Default)
-                                                              {
-                                                                  WrapU = TextureWrap.Wrap,
-                                                                  WrapV = TextureWrap.Wrap
-                                                              };
+        private readonly GorgonSamplerState _defaultSampler;
+        // The builder used to create draw calls.
+        private readonly GorgonDrawIndexCallBuilder _drawBuilder;
+        // The builder used to create pipeline state.
+        private readonly GorgonPipelineStateBuilder _stateBuilder;
         #endregion
 
         #region Properties.
@@ -181,7 +181,7 @@ namespace Gorgon.Graphics.Example
         /// <summary>
         /// Property to return the lights used in rendering.
         /// </summary>
-        public GorgonMonitoredArray<Light> Lights
+        public GorgonArray<Light> Lights
         {
             get;
         }
@@ -206,7 +206,7 @@ namespace Gorgon.Graphics.Example
         /// <summary>
         /// Property to return the textures loaded into the renderer.
         /// </summary>
-        public Dictionary<string, GorgonTexture> TextureCache
+        public Dictionary<string, GorgonTexture2DView> TextureCache
         {
             get;
         }
@@ -233,7 +233,7 @@ namespace Gorgon.Graphics.Example
             }
 
             // Not an ideal place for this, but since we don't know when a vertex shader will be added to our renderer, and we require a vertex shader for our 
-            // input layout, then this will have to suffice.  In real renderer, we'd cache the vertex inputs per shader and just look it up because the type 
+            // input layout, then this will have to suffice.  In a real renderer, we'd cache the vertex inputs per shader and just look it up because the type 
             // of vertex may not be what we expect. In this case, we *know* that we're using Vertex3D and no other vertex type, so we're 100% safe doing it 
             // here in this example.
             if ((_vertexLayout == null) && (vertexShader != null))
@@ -243,49 +243,40 @@ namespace Gorgon.Graphics.Example
 
             GorgonPixelShader pixelShader = (GorgonPixelShader)shader;
 
-            GorgonPipelineState pipelineState = _graphics.GetPipelineState(new GorgonPipelineStateInfo
-                                                                           {
-                                                                               DepthStencilState = mesh.IsDepthWriteEnabled
-                                                                                                       ? GorgonDepthStencilState.DepthEnabled
-                                                                                                       : GorgonDepthStencilState.DepthEnabledNoWrite,
-                                                                               PixelShader = pixelShader,
-                                                                               VertexShader = vertexShader,
-                                                                               BlendStates =
-                                                                               {
-                                                                                   [0] = mesh.Material.BlendState
-                                                                               }
-                                                                           });
+            GorgonPipelineState pipelineState = _stateBuilder.Clear()
+                                                             .DepthStencilState(mesh.IsDepthWriteEnabled
+                                                                                    ? GorgonDepthStencilState.DepthEnabled
+                                                                                    : GorgonDepthStencilState.DepthEnabledNoWrite)
+                                                             .PixelShader(pixelShader)
+                                                             .VertexShader(vertexShader)
+                                                             .BlendState(mesh.Material.BlendState)
+                                                             .PrimitiveType(mesh.PrimitiveType)
+                                                             .Build();
 
-            GorgonDrawIndexedCall drawCall = new GorgonDrawIndexedCall
-                           {
-                               PipelineState = pipelineState,
-                               IndexCount = mesh.IndexCount,
-                               PrimitiveType = mesh.PrimitiveType,
-                               VertexBuffers = new GorgonVertexBufferBindings(_vertexLayout),
-                               IndexBuffer = mesh.IndexBuffer
-                           };
+            _drawBuilder.Clear()
+                        .PipelineState(pipelineState)
+                        .IndexBuffer(mesh.IndexBuffer, 0, mesh.IndexCount)
+                        .VertexBuffer(_vertexLayout, new GorgonVertexBufferBinding(mesh.VertexBuffer, Vertex3D.Size))
+                        .ConstantBuffer(ShaderType.Vertex, _viewProjectionBuffer)
+                        .ConstantBuffer(ShaderType.Vertex, _worldBuffer, 1)
+                        .ConstantBuffer(ShaderType.Pixel, _cameraBuffer)
+                        .ConstantBuffer(ShaderType.Pixel, _lightBuffer, 1)
+                        .ConstantBuffer(ShaderType.Pixel, _materialBuffer, 2);
+                                                       
+            ref readonly (int Start, int Count) textures = ref mesh.Material.Textures.GetDirtyItems();
 
-            ref (int Start, int Count) textures = ref mesh.Material.Textures.GetDirtyItems();
-            
             for (int i = textures.Start; i < textures.Start + textures.Count; ++i)
             {
-                if (!TextureCache.TryGetValue(mesh.Material.Textures[i], out GorgonTexture texture))
+                if (!TextureCache.TryGetValue(mesh.Material.Textures[i], out GorgonTexture2DView texture))
                 {
                     continue;
                 }
 
-                drawCall.PixelShaderResourceViews[i] = texture.DefaultShaderResourceView;
-                drawCall.PixelShaderSamplers[i] = _defaultSampler;
+                _drawBuilder.ShaderResource(ShaderType.Pixel, texture, i - textures.Start)
+                            .SamplerState(ShaderType.Pixel, _defaultSampler, i - textures.Start);
             }
 
-            drawCall.VertexBuffers[0] = new GorgonVertexBufferBinding(mesh.VertexBuffer, Vertex3D.Size);
-            drawCall.VertexShaderConstantBuffers[0] = _viewProjectionBuffer;
-            drawCall.VertexShaderConstantBuffers[1] = _worldBuffer;
-            drawCall.PixelShaderConstantBuffers[0] = _cameraBuffer;
-            drawCall.PixelShaderConstantBuffers[1] = _lightBuffer;
-            drawCall.PixelShaderConstantBuffers[2] = _materialBuffer;
-
-            _drawCalls.Add(drawCall);
+            _drawCalls.Add(_drawBuilder.Build());
         }
 
         /// <summary>
@@ -320,7 +311,7 @@ namespace Gorgon.Graphics.Example
                 return true;
             }
 
-            for (int i = 0; i < Lights.Count; ++i)
+            for (int i = 0; i < Lights.Length; ++i)
             {
                 if ((Lights[i] != null) && (Lights[i].IsDirty))
                 {
@@ -341,7 +332,7 @@ namespace Gorgon.Graphics.Example
                 return;
             }
 
-            ref (int Start, int Count) dirtyLights = ref Lights.GetDirtyItems();
+            ref readonly (int Start, int Count) dirtyLights = ref Lights.GetDirtyItems();
 
             int end = (dirtyLights.Start + dirtyLights.Count).Min(MaxLights);
 
@@ -360,7 +351,7 @@ namespace Gorgon.Graphics.Example
             }
 
             // Send to the constant buffer right away.
-            _graphics.SetDataRange(_lightData, _lightBuffer);
+            _lightBuffer.Buffer.SetData(_lightData);
         }
 
         /// <summary>
@@ -369,45 +360,40 @@ namespace Gorgon.Graphics.Example
         private void InitializeConstantBuffers()
         {
 
-            _viewProjectionBuffer = new GorgonConstantBuffer("WVPBuffer",
-                                                             _graphics,
-                                                             new GorgonConstantBufferInfo
+            _viewProjectionBuffer = new GorgonConstantBuffer(_graphics,
+                                                             new GorgonConstantBufferInfo("Projection/View Buffer")
                                                              {
-                                                                 SizeInBytes = DirectAccess.SizeOf<ViewProjectionData>(),
+                                                                 SizeInBytes = Unsafe.SizeOf<ViewProjectionData>(),
                                                                  Usage = ResourceUsage.Dynamic
-                                                             });
+                                                             }).GetView();
 
-            _worldBuffer = new GorgonConstantBuffer("WorldBuffer",
-                                                    _graphics,
-                                                    new GorgonConstantBufferInfo
+            _worldBuffer = new GorgonConstantBuffer(_graphics,
+                                                    new GorgonConstantBufferInfo("WorldBuffer")
                                                     {
                                                         Usage = ResourceUsage.Dynamic,
                                                         SizeInBytes = DX.Matrix.SizeInBytes
-                                                    });
+                                                    }).GetView();
 
-            _cameraBuffer = new GorgonConstantBuffer("CameraBuffer",
-                                                     _graphics,
-                                                     new GorgonConstantBufferInfo
+            _cameraBuffer = new GorgonConstantBuffer(_graphics,
+                                                     new GorgonConstantBufferInfo("CameraBuffer")
                                                      {
                                                          Usage = ResourceUsage.Dynamic,
-                                                         SizeInBytes = DirectAccess.SizeOf<CameraData>()
-                                                     });
+                                                         SizeInBytes = Unsafe.SizeOf<CameraData>()
+                                                     }).GetView();
 
-            _materialBuffer = new GorgonConstantBuffer("MaterialBuffer",
-                                                       _graphics,
-                                                       new GorgonConstantBufferInfo
+            _materialBuffer = new GorgonConstantBuffer(_graphics,
+                                                       new GorgonConstantBufferInfo("MaterialBuffer")
                                                        {
                                                            Usage = ResourceUsage.Dynamic,
-                                                           SizeInBytes = DirectAccess.SizeOf<Material>()
-                                                       });
+                                                           SizeInBytes = Unsafe.SizeOf<Material>()
+                                                       }).GetView();
 
-            _lightBuffer = new GorgonConstantBuffer("LightDataBuffer",
-                                                    _graphics,
-                                                    new GorgonConstantBufferInfo
+            _lightBuffer = new GorgonConstantBuffer(_graphics,
+                                                    new GorgonConstantBufferInfo("LightDataBuffer")
                                                     {
                                                         Usage = ResourceUsage.Dynamic,
-                                                        SizeInBytes = DirectAccess.SizeOf<LightData>() * MaxLights
-                                                    });
+                                                        SizeInBytes = Unsafe.SizeOf<LightData>() * MaxLights
+                                                    }).GetView();
 
             // Initialize the constant buffers.
             ViewProjectionData emptyViewProjection = new ViewProjectionData
@@ -431,11 +417,10 @@ namespace Gorgon.Graphics.Example
                                     UVOffset = DX.Vector2.Zero
                                 };
 
-
-            _graphics.SetValue(ref emptyViewProjection, _viewProjectionBuffer);
-            _graphics.SetValue(ref emptyWorld, _worldBuffer);
-            _graphics.SetValue(ref emptyCamera, _cameraBuffer);
-            _graphics.SetValue(ref emptyMaterial, _materialBuffer);
+            _viewProjectionBuffer.Buffer.SetData(ref emptyViewProjection);
+            _worldBuffer.Buffer.SetData(ref emptyWorld);
+            _cameraBuffer.Buffer.SetData(ref emptyCamera);
+            _materialBuffer.Buffer.SetData(ref emptyMaterial);
         }
 
         /// <summary>
@@ -444,11 +429,11 @@ namespace Gorgon.Graphics.Example
         private void UpdateMaterials(MeshMaterial material)
         {
             Material materialData = new Material
-                               {
-                                   UVOffset = material.TextureOffset,
-                                   SpecularPower = material.SpecularPower
-                               };
-            _graphics.SetValue(ref materialData, _materialBuffer);
+                                    {
+                                        UVOffset = material.TextureOffset,
+                                        SpecularPower = material.SpecularPower
+                                    };
+            _materialBuffer.Buffer.SetData(ref materialData);
         }
 
         /// <summary>
@@ -474,7 +459,7 @@ namespace Gorgon.Graphics.Example
                                       CameraPosition = Camera.EyePosition,
                                       CameraUp = Camera.Up
                                   };
-                    _graphics.SetValue(ref camData, _cameraBuffer);
+                    _cameraBuffer.Buffer.SetData(ref camData);
                 }
 
                 ViewProjectionData viewProjData = new ViewProjectionData
@@ -483,14 +468,14 @@ namespace Gorgon.Graphics.Example
                                        View = Camera.GetViewMatrix(),
                                        ViewProjection = Camera.GetViewProjectionMatrix()
                                    };
-                _graphics.SetValue(ref viewProjData, _viewProjectionBuffer);
+                _viewProjectionBuffer.Buffer.SetData(ref viewProjData);
             }
 
             for (int i = 0; i < _drawCalls.Count; ++i)
             {
                 if (_meshes[i] is MoveableMesh movableMesh)
                 {
-                    _graphics.SetValue(ref movableMesh.WorldMatrix, _worldBuffer);
+                    _worldBuffer.Buffer.SetData(ref movableMesh.WorldMatrix);
                 }
 
                 UpdateMaterials(_meshes[i].Material);
@@ -515,7 +500,7 @@ namespace Gorgon.Graphics.Example
                 shader.Value.Dispose();
             }
 
-            foreach (KeyValuePair<string, GorgonTexture> texture in TextureCache)
+            foreach (KeyValuePair<string, GorgonTexture2DView> texture in TextureCache)
             {
                 texture.Value.Dispose();
             }
@@ -531,9 +516,14 @@ namespace Gorgon.Graphics.Example
         {
             _graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
 
-            TextureCache = new Dictionary<string, GorgonTexture>(StringComparer.Ordinal);
+            _drawBuilder = new GorgonDrawIndexCallBuilder();
+            _stateBuilder = new GorgonPipelineStateBuilder(_graphics);
+            var sampleBuilder = new GorgonSamplerStateBuilder(_graphics);
+            _defaultSampler = sampleBuilder.Wrapping(TextureWrap.Wrap, TextureWrap.Wrap).Build();
+
+            TextureCache = new Dictionary<string, GorgonTexture2DView>(StringComparer.Ordinal);
             ShaderCache = new Dictionary<string, GorgonShader>(StringComparer.Ordinal);
-            Lights = new GorgonMonitoredArray<Light>(8);
+            Lights = new GorgonArray<Light>(8);
             _meshes.CollectionChanged += Meshes_CollectionChanged;
 
             InitializeConstantBuffers();

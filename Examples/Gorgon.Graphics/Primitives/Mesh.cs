@@ -27,6 +27,7 @@
 using System;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
+using Gorgon.Native;
 using D3D = SharpDX.Direct3D;
 using DX = SharpDX;
 
@@ -126,24 +127,25 @@ namespace Gorgon.Graphics.Example
         /// </summary>
         /// <param name="vertexData">Buffer holding the vertices.</param>
         /// <param name="indexData">Buffer holding the indices.</param>
-        protected unsafe void CalculateTangents(Vertex3D* vertexData, int* indexData)
+        protected void CalculateTangents(GorgonNativeBuffer<Vertex3D> vertexData, GorgonNativeBuffer<int> indexData)
         {
 			DX.Vector3[] biTanData = new DX.Vector3[VertexCount];
 			DX.Vector3[] tanData = new DX.Vector3[VertexCount];
+            int indexOffset = 0;
 
             for (int i = 0; i < TriangleCount; ++i)
             {
-                int index1 = *(indexData++);
+                int index1 = indexData[indexOffset++];
 
 				// If we hit a strip-restart index, then skip to the next index.
 	            if ((PrimitiveType == PrimitiveType.TriangleStrip) 
 					&& (index1 < 0))
 	            {
-		            index1 = *(indexData++);
+		            index1 = indexData[indexOffset++];
 	            }
 
-                int index2 = *(indexData++);
-                int index3 = *(indexData++);
+                int index2 = indexData[indexOffset++];
+                int index3 = indexData[indexOffset++];
 
                 Vertex3D vertex1 = vertexData[index1];
                 Vertex3D vertex2 = vertexData[index2];

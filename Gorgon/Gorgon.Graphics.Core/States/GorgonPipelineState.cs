@@ -53,7 +53,8 @@ namespace Gorgon.Graphics.Core
 	/// <seealso cref="GorgonStreamOutCall"/>
 	public class GorgonPipelineState
 	{
-		#region Properties.
+	    private GorgonRasterState _rasterState;
+	    #region Properties.
 		/// <summary>
 		/// Property to return the Direct 3D 11 raster state.
 		/// </summary>
@@ -154,19 +155,22 @@ namespace Gorgon.Graphics.Core
 	        get;
 	        internal set;
 	    }
-        
-        /// <summary>
-        /// Property to return the rasterizer state for the pipeline.
-        /// </summary>
+
+	    /// <summary>
+	    /// Property to return the rasterizer state for the pipeline.
+	    /// </summary>
 	    public GorgonRasterState RasterState
 	    {
-	        get;
-            internal set;
-        }
+	        get => _rasterState;
+	        internal set
+	        {
+	            _rasterState = value;
+	        }
+	    }
 
-        /// <summary>
-        /// Property to return the depth/stencil state for the pipeline.
-        /// </summary>
+	    /// <summary>
+	    /// Property to return the depth/stencil state for the pipeline.
+	    /// </summary>
 	    public GorgonDepthStencilState DepthStencilState
 	    {
 	        get;
@@ -361,8 +365,8 @@ namespace Gorgon.Graphics.Core
         /// <param name="state">The state copy.</param>
         internal GorgonPipelineState(GorgonPipelineState state)
         {
-            RasterState = new GorgonRasterState(state.RasterState);
-            DepthStencilState = new GorgonDepthStencilState(state.DepthStencilState);
+            RasterState = state.RasterState;
+            DepthStencilState = state.DepthStencilState;
             IsIndependentBlendingEnabled = state.IsIndependentBlendingEnabled;
             IsAlphaToCoverageEnabled = state.IsAlphaToCoverageEnabled;
             PixelShader = state.PixelShader;

@@ -375,34 +375,30 @@ namespace Gorgon.Graphics.Example
 
 			FixSeam(vertexList, indexList);
 
-			unsafe
+			using (var vertexData = GorgonNativeBuffer<Vertex3D>.Pin(vertexList.ToArray()))
+			using (var indexData = GorgonNativeBuffer<int>.Pin(indexList.ToArray()))
 			{
-				using (IGorgonPointer vertexData = new GorgonPointerPinned<Vertex3D>(vertexList.ToArray()))
-				using (IGorgonPointer indexData = new GorgonPointerPinned<int>(indexList.ToArray()))
-				{
-					VertexCount = vertexList.Count;
-					IndexCount = indexList.Count;
-					TriangleCount = IndexCount / 3;
+				VertexCount = vertexList.Count;
+				IndexCount = indexList.Count;
+				TriangleCount = IndexCount / 3;
 
-					CalculateTangents((Vertex3D*)vertexData.Address, (int*)indexData.Address);
-                    
-					VertexBuffer = new GorgonVertexBuffer("IcoSphereVertexBuffer", graphics,
-						                                                new GorgonVertexBufferInfo
-						                                                {
-																			SizeInBytes = (int)vertexData.Size,
-																			Usage = ResourceUsage.Immutable
-						                                                },
-						                                                vertexData);
-				    IndexBuffer = new GorgonIndexBuffer("IcoSphereIndexBuffer",
-				                                        graphics,
-				                                        new GorgonIndexBufferInfo
-				                                        {
-				                                            Usage = ResourceUsage.Immutable,
-				                                            Use16BitIndices = false,
-				                                            IndexCount = IndexCount
-				                                        },
-				                                        indexData);
-				}
+				CalculateTangents(vertexData, indexData);
+
+			    VertexBuffer = new GorgonVertexBuffer(graphics,
+			                                          new GorgonVertexBufferInfo("IcoSphereVertexBuffer")
+			                                          {
+			                                              SizeInBytes = vertexData.SizeInBytes,
+			                                              Usage = ResourceUsage.Immutable
+			                                          },
+			                                          vertexData.Cast<byte>());
+				IndexBuffer = new GorgonIndexBuffer(graphics,
+				                                    new GorgonIndexBufferInfo
+				                                    {
+				                                        Usage = ResourceUsage.Immutable,
+				                                        Use16BitIndices = false,
+				                                        IndexCount = IndexCount
+				                                    },
+				                                    indexData);
 			}
 		}
         #endregion

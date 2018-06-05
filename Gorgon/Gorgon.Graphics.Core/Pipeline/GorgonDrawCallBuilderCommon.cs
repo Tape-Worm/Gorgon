@@ -645,7 +645,7 @@ namespace Gorgon.Graphics.Core
 
             DrawCall.D3DState.ReadWriteViews.Clear();
 
-            DrawCall.D3DState.PipelineState.Clear();
+            DrawCall.D3DState.PipelineState = null;
 
             return OnClear();
         }

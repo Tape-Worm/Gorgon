@@ -45,32 +45,35 @@ namespace Gorgon.Graphics.Example
 {
     internal static class Program
 	{
-		// Main application form.
-		private static FormMain _form;
-		// Camera.
-		private static Camera _camera;
-        // Rotation value.
+	    #region Variables.
+	    // Main application form.
+	    private static FormMain _form;
+	    // Camera.
+	    private static Camera _camera;
+	    // Rotation value.
 	    private static float _objRotation;
-		// Rotation value.
-		private static float _cloudRotation;
-		// Input factory.
-		private static GI.GorgonRawInput _input;
-		// Keyboard interface.
-		private static GI.GorgonRawKeyboard _keyboard;
-		// Mouse interface.
-		private static GI.GorgonRawMouse _mouse;
-		// Camera rotation amount.
-		private static DX.Vector3 _cameraRotation;
-		// Lock to sphere.
-		private static bool _lock;
-		// Mouse sensitivity.
-		private static float _sensitivity = 1.5f;
+	    // Rotation value.
+	    private static float _cloudRotation;
+	    // Input factory.
+	    private static GI.GorgonRawInput _input;
+	    // Keyboard interface.
+	    private static GI.GorgonRawKeyboard _keyboard;
+	    // Mouse interface.
+	    private static GI.GorgonRawMouse _mouse;
+	    // Camera rotation amount.
+	    private static DX.Vector3 _cameraRotation;
+	    // Lock to sphere.
+	    private static bool _lock;
+	    // Mouse sensitivity.
+	    private static float _sensitivity = 1.5f;
 	    // Graphics interface.
 	    private static GorgonGraphics _graphics;
 	    // Primary swap chain.
 	    private static GorgonSwapChain _swapChain;
+        // The depth buffer.
+	    private static GorgonDepthStencil2DView _depthBuffer;
 	    // Triangle primitive.
-        private static Triangle _triangle;
+	    private static Triangle _triangle;
 	    // Plane primitive.
 	    private static Plane _plane;
 	    // Cube primitive.
@@ -81,10 +84,11 @@ namespace Gorgon.Graphics.Example
 	    private static Sphere _clouds;
 	    // Icosphere primitive.
 	    private static IcoSphere _icoSphere;
-        // Timer for updating text.
+	    // Timer for updating text.
 	    private static IGorgonTimer _timer;
-        // A simple application specific renderer.
+	    // A simple application specific renderer.
 	    private static SimpleRenderer _renderer;
+	    #endregion
 
 		/// <summary>
 		/// Main application loop.
@@ -95,7 +99,7 @@ namespace Gorgon.Graphics.Example
 		    ProcessKeys();
 
             _swapChain.RenderTargetView.Clear(Color.CornflowerBlue);
-		    _swapChain.DepthStencilView.Clear(1.0f, 0);
+		    _depthBuffer.Clear(1.0f, 0);
 
             _cloudRotation += 2.0f * GorgonTiming.Delta;
 		    _objRotation += 50.0f * GorgonTiming.Delta;
@@ -322,6 +326,25 @@ namespace Gorgon.Graphics.Example
 		}
 
         /// <summary>
+        /// Function to build or rebuild the depth buffer.
+        /// </summary>
+        /// <param name="width">The width of the depth buffer.</param>
+        /// <param name="height">The height of the depth buffer.</param>
+	    private static void BuildDepthBuffer(int width, int height)
+	    {
+            _depthBuffer?.Dispose();
+	        _depthBuffer = GorgonDepthStencil2DView.CreateDepthStencil(_graphics,
+	                                                                   new GorgonTexture2DInfo
+	                                                                   {
+	                                                                       Usage = ResourceUsage.Default,
+	                                                                       Width = width,
+	                                                                       Height = height,
+	                                                                       Format = BufferFormat.D24_UNorm_S8_UInt,
+	                                                                       Binding = TextureBinding.DepthStencil
+	                                                                   });
+	    }
+
+        /// <summary>
         /// Function to build the shaders required for the application.
         /// </summary>
 	    private static void LoadShaders()
@@ -338,11 +361,35 @@ namespace Gorgon.Graphics.Example
 	    private static void LoadTextures()
         {
             // Load standard images from the resource section.
-            _renderer.TextureCache["UV"] = Resources.UV.ToTexture("UV", _graphics);
-	        _renderer.TextureCache["Earth"] = Resources.earthmap1k.ToTexture("Earth", _graphics);
-	        _renderer.TextureCache["Earth_Specular"] = Resources.earthspec1k.ToTexture("Earth_Specular", _graphics);
-	        _renderer.TextureCache["Clouds"] = Resources.earthcloudmap.ToTexture("Clouds", _graphics);
-            _renderer.TextureCache["GorgonNormalMap"] = Resources.normalmap.ToTexture("GorgonNormalMap", _graphics);
+            _renderer.TextureCache["UV"] = Resources.UV.ToTexture2D(_graphics,
+                                                                    new GorgonTextureLoadOptions
+                                                                    {
+                                                                        Name = "UV"
+                                                                    }).GetShaderResourceView();
+
+            _renderer.TextureCache["Earth"] = Resources.earthmap1k.ToTexture2D(_graphics,
+                                                                               new GorgonTextureLoadOptions
+                                                                               {
+                                                                                   Name = "Earth"
+                                                                               }).GetShaderResourceView();
+
+            _renderer.TextureCache["Earth_Specular"] = Resources.earthspec1k.ToTexture2D(_graphics,
+                                                                                         new GorgonTextureLoadOptions
+                                                                                         {
+                                                                                             Name = "Earth_Specular"
+                                                                                         }).GetShaderResourceView();
+
+            _renderer.TextureCache["Clouds"] = Resources.earthcloudmap.ToTexture2D(_graphics,
+                                                                                   new GorgonTextureLoadOptions
+                                                                                   {
+                                                                                       Name = "Clouds"
+                                                                                   }).GetShaderResourceView();
+
+            _renderer.TextureCache["GorgonNormalMap"] = Resources.normalmap.ToTexture2D(_graphics,
+                                                                                        new GorgonTextureLoadOptions
+                                                                                        {
+                                                                                            Name = "GorgonNormalMap"
+                                                                                        }).GetShaderResourceView();
 
             // The following images are DDS encoded and require an encoder to read them from the resources.
 	        GorgonCodecDds dds = new GorgonCodecDds();
@@ -350,19 +397,31 @@ namespace Gorgon.Graphics.Example
 	        using (MemoryStream stream = new MemoryStream(Resources.Rain_Height_NRM))
 	        using (IGorgonImage image = dds.LoadFromStream(stream))
 	        {
-	            _renderer.TextureCache["Water_Normal"] = image.ToTexture("Water_Normal", _graphics);
+	            _renderer.TextureCache["Water_Normal"] = image.ToTexture2D(_graphics,
+	                                                                       new GorgonTextureLoadOptions
+	                                                                       {
+	                                                                           Name = "Water_Normal"
+	                                                                       }).GetShaderResourceView();
 	        }
 
             using (MemoryStream stream = new MemoryStream(Resources.Rain_Height_SPEC))
                 using (IGorgonImage image = dds.LoadFromStream(stream))
                 {
-                    _renderer.TextureCache["Water_Specular"] = image.ToTexture("Water_Specular", _graphics);
+                    _renderer.TextureCache["Water_Specular"] = image.ToTexture2D(_graphics,
+                                                                                 new GorgonTextureLoadOptions
+                                                                                 {
+                                                                                     Name = "Water_Specular"
+                                                                                 }).GetShaderResourceView();
                 }
 
             using (MemoryStream stream = new MemoryStream(Resources.earthbump1k_NRM))
 	        using (IGorgonImage image = dds.LoadFromStream(stream))
 	        {
-	            _renderer.TextureCache["Earth_Normal"] = image.ToTexture("Earth_Normal", _graphics);
+	            _renderer.TextureCache["Earth_Normal"] = image.ToTexture2D(_graphics,
+	                                                                       new GorgonTextureLoadOptions
+	                                                                       {
+	                                                                           Name = "Earth_Normal"
+	                                                                       }).GetShaderResourceView();
 	        }
         }
 
@@ -544,16 +603,16 @@ namespace Gorgon.Graphics.Example
             _graphics = new GorgonGraphics(deviceList[0]);
 		    _renderer = new SimpleRenderer(_graphics);
 
-            _swapChain = new GorgonSwapChain("Swap",
-		                                     _graphics,
+            _swapChain = new GorgonSwapChain(_graphics,
 		                                     _form,
-		                                     new GorgonSwapChainInfo
+		                                     new GorgonSwapChainInfo("Swap")
 		                                     {
 		                                         Width = _form.ClientSize.Width,
 		                                         Height = _form.ClientSize.Height,
-		                                         DepthStencilFormat = BufferFormat.D24_UNorm_S8_UInt,
 		                                         Format = BufferFormat.R8G8B8A8_UNorm
 		                                     });
+
+            BuildDepthBuffer(_swapChain.Width, _swapChain.Height);
 
 		    _graphics.SetRenderTarget(_swapChain.RenderTargetView);
 
@@ -565,11 +624,11 @@ namespace Gorgon.Graphics.Example
 
 		    BuildMeshes();
 
-            _renderer.Camera = _camera = new Camera
+		    _renderer.Camera = _camera = new Camera
 		                                 {
 		                                     Fov = 75.0f,
-		                                     ViewWidth = _swapChain.Info.Width,
-		                                     ViewHeight = _swapChain.Info.Height
+		                                     ViewWidth = _swapChain.Width,
+		                                     ViewHeight = _swapChain.Height
 		                                 };
 
             _timer = new GorgonTimerQpc();
@@ -583,13 +642,22 @@ namespace Gorgon.Graphics.Example
 			_form.MouseDown += Mouse_Down;
 			_form.MouseWheel += Mouse_Wheel;
 
+		    _swapChain.BeforeSwapChainResized += (sender, args) =>
+		                                         {
+                                                    _graphics.SetDepthStencil(null);
+		                                         };
+
 		    // When we resize, update the projection and viewport to match our client size.
 		    _swapChain.AfterSwapChainResized += (sender, args) =>
 		                                        {
-		                                            _camera.ViewWidth = _swapChain.Info.Width;
-		                                            _camera.ViewHeight = _swapChain.Info.Height;
+		                                            _camera.ViewWidth = args.Size.Width;
+		                                            _camera.ViewHeight = args.Size.Height;
+
+		                                            BuildDepthBuffer(args.Size.Width, args.Size.Height);
+
+		                                            _graphics.SetDepthStencil(_depthBuffer);
 		                                        };
-        }
+		}
 
         /// <summary>
         /// The main entry point for the application.

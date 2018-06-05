@@ -38,7 +38,7 @@ namespace Gorgon.Graphics.Example
         /// <summary>
         /// Property to return the textures for this mesh.
         /// </summary>
-        public GorgonMonitoredArray<string> Textures
+        public GorgonArray<string> Textures
         {
             get;
         }
@@ -96,7 +96,7 @@ namespace Gorgon.Graphics.Example
         public MeshMaterial()
         {
             SpecularPower = 1.0f;
-            Textures = new GorgonMonitoredArray<string>(3);
+            Textures = new GorgonArray<string>(3);
             BlendState = GorgonBlendState.NoBlending;
         }
         #endregion

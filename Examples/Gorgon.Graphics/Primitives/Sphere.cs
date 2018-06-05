@@ -64,14 +64,16 @@ namespace Gorgon.Graphics.Example
         /// <param name="textureCoordinates">Texture coordinates for the sphere.</param>
         /// <param name="ringCount">Number of rings in the sphere.</param>
         /// <param name="segmentCount">Number of segments in the sphere.</param>
-        private unsafe void GetVertices(Vertex3D* vertexData,
-                                        int* indexData,
+        private void GetVertices(GorgonNativeBuffer<Vertex3D> vertexData,
+                                        GorgonNativeBuffer<int> indexData,
                                         float radius,
                                         RectangleF textureCoordinates,
                                         int ringCount,
                                         int segmentCount)
         {
             int index = 0; // Current index.
+            int vertexOffset = 0;
+            int indexOffset = 0;
             float deltaRingAngle = ((float)System.Math.PI) / ringCount;
             float deltaSegAngle = (((float)System.Math.PI) * 2.0f) / segmentCount;
 
@@ -103,12 +105,12 @@ namespace Gorgon.Graphics.Example
                     textureDelta.X += textureCoordinates.X;
                     textureDelta.Y += textureCoordinates.Y;
 
-                    *(vertexData++) = new Vertex3D
-                                      {
-                                          Position = new DX.Vector4(position, 1.0f),
-                                          UV = textureDelta,
-                                          Normal = normal
-                                      };
+                    vertexData[vertexOffset++] = new Vertex3D
+                                                 {
+                                                     Position = new DX.Vector4(position, 1.0f),
+                                                     UV = textureDelta,
+                                                     Normal = normal
+                                                 };
 
                     // Add the indices and skip the last ring.
                     if (ring == ringCount)
@@ -116,13 +118,13 @@ namespace Gorgon.Graphics.Example
                         continue;
                     }
 
-                    *(indexData++) = (index + segmentCount + 1);
-                    *(indexData++) = index;
-                    *(indexData++) = (index + segmentCount);
+                    indexData[indexOffset++] = (index + segmentCount + 1);
+                    indexData[indexOffset++] = index;
+                    indexData[indexOffset++] = (index + segmentCount);
 
-                    *(indexData++) = (index + segmentCount + 1);
-                    *(indexData++) = (index + 1);
-                    *(indexData++) = index;
+                    indexData[indexOffset++] = (index + segmentCount + 1);
+                    indexData[indexOffset++] = (index + 1);
+                    indexData[indexOffset++] = index;
                     index++;
                 }
             }
@@ -152,37 +154,32 @@ namespace Gorgon.Graphics.Example
             DX.Quaternion.RotationYawPitchRoll(angle.Y.ToRadians(), angle.X.ToRadians(), angle.Z.ToRadians(), out DX.Quaternion orientation);
             DX.Matrix.RotationQuaternion(ref orientation, out _orientation);
 
-            unsafe
+            using (var vertexData = new GorgonNativeBuffer<Vertex3D>(VertexCount))
+            using (var indexData = new GorgonNativeBuffer<int>(IndexCount))
             {
-                using (IGorgonPointer vertexData = new GorgonPointerTyped<Vertex3D>(VertexCount),
-                                      indexData = new GorgonPointerTyped<int>(IndexCount))
-                {
-                    GetVertices((Vertex3D*)vertexData.Address,
-                                (int*)indexData.Address,
-                                radius,
-                                textureCoordinates,
-                                ringCount,
-                                segmentCount);
+                GetVertices(vertexData,
+                            indexData,
+                            radius,
+                            textureCoordinates,
+                            ringCount,
+                            segmentCount);
 
-                    VertexBuffer = new GorgonVertexBuffer("SphereVertexBuffer",
-                                                          graphics,
-                                                          new GorgonVertexBufferInfo
-                                                          {
-                                                              Usage = ResourceUsage.Immutable,
-                                                              SizeInBytes = (int)vertexData.Size
-                                                          },
-                                                          vertexData);
+                VertexBuffer = new GorgonVertexBuffer(graphics,
+                                                      new GorgonVertexBufferInfo("SphereVertexBuffer")
+                                                      {
+                                                          Usage = ResourceUsage.Immutable,
+                                                          SizeInBytes = vertexData.SizeInBytes
+                                                      },
+                                                      vertexData.Cast<byte>());
 
-                    IndexBuffer = new GorgonIndexBuffer("SphereIndexBuffer",
-                                                        graphics,
-                                                        new GorgonIndexBufferInfo
-                                                        {
-                                                            Usage = ResourceUsage.Immutable,
-                                                            Use16BitIndices = false,
-                                                            IndexCount = IndexCount
-                                                        },
-                                                        indexData);
-                }
+                IndexBuffer = new GorgonIndexBuffer(graphics,
+                                                    new GorgonIndexBufferInfo("SphereIndexBuffer")
+                                                    {
+                                                        Usage = ResourceUsage.Immutable,
+                                                        Use16BitIndices = false,
+                                                        IndexCount = IndexCount
+                                                    },
+                                                    indexData);
             }
         }
         #endregion

@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Graphics.Core;
 using Gorgon.Native;
@@ -41,7 +42,7 @@ namespace Gorgon.Graphics.Example
 		/// <summary>
 		/// Size of the vertex, in bytes.
 		/// </summary>
-		public static readonly int Size = DirectAccess.SizeOf<Vertex3D>();
+		public static readonly int Size = Unsafe.SizeOf<Vertex3D>();
 
 		/// <summary>
 		/// The position of the vertex.

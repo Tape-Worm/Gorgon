@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System;
 using Gorgon.Math;
 using DX = SharpDX;
 
@@ -33,6 +34,7 @@ namespace Gorgon.Graphics.Example
 	/// A light to shine on our sad primitives
 	/// </summary>
 	internal class Light
+        : IEquatable<Light>
     {
         #region Variables.
         // The diffuse color of the light.
@@ -83,7 +85,7 @@ namespace Gorgon.Graphics.Example
             get => _lightColor;
             set
             {
-                if (GorgonColor.Equals(ref value, ref _lightColor))
+                if (GorgonColor.Equals(in value, in _lightColor))
                 {
                     return;
                 }
@@ -101,7 +103,7 @@ namespace Gorgon.Graphics.Example
             get => _specularColor;
             set
             {
-                if (GorgonColor.Equals(ref value, ref _specularColor))
+                if (GorgonColor.Equals(in value, in _specularColor))
                 {
                     return;
                 }
@@ -148,6 +150,32 @@ namespace Gorgon.Graphics.Example
         }
         #endregion
 
+        #region Methods.
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns><see langword="true" /> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <see langword="false" />.</returns>
+        public bool Equals(Light other)
+        {
+            if (other == null)
+            {
+                return false;
+            }
+
+            if (other == this)
+            {
+                return true;
+            }
+
+            return ((_attenuation.EqualsEpsilon(other._attenuation))
+                    && (_specularPower.EqualsEpsilon(other._specularPower))
+                    && (_lightColor.Equals(in other._lightColor))
+                    && (_specularColor.Equals(in other._specularColor))
+                    && (_position.Equals(ref other._position)));
+        }
+        #endregion
+
 		#region Constructor.
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Camera"/> class.
@@ -160,6 +188,6 @@ namespace Gorgon.Graphics.Example
 		    _specularColor = GorgonColor.White;
 		    _specularPower = 512.0f;
 		}
-		#endregion
-	}
+        #endregion
+    }
 }

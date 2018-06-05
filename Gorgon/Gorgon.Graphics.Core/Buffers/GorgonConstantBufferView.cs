@@ -372,7 +372,7 @@ namespace Gorgon.Graphics.Core
         internal GorgonConstantBufferView(GorgonConstantBuffer buffer, int firstElement, int elementCount)
         {
             _buffer = buffer ?? throw new ArgumentNullException(nameof(buffer));
-            TotalElementCount = (int)(buffer.SizeInBytes / 256.0f).FastFloor();
+            TotalElementCount = (int)(buffer.SizeInBytes / 256.0f).FastFloor().Min(1);
             AdjustView(firstElement, elementCount);
         }
         #endregion
