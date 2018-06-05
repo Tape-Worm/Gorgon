@@ -933,7 +933,7 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The shader type &apos;{0}&apos; is not a valid type..
+        ///   Looks up a localized string similar to The shader type &apos;{0}&apos; is not valid for this operation or is not a valid shader type..
         /// </summary>
         internal static string GORGFX_ERR_SHADER_UNKNOWN_TYPE {
             get {

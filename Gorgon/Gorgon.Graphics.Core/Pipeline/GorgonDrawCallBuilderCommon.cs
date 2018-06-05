@@ -97,6 +97,12 @@ namespace Gorgon.Graphics.Core
         /// <param name="shaderType">The type of shader to update.</param>
         /// <param name="samplers">The samplers to assign.</param>
         /// <returns>The fluent interface for this builder.</returns>
+        /// <exception cref="NotSupportedException">Thrown if the <paramref name="shaderType"/> is not valid.</exception>
+        /// <remarks>
+        /// <para>
+        /// <see cref="ShaderType.Compute"/> shaders are not supported in this method will throw an exception.
+        /// </para>
+        /// </remarks>
         public TB SamplerStates(ShaderType shaderType, IReadOnlyList<GorgonSamplerState> samplers)
         {
             switch (shaderType)
@@ -116,9 +122,8 @@ namespace Gorgon.Graphics.Core
                 case ShaderType.Hull:
                     StateCopy.CopySamplers(DrawCall.D3DState.VsSamplers, samplers);
                     break;
-                case ShaderType.Compute:
-                    StateCopy.CopySamplers(DrawCall.D3DState.CsSamplers, samplers);
-                    break;
+                default:
+                    throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_SHADER_UNKNOWN_TYPE, shaderType));
             }
             
             return (TB)this;
@@ -130,7 +135,12 @@ namespace Gorgon.Graphics.Core
         /// <param name="shaderType">The type of shader to update.</param>
         /// <param name="sampler">The sampler to assign.</param>
         /// <param name="index">[Optional] The index of the sampler.</param>
-        /// <returns>The fluent interface for this builder.</returns>
+        /// <exception cref="NotSupportedException">Thrown if the <paramref name="shaderType"/> is not valid.</exception>
+        /// <remarks>
+        /// <para>
+        /// <see cref="ShaderType.Compute"/> shaders are not supported in this method will throw an exception.
+        /// </para>
+        /// </remarks>
         public TB SamplerState(ShaderType shaderType, GorgonSamplerStateBuilder sampler, int index = 0)
         {
             return SamplerState(shaderType, sampler.Build(), index);
@@ -144,6 +154,12 @@ namespace Gorgon.Graphics.Core
         /// <param name="index">[Optional] The index of the sampler.</param>
         /// <returns>The fluent interface for this builder.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="index"/> parameter is less than 0, or greater than/equal to <see cref="GorgonSamplerStates.MaximumSamplerStateCount"/>.</exception>
+        /// <exception cref="NotSupportedException">Thrown if the <paramref name="shaderType"/> is not valid.</exception>
+        /// <remarks>
+        /// <para>
+        /// <see cref="ShaderType.Compute"/> shaders are not supported in this method will throw an exception.
+        /// </para>
+        /// </remarks>
         public TB SamplerState(ShaderType shaderType, GorgonSamplerState sampler, int index = 0)
         {
             if ((index < 0) || (index >= GorgonSamplerStates.MaximumSamplerStateCount))
@@ -168,9 +184,8 @@ namespace Gorgon.Graphics.Core
                 case ShaderType.Hull:
                     DrawCall.D3DState.HsSamplers[index] = sampler;
                     break;
-                case ShaderType.Compute:
-                    DrawCall.D3DState.CsSamplers[index] = sampler;
-                    break;
+                default:
+                    throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_SHADER_UNKNOWN_TYPE, shaderType));
             }
 
             return (TB)this;
@@ -299,6 +314,12 @@ namespace Gorgon.Graphics.Core
         /// <param name="slot">The slot for the constant buffer.</param>
         /// <returns>The fluent builder interface.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="slot"/> is less than 0, or greater than/equal to <see cref="GorgonConstantBuffers.MaximumConstantBufferCount"/>.</exception>
+        /// <exception cref="NotSupportedException">Thrown if the <paramref name="shaderType"/> is not valid.</exception>
+        /// <remarks>
+        /// <para>
+        /// <see cref="ShaderType.Compute"/> shaders are not supported in this method will throw an exception.
+        /// </para>
+        /// </remarks>
         public TB ConstantBuffer(ShaderType shaderType, GorgonConstantBufferView constantBuffer, int slot = 0)
         {
             if ((slot < 0) || (slot >= GorgonConstantBuffers.MaximumConstantBufferCount))
@@ -323,9 +344,8 @@ namespace Gorgon.Graphics.Core
                 case ShaderType.Hull:
                     DrawCall.D3DState.HsConstantBuffers[slot] = constantBuffer;
                     break;
-                case ShaderType.Compute:
-                    DrawCall.D3DState.CsConstantBuffers[slot] = constantBuffer;
-                    break;
+                default:
+                    throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_SHADER_UNKNOWN_TYPE, shaderType));
             }
 
             return (TB)this;
@@ -339,6 +359,12 @@ namespace Gorgon.Graphics.Core
         /// <param name="startSlot">[Optional] The starting slot to use when copying the list.</param>
         /// <returns>The fluent builder interface.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="startSlot"/> is less than 0, or greater than/equal to <see cref="GorgonConstantBuffers.MaximumConstantBufferCount"/>.</exception>
+        /// <exception cref="NotSupportedException">Thrown if the <paramref name="shaderType"/> is not valid.</exception>
+        /// <remarks>
+        /// <para>
+        /// <see cref="ShaderType.Compute"/> shaders are not supported in this method will throw an exception.
+        /// </para>
+        /// </remarks>
         public TB ConstantBuffers(ShaderType shaderType, IReadOnlyList<GorgonConstantBufferView> constantBuffers, int startSlot = 0)
         {
             if ((startSlot < 0) || (startSlot >= GorgonConstantBuffers.MaximumConstantBufferCount))
@@ -363,9 +389,8 @@ namespace Gorgon.Graphics.Core
                 case ShaderType.Hull:
                     StateCopy.CopyConstantBuffers(DrawCall.D3DState.HsConstantBuffers, constantBuffers, startSlot);
                     break;
-                case ShaderType.Compute:
-                    StateCopy.CopyConstantBuffers(DrawCall.D3DState.CsConstantBuffers, constantBuffers, startSlot);
-                    break;
+                default:
+                    throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_SHADER_UNKNOWN_TYPE, shaderType));
             }
 
             return (TB)this;
@@ -379,6 +404,12 @@ namespace Gorgon.Graphics.Core
         /// <param name="slot">[Optional] The slot used to asign the view.</param>
         /// <returns>The fluent builder interface.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="slot"/> is less than 0, or greater than/equal to <see cref="GorgonShaderResourceViews.MaximumShaderResourceViewCount"/>.</exception>
+        /// <exception cref="NotSupportedException">Thrown if the <paramref name="shaderType"/> is not valid.</exception>
+        /// <remarks>
+        /// <para>
+        /// <see cref="ShaderType.Compute"/> shaders are not supported in this method will throw an exception.
+        /// </para>
+        /// </remarks>
         public TB ShaderResource(ShaderType shaderType, GorgonShaderResourceView resourceView, int slot = 0)
         {
             if ((slot < 0) || (slot >= GorgonShaderResourceViews.MaximumShaderResourceViewCount))
@@ -403,9 +434,8 @@ namespace Gorgon.Graphics.Core
                 case ShaderType.Hull:
                     DrawCall.D3DState.HsSrvs[slot] = resourceView;
                     break;
-                case ShaderType.Compute:
-                    DrawCall.D3DState.CsSrvs[slot] = resourceView;
-                    break;
+                default:
+                    throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_SHADER_UNKNOWN_TYPE, shaderType));
             }
 
             return (TB)this;
@@ -419,6 +449,12 @@ namespace Gorgon.Graphics.Core
         /// <param name="startSlot">[Optional] The starting slot to use when copying the list.</param>
         /// <returns>The fluent builder interface .</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="startSlot"/> is less than 0, or greater than/equal to <see cref="GorgonShaderResourceViews.MaximumShaderResourceViewCount"/>.</exception>
+        /// <exception cref="NotSupportedException">Thrown if the <paramref name="shaderType"/> is not valid.</exception>
+        /// <remarks>
+        /// <para>
+        /// <see cref="ShaderType.Compute"/> shaders are not supported in this method will throw an exception.
+        /// </para>
+        /// </remarks>
         public TB ShaderResources(ShaderType shaderType, IReadOnlyList<GorgonShaderResourceView> resourceViews, int startSlot = 0)
         {
             if ((startSlot < 0) || (startSlot >= GorgonShaderResourceViews.MaximumShaderResourceViewCount))
@@ -443,9 +479,8 @@ namespace Gorgon.Graphics.Core
                 case ShaderType.Hull:
                     StateCopy.CopySrvs(DrawCall.D3DState.HsSrvs, resourceViews, startSlot);
                     break;
-                case ShaderType.Compute:
-                    StateCopy.CopySrvs(DrawCall.D3DState.CsSrvs, resourceViews, startSlot);
-                    break;
+                default:
+                    throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_SHADER_UNKNOWN_TYPE, shaderType));
             }
 
             return (TB)this;

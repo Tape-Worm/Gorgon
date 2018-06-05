@@ -183,7 +183,7 @@ The structure size must be greater than 0 and no greater than 2048 bytes.</value
     <value>Multisampling count: {0}, quality: {1}.</value>
   </data>
   <data name="GORGFX_ERR_SHADER_UNKNOWN_TYPE" xml:space="preserve">
-    <value>The shader type '{0}' is not a valid type.</value>
+    <value>The shader type '{0}' is not valid for this operation or is not a valid shader type.</value>
   </data>
   <data name="GORGFX_ERR_CATASTROPHIC" xml:space="preserve">
     <value>There was a catastrophic error in Gorgon.

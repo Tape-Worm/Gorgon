@@ -53,7 +53,6 @@ namespace Gorgon.Graphics.Core
 	/// <seealso cref="GorgonStreamOutCall"/>
 	public class GorgonPipelineState
 	{
-	    private GorgonRasterState _rasterState;
 	    #region Properties.
 		/// <summary>
 		/// Property to return the Direct 3D 11 raster state.
@@ -148,24 +147,12 @@ namespace Gorgon.Graphics.Core
 	    }
 
 	    /// <summary>
-	    /// Property to return the compute shader.
-	    /// </summary>
-	    public GorgonComputeShader ComputeShader
-	    {
-	        get;
-	        internal set;
-	    }
-
-	    /// <summary>
 	    /// Property to return the rasterizer state for the pipeline.
 	    /// </summary>
 	    public GorgonRasterState RasterState
 	    {
-	        get => _rasterState;
-	        internal set
-	        {
-	            _rasterState = value;
-	        }
+	        get;
+	        internal set;
 	    }
 
 	    /// <summary>
@@ -333,7 +320,6 @@ namespace Gorgon.Graphics.Core
 	        pipelineState.GeometryShader = GeometryShader;
 	        pipelineState.DomainShader = DomainShader;
 	        pipelineState.HullShader = HullShader;
-	        pipelineState.ComputeShader = ComputeShader;
 	        pipelineState.PrimitiveType = PrimitiveType;
             RwBlendStates.CopyTo(pipelineState.RwBlendStates);
 	    }
@@ -352,7 +338,6 @@ namespace Gorgon.Graphics.Core
             GeometryShader = null;
             DomainShader = null;
             HullShader = null;
-            ComputeShader = null;
             PrimitiveType = PrimitiveType.TriangleList;
             RwBlendStates.Clear();
         }
@@ -374,7 +359,6 @@ namespace Gorgon.Graphics.Core
             GeometryShader = state.GeometryShader;
             DomainShader = state.DomainShader;
             HullShader = state.HullShader;
-            ComputeShader = state.ComputeShader;
             PrimitiveType = state.PrimitiveType;
             state.RwBlendStates.CopyTo(RwBlendStates);
         }

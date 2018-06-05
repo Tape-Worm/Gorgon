@@ -175,18 +175,6 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Function to set the current compute shader on the pipeline.
-        /// </summary>
-        /// <param name="computeShader">The compute shader to assign.</param>
-        /// <returns>The fluent interface for this builder.</returns>
-        public GorgonPipelineStateBuilder ComputeShader(GorgonComputeShader computeShader)
-        {
-            _workState.ComputeShader = computeShader;
-            return this;
-        }
-
-
-        /// <summary>
         /// Function to set primitive topology for the draw call.
         /// </summary>
         /// <param name="primitiveType">The type of primitive to render.</param>
@@ -293,7 +281,6 @@ namespace Gorgon.Graphics.Core
             _workState.GeometryShader = pipeState.GeometryShader;
             _workState.DomainShader = pipeState.DomainShader;
             _workState.HullShader = pipeState.HullShader;
-            _workState.ComputeShader = pipeState.ComputeShader;
             _workState.PrimitiveType = pipeState.PrimitiveType;
             _workState.IsIndependentBlendingEnabled = pipeState.IsIndependentBlendingEnabled;
             _workState.IsAlphaToCoverageEnabled = pipeState.IsAlphaToCoverageEnabled;

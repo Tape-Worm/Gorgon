@@ -444,6 +444,15 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
+        /// Property to set or return the current compute shader.
+        /// </summary>
+        public GorgonComputeShader ComputeShader
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Property to return the current input layout.
         /// </summary>
         public GorgonInputLayout InputLayout => VertexBuffers?.InputLayout;

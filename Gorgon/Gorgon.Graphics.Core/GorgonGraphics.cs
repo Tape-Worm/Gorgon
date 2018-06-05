@@ -1026,11 +1026,6 @@ namespace Gorgon.Graphics.Core
             {
                 D3DDeviceContext.HullShader.Set(currentState.HullShader?.NativeShader);
             }
-
-            if ((changes & DrawCallChanges.ComputeShader) == DrawCallChanges.ComputeShader)
-            {
-                D3DDeviceContext.ComputeShader.Set(currentState.ComputeShader?.NativeShader);
-            }
         }
 
         /// <summary>
@@ -1097,11 +1092,6 @@ namespace Gorgon.Graphics.Core
             if (ChangeBuilder(lastState.HullShader == currentState.HullShader, DrawCallChanges.HullShader, ref changes))
             {
                 _lastState.PipelineState.HullShader = currentState.HullShader;
-            }
-
-            if (ChangeBuilder(lastState.ComputeShader == currentState.ComputeShader, DrawCallChanges.ComputeShader, ref changes))
-            {
-                _lastState.PipelineState.ComputeShader = currentState.ComputeShader;
             }
 
             return changes;
@@ -1617,8 +1607,9 @@ namespace Gorgon.Graphics.Core
                 }
             }
 
+            // TODO: Need to provide a separate system for compute.
             // Check compute shader resources if we have or had a compute shader assigned.
-            if ((currentState.PipelineState.ComputeShader == null)
+            /*if ((currentState.PipelineState.ComputeShader == null)
                 && ((pipelineChanges & DrawCallChanges.ComputeShader) != DrawCallChanges.ComputeShader))
             {
                 return changes;
@@ -1650,7 +1641,7 @@ namespace Gorgon.Graphics.Core
                 return changes;
             }
 
-            _lastState.CsSrvs = currentState.CsSrvs;
+            _lastState.CsSrvs = currentState.CsSrvs;*/
 
             return changes;
         }
@@ -2113,11 +2104,6 @@ namespace Gorgon.Graphics.Core
                     if (cachedState.HullShader == newState.HullShader)
                     {
                         inheritedState |= DrawCallChanges.HullShader;
-                    }
-
-                    if (cachedState.ComputeShader == newState.ComputeShader)
-                    {
-                        inheritedState |= DrawCallChanges.PixelShader;
                     }
 
                     if (cachedState.RasterState.Equals(newState.RasterState))
