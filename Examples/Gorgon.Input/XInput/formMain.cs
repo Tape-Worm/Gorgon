@@ -59,7 +59,7 @@ namespace Gorgon.Examples
 	/// To activate the spray can effect press the trigger.  The harder it's pushed, the darker the color and the quicker 
 	/// the trigger is pushed, the thicker the spray.  Use the secondary directional stick to spray in a given direction.  
 	/// </remarks>
-	public partial class formMain : Form
+	public partial class FormMain : Form
 	{
 		#region Variables.
 		// Our XInput driver.
@@ -423,9 +423,9 @@ namespace Gorgon.Examples
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="formMain" /> class.
+		/// Initializes a new instance of the <see cref="FormMain" /> class.
 		/// </summary>
-		public formMain()
+		public FormMain()
 		{
 			InitializeComponent();
 		}

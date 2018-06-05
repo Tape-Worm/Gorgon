@@ -337,8 +337,9 @@ namespace Gorgon.Graphics.Core
 	    /// <param name="initialData">The initial data used to populate the buffer.</param>
 	    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, <paramref name="info"/> or the <paramref name="initialData"/> parameters are <b>null</b>.</exception>
 	    public GorgonIndexBuffer(GorgonGraphics graphics, IGorgonIndexBufferInfo info, GorgonNativeBuffer<byte> initialData)
-	        : this(graphics, info)
+	        : base(graphics)
 	    {
+	        _info = new GorgonIndexBufferInfo(info ?? throw new ArgumentNullException(nameof(info)));
 	        Initialize(initialData ?? throw new ArgumentNullException(nameof(initialData)));
 	    }
 
@@ -350,8 +351,9 @@ namespace Gorgon.Graphics.Core
 	    /// <param name="initialData">The initial data used to populate the buffer.</param>
 	    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, <paramref name="info"/> or the <paramref name="initialData"/> parameters are <b>null</b>.</exception>
 	    public GorgonIndexBuffer(GorgonGraphics graphics, IGorgonIndexBufferInfo info, GorgonNativeBuffer<ushort> initialData)
-	        : this(graphics, info)
+	        : base(graphics)
 	    {
+	        _info = new GorgonIndexBufferInfo(info ?? throw new ArgumentNullException(nameof(info)));
 	        Initialize(initialData ?? throw new ArgumentNullException(nameof(initialData)));
 	    }
 
@@ -363,8 +365,9 @@ namespace Gorgon.Graphics.Core
 	    /// <param name="initialData">The initial data used to populate the buffer.</param>
 	    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, <paramref name="info"/> or the <paramref name="initialData"/> parameters are <b>null</b>.</exception>
 	    public GorgonIndexBuffer(GorgonGraphics graphics, IGorgonIndexBufferInfo info, GorgonNativeBuffer<short> initialData = null)
-	        : this(graphics, info)
+	        : base(graphics)
 	    {
+	        _info = new GorgonIndexBufferInfo(info ?? throw new ArgumentNullException(nameof(info)));
 	        Initialize(initialData ?? throw new ArgumentNullException(nameof(initialData)));
 	    }
 
@@ -376,8 +379,9 @@ namespace Gorgon.Graphics.Core
 	    /// <param name="initialData">The initial data used to populate the buffer.</param>
 	    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, <paramref name="info"/> or the <paramref name="initialData"/> parameters are <b>null</b>.</exception>
 	    public GorgonIndexBuffer(GorgonGraphics graphics, IGorgonIndexBufferInfo info, GorgonNativeBuffer<uint> initialData = null)
-	        : this(graphics, info)
+	        : base(graphics)
 	    {
+	        _info = new GorgonIndexBufferInfo(info ?? throw new ArgumentNullException(nameof(info)));
 	        Initialize(initialData ?? throw new ArgumentNullException(nameof(initialData)));
 	    }
 
@@ -389,8 +393,9 @@ namespace Gorgon.Graphics.Core
 	    /// <param name="initialData">The initial data used to populate the buffer.</param>
 	    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, <paramref name="info"/> or the <paramref name="initialData"/> parameters are <b>null</b>.</exception>
 	    public GorgonIndexBuffer(GorgonGraphics graphics, IGorgonIndexBufferInfo info, GorgonNativeBuffer<int> initialData = null)
-	        : this(graphics, info)
+	        : base(graphics)
 	    {
+	        _info = new GorgonIndexBufferInfo(info ?? throw new ArgumentNullException(nameof(info)));
 	        Initialize(initialData ?? throw new ArgumentNullException(nameof(initialData)));
 	    }
 		#endregion

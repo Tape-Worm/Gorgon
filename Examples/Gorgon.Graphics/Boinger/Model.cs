@@ -80,7 +80,7 @@ namespace Gorgon.Graphics.Example
 		/// <summary>
 		/// Property to set or return the indices for our object.
 		/// </summary>
-		protected int[] Indices
+		protected ushort[] Indices
 		{
 			get;
 			set;
@@ -103,10 +103,17 @@ namespace Gorgon.Graphics.Example
 			get;
 		}
 
-		/// <summary>
-		/// Property to return the world matrix.
-		/// </summary>
-		public DX.Matrix WorldMatrix => _worldMatrix;
+	    /// <summary>
+	    /// Property to return the world matrix for this model.
+	    /// </summary>
+	    public ref DX.Matrix WorldMatrix
+	    {
+	        get
+	        {
+	            UpdateTransform();
+	            return ref _worldMatrix;
+	        }
+	    }
 
 		/// <summary>
 		/// Property to set or return the material used on the model.
@@ -176,7 +183,7 @@ namespace Gorgon.Graphics.Example
 		/// <summary>
 		/// Function to update the transformation matrix of the plane.
 		/// </summary>
-		private void UpdateTransform()
+		public void UpdateTransform()
 		{
 			// Don't recalculate unless we have changes.
 			if ((!_isPositionChanged) && (!_isScaleChanged) && (!_isRotationChanged))
@@ -211,17 +218,7 @@ namespace Gorgon.Graphics.Example
 			DX.Matrix.Multiply(ref temp, ref _positionMatrix, out _worldMatrix);
 		}
 
-		/// <summary>
-		/// Property to return the world matrix for this model.
-		/// </summary>
-		/// <param name="worldMatrix">The world matrix from the model.</param>
-		public void GetWorldMatrix(out DX.Matrix worldMatrix)
-		{
-			UpdateTransform();
-			worldMatrix = _worldMatrix;
-		}
-
-		/// <summary>
+	    /// <summary>
 		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
 		/// </summary>
 		/// <exception cref="System.NotImplementedException"></exception>

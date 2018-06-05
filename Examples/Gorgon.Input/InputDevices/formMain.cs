@@ -85,7 +85,7 @@ namespace Gorgon.Examples
 	/// of the window message loop. This has the effect if retrieving the relative mouse position every time (and resetting it). 
 	/// And because of this, the amount of relative movement will appear smaller.
 	/// </remarks>
-	public partial class formMain : Form
+	public partial class FormMain : Form
 	{
 		#region Variables.
 		// The spray effect.
@@ -313,7 +313,7 @@ namespace Gorgon.Examples
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
 		/// <exception cref="System.NotSupportedException"></exception>
-		private void panelDisplay_Resize(object sender, EventArgs e)
+		private void PanelDisplay_Resize(object sender, EventArgs e)
 		{
 			if (WindowState == FormWindowState.Minimized)
 			{
@@ -415,7 +415,7 @@ namespace Gorgon.Examples
 
 				// When the display area changes size, update the spray effect
 				// and limit the mouse.
-				panelDisplay.Resize += panelDisplay_Resize;
+				panelDisplay.Resize += PanelDisplay_Resize;
 
 				// Set up our spray object.
 				_spray = new Spray(panelDisplay.ClientSize);
@@ -502,9 +502,9 @@ namespace Gorgon.Examples
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="formMain" /> class.
+		/// Initializes a new instance of the <see cref="FormMain" /> class.
 		/// </summary>
-		public formMain()
+		public FormMain()
 		{
 			InitializeComponent();
 		}

@@ -3,7 +3,7 @@ using System.Windows.Forms;
 
 namespace Gorgon.Examples
 {
-	partial class formMain
+	partial class FormMain
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -31,7 +31,7 @@ namespace Gorgon.Examples
 		/// </summary>
 		private void InitializeComponent()
 		{
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(formMain));
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
 			this.panelDisplay = new System.Windows.Forms.Panel();
 			this.labelMessage = new System.Windows.Forms.Label();
 			this.panelControllers = new System.Windows.Forms.Panel();

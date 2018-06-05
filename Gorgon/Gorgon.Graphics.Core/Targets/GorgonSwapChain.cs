@@ -573,7 +573,11 @@ namespace Gorgon.Graphics.Core
             GorgonDepthStencil2DView dsv = null;
             if (Graphics.DepthStencilView != null)
             {
-                dsv = ((_info.Width == Graphics.DepthStencilView.Width) && (_info.Height == Graphics.DepthStencilView.Height))
+                dsv = ((_info.Width == Graphics.DepthStencilView.Width) 
+                       && (_info.Height == Graphics.DepthStencilView.Height) 
+                       && (Graphics.DepthStencilView.ArrayCount == 1) 
+                       && (Graphics.DepthStencilView.ArrayIndex == 0)
+                       && (Graphics.DepthStencilView.MultisampleInfo == GorgonMultisampleInfo.NoMultiSampling))
                           ? Graphics.DepthStencilView
                           : null;
 

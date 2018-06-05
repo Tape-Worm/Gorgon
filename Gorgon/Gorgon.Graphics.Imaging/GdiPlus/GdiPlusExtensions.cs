@@ -50,14 +50,13 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
 	        unsafe
 	        {
 	            int* pixels = (int*)bitmapLock.Scan0.ToPointer();
-	            int destStride = buffer.PitchInformation.RowPitch / destBufferSize;
 
 	            for (int y = 0; y < bitmapLock.Height; y++)
 	            {
 	                // We only need the width here, as our pointer will handle the stride by virtue of being an int.
 	                int* offset = pixels + (y * bitmapLock.Width);
 
-	                int destOffset = y * destStride;
+	                int destOffset = y * buffer.PitchInformation.RowPitch;
 	                for (int x = 0; x < bitmapLock.Width; x++)
 	                {
 	                    // The DXGI format nomenclature is a little confusing as we tend to think of the layout as being highest to 
@@ -66,9 +65,10 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
 	                    // (R at byte 0) to the highest byte (A at byte 3).
 	                    // Thus, R is the lowest byte, and A is the highest: A(24), B(16), G(8), R(0).
 	                    GorgonColor color = new GorgonColor(*offset);
-	                    ref int valueRef = ref buffer.Data.ReadAs<int>(destOffset++);
-                        valueRef = color.ToABGR();
+	                    int* destBuffer = (int *)(Unsafe.AsPointer(ref buffer.Data[destOffset]));
+	                    *destBuffer = color.ToABGR();
 	                    offset++;
+	                    destOffset += 4;
                     }
 	            }
 	        }
@@ -85,14 +85,13 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
 	        unsafe
 	        {
 	            byte* pixels = (byte*)bitmapLock.Scan0.ToPointer();
-	            int destStride = buffer.PitchInformation.RowPitch / destBufferSize;
 
 	            for (int y = 0; y < bitmapLock.Height; y++)
 	            {
 	                // We only need the width here, as our pointer will handle the stride by virtue of being an int.
 	                byte* offset = pixels + (y * bitmapLock.Stride);
 
-	                int destOffset = y * destStride;
+	                int destOffset = y * buffer.PitchInformation.RowPitch;
 	                for (int x = 0; x < bitmapLock.Width; x++)
 	                {
 	                    // The DXGI format nomenclature is a little confusing as we tend to think of the layout as being highest to 
@@ -105,8 +104,9 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
 	                    byte r = *offset++;
 
 	                    var color = new GorgonColor(r / 255.0f, g / 255.0f, b / 255.0f, 1.0f);
-	                    ref int valueRef = ref buffer.Data.ReadAs<int>(destOffset++);
-	                    valueRef = color.ToABGR();
+	                    int* destBuffer = (int *)(Unsafe.AsPointer(ref buffer.Data[destOffset]));
+	                    *destBuffer = color.ToABGR();
+	                    destOffset += 4;
 	                }
 	            }
 	        }

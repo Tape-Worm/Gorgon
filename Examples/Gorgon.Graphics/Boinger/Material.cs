@@ -45,7 +45,7 @@ namespace Gorgon.Graphics.Example
 		/// <summary>
 		/// Property to set or return the texture for the model.
 		/// </summary>
-		public GorgonTextureView Texture
+		public GorgonTexture2DView Texture
 		{
 			get;
 			set;
