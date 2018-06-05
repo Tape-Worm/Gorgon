@@ -348,18 +348,18 @@ namespace Gorgon.Examples
 		/// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
 		protected override void OnLoad(EventArgs e)
 		{
-			GorgonPluginAssemblyCache assemblies = null;
+			GorgonMefPluginCache assemblies = null;
 
 			base.OnLoad(e);
 
 			try
 			{
 				// Create the assembly cache.
-				assemblies = new GorgonPluginAssemblyCache(GorgonApplication.Log);
-				assemblies.Load(Program.PlugInPath + "Gorgon.Input.XInput.dll");
+				assemblies = new GorgonMefPluginCache(GorgonApplication.Log);
+				assemblies.LoadPluginAssemblies(Program.PlugInPath, "Gorgon.Input.XInput.dll");
 
 				// Create the plug services.
-				GorgonPluginService pluginService = new GorgonPluginService(assemblies, GorgonApplication.Log);
+				IGorgonPluginService pluginService = new GorgonMefPluginService(assemblies, GorgonApplication.Log);
 
 				// Create the gaming device driver factory.
 				GorgonGamingDeviceDriverFactory factory = new GorgonGamingDeviceDriverFactory(pluginService, GorgonApplication.Log);

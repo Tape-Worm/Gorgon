@@ -331,17 +331,6 @@ namespace Gorgon.Native
 		private static extern int GetRegisteredRawInputDevices(IntPtr pRawInputDevices, ref uint puiNumDevices, uint cbSize);
 
 		/// <summary>
-		/// Function to perform a buffered read of raw input data.
-		/// </summary>
-		/// <param name="pData">Raw input data structures.</param>
-		/// <param name="pcbSize">Size of the raw input structure.</param>
-		/// <param name="cbSizeHeader">Size of the raw input header value.</param>
-		/// <returns>0 if successful, -1 if not.</returns>
-		[DllImport("user32.dll")]
-		private static extern unsafe int GetRawInputBuffer(RAWINPUT* pData, int* pcbSize, int cbSizeHeader);
-
-
-		/// <summary>
 		/// Function to retrieve the preparsed HID data for a given device.
 		/// </summary>
 		/// <param name="deviceHandle">The handle to the device.</param>
@@ -375,45 +364,6 @@ namespace Gorgon.Native
 
 		    win32Error = Marshal.GetLastWin32Error();
 			throw new Win32Exception(string.Format(Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA, win32Error));
-		}
-
-		/// <summary>
-		/// Function to perform a buffered read of raw input data.
-		/// </summary>
-		/// <returns>An array of raw input data structures.</returns>
-		public static RAWINPUT[] GetBufferedInput()
-		{
-		    int headerSize = Unsafe.SizeOf<RAWINPUTHEADER>();
-			int rawInputSize = Unsafe.SizeOf<RAWINPUT>();
-            int bufferSize = 0;
-
-			unsafe
-			{
-				if (GetRawInputBuffer(null, &bufferSize, headerSize) == -1)
-				{
-					throw new Win32Exception(Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA);
-				}
-
-				if (bufferSize == 0)
-				{
-					return new RAWINPUT[0];
-				}
-
-				int resultLength = (bufferSize / rawInputSize);
-				bufferSize *= 8;
-
-			    RAWINPUT[] result = ArrayPool<RAWINPUT>.Shared.Rent(resultLength);
-
-                fixed(RAWINPUT *resultPtr = &result[0])
-				{
-					if (GetRawInputBuffer(resultPtr, &bufferSize, headerSize) == -1)
-					{
-						throw new Win32Exception(Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA);
-					}
-
-				    return result;
-				}
-			}
 		}
 
 		/// <summary>
@@ -524,16 +474,23 @@ namespace Gorgon.Native
 
 		        RAWINPUTDEVICELIST[] deviceList = ArrayPool<RAWINPUTDEVICELIST>.Shared.Rent(deviceCount);
 
-		        fixed (RAWINPUTDEVICELIST* deviceListPtr = &deviceList[0])
+		        try
 		        {
-		            if (GetRawInputDeviceList(deviceListPtr, ref deviceCount, structSize) < 0)
+		            fixed (RAWINPUTDEVICELIST* deviceListPtr = &deviceList[0])
 		            {
-		                int win32Error = Marshal.GetLastWin32Error();
-		                throw new Win32Exception(string.Format(Resources.GORINP_RAW_ERR_CANNOT_ENUMERATE_WIN32_ERR, win32Error));
+		                if (GetRawInputDeviceList(deviceListPtr, ref deviceCount, structSize) < 0)
+		                {
+		                    int win32Error = Marshal.GetLastWin32Error();
+		                    throw new Win32Exception(string.Format(Resources.GORINP_RAW_ERR_CANNOT_ENUMERATE_WIN32_ERR, win32Error));
+		                }
 		            }
-		        }
 
-		        return deviceList.Where(item => item.DeviceType == deviceType).ToArray();
+		            return deviceList.Where(item => item.Device != IntPtr.Zero && item.DeviceType == deviceType).ToArray();
+		        }
+		        finally
+		        {
+                    ArrayPool<RAWINPUTDEVICELIST>.Shared.Return(deviceList);
+		        }
 		    }
 		}
 

@@ -129,16 +129,14 @@ namespace Gorgon.Input
 			string className = RawInputDeviceRegistryInfo.GetDeviceClass(deviceName, _log);
 			string deviceDescription = RawInputDeviceRegistryInfo.GetDeviceDescription(deviceName, _log);
 
-			RID_DEVICE_INFO rawDeviceInfo = RawInputApi.GetDeviceInfo(ref device);
-
 			switch (deviceInfo.dwType)
 			{
 				case RawInputType.Keyboard:
-					return new RawKeyboardInfo(device.Device, deviceName, className, deviceDescription, rawDeviceInfo.keyboard) as T;
+					return new RawKeyboardInfo(device.Device, deviceName, className, deviceDescription, deviceInfo.keyboard) as T;
 				case RawInputType.Mouse:
-					return new RawMouseInfo(device.Device, deviceName, className, deviceDescription, rawDeviceInfo.mouse) as T;
+					return new RawMouseInfo(device.Device, deviceName, className, deviceDescription, deviceInfo.mouse) as T;
 				case RawInputType.HID:
-					return new GorgonRawHIDInfo(device.Device, deviceName, className, deviceDescription, rawDeviceInfo.hid) as T;
+					return new GorgonRawHIDInfo(device.Device, deviceName, className, deviceDescription, deviceInfo.hid) as T;
 				default:
 					return null;
 			}
@@ -362,7 +360,6 @@ namespace Gorgon.Input
 		/// <summary>
 		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
 		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", MessageId = "_filter")]
 		public void Dispose()
 		{
 			// Multiple threads should -not- call dispose, but just in case someone thinks they're smart...

@@ -62,13 +62,13 @@ namespace Gorgon.Input
 	/// <![CDATA[
 	/// IReadOnlyList<GorgonGamingDeviceInfo> joysticks = null;
 	/// 
-	/// using (var assemblies = new GorgonPluginAssemblyCache())
+	/// using (var assemblies = new GorgonMefPluginCache())
 	/// {
-	///		var plugInService = new GorgonPluginService(assemblies);
+	///		IGorgonPluginService plugInService = new GorgonMefPluginService(assemblies);
 	///		var factory = new GorgonGamingDeviceDriverFactory(plugInService);
 	///
 	///		// Load the assembly for the XInput driver.
-	///		assemblies.Load(".\Gorgon.Input.XInput.dll");
+	///		assemblies.LoadAssemblies(".\", "Gorgon.Input.XInput.dll");
 	/// 
 	///		// Get the correct driver from the plug ins via the factory. 
 	///		IGorgonGamingDeviceDriver driver = factory.Load("Gorgon.Input.GorgonXInputDriver");

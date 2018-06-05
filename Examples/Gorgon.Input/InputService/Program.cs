@@ -68,6 +68,11 @@ namespace Gorgon.Examples
 	/// </remarks>
 	internal static class Program
 	{
+        #region Variables.
+        // The cache that will hold our plugin instances.
+	    private static GorgonMefPluginCache _pluginCache;
+        #endregion
+
 		#region Properties.
 		/// <summary>
 		/// Property to return the path to the input plugins.
@@ -106,43 +111,28 @@ namespace Gorgon.Examples
 		private static IReadOnlyList<IGorgonGamingDeviceDriver> GetGamingDeviceDrivers()
 		{
 			// Access our plugin cache.
-			using (GorgonPluginAssemblyCache assemblies = new GorgonPluginAssemblyCache(GorgonApplication.Log))
+		    _pluginCache = new GorgonMefPluginCache(GorgonApplication.Log);
+
+			// Get the files from the plugin directory.
+			// The plugin directory can be changed in the configuration file
+			// to point at wherever you'd like.  If a {0} place holder is
+			// in the path, it will be replaced with whatever the build
+			// configuration is set to (i.e. DEBUG or RELEASE).
+			_pluginCache.LoadPluginAssemblies(PlugInPath, "Gorgon.Input.*.dll");
+
+			if (_pluginCache.PluginAssemblies.Count == 0)
 			{
-				// Get the files from the plugin directory.
-				// The plugin directory can be changed in the configuration file
-				// to point at wherever you'd like.  If a {0} place holder is
-				// in the path, it will be replaced with whatever the build
-				// configuration is set to (i.e. DEBUG or RELEASE).
-				string[] files = Directory.GetFiles(PlugInPath, "*.dll");
-
-				if (files.Length == 0)
-				{
-					return new IGorgonGamingDeviceDriver[0];
-				}
-
-				// Find our plugins in the DLLs.
-				foreach (string file in files)
-				{
-					// Ensure that the plugin assemblies have plugins, and 
-					// can be loaded as assemblies.
-					if (!assemblies.IsPluginAssembly(file))
-					{
-						continue;
-					}
-
-					// Load the assembly DLL.
-					assemblies.Load(file);
-				}
-				
-				// Create our plugin service.
-				GorgonPluginService pluginService = new GorgonPluginService(assemblies, GorgonApplication.Log);
-
-				// Create our input service factory.
-				GorgonGamingDeviceDriverFactory factory = new GorgonGamingDeviceDriverFactory(pluginService, GorgonApplication.Log);
-
-				// Retrieve the list of driver plug ins from the input service factory.
-				return factory.LoadAllDrivers();
+				return new IGorgonGamingDeviceDriver[0];
 			}
+			
+			// Create our plugin service.
+			IGorgonPluginService pluginService = new GorgonMefPluginService(_pluginCache, GorgonApplication.Log);
+
+			// Create our input service factory.
+			var factory = new GorgonGamingDeviceDriverFactory(pluginService, GorgonApplication.Log);
+
+			// Retrieve the list of driver plug ins from the input service factory.
+			return factory.LoadAllDrivers();
 		}
 
 		/// <summary>
@@ -151,80 +141,86 @@ namespace Gorgon.Examples
 		[STAThread]
 		private static void Main()
 		{
-			try
-			{
-				Console.Clear();				
-				Console.ForegroundColor = ConsoleColor.White;
-                Console.Title = "Gorgon Example - Input Services.";
+		    try
+		    {
+		        Console.Clear();
+		        Console.ForegroundColor = ConsoleColor.White;
+		        Console.Title = "Gorgon Example - Input Services.";
 
-                Console.WriteLine("In this example we will perform the first step in accessing Gorgon's gaming");
-				Console.WriteLine("device driver API. These drivers will allow access to any gaming device (e.g. a ");
-				Console.WriteLine("joystick, game pad, etc...) that is supported by its underlying native provider.");
-				Console.WriteLine("These drivers are loaded as plug ins and can be used to mix and match various");
-				Console.WriteLine("types of gaming devices.");
-				Console.WriteLine();
-				Console.WriteLine("Only connected gaming device drivers will be reported by this example.");
-				Console.WriteLine();
-				Console.WriteLine("It is important to note that this example does not create any of these devices ");
-                Console.WriteLine("since some providers (e.g. Direct Input) require a window handle to operate.");
+		        Console.WriteLine("In this example we will perform the first step in accessing Gorgon's gaming");
+		        Console.WriteLine("device driver API. These drivers will allow access to any gaming device (e.g. a ");
+		        Console.WriteLine("joystick, game pad, etc...) that is supported by its underlying native provider.");
+		        Console.WriteLine("These drivers are loaded as plug ins and can be used to mix and match various");
+		        Console.WriteLine("types of gaming devices.");
+		        Console.WriteLine();
+		        Console.WriteLine("Only connected gaming device drivers will be reported by this example.");
+		        Console.WriteLine();
+		        Console.WriteLine("It is important to note that this example does not create any of these devices ");
+		        Console.WriteLine("since some providers (e.g. Direct Input) require a window handle to operate.");
 
-                Console.WriteLine();
-				Console.WriteLine("Loading gaming device drivers...");
+		        Console.WriteLine();
+		        Console.WriteLine("Loading gaming device drivers...");
 
-				// Load our input factory plugins.
-				IReadOnlyList<IGorgonGamingDeviceDriver> inputPlugIns = GetGamingDeviceDrivers();
+		        // Load our input factory plugins.
+		        IReadOnlyList<IGorgonGamingDeviceDriver> inputPlugIns = GetGamingDeviceDrivers();
 
-                // No plugins?  No luck.
-				if (inputPlugIns.Count == 0)
-				{
-					Console.ResetColor();
-					Console.WriteLine("Could not find any gaming device driver plug ins.");
-					return;
-				}
+		        // No plugins?  No luck.
+		        if (inputPlugIns.Count == 0)
+		        {
+		            Console.ResetColor();
+		            Console.WriteLine("Could not find any gaming device driver plug ins.");
+		            return;
+		        }
 
-			    // Display the plugin information.
-			    Console.WriteLine();
-			    Console.WriteLine("{0} gaming device driver plug ins found:", inputPlugIns.Count);					
-			    foreach (IGorgonGamingDeviceDriver plugIn in inputPlugIns)
-			    {
-			        Console.ForegroundColor = ConsoleColor.Cyan;
+		        // Display the plugin information.
+		        Console.WriteLine();
+		        Console.WriteLine("{0} gaming device driver plug ins found:", inputPlugIns.Count);
+		        foreach (IGorgonGamingDeviceDriver plugIn in inputPlugIns)
+		        {
+		            Console.ForegroundColor = ConsoleColor.Cyan;
 
-			        // Enumerate the devices available on the system.
-				    try
-				    {
-					    IReadOnlyList<IGorgonGamingDeviceInfo> devices = plugIn.EnumerateGamingDevices(true);
+		            // Enumerate the devices available on the system.
+		            try
+		            {
+		                IReadOnlyList<IGorgonGamingDeviceInfo> devices = plugIn.EnumerateGamingDevices(true);
 
-						Console.WriteLine($"{plugIn.Description} ({devices.Count} device(s))");
-						Console.ForegroundColor = ConsoleColor.Gray;
-					    for (int i = 0; i < devices.Count; ++i)
-					    {
-							Console.WriteLine($"\t{i + 1}. {devices[i].Description}");						    
-					    }
-				    }
-				    catch (Exception ex)
-				    {
-					    Console.ForegroundColor = ConsoleColor.Red;
-					    Console.WriteLine("Cannot enumerate devices from {0}. Error:\n{1}", plugIn.Description, ex.Message.Ellipses(Console.WindowWidth - 4));
-				    }
-			    }
-			    Console.ResetColor();
+		                Console.WriteLine($"{plugIn.Description} ({devices.Count} device(s))");
+		                Console.ForegroundColor = ConsoleColor.Gray;
+		                for (int i = 0; i < devices.Count; ++i)
+		                {
+		                    Console.WriteLine($"\t{i + 1}. {devices[i].Description}");
+		                }
+		            }
+		            catch (Exception ex)
+		            {
+		                Console.ForegroundColor = ConsoleColor.Red;
+		                Console.WriteLine("Cannot enumerate devices from {0}. Error:\n{1}", plugIn.Description, ex.Message.Ellipses(Console.WindowWidth - 4));
+		            }
+		        }
 
-			    Console.WriteLine();
-                Console.WriteLine("Press any key...");
-				Console.ReadKey();
-			}
-			catch (Exception ex)
-			{
-				ex.Catch(_ => {
-					             Console.Clear();
-					             Console.ForegroundColor = ConsoleColor.Red;
-					             Console.WriteLine("Exception:\n{0}\n\nStack Trace:{1}", _.Message, _.StackTrace);					
-				});
-				Console.ResetColor();
+		        Console.ResetColor();
+
+		        Console.WriteLine();
+		        Console.WriteLine("Press any key...");
+		        Console.ReadKey();
+		    }
+		    catch (Exception ex)
+		    {
+		        ex.Catch(_ =>
+		                 {
+		                     Console.Clear();
+		                     Console.ForegroundColor = ConsoleColor.Red;
+		                     Console.WriteLine("Exception:\n{0}\n\nStack Trace:{1}", _.Message, _.StackTrace);
+		                 });
+		        Console.ResetColor();
 #if DEBUG
-				Console.ReadKey();
+		        Console.ReadKey();
 #endif
-			}
+		    }
+		    finally
+		    {
+                _pluginCache?.Dispose();
+		    }
 		}
 		#endregion
 	}

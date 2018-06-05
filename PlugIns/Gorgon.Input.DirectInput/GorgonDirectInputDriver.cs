@@ -41,7 +41,7 @@ namespace Gorgon.Input.DirectInput
 	/// <remarks>
 	/// This driver will enumerate all gaming devices except those covered by the XInput driver. To use those devices, use the XInput driver directly.
 	/// </remarks>
-	public sealed class GorgonDirectInputDriver
+	internal sealed class GorgonDirectInputDriver
 		: GorgonGamingDeviceDriver
 	{
 		#region Variables.
