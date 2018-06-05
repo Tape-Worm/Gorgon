@@ -35,7 +35,7 @@ namespace Gorgon.Graphics.Example
     /// This plug-in will encode/decode images as 1 pixel per channel.  This will give the image an appearance similar to the line patterns on a CRT TV screen.  Well, somewhat.
     /// </remarks>
     public class TvImageCodecPlugIn
-        : GorgonImageCodecPlugIn
+        : GorgonImageCodecPlugin
     {
 		#region Properties.
 	    /// <summary>

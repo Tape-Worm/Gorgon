@@ -45,12 +45,14 @@ namespace CodecPlugIn
     public partial class FormMain : Form
     {
 		#region Variables.
+        // The cache that holds plugin information.
+        private GorgonMefPluginCache _pluginCache;
 		// The main graphics interface.
 		private GorgonGraphics _graphics;
 		// The swap chain to use.
 	    private GorgonSwapChain _swap;
 		// Image to display, loaded from our plug-in.
-		private GorgonTexture _texture;
+		private GorgonTexture2DView _texture;
 		// The image in system memory.
 	    private IGorgonImage _image;
 		// Our custom codec loaded from the plug-in.
@@ -67,7 +69,7 @@ namespace CodecPlugIn
 			_swap.RenderTargetView.Clear(GorgonColor.White);
 
 			DX.Size2F windowSize = new DX.Size2F(ClientSize.Width, ClientSize.Height);
-			DX.Size2F imageSize = new DX.Size2F(_texture.Info.Width, _texture.Info.Height);
+			DX.Size2F imageSize = new DX.Size2F(_texture.Width, _texture.Height);
 
 			// Calculate the scale between the images.
 			DX.Size2F scale = new DX.Size2F(windowSize.Width / imageSize.Width, windowSize.Height / imageSize.Height);
@@ -88,7 +90,8 @@ namespace CodecPlugIn
 			// Find the position.
 			DX.Rectangle bounds = new DX.Rectangle((int)(windowSize.Width / 2 - size.Width / 2), (int)(windowSize.Height / 2 - size.Height / 2), size.Width, size.Height);
 
-			_graphics.DrawTexture(_texture.DefaultShaderResourceView, bounds);
+            #warning Needs fixing.
+			//_graphics.DrawTexture(_texture.DefaultShaderResourceView, bounds);
 
 			_swap.Present(1);
 
@@ -103,37 +106,23 @@ namespace CodecPlugIn
 		{
 			const string pluginName = "Gorgon.Graphics.Example.TvImageCodecPlugIn";
 
-			using (GorgonPluginAssemblyCache pluginAssemblies = new GorgonPluginAssemblyCache(GorgonApplication.Log))
+			_pluginCache = new GorgonMefPluginCache(GorgonApplication.Log);
+			
+			// Load our plug-in.
+			_pluginCache.LoadPluginAssemblies(GorgonApplication.StartupPath.FullName, "TVImageCodec.dll");
+
+			// Activate the plugin service.
+			IGorgonPluginService pluginService = new GorgonMefPluginService(_pluginCache);
+
+			// Find the plugin.
+		    GorgonImageCodecPlugin plugIn = pluginService.GetPlugin<GorgonImageCodecPlugin>(pluginName);
+
+			if (plugIn == null)
 			{
-				// Load our plug-in.
-				string plugInPath = GorgonApplication.StartupPath + "TVImageCodec.dll";
-
-				if (!File.Exists(plugInPath))
-				{
-					return false;
-				}
-
-				// Ensure that we can load this file.
-				if (!pluginAssemblies.IsPluginAssembly(plugInPath))
-				{
-					return false;
-				}
-
-				pluginAssemblies.Load(plugInPath);
-
-				// Activate the plugin service.
-				GorgonPluginService pluginService = new GorgonPluginService(pluginAssemblies);
-
-				// Find the plugin.
-				GorgonImageCodecPlugIn plugIn = pluginService.GetPlugin<GorgonImageCodecPlugIn>(pluginName);
-
-				if (plugIn == null)
-				{
-					return false;
-				}
-
-				_customCodec = plugIn.CreateCodec(pluginName);
+				return false;
 			}
+
+			_customCodec = plugIn.CreateCodec(pluginName);
 
 			return _customCodec != null;
 		}
@@ -155,7 +144,10 @@ namespace CodecPlugIn
 
 				_image = _customCodec.LoadFromFile(tempPath);
 				
-				_texture = _image.ToTexture("Converted Texture", _graphics);
+				_texture = _image.ToTexture2D(_graphics, new GorgonTextureLoadOptions
+				                                         {
+                                                             Name = "Converted Texture"
+				                                         }).GetShaderResourceView();
 				
 			}
 			catch
@@ -187,6 +179,7 @@ namespace CodecPlugIn
 	    {
 		    base.OnFormClosing(e);
 			
+            _pluginCache?.Dispose();
 			_texture?.Dispose();
 			_swap?.Dispose();
 			_graphics?.Dispose();
@@ -227,10 +220,9 @@ namespace CodecPlugIn
 
                 _graphics = new GorgonGraphics(deviceList[0]);
 
-	            _swap = new GorgonSwapChain("Codec Plugin SwapChain",
-	                                        _graphics,
+	            _swap = new GorgonSwapChain(_graphics,
 	                                        this,
-	                                        new GorgonSwapChainInfo
+	                                        new GorgonSwapChainInfo("Codec Plugin SwapChain")
 	                                        {
 		                                        Width = ClientSize.Width,
 		                                        Height = ClientSize.Height,

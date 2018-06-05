@@ -148,7 +148,7 @@ namespace Gorgon.Native
         /// </para>
         /// </remarks>
         public ref TCastType ReadAs<TCastType>(int index)
-            where TCastType : struct
+            where TCastType : unmanaged
         {
             if ((index < 0) || (index >= Length))
             {
