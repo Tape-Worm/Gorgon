@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using Gorgon.Native;
 
 namespace Gorgon.Input
 {
@@ -59,7 +60,6 @@ namespace Gorgon.Input
 		/// If the <see cref="AllowBackground"/> is set to <b>true</b>, then this value must be set.
 		/// </para>
 		/// </remarks>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2111:PointersShouldNotBeVisible", Justification = "This is necessary for Raw Input to work outside of WinForms you dolt.")]
-		public IntPtr TargetWindow;
+		public GorgonReadOnlyPointer TargetWindow;
 	}
 }

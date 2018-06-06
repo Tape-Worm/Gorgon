@@ -101,7 +101,7 @@
     <Compile Include="Devices\_Interfaces\IGorgonRawHID.cs" />
     <Compile Include="Devices\_Interfaces\IGorgonRawHIDInfo.cs" />
     <Compile Include="Devices\_Interfaces\IGorgonRawInputDevice.cs" />
-    <Compile Include="Devices\_Interfaces\IGorgonRawInputDeviceData.cs" />
+    <Compile Include="Devices\_Internal\_Interfaces\IRawInputDeviceData.cs" />
     <Compile Include="Devices\_Interfaces\IGorgonRawInputDeviceInfo.cs" />
     <Compile Include="Devices\_Internal\RawKeyboardInfo.cs" />
     <Compile Include="Devices\_Internal\RawMouseInfo.cs" />

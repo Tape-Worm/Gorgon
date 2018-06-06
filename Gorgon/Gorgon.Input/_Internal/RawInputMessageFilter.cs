@@ -85,8 +85,12 @@ namespace Gorgon.Native
 		private bool _directHook;
 		// The window handle to hook into.
 		private static IntPtr _hwnd = IntPtr.Zero;
+	    // The devices that are registered with the raw input provider.
+	    private readonly Dictionary<DeviceKey, IRawInputDeviceData<GorgonRawKeyboardData>> _keyboardDevices;
+	    // The devices that are registered with the raw input provider.
+	    private readonly Dictionary<DeviceKey, IRawInputDeviceData<GorgonRawMouseData>> _mouseDevices;
 		// The devices that are registered with the raw input provider.
-		private readonly Dictionary<DeviceKey, IGorgonRawInputDevice> _devices;
+		private readonly Dictionary<DeviceKey, IRawInputDeviceData<GorgonRawHIDData>> _hidDevices;
 		#endregion
 
 		#region Properties.
@@ -102,6 +106,60 @@ namespace Gorgon.Native
 		#endregion
 
 		#region Methods.
+        /// <summary>
+        /// Function to retrieve a raw input HID.
+        /// </summary>
+        /// <param name="key">The key for the raw input device.</param>
+        /// <param name="deviceHandle">The device handle.</param>
+        /// <returns></returns>
+	    private IRawInputDeviceData<GorgonRawHIDData> GetRawInputHid(DeviceKey key, IntPtr deviceHandle)
+	    {
+	        if (_hidDevices.TryGetValue(key, out IRawInputDeviceData<GorgonRawHIDData> result))
+	        {
+	            return result;
+	        }
+
+	        key.DeviceHandle = deviceHandle;
+
+	        return !_hidDevices.TryGetValue(key, out result) ? null : result;
+	    }
+
+	    /// <summary>
+	    /// Function to retrieve a raw input mouse.
+	    /// </summary>
+	    /// <param name="key">The key for the raw input device.</param>
+	    /// <param name="deviceHandle">The device handle.</param>
+	    /// <returns></returns>
+	    private IRawInputDeviceData<GorgonRawMouseData> GetRawInputMouseDevice(DeviceKey key, IntPtr deviceHandle)
+	    {
+	        if (_mouseDevices.TryGetValue(key, out IRawInputDeviceData<GorgonRawMouseData> result))
+	        {
+	            return result;
+	        }
+
+	        key.DeviceHandle = deviceHandle;
+
+	        return !_mouseDevices.TryGetValue(key, out result) ? null : result;
+	    }
+
+	    /// <summary>
+	    /// Function to retrieve a raw input keyboard.
+	    /// </summary>
+	    /// <param name="key">The key for the raw input device.</param>
+	    /// <param name="deviceHandle">The device handle.</param>
+	    /// <returns></returns>
+	    private IRawInputDeviceData<GorgonRawKeyboardData> GetRawInputKeyboardDevice(DeviceKey key, IntPtr deviceHandle)
+	    {
+	        if (_keyboardDevices.TryGetValue(key, out IRawInputDeviceData<GorgonRawKeyboardData> result))
+	        {
+	            return result;
+	        }
+
+	        key.DeviceHandle = deviceHandle;
+
+	        return !_keyboardDevices.TryGetValue(key, out result) ? null : result;
+	    }
+
 		/// <summary>
 		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
 		/// </summary>
@@ -193,49 +251,67 @@ namespace Gorgon.Native
 				DeviceHandle = IntPtr.Zero
 			};
 
-			// Try the system device first. If that fails, then try for the actual device that was registered.
-			if (!_devices.TryGetValue(key, out IGorgonRawInputDevice device))
-			{
-				key.DeviceHandle = data.Header.Device;
-
-				if (!_devices.TryGetValue(key, out device))
-				{
-					return false;
-				}
-			}
-
 			switch (data.Header.Type)
 			{
 				case RawInputType.Keyboard:
-					RawInputDispatcher.Dispatch(device, ref data.Union.Keyboard);
+				    IRawInputDeviceData<GorgonRawKeyboardData> keyboard = GetRawInputKeyboardDevice(key, data.Header.Device);
+                    
+				    if (keyboard == null)
+				    {
+				        return false;
+				    }
+
+					RawInputDispatcher.Dispatch(keyboard, ref data.Union.Keyboard);
 					break;
 				case RawInputType.Mouse:
-					RawInputDispatcher.Dispatch(device, ref data.Union.Mouse);
+				    IRawInputDeviceData<GorgonRawMouseData> mouse = GetRawInputMouseDevice(key, data.Header.Device);
+
+				    if (mouse == null)
+				    {
+				        return false;
+				    }
+
+					RawInputDispatcher.Dispatch(mouse, ref data.Union.Mouse);
 					break;
 				case RawInputType.HID:
-					RawInputDispatcher.Dispatch(device, ref data.Union.HID);
+				    IRawInputDeviceData<GorgonRawHIDData> hid = GetRawInputHid(key, data.Header.Device);
+
+				    if (hid == null)
+				    {
+				        return false;
+				    }
+
+					RawInputDispatcher.Dispatch(hid, ref data.Union.HID);
 					break;
 			}
 
 			return true;
 		}
+
 		#endregion
 
 		#region Constructor/Finalizer.
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RawInputMessageFilter"/> class.
 		/// </summary>
-		/// <param name="devices">The devices that are registered with the raw input provider.</param>
+		/// <param name="keyboardDevices">The keyboard devices that are registered with the raw input provider.</param>
+		/// <param name="pointingDevices">The pointing devices that are registered with the raw input provider.</param>
+		/// <param name="hidDevices">The HID devices that are registered with the raw input provider.</param>
 		/// <param name="hwnd">The window handle to the main application window.</param>
 		/// <param name="hookDirectly"><b>true</b> to hook the windows message procedure directly, or <b>false</b> to install a WinForms message filter.</param>
 		/// <exception cref="System.ComponentModel.Win32Exception">Thrown when the message hook could be applied to the window.</exception>
-		public RawInputMessageFilter(Dictionary<DeviceKey, IGorgonRawInputDevice> devices, IntPtr hwnd, bool hookDirectly)
+		public RawInputMessageFilter(
+		    Dictionary<DeviceKey, IRawInputDeviceData<GorgonRawKeyboardData>> keyboardDevices,
+		    Dictionary<DeviceKey, IRawInputDeviceData<GorgonRawMouseData>> pointingDevices,
+		    Dictionary<DeviceKey, IRawInputDeviceData<GorgonRawHIDData>> hidDevices, IntPtr hwnd, bool hookDirectly)
 		{
-			_devices = devices;
+		    _keyboardDevices = keyboardDevices;
+		    _mouseDevices = pointingDevices;
+			_hidDevices = hidDevices;
 
 			if ((Interlocked.Increment(ref _hookInstalled) == 1) && (_hwnd == IntPtr.Zero))
 			{
-				_hwnd = hwnd;
+			    _hwnd = hwnd;
 			}
 			
 			_directHook = hookDirectly;
@@ -247,7 +323,7 @@ namespace Gorgon.Native
 			}
 			else
 			{
-				MessageFilterHook.AddFilter(hwnd, this);	
+			    MessageFilterHook.AddFilter(hwnd, this);	    
 			}
 		}
 

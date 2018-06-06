@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using Gorgon.Diagnostics;
+using Gorgon.Input.Properties;
 using Gorgon.Native;
 
 namespace Gorgon.Input
@@ -95,6 +96,12 @@ namespace Gorgon.Input
 		private readonly IntPtr _applicationWindow;
 		// Flag to indicate whether the native window hook is used, or Application.AddFilter is used.
 		private readonly bool _useNativeHook;
+        // The list of human interface devices registered on the system.
+	    private readonly Dictionary<DeviceKey, IRawInputDeviceData<GorgonRawHIDData>> _hids = new Dictionary<DeviceKey, IRawInputDeviceData<GorgonRawHIDData>>();
+        // The list of keyboard devices registered on the system.
+	    private readonly Dictionary<DeviceKey, IRawInputDeviceData<GorgonRawKeyboardData>> _keyboardDevices = new Dictionary<DeviceKey, IRawInputDeviceData<GorgonRawKeyboardData>>();
+        // The list of pointing devices registered on the system.
+	    private readonly Dictionary<DeviceKey, IRawInputDeviceData<GorgonRawMouseData>> _mouseDevices = new Dictionary<DeviceKey, IRawInputDeviceData<GorgonRawMouseData>>();
 		#endregion
 
 		#region Methods.
@@ -181,7 +188,7 @@ namespace Gorgon.Input
 				// If we've not set up the filter yet, then add it to the window now.
 				if (_filter == null)
 				{
-					_filter = new RawInputMessageFilter(_devices, _applicationWindow, _useNativeHook);
+				    _filter = new RawInputMessageFilter(_keyboardDevices, _mouseDevices, _hids,_applicationWindow , _useNativeHook);
 				}
 
 				DeviceKey key = new DeviceKey
@@ -195,6 +202,21 @@ namespace Gorgon.Input
 					return;
 				}
 
+			    switch (device.DeviceType)
+			    {
+                    case RawInputType.Keyboard:
+                        _keyboardDevices.Add(key, (IRawInputDeviceData<GorgonRawKeyboardData>)device);
+                        break;
+                    case RawInputType.Mouse:
+                        _mouseDevices.Add(key, (IRawInputDeviceData<GorgonRawMouseData>)device);
+                        break;
+			        case RawInputType.HID:
+                        _hids.Add(key, (IRawInputDeviceData<GorgonRawHIDData>)device);
+			            break;
+                    default:
+                        throw new ArgumentException(string.Format(Resources.GORINP_RAW_ERR_UNKNOWN_DEVICE_TYPE, device.DeviceType), nameof(device));
+			    }
+
 				_devices.Add(key, device);
 
 				// Get the current device registration properties.
@@ -207,13 +229,16 @@ namespace Gorgon.Input
 				
 				// If we omit the target window, and specify background messages, we'll use the application window instead.
 				// This is because Raw Input requires that background devices have a window target.
-				if ((settings.Value.TargetWindow == IntPtr.Zero) && (settings.Value.AllowBackground))
+				if ((settings.Value.TargetWindow.IsNull) && (settings.Value.AllowBackground))
 				{
-					settings = new GorgonRawInputSettings
-					           {
-						           TargetWindow = _applicationWindow,
-						           AllowBackground = true
-					           };
+				    unsafe
+				    {
+				        settings = new GorgonRawInputSettings
+				                   {
+				                       TargetWindow = new GorgonReadOnlyPointer((void *)_applicationWindow, IntPtr.Size),
+				                       AllowBackground = true
+				                   };
+				    }
 				}
 
 				RawInputDeviceFlags flags = RawInputDeviceFlags.None;
@@ -251,13 +276,28 @@ namespace Gorgon.Input
 					          DeviceHandle = device.Handle
 				          };
 
+			    switch (device.DeviceType)
+			    {
+			        case RawInputType.Keyboard:
+			            _keyboardDevices.Remove(key);
+			            break;
+			        case RawInputType.Mouse:
+			            _mouseDevices.Remove(key);
+			            break;
+			        case RawInputType.HID:
+			            _hids.Remove(key);
+			            break;
+			        default:
+			            throw new ArgumentException(string.Format(Resources.GORINP_RAW_ERR_UNKNOWN_DEVICE_TYPE, device.DeviceType), nameof(device));
+			    }
+
 				if (!_devices.ContainsKey(key))
 				{
 					return;
 				}
 
 				_devices.Remove(key);
-
+                
 				// If all devices of this type have been unregistered, unregister with raw input as well.
 				if ((_devices.Count(item => item.Value.DeviceType == device.DeviceType) == 0)
 					&& (RawInputApi.GetDeviceRegistration(device.DeviceUsage) != null))
@@ -362,10 +402,14 @@ namespace Gorgon.Input
 		/// </summary>
 		public void Dispose()
 		{
-			// Multiple threads should -not- call dispose, but just in case someone thinks they're smart...
+			// Multiple threads should -not- call dispose.
 			lock (_syncLock)
 			{
 				UnhookRawInput();
+
+                _mouseDevices.Clear();
+                _keyboardDevices.Clear();
+                _hids.Clear();
 
 				_devices.Clear();
 				_filter?.Dispose();
@@ -394,8 +438,8 @@ namespace Gorgon.Input
 		public GorgonRawInput(Control applicationWindow, IGorgonLog log = null)
 		{
 		    _log = log ?? GorgonLog.NullLog;
-			_applicationWindow = applicationWindow?.Handle ?? throw new ArgumentNullException(nameof(applicationWindow));
-			_devices = new Dictionary<DeviceKey, IGorgonRawInputDevice>();
+		    _applicationWindow = applicationWindow?.Handle ?? throw new ArgumentNullException(nameof(applicationWindow));
+		    _devices = new Dictionary<DeviceKey, IGorgonRawInputDevice>();
 		}
 
 		/// <summary>
@@ -412,16 +456,19 @@ namespace Gorgon.Input
 		/// The <paramref name="windowHandle"/> parameter is required in order to set up the application to receive <c>WM_INPUT</c> messages. Ideally, this window should be the primary application window.
 		/// </para>
 		/// </remarks>
-		public GorgonRawInput(IntPtr windowHandle, IGorgonLog log = null)
+		public GorgonRawInput(GorgonReadOnlyPointer windowHandle, IGorgonLog log = null)
 		{
-			if (windowHandle == IntPtr.Zero)
+			if (windowHandle.IsNull)
 			{
 				throw new ArgumentNullException(nameof(windowHandle));
 			}
 
 			_log = log ?? GorgonLog.NullLog;
-			_applicationWindow = windowHandle;
-			_devices = new Dictionary<DeviceKey, IGorgonRawInputDevice>();
+		    unsafe
+		    {
+		        _applicationWindow = new IntPtr((void*)windowHandle);
+		    }
+		    _devices = new Dictionary<DeviceKey, IGorgonRawInputDevice>();
 			_useNativeHook = true;
 		}
 

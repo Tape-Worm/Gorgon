@@ -40,23 +40,18 @@ namespace Gorgon.Input
 		/// </summary>
 		/// <param name="device">The device that will receive the data.</param>
 		/// <param name="rawData">Raw input data to translate.</param>
-		public static void Dispatch(IGorgonRawInputDevice device, ref RAWINPUTHID rawData)
+		public static void Dispatch(IRawInputDeviceData<GorgonRawHIDData> device, ref RAWINPUTHID rawData)
 		{
-		    if (!(device is IGorgonRawInputDeviceData<GorgonRawHIDData> deviceProcessor))
-			{
-				return;
-			}
-
 		    unsafe
 		    {
 		        var data = new GorgonRawHIDData
 		                   {
-		                       HidData = new GorgonNativeBuffer<byte>(rawData.Data.ToPointer(), rawData.Size * rawData.Count),
+		                       HidData = new GorgonReadOnlyPointer(rawData.Data.ToPointer(), rawData.Size * rawData.Count),
 		                       ItemCount = rawData.Count,
 		                       HIDDataSize = rawData.Size
 		                   };
 
-		        deviceProcessor.ProcessData(ref data);
+		        device.ProcessData(ref data);
 		    }
 		}
 
@@ -65,15 +60,10 @@ namespace Gorgon.Input
 		/// </summary>
 		/// <param name="device">The device that will receive the data.</param>
 		/// <param name="rawData">Raw input data to translate.</param>
-		public static void Dispatch(IGorgonRawInputDevice device, ref RAWINPUTMOUSE rawData)
+		public static void Dispatch(IRawInputDeviceData<GorgonRawMouseData> device, ref RAWINPUTMOUSE rawData)
 		{
 			short wheelDelta = 0;
 			MouseButtonState state = MouseButtonState.None;
-
-		    if (!(device is IGorgonRawInputDeviceData<GorgonRawMouseData> deviceProcessor))
-			{
-				return;
-			}
 
 			if ((rawData.ButtonFlags & RawMouseButtons.MouseWheel) == RawMouseButtons.MouseWheel)
 			{
@@ -138,52 +128,47 @@ namespace Gorgon.Input
 				IsRelative = ((rawData.Flags & RawMouseFlags.MoveAbsolute) != RawMouseFlags.MoveAbsolute)
 			};
 
-			deviceProcessor.ProcessData(ref processedData);
+			device.ProcessData(ref processedData);
 		}
 
-		/// <summary>
-		/// Function to dispatch the raw input to a keyboard device.
-		/// </summary>
-		/// <param name="device">The device that will receive the data.</param>
-		/// <param name="rawData">Raw input data to translate.</param>
-		public static void Dispatch(IGorgonRawInputDevice device, ref RAWINPUTKEYBOARD rawData)
-		{
-			KeyboardDataFlags flags = KeyboardDataFlags.KeyDown;
+	    /// <summary>
+	    /// Function to dispatch the raw input to a keyboard device.
+	    /// </summary>
+	    /// <param name="device">The device that will receive the data.</param>
+	    /// <param name="rawData">Raw input data to translate.</param>
+	    public static void Dispatch(IRawInputDeviceData<GorgonRawKeyboardData> device, ref RAWINPUTKEYBOARD rawData)
+	    {
+	        KeyboardDataFlags flags = KeyboardDataFlags.KeyDown;
 
-		    if (!(device is IGorgonRawInputDeviceData<GorgonRawKeyboardData> deviceProcessor))
-			{
-				return;
-			}
-			
-			if ((rawData.Flags & RawKeyboardFlags.KeyBreak) == RawKeyboardFlags.KeyBreak)
-			{
-				flags = KeyboardDataFlags.KeyUp;
-			}
+	        if ((rawData.Flags & RawKeyboardFlags.KeyBreak) == RawKeyboardFlags.KeyBreak)
+	        {
+	            flags = KeyboardDataFlags.KeyUp;
+	        }
 
-			if ((rawData.Flags & RawKeyboardFlags.KeyE0) == RawKeyboardFlags.KeyE0)
-			{
-				flags |= KeyboardDataFlags.LeftKey;
-			}
+	        if ((rawData.Flags & RawKeyboardFlags.KeyE0) == RawKeyboardFlags.KeyE0)
+	        {
+	            flags |= KeyboardDataFlags.LeftKey;
+	        }
 
-			if ((rawData.Flags & RawKeyboardFlags.KeyE1) == RawKeyboardFlags.KeyE1)
-			{
-				flags |= KeyboardDataFlags.RightKey;
-			}
+	        if ((rawData.Flags & RawKeyboardFlags.KeyE1) == RawKeyboardFlags.KeyE1)
+	        {
+	            flags |= KeyboardDataFlags.RightKey;
+	        }
 
-			// Shift has to be handled in a special case since it doesn't actually detect left/right from raw input.
-			if (rawData.VirtualKey == VirtualKeys.Shift)
-			{
-				flags |= rawData.MakeCode == 0x36 ? KeyboardDataFlags.RightKey : KeyboardDataFlags.LeftKey;
-			}
+	        // Shift has to be handled in a special case since it doesn't actually detect left/right from raw input.
+	        if (rawData.VirtualKey == VirtualKeys.Shift)
+	        {
+	            flags |= rawData.MakeCode == 0x36 ? KeyboardDataFlags.RightKey : KeyboardDataFlags.LeftKey;
+	        }
 
-			GorgonRawKeyboardData data = new GorgonRawKeyboardData
-			           {
-				           ScanCode = rawData.MakeCode,
-				           Key = (Keys)rawData.VirtualKey,
-				           Flags = flags
-			           };
+	        GorgonRawKeyboardData data = new GorgonRawKeyboardData
+	                                     {
+	                                         ScanCode = rawData.MakeCode,
+	                                         Key = (Keys)rawData.VirtualKey,
+	                                         Flags = flags
+	                                     };
 
-			deviceProcessor.ProcessData(ref data);
-		}
+	        device.ProcessData(ref data);
+	    }
 	}
 }

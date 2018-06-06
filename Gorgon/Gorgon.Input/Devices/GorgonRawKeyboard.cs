@@ -40,7 +40,7 @@ namespace Gorgon.Input
 	/// </para>
 	/// </remarks>
 	public class GorgonRawKeyboard
-		: IGorgonRawInputDevice, IGorgonRawInputDeviceData<GorgonRawKeyboardData>, IGorgonKeyboard
+		: IGorgonRawInputDevice, IRawInputDeviceData<GorgonRawKeyboardData>, IGorgonKeyboard
 	{
 		#region Events.
 		/// <summary>
@@ -300,7 +300,7 @@ namespace Gorgon.Input
 		/// Function to process the Gorgon raw input data into device state data and appropriate events.
 		/// </summary>
 		/// <param name="rawInputData">The data to process.</param>
-		void IGorgonRawInputDeviceData<GorgonRawKeyboardData>.ProcessData(ref GorgonRawKeyboardData rawInputData)
+		void IRawInputDeviceData<GorgonRawKeyboardData>.ProcessData(ref GorgonRawKeyboardData rawInputData)
 		{
 			// Get the key code.
 			Keys keyCode = rawInputData.Key;

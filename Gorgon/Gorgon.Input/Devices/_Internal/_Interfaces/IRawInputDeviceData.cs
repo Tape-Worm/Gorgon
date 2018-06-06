@@ -33,7 +33,7 @@ namespace Gorgon.Input
 	/// <remarks>
 	/// This interface is not meant to be used within an application and should only be used internally by Gorgon.
 	/// </remarks>
-	public interface IGorgonRawInputDeviceData<T>
+	internal interface IRawInputDeviceData<T>
 		where T : struct
 	{
 		/// <summary>

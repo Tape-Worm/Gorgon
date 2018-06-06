@@ -166,6 +166,9 @@ This may happen if the object is disposed, but not cleaned up correctly.</value>
   <data name="GORINP_RAW_ERR_ONLY_ONE_INSTANCE" xml:space="preserve">
     <value>Only one instance of the raw input system may be active at any given time.</value>
   </data>
+  <data name="GORINP_RAW_ERR_UNKNOWN_DEVICE_TYPE" xml:space="preserve">
+    <value>The device type '{0}' is unknown.</value>
+  </data>
   <data name="GORINP_TOSTR_JOYSTICKAXIS" xml:space="preserve">
     <value>Joystick axis: {0}, Range: {1} - {2}.</value>
   </data>

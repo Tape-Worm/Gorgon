@@ -34,7 +34,7 @@ namespace Gorgon.Input
 	/// <remarks>
 	/// This object will allow for enumeration of keyboards and mice attached to the system and will allow an application to register these types of devices for use with the application.  
 	/// </remarks>
-	public interface IGorgonKeyboardAndMouseInput
+	public interface IGorgonInput
 	{
 		/// <summary>
 		/// Function to retrieve a list of mice.

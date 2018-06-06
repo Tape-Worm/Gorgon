@@ -76,7 +76,7 @@ namespace Gorgon.Input
 	/// </code>
 	/// </example>
 	public interface IGorgonRawInput 
-		: IDisposable, IGorgonKeyboardAndMouseInput
+		: IDisposable, IGorgonInput
 	{
 		/// <summary>
 		/// Function to register the device with the raw input provider.

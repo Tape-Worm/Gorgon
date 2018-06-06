@@ -351,7 +351,7 @@ namespace Gorgon.Native
 
 			    if (dataSize == 0)
 			    {
-				    return null;
+				    return default;
 			    }
 
 			    var result = new GorgonNativeBuffer<byte>(dataSize);

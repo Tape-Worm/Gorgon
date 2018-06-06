@@ -43,7 +43,7 @@ namespace Gorgon.Input
 	/// </para>
 	/// </remarks>
 	public class GorgonRawHID
-		: IGorgonRawHID, IGorgonRawInputDeviceData<GorgonRawHIDData>
+		: IGorgonRawHID, IRawInputDeviceData<GorgonRawHIDData>
 	{
 		#region Variables.
 		// Pre parsed data for this device.
@@ -86,7 +86,7 @@ namespace Gorgon.Input
 		/// <summary>
 		/// Property to return a pointer to the block of memory that stores the HID data.
 		/// </summary>
-		public GorgonNativeBuffer<byte> Data
+		public GorgonReadOnlyPointer Data
 		{
 			get;
 			private set;
@@ -113,7 +113,7 @@ namespace Gorgon.Input
 		/// <summary>
 		/// Property to return the pre-parsed data for this HID.
 		/// </summary>
-		public GorgonNativeBuffer<byte> PreParsedData
+		public GorgonReadOnlyPointer PreParsedData
 		{
 			get
 			{
@@ -125,7 +125,7 @@ namespace Gorgon.Input
 					}
 				}
 
-				return _preParsedData;
+				return (GorgonReadOnlyPointer)_preParsedData;
 			}
 		}
 		#endregion
@@ -136,12 +136,12 @@ namespace Gorgon.Input
 		/// Function to process the Gorgon raw input data into device state data and appropriate events.
 		/// </summary>
 		/// <param name="rawInputData">The data to process.</param>
-		void IGorgonRawInputDeviceData<GorgonRawHIDData>.ProcessData(ref GorgonRawHIDData rawInputData)
+		void IRawInputDeviceData<GorgonRawHIDData>.ProcessData(ref GorgonRawHIDData rawInputData)
 		{
 			Data = rawInputData.HidData;
 			HIDSize = rawInputData.HIDDataSize;
 			Count = rawInputData.ItemCount;
-
+            
 			DataReceived?.Invoke(this, new GorgonHIDEventArgs(rawInputData.HidData, rawInputData.HIDDataSize, rawInputData.ItemCount));
 		}
 

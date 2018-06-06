@@ -388,7 +388,7 @@ namespace Gorgon.Graphics.Core
 
         #region Methods.
         #region Resource Reset Code.  Adds 10ms/frame (for 100,000 draw calls).  Needs work.
-        /// <summary>
+        /*/// <summary>
         /// Function to unbind the resource from stream out resources.
         /// </summary>
         /// <param name="buffer">The buffer to unbind.</param>
@@ -458,33 +458,6 @@ namespace Gorgon.Graphics.Core
                     return state.HsConstantBuffers;
                 case ShaderType.Compute:
                     return state.CsConstantBuffers;
-                default:
-                    return null;
-            }
-        }
-
-        /// <summary>
-        /// Function to retrieve the shader resource views from the specified draw.
-        /// </summary>
-        /// <param name="state">The state to evaluate.</param>
-        /// <param name="shaderType">The shader type.</param>
-        /// <returns>The shader resource views.</returns>
-        private static GorgonShaderResourceViews GetSrvs(D3DState state, ShaderType shaderType)
-        {
-            switch (shaderType)
-            {
-                case ShaderType.Vertex:
-                    return state.VsSrvs;
-                case ShaderType.Pixel:
-                    return state.PsSrvs;
-                case ShaderType.Geometry:
-                    return state.GsSrvs;
-                case ShaderType.Domain:
-                    return state.DsSrvs;
-                case ShaderType.Hull:
-                    return state.HsSrvs;
-                case ShaderType.Compute:
-                    return state.CsSrvs;
                 default:
                     return null;
             }
@@ -735,7 +708,7 @@ namespace Gorgon.Graphics.Core
                     }
                 }
             }
-        }
+        }*/
         #endregion
 
 
@@ -1701,6 +1674,12 @@ namespace Gorgon.Graphics.Core
                 _lastState.ComputeShader = currentState.ComputeShader;
             }
 
+            // If we turned off the compute shader, and it was done in a prior call, then there's no need to execute the code below (we hope).
+            if ((currentState.ComputeShader == null) && ((changes & DrawCallChanges.ComputeShader) != DrawCallChanges.ComputeShader))
+            {
+                return changes;
+            }
+                    
             if (ChangeBuilder(currentState.CsReadWriteViews.DirtyEquals(_lastState.CsReadWriteViews), DrawCallChanges.CsUavs, ref changes))
             {
                 _lastState.CsReadWriteViews = currentState.CsReadWriteViews;
@@ -1949,12 +1928,39 @@ namespace Gorgon.Graphics.Core
                 {
                     ShaderType shaderType = _shaderType[s];
                     GorgonShaderResourceViews srvs = GetSrvs(_lastState, shaderType);
-                    UnbindFromShader(view, srvs, shaderType);
+                    UnbindFromSrvs(view, srvs, shaderType);
+                }
+
+                GorgonReadWriteViewBindings uavs = _lastState.ReadWriteViews;
+                UnbindFromUavs(view, uavs, false);
+                uavs = _lastState.CsReadWriteViews;
+                UnbindFromUavs(view, uavs, true);
+            }
+
+            // Function to retrieve the shader resource views from the specified draw.
+            GorgonShaderResourceViews GetSrvs(D3DState state, ShaderType shaderType)
+            {
+                switch (shaderType)
+                {
+                    case ShaderType.Vertex:
+                        return state.VsSrvs;
+                    case ShaderType.Pixel:
+                        return state.PsSrvs;
+                    case ShaderType.Geometry:
+                        return state.GsSrvs;
+                    case ShaderType.Domain:
+                        return state.DsSrvs;
+                    case ShaderType.Hull:
+                        return state.HsSrvs;
+                    case ShaderType.Compute:
+                        return state.CsSrvs;
+                    default:
+                        return null;
                 }
             }
 
-            // TODO: Support UAVs
-            void UnbindFromShader(GorgonGraphicsResource renderTarget, GorgonShaderResourceViews srvs, ShaderType shaderType)
+            // Unbinds shader resources.
+            void UnbindFromSrvs(GorgonGraphicsResource renderTarget, GorgonShaderResourceViews srvs, ShaderType shaderType)
             {
                 if (srvs == null)
                 {
@@ -1980,6 +1986,36 @@ namespace Gorgon.Graphics.Core
                 if (srvChanged)
                 {
                     BindSrvs(shaderType, srvs);
+                }
+            }
+
+            // Unbinds uavs.
+            void UnbindFromUavs(GorgonGraphicsResource renderTarget, GorgonReadWriteViewBindings uavs, bool useCs)
+            {
+                if (uavs == null)
+                {
+                    return;
+                }
+
+                bool uavChanged = false;
+                (int start, int count) = uavs.GetDirtyItems();
+
+                for (int i = start; i < start + count; ++i)
+                {
+                    GorgonGraphicsResource uav = uavs[i].ReadWriteView?.Resource;
+                    
+                    if ((uav == null) || (renderTarget != uav))
+                    {
+                        continue;
+                    }
+
+                    uavs[i] = default;
+                    uavChanged = true;
+                }
+
+                if (uavChanged)
+                {
+                    BindUavs(uavs, useCs);
                 }
             }
         }
@@ -2239,6 +2275,40 @@ namespace Gorgon.Graphics.Core
                 _cachedPipelineStates.Add(resultState);
                 return resultState;
             }
+        }
+
+        /// <summary>
+        /// Function to execute a dispatch call for a compute shader.
+        /// </summary>
+        /// <param name="dispatchCall">The call to execute.</param>
+        /// <param name="threadGroupCountX">The number of thread groups to dispatch in the X direction.</param>
+        /// <param name="threadGroupCountY">The number of thread groups to dispatch in the Y direction.</param>
+        /// <param name="threadGroupCountZ">The number of thread groups to dispatch in the Z direction.</param>
+        internal void Dispatch(GorgonDispatchCall dispatchCall, int threadGroupCountX, int threadGroupCountY, int threadGroupCountZ)
+        {
+            dispatchCall.ValidateObject(nameof(dispatchCall));
+            threadGroupCountX.ValidateRange(nameof(threadGroupCountX), 0, GorgonComputeEngine.MaxThreadGroupCount);
+            threadGroupCountY.ValidateRange(nameof(threadGroupCountY), 0, GorgonComputeEngine.MaxThreadGroupCount);
+            threadGroupCountZ.ValidateRange(nameof(threadGroupCountZ), 0, GorgonComputeEngine.MaxThreadGroupCount);
+
+            SetDrawStates(dispatchCall.D3DState, _blendFactor, _blendSampleMask, _depthStencilReference);
+            D3DDeviceContext.Dispatch(threadGroupCountX, threadGroupCountY, threadGroupCountZ);
+        }
+
+        /// <summary>
+        /// Function to execute a dispatch call for a compute shader.
+        /// </summary>
+        /// <param name="dispatchCall">The call to execute.</param>
+        /// <param name="indirectArgs">The buffer containing the arguments for the compute shader.</param>
+        /// <param name="threadGroupOffset">[Optional] The offset within the buffer, in bytes, to where the arguments are stored.</param>
+        internal void Dispatch(GorgonDispatchCall dispatchCall, GorgonBufferCommon indirectArgs, int threadGroupOffset = 0)
+        {
+            dispatchCall.ValidateObject(nameof(dispatchCall));
+            indirectArgs.ValidateObject(nameof(indirectArgs));
+            threadGroupOffset.ValidateRange(nameof(threadGroupOffset), 0, int.MaxValue);
+
+            SetDrawStates(dispatchCall.D3DState, _blendFactor, _blendSampleMask, _depthStencilReference);
+            D3DDeviceContext.DispatchIndirect(indirectArgs.Native, threadGroupOffset);
         }
 
         /// <summary>
@@ -2585,40 +2655,6 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Function to execute a dispatch call for a compute shader.
-        /// </summary>
-        /// <param name="dispatchCall">The call to execute.</param>
-        /// <param name="threadGroupCountX">The number of thread groups to dispatch in the X direction.</param>
-        /// <param name="threadGroupCountY">The number of thread groups to dispatch in the Y direction.</param>
-        /// <param name="threadGroupCountZ">The number of thread groups to dispatch in the Z direction.</param>
-        internal void Dispatch(GorgonDispatchCall dispatchCall, int threadGroupCountX, int threadGroupCountY, int threadGroupCountZ)
-        {
-            dispatchCall.ValidateObject(nameof(dispatchCall));
-            threadGroupCountX.ValidateRange(nameof(threadGroupCountX), 0, GorgonComputeEngine.MaxThreadGroupCount);
-            threadGroupCountY.ValidateRange(nameof(threadGroupCountY), 0, GorgonComputeEngine.MaxThreadGroupCount);
-            threadGroupCountZ.ValidateRange(nameof(threadGroupCountZ), 0, GorgonComputeEngine.MaxThreadGroupCount);
-
-            SetDrawStates(dispatchCall.D3DState, _blendFactor, _blendSampleMask, _depthStencilReference);
-            D3DDeviceContext.Dispatch(threadGroupCountX, threadGroupCountY, threadGroupCountZ);
-        }
-
-        /// <summary>
-        /// Function to execute a dispatch call for a compute shader.
-        /// </summary>
-        /// <param name="dispatchCall">The call to execute.</param>
-        /// <param name="indirectArgs">The buffer containing the arguments for the compute shader.</param>
-        /// <param name="threadGroupOffset">[Optional] The offset within the buffer, in bytes, to where the arguments are stored.</param>
-        internal void Dispatch(GorgonDispatchCall dispatchCall, GorgonBufferCommon indirectArgs, int threadGroupOffset = 0)
-        {
-            dispatchCall.ValidateObject(nameof(dispatchCall));
-            indirectArgs.ValidateObject(nameof(indirectArgs));
-            threadGroupOffset.ValidateRange(nameof(threadGroupOffset), 0, int.MaxValue);
-
-            SetDrawStates(dispatchCall.D3DState, _blendFactor, _blendSampleMask, _depthStencilReference);
-            D3DDeviceContext.DispatchIndirect(indirectArgs.Native, threadGroupOffset);
-        }
-
-        /// <summary>
         /// Function to submit a basic draw call to the GPU.
         /// </summary>
         /// <param name="drawCall">The draw call to execute.</param>
@@ -2816,6 +2852,48 @@ namespace Gorgon.Graphics.Core
         /// Function to draw a texture to the current render target.
         /// </summary>
         /// <param name="texture">The texture to draw.</param>
+        /// <param name="destination">The location on the target to draw into.</param>
+        /// <param name="color">[Optional] The color to apply to the texture when drawing.</param>
+        /// <param name="blendState">[Optional] The type of blending to perform.</param>
+        /// <param name="samplerState">[Optional] The sampler state used to define how to sample the texture.</param>
+        /// <param name="pixelShader">[Optional] A pixel shader used to apply effects to the texture.</param>
+        /// <param name="psConstantBuffers">[Optional] A list of constant buffers for the pixel shader if they're required.</param>
+        /// <remarks>
+        /// <para>
+        /// This is a utility method used to draw a (2D) texture to the current render target.  This is handy for quick testing to ensure things are working as they should. 
+        /// </para>
+        /// <para>
+        /// <note type="important">
+        /// <para>
+        /// This method, while quite handy, should not be used for performance sensitive work as it is not the most optimal means of displaying texture data.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="GorgonTexture2DView"/>
+        public void DrawTexture(GorgonTexture2DView texture,
+                                DX.Point destination,
+                                GorgonColor? color = null,
+                                GorgonBlendState blendState = null,
+                                GorgonSamplerState samplerState = null,
+                                GorgonPixelShader pixelShader = null,
+                                GorgonConstantBuffers psConstantBuffers = null)
+        {
+            _textureBlitter.Value.Blit(texture,
+                                       new DX.Rectangle(destination.X, destination.Y, texture.Width, texture.Height),
+                                       DX.Point.Zero,
+                                       color ?? GorgonColor.White,
+                                       true,
+                                       blendState,
+                                       samplerState,
+                                       pixelShader,
+                                       psConstantBuffers);
+        }
+
+        /// <summary>
+        /// Function to draw a texture to the current render target.
+        /// </summary>
+        /// <param name="texture">The texture to draw.</param>
         /// <param name="destinationRectangle">The location on the target to draw into, and the size of the area to draw.</param>
         /// <param name="sourceOffset">[Optional] The offset into the texture to start drawing from.</param>
         /// <param name="clipRectangle">[Optional] <b>true</b> to clip the contents of the texture if the size does not match, or <b>false</b> to stretch.</param>
@@ -2824,6 +2902,19 @@ namespace Gorgon.Graphics.Core
         /// <param name="samplerState">[Optional] The sampler state used to define how to sample the texture.</param>
         /// <param name="pixelShader">[Optional] A pixel shader used to apply effects to the texture.</param>
         /// <param name="psConstantBuffers">[Optional] A list of constant buffers for the pixel shader if they're required.</param>
+        /// <remarks>
+        /// <para>
+        /// This is a utility method used to draw a (2D) texture to the current render target.  This is handy for quick testing to ensure things are working as they should. 
+        /// </para>
+        /// <para>
+        /// <note type="important">
+        /// <para>
+        /// This method, while quite handy, should not be used for performance sensitive work as it is not the most optimal means of displaying texture data.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="GorgonTexture2DView"/>
         public void DrawTexture(GorgonTexture2DView texture,
                                 DX.Rectangle destinationRectangle,
                                 DX.Point sourceOffset = default,

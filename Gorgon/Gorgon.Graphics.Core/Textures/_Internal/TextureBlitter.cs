@@ -44,9 +44,9 @@ namespace Gorgon.Graphics
 	    private readonly GorgonGraphics _graphics;
         // The vertices used to blit the texture.
         private readonly BltVertex[] _vertices = new BltVertex[4];
-		// The vertex shader for blitting the texture.
+		// The default vertex shader for blitting the texture.
 		private GorgonVertexShader _vertexShader;
-		// The pixel shader for blitting the texture.
+		// The default pixel shader for blitting the texture.
 		private GorgonPixelShader _pixelShader;
 		// The input layout for the blit vertices.
 		private GorgonInputLayout _inputLayout;
@@ -105,6 +105,43 @@ namespace Gorgon.Graphics
 		    _targetBounds = new DX.Rectangle(0, 0, target.Width, target.Height);
             _needsWvpUpdate = false;
 		}
+
+        /// <summary>
+        /// Function to return the appropriate draw call based on the states provided.
+        /// </summary>
+        /// <param name="texture">The texture to display.</param>
+        /// <param name="blendState">The blending state for the texture.</param>
+        /// <param name="samplerState">The sampler state for the texture.</param>
+        /// <param name="shader">The pixel shader to use.</param>
+        /// <param name="constantBuffers">Constant buffers for the pixel shader, if required.</param>
+	    private void GetDrawCall(GorgonTexture2DView texture, GorgonBlendState blendState, GorgonSamplerState samplerState, GorgonPixelShader shader, GorgonConstantBuffers constantBuffers)
+        {
+	        if ((_drawCall != null) 
+                && (shader == _pixelShader)
+                && (_drawCall.PixelShader.Samplers[0] == samplerState)
+                && (_pipelineState.BlendStates[0] == blendState)
+	            && (_drawCall.PixelShader.ShaderResources[0] == texture)
+	            && (_drawCall.PixelShader.ConstantBuffers.DirtyEquals(constantBuffers)))
+	        {
+                // This draw call hasn't changed, so return the previous one.
+	            return;
+	        }
+
+	        if (_pipelineState.BlendStates[0] != blendState)
+	        {
+	            _pipelineState = _pipeStateBuilder
+	                             .BlendState(blendState)
+	                             .Build(_stateAllocator);
+
+	            _drawCallBuilder.PipelineState(_pipelineState);
+	        }
+
+	        _drawCall = _drawCallBuilder.ConstantBuffers(ShaderType.Pixel, constantBuffers)
+	                                    .SamplerState(ShaderType.Pixel, samplerState)
+	                                    .ShaderResource(ShaderType.Pixel, texture)
+	                                    .Build(_drawAllocator);
+	    }
+
 
 		/// <summary>
 		/// Function to initialize the blitter.
@@ -182,42 +219,6 @@ namespace Gorgon.Graphics
 		        Interlocked.Decrement(ref _initializedFlag);
 		    }
 		}
-
-        /// <summary>
-        /// Function to return the appropriate draw call based on the states provided.
-        /// </summary>
-        /// <param name="texture">The texture to display.</param>
-        /// <param name="blendState">The blending state for the texture.</param>
-        /// <param name="samplerState">The sampler state for the texture.</param>
-        /// <param name="shader">The pixel shader to use.</param>
-        /// <param name="constantBuffers">Constant buffers for the pixel shader, if required.</param>
-	    private void GetDrawCall(GorgonTexture2DView texture, GorgonBlendState blendState, GorgonSamplerState samplerState, GorgonPixelShader shader, GorgonConstantBuffers constantBuffers)
-        {
-	        if ((_drawCall != null) 
-                && (shader == _pixelShader)
-                && (_drawCall.PixelShader.Samplers[0] == samplerState)
-                && (_pipelineState.BlendStates[0] == blendState)
-	            && (_drawCall.PixelShader.ShaderResources[0] == texture)
-	            && (_drawCall.PixelShader.ConstantBuffers.DirtyEquals(constantBuffers)))
-	        {
-                // This draw call hasn't changed, so return the previous one.
-	            return;
-	        }
-
-	        if (_pipelineState.BlendStates[0] != blendState)
-	        {
-	            _pipelineState = _pipeStateBuilder
-	                             .BlendState(blendState)
-	                             .Build(_stateAllocator);
-
-	            _drawCallBuilder.PipelineState(_pipelineState);
-	        }
-
-	        _drawCall = _drawCallBuilder.ConstantBuffers(ShaderType.Pixel, constantBuffers)
-	                                    .SamplerState(ShaderType.Pixel, samplerState)
-	                                    .ShaderResource(ShaderType.Pixel, texture)
-	                                    .Build(_drawAllocator);
-	    }
 
 	    /// <summary>
 	    /// Function to blit the texture to the specified render target.

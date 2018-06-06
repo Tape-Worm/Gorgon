@@ -63,7 +63,7 @@ namespace Gorgon.Input
 	/// </para>
 	/// </remarks>
 	public class GorgonRawMouse
-		: IGorgonRawInputDevice, IGorgonRawInputDeviceData<GorgonRawMouseData>, IGorgonMouse
+		: IGorgonRawInputDevice, IRawInputDeviceData<GorgonRawMouseData>, IGorgonMouse
 	{
 		#region Variables.
 		// Range that a double click is valid within.
@@ -638,7 +638,7 @@ namespace Gorgon.Input
 		/// Function to process the Gorgon raw input data into device state data and appropriate events.
 		/// </summary>
 		/// <param name="rawInputData">The data to process.</param>
-		void IGorgonRawInputDeviceData<GorgonRawMouseData>.ProcessData(ref GorgonRawMouseData rawInputData)
+		void IRawInputDeviceData<GorgonRawMouseData>.ProcessData(ref GorgonRawMouseData rawInputData)
 		{
 			// Gather the event information.
 			MouseButtons downButtons = MouseButtons.None;
