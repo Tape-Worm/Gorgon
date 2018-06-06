@@ -614,7 +614,7 @@ namespace Gorgon.Graphics.Example
 
             BuildDepthBuffer(_swapChain.Width, _swapChain.Height);
 
-		    _graphics.SetRenderTarget(_swapChain.RenderTargetView);
+		    _graphics.SetRenderTarget(_swapChain.RenderTargetView, _depthBuffer);
 
             LoadShaders();
 
