@@ -463,7 +463,7 @@ namespace Gorgon.Graphics.Core
             }
 
             // If the dirty state has already been updated for both arrays, then just check that.
-            if (((_changedIndices.Count != 0) || (other._changedIndices.Count != 0)) &&
+            if (((_changedIndices.Count != 0) || (other._changedIndices.Count != 0)) ||
                 ((_dirtyItems.Start != other._dirtyItems.Start) || (_dirtyItems.Count != other._dirtyItems.Count)))
             {
                 return false;

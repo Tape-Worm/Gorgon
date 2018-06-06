@@ -566,7 +566,6 @@ namespace Gorgon.Graphics.Core
             StateCopy.CopyConstantBuffers(final.D3DState.GsConstantBuffers, DrawCall.D3DState.GsConstantBuffers, 0);
             StateCopy.CopyConstantBuffers(final.D3DState.HsConstantBuffers, DrawCall.D3DState.HsConstantBuffers, 0);
             StateCopy.CopyConstantBuffers(final.D3DState.DsConstantBuffers, DrawCall.D3DState.DsConstantBuffers, 0);
-            StateCopy.CopyConstantBuffers(final.D3DState.CsConstantBuffers, DrawCall.D3DState.CsConstantBuffers, 0);
 
             // Copy over samplers.
             StateCopy.CopySamplers(final.D3DState.PsSamplers, DrawCall.D3DState.PsSamplers);
@@ -574,7 +573,6 @@ namespace Gorgon.Graphics.Core
             StateCopy.CopySamplers(final.D3DState.GsSamplers, DrawCall.D3DState.GsSamplers);
             StateCopy.CopySamplers(final.D3DState.DsSamplers, DrawCall.D3DState.DsSamplers);
             StateCopy.CopySamplers(final.D3DState.HsSamplers, DrawCall.D3DState.HsSamplers);
-            StateCopy.CopySamplers(final.D3DState.CsSamplers, DrawCall.D3DState.CsSamplers);
 
             // Copy over shader resource views.
             StateCopy.CopySrvs(final.D3DState.PsSrvs, DrawCall.D3DState.PsSrvs, 0);
@@ -582,7 +580,6 @@ namespace Gorgon.Graphics.Core
             StateCopy.CopySrvs(final.D3DState.GsSrvs, DrawCall.D3DState.GsSrvs, 0);
             StateCopy.CopySrvs(final.D3DState.DsSrvs, DrawCall.D3DState.DsSrvs, 0);
             StateCopy.CopySrvs(final.D3DState.HsSrvs, DrawCall.D3DState.HsSrvs, 0);
-            StateCopy.CopySrvs(final.D3DState.CsSrvs, DrawCall.D3DState.CsSrvs, 0);
 
             // Copy over unordered access views.
             StateCopy.CopyReadWriteViews(final.D3DState.ReadWriteViews, DrawCall.D3DState.ReadWriteViews, 0);
@@ -625,21 +622,18 @@ namespace Gorgon.Graphics.Core
             ConstantBuffers(ShaderType.Geometry, drawCall.D3DState.GsConstantBuffers);
             ConstantBuffers(ShaderType.Domain, drawCall.D3DState.DsConstantBuffers);
             ConstantBuffers(ShaderType.Hull, drawCall.D3DState.HsConstantBuffers);
-            ConstantBuffers(ShaderType.Compute, drawCall.D3DState.CsConstantBuffers);
             
             SamplerStates(ShaderType.Pixel, drawCall.D3DState.PsSamplers);
             SamplerStates(ShaderType.Vertex, drawCall.D3DState.VsSamplers);
             SamplerStates(ShaderType.Geometry, drawCall.D3DState.GsSamplers);
             SamplerStates(ShaderType.Domain, drawCall.D3DState.DsSamplers);
             SamplerStates(ShaderType.Hull, drawCall.D3DState.HsSamplers);
-            SamplerStates(ShaderType.Compute, drawCall.D3DState.CsSamplers);
 
             ShaderResources(ShaderType.Pixel, drawCall.D3DState.PsSrvs);
             ShaderResources(ShaderType.Vertex, drawCall.D3DState.VsSrvs);
             ShaderResources(ShaderType.Geometry, drawCall.D3DState.GsSrvs);
             ShaderResources(ShaderType.Domain, drawCall.D3DState.DsSrvs);
             ShaderResources(ShaderType.Hull, drawCall.D3DState.HsSrvs);
-            ShaderResources(ShaderType.Compute, drawCall.D3DState.CsSrvs);
 
             ReadWriteViews(drawCall.D3DState.ReadWriteViews);
 
@@ -662,21 +656,18 @@ namespace Gorgon.Graphics.Core
             DrawCall.D3DState.GsConstantBuffers.Clear();
             DrawCall.D3DState.HsConstantBuffers.Clear();
             DrawCall.D3DState.DsConstantBuffers.Clear();
-            DrawCall.D3DState.CsConstantBuffers.Clear();
 
             DrawCall.D3DState.PsSamplers.Clear();
             DrawCall.D3DState.VsSamplers.Clear();
             DrawCall.D3DState.GsSamplers.Clear();
             DrawCall.D3DState.DsSamplers.Clear();
             DrawCall.D3DState.HsSamplers.Clear();
-            DrawCall.D3DState.CsSamplers.Clear();
 
             DrawCall.D3DState.PsSrvs.Clear();
             DrawCall.D3DState.VsSrvs.Clear();
             DrawCall.D3DState.GsSrvs.Clear();
             DrawCall.D3DState.DsSrvs.Clear();
             DrawCall.D3DState.HsSrvs.Clear();
-            DrawCall.D3DState.CsSrvs.Clear();
 
             DrawCall.D3DState.ReadWriteViews.Clear();
 
@@ -694,9 +685,9 @@ namespace Gorgon.Graphics.Core
         private protected GorgonDrawCallBuilderCommon(TDc drawCall)
         {
             DrawCall = drawCall;
-            drawCall.SetupConstantBuffers();
-            drawCall.SetupSamplers();
-            drawCall.SetupViews();
+            DrawCall.SetupConstantBuffers();
+            DrawCall.SetupSamplers();
+            DrawCall.SetupViews();
             drawCall.D3DState.PsSamplers[0] = GorgonSamplerState.Default;
             DrawCall.D3DState.VertexBuffers = new GorgonVertexBufferBindings();
             DrawCall.D3DState.StreamOutBindings = new GorgonStreamOutBindings();

@@ -27,7 +27,6 @@
 using System;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
-using Gorgon.Native;
 
 namespace Gorgon.Graphics.Example
 {
@@ -40,12 +39,14 @@ namespace Gorgon.Graphics.Example
         #region Variables.
         // The compute engine to use.
         private readonly GorgonComputeEngine _compute;
-        // The shader for sobel edge detection.
-        private readonly GorgonComputeShader _shader;
         // The sobel constant data.
         private readonly GorgonConstantBuffer _sobelData;
         // The options to send to the sobel shader.
-        private float[] _sobelOptions = new float[2];
+        private readonly float[] _sobelOptions = new float[2];
+        // The dispatch call.
+        private GorgonDispatchCall _dispatch;
+        // The dispatch call builder.
+        private readonly GorgonDispatchCallBuilder _dispatchBuilder;
         #endregion
 
         #region Methods.
@@ -56,7 +57,7 @@ namespace Gorgon.Graphics.Example
         /// <param name="outputTexture">The output texture that will receive the processed texture.</param>
         /// <param name="thickness">The thickness of the sobel lines.</param>
         /// <param name="threshold">The threshold used to determine an edge.</param>
-        public void Process(GorgonTextureView texture, GorgonTextureUav outputTexture, int thickness, float threshold)
+        public void Process(GorgonTexture2DView texture, GorgonTexture2DReadWriteView outputTexture, int thickness, float threshold)
         {
             if ((texture == null)
                 || (outputTexture == null))
@@ -64,19 +65,19 @@ namespace Gorgon.Graphics.Example
                 return;
             }
 
+            if ((_dispatch == null) || (_dispatch.ShaderResources[0] != texture) || (_dispatch.ReadWriteViews[0].ReadWriteView != outputTexture))
+            {
+                _dispatch = _dispatchBuilder.ReadWriteView(new GorgonReadWriteViewBinding(outputTexture))
+                                            .ShaderResource(texture)
+                                            .Build();
+            }
+
             _sobelOptions[0] = thickness;
             _sobelOptions[1] = threshold;
-            _compute.Graphics.SetDataRange(_sobelOptions, _sobelData);
-
-            _compute.ConstantBuffers[0] = _sobelData;
-            _compute.ShaderResourceViews[0] = texture;
-            _compute.UnorderedAccessViews[0] = new GorgonUavBinding(outputTexture);
+            _sobelData.SetData(_sobelOptions);
 
             // Send 32 threads per group.
-            _compute.Execute(_shader, (int)(texture.Width / 32.0f).FastCeiling(), (int)(texture.Height / 32.0f).FastCeiling(), 1);
-
-            // Always call unbind after we're done so that we can be sure the state won't conflict.
-            _compute.Unbind();
+            _compute.Execute(_dispatch, (int)(texture.Width / 32.0f).FastCeiling(), (int)(texture.Height / 32.0f).FastCeiling(), 1);
         }
 
         /// <summary>
@@ -97,13 +98,22 @@ namespace Gorgon.Graphics.Example
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, or the <paramref name="sobelShader"/> parameter is <b>null</b>.</exception>
         public Sobel(GorgonGraphics graphics, GorgonComputeShader sobelShader)
         {
+            if (sobelShader == null)
+            {
+                throw new ArgumentNullException(nameof(sobelShader));
+            }
+
             _compute = new GorgonComputeEngine(graphics);
-            _shader = sobelShader ?? throw new ArgumentNullException(nameof(sobelShader));
-            _sobelData = new GorgonConstantBuffer("SobelData", graphics, new GorgonConstantBufferInfo
-                                                                         {
-                                                                             Usage = ResourceUsage.Dynamic,
-                                                                             SizeInBytes = 16
-                                                                         });
+            _sobelData = new GorgonConstantBuffer(graphics,
+                                                  new GorgonConstantBufferInfo("SobelData")
+                                                  {
+                                                      Usage = ResourceUsage.Dynamic,
+                                                      SizeInBytes = 16
+                                                  });
+
+            _dispatchBuilder = new GorgonDispatchCallBuilder();
+            _dispatchBuilder.ConstantBuffer(_sobelData.GetView())
+                            .ComputeShader(sobelShader);
         }
         #endregion
     }

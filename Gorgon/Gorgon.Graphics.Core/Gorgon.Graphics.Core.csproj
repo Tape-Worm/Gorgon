@@ -85,6 +85,9 @@
     <Compile Include="Buffers\_Internal\ShaderViewKey.cs" />
     <Compile Include="Comparison.cs" />
     <Compile Include="ComputeShaderFormat.cs" />
+    <Compile Include="Compute\GorgonComputeEngine.cs" />
+    <Compile Include="Compute\GorgonDispatchCall.cs" />
+    <Compile Include="Compute\GorgonDispatchCallBuilder.cs" />
     <Compile Include="CopyMode.cs" />
     <Compile Include="Devices\GorgonVideoAdapterOutputList.cs" />
     <Compile Include="Devices\_Interfaces\IGorgonVideoAdapterInfo.cs" />

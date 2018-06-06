@@ -36,7 +36,7 @@ namespace Gorgon.Graphics.Core
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This type of view allows for unordered access to a <see cref="GorgonBuffer"/>. The buffer must have been created with the <see cref="BufferBinding.ReadWriteView"/> flag in its 
+    /// This type of view allows for unordered access to a <see cref="GorgonBuffer"/>. The buffer must have been created with the <see cref="BufferBinding.ReadWrite"/> flag in its 
     /// <see cref="IGorgonBufferInfo.Binding"/> property, and the <see cref="IGorgonBufferInfo.AllowRawView"/> flag must have been set to <b>true</b>.
     /// </para>
     /// <para>
@@ -117,7 +117,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <remarks>
         /// <para>
-        /// This flag only applies to buffers with a <see cref="IGorgonBufferInfo.Binding"/> of <see cref="BufferBinding.ReadWriteView"/>, and/or <see cref="BufferBinding.Shader"/>. If the binding is set
+        /// This flag only applies to buffers with a <see cref="IGorgonBufferInfo.Binding"/> of <see cref="BufferBinding.ReadWrite"/>, and/or <see cref="BufferBinding.Shader"/>. If the binding is set
         /// to anything else, then this flag is treated as being set to <b>false</b>.
         /// </para>
         /// <para>

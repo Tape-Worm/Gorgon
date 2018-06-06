@@ -707,6 +707,15 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Dispatch calls require a compute shader..
+        /// </summary>
+        internal static string GORGFX_ERR_NO_COMPUTE_SHADER {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_NO_COMPUTE_SHADER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A draw call requires an input layout before it can be used..
         /// </summary>
         internal static string GORGFX_ERR_NO_INPUT_LAYOUT {

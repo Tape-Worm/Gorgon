@@ -187,20 +187,29 @@ namespace Gorgon.Graphics.Core
         /// <returns>The shader view description.</returns>
         private D3D11.UnorderedAccessViewDescription1 GetDesc2D(GorgonTexture2D texture)
         {
-            return new D3D11.UnorderedAccessViewDescription1
-                   {
-                       Format = (DXGI.Format)Format,
-                       Dimension = texture.ArrayCount > 1
-                                       ? D3D11.UnorderedAccessViewDimension.Texture2DArray
-                                       : D3D11.UnorderedAccessViewDimension.Texture2D,
-                       Texture2DArray =
-                       {
-                           MipSlice =  MipSlice,
-                           FirstArraySlice = ArrayCount,
-                           ArraySize = ArrayIndex,
-                           PlaneSlice = 0
-                       }
-                   };
+            return texture.ArrayCount == 1
+                       ? new D3D11.UnorderedAccessViewDescription1
+                         {
+                             Format = (DXGI.Format)Format,
+                             Dimension = D3D11.UnorderedAccessViewDimension.Texture2D,
+                             Texture2D = 
+                             {
+                                 MipSlice = MipSlice,
+                                 PlaneSlice = 0
+                             }
+                         }
+                       : new D3D11.UnorderedAccessViewDescription1
+                         {
+                             Format = (DXGI.Format)Format,
+                             Dimension = D3D11.UnorderedAccessViewDimension.Texture2DArray,
+                             Texture2DArray =
+                             {
+                                 MipSlice = MipSlice,
+                                 FirstArraySlice = ArrayCount,
+                                 ArraySize = ArrayIndex,
+                                 PlaneSlice = 0
+                             }
+                         };
         }
 
         /// <summary>

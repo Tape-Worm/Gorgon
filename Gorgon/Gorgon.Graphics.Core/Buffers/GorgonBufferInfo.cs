@@ -112,7 +112,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <remarks>
         /// <para>
-        /// This flag only applies to buffers with a <see cref="IGorgonBufferInfo.Binding"/> of <see cref="BufferBinding.ReadWriteView"/>, and/or <see cref="BufferBinding.Shader"/>. If the binding is set to anything else, 
+        /// This flag only applies to buffers with a <see cref="IGorgonBufferInfo.Binding"/> of <see cref="BufferBinding.ReadWrite"/>, and/or <see cref="BufferBinding.Shader"/>. If the binding is set to anything else, 
         /// then this flag is ignored.
         /// </para>
         /// <para>
@@ -157,7 +157,7 @@ namespace Gorgon.Graphics.Core
         /// <see cref="IGorgonBufferInfo.StructureSize"/> will determine how to address data in the buffer.
         /// </para>
         /// <para>
-        /// This value is only used when the <see cref="IGorgonBufferInfo.Binding"/> property has the <see cref="BufferBinding.ReadWriteView"/> flag. 
+        /// This value is only used when the <see cref="IGorgonBufferInfo.Binding"/> property has the <see cref="BufferBinding.ReadWrite"/> flag. 
         /// </para>
         /// <para>
         /// The default value is <b>false</b>.

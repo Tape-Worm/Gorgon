@@ -35,7 +35,6 @@ using Gorgon.Graphics.Example.Properties;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.UI;
-using System.Linq;
 
 namespace SobelComputeEngine
 {
@@ -61,17 +60,17 @@ namespace SobelComputeEngine
         // The renderer used to display our textures.
         private GraphicsRenderer _renderer;
         // The texture that we will process.
-        private GorgonTexture _sourceTexture;
+        private GorgonTexture2DView _sourceTexture;
         // The output texture.
-        private GorgonTexture _outputTexture;
+        private GorgonTexture2D _outputTexture;
         // The sobel edge detection functionality.
         private Sobel _sobel;
         // The shader used to render the sobel edge detection.
         private GorgonComputeShader _sobelShader;
         // The output view for the output texture.
-        private GorgonTextureView _outputView;
+        private GorgonTexture2DView _outputView;
         // The output uav for the output texture.
-        private GorgonTextureUav _outputUav;
+        private GorgonTexture2DReadWriteView _outputUav;
         #endregion
 
         #region Methods.
@@ -95,30 +94,35 @@ namespace SobelComputeEngine
                 }
 
                 TextImagePath.Text = DialogOpenPng.FileName;
-                _sourceTexture?.Dispose();
+                _sourceTexture?.Texture?.Dispose();
                 _outputTexture?.Dispose();
                 _sourceTexture = null;
                 _outputTexture = null;
 
                 image = png.LoadFromFile(DialogOpenPng.FileName);
-                _sourceTexture = image.ConvertToFormat(BufferFormat.R8G8B8A8_UNorm).ToTexture(Path.GetFileNameWithoutExtension(DialogOpenPng.FileName), _graphics);
-
-                _outputTexture = new GorgonTexture("Output",
-                                                   _graphics,
-                                                   new GorgonTextureInfo(_sourceTexture.Info)
+                _sourceTexture = image.ConvertToFormat(BufferFormat.R8G8B8A8_UNorm)
+                                      .ToTexture2D(_graphics,
+                                                   new GorgonTextureLoadOptions
                                                    {
-                                                       Format = BufferFormat.R8G8B8A8_Typeless,
-                                                       Binding = TextureBinding.ShaderResource | TextureBinding.UnorderedAccess
-                                                   });
+                                                       Name =
+                                                           Path.GetFileNameWithoutExtension(DialogOpenPng.FileName)
+                                                   }).GetShaderResourceView();
+
+                _outputTexture = new GorgonTexture2D(_graphics,
+                                                     new GorgonTexture2DInfo(_sourceTexture, "Output")
+                                                     {
+                                                         Format = BufferFormat.R8G8B8A8_Typeless,
+                                                         Binding = TextureBinding.ShaderResource | TextureBinding.ReadWriteView
+                                                     });
 
                 // Get an SRV for the output texture so we can render it later.
                 _outputView = _outputTexture.GetShaderResourceView(BufferFormat.R8G8B8A8_UNorm);
 
                 // Get a UAV for the output.
-                _outputUav = _outputTexture.GetUnorderedAccessView(BufferFormat.R32_UInt);
+                _outputUav = _outputTexture.GetReadWriteView(BufferFormat.R32_UInt);
 
                 // Process the newly loaded texture.
-                _sobel.Process(_sourceTexture.DefaultShaderResourceView, _outputUav, TrackThickness.Value, TrackThreshold.Value / 100.0f);
+                _sobel.Process(_sourceTexture, _outputUav, TrackThickness.Value, TrackThreshold.Value / 100.0f);
 
                 TrackThreshold.Enabled = TrackThickness.Enabled = true;
             }
@@ -140,7 +144,7 @@ namespace SobelComputeEngine
         /// <returns><b>true</b> to continue rendering, <b>false</b> to stop.</returns>
         private bool Idle()
         {
-            _renderer.Render(_sourceTexture?.DefaultShaderResourceView, _outputView);
+            _renderer.Render(_sourceTexture, _outputView);
 
             return true;
         }
@@ -164,7 +168,21 @@ namespace SobelComputeEngine
                 // Unfortunately, because the two interfaces are disconnected, we need to ensure that we're not using a resource on the graphics side 
                 // when we want access to it on the compute side. This needs to be fixed as it can be a bit on the slow side to constantly do this 
                 // every frame.
-                _sobel.Process(_sourceTexture.DefaultShaderResourceView, _outputUav, TrackThickness.Value, TrackThreshold.Value / 100.0f);
+                _sobel.Process(_sourceTexture, _outputUav, TrackThickness.Value, TrackThreshold.Value / 100.0f);
+
+                GorgonCodecPng png = new GorgonCodecPng();
+                using (GorgonTexture2D tempTexture = new GorgonTexture2D(_graphics, new GorgonTexture2DInfo(_outputTexture)
+                                                                                    {
+                                                                                        Format = BufferFormat.R8G8B8A8_UNorm
+                                                                                    }))
+                {
+
+                    _outputTexture.CopyTo(tempTexture);
+                    using (IGorgonImage image = tempTexture.ToImage())
+                    {
+                        png.SaveToFile(image, @"D:\unpak\uav.png");
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -189,7 +207,7 @@ namespace SobelComputeEngine
             _sobel?.Dispose();
             _sobelShader?.Dispose();
             _outputTexture?.Dispose();
-            _sourceTexture?.Dispose();
+            _sourceTexture?.Texture?.Dispose();
             _renderer?.Dispose();
             _graphics?.Dispose();
         }
@@ -216,17 +234,7 @@ namespace SobelComputeEngine
                     return;
                 }
 
-                IGorgonVideoAdapterInfo videoDeviceInfo = deviceList.FirstOrDefault(item => item.SupportedFeatureLevel >= FeatureSet.Level_12_0);
-
-                // Do not allow us to continue further if we don't have a device capable of supporting the compute functionality.
-                if (videoDeviceInfo == null)
-                {
-                    GorgonDialogs.ErrorBox(this, "This example requires a minimum feature level of 11.0.");
-                    GorgonApplication.Quit();
-                    return;
-                }
-
-                _graphics = new GorgonGraphics(videoDeviceInfo);
+                _graphics = new GorgonGraphics(deviceList[0]);
                 _renderer = new GraphicsRenderer(_graphics);
                 _renderer.SetPanel(PanelDisplay);
 

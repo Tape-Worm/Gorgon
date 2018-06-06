@@ -135,6 +135,36 @@ namespace Gorgon.Graphics.Core
         #endregion
 
         #region Variables.
+        // An empty UAV count to get around an idiotic design decision (no count exposed on the method) for UAVs on compute shaders
+        private static readonly int[] _emptyUavCounts =
+        {
+            0
+        };
+
+        // An empty UAV to get around an idiotic design decision (no count exposed on the method) for UAVs on compute shaders
+        private static readonly D3D11.UnorderedAccessView[] _emptyUavs =
+        {
+            null
+        };
+
+        // An empty SRV.
+        private static readonly D3D11.ShaderResourceView[] _emptySrvs =
+        {
+            null
+        };
+
+        // An empty set of buffers.
+        private static readonly D3D11.Buffer[] _emptyBuffers =
+        {
+            null
+        };
+
+        // Empty sampler states.
+        private static readonly D3D11.SamplerState[] _emptySamplers =
+        {
+            null
+        };
+
         // The list of available shader types.
         private readonly ShaderType[] _shaderType = (ShaderType[])Enum.GetValues(typeof(ShaderType));
 
@@ -885,13 +915,21 @@ namespace Gorgon.Graphics.Core
         {
             if (samplers == null)
             {
-                shaderStage.SetSamplers(0);
+                shaderStage.SetSamplers(0, 1, _emptySamplers);
                 return;
             }
 
             (int start, int count) = samplers.GetDirtyItems();
 
-            shaderStage.SetSamplers(start, count, samplers.Native);
+            D3D11.SamplerState[] states = samplers.Native;
+
+            if (count == 0)
+            {
+                states = _emptySamplers;
+                count = 1;
+            }
+
+            shaderStage.SetSamplers(start, count, states);
         }
 
         /// <summary>
@@ -1038,8 +1076,7 @@ namespace Gorgon.Graphics.Core
             GorgonPipelineState lastState = _lastState.PipelineState;
             DrawCallChanges changes = DrawCallChanges.None;
 
-
-            if (ChangeBuilder(_lastState.PipelineState.PrimitiveType == currentState.PrimitiveType, DrawCallChanges.Topology, ref changes))
+            if (ChangeBuilder(lastState.PrimitiveType == currentState.PrimitiveType, DrawCallChanges.Topology, ref changes))
             {
                 _lastState.PipelineState.PrimitiveType = currentState.PrimitiveType;
             }
@@ -1062,7 +1099,7 @@ namespace Gorgon.Graphics.Core
             }
 
             if (((changes & DrawCallChanges.RasterState) != DrawCallChanges.RasterState)
-                && (ChangeBuilder(CompareScissorRects(lastState.RasterState?.ScissorRectangles, currentState.RasterState.ScissorRectangles),
+                && (ChangeBuilder(CompareScissorRects(lastState.RasterState?.ScissorRectangles, currentState.RasterState?.ScissorRectangles),
                                   DrawCallChanges.Scissors,
                                   ref changes)))
             {
@@ -1109,22 +1146,22 @@ namespace Gorgon.Graphics.Core
                 switch (shaderType)
                 {
                     case ShaderType.Vertex:
-                        D3DDeviceContext.VSSetConstantBuffers1(0, 0, (D3D11.Buffer[])null, null, null);
+                        D3DDeviceContext.VSSetConstantBuffers1(0, 1, _emptyBuffers, null, null);
                         break;
                     case ShaderType.Pixel:
-                        D3DDeviceContext.PSSetConstantBuffers1(0, 0, (D3D11.Buffer[])null, null, null);
+                        D3DDeviceContext.PSSetConstantBuffers1(0, 1, _emptyBuffers, null, null);
                         break;
                     case ShaderType.Geometry:
-                        D3DDeviceContext.GSSetConstantBuffers1(0, 0, (D3D11.Buffer[])null, null, null);
+                        D3DDeviceContext.GSSetConstantBuffers1(0, 1, _emptyBuffers, null, null);
                         break;
                     case ShaderType.Domain:
-                        D3DDeviceContext.DSSetConstantBuffers1(0, 0, (D3D11.Buffer[])null, null, null);
+                        D3DDeviceContext.DSSetConstantBuffers1(0, 1, _emptyBuffers, null, null);
                         break;
                     case ShaderType.Hull:
-                        D3DDeviceContext.HSSetConstantBuffers1(0, 0, (D3D11.Buffer[])null, null, null);
+                        D3DDeviceContext.HSSetConstantBuffers1(0, 1, _emptyBuffers, null, null);
                         break;
                     case ShaderType.Compute:
-                        D3DDeviceContext.CSSetConstantBuffers1(0, 0, (D3D11.Buffer[])null, null, null);
+                        D3DDeviceContext.CSSetConstantBuffers1(0, 1, _emptyBuffers, null, null);
                         break;
                 }
 
@@ -1148,25 +1185,38 @@ namespace Gorgon.Graphics.Core
                 constantBuffers.ViewCount[i] = (view.ElementCount + 15) & ~15;
             }
 
+            D3D11.Buffer[] buffers = constantBuffers.Native;
+            int[] viewStarts = constantBuffers.ViewStart;
+            int[] viewCounts = constantBuffers.ViewCount;
+
+            // If we have no buffers, then reset to empty.
+            if (count == 0)
+            {
+                buffers = _emptyBuffers;
+                viewStarts = null;
+                viewCounts = null;
+                count = 1;
+            }
+
             switch (shaderType)
             {
                 case ShaderType.Vertex:
-                    D3DDeviceContext.VSSetConstantBuffers1(start, count, constantBuffers.Native, constantBuffers.ViewStart, constantBuffers.ViewCount);
+                    D3DDeviceContext.VSSetConstantBuffers1(start, count, buffers, viewStarts, viewCounts);
                     break;
                 case ShaderType.Pixel:
-                    D3DDeviceContext.PSSetConstantBuffers1(start, count, constantBuffers.Native, constantBuffers.ViewStart, constantBuffers.ViewCount);
+                    D3DDeviceContext.PSSetConstantBuffers1(start, count, buffers, viewStarts, viewCounts);
                     break;
                 case ShaderType.Geometry:
-                    D3DDeviceContext.GSSetConstantBuffers1(start, count, constantBuffers.Native, constantBuffers.ViewStart, constantBuffers.ViewCount);
+                    D3DDeviceContext.GSSetConstantBuffers1(start, count, buffers, viewStarts, viewCounts);
                     break;
                 case ShaderType.Domain:
-                    D3DDeviceContext.DSSetConstantBuffers1(start, count, constantBuffers.Native, constantBuffers.ViewStart, constantBuffers.ViewCount);
+                    D3DDeviceContext.DSSetConstantBuffers1(start, count, buffers, viewStarts, viewCounts);
                     break;
                 case ShaderType.Hull:
-                    D3DDeviceContext.HSSetConstantBuffers1(start, count, constantBuffers.Native, constantBuffers.ViewStart, constantBuffers.ViewCount);
+                    D3DDeviceContext.HSSetConstantBuffers1(start, count, buffers, viewStarts, viewCounts);
                     break;
                 case ShaderType.Compute:
-                    D3DDeviceContext.CSSetConstantBuffers1(start, count, constantBuffers.Native, constantBuffers.ViewStart, constantBuffers.ViewCount);
+                    D3DDeviceContext.CSSetConstantBuffers1(start, count, buffers, viewStarts, viewCounts);
                     break;
             }
         }
@@ -1175,11 +1225,20 @@ namespace Gorgon.Graphics.Core
         /// Function to bind unordered access views to the pipeline.
         /// </summary>
         /// <param name="uavs">The unordered access views to bind.</param>
-        private void BindUavs(GorgonReadWriteViewBindings uavs)
+        /// <param name="useCs"><b>true</b> to set the uavs on the compute shader, <b>false</b> if they're being set on the draw interface.</param>
+        private void BindUavs(GorgonReadWriteViewBindings uavs, bool useCs)
         {
             if (uavs == null)
             {
-                D3DDeviceContext.OutputMerger.SetRenderTargets(DepthStencilView?.Native, _d3DRtvs);
+                if (!useCs)
+                {
+                    D3DDeviceContext.OutputMerger.SetRenderTargets(DepthStencilView?.Native, _d3DRtvs);
+                }
+                else
+                {
+                    D3DDeviceContext.ComputeShader.SetUnorderedAccessViews(0, _emptyUavs, _emptyUavCounts);
+                }
+
                 return;
             }
 
@@ -1196,7 +1255,21 @@ namespace Gorgon.Graphics.Core
                 _d3DUavs.Item2[i] = uavs.Counts[i];
             }
 
-            D3DDeviceContext.OutputMerger.SetUnorderedAccessViews(start, _d3DUavs.Item1, _d3DUavs.Item2);
+            if (!useCs)
+            {
+                D3DDeviceContext.OutputMerger.SetUnorderedAccessViews(start, _d3DUavs.Item1, _d3DUavs.Item2);
+            }
+            else
+            {
+                if (_d3DUavs.Item1.Length == 0)
+                {
+                    D3DDeviceContext.ComputeShader.SetUnorderedAccessViews(start, _emptyUavs, _emptyUavCounts);
+                }
+                else
+                {
+                    D3DDeviceContext.ComputeShader.SetUnorderedAccessViews(start, _d3DUavs.Item1, _d3DUavs.Item2);
+                }
+            }
         }
 
         /// <summary>
@@ -1211,22 +1284,22 @@ namespace Gorgon.Graphics.Core
                 switch (shaderType)
                 {
                     case ShaderType.Vertex:
-                        D3DDeviceContext.VertexShader.SetShaderResources(0, 0, (D3D11.ShaderResourceView[])null);
+                        D3DDeviceContext.VertexShader.SetShaderResources(0, 1, _emptySrvs);
                         break;
                     case ShaderType.Pixel:
-                        D3DDeviceContext.PixelShader.SetShaderResources(0, 0, (D3D11.ShaderResourceView[])null);
+                        D3DDeviceContext.PixelShader.SetShaderResources(0, 1, _emptySrvs);
                         break;
                     case ShaderType.Geometry:
-                        D3DDeviceContext.GeometryShader.SetShaderResources(0, 0, (D3D11.ShaderResourceView[])null);
+                        D3DDeviceContext.GeometryShader.SetShaderResources(0, 1, _emptySrvs);
                         break;
                     case ShaderType.Domain:
-                        D3DDeviceContext.DomainShader.SetShaderResources(0, 0, (D3D11.ShaderResourceView[])null);
+                        D3DDeviceContext.DomainShader.SetShaderResources(0, 1, _emptySrvs);
                         break;
                     case ShaderType.Hull:
-                        D3DDeviceContext.HullShader.SetShaderResources(0, 0, (D3D11.ShaderResourceView[])null);
+                        D3DDeviceContext.HullShader.SetShaderResources(0, 1, _emptySrvs);
                         break;
                     case ShaderType.Compute:
-                        D3DDeviceContext.ComputeShader.SetShaderResources(0, 0, (D3D11.ShaderResourceView[])null);
+                        D3DDeviceContext.ComputeShader.SetShaderResources(0, 1, _emptySrvs);
                         break;
                 }
 
@@ -1235,25 +1308,33 @@ namespace Gorgon.Graphics.Core
 
             (int start, int count) = srvs.GetDirtyItems();
 
+            D3D11.ShaderResourceView[] states = srvs.Native;
+
+            if (count == 0)
+            {
+                states = _emptySrvs;
+                count = 1;
+            }
+
             switch (shaderType)
             {
                 case ShaderType.Vertex:
-                    D3DDeviceContext.VertexShader.SetShaderResources(start, count, srvs.Native);
+                    D3DDeviceContext.VertexShader.SetShaderResources(start, count, states);
                     break;
                 case ShaderType.Pixel:
-                    D3DDeviceContext.PixelShader.SetShaderResources(start, count, srvs.Native);
+                    D3DDeviceContext.PixelShader.SetShaderResources(start, count, states);
                     break;
                 case ShaderType.Geometry:
-                    D3DDeviceContext.GeometryShader.SetShaderResources(start, count, srvs.Native);
+                    D3DDeviceContext.GeometryShader.SetShaderResources(start, count, states);
                     break;
                 case ShaderType.Domain:
-                    D3DDeviceContext.DomainShader.SetShaderResources(start, count, srvs.Native);
+                    D3DDeviceContext.DomainShader.SetShaderResources(start, count, states);
                     break;
                 case ShaderType.Hull:
-                    D3DDeviceContext.HullShader.SetShaderResources(start, count, srvs.Native);
+                    D3DDeviceContext.HullShader.SetShaderResources(start, count, states);
                     break;
                 case ShaderType.Compute:
-                    D3DDeviceContext.ComputeShader.SetShaderResources(start, count, srvs.Native);
+                    D3DDeviceContext.ComputeShader.SetShaderResources(start, count, states);
                     break;
             }
         }
@@ -1267,6 +1348,12 @@ namespace Gorgon.Graphics.Core
             if (resourceChanges == DrawCallChanges.None)
             {
                 return;
+            }
+
+            // Compute shaders are moved into the main call for dispatch, and are not available on any other call type.
+            if ((resourceChanges & DrawCallChanges.ComputeShader) == DrawCallChanges.ComputeShader)
+            {
+                D3DDeviceContext.ComputeShader.Set(_lastState.ComputeShader?.NativeShader);
             }
 
             if ((resourceChanges & DrawCallChanges.StreamOutBuffers) == DrawCallChanges.StreamOutBuffers)
@@ -1291,7 +1378,7 @@ namespace Gorgon.Graphics.Core
 
             if ((resourceChanges & DrawCallChanges.Uavs) == DrawCallChanges.Uavs)
             {
-                BindUavs(_lastState.ReadWriteViews);
+                BindUavs(_lastState.ReadWriteViews, false);
             }
 
             if ((resourceChanges & DrawCallChanges.PsSamplers) == DrawCallChanges.PsSamplers)
@@ -1383,6 +1470,11 @@ namespace Gorgon.Graphics.Core
             {
                 BindSrvs(ShaderType.Compute, _lastState.CsSrvs);
             }
+            
+            if ((resourceChanges & DrawCallChanges.CsUavs) == DrawCallChanges.CsUavs)
+            {
+                BindUavs(_lastState.CsReadWriteViews, true);
+            }
         }
 
         /// <summary>
@@ -1395,10 +1487,6 @@ namespace Gorgon.Graphics.Core
         {
             DrawCallChanges changes = DrawCallChanges.None;
 
-            Debug.Assert(currentState.CsSrvs != null, "ComputeShader srvs are null - This is not allowed.");
-            Debug.Assert(currentState.CsConstantBuffers != null, "ComputeShader constants is null - This is not allowed.");
-            Debug.Assert(currentState.CsSamplers != null, "ComputeShader samplers is null - This is not allowed.");
-            Debug.Assert(currentState.CsReadWriteViews != null, "ComputeShader read/write views is null - This is not allowed.");
             Debug.Assert(currentState.HsSamplers != null, "HullShader samplers is null - This is not allowed.");
             Debug.Assert(currentState.HsSrvs != null, "HullShader srvs are null - This is now allowed.");
             Debug.Assert(currentState.HsConstantBuffers != null, "HullShader constants is null - This is now allowed.");
@@ -1607,12 +1695,10 @@ namespace Gorgon.Graphics.Core
                 }
             }
 
-            // TODO: Need to provide a separate system for compute.
             // Check compute shader resources if we have or had a compute shader assigned.
-            /*if ((currentState.PipelineState.ComputeShader == null)
-                && ((pipelineChanges & DrawCallChanges.ComputeShader) != DrawCallChanges.ComputeShader))
+            if (ChangeBuilder(currentState.ComputeShader == _lastState.ComputeShader, DrawCallChanges.ComputeShader, ref changes))
             {
-                return changes;
+                _lastState.ComputeShader = currentState.ComputeShader;
             }
 
             if (ChangeBuilder(currentState.CsReadWriteViews.DirtyEquals(_lastState.CsReadWriteViews), DrawCallChanges.CsUavs, ref changes))
@@ -1627,21 +1713,21 @@ namespace Gorgon.Graphics.Core
                 _lastState.CsSamplers = currentState.CsSamplers;
             }
 
-            if (ChangeBuilder(currentState.HsConstantBuffers.DirtyEquals(_lastState.CsConstantBuffers),
+            if (ChangeBuilder(currentState.CsConstantBuffers.DirtyEquals(_lastState.CsConstantBuffers),
                               DrawCallChanges.CsConstants,
                               ref changes))
             {
                 _lastState.CsConstantBuffers = currentState.CsConstantBuffers;
             }
 
-            if (!ChangeBuilder(currentState.HsSrvs.DirtyEquals(_lastState.CsSrvs),
+            if (!ChangeBuilder(currentState.CsSrvs.DirtyEquals(_lastState.CsSrvs),
                                DrawCallChanges.CsResourceViews,
                                ref changes))
             {
                 return changes;
             }
 
-            _lastState.CsSrvs = currentState.CsSrvs;*/
+            _lastState.CsSrvs = currentState.CsSrvs;
 
             return changes;
         }
@@ -2496,6 +2582,40 @@ namespace Gorgon.Graphics.Core
             }
 
             ClearStateCache(true);
+        }
+
+        /// <summary>
+        /// Function to execute a dispatch call for a compute shader.
+        /// </summary>
+        /// <param name="dispatchCall">The call to execute.</param>
+        /// <param name="threadGroupCountX">The number of thread groups to dispatch in the X direction.</param>
+        /// <param name="threadGroupCountY">The number of thread groups to dispatch in the Y direction.</param>
+        /// <param name="threadGroupCountZ">The number of thread groups to dispatch in the Z direction.</param>
+        internal void Dispatch(GorgonDispatchCall dispatchCall, int threadGroupCountX, int threadGroupCountY, int threadGroupCountZ)
+        {
+            dispatchCall.ValidateObject(nameof(dispatchCall));
+            threadGroupCountX.ValidateRange(nameof(threadGroupCountX), 0, GorgonComputeEngine.MaxThreadGroupCount);
+            threadGroupCountY.ValidateRange(nameof(threadGroupCountY), 0, GorgonComputeEngine.MaxThreadGroupCount);
+            threadGroupCountZ.ValidateRange(nameof(threadGroupCountZ), 0, GorgonComputeEngine.MaxThreadGroupCount);
+
+            SetDrawStates(dispatchCall.D3DState, _blendFactor, _blendSampleMask, _depthStencilReference);
+            D3DDeviceContext.Dispatch(threadGroupCountX, threadGroupCountY, threadGroupCountZ);
+        }
+
+        /// <summary>
+        /// Function to execute a dispatch call for a compute shader.
+        /// </summary>
+        /// <param name="dispatchCall">The call to execute.</param>
+        /// <param name="indirectArgs">The buffer containing the arguments for the compute shader.</param>
+        /// <param name="threadGroupOffset">[Optional] The offset within the buffer, in bytes, to where the arguments are stored.</param>
+        internal void Dispatch(GorgonDispatchCall dispatchCall, GorgonBufferCommon indirectArgs, int threadGroupOffset = 0)
+        {
+            dispatchCall.ValidateObject(nameof(dispatchCall));
+            indirectArgs.ValidateObject(nameof(indirectArgs));
+            threadGroupOffset.ValidateRange(nameof(threadGroupOffset), 0, int.MaxValue);
+
+            SetDrawStates(dispatchCall.D3DState, _blendFactor, _blendSampleMask, _depthStencilReference);
+            D3DDeviceContext.DispatchIndirect(indirectArgs.Native, threadGroupOffset);
         }
 
         /// <summary>

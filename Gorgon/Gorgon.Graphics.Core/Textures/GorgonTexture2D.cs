@@ -1813,7 +1813,7 @@ namespace Gorgon.Graphics.Core
                 throw new ArgumentException(Resources.GORGFX_ERR_VIEW_NO_TYPELESS, nameof(format));
 	        }
 
-	        if ((FormatInformation.Group != info.Group)
+	        if (((info.Group != BufferFormat.R32_Typeless) && (FormatInformation.Group != info.Group))
 	            || (info.SizeInBytes != FormatInformation.SizeInBytes))
 	        {
 	            throw new ArgumentException(string.Format(Resources.GORGFX_ERR_VIEW_CANNOT_CAST_FORMAT,

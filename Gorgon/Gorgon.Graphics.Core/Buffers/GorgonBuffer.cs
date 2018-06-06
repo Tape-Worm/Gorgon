@@ -156,12 +156,12 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <remarks>
         /// <para>
-        /// This flag only applies to buffers with a <see cref="Binding"/> of <see cref="BufferBinding.ReadWriteView"/>, and/or <see cref="BufferBinding.Shader"/>. If the <see cref="Binding"/> does not
+        /// This flag only applies to buffers with a <see cref="Binding"/> of <see cref="BufferBinding.ReadWrite"/>, and/or <see cref="BufferBinding.Shader"/>. If the <see cref="Binding"/> does not
         /// contain one of these flags, then this will always return <b>false</b>.
         /// </para>
         /// </remarks>
         public bool IndirectArgs => (_info.IndirectArgs) && (((Binding & BufferBinding.Shader) == BufferBinding.Shader) ||
-                                                             ((Binding & BufferBinding.ReadWriteView) == BufferBinding.ReadWriteView));
+                                                             ((Binding & BufferBinding.ReadWrite) == BufferBinding.ReadWrite));
         #endregion
 
         #region Methods.
@@ -179,7 +179,7 @@ namespace Gorgon.Graphics.Core
                 bindFlags |= D3D11.BindFlags.ShaderResource;
             }
 
-            if ((binding & BufferBinding.ReadWriteView) == BufferBinding.ReadWriteView)
+            if ((binding & BufferBinding.ReadWrite) == BufferBinding.ReadWrite)
             {
                 bindFlags |= D3D11.BindFlags.UnorderedAccess;
             }
@@ -273,8 +273,8 @@ namespace Gorgon.Graphics.Core
                     break;
                 case ResourceUsage.Default:
                     if ((binding != BufferBinding.Shader) 
-                        && (binding != BufferBinding.ReadWriteView)
-                        && (binding != (BufferBinding.Shader | BufferBinding.ReadWriteView)))
+                        && (binding != BufferBinding.ReadWrite)
+                        && (binding != (BufferBinding.Shader | BufferBinding.ReadWrite)))
                     {
                         break;
                     }
@@ -539,7 +539,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="elementCount">[Optional] The number of elements to view.</param>
         /// <returns>A <see cref="GorgonBufferReadWriteView"/> used to bind the buffer to a shader.</returns>
         /// <exception cref="GorgonException">
-        /// <para>Thrown when this buffer does not have a <see cref="BufferBinding"/> of <see cref="BufferBinding.ReadWriteView"/>.</para>
+        /// <para>Thrown when this buffer does not have a <see cref="BufferBinding"/> of <see cref="BufferBinding.ReadWrite"/>.</para>
         /// <para>-or-</para>
         /// <para>Thrown when this buffer has a usage of <see cref="ResourceUsage.Staging"/>.</para>
         /// </exception>
@@ -564,7 +564,7 @@ namespace Gorgon.Graphics.Core
         public GorgonBufferReadWriteView GetReadWriteView(BufferFormat format, int startElement = 0, int elementCount = 0)
         {
             if ((Usage == ResourceUsage.Staging)
-                || ((Binding & BufferBinding.ReadWriteView) != BufferBinding.ReadWriteView))
+                || ((Binding & BufferBinding.ReadWrite) != BufferBinding.ReadWrite))
             {
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_UAV_RESOURCE_NOT_VALID, Name));
             }
@@ -617,7 +617,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="uavType">[Optional] The type of uav to create.</param>
         /// <returns>A <see cref="GorgonStructuredReadWriteView"/> used to bind the buffer to a shader.</returns>
         /// <exception cref="GorgonException">
-        /// Thrown when this buffer does not have a <see cref="BufferBinding"/> of <see cref="BufferBinding.ReadWriteView"/>.
+        /// Thrown when this buffer does not have a <see cref="BufferBinding"/> of <see cref="BufferBinding.ReadWrite"/>.
         /// <para>-or-</para>
         /// <para>Thrown when this buffer has a usage of <see cref="ResourceUsage.Staging"/>.</para>
         /// </exception>
@@ -642,7 +642,7 @@ namespace Gorgon.Graphics.Core
         public GorgonStructuredReadWriteView GetStructuredReadWriteView(int startElement = 0, int elementCount = 0, StructuredBufferReadWriteViewType uavType = StructuredBufferReadWriteViewType.None)
         {
             if ((Usage == ResourceUsage.Staging)
-                || ((Binding & BufferBinding.ReadWriteView) != BufferBinding.ReadWriteView))
+                || ((Binding & BufferBinding.ReadWrite) != BufferBinding.ReadWrite))
             {
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_UAV_RESOURCE_NOT_VALID, Name));
             }
@@ -681,7 +681,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="startElement">[Optional] The first element to start viewing from.</param>
         /// <param name="elementCount">[Optional] The number of elements to view.</param>
         /// <returns>A <see cref="GorgonRawReadWriteView"/> used to bind the buffer to a shader.</returns>
-        /// <exception cref="GorgonException">Thrown when this buffer does not have a <see cref="BufferBinding"/> of <see cref="BufferBinding.ReadWriteView"/>.
+        /// <exception cref="GorgonException">Thrown when this buffer does not have a <see cref="BufferBinding"/> of <see cref="BufferBinding.ReadWrite"/>.
         /// <para>-or-</para>
         /// <para>Thrown when this buffer has a usage of <see cref="ResourceUsage.Staging"/>.</para>
         /// </exception>
@@ -744,7 +744,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="startElement">[Optional] The first element to start viewing from.</param>
         /// <param name="elementCount">[Optional] The number of elements to view.</param>
         /// <returns>A <see cref="GorgonRawReadWriteView"/> used to bind the buffer to a shader.</returns>
-        /// <exception cref="GorgonException">Thrown when this buffer does not have a <see cref="BufferBinding"/> of <see cref="BufferBinding.ReadWriteView"/>.
+        /// <exception cref="GorgonException">Thrown when this buffer does not have a <see cref="BufferBinding"/> of <see cref="BufferBinding.ReadWrite"/>.
         /// <para>-or-</para>
         /// <para>Thrown when this buffer has a usage of <see cref="ResourceUsage.Staging"/>.</para>
         /// </exception>
@@ -771,7 +771,7 @@ namespace Gorgon.Graphics.Core
         public GorgonRawReadWriteView GetRawReadWriteView(RawBufferElementType elementType, int startElement = 0, int elementCount = 0)
         {
             if ((Usage == ResourceUsage.Staging)
-                || ((Binding & BufferBinding.ReadWriteView) != BufferBinding.ReadWriteView))
+                || ((Binding & BufferBinding.ReadWrite) != BufferBinding.ReadWrite))
             {
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_UAV_RESOURCE_NOT_VALID, Name));
             }

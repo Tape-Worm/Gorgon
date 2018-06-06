@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ComputeEngine.Properties {
+namespace Gorgon.Graphics.Example.Properties {
     using System;
     
     
@@ -19,7 +19,7 @@ namespace ComputeEngine.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -39,7 +39,7 @@ namespace ComputeEngine.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("ComputeEngine.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Gorgon.Graphics.Example.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,7 +61,24 @@ namespace ComputeEngine.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to // A simple data buffer holding some data.
+        ///struct DataBuffer
+        ///{
+        ///	int Sum;
+        ///	float Product;
+        ///};
+        ///
+        ///// Our inputs and outputs.
+        ///Buffer&lt;int&gt; IntData : register(t0);
+        ///Buffer&lt;float&gt; FltData : register(t1);
+        ///RWStructuredBuffer&lt;DataBuffer&gt; OutputData : register(u0);
+        ///
+        ///// A -very- simple compute shader to show how to use the compute engine in Gorgon.
+        ///[numthreads(1, 1, 1)]
+        ///void SimpleCompute(uint3 threadId : SV_DispatchThreadID)
+        ///{
+        ///	OutputData[threadId.x].Sum = IntData[threadId.x] + IntData[threadId.x];
+        ///	Outp [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string ComputeShader {
             get {

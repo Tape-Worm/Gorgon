@@ -37,7 +37,7 @@ namespace Gorgon.Graphics.Core
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This type of view allows for unordered access to a <see cref="GorgonVertexBuffer"/>. The buffer must have been created with the <see cref="BufferBinding.ReadWriteView"/> flag in its 
+    /// This type of view allows for unordered access to a <see cref="GorgonVertexBuffer"/>. The buffer must have been created with the <see cref="BufferBinding.ReadWrite"/> flag in its 
     /// <see cref="IGorgonVertexBufferInfo.Binding"/> property.
     /// </para>
     /// <para>

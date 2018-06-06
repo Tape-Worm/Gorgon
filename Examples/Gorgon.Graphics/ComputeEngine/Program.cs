@@ -27,12 +27,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using ComputeEngine.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Example.Properties;
 using Gorgon.Math;
-using Gorgon.Native;
 
 namespace ComputeEngine
 {
@@ -91,6 +91,8 @@ namespace ComputeEngine
         private static GorgonBuffer _outputBuffer;
         // The compute engine.
         private static GorgonComputeEngine _engine;
+        // The dispatch call builder.
+        private static readonly GorgonDispatchCallBuilder _dispatchBuilder = new GorgonDispatchCallBuilder();
         #endregion
 
         #region Methods.
@@ -103,31 +105,28 @@ namespace ComputeEngine
             // have to copy this data to a CPU accessible buffer once we're done, thus we have the _cpuData buffer below.
             // The GPU output data buffer will be bound to the compute engine as an unordered access view (UAV) so that we can write 
             // the data back into the buffer.
-            _outputBuffer = new GorgonBuffer("OutputData",
-                                             _graphics,
-                                             new GorgonBufferInfo
+            _outputBuffer = new GorgonBuffer(_graphics,
+                                             new GorgonBufferInfo("OutputData")
                                              {
                                                  Usage = ResourceUsage.Default,
-                                                 SizeInBytes = DirectAccess.SizeOf<OutputData>() * MaxValues,
-                                                 Binding = BufferBinding.UnorderedAccess,
-                                                 StructureSize = DirectAccess.SizeOf<OutputData>(),
+                                                 SizeInBytes = Unsafe.SizeOf<OutputData>() * MaxValues,
+                                                 Binding = BufferBinding.ReadWrite,
+                                                 StructureSize = Unsafe.SizeOf<OutputData>(),
                                                  AllowCpuRead = true
                                              });
 
             // This is our input data buffers. One for integer values, and another for floating point.
             // These are just standard buffers that will be bound as a shader resource view (SRV).
-            _intBuffer = new GorgonBuffer("IntData",
-                                          _graphics,
-                                          new GorgonBufferInfo
+            _intBuffer = new GorgonBuffer(_graphics,
+                                          new GorgonBufferInfo("IntData")
                                           {
                                               Usage = ResourceUsage.Default,
                                               SizeInBytes = sizeof(int) * MaxValues,
                                               Binding = BufferBinding.Shader
                                           });
 
-            _floatBuffer = new GorgonBuffer("FloatData",
-                                            _graphics,
-                                            new GorgonBufferInfo
+            _floatBuffer = new GorgonBuffer(_graphics,
+                                            new GorgonBufferInfo("FloatData")
                                             {
                                                 Usage = ResourceUsage.Default,
                                                 SizeInBytes = sizeof(float) * MaxValues,
@@ -147,20 +146,8 @@ namespace ComputeEngine
             }
 
             // Send to the buffers.
-            _graphics.SetDataRange(inputInts, _intBuffer);
-            _graphics.SetDataRange(inputFloats, _floatBuffer);
-
-            var buffer = new GorgonBuffer("a",
-                                          _graphics,
-                                          new GorgonBufferInfo
-                                          {
-                                              AllowCpuRead = true,
-                                              Usage = ResourceUsage.Default,
-                                              SizeInBytes = 1234,
-                                              Binding = BufferBinding.Shader,
-                                              IndirectArgs = true
-                                          });
-            buffer.Dispose();
+            _intBuffer.SetData(inputInts);
+            _floatBuffer.SetData(inputFloats);
         }
 
         /// <summary>
@@ -174,7 +161,7 @@ namespace ComputeEngine
 
             Console.WriteLine("Enumerating video devices...");
 
-            IGorgonVideoAdapterInfo firstDevice = deviceList.FirstOrDefault(item => item.SupportedFeatureLevel >= FeatureSet.Level_12_0);
+            IGorgonVideoAdapterInfo firstDevice = deviceList.FirstOrDefault(item => item.FeatureSet >= FeatureSet.Level_12_0);
 
             // If a device with a feature set of at least 12.0 not found, then we cannot run this example. The compute engine requires a minimum 
             // of feature level 12.0 to run.
@@ -207,22 +194,18 @@ namespace ComputeEngine
         private static OutputData[] Execute()
         {
             // The first step is to provide the compute shader with the information it needs to do its job.
-            _engine.ShaderResourceViews[0] = _intBuffer.GetShaderResourceView(BufferFormat.R32_SInt);
-            _engine.ShaderResourceViews[1] = _floatBuffer.GetShaderResourceView(BufferFormat.R32_Float);
-            _engine.UnorderedAccessViews[0] = new GorgonUavBinding(_outputBuffer.GetStructuredUav());
+            GorgonDispatchCall dispatch = _dispatchBuilder.ShaderResource(_intBuffer.GetShaderResourceView(BufferFormat.R32_SInt))
+                                                          .ShaderResource(_floatBuffer.GetShaderResourceView(BufferFormat.R32_Float), 1)
+                                                          .ReadWriteView(new GorgonReadWriteViewBinding(_outputBuffer.GetStructuredReadWriteView()))
+                                                          .ComputeShader(_computeShader)
+                                                          .Build();
 
             // Now, we execute the shader with MaxValues threads for the first thread group.
-            _engine.Execute(_computeShader, MaxValues, 1, 1);
-
-            // We can use this line to force the compute engine to reset its state back to the initial state.
-            // This is handy in case we leave items bound to the engine that don't need to be.
-            // Keep in mind that this will incur a slight performance penalty, so it's best to only do this when 
-            // absolutely necessary.
-            _engine.Unbind();
+            _engine.Execute(dispatch, MaxValues, 1, 1);
 
             // Finally, let's turn this into some meaningful data structures rather than raw buffer data.
             // This will enable us handle the data better in our code.
-            return _graphics.GetData<OutputData>(_outputBuffer);
+            return _outputBuffer.GetData<OutputData>();
         }
 
         /// <summary>

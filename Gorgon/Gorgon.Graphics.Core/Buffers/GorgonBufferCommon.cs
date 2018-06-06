@@ -195,7 +195,7 @@ namespace Gorgon.Graphics.Core
                         throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_NO_SO, usage));
                     }
 
-                    if ((binding & BufferBinding.ReadWriteView) == BufferBinding.ReadWriteView)
+                    if ((binding & BufferBinding.ReadWrite) == BufferBinding.ReadWrite)
                     {
                         throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_NO_UAV, usage));
                     }

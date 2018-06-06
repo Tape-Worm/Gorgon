@@ -116,14 +116,6 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Property to return the resources for the compute shader.
-        /// </summary>
-        public GorgonComputeShaderResources ComputeShader
-        {
-            get;
-        }
-
-        /// <summary>
         /// Property to return the list of unordered access views for the shader.
         /// </summary>
         public IGorgonReadOnlyArray<GorgonReadWriteViewBinding> ReadWriteViews => D3DState.ReadWriteViews;
@@ -140,9 +132,9 @@ namespace Gorgon.Graphics.Core
             GeometryShader.ShaderResources = D3DState.GsSrvs = new GorgonShaderResourceViews();
             DomainShader.ShaderResources = D3DState.DsSrvs = new GorgonShaderResourceViews();
             HullShader.ShaderResources = D3DState.HsSrvs = new GorgonShaderResourceViews();
-            ComputeShader.ShaderResources = D3DState.CsSrvs = new GorgonShaderResourceViews();
             D3DState.ReadWriteViews = new GorgonReadWriteViewBindings();
-            ComputeShader.ReadWriteViews = D3DState.CsReadWriteViews = new GorgonReadWriteViewBindings();
+            D3DState.CsSrvs = new GorgonShaderResourceViews();
+            D3DState.CsReadWriteViews = new GorgonReadWriteViewBindings();
         }
 
         /// <summary>
@@ -155,7 +147,7 @@ namespace Gorgon.Graphics.Core
             GeometryShader.Samplers = D3DState.GsSamplers = new GorgonSamplerStates();
             HullShader.Samplers = D3DState.HsSamplers = new GorgonSamplerStates();
             DomainShader.Samplers = D3DState.DsSamplers = new GorgonSamplerStates();
-            ComputeShader.Samplers = D3DState.CsSamplers = new GorgonSamplerStates();
+            D3DState.CsSamplers = new GorgonSamplerStates();
         }
 
         /// <summary>
@@ -168,7 +160,7 @@ namespace Gorgon.Graphics.Core
             GeometryShader.ConstantBuffers = D3DState.GsConstantBuffers = new GorgonConstantBuffers();
             HullShader.ConstantBuffers = D3DState.HsConstantBuffers = new GorgonConstantBuffers();
             DomainShader.ConstantBuffers = D3DState.DsConstantBuffers = new GorgonConstantBuffers();
-            ComputeShader.ConstantBuffers = D3DState.CsConstantBuffers = new GorgonConstantBuffers();
+            D3DState.CsConstantBuffers = new GorgonConstantBuffers();
         }
         #endregion
 
@@ -183,7 +175,6 @@ namespace Gorgon.Graphics.Core
             GeometryShader = new GorgonShaderResources();
             DomainShader = new GorgonShaderResources();
             HullShader = new GorgonShaderResources();
-            ComputeShader = new GorgonComputeShaderResources();
         }
         #endregion
     }

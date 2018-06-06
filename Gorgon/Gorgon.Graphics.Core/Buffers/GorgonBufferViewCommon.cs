@@ -103,6 +103,7 @@ namespace Gorgon.Graphics.Core
             TotalElementCount = totalElementCount;
             StartElement = startingElement;
             ElementCount = elementCount;
+            Buffer = buffer;
         }
         #endregion
     }

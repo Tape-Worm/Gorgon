@@ -51,7 +51,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// The GPU will have read/write access via the shaders using unordered access.
         /// </summary>
-        ReadWriteView = 2,
+        ReadWrite = 2,
         /// <summary>
         /// The GPU will bind this buffer as a stream out buffer used to receive data.
         /// </summary>
@@ -226,7 +226,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <remarks>
         /// <para>
-        /// This flag only applies to buffers with a <see cref="Binding"/> of <see cref="BufferBinding.ReadWriteView"/>, and/or <see cref="BufferBinding.Shader"/>. If the binding is set to anything else, 
+        /// This flag only applies to buffers with a <see cref="Binding"/> of <see cref="BufferBinding.ReadWrite"/>, and/or <see cref="BufferBinding.Shader"/>. If the binding is set to anything else, 
         /// then this flag is treated as being set to <b>false</b>.
         /// </para>
         /// <para>

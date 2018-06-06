@@ -44,7 +44,7 @@ namespace Gorgon.Graphics.Core
     {
         #region Variables.
         // A structured buffer unordered access view for quick access.
-        private readonly GorgonStructuredReadWriteView _uav;
+        private readonly GorgonStructuredReadWriteView _structuredUav;
 
         /// <summary>
         /// An empty UAV binding.
@@ -70,7 +70,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the type of UAV if the UAV is for a structured buffer.
         /// </summary>
-        public StructuredBufferReadWriteViewType ReadWriteViewType => _uav?.ReadWriteViewType ?? StructuredBufferReadWriteViewType.None;
+        public StructuredBufferReadWriteViewType ReadWriteViewType => _structuredUav?.ReadWriteViewType ?? StructuredBufferReadWriteViewType.None;
         #endregion
 
         #region Methods.
@@ -168,7 +168,7 @@ namespace Gorgon.Graphics.Core
         {
             ReadWriteView = readWriteView;
             InitialCount = -1;
-            _uav = null;
+            _structuredUav = null;
         }
 
         /// <summary>
@@ -179,7 +179,7 @@ namespace Gorgon.Graphics.Core
         public GorgonReadWriteViewBinding(GorgonStructuredReadWriteView readWriteView, int initialCount)
         {
             ReadWriteView = readWriteView;
-            _uav = readWriteView;
+            _structuredUav = readWriteView;
             InitialCount = initialCount;
         }
         #endregion

@@ -46,7 +46,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// The buffer can have unordered access views.
         /// </summary>
-        UnorderedAccess = BufferBinding.ReadWriteView
+        UnorderedAccess = BufferBinding.ReadWrite
     }
 
 	/// <summary>

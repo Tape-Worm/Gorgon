@@ -33,7 +33,7 @@ namespace Gorgon.Graphics.Core
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This type of view allows for unordered access to a buffer. The buffer must have been created with the <see cref="BufferBinding.ReadWriteView"/> flag in its binding property.
+    /// This type of view allows for unordered access to a buffer. The buffer must have been created with the <see cref="BufferBinding.ReadWrite"/> flag in its binding property.
     /// </para>
     /// <para>
     /// The unordered access allows a shader to read/write any part of a <see cref="GorgonGraphicsResource"/> by multiple threads without memory contention. This is done through the use of 
