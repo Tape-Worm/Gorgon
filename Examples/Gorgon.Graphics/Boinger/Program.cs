@@ -133,8 +133,6 @@ namespace Gorgon.Graphics.Example
 		private static float _dropSpeed = 0.01f;
 		// The selected video mode.
 		private static GorgonVideoMode _selectedVideoMode;
-		// The current output.
-		private static IGorgonVideoOutputInfo _output;
 		// The draw call used to render the plane(s).
 		private static readonly GorgonDrawIndexCall[] _drawCalls = new GorgonDrawIndexCall[3];
 		#endregion
@@ -458,13 +456,17 @@ namespace Gorgon.Graphics.Example
 
             // Build the depth buffer for our swap chain.
             BuildDepthBuffer(_swap.Width, _swap.Height);
+
             
 			if (!Settings.Default.IsWindowed)
 			{
+			    // Get the output for the main window.
+			    Screen currentScreen = Screen.FromControl(_mainForm);
+			    IGorgonVideoOutputInfo output = _graphics.VideoAdapter.Outputs[currentScreen.DeviceName];
+
 				// If we've asked for full screen mode, then locate the correct video mode and set us up.
-				_output = _graphics.VideoAdapter.Outputs[Screen.PrimaryScreen.DeviceName];
 			    _selectedVideoMode = new GorgonVideoMode(Settings.Default.Resolution.Width, Settings.Default.Resolution.Height, BufferFormat.R8G8B8A8_UNorm);
-				_swap.EnterFullScreen(in _selectedVideoMode, _output);
+				_swap.EnterFullScreen(in _selectedVideoMode, output);
 			}
 
 			// Handle resizing because the projection matrix and depth buffer needs to be updated to reflect the new view size.
@@ -658,7 +660,7 @@ namespace Gorgon.Graphics.Example
         /// <exception cref="System.NotSupportedException"></exception>
         private static void _mainForm_KeyDown(object sender, KeyEventArgs e)
 		{
-			if ((!e.Alt) || (e.KeyCode != Keys.Enter) || (_output == null))
+			if ((!e.Alt) || (e.KeyCode != Keys.Enter))
 			{
 				return;
 			}
@@ -669,7 +671,11 @@ namespace Gorgon.Graphics.Example
 			}
 			else
 			{
-				_swap.EnterFullScreen(in _selectedVideoMode, _output);
+			    // Get the output for the main window.
+			    Screen currentScreen = Screen.FromControl(_mainForm);
+			    IGorgonVideoOutputInfo output = _graphics.VideoAdapter.Outputs[currentScreen.DeviceName];
+
+				_swap.EnterFullScreen(in _selectedVideoMode, output);
 			}
 		}
 
@@ -697,7 +703,7 @@ namespace Gorgon.Graphics.Example
             // This is also the place to re-apply any custom viewports, or scissor rectangles.
 
 			// Reset our projection matrix to match our new size.
-			_projMatrix = DX.Matrix.PerspectiveFovLH((75.0f).ToRadians(), e.Size.Width / (float)e.Size.Height, 0.125f, 500.0f);
+			_projMatrix = DX.Matrix.PerspectiveFovLH((75.0f).ToRadians(), e.Size.Width / (float)e.Size.Height, 500.0f, 0.125f);
             BuildDepthBuffer(e.Size.Width, e.Size.Height);
             _graphics.SetDepthStencil(_depthBuffer);
         }
