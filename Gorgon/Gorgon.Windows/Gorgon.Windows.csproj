@@ -78,45 +78,31 @@
     <Compile Include="UI\GorgonApplication.cs" />
     <Compile Include="UI\GorgonDialogs.cs" />
     <Compile Include="UI\GorgonFlatFormTheme.cs" />
-    <Compile Include="UI\_Controls\GorgonSelectablePanel.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="UI\_Controls\GorgonSelectablePanel.cs" />
     <Compile Include="UI\_Enums\Alignment.cs" />
     <Compile Include="UI\_Extensions\GorgonControlExtensions.cs" />
     <Compile Include="UI\_Extensions\GorgonListViewExtensions.cs" />
-    <Compile Include="UI\_Forms\GorgonFlatForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="UI\_Forms\GorgonFlatForm.cs" />
     <Compile Include="UI\_Forms\GorgonFlatForm.Designer.cs">
       <DependentUpon>GorgonFlatForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\_Forms\_Internal\BaseDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="UI\_Forms\_Internal\BaseDialog.cs" />
     <Compile Include="UI\_Forms\_Internal\BaseDialog.designer.cs">
       <DependentUpon>BaseDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\_Forms\_Internal\ConfirmationDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="UI\_Forms\_Internal\ConfirmationDialog.cs" />
     <Compile Include="UI\_Forms\_Internal\ConfirmationDialog.designer.cs">
       <DependentUpon>ConfirmationDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\_Forms\_Internal\ConfirmationDialogEx.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="UI\_Forms\_Internal\ConfirmationDialogEx.cs" />
     <Compile Include="UI\_Forms\_Internal\ConfirmationDialogEx.designer.cs">
       <DependentUpon>ConfirmationDialogEx.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\_Forms\_Internal\ErrorDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="UI\_Forms\_Internal\ErrorDialog.cs" />
     <Compile Include="UI\_Forms\_Internal\ErrorDialog.designer.cs">
       <DependentUpon>ErrorDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\_Forms\_Internal\WarningDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="UI\_Forms\_Internal\WarningDialog.cs" />
     <Compile Include="UI\_Forms\_Internal\WarningDialog.designer.cs">
       <DependentUpon>WarningDialog.cs</DependentUpon>
     </Compile>

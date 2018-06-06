@@ -52,9 +52,7 @@
     <Compile Include="..\..\..\Gorgon\Gorgon.Core\SharedAssemblyInfo.cs">
       <Link>SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="FormExample.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="FormExample.cs" />
     <Compile Include="FormExample.Designer.cs">
       <DependentUpon>FormExample.cs</DependentUpon>
     </Compile>
