@@ -1,7 +1,7 @@
-﻿#region MIT.
+﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2012 Michael Winsor
+// Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,40 +20,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Wednesday, August 22, 2012 9:31:26 PM
+// Created: June 6, 2018 12:50:43 PM
 // 
 #endregion
 
-namespace Gorgon.Renderers
-{
-	/// <summary>
-	/// Defines an object that can use colliders.
-	/// </summary>
-	public interface I2DCollisionObject
-	{
-		/// <summary>
-		/// Property to set or return the collider that is assigned to the object.
-		/// </summary>
-		Gorgon2DCollider Collider
-		{
-			get;
-			set;
-		}
+using System.Reflection;
+using System.Runtime.InteropServices;
 
-		/// <summary>
-		/// Property to return the list of vertices associated with the object.
-		/// </summary>
-		Gorgon2DVertex[] Vertices
-		{
-			get;
-		}
+// General Information about an assembly is controlled through the following
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+[assembly: AssemblyTitle("Gorgon.Renderers.Graphics2D")]
+[assembly: AssemblyDescription("A renderer used to draw two dimensional graphics using Direct 3D 11.4 for hardware accelation.")]
+[assembly: AssemblyCulture("")]
 
-		/// <summary>
-		/// Property to return the number of vertices to process.
-		/// </summary>
-		int VertexCount
-		{
-			get;
-		}
-	}
-}
+// The following GUID is for the ID of the typelib if this project is exposed to COM
+[assembly: Guid("4bb4ef41-1f32-4c50-bcbf-43c02f9600bd")]

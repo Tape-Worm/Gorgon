@@ -2181,9 +2181,8 @@ namespace Gorgon.Graphics.Core
         /// Function to build up a <see cref="GorgonPipelineState"/> object with Direct 3D 11 state objects by either creating new objects, or inheriting previous ones.
         /// </summary>
         /// <param name="newState">The new state to initialize.</param>
-        /// <param name="allocator">The allocator to use when creating the pipeline state object.</param>
         /// <returns>If the pipeline state matches a cached pipeline state, then the cached state is returned, otherwise a copy of the <paramref name="newState"/> is returned.</returns>
-        internal GorgonPipelineState CachePipelineState(GorgonPipelineState newState, GorgonPipelineStatePoolAllocator allocator)
+        internal GorgonPipelineState CachePipelineState(GorgonPipelineState newState)
         {
             // Existing states.
             D3D11.DepthStencilState depthStencilState = null;
@@ -2195,6 +2194,7 @@ namespace Gorgon.Graphics.Core
                 // ReSharper disable once ForCanBeConvertedToForeach
                 for (int i = 0; i < _cachedPipelineStates.Count; ++i)
                 {
+                    // Compute shaders don't use pipeline state.  So, we assume the compute shader is equal at all times.
                     DrawCallChanges inheritedState = DrawCallChanges.None;
                     GorgonPipelineState cachedState = _cachedPipelineStates[i];
 
@@ -2263,13 +2263,7 @@ namespace Gorgon.Graphics.Core
                 }
 
                 // Setup any uninitialized states.
-                var resultState = allocator != null ? allocator.Allocate() : new GorgonPipelineState(newState);
-                
-                if (allocator != null)
-                {
-                    newState.CopyTo(resultState);
-                }
-
+                var resultState = new GorgonPipelineState(newState);
                 InitializePipelineState(resultState, blendState, depthStencilState, rasterState);
                 resultState.ID = _cachedPipelineStates.Count;
                 _cachedPipelineStates.Add(resultState);

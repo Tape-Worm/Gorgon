@@ -306,21 +306,11 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Function to build a pipeline state.
         /// </summary>
-        /// <param name="allocator">[Optional] The allocator to use when creating pipeline state objects.</param>
         /// <returns>A new pipeline state.</returns>
-        /// <remarks>
-        /// <para>
-        /// Using an <paramref name="allocator"/> can provide different strategies when building pipelnie states.  If omitted, the pipeline state will be created using the standard <see langword="new"/> keyword.
-        /// </para>
-        /// <para>
-        /// A custom allocator can be beneficial because it allows us to use a pool for allocating the objects, and thus allows for recycling of objects. This keeps the garbage collector happy by keeping objects
-        /// around for as long as we need them, instead of creating objects that can potentially end up in the large object heap or in Gen 2.
-        /// </para>
-        /// </remarks>
-        public GorgonPipelineState Build(GorgonPipelineStatePoolAllocator allocator = null)
+        public GorgonPipelineState Build()
         {
             // Build the actual state.
-            return Graphics.CachePipelineState(_workState, allocator);
+            return Graphics.CachePipelineState(_workState);
         }
         #endregion
 

@@ -38,6 +38,7 @@ GorgonFull.snk
 /Docs/D3D11.3_Features.txt
 /Docs/D3D11.4_Features.txt
 /Gorgon/Gorgon.Graphics.Core/OLDE
+/Gorgon/Gorgon.Renderers/Gorgon2D/__OLDE__/
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/

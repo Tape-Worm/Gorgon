@@ -1,0 +1,250 @@
+﻿#region MIT
+// 
+// Gorgon.
+// Copyright (C) 2018 Michael Winsor
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+// 
+// Created: June 6, 2018 8:56:13 PM
+// 
+#endregion
+
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Gorgon.Graphics.Core;
+using Gorgon.Math;
+using Gorgon.Native;
+
+namespace Gorgon.Renderers
+{
+    /// <summary>
+    /// The renderer for sprite objects.
+    /// </summary>
+    internal class SpriteRenderer
+        : IDisposable, IGorgonGraphicsObject
+    {
+        #region Constants.
+        // Maximum number of sprites that can be buffered prior to sending to the GPU.
+        // We have 10,922 sprites (16 bit Index Buffer - 65536 bytes / 6 indices per sprite = ~10922).
+        private const int MaxSpriteCount = 10922;
+        // The maximum number of vertices we can render.
+        private const int MaxVertexCount = MaxSpriteCount * 4;
+        // The maximum number of indices we can render.
+        private const int MaxIndexCount = MaxSpriteCount * 6;
+        #endregion
+
+        #region Variables.
+        // Start with a modest cache size.
+        private Gorgon2DVertex[] _vertexCache = new Gorgon2DVertex[1024];
+        // The current vertex index.
+        private int _currentVertexIndex;
+        // The number of vertices allocated in the cache.
+        private int _allocatedVertexCount;
+        // The offset in the vertex buffer to start rendering at (in bytes).
+        private int _vertexBufferByteOffset;
+        // The starting index to render.
+        private int _indexStart;
+        // The number of indices queued.
+        private int _indexCount;
+        #endregion
+
+        #region Properties.
+        /// <summary>
+        /// Property to return the vertex buffer used by the sprite renderer.
+        /// </summary>
+        public GorgonVertexBufferBinding VertexBuffer
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Property to return the index buffer used by the sprite renderer.
+        /// </summary>
+        public GorgonIndexBuffer IndexBuffer
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Property to return the graphics interface that built this object.
+        /// </summary>
+        public GorgonGraphics Graphics
+        {
+            get;
+        }
+        #endregion
+
+        #region Methods.
+        /// <summary>
+        /// Function to expand the vertex cache if it is full.
+        /// </summary>
+        private void ExpandCache()
+        {
+            int previousSize = _vertexCache.Length / 4;
+            int newSize = previousSize + (previousSize / 2);
+            // Move to the next 
+            newSize = ((newSize + 63) & ~63) * 4;
+
+            Array.Resize(ref _vertexCache, newSize);
+
+            // Initialize empty slots.
+            for (int i = previousSize; i < newSize; ++i)
+            {
+                _vertexCache[i] = default;
+            }
+        }
+
+        /// <summary>
+        /// Function queue a sprite for rendering.
+        /// </summary>
+        /// <param name="sprite">The sprite to queue.</param>
+        public void QueueSprite(Gorgon2DRenderable sprite)
+        {
+            int lastVertex = _allocatedVertexCount + _currentVertexIndex + sprite.Vertices.Length;
+
+            // Ensure we actually have the room to cache the sprite vertices.
+            if (lastVertex >= _vertexCache.Length)
+            {
+                ExpandCache();
+            }
+
+            for (int i = 0; i < sprite.Vertices.Length; ++i, ++_allocatedVertexCount)
+            {
+                _vertexCache[_currentVertexIndex++] = sprite.Vertices[i];
+            }
+            
+            _indexCount += 6;
+        }
+
+        /// <summary>
+        /// Function to flush the cache data into the buffers and render the sprites.
+        /// </summary>
+        /// <param name="drawCall">The draw call that will be used to render the sprites.</param>
+        public void RenderBatches(GorgonDrawIndexCall drawCall)
+        {
+            GorgonVertexBuffer vertexBuffer = VertexBuffer.VertexBuffer;
+            int cacheIndex = _currentVertexIndex - _allocatedVertexCount;
+            
+            while (_allocatedVertexCount > 0)
+            {
+                int vertexCount = _allocatedVertexCount.Min(MaxVertexCount);
+                int indexCount = _indexCount.Min(MaxIndexCount);
+                int byteCount = Gorgon2DVertex.SizeInBytes * vertexCount;
+
+                // If we've exceeded our vertex or index buffer size, we need to reset from the beginning.
+                if (((_vertexBufferByteOffset + byteCount) >= vertexBuffer.SizeInBytes)
+                    || ((_indexStart + _indexCount) >= MaxIndexCount))
+                {
+                    _indexStart = 0;
+                    _vertexBufferByteOffset = 0;
+                }
+                
+                CopyMode copyMode = _vertexBufferByteOffset == 0 ? CopyMode.Discard : CopyMode.NoOverwrite;
+                
+                // Copy a chunk of the cache.
+                vertexBuffer.SetData(_vertexCache, cacheIndex, vertexCount, _vertexBufferByteOffset, copyMode);
+
+                drawCall.IndexStart = _indexStart;
+                drawCall.IndexCount = indexCount;
+                Graphics.Submit(drawCall);
+
+                // Move to the next block of bytes to render.
+                _vertexBufferByteOffset += byteCount;
+                _allocatedVertexCount -= vertexCount;
+                cacheIndex += vertexCount;
+                _indexStart += indexCount;
+                _indexCount -= indexCount;
+            }
+
+            // Invalidate the cache.
+            _currentVertexIndex = 0;
+            _allocatedVertexCount = 0;
+            _indexCount = 0;
+        }
+
+        /// <summary>
+        /// Function to initialize the resources required by the sprite renderer.
+        /// </summary>
+        public void InitializeResources()
+        {
+            // We don't need to update the index buffer ever.  So we can set up the indices right now.
+            using (GorgonNativeBuffer<ushort> indices = new GorgonNativeBuffer<ushort>(MaxSpriteCount * 6))
+            {
+                int indexOffset = 0;
+                ushort index = 0;
+                for (int i = 0; i < MaxSpriteCount; ++i)
+                {
+                    indices[indexOffset++] = index;
+                    indices[indexOffset++] = (ushort)(index + 1);
+                    indices[indexOffset++] = (ushort)(index + 2);
+                    indices[indexOffset++] = (ushort)(index + 1);
+                    indices[indexOffset++] = (ushort)(index + 3);
+                    indices[indexOffset++] = (ushort)(index + 2);
+
+                    index += 4;
+                }
+
+                VertexBuffer = GorgonVertexBufferBinding.CreateVertexBuffer<Gorgon2DVertex>(Graphics,
+                                                                                            new GorgonVertexBufferInfo
+                                                                                            {
+                                                                                                Usage = ResourceUsage.Dynamic,
+                                                                                                Binding = VertexIndexBufferBinding.None,
+                                                                                                SizeInBytes = Gorgon2DVertex.SizeInBytes * (MaxSpriteCount * 4)
+                                                                                            });
+
+                IndexBuffer = new GorgonIndexBuffer(Graphics,
+                                                    new GorgonIndexBufferInfo
+                                                    {
+                                                        Usage = ResourceUsage.Immutable,
+                                                        Binding = VertexIndexBufferBinding.None,
+                                                        IndexCount = MaxSpriteCount * 6
+                                                    },
+                                                    indices);
+            }
+        }
+
+
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            VertexBuffer.VertexBuffer?.Dispose();
+            IndexBuffer.Dispose();
+        }
+        #endregion
+
+        #region Constructor/Finalizer.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SpriteRenderer"/> class.
+        /// </summary>
+        /// <param name="graphics">The graphics interface that uses this renderer.</param>
+        public SpriteRenderer(GorgonGraphics graphics)
+        {
+            Graphics = graphics;
+        }
+        #endregion
+    }
+}

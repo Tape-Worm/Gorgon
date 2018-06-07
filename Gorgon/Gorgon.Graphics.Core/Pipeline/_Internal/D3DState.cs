@@ -182,7 +182,8 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// All pipeline states.
         /// </summary>
-        AllPipelineState = RasterState 
+        AllPipelineState = Topology
+                           |RasterState 
                            | DepthStencilState
                            | BlendState
                            | PixelShader
@@ -190,7 +191,6 @@ namespace Gorgon.Graphics.Core
                            | GeometryShader
                            | DomainShader
                            | HullShader
-                           | ComputeShader
                            | Scissors,
         /// <summary>
         /// Everything changed.

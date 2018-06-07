@@ -300,7 +300,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="bindings">The vertex buffer bindings to set.</param>
         /// <returns>The fluent builder interface.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="layout"/> parameter is <b>null</b>.</exception>
-        public TB VertexBufferBindings(GorgonInputLayout layout, IReadOnlyList<GorgonVertexBufferBinding> bindings)
+        public TB VertexBuffers(GorgonInputLayout layout, IReadOnlyList<GorgonVertexBufferBinding> bindings)
         {
             StateCopy.CopyVertexBuffers(DrawCall.D3DState.VertexBuffers, bindings, layout ?? throw new ArgumentNullException(nameof(layout)));
             return (TB)this;
@@ -543,10 +543,17 @@ namespace Gorgon.Graphics.Core
         public TDc Build(GorgonRingPool<TDc> allocator = null)
         {
             TDc final = OnCreate(allocator);
-            final.SetupConstantBuffers();
-            final.SetupSamplers();
-            final.SetupViews();
-            
+
+            if ((allocator == null)
+                || (final.VertexShader.ConstantBuffers == null)
+                || (final.PixelShader.Samplers == null)
+                || (final.PixelShader.ShaderResources == null))
+            {
+                final.SetupConstantBuffers();
+                final.SetupSamplers();
+                final.SetupViews();
+            }
+
             if (final.D3DState.VertexBuffers == null)
             {
                 final.D3DState.VertexBuffers = new GorgonVertexBufferBindings();
@@ -560,26 +567,71 @@ namespace Gorgon.Graphics.Core
             StateCopy.CopyVertexBuffers(final.D3DState.VertexBuffers, DrawCall.VertexBufferBindings, DrawCall.InputLayout);
             StateCopy.CopyStreamOutBuffers(final.D3DState.StreamOutBindings, DrawCall.StreamOutBufferBindings);
 
-            // Copy over the available constants.
-            StateCopy.CopyConstantBuffers(final.D3DState.PsConstantBuffers, DrawCall.D3DState.PsConstantBuffers, 0);
-            StateCopy.CopyConstantBuffers(final.D3DState.VsConstantBuffers, DrawCall.D3DState.VsConstantBuffers, 0);
-            StateCopy.CopyConstantBuffers(final.D3DState.GsConstantBuffers, DrawCall.D3DState.GsConstantBuffers, 0);
-            StateCopy.CopyConstantBuffers(final.D3DState.HsConstantBuffers, DrawCall.D3DState.HsConstantBuffers, 0);
-            StateCopy.CopyConstantBuffers(final.D3DState.DsConstantBuffers, DrawCall.D3DState.DsConstantBuffers, 0);
+            // Copy over the shader resources.
+            if (DrawCall.D3DState.PipelineState?.PixelShader != null)
+            {
+                StateCopy.CopyConstantBuffers(final.D3DState.PsConstantBuffers, DrawCall.D3DState.PsConstantBuffers, 0);
+                StateCopy.CopySamplers(final.D3DState.PsSamplers, DrawCall.D3DState.PsSamplers);
+                StateCopy.CopySrvs(final.D3DState.PsSrvs, DrawCall.D3DState.PsSrvs, 0);
+            }
+            else
+            {
+                final.D3DState.PsConstantBuffers.Clear();
+                final.D3DState.PsSamplers.Clear();
+                final.D3DState.PsSrvs.Clear();
+            }
 
-            // Copy over samplers.
-            StateCopy.CopySamplers(final.D3DState.PsSamplers, DrawCall.D3DState.PsSamplers);
-            StateCopy.CopySamplers(final.D3DState.VsSamplers, DrawCall.D3DState.VsSamplers);
-            StateCopy.CopySamplers(final.D3DState.GsSamplers, DrawCall.D3DState.GsSamplers);
-            StateCopy.CopySamplers(final.D3DState.DsSamplers, DrawCall.D3DState.DsSamplers);
-            StateCopy.CopySamplers(final.D3DState.HsSamplers, DrawCall.D3DState.HsSamplers);
+            if (DrawCall.D3DState.PipelineState?.VertexShader != null)
+            {
+                StateCopy.CopyConstantBuffers(final.D3DState.VsConstantBuffers, DrawCall.D3DState.VsConstantBuffers, 0);
+                StateCopy.CopySamplers(final.D3DState.VsSamplers, DrawCall.D3DState.VsSamplers);
+                StateCopy.CopySrvs(final.D3DState.VsSrvs, DrawCall.D3DState.VsSrvs, 0);
+            }
+            else
+            {
+                final.D3DState.VsConstantBuffers.Clear();
+                final.D3DState.VsSamplers.Clear();
+                final.D3DState.VsSrvs.Clear();
+            }
 
-            // Copy over shader resource views.
-            StateCopy.CopySrvs(final.D3DState.PsSrvs, DrawCall.D3DState.PsSrvs, 0);
-            StateCopy.CopySrvs(final.D3DState.VsSrvs, DrawCall.D3DState.VsSrvs, 0);
-            StateCopy.CopySrvs(final.D3DState.GsSrvs, DrawCall.D3DState.GsSrvs, 0);
-            StateCopy.CopySrvs(final.D3DState.DsSrvs, DrawCall.D3DState.DsSrvs, 0);
-            StateCopy.CopySrvs(final.D3DState.HsSrvs, DrawCall.D3DState.HsSrvs, 0);
+            if (DrawCall.D3DState.PipelineState?.GeometryShader != null)
+            {
+                StateCopy.CopyConstantBuffers(final.D3DState.GsConstantBuffers, DrawCall.D3DState.GsConstantBuffers, 0);
+                StateCopy.CopySamplers(final.D3DState.GsSamplers, DrawCall.D3DState.GsSamplers);
+                StateCopy.CopySrvs(final.D3DState.GsSrvs, DrawCall.D3DState.GsSrvs, 0);
+            }
+            else
+            {
+                final.D3DState.GsConstantBuffers.Clear();
+                final.D3DState.GsSamplers.Clear();
+                final.D3DState.GsSrvs.Clear();
+            }
+
+            if (DrawCall.D3DState.PipelineState?.DomainShader != null)
+            {
+                StateCopy.CopyConstantBuffers(final.D3DState.DsConstantBuffers, DrawCall.D3DState.DsConstantBuffers, 0);
+                StateCopy.CopySamplers(final.D3DState.DsSamplers, DrawCall.D3DState.DsSamplers);
+                StateCopy.CopySrvs(final.D3DState.DsSrvs, DrawCall.D3DState.DsSrvs, 0);
+            }
+            else
+            {
+                final.D3DState.DsConstantBuffers.Clear();
+                final.D3DState.DsSamplers.Clear();
+                final.D3DState.DsSrvs.Clear();
+            }
+
+            if (DrawCall.D3DState.PipelineState?.HullShader != null)
+            {
+                StateCopy.CopyConstantBuffers(final.D3DState.HsConstantBuffers, DrawCall.D3DState.HsConstantBuffers, 0);
+                StateCopy.CopySamplers(final.D3DState.HsSamplers, DrawCall.D3DState.HsSamplers);
+                StateCopy.CopySrvs(final.D3DState.HsSrvs, DrawCall.D3DState.HsSrvs, 0);
+            }
+            else
+            {
+                final.D3DState.HsConstantBuffers.Clear();
+                final.D3DState.HsSamplers.Clear();
+                final.D3DState.HsSrvs.Clear();
+            }
 
             // Copy over unordered access views.
             StateCopy.CopyReadWriteViews(final.D3DState.ReadWriteViews, DrawCall.D3DState.ReadWriteViews, 0);
@@ -613,7 +665,7 @@ namespace Gorgon.Graphics.Core
                 return Clear();
             }
             
-            VertexBufferBindings(drawCall.InputLayout, drawCall.VertexBufferBindings);
+            VertexBuffers(drawCall.InputLayout, drawCall.VertexBufferBindings);
             StreamOutBuffers(drawCall.StreamOutBufferBindings);
 
             // Copy over the available constants.

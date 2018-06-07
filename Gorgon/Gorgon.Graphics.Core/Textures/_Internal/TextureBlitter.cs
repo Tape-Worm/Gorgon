@@ -64,8 +64,6 @@ namespace Gorgon.Graphics
 	    private readonly GorgonPipelineStateBuilder _pipeStateBuilder;
         // The allocator used to create/recycle draw calls.
 	    private readonly GorgonDrawCallPoolAllocator<GorgonDrawCall> _drawAllocator = new GorgonDrawCallPoolAllocator<GorgonDrawCall>(128);
-        // The allocator used to create/recycle pipeline states.
-        private readonly GorgonPipelineStatePoolAllocator _stateAllocator = new GorgonPipelineStatePoolAllocator(4096);
 		// Flag to indicate that the world/view/projection needs updating.
 		private bool _needsWvpUpdate = true;
         // The bounds of the most recent target.
@@ -131,7 +129,7 @@ namespace Gorgon.Graphics
 	        {
 	            _pipelineState = _pipeStateBuilder
 	                             .BlendState(blendState)
-	                             .Build(_stateAllocator);
+	                             .Build();
 
 	            _drawCallBuilder.PipelineState(_pipelineState);
 	        }
@@ -197,9 +195,9 @@ namespace Gorgon.Graphics
 		                                          .PrimitiveType(PrimitiveType.TriangleStrip)
 		                                          .RasterState(GorgonRasterState.Default)
 		                                          .PixelShader(_pixelShader)
-		                                          .Build(_stateAllocator);
+		                                          .Build();
                                  
-		        _drawCallBuilder.VertexBufferBindings(_inputLayout, _vertexBufferBindings)
+		        _drawCallBuilder.VertexBuffers(_inputLayout, _vertexBufferBindings)
 		                        .VertexRange(0, 4)
 		                        .SamplerState(ShaderType.Pixel, GorgonSamplerState.Default)
 		                        .PipelineState(_pipelineState)

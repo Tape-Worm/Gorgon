@@ -106,8 +106,6 @@
     <Compile Include="GorgonGraphicsResource.cs" />
     <Compile Include="GorgonResourceView.cs" />
     <Compile Include="Pipeline\GorgonStreamOutCallPoolAllocator.cs" />
-    <Compile Include="States\GorgonStreamOutPipelineStatePoolAllocator.cs" />
-    <Compile Include="States\GorgonPipelineStatePoolAllocator.cs" />
     <Compile Include="Pipeline\GorgonDrawCallPoolAllocator.cs" />
     <Compile Include="Pipeline\GorgonStreamOutCallBuilder.cs" />
     <Compile Include="Pipeline\GorgonInstancedCallBuilder.cs" />

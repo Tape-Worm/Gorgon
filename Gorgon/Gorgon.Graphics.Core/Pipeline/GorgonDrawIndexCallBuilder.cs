@@ -115,14 +115,14 @@ namespace Gorgon.Graphics.Core
         /// Function to assign an index buffer to the draw call.
         /// </summary>
         /// <param name="buffer">The buffer to assign.</param>
-        /// <param name="indexStart">The first index in the index buffer to render.</param>
-        /// <param name="indexCount">The number of indices to render.</param>
+        /// <param name="indexStart">[Optional] The first index in the index buffer to render.</param>
+        /// <param name="indexCount">[Optional]  The number of indices to render.</param>
         /// <returns>The fluent builder interface.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="indexStart"/> parameter is less than 0.
         /// <para>-or-</para>
         /// <para>Thrown when the <paramref name="indexCount"/> parameter is less than 1.</para>
         /// </exception>
-        public GorgonDrawIndexCallBuilder IndexBuffer(GorgonIndexBuffer buffer, int indexStart, int indexCount)
+        public GorgonDrawIndexCallBuilder IndexBuffer(GorgonIndexBuffer buffer, int indexStart = 0, int indexCount = 1)
         {
             if (indexStart < 0)
             {
