@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using Gorgon.Core;
 using D3D11 = SharpDX.Direct3D11;
 using Gorgon.Graphics.Core.Properties;
 
@@ -57,7 +58,7 @@ namespace Gorgon.Graphics.Core
     /// <seealso cref="GorgonStreamOutCall"/>
     /// <seealso cref="GorgonStreamOutPipelineState"/>
     public class GorgonStreamOutPipelineStateBuilder
-        : IGorgonGraphicsObject
+        : IGorgonGraphicsObject, IGorgonFluentBuilder<GorgonStreamOutPipelineStateBuilder, GorgonStreamOutPipelineState>
     {
         #region Variables.
         // The working state.

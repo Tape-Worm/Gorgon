@@ -50,7 +50,8 @@ namespace Gorgon.Graphics.Core
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonGraphics"/>
-    public abstract class GorgonDrawCallBuilderCommon<TB, TDc>
+    public abstract class GorgonDrawCallBuilderCommon<TB, TDc> 
+        : IGorgonFluentBuilderAllocator<TB, TDc, GorgonDrawCallPoolAllocator<TDc>>
         where TB : GorgonDrawCallBuilderCommon<TB, TDc>
         where TDc : GorgonDrawCallCommon
     {
@@ -523,137 +524,6 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Function to return the draw call.
-        /// </summary>
-        /// <param name="allocator">[Optional] The allocator used to create an instance of the object</param>
-        /// <returns>The draw call created or updated by this builder.</returns>
-        /// <exception cref="GorgonException">Thrown if a <see cref="GorgonVertexShader"/> is not assigned to the <see cref="GorgonPipelineState.VertexShader"/> property with the <see cref="PipelineState(Gorgon.Graphics.Core.GorgonPipelineStateBuilder)"/> command.</exception>
-        /// <remarks>
-        /// <para>
-        /// Using an <paramref name="allocator"/> can provide different strategies when building draw calls.  If omitted, the draw call will be created using the standard <see langword="new"/> keyword.
-        /// </para>
-        /// <para>
-        /// A custom allocator can be beneficial because it allows us to use a pool for allocating the objects, and thus allows for recycling of objects. This keeps the garbage collector happy by keeping objects
-        /// around for as long as we need them, instead of creating objects that can potentially end up in the large object heap or in Gen 2.
-        /// </para>
-        /// <para>
-        /// A draw call requires that at least a vertex shader be bound. If none is present, then the method will throw an exception.
-        /// </para>
-        /// </remarks>
-        public TDc Build(GorgonRingPool<TDc> allocator = null)
-        {
-            TDc final = OnCreate(allocator);
-
-            if ((allocator == null)
-                || (final.VertexShader.ConstantBuffers == null)
-                || (final.PixelShader.Samplers == null)
-                || (final.PixelShader.ShaderResources == null))
-            {
-                final.SetupConstantBuffers();
-                final.SetupSamplers();
-                final.SetupViews();
-            }
-
-            if (final.D3DState.VertexBuffers == null)
-            {
-                final.D3DState.VertexBuffers = new GorgonVertexBufferBindings();
-            }
-
-            if (final.D3DState.StreamOutBindings == null)
-            {
-                final.D3DState.StreamOutBindings = new GorgonStreamOutBindings();
-            }
-            
-            StateCopy.CopyVertexBuffers(final.D3DState.VertexBuffers, DrawCall.VertexBufferBindings, DrawCall.InputLayout);
-            StateCopy.CopyStreamOutBuffers(final.D3DState.StreamOutBindings, DrawCall.StreamOutBufferBindings);
-
-            // Copy over the shader resources.
-            if (DrawCall.D3DState.PipelineState?.PixelShader != null)
-            {
-                StateCopy.CopyConstantBuffers(final.D3DState.PsConstantBuffers, DrawCall.D3DState.PsConstantBuffers, 0);
-                StateCopy.CopySamplers(final.D3DState.PsSamplers, DrawCall.D3DState.PsSamplers);
-                StateCopy.CopySrvs(final.D3DState.PsSrvs, DrawCall.D3DState.PsSrvs, 0);
-            }
-            else
-            {
-                final.D3DState.PsConstantBuffers.Clear();
-                final.D3DState.PsSamplers.Clear();
-                final.D3DState.PsSrvs.Clear();
-            }
-
-            if (DrawCall.D3DState.PipelineState?.VertexShader != null)
-            {
-                StateCopy.CopyConstantBuffers(final.D3DState.VsConstantBuffers, DrawCall.D3DState.VsConstantBuffers, 0);
-                StateCopy.CopySamplers(final.D3DState.VsSamplers, DrawCall.D3DState.VsSamplers);
-                StateCopy.CopySrvs(final.D3DState.VsSrvs, DrawCall.D3DState.VsSrvs, 0);
-            }
-            else
-            {
-                final.D3DState.VsConstantBuffers.Clear();
-                final.D3DState.VsSamplers.Clear();
-                final.D3DState.VsSrvs.Clear();
-            }
-
-            if (DrawCall.D3DState.PipelineState?.GeometryShader != null)
-            {
-                StateCopy.CopyConstantBuffers(final.D3DState.GsConstantBuffers, DrawCall.D3DState.GsConstantBuffers, 0);
-                StateCopy.CopySamplers(final.D3DState.GsSamplers, DrawCall.D3DState.GsSamplers);
-                StateCopy.CopySrvs(final.D3DState.GsSrvs, DrawCall.D3DState.GsSrvs, 0);
-            }
-            else
-            {
-                final.D3DState.GsConstantBuffers.Clear();
-                final.D3DState.GsSamplers.Clear();
-                final.D3DState.GsSrvs.Clear();
-            }
-
-            if (DrawCall.D3DState.PipelineState?.DomainShader != null)
-            {
-                StateCopy.CopyConstantBuffers(final.D3DState.DsConstantBuffers, DrawCall.D3DState.DsConstantBuffers, 0);
-                StateCopy.CopySamplers(final.D3DState.DsSamplers, DrawCall.D3DState.DsSamplers);
-                StateCopy.CopySrvs(final.D3DState.DsSrvs, DrawCall.D3DState.DsSrvs, 0);
-            }
-            else
-            {
-                final.D3DState.DsConstantBuffers.Clear();
-                final.D3DState.DsSamplers.Clear();
-                final.D3DState.DsSrvs.Clear();
-            }
-
-            if (DrawCall.D3DState.PipelineState?.HullShader != null)
-            {
-                StateCopy.CopyConstantBuffers(final.D3DState.HsConstantBuffers, DrawCall.D3DState.HsConstantBuffers, 0);
-                StateCopy.CopySamplers(final.D3DState.HsSamplers, DrawCall.D3DState.HsSamplers);
-                StateCopy.CopySrvs(final.D3DState.HsSrvs, DrawCall.D3DState.HsSrvs, 0);
-            }
-            else
-            {
-                final.D3DState.HsConstantBuffers.Clear();
-                final.D3DState.HsSamplers.Clear();
-                final.D3DState.HsSrvs.Clear();
-            }
-
-            // Copy over unordered access views.
-            StateCopy.CopyReadWriteViews(final.D3DState.ReadWriteViews, DrawCall.D3DState.ReadWriteViews, 0);
-
-            final.D3DState.PipelineState = DrawCall.PipelineState;
-
-            // Copy the cached states.
-            final.PipelineState.D3DBlendState = DrawCall.PipelineState.D3DBlendState;
-            final.PipelineState.D3DDepthStencilState = DrawCall.PipelineState.D3DDepthStencilState;
-            final.PipelineState.D3DRasterState = DrawCall.PipelineState.D3DRasterState;
-
-            OnUpdate(final);
-
-            if (final.PipelineState.VertexShader == null)
-            {
-                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_NO_VERTEX_SHADER);
-            }
-
-            return final;
-        }
-
-        /// <summary>
         /// Function to reset the builder to the specified draw call state.
         /// </summary>
         /// <param name="drawCall">[Optional] The specified draw call state to copy.</param>
@@ -681,11 +551,11 @@ namespace Gorgon.Graphics.Core
             SamplerStates(ShaderType.Domain, drawCall.D3DState.DsSamplers);
             SamplerStates(ShaderType.Hull, drawCall.D3DState.HsSamplers);
 
-            ShaderResources(ShaderType.Pixel, drawCall.D3DState.PsSrvs);
-            ShaderResources(ShaderType.Vertex, drawCall.D3DState.VsSrvs);
-            ShaderResources(ShaderType.Geometry, drawCall.D3DState.GsSrvs);
-            ShaderResources(ShaderType.Domain, drawCall.D3DState.DsSrvs);
-            ShaderResources(ShaderType.Hull, drawCall.D3DState.HsSrvs);
+            StateCopy.CopySrvs(DrawCall.D3DState.PsSrvs, drawCall.D3DState.PsSrvs);
+            StateCopy.CopySrvs(DrawCall.D3DState.VsSrvs, drawCall.D3DState.VsSrvs);
+            StateCopy.CopySrvs(DrawCall.D3DState.GsSrvs, drawCall.D3DState.GsSrvs);
+            StateCopy.CopySrvs(DrawCall.D3DState.DsSrvs, drawCall.D3DState.DsSrvs);
+            StateCopy.CopySrvs(DrawCall.D3DState.HsSrvs, drawCall.D3DState.HsSrvs);
 
             ReadWriteViews(drawCall.D3DState.ReadWriteViews);
 
@@ -726,6 +596,147 @@ namespace Gorgon.Graphics.Core
             DrawCall.D3DState.PipelineState = null;
 
             return OnClear();
+        }
+
+        /// <summary>
+        /// Function to return the draw call.
+        /// </summary>
+        /// <param name="allocator">The allocator used to create an instance of the object</param>
+        /// <returns>The draw call created or updated by this builder.</returns>
+        /// <exception cref="GorgonException">Thrown if a <see cref="GorgonVertexShader"/> is not assigned to the <see cref="GorgonPipelineState.VertexShader"/> property with the <see cref="PipelineState(Gorgon.Graphics.Core.GorgonPipelineStateBuilder)"/> command.</exception>
+        /// <remarks>
+        /// <para>
+        /// Using an <paramref name="allocator"/> can provide different strategies when building draw calls.  If omitted, the draw call will be created using the standard <see langword="new"/> keyword.
+        /// </para>
+        /// <para>
+        /// A custom allocator can be beneficial because it allows us to use a pool for allocating the objects, and thus allows for recycling of objects. This keeps the garbage collector happy by keeping objects
+        /// around for as long as we need them, instead of creating objects that can potentially end up in the large object heap or in Gen 2.
+        /// </para>
+        /// <para>
+        /// A draw call requires that at least a vertex shader be bound. If none is present, then the method will throw an exception.
+        /// </para>
+        /// </remarks>
+        public TDc Build(GorgonDrawCallPoolAllocator<TDc> allocator)
+        {
+            TDc final = OnCreate(allocator);
+
+            if ((allocator == null)
+                || (final.VertexShader.ConstantBuffers == null)
+                || (final.PixelShader.Samplers == null)
+                || (final.PixelShader.ShaderResources == null))
+            {
+                final.SetupConstantBuffers();
+                final.SetupSamplers();
+                final.SetupViews();
+            }
+
+            if (final.D3DState.VertexBuffers == null)
+            {
+                final.D3DState.VertexBuffers = new GorgonVertexBufferBindings();
+            }
+
+            if (final.D3DState.StreamOutBindings == null)
+            {
+                final.D3DState.StreamOutBindings = new GorgonStreamOutBindings();
+            }
+            
+            StateCopy.CopyVertexBuffers(final.D3DState.VertexBuffers, DrawCall.VertexBufferBindings, DrawCall.InputLayout);
+            StateCopy.CopyStreamOutBuffers(final.D3DState.StreamOutBindings, DrawCall.StreamOutBufferBindings);
+
+            // Copy over the shader resources.
+            if (DrawCall.D3DState.PipelineState?.PixelShader != null)
+            {
+                StateCopy.CopyConstantBuffers(final.D3DState.PsConstantBuffers, DrawCall.D3DState.PsConstantBuffers, 0);
+                StateCopy.CopySamplers(final.D3DState.PsSamplers, DrawCall.D3DState.PsSamplers);
+                StateCopy.CopySrvs(final.D3DState.PsSrvs, DrawCall.D3DState.PsSrvs);
+            }
+            else
+            {
+                final.D3DState.PsConstantBuffers.Clear();
+                final.D3DState.PsSamplers.Clear();
+                final.D3DState.PsSrvs.Clear();
+            }
+
+            if (DrawCall.D3DState.PipelineState?.VertexShader != null)
+            {
+                StateCopy.CopyConstantBuffers(final.D3DState.VsConstantBuffers, DrawCall.D3DState.VsConstantBuffers, 0);
+                StateCopy.CopySamplers(final.D3DState.VsSamplers, DrawCall.D3DState.VsSamplers);
+                StateCopy.CopySrvs(final.D3DState.VsSrvs, DrawCall.D3DState.VsSrvs);
+            }
+            else
+            {
+                final.D3DState.VsConstantBuffers.Clear();
+                final.D3DState.VsSamplers.Clear();
+                final.D3DState.VsSrvs.Clear();
+            }
+
+            if (DrawCall.D3DState.PipelineState?.GeometryShader != null)
+            {
+                StateCopy.CopyConstantBuffers(final.D3DState.GsConstantBuffers, DrawCall.D3DState.GsConstantBuffers, 0);
+                StateCopy.CopySamplers(final.D3DState.GsSamplers, DrawCall.D3DState.GsSamplers);
+                StateCopy.CopySrvs(final.D3DState.GsSrvs, DrawCall.D3DState.GsSrvs);
+            }
+            else
+            {
+                final.D3DState.GsConstantBuffers.Clear();
+                final.D3DState.GsSamplers.Clear();
+                final.D3DState.GsSrvs.Clear();
+            }
+
+            if (DrawCall.D3DState.PipelineState?.DomainShader != null)
+            {
+                StateCopy.CopyConstantBuffers(final.D3DState.DsConstantBuffers, DrawCall.D3DState.DsConstantBuffers, 0);
+                StateCopy.CopySamplers(final.D3DState.DsSamplers, DrawCall.D3DState.DsSamplers);
+                StateCopy.CopySrvs(final.D3DState.DsSrvs, DrawCall.D3DState.DsSrvs);
+            }
+            else
+            {
+                final.D3DState.DsConstantBuffers.Clear();
+                final.D3DState.DsSamplers.Clear();
+                final.D3DState.DsSrvs.Clear();
+            }
+
+            if (DrawCall.D3DState.PipelineState?.HullShader != null)
+            {
+                StateCopy.CopyConstantBuffers(final.D3DState.HsConstantBuffers, DrawCall.D3DState.HsConstantBuffers, 0);
+                StateCopy.CopySamplers(final.D3DState.HsSamplers, DrawCall.D3DState.HsSamplers);
+                StateCopy.CopySrvs(final.D3DState.HsSrvs, DrawCall.D3DState.HsSrvs);
+            }
+            else
+            {
+                final.D3DState.HsConstantBuffers.Clear();
+                final.D3DState.HsSamplers.Clear();
+                final.D3DState.HsSrvs.Clear();
+            }
+
+            // Copy over unordered access views.
+            StateCopy.CopyReadWriteViews(final.D3DState.ReadWriteViews, DrawCall.D3DState.ReadWriteViews, 0);
+
+            final.D3DState.PipelineState = DrawCall.PipelineState;
+
+            // Copy the cached states.
+            final.PipelineState.D3DBlendState = DrawCall.PipelineState.D3DBlendState;
+            final.PipelineState.D3DDepthStencilState = DrawCall.PipelineState.D3DDepthStencilState;
+            final.PipelineState.D3DRasterState = DrawCall.PipelineState.D3DRasterState;
+
+            OnUpdate(final);
+
+            if (final.PipelineState.VertexShader == null)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_NO_VERTEX_SHADER);
+            }
+
+            return final;
+        }
+
+        /// <summary>
+        /// Function to return the draw call.
+        /// </summary>
+        /// <returns>The draw call created or updated by this builder.</returns>
+        /// <exception cref="GorgonException">Thrown if a <see cref="GorgonVertexShader"/> is not assigned to the <see cref="GorgonPipelineState.VertexShader"/> property with the <see cref="PipelineState(Gorgon.Graphics.Core.GorgonPipelineStateBuilder)"/> command.</exception>
+        public TDc Build()
+        {
+            return Build(null);
         }
         #endregion
 

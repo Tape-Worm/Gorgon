@@ -71,6 +71,7 @@ namespace Gorgon.Graphics.Core
     /// <seealso cref="GorgonVertexBuffer"/>
     /// <seealso cref="VertexBufferBinding"/>
     public sealed class GorgonStreamOutCallBuilder
+        : IGorgonFluentBuilderAllocator<GorgonStreamOutCallBuilder, GorgonStreamOutCall, GorgonStreamOutCallPoolAllocator>
     {
         #region Variables.
         // The worker call used to build up the object.
@@ -272,7 +273,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Function to return the draw call.
         /// </summary>
-        /// <param name="allocator">[Optional] The allocator used to create an instance of the object</param>
+        /// <param name="allocator">The allocator used to create an instance of the object</param>
         /// <returns>The draw call created or updated by this builder.</returns>
         /// <exception cref="GorgonException">Thrown if a <see cref="GorgonVertexShader"/> is not assigned to the <see cref="GorgonPipelineState.VertexShader"/> property with the <see cref="PipelineState(GorgonStreamOutPipelineState)"/> command.</exception>
         /// <remarks>
@@ -287,7 +288,7 @@ namespace Gorgon.Graphics.Core
         /// A stream out call requires that at least a vertex shader be bound. If none is present, then the method will throw an exception.
         /// </para>
         /// </remarks>
-        public GorgonStreamOutCall Build(GorgonStreamOutCallPoolAllocator allocator = null)
+        public GorgonStreamOutCall Build(GorgonStreamOutCallPoolAllocator allocator)
         {
             var final = allocator == null ? new GorgonStreamOutCall() : allocator.Allocate();
             final.SetupConstantBuffers();
@@ -309,7 +310,7 @@ namespace Gorgon.Graphics.Core
             StateCopy.CopySamplers(final.D3DState.PsSamplers, _workerCall.D3DState.PsSamplers);
 
             // Copy over shader resource views.
-            StateCopy.CopySrvs(final.D3DState.PsSrvs, _workerCall.D3DState.PsSrvs, 0);
+            StateCopy.CopySrvs(final.D3DState.PsSrvs, _workerCall.D3DState.PsSrvs);
 
             // Copy over uavs.
             StateCopy.CopyReadWriteViews(final.D3DState.ReadWriteViews, _workerCall.D3DState.ReadWriteViews, 0);
@@ -322,6 +323,16 @@ namespace Gorgon.Graphics.Core
             }
 
             return final;
+        }
+
+        /// <summary>
+        /// Function to return the draw call.
+        /// </summary>
+        /// <returns>The draw call created or updated by this builder.</returns>
+        /// <exception cref="GorgonException">Thrown if a <see cref="GorgonVertexShader"/> is not assigned to the <see cref="GorgonPipelineState.VertexShader"/> property with the <see cref="PipelineState(GorgonStreamOutPipelineState)"/> command.</exception>
+        public GorgonStreamOutCall Build()
+        {
+            return Build(null);
         }
 
         /// <summary>
@@ -341,7 +352,7 @@ namespace Gorgon.Graphics.Core
             // Copy over the available constants.
             ConstantBuffers(drawCall.D3DState.PsConstantBuffers);
             SamplerStates(drawCall.D3DState.PsSamplers);
-            ShaderResources(drawCall.D3DState.PsSrvs);
+            StateCopy.CopySrvs(_workerCall.D3DState.PsSrvs, drawCall.D3DState.PsSrvs);
             ReadWriteViews(drawCall.ReadWriteViews);
             
             _workerCall.PipelineState = new GorgonStreamOutPipelineState(drawCall.PipelineState.PipelineState);

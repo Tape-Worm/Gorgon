@@ -140,9 +140,7 @@ namespace Gorgon.Graphics.Core
             get;
             internal set;
         }
-
-
-
+        
         /// <summary>
         /// Property to set or return whether to enable writing to the depth buffer or not.
         /// </summary>

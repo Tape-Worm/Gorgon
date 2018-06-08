@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using CenterCLR.XorRandomGenerator;
 using Simplex;
 
 namespace Gorgon.Core
@@ -67,7 +68,7 @@ namespace Gorgon.Core
 		// Seed used to generate random numbers.
 		private static int _seed;
 		// Random number generator.
-		private static Random _rnd;
+		private static XorRandom _rnd;
 		#endregion
 
 		#region Properties.
@@ -81,7 +82,7 @@ namespace Gorgon.Core
 			{
 			    Noise.Seed = value;
 				_seed = value;
-				_rnd = new Random(_seed);
+				_rnd = new XorRandom(_seed);
 			}
 		}
 

@@ -37,6 +37,7 @@ namespace Gorgon.Graphics.Core
     /// </summary>
     /// <seealso cref="GorgonDispatchCall"/>
     public class GorgonDispatchCallBuilder
+        : IGorgonFluentBuilderAllocator<GorgonDispatchCallBuilder, GorgonDispatchCall, GorgonRingPool<GorgonDispatchCall>>
     {
         #region Variables.
         // The dispatch call being edited.
@@ -206,7 +207,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Function to return the dispatch call.
         /// </summary>
-        /// <param name="allocator">[Optional] The allocator used to create an instance of the object</param>
+        /// <param name="allocator">The allocator used to create an instance of the object</param>
         /// <returns>The dispatch call created or updated by this builder.</returns>
         /// <exception cref="GorgonException">Thrown if a <see cref="GorgonComputeShader"/> is not assigned to the <see cref="GorgonComputeShader"/> property with the <see cref="ComputeShader"/> command.</exception>
         /// <remarks>
@@ -221,7 +222,7 @@ namespace Gorgon.Graphics.Core
         /// A dispatch call requires that at least a vertex shader be bound. If none is present, then the method will throw an exception.
         /// </para>
         /// </remarks>
-        public GorgonDispatchCall Build(GorgonRingPool<GorgonDispatchCall> allocator = null)
+        public GorgonDispatchCall Build(GorgonRingPool<GorgonDispatchCall> allocator)
         {
             var final = new GorgonDispatchCall();
             final.Setup();
@@ -233,7 +234,9 @@ namespace Gorgon.Graphics.Core
             StateCopy.CopySamplers(final.D3DState.CsSamplers, _worker.D3DState.CsSamplers);
 
             // Copy over shader resource views.
-            StateCopy.CopySrvs(final.D3DState.CsSrvs, _worker.D3DState.CsSrvs, 0);
+            (int srvStart, int srvCount) = _worker.D3DState.CsSrvs.GetDirtyItems();
+
+            StateCopy.CopySrvs(final.D3DState.CsSrvs, _worker.D3DState.CsSrvs);
 
             // Copy over unordered access views.
             StateCopy.CopyReadWriteViews(final.D3DState.CsReadWriteViews, _worker.D3DState.CsReadWriteViews, 0);
@@ -246,6 +249,16 @@ namespace Gorgon.Graphics.Core
             final.D3DState.ComputeShader = _worker.D3DState.ComputeShader;
 
             return final;
+        }
+
+        /// <summary>
+        /// Function to return the dispatch call.
+        /// </summary>
+        /// <returns>The dispatch call created or updated by this builder.</returns>
+        /// <exception cref="GorgonException">Thrown if a <see cref="GorgonComputeShader"/> is not assigned to the <see cref="GorgonComputeShader"/> property with the <see cref="ComputeShader"/> command.</exception>
+        public GorgonDispatchCall Build()
+        {
+            return Build(null);
         }
 
         /// <summary>

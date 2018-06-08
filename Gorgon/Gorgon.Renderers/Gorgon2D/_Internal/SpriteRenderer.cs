@@ -25,11 +25,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Native;
@@ -39,13 +34,15 @@ namespace Gorgon.Renderers
     /// <summary>
     /// The renderer for sprite objects.
     /// </summary>
-    internal class SpriteRenderer
-        : IDisposable, IGorgonGraphicsObject
+    internal sealed class SpriteRenderer
+        : ObjectRenderer
     {
         #region Constants.
-        // Maximum number of sprites that can be buffered prior to sending to the GPU.
-        // We have 10,922 sprites (16 bit Index Buffer - 65536 bytes / 6 indices per sprite = ~10922).
-        private const int MaxSpriteCount = 10922;
+        /// <summary>
+        /// Maximum number of sprites that can be buffered prior to sending to the GPU.
+        /// We have 10,922 sprites (16 bit Index Buffer - 65536 bytes / 6 indices per sprite = ~10922).
+        /// </summary>
+        public const int MaxSpriteCount = 10922;
         // The maximum number of vertices we can render.
         private const int MaxVertexCount = MaxSpriteCount * 4;
         // The maximum number of indices we can render.
@@ -54,7 +51,7 @@ namespace Gorgon.Renderers
 
         #region Variables.
         // Start with a modest cache size.
-        private Gorgon2DVertex[] _vertexCache = new Gorgon2DVertex[1024];
+        private Gorgon2DVertex[] _vertexCache = new Gorgon2DVertex[4096];
         // The current vertex index.
         private int _currentVertexIndex;
         // The number of vertices allocated in the cache.
@@ -69,33 +66,56 @@ namespace Gorgon.Renderers
 
         #region Properties.
         /// <summary>
-        /// Property to return the vertex buffer used by the sprite renderer.
-        /// </summary>
-        public GorgonVertexBufferBinding VertexBuffer
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Property to return the index buffer used by the sprite renderer.
-        /// </summary>
-        public GorgonIndexBuffer IndexBuffer
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
         /// Property to return the graphics interface that built this object.
         /// </summary>
-        public GorgonGraphics Graphics
+        public override GorgonGraphics Graphics
         {
             get;
         }
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to create the vertex/index buffers for the renderer.
+        /// </summary>
+        private void CreateBuffers()
+        {
+            // We don't need to update the index buffer ever.  So we can set up the indices right now.
+            using (var indices = new GorgonNativeBuffer<ushort>(MaxSpriteCount * 6))
+            {
+                int indexOffset = 0;
+                ushort index = 0;
+                for (int i = 0; i < MaxSpriteCount; ++i)
+                {
+                    indices[indexOffset++] = index;
+                    indices[indexOffset++] = (ushort)(index + 1);
+                    indices[indexOffset++] = (ushort)(index + 2);
+                    indices[indexOffset++] = (ushort)(index + 1);
+                    indices[indexOffset++] = (ushort)(index + 3);
+                    indices[indexOffset++] = (ushort)(index + 2);
+
+                    index += 4;
+                }
+
+                VertexBuffer = GorgonVertexBufferBinding.CreateVertexBuffer<Gorgon2DVertex>(Graphics,
+                                                                                             new GorgonVertexBufferInfo
+                                                                                             {
+                                                                                                 Usage = ResourceUsage.Dynamic,
+                                                                                                 Binding = VertexIndexBufferBinding.None,
+                                                                                                 SizeInBytes = Gorgon2DVertex.SizeInBytes * (MaxSpriteCount * 4)
+                                                                                             });
+
+                IndexBuffer = new GorgonIndexBuffer(Graphics,
+                                                    new GorgonIndexBufferInfo
+                                                    {
+                                                        Usage = ResourceUsage.Immutable,
+                                                        Binding = VertexIndexBufferBinding.None,
+                                                        IndexCount = indices.Length
+                                                    },
+                                                    indices);
+            }
+        }
+
         /// <summary>
         /// Function to expand the vertex cache if it is full.
         /// </summary>
@@ -182,58 +202,6 @@ namespace Gorgon.Renderers
             _allocatedVertexCount = 0;
             _indexCount = 0;
         }
-
-        /// <summary>
-        /// Function to initialize the resources required by the sprite renderer.
-        /// </summary>
-        public void InitializeResources()
-        {
-            // We don't need to update the index buffer ever.  So we can set up the indices right now.
-            using (GorgonNativeBuffer<ushort> indices = new GorgonNativeBuffer<ushort>(MaxSpriteCount * 6))
-            {
-                int indexOffset = 0;
-                ushort index = 0;
-                for (int i = 0; i < MaxSpriteCount; ++i)
-                {
-                    indices[indexOffset++] = index;
-                    indices[indexOffset++] = (ushort)(index + 1);
-                    indices[indexOffset++] = (ushort)(index + 2);
-                    indices[indexOffset++] = (ushort)(index + 1);
-                    indices[indexOffset++] = (ushort)(index + 3);
-                    indices[indexOffset++] = (ushort)(index + 2);
-
-                    index += 4;
-                }
-
-                VertexBuffer = GorgonVertexBufferBinding.CreateVertexBuffer<Gorgon2DVertex>(Graphics,
-                                                                                            new GorgonVertexBufferInfo
-                                                                                            {
-                                                                                                Usage = ResourceUsage.Dynamic,
-                                                                                                Binding = VertexIndexBufferBinding.None,
-                                                                                                SizeInBytes = Gorgon2DVertex.SizeInBytes * (MaxSpriteCount * 4)
-                                                                                            });
-
-                IndexBuffer = new GorgonIndexBuffer(Graphics,
-                                                    new GorgonIndexBufferInfo
-                                                    {
-                                                        Usage = ResourceUsage.Immutable,
-                                                        Binding = VertexIndexBufferBinding.None,
-                                                        IndexCount = MaxSpriteCount * 6
-                                                    },
-                                                    indices);
-            }
-        }
-
-
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            VertexBuffer.VertexBuffer?.Dispose();
-            IndexBuffer.Dispose();
-        }
         #endregion
 
         #region Constructor/Finalizer.
@@ -244,6 +212,7 @@ namespace Gorgon.Renderers
         public SpriteRenderer(GorgonGraphics graphics)
         {
             Graphics = graphics;
+            CreateBuffers();
         }
         #endregion
     }

@@ -24,6 +24,8 @@
 // 
 #endregion
 
+using Gorgon.Core;
+
 namespace Gorgon.Graphics.Core
 {
     /// <summary>
@@ -32,6 +34,7 @@ namespace Gorgon.Graphics.Core
     /// <typeparam name="TB">The type of builder.</typeparam>
     /// <typeparam name="TRs">The type of state.</typeparam>
     public abstract class GorgonStateBuilderCommon<TB, TRs>
+        : IGorgonFluentBuilder<TB, TRs>
         where TB : GorgonStateBuilderCommon<TB, TRs>
         where TRs : class
     {

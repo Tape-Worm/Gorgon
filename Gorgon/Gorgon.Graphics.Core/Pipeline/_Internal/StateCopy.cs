@@ -63,6 +63,17 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="destStates">The destination shader resource views.</param>
         /// <param name="srcStates">The shader resource views to copy.</param>
+        public static void CopySrvs(GorgonShaderResourceViews destStates, GorgonShaderResourceViews srcStates)
+        {
+            destStates.Clear();
+            srcStates?.CopyTo(destStates);
+        }
+
+        /// <summary>
+        /// Function to copy shader resource views.
+        /// </summary>
+        /// <param name="destStates">The destination shader resource views.</param>
+        /// <param name="srcStates">The shader resource views to copy.</param>
         /// <param name="startSlot">The slot to start copying into.</param>
         public static void CopySrvs(GorgonShaderResourceViews destStates, IReadOnlyList<GorgonShaderResourceView> srcStates, int startSlot)
         {

@@ -36,6 +36,7 @@ using Gorgon.Diagnostics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
+using Gorgon.Native;
 using Gorgon.Renderers.Properties;
 
 namespace Gorgon.Renderers
@@ -67,6 +68,10 @@ namespace Gorgon.Renderers
         private DrawCallFactory _drawCallFactory;
         // The currently active draw call.
         private GorgonDrawIndexCall _currentDrawCall;
+        // The previously assigned batch state.
+        private readonly Gorgon2DBatchState _lastBatchState = new Gorgon2DBatchState();
+        // The last sprite that was put into the system.
+        private Gorgon2DRenderable _lastSprite;
         #endregion
 
         #region Properties.
@@ -112,6 +117,7 @@ namespace Gorgon.Renderers
                                                                               });
             _defaultTexture = textureResource.GetShaderResourceView();
 
+            // Set up the sprite renderer buffers.
             DX.Matrix.OrthoOffCenterLH(0,
                                        _primaryTarget.Width,
                                        _primaryTarget.Height,
@@ -120,18 +126,20 @@ namespace Gorgon.Renderers
                                        1.0f,
                                        out DX.Matrix projection);
 
-            _viewProjection = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref projection, name: "View * Projection Matrix Buffer");
+            _viewProjection = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref projection, "View * Projection Matrix Buffer");
 
-            // Set up the sprite renderer.
-            _spriteRenderer.InitializeResources();
+            _spriteRenderer = new SpriteRenderer(Graphics);
+            _drawCallFactory = new DrawCallFactory(Graphics, _defaultTexture, _vertexLayout)
+                               {
+                                   ProjectionViewBuffer = _viewProjection
+                               };
 
-            _drawCallFactory.InputLayout = _vertexLayout;
-            _drawCallFactory.IndexBuffer = _spriteRenderer.IndexBuffer;
-            _drawCallFactory.VertexBuffer = _spriteRenderer.VertexBuffer;
-            _drawCallFactory.DefaultPixelShader = _defaultPixelShader;
-            _drawCallFactory.DefaultVertexShader = _defaultVertexShader;
-            _drawCallFactory.ProjectionViewBuffer = _viewProjection;
-            _drawCallFactory.DefaultTexture = _defaultTexture;
+            // Set up the initial state.
+            _lastBatchState.PixelShader = _defaultPixelShader;
+            _lastBatchState.VertexShader = _defaultVertexShader;
+            _lastBatchState.BlendState = GorgonBlendState.Default;
+            _lastBatchState.RasterState = GorgonRasterState.Default;
+            _lastBatchState.DepthStencilState = GorgonDepthStencilState.Default;
 
             // Set the initial render target.
             Graphics.SetRenderTarget(_primaryTarget);
@@ -142,7 +150,8 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Function to begin rendering.
         /// </summary>
-        public void Begin()
+        /// <param name="batchState">[Optional] Defines common global state to use when rendering a batch of objects.</param>
+        public void Begin(Gorgon2DBatchState batchState = null)
         {
             // If we're not initialized, then do so now.
             // Note that this is not thread safe.
@@ -150,18 +159,35 @@ namespace Gorgon.Renderers
             {
                 Initialize();
             }
+
+            _lastSprite = null;
+            _lastBatchState.PixelShader = batchState?.PixelShader ?? _defaultPixelShader;
+            _lastBatchState.VertexShader = batchState?.VertexShader ?? _defaultVertexShader;
+            _lastBatchState.BlendState = batchState?.BlendState ?? GorgonBlendState.Default;
+            _lastBatchState.RasterState = batchState?.RasterState ?? GorgonRasterState.Default;
+            _lastBatchState.DepthStencilState = batchState?.DepthStencilState ?? GorgonDepthStencilState.Default;
         }
 
-        public void Draw(Gorgon2DRenderable sprite)
+        /// <summary>
+        /// Function to draw a sprite.
+        /// </summary>
+        /// <param name="sprite"></param>
+        public void Draw(GorgonSprite sprite)
         {
-            GorgonDrawIndexCall drawCall = _drawCallFactory.GetDrawIndexCall(sprite);
-
-            if ((_currentDrawCall != null) && (drawCall != _currentDrawCall))
+            // If we're sending the same guy in, there's no point in jumping through all of these hoops.
+            if ((_lastSprite == null) || (_lastSprite != sprite) || (!_lastSprite.Equals(sprite)))
             {
-                _spriteRenderer.RenderBatches(_currentDrawCall);
-            }
+                GorgonDrawIndexCall drawCall = _drawCallFactory.GetDrawIndexCall(sprite, _lastBatchState, _spriteRenderer);
 
-            _currentDrawCall = drawCall;
+                if ((_currentDrawCall != null) && (drawCall != _currentDrawCall))
+                {
+                    _spriteRenderer.RenderBatches(_currentDrawCall);
+                }
+
+                _lastSprite = sprite;
+
+                _currentDrawCall = drawCall;
+            }
 
             _spriteRenderer.QueueSprite(sprite);
         }
@@ -187,9 +213,9 @@ namespace Gorgon.Renderers
             GorgonTexture2DView texture = Interlocked.Exchange(ref _defaultTexture, null);
             GorgonConstantBufferView viewProj = Interlocked.Exchange(ref _viewProjection, null);
             
+            spriteRenderer?.Dispose();
             viewProj?.Buffer?.Dispose();
             texture?.Texture?.Dispose();
-            spriteRenderer?.Dispose();
             layout?.Dispose();
             vertexShader?.Dispose();
             pixelShader?.Dispose();
@@ -205,8 +231,6 @@ namespace Gorgon.Renderers
         public Gorgon2D(GorgonRenderTarget2DView target)
         {
             _primaryTarget = target ?? throw new ArgumentNullException(nameof(target));
-            _spriteRenderer = new SpriteRenderer(target.Graphics);
-            _drawCallFactory = new DrawCallFactory(target.Graphics);
         }
         #endregion
     }

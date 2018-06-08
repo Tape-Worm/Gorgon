@@ -467,15 +467,10 @@ namespace Gorgon.Graphics.Core
 
             DX.DataBox mapData = Graphics.D3DDeviceContext.MapSubresource(Native, 0, mapMode, D3D11.MapFlags.None);
 
-            try
-            {
-                byte* destPtr = (byte*)mapData.DataPointer + destOffset;
-                Unsafe.CopyBlock(destPtr, srcPtr, (uint)count);
-            }
-            finally
-            {
-                Graphics.D3DDeviceContext.UnmapSubresource(Native, 0);
-            }
+            byte* destPtr = (byte*)mapData.DataPointer + destOffset;
+            Unsafe.CopyBlock(destPtr, srcPtr, (uint)count);
+
+            Graphics.D3DDeviceContext.UnmapSubresource(Native, 0);
         }
 
         /// <summary>

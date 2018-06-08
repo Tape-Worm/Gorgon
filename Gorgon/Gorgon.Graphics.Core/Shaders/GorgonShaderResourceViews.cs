@@ -64,20 +64,26 @@ namespace Gorgon.Graphics.Core
 	    private (int Start, int Count) _dirtyItems;
 
         // The backing array for this array.
-	    private readonly GorgonShaderResourceView[] _backingArray = new GorgonShaderResourceView[MaximumShaderResourceViewCount];
+	    private GorgonShaderResourceView[] _backingArray = new GorgonShaderResourceView[16];
 
         // The list of changed indices.
-	    private readonly List<int> _changedIndices = new List<int>(MaximumShaderResourceViewCount);
+	    private readonly List<int> _changedIndices = new List<int>(16);
+
+        // The first index mask (bits 0 - 63).
+	    private ulong _indexMask1 = 0;
+
+	    // The second index mask (bits 0 - 63).
+	    private ulong _indexMask2 = 0;
+
+        // Native views.
+        private D3D11.ShaderResourceView[] _native = new D3D11.ShaderResourceView[16];
         #endregion
 
 		#region Properties.
-		/// <summary>
-		/// Property to return the native shader resource views.
-		/// </summary>
-		internal D3D11.ShaderResourceView[] Native
-		{
-		    get;
-		} = new D3D11.ShaderResourceView[MaximumShaderResourceViewCount];
+	    /// <summary>
+	    /// Property to return the native shader resource views.
+	    /// </summary>
+	    internal D3D11.ShaderResourceView[] Native => _native;
 
 	    /// <summary>
 	    /// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.
@@ -91,7 +97,7 @@ namespace Gorgon.Graphics.Core
 	    /// <summary>
 	    /// Property to return the length of the array.
 	    /// </summary>
-	    public int Length => _backingArray.Length;
+	    public int Length => MaximumShaderResourceViewCount;
 
 	    /// <summary>Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</summary>
 	    /// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only; otherwise, false.</returns>
@@ -106,15 +112,62 @@ namespace Gorgon.Graphics.Core
 	    /// <returns>The element at the specified index.</returns>
 	    public GorgonShaderResourceView this[int index]
 	    {
-	        get => _backingArray[index];
+	        get
+	        {
+	            if (index < _backingArray.Length)
+	            {
+	                return _backingArray[index];
+	            }
+
+	            if (index >= MaximumShaderResourceViewCount)
+	            {
+	                throw new ArgumentOutOfRangeException(nameof(index));
+	            }
+
+	            return null;
+	        }
 	        set
 	        {
+                // Adjust the size of the underlying array if we go out of bounds.
+	            if (index >= _backingArray.Length)
+	            {
+	                if (index >= MaximumShaderResourceViewCount)
+	                {
+	                    throw new ArgumentOutOfRangeException(nameof(index));
+	                }
+
+	                int newSize = index * 2;
+	                newSize = ((newSize + 3) & ~3).Min(MaximumShaderResourceViewCount);
+	                Array.Resize(ref _backingArray, newSize);
+                    Array.Resize(ref _native, newSize);
+	            }
+
 	            if (value == _backingArray[index])
 	            {
 	                return;
 	            }
 
 	            _backingArray[index] = value;
+
+	            ulong mask;
+	            ref ulong indexMask = ref _indexMask1;
+
+	            if (index > 63)
+	            {
+	                mask = (ulong)(1 << (index - 63));
+	                indexMask = ref _indexMask2;
+	            }
+	            else
+	            {
+	                mask = (ulong)(1 << index);
+	            }
+
+	            if ((indexMask & mask) == mask)
+	            {
+	                return;
+	            }
+
+	            indexMask |= mask;
                 _changedIndices.Add(index);
 	        }
 	    }
@@ -192,6 +245,7 @@ namespace Gorgon.Graphics.Core
 
 		    if (!peek)
 		    {
+		        _indexMask1 = _indexMask2 = 0;
                 _changedIndices.Clear();
 		    }
             
@@ -312,12 +366,14 @@ namespace Gorgon.Graphics.Core
 				destIndex = 0;
 			}
 
-			if (destIndex >= array.Length)
+			if (destIndex >= MaximumShaderResourceViewCount)
 			{
-				destIndex = array.Length - 1;
+				destIndex = MaximumShaderResourceViewCount - 1;
 			}
 
-			for (int j = destIndex, i = 0; j < array.Length && i < Length; ++i, ++j)
+		    int count = array._backingArray.Length.Min(_backingArray.Length);
+
+			for (int j = destIndex, i = 0; j < destIndex + count && i < count; ++i, ++j)
 			{
 				array[j] = this[i];
 			}
@@ -331,6 +387,7 @@ namespace Gorgon.Graphics.Core
 			Array.Clear(_backingArray, 0, _backingArray.Length);
 			_changedIndices.Clear();
 			_dirtyItems = (0, 0);
+		    _indexMask1 = _indexMask2 = 0;
 		}
 		
 		/// <summary>Returns an enumerator that iterates through the collection.</summary>

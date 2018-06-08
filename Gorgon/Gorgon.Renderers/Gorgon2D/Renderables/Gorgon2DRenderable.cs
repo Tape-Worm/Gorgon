@@ -4,43 +4,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Gorgon.Graphics.Core;
+using SharpDX.Direct3D11;
+using BlendOperation = Gorgon.Graphics.Core.BlendOperation;
+using LogicOperation = Gorgon.Graphics.Core.LogicOperation;
 
 namespace Gorgon.Renderers
 {
     /// <summary>
     /// A base class for a 2D renderable object.
     /// </summary>
-    public class Gorgon2DRenderable
+    public abstract class Gorgon2DRenderable
         : IEquatable<Gorgon2DRenderable>
     {
         #region Properties.
-        /// <summary>
-        /// Property to set or return the draw call for this renderable.
-        /// </summary>
-        internal GorgonDrawIndexCall AssociatedDrawCall
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the blend state for this renderable.
-        /// </summary>
-        public GorgonBlendState BlendState
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the depth/stencil state for this renderable.
-        /// </summary>
-        public GorgonDepthStencilState DepthStencilState
-        {
-            get;
-            set;
-        }
-
         /// <summary>
         /// Property to set or return the texture to render.
         /// </summary>
@@ -65,7 +41,8 @@ namespace Gorgon.Renderers
         public Gorgon2DVertex[] Vertices
         {
             get;
-        } = new Gorgon2DVertex[4];
+            protected set;
+        }
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -79,23 +56,12 @@ namespace Gorgon.Renderers
                 return false;
             }
 
-            if (other == this)
-            {
-                return true;
-            }
-
-            return ((BlendState == other.BlendState)
-                    && (DepthStencilState == other.DepthStencilState)
-                    && (Texture == other.Texture)
+            return ((Texture == other.Texture)
                     && (TextureSampler == other.TextureSampler));
         }
         #endregion
 
         #region Methods.
-
-        #endregion
-
-        #region Constructor/Finalizer.
 
         #endregion
     }
