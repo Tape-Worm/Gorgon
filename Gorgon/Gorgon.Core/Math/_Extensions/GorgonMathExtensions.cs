@@ -740,91 +740,91 @@ namespace Gorgon.Math
 		/// <summary>
 		/// Function to return the inverse sine value of a <see cref="float"/> value representing an angle, in radians.
 		/// </summary>
-		/// <param name="angle">The angle, in radians.</param>
-		/// <returns>The inverse sine value of the <paramref name="angle"/>.</returns>
-		public static float ASin(this float angle)
+		/// <param name="sine">The sine value.</param>
+		/// <returns>The inverse sine value of the <paramref name="sine"/>.</returns>
+		public static float ASin(this float sine)
 		{
-			return (float)System.Math.Asin(angle);
+			return (float)System.Math.Asin(sine);
 		}
 
 		/// <summary>
 		/// Function to return the inverse sine value of a <see cref="decimal"/> value representing an angle, in radians.
 		/// </summary>
-		/// <param name="angle">The angle, in radians.</param>
-		/// <returns>The inverse sine value of the <paramref name="angle"/>.</returns>
-		public static decimal ASin(this decimal angle)
+		/// <param name="sine">The sine value.</param>
+		/// <returns>The inverse sine value of the <paramref name="sine"/>.</returns>
+		public static decimal ASin(this decimal sine)
 		{
-			return (decimal)System.Math.Asin((double)angle);
+			return (decimal)System.Math.Asin((double)sine);
 		}
 
 		/// <summary>
 		/// Function to return the inverse sine value of a <see cref="double"/> value representing an angle, in radians.
 		/// </summary>
-		/// <param name="angle">The angle, in radians.</param>
-		/// <returns>The inverse sine value of the <paramref name="angle"/>.</returns>
-		public static double ASin(this double angle)
+		/// <param name="sine">The sine value.</param>
+		/// <returns>The inverse sine value of the <paramref name="sine"/>.</returns>
+		public static double ASin(this double sine)
 		{
-			return System.Math.Asin(angle);
+			return System.Math.Asin(sine);
 		}
 
 		/// <summary>
 		/// Function to return the inverse cosine value of a <see cref="float"/> value representing an angle, in radians.
 		/// </summary>
-		/// <param name="angle">The angle, in radians.</param>
-		/// <returns>The inverse cosine value of the <paramref name="angle"/>.</returns>
-		public static float ACos(this float angle)
+		/// <param name="cosine">The cosine value.</param>
+		/// <returns>The inverse cosine value of the <paramref name="cosine"/>.</returns>
+		public static float ACos(this float cosine)
 		{
-			return (float)System.Math.Acos(angle);
+			return (float)System.Math.Acos(cosine);
 		}
 
 		/// <summary>
 		/// Function to return the inverse cosine value of a <see cref="decimal"/> value representing an angle, in radians.
 		/// </summary>
-		/// <param name="angle">The angle, in radians.</param>
-		/// <returns>The inverse cosine value of the <paramref name="angle"/>.</returns>
-		public static decimal ACos(this decimal angle)
+		/// <param name="cosine">The cosine value.</param>
+		/// <returns>The inverse cosine value of the <paramref name="cosine"/>.</returns>
+		public static decimal ACos(this decimal cosine)
 		{
-			return (decimal)System.Math.Acos((double)angle);
+			return (decimal)System.Math.Acos((double)cosine);
 		}
 
 		/// <summary>
 		/// Function to return the inverse cosine value of a <see cref="double"/> value representing an angle, in radians.
 		/// </summary>
-		/// <param name="angle">The angle, in radians.</param>
-		/// <returns>The inverse cosine value of the <paramref name="angle"/>.</returns>
-		public static double ACos(this double angle)
+		/// <param name="cosine">The cosine value.</param>
+		/// <returns>The inverse cosine value of the <paramref name="cosine"/>.</returns>
+		public static double ACos(this double cosine)
 		{
-			return System.Math.Acos(angle);
+			return System.Math.Acos(cosine);
 		}
 
 		/// <summary>
 		/// Function to return the inverse tangent value of a <see cref="float"/> value representing an angle, in radians.
 		/// </summary>
-		/// <param name="angle">The angle, in radians.</param>
-		/// <returns>The tangent sine value of the <paramref name="angle"/>.</returns>
-		public static float ATan(this float angle)
+		/// <param name="tangent">The tangent value.</param>
+		/// <returns>The tangent sine value of the <paramref name="tangent"/>.</returns>
+		public static float ATan(this float tangent)
 		{
-			return (float)System.Math.Atan(angle);
+			return (float)System.Math.Atan(tangent);
 		}
 
 		/// <summary>
 		/// Function to return the inverse tangent value of a <see cref="decimal"/> value representing an angle, in radians.
 		/// </summary>
-		/// <param name="angle">The angle, in radians.</param>
-		/// <returns>The tangent sine value of the <paramref name="angle"/>.</returns>
-		public static decimal ATan(this decimal angle)
+		/// <param name="tangent">The tangent value.</param>
+		/// <returns>The tangent sine value of the <paramref name="tangent"/>.</returns>
+		public static decimal ATan(this decimal tangent)
 		{
-			return (decimal)System.Math.Atan((double)angle);
+			return (decimal)System.Math.Atan((double)tangent);
 		}
 
 		/// <summary>
 		/// Function to return the inverse tangent value of a <see cref="double"/> value representing an angle, in radians.
 		/// </summary>
-		/// <param name="angle">The angle, in radians.</param>
-		/// <returns>The tangent sine value of the <paramref name="angle"/>.</returns>
-		public static double ATan(this double angle)
+		/// <param name="tangent">The tangent value.</param>
+		/// <returns>The tangent sine value of the <paramref name="tangent"/>.</returns>
+		public static double ATan(this double tangent)
 		{
-			return System.Math.Atan(angle);
+			return System.Math.Atan(tangent);
 		}
 
 		/// <summary>

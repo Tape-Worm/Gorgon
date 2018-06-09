@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using Gorgon.Graphics.Core;
 
 namespace Gorgon.Renderers
@@ -61,8 +62,16 @@ namespace Gorgon.Renderers
             get;
             protected set;
         }
-        #endregion
 
+        /// <summary>
+        /// Property to return the equality comparer for renderable object state.
+        /// </summary>
+        public BatchRenderableStateEqualityComparer RenderableStateComparer
+        {
+            get;
+        }= new BatchRenderableStateEqualityComparer();
+        #endregion
+        
         #region Methods.
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.

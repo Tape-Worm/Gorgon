@@ -62,6 +62,15 @@ namespace Gorgon.Renderers
             get;
             set;
         }
+
+        /// <summary>
+        /// Property to set or return the buffer used to hold alpha test data.
+        /// </summary>
+        public GorgonConstantBufferView AlphaTestBuffer
+        {
+            get;
+            set;
+        }
         #endregion
 
         #region Methods.
@@ -86,7 +95,8 @@ namespace Gorgon.Renderers
                                       || (!_prevSprite.Equals(renderable))
                                       || (_lastCall.IndexBuffer != renderer.IndexBuffer)
                                       || (_lastCall.VertexBufferBindings[0] != renderer.VertexBuffer)
-                                      || (_lastCall.VertexShader.ConstantBuffers[0] != ProjectionViewBuffer);
+                                      || (_lastCall.VertexShader.ConstantBuffers[0] != ProjectionViewBuffer)
+                                      || (_lastCall.PixelShader.ConstantBuffers[0] != AlphaTestBuffer);
 
             _prevSprite = renderable;
 
@@ -114,9 +124,11 @@ namespace Gorgon.Renderers
             
             _lastCall = _drawBuilder.PipelineState(_lastState)
                                     .ConstantBuffer(ShaderType.Vertex, ProjectionViewBuffer)
+                                    .ConstantBuffer(ShaderType.Pixel, AlphaTestBuffer)
                                     .IndexBuffer(renderer.IndexBuffer)
                                     .VertexBuffer(_inputLayout, renderer.VertexBuffer)
                                     .ShaderResource(ShaderType.Pixel, renderable.Texture ?? _defaultTexture)
+                                    .SamplerState(ShaderType.Pixel, renderable.TextureSampler ?? GorgonSamplerState.Default)
                                     .Build(_drawAllocator);
             return _lastCall;
         }

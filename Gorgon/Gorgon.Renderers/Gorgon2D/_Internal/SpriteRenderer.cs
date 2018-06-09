@@ -139,7 +139,7 @@ namespace Gorgon.Renderers
         /// Function queue a sprite for rendering.
         /// </summary>
         /// <param name="sprite">The sprite to queue.</param>
-        public void QueueSprite(Gorgon2DRenderable sprite)
+        public void QueueSprite(BatchRenderable sprite)
         {
             int lastVertex = _allocatedVertexCount + _currentVertexIndex + sprite.Vertices.Length;
 
