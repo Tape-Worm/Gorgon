@@ -211,7 +211,7 @@ namespace Gorgon.Renderers
                 {
                     if (_lastRenderable != null)
                     {
-                        UpdateAlphaTest(ref _lastRenderable.AlphaTestDataRef);
+                        UpdateAlphaTest(ref _lastRenderable.AlphaTestData);
                     }
 
                     _spriteRenderer.RenderBatches(_currentDrawCall);
@@ -219,13 +219,13 @@ namespace Gorgon.Renderers
 
                 _lastRenderable = sprite.Renderable;
                 // All states are reconciled, so reset the change flag.
-                _lastRenderable.Changed = false;
+                _lastRenderable.StateChanged = false;
 
                 _currentDrawCall = drawCall;
             }
 
             // Perform an update of the sprite's transformation information.
-            if (sprite.NeedsUpdate)
+            if (sprite.IsUpdated)
             {
                 // TODO: This should call some sort of transform component.
                 sprite.UpdateSprite();
@@ -258,13 +258,14 @@ namespace Gorgon.Renderers
 
             crossStart *= size / 2.0f;
 
+            _lineSprite.Bounds = new DX.RectangleF(x1, y1, diff.X, diff.Y);
             _lineSprite.UpdateSprite();
             
             _lineSprite.Renderable.Vertices[0].Position = new DX.Vector4(x1 + crossStart.X, y1 + crossStart.Y, 0, 1.0f);
             _lineSprite.Renderable.Vertices[1].Position = new DX.Vector4(x2 + crossStart.X, y2 + crossStart.Y, 0, 1.0f);
             _lineSprite.Renderable.Vertices[2].Position = new DX.Vector4(x1 - crossStart.X, y1 - crossStart.Y, 0, 1.0f);
             _lineSprite.Renderable.Vertices[3].Position = new DX.Vector4(x2 - crossStart.X, y2 - crossStart.Y, 0, 1.0f);
-
+            
             //_lineSprite.Bounds = new DX.RectangleF(x1, y1, diff.X, size.Max(1.0f));
 
             //_lineSprite.Angle = 45.0f;// angle;
@@ -289,7 +290,7 @@ namespace Gorgon.Renderers
         {
             if (_lastRenderable != null)
             {
-                UpdateAlphaTest(ref _lastRenderable.AlphaTestDataRef);
+                UpdateAlphaTest(ref _lastRenderable.AlphaTestData);
             }
             
             _spriteRenderer.RenderBatches(_currentDrawCall);

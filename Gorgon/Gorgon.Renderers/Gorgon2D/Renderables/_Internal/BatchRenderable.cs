@@ -24,7 +24,10 @@
 // 
 #endregion
 
+using System.Runtime.CompilerServices;
+using DX = SharpDX;
 using Gorgon.Core;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 
 namespace Gorgon.Renderers
@@ -35,94 +38,133 @@ namespace Gorgon.Renderers
     internal class BatchRenderable
     {
         #region Variables.
-        // The texture for the renderable.
-        private GorgonTexture2DView _texture;
-        // The sampler for the renderable.
-        private GorgonSamplerState _textureSampler;
-        // Alpha test data.
-        private AlphaTestData _alphaTest = new AlphaTestData(true, GorgonRangeF.Empty);
+        // Flag to indicate that transformation is required.
+        private bool _hasTransforms = true;
         #endregion
 
+        // Many of these "Properties" are variables.  While this is horrid coding style, it's also SUPER efficient for access, so we'll trade pretty code for raw performance here.
         #region Properties.
         /// <summary>
-        /// Property to set or return whether or not the sprite properties have been changed.
+        /// Property to set or return whether the vertices need to be transformed or not.
         /// </summary>
-        public bool Changed
+        public bool HasTransformChanges
         {
-            get;
-            set;
-        } = true;
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => _hasTransforms || RectangleOffsets.HasChanged;
+            set => _hasTransforms = value;
+        }
 
         /// <summary>
-        /// Property to set or return the reference to the alpha test data.
+        /// Property to set or return whether the object space information the vertices need updating or not.
+        /// </summary>
+        public bool HasVertexChanges = true;
+
+        /// <summary>
+        /// Property to set or return whether the texture coordinates for the vertices need updating.
+        /// </summary>
+        public bool HasTextureChanges = true;
+
+        /// <summary>
+        /// Property to return the interface for setting rectangle corner colors.
+        /// </summary>
+        public readonly GorgonRectangleColors RectangleColors = new GorgonRectangleColors(GorgonColor.White);
+
+        /// <summary>
+        /// Property to return the interface for setting rectangle corner colors.
+        /// </summary>
+        public readonly GorgonRectangleOffsets RectangleOffsets = new GorgonRectangleOffsets();
+
+        /// <summary>
+        /// Property to set or return the rectangle bounds for this renderable item.
+        /// </summary>
+        public DX.RectangleF Bounds;
+
+        /// <summary>
+        /// Property to set or return the depth value for this sprite.
+        /// </summary>
+        public float Depth;
+
+        /// <summary>
+        /// Property to set or return the point around which the sprite will pivot when rotated.
         /// </summary>
         /// <remarks>
-        /// This is used internally to write data into a buffer. Use the <see cref="AlphaTestData"/> property for general use.
+        /// This value is a relative value where 0, 0 means the upper left of the sprite, and 1, 1 means the lower right.
         /// </remarks>
-        public ref AlphaTestData AlphaTestDataRef => ref _alphaTest;
+        public DX.Vector2 Anchor;
+
+        /// <summary>
+        /// Property to set or return the region of the texture to use when drawing the sprite.
+        /// </summary>
+        /// <remarks>
+        /// These values are in texel coordinates.
+        /// </remarks>
+        public DX.RectangleF TextureRegion = new DX.RectangleF(0, 0, 1, 1);
+
+        /// <summary>
+        /// Property to set or return the scale factor to apply to the sprite.
+        /// </summary>
+        public DX.Vector2 Scale = DX.Vector2.One;
+
+        /// <summary>
+        /// Property to set or return the angle of rotation in radians.
+        /// </summary>
+        public float AngleRads;
+
+        /// <summary>
+        /// Property to set or return cached the sine for the rotation angle.
+        /// </summary>
+        public float AngleSin;
+
+        /// <summary>
+        /// Property to set or return cached the cosine for the rotation angle.
+        /// </summary>
+        public float AngleCos;
+
+        /// <summary>
+        /// Property to set or return which index within a texture array to use.
+        /// </summary>
+        public int TextureArrayIndex;
+
+        /// <summary>
+        /// Property to set or return whether the sprite texture is flipped horizontally.
+        /// </summary>
+        /// <remarks>
+        /// This only flips the texture region mapped to the sprite.  It does not affect the positioning or axis of the sprite.
+        /// </remarks>
+        public bool HorizontalFlip;
+
+        /// <summary>
+        /// Property to set or return whether the sprite texture is flipped vertically.
+        /// </summary>
+        /// <remarks>
+        /// This only flips the texture region mapped to the sprite.  It does not affect the positioning or axis of the sprite.
+        /// </remarks>
+        public bool VerticalFlip;
+
+        /// <summary>
+        /// Property to set or return whether or not the state properties have been changed.
+        /// </summary>
+        public bool StateChanged = true;
 
         /// <summary>
         /// Property to set or return the alpha test data.
         /// </summary>
-        public AlphaTestData AlphaTestData
-        {
-            get => _alphaTest;
-            set
-            {
-                if (_alphaTest.Equals(value))
-                {
-                    return;
-                }
-
-                _alphaTest = value;
-                Changed = true;
-            }
-        }
+        public AlphaTestData AlphaTestData = new AlphaTestData(true, GorgonRangeF.Empty);
 
         /// <summary>
         /// Property to set or return the vertices for this renderable.
         /// </summary>
-        public Gorgon2DVertex[] Vertices
-        {
-            get;
-            set;
-        }
+        public Gorgon2DVertex[] Vertices;
 
         /// <summary>
         /// Property to set or return the texture to render.
         /// </summary>
-        public GorgonTexture2DView Texture
-        {
-            get => _texture;
-            set
-            {
-                if (_texture == value)
-                {
-                    return;
-                }
-
-                _texture = value;
-                Changed = true;
-            }
-        }
+        public GorgonTexture2DView Texture;
 
         /// <summary>
         /// Property to set or return the texture sampler to use when rendering.
         /// </summary>
-        public GorgonSamplerState TextureSampler
-        {
-            get => _textureSampler;
-            set
-            {
-                if (_textureSampler == value)
-                {
-                    return;
-                }
-
-                _textureSampler = value;
-                Changed = true;
-            }
-        }
+        public GorgonSamplerState TextureSampler;
         #endregion
     }
 }

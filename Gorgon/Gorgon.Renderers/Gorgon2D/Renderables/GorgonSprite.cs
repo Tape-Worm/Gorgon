@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System.Runtime.CompilerServices;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using DX = SharpDX;
@@ -38,67 +39,65 @@ namespace Gorgon.Renderers
     public class GorgonSprite
     {
         #region Variables.
-        // Flag to indicate that the vertices for the sprite need updating.
-        private bool _verticesChanged = true;
-        // Flag to indicate that the vertices need transformation.
-        private bool _transformChanged = true;
-        // Flag to indicate that the texture coordinates have been changed.
-        private bool _uvsChanged = true;
-        // Rectangle bounds for the sprite.
-        private DX.RectangleF _bounds;
         // The corners for the sprite rectangle.
         private DX.Vector4 _corners;
-        // The axis point for the sprite.
-        private DX.Vector2 _axis;
-        // The scale of the sprite.
-        private DX.Vector2 _scale = DX.Vector2.One;
         // The angle of rotation, in degrees.
-        // This value is shown and input by the user.
         private float _angle;
-        // This value is used internally for rotation calculations.
-        private float _angleRads;
-        // Cached sine for the angle.
-        private float _angleCachedSin;
-        // Cached cosine for the angle.
-        private float _angleCachedCos;
-        // The index of the array item in a texture array to use.
-        private int _textureIndex;
-        // The region of the texture to draw.
-        private DX.RectangleF _textureRegion = new DX.RectangleF(0, 0, 1, 1);
+        // The renderable.
+        // We have it outside of the property as a performance improvement (and it's quite noticable).
+        private readonly BatchRenderable _renderable = new BatchRenderable();
         #endregion
 
         #region Properties.
         /// <summary>
         /// Property to return the renderable associated with the sprite data.
         /// </summary>
-        internal BatchRenderable Renderable
-        {
-            get;
-        } = new BatchRenderable();
+        internal BatchRenderable Renderable => _renderable;
 
         /// <summary>
-        /// Property to indicate that the sprite needs to be updated before rendering.
+        /// Property to return whether or not the sprite has had its position, size, texture information, or object space vertices updated since it was last drawn.
         /// </summary>
-        internal bool NeedsUpdate => _transformChanged || _verticesChanged || CornerColors.HasChanged || _uvsChanged;
+        public bool IsUpdated => _renderable.HasTextureChanges || _renderable.HasTransformChanges || _renderable.HasVertexChanges ||
+                                 _renderable.RectangleColors.HasChanged;
 
         /// <summary>
-        /// Property to return the colors for each corner of the sprite.
+        /// Property to return the interface that allows colors to be assigned to each corner of the sprite.
+        /// </summary>
+        public GorgonRectangleColors CornerColors => _renderable.RectangleColors;
+
+        /// <summary>
+        /// Property to set or return the color of the sprite.
         /// </summary>
         /// <remarks>
-        /// The individual values for the corner colors can be set through this interface.
+        /// This sets the color for the entire sprite.  To assign colors to each corner of the sprite, use the <see cref="CornerColors"/> property.
         /// </remarks>
-        public GorgonRectangleColors CornerColors
+        public GorgonColor Color
         {
-            get;
-        } = new GorgonRectangleColors(GorgonColor.White);
+            get => _renderable.RectangleColors.UpperLeft;
+            set => _renderable.RectangleColors.SetAll(in value);
+        }
+
+        /// <summary>
+        /// Property to return the interface that allows an offset to be applied to each corner of the sprite.
+        /// </summary>
+        public GorgonRectangleOffsets CornerOffsets => _renderable.RectangleOffsets;
 
         /// <summary>
         /// Property to set or return the texture to render.
         /// </summary>
         public GorgonTexture2DView Texture
         {
-            get => Renderable.Texture;
-            set => Renderable.Texture = value;
+            get => _renderable.Texture;
+            set
+            {
+                if (_renderable.Texture == value)
+                {
+                    return;
+                }
+
+                _renderable.Texture = value;
+                _renderable.StateChanged = true;
+            }
         }
 
         /// <summary>
@@ -106,8 +105,17 @@ namespace Gorgon.Renderers
         /// </summary>
         public GorgonSamplerState TextureSampler
         {
-            get => Renderable.TextureSampler;
-            set => Renderable.TextureSampler = value;
+            get => _renderable.TextureSampler;
+            set
+            {
+                if (_renderable.TextureSampler == value)
+                {
+                    return;
+                }
+
+                _renderable.TextureSampler = value;
+                _renderable.StateChanged = true;
+            }
         }
 
         /// <summary>
@@ -115,17 +123,21 @@ namespace Gorgon.Renderers
         /// </summary>
         public DX.RectangleF Bounds
         {
-            get => _bounds;
+            get => _renderable.Bounds;
             set
             {
-                if (_bounds.Equals(ref value))
+                ref DX.RectangleF bounds = ref _renderable.Bounds;
+
+                if ((bounds.Left == value.Left) 
+                    && (bounds.Right == value.Right)
+                    && (bounds.Top == value.Top)
+                    && (bounds.Bottom == value.Bottom))
                 {
                     return;
                 }
 
-                _bounds = value;
-                _transformChanged = true;
-                _verticesChanged = true;
+                bounds = value;
+                _renderable.HasVertexChanges = true;
             }
         }
 
@@ -134,16 +146,37 @@ namespace Gorgon.Renderers
         /// </summary>
         public DX.Vector2 Position
         {
-            get => Bounds.TopLeft;
+            get => _renderable.Bounds.TopLeft;
             set
             {
-                if (Bounds.TopLeft.Equals(ref value))
+                ref DX.RectangleF bounds = ref _renderable.Bounds;
+                if ((bounds.X == value.X)
+                    && (bounds.Y == value.Y))
                 {
                     return;
                 }
 
-                _bounds = new DX.RectangleF(value.X, value.Y, Bounds.Width, Bounds.Height);
-                _transformChanged = true;
+                bounds.X = value.X;
+                bounds.Y = value.Y;
+                _renderable.HasTransformChanges = true;
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the depth value for this sprite.
+        /// </summary>
+        public float Depth
+        {
+            get => _renderable.Depth;
+            set
+            {
+                if (_renderable.Depth.EqualsEpsilon(value))
+                {
+                    return;
+                }
+
+                _renderable.Depth = value;
+                _renderable.HasTransformChanges = true;
             }
         }
 
@@ -155,16 +188,18 @@ namespace Gorgon.Renderers
         /// </remarks>
         public DX.Vector2 Anchor
         {
-            get => _axis;
+            get => _renderable.Anchor;
             set
             {
-                if (_axis.Equals(ref value))
+                ref DX.Vector2 anchor = ref _renderable.Anchor;
+                if ((anchor.X == value.X)
+                    && (anchor.Y == value.Y))
                 {
                     return;
                 }
 
-                _axis = value;
-                _verticesChanged = true;
+                anchor = value;
+                _renderable.HasVertexChanges = true;
             }
         }
 
@@ -176,13 +211,15 @@ namespace Gorgon.Renderers
             get => Bounds.Size;
             set
             {
-                if (_bounds.Size.Equals(value))
+                ref DX.RectangleF bounds = ref _renderable.Bounds;
+                if ((bounds.Size.Width == value.Width)
+                    && (bounds.Size.Height == value.Height))
                 {
                     return;
                 }
 
-                _bounds = new DX.RectangleF(Bounds.X, Bounds.Y, value.Width, value.Height);
-                _verticesChanged = true;
+                bounds = new DX.RectangleF(Bounds.X, Bounds.Y, value.Width, value.Height);
+                _renderable.HasVertexChanges = true;
             }
         }
 
@@ -194,16 +231,20 @@ namespace Gorgon.Renderers
         /// </remarks>
         public DX.RectangleF TextureRegion
         {
-            get => _textureRegion;
+            get => _renderable.TextureRegion;
             set
             {
-                if (_textureRegion.Equals(ref value))
+                ref DX.RectangleF region = ref _renderable.TextureRegion;
+                if ((region.Left == value.Left)
+                    && (region.Top == value.Top)
+                    && (region.Right == value.Right)
+                    && (region.Bottom == value.Bottom))
                 {
                     return;
                 }
 
-                _textureRegion = value;
-                _uvsChanged = true;
+                region = value;
+                _renderable.HasTextureChanges = true;
             }
         }
 
@@ -212,16 +253,42 @@ namespace Gorgon.Renderers
         /// </summary>
         public int TextureArrayIndex
         {
-            get => _textureIndex;
+            get => _renderable.TextureArrayIndex;
             set
             {
-                if (_textureIndex == value)
+                if (_renderable.TextureArrayIndex == value)
                 {
                     return;
                 }
 
-                _textureIndex = value;
-                _uvsChanged = true;
+                _renderable.TextureArrayIndex = value;
+                _renderable.HasTextureChanges = true;
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the size of the renderable after scaling has been applied.
+        /// </summary>
+        /// <remarks>
+        /// This property will set or return the actual size of the renderable.  This means that if a <see cref="Scale"/> has been set, then this property will return the size of the renderable with
+        /// multiplied by the scale.  When assigning a value, the scale be set on value derived from the current size of the renderable.
+        /// </remarks>
+        public DX.Vector2 ScaledSize
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                ref DX.RectangleF bounds = ref _renderable.Bounds;
+                ref DX.Vector2 scale = ref _renderable.Scale;
+                return new DX.Vector2(scale.X * bounds.Width, scale.Y * bounds.Height);
+            }
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            set
+            {
+                ref DX.RectangleF bounds = ref _renderable.Bounds;
+                ref DX.Vector2 scale = ref _renderable.Scale;
+                scale = new DX.Vector2(value.X / bounds.Width, value.Y / bounds.Height);
+                _renderable.HasTransformChanges = true;
             }
         }
 
@@ -230,16 +297,18 @@ namespace Gorgon.Renderers
         /// </summary>
         public DX.Vector2 Scale
         {
-            get => _scale;
+            get => _renderable.Scale;
             set
             {
-                if (_scale.Equals(ref value))
+                ref DX.Vector2 scale = ref _renderable.Scale;
+                if ((scale.X == value.X)
+                    && (scale.Y == value.Y))
                 {
                     return;
                 }
 
-                _scale = value;
-                _transformChanged = true;
+                scale = value;
+                _renderable.HasTransformChanges = true;
             }
         }
 
@@ -251,16 +320,17 @@ namespace Gorgon.Renderers
             get => _angle;
             set
             {
-                if (_angle.EqualsEpsilon(value))
+                if (_angle == value)
                 {
                     return;
                 }
 
                 _angle = value;
-                _angleRads = value.ToRadians();
-                _angleCachedSin = _angleRads.FastSin();
-                _angleCachedCos = _angleRads.FastCos();
-                _transformChanged = true;
+                float rads = value.ToRadians();
+                _renderable.AngleRads = rads;
+                _renderable.AngleSin = rads.FastSin();
+                _renderable.AngleCos = rads.FastCos();
+                _renderable.HasTransformChanges = true;
             }
         }
 
@@ -279,25 +349,72 @@ namespace Gorgon.Renderers
         {
             get
             {
-                if (Renderable.AlphaTestData.IsEnabled == 0)
+                if (_renderable.AlphaTestData.IsEnabled == 0)
                 {
                     return null;
                 }
 
-                return new GorgonRangeF(Renderable.AlphaTestData.LowerAlpha, Renderable.AlphaTestData.UpperAlpha);
+                return new GorgonRangeF(_renderable.AlphaTestData.LowerAlpha, _renderable.AlphaTestData.UpperAlpha);
             }
             set
             {
+                // ReSharper disable once ConvertIfStatementToSwitchStatement
                 if (value == null)
                 {
-                    if (Renderable.AlphaTestData.IsEnabled != 0)
+                    if (_renderable.AlphaTestData.IsEnabled == 0)
                     {
-                        Renderable.AlphaTestData = new AlphaTestData(false, new GorgonRangeF(Renderable.AlphaTestData.LowerAlpha, Renderable.AlphaTestData.UpperAlpha));
+                        return;
                     }
+
+                    _renderable.AlphaTestData = new AlphaTestData(false, new GorgonRangeF(_renderable.AlphaTestData.LowerAlpha, _renderable.AlphaTestData.UpperAlpha));
+                    _renderable.StateChanged = true;
                     return;
                 }
 
-                Renderable.AlphaTestData = new AlphaTestData(true, value.Value);
+                _renderable.AlphaTestData = new AlphaTestData(true, value.Value);
+                _renderable.StateChanged = true;
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return whether the sprite texture is flipped horizontally.
+        /// </summary>
+        /// <remarks>
+        /// This only flips the texture region mapped to the sprite.  It does not affect the positioning or axis of the sprite.
+        /// </remarks>
+        public bool HorizontalFlip
+        {
+            get => _renderable.HorizontalFlip;
+            set
+            {
+                if (value == _renderable.HorizontalFlip)
+                {
+                    return;
+                }
+
+                HorizontalFlip = value;
+                _renderable.HasTextureChanges = true;
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return whether the sprite texture is flipped vertically.
+        /// </summary>
+        /// <remarks>
+        /// This only flips the texture region mapped to the sprite.  It does not affect the positioning or axis of the sprite.
+        /// </remarks>
+        public bool VerticalFlip
+        {
+            get => _renderable.VerticalFlip;
+            set
+            {
+                if (value == VerticalFlip)
+                {
+                    return;
+                }
+
+                VerticalFlip = value;
+                _renderable.HasTextureChanges = true;
             }
         }
         #endregion
@@ -308,19 +425,21 @@ namespace Gorgon.Renderers
         /// </summary>
         private void BuildSprite()
         {
-            DX.Vector2 vectorSize = new DX.Vector2(Size.Width, Size.Height);
+            ref DX.RectangleF bounds = ref _renderable.Bounds;
+            DX.Vector2 vectorSize = new DX.Vector2(bounds.Size.Width, bounds.Size.Height);
             DX.Vector2 axisOffset = default;
 
-            if (!_axis.IsZero)
+            ref DX.Vector2 anchor = ref _renderable.Anchor;
+            if (!anchor.IsZero)
             {
-                DX.Vector2.Multiply(ref _axis, ref vectorSize, out axisOffset);
+                DX.Vector2.Multiply(ref anchor, ref vectorSize, out axisOffset);
             }
 
             _corners = new DX.Vector4(-axisOffset.X, -axisOffset.Y, vectorSize.X - axisOffset.X, vectorSize.Y - axisOffset.Y);
 
-            _verticesChanged = false;
+            _renderable.HasVertexChanges = false;
             // If we've updated the physical dimensions for the sprite, then we need to update the transform as well.
-            _transformChanged = true;
+            _renderable.HasTransformChanges = true;
         }
 
         /// <summary>
@@ -328,12 +447,12 @@ namespace Gorgon.Renderers
         /// </summary>
         private void UpdateVertexColors()
         {
-            Renderable.Vertices[0].Color = CornerColors.UpperLeft;
-            Renderable.Vertices[1].Color = CornerColors.UpperRight;
-            Renderable.Vertices[2].Color = CornerColors.LowerLeft;
-            Renderable.Vertices[3].Color = CornerColors.LowerRight;
+            _renderable.Vertices[0].Color = CornerColors.UpperLeft;
+            _renderable.Vertices[1].Color = CornerColors.UpperRight;
+            _renderable.Vertices[2].Color = CornerColors.LowerLeft;
+            _renderable.Vertices[3].Color = CornerColors.LowerRight;
 
-            CornerColors.HasChanged = false;
+            _renderable.RectangleColors.HasChanged = false;
         }
 
         /// <summary>
@@ -341,12 +460,30 @@ namespace Gorgon.Renderers
         /// </summary>
         private void UpdateTextureCoordinates()
         {
-            Renderable.Vertices[0].UV = new DX.Vector3(TextureRegion.Left, TextureRegion.Top, _textureIndex);
-            Renderable.Vertices[1].UV = new DX.Vector3(TextureRegion.Right, TextureRegion.Top, _textureIndex);
-            Renderable.Vertices[2].UV = new DX.Vector3(TextureRegion.Left, TextureRegion.Bottom, _textureIndex);
-            Renderable.Vertices[3].UV = new DX.Vector3(TextureRegion.Right, TextureRegion.Bottom, _textureIndex);
+            // Calculate texture coordinates.
+            ref DX.RectangleF textureRegion = ref _renderable.TextureRegion;
 
-            _uvsChanged = false;
+            var rightBottom = new DX.Vector3(textureRegion.BottomRight, _renderable.TextureArrayIndex);
+            var leftTop = new DX.Vector3(textureRegion.TopLeft, _renderable.TextureArrayIndex);
+
+            if (_renderable.HorizontalFlip)
+            {
+                leftTop.X = TextureRegion.Right;
+                rightBottom.X = TextureRegion.Left;
+            }
+
+            if (_renderable.VerticalFlip)
+            {
+                leftTop.Y = TextureRegion.Bottom;
+                rightBottom.Y = TextureRegion.Top;
+            }
+
+            _renderable.Vertices[0].UV = leftTop;
+            _renderable.Vertices[1].UV = new DX.Vector3(rightBottom.X, leftTop.Y, _renderable.TextureArrayIndex);
+            _renderable.Vertices[2].UV = new DX.Vector3(leftTop.X, rightBottom.Y, _renderable.TextureArrayIndex);
+            _renderable.Vertices[3].UV = rightBottom;
+
+            _renderable.HasTextureChanges = false;
         }
 
         /// <summary>
@@ -354,49 +491,75 @@ namespace Gorgon.Renderers
         /// </summary>
         private void TransformVertices()
         {
-            DX.Vector4 corners = _corners;
+            ref DX.RectangleF bounds = ref _renderable.Bounds;
+            ref DX.Vector2 renderableScale = ref _renderable.Scale;
 
-            if ((!_scale.X.EqualsEpsilon(1.0f)) || (!_scale.Y.EqualsEpsilon(1.0f)))
+            if ((renderableScale.X != 1.0f) || (renderableScale.Y != 1.0f))
             {
-                DX.Vector4 scale = new DX.Vector4(_scale.X, _scale.Y, _scale.X, _scale.Y);
-                DX.Vector4.Multiply(ref corners, ref scale, out corners);
+                var scale = new DX.Vector4(renderableScale.X, renderableScale.Y, renderableScale.X, renderableScale.Y);
+                DX.Vector4.Multiply(ref _corners, ref scale, out _corners);
             }
 
-            if (!_angle.EqualsEpsilon(0.0f))
+            Gorgon2DVertex[] vertices = _renderable.Vertices;
+            ref Gorgon2DVertex v1 = ref vertices[0];
+            ref Gorgon2DVertex v2 = ref vertices[1];
+            ref Gorgon2DVertex v3 = ref vertices[2];
+            ref Gorgon2DVertex v4 = ref vertices[3];
+            float depth = _renderable.Depth;
+            GorgonRectangleOffsets cornerOffsets = _renderable.RectangleOffsets;
+            DX.Vector3 cornerUpperLeft = cornerOffsets.UpperLeft;
+            DX.Vector3 cornerUpperRight = cornerOffsets.UpperRight;
+            DX.Vector3 cornerLowerLeft = cornerOffsets.LowerLeft;
+            DX.Vector3 cornerLowerRight = cornerOffsets.LowerRight;
+
+            if (_angle != 0.0f)
             {
-                Renderable.Vertices[0].Position.X = (corners.X * _angleCachedCos - corners.Y * _angleCachedSin) + _bounds.X;// + sprite.CornerOffsets.UpperLeft.X;
-                Renderable.Vertices[0].Position.Y = (corners.X * _angleCachedSin + corners.Y * _angleCachedCos) + _bounds.Y;// + sprite.CornerOffsets.UpperLeft.Y;
-                Renderable.Vertices[0].Angle = _angleRads;
+                float angleRads = _renderable.AngleRads;
+                float angleSin = _renderable.AngleSin;
+                float angleCos = _renderable.AngleCos;
 
-                Renderable.Vertices[1].Position.X = (corners.Z * _angleCachedCos - corners.Y * _angleCachedSin) + _bounds.X;// + sprite.CornerOffsets.UpperRight.X;
-                Renderable.Vertices[1].Position.Y = (corners.Z * _angleCachedSin + corners.Y * _angleCachedCos) + _bounds.Y;// + sprite.CornerOffsets.UpperRight.Y;
-                Renderable.Vertices[1].Angle = _angleRads;
+                v1.Position.X = (_corners.X * angleCos - _corners.Y * angleSin) + bounds.X + cornerUpperLeft.X;
+                v1.Position.Y = (_corners.X * angleSin + _corners.Y * angleCos) + bounds.Y + cornerUpperLeft.Y;
+                v1.Position.Z = depth + cornerUpperLeft.Z;
+                v1.Angle = angleRads;
 
-                Renderable.Vertices[2].Position.X = (corners.X * _angleCachedCos - corners.W * _angleCachedSin) + _bounds.X;// + sprite.CornerOffsets.LowerLeft.X;
-                Renderable.Vertices[2].Position.Y = (corners.X * _angleCachedSin + corners.W * _angleCachedCos) + _bounds.Y;// + sprite.CornerOffsets.LowerLeft.Y;
-                Renderable.Vertices[2].Angle = _angleRads;
+                v2.Position.X = (_corners.Z * angleCos - _corners.Y * angleSin) + bounds.X + cornerUpperRight.X;
+                v2.Position.Y = (_corners.Z * angleSin + _corners.Y * angleCos) + bounds.Y + cornerUpperRight.Y;
+                v2.Position.Z = depth + cornerUpperRight.Z;
+                v2.Angle = angleRads;
 
-                Renderable.Vertices[3].Position.X = (corners.Z * _angleCachedCos - corners.W * _angleCachedSin) + _bounds.X;// + sprite.CornerOffsets.LowerRight.X;
-                Renderable.Vertices[3].Position.Y = (corners.Z * _angleCachedSin + corners.W * _angleCachedCos) + _bounds.Y;// + sprite.CornerOffsets.LowerRight.Y;
-                Renderable.Vertices[3].Angle = _angleRads;
+                v3.Position.X = (_corners.X * angleCos - _corners.W * angleSin) + bounds.X + cornerLowerLeft.X;
+                v3.Position.Y = (_corners.X * angleSin + _corners.W * angleCos) + bounds.Y + cornerLowerLeft.Y;
+                v3.Position.Z = depth + cornerLowerLeft.Z;
+                v3.Angle = angleRads;
+
+                v4.Position.X = (_corners.Z * angleCos - _corners.W * angleSin) + bounds.X + cornerLowerRight.X;
+                v4.Position.Y = (_corners.Z * angleSin + _corners.W * angleCos) + bounds.Y + cornerLowerRight.Y;
+                v4.Position.Z = depth + cornerLowerRight.Z;
+                v4.Angle = angleRads;
             }
             else
             {
-                Renderable.Vertices[0].Position.X = corners.X + _bounds.X;
-                Renderable.Vertices[0].Position.Y = corners.Y + _bounds.Y;
-                Renderable.Vertices[0].Angle = 0.0f;
-                Renderable.Vertices[1].Position.X = corners.Z + _bounds.X;
-                Renderable.Vertices[1].Position.Y = corners.Y + _bounds.Y;
-                Renderable.Vertices[1].Angle = 0.0f;
-                Renderable.Vertices[2].Position.X = corners.X + _bounds.X;
-                Renderable.Vertices[2].Position.Y = corners.W + _bounds.Y;
-                Renderable.Vertices[2].Angle = 0.0f;
-                Renderable.Vertices[3].Position.X = corners.Z + _bounds.X;
-                Renderable.Vertices[3].Position.Y = corners.W + _bounds.Y;
-                Renderable.Vertices[3].Angle = 0.0f;
+                v1.Position.X = _corners.X + bounds.X + cornerUpperLeft.X;
+                v1.Position.Y = _corners.Y + bounds.Y + cornerUpperLeft.Y;
+                v1.Position.Z = depth + cornerUpperLeft.Z;
+                v1.Angle = 0.0f;
+                v2.Position.X = _corners.Z + bounds.X + cornerUpperRight.X;
+                v2.Position.Y = _corners.Y + bounds.Y + cornerUpperRight.Y;
+                v2.Position.Z = depth + cornerUpperRight.Z;
+                v2.Angle = 0.0f;
+                v3.Position.X = _corners.X + bounds.X + cornerLowerLeft.X;
+                v3.Position.Y = _corners.W + bounds.Y + cornerLowerLeft.Y;
+                v3.Position.Z = depth + cornerLowerLeft.Z;
+                v3.Angle = 0.0f;
+                v4.Position.X = _corners.Z + bounds.X + cornerLowerRight.X;
+                v4.Position.Y = _corners.W + bounds.Y + cornerLowerRight.Y;
+                v4.Position.Z = depth + cornerLowerRight.Z;
+                v4.Angle = 0.0f;
             }
 
-            _transformChanged = false;
+            _renderable.HasTransformChanges = false;
+            cornerOffsets.HasChanged = false;
         }
 
         /// <summary>
@@ -404,22 +567,22 @@ namespace Gorgon.Renderers
         /// </summary>
         internal void UpdateSprite()
         {
-            if (_verticesChanged)
+            if (_renderable.HasVertexChanges)
             {
                 BuildSprite();
             }
 
-            if (_transformChanged)
+            if (_renderable.HasTransformChanges)
             {
                 TransformVertices();
             }
 
-            if (CornerColors.HasChanged)
+            if (_renderable.RectangleColors.HasChanged)
             {
                 UpdateVertexColors();
             }
 
-            if (!_uvsChanged)
+            if (!_renderable.HasTextureChanges)
             {
                 return;
             }
@@ -434,11 +597,11 @@ namespace Gorgon.Renderers
         /// </summary>
         public GorgonSprite()
         {
-            Renderable.Vertices = new Gorgon2DVertex[4];
+            _renderable.Vertices = new Gorgon2DVertex[4];
 
-            for (int i = 0; i < Renderable.Vertices.Length; ++i)
+            for (int i = 0; i < _renderable.Vertices.Length; ++i)
             {
-                Renderable.Vertices[i].Position.W = 1.0f;
+                _renderable.Vertices[i].Position.W = 1.0f;
             }
         }
         #endregion

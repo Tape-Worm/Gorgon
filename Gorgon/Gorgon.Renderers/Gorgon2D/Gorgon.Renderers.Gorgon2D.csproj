@@ -73,9 +73,10 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Renderables\GorgonSprite.cs" />
+    <Compile Include="Renderables\_Internal\SpriteTransformer.cs" />
     <Compile Include="_Internal\DrawCallFactory.cs" />
     <Compile Include="_Internal\ObjectRenderer.cs" />
-    <Compile Include="_Internal\BatchRenderableStateEqualityComparer.cs" />
+    <Compile Include="Renderables\_Internal\BatchRenderableStateEqualityComparer.cs" />
     <Compile Include="_Internal\SpriteRenderer.cs" />
   </ItemGroup>
   <ItemGroup>

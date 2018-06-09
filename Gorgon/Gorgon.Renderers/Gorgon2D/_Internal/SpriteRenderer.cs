@@ -127,12 +127,6 @@ namespace Gorgon.Renderers
             newSize = ((newSize + 63) & ~63) * 4;
 
             Array.Resize(ref _vertexCache, newSize);
-
-            // Initialize empty slots.
-            for (int i = previousSize; i < newSize; ++i)
-            {
-                _vertexCache[i] = default;
-            }
         }
 
         /// <summary>
@@ -141,7 +135,9 @@ namespace Gorgon.Renderers
         /// <param name="sprite">The sprite to queue.</param>
         public void QueueSprite(BatchRenderable sprite)
         {
-            int lastVertex = _allocatedVertexCount + _currentVertexIndex + sprite.Vertices.Length;
+            Gorgon2DVertex[] vertices = sprite.Vertices;
+            int vertexCount = vertices.Length;
+            int lastVertex = _allocatedVertexCount + _currentVertexIndex + vertexCount;
 
             // Ensure we actually have the room to cache the sprite vertices.
             if (lastVertex >= _vertexCache.Length)
@@ -149,9 +145,9 @@ namespace Gorgon.Renderers
                 ExpandCache();
             }
 
-            for (int i = 0; i < sprite.Vertices.Length; ++i, ++_allocatedVertexCount)
+            for (int i = 0; i < vertexCount; ++i, ++_allocatedVertexCount)
             {
-                _vertexCache[_currentVertexIndex++] = sprite.Vertices[i];
+                _vertexCache[_currentVertexIndex++] = vertices[i];
             }
             
             _indexCount += 6;
