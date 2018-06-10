@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System.Runtime.CompilerServices;
 using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Graphics;
@@ -38,21 +37,52 @@ namespace Gorgon.Renderers
     internal class BatchRenderable
     {
         #region Variables.
-        // Flag to indicate that transformation is required.
-        private bool _hasTransforms = true;
-        #endregion
-
         // Many of these "Properties" are variables.  While this is horrid coding style, it's also SUPER efficient for access, so we'll trade pretty code for raw performance here.
-        #region Properties.
+
         /// <summary>
         /// Property to set or return whether the vertices need to be transformed or not.
         /// </summary>
-        public bool HasTransformChanges
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => _hasTransforms || RectangleOffsets.HasChanged;
-            set => _hasTransforms = value;
-        }
+        public bool HasTransformChanges;
+
+        /// <summary>
+        /// The color of the upper left corner of the renderable.
+        /// </summary>
+        public GorgonColor UpperLeftColor;
+
+        /// <summary>
+        /// The color of the upper right corner of the renderable.
+        /// </summary>
+        public GorgonColor UpperRightColor;
+        
+        /// <summary>
+        /// The color of the lower left corner of the renderable.
+        /// </summary>
+        public GorgonColor LowerLeftColor;
+        
+        /// <summary>
+        /// The color of the lower right corner of the renderable.
+        /// </summary>
+        public GorgonColor LowerRightColor;
+
+        /// <summary>
+        /// The offset of the upper left corner of the renderable.
+        /// </summary>
+        public DX.Vector3 UpperLeftOffset;
+
+        /// <summary>
+        /// The offset of the upper right corner of the renderable.
+        /// </summary>
+        public DX.Vector3 UpperRightOffset;
+
+        /// <summary>
+        /// The offset of the lower left corner of the renderable.
+        /// </summary>
+        public DX.Vector3 LowerLeftOffset;
+
+        /// <summary>
+        /// The offset of the lower right corner of the renderable.
+        /// </summary>
+        public DX.Vector3 LowerRightOffset;
 
         /// <summary>
         /// Property to set or return whether the object space information the vertices need updating or not.
@@ -60,19 +90,14 @@ namespace Gorgon.Renderers
         public bool HasVertexChanges = true;
 
         /// <summary>
+        /// A flag to indicate whether the colors of the individual corners of the renderable have changed.
+        /// </summary>
+        public bool HasVertexColorChanges = true;
+
+        /// <summary>
         /// Property to set or return whether the texture coordinates for the vertices need updating.
         /// </summary>
         public bool HasTextureChanges = true;
-
-        /// <summary>
-        /// Property to return the interface for setting rectangle corner colors.
-        /// </summary>
-        public readonly GorgonRectangleColors RectangleColors = new GorgonRectangleColors(GorgonColor.White);
-
-        /// <summary>
-        /// Property to return the interface for setting rectangle corner colors.
-        /// </summary>
-        public readonly GorgonRectangleOffsets RectangleOffsets = new GorgonRectangleOffsets();
 
         /// <summary>
         /// Property to set or return the rectangle bounds for this renderable item.
@@ -165,6 +190,11 @@ namespace Gorgon.Renderers
         /// Property to set or return the texture sampler to use when rendering.
         /// </summary>
         public GorgonSamplerState TextureSampler;
+
+        /// <summary>
+        /// The bounding corners for a renderable.
+        /// </summary>
+        public DX.Vector4 Corners;
         #endregion
     }
 }

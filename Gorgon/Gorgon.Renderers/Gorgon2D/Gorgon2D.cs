@@ -25,20 +25,12 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using Gorgon.Core;
 using DX = SharpDX;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using Gorgon.Graphics.Imaging;
-using Gorgon.Math;
-using Gorgon.Native;
 using Gorgon.Renderers.Properties;
 
 namespace Gorgon.Renderers
@@ -78,6 +70,8 @@ namespace Gorgon.Renderers
         private BatchRenderable _lastRenderable;
         // The current alpha test data.
         private AlphaTestData _alphaTestData;
+        // Flag to indicate that the begin method has been called.
+        private int _beginCalled = 0;
         #endregion
 
         #region Properties.
@@ -178,6 +172,11 @@ namespace Gorgon.Renderers
         /// <param name="batchState">[Optional] Defines common global state to use when rendering a batch of objects.</param>
         public void Begin(Gorgon2DBatchState batchState = null)
         {
+            if (Interlocked.Exchange(ref _beginCalled, 1) == 1)
+            {
+                return;
+            }
+
             // If we're not initialized, then do so now.
             // Note that this is not thread safe.
             if (!_initialized)
@@ -198,9 +197,15 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="sprite"></param>
         /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="InvalidOperationException">Thrown if <see cref="Begin"/> has not been called prior to calling this method.</exception>
         public void Draw(GorgonSprite sprite)
         {
             sprite.ValidateObject(nameof(sprite));
+
+            if (_beginCalled == 0)
+            {
+                throw new InvalidOperationException(Resources.GOR2D_ERR_BEGIN_NOT_CALLED);
+            }
 
             // If we're sending the same guy in, there's no point in jumping through all of these hoops.
             if ((_lastRenderable == null) || (!_spriteRenderer.RenderableStateComparer.Equals(_lastRenderable, sprite.Renderable)))
@@ -227,18 +232,20 @@ namespace Gorgon.Renderers
             // Perform an update of the sprite's transformation information.
             if (sprite.IsUpdated)
             {
-                // TODO: This should call some sort of transform component.
-                sprite.UpdateSprite();
+                _spriteRenderer.Transformer.Transform(sprite);
             }
 
             _spriteRenderer.QueueSprite(sprite.Renderable);
         }
 
+
         // TODO: Turn this into a real thing, it works really well.
+        // ReSharper disable FieldCanBeMadeReadOnly.Local
         private GorgonSprite _lineSprite = new GorgonSprite();
         private GorgonSamplerState _testSampler;
         private GorgonSamplerStateBuilder _sampleBuilder;
 
+#pragma warning disable 1591
         public void DrawLineForGiggles(int x1, int y1, int x2, int y2, GorgonColor color, GorgonTexture2DView texture, float size = 20.0f)
         {
             if (_sampleBuilder == null)
@@ -259,7 +266,9 @@ namespace Gorgon.Renderers
             crossStart *= size / 2.0f;
 
             _lineSprite.Bounds = new DX.RectangleF(x1, y1, diff.X, diff.Y);
-            _lineSprite.UpdateSprite();
+            _lineSprite.Renderable.HasTextureChanges = _lineSprite.Renderable.HasTransformChanges =
+                                                           _lineSprite.Renderable.HasVertexChanges =
+                                                               _lineSprite.Renderable.HasVertexColorChanges = false;
             
             _lineSprite.Renderable.Vertices[0].Position = new DX.Vector4(x1 + crossStart.X, y1 + crossStart.Y, 0, 1.0f);
             _lineSprite.Renderable.Vertices[1].Position = new DX.Vector4(x2 + crossStart.X, y2 + crossStart.Y, 0, 1.0f);
@@ -282,12 +291,19 @@ namespace Gorgon.Renderers
 
             Draw(_lineSprite);
         }
+#pragma warning restore 1591
+        // ReSharper restore FieldCanBeMadeReadOnly.Local
 
         /// <summary>
         /// Function to end rendering.
         /// </summary>
         public void End()
         {
+            if (Interlocked.Exchange(ref _beginCalled, 0) == 0)
+            {
+                return;
+            }
+
             if (_lastRenderable != null)
             {
                 UpdateAlphaTest(ref _lastRenderable.AlphaTestData);
@@ -310,7 +326,6 @@ namespace Gorgon.Renderers
             GorgonConstantBufferView viewProj = Interlocked.Exchange(ref _viewProjection, null);
             GorgonConstantBufferView alphaTest = Interlocked.Exchange(ref _alphaTest, null);
             
-
             spriteRenderer?.Dispose();
             alphaTest?.Buffer?.Dispose();
             viewProj?.Buffer?.Dispose();

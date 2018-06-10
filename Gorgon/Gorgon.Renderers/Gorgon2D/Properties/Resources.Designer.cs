@@ -104,6 +104,15 @@ namespace Gorgon.Renderers.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The Begin() method must be called prior to calling this method..
+        /// </summary>
+        internal static string GOR2D_ERR_BEGIN_NOT_CALLED {
+            get {
+                return ResourceManager.GetString("GOR2D_ERR_BEGIN_NOT_CALLED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap Icons {

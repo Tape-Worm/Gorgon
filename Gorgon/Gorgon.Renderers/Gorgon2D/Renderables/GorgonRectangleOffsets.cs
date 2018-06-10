@@ -32,44 +32,28 @@ namespace Gorgon.Renderers
 	/// Defines the offsets for each corner of a rectangle.
 	/// </summary>
 	public class GorgonRectangleOffsets
-		: IEquatable<GorgonRectangleOffsets>
 	{
 		#region Variables.
-		// The color of the upper left corner.
-		private DX.Vector3 _upperLeft;
-		// The color of the upper right corner.
-		private DX.Vector3 _upperRight;
-		// The color of the lower left corner.
-		private DX.Vector3 _lowerLeft;
-		// The color of the lower right corner.
-		private DX.Vector3 _lowerRight;
+        // The renderable object to update.
+	    private readonly BatchRenderable _renderable;
 		#endregion
 
 		#region Properties.
-		/// <summary>
-		/// Property to set or return whether the offsets in this list have changed or not.
-		/// </summary>
-		internal bool HasChanged
-		{
-			get;
-			set;
-		}
-
 		/// <summary>
 		/// Property to set or return the offset of the upper left corner.
 		/// </summary>
 		public DX.Vector3 UpperLeft
 		{
-			get => _upperLeft;
+			get => _renderable.UpperLeftOffset;
 			set
 			{
-				if (_upperLeft.Equals(ref value))
+				if (_renderable.UpperLeftOffset.Equals(ref value))
 				{
 					return;
 				}
 
-				_upperLeft = value;
-				HasChanged = true;
+			    _renderable.UpperLeftOffset = value;
+				_renderable.HasTransformChanges = true;
 			}
 		}
 
@@ -78,16 +62,16 @@ namespace Gorgon.Renderers
 		/// </summary>
 		public DX.Vector3 UpperRight
 		{
-			get => _upperRight;
+			get => _renderable.UpperRightOffset;
 			set
 			{
-				if (_upperRight.Equals(ref value))
+				if (_renderable.UpperRightOffset.Equals(ref value))
 				{
 					return;
 				}
 
-				_upperRight = value;
-				HasChanged = true;
+			    _renderable.UpperRightOffset = value;
+				_renderable.HasTransformChanges = true;
 			}
 		}
 
@@ -96,16 +80,16 @@ namespace Gorgon.Renderers
 		/// </summary>
 		public DX.Vector3 LowerLeft
 		{
-			get => _lowerLeft;
+			get => _renderable.LowerLeftOffset;
 			set
 			{
-				if (_lowerLeft.Equals(ref value))
+				if (_renderable.LowerLeftOffset.Equals(ref value))
 				{
 					return;
 				}
 
-				_lowerLeft = value;
-				HasChanged = true;
+			    _renderable.LowerLeftOffset = value;
+				_renderable.HasTransformChanges = true;
 			}
 		}
 
@@ -114,16 +98,16 @@ namespace Gorgon.Renderers
 		/// </summary>
 		public DX.Vector3 LowerRight
 		{
-			get => _lowerRight;
+			get => _renderable.LowerRightOffset;
 			set
 			{
-				if (_lowerRight.Equals(ref value))
+				if (_renderable.LowerRightOffset.Equals(ref value))
 				{
 					return;
 				}
 
-				_lowerRight = value;
-				HasChanged = true;
+			    _renderable.LowerRightOffset = value;
+				_renderable.HasTransformChanges = true;
 			}
 		}
 		#endregion
@@ -135,7 +119,15 @@ namespace Gorgon.Renderers
 		/// <param name="offset">The offset to assign.</param>
 		public void SetAll(DX.Vector3 offset)
 		{
-			LowerLeft = LowerRight = UpperLeft = UpperRight = offset;
+		    if ((offset.Equals(ref _renderable.LowerLeftOffset))
+		        && (offset.Equals(ref _renderable.LowerRightOffset))
+		        && (offset.Equals(ref _renderable.UpperRightOffset))
+		        && (offset.Equals(ref _renderable.UpperLeftOffset)))
+		    {
+		        return;
+		    }
+
+		    _renderable.LowerLeftOffset = _renderable.LowerRightOffset = _renderable.UpperRightOffset = _renderable.UpperLeftOffset;
 		}
 
 		/// <summary>
@@ -155,24 +147,17 @@ namespace Gorgon.Renderers
 			destination.UpperRight = UpperRight;
 			destination.UpperLeft = UpperLeft;
 		}
+        #endregion
 
-		/// <summary>
-		/// Indicates whether the current object is equal to another object of the same type.
-		/// </summary>
-		/// <param name="other">An object to compare with this object.</param>
-		/// <returns>true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.</returns>
-		public bool Equals(GorgonRectangleOffsets other)
-		{
-			if (other == null)
-			{
-				return false;
-			}
-
-			return other._lowerLeft.Equals(ref _lowerLeft)
-			       && other._lowerRight.Equals(ref _lowerRight)
-			       && other._upperLeft.Equals(ref _upperLeft)
-			       && other._upperRight.Equals(ref _upperRight);
-		}
-		#endregion
+        #region Constructor
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonRectangleOffsets"/> class.
+        /// </summary>
+        /// <param name="renderable">The renderable to update.</param>
+        internal GorgonRectangleOffsets(BatchRenderable renderable)
+	    {
+	        _renderable = renderable;
+	    }
+        #endregion
 	}
 }

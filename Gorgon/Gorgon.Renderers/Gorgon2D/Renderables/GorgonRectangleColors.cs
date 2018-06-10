@@ -34,44 +34,28 @@ namespace Gorgon.Renderers
 	/// Defines the colors for each corner of a rectangle.
 	/// </summary>
 	public class GorgonRectangleColors
-		: IEquatable<GorgonRectangleColors>, IGorgonEquatableByRef<GorgonColor>
 	{
 		#region Variables.
-		// The color of the upper left corner.
-		private GorgonColor _upperLeft;
-		// The color of the upper right corner.
-		private GorgonColor _upperRight;
-		// The color of the lower left corner.
-		private GorgonColor _lowerLeft;
-		// The color of the lower right corner.
-		private GorgonColor _lowerRight;
+        // The renderable that owns this object.
+	    private readonly BatchRenderable _renderable;
 		#endregion 
 
 		#region Properties.
-		/// <summary>
-		/// Property to set or return whether the colors in this list have changed.
-		/// </summary>
-		internal bool HasChanged
-		{
-			get;
-			set;
-		}
-
 		/// <summary>
 		/// Property to set or return the color of the upper left corner.
 		/// </summary>
 		public GorgonColor UpperLeft
 		{
-			get => _upperLeft;
+			get => _renderable.UpperLeftColor;
 			set
 			{
-				if (GorgonColor.Equals(in value, in _upperLeft))
+				if (GorgonColor.Equals(in value, in _renderable.UpperLeftColor))
 				{
 					return;
 				}
 
-				_upperLeft = value;
-				HasChanged = true;
+				_renderable.UpperLeftColor = value;
+				_renderable.HasVertexColorChanges = true;
 			}
 		}
 
@@ -80,16 +64,16 @@ namespace Gorgon.Renderers
 		/// </summary>
 		public GorgonColor UpperRight
 		{
-			get => _upperRight;
+			get => _renderable.UpperRightColor;
 			set
 			{
-				if (GorgonColor.Equals(in value, in _upperRight))
+				if (GorgonColor.Equals(in value, in _renderable.UpperRightColor))
 				{
 					return;
 				}
 
-				_upperRight = value;
-				HasChanged = true;
+			    _renderable.UpperRightColor = value;
+			    _renderable.HasVertexColorChanges = true;
 			}
 		}
 
@@ -98,16 +82,16 @@ namespace Gorgon.Renderers
 		/// </summary>
 		public GorgonColor LowerLeft
 		{
-			get => _lowerLeft;
+			get => _renderable.LowerLeftColor;
 			set
 			{
-				if (GorgonColor.Equals(in value, in _lowerLeft))
+				if (GorgonColor.Equals(in value, in _renderable.LowerLeftColor))
 				{
 					return;
 				}
 
-				_lowerLeft = value;
-				HasChanged = true;
+				_renderable.LowerLeftColor = value;
+				_renderable.HasVertexColorChanges = true;
 			}
 		}
 
@@ -116,16 +100,16 @@ namespace Gorgon.Renderers
 		/// </summary>
 		public GorgonColor LowerRight
 		{
-			get => _lowerRight;
+			get => _renderable.LowerRightColor;
 			set
 			{
-				if (GorgonColor.Equals(in value, in _lowerRight))
+				if (GorgonColor.Equals(in value, in _renderable.LowerRightColor))
 				{
 					return;
 				}
 
-				_lowerRight = value;
-				HasChanged = true;
+			    _renderable.LowerRightColor = value;
+				_renderable.HasVertexColorChanges = true;
 			}
 		}
 		#endregion
@@ -137,25 +121,16 @@ namespace Gorgon.Renderers
 		/// <param name="color">The color to assign.</param>
 		public void SetAll(in GorgonColor color)
 		{
-			LowerLeft = LowerRight = UpperLeft = UpperRight = color;
-		}
+		    if ((_renderable.LowerLeftColor.Equals(in color))
+		        && (_renderable.LowerRightColor.Equals(in color))
+		        && (_renderable.UpperLeftColor.Equals(in color))
+		        && (_renderable.UpperRightColor.Equals(in color)))
+		    {
+		        return;
+		    }
 
-		/// <summary>
-		/// Indicates whether the current object is equal to another object of the same type.
-		/// </summary>
-		/// <param name="other">An object to compare with this object.</param>
-		/// <returns>true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.</returns>
-		public bool Equals(GorgonRectangleColors other)
-		{
-			if (other == null)
-			{
-				return false;
-			}
-
-			return GorgonColor.Equals(in other._lowerLeft, in _lowerLeft)
-			       && GorgonColor.Equals(in other._lowerRight, in _lowerRight)
-			       && GorgonColor.Equals(in other._upperLeft, in _upperLeft)
-			       && GorgonColor.Equals(in other._upperRight, in _upperRight);
+		    _renderable.LowerLeftColor = _renderable.LowerRightColor = _renderable.UpperRightColor = _renderable.UpperLeftColor = color;
+		    _renderable.HasVertexColorChanges = true;
 		}
 
 		/// <summary>
@@ -175,29 +150,6 @@ namespace Gorgon.Renderers
 			destination.UpperRight = UpperRight;
 			destination.UpperLeft = UpperLeft;
 		}
-
-		/// <summary>
-		/// Function to compare this instance with another.
-		/// </summary>
-		/// <param name="other">The other instance to use for comparison.</param>
-		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-		public bool Equals(GorgonColor other)
-		{
-			return Equals(in other);
-		}
-
-		/// <summary>
-		/// Function to compare this instance with another.
-		/// </summary>
-		/// <param name="other">The other instance to use for comparison.</param>
-		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-		public bool Equals(in GorgonColor other)
-		{
-			return GorgonColor.Equals(in other, in _lowerLeft)
-				   && GorgonColor.Equals(in other, in _lowerRight)
-				   && GorgonColor.Equals(in other, in _upperLeft)
-				   && GorgonColor.Equals(in other, in _upperRight);
-		}
         #endregion
 
         #region Constructor
@@ -205,10 +157,11 @@ namespace Gorgon.Renderers
         /// Initializes a new instance of the <see cref="GorgonRectangleColors"/> class.
         /// </summary>
         /// <param name="defaultColor">The default color for the corners.</param>
-        public GorgonRectangleColors(GorgonColor defaultColor)
-		{
+        /// <param name="renderable">The renderable that owns this object.</param>
+        internal GorgonRectangleColors(GorgonColor defaultColor, BatchRenderable renderable)
+        {
+            _renderable = renderable;
 			SetAll(defaultColor);
-			HasChanged = true;
 		}
 		#endregion
 	}

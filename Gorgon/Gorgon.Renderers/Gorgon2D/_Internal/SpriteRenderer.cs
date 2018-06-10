@@ -72,6 +72,14 @@ namespace Gorgon.Renderers
         {
             get;
         }
+
+        /// <summary>
+        /// Property to return the transformer to use when updating the sprite.
+        /// </summary>
+        public SpriteTransformer Transformer
+        {
+            get;
+        }
         #endregion
 
         #region Methods.
@@ -208,6 +216,7 @@ namespace Gorgon.Renderers
         public SpriteRenderer(GorgonGraphics graphics)
         {
             Graphics = graphics;
+            Transformer = new SpriteTransformer();
             CreateBuffers();
         }
         #endregion
