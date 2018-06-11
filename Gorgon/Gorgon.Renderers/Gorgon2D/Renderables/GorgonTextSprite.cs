@@ -46,6 +46,10 @@ namespace Gorgon.Renderers
         private GorgonFont _font;
         // The text to render.
         private string _text;
+        // Flag to indicate that we are using an outline from the font.
+        private bool _useOutline;
+        // The tint color for the outline.
+        private GorgonColor _outlineTint = GorgonColor.White;
 
         /// <summary>
         /// The renderable data for this sprite.
@@ -55,6 +59,29 @@ namespace Gorgon.Renderers
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to set or return whether to use an outline on the font (if one is available in the font)
+        /// </summary>
+        /// <remarks>
+        /// This parameter will not have any effect if the <see cref="Font"/> was not generated with an <see cref="IGorgonFontInfo.OutlineSize"/> greater than 0, and non transparent colors in
+        /// <see cref="IGorgonFontInfo.OutlineColor1"/> and <see cref="IGorgonFontInfo.OutlineColor1"/>.
+        /// </remarks>
+        /// <seealso cref="IGorgonFontInfo"/>
+        public bool UseOutline
+        {
+            get => _useOutline;
+            set
+            {
+                if (_useOutline == value)
+                {
+                    return;
+                }
+
+                _useOutline = value;
+                Renderable.VertexCountChanged = true;
+            }
+        }
+
         /// <summary>
         /// Property to set or return the text to render.
         /// </summary>
@@ -74,7 +101,7 @@ namespace Gorgon.Renderers
                 }
 
                 _text = value;
-                Renderable.VertexCountChanged = (Renderable.Vertices == null) || ((value.Length * 4) >= Renderable.Vertices.Length);
+                Renderable.VertexCountChanged = (Renderable.Vertices == null) || ((value.Length * (UseOutline ? 8 : 4)) >= Renderable.Vertices.Length);
                 Renderable.HasTransformChanges = true;
                 Renderable.HasTextureChanges = true;
                 Renderable.HasVertexChanges = true;
@@ -108,6 +135,29 @@ namespace Gorgon.Renderers
         {
             get => GlyphCornerColors.UpperLeft;
             set => GlyphCornerColors.SetAll(in value);
+        }
+
+        /// <summary>
+        /// Property to set or return the tint color for an outline.
+        /// </summary>
+        /// <remarks>
+        /// This sets a tint color value for a text sprite with an outline. This parameter requires that the <see cref="UseOutline"/> property be set to <b>true</b>, and the <see cref="Font"/> has a
+        /// <see cref="IGorgonFontInfo.OutlineSize"/> that is greater than 0, and a non transparent <see cref="IGorgonFontInfo.OutlineColor1"/>, and/or <see cref="IGorgonFontInfo.OutlineColor2"/>.
+        /// </remarks>
+        /// <seealso cref="IGorgonFontInfo"/>
+        public GorgonColor OutlineTint
+        {
+            get => _outlineTint;
+            set
+            {
+                if (GorgonColor.Equals(in value, in _outlineTint))
+                {
+                    return;
+                }
+
+                _outlineTint = value;
+                Renderable.HasVertexColorChanges = true;
+            }
         }
 
         /// <summary>

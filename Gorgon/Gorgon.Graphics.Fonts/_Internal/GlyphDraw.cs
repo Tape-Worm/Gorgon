@@ -399,8 +399,8 @@ namespace Gorgon.Graphics.Fonts
 			foreach (KeyValuePair<char, GlyphRegions> glyphBound in glyphBounds)
 			{
 				result = !hasOutline
-					         ? new DX.Size2(glyphBound.Value.CharacterRegion.Width.Max(result.Width), glyphBound.Value.CharacterRegion.Height.Max(result.Height))
-					         : new DX.Size2(glyphBound.Value.OutlineRegion.Width.Max(result.Width), glyphBound.Value.OutlineRegion.Height.Max(result.Height));
+					         ? new DX.Size2(glyphBound.Value.CharacterRegion.Right.Max(result.Width), glyphBound.Value.CharacterRegion.Bottom.Max(result.Height))
+					         : new DX.Size2(glyphBound.Value.OutlineRegion.Right.Max(result.Width), glyphBound.Value.OutlineRegion.Bottom.Max(result.Height));
 			}
 
 			return new DX.Size2(result.Width, result.Height);
@@ -530,7 +530,7 @@ namespace Gorgon.Graphics.Fonts
 			Dictionary<char, GlyphInfo> result = new Dictionary<char, GlyphInfo>();
 			System.Drawing.Graphics packedGraphics = null;
 			DX.Size2 maxGlyphSize = GetMaxGlyphSize(glyphBounds, hasOutline);
-			var glyphBitmap = new Bitmap(maxGlyphSize.Width * 2, maxGlyphSize.Height, PixelFormat.Format32bppArgb);
+			var glyphBitmap = new Bitmap(maxGlyphSize.Width + 10, maxGlyphSize.Height + 10, PixelFormat.Format32bppArgb);
 			System.Drawing.Graphics glyphGraphics = System.Drawing.Graphics.FromImage(glyphBitmap);
 			GorgonGlyphBrush glyphBrush = _fontInfo.Brush ?? new GorgonGlyphSolidBrush
 			                                                 {

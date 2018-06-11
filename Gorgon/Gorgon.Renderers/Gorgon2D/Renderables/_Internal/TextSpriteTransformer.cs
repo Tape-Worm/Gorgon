@@ -25,13 +25,7 @@
 #endregion
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
-using System.Windows.Forms;
 using Gorgon.Graphics;
-using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
 using DX = SharpDX;
 
@@ -67,8 +61,33 @@ namespace Gorgon.Renderers
         /// <param name="upperRight">The color of the upper right corner.</param>
         /// <param name="lowerLeft">The color of the lower left corner.</param>
         /// <param name="lowerRight">The color of the lower right corner.</param>
-        private static void UpdateVertexColors(Gorgon2DVertex[] vertices, in GorgonColor upperLeft, in GorgonColor upperRight, in GorgonColor lowerLeft, in GorgonColor lowerRight)
+        /// <param name="vertexOffset">The offset into the vertex array.</param>
+        /// <param name="hasOutline"><b>true</b> if using the outlines in the font, <b>false</b> if not.</param>
+        /// <param name="outlineTint">A color used to tint the </param>
+        private static void UpdateVertexColors(Gorgon2DVertex[] vertices,
+                                               in GorgonColor upperLeft,
+                                               in GorgonColor upperRight,
+                                               in GorgonColor lowerLeft,
+                                               in GorgonColor lowerRight,
+                                               int vertexOffset,
+                                               bool hasOutline,
+                                               GorgonColor outlineTint)
         {
+            ref Gorgon2DVertex v0 = ref vertices[vertexOffset];
+            ref Gorgon2DVertex v1 = ref vertices[vertexOffset + 1];
+            ref Gorgon2DVertex v2 = ref vertices[vertexOffset + 2];
+            ref Gorgon2DVertex v3 = ref vertices[vertexOffset + 3];
+
+            if (hasOutline)
+            {
+                v0.Color = v1.Color = v2.Color = v3.Color = outlineTint;
+                return;
+            }
+
+            v0.Color = upperLeft;
+            v1.Color = upperRight;
+            v2.Color = lowerLeft;
+            v3.Color = lowerRight;
         }
 
         /// <summary>
@@ -184,18 +203,19 @@ namespace Gorgon.Renderers
             }
 
 
+            int oldSize = 0;
             int newSize = (((characterCount + (characterCount / 2)) + 63) & ~63) * 4;
             if (vertices != null)
             {
+                oldSize = vertices.Length;
                 Array.Resize(ref vertices, newSize);
             }
             else
             {
-                vertexCount = 0;
                 vertices = new Gorgon2DVertex[newSize];
             }
 
-            for (int i = vertexCount; i < newSize; ++i)
+            for (int i = oldSize; i < newSize; ++i)
             {
                 ref Gorgon2DVertex vertex = ref vertices[i];
 
@@ -215,7 +235,9 @@ namespace Gorgon.Renderers
         /// <param name="position">The glyph position relative to the upper left corner of the text sprite.</param>
         /// <param name="textLength">The total number of characters to render.</param>
         /// <param name="vertexOffset">The position in the vertex array to update.</param>
-        public void Transform(BatchRenderable renderable, GorgonGlyph glyph, ref DX.Vector2 textSpritePosition, ref DX.Vector2 position, int textLength, int vertexOffset)
+        /// <param name="hasOutlines"><b>true</b> if outlines need to be drawn, or <b>false</b> if not.</param>
+        /// <param name="outlineTint">A color used to tint the </param>
+        public void Transform(BatchRenderable renderable, GorgonGlyph glyph, ref DX.Vector2 textSpritePosition, ref DX.Vector2 position, int textLength, int vertexOffset, bool hasOutlines, in GorgonColor outlineTint)
         {
             ref Gorgon2DVertex[] vertices = ref renderable.Vertices;
             
@@ -239,12 +261,22 @@ namespace Gorgon.Renderers
                 renderable.HasVertexChanges = false;
             }
 
+            if (renderable.HasVertexColorChanges)
+            {
+                UpdateVertexColors(vertices, in renderable.UpperLeftColor, in renderable.UpperRightColor, in renderable.LowerLeftColor, in renderable.LowerRightColor, vertexOffset, hasOutlines, outlineTint);
+            }
+
             if (renderable.HasTransformChanges)
             {
-                var glyphBounds = new DX.RectangleF(position.X + glyph.Offset.X + renderable.Corners.X,
-                                                    position.Y + glyph.Offset.Y + renderable.Corners.Y,
-                                                    glyph.GlyphCoordinates.Width,
-                                                    glyph.GlyphCoordinates.Height);
+                DX.Vector2 offset = hasOutlines ? glyph.OutlineOffset : glyph.Offset;
+                DX.Vector2 size = hasOutlines
+                                      ? new DX.Vector2(glyph.OutlineCoordinates.Width, glyph.OutlineCoordinates.Height)
+                                      : new DX.Vector2(glyph.GlyphCoordinates.Width, glyph.GlyphCoordinates.Height);
+
+                var glyphBounds = new DX.RectangleF(position.X + offset.X + renderable.Corners.X,
+                                                    position.Y + offset.Y + renderable.Corners.Y,
+                                                    size.X,
+                                                    size.Y);
 
                 TransformVertices(vertices,
                                   ref glyphBounds,
@@ -262,8 +294,8 @@ namespace Gorgon.Renderers
                 return;
             }
 
-            DX.RectangleF textureCoordinates = glyph.TextureCoordinates;
-            UpdateTextureCoordinates(vertices, ref textureCoordinates, 0, vertexOffset);
+            DX.RectangleF textureCoordinates = hasOutlines ? glyph.OutlineTextureCoordinates : glyph.TextureCoordinates;
+            UpdateTextureCoordinates(vertices, ref textureCoordinates, glyph.TextureIndex, vertexOffset);
         }
     }
 }

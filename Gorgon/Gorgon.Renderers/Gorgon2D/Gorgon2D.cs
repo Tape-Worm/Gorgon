@@ -270,70 +270,78 @@ namespace Gorgon.Renderers
 
             // Flush the previous batch if we have one that's incompatible with our current renderer.
             RenderBatchOnChange(renderable);
-
+            
             GorgonFont font = sprite.Font;
+            int drawCount = ((sprite.UseOutline) && (font.HasOutline)) ? 2 : 1;
+            int renderGlyphCount = textLength * drawCount;
             float fontHeight = font.FontHeight;
-            DX.Vector2 position = DX.Vector2.Zero;
             DX.Vector2 spritePosition = renderable.Bounds.TopLeft;
             int vertexOffset = 0;
             bool hasKerning = (font.Info.UseKerningPairs) && (font.KerningPairs.Count > 0);
             IDictionary<GorgonKerningPair, int> kerningValues = font.KerningPairs;
+            
             int charRenderCount = 0;
 
-            for (int i = 0; i < textLength; ++i)
+            for (int dc = 0; dc < 2; ++dc)
             {
-                char character = text[i];
-                int kernAmount = 0;
-                
-                // Handle special case for line feed and newline.
-                if ((character == '\n')
-                    || (character == '\r'))
+                DX.Vector2 position = DX.Vector2.Zero;
 
+                for (int i = 0; i < textLength; ++i)
                 {
-                    position.Y += fontHeight; // TODO: Need a line height.
-                    position.X = 0;
-                    continue;
-                }
+                    char character = text[i];
+                    int kernAmount = 0;
 
-                if (!font.Glyphs.TryGetValue(character, out GorgonGlyph glyph))
-                {
-                    if (!font.TryGetDefaultGlyph(out glyph))
+                    // Handle special case for line feed and newline.
+                    if ((character == '\n')
+                        || (character == '\r'))
+
                     {
+                        position.Y += fontHeight; // TODO: Need a line height.
+                        position.X = 0;
                         continue;
                     }
-                }
 
-                // Handle whitespace by just advancing our position, we don't need geometry for this.
-                if ((char.IsWhiteSpace(character))
-                    || (glyph.TextureView == null))
-                {
-                    position.X += glyph.Advance;
-                    continue;
-                }
-
-                // If we have a change of texture, then we need to let the renderer know that we need a flush.
-                if ((renderable.Texture != null) && (renderable.Texture != glyph.TextureView))
-                {
-                    RenderBatchOnChange(renderable);
-                    renderable.HasTextureChanges = true;
-                }
-
-                renderable.Texture = glyph.TextureView;
-
-                if (sprite.IsUpdated)
-                {
-                    if ((hasKerning) && (i < textLength - 1))
+                    if (!font.Glyphs.TryGetValue(character, out GorgonGlyph glyph))
                     {
-                        var kernPair = new GorgonKerningPair(character, text[i + 1]);
-                        kerningValues.TryGetValue(kernPair, out kernAmount);
+                        if (!font.TryGetDefaultGlyph(out glyph))
+                        {
+                            continue;
+                        }
                     }
 
-                    _spriteRenderer.TextSpriteTransformer.Transform(renderable, glyph, ref spritePosition, ref position, textLength, vertexOffset);
-                }
+                    // Handle whitespace by just advancing our position, we don't need geometry for this.
+                    if ((char.IsWhiteSpace(character))
+                        || (glyph.TextureView == null))
+                    {
+                        position.X += glyph.Advance;
+                        continue;
+                    }
 
-                vertexOffset += 4;
-                position.X += glyph.Advance + kernAmount;
-                ++charRenderCount;
+                    // If we have a change of texture, then we need to let the renderer know that we need a flush.
+                    if ((renderable.Texture != null) && (renderable.Texture != glyph.TextureView))
+                    {
+                        RenderBatchOnChange(renderable);
+                        renderable.HasTextureChanges = true;
+                    }
+
+                    renderable.Texture = glyph.TextureView;
+
+                    if (sprite.IsUpdated)
+                    {
+                        if ((hasKerning) && (i < textLength - 1))
+                        {
+                            var kernPair = new GorgonKerningPair(character, text[i + 1]);
+                            kerningValues.TryGetValue(kernPair, out kernAmount);
+                        }
+
+                        GorgonColor outlineColor = sprite.OutlineTint;
+                        _spriteRenderer.TextSpriteTransformer.Transform(renderable, glyph, ref spritePosition, ref position, renderGlyphCount, vertexOffset, (drawCount == 2) && (dc == 0), in outlineColor);
+                    }
+
+                    vertexOffset += 4;
+                    position.X += glyph.Advance + kernAmount;
+                    ++charRenderCount;
+                }
             }
 
             if (charRenderCount != 0)

@@ -3,7 +3,7 @@
 #define MAX_KERNEL_SIZE 13
 
 // Our default texture and sampler.
-Texture2D _gorgonTexture : register(t0);
+Texture2DArray _gorgonTexture : register(t0);
 SamplerState _gorgonSampler : register(s0);
 
 // Additional effect texture buffer.
@@ -14,7 +14,7 @@ struct GorgonSpriteVertex
 {
    float4 position : SV_POSITION;
    float4 color : COLOR;
-   float2 uv : TEXCOORD;
+   float3 uv : TEXCOORD;
    float angle : ANGLE;
 };
 
@@ -121,8 +121,18 @@ GorgonSpriteVertex GorgonVertexShader(GorgonSpriteVertex vertex)
 	return output;
 }
 
+// Our default pixel shader with textures with alpha testing.
+float4 GorgonPixelShaderTextured(GorgonSpriteVertex vertex) : SV_Target
+{
+	float4 color = _gorgonTexture.Sample(_gorgonSampler, vertex.uv) * vertex.color;
+
+	REJECT_ALPHA(color.a);
+		
+	return color;
+}
+
 // Our default pixel shader with textures, alpha testing and materials.
-float4 GorgonPixelShaderTexturedMaterial(GorgonSpriteVertex vertex) : SV_Target
+/*float4 GorgonPixelShaderTexturedMaterial(GorgonSpriteVertex vertex) : SV_Target
 {
 	float4 color = _gorgonTexture.Sample(_gorgonSampler, (vertex.uv * matTextureTransform.zw) + matTextureTransform.xy) * vertex.color * matDiffuse;
 
@@ -135,16 +145,6 @@ float4 GorgonPixelShaderTexturedMaterial(GorgonSpriteVertex vertex) : SV_Target
 float4 GorgonPixelShaderDiffuseMaterial(GorgonSpriteVertex vertex) : SV_Target
 {
 	float4 color = vertex.color * matDiffuse;
-
-	REJECT_ALPHA(color.a);
-		
-	return color;
-}
-
-// Our default pixel shader with textures with alpha testing.
-float4 GorgonPixelShaderTextured(GorgonSpriteVertex vertex) : SV_Target
-{
-	float4 color = _gorgonTexture.Sample(_gorgonSampler, vertex.uv) * vertex.color;
 
 	REJECT_ALPHA(color.a);
 		
@@ -405,4 +405,4 @@ float4 GorgonPixelShaderDisplacementDecoder(GorgonSpriteVertex vertex) : SV_Targ
 	REJECT_ALPHA(color.a);
 
 	return color;
-}
+}*/
