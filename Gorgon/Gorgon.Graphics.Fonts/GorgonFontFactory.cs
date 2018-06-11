@@ -227,15 +227,18 @@ namespace Gorgon.Graphics.Fonts
 		/// </summary>
 		public void InvalidateCache()
 		{
+		    GorgonFont[] fonts;
+
 			lock (_syncLock)
 			{
-				foreach (KeyValuePair<string, GorgonFont> font in _fontCache)
-				{
-					font.Value.Dispose();
-				}
-
-				_fontCache.Clear();
+			    fonts = _fontCache.Values.ToArray();
+			    _fontCache.Clear();
 			}
+
+		    foreach (GorgonFont font in fonts)
+		    {
+		        font.Dispose();
+		    }
 		}
 
 		/// <summary>

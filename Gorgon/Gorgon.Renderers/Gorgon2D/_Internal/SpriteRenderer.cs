@@ -25,9 +25,11 @@
 #endregion
 
 using System;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Native;
+using DX = SharpDX;
 
 namespace Gorgon.Renderers
 {
@@ -76,7 +78,15 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to return the transformer to use when updating the sprite.
         /// </summary>
-        public SpriteTransformer Transformer
+        public SpriteTransformer SpriteTransformer
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the transformer to use when updating the sprite.
+        /// </summary>
+        public TextSpriteTransformer TextSpriteTransformer
         {
             get;
         }
@@ -141,7 +151,8 @@ namespace Gorgon.Renderers
         /// Function queue a sprite for rendering.
         /// </summary>
         /// <param name="sprite">The sprite to queue.</param>
-        public void QueueSprite(BatchRenderable sprite)
+        /// <param name="indexCount">The number of indices used by the sprite.</param>
+        public void QueueSprite(BatchRenderable sprite, int indexCount)
         {
             Gorgon2DVertex[] vertices = sprite.Vertices;
             int vertexCount = vertices.Length;
@@ -158,7 +169,7 @@ namespace Gorgon.Renderers
                 _vertexCache[_currentVertexIndex++] = vertices[i];
             }
             
-            _indexCount += 6;
+            _indexCount += indexCount;
         }
 
         /// <summary>
@@ -216,7 +227,8 @@ namespace Gorgon.Renderers
         public SpriteRenderer(GorgonGraphics graphics)
         {
             Graphics = graphics;
-            Transformer = new SpriteTransformer();
+            SpriteTransformer = new SpriteTransformer();
+            TextSpriteTransformer = new TextSpriteTransformer();
             CreateBuffers();
         }
         #endregion

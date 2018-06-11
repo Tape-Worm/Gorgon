@@ -279,21 +279,21 @@ namespace Gorgon.Renderers
         /// This property will set or return the actual size of the renderable.  This means that if a <see cref="Scale"/> has been set, then this property will return the size of the renderable with
         /// multiplied by the scale.  When assigning a value, the scale be set on value derived from the current size of the renderable.
         /// </remarks>
-        public DX.Vector2 ScaledSize
+        public DX.Size2F ScaledSize
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
                 ref DX.RectangleF bounds = ref Renderable.Bounds;
                 ref DX.Vector2 scale = ref Renderable.Scale;
-                return new DX.Vector2(scale.X * bounds.Width, scale.Y * bounds.Height);
+                return new DX.Size2F(scale.X * bounds.Width, scale.Y * bounds.Height);
             }
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             set
             {
                 ref DX.RectangleF bounds = ref Renderable.Bounds;
                 ref DX.Vector2 scale = ref Renderable.Scale;
-                scale = new DX.Vector2(value.X / bounds.Width, value.Y / bounds.Height);
+                scale = new DX.Vector2(value.Width / bounds.Width, value.Height / bounds.Height);
                 Renderable.HasTransformChanges = true;
             }
         }
@@ -398,7 +398,7 @@ namespace Gorgon.Renderers
                     return;
                 }
 
-                HorizontalFlip = value;
+                Renderable.HorizontalFlip = value;
                 Renderable.HasTextureChanges = true;
             }
         }
@@ -419,7 +419,7 @@ namespace Gorgon.Renderers
                     return;
                 }
 
-                VerticalFlip = value;
+                Renderable.VerticalFlip = value;
                 Renderable.HasTextureChanges = true;
             }
         }

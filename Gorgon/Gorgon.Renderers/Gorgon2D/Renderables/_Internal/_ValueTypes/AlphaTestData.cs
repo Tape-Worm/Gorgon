@@ -35,7 +35,7 @@ namespace Gorgon.Renderers
 	/// </summary>
 	/// <remarks>This will define the range of alpha values to clip.  An alpha value that falls between the lower and upper range will not be rendered.</remarks>
 	[StructLayout(LayoutKind.Sequential, Pack = 1, Size = 16)]
-	readonly struct AlphaTestData
+	internal readonly struct AlphaTestData
 		: IEquatable<AlphaTestData>
 	{
 		#region Variables.
@@ -67,8 +67,9 @@ namespace Gorgon.Renderers
 		public static bool Equals(in AlphaTestData left, in AlphaTestData right)
 		{
 			// ReSharper disable CompareOfFloatsByEqualityOperator
-			return ((left.IsEnabled == right.IsEnabled) &&
-			        (left.UpperAlpha == right.UpperAlpha) && (left.LowerAlpha == right.LowerAlpha));
+			return ((left.IsEnabled == right.IsEnabled) 
+			        && (left.UpperAlpha == right.UpperAlpha) 
+			        && (left.LowerAlpha == right.LowerAlpha));
 			// ReSharper restore CompareOfFloatsByEqualityOperator
 		}
 

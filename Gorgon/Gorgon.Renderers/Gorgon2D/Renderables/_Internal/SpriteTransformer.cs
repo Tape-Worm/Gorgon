@@ -24,9 +24,8 @@
 // 
 #endregion
 
-using System.Runtime.InteropServices;
-using Gorgon.Graphics;
 using DX = SharpDX;
+using Gorgon.Graphics;
 
 namespace Gorgon.Renderers
 {
@@ -41,7 +40,7 @@ namespace Gorgon.Renderers
         /// <param name="bounds">The bounds of the renderable.</param>
         /// <param name="anchor">The anchor point for the renderable.</param>
         /// <param name="corners">The corners of the renderable.</param>
-        private static void BuildSprite(ref DX.RectangleF bounds, ref DX.Vector2 anchor, out DX.Vector4 corners)
+        private static void BuildRenderable(ref DX.RectangleF bounds, ref DX.Vector2 anchor, out DX.Vector4 corners)
         {
             DX.Vector2 vectorSize = new DX.Vector2(bounds.Size.Width, bounds.Size.Height);
             DX.Vector2 axisOffset = default;
@@ -190,15 +189,14 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Function to transform the vertices for a renderable.
         /// </summary>
-        /// <param name="sprite">The sprite to transform.</param>
-        public void Transform(GorgonSprite sprite)
+        /// <param name="renderable">The renderable to transform.</param>
+        public void Transform(BatchRenderable renderable)
         {
-            BatchRenderable renderable = sprite.Renderable;
             Gorgon2DVertex[] vertices = renderable.Vertices;
 
             if (renderable.HasVertexChanges)
             {
-                BuildSprite(ref renderable.Bounds, ref renderable.Anchor, out renderable.Corners);
+                BuildRenderable(ref renderable.Bounds, ref renderable.Anchor, out renderable.Corners);
 
                 // If we've updated the physical dimensions for the renderable, then we need to update the transform as well.
                 renderable.HasTransformChanges = true;

@@ -25,12 +25,14 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using Gorgon.Core;
 using DX = SharpDX;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Fonts;
 using Gorgon.Renderers.Properties;
 
 namespace Gorgon.Renderers
@@ -193,6 +195,37 @@ namespace Gorgon.Renderers
         }
 
         /// <summary>
+        /// Function to check for changes in the batch state, and render the previous batch if necessary.
+        /// </summary>
+        /// <param name="renderable"></param>
+        private void RenderBatchOnChange(BatchRenderable renderable)
+        {
+            // If we're sending the same guy in, there's no point in jumping through all of these hoops.
+            if ((_lastRenderable != null) && (_spriteRenderer.RenderableStateComparer.Equals(_lastRenderable, renderable)))
+            {
+                return;
+            }
+
+            GorgonDrawIndexCall drawCall = _drawCallFactory.GetDrawIndexCall(renderable, _lastBatchState, _spriteRenderer);
+
+            if ((_currentDrawCall != null) && (drawCall != _currentDrawCall))
+            {
+                if (_lastRenderable != null)
+                {
+                    UpdateAlphaTest(ref _lastRenderable.AlphaTestData);
+                }
+
+                _spriteRenderer.RenderBatches(_currentDrawCall);
+            }
+
+            _lastRenderable = renderable;
+            // All states are reconciled, so reset the change flag.
+            _lastRenderable.StateChanged = false;
+
+            _currentDrawCall = drawCall;
+        }
+
+        /// <summary>
         /// Function to draw a sprite.
         /// </summary>
         /// <param name="sprite"></param>
@@ -207,37 +240,112 @@ namespace Gorgon.Renderers
                 throw new InvalidOperationException(Resources.GOR2D_ERR_BEGIN_NOT_CALLED);
             }
 
-            // If we're sending the same guy in, there's no point in jumping through all of these hoops.
-            if ((_lastRenderable == null) || (!_spriteRenderer.RenderableStateComparer.Equals(_lastRenderable, sprite.Renderable)))
-            {
-                GorgonDrawIndexCall drawCall = _drawCallFactory.GetDrawIndexCall(sprite, _lastBatchState, _spriteRenderer);
+            BatchRenderable renderable = sprite.Renderable;
 
-                if ((_currentDrawCall != null) && (drawCall != _currentDrawCall))
-                {
-                    if (_lastRenderable != null)
-                    {
-                        UpdateAlphaTest(ref _lastRenderable.AlphaTestData);
-                    }
+            RenderBatchOnChange(renderable);
 
-                    _spriteRenderer.RenderBatches(_currentDrawCall);
-                }
-
-                _lastRenderable = sprite.Renderable;
-                // All states are reconciled, so reset the change flag.
-                _lastRenderable.StateChanged = false;
-
-                _currentDrawCall = drawCall;
-            }
-
-            // Perform an update of the sprite's transformation information.
             if (sprite.IsUpdated)
             {
-                _spriteRenderer.Transformer.Transform(sprite);
+                _spriteRenderer.SpriteTransformer.Transform(renderable);
             }
 
-            _spriteRenderer.QueueSprite(sprite.Renderable);
+            _spriteRenderer.QueueSprite(renderable, 6);
         }
 
+        /// <summary>
+        /// Function to draw text.
+        /// </summary>
+        /// <param name="sprite">The text sprite to render.</param>
+        public void DrawText(GorgonTextSprite sprite)
+        {
+            BatchRenderable renderable = sprite.Renderable;
+            string text = sprite.Text;
+            int textLength = sprite.Text.Length;
+
+            // If there's no text, then there's nothing to render.
+            if (textLength == 0)
+            {
+                return;
+            }
+
+            // Flush the previous batch if we have one that's incompatible with our current renderer.
+            RenderBatchOnChange(renderable);
+
+            GorgonFont font = sprite.Font;
+            float fontHeight = font.FontHeight;
+            DX.Vector2 position = DX.Vector2.Zero;
+            DX.Vector2 spritePosition = renderable.Bounds.TopLeft;
+            int vertexOffset = 0;
+            bool hasKerning = (font.Info.UseKerningPairs) && (font.KerningPairs.Count > 0);
+            IDictionary<GorgonKerningPair, int> kerningValues = font.KerningPairs;
+            int charRenderCount = 0;
+
+            for (int i = 0; i < textLength; ++i)
+            {
+                char character = text[i];
+                int kernAmount = 0;
+                
+                // Handle special case for line feed and newline.
+                if ((character == '\n')
+                    || (character == '\r'))
+
+                {
+                    position.Y += fontHeight; // TODO: Need a line height.
+                    position.X = 0;
+                    continue;
+                }
+
+                if (!font.Glyphs.TryGetValue(character, out GorgonGlyph glyph))
+                {
+                    if (!font.TryGetDefaultGlyph(out glyph))
+                    {
+                        continue;
+                    }
+                }
+
+                // Handle whitespace by just advancing our position, we don't need geometry for this.
+                if ((char.IsWhiteSpace(character))
+                    || (glyph.TextureView == null))
+                {
+                    position.X += glyph.Advance;
+                    continue;
+                }
+
+                // If we have a change of texture, then we need to let the renderer know that we need a flush.
+                if ((renderable.Texture != null) && (renderable.Texture != glyph.TextureView))
+                {
+                    RenderBatchOnChange(renderable);
+                    renderable.HasTextureChanges = true;
+                }
+
+                renderable.Texture = glyph.TextureView;
+
+                if (sprite.IsUpdated)
+                {
+                    if ((hasKerning) && (i < textLength - 1))
+                    {
+                        var kernPair = new GorgonKerningPair(character, text[i + 1]);
+                        kerningValues.TryGetValue(kernPair, out kernAmount);
+                    }
+
+                    _spriteRenderer.TextSpriteTransformer.Transform(renderable, glyph, ref spritePosition, ref position, textLength, vertexOffset);
+                }
+
+                vertexOffset += 4;
+                position.X += glyph.Advance + kernAmount;
+                ++charRenderCount;
+            }
+
+            if (charRenderCount != 0)
+            {
+                _spriteRenderer.QueueSprite(renderable, charRenderCount * 6);
+            }
+
+            renderable.HasTransformChanges = false;
+            renderable.HasVertexChanges = false;
+            renderable.HasTextureChanges = false;
+            renderable.HasVertexColorChanges = false;
+        }
 
         // TODO: Turn this into a real thing, it works really well.
         // ReSharper disable FieldCanBeMadeReadOnly.Local

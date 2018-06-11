@@ -49,7 +49,7 @@ namespace Gorgon.Renderers
         // The current input layout.
         private readonly GorgonInputLayout _inputLayout;
         // The previous sprite.
-        private GorgonSprite _prevSprite;
+        private BatchRenderable _prevRenderable;
         #endregion
 
         #region Properties.
@@ -81,7 +81,7 @@ namespace Gorgon.Renderers
         /// <param name="batchState">The current global state for the batch.</param>
         /// <param name="renderer">The renderer that will be </param>
         /// <returns>The draw call.</returns>
-        public GorgonDrawIndexCall GetDrawIndexCall(GorgonSprite renderable, Gorgon2DBatchState batchState, ObjectRenderer renderer)
+        public GorgonDrawIndexCall GetDrawIndexCall(BatchRenderable renderable, Gorgon2DBatchState batchState, ObjectRenderer renderer)
         {
             bool needStateUpdate = (_lastState == null) 
                                    || (_lastCall?.PipelineState != _lastState) 
@@ -92,13 +92,13 @@ namespace Gorgon.Renderers
                                    || (_lastState.RasterState != batchState.RasterState);
 
             bool needResourceUpdate = (_lastCall == null)
-                                      || (!_prevSprite.Equals(renderable))
+                                      || (!_prevRenderable.Equals(renderable))
                                       || (_lastCall.IndexBuffer != renderer.IndexBuffer)
                                       || (_lastCall.VertexBufferBindings[0] != renderer.VertexBuffer)
                                       || (_lastCall.VertexShader.ConstantBuffers[0] != ProjectionViewBuffer)
                                       || (_lastCall.PixelShader.ConstantBuffers[0] != AlphaTestBuffer);
 
-            _prevSprite = renderable;
+            _prevRenderable = renderable;
 
             if ((!needResourceUpdate) && (!needStateUpdate))
             {

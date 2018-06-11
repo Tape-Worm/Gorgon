@@ -45,6 +45,11 @@ namespace Gorgon.Renderers
         public bool HasTransformChanges;
 
         /// <summary>
+        /// Flag to indicate whether the vertex count changed or not.
+        /// </summary>
+        public bool VertexCountChanged;
+
+        /// <summary>
         /// The color of the upper left corner of the renderable.
         /// </summary>
         public GorgonColor UpperLeftColor;
