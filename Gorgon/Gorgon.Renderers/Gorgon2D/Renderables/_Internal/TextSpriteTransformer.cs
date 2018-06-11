@@ -27,6 +27,7 @@
 using System;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Fonts;
+using Gorgon.UI;
 using DX = SharpDX;
 
 namespace Gorgon.Renderers
@@ -36,6 +37,63 @@ namespace Gorgon.Renderers
     /// </summary>
     internal class TextSpriteTransformer
     {
+		/// <summary>
+		/// Function to update the transform coordinates by the alignment settings.
+		/// </summary>
+		/// <param name="leftTop">Left and top coordinates.</param>
+		/// <param name="alignment">The alignment to use.</param>
+		/// <param name="layoutSize">The layout region size.</param>
+		/// <param name="lineLength">Length of the line, in pixels.</param>
+		/// <param name="textHeight">The height of the text block being rendered.</param>
+		private static void GetTextAlignmentExtents(ref DX.Vector2 leftTop, Alignment alignment, DX.Size2F layoutSize, float lineLength, float textHeight)
+		{
+			int calc;
+
+			switch (alignment)
+			{
+				case Alignment.UpperCenter:
+					calc = (int)((layoutSize.Width / 2.0f) - (lineLength / 2.0f));
+					leftTop.X += calc;
+					break;
+				case Alignment.UpperRight:
+					calc = (int)(layoutSize.Width - lineLength);
+					leftTop.X += calc;
+					break;
+				case Alignment.CenterLeft:
+					calc = (int)(layoutSize.Height / 2.0f - textHeight / 2.0f);
+					leftTop.Y += calc;
+					break;
+				case Alignment.Center:
+					calc = (int)((layoutSize.Width / 2.0f) - (lineLength / 2.0f));
+					leftTop.X += calc;
+					calc = (int)(layoutSize.Height / 2.0f - textHeight / 2.0f);
+					leftTop.Y += calc;
+					break;
+				case Alignment.CenterRight:
+					calc = (int)(layoutSize.Width - lineLength);
+					leftTop.X += calc;
+					calc = (int)(layoutSize.Height / 2.0f - textHeight / 2.0f);
+					leftTop.Y += calc;
+					break;
+				case Alignment.LowerLeft:
+					calc = (int)(layoutSize.Height - textHeight);
+					leftTop.Y += calc;
+					break;
+				case Alignment.LowerCenter:
+					calc = (int)((layoutSize.Width / 2.0f) - (lineLength / 2.0f));
+					leftTop.X += calc;
+					calc = (int)(layoutSize.Height - textHeight);
+					leftTop.Y += calc;
+					break;
+				case Alignment.LowerRight:
+					calc = (int)(layoutSize.Width - lineLength);
+					leftTop.X += calc;
+					calc = (int)(layoutSize.Height - textHeight);
+					leftTop.Y += calc;
+					break;
+			}
+		}
+
         /// <summary>
         /// Function to build up the renderable vertices.
         /// </summary>
@@ -117,8 +175,8 @@ namespace Gorgon.Renderers
         /// Function to transform each vertex of the renderable to change its location, size and rotation.
         /// </summary>
         /// <param name="vertices">The vertices for the renderable.</param>
-        /// <param name="bounds">The bounds of the character to render.</param>
-        /// <param name="textPosition">The position of the text sprite.</param>
+        /// <param name="glyphBounds">The bounds of the character to render.</param>
+        /// <param name="spriteBounds">The bounds of the entire sprite.</param>
         /// <param name="scale">The scale of the renderable.</param>
         /// <param name="angleRads">The cached angle, in radians.</param>
         /// <param name="angleSin">The cached sine of the angle.</param>
@@ -126,8 +184,8 @@ namespace Gorgon.Renderers
         /// <param name="depth">The depth of the text sprite.</param>
         /// <param name="vertexOffset">The offset into the vertex array.</param>
         private static void TransformVertices(Gorgon2DVertex[] vertices,
-                                              ref DX.RectangleF bounds,
-                                              ref DX.Vector2 textPosition,
+                                              ref DX.RectangleF glyphBounds,
+                                              ref DX.RectangleF spriteBounds,
                                               ref DX.Vector2 scale,
                                               float angleRads,
                                               float angleSin,
@@ -137,7 +195,7 @@ namespace Gorgon.Renderers
         {
             if ((scale.X != 1.0f) || (scale.Y != 1.0f))
             {
-                bounds = new DX.RectangleF(bounds.Left * scale.X, bounds.Top * scale.Y, bounds.Width * scale.X, bounds.Height * scale.Y);
+                glyphBounds = new DX.RectangleF(glyphBounds.Left * scale.X, glyphBounds.Top * scale.Y, glyphBounds.Width * scale.X, glyphBounds.Height * scale.Y);
             }
 
             ref Gorgon2DVertex v0 = ref vertices[vertexOffset];
@@ -147,42 +205,42 @@ namespace Gorgon.Renderers
 
             if (angleRads != 0.0f)
             {
-                v0.Position = new DX.Vector4((bounds.Left * angleCos - bounds.Top * angleSin) + textPosition.X,
-                                             (bounds.Left * angleSin + bounds.Top * angleCos) + textPosition.Y,
+                v0.Position = new DX.Vector4((glyphBounds.Left * angleCos - glyphBounds.Top * angleSin) + spriteBounds.X,
+                                             (glyphBounds.Left * angleSin + glyphBounds.Top * angleCos) + spriteBounds.Y,
                                              depth,
                                              1.0f);
                 v0.Angle = angleRads;
 
-                v1.Position = new DX.Vector4((bounds.Right * angleCos - bounds.Top * angleSin) + textPosition.X,
-                                             (bounds.Right * angleSin + bounds.Top * angleCos) + textPosition.Y,
+                v1.Position = new DX.Vector4((glyphBounds.Right * angleCos - glyphBounds.Top * angleSin) + spriteBounds.X,
+                                             (glyphBounds.Right * angleSin + glyphBounds.Top * angleCos) + spriteBounds.Y,
                                              depth,
                                              1.0f);
                 v1.Angle = angleRads;
 
-                v2.Position = new DX.Vector4((bounds.Left * angleCos - bounds.Bottom * angleSin) + textPosition.X,
-                                             (bounds.Left * angleSin + bounds.Bottom * angleCos) + textPosition.Y,
+                v2.Position = new DX.Vector4((glyphBounds.Left * angleCos - glyphBounds.Bottom * angleSin) + spriteBounds.X,
+                                             (glyphBounds.Left * angleSin + glyphBounds.Bottom * angleCos) + spriteBounds.Y,
                                              depth,
                                              1.0f);
                 v2.Angle = angleRads;
 
-                v3.Position = new DX.Vector4((bounds.Right * angleCos - bounds.Bottom * angleSin) + textPosition.X,
-                                             (bounds.Right * angleSin + bounds.Bottom * angleCos) + textPosition.Y,
+                v3.Position = new DX.Vector4((glyphBounds.Right * angleCos - glyphBounds.Bottom * angleSin) + spriteBounds.X,
+                                             (glyphBounds.Right * angleSin + glyphBounds.Bottom * angleCos) + spriteBounds.Y,
                                              depth,
                                              1.0f);
                 v3.Angle = angleRads;
             }
             else
             {
-                v0.Position = new DX.Vector4(bounds.Left + textPosition.X, bounds.Top + textPosition.Y, depth, 1.0f);
+                v0.Position = new DX.Vector4(glyphBounds.Left + spriteBounds.X, glyphBounds.Top + spriteBounds.Y, depth, 1.0f);
                 v0.Angle = 0;
 
-                v1.Position = new DX.Vector4(bounds.Right + textPosition.X, bounds.Top + textPosition.Y, depth, 1.0f);
+                v1.Position = new DX.Vector4(glyphBounds.Right + spriteBounds.X, glyphBounds.Top + spriteBounds.Y, depth, 1.0f);
                 v1.Angle = 0;
 
-                v2.Position = new DX.Vector4(bounds.Left + textPosition.X, bounds.Bottom + textPosition.Y, depth, 1.0f);
+                v2.Position = new DX.Vector4(glyphBounds.Left + spriteBounds.X, glyphBounds.Bottom + spriteBounds.Y, depth, 1.0f);
                 v2.Angle = 0;
 
-                v3.Position = new DX.Vector4(bounds.Right + textPosition.X, bounds.Bottom + textPosition.Y, depth, 1.0f);
+                v3.Position = new DX.Vector4(glyphBounds.Right + spriteBounds.X, glyphBounds.Bottom + spriteBounds.Y, depth, 1.0f);
                 v3.Angle = 0;
             }
         }
@@ -231,13 +289,16 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="renderable">The renderable to transform.</param>
         /// <param name="glyph">The current glyph to render.</param>
-        /// <param name="textSpritePosition">The position of the text sprite.</param>
-        /// <param name="position">The glyph position relative to the upper left corner of the text sprite.</param>
+        /// <param name="spriteBounds">The boundaries of the sprite.</param>
+        /// <param name="glyphPosition">The glyph position relative to the upper left corner of the text sprite.</param>
         /// <param name="textLength">The total number of characters to render.</param>
         /// <param name="vertexOffset">The position in the vertex array to update.</param>
         /// <param name="hasOutlines"><b>true</b> if outlines need to be drawn, or <b>false</b> if not.</param>
         /// <param name="outlineTint">A color used to tint the </param>
-        public void Transform(BatchRenderable renderable, GorgonGlyph glyph, ref DX.Vector2 textSpritePosition, ref DX.Vector2 position, int textLength, int vertexOffset, bool hasOutlines, in GorgonColor outlineTint)
+        /// <param name="alignment">The alignment of the text.</param>
+        /// <param name="layoutArea">The area to layout the text inside of for an alignment.</param>
+        /// <param name="lineMeasure">The width of the line.</param>
+        public void Transform(BatchRenderable renderable, GorgonGlyph glyph, ref DX.RectangleF spriteBounds, ref DX.Vector2 glyphPosition, int textLength, int vertexOffset, bool hasOutlines, in GorgonColor outlineTint, Alignment alignment, DX.Size2F? layoutArea, float lineMeasure)
         {
             ref Gorgon2DVertex[] vertices = ref renderable.Vertices;
             
@@ -245,11 +306,12 @@ namespace Gorgon.Renderers
             if (renderable.VertexCountChanged)
             {
                 AdjustTextSpriteVertices(ref vertices, textLength);
+                renderable.VertexCountChanged = false;
+
                 renderable.HasVertexChanges = true;
                 renderable.HasTransformChanges = true;
                 renderable.HasTextureChanges = true;
                 renderable.HasVertexColorChanges = true;
-                renderable.VertexCountChanged = false;
             }
 
             if (renderable.HasVertexChanges)
@@ -257,8 +319,11 @@ namespace Gorgon.Renderers
                 BuildRenderable(ref renderable.Bounds, ref renderable.Anchor, ref renderable.Corners);
 
                 // If we've updated the physical dimensions for the renderable, then we need to update the transform as well.
-                renderable.HasTransformChanges = true;
                 renderable.HasVertexChanges = false;
+
+                renderable.HasTransformChanges = true;
+                renderable.HasTextureChanges = true;
+                renderable.HasVertexColorChanges = true;
             }
 
             if (renderable.HasVertexColorChanges)
@@ -269,18 +334,26 @@ namespace Gorgon.Renderers
             if (renderable.HasTransformChanges)
             {
                 DX.Vector2 offset = hasOutlines ? glyph.OutlineOffset : glyph.Offset;
-                DX.Vector2 size = hasOutlines
+                var size = hasOutlines
                                       ? new DX.Vector2(glyph.OutlineCoordinates.Width, glyph.OutlineCoordinates.Height)
                                       : new DX.Vector2(glyph.GlyphCoordinates.Width, glyph.GlyphCoordinates.Height);
+                var upperLeft = new DX.Vector2(glyphPosition.X + offset.X + renderable.Corners.X,
+                                               glyphPosition.Y + offset.Y + renderable.Corners.Y);
 
-                var glyphBounds = new DX.RectangleF(position.X + offset.X + renderable.Corners.X,
-                                                    position.Y + offset.Y + renderable.Corners.Y,
-                                                    size.X,
-                                                    size.Y);
+                if (alignment != Alignment.UpperLeft)
+                {
+                    GetTextAlignmentExtents(ref upperLeft,
+                                            alignment,
+                                            layoutArea ?? new DX.Size2F(spriteBounds.Width, spriteBounds.Height),
+                                            lineMeasure,
+                                            spriteBounds.Height);
+                }
+                
+                var glyphBounds = new DX.RectangleF(upperLeft.X, upperLeft.Y, size.X, size.Y);
 
                 TransformVertices(vertices,
                                   ref glyphBounds,
-                                  ref textSpritePosition,
+                                  ref spriteBounds,
                                   ref renderable.Scale,
                                   renderable.AngleRads,
                                   renderable.AngleSin,

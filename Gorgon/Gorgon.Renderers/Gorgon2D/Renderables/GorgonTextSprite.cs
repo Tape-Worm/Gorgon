@@ -25,15 +25,46 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using DX = SharpDX;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
 using Gorgon.Math;
+using Gorgon.UI;
 
 namespace Gorgon.Renderers
 {
+    /// <summary>
+    /// Determines how text should be rendered.
+    /// </summary>
+    public enum TextDrawMode
+    {
+        /// <summary>
+        /// <para>
+        /// Draw both the glyphs and the outlines.
+        /// </para> 
+        /// <para>
+        /// This is only supported when the <see cref="GorgonFont"/> has an outline.
+        /// </para>
+        /// </summary>
+        OutlinedGlyphs = 0,
+        /// <summary>
+        /// Draw the glyphs only.
+        /// </summary>
+        GlyphsOnly = 1,
+        /// <summary>
+        /// <para>
+        /// Draw the outlines only.
+        /// </para>
+        /// <para>
+        /// This is only supported when the <see cref="GorgonFont"/> has an outline.
+        /// </para>
+        /// </summary>
+        OutlineOnly = 2
+    }
+    
     /// <summary>
     /// A class that defines a sprite that is used to display text.
     /// </summary>
@@ -46,10 +77,24 @@ namespace Gorgon.Renderers
         private GorgonFont _font;
         // The text to render.
         private string _text;
+        // The formatted text.
+        private string _formattedText;
         // Flag to indicate that we are using an outline from the font.
-        private bool _useOutline;
+        private TextDrawMode _drawMode;
         // The tint color for the outline.
         private GorgonColor _outlineTint = GorgonColor.White;
+        // The number of spaces to use when a tab character is encountered.
+        private int _tabSpaceCount = 4;
+        // The multiplier for spacing between lines.
+        private float _lineSpacing = 1.0f;
+        // Flag to indicate that word wrapping is enabled.
+        private bool _useWordWrap;
+        // The area for used for text layout.
+        private DX.Size2F? _layoutArea;
+        // The alignment of the text.
+        private Alignment _alignment = Alignment.UpperLeft;
+        // The lines of text in the sprite text property.
+        private string[] _lines;
 
         /// <summary>
         /// The renderable data for this sprite.
@@ -60,27 +105,135 @@ namespace Gorgon.Renderers
 
         #region Properties.
         /// <summary>
-        /// Property to set or return whether to use an outline on the font (if one is available in the font)
+        /// Property to set or return the alignment for the text.
+        /// </summary>
+        /// <remarks>
+        /// This property requires that the <see cref="LayoutArea"/> be assigned with a value. Otherwise, it will be ignored.
+        /// </remarks>
+        public Alignment Alignment
+        {
+            get => _alignment;
+            set
+            {
+                if (_alignment == value)
+                {
+                    return;
+                }
+
+                _alignment = value;
+                UpdateBounds();
+                Renderable.HasVertexChanges = true;
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return whether or not word wrapping is enabled.
+        /// </summary>
+        /// <remarks>
+        /// If this property is set to <b>true</b>, then the <see cref="LayoutArea"/> must be assigned, otherwise there will be no cut off point for breaking the line.
+        /// </remarks>
+        public bool UseWordWrapping
+        {
+            get => _useWordWrap;
+            set
+            {
+                if (_useWordWrap == value)
+                {
+                    return;
+                }
+
+                _useWordWrap = value;
+                UpdateBounds();
+                Renderable.HasVertexChanges = true;
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the layout area for <see cref="UseWordWrapping"/>, and/or the <see cref="Alignment"/> property.
+        /// </summary>
+        public DX.Size2F? LayoutArea
+        {
+            get => _layoutArea;
+            set
+            {
+                if (_layoutArea == value)
+                {
+                    return;
+                }
+
+                _layoutArea = value;
+                UpdateBounds();
+                Renderable.HasVertexChanges = true;
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return a mulitplier used to indicate how much space to put between each vertical line.
+        /// </summary>
+        public float LineSpace
+        {
+            get => _lineSpacing;
+            set
+            {
+                if (_lineSpacing.EqualsEpsilon(value))
+                {
+                    return;
+                }
+
+                _lineSpacing = value;
+                UpdateBounds();
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return how to draw the text when rendering.
         /// </summary>
         /// <remarks>
         /// This parameter will not have any effect if the <see cref="Font"/> was not generated with an <see cref="IGorgonFontInfo.OutlineSize"/> greater than 0, and non transparent colors in
         /// <see cref="IGorgonFontInfo.OutlineColor1"/> and <see cref="IGorgonFontInfo.OutlineColor1"/>.
         /// </remarks>
         /// <seealso cref="IGorgonFontInfo"/>
-        public bool UseOutline
+        public TextDrawMode DrawMode
         {
-            get => _useOutline;
+            get => _drawMode;
             set
             {
-                if (_useOutline == value)
+                if (_drawMode == value)
                 {
                     return;
                 }
 
-                _useOutline = value;
+                _drawMode = value;
+                UpdateBounds();
                 Renderable.VertexCountChanged = true;
             }
         }
+
+        /// <summary>
+        /// Property to set or return the number of spaces to substitute when rendering a tab (\t) control character.
+        /// </summary>
+        /// <remarks>
+        /// The default value is 4.
+        /// </remarks>
+        public int TabSpaceCount
+        {
+            get => _tabSpaceCount;
+            set
+            {
+                if (_tabSpaceCount == value)
+                {
+                    return;
+                }
+
+                _tabSpaceCount = value;
+                FormatText();
+            }
+        }
+
+        /// <summary>
+        /// Property to return the individual lines of text within the <see cref="Text"/> property.
+        /// </summary>
+        public IReadOnlyList<string> Lines => _lines;
 
         /// <summary>
         /// Property to set or return the text to render.
@@ -99,16 +252,12 @@ namespace Gorgon.Renderers
                 {
                     return;
                 }
-
+                
                 _text = value;
-                Renderable.VertexCountChanged = (Renderable.Vertices == null) || ((value.Length * (UseOutline ? 8 : 4)) >= Renderable.Vertices.Length);
-                Renderable.HasTransformChanges = true;
-                Renderable.HasTextureChanges = true;
+                Renderable.VertexCountChanged = (Renderable.Vertices == null) || ((value.Length * (DrawMode == TextDrawMode.OutlinedGlyphs ? 8 : 4)) >= Renderable.Vertices.Length);
                 Renderable.HasVertexChanges = true;
-                Renderable.HasVertexColorChanges = true;
 
-                DX.Size2F size = _font.MeasureText(_text, false, 4, 1, null);
-                Renderable.Bounds = new DX.RectangleF(Renderable.Bounds.Left, Renderable.Bounds.Top, size.Width, size.Height);
+                FormatText();
             }
         }
 
@@ -141,7 +290,7 @@ namespace Gorgon.Renderers
         /// Property to set or return the tint color for an outline.
         /// </summary>
         /// <remarks>
-        /// This sets a tint color value for a text sprite with an outline. This parameter requires that the <see cref="UseOutline"/> property be set to <b>true</b>, and the <see cref="Font"/> has a
+        /// This sets a tint color value for a text sprite with an outline. This parameter requires that the <see cref="DrawMode"/> property be set to <b>true</b>, and the <see cref="Font"/> has a
         /// <see cref="IGorgonFontInfo.OutlineSize"/> that is greater than 0, and a non transparent <see cref="IGorgonFontInfo.OutlineColor1"/>, and/or <see cref="IGorgonFontInfo.OutlineColor2"/>.
         /// </remarks>
         /// <seealso cref="IGorgonFontInfo"/>
@@ -195,6 +344,11 @@ namespace Gorgon.Renderers
                 }
 
                 _font = value;
+                Renderable.HasVertexChanges = true;
+                Renderable.HasTextureChanges = true;
+                Renderable.HasVertexColorChanges = true;
+
+                FormatText();
             }
         }
 
@@ -375,6 +529,45 @@ namespace Gorgon.Renderers
                 renderable.AlphaTestData = new AlphaTestData(true, value.Value);
                 renderable.StateChanged = true;
             }
+        }
+        #endregion
+
+        #region Methods.
+        /// <summary>
+        /// Function to update the boundaries on the text sprite.
+        /// </summary>
+        private void UpdateBounds()
+        {
+            float? layoutWidth = UseWordWrapping ? _layoutArea?.Width : null;
+            DX.Size2F size = _font.MeasureText(_formattedText, DrawMode != TextDrawMode.GlyphsOnly, _tabSpaceCount, _lineSpacing, layoutWidth);
+            Renderable.Bounds = new DX.RectangleF(Renderable.Bounds.Left, Renderable.Bounds.Top, size.Width, size.Height);
+        }
+
+        /// <summary>
+        /// Function to format the text applied.
+        /// </summary>
+        private void FormatText()
+        {
+            if (_text.Length == 0)
+            {
+                _lines = new string[0];
+                return;
+            }
+
+            string text = _text;
+            text = text.FormatStringForRendering(_tabSpaceCount);
+
+            if ((_useWordWrap) && (_layoutArea != null))
+            {
+                text = _font.WordWrap(text, _layoutArea.Value.Width);
+            }
+
+            _formattedText = text;
+            _lines = text.GetLines();
+
+            UpdateBounds();
+
+            Renderable.HasVertexChanges = true;
         }
         #endregion
 

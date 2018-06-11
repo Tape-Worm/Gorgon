@@ -34,6 +34,9 @@ namespace Gorgon.Graphics.Fonts
 	/// </summary>
 	public static class GorgonFontTextFormatter
 	{
+        // A worker buffer for formatting the string.
+        private static readonly StringBuilder _workBuffer = new StringBuilder(256);
+
 		/// <summary>
 		/// Function to format a string for rendering using a <see cref="GorgonFont"/>.
 		/// </summary>
@@ -56,15 +59,16 @@ namespace Gorgon.Graphics.Fonts
 			}
 
 			tabSpacing = tabSpacing.Min(1);
-			var newString = new StringBuilder(renderText);
+		    _workBuffer.Length = 0;
+		    _workBuffer.Append(renderText);
 
 			// Strip all carriage returns.
-			newString.Replace("\r", string.Empty);
+			_workBuffer.Replace("\r", string.Empty);
 
 			// Convert tabs to spaces.
-			newString.Replace("\t", new string(' ', tabSpacing));
+		    _workBuffer.Replace("\t", new string(' ', tabSpacing));
 
-			return newString.ToString();
+			return _workBuffer.ToString();
 		}
 
 		/// <summary>

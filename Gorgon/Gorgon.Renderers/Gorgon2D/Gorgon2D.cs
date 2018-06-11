@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading;
 using Gorgon.Core;
 using DX = SharpDX;
@@ -34,6 +35,7 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
 using Gorgon.Renderers.Properties;
+using Gorgon.UI;
 
 namespace Gorgon.Renderers
 {
@@ -73,7 +75,9 @@ namespace Gorgon.Renderers
         // The current alpha test data.
         private AlphaTestData _alphaTestData;
         // Flag to indicate that the begin method has been called.
-        private int _beginCalled = 0;
+        private int _beginCalled;
+        // A buffer used for text manipulation in the DrawText method.
+        private StringBuilder _textBuffer = new StringBuilder(256);
         #endregion
 
         #region Properties.
@@ -258,90 +262,117 @@ namespace Gorgon.Renderers
         /// <param name="sprite">The text sprite to render.</param>
         public void DrawText(GorgonTextSprite sprite)
         {
-            BatchRenderable renderable = sprite.Renderable;
-            string text = sprite.Text;
-            int textLength = sprite.Text.Length;
+            int vertexOffset = 0;
+            DX.Vector2 position = DX.Vector2.Zero;
+            int charRenderCount = 0;
 
+            sprite.ValidateObject(nameof(sprite));
+
+            BatchRenderable renderable = sprite.Renderable;
+
+            _textBuffer.Length = 0;
+            _textBuffer.Append(sprite.Text);
+            int textLength = sprite.Text.Length;
+            
             // If there's no text, then there's nothing to render.
             if (textLength == 0)
             {
                 return;
             }
 
+            GorgonFont font = sprite.Font;
+            DX.Size2F? layoutArea = sprite.LayoutArea;
+
             // Flush the previous batch if we have one that's incompatible with our current renderer.
             RenderBatchOnChange(renderable);
             
-            GorgonFont font = sprite.Font;
-            int drawCount = ((sprite.UseOutline) && (font.HasOutline)) ? 2 : 1;
-            int renderGlyphCount = textLength * drawCount;
+            bool drawOutlines = ((sprite.DrawMode != TextDrawMode.GlyphsOnly) && (font.HasOutline));
+            int drawCount = ((drawOutlines) && (sprite.DrawMode == TextDrawMode.OutlinedGlyphs))? 2 : 1;
             float fontHeight = font.FontHeight;
-            DX.Vector2 spritePosition = renderable.Bounds.TopLeft;
-            int vertexOffset = 0;
+            ref DX.RectangleF spriteBounds = ref renderable.Bounds;
+            
             bool hasKerning = (font.Info.UseKerningPairs) && (font.KerningPairs.Count > 0);
             IDictionary<GorgonKerningPair, int> kerningValues = font.KerningPairs;
+            float lineSpaceMultiplier = sprite.LineSpace;
+            Alignment alignment = sprite.Alignment;
+            int renderGlyphCount = textLength * drawCount;
             
-            int charRenderCount = 0;
-
-            for (int dc = 0; dc < 2; ++dc)
+            for (int line = 0; line < sprite.Lines.Count; ++line)
             {
-                DX.Vector2 position = DX.Vector2.Zero;
+                string textLine = sprite.Lines[line];
+                textLength = textLine.Length;
 
-                for (int i = 0; i < textLength; ++i)
+                for (int dc = 0; dc < drawCount; ++dc)
                 {
-                    char character = text[i];
-                    int kernAmount = 0;
-
-                    // Handle special case for line feed and newline.
-                    if ((character == '\n')
-                        || (character == '\r'))
-
+                    DX.Size2F lineMeasure = DX.Size2F.Empty;
+                    if (alignment != Alignment.UpperLeft)
                     {
-                        position.Y += fontHeight; // TODO: Need a line height.
-                        position.X = 0;
-                        continue;
+                        lineMeasure = font.MeasureLine(textLine, (drawOutlines) && (dc == 0), lineSpaceMultiplier);
                     }
 
-                    if (!font.Glyphs.TryGetValue(character, out GorgonGlyph glyph))
+                    position.X = 0;
+
+                    for (int i = 0; i < textLength; ++i)
                     {
-                        if (!font.TryGetDefaultGlyph(out glyph))
+                        char character = textLine[i];
+                        int kernAmount = 0;
+
+                        if (!font.Glyphs.TryGetValue(character, out GorgonGlyph glyph))
                         {
+                            if (!font.TryGetDefaultGlyph(out glyph))
+                            {
+                                continue;
+                            }
+                        }
+
+                        // Handle whitespace by just advancing our position, we don't need geometry for this.
+                        if ((char.IsWhiteSpace(character))
+                            || (glyph.TextureView == null))
+                        {
+                            position.X += glyph.Advance;
                             continue;
                         }
-                    }
 
-                    // Handle whitespace by just advancing our position, we don't need geometry for this.
-                    if ((char.IsWhiteSpace(character))
-                        || (glyph.TextureView == null))
-                    {
-                        position.X += glyph.Advance;
-                        continue;
-                    }
-
-                    // If we have a change of texture, then we need to let the renderer know that we need a flush.
-                    if ((renderable.Texture != null) && (renderable.Texture != glyph.TextureView))
-                    {
-                        RenderBatchOnChange(renderable);
-                        renderable.HasTextureChanges = true;
-                    }
-
-                    renderable.Texture = glyph.TextureView;
-
-                    if (sprite.IsUpdated)
-                    {
-                        if ((hasKerning) && (i < textLength - 1))
+                        // If we have a change of texture, then we need to let the renderer know that we need a flush.
+                        if ((renderable.Texture != null) && (renderable.Texture != glyph.TextureView))
                         {
-                            var kernPair = new GorgonKerningPair(character, text[i + 1]);
-                            kerningValues.TryGetValue(kernPair, out kernAmount);
+                            RenderBatchOnChange(renderable);
+                            renderable.HasTextureChanges = true;
                         }
 
-                        GorgonColor outlineColor = sprite.OutlineTint;
-                        _spriteRenderer.TextSpriteTransformer.Transform(renderable, glyph, ref spritePosition, ref position, renderGlyphCount, vertexOffset, (drawCount == 2) && (dc == 0), in outlineColor);
-                    }
+                        renderable.Texture = glyph.TextureView;
 
-                    vertexOffset += 4;
-                    position.X += glyph.Advance + kernAmount;
-                    ++charRenderCount;
+                        if (sprite.IsUpdated)
+                        {
+                            if ((hasKerning) && (i < textLength - 1))
+                            {
+                                var kernPair = new GorgonKerningPair(character, textLine[i + 1]);
+                                kerningValues.TryGetValue(kernPair, out kernAmount);
+                            }
+
+
+                            GorgonColor outlineColor = sprite.OutlineTint;
+                            _spriteRenderer.TextSpriteTransformer.Transform(renderable,
+                                                                            glyph,
+                                                                            ref spriteBounds,
+                                                                            ref position,
+                                                                            renderGlyphCount,
+                                                                            vertexOffset,
+                                                                            (drawOutlines) && (dc == 0),
+                                                                            in outlineColor,
+                                                                            alignment,
+                                                                            layoutArea,
+                                                                            lineMeasure.Width);
+
+                            vertexOffset += 4;
+                        }
+                        
+                        position.X += glyph.Advance + kernAmount;
+                        ++charRenderCount;
+                    }
                 }
+
+                position.Y += fontHeight * lineSpaceMultiplier;
             }
 
             if (charRenderCount != 0)
