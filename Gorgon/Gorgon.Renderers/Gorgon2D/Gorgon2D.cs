@@ -262,16 +262,9 @@ namespace Gorgon.Renderers
         /// <param name="sprite">The text sprite to render.</param>
         public void DrawText(GorgonTextSprite sprite)
         {
-            int vertexOffset = 0;
-            DX.Vector2 position = DX.Vector2.Zero;
-            int charRenderCount = 0;
-
             sprite.ValidateObject(nameof(sprite));
 
-            BatchRenderable renderable = sprite.Renderable;
-
             _textBuffer.Length = 0;
-            _textBuffer.Append(sprite.Text);
             int textLength = sprite.Text.Length;
             
             // If there's no text, then there's nothing to render.
@@ -280,31 +273,37 @@ namespace Gorgon.Renderers
                 return;
             }
 
-            GorgonFont font = sprite.Font;
-            DX.Size2F? layoutArea = sprite.LayoutArea;
+            TextRenderable renderable = sprite.Renderable;
 
-            // Flush the previous batch if we have one that's incompatible with our current renderer.
+            // Flush the previous batch if we have one that's different from the upcoming batch.
             RenderBatchOnChange(renderable);
+
+            _textBuffer.Append(sprite.Text);
             
+            int vertexOffset = 0;
+            DX.Vector2 position = DX.Vector2.Zero;
+            int charRenderCount = 0;
+            Alignment alignment = sprite.Alignment;
+
+            GorgonFont font = sprite.Font;
             bool drawOutlines = ((sprite.DrawMode != TextDrawMode.GlyphsOnly) && (font.HasOutline));
             int drawCount = ((drawOutlines) && (sprite.DrawMode == TextDrawMode.OutlinedGlyphs))? 2 : 1;
             float fontHeight = font.FontHeight;
-            ref DX.RectangleF spriteBounds = ref renderable.Bounds;
-            
             bool hasKerning = (font.Info.UseKerningPairs) && (font.KerningPairs.Count > 0);
             IDictionary<GorgonKerningPair, int> kerningValues = font.KerningPairs;
             float lineSpaceMultiplier = sprite.LineSpace;
-            Alignment alignment = sprite.Alignment;
-            int renderGlyphCount = textLength * drawCount;
             
-            for (int line = 0; line < sprite.Lines.Count; ++line)
+            for (int line = 0; line < renderable.Lines.Length; ++line)
             {
                 string textLine = sprite.Lines[line];
                 textLength = textLine.Length;
 
                 for (int dc = 0; dc < drawCount; ++dc)
                 {
+                    bool isOutlinePass = (drawOutlines) && (dc == 0);
+
                     DX.Size2F lineMeasure = DX.Size2F.Empty;
+
                     if (alignment != Alignment.UpperLeft)
                     {
                         lineMeasure = font.MeasureLine(textLine, (drawOutlines) && (dc == 0), lineSpaceMultiplier);
@@ -351,23 +350,17 @@ namespace Gorgon.Renderers
                             }
 
 
-                            GorgonColor outlineColor = sprite.OutlineTint;
                             _spriteRenderer.TextSpriteTransformer.Transform(renderable,
                                                                             glyph,
-                                                                            ref spriteBounds,
                                                                             ref position,
-                                                                            renderGlyphCount,
                                                                             vertexOffset,
-                                                                            (drawOutlines) && (dc == 0),
-                                                                            in outlineColor,
-                                                                            alignment,
-                                                                            layoutArea,
+                                                                            isOutlinePass,
                                                                             lineMeasure.Width);
 
                             vertexOffset += 4;
+                            position.X += glyph.Advance + kernAmount;
                         }
-                        
-                        position.X += glyph.Advance + kernAmount;
+
                         ++charRenderCount;
                     }
                 }
@@ -379,7 +372,8 @@ namespace Gorgon.Renderers
             {
                 _spriteRenderer.QueueSprite(renderable, charRenderCount * 6);
             }
-
+            
+            renderable.VertexCountChanged = false;
             renderable.HasTransformChanges = false;
             renderable.HasVertexChanges = false;
             renderable.HasTextureChanges = false;

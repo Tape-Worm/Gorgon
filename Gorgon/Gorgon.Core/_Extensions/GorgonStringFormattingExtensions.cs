@@ -37,6 +37,88 @@ namespace Gorgon.Core
 	/// </summary>
 	public static class GorgonStringFormattingExtension
 	{
+	    /// <summary>
+	    /// Function to break a string into an array of strings based on the newline control characters present in the text.
+	    /// </summary>
+	    /// <param name="renderText">The text to evaluate.</param>
+	    /// <param name="buffer">The array of strings representing a single line per newline control character.</param>
+	    public static void GetLines(this StringBuilder renderText, ref string[] buffer)
+	    {
+	        int lineCount = 0;
+
+	        if (renderText.Length == 0)
+	        {
+	            buffer = new string[0];
+	            return;
+	        }
+
+	        int startChar = 0;
+	        int charCount = 0;
+
+            // Find out how many lines we have.
+	        for (int i = 0; i < renderText.Length; ++i)
+	        {
+	            char character = renderText[i];
+
+	            if (character == '\n')
+	            {
+	                ++lineCount;
+	            }
+	        }
+
+            // We'll always have at least 1 line.
+	        ++lineCount;
+            
+	        if ((buffer == null) || (buffer.Length != lineCount))
+	        {
+                buffer = new string[lineCount];
+	        }
+
+	        int line = 0;
+	        for (int i = 0; i < renderText.Length; ++i)
+	        {
+	            char character = renderText[i];
+
+	            if (character != '\n')
+	            {
+	                ++charCount;
+                    continue;
+	            }
+
+	            if (charCount == 0)
+	            {
+	                buffer[line] = "\n";
+	                ++startChar;
+	            }
+	            else
+	            {
+	                buffer[line] = renderText.ToString(startChar, charCount);
+	                startChar += charCount + 1;
+	            }
+
+	            ++line;
+	            charCount = 0;
+	        }
+
+	        if (line == lineCount)
+	        {
+	            return;
+	        }
+
+            // Get last line.
+	        buffer[line] = renderText.ToString(startChar, charCount);
+	    }
+
+		/// <summary>
+		/// Function to break a string into an array of strings based on the newline control characters present in the text.
+		/// </summary>
+		/// <param name="renderText">The text to evaluate.</param>
+		/// <returns>The array of strings representing a single line per newline control character.</returns>
+		public static string[] GetLines(this string renderText)
+		{
+			return string.IsNullOrEmpty(renderText) ? new string[0] : renderText.Split('\n');
+		}
+
 		/// <summary>
 		/// Function to find the index of a character in a <see cref="StringBuilder"/>.
 		/// </summary>

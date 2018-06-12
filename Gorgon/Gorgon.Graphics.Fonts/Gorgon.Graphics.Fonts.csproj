@@ -63,7 +63,6 @@
     <Compile Include="GorgonFontFactory.cs" />
     <Compile Include="GorgonFontGlyphCollection.cs" />
     <Compile Include="GorgonFontInfo.cs" />
-    <Compile Include="GorgonFontTextFormatter.cs" />
     <Compile Include="GorgonGlyph.cs" />
     <Compile Include="GorgonGlyphBrush.cs" />
     <Compile Include="GorgonGlyphBrushInterpolator.cs" />

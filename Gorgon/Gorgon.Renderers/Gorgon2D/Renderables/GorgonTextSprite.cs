@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using DX = SharpDX;
@@ -73,37 +74,26 @@ namespace Gorgon.Renderers
         #region Variables.
         // The angle of rotation, in degrees.
         private float _angle;
-        // The font used to render the text.
-        private GorgonFont _font;
         // The text to render.
         private string _text;
         // The formatted text.
-        private string _formattedText;
-        // Flag to indicate that we are using an outline from the font.
-        private TextDrawMode _drawMode;
-        // The tint color for the outline.
-        private GorgonColor _outlineTint = GorgonColor.White;
-        // The number of spaces to use when a tab character is encountered.
-        private int _tabSpaceCount = 4;
-        // The multiplier for spacing between lines.
-        private float _lineSpacing = 1.0f;
-        // Flag to indicate that word wrapping is enabled.
-        private bool _useWordWrap;
+        private readonly StringBuilder _formattedText = new StringBuilder(256);
         // The area for used for text layout.
         private DX.Size2F? _layoutArea;
-        // The alignment of the text.
-        private Alignment _alignment = Alignment.UpperLeft;
-        // The lines of text in the sprite text property.
-        private string[] _lines;
 
         /// <summary>
         /// The renderable data for this sprite.
         /// It is exposed an internal variable (which goes against C# best practices) for performance reasons (property accesses add up over time).
         /// </summary>
-        internal readonly BatchRenderable Renderable = new BatchRenderable();
+        internal readonly TextRenderable Renderable = new TextRenderable();
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to return whether or not the sprite has had its position, size, texture information, or object space vertices updated since it was last drawn.
+        /// </summary>
+        public bool IsUpdated => Renderable.VertexCountChanged || Renderable.HasTransformChanges || Renderable.HasVertexChanges || Renderable.HasVertexColorChanges || Renderable.HasTextureChanges;
+
         /// <summary>
         /// Property to set or return the alignment for the text.
         /// </summary>
@@ -112,45 +102,28 @@ namespace Gorgon.Renderers
         /// </remarks>
         public Alignment Alignment
         {
-            get => _alignment;
+            get => Renderable.Alignment;
             set
             {
-                if (_alignment == value)
+                if (Renderable.Alignment == value)
                 {
                     return;
                 }
 
-                _alignment = value;
-                UpdateBounds();
-                Renderable.HasVertexChanges = true;
+                Renderable.Alignment = value;
+                Renderable.HasTransformChanges = true;
             }
         }
 
         /// <summary>
-        /// Property to set or return whether or not word wrapping is enabled.
+        /// Property to set or return the layout area for the <see cref="Alignment"/> property.
         /// </summary>
         /// <remarks>
-        /// If this property is set to <b>true</b>, then the <see cref="LayoutArea"/> must be assigned, otherwise there will be no cut off point for breaking the line.
+        /// <para>
+        /// This defines a custom area to layout the text when changing its <see cref="Alignment"/>. By default, Gorgon will use the <see cref="Bounds"/> to determine the layout region for aligning text,
+        /// but, when this property is defined, the layout region can be larger or smaller than the sprite <see cref="Bounds"/>.
+        /// </para>
         /// </remarks>
-        public bool UseWordWrapping
-        {
-            get => _useWordWrap;
-            set
-            {
-                if (_useWordWrap == value)
-                {
-                    return;
-                }
-
-                _useWordWrap = value;
-                UpdateBounds();
-                Renderable.HasVertexChanges = true;
-            }
-        }
-
-        /// <summary>
-        /// Property to set or return the layout area for <see cref="UseWordWrapping"/>, and/or the <see cref="Alignment"/> property.
-        /// </summary>
         public DX.Size2F? LayoutArea
         {
             get => _layoutArea;
@@ -160,10 +133,10 @@ namespace Gorgon.Renderers
                 {
                     return;
                 }
-
+                
                 _layoutArea = value;
                 UpdateBounds();
-                Renderable.HasVertexChanges = true;
+                Renderable.HasTransformChanges = true;
             }
         }
 
@@ -172,15 +145,15 @@ namespace Gorgon.Renderers
         /// </summary>
         public float LineSpace
         {
-            get => _lineSpacing;
+            get => Renderable.LineSpaceMultiplier;
             set
             {
-                if (_lineSpacing.EqualsEpsilon(value))
+                if (Renderable.LineSpaceMultiplier.EqualsEpsilon(value))
                 {
                     return;
                 }
 
-                _lineSpacing = value;
+                Renderable.LineSpaceMultiplier = value;
                 UpdateBounds();
             }
         }
@@ -195,16 +168,17 @@ namespace Gorgon.Renderers
         /// <seealso cref="IGorgonFontInfo"/>
         public TextDrawMode DrawMode
         {
-            get => _drawMode;
+            get => Renderable.DrawMode;
             set
             {
-                if (_drawMode == value)
+                if (Renderable.DrawMode == value)
                 {
                     return;
                 }
 
-                _drawMode = value;
+                Renderable.DrawMode = value;
                 UpdateBounds();
+                // This will increase the amount of geometry required by a factor of 2 in the worst case.
                 Renderable.VertexCountChanged = true;
             }
         }
@@ -217,23 +191,23 @@ namespace Gorgon.Renderers
         /// </remarks>
         public int TabSpaceCount
         {
-            get => _tabSpaceCount;
+            get => Renderable.TabSpaceCount;
             set
             {
-                if (_tabSpaceCount == value)
+                if (Renderable.TabSpaceCount == value)
                 {
                     return;
                 }
 
-                _tabSpaceCount = value;
-                FormatText();
+                Renderable.TabSpaceCount = value;
+                UpdateBounds();
             }
         }
 
         /// <summary>
         /// Property to return the individual lines of text within the <see cref="Text"/> property.
         /// </summary>
-        public IReadOnlyList<string> Lines => _lines;
+        public IReadOnlyList<string> Lines => Renderable.Lines;
 
         /// <summary>
         /// Property to set or return the text to render.
@@ -254,17 +228,13 @@ namespace Gorgon.Renderers
                 }
                 
                 _text = value;
-                Renderable.VertexCountChanged = (Renderable.Vertices == null) || ((value.Length * (DrawMode == TextDrawMode.OutlinedGlyphs ? 8 : 4)) >= Renderable.Vertices.Length);
-                Renderable.HasVertexChanges = true;
+                Renderable.TextLength = Text.Length;
+
+                _formattedText.FormatStringForRendering(value, Renderable.TabSpaceCount);
 
                 FormatText();
             }
         }
-
-        /// <summary>
-        /// Property to return whether or not the sprite has had its position, size, texture information, or object space vertices updated since it was last drawn.
-        /// </summary>
-        public bool IsUpdated => Renderable.VertexCountChanged || Renderable.HasTransformChanges || Renderable.HasVertexChanges || Renderable.HasVertexColorChanges || Renderable.HasTextureChanges;
 
         /// <summary>
         /// Property to return the interface that allows colors to be assigned to each corner of an individual font glyph.
@@ -296,15 +266,15 @@ namespace Gorgon.Renderers
         /// <seealso cref="IGorgonFontInfo"/>
         public GorgonColor OutlineTint
         {
-            get => _outlineTint;
+            get => Renderable.OutlineTint;
             set
             {
-                if (GorgonColor.Equals(in value, in _outlineTint))
+                if (GorgonColor.Equals(in Renderable.OutlineTint, in value))
                 {
                     return;
                 }
 
-                _outlineTint = value;
+                Renderable.OutlineTint = value;
                 Renderable.HasVertexColorChanges = true;
             }
         }
@@ -333,17 +303,17 @@ namespace Gorgon.Renderers
         /// </summary>
         public GorgonFont Font
         {
-            get => _font;
+            get => Renderable.Font;
             set
             {
                 // TODO: Perhaps have a default font and NULL will be used to represent that.
-                if ((_font == value)
+                if ((Renderable.Font == value)
                     || (value == null))
                 {
                     return;
                 }
 
-                _font = value;
+                Renderable.Font = value;
                 Renderable.HasVertexChanges = true;
                 Renderable.HasTextureChanges = true;
                 Renderable.HasVertexColorChanges = true;
@@ -538,9 +508,13 @@ namespace Gorgon.Renderers
         /// </summary>
         private void UpdateBounds()
         {
-            float? layoutWidth = UseWordWrapping ? _layoutArea?.Width : null;
-            DX.Size2F size = _font.MeasureText(_formattedText, DrawMode != TextDrawMode.GlyphsOnly, _tabSpaceCount, _lineSpacing, layoutWidth);
+            DX.Size2F size = Renderable.Font.MeasureText(_formattedText.ToString(), 
+                                                         DrawMode != TextDrawMode.GlyphsOnly, 
+                                                         Renderable.TabSpaceCount, 
+                                                         Renderable.LineSpaceMultiplier);
+
             Renderable.Bounds = new DX.RectangleF(Renderable.Bounds.Left, Renderable.Bounds.Top, size.Width, size.Height);
+            Renderable.LayoutArea = _layoutArea ?? size;
         }
 
         /// <summary>
@@ -548,26 +522,19 @@ namespace Gorgon.Renderers
         /// </summary>
         private void FormatText()
         {
-            if (_text.Length == 0)
+            if (_formattedText.Length == 0)
             {
-                _lines = new string[0];
+                Renderable.Lines = new string[0];
                 return;
             }
 
-            string text = _text;
-            text = text.FormatStringForRendering(_tabSpaceCount);
-
-            if ((_useWordWrap) && (_layoutArea != null))
-            {
-                text = _font.WordWrap(text, _layoutArea.Value.Width);
-            }
-
-            _formattedText = text;
-            _lines = text.GetLines();
-
+            _formattedText.GetLines(ref Renderable.Lines);
             UpdateBounds();
 
+            int vertexCount = _formattedText.Length * (Renderable.DrawMode == TextDrawMode.OutlinedGlyphs ? 8 : 4);
+
             Renderable.HasVertexChanges = true;
+            Renderable.VertexCountChanged = (Renderable.Vertices == null) || (vertexCount > Renderable.Vertices.Length);
         }
         #endregion
 
@@ -580,7 +547,7 @@ namespace Gorgon.Renderers
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="font"/> parameter is <b>null</b>.</exception>
         public GorgonTextSprite(GorgonFont font, string text = null)
         {
-            _font = font ?? throw new ArgumentNullException(nameof(font));
+            Renderable.Font = font ?? throw new ArgumentNullException(nameof(font));
             Text = text ?? string.Empty;
             GlyphCornerColors = new GorgonRectangleColors(GorgonColor.White, Renderable);
         }

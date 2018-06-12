@@ -45,7 +45,7 @@ namespace Gorgon.Renderers
 		/// <param name="layoutSize">The layout region size.</param>
 		/// <param name="lineLength">Length of the line, in pixels.</param>
 		/// <param name="textHeight">The height of the text block being rendered.</param>
-		private static void GetTextAlignmentExtents(ref DX.Vector2 leftTop, Alignment alignment, DX.Size2F layoutSize, float lineLength, float textHeight)
+		private static void GetTextAlignmentExtents(ref DX.Vector2 leftTop, Alignment alignment, ref DX.Size2F layoutSize, float lineLength, float textHeight)
 		{
 			int calc;
 
@@ -127,9 +127,9 @@ namespace Gorgon.Renderers
                                                in GorgonColor upperRight,
                                                in GorgonColor lowerLeft,
                                                in GorgonColor lowerRight,
+                                               in GorgonColor outlineTint,
                                                int vertexOffset,
-                                               bool hasOutline,
-                                               GorgonColor outlineTint)
+                                               bool hasOutline)
         {
             ref Gorgon2DVertex v0 = ref vertices[vertexOffset];
             ref Gorgon2DVertex v1 = ref vertices[vertexOffset + 1];
@@ -289,25 +289,24 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="renderable">The renderable to transform.</param>
         /// <param name="glyph">The current glyph to render.</param>
-        /// <param name="spriteBounds">The boundaries of the sprite.</param>
         /// <param name="glyphPosition">The glyph position relative to the upper left corner of the text sprite.</param>
-        /// <param name="textLength">The total number of characters to render.</param>
         /// <param name="vertexOffset">The position in the vertex array to update.</param>
-        /// <param name="hasOutlines"><b>true</b> if outlines need to be drawn, or <b>false</b> if not.</param>
-        /// <param name="outlineTint">A color used to tint the </param>
-        /// <param name="alignment">The alignment of the text.</param>
-        /// <param name="layoutArea">The area to layout the text inside of for an alignment.</param>
+        /// <param name="isOutlinePass"><b>true</b> if outlines need to be drawn, or <b>false</b> if not.</param>
         /// <param name="lineMeasure">The width of the line.</param>
-        public void Transform(BatchRenderable renderable, GorgonGlyph glyph, ref DX.RectangleF spriteBounds, ref DX.Vector2 glyphPosition, int textLength, int vertexOffset, bool hasOutlines, in GorgonColor outlineTint, Alignment alignment, DX.Size2F? layoutArea, float lineMeasure)
+        public void Transform(TextRenderable renderable, GorgonGlyph glyph, ref DX.Vector2 glyphPosition, int vertexOffset, bool isOutlinePass, float lineMeasure)
         {
             ref Gorgon2DVertex[] vertices = ref renderable.Vertices;
+            ref DX.RectangleF spriteBounds = ref renderable.Bounds;
+            Alignment alignment = renderable.Alignment;
+            ref GorgonColor outlineTint = ref renderable.OutlineTint;
             
             // Ensure there's enough vertices allocated.
             if (renderable.VertexCountChanged)
             {
+                int textLength = renderable.TextLength * (renderable.DrawMode == TextDrawMode.OutlinedGlyphs ? 2 : 1);
                 AdjustTextSpriteVertices(ref vertices, textLength);
-                renderable.VertexCountChanged = false;
 
+                renderable.VertexCountChanged = false;
                 renderable.HasVertexChanges = true;
                 renderable.HasTransformChanges = true;
                 renderable.HasTextureChanges = true;
@@ -320,55 +319,60 @@ namespace Gorgon.Renderers
 
                 // If we've updated the physical dimensions for the renderable, then we need to update the transform as well.
                 renderable.HasVertexChanges = false;
-
                 renderable.HasTransformChanges = true;
                 renderable.HasTextureChanges = true;
                 renderable.HasVertexColorChanges = true;
             }
 
-            if (renderable.HasVertexColorChanges)
+            if ((renderable.HasVertexColorChanges)
+                || (isOutlinePass))
             {
-                UpdateVertexColors(vertices, in renderable.UpperLeftColor, in renderable.UpperRightColor, in renderable.LowerLeftColor, in renderable.LowerRightColor, vertexOffset, hasOutlines, outlineTint);
+                UpdateVertexColors(vertices,
+                                   in renderable.UpperLeftColor,
+                                   in renderable.UpperRightColor,
+                                   in renderable.LowerLeftColor,
+                                   in renderable.LowerRightColor,
+                                   in outlineTint,
+                                   vertexOffset,
+                                   isOutlinePass);
             }
 
-            if (renderable.HasTransformChanges)
+            if (renderable.HasTextureChanges)
             {
-                DX.Vector2 offset = hasOutlines ? glyph.OutlineOffset : glyph.Offset;
-                var size = hasOutlines
-                                      ? new DX.Vector2(glyph.OutlineCoordinates.Width, glyph.OutlineCoordinates.Height)
-                                      : new DX.Vector2(glyph.GlyphCoordinates.Width, glyph.GlyphCoordinates.Height);
-                var upperLeft = new DX.Vector2(glyphPosition.X + offset.X + renderable.Corners.X,
-                                               glyphPosition.Y + offset.Y + renderable.Corners.Y);
-
-                if (alignment != Alignment.UpperLeft)
-                {
-                    GetTextAlignmentExtents(ref upperLeft,
-                                            alignment,
-                                            layoutArea ?? new DX.Size2F(spriteBounds.Width, spriteBounds.Height),
-                                            lineMeasure,
-                                            spriteBounds.Height);
-                }
-                
-                var glyphBounds = new DX.RectangleF(upperLeft.X, upperLeft.Y, size.X, size.Y);
-
-                TransformVertices(vertices,
-                                  ref glyphBounds,
-                                  ref spriteBounds,
-                                  ref renderable.Scale,
-                                  renderable.AngleRads,
-                                  renderable.AngleSin,
-                                  renderable.AngleCos,
-                                  renderable.Depth,
-                                  vertexOffset);
+                DX.RectangleF textureCoordinates = isOutlinePass ? glyph.OutlineTextureCoordinates : glyph.TextureCoordinates;
+                UpdateTextureCoordinates(vertices, ref textureCoordinates, glyph.TextureIndex, vertexOffset);
             }
 
-            if (!renderable.HasTextureChanges)
+            if (!renderable.HasTransformChanges)
             {
                 return;
             }
 
-            DX.RectangleF textureCoordinates = hasOutlines ? glyph.OutlineTextureCoordinates : glyph.TextureCoordinates;
-            UpdateTextureCoordinates(vertices, ref textureCoordinates, glyph.TextureIndex, vertexOffset);
+            DX.Vector2 offset = isOutlinePass ? glyph.OutlineOffset : glyph.Offset;
+            var size = isOutlinePass
+                           ? new DX.Vector2(glyph.OutlineCoordinates.Width, glyph.OutlineCoordinates.Height)
+                           : new DX.Vector2(glyph.GlyphCoordinates.Width, glyph.GlyphCoordinates.Height);
+
+            var upperLeft = new DX.Vector2(glyphPosition.X + offset.X + renderable.Corners.X,
+                                           glyphPosition.Y + offset.Y + renderable.Corners.Y);
+
+            if (alignment != Alignment.UpperLeft)
+            {
+                GetTextAlignmentExtents(ref upperLeft, alignment, ref renderable.LayoutArea, lineMeasure, spriteBounds.Height);
+            }
+                
+            var glyphBounds = new DX.RectangleF(upperLeft.X, upperLeft.Y, size.X, size.Y);
+
+            TransformVertices(vertices,
+                              ref glyphBounds,
+                              ref spriteBounds,
+                              ref renderable.Scale,
+                              renderable.AngleRads,
+                              renderable.AngleSin,
+                              renderable.AngleCos,
+                              renderable.Depth,
+                              vertexOffset);
+
         }
     }
 }

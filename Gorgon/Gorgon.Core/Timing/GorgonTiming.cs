@@ -25,6 +25,7 @@
 #endregion
 
 using System.Threading;
+using Gorgon.Math;
 
 namespace Gorgon.Timing
 {	
@@ -102,6 +103,10 @@ namespace Gorgon.Timing
 		private static long _maxAverageCount = 500;
         // Flag to indicate that timing has started.
 	    private static int _timingStarted;
+        // The lowest frames per second.
+	    private static float? _lowestFps;
+        // The lowest frame delta.
+	    private static float? _lowestDelta;
 		#endregion
 
 		#region Properties.
@@ -236,18 +241,14 @@ namespace Gorgon.Timing
 			private set;
 		}
 
-		/// <summary>
-		/// Property to return the lowest FPS.
-		/// </summary>
-		/// <remarks>
-		/// Note that the averaged/min/max calculations are affected by the length of time it takes to execute a single iteration of the idle loop and will not have meaningful data until the 
-		/// application loop begins processing after a call to one of the <see cref="O:Gorgon.UI.GorgonApplication.Run"/> methods.
-		/// </remarks>
-		public static float LowestFPS
-		{
-			get;
-			private set;
-		}
+	    /// <summary>
+	    /// Property to return the lowest FPS.
+	    /// </summary>
+	    /// <remarks>
+	    /// Note that the averaged/min/max calculations are affected by the length of time it takes to execute a single iteration of the idle loop and will not have meaningful data until the 
+	    /// application loop begins processing after a call to one of the <see cref="O:Gorgon.UI.GorgonApplication.Run"/> methods.
+	    /// </remarks>
+	    public static float LowestFPS => _lowestFps ?? 0.0f;
 
 		/// <summary>
 		/// Property to return the highest idle loop delta.
@@ -267,23 +268,19 @@ namespace Gorgon.Timing
 			private set;
 		}
 
-		/// <summary>
-		/// Property to return the lowest idle loop delta.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// Note that the averaged/min/max calculations are affected by the length of time it takes to execute a single iteration of the idle loop and will not have meaningful data until the 
-		/// application loop begins processing after a call to one of the <see cref="O:Gorgon.UI.GorgonApplication.Run"/> methods.
-		/// </para>
-		/// <para>
-		/// This value is not affected by the <see cref="TimeScale"/> property because it is meant to be used in performance measurement.
-		/// </para>
-		/// </remarks>
-		public static float LowestDelta
-		{
-			get;
-			private set;
-		}
+	    /// <summary>
+	    /// Property to return the lowest idle loop delta.
+	    /// </summary>
+	    /// <remarks>
+	    /// <para>
+	    /// Note that the averaged/min/max calculations are affected by the length of time it takes to execute a single iteration of the idle loop and will not have meaningful data until the 
+	    /// application loop begins processing after a call to one of the <see cref="O:Gorgon.UI.GorgonApplication.Run"/> methods.
+	    /// </para>
+	    /// <para>
+	    /// This value is not affected by the <see cref="TimeScale"/> property because it is meant to be used in performance measurement.
+	    /// </para>
+	    /// </remarks>
+	    public static float LowestDelta => _lowestDelta ?? 0.0f;
 
 		/// <summary>
 		/// Property to return the average number of seconds to run the idle loop for a single iteration.
@@ -438,25 +435,10 @@ namespace Gorgon.Timing
 					_lastTime = _lastTimerValue;
 					_frameCounter = 0;
 
-					if (FPS > HighestFPS)
-					{
-						HighestFPS = FPS;
-					}
-
-					if (FPS < LowestFPS)
-					{
-						LowestFPS = FPS;
-					}
-
-					if (Delta > HighestDelta)
-					{
-						HighestDelta = Delta;
-					}
-
-					if (Delta < LowestDelta)
-					{
-						LowestDelta = Delta;
-					}
+				    HighestFPS = HighestFPS.Max(FPS);
+				    _lowestFps = _lowestFps?.Min(FPS) ?? FPS;
+				    HighestDelta = HighestDelta.Max(Delta);
+				    _lowestDelta = _lowestDelta?.Min(Delta) ?? FPS;
 				}
 
 				if (_averageCounter > 0)
@@ -532,11 +514,11 @@ namespace Gorgon.Timing
 		/// </remarks>
 		public static void Reset()
 		{
-			HighestFPS = float.MinValue;
-			LowestFPS = float.MaxValue;
+			HighestFPS = 0;
+			_lowestFps = null;
 			AverageFPS = 0.0f;
-			HighestDelta = float.MinValue;
-			LowestDelta = float.MaxValue;
+			HighestDelta = 0;
+			_lowestDelta = null;
 			AverageScaledDelta = 0.0f;
 			AverageDelta = 0.0f;
 			Delta = 0.0f;

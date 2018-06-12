@@ -1,7 +1,7 @@
 ﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2017 Michael Winsor
+// Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,29 +20,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: February 21, 2017 12:50:31 PM
+// Created: June 11, 2018 8:50:14 PM
 // 
 #endregion
 
 using System.Text;
+using Gorgon.Graphics.Fonts;
 using Gorgon.Math;
 
-namespace Gorgon.Graphics.Fonts
+namespace Gorgon.Renderers
 {
 	/// <summary>
 	/// The text formatter used to format a string for rendering.
 	/// </summary>
-	public static class GorgonFontTextFormatter
+	internal static class FontTextFormatter
 	{
-        // A worker buffer for formatting the string.
-        private static readonly StringBuilder _workBuffer = new StringBuilder(256);
-
 		/// <summary>
 		/// Function to format a string for rendering using a <see cref="GorgonFont"/>.
 		/// </summary>
-		/// <param name="renderText">The text to render.</param>
-		/// <param name="tabSpacing">[Optional] The number of spaces used to replace a tab control character.</param>
-		/// <returns>The formatted text.</returns>
+		/// <param name="formattedText">The string builder that will contain the formatted text.</param>
+		/// <param name="textToRender">The text to render.</param>
+		/// <param name="tabSpacing">The number of spaces used to replace a tab control character.</param>
 		/// <remarks>
 		/// <para>
 		/// This method will format the string so that all control characters such as carriage return, and tabs are converted into spaces. 
@@ -51,34 +49,22 @@ namespace Gorgon.Graphics.Fonts
 		/// If the <paramref name="tabSpacing"/> parameter is changed from its default of 4, then that will be the number of space substituted for the tab control character.
 		/// </para>
 		/// </remarks>
-		public static string FormatStringForRendering(this string renderText, int tabSpacing = 4)
+		public static void FormatStringForRendering(this StringBuilder formattedText, string textToRender, int tabSpacing)
 		{
-			if (string.IsNullOrEmpty(renderText))
+		    formattedText.Length = 0;
+
+			if (string.IsNullOrEmpty(textToRender))
 			{
-				return string.Empty;
+			    return;
 			}
 
-			tabSpacing = tabSpacing.Min(1);
-		    _workBuffer.Length = 0;
-		    _workBuffer.Append(renderText);
+			tabSpacing = tabSpacing.Max(1);
+		    formattedText.Append(textToRender);
 
 			// Strip all carriage returns.
-			_workBuffer.Replace("\r", string.Empty);
-
+			formattedText.Replace("\r", string.Empty);
 			// Convert tabs to spaces.
-		    _workBuffer.Replace("\t", new string(' ', tabSpacing));
-
-			return _workBuffer.ToString();
-		}
-
-		/// <summary>
-		/// Function to break a string into an array of strings based on the newline control characters present in the text.
-		/// </summary>
-		/// <param name="renderText">The text to evaluate.</param>
-		/// <returns>The array of strings representing a single line per newline control character.</returns>
-		public static string[] GetLines(this string renderText)
-		{
-			return string.IsNullOrEmpty(renderText) ? new string[0] : renderText.Split('\n');
+		    formattedText.Replace("\t", new string(' ', tabSpacing));
 		}
 	}
 }

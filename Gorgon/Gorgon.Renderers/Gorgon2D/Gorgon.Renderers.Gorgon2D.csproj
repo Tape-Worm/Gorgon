@@ -60,6 +60,7 @@
     </Compile>
     <Compile Include="Gorgon2D.cs" />
     <Compile Include="Renderables\GorgonTextSprite.cs" />
+    <Compile Include="Renderables\_Internal\TextRenderable.cs" />
     <Compile Include="Renderables\_Internal\TextSpriteTransformer.cs" />
     <Compile Include="Gorgon2DVertex.cs" />
     <Compile Include="Renderables\Gorgon2DBatchState.cs" />
@@ -77,6 +78,7 @@
     <Compile Include="Renderables\_Internal\SpriteTransformer.cs" />
     <Compile Include="Renderables\_Internal\_ValueTypes\AlphaTestData.cs" />
     <Compile Include="_Internal\DrawCallFactory.cs" />
+    <Compile Include="_Internal\FontTextFormatter.cs" />
     <Compile Include="_Internal\ObjectRenderer.cs" />
     <Compile Include="Renderables\_Internal\BatchRenderableStateEqualityComparer.cs" />
     <Compile Include="_Internal\SpriteRenderer.cs" />

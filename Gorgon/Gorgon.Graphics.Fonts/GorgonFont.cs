@@ -58,6 +58,8 @@ namespace Gorgon.Graphics.Fonts
 		: GorgonNamedObject, IDisposable
 	{
         #region Variables.
+	    // A worker buffer for formatting the string.
+	    private readonly StringBuilder _workBuffer = new StringBuilder(256);
 		// A list of internal textures created by the font generator.
 		private readonly List<GorgonTexture2D> _internalTextures;
 		// The information used to generate the font.
@@ -165,6 +167,40 @@ namespace Gorgon.Graphics.Fonts
 		#endregion
 
 		#region Methods.
+	    /// <summary>
+	    /// Function to format a string for rendering using a <see cref="GorgonFont"/>.
+	    /// </summary>
+	    /// <param name="renderText">The text to render.</param>
+	    /// <param name="tabSpacing">[Optional] The number of spaces used to replace a tab control character.</param>
+	    /// <returns>The formatted text.</returns>
+	    /// <remarks>
+	    /// <para>
+	    /// This method will format the string so that all control characters such as carriage return, and tabs are converted into spaces. 
+	    /// </para>
+	    /// <para>
+	    /// If the <paramref name="tabSpacing"/> parameter is changed from its default of 4, then that will be the number of space substituted for the tab control character.
+	    /// </para>
+	    /// </remarks>
+	    public string FormatStringForRendering(string renderText, int tabSpacing = 4)
+	    {
+	        if (string.IsNullOrEmpty(renderText))
+	        {
+	            return string.Empty;
+	        }
+
+	        tabSpacing = tabSpacing.Max(1);
+	        _workBuffer.Length = 0;
+	        _workBuffer.Append(renderText);
+
+	        // Strip all carriage returns.
+	        _workBuffer.Replace("\r", string.Empty);
+
+	        // Convert tabs to spaces.
+	        _workBuffer.Replace("\t", new string(' ', tabSpacing));
+
+	        return _workBuffer.ToString();
+	    }
+
 		/// <summary>
 		/// Function to copy bitmap data to a texture.
 		/// </summary>
@@ -705,7 +741,7 @@ namespace Gorgon.Graphics.Fonts
 				return DX.Size2F.Zero;
 			}
 
-			string formattedText = text.FormatStringForRendering(tabSpaceCount);
+			string formattedText = FormatStringForRendering(text, tabSpaceCount);
 			DX.Size2F result = DX.Size2F.Zero;
 
 			if (wordWrapWidth != null)
