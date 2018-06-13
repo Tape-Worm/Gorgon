@@ -374,8 +374,6 @@ namespace Gorgon.Examples
 
 			DrawBackground();
 
-            _2D.End();
-
             // TODO: Not supported.
 			/*if (_2D.Effects.GaussianBlur.BlurAmount >= 10.0f)
 			{
@@ -386,19 +384,13 @@ namespace Gorgon.Examples
 				DrawBlurred();
 			}*/
 
-            _2D.Begin();
-
 		    DrawNoBlur();
 
-            _2D.End();
-
-		    _graphics.DrawTexture(_statsTexture, new DX.Point(0, 0), blendState: GorgonBlendState.Default);
-		    
-            _2D.Begin();
+            _2D.DrawFilledRectangle(new DX.RectangleF(0, 0, _statsTarget.Width, _statsTarget.Height), GorgonColor.White, _statsTexture, new DX.RectangleF(0, 0, 1, 1));
 
 			DrawOverlay();
 
-		    _2D.End();
+            _2D.End();
 
 			_mainScreen.Present();
 

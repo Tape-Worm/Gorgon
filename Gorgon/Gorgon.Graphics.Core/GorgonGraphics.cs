@@ -722,8 +722,10 @@ namespace Gorgon.Graphics.Core
                 GorgonSamplerState.Default.BuildD3D11SamplerState(_d3DDevice);
                 GorgonSamplerState.AnisotropicFiltering.BuildD3D11SamplerState(_d3DDevice);
                 GorgonSamplerState.PointFiltering.BuildD3D11SamplerState(_d3DDevice);
+                GorgonSamplerState.Wrapping.BuildD3D11SamplerState(_d3DDevice);
 
                 _cachedSamplers.Add(GorgonSamplerState.Default);
+                _cachedSamplers.Add(GorgonSamplerState.Wrapping);
                 _cachedSamplers.Add(GorgonSamplerState.AnisotropicFiltering);
                 _cachedSamplers.Add(GorgonSamplerState.PointFiltering);
             }

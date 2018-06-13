@@ -92,11 +92,13 @@ namespace Gorgon.Renderers
                                    || (_lastState.RasterState != batchState.RasterState);
 
             bool needResourceUpdate = (_lastCall == null)
-                                      || (!_prevRenderable.Equals(renderable))
+                                      || (_prevRenderable != renderable)
                                       || (_lastCall.IndexBuffer != renderer.IndexBuffer)
                                       || (_lastCall.VertexBufferBindings[0] != renderer.VertexBuffer)
                                       || (_lastCall.VertexShader.ConstantBuffers[0] != ProjectionViewBuffer)
-                                      || (_lastCall.PixelShader.ConstantBuffers[0] != AlphaTestBuffer);
+                                      || (_lastCall.PixelShader.ConstantBuffers[0] != AlphaTestBuffer)
+                                      || (_lastCall.PixelShader.ShaderResources[0] != renderable.Texture)
+                                      || (_lastCall.PixelShader.Samplers[0] != renderable.TextureSampler);
 
             _prevRenderable = renderable;
 

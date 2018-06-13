@@ -84,6 +84,11 @@ namespace Gorgon.Renderers
         private GorgonFont _defaultFont;
         // The default text sprite for rendering strings.
         private GorgonTextSprite _defaultTextSprite;
+        // The renderable for primitives (lines, rectangles, etc...)
+        private BatchRenderable _primitiveRenderable = new BatchRenderable
+                                                       {
+                                                           Vertices = new Gorgon2DVertex[4]
+                                                       };
         #endregion
 
         #region Properties.
@@ -309,6 +314,11 @@ namespace Gorgon.Renderers
             // The number of indices to render.
             int indexCount = 0;
 
+            if (_beginCalled == 0)
+            {
+                throw new InvalidOperationException(Resources.GOR2D_ERR_BEGIN_NOT_CALLED);
+            }
+
             sprite.ValidateObject(nameof(sprite));
 
             _textBuffer.Length = 0;
@@ -469,6 +479,87 @@ namespace Gorgon.Renderers
             renderable.HasVertexChanges = false;
             renderable.HasTextureChanges = false;
             renderable.HasVertexColorChanges = false;
+        }
+
+        /// <summary>
+        /// Function to draw a filled rectangle.
+        /// </summary>
+        /// <param name="region">The region for the rectangle.</param>
+        /// <param name="color">The color of the rectangle.</param>
+        /// <param name="texture">[Optional] The texture for the rectangle.</param>
+        /// <param name="textureRegion">[Optional] The texture coordinates to map to the rectangle.</param>
+        /// <param name="textureArrayIndex">[Optional] The array index for a texture array to use.</param>
+        /// <param name="textureSampler">[Optional] The texture sampler to apply to the texture.</param>
+        /// <param name="depth">[Optional] The depth value for the rectangle.</param>
+        public void DrawFilledRectangle(DX.RectangleF region, GorgonColor color, GorgonTexture2DView texture = null, DX.RectangleF? textureRegion = null, int textureArrayIndex = 0, GorgonSamplerState textureSampler = null, float depth = 0)
+        {
+            if (_beginCalled == 0)
+            {
+                throw new InvalidOperationException(Resources.GOR2D_ERR_BEGIN_NOT_CALLED);
+            }
+
+            // If there's no width/height, then there's nothing to draw.
+            if (region.IsEmpty)
+            {
+                return;
+            }
+
+            ref Gorgon2DVertex v0 = ref _primitiveRenderable.Vertices[0];
+            ref Gorgon2DVertex v1 = ref _primitiveRenderable.Vertices[1];
+            ref Gorgon2DVertex v2 = ref _primitiveRenderable.Vertices[2];
+            ref Gorgon2DVertex v3 = ref _primitiveRenderable.Vertices[3];
+
+            if (textureSampler == null)
+            {
+                textureSampler = GorgonSamplerState.Wrapping;
+            }
+
+            if (texture != null)
+            {
+                if (textureRegion == null)
+                {
+                    // Calculate the texture.
+                    v0.UV = new DX.Vector3(region.Left / texture.Width, region.Top / texture.Height, textureArrayIndex);
+                    v1.UV = new DX.Vector3(region.Right / texture.Width, region.Top / texture.Height, textureArrayIndex);
+                    v2.UV = new DX.Vector3(region.Left / texture.Width, region.Bottom / texture.Height, textureArrayIndex);
+                    v3.UV = new DX.Vector3(region.Right / texture.Width, region.Bottom / texture.Height, textureArrayIndex);
+                }
+            }
+            else
+            {
+                v0.UV = DX.Vector3.Zero;
+                v1.UV = new DX.Vector3(1.0f, 0, 0);
+                v2.UV = new DX.Vector3(0, 1.0f, 0);
+                v3.UV = new DX.Vector3(1.0f, 1.0f, 0);
+                
+                texture = _defaultTexture;
+            }
+
+            v0.Color = color;
+            v1.Color = color;
+            v2.Color = color;
+            v3.Color = color;
+
+            v0.Position = new DX.Vector4(region.TopLeft, depth, 1.0f);
+            v1.Position = new DX.Vector4(region.TopRight, depth, 1.0f);
+            v2.Position = new DX.Vector4(region.BottomLeft, depth, 1.0f);
+            v3.Position = new DX.Vector4(region.BottomRight, depth, 1.0f);
+
+            var alphaTestData = new AlphaTestData(true, GorgonRangeF.Empty);
+
+            _primitiveRenderable.StateChanged = (texture != _primitiveRenderable.Texture)
+                                                || (textureSampler != _primitiveRenderable.TextureSampler)
+                                                || (!AlphaTestData.Equals(in alphaTestData, in _primitiveRenderable.AlphaTestData));
+
+            _primitiveRenderable.Bounds = region;
+            _primitiveRenderable.ActualVertexCount = 4;
+            _primitiveRenderable.AlphaTestData = new AlphaTestData(true, GorgonRangeF.Empty);
+            _primitiveRenderable.Texture = texture;
+            _primitiveRenderable.TextureSampler = textureSampler;
+
+            RenderBatchOnChange(_primitiveRenderable);
+            
+            _spriteRenderer.QueueSprite(_primitiveRenderable, 6);
         }
 
         // TODO: Turn this into a real thing, it works really well.

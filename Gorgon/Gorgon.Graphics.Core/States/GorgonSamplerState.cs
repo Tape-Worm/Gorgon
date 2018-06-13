@@ -40,8 +40,8 @@ namespace Gorgon.Graphics.Core
 	/// This will define how a texture is sampled inside of a shader when rendering. Filtering, addressing, etc... are all defined in this state.
 	/// </para>
 	/// <para>
-	/// The sampler state contains 3 common samplers used by applications: <see cref="Default"/> (bilinear filtering), <see cref="PointFiltering"/> (point or "pixelated" filtering), and 
-	/// <see cref="AnisotropicFiltering"/>. 
+	/// The sampler state contains 4 common samplers used by applications: <see cref="Default"/> (bilinear filtering), <see cref="PointFiltering"/> (point or "pixelated" filtering), 
+	/// <see cref="AnisotropicFiltering"/>, and <see cref="Wrapping"/>. 
 	/// </para>
 	/// <para>
 	/// A sampler state is an immutable object, and as such can only be created by using a <see cref="GorgonSamplerStateBuilder"/>.
@@ -59,6 +59,15 @@ namespace Gorgon.Graphics.Core
 	    /// </summary>
 	    public static readonly GorgonSamplerState Default = new GorgonSamplerState();
 
+        /// <summary>
+        /// A sampler state that turns on texture wrapping when texture coordinates exceed the range of the texture size.
+        /// </summary>
+	    public static readonly GorgonSamplerState Wrapping = new GorgonSamplerState
+	                                                         {
+	                                                             WrapU = TextureWrap.Wrap,
+	                                                             WrapV = TextureWrap.Wrap,
+	                                                             WrapW = TextureWrap.Wrap
+	                                                         };
 
 	    /// <summary>
 	    /// A sampler state that provides point filtering for the complete texture.
