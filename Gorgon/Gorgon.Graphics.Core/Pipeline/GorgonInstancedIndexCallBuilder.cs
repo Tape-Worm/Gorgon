@@ -120,27 +120,27 @@ namespace Gorgon.Graphics.Core
         /// Function to assign an index buffer to the draw call.
         /// </summary>
         /// <param name="buffer">The buffer to assign.</param>
-        /// <param name="indexStart">The first index in the index buffer to render.</param>
-        /// <param name="indexCountPerInstance">The number of indices to render, per instance.</param>
+        /// <param name="indexStart">[Optional] The first index in the index buffer to render.</param>
+        /// <param name="indexCountPerInstance">[Optional] The number of indices to render, per instance.</param>
         /// <returns>The fluent builder interface.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="indexStart"/> parameter is less than 0.
         /// <para>-or-</para>
         /// <para>Thrown when the <paramref name="indexCountPerInstance"/> parameter is less than 1.</para>
         /// </exception>
-        public GorgonInstancedIndexCallBuilder IndexBuffer(GorgonIndexBuffer buffer, int indexStart, int indexCountPerInstance)
+        public GorgonInstancedIndexCallBuilder IndexBuffer(GorgonIndexBuffer buffer, int indexStart = 0, int? indexCountPerInstance = null)
         {
             if (indexStart < 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(indexStart), Resources.GORGFX_ERR_INDEX_TOO_SMALL);
             }
 
-            if (indexCountPerInstance < 1)
+            if ((indexCountPerInstance != null) && (indexCountPerInstance < 1))
             {
                 throw new ArgumentOutOfRangeException(nameof(indexCountPerInstance), Resources.GORGFX_ERR_INDEX_COUNT_TOO_SMALL);
             }
 
             DrawCall.IndexStart = indexStart;
-            DrawCall.IndexCountPerInstance = indexCountPerInstance;
+            DrawCall.IndexCountPerInstance = indexCountPerInstance ?? 0;
             DrawCall.IndexBuffer = buffer;
             return this;
         }

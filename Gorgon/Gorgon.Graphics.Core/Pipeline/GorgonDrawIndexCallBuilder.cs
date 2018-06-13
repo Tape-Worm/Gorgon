@@ -122,20 +122,20 @@ namespace Gorgon.Graphics.Core
         /// <para>-or-</para>
         /// <para>Thrown when the <paramref name="indexCount"/> parameter is less than 1.</para>
         /// </exception>
-        public GorgonDrawIndexCallBuilder IndexBuffer(GorgonIndexBuffer buffer, int indexStart, int indexCount)
+        public GorgonDrawIndexCallBuilder IndexBuffer(GorgonIndexBuffer buffer, int indexStart = 0, int? indexCount = null)
         {
             if (indexStart < 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(indexStart), Resources.GORGFX_ERR_INDEX_TOO_SMALL);
             }
 
-            if (indexCount < 1)
+            if ((indexCount != null) && (indexCount < 1))
             {
                 throw new ArgumentOutOfRangeException(nameof(indexCount), Resources.GORGFX_ERR_INDEX_COUNT_TOO_SMALL);
             }
 
             DrawCall.IndexStart = indexStart;
-            DrawCall.IndexCount = indexCount;
+            DrawCall.IndexCount = indexCount ?? 0;
             DrawCall.IndexBuffer = buffer;
             return this;
         }

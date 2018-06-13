@@ -214,9 +214,10 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Function to perform initialization of the view.
+        /// Function to perform the creation of a specific kind of view.
         /// </summary>
-        private protected override void OnCreateNativeView()
+        /// <returns>The view that was created.</returns>
+        private protected override D3D11.ResourceView OnCreateNativeView()
         {
             Graphics.Log.Print($"Render Target 2D View '{Texture.Name}': Creating D3D11 render target view.", LoggingLevel.Simple);
 
@@ -239,6 +240,8 @@ namespace Gorgon.Graphics.Core
                      {
                          DebugName = $"'{Texture.Name}'_D3D11RenderTargetView1_2D"
                      };
+
+            return Native;
         }
 
         /// <summary>
