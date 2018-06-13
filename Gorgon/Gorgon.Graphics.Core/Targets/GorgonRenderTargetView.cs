@@ -25,9 +25,6 @@
 #endregion
 
 using System;
-using System.Diagnostics;
-using System.Threading;
-using Gorgon.Diagnostics;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
@@ -48,32 +45,16 @@ namespace Gorgon.Graphics.Core
     /// <seealso cref="GorgonTexture2D"/>
     /// <seealso cref="GorgonTexture3D"/>
     public abstract class GorgonRenderTargetView
-        : IDisposable, IGorgonGraphicsObject
+        : GorgonResourceView
     {
-		#region Variables.
-        // The D3D 11 render target view.
-        private D3D11.RenderTargetView1 _view;
-        // The texture bound to this view.
-        private GorgonGraphicsResource _resource;
-        #endregion
-
 		#region Properties.
         /// <summary>
-        /// Property to set or return whether the view owns the attached resource or not.
-        /// </summary>
-        protected bool OwnsResource
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to return the render target view.
+        /// Property to return the native D3D depth/stencil view.
         /// </summary>
         internal D3D11.RenderTargetView1 Native
         {
-            get => _view;
-            set => _view = value;
+            get;
+            set;
         }
 
         /// <summary>
@@ -83,16 +64,6 @@ namespace Gorgon.Graphics.Core
         {
             get;
         }
-
-        /// <summary>
-        /// Property to return whether or not the object is disposed.
-        /// </summary>
-        public bool IsDisposed => _resource == null;
-
-        /// <summary>
-        /// Property to return the resource bound to this render target view.
-        /// </summary>
-        public GorgonGraphicsResource Resource => _resource;
 
         /// <summary>
         /// Property to return the format used to interpret this view.
@@ -109,16 +80,6 @@ namespace Gorgon.Graphics.Core
 	    {
 		    get;
 	    }
-
-        /// <summary>
-        /// Property to return the intended usage flags for the texture.
-        /// </summary>
-        public ResourceUsage Usage => _resource?.Usage ?? ResourceUsage.Default;
-
-        /// <summary>
-        /// Property to return the graphics interface that built the texture.
-        /// </summary>
-        public GorgonGraphics Graphics => _resource?.Graphics;
 
         /// <summary>
         /// Property to return the width of the render target view.
@@ -139,23 +100,6 @@ namespace Gorgon.Graphics.Core
 
         #region Methods.
         /// <summary>
-        /// Function to create a native version of the render target view.
-        /// </summary>
-        private protected abstract void OnCreateNativeView();
-
-        /// <summary>
-        /// Function to create a native version of the render target view.
-        /// </summary>
-        internal void CreateNativeView()
-        {
-            OnCreateNativeView();
-
-            Debug.Assert(Native != null, "No view was created.");
-            
-            this.RegisterDisposable(Graphics);
-        }
-
-        /// <summary>
         /// Function to clear the contents of the render target for this view.
         /// </summary>
         /// <param name="color">Color to use when clearing the render target view.</param>
@@ -166,37 +110,9 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public void Clear(GorgonColor color)
         {
+            base.
             Graphics.D3DDeviceContext.ClearRenderTargetView(Native, color.ToRawColor4());
         }
-
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		public virtual void Dispose()
-		{
-		    D3D11.RenderTargetView1 view = Interlocked.Exchange(ref _view, null);
-
-		    if (view == null)
-		    {
-                GC.SuppressFinalize(this);
-		        return;
-		    }
-
-            this.UnregisterDisposable(Resource.Graphics);
-
-		    if (OwnsResource)
-		    {
-		        Graphics.Log.Print($"Render Target View '{Resource.Name}': Releasing D3D11 resource because it owns it.", LoggingLevel.Simple);
-
-		        GorgonGraphicsResource resource = Interlocked.Exchange(ref _resource, null);
-                resource?.Dispose();
-		    }
-
-		    Graphics.Log.Print($"Render Target View '{Resource.Name}': Releasing D3D11 render target view.", LoggingLevel.Simple);
-		    view.Dispose();
-
-            GC.SuppressFinalize(this);
-		}
         #endregion
 
         #region Constructor/Destructor.
@@ -208,10 +124,10 @@ namespace Gorgon.Graphics.Core
         /// <param name="formatInfo">Information about the format.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="resource"/>, or the <paramref name="formatInfo"/> parameter is <b>null</b>.</exception>
         protected GorgonRenderTargetView(GorgonGraphicsResource resource, BufferFormat format, GorgonFormatInfo formatInfo)
+            : base(resource)
         {
-            _resource = resource ?? throw new ArgumentNullException(nameof(formatInfo));
-            Format = format;
             FormatInformation = formatInfo ?? throw new ArgumentNullException(nameof(formatInfo));
+            Format = format;
         }
         #endregion
     }

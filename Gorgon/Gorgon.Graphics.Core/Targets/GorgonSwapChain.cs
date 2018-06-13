@@ -505,14 +505,15 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Function to destroy the resources for the swap chain.
         /// </summary>
+        /// <param name="disposing"><b>true</b> if the object is being disposed, <b>false</b> if not.</param>
         /// <returns>The previous index of this swap chain's render target view.</returns>
-        private int DestroyResources()
+        private int DestroyResources(bool disposing)
         {
             Graphics.Log.Print($"Destroying {Name} swap chain DXGI/D3D11 resources.", LoggingLevel.Simple);
             int renderTargetViewIndex = Graphics.RenderTargets.IndexOf(RenderTargetView);
 
             // Unbind this render target before removing the resources.
-            if (renderTargetViewIndex != -1)
+            if ((renderTargetViewIndex != -1) && (!disposing))
             {
                 GorgonRenderTargetView[] currentViews = Graphics.RenderTargets.Select(item => item == RenderTargetView ? null : item).ToArray();
                 Graphics.SetRenderTargets(currentViews, Graphics.DepthStencilView);
@@ -993,7 +994,7 @@ namespace Gorgon.Graphics.Core
 			// Tell the application that this swap chain is going to be resized.
 			BeforeSwapChainResized?.Invoke(this, new BeforeSwapChainResizedEventArgs(new DX.Size2(_info.Width, _info.Height), new DX.Size2(newWidth, newHeight)));
 
-			int rtvIndex = DestroyResources();
+			int rtvIndex = DestroyResources(false);
 
 			DXGISwapChain.ResizeBuffers(IsWindowed ? 2 : 3, newWidth, newHeight, (DXGI.Format)Format, DXGI.SwapChainFlags.AllowModeSwitch);
 
@@ -1129,7 +1130,7 @@ namespace Gorgon.Graphics.Core
                 _fullScreenVideoMode = null;
             }
 
-            DestroyResources();
+            DestroyResources(true);
             this.UnregisterDisposable(Graphics);
             swapChain.Dispose();
         }
