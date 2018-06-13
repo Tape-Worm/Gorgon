@@ -84,8 +84,6 @@ namespace Gorgon.Examples
 	    private static GorgonFontFactory _fontFactory;
 	    // Render target for the balls.
 		private static GorgonRenderTarget2DView _ballTarget;
-	    // Render target for statistics.
-		private static GorgonRenderTarget2DView _statsTarget;
         // The view for rendering the stats render target.
 	    private static GorgonTexture2DView _statsTexture;
 	    // Frames per second text.
@@ -332,8 +330,11 @@ namespace Gorgon.Examples
 			_fpsText.Length = 0;
 			_fpsText.AppendFormat(Resources.FPSLine, GorgonTiming.AverageFPS, GorgonTiming.AverageDelta * 1000.0f, _ballCount);
 
-            // TODO: Need support for simple blitting.
-            //_2D.Drawing.Blit(_statsTarget, DX.Vector2.Zero);
+
+		    _2D.DrawFilledRectangle(new DX.RectangleF(0, 0, _statsTexture.Width, _statsTexture.Height),
+		                            GorgonColor.White,
+		                            _statsTexture,
+		                            new DX.RectangleF(0, 0, 1, 1));
             _2D.DrawString(_fpsText.ToString(), new DX.Vector2(3.0f, 0), _ballFont);
 			
 			// Draw the draw call counter.
@@ -385,8 +386,6 @@ namespace Gorgon.Examples
 			}*/
 
 		    DrawNoBlur();
-
-            _2D.DrawFilledRectangle(new DX.RectangleF(0, 0, _statsTarget.Width, _statsTarget.Height), GorgonColor.White, _statsTexture, new DX.RectangleF(0, 0, 1, 1));
 
 			DrawOverlay();
 
@@ -512,7 +511,7 @@ namespace Gorgon.Examples
 			GenerateBalls(Settings.Default.BallCount);
 
 			// Assign event handlers.
-			_form.KeyDown += _form_KeyDown;
+			_form.KeyDown += Form_KeyDown;
 
 			// Create our font.
             _fontFactory = new GorgonFontFactory(_graphics);
@@ -526,25 +525,20 @@ namespace Gorgon.Examples
 		                                     });
 
 			// Create statistics render target.
-            _statsTarget = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo("Statistics")
-                                                                                  {
-                                                                                      Width = (int)_ballFont.MeasureText(string.Format(Resources.FPSLine, 999999, 999999.999, _ballCount), true).Width,
-                                                                                      Height = (int)((_ballFont.FontHeight * 4) + _ballFont.Descent),
-                                                                                      Format = BufferFormat.R8G8B8A8_UNorm
-                                                                                  });
-		    _statsTexture = _statsTarget.Texture.GetShaderResourceView();
 
-			// Draw our stats window frame.
-            _statsTarget.Clear(new GorgonColor(0, 0, 0, 0.5f));
+		    _statsTexture = GorgonTexture2DView.CreateTexture(_graphics,
+		                                                      new GorgonTexture2DInfo("Stats Render Target")
+		                                                      {
+		                                                          Width = (int)_ballFont
+		                                                                       .MeasureText(string.Format(Resources.FPSLine, 999999, 999999.999, _ballCount),
+		                                                                                    true).Width,
+		                                                          Height = (int)((_ballFont.FontHeight * 4) + _ballFont.Descent),
+		                                                          Format = BufferFormat.R8G8B8A8_UNorm,
+		                                                          Binding = TextureBinding.RenderTarget
+		                                                      });
 
-            // TODO: Need primitive support.
-			/*_2D.Target = _statsTarget;
-			_2D.Drawing.DrawRectangle(new RectangleF(0, 0, _statsTarget.Settings.Width - 1, _statsTarget.Settings.Height - 1),
-				new GorgonColor(0.86667f, 0.84314f, 0.7451f, 1.0f));
-			_2D.Target = null;*/
-
-			// Statistics text buffer.
-			_fpsText = new StringBuilder(64);
+		    // Statistics text buffer.
+		    _fpsText = new StringBuilder(64);
 
 		    _helpTextSprite = new GorgonTextSprite(_ballFont,
 		                                           string.Format(Resources.HelpText,
@@ -553,11 +547,21 @@ namespace Gorgon.Examples
 		                                                         _graphics.VideoAdapter.Memory.Video.FormatMemory()))
 		                      {
 		                          Color = Color.Yellow,
-		                          Position = new DX.Vector2(3, (_statsTarget.Height + 8.0f).FastFloor()),
-                                  DrawMode = TextDrawMode.OutlinedGlyphs
+		                          Position = new DX.Vector2(3, (_statsTexture.Height + 8.0f).FastFloor()),
+		                          DrawMode = TextDrawMode.OutlinedGlyphs
 		                      };
 
-            // Set our main render target.
+		    using (GorgonRenderTarget2DView rtv = _statsTexture.Texture.GetRenderTargetView())
+		    {
+		        // Draw our stats window frame.
+		        rtv.Clear(new GorgonColor(0, 0, 0, 0.5f));
+		        _graphics.SetRenderTarget(rtv);
+		        _2D.Begin();
+		        _2D.DrawRectangle(new DX.RectangleF(0, 0, rtv.Width, rtv.Height), new GorgonColor(0.86667f, 0.84314f, 0.7451f, 1.0f));
+		        _2D.End();
+		    }
+
+		    // Set our main render target.
             _graphics.SetRenderTarget(_mainScreen.RenderTargetView);
 		}
 
@@ -566,7 +570,7 @@ namespace Gorgon.Examples
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="System.Windows.Forms.KeyEventArgs"/> instance containing the event data.</param>
-		private static void _form_KeyDown(object sender, KeyEventArgs e)
+		private static void Form_KeyDown(object sender, KeyEventArgs e)
 		{
 			int ballIncrement = 1;
 			switch (e.KeyCode)
@@ -606,7 +610,17 @@ namespace Gorgon.Examples
 				    {
 				        if (_mainScreen.IsWindowed)
 				        {
-				            _mainScreen.EnterFullScreen();
+				            IGorgonVideoOutputInfo output = _graphics.VideoAdapter.Outputs[_form.Handle];
+
+				            if (output == null)
+				            {
+				                _mainScreen.EnterFullScreen();
+				            }
+				            else
+				            {
+                                var mode = new GorgonVideoMode(_form.ClientSize.Width, _form.ClientSize.Height, BufferFormat.R8G8B8A8_UNorm);
+                                _mainScreen.EnterFullScreen(in mode, output);
+				            }
 				        }
 				        else
 				        {

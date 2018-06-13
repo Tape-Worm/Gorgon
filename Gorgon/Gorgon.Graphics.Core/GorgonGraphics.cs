@@ -121,6 +121,23 @@ namespace Gorgon.Graphics.Core
     public sealed class GorgonGraphics
         : IDisposable
     {
+        #region Events.
+        /// <summary>
+        /// Event triggered when the render target has been changed.
+        /// </summary>
+        public event EventHandler RenderTargetChanged;
+
+        /// <summary>
+        /// Event triggered when a viewport is changed.
+        /// </summary>
+        public event EventHandler ViewPortChanged;
+
+        /// <summary>
+        /// Event triggered when the depth/stencil buffer has been changed.
+        /// </summary>
+        public event EventHandler DepthStencilChanged;
+        #endregion
+
         #region Constants.
         /// <summary>
         /// The minimum build number required for the Windows 10 operating system.
@@ -2089,6 +2106,20 @@ namespace Gorgon.Graphics.Core
             }
 
             D3DDeviceContext.OutputMerger.SetTargets(DepthStencilView?.Native, rtvCount, _d3DRtvs);
+
+            EventHandler handler;
+            if (_isTargetUpdated.RtvsChanged)
+            {
+                handler = RenderTargetChanged;
+                handler?.Invoke(this, EventArgs.Empty);
+            }
+
+            if (_isTargetUpdated.DepthViewChanged)
+            {
+                handler = DepthStencilChanged;
+                handler?.Invoke(this, EventArgs.Empty);
+            }
+
             _isTargetUpdated = (false, false);
         }
 
@@ -2555,6 +2586,9 @@ namespace Gorgon.Graphics.Core
             _viewports[0] = viewport;
             Array.Clear(_viewports, 1, _viewports.Length - 1);
             D3DDeviceContext.Rasterizer.SetViewport(viewport.X, viewport.Y, viewport.Width, viewport.Height, viewport.MinDepth, viewport.MaxDepth);
+
+            EventHandler handler = ViewPortChanged;
+            handler?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -2572,6 +2606,9 @@ namespace Gorgon.Graphics.Core
             {
                 Array.Clear(_viewports, 0, _viewports.Length);
                 D3DDeviceContext.Rasterizer.SetViewport(0, 0, 1, 1);
+
+                EventHandler handler = ViewPortChanged;
+                handler?.Invoke(this, EventArgs.Empty);
                 return;
             }
 
@@ -2607,6 +2644,8 @@ namespace Gorgon.Graphics.Core
                 }
 
                 D3DDeviceContext.Rasterizer.SetViewports(viewportPtr, viewportCount);
+                EventHandler handler = ViewPortChanged;
+                handler?.Invoke(this, EventArgs.Empty);
             }
         }
 

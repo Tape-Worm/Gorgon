@@ -28,12 +28,14 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using System.Windows;
 using Gorgon.Core;
 using DX = SharpDX;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
+using Gorgon.Math;
 using Gorgon.Renderers.Properties;
 using Gorgon.UI;
 
@@ -85,10 +87,12 @@ namespace Gorgon.Renderers
         // The default text sprite for rendering strings.
         private GorgonTextSprite _defaultTextSprite;
         // The renderable for primitives (lines, rectangles, etc...)
-        private BatchRenderable _primitiveRenderable = new BatchRenderable
-                                                       {
-                                                           Vertices = new Gorgon2DVertex[4]
-                                                       };
+        private readonly BatchRenderable _primitiveRenderable = new BatchRenderable
+                                                                {
+                                                                    Vertices = new Gorgon2DVertex[4]
+                                                                };
+        // The currently active viewport.
+        private DX.ViewportF _currentViewport;
         #endregion
 
         #region Properties.
@@ -178,7 +182,11 @@ namespace Gorgon.Renderers
             _lastBatchState.DepthStencilState = GorgonDepthStencilState.Default;
 
             // Set the initial render target.
-            Graphics.SetRenderTarget(_primaryTarget);
+            if (Graphics.RenderTargets[0] == null)
+            {
+                Graphics.SetRenderTarget(_primaryTarget);
+                _currentViewport = Graphics.Viewports[0];
+            }
 
             _defaultFont = _defaultFontFactory.Value.GetFont(new GorgonFontInfo("Segoe UI", 9.0f, FontHeightMode.Points, "Gorgon2D Default Font")
                                                              {
@@ -245,6 +253,41 @@ namespace Gorgon.Renderers
             _lastRenderable.StateChanged = false;
 
             _currentDrawCall = drawCall;
+        }
+
+        /// <summary>
+        /// Function called when a render target is changed on the main graphics interface.
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="e">The event parameters.</param>
+        private void RenderTarget_Changed(object sender, EventArgs e)
+        {
+            // If we've not been initialized yet, do so now.
+            if (!_initialized)
+            {
+                Initialize();
+            }
+
+            DX.ViewportF viewPort = Graphics.Viewports[0];
+
+            // Nothing's changed, so get out.
+            if (viewPort.Equals(ref _currentViewport))
+            {
+                return;
+            }
+
+            // Set up the sprite renderer buffers.
+            DX.Matrix.OrthoOffCenterLH(0,
+                                       viewPort.Width,
+                                       viewPort.Height,
+                                       0,
+                                       0.0f,
+                                       1.0f,
+                                       out DX.Matrix projection);
+
+            _viewProjection.Buffer.SetData(ref projection);
+
+            _currentViewport = viewPort;
         }
 
         /// <summary>
@@ -516,6 +559,8 @@ namespace Gorgon.Renderers
 
             if (texture != null)
             {
+                textureArrayIndex = textureArrayIndex.Max(0);
+
                 if (textureRegion == null)
                 {
                     // Calculate the texture.
@@ -523,6 +568,13 @@ namespace Gorgon.Renderers
                     v1.UV = new DX.Vector3(region.Right / texture.Width, region.Top / texture.Height, textureArrayIndex);
                     v2.UV = new DX.Vector3(region.Left / texture.Width, region.Bottom / texture.Height, textureArrayIndex);
                     v3.UV = new DX.Vector3(region.Right / texture.Width, region.Bottom / texture.Height, textureArrayIndex);
+                }
+                else
+                {
+                    v0.UV = new DX.Vector3(textureRegion.Value.TopLeft, textureArrayIndex);
+                    v1.UV = new DX.Vector3(textureRegion.Value.TopRight, textureArrayIndex);
+                    v2.UV = new DX.Vector3(textureRegion.Value.BottomLeft, textureArrayIndex);
+                    v3.UV = new DX.Vector3(textureRegion.Value.BottomRight, textureArrayIndex);
                 }
             }
             else
@@ -562,60 +614,190 @@ namespace Gorgon.Renderers
             _spriteRenderer.QueueSprite(_primitiveRenderable, 6);
         }
 
-        // TODO: Turn this into a real thing, it works really well.
-        // ReSharper disable FieldCanBeMadeReadOnly.Local
-        private GorgonSprite _lineSprite = new GorgonSprite();
-        private GorgonSamplerState _testSampler;
-        private GorgonSamplerStateBuilder _sampleBuilder;
-
-#pragma warning disable 1591
-        public void DrawLineForGiggles(int x1, int y1, int x2, int y2, GorgonColor color, GorgonTexture2DView texture, float size = 20.0f)
+        /// <summary>
+        /// Function to draw a filled rectangle.
+        /// </summary>
+        /// <param name="region">The region for the rectangle.</param>
+        /// <param name="color">The color of the rectangle.</param>
+        /// <param name="thickness">[Optional] The line thickness.</param>
+        /// <param name="texture">[Optional] The texture for the rectangle.</param>
+        /// <param name="textureRegion">[Optional] The texture coordinates to map to the rectangle.</param>
+        /// <param name="textureArrayIndex">[Optional] The array index for a texture array to use.</param>
+        /// <param name="textureSampler">[Optional] The texture sampler to apply to the texture.</param>
+        /// <param name="depth">[Optional] The depth value for the rectangle.</param>
+        public void DrawRectangle(DX.RectangleF region,
+                                  GorgonColor color,
+                                  float thickness = 1.0f,
+                                  GorgonTexture2DView texture = null,
+                                  DX.RectangleF? textureRegion = null,
+                                  int textureArrayIndex = 0,
+                                  GorgonSamplerState textureSampler = null,
+                                  float depth = 0)
         {
-            if (_sampleBuilder == null)
+            if (_beginCalled == 0)
             {
-                _sampleBuilder = new GorgonSamplerStateBuilder(Graphics);
-                _testSampler = _sampleBuilder.ResetTo(GorgonSamplerState.PointFiltering)
-                                             .Wrapping(TextureWrap.Wrap, TextureWrap.Wrap)
-                                             .Build();
-                _lineSprite.TextureSampler = _testSampler;
+                throw new InvalidOperationException(Resources.GOR2D_ERR_BEGIN_NOT_CALLED);
             }
 
-            DX.Vector2 diff = new DX.Vector2(x2 - x1, y2 - y1);
-            
-            _lineSprite.CornerColors.SetAll(color);
-            DX.Vector2 crossStart = new DX.Vector2(diff.Y, -diff.X);
-            crossStart.Normalize();
+            // If there's no width/height or thickness, then there's nothing to draw.
+            if ((region.IsEmpty) || (thickness <= 0.0f))
+            {
+                return;
+            }
 
-            crossStart *= size / 2.0f;
+            // Push borders to the outside.
+            if (thickness > 1.0f)
+            {
+                region.Inflate(thickness / 2.0f, thickness / 2.0f);
+            }
 
-            _lineSprite.Bounds = new DX.RectangleF(x1, y1, diff.X, diff.Y);
-            _lineSprite.Renderable.HasTextureChanges = _lineSprite.Renderable.HasTransformChanges =
-                                                           _lineSprite.Renderable.HasVertexChanges =
-                                                               _lineSprite.Renderable.HasVertexColorChanges = false;
-            
-            _lineSprite.Renderable.Vertices[0].Position = new DX.Vector4(x1 + crossStart.X, y1 + crossStart.Y, 0, 1.0f);
-            _lineSprite.Renderable.Vertices[1].Position = new DX.Vector4(x2 + crossStart.X, y2 + crossStart.Y, 0, 1.0f);
-            _lineSprite.Renderable.Vertices[2].Position = new DX.Vector4(x1 - crossStart.X, y1 - crossStart.Y, 0, 1.0f);
-            _lineSprite.Renderable.Vertices[3].Position = new DX.Vector4(x2 - crossStart.X, y2 - crossStart.Y, 0, 1.0f);
-            
-            //_lineSprite.Bounds = new DX.RectangleF(x1, y1, diff.X, size.Max(1.0f));
+            // Top Across.
+            DrawFilledRectangle(new DX.RectangleF(region.X, region.Y, region.Width, thickness),
+                                color,
+                                texture,
+                                textureRegion,
+                                textureArrayIndex,
+                                textureSampler,
+                                depth);
 
-            //_lineSprite.Angle = 45.0f;// angle;
-            
+            // Right down.
+            DrawFilledRectangle(new DX.RectangleF(region.Right - thickness, region.Y, thickness, region.Height),
+                                color,
+                                texture,
+                                textureRegion,
+                                textureArrayIndex,
+                                textureSampler,
+                                depth);
 
+            // Bottom across.
+            DrawFilledRectangle(new DX.RectangleF(region.X, region.Bottom - thickness, region.Width, thickness),
+                                color,
+                                texture,
+                                textureRegion,
+                                textureArrayIndex,
+                                textureSampler,
+                                depth);
+
+            // Left down.
+            DrawFilledRectangle(new DX.RectangleF(region.X, region.Y, thickness, region.Height),
+                                color,
+                                texture,
+                                textureRegion,
+                                textureArrayIndex,
+                                textureSampler,
+                                depth);
+        }
+
+        /// <summary>
+        /// Function to draw a line.
+        /// </summary>
+        /// <param name="x1">The starting horizontal position.</param>
+        /// <param name="y1">The starting vertical position.</param>
+        /// <param name="x2">The ending horizontal position.</param>
+        /// <param name="y2">The ending vertical position.</param>
+        /// <param name="color">The color of the line.</param>
+        /// <param name="thickness">[Optional] The line thickness.</param>
+        /// <param name="texture">[Optional] The texture to render on the line.</param>
+        /// <param name="textureRegion">[Optional] The texture coordinates to map to the rectangle.</param>
+        /// <param name="textureArrayIndex">[Optional] The array index for a texture array to use.</param>
+        /// <param name="textureSampler">[Optional] The texture sampler to apply to the texture.</param>
+        /// <param name="startDepth">[Optional] The depth value for the starting point of the line.</param>
+        /// <param name="endDepth">[Optional] The depth value for the ending point of the line.</param>
+        public void DrawLine(float x1, float y1, float x2, float y2, GorgonColor color, float thickness = 1.0f, GorgonTexture2DView texture = null, DX.RectangleF? textureRegion = null, int textureArrayIndex = 0, GorgonSamplerState textureSampler = null, float startDepth = 0, float endDepth = 0)
+        {
+            if (_beginCalled == 0)
+            {
+                throw new InvalidOperationException(Resources.GOR2D_ERR_BEGIN_NOT_CALLED);
+            }
+
+            // There's nothing to render.
+            if (((x2 == x1) && (y2 == y1)) || (thickness <= 0.0f))
+            {
+                return;
+            }
+
+            var topLeft = new DX.Vector2(x1, y1);
+            var bottomRight = new DX.Vector2(x2, y2);
+            
+            ref Gorgon2DVertex v0 = ref _primitiveRenderable.Vertices[0];
+            ref Gorgon2DVertex v1 = ref _primitiveRenderable.Vertices[1];
+            ref Gorgon2DVertex v2 = ref _primitiveRenderable.Vertices[2];
+            ref Gorgon2DVertex v3 = ref _primitiveRenderable.Vertices[3];
+
+            if (textureSampler == null)
+            {
+                textureSampler = GorgonSamplerState.Wrapping;
+            }
+
+            DX.Vector2.Subtract(ref bottomRight, ref topLeft, out DX.Vector2 length);
+            // Get cross products of start and end points.
+            var cross = new DX.Vector2(length.Y, -length.X);
+            cross.Normalize();
+
+            DX.Vector2.Multiply(ref cross, thickness / 2.0f, out cross);
+            
+            var start1 = new DX.Vector2((x1 + cross.X).FastCeiling(), (y1 + cross.Y).FastCeiling());
+            var end1 = new DX.Vector2((x2 + cross.X).FastCeiling(), (y2 + cross.Y).FastCeiling());
+            var start2 = new DX.Vector2((x1 - cross.X).FastCeiling(), (y1 - cross.Y).FastCeiling());
+            var end2 = new DX.Vector2((x2 - cross.X).FastCeiling(), (y2 - cross.Y).FastCeiling());
+            
             if (texture != null)
             {
-                _lineSprite.Renderable.Vertices[0].UV = new DX.Vector3((x1 + crossStart.X) / texture.Width, (y1 + crossStart.Y) / texture.Height, 0);
-                _lineSprite.Renderable.Vertices[1].UV = new DX.Vector3((x2 + crossStart.X) / texture.Width, (y2 + crossStart.Y) / texture.Height, 0);
-                _lineSprite.Renderable.Vertices[2].UV = new DX.Vector3((x1 - crossStart.X) / texture.Width, (y1 - crossStart.Y) / texture.Height, 0);
-                _lineSprite.Renderable.Vertices[3].UV = new DX.Vector3((x2 - crossStart.X) / texture.Width, (y2 - crossStart.Y) / texture.Height, 0);
-                _lineSprite.Texture = texture;
-            }
+                textureArrayIndex = textureArrayIndex.Max(0);
 
-            DrawSprite(_lineSprite);
+                if (textureRegion == null)
+                {
+                    // Calculate the texture.
+                    v0.UV = new DX.Vector3(start1.X / texture.Width, start1.Y / texture.Height, textureArrayIndex);
+                    v1.UV = new DX.Vector3(end1.X / texture.Width, end1.Y / texture.Height, textureArrayIndex);
+                    v2.UV = new DX.Vector3(start2.X / texture.Width, start2.Y / texture.Height, textureArrayIndex);
+                    v3.UV = new DX.Vector3(end2.X / texture.Width, end2.Y / texture.Height, textureArrayIndex);
+                }
+                else
+                {
+                    v0.UV = new DX.Vector3(textureRegion.Value.TopLeft, textureArrayIndex);
+                    v1.UV = new DX.Vector3(textureRegion.Value.TopRight, textureArrayIndex);
+                    v2.UV = new DX.Vector3(textureRegion.Value.BottomLeft, textureArrayIndex);
+                    v3.UV = new DX.Vector3(textureRegion.Value.BottomRight, textureArrayIndex);
+                }
+            }
+            else
+            {
+                v0.UV = DX.Vector3.Zero;
+                v1.UV = new DX.Vector3(1.0f, 0, 0);
+                v2.UV = new DX.Vector3(0, 1.0f, 0);
+                v3.UV = new DX.Vector3(1.0f, 1.0f, 0);
+                
+                texture = _defaultTexture;
+            }
+            
+
+            v0.Color = color;
+            v1.Color = color;
+            v2.Color = color;
+            v3.Color = color;
+
+            v0.Position = new DX.Vector4(start1, startDepth, 1.0f);
+            v1.Position = new DX.Vector4(end1, startDepth, 1.0f);
+            v2.Position = new DX.Vector4(start2, startDepth, 1.0f);
+            v3.Position = new DX.Vector4(end2, startDepth, 1.0f);
+
+            var alphaTestData = new AlphaTestData(true, GorgonRangeF.Empty);
+
+            _primitiveRenderable.StateChanged = (texture != _primitiveRenderable.Texture)
+                                                || (textureSampler != _primitiveRenderable.TextureSampler)
+                                                || (!AlphaTestData.Equals(in alphaTestData, in _primitiveRenderable.AlphaTestData));
+
+            _primitiveRenderable.Bounds = new DX.RectangleF(x1, y1, length.X, length.Y);
+            _primitiveRenderable.ActualVertexCount = 4;
+            _primitiveRenderable.AlphaTestData = new AlphaTestData(true, GorgonRangeF.Empty);
+            _primitiveRenderable.Texture = texture;
+            _primitiveRenderable.TextureSampler = textureSampler;
+
+            RenderBatchOnChange(_primitiveRenderable);
+            
+            _spriteRenderer.QueueSprite(_primitiveRenderable, 6);
         }
-#pragma warning restore 1591
-        // ReSharper restore FieldCanBeMadeReadOnly.Local
 
         /// <summary>
         /// Function to end rendering.
@@ -649,6 +831,9 @@ namespace Gorgon.Renderers
             GorgonConstantBufferView viewProj = Interlocked.Exchange(ref _viewProjection, null);
             GorgonConstantBufferView alphaTest = Interlocked.Exchange(ref _alphaTest, null);
             Lazy<GorgonFontFactory> defaultFont = Interlocked.Exchange(ref _defaultFontFactory, null);
+
+            WeakEventManager<GorgonGraphics, EventArgs>.RemoveHandler(Graphics, nameof(GorgonGraphics.RenderTargetChanged), RenderTarget_Changed);
+            WeakEventManager<GorgonGraphics, EventArgs>.RemoveHandler(Graphics, nameof(GorgonGraphics.ViewPortChanged), RenderTarget_Changed);
             
             _defaultFont = null;
 
@@ -677,6 +862,9 @@ namespace Gorgon.Renderers
         {
             _primaryTarget = target ?? throw new ArgumentNullException(nameof(target));
             _defaultFontFactory = new Lazy<GorgonFontFactory>(() => new GorgonFontFactory(target.Graphics), true);
+
+            WeakEventManager<GorgonGraphics, EventArgs>.AddHandler(target.Graphics, nameof(GorgonGraphics.RenderTargetChanged), RenderTarget_Changed);
+            WeakEventManager<GorgonGraphics, EventArgs>.AddHandler(target.Graphics, nameof(GorgonGraphics.ViewPortChanged), RenderTarget_Changed);
         }
         #endregion
     }
