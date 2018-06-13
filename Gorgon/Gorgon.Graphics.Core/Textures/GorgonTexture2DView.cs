@@ -378,7 +378,7 @@ namespace Gorgon.Graphics.Core
                           {
                               Usage = info.Usage == ResourceUsage.Staging ? ResourceUsage.Default : info.Usage,
                               Binding = (info.Binding & TextureBinding.ShaderResource) != TextureBinding.ShaderResource
-                                            ? (info.Binding & TextureBinding.ShaderResource)
+                                            ? (info.Binding | TextureBinding.ShaderResource)
                                             : info.Binding
                           };
 
