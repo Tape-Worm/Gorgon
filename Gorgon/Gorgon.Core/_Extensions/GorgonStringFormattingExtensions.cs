@@ -154,10 +154,11 @@ namespace Gorgon.Core
 		/// </summary>
 		/// <param name="theString">The string to search.</param>
 		/// <param name="characters">Characters to search for.</param>
+		/// <param name="startIndex">[Optional] The index to start searching from.</param>
 		/// <param name="comparison">[Optional] One of the enumeration values that specifies the rules for the search.</param>
 		/// <returns>The index of the character, or -1 if not found.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="theString"/> parameter is <b>null</b>.</exception>
-		public static int IndexOf(this StringBuilder theString, string characters, StringComparison comparison = StringComparison.InvariantCulture)
+		public static int IndexOf(this StringBuilder theString, string characters, int startIndex = 0, StringComparison comparison = StringComparison.InvariantCulture)
 		{
 			if (theString == null)
 			{
@@ -179,7 +180,7 @@ namespace Gorgon.Core
 				return -1;
 			}
 
-			return theString.ToString().IndexOf(characters, comparison);
+			return theString.ToString().IndexOf(characters, startIndex, comparison);
 		}
 
 		/// <summary>

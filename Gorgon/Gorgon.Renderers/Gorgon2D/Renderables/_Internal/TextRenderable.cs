@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System.Collections.Generic;
 using Gorgon.Graphics;
 using DX = SharpDX;
 using Gorgon.Graphics.Fonts;
@@ -70,7 +71,7 @@ namespace Gorgon.Renderers
         /// <summary>
         /// The color used to tint the outline (if the font supports it and outlining is enabled).
         /// </summary>
-        public GorgonColor OutlineTint;
+        public GorgonColor OutlineTint = GorgonColor.White;
 
         /// <summary>
         /// The number of spaces to use when rendering a tab control character.
@@ -81,5 +82,10 @@ namespace Gorgon.Renderers
         /// The length of the complete text.
         /// </summary>
         public int TextLength;
+
+        /// <summary>
+        /// A list of blocks of text to colorize using embedded codes.
+        /// </summary>
+        public List<ColorBlock> ColorBlocks = new List<ColorBlock>();
     }
 }

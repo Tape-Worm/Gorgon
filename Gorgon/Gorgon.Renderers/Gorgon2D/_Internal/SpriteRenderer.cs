@@ -155,7 +155,7 @@ namespace Gorgon.Renderers
         public void QueueSprite(BatchRenderable sprite, int indexCount)
         {
             Gorgon2DVertex[] vertices = sprite.Vertices;
-            int vertexCount = vertices.Length;
+            int vertexCount = sprite.ActualVertexCount;
             int lastVertex = _allocatedVertexCount + _currentVertexIndex + vertexCount;
 
             // Ensure we actually have the room to cache the sprite vertices.

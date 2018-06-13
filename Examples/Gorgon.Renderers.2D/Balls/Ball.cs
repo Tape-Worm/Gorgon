@@ -24,8 +24,8 @@
 // 
 #endregion
 
+using DX = SharpDX;
 using Gorgon.Graphics;
-using SlimMath;
 
 namespace Gorgon.Examples
 {
@@ -36,9 +36,9 @@ namespace Gorgon.Examples
 	{
 		#region Variables.
 		/// <summary>Position of the ball.</summary>
-		public Vector2 Position;
+		public DX.Vector2 Position;
 		/// <summary>Delta for the position of the ball.</summary>
-		public Vector2 PositionDelta;
+		public DX.Vector2 PositionDelta;
 		/// <summary>Scale of the ball.</summary>
 		public float Scale;
 		/// <summary>Delta for the scale of the ball</summary>

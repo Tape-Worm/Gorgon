@@ -182,7 +182,7 @@ namespace Gorgon.Graphics.Core
 				includeLine.Append(lines[i]);
 				TrimLine(includeLine);
 
-				if (includeLine.IndexOf("#GorgonInclude", StringComparison.OrdinalIgnoreCase) != 0)
+				if (includeLine.IndexOf("#GorgonInclude", comparison: StringComparison.OrdinalIgnoreCase) != 0)
 				{
 					result.Append($"{lines[i++]}\r\n");
 					continue;

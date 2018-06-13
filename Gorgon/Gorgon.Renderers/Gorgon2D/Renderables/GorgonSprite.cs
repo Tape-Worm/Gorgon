@@ -435,6 +435,7 @@ namespace Gorgon.Renderers
             CornerOffsets = new GorgonRectangleOffsets(Renderable);
 
             Renderable.Vertices = new Gorgon2DVertex[4];
+            Renderable.ActualVertexCount = 4;
 
             for (int i = 0; i < Renderable.Vertices.Length; ++i)
             {

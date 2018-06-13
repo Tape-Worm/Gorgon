@@ -187,6 +187,11 @@ namespace Gorgon.Renderers
         public Gorgon2DVertex[] Vertices;
 
         /// <summary>
+        /// The actual number of vertices used (the vertices property may be larger than the actual number of vertices).
+        /// </summary>
+        public int ActualVertexCount;
+
+        /// <summary>
         /// Property to set or return the texture to render.
         /// </summary>
         public GorgonTexture2DView Texture;

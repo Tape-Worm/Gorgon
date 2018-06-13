@@ -77,7 +77,13 @@ namespace Gorgon.Renderers
         // Flag to indicate that the begin method has been called.
         private int _beginCalled;
         // A buffer used for text manipulation in the DrawText method.
-        private StringBuilder _textBuffer = new StringBuilder(256);
+        private readonly StringBuilder _textBuffer = new StringBuilder(256);
+        // The default font.
+        private Lazy<GorgonFontFactory> _defaultFontFactory;
+        // The default font.
+        private GorgonFont _defaultFont;
+        // The default text sprite for rendering strings.
+        private GorgonTextSprite _defaultTextSprite;
         #endregion
 
         #region Properties.
@@ -169,6 +175,13 @@ namespace Gorgon.Renderers
             // Set the initial render target.
             Graphics.SetRenderTarget(_primaryTarget);
 
+            _defaultFont = _defaultFontFactory.Value.GetFont(new GorgonFontInfo("Segoe UI", 9.0f, FontHeightMode.Points, "Gorgon2D Default Font")
+                                                             {
+                                                                 FontStyle = FontStyle.Bold
+                                                             });
+
+            _defaultTextSprite = new GorgonTextSprite(_defaultFont);
+
             _initialized = true;
         }
 
@@ -235,7 +248,7 @@ namespace Gorgon.Renderers
         /// <param name="sprite"></param>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="InvalidOperationException">Thrown if <see cref="Begin"/> has not been called prior to calling this method.</exception>
-        public void Draw(GorgonSprite sprite)
+        public void DrawSprite(GorgonSprite sprite)
         {
             sprite.ValidateObject(nameof(sprite));
 
@@ -259,9 +272,43 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Function to draw text.
         /// </summary>
-        /// <param name="sprite">The text sprite to render.</param>
-        public void DrawText(GorgonTextSprite sprite)
+        /// <param name="text">The text to render.</param>
+        /// <param name="position">The position of the text.</param>
+        /// <param name="font">[Optional] The font to use.</param>
+        /// <param name="color">[Optional] The color of the text.</param>
+        public void DrawString(string text, DX.Vector2 position, GorgonFont font = null, GorgonColor? color = null)
         {
+            // We have nothing to render.
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                return;
+            }
+
+            _defaultTextSprite.Text = text;
+            _defaultTextSprite.Color = color ?? GorgonColor.White;
+            _defaultTextSprite.Position = position;
+            _defaultTextSprite.Font = font ?? _defaultFont;
+            _defaultTextSprite.AllowColorCodes = (text.IndexOf("[c", StringComparison.CurrentCultureIgnoreCase) > -1)
+                                                 && (text.IndexOf("[/c]", StringComparison.CurrentCultureIgnoreCase) > -1);
+
+            DrawTextSprite(_defaultTextSprite);
+        }
+
+        /// <summary>
+        /// Function to draw text.
+        /// </summary>
+        /// <param name="sprite">The text sprite to render.</param>
+        public void DrawTextSprite(GorgonTextSprite sprite)
+        {
+            // The number of characters evaluated.
+            int charCount = 0;
+            // The index into the vertex array for the sprite.
+            int vertexOffset = 0;
+            // The position of the current glyph.
+            DX.Vector2 position = DX.Vector2.Zero;
+            // The number of indices to render.
+            int indexCount = 0;
+
             sprite.ValidateObject(nameof(sprite));
 
             _textBuffer.Length = 0;
@@ -280,19 +327,20 @@ namespace Gorgon.Renderers
 
             _textBuffer.Append(sprite.Text);
             
-            int vertexOffset = 0;
-            DX.Vector2 position = DX.Vector2.Zero;
-            int charRenderCount = 0;
-            Alignment alignment = sprite.Alignment;
-
-            GorgonFont font = sprite.Font;
-            bool drawOutlines = ((sprite.DrawMode != TextDrawMode.GlyphsOnly) && (font.HasOutline));
-            int drawCount = ((drawOutlines) && (sprite.DrawMode == TextDrawMode.OutlinedGlyphs))? 2 : 1;
+            Alignment alignment = renderable.Alignment;
+            GorgonFont font = renderable.Font;
+            bool drawOutlines = ((renderable.DrawMode != TextDrawMode.GlyphsOnly) && (font.HasOutline));
+            int drawCount = ((drawOutlines) && (renderable.DrawMode == TextDrawMode.OutlinedGlyphs))? 2 : 1;
             float fontHeight = font.FontHeight;
             bool hasKerning = (font.Info.UseKerningPairs) && (font.KerningPairs.Count > 0);
             IDictionary<GorgonKerningPair, int> kerningValues = font.KerningPairs;
-            float lineSpaceMultiplier = sprite.LineSpace;
+            float lineSpaceMultiplier = renderable.LineSpaceMultiplier;
+            List<ColorBlock> colorBlocks = renderable.ColorBlocks;
+            bool allowColorCodes = sprite.AllowColorCodes;
+            bool isUpdated = sprite.IsUpdated;
             
+            renderable.ActualVertexCount = 0;
+
             for (int line = 0; line < renderable.Lines.Length; ++line)
             {
                 string textLine = sprite.Lines[line];
@@ -316,10 +364,18 @@ namespace Gorgon.Renderers
                         char character = textLine[i];
                         int kernAmount = 0;
 
+                        // Find the color block for the text.
+                        GorgonColor? blockColor = null;
+
                         if (!font.Glyphs.TryGetValue(character, out GorgonGlyph glyph))
                         {
                             if (!font.TryGetDefaultGlyph(out glyph))
                             {
+                                // Only update when we're in non-outline.
+                                if (!isOutlinePass)
+                                {
+                                    ++charCount;
+                                }
                                 continue;
                             }
                         }
@@ -328,7 +384,21 @@ namespace Gorgon.Renderers
                         if ((char.IsWhiteSpace(character))
                             || (glyph.TextureView == null))
                         {
-                            position.X += glyph.Advance;
+                            if (character == '\t')
+                            {
+                                position.X += glyph.Advance * renderable.TabSpaceCount;
+                            }
+                            // We don't use carriage returns.
+                            else if (character != '\r')
+                            {
+                                position.X += glyph.Advance;
+                            }
+
+                            // Only update when we're in non-outline.
+                            if (!isOutlinePass)
+                            {
+                                ++charCount;
+                            }
                             continue;
                         }
 
@@ -341,8 +411,18 @@ namespace Gorgon.Renderers
 
                         renderable.Texture = glyph.TextureView;
 
-                        if (sprite.IsUpdated)
+                        if (isUpdated)
                         {
+                            if ((allowColorCodes) && (!isOutlinePass))
+                            {
+                                blockColor = _spriteRenderer.TextSpriteTransformer.GetColorForCharacter(charCount, colorBlocks);
+                            }
+
+                            if ((blockColor != null) && (!renderable.HasVertexColorChanges))
+                            {
+                                renderable.HasVertexColorChanges = true;
+                            }
+
                             if ((hasKerning) && (i < textLength - 1))
                             {
                                 var kernPair = new GorgonKerningPair(character, textLine[i + 1]);
@@ -352,6 +432,7 @@ namespace Gorgon.Renderers
 
                             _spriteRenderer.TextSpriteTransformer.Transform(renderable,
                                                                             glyph,
+                                                                            blockColor,
                                                                             ref position,
                                                                             vertexOffset,
                                                                             isOutlinePass,
@@ -361,16 +442,26 @@ namespace Gorgon.Renderers
                             position.X += glyph.Advance + kernAmount;
                         }
 
-                        ++charRenderCount;
+                        // Only update when we're in non-outline.
+                        if (!isOutlinePass)
+                        {
+                            ++charCount;
+                        }
+
+                        indexCount += 6;
+                        renderable.ActualVertexCount += 4;
                     }
+
                 }
 
+                // This is to account for the new line character.
+                ++charCount;
                 position.Y += fontHeight * lineSpaceMultiplier;
             }
 
-            if (charRenderCount != 0)
+            if (indexCount != 0)
             {
-                _spriteRenderer.QueueSprite(renderable, charRenderCount * 6);
+                _spriteRenderer.QueueSprite(renderable, indexCount);
             }
             
             renderable.VertexCountChanged = false;
@@ -430,7 +521,7 @@ namespace Gorgon.Renderers
                 _lineSprite.Texture = texture;
             }
 
-            Draw(_lineSprite);
+            DrawSprite(_lineSprite);
         }
 #pragma warning restore 1591
         // ReSharper restore FieldCanBeMadeReadOnly.Local
@@ -466,7 +557,15 @@ namespace Gorgon.Renderers
             GorgonTexture2DView texture = Interlocked.Exchange(ref _defaultTexture, null);
             GorgonConstantBufferView viewProj = Interlocked.Exchange(ref _viewProjection, null);
             GorgonConstantBufferView alphaTest = Interlocked.Exchange(ref _alphaTest, null);
+            Lazy<GorgonFontFactory> defaultFont = Interlocked.Exchange(ref _defaultFontFactory, null);
             
+            _defaultFont = null;
+
+            if (defaultFont?.IsValueCreated ?? false)
+            {
+                defaultFont.Value.Dispose();
+            }
+
             spriteRenderer?.Dispose();
             alphaTest?.Buffer?.Dispose();
             viewProj?.Buffer?.Dispose();
@@ -486,6 +585,7 @@ namespace Gorgon.Renderers
         public Gorgon2D(GorgonRenderTarget2DView target)
         {
             _primaryTarget = target ?? throw new ArgumentNullException(nameof(target));
+            _defaultFontFactory = new Lazy<GorgonFontFactory>(() => new GorgonFontFactory(target.Graphics), true);
         }
         #endregion
     }

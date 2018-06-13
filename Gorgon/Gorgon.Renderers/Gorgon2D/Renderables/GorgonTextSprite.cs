@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Gorgon.Core;
 using Gorgon.Graphics;
@@ -43,18 +44,9 @@ namespace Gorgon.Renderers
     public enum TextDrawMode
     {
         /// <summary>
-        /// <para>
-        /// Draw both the glyphs and the outlines.
-        /// </para> 
-        /// <para>
-        /// This is only supported when the <see cref="GorgonFont"/> has an outline.
-        /// </para>
-        /// </summary>
-        OutlinedGlyphs = 0,
-        /// <summary>
         /// Draw the glyphs only.
         /// </summary>
-        GlyphsOnly = 1,
+        GlyphsOnly = 0,
         /// <summary>
         /// <para>
         /// Draw the outlines only.
@@ -63,7 +55,16 @@ namespace Gorgon.Renderers
         /// This is only supported when the <see cref="GorgonFont"/> has an outline.
         /// </para>
         /// </summary>
-        OutlineOnly = 2
+        OutlineOnly = 1,
+        /// <summary>
+        /// <para>
+        /// Draw both the glyphs and the outlines.
+        /// </para> 
+        /// <para>
+        /// This is only supported when the <see cref="GorgonFont"/> has an outline.
+        /// </para>
+        /// </summary>
+        OutlinedGlyphs = 2
     }
     
     /// <summary>
@@ -76,10 +77,16 @@ namespace Gorgon.Renderers
         private float _angle;
         // The text to render.
         private string _text;
+        // Text with embedded codes.
+        private string _encodedText;
         // The formatted text.
         private readonly StringBuilder _formattedText = new StringBuilder(256);
         // The area for used for text layout.
         private DX.Size2F? _layoutArea;
+        // Flag to allow or disallow control codes in the text.
+        private bool _allowCodes;
+        // The parser used to parse out the codes from text assigned to this object.
+        private readonly TextCodeParser _parser = new TextCodeParser();
 
         /// <summary>
         /// The renderable data for this sprite.
@@ -95,10 +102,60 @@ namespace Gorgon.Renderers
         public bool IsUpdated => Renderable.VertexCountChanged || Renderable.HasTransformChanges || Renderable.HasVertexChanges || Renderable.HasVertexColorChanges || Renderable.HasTextureChanges;
 
         /// <summary>
+        /// Property to set or return whether color codes are allowed or not.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// The text sprite allows a developer to insert a special code into the <see cref="Text"/> string to enable coloring of individual letters or words. This code, which is similar to a bbcode is in 
+        /// the format of [c #AARRGGBB] and is closed with a tag of [/c].  For example, to change a block of text to red, pass <c>[c #FFFF0000]Red[/c] text</c> to the <see cref="Text"/> property.
+        /// </para>
+        /// <para>
+        /// Because enabling this value incurs more overhead for text rendering, it is defaulted to <b>false</b>.
+        /// </para>
+        /// </remarks>
+        public bool AllowColorCodes
+        {
+            get => _allowCodes;
+            set
+            {
+                if (_allowCodes == value)
+                {
+                    return;
+                }
+
+                _allowCodes = value;
+                Renderable.HasVertexColorChanges = true;
+
+                if (Renderable.ColorBlocks.Count > 0)
+                {
+                    Renderable.ColorBlocks.Clear();
+                }
+
+                if (_allowCodes)
+                {
+                    _encodedText = _text;
+                    (string decodedText, List<ColorBlock> colorBlocks) = _parser.ParseColorCodes(_encodedText);
+                    Renderable.ColorBlocks.AddRange(colorBlocks);
+                    _text = decodedText;
+                }
+                else
+                {
+                    _encodedText = string.Empty;
+                }
+
+                Renderable.TextLength = _text.Length;
+                _formattedText.Length = 0;
+                _formattedText.Append(_text);
+
+                FormatText();
+            }
+        }
+
+        /// <summary>
         /// Property to set or return the alignment for the text.
         /// </summary>
         /// <remarks>
-        /// This property requires that the <see cref="LayoutArea"/> be assigned with a value. Otherwise, it will be ignored.
+        /// If the <see cref="LayoutArea"/> is defined, then it will be used to determine the layout of the text when aligning. Otherwise, the <see cref="Size"/> is used.
         /// </remarks>
         public Alignment Alignment
         {
@@ -212,9 +269,21 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to set or return the text to render.
         /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This sets or returns the text to render.
+        /// </para>
+        /// <para>
+        /// This property will also allow the use of a color code (if the <see cref="AllowColorCodes"/> property is <b>true</b>). This code, which is similar to a bbcode is in the format of [c #AARRGGBB]
+        /// and is closed with a tag of [/c].  For example, to change a block of text to red, pass <c>[c #FFFF0000]Red[/c] text</c> to the this property.
+        /// </para>
+        /// <para>
+        /// Because the color codes add more overhead when rendering text, it is best to only use it sparingly for performance intensive scenarios.
+        /// </para>
+        /// </remarks>
         public string Text
         {
-            get => _text;
+            get => _allowCodes ? _encodedText : _text;
             set
             {
                 if (value == null)
@@ -222,15 +291,32 @@ namespace Gorgon.Renderers
                     value = string.Empty;
                 }
 
-                if (string.Equals(_text, value))
+                if (string.Equals(_allowCodes ? _encodedText : _text, value))
                 {
                     return;
                 }
-                
-                _text = value;
-                Renderable.TextLength = Text.Length;
 
-                _formattedText.FormatStringForRendering(value, Renderable.TabSpaceCount);
+                if (Renderable.ColorBlocks.Count > 0)
+                {
+                    Renderable.ColorBlocks.Clear();
+                }
+
+                if (_allowCodes)
+                {
+                    _encodedText = value;
+                    (string decodedText, List<ColorBlock> colorBlocks) = _parser.ParseColorCodes(_encodedText);
+                    Renderable.ColorBlocks.AddRange(colorBlocks);
+                    _text = decodedText;
+                }
+                else
+                {
+                    _encodedText = string.Empty;
+                    _text = value;
+                }
+
+                Renderable.TextLength = _text.Length;
+                _formattedText.Length = 0;
+                _formattedText.Append(_text);
 
                 FormatText();
             }
@@ -314,6 +400,8 @@ namespace Gorgon.Renderers
                 }
 
                 Renderable.Font = value;
+                // Default to the first glyph texture.
+                Renderable.Texture = value.Glyphs.FirstOrDefault(item => item.TextureView != null)?.TextureView;
                 Renderable.HasVertexChanges = true;
                 Renderable.HasTextureChanges = true;
                 Renderable.HasVertexColorChanges = true;
@@ -531,10 +619,10 @@ namespace Gorgon.Renderers
             _formattedText.GetLines(ref Renderable.Lines);
             UpdateBounds();
 
-            int vertexCount = _formattedText.Length * (Renderable.DrawMode == TextDrawMode.OutlinedGlyphs ? 8 : 4);
+            int estimatedVertexCount = _formattedText.Length * (Renderable.DrawMode == TextDrawMode.OutlinedGlyphs ? 8 : 4);
 
             Renderable.HasVertexChanges = true;
-            Renderable.VertexCountChanged = (Renderable.Vertices == null) || (vertexCount > Renderable.Vertices.Length);
+            Renderable.VertexCountChanged = (Renderable.Vertices == null) || (estimatedVertexCount > Renderable.Vertices.Length);
         }
         #endregion
 
@@ -547,7 +635,7 @@ namespace Gorgon.Renderers
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="font"/> parameter is <b>null</b>.</exception>
         public GorgonTextSprite(GorgonFont font, string text = null)
         {
-            Renderable.Font = font ?? throw new ArgumentNullException(nameof(font));
+            Font = font ?? throw new ArgumentNullException(nameof(font));
             Text = text ?? string.Empty;
             GlyphCornerColors = new GorgonRectangleColors(GorgonColor.White, Renderable);
         }

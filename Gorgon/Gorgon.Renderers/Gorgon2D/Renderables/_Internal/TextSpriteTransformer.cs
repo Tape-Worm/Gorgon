@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Fonts;
 using Gorgon.UI;
@@ -285,15 +286,37 @@ namespace Gorgon.Renderers
         }
 
         /// <summary>
+        /// Function to return the color for a specific character index based on formatting blocks in the text.
+        /// </summary>
+        /// <param name="charIndex">The index of the character.</param>
+        /// <param name="colorBlocks">The blocks to evaulate.</param>
+        /// <returns>The color if found, or <b>null</b> if not.</returns>
+        public GorgonColor? GetColorForCharacter(int charIndex, List<ColorBlock> colorBlocks)
+        {
+            for (int i = 0; i < colorBlocks.Count; ++i)
+            {
+                ColorBlock block = colorBlocks[i];
+
+                if ((charIndex >= block.Start) && (charIndex <= block.End))
+                {
+                    return block.Color;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// Function to transform the vertices for a renderable.
         /// </summary>
         /// <param name="renderable">The renderable to transform.</param>
         /// <param name="glyph">The current glyph to render.</param>
+        /// <param name="blockColor">The current block color.</param>
         /// <param name="glyphPosition">The glyph position relative to the upper left corner of the text sprite.</param>
         /// <param name="vertexOffset">The position in the vertex array to update.</param>
         /// <param name="isOutlinePass"><b>true</b> if outlines need to be drawn, or <b>false</b> if not.</param>
         /// <param name="lineMeasure">The width of the line.</param>
-        public void Transform(TextRenderable renderable, GorgonGlyph glyph, ref DX.Vector2 glyphPosition, int vertexOffset, bool isOutlinePass, float lineMeasure)
+        public void Transform(TextRenderable renderable, GorgonGlyph glyph, GorgonColor? blockColor, ref DX.Vector2 glyphPosition, int vertexOffset, bool isOutlinePass, float lineMeasure)
         {
             ref Gorgon2DVertex[] vertices = ref renderable.Vertices;
             ref DX.RectangleF spriteBounds = ref renderable.Bounds;
@@ -327,11 +350,17 @@ namespace Gorgon.Renderers
             if ((renderable.HasVertexColorChanges)
                 || (isOutlinePass))
             {
+                // Override the colors if we have a block color.
+                GorgonColor upperLeftColor = blockColor ?? renderable.UpperLeftColor;
+                GorgonColor upperRightColor = blockColor ?? renderable.UpperRightColor;
+                GorgonColor lowerLeftColor = blockColor ?? renderable.LowerLeftColor;
+                GorgonColor lowerRightColor = blockColor ?? renderable.LowerRightColor;
+
                 UpdateVertexColors(vertices,
-                                   in renderable.UpperLeftColor,
-                                   in renderable.UpperRightColor,
-                                   in renderable.LowerLeftColor,
-                                   in renderable.LowerRightColor,
+                                   in upperLeftColor,
+                                   in upperRightColor,
+                                   in lowerLeftColor,
+                                   in lowerRightColor,
                                    in outlineTint,
                                    vertexOffset,
                                    isOutlinePass);
