@@ -659,26 +659,74 @@ namespace Gorgon.Renderers
                 return;
             }
 
-            // Push borders to the outside.
+            //// Push borders to the outside.
             if (thickness > 1.0f)
             {
                 region.Inflate(thickness / 2.0f, thickness / 2.0f);
+            }
+
+            DX.RectangleF? topAcross = null;
+            DX.RectangleF? bottomAcross = null;
+            DX.RectangleF? leftDown = null;
+            DX.RectangleF? rightDown = null;
+
+            // If we supply our own texture coordinates, then ensure that the individual lines are mapped appropriately.
+            if ((textureRegion != null) && (texture != null))
+            {
+                DX.RectangleF innerRect = new DX.RectangleF(thickness, thickness, region.Width - thickness * 2, region.Height - thickness * 2);
+
+                innerRect.Left = innerRect.Left / region.Width + textureRegion.Value.Left;
+                innerRect.Top = innerRect.Top / region.Height + textureRegion.Value.Top;
+                innerRect.Right = innerRect.Right / region.Width;
+                innerRect.Bottom = innerRect.Bottom / region.Height;
+
+                topAcross = new DX.RectangleF
+                            {
+                                Left = textureRegion.Value.Left,
+                                Top = textureRegion.Value.Top,
+                                Right = textureRegion.Value.Right,
+                                Bottom = innerRect.Top
+                            };
+
+                rightDown = new DX.RectangleF
+                            {
+                                Left = innerRect.Right,
+                                Top = innerRect.Top,
+                                Right = textureRegion.Value.Right,
+                                Bottom = innerRect.Bottom
+                            };
+
+                bottomAcross = new DX.RectangleF
+                               {
+                                   Left = textureRegion.Value.Left,
+                                   Top = innerRect.Bottom,
+                                   Right = textureRegion.Value.Right,
+                                   Bottom = textureRegion.Value.Bottom
+                               };
+
+                leftDown = new DX.RectangleF
+                           {
+                               Left = textureRegion.Value.Left,
+                               Top = innerRect.Top,
+                               Right = innerRect.Left,
+                               Bottom = innerRect.Bottom
+                           };
             }
 
             // Top Across.
             DrawFilledRectangle(new DX.RectangleF(region.X, region.Y, region.Width, thickness),
                                 color,
                                 texture,
-                                textureRegion,
+                                topAcross,
                                 textureArrayIndex,
                                 textureSampler,
                                 depth);
 
             // Right down.
-            DrawFilledRectangle(new DX.RectangleF(region.Right - thickness, region.Y, thickness, region.Height),
+            DrawFilledRectangle(new DX.RectangleF(region.Right - thickness, region.Y + thickness, thickness, region.Height - thickness * 2),
                                 color,
                                 texture,
-                                textureRegion,
+                                rightDown,
                                 textureArrayIndex,
                                 textureSampler,
                                 depth);
@@ -687,16 +735,16 @@ namespace Gorgon.Renderers
             DrawFilledRectangle(new DX.RectangleF(region.X, region.Bottom - thickness, region.Width, thickness),
                                 color,
                                 texture,
-                                textureRegion,
+                                bottomAcross,
                                 textureArrayIndex,
                                 textureSampler,
                                 depth);
 
             // Left down.
-            DrawFilledRectangle(new DX.RectangleF(region.X, region.Y, thickness, region.Height),
+            DrawFilledRectangle(new DX.RectangleF(region.X, region.Y + thickness, thickness, region.Height - thickness * 2),
                                 color,
                                 texture,
-                                textureRegion,
+                                leftDown,
                                 textureArrayIndex,
                                 textureSampler,
                                 depth);
