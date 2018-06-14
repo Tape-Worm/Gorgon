@@ -64,7 +64,7 @@ namespace Gorgon.Renderers
                 return;
             }
 
-            int length = src.Count.Min(15 - startSlot);
+            int length = src.Count.Min(dest.Length - startSlot);
 
             for (int i = 0; i < length; ++i)
             {
@@ -89,12 +89,12 @@ namespace Gorgon.Renderers
         /// <param name="constantBuffer">The constant buffer to assign.</param>
         /// <param name="slot">The slot for the constant buffer.</param>
         /// <returns>The fluent builder interface.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="slot"/> is less than 0, or greater than/equal to 15.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="slot"/> is less than 0, or greater than/equal to <see cref="GorgonConstantBuffers.MaximumConstantBufferCount"/>.</exception>
         public Gorgon2DShaderBuilder<T> ConstantBuffer(GorgonConstantBufferView constantBuffer, int slot = 0)
         {
             if ((slot < 0) || (slot >= GorgonConstantBuffers.MaximumConstantBufferCount))
             {
-                throw new ArgumentOutOfRangeException(nameof(slot), string.Format(Resources.GOR2D_ERR_CBUFFER_SLOT_INVALID, 0));
+                throw new ArgumentOutOfRangeException(nameof(slot), string.Format(Resources.GOR2D_ERR_CBUFFER_SLOT_INVALID, GorgonConstantBuffers.MaximumConstantBufferCount));
             }
 
             _workingShader.RwConstantBuffers[slot] = constantBuffer;
@@ -125,12 +125,12 @@ namespace Gorgon.Renderers
         /// <param name="resourceView">The shader resource view to assign.</param>
         /// <param name="slot">[Optional] The slot used to asign the view.</param>
         /// <returns>The fluent builder interface.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="slot"/> is less than 0, or greater than/equal to 15.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="slot"/> is less than 0, or greater than/equal to 16.</exception>
         public Gorgon2DShaderBuilder<T> ShaderResource(GorgonShaderResourceView resourceView, int slot = 0)
         {
-            if ((slot < 0) || (slot >= 15))
+            if ((slot < 0) || (slot >= 16))
             {
-                throw new ArgumentOutOfRangeException(nameof(slot), string.Format(Resources.GOR2D_ERR_SRV_SLOT_INVALID, GorgonShaderResourceViews.MaximumShaderResourceViewCount));
+                throw new ArgumentOutOfRangeException(nameof(slot), string.Format(Resources.GOR2D_ERR_SRV_SLOT_INVALID, 16));
             }
 
             _workingShader.RwSrvs[slot] = resourceView;
@@ -143,12 +143,12 @@ namespace Gorgon.Renderers
         /// <param name="resourceViews">The shader resource views to copy.</param>
         /// <param name="startSlot">[Optional] The starting slot to use when copying the list.</param>
         /// <returns>The fluent builder interface .</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="startSlot"/> is less than 0, or greater than/equal to 15.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="startSlot"/> is less than 0, or greater than/equal to 16.</exception>
         public Gorgon2DShaderBuilder<T> ShaderResources(IReadOnlyList<GorgonShaderResourceView> resourceViews, int startSlot = 0)
         {
-            if ((startSlot < 0) || (startSlot >= 15))
+            if ((startSlot < 0) || (startSlot >= 16))
             {
-                throw new ArgumentOutOfRangeException(nameof(startSlot), string.Format(Resources.GOR2D_ERR_SRV_SLOT_INVALID, GorgonShaderResourceViews.MaximumShaderResourceViewCount));
+                throw new ArgumentOutOfRangeException(nameof(startSlot), string.Format(Resources.GOR2D_ERR_SRV_SLOT_INVALID, 16));
             }
 
             Copy(_workingShader.RwSrvs, resourceViews, startSlot);
@@ -160,9 +160,16 @@ namespace Gorgon.Renderers
         /// Function to assign a list of samplers to a shader on the pipeline.
         /// </summary>
         /// <param name="samplers">The samplers to assign.</param>
+        /// <param name="index">[Optional] The starting index to use when copying.</param>
         /// <returns>The fluent interface for this builder.</returns>
-        public Gorgon2DShaderBuilder<T> SamplerStates(IReadOnlyList<GorgonSamplerState> samplers)
+        /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="index"/> parameter is less than 0, or greater than/equal to <see cref="GorgonSamplerStates.MaximumSamplerStateCount"/>.</exception>
+        public Gorgon2DShaderBuilder<T> SamplerStates(IReadOnlyList<GorgonSamplerState> samplers, int index = 0)
         {
+            if ((index < 0) || (index >= GorgonSamplerStates.MaximumSamplerStateCount))
+            {
+                throw new ArgumentOutOfRangeException(nameof(index), string.Format(Resources.GOR2D_ERR_INVALID_SAMPLER_INDEX, GorgonSamplerStates.MaximumSamplerStateCount));
+            }
+
             Copy(_workingShader.RwSamplers, samplers, 0);
             return this;
         }
@@ -172,6 +179,7 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="sampler">The sampler to assign.</param>
         /// <param name="index">[Optional] The index of the sampler.</param>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="index"/> parameter is less than 0, or greater than/equal to <see cref="GorgonSamplerStates.MaximumSamplerStateCount"/>.</exception>
         public Gorgon2DShaderBuilder<T> SamplerState(GorgonSamplerStateBuilder sampler, int index = 0)
         {
             return SamplerState(sampler.Build(), index);
@@ -186,9 +194,9 @@ namespace Gorgon.Renderers
         /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="index"/> parameter is less than 0, or greater than/equal to <see cref="GorgonSamplerStates.MaximumSamplerStateCount"/>.</exception>
         public Gorgon2DShaderBuilder<T> SamplerState(GorgonSamplerState sampler, int index = 0)
         {
-            if ((index < 0) || (index >= 15))
+            if ((index < 0) || (index >= GorgonSamplerStates.MaximumSamplerStateCount))
             {
-                throw new ArgumentOutOfRangeException(nameof(index), string.Format(Resources.GOR2D_ERR_INVALID_SAMPLER_INDEX, 15));
+                throw new ArgumentOutOfRangeException(nameof(index), string.Format(Resources.GOR2D_ERR_INVALID_SAMPLER_INDEX, GorgonSamplerStates.MaximumSamplerStateCount));
             }
 
             _workingShader.RwSamplers[index] = sampler;

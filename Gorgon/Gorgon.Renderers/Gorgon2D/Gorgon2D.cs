@@ -82,8 +82,6 @@ namespace Gorgon.Renderers
         private readonly StringBuilder _textBuffer = new StringBuilder(256);
         // The default font.
         private Lazy<GorgonFontFactory> _defaultFontFactory;
-        // The default font.
-        private GorgonFont _defaultFont;
         // The default text sprite for rendering strings.
         private GorgonTextSprite _defaultTextSprite;
         // The renderable for primitives (lines, rectangles, etc...)
@@ -162,10 +160,10 @@ namespace Gorgon.Renderers
                                        1.0f,
                                        out DX.Matrix projection);
 
-            _defaultVertexShader.RwConstantBuffers[0] = _viewProjection = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref projection, "View * Projection Matrix Buffer");
+            _viewProjection = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref projection, "View * Projection Matrix Buffer");
 
             _alphaTestData = new AlphaTestData(true, GorgonRangeF.Empty);
-            _defaultPixelShader.RwConstantBuffers[0] = _alphaTest = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _alphaTestData, "Alpha Test Buffer");
+            _alphaTest = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _alphaTestData, "Alpha Test Buffer");
 
             _spriteRenderer = new SpriteRenderer(Graphics);
             _drawCallFactory = new DrawCallFactory(Graphics, _defaultTexture, _vertexLayout)
@@ -188,12 +186,7 @@ namespace Gorgon.Renderers
                 _currentViewport = Graphics.Viewports[0];
             }
 
-            _defaultFont = _defaultFontFactory.Value.GetFont(new GorgonFontInfo("Segoe UI", 9.0f, FontHeightMode.Points, "Gorgon2D Default Font")
-                                                             {
-                                                                 FontStyle = FontStyle.Bold
-                                                             });
-
-            _defaultTextSprite = new GorgonTextSprite(_defaultFont);
+            _defaultTextSprite = new GorgonTextSprite(_defaultFontFactory.Value.DefaultFont);
 
             _initialized = true;
         }
@@ -222,16 +215,26 @@ namespace Gorgon.Renderers
             _lastBatchState.BlendState = batchState?.BlendState ?? GorgonBlendState.Default;
             _lastBatchState.RasterState = batchState?.RasterState ?? GorgonRasterState.Default;
             _lastBatchState.DepthStencilState = batchState?.DepthStencilState ?? GorgonDepthStencilState.Default;
-
+            
             // If we didn't assign shaders, then use our defaults.
             if (_lastBatchState.PixelShader.Shader == null)
             {
                 _lastBatchState.PixelShader.Shader = _defaultPixelShader.Shader;
             }
 
+            if (_lastBatchState.PixelShader.RwConstantBuffers[0] == null)
+            {
+                _lastBatchState.PixelShader.RwConstantBuffers[0] = _alphaTest;
+            }
+
             if (_lastBatchState.VertexShader.Shader == null)
             {
                 _lastBatchState.VertexShader.Shader = _defaultVertexShader.Shader;
+            }
+
+            if (_lastBatchState.VertexShader.RwConstantBuffers[0] == null)
+            {
+                _lastBatchState.VertexShader.RwConstantBuffers[0] = _viewProjection;
             }
         }
 
@@ -346,7 +349,7 @@ namespace Gorgon.Renderers
             _defaultTextSprite.Text = text;
             _defaultTextSprite.Color = color ?? GorgonColor.White;
             _defaultTextSprite.Position = position;
-            _defaultTextSprite.Font = font ?? _defaultFont;
+            _defaultTextSprite.Font = font ?? _defaultFontFactory.Value.DefaultFont;
             _defaultTextSprite.AllowColorCodes = (text.IndexOf("[c", StringComparison.CurrentCultureIgnoreCase) > -1)
                                                  && (text.IndexOf("[/c]", StringComparison.CurrentCultureIgnoreCase) > -1);
 
@@ -846,8 +849,6 @@ namespace Gorgon.Renderers
             WeakEventManager<GorgonGraphics, EventArgs>.RemoveHandler(Graphics, nameof(GorgonGraphics.RenderTargetChanged), RenderTarget_Changed);
             WeakEventManager<GorgonGraphics, EventArgs>.RemoveHandler(Graphics, nameof(GorgonGraphics.ViewPortChanged), RenderTarget_Changed);
             
-            _defaultFont = null;
-
             if (defaultFont?.IsValueCreated ?? false)
             {
                 defaultFont.Value.Dispose();

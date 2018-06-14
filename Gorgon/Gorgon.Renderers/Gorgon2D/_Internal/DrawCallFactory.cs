@@ -83,6 +83,10 @@ namespace Gorgon.Renderers
         /// <returns>The draw call.</returns>
         public GorgonDrawIndexCall GetDrawIndexCall(BatchRenderable renderable, Gorgon2DBatchState batchState, ObjectRenderer renderer)
         {
+            // If we haven't specified values for our first texture and sampler, then do so now.
+            batchState.PixelShader.RwSrvs[0] = renderable.Texture ?? _defaultTexture;
+            batchState.PixelShader.RwSamplers[0] = renderable.TextureSampler ?? GorgonSamplerState.Default;
+
             bool needStateUpdate = (_lastState == null)
                                    || (_lastCall?.PipelineState != _lastState)
                                    || (_lastState.PixelShader != batchState.PixelShader.Shader)
@@ -92,12 +96,11 @@ namespace Gorgon.Renderers
                                    || (_lastState.RasterState != batchState.RasterState);
 
             bool needResourceUpdate = (_lastCall == null)
-                                      || (_prevRenderable != renderable)
                                       || (renderable.StateChanged)
                                       || (_lastCall.IndexBuffer != renderer.IndexBuffer)
                                       || (_lastCall.VertexBufferBindings[0] != renderer.VertexBuffer)
-                                      || (_lastCall.VertexShader.ConstantBuffers[0] != ProjectionViewBuffer)
-                                      || (_lastCall.PixelShader.ConstantBuffers[0] != AlphaTestBuffer);
+                                      || (_lastCall.VertexShader.ConstantBuffers[0] != batchState.VertexShader.RwConstantBuffers[0])
+                                      || (_lastCall.PixelShader.ConstantBuffers[0] != batchState.PixelShader.RwConstantBuffers[0]);
 
             bool needsVsConstantsUpdate = _lastCall == null;
             bool needsPsConstantsUpdate = _lastCall == null;
@@ -109,32 +112,32 @@ namespace Gorgon.Renderers
             // Check for resource switches.
             if (_lastCall != null)
             {
-                if (_lastCall.VertexShader.ConstantBuffers.DirtyEquals(batchState.VertexShader.ConstantBuffers))
+                if (!_lastCall.VertexShader.ConstantBuffers.DirtyEquals(batchState.VertexShader.ConstantBuffers))
                 {
                     needResourceUpdate = needsVsConstantsUpdate = true;
                 }
 
-                if (_lastCall.PixelShader.ConstantBuffers.DirtyEquals(batchState.PixelShader.ConstantBuffers))
+                if (!_lastCall.PixelShader.ConstantBuffers.DirtyEquals(batchState.PixelShader.ConstantBuffers))
                 {
                     needResourceUpdate = needsPsConstantsUpdate = true;
                 }
 
-                if (_lastCall.VertexShader.ShaderResources.DirtyEquals(batchState.VertexShader.ShaderResources))
+                if (!_lastCall.VertexShader.ShaderResources.DirtyEquals(batchState.VertexShader.ShaderResources))
                 {
                     needResourceUpdate = needsVsSrvUpdate = true;
                 }
 
-                if (_lastCall.PixelShader.ShaderResources.DirtyEquals(batchState.PixelShader.ShaderResources))
+                if (!_lastCall.PixelShader.ShaderResources.DirtyEquals(batchState.PixelShader.ShaderResources))
                 {
                     needResourceUpdate = needsPsSrvUpdate = true;
                 }
 
-                if (_lastCall.VertexShader.Samplers.DirtyEquals(batchState.VertexShader.Samplers))
+                if (!_lastCall.VertexShader.Samplers.DirtyEquals(batchState.VertexShader.Samplers))
                 {
                     needResourceUpdate = needsVsSamplerUpdate = true;
                 }
 
-                if (_lastCall.PixelShader.Samplers.DirtyEquals(batchState.PixelShader.Samplers))
+                if (!_lastCall.PixelShader.Samplers.DirtyEquals(batchState.PixelShader.Samplers))
                 {
                     needResourceUpdate = needsPsSamplerUpdate = true;
                 }
@@ -166,42 +169,37 @@ namespace Gorgon.Renderers
 
             if (needsVsConstantsUpdate)
             {
-                _drawBuilder.ConstantBuffers(ShaderType.Vertex, batchState.VertexShader.ConstantBuffers, 1);
+                _drawBuilder.ConstantBuffers(ShaderType.Vertex, batchState.VertexShader.RwConstantBuffers);
             }
 
             if (needsPsConstantsUpdate)
             {
-                _drawBuilder.ConstantBuffers(ShaderType.Pixel, batchState.PixelShader.ConstantBuffers, 1);
+                _drawBuilder.ConstantBuffers(ShaderType.Pixel, batchState.PixelShader.RwConstantBuffers);
             }
 
             if (needsVsSrvUpdate)
             {
-                _drawBuilder.ShaderResources(ShaderType.Vertex, batchState.VertexShader.ShaderResources);
+                _drawBuilder.ShaderResources(ShaderType.Vertex, batchState.VertexShader.RwSrvs);
             }
 
             if (needsPsSrvUpdate)
             {
-                _drawBuilder.ShaderResources(ShaderType.Pixel, batchState.PixelShader.ShaderResources, 1);
+                _drawBuilder.ShaderResources(ShaderType.Pixel, batchState.PixelShader.RwSrvs);
             }
 
             if (needsVsSamplerUpdate)
             {
-                _drawBuilder.SamplerStates(ShaderType.Vertex, batchState.VertexShader.Samplers);
+                _drawBuilder.SamplerStates(ShaderType.Vertex, batchState.VertexShader.RwSamplers);
             }
 
             if (needsPsSamplerUpdate)
             {
-                _drawBuilder.SamplerStates(ShaderType.Pixel, batchState.PixelShader.Samplers, 1);
+                _drawBuilder.SamplerStates(ShaderType.Pixel, batchState.PixelShader.RwSamplers);
             }
 
             _drawBuilder.PipelineState(_lastState)
-                        .ConstantBuffer(ShaderType.Vertex, ProjectionViewBuffer)
-                        .ConstantBuffer(ShaderType.Pixel, AlphaTestBuffer)
                         .IndexBuffer(renderer.IndexBuffer)
-                        .VertexBuffer(_inputLayout, renderer.VertexBuffer)
-                        .ShaderResource(ShaderType.Pixel, renderable.Texture ?? _defaultTexture)
-                        .SamplerState(ShaderType.Pixel, renderable.TextureSampler ?? GorgonSamplerState.Default);
-
+                        .VertexBuffer(_inputLayout, renderer.VertexBuffer);
 
             _lastCall = _drawBuilder.Build(_drawAllocator);
             return _lastCall;

@@ -59,8 +59,9 @@ namespace Gorgon.Collections
         /// Indicates whether the current object is equal to another object of the same type.
         /// </summary>
         /// <param name="other">An object to compare with this object.</param>
+        /// <param name="offset">[Optional] The offset in this array to start comparing from.</param>
         /// <returns><see langword="true" /> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <see langword="false" />.</returns>
-        bool DirtyEquals(IGorgonReadOnlyArray<T> other);
+        bool DirtyEquals(IGorgonReadOnlyArray<T> other, int offset = 0);
 
         /// <summary>
         /// Function to retrieve the dirty items in this list.

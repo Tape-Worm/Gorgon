@@ -33,9 +33,9 @@ using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Example.Properties;
 using Gorgon.Graphics.Imaging;
-using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Graphics.Imaging.GdiPlus;
 using Gorgon.Math;
+using Gorgon.Renderers;
 using Gorgon.Timing;
 using Gorgon.UI;
 using DX = SharpDX;
@@ -72,14 +72,11 @@ namespace Gorgon.Graphics.Example
 	/// 1. Draw the text manually myself.  And, there was no way in hell I was doing that.
 	/// 2. Use the 2D renderer.
 	/// 
-	/// // TODO: This is not accurate anymore.
-	/// You'll note that in the render loop, before we render the text, we call _2D.Begin2D().  This takes  a copy of the current 
-	/// state and then overwrites that state with the 2D stuff and then we render the text.  Finally, we call _2D.End2D() and that 
-	/// restores the previous state (the states are stored in a stack in a LIFO order) so the 3D renderer doesn't get all messed up.
-	/// When mixing the renderers like this, it's crucial to ensure that state doesn't get clobbered or else things won't show up 
-	/// properly.
+	/// You'll note that in the render loop, before we render the text, we call _2D.Begin().  This sets up the initial state for
+	/// 2D rendering.  Then we call the 2D functions to render a little window, and some text. And finally, we call _2D.End() and
+	/// that renders the batched 2D commands.
 	/// 
-	/// This example is considered advanced, and a firm understanding of a graphics API like Direct 3D 11.1 is recommended.
+	/// This example is considered advanced, and a firm understanding of a graphics API like Direct 3D 11.4 is recommended.
 	/// It's also very "low level", in that there's not a whole lot that's done for you by the API.  It's a very manual process to 
 	/// get everything initialized and thus there's a lot of set up code.  This is unlike the 2D renderer, which takes very little
 	/// effort to get up and running (technically, you barely have to touch the base graphics library to get the 2D renderer doing
@@ -111,8 +108,8 @@ namespace Gorgon.Graphics.Example
 		private static GorgonConstantBufferView _wvpBuffer;
         // Buffer holding our material.
 	    private static GorgonConstantBufferView _materialBuffer;
-		// TODO: 2D interface. 
-        //private static Gorgon2D _2D;								
+		// 2D interface for rendering our text.
+        private static Gorgon2D _2D;								
         // Our view matrix.
         private static DX.Matrix _viewMatrix = DX.Matrix.Identity;
 		// Our projection matrix.
@@ -221,10 +218,6 @@ namespace Gorgon.Graphics.Example
 			_graphics.Submit(drawCall);
 		}
 
-		// TODO: This is temporary until we get 2D rendering in place.
-		// TODO: Its purpose right now is to ensure that updating the window caption doesn't hurt our framerate (which it really does unless we limit it).
-		private static readonly IGorgonTimer _tempTimer = new GorgonTimerMultimedia();
-
         /// <summary>
 		/// Function to handle idle time for the application.
 		/// </summary>
@@ -273,41 +266,15 @@ namespace Gorgon.Graphics.Example
 			// Reset the rotation so it'll be in the correct place on the next frame.
 			_sphere.Rotation = sphereRotation;
 
-			// TODO: This is temporary until we get 2D rendering in place.
-			// TODO: This updates the caption of the window with the FPS every second.  We have to limit the rate of updates because it really hits our FPS hard.
-			if (_tempTimer.Milliseconds > 999)
-			{
-				_mainForm.Text = $"FPS: {GorgonTiming.FPS:0.00}, DT: {GorgonTiming.Delta:0.000}";
-				_tempTimer.Reset();
-			}
-
 			// Draw our text.
 			// Use this to show how incredibly slow and terrible my 3D code is.
-
-			// TODO: Disabled until we get 2D rendering up and running again.
-			// Tell the 2D renderer to remember the current state of the 3D scene.
-			/*_3DState = _2D.Begin2D();
-
-			_2D.Drawing.FilledRectangle(new RectangleF(0, 0, _mainForm.ClientSize.Width - 1.0f, 38.0f), Color.FromArgb(128, 0, 0, 0));
-			_2D.Drawing.DrawRectangle(new RectangleF(0, 0, _mainForm.ClientSize.Width, 38.0f), Color.White);
-			_2D.Drawing.DrawString(Graphics.Fonts.DefaultFont, 
-				"FPS: " + GorgonTiming.AverageFPS.ToString("0.0")
-				+ "\nDelta: " + (GorgonTiming.AverageDelta * 1000.0f).ToString("0.0##") + " milliseconds", 
-				new Vector2(3.0f, 0.0f), GorgonColor.White);
-			// Draw our logo because I'm insecure.
-			_2D.Drawing.Blit(Graphics.Textures.GorgonLogo,
-					new RectangleF(_mainForm.ClientSize.Width - Graphics.Textures.GorgonLogo.Settings.Width,
-						_mainForm.ClientSize.Height - Graphics.Textures.GorgonLogo.Settings.Height,
-						Graphics.Textures.GorgonLogo.Settings.Width,
-						Graphics.Textures.GorgonLogo.Settings.Height));
-
-			// Note that we're rendering here but not flipping the buffer (the 'false' parameter).  This just delays the page
-			// flipping until later.  Technically, we don't need to do this here because it's the last thing we're doing, but
-			// if we had more rendering to do after, we'd have to flip manually.
-			_2D.Flush();
-
-			// Restore the 3D scene state.
-			_2D.End2D(_3DState);*/
+            _2D.Begin();
+            _2D.DrawFilledRectangle(new DX.RectangleF(0, 0, _mainForm.ClientSize.Width - 1.0f, 64.0f), Color.FromArgb(128, 0, 0, 0));
+            _2D.DrawRectangle(new DX.RectangleF(0, 0, _mainForm.ClientSize.Width, 64.0f), Color.White);
+		    _2D.DrawString("FPS: " + GorgonTiming.AverageFPS.ToString("0.0")
+		                           + "\nDelta: " + (GorgonTiming.AverageDelta * 1000.0f).ToString("0.0##") + " milliseconds",
+		                   new DX.Vector2(3.0f, 0.0f));
+            _2D.End();
 
 			// Now we flip our buffers.
 			// We need to this or we won't see anything.
@@ -476,9 +443,6 @@ namespace Gorgon.Graphics.Example
             // Set the current render target output so we can see something.
 		    _graphics.SetRenderTarget(_swap.RenderTargetView, _depthBuffer);
 
-			// TODO: Create the 2D interface for our text.
-			//_2D = Graphics.Output.Create2DRenderer(_swap);									
-
 			// Create our shaders.
 			// Our vertex shader.  This is a simple shader, it just processes a vertex by multiplying it against
 			// the world/view/projection matrix and spits it back out.
@@ -497,8 +461,6 @@ namespace Gorgon.Graphics.Example
 			// We also will generate mip-map levels for this image so that scaling the texture will look better. 
 		    using (IGorgonImage image = Resources.Texture.ToGorgonImage())
 		    {
-                GorgonCodecPng c = new GorgonCodecPng();
-                
 		        _texture = image.ToTexture2D(_graphics,
 		                                     new GorgonTextureLoadOptions
 		                                     {
@@ -648,6 +610,9 @@ namespace Gorgon.Graphics.Example
             // Initialize the states used to draw the objects.
             InitializeStates();
 
+            // Initialize 2D rendering.
+            _2D = new Gorgon2D(_swap.RenderTargetView);
+
 			// I know, there's a lot in here.  Thing is, if this were Direct 3D 11 code, it'd probably MUCH 
 			// more code and that's even before creating our planes and sphere.
 		}
@@ -729,6 +694,8 @@ namespace Gorgon.Graphics.Example
 			}
 			finally
 			{
+                _2D.Dispose();
+
 				// Always call dispose so we can free the native memory allocated for the backing graphics API.
 				_sphere?.Dispose();
 

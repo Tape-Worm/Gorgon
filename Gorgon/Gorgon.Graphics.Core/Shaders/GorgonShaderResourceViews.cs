@@ -446,15 +446,11 @@ namespace Gorgon.Graphics.Core
 	    /// Indicates whether the current object is equal to another object of the same type.
 	    /// </summary>
 	    /// <param name="other">An object to compare with this object.</param>
+	    /// <param name="offset">[Optional] The offset in this array to start comparing from.</param>
 	    /// <returns><see langword="true" /> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <see langword="false" />.</returns>
-	    public bool DirtyEquals(IGorgonReadOnlyArray<GorgonShaderResourceView> other)
+	    public bool DirtyEquals(IGorgonReadOnlyArray<GorgonShaderResourceView> other, int offset = 0)
 	    {
 	        if (other == null)
-	        {
-	            return false;
-	        }
-
-	        if (other.Length != Length)
 	        {
 	            return false;
 	        }
@@ -473,14 +469,14 @@ namespace Gorgon.Graphics.Core
             ref readonly (int otherStart, int otherCount) otherRange = ref other.GetDirtyItems();
 
 	        // If the dirty state has already been updated for both arrays, then just check that.
-	        if ((_dirtyItems.Start != otherRange.otherStart) || (_dirtyItems.Count != otherRange.otherCount))
+	        if (((_dirtyItems.Start != otherRange.otherStart) || (_dirtyItems.Count != otherRange.otherCount)) && (offset == 0))
 	        {
 	            return false;
 	        }
 
-	        for (int i = _dirtyItems.Start; i < _dirtyItems.Start + _dirtyItems.Count; ++i)
+	        for (int i = _dirtyItems.Start; i < _dirtyItems.Start + _dirtyItems.Count && i + offset < _backingArray.Length; ++i)
 	        {
-	            if (_backingArray[i] != other[i])
+	            if (_backingArray[i + offset] != other[i])
 	            {
 	                return false;
 	            }
@@ -495,15 +491,11 @@ namespace Gorgon.Graphics.Core
         /// Indicates whether the current object is equal to another object of the same type.
         /// </summary>
         /// <param name="other">An object to compare with this object.</param>
+        /// <param name="offset">[Optional] The offset in this array to start comparing from.</param>
         /// <returns><see langword="true" /> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <see langword="false" />.</returns>
-        public bool DirtyEquals(GorgonShaderResourceViews other)
+        public bool DirtyEquals(GorgonShaderResourceViews other, int offset = 0)
         {
             if (other == null)
-            {
-                return false;
-            }
-
-            if (other.Length != Length)
             {
                 return false;
             }
@@ -520,15 +512,16 @@ namespace Gorgon.Graphics.Core
             }
 
             // If the dirty state has already been updated for both arrays, then just check that.
-            if (((_changedIndices.Count != 0) || (other._changedIndices.Count != 0)) ||
+            if ((((_changedIndices.Count != 0) || (other._changedIndices.Count != 0)) ||
                 ((_dirtyItems.Start != other._dirtyItems.Start) || (_dirtyItems.Count != other._dirtyItems.Count)))
+                && (offset == 0))
             {
                 return false;
             }
 
-            for (int i = _dirtyItems.Start; i < _dirtyItems.Start + _dirtyItems.Count; ++i)
+            for (int i = _dirtyItems.Start; i < _dirtyItems.Start + _dirtyItems.Count && i + offset < _backingArray.Length; ++i)
             {
-                if (_backingArray[i] != other[i])
+                if (_backingArray[i + offset] != other[i])
                 {
                     return false;
                 }

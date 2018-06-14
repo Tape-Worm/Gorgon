@@ -81,7 +81,7 @@
     <Compile Include="Renderables\_Internal\_ValueTypes\AlphaTestData.cs" />
     <Compile Include="Renderables\_Internal\_ValueTypes\ColorBlock.cs" />
     <Compile Include="Shaders\Gorgon2DShader.cs" />
-    <Compile Include="Shaders\GorgonPixelShaderBuilder.cs" />
+    <Compile Include="Shaders\Gorgon2DShaderBuilder.cs" />
     <Compile Include="_Internal\DrawCallFactory.cs" />
     <Compile Include="_Internal\ObjectRenderer.cs" />
     <Compile Include="Renderables\_Internal\BatchRenderableStateEqualityComparer.cs" />

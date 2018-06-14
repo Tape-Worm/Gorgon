@@ -33,10 +33,12 @@ using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Example.Properties;
+using Gorgon.Graphics.Fonts;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using GI = Gorgon.Input;
 using Gorgon.Math;
+using Gorgon.Renderers;
 using Gorgon.Timing;
 using Gorgon.UI;
 
@@ -84,10 +86,16 @@ namespace Gorgon.Graphics.Example
 	    private static Sphere _clouds;
 	    // Icosphere primitive.
 	    private static IcoSphere _icoSphere;
-	    // Timer for updating text.
-	    private static IGorgonTimer _timer;
 	    // A simple application specific renderer.
 	    private static SimpleRenderer _renderer;
+        // Our 2D renderer for rendering text.
+	    private static Gorgon2D _2DRenderer;
+        // A font factory used to build fonts.
+	    private static GorgonFontFactory _fontFactory;
+        // The font used to render our text.
+	    private static GorgonFont _font;
+        // The text sprite used to display our info.
+	    private static GorgonTextSprite _textSprite;
 	    #endregion
 
 		/// <summary>
@@ -130,23 +138,18 @@ namespace Gorgon.Graphics.Example
             _clouds.Rotation = new DX.Vector3(0, _cloudRotation, 0);
 
             _renderer.Render();
+
+            _2DRenderer.Begin();
+		    _textSprite.Text = $@"FPS: {GorgonTiming.FPS:0.0}, Delta: {GorgonTiming.Delta * 1000:0.000} ms " +
+		                       $@"Tris: {
+		                               ((_triangle.TriangleCount) + (_plane.TriangleCount) + (_cube.TriangleCount) + (_sphere.TriangleCount) + (_icoSphere.TriangleCount) +
+		                                (_clouds.TriangleCount))
+		                           :0} " +
+		                       $@"CamRot: {_cameraRotation} Mouse: {_mouse?.Position.X:0}x{_mouse?.Position.Y:0} Sensitivity: {_sensitivity:0.0##}";
+            _2DRenderer.DrawTextSprite(_textSprite);
+            _2DRenderer.End();
             
 			_swapChain.Present();
-
-            // Only update the window caption every 33 milliseconds. If we update it too fast, then application may stall.
-		    if (_timer.Milliseconds < 33)
-		    {
-		        return true;
-		    }
-
-		    _form.Text =
-		        $@"FPS: {GorgonTiming.FPS:0.0}, Delta: {GorgonTiming.Delta * 1000:0.000} ms " +
-		        $@"Tris: {
-		                ((_triangle.TriangleCount) + (_plane.TriangleCount) + (_cube.TriangleCount) + (_sphere.TriangleCount) + (_icoSphere.TriangleCount) +
-		                 (_clouds.TriangleCount))
-		            :0} " +
-		        $@"CamRot: {_cameraRotation} Mouse: {_mouse?.Position.X:0}x{_mouse?.Position.Y:0} Sensitivity: {_sensitivity:0.0##}";
-		    _timer.Reset();
 
 		    return true;
 		}
@@ -631,8 +634,6 @@ namespace Gorgon.Graphics.Example
 		                                     ViewHeight = _swapChain.Height
 		                                 };
 
-            _timer = new GorgonTimerQpc();
-
 			_input = new GI.GorgonRawInput(_form);
 			_keyboard = new GI.GorgonRawKeyboard();
 
@@ -657,6 +658,22 @@ namespace Gorgon.Graphics.Example
 
 		                                            _graphics.SetDepthStencil(_depthBuffer);
 		                                        };
+
+            // Create a font so we can render some text.
+            _fontFactory = new GorgonFontFactory(_graphics);
+		    _font = _fontFactory.GetFont(new GorgonFontInfo("Segoe UI", 14.0f, FontHeightMode.Points, "Segoe UI 14pt")
+		                                 {
+		                                     OutlineSize = 2,
+		                                     OutlineColor1 = GorgonColor.Black,
+		                                     OutlineColor2 = GorgonColor.Black
+		                                 });
+
+            _2DRenderer = new Gorgon2D(_swapChain.RenderTargetView);
+
+		    _textSprite = new GorgonTextSprite(_font)
+		                  {
+		                      DrawMode = TextDrawMode.OutlinedGlyphs
+		                  };
 		}
 
         /// <summary>
@@ -680,6 +697,9 @@ namespace Gorgon.Graphics.Example
 		    }
 		    finally
 		    {
+                _2DRenderer.Dispose();
+                _fontFactory.Dispose();
+
 		        _input?.Dispose();
 
                 if (_renderer != null)
@@ -691,7 +711,7 @@ namespace Gorgon.Graphics.Example
 
 		            _renderer.Dispose();
 		        }
-
+                
 		        _icoSphere?.Dispose();
                 _clouds?.Dispose();
 		        _sphere?.Dispose();

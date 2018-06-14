@@ -567,11 +567,11 @@ namespace Gorgon.Examples
 		    // Set our main render target.
             _graphics.SetRenderTarget(_mainScreen.RenderTargetView);
 
-            DX.Vector4 test = new DX.Vector4(0.5f, 0.5f, 0.5f, 1.0f);
-            m = GorgonConstantBufferView.CreateConstantBuffer(_graphics, ref test);
+            DX.Vector4 test = new DX.Vector4(0.75f, 0.125f, 0.85f, 0.90f);
+            m = GorgonConstantBufferView.CreateConstantBuffer(_graphics, ref test, "M buffer");
 
             var psB = new Gorgon2DShaderBuilder<GorgonPixelShader>();
-		    psB.ConstantBuffer(m);
+		    psB.ConstantBuffer(m, 1);
 		    Gorgon2DBatchStateBuilder b = new Gorgon2DBatchStateBuilder();
 		    _batchStatePs = b.PixelShader(psB).Build();
 		}

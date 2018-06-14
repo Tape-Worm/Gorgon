@@ -332,7 +332,7 @@ namespace Gorgon.Graphics.Core
         {
             if ((slot < 0) || (slot >= GorgonConstantBuffers.MaximumConstantBufferCount))
             {
-                throw new ArgumentOutOfRangeException(nameof(slot), string.Format(Resources.GORGFX_ERR_CBUFFER_SLOT_INVALID, 0));
+                throw new ArgumentOutOfRangeException(nameof(slot), string.Format(Resources.GORGFX_ERR_CBUFFER_SLOT_INVALID, GorgonConstantBuffers.MaximumConstantBufferCount));
             }
 
             switch (shaderType)
@@ -552,11 +552,11 @@ namespace Gorgon.Graphics.Core
             ConstantBuffers(ShaderType.Domain, drawCall.D3DState.DsConstantBuffers);
             ConstantBuffers(ShaderType.Hull, drawCall.D3DState.HsConstantBuffers);
             
-            SamplerStates(ShaderType.Pixel, drawCall.D3DState.PsSamplers, 0);
-            SamplerStates(ShaderType.Vertex, drawCall.D3DState.VsSamplers, 0);
-            SamplerStates(ShaderType.Geometry, drawCall.D3DState.GsSamplers, 0);
-            SamplerStates(ShaderType.Domain, drawCall.D3DState.DsSamplers, 0);
-            SamplerStates(ShaderType.Hull, drawCall.D3DState.HsSamplers, 0);
+            SamplerStates(ShaderType.Pixel, drawCall.D3DState.PsSamplers);
+            SamplerStates(ShaderType.Vertex, drawCall.D3DState.VsSamplers);
+            SamplerStates(ShaderType.Geometry, drawCall.D3DState.GsSamplers);
+            SamplerStates(ShaderType.Domain, drawCall.D3DState.DsSamplers);
+            SamplerStates(ShaderType.Hull, drawCall.D3DState.HsSamplers);
 
             StateCopy.CopySrvs(DrawCall.D3DState.PsSrvs, drawCall.D3DState.PsSrvs);
             StateCopy.CopySrvs(DrawCall.D3DState.VsSrvs, drawCall.D3DState.VsSrvs);

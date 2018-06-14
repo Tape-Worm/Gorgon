@@ -86,7 +86,7 @@ namespace Gorgon.Graphics.Fonts
 		/// This will return a default font used in applications for quick testing.
 		/// </para>
 		/// <para>
-		/// The font will be based on Segoe UI, have a size of 10 pixels, and will be bolded and antialiased.
+		/// The font will be based on Segoe UI, have a size of 12 points, and will be bolded and antialiased.
 		/// </para>
 		/// </remarks>
 		public GorgonFont DefaultFont
@@ -101,9 +101,9 @@ namespace Gorgon.Graphics.Fonts
 			        }
 
 			        // Create the default font.
-				    _default = new GorgonFont("Gorgon.Font.Default.SegoeUI_14px",
+				    _default = new GorgonFont("Gorgon.Font.Default.SegoeUI_12pt",
 				                              this,
-				                              new GorgonFontInfo("Segoe UI", 14)
+				                              new GorgonFontInfo("Segoe UI", 12, FontHeightMode.Points)
 				                              {
 					                              AntiAliasingMode = FontAntiAliasMode.AntiAlias,
 					                              FontStyle = FontStyle.Bold,

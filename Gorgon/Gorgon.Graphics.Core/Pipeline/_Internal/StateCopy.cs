@@ -25,7 +25,6 @@
 #endregion
 
 using System.Collections.Generic;
-using D3D11 = SharpDX.Direct3D11;
 using Gorgon.Math;
 
 namespace Gorgon.Graphics.Core
@@ -50,7 +49,7 @@ namespace Gorgon.Graphics.Core
                 return;
             }
 
-            int length = src.Count.Min(src.Count - startSlot);
+            int length = src.Count.Min(dest.Length - startSlot);
 
             for (int i = 0; i < length; ++i)
             {
@@ -84,7 +83,7 @@ namespace Gorgon.Graphics.Core
                 return;
             }
 
-            int length = srcStates.Count.Min(srcStates.Count - startSlot);
+            int length = srcStates.Count.Min(destStates.Length - startSlot);
 
             for (int i = 0; i < length; ++i)
             {
@@ -107,7 +106,7 @@ namespace Gorgon.Graphics.Core
                 return;
             }
 
-            int length = srcStates.Count.Min(srcStates.Count - startSlot);
+            int length = srcStates.Count.Min(destStates.Length - startSlot);
 
             for (int i = 0; i < length; ++i)
             {
@@ -130,7 +129,7 @@ namespace Gorgon.Graphics.Core
                 return;
             }
 
-            int length = srcStates.Count.Min(srcStates.Count - startSlot);
+            int length = srcStates.Count.Min(destStates.Length - startSlot);
 
             for (int i = 0; i < length; ++i)
             {
@@ -153,7 +152,7 @@ namespace Gorgon.Graphics.Core
                 return;
             }
 
-            int length = src.Count.Min(src.Count - startSlot);
+            int length = src.Count.Min(dest.Length - startSlot);
 
             for (int i = 0; i < length; ++i)
             {

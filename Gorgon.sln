@@ -5,11 +5,6 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Core", "Gorgon\Gorgon.Core\Gorgon.Core.csproj", "{933569ED-52A9-4232-A929-1D4C4489B5A1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{E656298C-C1C6-4274-87B5-A19C6BA689CB}"
-	ProjectSection(SolutionItems) = preProject
-		Gorgon\PerfNums.txt = Gorgon\PerfNums.txt
-		Gorgon\TextureInfo.txt = Gorgon\TextureInfo.txt
-		Gorgon\TODO.txt = Gorgon\TODO.txt
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example001", "Examples\Gorgon.Core\Example001\Example001.csproj", "{92184B11-8908-40DE-A81B-827CE74FE8C7}"
 EndProject
