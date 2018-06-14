@@ -97,31 +97,38 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="shaderType">The type of shader to update.</param>
         /// <param name="samplers">The samplers to assign.</param>
+        /// <param name="index">[Optional] The index to use when copying the list.</param>
         /// <returns>The fluent interface for this builder.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="index"/> parameter is less than 0, or greater than/equal to <see cref="GorgonSamplerStates.MaximumSamplerStateCount"/>.</exception>
         /// <exception cref="NotSupportedException">Thrown if the <paramref name="shaderType"/> is not valid.</exception>
         /// <remarks>
         /// <para>
         /// <see cref="ShaderType.Compute"/> shaders are not supported in this method will throw an exception.
         /// </para>
         /// </remarks>
-        public TB SamplerStates(ShaderType shaderType, IReadOnlyList<GorgonSamplerState> samplers)
+        public TB SamplerStates(ShaderType shaderType, IReadOnlyList<GorgonSamplerState> samplers, int index = 0)
         {
+            if ((index < 0) || (index >= GorgonSamplerStates.MaximumSamplerStateCount))
+            {
+                throw new ArgumentOutOfRangeException(nameof(index), string.Format(Resources.GORGFX_ERR_INVALID_SAMPLER_INDEX, GorgonSamplerStates.MaximumSamplerStateCount));
+            }
+
             switch (shaderType)
             {
                 case ShaderType.Pixel:
-                    StateCopy.CopySamplers(DrawCall.D3DState.PsSamplers, samplers);
+                    StateCopy.CopySamplers(DrawCall.D3DState.PsSamplers, samplers, index);
                     break;
                 case ShaderType.Vertex:
-                    StateCopy.CopySamplers(DrawCall.D3DState.VsSamplers, samplers);
+                    StateCopy.CopySamplers(DrawCall.D3DState.VsSamplers, samplers, index);
                     break;
                 case ShaderType.Geometry:
-                    StateCopy.CopySamplers(DrawCall.D3DState.GsSamplers, samplers);
+                    StateCopy.CopySamplers(DrawCall.D3DState.GsSamplers, samplers, index);
                     break;
                 case ShaderType.Domain:
-                    StateCopy.CopySamplers(DrawCall.D3DState.DsSamplers, samplers);
+                    StateCopy.CopySamplers(DrawCall.D3DState.DsSamplers, samplers, index);
                     break;
                 case ShaderType.Hull:
-                    StateCopy.CopySamplers(DrawCall.D3DState.VsSamplers, samplers);
+                    StateCopy.CopySamplers(DrawCall.D3DState.VsSamplers, samplers, index);
                     break;
                 default:
                     throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_SHADER_UNKNOWN_TYPE, shaderType));
@@ -545,11 +552,11 @@ namespace Gorgon.Graphics.Core
             ConstantBuffers(ShaderType.Domain, drawCall.D3DState.DsConstantBuffers);
             ConstantBuffers(ShaderType.Hull, drawCall.D3DState.HsConstantBuffers);
             
-            SamplerStates(ShaderType.Pixel, drawCall.D3DState.PsSamplers);
-            SamplerStates(ShaderType.Vertex, drawCall.D3DState.VsSamplers);
-            SamplerStates(ShaderType.Geometry, drawCall.D3DState.GsSamplers);
-            SamplerStates(ShaderType.Domain, drawCall.D3DState.DsSamplers);
-            SamplerStates(ShaderType.Hull, drawCall.D3DState.HsSamplers);
+            SamplerStates(ShaderType.Pixel, drawCall.D3DState.PsSamplers, 0);
+            SamplerStates(ShaderType.Vertex, drawCall.D3DState.VsSamplers, 0);
+            SamplerStates(ShaderType.Geometry, drawCall.D3DState.GsSamplers, 0);
+            SamplerStates(ShaderType.Domain, drawCall.D3DState.DsSamplers, 0);
+            SamplerStates(ShaderType.Hull, drawCall.D3DState.HsSamplers, 0);
 
             StateCopy.CopySrvs(DrawCall.D3DState.PsSrvs, drawCall.D3DState.PsSrvs);
             StateCopy.CopySrvs(DrawCall.D3DState.VsSrvs, drawCall.D3DState.VsSrvs);
@@ -647,7 +654,7 @@ namespace Gorgon.Graphics.Core
             if (DrawCall.D3DState.PipelineState?.PixelShader != null)
             {
                 StateCopy.CopyConstantBuffers(final.D3DState.PsConstantBuffers, DrawCall.D3DState.PsConstantBuffers, 0);
-                StateCopy.CopySamplers(final.D3DState.PsSamplers, DrawCall.D3DState.PsSamplers);
+                StateCopy.CopySamplers(final.D3DState.PsSamplers, DrawCall.D3DState.PsSamplers, 0);
                 StateCopy.CopySrvs(final.D3DState.PsSrvs, DrawCall.D3DState.PsSrvs);
             }
             else
@@ -660,7 +667,7 @@ namespace Gorgon.Graphics.Core
             if (DrawCall.D3DState.PipelineState?.VertexShader != null)
             {
                 StateCopy.CopyConstantBuffers(final.D3DState.VsConstantBuffers, DrawCall.D3DState.VsConstantBuffers, 0);
-                StateCopy.CopySamplers(final.D3DState.VsSamplers, DrawCall.D3DState.VsSamplers);
+                StateCopy.CopySamplers(final.D3DState.VsSamplers, DrawCall.D3DState.VsSamplers, 0);
                 StateCopy.CopySrvs(final.D3DState.VsSrvs, DrawCall.D3DState.VsSrvs);
             }
             else
@@ -673,7 +680,7 @@ namespace Gorgon.Graphics.Core
             if (DrawCall.D3DState.PipelineState?.GeometryShader != null)
             {
                 StateCopy.CopyConstantBuffers(final.D3DState.GsConstantBuffers, DrawCall.D3DState.GsConstantBuffers, 0);
-                StateCopy.CopySamplers(final.D3DState.GsSamplers, DrawCall.D3DState.GsSamplers);
+                StateCopy.CopySamplers(final.D3DState.GsSamplers, DrawCall.D3DState.GsSamplers, 0);
                 StateCopy.CopySrvs(final.D3DState.GsSrvs, DrawCall.D3DState.GsSrvs);
             }
             else
@@ -686,7 +693,7 @@ namespace Gorgon.Graphics.Core
             if (DrawCall.D3DState.PipelineState?.DomainShader != null)
             {
                 StateCopy.CopyConstantBuffers(final.D3DState.DsConstantBuffers, DrawCall.D3DState.DsConstantBuffers, 0);
-                StateCopy.CopySamplers(final.D3DState.DsSamplers, DrawCall.D3DState.DsSamplers);
+                StateCopy.CopySamplers(final.D3DState.DsSamplers, DrawCall.D3DState.DsSamplers, 0);
                 StateCopy.CopySrvs(final.D3DState.DsSrvs, DrawCall.D3DState.DsSrvs);
             }
             else
@@ -699,7 +706,7 @@ namespace Gorgon.Graphics.Core
             if (DrawCall.D3DState.PipelineState?.HullShader != null)
             {
                 StateCopy.CopyConstantBuffers(final.D3DState.HsConstantBuffers, DrawCall.D3DState.HsConstantBuffers, 0);
-                StateCopy.CopySamplers(final.D3DState.HsSamplers, DrawCall.D3DState.HsSamplers);
+                StateCopy.CopySamplers(final.D3DState.HsSamplers, DrawCall.D3DState.HsSamplers, 0);
                 StateCopy.CopySrvs(final.D3DState.HsSrvs, DrawCall.D3DState.HsSrvs);
             }
             else

@@ -95,6 +95,9 @@ namespace Gorgon.Examples
 	    // Flag to indicate that the animation is paused.
 		private static bool _paused;
 
+	    private static GorgonConstantBufferView m;
+	    private static Gorgon2DBatchState _batchStatePs;
+
         /// <summary>
         /// Property to return the path to the resources for the example.
         /// </summary>
@@ -371,7 +374,7 @@ namespace Gorgon.Examples
 			}
 
             // Begin our rendering.
-            _2D.Begin();
+            _2D.Begin(_batchStatePs);
 
 			DrawBackground();
 
@@ -563,6 +566,14 @@ namespace Gorgon.Examples
 
 		    // Set our main render target.
             _graphics.SetRenderTarget(_mainScreen.RenderTargetView);
+
+            DX.Vector4 test = new DX.Vector4(0.5f, 0.5f, 0.5f, 1.0f);
+            m = GorgonConstantBufferView.CreateConstantBuffer(_graphics, ref test);
+
+            var psB = new Gorgon2DShaderBuilder<GorgonPixelShader>();
+		    psB.ConstantBuffer(m);
+		    Gorgon2DBatchStateBuilder b = new Gorgon2DBatchStateBuilder();
+		    _batchStatePs = b.PixelShader(psB).Build();
 		}
 
 		/// <summary>

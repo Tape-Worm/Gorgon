@@ -120,7 +120,8 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="destStates">The destination sampler states.</param>
         /// <param name="srcStates">The sampler states to copy.</param>
-        public static void CopySamplers(GorgonSamplerStates destStates, IReadOnlyList<GorgonSamplerState> srcStates)
+        /// <param name="startSlot">The slot to start copying into.</param>
+        public static void CopySamplers(GorgonSamplerStates destStates, IReadOnlyList<GorgonSamplerState> srcStates, int startSlot)
         {
             destStates.Clear();
 
@@ -129,9 +130,9 @@ namespace Gorgon.Graphics.Core
                 return;
             }
 
-            int count = destStates.Length.Min(srcStates.Count);
+            int length = destStates.Length.Min(GorgonSamplerStates.MaximumSamplerStateCount - startSlot);
 
-            for (int i = 0; i < count; ++i)
+            for (int i = 0; i < length; ++i)
             {
                 destStates[i] = srcStates[i];
             }

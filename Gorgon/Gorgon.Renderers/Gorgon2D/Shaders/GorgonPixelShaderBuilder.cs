@@ -1,0 +1,252 @@
+﻿#region MIT
+// 
+// Gorgon.
+// Copyright (C) 2018 Michael Winsor
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+// 
+// Created: June 13, 2018 4:17:02 PM
+// 
+#endregion
+
+using System;
+using System.Collections.Generic;
+using Gorgon.Core;
+using Gorgon.Graphics.Core;
+using Gorgon.Math;
+using Gorgon.Renderers.Properties;
+
+namespace Gorgon.Renderers
+{
+    /// <summary>
+    /// A fluent interface used to create shaders for use with the <see cref="Gorgon2D"/> renderer.
+    /// </summary>
+    /// <typeparam name="T">The type of shader.</typeparam>
+    public class Gorgon2DShaderBuilder<T>
+        : IGorgonFluentBuilder<Gorgon2DShaderBuilder<T>, Gorgon2DShader<T>>
+        where T : GorgonShader
+    {
+        #region Variables.
+        // The shader to build.
+        private readonly Gorgon2DShader<T> _workingShader = new Gorgon2DShader<T>();
+        #endregion
+
+        #region Methods.
+        /// <summary>
+        /// Function to copy a list of items.
+        /// </summary>
+        /// <typeparam name="TA">The type of array element.</typeparam>
+        /// <param name="dest">The destination list.</param>
+        /// <param name="src">The source list.</param>
+        /// <param name="startSlot">The starting index.</param>
+        private static void Copy<TA>(GorgonArray<TA> dest, IReadOnlyList<TA> src, int startSlot)
+            where TA : IEquatable<TA>
+        {
+            dest.Clear();
+
+            if (src == null)
+            {
+                return;
+            }
+
+            int length = src.Count.Min(15 - startSlot);
+
+            for (int i = 0; i < length; ++i)
+            {
+                dest[i + startSlot] = src[i];
+            }
+        }
+
+        /// <summary>
+        /// Function to assign the current shader.
+        /// </summary>
+        /// <param name="shader">The shader to assign.</param>
+        /// <returns>The fluent builder interface.</returns>
+        public Gorgon2DShaderBuilder<T> Shader(T shader)
+        {
+            _workingShader.Shader = shader;
+            return this;
+        }
+
+        /// <summary>
+        /// Function to set a constant buffer for a specific shader stage.
+        /// </summary>
+        /// <param name="constantBuffer">The constant buffer to assign.</param>
+        /// <param name="slot">The slot for the constant buffer.</param>
+        /// <returns>The fluent builder interface.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="slot"/> is less than 0, or greater than/equal to 15.</exception>
+        public Gorgon2DShaderBuilder<T> ConstantBuffer(GorgonConstantBufferView constantBuffer, int slot = 0)
+        {
+            if ((slot < 0) || (slot >= GorgonConstantBuffers.MaximumConstantBufferCount))
+            {
+                throw new ArgumentOutOfRangeException(nameof(slot), string.Format(Resources.GOR2D_ERR_CBUFFER_SLOT_INVALID, 0));
+            }
+
+            _workingShader.RwConstantBuffers[slot] = constantBuffer;
+            return this;
+        }
+
+        /// <summary>
+        /// Function to set the constant buffers for a specific shader stage.
+        /// </summary>
+        /// <param name="constantBuffers">The constant buffers to copy.</param>
+        /// <param name="startSlot">[Optional] The starting slot to use when copying the list.</param>
+        /// <returns>The fluent builder interface.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="startSlot"/> is less than 0, or greater than/equal to <see cref="GorgonConstantBuffers.MaximumConstantBufferCount"/>.</exception>
+        public Gorgon2DShaderBuilder<T> ConstantBuffers(IReadOnlyList<GorgonConstantBufferView> constantBuffers, int startSlot = 0)
+        {
+            if ((startSlot < 0) || (startSlot >= GorgonConstantBuffers.MaximumConstantBufferCount))
+            {
+                throw new ArgumentOutOfRangeException(nameof(startSlot), string.Format(Resources.GOR2D_ERR_CBUFFER_SLOT_INVALID, GorgonConstantBuffers.MaximumConstantBufferCount));
+            }
+
+            Copy(_workingShader.RwConstantBuffers, constantBuffers, startSlot);
+            return this;
+        }
+
+        /// <summary>
+        /// Function to assign a single shader resource view to the draw call.
+        /// </summary>
+        /// <param name="resourceView">The shader resource view to assign.</param>
+        /// <param name="slot">[Optional] The slot used to asign the view.</param>
+        /// <returns>The fluent builder interface.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="slot"/> is less than 0, or greater than/equal to 15.</exception>
+        public Gorgon2DShaderBuilder<T> ShaderResource(GorgonShaderResourceView resourceView, int slot = 0)
+        {
+            if ((slot < 0) || (slot >= 15))
+            {
+                throw new ArgumentOutOfRangeException(nameof(slot), string.Format(Resources.GOR2D_ERR_SRV_SLOT_INVALID, GorgonShaderResourceViews.MaximumShaderResourceViewCount));
+            }
+
+            _workingShader.RwSrvs[slot] = resourceView;
+            return this;
+        }
+
+        /// <summary>
+        /// Function to assign the list of shader resource views to the shader.
+        /// </summary>
+        /// <param name="resourceViews">The shader resource views to copy.</param>
+        /// <param name="startSlot">[Optional] The starting slot to use when copying the list.</param>
+        /// <returns>The fluent builder interface .</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="startSlot"/> is less than 0, or greater than/equal to 15.</exception>
+        public Gorgon2DShaderBuilder<T> ShaderResources(IReadOnlyList<GorgonShaderResourceView> resourceViews, int startSlot = 0)
+        {
+            if ((startSlot < 0) || (startSlot >= 15))
+            {
+                throw new ArgumentOutOfRangeException(nameof(startSlot), string.Format(Resources.GOR2D_ERR_SRV_SLOT_INVALID, GorgonShaderResourceViews.MaximumShaderResourceViewCount));
+            }
+
+            Copy(_workingShader.RwSrvs, resourceViews, startSlot);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Function to assign a list of samplers to a shader on the pipeline.
+        /// </summary>
+        /// <param name="samplers">The samplers to assign.</param>
+        /// <returns>The fluent interface for this builder.</returns>
+        public Gorgon2DShaderBuilder<T> SamplerStates(IReadOnlyList<GorgonSamplerState> samplers)
+        {
+            Copy(_workingShader.RwSamplers, samplers, 0);
+            return this;
+        }
+
+        /// <summary>
+        /// Function to assign a sampler to a shader on the pipeline.
+        /// </summary>
+        /// <param name="sampler">The sampler to assign.</param>
+        /// <param name="index">[Optional] The index of the sampler.</param>
+        public Gorgon2DShaderBuilder<T> SamplerState(GorgonSamplerStateBuilder sampler, int index = 0)
+        {
+            return SamplerState(sampler.Build(), index);
+        }
+
+        /// <summary>
+        /// Function to assign a sampler to a shader on the pipeline.
+        /// </summary>
+        /// <param name="sampler">The sampler to assign.</param>
+        /// <param name="index">[Optional] The index of the sampler.</param>
+        /// <returns>The fluent interface for this builder.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="index"/> parameter is less than 0, or greater than/equal to <see cref="GorgonSamplerStates.MaximumSamplerStateCount"/>.</exception>
+        public Gorgon2DShaderBuilder<T> SamplerState(GorgonSamplerState sampler, int index = 0)
+        {
+            if ((index < 0) || (index >= 15))
+            {
+                throw new ArgumentOutOfRangeException(nameof(index), string.Format(Resources.GOR2D_ERR_INVALID_SAMPLER_INDEX, 15));
+            }
+
+            _workingShader.RwSamplers[index] = sampler;
+            return this;
+        }
+
+        /// <summary>
+        /// Function to return the object.
+        /// </summary>
+        /// <returns>The object created or updated by this builder.</returns>
+        public Gorgon2DShader<T> Build()
+        {
+            var shader = new Gorgon2DShader<T>
+                         {
+                             Shader = _workingShader.Shader
+                         };
+
+            Copy(shader.RwConstantBuffers, _workingShader.RwConstantBuffers, 0);
+            Copy(shader.RwSrvs, _workingShader.RwSrvs, 0);
+            Copy(shader.RwSamplers, _workingShader.RwSamplers, 0);
+
+            return shader;
+        }
+
+        /// <summary>
+        /// Function to clear the builder to a default state.
+        /// </summary>
+        /// <returns>The fluent builder interface.</returns>
+        public Gorgon2DShaderBuilder<T> Clear()
+        {
+            _workingShader.RwConstantBuffers.Clear();
+            _workingShader.RwSamplers.Clear();
+            _workingShader.RwSrvs.Clear();
+            _workingShader.Shader = null;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Function to reset the builder to the specified object state.
+        /// </summary>
+        /// <param name="builderObject">[Optional] The specified object state to copy.</param>
+        /// <returns>The fluent builder interface.</returns>
+        public Gorgon2DShaderBuilder<T> ResetTo(Gorgon2DShader<T> builderObject = null)
+        {
+            if (builderObject == null)
+            {
+                Clear();
+                return this;
+            }
+
+            Copy(_workingShader.RwConstantBuffers, builderObject.RwConstantBuffers, 0);
+            Copy(_workingShader.RwSrvs, builderObject.RwSrvs, 0);
+            Copy(_workingShader.RwSamplers, builderObject.RwSamplers, 0);
+            _workingShader.Shader = builderObject.Shader;
+
+            return this;
+        }
+        #endregion
+    }
+}

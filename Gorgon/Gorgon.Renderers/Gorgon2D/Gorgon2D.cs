@@ -53,9 +53,9 @@ namespace Gorgon.Renderers
         // The primary render target.
         private readonly GorgonRenderTarget2DView _primaryTarget;
         // The default vertex shader used by the renderer.
-        private GorgonVertexShader _defaultVertexShader;
+        private Gorgon2DShader<GorgonVertexShader> _defaultVertexShader = new Gorgon2DShader<GorgonVertexShader>();
         // The default pixel shader used by the renderer.
-        private GorgonPixelShader _defaultPixelShader;
+        private Gorgon2DShader<GorgonPixelShader> _defaultPixelShader = new Gorgon2DShader<GorgonPixelShader>();
         // The layout used to define a vertex to the vertex shader.
         private GorgonInputLayout _vertexLayout;
         // The renderer used to draw sprites.
@@ -138,10 +138,10 @@ namespace Gorgon.Renderers
                 GorgonShaderFactory.Includes["Gorgon2DShaders"] = new GorgonShaderInclude("Gorgon2DShaders", Resources.BasicSprite);
             }
 
-            _defaultVertexShader = GorgonShaderFactory.Compile<GorgonVertexShader>(Graphics, Resources.BasicSprite, "GorgonVertexShader", GorgonGraphics.IsDebugEnabled);
-            _defaultPixelShader = GorgonShaderFactory.Compile<GorgonPixelShader>(Graphics, Resources.BasicSprite, "GorgonPixelShaderTextured", GorgonGraphics.IsDebugEnabled);
+            _defaultVertexShader.Shader = GorgonShaderFactory.Compile<GorgonVertexShader>(Graphics, Resources.BasicSprite, "GorgonVertexShader", GorgonGraphics.IsDebugEnabled);
+            _defaultPixelShader.Shader = GorgonShaderFactory.Compile<GorgonPixelShader>(Graphics, Resources.BasicSprite, "GorgonPixelShaderTextured", GorgonGraphics.IsDebugEnabled);
 
-            _vertexLayout = GorgonInputLayout.CreateUsingType<Gorgon2DVertex>(Graphics, _defaultVertexShader);
+            _vertexLayout = GorgonInputLayout.CreateUsingType<Gorgon2DVertex>(Graphics, _defaultVertexShader.Shader);
 
             // We need to ensure that we have a default texture in case we decide not to send a texture in.
             GorgonTexture2D textureResource = Resources.White_2x2.ToTexture2D(Graphics,
@@ -162,10 +162,10 @@ namespace Gorgon.Renderers
                                        1.0f,
                                        out DX.Matrix projection);
 
-            _viewProjection = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref projection, "View * Projection Matrix Buffer");
+            _defaultVertexShader.RwConstantBuffers[0] = _viewProjection = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref projection, "View * Projection Matrix Buffer");
 
             _alphaTestData = new AlphaTestData(true, GorgonRangeF.Empty);
-            _alphaTest = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _alphaTestData, "Alpha Test Buffer");
+            _defaultPixelShader.RwConstantBuffers[0] = _alphaTest = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _alphaTestData, "Alpha Test Buffer");
 
             _spriteRenderer = new SpriteRenderer(Graphics);
             _drawCallFactory = new DrawCallFactory(Graphics, _defaultTexture, _vertexLayout)
@@ -222,6 +222,17 @@ namespace Gorgon.Renderers
             _lastBatchState.BlendState = batchState?.BlendState ?? GorgonBlendState.Default;
             _lastBatchState.RasterState = batchState?.RasterState ?? GorgonRasterState.Default;
             _lastBatchState.DepthStencilState = batchState?.DepthStencilState ?? GorgonDepthStencilState.Default;
+
+            // If we didn't assign shaders, then use our defaults.
+            if (_lastBatchState.PixelShader.Shader == null)
+            {
+                _lastBatchState.PixelShader.Shader = _defaultPixelShader.Shader;
+            }
+
+            if (_lastBatchState.VertexShader.Shader == null)
+            {
+                _lastBatchState.VertexShader.Shader = _defaultVertexShader.Shader;
+            }
         }
 
         /// <summary>
@@ -823,8 +834,8 @@ namespace Gorgon.Renderers
         /// </summary>
         public void Dispose()
         {
-            GorgonVertexShader vertexShader = Interlocked.Exchange(ref _defaultVertexShader, null);
-            GorgonPixelShader pixelShader = Interlocked.Exchange(ref _defaultPixelShader, null);
+            Gorgon2DShader<GorgonVertexShader> vertexShader = Interlocked.Exchange(ref _defaultVertexShader, null);
+            Gorgon2DShader<GorgonPixelShader> pixelShader = Interlocked.Exchange(ref _defaultPixelShader, null);
             GorgonInputLayout layout = Interlocked.Exchange(ref _vertexLayout, null);
             SpriteRenderer spriteRenderer = Interlocked.Exchange(ref _spriteRenderer, null);
             GorgonTexture2DView texture = Interlocked.Exchange(ref _defaultTexture, null);
@@ -847,8 +858,8 @@ namespace Gorgon.Renderers
             viewProj?.Buffer?.Dispose();
             texture?.Texture?.Dispose();
             layout?.Dispose();
-            vertexShader?.Dispose();
-            pixelShader?.Dispose();
+            vertexShader?.Shader?.Dispose();
+            pixelShader?.Shader?.Dispose();
         }
         #endregion
 

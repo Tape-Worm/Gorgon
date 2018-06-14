@@ -66,14 +66,14 @@ namespace Gorgon.Renderers.Properties {
         ///#define MAX_KERNEL_SIZE 13
         ///
         ///// Our default texture and sampler.
-        ///Texture2D _gorgonTexture : register(t0);
+        ///Texture2DArray _gorgonTexture : register(t0);
         ///SamplerState _gorgonSampler : register(s0);
         ///
         ///// Additional effect texture buffer.
         ///Texture2D _gorgonEffectTexture : register(t1);
         ///
         ///// Our default sprite vertex.
-        ///struct G [rest of string was truncated]&quot;;.
+        ///str [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string BasicSprite {
             get {
@@ -109,6 +109,33 @@ namespace Gorgon.Renderers.Properties {
         internal static string GOR2D_ERR_BEGIN_NOT_CALLED {
             get {
                 return ResourceManager.GetString("GOR2D_ERR_BEGIN_NOT_CALLED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The constant buffer slot must be 0 or less than {0}..
+        /// </summary>
+        internal static string GOR2D_ERR_CBUFFER_SLOT_INVALID {
+            get {
+                return ResourceManager.GetString("GOR2D_ERR_CBUFFER_SLOT_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The sampler index must be 0 or less than {1}..
+        /// </summary>
+        internal static string GOR2D_ERR_INVALID_SAMPLER_INDEX {
+            get {
+                return ResourceManager.GetString("GOR2D_ERR_INVALID_SAMPLER_INDEX", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The shader resource slot must be 0 or less than {0}..
+        /// </summary>
+        internal static string GOR2D_ERR_SRV_SLOT_INVALID {
+            get {
+                return ResourceManager.GetString("GOR2D_ERR_SRV_SLOT_INVALID", resourceCulture);
             }
         }
         

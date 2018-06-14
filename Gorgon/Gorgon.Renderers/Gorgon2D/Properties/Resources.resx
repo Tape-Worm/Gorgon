@@ -127,6 +127,15 @@
   <data name="GOR2D_ERR_BEGIN_NOT_CALLED" xml:space="preserve">
     <value>The Begin() method must be called prior to calling this method.</value>
   </data>
+  <data name="GOR2D_ERR_CBUFFER_SLOT_INVALID" xml:space="preserve">
+    <value>The constant buffer slot must be 0 or less than {0}.</value>
+  </data>
+  <data name="GOR2D_ERR_INVALID_SAMPLER_INDEX" xml:space="preserve">
+    <value>The sampler index must be 0 or less than {1}.</value>
+  </data>
+  <data name="GOR2D_ERR_SRV_SLOT_INVALID" xml:space="preserve">
+    <value>The shader resource slot must be 0 or less than {0}.</value>
+  </data>
   <data name="Icons" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Icons.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>

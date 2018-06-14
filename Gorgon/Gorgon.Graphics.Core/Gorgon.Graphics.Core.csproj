@@ -269,7 +269,6 @@
     <None Include="Resources\White_2x2.png" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="OLDE\" />
     <Folder Include="Pipeline\_Extensions\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

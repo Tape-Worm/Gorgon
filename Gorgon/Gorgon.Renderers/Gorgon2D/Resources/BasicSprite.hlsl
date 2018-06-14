@@ -111,6 +111,11 @@ cbuffer GorgonDisplacementEffect : register(b1)
 	float4 displaceSizeAmount = 0;
 }
 
+cbuffer TestCBuffers : register(b1)
+{
+	float4 m = float4(1, 1, 1, 1);
+}
+
 // Our default vertex shader.
 GorgonSpriteVertex GorgonVertexShader(GorgonSpriteVertex vertex)
 {
@@ -128,7 +133,7 @@ float4 GorgonPixelShaderTextured(GorgonSpriteVertex vertex) : SV_Target
 
 	REJECT_ALPHA(color.a);
 		
-	return color;
+	return color * m;
 }
 
 // Our default pixel shader with textures, alpha testing and materials.
