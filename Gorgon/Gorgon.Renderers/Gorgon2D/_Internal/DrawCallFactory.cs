@@ -40,16 +40,10 @@ namespace Gorgon.Renderers
         private readonly GorgonDrawIndexCallBuilder _drawBuilder;
         // The builder used to build states.
         private readonly GorgonPipelineStateBuilder _stateBuilder;
-        // The last draw call that was issued.
-        private GorgonDrawIndexCall _lastCall;
-        // The last pipeline state used.
-        private GorgonPipelineState _lastState;
         // The default texture to use if the renderable does not have one.
         private readonly GorgonTexture2DView _defaultTexture;
         // The current input layout.
         private readonly GorgonInputLayout _inputLayout;
-        // The previous sprite.
-        private BatchRenderable _prevRenderable;
         #endregion
 
         #region Properties.
@@ -87,122 +81,20 @@ namespace Gorgon.Renderers
             batchState.PixelShader.RwSrvs[0] = renderable.Texture ?? _defaultTexture;
             batchState.PixelShader.RwSamplers[0] = renderable.TextureSampler ?? GorgonSamplerState.Default;
 
-            bool needStateUpdate = (_lastState == null)
-                                   || (_lastCall?.PipelineState != _lastState)
-                                   || (_lastState.PixelShader != batchState.PixelShader.Shader)
-                                   || (_lastState.VertexShader != batchState.VertexShader.Shader)
-                                   || (_lastState.BlendStates[0] != batchState.BlendState)
-                                   || (_lastState.DepthStencilState != batchState.DepthStencilState)
-                                   || (_lastState.RasterState != batchState.RasterState);
-
-            bool needResourceUpdate = (_lastCall == null)
-                                      || (renderable.StateChanged)
-                                      || (_lastCall.IndexBuffer != renderer.IndexBuffer)
-                                      || (_lastCall.VertexBufferBindings[0] != renderer.VertexBuffer)
-                                      || (_lastCall.VertexShader.ConstantBuffers[0] != batchState.VertexShader.RwConstantBuffers[0])
-                                      || (_lastCall.PixelShader.ConstantBuffers[0] != batchState.PixelShader.RwConstantBuffers[0]);
-
-            bool needsVsConstantsUpdate = _lastCall == null;
-            bool needsPsConstantsUpdate = _lastCall == null;
-            bool needsVsSamplerUpdate = _lastCall == null;
-            bool needsPsSamplerUpdate = _lastCall == null;
-            bool needsVsSrvUpdate = _lastCall == null;
-            bool needsPsSrvUpdate = _lastCall == null;
-
-            // Check for resource switches.
-            if (_lastCall != null)
-            {
-                if (!_lastCall.VertexShader.ConstantBuffers.DirtyEquals(batchState.VertexShader.ConstantBuffers))
-                {
-                    needResourceUpdate = needsVsConstantsUpdate = true;
-                }
-
-                if (!_lastCall.PixelShader.ConstantBuffers.DirtyEquals(batchState.PixelShader.ConstantBuffers))
-                {
-                    needResourceUpdate = needsPsConstantsUpdate = true;
-                }
-
-                if (!_lastCall.VertexShader.ShaderResources.DirtyEquals(batchState.VertexShader.ShaderResources))
-                {
-                    needResourceUpdate = needsVsSrvUpdate = true;
-                }
-
-                if (!_lastCall.PixelShader.ShaderResources.DirtyEquals(batchState.PixelShader.ShaderResources))
-                {
-                    needResourceUpdate = needsPsSrvUpdate = true;
-                }
-
-                if (!_lastCall.VertexShader.Samplers.DirtyEquals(batchState.VertexShader.Samplers))
-                {
-                    needResourceUpdate = needsVsSamplerUpdate = true;
-                }
-
-                if (!_lastCall.PixelShader.Samplers.DirtyEquals(batchState.PixelShader.Samplers))
-                {
-                    needResourceUpdate = needsPsSamplerUpdate = true;
-                }
-            }
-
-            _prevRenderable = renderable;
-
-            if ((!needResourceUpdate) && (!needStateUpdate))
-            {
-                return _lastCall;
-            }
-
-            // Update the state only if we need to.
-            if (needStateUpdate)
-            {
-                _lastState = _stateBuilder.PixelShader(batchState.PixelShader.Shader)
-                                          .VertexShader(batchState.VertexShader.Shader)
-                                          .BlendState(batchState.BlendState)
-                                          .Build();
-
-                if (!needResourceUpdate)
-                {
-                    _lastCall = _drawBuilder.PipelineState(_lastState)
-                                            .Build(_drawAllocator);
-
-                    return _lastCall;
-                }
-            }
-
-            if (needsVsConstantsUpdate)
-            {
-                _drawBuilder.ConstantBuffers(ShaderType.Vertex, batchState.VertexShader.RwConstantBuffers);
-            }
-
-            if (needsPsConstantsUpdate)
-            {
-                _drawBuilder.ConstantBuffers(ShaderType.Pixel, batchState.PixelShader.RwConstantBuffers);
-            }
-
-            if (needsVsSrvUpdate)
-            {
-                _drawBuilder.ShaderResources(ShaderType.Vertex, batchState.VertexShader.RwSrvs);
-            }
-
-            if (needsPsSrvUpdate)
-            {
-                _drawBuilder.ShaderResources(ShaderType.Pixel, batchState.PixelShader.RwSrvs);
-            }
-
-            if (needsVsSamplerUpdate)
-            {
-                _drawBuilder.SamplerStates(ShaderType.Vertex, batchState.VertexShader.RwSamplers);
-            }
-
-            if (needsPsSamplerUpdate)
-            {
-                _drawBuilder.SamplerStates(ShaderType.Pixel, batchState.PixelShader.RwSamplers);
-            }
-
-            _drawBuilder.PipelineState(_lastState)
-                        .IndexBuffer(renderer.IndexBuffer)
-                        .VertexBuffer(_inputLayout, renderer.VertexBuffer);
-
-            _lastCall = _drawBuilder.Build(_drawAllocator);
-            return _lastCall;
+            return _drawBuilder.ConstantBuffers(ShaderType.Vertex, batchState.VertexShader.RwConstantBuffers)
+                               .ConstantBuffers(ShaderType.Pixel, batchState.PixelShader.RwConstantBuffers)
+                               .ShaderResources(ShaderType.Vertex, batchState.VertexShader.RwSrvs)
+                               .ShaderResources(ShaderType.Pixel, batchState.PixelShader.RwSrvs)
+                               .SamplerStates(ShaderType.Vertex, batchState.VertexShader.RwSamplers)
+                               .SamplerStates(ShaderType.Pixel, batchState.PixelShader.RwSamplers)
+                               .PipelineState(_stateBuilder.PixelShader(batchState.PixelShader.Shader)
+                                                           .VertexShader(batchState.VertexShader.Shader)
+                                                           .DepthStencilState(batchState.DepthStencilState)
+                                                           .RasterState(batchState.RasterState)
+                                                           .BlendState(batchState.BlendState))
+                               .IndexBuffer(renderer.IndexBuffer)
+                               .VertexBuffer(_inputLayout, renderer.VertexBuffer)
+                               .Build(_drawAllocator);
         }
         #endregion
 

@@ -241,10 +241,10 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Function to check for changes in the batch state, and render the previous batch if necessary.
         /// </summary>
-        /// <param name="renderable"></param>
+        /// <param name="renderable">The renderable object that needs to be evaluated.</param>
         private void RenderBatchOnChange(BatchRenderable renderable)
         {
-            // If we're sending the same guy in, there's no point in jumping through all of these hoops.
+            // Check for alpha test, sampler[0], and texture[0] changes.  We only need a new draw call when those states change.
             if ((_lastRenderable != null) && (_spriteRenderer.RenderableStateComparer.Equals(_lastRenderable, renderable)))
             {
                 return;
