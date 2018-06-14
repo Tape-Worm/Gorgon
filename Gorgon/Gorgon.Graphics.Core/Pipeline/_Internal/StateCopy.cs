@@ -50,7 +50,7 @@ namespace Gorgon.Graphics.Core
                 return;
             }
 
-            int length = src.Count.Min(D3D11.OutputMergerStage.SimultaneousRenderTargetCount - startSlot);
+            int length = src.Count.Min(src.Count - startSlot);
 
             for (int i = 0; i < length; ++i)
             {
@@ -84,7 +84,7 @@ namespace Gorgon.Graphics.Core
                 return;
             }
 
-            int length = srcStates.Count.Min(GorgonShaderResourceViews.MaximumShaderResourceViewCount - startSlot);
+            int length = srcStates.Count.Min(srcStates.Count - startSlot);
 
             for (int i = 0; i < length; ++i)
             {
@@ -107,7 +107,7 @@ namespace Gorgon.Graphics.Core
                 return;
             }
 
-            int length = srcStates.Count.Min(GorgonReadWriteViewBindings.MaximumReadWriteViewCount - startSlot);
+            int length = srcStates.Count.Min(srcStates.Count - startSlot);
 
             for (int i = 0; i < length; ++i)
             {
@@ -130,7 +130,7 @@ namespace Gorgon.Graphics.Core
                 return;
             }
 
-            int length = destStates.Length.Min(GorgonSamplerStates.MaximumSamplerStateCount - startSlot);
+            int length = srcStates.Count.Min(srcStates.Count - startSlot);
 
             for (int i = 0; i < length; ++i)
             {
@@ -153,7 +153,7 @@ namespace Gorgon.Graphics.Core
                 return;
             }
 
-            int length = src.Count.Min(GorgonConstantBuffers.MaximumConstantBufferCount - startSlot);
+            int length = src.Count.Min(src.Count - startSlot);
 
             for (int i = 0; i < length; ++i)
             {
