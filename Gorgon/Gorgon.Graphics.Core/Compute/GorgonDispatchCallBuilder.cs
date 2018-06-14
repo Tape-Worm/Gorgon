@@ -48,10 +48,17 @@ namespace Gorgon.Graphics.Core
         /// Function to assign a list of samplers to a compute shader on the pipeline.
         /// </summary>
         /// <param name="samplers">The samplers to assign.</param>
+        /// <param name="index">[Optional] The starting index to use when copying the list.</param>
         /// <returns>The fluent interface for this builder.</returns>
-        public GorgonDispatchCallBuilder SamplerStates(IReadOnlyList<GorgonSamplerState> samplers)
+        /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="index"/> parameter is less than 0, or greater than/equal to <see cref="GorgonSamplerStates.MaximumSamplerStateCount"/>.</exception>
+        public GorgonDispatchCallBuilder SamplerStates(IReadOnlyList<GorgonSamplerState> samplers, int index = 0)
         {
-            StateCopy.CopySamplers(_worker.D3DState.CsSamplers, samplers);
+            if ((index < 0) || (index >= GorgonSamplerStates.MaximumSamplerStateCount))
+            {
+                throw new ArgumentOutOfRangeException(nameof(index), string.Format(Resources.GORGFX_ERR_INVALID_SAMPLER_INDEX, GorgonSamplerStates.MaximumSamplerStateCount));
+            }
+
+            StateCopy.CopySamplers(_worker.D3DState.CsSamplers, samplers, index);
             return this;
         }
 
@@ -230,7 +237,7 @@ namespace Gorgon.Graphics.Core
             StateCopy.CopyConstantBuffers(final.D3DState.CsConstantBuffers, _worker.D3DState.CsConstantBuffers, 0);
 
             // Copy over samplers.
-            StateCopy.CopySamplers(final.D3DState.CsSamplers, _worker.D3DState.CsSamplers);
+            StateCopy.CopySamplers(final.D3DState.CsSamplers, _worker.D3DState.CsSamplers, 0);
 
             // Copy over shader resource views.
             StateCopy.CopySrvs(final.D3DState.CsSrvs, _worker.D3DState.CsSrvs, 0);
