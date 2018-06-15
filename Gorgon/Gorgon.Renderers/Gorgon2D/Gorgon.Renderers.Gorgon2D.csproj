@@ -85,7 +85,7 @@
     <Compile Include="_Internal\DrawCallFactory.cs" />
     <Compile Include="_Internal\ObjectRenderer.cs" />
     <Compile Include="Renderables\_Internal\BatchRenderableStateEqualityComparer.cs" />
-    <Compile Include="_Internal\SpriteRenderer.cs" />
+    <Compile Include="_Internal\BatchRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />

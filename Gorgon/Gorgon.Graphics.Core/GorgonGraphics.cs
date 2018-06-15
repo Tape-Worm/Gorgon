@@ -279,6 +279,15 @@ namespace Gorgon.Graphics.Core
         internal DXGI.Factory5 DXGIFactory => _dxgiFactory;
 
         /// <summary>
+        /// Property to return the number of draw calls since the last frame.
+        /// </summary>
+        public ulong DrawCallCount
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
         /// Property to return the logging interface used to write out debug messages.
         /// </summary>
         public IGorgonLog Log
@@ -2690,6 +2699,15 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
+        /// Function to reset the values for per/frame draw call statistics.
+        /// </summary>
+        /// <seealso cref="DrawCallCount"/>
+        public void ResetDrawCallStatistics()
+        {
+            DrawCallCount = 0;
+        }
+
+        /// <summary>
         /// Function to submit a basic draw call to the GPU.
         /// </summary>
         /// <param name="drawCall">The draw call to execute.</param>
@@ -2702,6 +2720,7 @@ namespace Gorgon.Graphics.Core
             drawCall.ValidateObject(nameof(drawCall));
             SetDrawStates(drawCall.D3DState, blendFactor ?? GorgonColor.White, blendSampleMask, depthStencilReference);
             D3DDeviceContext.Draw(drawCall.VertexCount, drawCall.VertexStartIndex);
+            ++DrawCallCount;
         }
 
         /// <summary>
@@ -2717,6 +2736,7 @@ namespace Gorgon.Graphics.Core
             drawCall.ValidateObject(nameof(drawCall));
             SetDrawStates(drawCall.D3DState, blendFactor ?? GorgonColor.White, blendSampleMask, depthStencilReference);
             D3DDeviceContext.DrawInstanced(drawCall.VertexCountPerInstance, drawCall.InstanceCount, drawCall.VertexStartIndex, drawCall.StartInstanceIndex);
+            ++DrawCallCount;
         }
 
         /// <summary>
@@ -2735,6 +2755,7 @@ namespace Gorgon.Graphics.Core
             drawIndexCall.ValidateObject(nameof(drawIndexCall));
             SetDrawStates(drawIndexCall.D3DState, blendFactor ?? GorgonColor.White, blendSampleMask, depthStencilReference);
             D3DDeviceContext.DrawIndexed(drawIndexCall.IndexCount, drawIndexCall.IndexStart, drawIndexCall.BaseVertexIndex);
+            ++DrawCallCount;
         }
 
         /// <summary>
@@ -2757,6 +2778,7 @@ namespace Gorgon.Graphics.Core
                                                   drawIndexCall.IndexStart,
                                                   drawIndexCall.BaseVertexIndex,
                                                   drawIndexCall.IndexStart);
+            ++DrawCallCount;
         }
 
         /// <summary>
@@ -2792,6 +2814,7 @@ namespace Gorgon.Graphics.Core
             indirectArgs.ValidateObject(nameof(indirectArgs));
             SetDrawStates(drawIndexCall.D3DState, _blendFactor, _blendSampleMask, _depthStencilReference);
             D3DDeviceContext.DrawIndexedInstancedIndirect(indirectArgs.Native, argumentOffset);
+            ++DrawCallCount;
         }
 
         /// <summary>
@@ -2840,6 +2863,7 @@ namespace Gorgon.Graphics.Core
 
             SetDrawStates(drawCall.D3DState, _blendFactor, _blendSampleMask, _depthStencilReference);
             D3DDeviceContext.DrawInstancedIndirect(indirectArgs.Native, argumentOffset);
+            ++DrawCallCount;
         }
 
         /// <summary>
@@ -2881,6 +2905,7 @@ namespace Gorgon.Graphics.Core
 
             SetDrawStates(drawCall.D3DState, _blendFactor, _blendSampleMask, _depthStencilReference);
             D3DDeviceContext.DrawAuto();
+            ++DrawCallCount;
         }
 
         /// <summary>

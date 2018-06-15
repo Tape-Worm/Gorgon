@@ -95,9 +95,6 @@ namespace Gorgon.Examples
 	    // Flag to indicate that the animation is paused.
 		private static bool _paused;
 
-	    private static GorgonConstantBufferView m;
-	    private static Gorgon2DBatchState _batchStatePs;
-
         /// <summary>
         /// Property to return the path to the resources for the example.
         /// </summary>
@@ -325,26 +322,16 @@ namespace Gorgon.Examples
 		/// </summary>
 		private static void DrawOverlay()
 		{
-			if (_showHelp)
-			{
-                _2D.DrawTextSprite(_helpTextSprite);
-			}
-
-			_fpsText.Length = 0;
-			_fpsText.AppendFormat(Resources.FPSLine, GorgonTiming.AverageFPS, GorgonTiming.AverageDelta * 1000.0f, _ballCount);
-
+		    // Draw the draw call counter.
+		    _fpsText.Length = 0;
+            // The draw commands below this are 2 guaranteed to generate actual draw calls, hence the + 2.
+		    _fpsText.AppendFormat(Resources.FPSLine, GorgonTiming.AverageFPS, GorgonTiming.AverageDelta * 1000.0f, _ballCount, _graphics.DrawCallCount);
 
 		    _2D.DrawFilledRectangle(new DX.RectangleF(0, 0, _statsTexture.Width, _statsTexture.Height),
 		                            GorgonColor.White,
 		                            _statsTexture,
 		                            new DX.RectangleF(0, 0, 1, 1));
             _2D.DrawString(_fpsText.ToString(), new DX.Vector2(3.0f, 0), _ballFont);
-			
-			// Draw the draw call counter.
-            // TODO: No stats support yet.
-			/*_fpsText.Length = 0;
-			_fpsText.AppendFormat(Resources.DrawCallsLine, GorgonRenderStatistics.DrawCallCount);
-			_2D.Drawing.DrawString(_ballFont, _fpsText.ToString(), new DX.Vector2(3.0f, (_ballFont.FontHeight * 3) + 2), Color.White);*/
 		}
 
 		/// <summary>
@@ -374,7 +361,7 @@ namespace Gorgon.Examples
 			}
 
             // Begin our rendering.
-            _2D.Begin(_batchStatePs);
+            _2D.Begin();
 
 			DrawBackground();
 
@@ -390,14 +377,20 @@ namespace Gorgon.Examples
 
 		    DrawNoBlur();
 
-			DrawOverlay();
+		    if (_showHelp)
+		    {
+		        _2D.DrawTextSprite(_helpTextSprite);
+		    }
 
-            _2D.End();
+			_2D.End();
+
+		    _2D.Begin();
+		    DrawOverlay();
+		    _2D.End();
 
 			_mainScreen.Present();
 
-            // TODO: Not supported.
-			//GorgonRenderStatistics.EndFrame();
+            _graphics.ResetDrawCallStatistics();
 
 			return true;
 		}
@@ -533,7 +526,7 @@ namespace Gorgon.Examples
 		                                                      new GorgonTexture2DInfo("Stats Render Target")
 		                                                      {
 		                                                          Width = (int)_ballFont
-		                                                                       .MeasureText(string.Format(Resources.FPSLine, 999999, 999999.999, _ballCount),
+		                                                                       .MeasureText(string.Format(Resources.FPSLine, 999999, 999999.999, _ballCount, 9999),
 		                                                                                    true).Width,
 		                                                          Height = (int)((_ballFont.FontHeight * 4) + _ballFont.Descent),
 		                                                          Format = BufferFormat.R8G8B8A8_UNorm,
@@ -566,14 +559,6 @@ namespace Gorgon.Examples
 
 		    // Set our main render target.
             _graphics.SetRenderTarget(_mainScreen.RenderTargetView);
-
-            DX.Vector4 test = new DX.Vector4(0.75f, 0.125f, 0.85f, 0.90f);
-            m = GorgonConstantBufferView.CreateConstantBuffer(_graphics, ref test, "M buffer");
-
-            var psB = new Gorgon2DShaderBuilder<GorgonPixelShader>();
-		    psB.ConstantBuffer(m, 1);
-		    Gorgon2DBatchStateBuilder b = new Gorgon2DBatchStateBuilder();
-		    _batchStatePs = b.PixelShader(psB).Build();
 		}
 
 		/// <summary>

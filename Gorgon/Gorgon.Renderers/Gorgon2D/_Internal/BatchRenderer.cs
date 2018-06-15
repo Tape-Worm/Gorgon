@@ -25,24 +25,22 @@
 #endregion
 
 using System;
-using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Native;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers
 {
     /// <summary>
-    /// The renderer for sprite objects.
+    /// The renderer for renderable objects.
     /// </summary>
-    internal sealed class SpriteRenderer
+    internal sealed class BatchRenderer
         : ObjectRenderer
     {
         #region Constants.
         /// <summary>
-        /// Maximum number of sprites that can be buffered prior to sending to the GPU.
-        /// We have 10,922 sprites (16 bit Index Buffer - 65536 bytes / 6 indices per sprite = ~10922).
+        /// Maximum number of renderables that can be buffered prior to sending to the GPU.
+        /// We have 10,922 renderables (16 bit Index Buffer - 65536 bytes / 6 indices per renderable = ~10922).
         /// </summary>
         public const int MaxSpriteCount = 10922;
         // The maximum number of vertices we can render.
@@ -64,6 +62,8 @@ namespace Gorgon.Renderers
         private int _indexStart;
         // The number of indices queued.
         private int _indexCount;
+        // The index of the vertex in the vertex buffer.
+        private int _vertexBufferIndex;
         #endregion
 
         #region Properties.
@@ -76,7 +76,7 @@ namespace Gorgon.Renderers
         }
 
         /// <summary>
-        /// Property to return the transformer to use when updating the sprite.
+        /// Property to return the transformer to use when updating the renderable.
         /// </summary>
         public SpriteTransformer SpriteTransformer
         {
@@ -84,7 +84,7 @@ namespace Gorgon.Renderers
         }
 
         /// <summary>
-        /// Property to return the transformer to use when updating the sprite.
+        /// Property to return the transformer to use when updating the renderable.
         /// </summary>
         public TextSpriteTransformer TextSpriteTransformer
         {
@@ -148,17 +148,16 @@ namespace Gorgon.Renderers
         }
 
         /// <summary>
-        /// Function queue a sprite for rendering.
+        /// Function queue a renderable item for rendering.
         /// </summary>
-        /// <param name="sprite">The sprite to queue.</param>
-        /// <param name="indexCount">The number of indices used by the sprite.</param>
-        public void QueueSprite(BatchRenderable sprite, int indexCount)
+        /// <param name="renderable">The renderable to queue.</param>
+        public void QueueRenderable(BatchRenderable renderable)
         {
-            Gorgon2DVertex[] vertices = sprite.Vertices;
-            int vertexCount = sprite.ActualVertexCount;
+            Gorgon2DVertex[] vertices = renderable.Vertices;
+            int vertexCount = renderable.ActualVertexCount;
             int lastVertex = _allocatedVertexCount + _currentVertexIndex + vertexCount;
 
-            // Ensure we actually have the room to cache the sprite vertices.
+            // Ensure we actually have the room to cache the renderable vertices.
             if (lastVertex >= _vertexCache.Length)
             {
                 ExpandCache();
@@ -168,14 +167,59 @@ namespace Gorgon.Renderers
             {
                 _vertexCache[_currentVertexIndex++] = vertices[i];
             }
-            
-            _indexCount += indexCount;
+
+            _indexCount += renderable.IndexCount;
         }
 
         /// <summary>
-        /// Function to flush the cache data into the buffers and render the sprites.
+        /// Function to flush the cache data into the buffers and render the renderables.
         /// </summary>
-        /// <param name="drawCall">The draw call that will be used to render the sprites.</param>
+        /// <param name="drawCall">The draw call that will be used to render the renderables.</param>
+        public void RenderBatches(GorgonDrawCall drawCall)
+        {
+            GorgonVertexBuffer vertexBuffer = VertexBuffer.VertexBuffer;
+            int cacheIndex = _currentVertexIndex - _allocatedVertexCount;
+            
+            while (_allocatedVertexCount > 0)
+            {
+                int vertexCount = _allocatedVertexCount.Min(MaxVertexCount);
+                int byteCount = Gorgon2DVertex.SizeInBytes * vertexCount;
+
+                // If we've exceeded our vertex or index buffer size, we need to reset from the beginning.
+                if ((_vertexBufferByteOffset + byteCount) >= vertexBuffer.SizeInBytes)
+                {
+                    _indexStart = 0;
+                    _vertexBufferByteOffset = 0;
+                    _vertexBufferIndex = 0;
+                }
+                
+                CopyMode copyMode = _vertexBufferByteOffset == 0 ? CopyMode.Discard : CopyMode.NoOverwrite;
+                
+                // Copy a chunk of the cache.
+                vertexBuffer.SetData(_vertexCache, cacheIndex, vertexCount, _vertexBufferByteOffset, copyMode);
+                
+                drawCall.VertexStartIndex = _vertexBufferIndex;
+                drawCall.VertexCount = vertexCount;
+                Graphics.Submit(drawCall);
+
+                // Move to the next block of bytes to render.
+                _vertexBufferByteOffset += byteCount;
+                _vertexBufferIndex += vertexCount;
+                _allocatedVertexCount -= vertexCount;
+                cacheIndex += vertexCount;
+            }
+
+            // Invalidate the cache.
+            _vertexBufferIndex = 0;
+            _currentVertexIndex = 0;
+            _allocatedVertexCount = 0;
+            _indexCount = 0;
+        }
+
+        /// <summary>
+        /// Function to flush the cache data into the buffers and render the renderables.
+        /// </summary>
+        /// <param name="drawCall">The draw call that will be used to render the renderables.</param>
         public void RenderBatches(GorgonDrawIndexCall drawCall)
         {
             GorgonVertexBuffer vertexBuffer = VertexBuffer.VertexBuffer;
@@ -193,19 +237,21 @@ namespace Gorgon.Renderers
                 {
                     _indexStart = 0;
                     _vertexBufferByteOffset = 0;
+                    _vertexBufferIndex = 0;
                 }
                 
                 CopyMode copyMode = _vertexBufferByteOffset == 0 ? CopyMode.Discard : CopyMode.NoOverwrite;
                 
                 // Copy a chunk of the cache.
                 vertexBuffer.SetData(_vertexCache, cacheIndex, vertexCount, _vertexBufferByteOffset, copyMode);
-
+                
                 drawCall.IndexStart = _indexStart;
                 drawCall.IndexCount = indexCount;
                 Graphics.Submit(drawCall);
 
                 // Move to the next block of bytes to render.
                 _vertexBufferByteOffset += byteCount;
+                _vertexBufferIndex += vertexCount;
                 _allocatedVertexCount -= vertexCount;
                 cacheIndex += vertexCount;
                 _indexStart += indexCount;
@@ -221,10 +267,10 @@ namespace Gorgon.Renderers
 
         #region Constructor/Finalizer.
         /// <summary>
-        /// Initializes a new instance of the <see cref="SpriteRenderer"/> class.
+        /// Initializes a new instance of the <see cref="BatchRenderer"/> class.
         /// </summary>
         /// <param name="graphics">The graphics interface that uses this renderer.</param>
-        public SpriteRenderer(GorgonGraphics graphics)
+        public BatchRenderer(GorgonGraphics graphics)
         {
             Graphics = graphics;
             SpriteTransformer = new SpriteTransformer();

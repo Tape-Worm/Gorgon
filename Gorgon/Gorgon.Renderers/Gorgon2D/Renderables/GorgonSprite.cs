@@ -436,6 +436,7 @@ namespace Gorgon.Renderers
 
             Renderable.Vertices = new Gorgon2DVertex[4];
             Renderable.ActualVertexCount = 4;
+            Renderable.IndexCount = 6;
 
             for (int i = 0; i < Renderable.Vertices.Length; ++i)
             {

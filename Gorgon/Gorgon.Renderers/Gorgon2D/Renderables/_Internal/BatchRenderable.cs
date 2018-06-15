@@ -205,6 +205,11 @@ namespace Gorgon.Renderers
         /// The bounding corners for a renderable.
         /// </summary>
         public DX.Vector4 Corners;
+
+        /// <summary>
+        /// The number of indices used by the renderable.
+        /// </summary>
+        public int IndexCount;
         #endregion
     }
 }

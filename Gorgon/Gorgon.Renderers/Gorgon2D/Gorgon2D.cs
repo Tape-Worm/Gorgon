@@ -58,8 +58,8 @@ namespace Gorgon.Renderers
         private Gorgon2DShader<GorgonPixelShader> _defaultPixelShader = new Gorgon2DShader<GorgonPixelShader>();
         // The layout used to define a vertex to the vertex shader.
         private GorgonInputLayout _vertexLayout;
-        // The renderer used to draw sprites.
-        private SpriteRenderer _spriteRenderer;
+        // The renderer used to draw batched renderable items.
+        private BatchRenderer _batchRenderer;
         // The default texture to render.
         private GorgonTexture2DView _defaultTexture;
         // The buffer that holds the view and projection matrices.
@@ -68,8 +68,10 @@ namespace Gorgon.Renderers
         private GorgonConstantBufferView _alphaTest;
         // A factory used to create draw calls.
         private DrawCallFactory _drawCallFactory;
-        // The currently active draw call.
-        private GorgonDrawIndexCall _currentDrawCall;
+        // The currently active draw index call.
+        private GorgonDrawIndexCall _currentDrawIndexCall;
+        // The currently active draw call (no indexing).
+        private GorgonDrawCall _currentDrawCall;
         // The previously assigned batch state.
         private readonly Gorgon2DBatchState _lastBatchState = new Gorgon2DBatchState();
         // The last sprite that was put into the system.
@@ -165,7 +167,7 @@ namespace Gorgon.Renderers
             _alphaTestData = new AlphaTestData(true, GorgonRangeF.Empty);
             _alphaTest = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _alphaTestData, "Alpha Test Buffer");
 
-            _spriteRenderer = new SpriteRenderer(Graphics);
+            _batchRenderer = new BatchRenderer(Graphics);
             _drawCallFactory = new DrawCallFactory(Graphics, _defaultTexture, _vertexLayout)
                                {
                                    ProjectionViewBuffer = _viewProjection,
@@ -239,34 +241,60 @@ namespace Gorgon.Renderers
         }
 
         /// <summary>
-        /// Function to check for changes in the batch state, and render the previous batch if necessary.
+        /// Function to update the alpha testing values and render the active draw call.
         /// </summary>
-        /// <param name="renderable">The renderable object that needs to be evaluated.</param>
-        private void RenderBatchOnChange(BatchRenderable renderable)
+        private void UpdateAlphaTestAndRender()
         {
-            // Check for alpha test, sampler[0], and texture[0] changes.  We only need a new draw call when those states change.
-            if ((_lastRenderable != null) && (_spriteRenderer.RenderableStateComparer.Equals(_lastRenderable, renderable)))
+            if ((_currentDrawCall == null) && (_currentDrawIndexCall == null))
             {
                 return;
             }
 
-            GorgonDrawIndexCall drawCall = _drawCallFactory.GetDrawIndexCall(renderable, _lastBatchState, _spriteRenderer);
-
-            if ((_currentDrawCall != null) && (drawCall != _currentDrawCall))
+            if (_lastRenderable != null)
             {
-                if (_lastRenderable != null)
-                {
-                    UpdateAlphaTest(ref _lastRenderable.AlphaTestData);
-                }
+                UpdateAlphaTest(ref _lastRenderable.AlphaTestData);
+            }
 
-                _spriteRenderer.RenderBatches(_currentDrawCall);
+            if (_currentDrawIndexCall != null)
+            {
+                _batchRenderer.RenderBatches(_currentDrawIndexCall);
+            }
+            else if (_currentDrawCall != null)
+            {
+                _batchRenderer.RenderBatches(_currentDrawCall);
+            }
+        }
+
+        /// <summary>
+        /// Function to check for changes in the batch state, and render the previous batch if necessary.
+        /// </summary>
+        /// <param name="renderable">The renderable object that needs to be evaluated.</param>
+        /// <param name="useIndices"><b>true</b> if the renderable requires indices, or <b>false</b> if not.</param>
+        private void RenderBatchOnChange(BatchRenderable renderable, bool useIndices)
+        {
+            // Check for alpha test, sampler[0], and texture[0] changes.  We only need a new draw call when those states change.
+            if ((_lastRenderable != null) && (_batchRenderer.RenderableStateComparer.Equals(_lastRenderable, renderable)))
+            {
+                return;
+            }
+
+            // Flush any pending draw calls.
+            UpdateAlphaTestAndRender();
+
+            if (useIndices)
+            {
+                _currentDrawCall = null;
+                _currentDrawIndexCall = _drawCallFactory.GetDrawIndexCall(renderable, _lastBatchState, _batchRenderer);
+            }
+            else
+            {
+                _currentDrawIndexCall = null;
+                _currentDrawCall = _drawCallFactory.GetDrawCall(renderable, _lastBatchState, _batchRenderer);
             }
 
             _lastRenderable = renderable;
             // All states are reconciled, so reset the change flag.
             _lastRenderable.StateChanged = false;
-
-            _currentDrawCall = drawCall;
         }
 
         /// <summary>
@@ -321,14 +349,14 @@ namespace Gorgon.Renderers
 
             BatchRenderable renderable = sprite.Renderable;
 
-            RenderBatchOnChange(renderable);
+            RenderBatchOnChange(renderable, true);
 
             if (sprite.IsUpdated)
             {
-                _spriteRenderer.SpriteTransformer.Transform(renderable);
+                _batchRenderer.SpriteTransformer.Transform(renderable);
             }
 
-            _spriteRenderer.QueueSprite(renderable, 6);
+            _batchRenderer.QueueRenderable(renderable);
         }
 
         /// <summary>
@@ -368,8 +396,6 @@ namespace Gorgon.Renderers
             int vertexOffset = 0;
             // The position of the current glyph.
             DX.Vector2 position = DX.Vector2.Zero;
-            // The number of indices to render.
-            int indexCount = 0;
 
             if (_beginCalled == 0)
             {
@@ -390,7 +416,7 @@ namespace Gorgon.Renderers
             TextRenderable renderable = sprite.Renderable;
 
             // Flush the previous batch if we have one that's different from the upcoming batch.
-            RenderBatchOnChange(renderable);
+            RenderBatchOnChange(renderable, true);
 
             _textBuffer.Append(sprite.Text);
             
@@ -405,7 +431,8 @@ namespace Gorgon.Renderers
             List<ColorBlock> colorBlocks = renderable.ColorBlocks;
             bool allowColorCodes = sprite.AllowColorCodes;
             bool isUpdated = sprite.IsUpdated;
-            
+
+            renderable.IndexCount = 0;
             renderable.ActualVertexCount = 0;
 
             for (int line = 0; line < renderable.Lines.Length; ++line)
@@ -472,7 +499,7 @@ namespace Gorgon.Renderers
                         // If we have a change of texture, then we need to let the renderer know that we need a flush.
                         if ((renderable.Texture != null) && (renderable.Texture != glyph.TextureView))
                         {
-                            RenderBatchOnChange(renderable);
+                            RenderBatchOnChange(renderable, true);
                             renderable.HasTextureChanges = true;
                         }
 
@@ -482,7 +509,7 @@ namespace Gorgon.Renderers
                         {
                             if ((allowColorCodes) && (!isOutlinePass))
                             {
-                                blockColor = _spriteRenderer.TextSpriteTransformer.GetColorForCharacter(charCount, colorBlocks);
+                                blockColor = _batchRenderer.TextSpriteTransformer.GetColorForCharacter(charCount, colorBlocks);
                             }
 
                             if ((blockColor != null) && (!renderable.HasVertexColorChanges))
@@ -497,7 +524,7 @@ namespace Gorgon.Renderers
                             }
 
 
-                            _spriteRenderer.TextSpriteTransformer.Transform(renderable,
+                            _batchRenderer.TextSpriteTransformer.Transform(renderable,
                                                                             glyph,
                                                                             blockColor,
                                                                             ref position,
@@ -515,7 +542,7 @@ namespace Gorgon.Renderers
                             ++charCount;
                         }
 
-                        indexCount += 6;
+                        renderable.IndexCount += 6;
                         renderable.ActualVertexCount += 4;
                     }
 
@@ -526,9 +553,9 @@ namespace Gorgon.Renderers
                 position.Y += fontHeight * lineSpaceMultiplier;
             }
 
-            if (indexCount != 0)
+            if (renderable.IndexCount != 0)
             {
-                _spriteRenderer.QueueSprite(renderable, indexCount);
+                _batchRenderer.QueueRenderable(renderable);
             }
             
             renderable.VertexCountChanged = false;
@@ -619,13 +646,14 @@ namespace Gorgon.Renderers
 
             _primitiveRenderable.Bounds = region;
             _primitiveRenderable.ActualVertexCount = 4;
+            _primitiveRenderable.IndexCount = 6;
             _primitiveRenderable.AlphaTestData = new AlphaTestData(true, GorgonRangeF.Empty);
             _primitiveRenderable.Texture = texture;
             _primitiveRenderable.TextureSampler = textureSampler;
 
-            RenderBatchOnChange(_primitiveRenderable);
+            RenderBatchOnChange(_primitiveRenderable, true);
             
-            _spriteRenderer.QueueSprite(_primitiveRenderable, 6);
+            _batchRenderer.QueueRenderable(_primitiveRenderable);
         }
 
         /// <summary>
@@ -803,6 +831,11 @@ namespace Gorgon.Renderers
             var start2 = new DX.Vector2((x1 - cross.X).FastCeiling(), (y1 - cross.Y).FastCeiling());
             var end2 = new DX.Vector2((x2 - cross.X).FastCeiling(), (y2 - cross.Y).FastCeiling());
             
+            v0.Position = new DX.Vector4(start1, startDepth, 1.0f);
+            v1.Position = new DX.Vector4(end1, endDepth, 1.0f);
+            v2.Position = new DX.Vector4(start2, startDepth, 1.0f);
+            v3.Position = new DX.Vector4(end2, endDepth, 1.0f);
+
             if (texture != null)
             {
                 textureArrayIndex = textureArrayIndex.Max(0);
@@ -817,10 +850,14 @@ namespace Gorgon.Renderers
                 }
                 else
                 {
-                    v0.UV = new DX.Vector3(textureRegion.Value.TopLeft, textureArrayIndex);
-                    v1.UV = new DX.Vector3(textureRegion.Value.TopRight, textureArrayIndex);
-                    v2.UV = new DX.Vector3(textureRegion.Value.BottomLeft, textureArrayIndex);
-                    v3.UV = new DX.Vector3(textureRegion.Value.BottomRight, textureArrayIndex);
+                    v0.UV = new DX.Vector3((start1.X / (textureRegion.Value.Width * texture.Width)) + textureRegion.Value.Left, 
+                                           (start1.Y / (textureRegion.Value.Height * texture.Height)) + textureRegion.Value.Top, textureArrayIndex);
+                    v1.UV = new DX.Vector3((end1.X / (textureRegion.Value.Width * texture.Width)) + textureRegion.Value.Left, 
+                                           (end1.Y / (textureRegion.Value.Height * texture.Height)) + textureRegion.Value.Top, textureArrayIndex);
+                    v2.UV = new DX.Vector3((start2.X / (textureRegion.Value.Width * texture.Width)) + textureRegion.Value.Left, 
+                                           (start2.Y / (textureRegion.Value.Height * texture.Height)) + textureRegion.Value.Top, textureArrayIndex);
+                    v3.UV = new DX.Vector3((end2.X / (textureRegion.Value.Width * texture.Width)) + textureRegion.Value.Left, 
+                                           (end2.Y / (textureRegion.Value.Height * texture.Height)) + textureRegion.Value.Top, textureArrayIndex);
                 }
             }
             else
@@ -839,11 +876,6 @@ namespace Gorgon.Renderers
             v2.Color = color;
             v3.Color = color;
 
-            v0.Position = new DX.Vector4(start1, startDepth, 1.0f);
-            v1.Position = new DX.Vector4(end1, startDepth, 1.0f);
-            v2.Position = new DX.Vector4(start2, startDepth, 1.0f);
-            v3.Position = new DX.Vector4(end2, startDepth, 1.0f);
-
             var alphaTestData = new AlphaTestData(true, GorgonRangeF.Empty);
 
             _primitiveRenderable.StateChanged = (texture != _primitiveRenderable.Texture)
@@ -852,13 +884,94 @@ namespace Gorgon.Renderers
 
             _primitiveRenderable.Bounds = new DX.RectangleF(x1, y1, length.X, length.Y);
             _primitiveRenderable.ActualVertexCount = 4;
+            _primitiveRenderable.IndexCount = 6;
             _primitiveRenderable.AlphaTestData = new AlphaTestData(true, GorgonRangeF.Empty);
             _primitiveRenderable.Texture = texture;
             _primitiveRenderable.TextureSampler = textureSampler;
 
-            RenderBatchOnChange(_primitiveRenderable);
+            RenderBatchOnChange(_primitiveRenderable, true);
             
-            _spriteRenderer.QueueSprite(_primitiveRenderable, 6);
+            _batchRenderer.QueueRenderable(_primitiveRenderable);
+        }
+
+        /// <summary>
+        /// Function to draw an ellipse.
+        /// </summary>
+        /// <param name="region">The region that will contain the ellipse.</param>
+        /// <param name="color">The color of the ellipse.</param>
+        /// <param name="smoothness">[Optional] The smoothness of the ellipse.</param>
+        /// <param name="thickness">[Optional] The ellipse line thickness.</param>
+        /// <param name="texture">[Optional] The texture to render on the ellipse.</param>
+        /// <param name="textureRegion">[Optional] The texture coordinates to map to the rectangle.</param>
+        /// <param name="textureArrayIndex">[Optional] The array index for a texture array to use.</param>
+        /// <param name="textureSampler">[Optional] The texture sampler to apply to the texture.</param>
+        /// <param name="depth">[Optional] The depth value for the ellipse.</param>
+        public void DrawEllipse(DX.RectangleF region, GorgonColor color, float smoothness = 1.0f, float thickness = 1.0f, GorgonTexture2DView texture = null, DX.RectangleF? textureRegion = null, int textureArrayIndex = 0, GorgonSamplerState textureSampler = null, float depth = 0)
+        {
+            if (_beginCalled == 0)
+            {
+                throw new InvalidOperationException(Resources.GOR2D_ERR_BEGIN_NOT_CALLED);
+            }
+
+            int quality = (int)(smoothness * 64.0f).FastCeiling();
+
+            // Nothing to draw.
+            if (quality == 0)
+            {
+                return;
+            }
+
+            // TODO: Texture coorindates..
+            float angle = 0.0f;
+            float step = (float)System.Math.PI * 2 / quality;
+            DX.Vector2 half = new DX.Vector2(0.5f, 0.5f);
+            DX.RectangleF actualTextureRegion = DX.RectangleF.Empty;
+
+            for (int i = 0; i < quality; i++)
+            {
+                var pointPosition = new DX.Vector2(angle.Cos() * 0.5f, angle.Sin() * 0.5f);
+                DX.Vector2.Add(ref pointPosition, ref half, out DX.Vector2 startPosition);
+
+                angle += step;
+
+                pointPosition = new DX.Vector2(angle.Cos() * 0.5f, angle.Sin() * 0.5f);
+                DX.Vector2.Add(ref pointPosition, ref half, out DX.Vector2 endPosition);
+
+                if ((textureRegion != null) && (texture != null))
+                {
+                    DX.Vector2 scaledPos = textureRegion.Value.TopLeft;
+                    DX.Vector2 scaledTexture = new DX.Vector2(textureRegion.Value.Size.Width, textureRegion.Value.Size.Height);
+                    
+                    DX.Vector2.Multiply(ref startPosition, ref scaledTexture, out DX.Vector2 startUV);
+                    DX.Vector2.Multiply(ref endPosition, ref scaledTexture, out DX.Vector2 endUV);
+
+                    DX.Vector2.Add(ref startUV, ref scaledPos, out startUV);
+                    DX.Vector2.Add(ref endUV, ref scaledPos, out endUV);
+
+                    actualTextureRegion.X = startUV.X;
+                    actualTextureRegion.Y = startUV.Y;
+                    actualTextureRegion.Width = endUV.X;
+                    actualTextureRegion.Height = endUV.Y;
+                }
+
+                startPosition.X = ((startPosition.X * (region.Size.Width * 2.0f)) / 2.0f) + region.Left - thickness;
+                startPosition.Y = ((startPosition.Y * (region.Size.Height * 2.0f)) / 2.0f) + region.Top - thickness;
+                endPosition.X = ((endPosition.X * (region.Size.Width * 2.0f)) / 2.0f) + region.Left - thickness;
+                endPosition.Y = ((endPosition.Y * (region.Size.Height * 2.0f)) / 2.0f) + region.Top - thickness;
+
+                DrawLine(startPosition.X,
+                         startPosition.Y,
+                         endPosition.X,
+                         endPosition.Y,
+                         color,
+                         thickness,
+                         texture,
+                         textureRegion == null ? null : (DX.RectangleF?)actualTextureRegion,
+                         textureArrayIndex,
+                         textureSampler,
+                         depth,
+                         depth);
+            }
         }
 
         /// <summary>
@@ -871,13 +984,10 @@ namespace Gorgon.Renderers
                 return;
             }
 
-            if (_lastRenderable != null)
-            {
-                UpdateAlphaTest(ref _lastRenderable.AlphaTestData);
-            }
-            
-            _spriteRenderer.RenderBatches(_currentDrawCall);
+            UpdateAlphaTestAndRender();
+
             _currentDrawCall = null;
+            _currentDrawIndexCall = null;
         }
 
         /// <summary>
@@ -888,7 +998,7 @@ namespace Gorgon.Renderers
             Gorgon2DShader<GorgonVertexShader> vertexShader = Interlocked.Exchange(ref _defaultVertexShader, null);
             Gorgon2DShader<GorgonPixelShader> pixelShader = Interlocked.Exchange(ref _defaultPixelShader, null);
             GorgonInputLayout layout = Interlocked.Exchange(ref _vertexLayout, null);
-            SpriteRenderer spriteRenderer = Interlocked.Exchange(ref _spriteRenderer, null);
+            BatchRenderer spriteRenderer = Interlocked.Exchange(ref _batchRenderer, null);
             GorgonTexture2DView texture = Interlocked.Exchange(ref _defaultTexture, null);
             GorgonConstantBufferView viewProj = Interlocked.Exchange(ref _viewProjection, null);
             GorgonConstantBufferView alphaTest = Interlocked.Exchange(ref _alphaTest, null);
