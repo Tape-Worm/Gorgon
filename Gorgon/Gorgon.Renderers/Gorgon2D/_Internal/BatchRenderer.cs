@@ -64,6 +64,8 @@ namespace Gorgon.Renderers
         private int _indexCount;
         // The index of the vertex in the vertex buffer.
         private int _vertexBufferIndex;
+        // The vertex index offset used by the index buffer to offset within the vertex buffer.
+        private int _indexBufferBaseVertexIndex;
         #endregion
 
         #region Properties.
@@ -168,7 +170,10 @@ namespace Gorgon.Renderers
                 _vertexCache[_currentVertexIndex++] = vertices[i];
             }
 
-            _indexCount += renderable.IndexCount;
+            if (renderable.IndexCount != 0)
+            {
+                _indexCount += renderable.IndexCount;
+            }
         }
 
         /// <summary>
@@ -191,6 +196,7 @@ namespace Gorgon.Renderers
                     _indexStart = 0;
                     _vertexBufferByteOffset = 0;
                     _vertexBufferIndex = 0;
+                    _indexBufferBaseVertexIndex = 0;
                 }
                 
                 CopyMode copyMode = _vertexBufferByteOffset == 0 ? CopyMode.Discard : CopyMode.NoOverwrite;
@@ -206,6 +212,7 @@ namespace Gorgon.Renderers
                 _vertexBufferByteOffset += byteCount;
                 _vertexBufferIndex += vertexCount;
                 _allocatedVertexCount -= vertexCount;
+                _indexBufferBaseVertexIndex += vertexCount;
                 cacheIndex += vertexCount;
             }
 
@@ -238,13 +245,15 @@ namespace Gorgon.Renderers
                     _indexStart = 0;
                     _vertexBufferByteOffset = 0;
                     _vertexBufferIndex = 0;
+                    _indexBufferBaseVertexIndex = 0;
                 }
                 
                 CopyMode copyMode = _vertexBufferByteOffset == 0 ? CopyMode.Discard : CopyMode.NoOverwrite;
                 
                 // Copy a chunk of the cache.
                 vertexBuffer.SetData(_vertexCache, cacheIndex, vertexCount, _vertexBufferByteOffset, copyMode);
-                
+
+                drawCall.BaseVertexIndex = _indexBufferBaseVertexIndex;
                 drawCall.IndexStart = _indexStart;
                 drawCall.IndexCount = indexCount;
                 Graphics.Submit(drawCall);

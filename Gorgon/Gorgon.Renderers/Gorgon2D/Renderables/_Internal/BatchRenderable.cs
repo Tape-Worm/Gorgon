@@ -36,7 +36,6 @@ namespace Gorgon.Renderers
     /// </summary>
     internal class BatchRenderable
     {
-        #region Variables.
         // Many of these "Properties" are variables.  While this is horrid coding style, it's also SUPER efficient for access, so we'll trade pretty code for raw performance here.
 
         /// <summary>
@@ -210,6 +209,10 @@ namespace Gorgon.Renderers
         /// The number of indices used by the renderable.
         /// </summary>
         public int IndexCount;
-        #endregion
+
+        /// <summary>
+        /// The type of primitive.
+        /// </summary>
+        public PrimitiveType PrimitiveType = PrimitiveType.TriangleList;
     }
 }

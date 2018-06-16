@@ -273,7 +273,10 @@ namespace Gorgon.Renderers
         private void RenderBatchOnChange(BatchRenderable renderable, bool useIndices)
         {
             // Check for alpha test, sampler[0], and texture[0] changes.  We only need a new draw call when those states change.
-            if ((_lastRenderable != null) && (_batchRenderer.RenderableStateComparer.Equals(_lastRenderable, renderable)))
+            if ((_lastRenderable != null) 
+                && (_batchRenderer.RenderableStateComparer.Equals(_lastRenderable, renderable))
+                && (((useIndices) && (_currentDrawIndexCall != null))
+                     || ((!useIndices) && (_currentDrawCall != null))))
             {
                 return;
             }
@@ -656,6 +659,23 @@ namespace Gorgon.Renderers
             _batchRenderer.QueueRenderable(_primitiveRenderable);
         }
 
+        public void TestDrawCallNonIndexed()
+        {
+            _primitiveRenderable.ActualVertexCount = 3;
+            _primitiveRenderable.IndexCount = 0;
+            _primitiveRenderable.Vertices[0].Position = new DX.Vector4(640, 240, 0, 1.0f);
+            _primitiveRenderable.Vertices[0].Color = new GorgonColor(1.0f, 0, 0, 1.0f);
+            _primitiveRenderable.Vertices[1].Position = new DX.Vector4(960, 480, 0, 1.0f);
+            _primitiveRenderable.Vertices[1].Color = new GorgonColor(0.0f, 1.0f, 0, 1.0f);
+            _primitiveRenderable.Vertices[2].Position = new DX.Vector4(320, 480, 0, 1.0f);
+            _primitiveRenderable.Vertices[2].Color = new GorgonColor(0.0f, 0, 1.0f, 1.0f);
+            _primitiveRenderable.Texture = _defaultTexture;
+            
+            RenderBatchOnChange(_primitiveRenderable, false);
+
+            _batchRenderer.QueueRenderable(_primitiveRenderable);
+        }
+
         /// <summary>
         /// Function to draw a filled rectangle.
         /// </summary>
@@ -900,6 +920,100 @@ namespace Gorgon.Renderers
         /// <param name="region">The region that will contain the ellipse.</param>
         /// <param name="color">The color of the ellipse.</param>
         /// <param name="smoothness">[Optional] The smoothness of the ellipse.</param>
+        /// <param name="texture">[Optional] The texture to render on the ellipse.</param>
+        /// <param name="textureRegion">[Optional] The texture coordinates to map to the rectangle.</param>
+        /// <param name="textureArrayIndex">[Optional] The array index for a texture array to use.</param>
+        /// <param name="textureSampler">[Optional] The texture sampler to apply to the texture.</param>
+        /// <param name="depth">[Optional] The depth value for the ellipse.</param>
+        public void DrawFilledEllipse(DX.RectangleF region, GorgonColor color, float smoothness = 1.0f, GorgonTexture2DView texture = null, DX.RectangleF? textureRegion = null, int textureArrayIndex = 0, GorgonSamplerState textureSampler = null, float depth = 0)
+        {
+            if (_beginCalled == 0)
+            {
+                throw new InvalidOperationException(Resources.GOR2D_ERR_BEGIN_NOT_CALLED);
+            }
+
+            int quality = (int)(smoothness * 64.0f).FastCeiling().Max(8).Min(2048);
+
+            // Nothing to draw.
+            if (quality == 0)
+            {
+                return;
+            }
+
+            _primitiveRenderable.Bounds = region;
+            _primitiveRenderable.PrimitiveType = PrimitiveType.TriangleStrip;
+            _primitiveRenderable.IndexCount = 0;
+            _primitiveRenderable.ActualVertexCount = (quality * 2) + 2;
+            _primitiveRenderable.Texture = texture ?? _defaultTexture;
+
+            // Ensure the primitive batch object is large enough to hold our vertex list.
+            if ((_primitiveRenderable.Vertices == null) || (_primitiveRenderable.Vertices.Length < _primitiveRenderable.ActualVertexCount))
+            {
+                _primitiveRenderable.Vertices = new Gorgon2DVertex[_primitiveRenderable.ActualVertexCount  * 2];
+            }
+
+            DX.Vector2 centerPoint = region.Center;
+            
+            var radius = new DX.Vector2(region.Width * 0.5f, region.Height * 0.5f);
+
+            DX.Vector3 uvCenter = DX.Vector3.Zero;
+
+            if (texture != null)
+            {
+                uvCenter = textureRegion == null
+                               ? new DX.Vector3(centerPoint.X / texture.Width, centerPoint.Y / texture.Height, textureArrayIndex)
+                               : new DX.Vector3((((centerPoint.X - region.Left) / region.Width) * textureRegion.Value.Width) + textureRegion.Value.Left,
+                                                (((centerPoint.Y - region.Top) / region.Height) * textureRegion.Value.Height) + textureRegion.Value.Top,
+                                                textureArrayIndex);
+
+            }
+
+            int vertexIndex = 0;
+            for (int i = 0; i <= quality; ++i)
+            {
+                float angle = (float)i / quality * 2.0f * (float)System.Math.PI;
+                float sin = angle.FastSin();
+                float cos = angle.FastCos();
+
+                var point = new DX.Vector2(sin * radius.X + centerPoint.X, cos * radius.Y + centerPoint.Y);
+
+                DX.Vector3 uv = DX.Vector3.Zero;
+
+                if (texture != null)
+                {
+                    uv = textureRegion == null
+                             ? new DX.Vector3(point.X / texture.Width,
+                                              point.Y / texture.Height,
+                                              textureArrayIndex)
+                             : new DX.Vector3((((point.X - region.Left) / region.Width) * textureRegion.Value.Width) + textureRegion.Value.Left,
+                                              (((point.Y - region.Top) / region.Height) * textureRegion.Value.Height) + textureRegion.Value.Top,
+                                              textureArrayIndex);
+                }
+
+                ref Gorgon2DVertex v = ref _primitiveRenderable.Vertices[vertexIndex++];
+                ref Gorgon2DVertex c = ref _primitiveRenderable.Vertices[vertexIndex++];
+
+                v.Position = new DX.Vector4(point, depth, 1.0f);
+                v.Color = color;
+                v.UV = uv;
+
+                c.Position = new DX.Vector4(centerPoint, depth, 1.0f);
+                c.Color = color;
+                c.UV = uvCenter;
+            }
+
+
+            RenderBatchOnChange(_primitiveRenderable, false);
+
+            _batchRenderer.QueueRenderable(_primitiveRenderable);
+        }
+
+        /// <summary>
+        /// Function to draw an ellipse.
+        /// </summary>
+        /// <param name="region">The region that will contain the ellipse.</param>
+        /// <param name="color">The color of the ellipse.</param>
+        /// <param name="smoothness">[Optional] The smoothness of the ellipse.</param>
         /// <param name="thickness">[Optional] The ellipse line thickness.</param>
         /// <param name="texture">[Optional] The texture to render on the ellipse.</param>
         /// <param name="textureRegion">[Optional] The texture coordinates to map to the rectangle.</param>
@@ -913,65 +1027,84 @@ namespace Gorgon.Renderers
                 throw new InvalidOperationException(Resources.GOR2D_ERR_BEGIN_NOT_CALLED);
             }
 
-            int quality = (int)(smoothness * 64.0f).FastCeiling();
+            int quality = (int)(smoothness * 64.0f).FastCeiling().Max(8).Min(2048);
 
             // Nothing to draw.
-            if (quality == 0)
+            if ((quality == 0) || (thickness <= 0.0f))
             {
                 return;
             }
 
-            // TODO: Texture coorindates..
-            float angle = 0.0f;
-            float step = (float)System.Math.PI * 2 / quality;
-            DX.Vector2 half = new DX.Vector2(0.5f, 0.5f);
-            DX.RectangleF actualTextureRegion = DX.RectangleF.Empty;
+            _primitiveRenderable.Bounds = region;
+            _primitiveRenderable.PrimitiveType = PrimitiveType.TriangleStrip;
+            _primitiveRenderable.IndexCount = 0;
+            _primitiveRenderable.ActualVertexCount = (quality * 2) + 2;
+            _primitiveRenderable.Texture = texture ?? _defaultTexture;
 
-            for (int i = 0; i < quality; i++)
+            // Ensure the primitive batch object is large enough to hold our vertex list.
+            if ((_primitiveRenderable.Vertices == null) || (_primitiveRenderable.Vertices.Length < _primitiveRenderable.ActualVertexCount))
             {
-                var pointPosition = new DX.Vector2(angle.Cos() * 0.5f, angle.Sin() * 0.5f);
-                DX.Vector2.Add(ref pointPosition, ref half, out DX.Vector2 startPosition);
+                _primitiveRenderable.Vertices = new Gorgon2DVertex[_primitiveRenderable.ActualVertexCount  * 2];
+            }
 
-                angle += step;
+            DX.Vector2 centerPoint = region.Center;
+            
+            var outerRadius = new DX.Vector2(region.Width * 0.5f + thickness * 0.5f, region.Height * 0.5f + thickness * 0.5f);
+            var innerRadius = new DX.Vector2(region.Width * 0.5f - thickness * 0.5f, region.Height * 0.5f - thickness * 0.5f);
 
-                pointPosition = new DX.Vector2(angle.Cos() * 0.5f, angle.Sin() * 0.5f);
-                DX.Vector2.Add(ref pointPosition, ref half, out DX.Vector2 endPosition);
 
-                if ((textureRegion != null) && (texture != null))
+            int vertexIndex = 0;
+            for (int i = 0; i <= quality; ++i)
+            {
+                float angle = (float)i / quality * 2.0f * (float)System.Math.PI;
+                float sin = angle.FastSin();
+                float cos = angle.FastCos();
+
+                var innerPoint = new DX.Vector2(sin * innerRadius.X + centerPoint.X, cos * innerRadius.Y + centerPoint.Y);
+                var outerPoint = new DX.Vector2(sin * outerRadius.X + centerPoint.X, cos * outerRadius.Y + centerPoint.Y);
+
+                DX.Vector3 uvInner = DX.Vector3.Zero;
+                DX.Vector3 uvOuter = DX.Vector3.Zero;
+
+                if (texture != null)
                 {
-                    DX.Vector2 scaledPos = textureRegion.Value.TopLeft;
-                    DX.Vector2 scaledTexture = new DX.Vector2(textureRegion.Value.Size.Width, textureRegion.Value.Size.Height);
-                    
-                    DX.Vector2.Multiply(ref startPosition, ref scaledTexture, out DX.Vector2 startUV);
-                    DX.Vector2.Multiply(ref endPosition, ref scaledTexture, out DX.Vector2 endUV);
-
-                    DX.Vector2.Add(ref startUV, ref scaledPos, out startUV);
-                    DX.Vector2.Add(ref endUV, ref scaledPos, out endUV);
-
-                    actualTextureRegion.X = startUV.X;
-                    actualTextureRegion.Y = startUV.Y;
-                    actualTextureRegion.Width = endUV.X;
-                    actualTextureRegion.Height = endUV.Y;
+                    if (textureRegion == null)
+                    {
+                        uvOuter = new DX.Vector3(outerPoint.X / texture.Width,
+                                                 outerPoint.Y / texture.Height,
+                                                 textureArrayIndex);
+                        uvInner = new DX.Vector3(innerPoint.X / texture.Width,
+                                                 innerPoint.Y / texture.Height,
+                                                 textureArrayIndex);
+                    }
+                    else
+                    {
+                        DX.RectangleF scaleRegion = region;
+                        scaleRegion.Inflate(thickness * 0.5f, thickness * 0.5f);
+                        uvOuter = new DX.Vector3((((outerPoint.X - scaleRegion.Left) / scaleRegion.Width) * textureRegion.Value.Width) + textureRegion.Value.Left,
+                                                 (((outerPoint.Y - scaleRegion.Top) / scaleRegion.Height) * textureRegion.Value.Height) + textureRegion.Value.Top,
+                                                 textureArrayIndex);
+                        uvInner = new DX.Vector3((((innerPoint.X - scaleRegion.Left) / scaleRegion.Width) * textureRegion.Value.Width) + textureRegion.Value.Left,
+                                                 (((innerPoint.Y - scaleRegion.Top) / scaleRegion.Height) * textureRegion.Value.Height) + textureRegion.Value.Top,
+                                                 textureArrayIndex);
+                    }
                 }
 
-                startPosition.X = ((startPosition.X * (region.Size.Width * 2.0f)) / 2.0f) + region.Left - thickness;
-                startPosition.Y = ((startPosition.Y * (region.Size.Height * 2.0f)) / 2.0f) + region.Top - thickness;
-                endPosition.X = ((endPosition.X * (region.Size.Width * 2.0f)) / 2.0f) + region.Left - thickness;
-                endPosition.Y = ((endPosition.Y * (region.Size.Height * 2.0f)) / 2.0f) + region.Top - thickness;
+                ref Gorgon2DVertex vOuter = ref _primitiveRenderable.Vertices[vertexIndex++];
+                ref Gorgon2DVertex vInner = ref _primitiveRenderable.Vertices[vertexIndex++];
 
-                DrawLine(startPosition.X,
-                         startPosition.Y,
-                         endPosition.X,
-                         endPosition.Y,
-                         color,
-                         thickness,
-                         texture,
-                         textureRegion == null ? null : (DX.RectangleF?)actualTextureRegion,
-                         textureArrayIndex,
-                         textureSampler,
-                         depth,
-                         depth);
+                vOuter.Position = new DX.Vector4(outerPoint, depth, 1.0f);
+                vOuter.Color = color;
+                vOuter.UV = uvOuter;
+
+                vInner.Position = new DX.Vector4(innerPoint, depth, 1.0f);
+                vInner.Color = color;
+                vInner.UV = uvInner;
             }
+
+            RenderBatchOnChange(_primitiveRenderable, false);
+
+            _batchRenderer.QueueRenderable(_primitiveRenderable);
         }
 
         /// <summary>

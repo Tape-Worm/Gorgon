@@ -73,6 +73,38 @@ namespace Gorgon.Renderers
 
         #region Methods.
         /// <summary>
+        /// Function to set up common states for a draw call type.
+        /// </summary>
+        /// <typeparam name="TB">The type of draw call builder.</typeparam>
+        /// <typeparam name="TD">The type of draw call to return.</typeparam>
+        /// <param name="builder">The builder to pass in.</param>
+        /// <param name="renderable">The renderable being rendered.</param>
+        /// <param name="batchState">The current batch level state.</param>
+        /// <param name="renderer">The renderer used to send renderable data to the GPU.</param>
+        private void SetCommonStates<TB, TD>(GorgonDrawCallBuilderCommon<TB, TD> builder, BatchRenderable renderable, Gorgon2DBatchState batchState, ObjectRenderer renderer)
+            where TB : GorgonDrawCallBuilderCommon<TB, TD>
+            where TD : GorgonDrawCallCommon
+        {
+            // If we haven't specified values for our first texture and sampler, then do so now.
+            batchState.PixelShader.RwSrvs[0] = renderable.Texture ?? _defaultTexture;
+            batchState.PixelShader.RwSamplers[0] = renderable.TextureSampler ?? GorgonSamplerState.Default;
+
+            builder.ConstantBuffers(ShaderType.Vertex, batchState.VertexShader.RwConstantBuffers)
+                   .ConstantBuffers(ShaderType.Pixel, batchState.PixelShader.RwConstantBuffers)
+                   .ShaderResources(ShaderType.Vertex, batchState.VertexShader.RwSrvs)
+                   .ShaderResources(ShaderType.Pixel, batchState.PixelShader.RwSrvs)
+                   .SamplerStates(ShaderType.Vertex, batchState.VertexShader.RwSamplers)
+                   .SamplerStates(ShaderType.Pixel, batchState.PixelShader.RwSamplers)
+                   .PipelineState(_stateBuilder.PixelShader(batchState.PixelShader.Shader)
+                                               .VertexShader(batchState.VertexShader.Shader)
+                                               .DepthStencilState(batchState.DepthStencilState)
+                                               .RasterState(batchState.RasterState)
+                                               .BlendState(batchState.BlendState)
+                                               .PrimitiveType(renderable.PrimitiveType))
+                   .VertexBuffer(_inputLayout, renderer.VertexBuffer);
+        }
+
+        /// <summary>
         /// Function to retrieve a draw call from the pool and, initialize it.
         /// </summary>
         /// <param name="renderable">The renderable to evaluate.</param>
@@ -81,23 +113,8 @@ namespace Gorgon.Renderers
         /// <returns>The draw call.</returns>
         public GorgonDrawCall GetDrawCall(BatchRenderable renderable, Gorgon2DBatchState batchState, ObjectRenderer renderer)
         {
-            // If we haven't specified values for our first texture and sampler, then do so now.
-            batchState.PixelShader.RwSrvs[0] = renderable.Texture ?? _defaultTexture;
-            batchState.PixelShader.RwSamplers[0] = renderable.TextureSampler ?? GorgonSamplerState.Default;
-
-            return _drawBuilder.ConstantBuffers(ShaderType.Vertex, batchState.VertexShader.RwConstantBuffers)
-                               .ConstantBuffers(ShaderType.Pixel, batchState.PixelShader.RwConstantBuffers)
-                               .ShaderResources(ShaderType.Vertex, batchState.VertexShader.RwSrvs)
-                               .ShaderResources(ShaderType.Pixel, batchState.PixelShader.RwSrvs)
-                               .SamplerStates(ShaderType.Vertex, batchState.VertexShader.RwSamplers)
-                               .SamplerStates(ShaderType.Pixel, batchState.PixelShader.RwSamplers)
-                               .PipelineState(_stateBuilder.PixelShader(batchState.PixelShader.Shader)
-                                                           .VertexShader(batchState.VertexShader.Shader)
-                                                           .DepthStencilState(batchState.DepthStencilState)
-                                                           .RasterState(batchState.RasterState)
-                                                           .BlendState(batchState.BlendState))
-                               .VertexBuffer(_inputLayout, renderer.VertexBuffer)
-                               .Build(_drawAllocator);
+            SetCommonStates(_drawBuilder, renderable, batchState, renderer);
+            return _drawBuilder.Build(_drawAllocator);
         }
 
         /// <summary>
@@ -109,23 +126,8 @@ namespace Gorgon.Renderers
         /// <returns>The draw call.</returns>
         public GorgonDrawIndexCall GetDrawIndexCall(BatchRenderable renderable, Gorgon2DBatchState batchState, ObjectRenderer renderer)
         {
-            // If we haven't specified values for our first texture and sampler, then do so now.
-            batchState.PixelShader.RwSrvs[0] = renderable.Texture ?? _defaultTexture;
-            batchState.PixelShader.RwSamplers[0] = renderable.TextureSampler ?? GorgonSamplerState.Default;
-
-            return _drawIndexBuilder.ConstantBuffers(ShaderType.Vertex, batchState.VertexShader.RwConstantBuffers)
-                                    .ConstantBuffers(ShaderType.Pixel, batchState.PixelShader.RwConstantBuffers)
-                                    .ShaderResources(ShaderType.Vertex, batchState.VertexShader.RwSrvs)
-                                    .ShaderResources(ShaderType.Pixel, batchState.PixelShader.RwSrvs)
-                                    .SamplerStates(ShaderType.Vertex, batchState.VertexShader.RwSamplers)
-                                    .SamplerStates(ShaderType.Pixel, batchState.PixelShader.RwSamplers)
-                                    .PipelineState(_stateBuilder.PixelShader(batchState.PixelShader.Shader)
-                                                                .VertexShader(batchState.VertexShader.Shader)
-                                                                .DepthStencilState(batchState.DepthStencilState)
-                                                                .RasterState(batchState.RasterState)
-                                                                .BlendState(batchState.BlendState))
-                                    .IndexBuffer(renderer.IndexBuffer)
-                                    .VertexBuffer(_inputLayout, renderer.VertexBuffer)
+            SetCommonStates(_drawIndexBuilder, renderable, batchState, renderer);
+            return _drawIndexBuilder.IndexBuffer(renderer.IndexBuffer)
                                     .Build(_drawIndexAllocator);
         }
         #endregion

@@ -57,7 +57,8 @@ namespace Gorgon.Renderers
                 return !x.StateChanged;
             }
 
-            return (x.Texture == y.Texture)
+            return (x.PrimitiveType == y.PrimitiveType)
+                   && (x.Texture == y.Texture)
                    && (x.TextureSampler == y.TextureSampler)
                    && (AlphaTestData.Equals(in x.AlphaTestData, in y.AlphaTestData));
         }
