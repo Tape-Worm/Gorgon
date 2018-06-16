@@ -826,9 +826,6 @@ namespace Gorgon.Renderers
                 return;
             }
 
-            var topLeft = new DX.Vector2(x1, y1);
-            var bottomRight = new DX.Vector2(x2, y2);
-            
             ref Gorgon2DVertex v0 = ref _primitiveRenderable.Vertices[0];
             ref Gorgon2DVertex v1 = ref _primitiveRenderable.Vertices[1];
             ref Gorgon2DVertex v2 = ref _primitiveRenderable.Vertices[2];
@@ -839,9 +836,16 @@ namespace Gorgon.Renderers
                 textureSampler = GorgonSamplerState.Wrapping;
             }
 
-            DX.Vector2.Subtract(ref bottomRight, ref topLeft, out DX.Vector2 length);
+            var bounds = new DX.RectangleF
+                         {
+                             Left = x1,
+                             Top = y1,
+                             Right = x2,
+                             Bottom = y2
+                         };
+            
             // Get cross products of start and end points.
-            var cross = new DX.Vector2(length.Y, -length.X);
+            var cross = new DX.Vector2(bounds.Height, -bounds.Width);
             cross.Normalize();
 
             DX.Vector2.Multiply(ref cross, thickness / 2.0f, out cross);
@@ -870,14 +874,35 @@ namespace Gorgon.Renderers
                 }
                 else
                 {
-                    v0.UV = new DX.Vector3((start1.X / (textureRegion.Value.Width * texture.Width)) + textureRegion.Value.Left, 
-                                           (start1.Y / (textureRegion.Value.Height * texture.Height)) + textureRegion.Value.Top, textureArrayIndex);
-                    v1.UV = new DX.Vector3((end1.X / (textureRegion.Value.Width * texture.Width)) + textureRegion.Value.Left, 
-                                           (end1.Y / (textureRegion.Value.Height * texture.Height)) + textureRegion.Value.Top, textureArrayIndex);
-                    v2.UV = new DX.Vector3((start2.X / (textureRegion.Value.Width * texture.Width)) + textureRegion.Value.Left, 
-                                           (start2.Y / (textureRegion.Value.Height * texture.Height)) + textureRegion.Value.Top, textureArrayIndex);
-                    v3.UV = new DX.Vector3((end2.X / (textureRegion.Value.Width * texture.Width)) + textureRegion.Value.Left, 
-                                           (end2.Y / (textureRegion.Value.Height * texture.Height)) + textureRegion.Value.Top, textureArrayIndex);
+                    // To perform the same kind of texture mapping on a line as we have on other primitives, we need to 
+                    // find the min and max of the line vertices.
+                    bounds = new DX.RectangleF
+                             {
+                                 Left = float.MaxValue,
+                                 Top = float.MaxValue,
+                                 Right = float.MinValue,
+                                 Bottom = float.MinValue
+                             };
+                    for (int i = 0; i < 4; ++i)
+                    {
+                        bounds.Left = bounds.Left.Min(_primitiveRenderable.Vertices[i].Position.X);
+                        bounds.Top = bounds.Top.Min(_primitiveRenderable.Vertices[i].Position.Y);
+                        bounds.Right = bounds.Right.Max(_primitiveRenderable.Vertices[i].Position.X);
+                        bounds.Bottom = bounds.Bottom.Max(_primitiveRenderable.Vertices[i].Position.Y);
+                    }
+                    
+                    v0.UV = new DX.Vector3((((start1.X - bounds.Left) / bounds.Width) * textureRegion.Value.Width) + textureRegion.Value.Left,
+                                           (((start1.Y - bounds.Top) / bounds.Height) * textureRegion.Value.Height) + textureRegion.Value.Top,
+                                           textureArrayIndex);
+                    v1.UV = new DX.Vector3((((end1.X - bounds.Left) / bounds.Width) * textureRegion.Value.Width) + textureRegion.Value.Left,
+                                           (((end1.Y - bounds.Top) / bounds.Height) * textureRegion.Value.Height) + textureRegion.Value.Top,
+                                           textureArrayIndex);
+                    v2.UV = new DX.Vector3((((start2.X - bounds.Left) / bounds.Width) * textureRegion.Value.Width) + textureRegion.Value.Left,
+                                           (((start2.Y - bounds.Top) / bounds.Height) * textureRegion.Value.Height) + textureRegion.Value.Top,
+                                           textureArrayIndex);
+                    v3.UV = new DX.Vector3((((end2.X - bounds.Left) / bounds.Width) * textureRegion.Value.Width) + textureRegion.Value.Left,
+                                           (((end2.Y - bounds.Top) / bounds.Height) * textureRegion.Value.Height) + textureRegion.Value.Top,
+                                           textureArrayIndex);
                 }
             }
             else
@@ -902,7 +927,6 @@ namespace Gorgon.Renderers
                                                 || (textureSampler != _primitiveRenderable.TextureSampler)
                                                 || (!AlphaTestData.Equals(in alphaTestData, in _primitiveRenderable.AlphaTestData));
 
-            _primitiveRenderable.Bounds = new DX.RectangleF(x1, y1, length.X, length.Y);
             _primitiveRenderable.ActualVertexCount = 4;
             _primitiveRenderable.IndexCount = 6;
             _primitiveRenderable.AlphaTestData = new AlphaTestData(true, GorgonRangeF.Empty);
