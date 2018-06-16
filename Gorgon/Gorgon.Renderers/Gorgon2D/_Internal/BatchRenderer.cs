@@ -217,7 +217,6 @@ namespace Gorgon.Renderers
             }
 
             // Invalidate the cache.
-            _vertexBufferIndex = 0;
             _currentVertexIndex = 0;
             _allocatedVertexCount = 0;
             _indexCount = 0;

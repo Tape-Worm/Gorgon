@@ -1002,7 +1002,6 @@ namespace Gorgon.Renderers
                 c.UV = uvCenter;
             }
 
-
             RenderBatchOnChange(_primitiveRenderable, false);
 
             _batchRenderer.QueueRenderable(_primitiveRenderable);
