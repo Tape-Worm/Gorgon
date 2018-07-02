@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
@@ -123,14 +124,29 @@ namespace Gorgon.Graphics.Core
     {
         #region Events.
         /// <summary>
+        /// Event triggered before a render target is changed.
+        /// </summary>
+        public event CancelEventHandler RenderTargetChanging;
+
+        /// <summary>
         /// Event triggered when the render target has been changed.
         /// </summary>
         public event EventHandler RenderTargetChanged;
 
         /// <summary>
+        /// Event triggered before a viewport is changed.
+        /// </summary>
+        public event CancelEventHandler ViewportChanging;
+
+        /// <summary>
         /// Event triggered when a viewport is changed.
         /// </summary>
-        public event EventHandler ViewPortChanged;
+        public event EventHandler ViewportChanged;
+
+        /// <summary>
+        /// Event triggered before a depth/stencil buffer is changed.
+        /// </summary>
+        public event CancelEventHandler DepthStencilChanging;
 
         /// <summary>
         /// Event triggered when the depth/stencil buffer has been changed.
@@ -2082,6 +2098,67 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
+        /// Function to fire the <see cref="ViewportChanging"/> event.
+        /// </summary>
+        /// <returns><b>true</b> if cancelled, <b>false</b> if not.</returns>>
+        private bool OnViewportChanging()
+        {
+            CancelEventHandler cancelHandler = ViewportChanging;
+
+            if (cancelHandler == null)
+            {
+                return false;
+            }
+
+            var cancelArgs = new CancelEventArgs();
+            cancelHandler(this, cancelArgs);
+
+            return cancelArgs.Cancel;
+        }
+
+        /// <summary>
+        /// Function to fire the <see cref="RenderTargetChanging"/> event.
+        /// </summary>
+        private void OnRenderTargetChanging()
+        {
+            CancelEventHandler cancelHandler = RenderTargetChanging;
+
+            if ((!_isTargetUpdated.RtvsChanged) || (cancelHandler == null))
+            {
+                return;
+            }
+
+            var cancelArgs = new CancelEventArgs();
+            cancelHandler(this, cancelArgs);
+
+            if (cancelArgs.Cancel)
+            {
+                _isTargetUpdated.RtvsChanged = false;
+            }
+        }
+
+        /// <summary>
+        /// Function to fire the <see cref="DepthStencilChanging"/> event.
+        /// </summary>
+        private void OnDepthStencilChanging()
+        {
+            CancelEventHandler cancelHandler = DepthStencilChanging;
+
+            if ((!_isTargetUpdated.DepthViewChanged) || (cancelHandler == null))
+            {
+                return;
+            }
+
+            var cancelArgs = new CancelEventArgs();
+            cancelHandler(this, cancelArgs);
+
+            if (cancelArgs.Cancel)
+            {
+                _isTargetUpdated.DepthViewChanged = false;
+            }
+        }
+
+        /// <summary>
         /// Function to assign the render targets.
         /// </summary>
         /// <param name="rtvCount">The number of render targets to update.</param>
@@ -2467,6 +2544,9 @@ namespace Gorgon.Graphics.Core
 
             _isTargetUpdated = (_renderTargets[0] != renderTarget, DepthStencilView != depthStencil);
 
+            OnRenderTargetChanging();
+            OnDepthStencilChanging();
+
             if (_isTargetUpdated.RtvsChanged)
             {
                 Array.Clear(_renderTargets, 1, _renderTargets.Length - 1);
@@ -2481,7 +2561,11 @@ namespace Gorgon.Graphics.Core
                 SetViewport(ref viewport);
             }
 
-            DepthStencilView = depthStencil;
+            if (_isTargetUpdated.DepthViewChanged)
+            {
+                DepthStencilView = depthStencil;
+            }
+
             SetRenderTargetAndDepthViews(1);
         }
 
@@ -2524,8 +2608,21 @@ namespace Gorgon.Graphics.Core
             if ((renderTargets == null)
                 || (renderTargets.Length == 0))
             {
-                Array.Clear(_renderTargets, 0, _renderTargets.Length);
-                DepthStencilView = depthStencil;
+                _isTargetUpdated = (true, true);
+
+                OnRenderTargetChanging();
+                OnDepthStencilChanging();
+
+                if (_isTargetUpdated.RtvsChanged)
+                {
+                    Array.Clear(_renderTargets, 0, _renderTargets.Length);
+                }
+
+                if (_isTargetUpdated.DepthViewChanged)
+                {
+                    DepthStencilView = depthStencil;
+                }
+
                 SetRenderTargetAndDepthViews(0);
                 return;
             }
@@ -2544,6 +2641,8 @@ namespace Gorgon.Graphics.Core
                 view = renderTargets[i];
                 _isTargetUpdated = (true, depthStencil != DepthStencilView);
             }
+
+            OnRenderTargetChanging();
 
             if ((!_isTargetUpdated.DepthViewChanged) && (!_isTargetUpdated.RtvsChanged))
             {
@@ -2570,7 +2669,13 @@ namespace Gorgon.Graphics.Core
                 SetViewport(ref viewport);
             }
 
-            DepthStencilView = depthStencil;
+            OnDepthStencilChanging();
+
+            if (_isTargetUpdated.DepthViewChanged)
+            {
+                DepthStencilView = depthStencil;
+            }
+
             SetRenderTargetAndDepthViews(rtvCount);
         }
 
@@ -2592,11 +2697,16 @@ namespace Gorgon.Graphics.Core
                 return;
             }
 
+            if (OnViewportChanging())
+            {
+                return;
+            }
+
             _viewports[0] = viewport;
             Array.Clear(_viewports, 1, _viewports.Length - 1);
             D3DDeviceContext.Rasterizer.SetViewport(viewport.X, viewport.Y, viewport.Width, viewport.Height, viewport.MinDepth, viewport.MaxDepth);
 
-            EventHandler handler = ViewPortChanged;
+            EventHandler handler = ViewportChanged;
             handler?.Invoke(this, EventArgs.Empty);
         }
 
@@ -2613,10 +2723,15 @@ namespace Gorgon.Graphics.Core
         {
             if (viewports == null)
             {
+                if (OnViewportChanging())
+                {
+                    return;
+                }
+
                 Array.Clear(_viewports, 0, _viewports.Length);
                 D3DDeviceContext.Rasterizer.SetViewport(0, 0, 1, 1);
 
-                EventHandler handler = ViewPortChanged;
+                EventHandler handler = ViewportChanged;
                 handler?.Invoke(this, EventArgs.Empty);
                 return;
             }
@@ -2652,8 +2767,13 @@ namespace Gorgon.Graphics.Core
                     return;
                 }
 
+                if (OnViewportChanging())
+                {
+                    return;
+                }
+
                 D3DDeviceContext.Rasterizer.SetViewports(viewportPtr, viewportCount);
-                EventHandler handler = ViewPortChanged;
+                EventHandler handler = ViewportChanged;
                 handler?.Invoke(this, EventArgs.Empty);
             }
         }

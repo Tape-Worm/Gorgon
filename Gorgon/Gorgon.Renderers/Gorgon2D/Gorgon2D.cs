@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 using System.Threading;
 using System.Windows;
@@ -74,6 +75,12 @@ namespace Gorgon.Renderers
         private GorgonDrawCall _currentDrawCall;
         // The previously assigned batch state.
         private readonly Gorgon2DBatchState _lastBatchState = new Gorgon2DBatchState();
+        // The previously assigned batch state.
+        private readonly Gorgon2DBatchState _flushBatchState = new Gorgon2DBatchState
+                                                               {
+                                                                   PixelShader = new Gorgon2DShader<GorgonPixelShader>(),
+                                                                   VertexShader = new Gorgon2DShader<GorgonVertexShader>()
+                                                               };
         // The last sprite that was put into the system.
         private BatchRenderable _lastRenderable;
         // The current alpha test data.
@@ -99,7 +106,7 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to return the log used to log debug messages.
         /// </summary>
-        public IGorgonLog Log => _primaryTarget.Graphics.Log;
+        public IGorgonLog Log => _primaryTarget?.Graphics?.Log;
 
         /// <summary>
         /// Property to return the <see cref="GorgonGraphics"/> interface that owns this renderer.
@@ -108,6 +115,44 @@ namespace Gorgon.Renderers
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function called when a render target, depth/stencil or view port is changed on the primary graphics object.
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="e">The event parameters.</param>
+        private void ValidateBeginEndCall(object sender, CancelEventArgs e)
+        {
+            // If we've already begun a Begin block, then we cannot allow it to continue or else the state will be incorrect when rendering.
+            // To keep the code consistent, and to provide as little of a surprise as possible, we've opted to throw an error here instead 
+            // of forcing a flush and restart of the pipeline.  This will force the developer to write their code in a more consistent manner.
+            if (_beginCalled == 0)
+            {
+                return;
+            }
+
+            throw new InvalidOperationException(Resources.GOR2D_ERR_CANNOT_CHANGE_STATE_INSIDE_BEGIN);
+        }
+
+        /// <summary>
+        /// Function to check the primitive (line, ellipse, etc...) renderable for state changes.
+        /// </summary>
+        /// <param name="texture">The texture to compare for changes.</param>
+        /// <param name="textureSampler">The texture sampler to compare for changes.</param>
+        private void CheckPrimitiveStateChange(GorgonTexture2DView texture, GorgonSamplerState textureSampler)
+        {
+            var alphaTestData = new AlphaTestData(true, GorgonRangeF.Empty);
+
+            // The state has already been marked as changed, so we don't need to test further.
+            if (_primitiveRenderable.StateChanged)
+            {
+                return;
+            }
+
+            _primitiveRenderable.StateChanged = (texture != _primitiveRenderable.Texture)
+                                                || (textureSampler != _primitiveRenderable.TextureSampler)
+                                                || (!AlphaTestData.Equals(in alphaTestData, in _primitiveRenderable.AlphaTestData));
+        }
+
         /// <summary>
         /// Function to update the alpha test data.
         /// </summary>
@@ -641,11 +686,7 @@ namespace Gorgon.Renderers
             v2.Position = new DX.Vector4(region.BottomLeft, depth, 1.0f);
             v3.Position = new DX.Vector4(region.BottomRight, depth, 1.0f);
 
-            var alphaTestData = new AlphaTestData(true, GorgonRangeF.Empty);
-
-            _primitiveRenderable.StateChanged = (texture != _primitiveRenderable.Texture)
-                                                || (textureSampler != _primitiveRenderable.TextureSampler)
-                                                || (!AlphaTestData.Equals(in alphaTestData, in _primitiveRenderable.AlphaTestData));
+            CheckPrimitiveStateChange(texture, textureSampler);
 
             _primitiveRenderable.Bounds = region;
             _primitiveRenderable.ActualVertexCount = 4;
@@ -659,17 +700,44 @@ namespace Gorgon.Renderers
             _batchRenderer.QueueRenderable(_primitiveRenderable);
         }
 
-        public void TestDrawCallNonIndexed()
+        /// <summary>
+        /// Function to draw a simple triangle.
+        /// </summary>
+        /// <param name="point1">The vertex for the first point in the triangle.</param>
+        /// <param name="point2">The vertex for the second point in the triangle.</param>
+        /// <param name="point3">The vertex for the third point in the triangle.</param>
+        /// <param name="texture">[Optional] The texture for the rectangle.</param>
+        /// <param name="textureRegion">[Optional] The texture coordinates to map to the rectangle.</param>
+        /// <param name="textureArrayIndex">[Optional] The array index for a texture array to use.</param>
+        /// <param name="textureSampler">[Optional] The texture sampler to apply to the texture.</param>
+        /// <param name="depth">[Optional] The depth value for the rectangle.</param>
+        public void DrawTriangle(in GorgonTrianglePoint point1, in GorgonTrianglePoint point2, in GorgonTrianglePoint point3, GorgonTexture2DView texture = null, DX.RectangleF? textureRegion = null, int textureArrayIndex = 0, GorgonSamplerState textureSampler = null, float depth = 0)
         {
+            CheckPrimitiveStateChange(texture, textureSampler);
+
             _primitiveRenderable.ActualVertexCount = 3;
             _primitiveRenderable.IndexCount = 0;
-            _primitiveRenderable.Vertices[0].Position = new DX.Vector4(640, 240, 0, 1.0f);
-            _primitiveRenderable.Vertices[0].Color = new GorgonColor(1.0f, 0, 0, 1.0f);
-            _primitiveRenderable.Vertices[1].Position = new DX.Vector4(960, 480, 0, 1.0f);
-            _primitiveRenderable.Vertices[1].Color = new GorgonColor(0.0f, 1.0f, 0, 1.0f);
-            _primitiveRenderable.Vertices[2].Position = new DX.Vector4(320, 480, 0, 1.0f);
-            _primitiveRenderable.Vertices[2].Color = new GorgonColor(0.0f, 0, 1.0f, 1.0f);
-            _primitiveRenderable.Texture = _defaultTexture;
+            _primitiveRenderable.Vertices[0] = new Gorgon2DVertex
+                                               {
+                                                   Color = point1.Color,
+                                                   Position = new DX.Vector4(point1.Position, depth, 1.0f),
+                                                   UV = texture != null ? new DX.Vector3(point1.TextureCoordinate, point1.TextureArrayIndex) : DX.Vector3.Zero
+                                               };
+            _primitiveRenderable.Vertices[1] = new Gorgon2DVertex
+                                               {
+                                                   Color = point2.Color,
+                                                   Position = new DX.Vector4(point2.Position, depth, 1.0f),
+                                                   UV = texture != null ? new DX.Vector3(point2.TextureCoordinate, point2.TextureArrayIndex) : DX.Vector3.Zero
+                                               };
+            _primitiveRenderable.Vertices[2] = new Gorgon2DVertex
+                                               {
+                                                   Color = point3.Color,
+                                                   Position = new DX.Vector4(point3.Position, depth, 1.0f),
+                                                   UV = texture != null ? new DX.Vector3(point3.TextureCoordinate, point3.TextureArrayIndex) : DX.Vector3.Zero
+                                               };
+            _primitiveRenderable.AlphaTestData = new AlphaTestData(true, GorgonRangeF.Empty);
+            _primitiveRenderable.Texture = texture ?? _defaultTexture;
+            _primitiveRenderable.TextureSampler = textureSampler;
             
             RenderBatchOnChange(_primitiveRenderable, false);
 
@@ -922,11 +990,7 @@ namespace Gorgon.Renderers
             v2.Color = color;
             v3.Color = color;
 
-            var alphaTestData = new AlphaTestData(true, GorgonRangeF.Empty);
-
-            _primitiveRenderable.StateChanged = (texture != _primitiveRenderable.Texture)
-                                                || (textureSampler != _primitiveRenderable.TextureSampler)
-                                                || (!AlphaTestData.Equals(in alphaTestData, in _primitiveRenderable.AlphaTestData));
+            CheckPrimitiveStateChange(texture, textureSampler);
 
             _primitiveRenderable.ActualVertexCount = 4;
             _primitiveRenderable.IndexCount = 6;
@@ -1026,6 +1090,8 @@ namespace Gorgon.Renderers
                 c.Color = color;
                 c.UV = uvCenter;
             }
+
+            CheckPrimitiveStateChange(texture, textureSampler);
 
             RenderBatchOnChange(_primitiveRenderable, false);
 
@@ -1141,6 +1207,8 @@ namespace Gorgon.Renderers
                 vInner.UV = uvInner;
             }
 
+            CheckPrimitiveStateChange(texture, textureSampler);
+
             RenderBatchOnChange(_primitiveRenderable, false);
 
             _batchRenderer.QueueRenderable(_primitiveRenderable);
@@ -1154,7 +1222,6 @@ namespace Gorgon.Renderers
         /// <param name="startAngle">The starting angle of the arc, in degrees.</param>
         /// <param name="endAngle">The ending angle of the arc, in degrees.</param>
         /// <param name="smoothness">[Optional] The smoothness of the ellipse.</param>
-        /// <param name="thickness">[Optional] The ellipse line thickness.</param>
         /// <param name="texture">[Optional] The texture to render on the ellipse.</param>
         /// <param name="textureRegion">[Optional] The texture coordinates to map to the rectangle.</param>
         /// <param name="textureArrayIndex">[Optional] The array index for a texture array to use.</param>
@@ -1250,6 +1317,8 @@ namespace Gorgon.Renderers
                 c.UV = uvCenter;
             }
 
+            CheckPrimitiveStateChange(texture, textureSampler);
+            
             RenderBatchOnChange(_primitiveRenderable, false);
 
             _batchRenderer.QueueRenderable(_primitiveRenderable);
@@ -1349,6 +1418,8 @@ namespace Gorgon.Renderers
                 vInner.UV = uvInner;
             }
 
+            CheckPrimitiveStateChange(texture, textureSampler);
+            
             RenderBatchOnChange(_primitiveRenderable, false);
 
             _batchRenderer.QueueRenderable(_primitiveRenderable);
@@ -1368,6 +1439,13 @@ namespace Gorgon.Renderers
 
             _currentDrawCall = null;
             _currentDrawIndexCall = null;
+
+            // Reset the last batch state so we can enter again with a clean setup.
+            _lastBatchState.RasterState = null;
+            _lastBatchState.BlendState = null;
+            _lastBatchState.DepthStencilState = null;
+            _lastBatchState.PixelShader = null;
+            _lastBatchState.VertexShader = null;
         }
 
         /// <summary>
@@ -1384,8 +1462,11 @@ namespace Gorgon.Renderers
             GorgonConstantBufferView alphaTest = Interlocked.Exchange(ref _alphaTest, null);
             Lazy<GorgonFontFactory> defaultFont = Interlocked.Exchange(ref _defaultFontFactory, null);
 
+            WeakEventManager<GorgonGraphics, CancelEventArgs>.RemoveHandler(Graphics, nameof(GorgonGraphics.RenderTargetChanging), ValidateBeginEndCall);
+            WeakEventManager<GorgonGraphics, CancelEventArgs>.RemoveHandler(Graphics, nameof(GorgonGraphics.ViewportChanging), ValidateBeginEndCall);
+            WeakEventManager<GorgonGraphics, CancelEventArgs>.RemoveHandler(Graphics, nameof(GorgonGraphics.DepthStencilChanging), ValidateBeginEndCall);
             WeakEventManager<GorgonGraphics, EventArgs>.RemoveHandler(Graphics, nameof(GorgonGraphics.RenderTargetChanged), RenderTarget_Changed);
-            WeakEventManager<GorgonGraphics, EventArgs>.RemoveHandler(Graphics, nameof(GorgonGraphics.ViewPortChanged), RenderTarget_Changed);
+            WeakEventManager<GorgonGraphics, EventArgs>.RemoveHandler(Graphics, nameof(GorgonGraphics.ViewportChanged), RenderTarget_Changed);
             
             if (defaultFont?.IsValueCreated ?? false)
             {
@@ -1414,7 +1495,10 @@ namespace Gorgon.Renderers
             _defaultFontFactory = new Lazy<GorgonFontFactory>(() => new GorgonFontFactory(target.Graphics), true);
 
             WeakEventManager<GorgonGraphics, EventArgs>.AddHandler(target.Graphics, nameof(GorgonGraphics.RenderTargetChanged), RenderTarget_Changed);
-            WeakEventManager<GorgonGraphics, EventArgs>.AddHandler(target.Graphics, nameof(GorgonGraphics.ViewPortChanged), RenderTarget_Changed);
+            WeakEventManager<GorgonGraphics, EventArgs>.AddHandler(target.Graphics, nameof(GorgonGraphics.ViewportChanged), RenderTarget_Changed);
+            WeakEventManager<GorgonGraphics, CancelEventArgs>.AddHandler(target.Graphics, nameof(GorgonGraphics.RenderTargetChanging), ValidateBeginEndCall);
+            WeakEventManager<GorgonGraphics, CancelEventArgs>.AddHandler(target.Graphics, nameof(GorgonGraphics.ViewportChanging), ValidateBeginEndCall);
+            WeakEventManager<GorgonGraphics, CancelEventArgs>.AddHandler(target.Graphics, nameof(GorgonGraphics.DepthStencilChanging), ValidateBeginEndCall);
         }
         #endregion
     }

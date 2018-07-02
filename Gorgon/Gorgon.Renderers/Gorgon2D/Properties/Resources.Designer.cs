@@ -113,6 +113,15 @@ namespace Gorgon.Renderers.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot change the render target, depth/stencil or viewport during a Begin/End rendering block..
+        /// </summary>
+        internal static string GOR2D_ERR_CANNOT_CHANGE_STATE_INSIDE_BEGIN {
+            get {
+                return ResourceManager.GetString("GOR2D_ERR_CANNOT_CHANGE_STATE_INSIDE_BEGIN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The constant buffer slot must be 0 or less than {0}..
         /// </summary>
         internal static string GOR2D_ERR_CBUFFER_SLOT_INVALID {

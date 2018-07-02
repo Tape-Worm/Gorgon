@@ -131,6 +131,21 @@ float4 GorgonPixelShaderTextured(GorgonSpriteVertex vertex) : SV_Target
 	return color;
 }
 
+// Function to gather the a single pass of the separable gaussian blur.
+float4 GorgonPixelShaderGaussBlur(GorgonSpriteVertex vertex) : SV_Target
+{
+	float4 sample = 0.0f;
+	int kernelSize = (blurRadius * 2) + 1;
+
+	[unroll]	
+	for (int i = 0; i < kernelSize; i++)
+	{
+		sample += _gorgonTexture.Sample(_gorgonSampler, float3(vertex.uv.xy + _offsets[i], vertex.uv.z)) * vertex.color * _weights[i];	
+	}
+
+	return sample;
+}
+
 // Our default pixel shader with textures, alpha testing and materials.
 /*float4 GorgonPixelShaderTexturedMaterial(GorgonSpriteVertex vertex) : SV_Target
 {
@@ -275,21 +290,6 @@ float4 GorgonPixelShader1Bit(GorgonSpriteVertex vertex) : SV_Target
 	REJECT_ALPHA(color.a);
 
 	return color;
-}
-
-// Function to gather the a single pass of the separable gaussian blur.
-float4 GorgonPixelShaderGaussBlur(GorgonSpriteVertex vertex) : SV_Target
-{
-	float4 sample = 0.0f;
-	int kernelSize = (blurRadius * 2) + 1;
-
-	[unroll]	
-	for (int i = 0; i < kernelSize; i++)
-	{
-		sample += _gorgonTexture.Sample(_gorgonSampler, vertex.uv + _offsets[i]) * vertex.color * _weights[i];	
-	}
-
-	return sample;
 }
 
 // Function to posterize texture data.

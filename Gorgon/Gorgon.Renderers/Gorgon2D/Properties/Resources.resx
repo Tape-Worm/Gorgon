@@ -127,6 +127,9 @@
   <data name="GOR2D_ERR_BEGIN_NOT_CALLED" xml:space="preserve">
     <value>The Begin() method must be called prior to calling this method.</value>
   </data>
+  <data name="GOR2D_ERR_CANNOT_CHANGE_STATE_INSIDE_BEGIN" xml:space="preserve">
+    <value>Cannot change the render target, depth/stencil or viewport during a Begin/End rendering block.</value>
+  </data>
   <data name="GOR2D_ERR_CBUFFER_SLOT_INVALID" xml:space="preserve">
     <value>The constant buffer slot must be 0 or less than {0}.</value>
   </data>
