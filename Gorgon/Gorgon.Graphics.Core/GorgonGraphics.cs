@@ -107,7 +107,7 @@ namespace Gorgon.Graphics.Core
     /// <para>
     /// This object requires a minimum of:
     /// <list type="bullet">
-    ///     <item>C# 7.3 (Visual Studio 2017 v15.7.2) or better - All libraries in Gorgon.</item>
+    ///     <item>C# 7.3 (Visual Studio 2017 v15.7.4) or better - All libraries in Gorgon.</item>
     ///     <item>.NET 4.7.1 - All libraries in Gorgon.</item>
     ///     <item>Windows 10 v1703, Build 15603 (aka Creators Update).</item>
     ///     <item>Direct 3D 11.4 or better.</item>

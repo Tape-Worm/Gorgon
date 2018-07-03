@@ -140,6 +140,15 @@ namespace Gorgon.Renderers.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Could not initialize the 2D renderer because there was no render target assigned to slot 0 on the graphics interface..
+        /// </summary>
+        internal static string GOR2D_ERR_NO_RTV {
+            get {
+                return ResourceManager.GetString("GOR2D_ERR_NO_RTV", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The shader resource slot must be 0 or less than {0}..
         /// </summary>
         internal static string GOR2D_ERR_SRV_SLOT_INVALID {

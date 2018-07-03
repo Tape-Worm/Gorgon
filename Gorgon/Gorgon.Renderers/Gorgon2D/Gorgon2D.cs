@@ -43,8 +43,43 @@ using Gorgon.UI;
 namespace Gorgon.Renderers
 {
     /// <summary>
-    /// TODO: Fill me in.
+    /// Provides 2D rendering functionality.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The 2D renderer allows applications to render sprites, text and primitives (lines, rectangles, ellipses, etc...) using a simplified interface.  
+    /// </para>
+    /// <para>
+    /// This is a batching renderer, which means that items that need to be drawn are done as a group of items sharing a common global state during rendering (this includes pixel and vertex shaders). Which 
+    /// global states/shaders are applied can be defined by the user via the <see cref="Gorgon2DBatchState"/> object which is passed to the <see cref="Begin"/> method.
+    /// </para>
+    /// <para>
+    /// Because this is a batching renderer, applications must inform the renderer when to start rendering items via the <see cref="Begin"/> method, and when to end rendering using the <see cref="End"/> 
+    /// method. 
+    /// </para>
+    /// <para>
+    /// <note type="important">
+    /// <para>
+    /// While all drawing must be done between these calls. Changing the current render target, viewport and/or depth/stencil on the <see cref="GorgonGraphics"/> interface while rendering is not allowed 
+    /// and will generate an exception if an attempt to change those items is made.  This means that applications must perform target changes, viewport changes, and/or depth/stencil changes prior to 
+    /// calling <see cref="Begin"/>, or after <see cref="End"/>.
+    /// </para>
+    /// </note>
+    /// </para>
+    /// <para>
+    /// To render, an application must start the process by calling the <see cref="Begin"/> method, draw the desired items, and then call the <see cref="End"/> method. This render block segregates drawing 
+    /// by global states.  So, for example, if the user wishes to change the blending mode, a call to <see cref="Begin"/> with the <see cref="Gorgon2DBatchState"/> set up for the appropriate blending mode 
+    /// is made. When finished, the user will call the <see cref="End"/> method. These blocks batch all rendering commands until the <see cref="End"/> method is called, and this allows for high performance 
+    /// 2D rendering.
+    /// </para>
+    /// <para>
+    /// Because this renderer uses batching to achieve its performance, it is worth noting that calls to draw items will share the same global state via the <see cref="GorgonBlendState"/>,
+    /// <see cref="GorgonDepthStencilState"/> and <see cref="GorgonRasterState"/> state objects. This includes pixel shaders and vertex shaders, and their associated resources.  And users can send custom
+    /// states and shaders to the <see cref="Begin"/> method. However, when a new item is drawn with a different <see cref="GorgonTexture2DView"/>, 
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="GorgonGraphics"/>
+    /// <seealso cref="Gorgon2DBatchState"/>
     public class Gorgon2D
         : IDisposable, IGorgonGraphicsObject
     {
@@ -75,12 +110,6 @@ namespace Gorgon.Renderers
         private GorgonDrawCall _currentDrawCall;
         // The previously assigned batch state.
         private readonly Gorgon2DBatchState _lastBatchState = new Gorgon2DBatchState();
-        // The previously assigned batch state.
-        private readonly Gorgon2DBatchState _flushBatchState = new Gorgon2DBatchState
-                                                               {
-                                                                   PixelShader = new Gorgon2DShader<GorgonPixelShader>(),
-                                                                   VertexShader = new Gorgon2DShader<GorgonVertexShader>()
-                                                               };
         // The last sprite that was put into the system.
         private BatchRenderable _lastRenderable;
         // The current alpha test data.
@@ -106,12 +135,15 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to return the log used to log debug messages.
         /// </summary>
-        public IGorgonLog Log => _primaryTarget?.Graphics?.Log;
+        public IGorgonLog Log => Graphics.Log;
 
         /// <summary>
         /// Property to return the <see cref="GorgonGraphics"/> interface that owns this renderer.
         /// </summary>
-        public GorgonGraphics Graphics => _primaryTarget.Graphics;
+        public GorgonGraphics Graphics
+        {
+            get;
+        }
         #endregion
 
         #region Methods.
@@ -230,10 +262,16 @@ namespace Gorgon.Renderers
             if (Graphics.RenderTargets[0] == null)
             {
                 Graphics.SetRenderTarget(_primaryTarget);
-                _currentViewport = Graphics.Viewports[0];
             }
 
+            _currentViewport = Graphics.Viewports[0];
             _defaultTextSprite = new GorgonTextSprite(_defaultFontFactory.Value.DefaultFont);
+
+            WeakEventManager<GorgonGraphics, EventArgs>.AddHandler(Graphics, nameof(GorgonGraphics.RenderTargetChanged), RenderTarget_Changed);
+            WeakEventManager<GorgonGraphics, EventArgs>.AddHandler(Graphics, nameof(GorgonGraphics.ViewportChanged), RenderTarget_Changed);
+            WeakEventManager<GorgonGraphics, CancelEventArgs>.AddHandler(Graphics, nameof(GorgonGraphics.RenderTargetChanging), ValidateBeginEndCall);
+            WeakEventManager<GorgonGraphics, CancelEventArgs>.AddHandler(Graphics, nameof(GorgonGraphics.ViewportChanging), ValidateBeginEndCall);
+            WeakEventManager<GorgonGraphics, CancelEventArgs>.AddHandler(Graphics, nameof(GorgonGraphics.DepthStencilChanging), ValidateBeginEndCall);
 
             _initialized = true;
         }
@@ -254,6 +292,14 @@ namespace Gorgon.Renderers
             if (!_initialized)
             {
                 Initialize();
+            }
+            else
+            {
+                // If we attempt to render with no render target, then reset to our primary.
+                if (Graphics.RenderTargets[0] == null)
+                {
+                    Graphics.SetRenderTarget(_primaryTarget, Graphics.DepthStencilView);
+                }
             }
 
             _lastRenderable = null;
@@ -1487,18 +1533,13 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Initializes a new instance of the <see cref="Gorgon2D"/> class.
         /// </summary>
-        /// <param name="target">The render target that will receive the rendering data.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="target"/> parameter is <b>null</b>.</exception>
-        public Gorgon2D(GorgonRenderTarget2DView target)
+        /// <param name="defaultTarget">The default render target that will receive the rendering data.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="defaultTarget"/> parameter is <b>null</b>.</exception>
+        public Gorgon2D(GorgonRenderTarget2DView defaultTarget)
         {
-            _primaryTarget = target ?? throw new ArgumentNullException(nameof(target));
-            _defaultFontFactory = new Lazy<GorgonFontFactory>(() => new GorgonFontFactory(target.Graphics), true);
-
-            WeakEventManager<GorgonGraphics, EventArgs>.AddHandler(target.Graphics, nameof(GorgonGraphics.RenderTargetChanged), RenderTarget_Changed);
-            WeakEventManager<GorgonGraphics, EventArgs>.AddHandler(target.Graphics, nameof(GorgonGraphics.ViewportChanged), RenderTarget_Changed);
-            WeakEventManager<GorgonGraphics, CancelEventArgs>.AddHandler(target.Graphics, nameof(GorgonGraphics.RenderTargetChanging), ValidateBeginEndCall);
-            WeakEventManager<GorgonGraphics, CancelEventArgs>.AddHandler(target.Graphics, nameof(GorgonGraphics.ViewportChanging), ValidateBeginEndCall);
-            WeakEventManager<GorgonGraphics, CancelEventArgs>.AddHandler(target.Graphics, nameof(GorgonGraphics.DepthStencilChanging), ValidateBeginEndCall);
+            _primaryTarget = defaultTarget ?? throw new ArgumentNullException(nameof(defaultTarget));
+            Graphics = _primaryTarget.Graphics;
+            _defaultFontFactory = new Lazy<GorgonFontFactory>(() => new GorgonFontFactory(Graphics), true);
         }
         #endregion
     }
