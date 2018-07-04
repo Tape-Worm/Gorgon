@@ -69,10 +69,10 @@ namespace Gorgon.Renderers
         // The kernel data to upload into the constant buffer.
         private GorgonNativeBuffer<byte> _kernelData;
         // Calculated offsets.
-        private DX.Vector4[] _xOffsets;										        
-        private DX.Vector4[] _yOffsets;										        
+        private readonly DX.Vector4[] _xOffsets;										        
+        private readonly DX.Vector4[] _yOffsets;										        
         // Blur kernel.
-        private float[] _kernel;											        
+        private readonly float[] _kernel;											        
         // Radius for the blur.
         private int _blurRadius = 6;												
         // Amount to blur.

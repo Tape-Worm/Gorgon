@@ -147,6 +147,7 @@
     <Compile Include="_Extensions\GorgonNumericFormattingExtensions.cs" />
     <Compile Include="Reflection\_Extensions\GorgonReflectionExtensions.cs" />
     <Compile Include="_Extensions\GorgonStringFormattingExtensions.cs" />
+    <Compile Include="_Extensions\SharpDXRectangleFFixes.cs" />
     <Compile Include="_Interfaces\IGorgonFluentBuilder.cs" />
     <Compile Include="_Interfaces\IGorgonFluentBuilderAllocator.cs" />
     <Compile Include="_Interfaces\IGorgonCloneable.cs" />

@@ -59,6 +59,9 @@
     <Compile Include="..\..\Gorgon.Core\SharedAssemblyInfo.cs">
       <Link>SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Cameras\Gorgon2DCamera.cs" />
+    <Compile Include="Cameras\Gorgon2DOrthoCamera.cs" />
+    <Compile Include="Cameras\Gorgon2DPerspectiveCamera.cs" />
     <Compile Include="Effects\Gorgon2DGaussBlurEffect.cs" />
     <Compile Include="Gorgon2D.cs" />
     <Compile Include="Renderables\GorgonTrianglePoint.cs" />

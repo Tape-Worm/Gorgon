@@ -127,8 +127,8 @@ namespace Gorgon.Renderers
                                                                 {
                                                                     Vertices = new Gorgon2DVertex[4]
                                                                 };
-        // The currently active viewport.
-        private DX.ViewportF _currentViewport;
+        // The 2D camera used to render the data.
+        private Gorgon2DOrthoCamera _defaultCamera;
         #endregion
 
         #region Properties.
@@ -136,6 +136,15 @@ namespace Gorgon.Renderers
         /// Property to return the log used to log debug messages.
         /// </summary>
         public IGorgonLog Log => Graphics.Log;
+
+        /// <summary>
+        /// Property to return the currently active camera.
+        /// </summary>
+        public Gorgon2DCamera CurrentCamera
+        {
+            get;
+            private set;
+        }
 
         /// <summary>
         /// Property to return the <see cref="GorgonGraphics"/> interface that owns this renderer.
@@ -230,17 +239,6 @@ namespace Gorgon.Renderers
                                                                               });
             _defaultTexture = textureResource.GetShaderResourceView();
 
-            // Set up the sprite renderer buffers.
-            DX.Matrix.OrthoOffCenterLH(0,
-                                       _primaryTarget.Width,
-                                       _primaryTarget.Height,
-                                       0,
-                                       0.0f,
-                                       1.0f,
-                                       out DX.Matrix projection);
-
-            _viewProjection = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref projection, "View * Projection Matrix Buffer");
-
             _alphaTestData = new AlphaTestData(true, GorgonRangeF.Empty);
             _alphaTest = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _alphaTestData, "Alpha Test Buffer");
 
@@ -264,7 +262,11 @@ namespace Gorgon.Renderers
                 Graphics.SetRenderTarget(_primaryTarget);
             }
 
-            _currentViewport = Graphics.Viewports[0];
+            _defaultCamera = new Gorgon2DOrthoCamera(this, new DX.RectangleF(0, 0, Graphics.Viewports[0].Width, Graphics.Viewports[0].Height), 0, 1.0f, "Gorgon2D.Default_Camera");
+            _defaultCamera.Update();
+            _defaultCamera.NeedsUpload = false;
+            _viewProjection = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _defaultCamera.ViewProjectionMatrix, "[Gorgon2D] View * Projection Matrix Buffer");
+
             _defaultTextSprite = new GorgonTextSprite(_defaultFontFactory.Value.DefaultFont);
 
             WeakEventManager<GorgonGraphics, EventArgs>.AddHandler(Graphics, nameof(GorgonGraphics.RenderTargetChanged), RenderTarget_Changed);
@@ -280,7 +282,8 @@ namespace Gorgon.Renderers
         /// Function to begin rendering.
         /// </summary>
         /// <param name="batchState">[Optional] Defines common global state to use when rendering a batch of objects.</param>
-        public void Begin(Gorgon2DBatchState batchState = null)
+        /// <param name="camera">[Optional] A camera to use when rendering.</param>
+        public void Begin(Gorgon2DBatchState batchState = null, Gorgon2DCamera camera = null)
         {
             if (Interlocked.Exchange(ref _beginCalled, 1) == 1)
             {
@@ -293,15 +296,34 @@ namespace Gorgon.Renderers
             {
                 Initialize();
             }
-            else
+
+            bool cameraChanged = camera != CurrentCamera;
+            bool updateCamera = (cameraChanged) || ((camera != null) && (camera.NeedsUpdate));
+            CurrentCamera = camera;
+
+            // If we attempt to render with no render target, then reset to our primary.
+            if (Graphics.RenderTargets[0] == null)
             {
-                // If we attempt to render with no render target, then reset to our primary.
-                if (Graphics.RenderTargets[0] == null)
+                // This will trigger the event that will update the camera.
+                Graphics.SetRenderTarget(_primaryTarget, Graphics.DepthStencilView);
+            }
+            else if (updateCamera)
+            {
+                if (camera == null)
                 {
-                    Graphics.SetRenderTarget(_primaryTarget, Graphics.DepthStencilView);
+                    camera = _defaultCamera;
+                }
+
+                camera.Update();
+
+                // If we changed the camera, then we need to re-upload the matrix data to the GPU.
+                if ((cameraChanged) || (camera.NeedsUpload))
+                {
+                    _viewProjection.Buffer.SetData(ref camera.ViewProjectionMatrix);
+                    camera.NeedsUpload = false;
                 }
             }
-
+            
             _lastRenderable = null;
             _lastBatchState.PixelShader = batchState?.PixelShader ?? _defaultPixelShader;
             _lastBatchState.VertexShader = batchState?.VertexShader ?? _defaultVertexShader;
@@ -404,26 +426,21 @@ namespace Gorgon.Renderers
                 Initialize();
             }
 
-            DX.ViewportF viewPort = Graphics.Viewports[0];
+            Gorgon2DCamera camera = CurrentCamera ?? _defaultCamera;
 
-            // Nothing's changed, so get out.
-            if (viewPort.Equals(ref _currentViewport))
+            if (camera.AllowUpdateOnResize)
+            {
+                DX.ViewportF viewPort = Graphics.Viewports[0];
+                camera.ViewDimensions = new DX.RectangleF(0, 0, viewPort.Width, viewPort.Height);
+                camera.Update();
+            }
+
+            if (!camera.NeedsUpload)
             {
                 return;
             }
 
-            // Set up the sprite renderer buffers.
-            DX.Matrix.OrthoOffCenterLH(0,
-                                       viewPort.Width,
-                                       viewPort.Height,
-                                       0,
-                                       0.0f,
-                                       1.0f,
-                                       out DX.Matrix projection);
-
-            _viewProjection.Buffer.SetData(ref projection);
-
-            _currentViewport = viewPort;
+            _viewProjection.Buffer.SetData(ref camera.ViewProjectionMatrix);
         }
 
         /// <summary>
@@ -1492,6 +1509,7 @@ namespace Gorgon.Renderers
             _lastBatchState.DepthStencilState = null;
             _lastBatchState.PixelShader = null;
             _lastBatchState.VertexShader = null;
+            CurrentCamera = null;
         }
 
         /// <summary>
