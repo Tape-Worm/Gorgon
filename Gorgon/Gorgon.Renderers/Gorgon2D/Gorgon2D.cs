@@ -262,7 +262,7 @@ namespace Gorgon.Renderers
                 Graphics.SetRenderTarget(_primaryTarget);
             }
 
-            _defaultCamera = new Gorgon2DOrthoCamera(this, new DX.RectangleF(0, 0, Graphics.Viewports[0].Width, Graphics.Viewports[0].Height), 0, 1.0f, "Gorgon2D.Default_Camera");
+            _defaultCamera = new Gorgon2DOrthoCamera(this, new DX.Size2F(Graphics.Viewports[0].Width, Graphics.Viewports[0].Height), 0, 1.0f, "Gorgon2D.Default_Camera");
             _defaultCamera.Update();
             _defaultCamera.NeedsUpload = false;
             _viewProjection = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _defaultCamera.ViewProjectionMatrix, "[Gorgon2D] View * Projection Matrix Buffer");
@@ -298,7 +298,9 @@ namespace Gorgon.Renderers
             }
 
             bool cameraChanged = camera != CurrentCamera;
-            bool updateCamera = (cameraChanged) || ((camera != null) && (camera.NeedsUpdate));
+            bool updateCamera = (cameraChanged) ||
+                                ((camera != null) && (camera.NeedsUpdate));
+
             CurrentCamera = camera;
 
             // If we attempt to render with no render target, then reset to our primary.
@@ -319,8 +321,7 @@ namespace Gorgon.Renderers
                 // If we changed the camera, then we need to re-upload the matrix data to the GPU.
                 if ((cameraChanged) || (camera.NeedsUpload))
                 {
-                    _viewProjection.Buffer.SetData(ref camera.ViewProjectionMatrix);
-                    camera.NeedsUpload = false;
+                    UploadCameraData(camera);
                 }
             }
             
@@ -414,6 +415,21 @@ namespace Gorgon.Renderers
         }
 
         /// <summary>
+        /// Function to upload the data from the camera to the GPU.
+        /// </summary>
+        /// <param name="camera">The camera containing the data to upload.</param>
+        private void UploadCameraData(Gorgon2DCamera camera)
+        {
+            if (!camera.NeedsUpload)
+            {
+                return;
+            }
+
+            _viewProjection.Buffer.SetData(ref camera.ViewProjectionMatrix);
+            camera.NeedsUpload = false;
+        }
+
+        /// <summary>
         /// Function called when a render target is changed on the main graphics interface.
         /// </summary>
         /// <param name="sender">The sender of the event.</param>
@@ -431,16 +447,11 @@ namespace Gorgon.Renderers
             if (camera.AllowUpdateOnResize)
             {
                 DX.ViewportF viewPort = Graphics.Viewports[0];
-                camera.ViewDimensions = new DX.RectangleF(0, 0, viewPort.Width, viewPort.Height);
+                camera.ViewDimensions = new DX.Size2F(viewPort.Width, viewPort.Height);
                 camera.Update();
             }
 
-            if (!camera.NeedsUpload)
-            {
-                return;
-            }
-
-            _viewProjection.Buffer.SetData(ref camera.ViewProjectionMatrix);
+            UploadCameraData(camera);
         }
 
         /// <summary>

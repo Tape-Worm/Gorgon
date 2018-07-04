@@ -38,7 +38,7 @@ namespace Gorgon.Renderers
     {
         #region Variables.
         // View projection dimensions.
-        private DX.RectangleF _viewDimensions;								
+        private DX.Size2F _viewDimensions;								
         // Maximum depth.
         private float _maxDepth;										
         // Minimum depth value.
@@ -98,12 +98,12 @@ namespace Gorgon.Renderers
 		/// <summary>
 		/// Property to set or return the projection view dimensions for the camera.
 		/// </summary>
-		public DX.RectangleF ViewDimensions
+		public DX.Size2F ViewDimensions
 		{
 			get => _viewDimensions;
 		    set
 			{
-				if (_viewDimensions.Equals(ref value))
+				if (_viewDimensions.Equals(value))
 				{
 					return;
 				}
@@ -155,7 +155,7 @@ namespace Gorgon.Renderers
 		}
 
 	    /// <summary>
-	    /// Property to set or return a flag to indicate that the renderer should automatically update this camera.
+	    /// Property to set or return a flag to indicate that the renderer should automatically update this camera when the render target size changes.
 	    /// </summary>
 	    /// <remarks>
 	    /// <para>
@@ -271,11 +271,13 @@ namespace Gorgon.Renderers
         /// Initializes a new instance of the <see cref="Gorgon2DCamera" /> class.
         /// </summary>
         /// <param name="renderer">The 2D renderer to use with this camera.</param>
+        /// <param name="viewDimensions">The view dimensions.</param>
         /// <param name="name">The name of the camera.</param>
-        protected Gorgon2DCamera(Gorgon2D renderer, string name)
-            : base(string.IsNullOrWhiteSpace(name) ? $"Gorgon2D.OrthoCamera.{Guid.NewGuid():N}" : name)
+        protected Gorgon2DCamera(Gorgon2D renderer, DX.Size2F viewDimensions, string name)
+            : base(name)
         {
             Renderer = renderer ?? throw new ArgumentNullException(nameof(renderer));
+            _viewDimensions = viewDimensions;
         }
         #endregion
     }

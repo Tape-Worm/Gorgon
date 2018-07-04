@@ -267,13 +267,18 @@ namespace Gorgon.Renderers
         /// </summary>
         public override void Update()
         {
+            if ((!NeedsProjectionUpdate) && (!NeedsViewUpdate))
+            {
+                return;
+            }
+
             if (NeedsProjectionUpdate)
             {
                 var anchor = new DX.Vector2(Anchor.X * ViewDimensions.Width, Anchor.Y * ViewDimensions.Height);
-                DX.Matrix.PerspectiveOffCenterLH(ViewDimensions.Left - anchor.X,
-                                                 ViewDimensions.Right - anchor.X,
-                                                 ViewDimensions.Bottom - anchor.Y,
-                                                 ViewDimensions.Top - anchor.Y,
+                DX.Matrix.PerspectiveOffCenterLH(-anchor.X,
+                                                 ViewDimensions.Width - anchor.X,
+                                                 ViewDimensions.Height - anchor.Y,
+                                                 -anchor.Y,
                                                  MinimumDepth,
                                                  MaximumDepth,
                                                  out ProjectionMatrix);
@@ -284,12 +289,8 @@ namespace Gorgon.Renderers
                 UpdateViewMatrix();
             }
 
-            if ((NeedsProjectionUpdate) || (NeedsViewUpdate))
-            {
-                DX.Matrix.Multiply(ref ViewMatrix, ref ProjectionMatrix, out ViewProjectionMatrix);
-                NeedsUpload = true;
-            }
-			
+            DX.Matrix.Multiply(ref ViewMatrix, ref ProjectionMatrix, out ViewProjectionMatrix);
+            NeedsUpload = true;
             NeedsProjectionUpdate = false;
             NeedsViewUpdate = false;
         }
@@ -305,12 +306,11 @@ namespace Gorgon.Renderers
         /// <param name="maximumDepth">[Optional] The maximum depth value.</param>
         /// <param name="name">[Optional] The name of the camera.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="gorgon2D"/> parameter is <b>null</b>.</exception>
-        public Gorgon2DPerspectiveCamera(Gorgon2D gorgon2D, DX.RectangleF viewDimensions, float minDepth = 0.1f, float maximumDepth = 1000.0f, string name = null)
-            : base(gorgon2D, name)
+        public Gorgon2DPerspectiveCamera(Gorgon2D gorgon2D, DX.Size2F viewDimensions, float minDepth = 0.1f, float maximumDepth = 1000.0f, string name = null)
+            : base(gorgon2D, viewDimensions, string.IsNullOrWhiteSpace(name) ? $"Gorgon2D.PerspectiveCamera.{Guid.NewGuid():N}" : name)
         {
             MaximumDepth = maximumDepth.Max(1.0f);
 	        MinimumDepth = minDepth;
-	        ViewDimensions = viewDimensions;
         }
         #endregion
 	}
