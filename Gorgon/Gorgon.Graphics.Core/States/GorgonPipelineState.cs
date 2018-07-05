@@ -329,6 +329,10 @@ namespace Gorgon.Graphics.Core
         /// </summary>
 	    internal void Clear()
         {
+            D3DBlendState = null;
+            D3DDepthStencilState = null;
+            D3DRasterState = null;
+
             RasterState = null;
             DepthStencilState = null;
             IsIndependentBlendingEnabled = false;
