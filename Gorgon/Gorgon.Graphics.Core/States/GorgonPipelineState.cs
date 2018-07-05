@@ -338,7 +338,7 @@ namespace Gorgon.Graphics.Core
             GeometryShader = null;
             DomainShader = null;
             HullShader = null;
-            PrimitiveType = PrimitiveType.TriangleList;
+            PrimitiveType = PrimitiveType.None;
             RwBlendStates.Clear();
         }
         #endregion
