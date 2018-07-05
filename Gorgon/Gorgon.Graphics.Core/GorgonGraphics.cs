@@ -2376,7 +2376,14 @@ namespace Gorgon.Graphics.Core
         /// <para>
         /// This depth/stencil have the same dimensions, array size, and multisample values as the currently assigned <see cref="RenderTargets"/>. 
         /// </para>
-        /// <note type="caution">
+        /// <para>
+        /// <note type="warning">
+        /// <para>
+        /// When changing a depth/stencil, the state of the GPU is reset and may impact performance. This is done to avoid resource hazards (e.g. depth/stencil is set as a shader resource). 
+        /// </para>
+        /// </note>
+        /// </para>
+        /// <note type="important">
         /// <para>
         /// For performance reasons, any exceptions thrown from this method will only be thrown when Gorgon is compiled as DEBUG.
         /// </para>
@@ -2417,11 +2424,20 @@ namespace Gorgon.Graphics.Core
         /// When a render target is set, the first viewport in the <see cref="Viewports"/> list will be reset to the size of the render target. The user is responsible for restoring these to their intended
         /// values after assigning the target if a different viewport region is required.
         /// </para>
-        /// <note type="caution">
+        /// <para>
+        /// <note type="warning">
+        /// <para>
+        /// When changing a render target or depth/stencil, the state of the GPU is reset and may impact performance. This is done to avoid resource hazards (e.g. target is set as a shader resource). 
+        /// </para>
+        /// </note>
+        /// </para>
+        /// <para>
+        /// <note type="important">
         /// <para>
         /// For performance reasons, any exceptions thrown from this method will only be thrown when Gorgon is compiled as DEBUG.
         /// </para>
         /// </note>
+        /// </para>
         /// </remarks>
         /// <seealso cref="GorgonDepthStencil2DView"/>
         /// <seealso cref="GorgonTexture2D"/>
@@ -2488,6 +2504,13 @@ namespace Gorgon.Graphics.Core
         /// <para>
         /// When a render target is set, the first viewport in the <see cref="Viewports"/> list will be reset to the size of the render target. The user is responsible for restoring these to their intended
         /// values after assigning the target if a different viewport region is required.
+        /// </para>
+        /// <para>
+        /// <note type="warning">
+        /// <para>
+        /// When changing a render target or depth/stencil, the state of the GPU is reset and may impact performance. This is done to avoid resource hazards (e.g. target is set as a shader resource). 
+        /// </para>
+        /// </note>
         /// </para>
         /// <para>
         /// <note type="information">
@@ -2821,7 +2844,7 @@ namespace Gorgon.Graphics.Core
         /// through without having to get the CPU to read the data back, thus avoiding the stall.
         /// </para>
         /// <para>
-        /// <note type="caution">
+        /// <note type="important">
         /// <para>
         /// For performance reasons, any exceptions thrown from this method will only be thrown when Gorgon is compiled as DEBUG.
         /// </para>
@@ -2857,7 +2880,7 @@ namespace Gorgon.Graphics.Core
         /// through without having to get the CPU to read the data back, thus avoiding the stall.
         /// </para>
         /// <para>
-        /// <note type="caution">
+        /// <note type="important">
         /// <para>
         /// For performance reasons, any exceptions thrown from this method will only be thrown when Gorgon is compiled as DEBUG.
         /// </para>
@@ -2906,7 +2929,7 @@ namespace Gorgon.Graphics.Core
         /// To render data with this method, the <see cref="GorgonVertexBufferBinding"/> being rendered must have been be created with the <see cref="VertexIndexBufferBinding.StreamOut"/> flag set.
         /// </para>
         /// <para>
-        /// <note type="caution">
+        /// <note type="important">
         /// <para>
         /// For performance reasons, any exceptions thrown from this method will only be thrown when Gorgon is compiled as DEBUG.
         /// </para>
