@@ -105,6 +105,24 @@ namespace Gorgon.Renderers.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Displacement Effect.
+        /// </summary>
+        internal static string GOR2D_EFFECT_DISPLACEMENT {
+            get {
+                return ResourceManager.GetString("GOR2D_EFFECT_DISPLACEMENT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Displaces pixels on a background image by weighting the pixels from another image over top..
+        /// </summary>
+        internal static string GOR2D_EFFECT_DISPLACEMENT_DESC {
+            get {
+                return ResourceManager.GetString("GOR2D_EFFECT_DISPLACEMENT_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Gaussian Blur Effect.
         /// </summary>
         internal static string GOR2D_EFFECT_GAUSS_BLUR {
@@ -200,6 +218,15 @@ namespace Gorgon.Renderers.Properties {
         internal static string GOR2D_ERR_EFFECT_BLUR_RENDER_TARGET_FORMAT_NOT_SUPPORTED {
             get {
                 return ResourceManager.GetString("GOR2D_ERR_EFFECT_BLUR_RENDER_TARGET_FORMAT_NOT_SUPPORTED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The format [{0}] is not supported for render targets..
+        /// </summary>
+        internal static string GOR2D_ERR_EFFECT_DISPLACEMENT_UNSUPPORTED_FORMAT {
+            get {
+                return ResourceManager.GetString("GOR2D_ERR_EFFECT_DISPLACEMENT_UNSUPPORTED_FORMAT", resourceCulture);
             }
         }
         

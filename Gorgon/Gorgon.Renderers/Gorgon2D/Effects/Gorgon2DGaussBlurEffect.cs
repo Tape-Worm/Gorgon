@@ -591,7 +591,7 @@ namespace Gorgon.Renderers
             sourceTexture.ValidateObject(nameof(sourceTexture));
 
             _inputTexture = sourceTexture;
-            Render(null, null, null);
+            Render();
         }
 
         /// <summary>

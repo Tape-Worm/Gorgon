@@ -42,36 +42,15 @@ namespace Gorgon.Renderers
         private bool _isInitialized;
         // The camera to use when rendering.
         private Gorgon2DCamera _camera;
+        // The currently overridden blend state.
+        private GorgonBlendState _blendStateOverride;
+        // The currently overridden raster state.
+        private GorgonRasterState _rasterStateOverride;
+        // The currently overridden depth/stencil state.
+        private GorgonDepthStencilState _depthStencilStateOverride;
         #endregion
 
         #region Properties.
-        /// <summary>
-        /// Property to return the currently overridden blend state.
-        /// </summary>
-        protected GorgonBlendState BlendStateOverride
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Property to return the currently overridden raster state.
-        /// </summary>
-        protected GorgonRasterState RasterStateOverride
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Property to return the currently overridden depth/stencil state.
-        /// </summary>
-        protected GorgonDepthStencilState DepthStencilStateOverride
-        {
-            get;
-            private set;
-        }
-
         /// <summary>
         /// Property to return the batch state builder used to create custom batch states.
         /// </summary>
@@ -205,11 +184,11 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Function called to render the effect.
         /// </summary>
-        /// <param name="blendStateOverride">An override for the current blending state.</param>
-        /// <param name="depthStencilStateOverride">An override for the current depth/stencil state.</param>
-        /// <param name="rasterStateOverride">An override for the current raster state.</param>
+        /// <param name="blendStateOverride">[Optional] An override for the current blending state.</param>
+        /// <param name="depthStencilStateOverride">[Optional] An override for the current depth/stencil state.</param>
+        /// <param name="rasterStateOverride">[Optional] An override for the current raster state.</param>
         /// <param name="camera">[Optional] The camera to use when rendering.</param>
-        protected void Render(GorgonBlendState blendStateOverride, GorgonDepthStencilState depthStencilStateOverride, GorgonRasterState rasterStateOverride, Gorgon2DCamera camera = null)
+        protected void Render(GorgonBlendState blendStateOverride = null, GorgonDepthStencilState depthStencilStateOverride = null, GorgonRasterState rasterStateOverride = null, Gorgon2DCamera camera = null)
         {
             if (!_isInitialized)
             {
@@ -225,17 +204,18 @@ namespace Gorgon.Renderers
             bool stateChanged = false;
             _camera = camera;
 
-            if ((blendStateOverride != BlendStateOverride)
-                || (depthStencilStateOverride != DepthStencilStateOverride)
-                || (rasterStateOverride != RasterStateOverride))
+            if ((blendStateOverride != _blendStateOverride)
+                || (depthStencilStateOverride != _depthStencilStateOverride)
+                || (rasterStateOverride != _rasterStateOverride))
             {
                 BatchStateBuilder.BlendState(blendStateOverride ?? GorgonBlendState.Default)
                                  .DepthStencilState(depthStencilStateOverride ?? GorgonDepthStencilState.Default)
                                  .RasterState(rasterStateOverride ?? GorgonRasterState.Default);
 
-                BlendStateOverride = blendStateOverride;
-                DepthStencilStateOverride = depthStencilStateOverride;
-                RasterStateOverride = rasterStateOverride;
+                _blendStateOverride = blendStateOverride;
+                _depthStencilStateOverride = depthStencilStateOverride;
+                _rasterStateOverride = rasterStateOverride;
+                    
                 stateChanged = true;
             }
 

@@ -285,6 +285,13 @@ namespace Gorgon.Renderers
         /// <param name="camera">[Optional] A camera to use when rendering.</param>
         public void Begin(Gorgon2DBatchState batchState = null, Gorgon2DCamera camera = null)
         {
+            // If we attempt to render with no render target, then reset to our primary.
+            if (Graphics.RenderTargets[0] == null)
+            {
+                // This will trigger the event that will update the camera.
+                Graphics.SetRenderTarget(_primaryTarget, Graphics.DepthStencilView);
+            }
+
             if (Interlocked.Exchange(ref _beginCalled, 1) == 1)
             {
                 return;
@@ -303,13 +310,7 @@ namespace Gorgon.Renderers
 
             CurrentCamera = camera;
 
-            // If we attempt to render with no render target, then reset to our primary.
-            if (Graphics.RenderTargets[0] == null)
-            {
-                // This will trigger the event that will update the camera.
-                Graphics.SetRenderTarget(_primaryTarget, Graphics.DepthStencilView);
-            }
-            else if (updateCamera)
+            if (updateCamera)
             {
                 if (camera == null)
                 {

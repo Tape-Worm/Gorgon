@@ -146,7 +146,7 @@ namespace Gorgon.Renderers
             renderCallback.ValidateObject(nameof(renderCallback));
 	        _renderCallback = renderCallback;
             
-            Render(blendState, null, null, camera);
+            Render(blendState, camera: camera);
 
 	        _renderCallback = null;
 	    }

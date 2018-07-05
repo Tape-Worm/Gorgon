@@ -124,6 +124,12 @@
   <data name="FilmGrain" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\FilmGrain.hlsl;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
+  <data name="GOR2D_EFFECT_DISPLACEMENT" xml:space="preserve">
+    <value>Displacement Effect</value>
+  </data>
+  <data name="GOR2D_EFFECT_DISPLACEMENT_DESC" xml:space="preserve">
+    <value>Displaces pixels on a background image by weighting the pixels from another image over top.</value>
+  </data>
   <data name="GOR2D_EFFECT_GAUSS_BLUR" xml:space="preserve">
     <value>Gaussian Blur Effect</value>
   </data>
@@ -155,6 +161,9 @@
     <value>The kernel size must be between 3 and 81 (inclusive).</value>
   </data>
   <data name="GOR2D_ERR_EFFECT_BLUR_RENDER_TARGET_FORMAT_NOT_SUPPORTED" xml:space="preserve">
+    <value>The format [{0}] is not supported for render targets.</value>
+  </data>
+  <data name="GOR2D_ERR_EFFECT_DISPLACEMENT_UNSUPPORTED_FORMAT" xml:space="preserve">
     <value>The format [{0}] is not supported for render targets.</value>
   </data>
   <data name="GOR2D_ERR_INVALID_SAMPLER_INDEX" xml:space="preserve">
