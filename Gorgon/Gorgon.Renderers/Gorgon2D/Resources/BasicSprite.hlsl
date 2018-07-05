@@ -1,6 +1,5 @@
 #define REJECT_ALPHA(alpha) if (alphaTestEnabled) clip((alpha <= alphaTestValueHi && alpha >= alphaTestValueLow) ? -1 : 1);
 #define RANGE_BW(colorValue) (colorValue < oneBitRange.x || colorValue > oneBitRange.y) ? 0.0f : 1.0f;
-#define MAX_KERNEL_SIZE 13
 
 // Our default texture and sampler.
 Texture2DArray _gorgonTexture : register(t0);
@@ -37,28 +36,6 @@ cbuffer GorgonMaterial : register(b1)
 {
 	float4 matDiffuse;
 	float4 matTextureTransform;
-}
-
-// Wave effect variables.
-cbuffer GorgonWaveEffect : register(b1)
-{
-	int waveType;
-	float waveAmplitude;
-	float waveLength;
-	float wavePeriod;
-	float waveLengthScale;
-}
-
-// Gaussian blur variables.
-cbuffer GorgonGaussBlurEffectStatic : register(b1)
-{
-	int blurRadius = 7;
-	float _weights[MAX_KERNEL_SIZE];
-}
-
-cbuffer GorgonGaussEffectBlur : register(b2)
-{
-	float2 _offsets[MAX_KERNEL_SIZE];
 }
 
 // Sharpen/emboss effect variables.
@@ -105,12 +82,6 @@ cbuffer GorgonBurnDodgeEffect : register(b1)
 	bool burnDodgeUseDodge;
 }
 
-// Displacement effect variables.
-cbuffer GorgonDisplacementEffect : register(b1)
-{
-	float4 displaceSizeAmount = 0;
-}
-
 // Our default vertex shader.
 GorgonSpriteVertex GorgonVertexShader(GorgonSpriteVertex vertex)
 {
@@ -131,20 +102,167 @@ float4 GorgonPixelShaderTextured(GorgonSpriteVertex vertex) : SV_Target
 	return color;
 }
 
-// Function to gather the a single pass of the separable gaussian blur.
-float4 GorgonPixelShaderGaussBlur(GorgonSpriteVertex vertex) : SV_Target
+#ifdef WAVE_EFFECT
+// Wave effect variables.
+cbuffer GorgonWaveEffect : register(b1)
 {
-	float4 sample = 0.0f;
-	int kernelSize = (blurRadius * 2) + 1;
+	float waveAmplitude;
+	float waveLength;
+	float wavePeriod;
+	float waveLengthScale;
+	int waveType;
+}
 
-	[unroll]	
-	for (int i = 0; i < kernelSize; i++)
+// A vertical wave effect pixel shader.
+float4 GorgonPixelShaderWaveEffect(GorgonSpriteVertex vertex) : SV_Target
+{
+	float2 uv = vertex.uv;
+	float4 color;
+	float length = abs(1.0f - (waveLength / waveLengthScale)) * waveLength;
+	float amp = waveAmplitude / 360.0f;
+		
+	if ((waveType == 0) || (waveType == 2))
 	{
-		sample += _gorgonTexture.Sample(_gorgonSampler, float3(vertex.uv.xy + _offsets[i], vertex.uv.z)) * vertex.color * _weights[i];	
+		uv.x += sin((uv.y + wavePeriod) * length) * amp;
 	}
 
-	return sample;
+	if ((waveType == 1) || (waveType == 2))
+	{
+		uv.y += cos((uv.x + wavePeriod) * length) * amp;
+	}
+			
+	color = _gorgonTexture.Sample(_gorgonSampler, float3(uv, vertex.uv.z)) * vertex.color;
+	REJECT_ALPHA(color.a);
+	return color;
 }
+#endif
+
+#ifdef DISPLACEMENT_EFFECT
+// Displacement effect variables.
+cbuffer GorgonDisplacementEffect : register(b1)
+{
+	float4 displaceSizeAmount;
+}
+
+// The displacement shader encoder.
+float2 GorgonPixelShaderDisplacementEncoder(float3 uv)
+{
+	float4 offset = _gorgonEffectTexture.Sample(_gorgonSampler, uv);
+
+	float4 basisX = offset.x >= 0.5f ? float4(offset.x, 0.0f, 0.0f, 0) : float4(0.0f, 0.0f, -offset.x, 0.0f);
+	float4 basisY = offset.y >= 0.5f ? float4(0.0f, offset.y, 0.0f, 0) : float4(0.0f, 0.0f, 0.0f, -offset.y);	
+	float4 displacement = (basisX + basisY) * displaceSizeAmount.z;
+
+	return (displacement.xy + displacement.zw) * displaceSizeAmount.xy;
+}
+
+// The displacement shader decoder.
+float4 GorgonPixelShaderDisplacementDecoder(GorgonSpriteVertex vertex) : SV_Target
+{	
+	float2 offset = GorgonPixelShaderDisplacementEncoder(vertex.uv);		
+	float4 color = _gorgonTexture.Sample(_gorgonSampler, float3(vertex.uv.xy + offset.xy, vertex.uv.z)) * vertex.color;
+
+	REJECT_ALPHA(color.a);
+
+	return color;
+}
+#endif
+
+#ifdef GRAYSCALE_EFFECT
+// A pixel shader that converts to gray scale.
+float4 GorgonPixelShaderGrayScale(GorgonSpriteVertex vertex) : SV_Target
+{
+	float4 color = _gorgonTexture.Sample(_gorgonSampler, vertex.uv) * vertex.color;
+
+	REJECT_ALPHA(color.a);
+
+	float grayValue = color.r * 0.3f + color.g * 0.59f + color.b * 0.11f;
+
+	return float4(grayValue, grayValue, grayValue, color.a);
+}
+#endif
+
+#ifdef GAUSS_BLUR_EFFECT
+// Gaussian blur effect starts here.
+
+// Adjust the weighting and offsets so we can pack our float values in tightly (much less bandwidth when updating the CB).
+#define MAX_WEIGHT_SIZE (((MAX_KERNEL_SIZE * 4) + 15) & (~15)) / 16
+#define MAX_OFFSET_SIZE (((MAX_KERNEL_SIZE * 8) + 15) & (~15)) / 16
+
+// Gaussian blur kernal (for the gaussian blur shader).
+cbuffer GorgonGaussKernelData : register(b1)
+{
+	float4 _offsets[MAX_OFFSET_SIZE];
+	float4 _weights[MAX_WEIGHT_SIZE];
+	float _blurRadius;
+}
+
+// Gaussian blur pass data (for the gaussian blur shader).
+cbuffer GorgonGaussPassSettings : register(b2)
+{
+	int _passIndex;
+}
+
+// Function to gather a single pass of the separable gaussian blur with alpha preservation.
+float4 GorgonPixelShaderGaussBlurNoAlpha(GorgonSpriteVertex vertex) : SV_Target
+{
+	float4 blurSample = 0.0f;
+	int kernelSize = (_blurRadius * 2) + 1;
+
+	[unroll]
+	for (int i = 0; i < kernelSize; i++)
+	{
+		int arrayIndex = i / 4;
+		int componentIndex = i % 4;
+		float2 offset = _passIndex == 0 ? float2(_offsets[arrayIndex][componentIndex], 0) : float2(0, _offsets[arrayIndex][componentIndex]);
+		float4 texSample = _gorgonTexture.Sample(_gorgonSampler, float3(vertex.uv.xy + offset, vertex.uv.z));
+
+		blurSample.rgb += texSample.rgb * _weights[arrayIndex][componentIndex];	
+		blurSample.a = texSample.a;
+	}
+
+	return saturate(blurSample);
+}
+
+// Function to gather a single pass of the separable gaussian blur.
+float4 GorgonPixelShaderGaussBlur(GorgonSpriteVertex vertex) : SV_Target
+{
+	if (_blurRadius > 6.0f)
+	{
+		return float4(_blurRadius / 6.0f, 0, 0, 1.0f);
+	}
+
+	float4 blurSample = 0.0f;
+	int kernelSize = (_blurRadius * 2) + 1;
+	float totalWeight = 0.0f;
+
+	[unroll]
+	for (int i = 0; i < kernelSize; i++)
+	{
+		int arrayIndex = i / 4;
+		int componentIndex = i % 4;
+		float2 offset = _passIndex == 0 ? float2(_offsets[arrayIndex][componentIndex], 0) : float2(0, _offsets[arrayIndex][componentIndex]);
+		float4 texSample = _gorgonTexture.Sample(_gorgonSampler, float3(vertex.uv.xy + offset, vertex.uv.z));
+
+		// Skip blurring if there's no alpha.  If there's no alpha, then there's nothing to contribute to the blur.
+		// We can't use clip() here because it causes smearing when animating the image.		
+		if (texSample.a == 0)
+		{			
+			continue;
+		}
+
+		float newAlpha = _weights[arrayIndex][componentIndex] * texSample.a;
+
+		blurSample.rgb += texSample.rgb * newAlpha;
+		blurSample.a += newAlpha;
+
+		totalWeight += newAlpha;
+	}
+
+	// If there's no weighting, then do nothing with this texel.
+	return totalWeight != 0 ? saturate(float4(blurSample.rgb / totalWeight, blurSample.a)) : float4(blurSample.rgb, 0);
+}
+#endif
 
 // Our default pixel shader with textures, alpha testing and materials.
 /*float4 GorgonPixelShaderTexturedMaterial(GorgonSpriteVertex vertex) : SV_Target
@@ -176,40 +294,6 @@ float4 GorgonPixelShaderDiffuse(GorgonSpriteVertex vertex)  : SV_Target
 
 // These functions are some basic effects for textured images.
 
-// A pixel shader that converts to gray scale.
-float4 GorgonPixelShaderGrayScale(GorgonSpriteVertex vertex) : SV_Target
-{
-	float4 color = _gorgonTexture.Sample(_gorgonSampler, vertex.uv) * vertex.color;
-
-	REJECT_ALPHA(color.a);
-
-	float grayValue = color.r * 0.3f + color.g * 0.59f + color.b * 0.11f;
-
-	return float4(grayValue, grayValue, grayValue, color.a);
-}
-
-// A vertical wave effect pixel shader.
-float4 GorgonPixelShaderWaveEffect(GorgonSpriteVertex vertex) : SV_Target
-{
-	float2 uv = vertex.uv;
-	float4 color;
-	float length = abs(1.0f - (waveLength / waveLengthScale)) * waveLength;
-	float amp = waveAmplitude / 360.0f;
-		
-	if ((waveType == 0) || (waveType == 2))
-	{
-		uv.x += sin((uv.y + wavePeriod) * length) * amp;
-	}
-
-	if ((waveType == 1) || (waveType == 2))
-	{
-		uv.y += cos((uv.x + wavePeriod) * length) * amp;
-	}
-			
-	color = _gorgonTexture.Sample(_gorgonSampler, uv) * vertex.color;
-	REJECT_ALPHA(color.a);
-	return color;
-}
 
 // A pixel shader to invert the color on a texture.
 float4 GorgonPixelShaderInvert(GorgonSpriteVertex vertex) : SV_Target
@@ -383,26 +467,4 @@ float4 GorgonPixelShaderBurnDodge(GorgonSpriteVertex vertex) : SV_Target
 	
 	return saturate(color);
 }
-
-// The displacement shader encoder.
-float2 GorgonPixelShaderDisplacementEncoder(float2 uv)
-{
-	float4 offset = _gorgonEffectTexture.Sample(_gorgonSampler, uv);
-
-	float4 basisX = offset.x >= 0.5f ? float4(offset.x, 0.0f, 0.0f, 0) : float4(0.0f, 0.0f, -offset.x, 0.0f);
-	float4 basisY = offset.y >= 0.5f ? float4(0.0f, offset.y, 0.0f, 0) : float4(0.0f, 0.0f, 0.0f, -offset.y);	
-	float4 displacement = (basisX + basisY) * displaceSizeAmount.z;
-
-	return (displacement.xy + displacement.zw) * displaceSizeAmount.xy;
-}
-
-// The displacement shader decoder.
-float4 GorgonPixelShaderDisplacementDecoder(GorgonSpriteVertex vertex) : SV_Target
-{	
-	float2 offset = GorgonPixelShaderDisplacementEncoder(vertex.uv);		
-	float4 color = _gorgonTexture.Sample(_gorgonSampler, vertex.uv + offset.xy) * vertex.color;
-
-	REJECT_ALPHA(color.a);
-
-	return color;
-}*/
+*/

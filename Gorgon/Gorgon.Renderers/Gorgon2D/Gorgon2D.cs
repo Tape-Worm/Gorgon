@@ -181,7 +181,7 @@ namespace Gorgon.Renderers
         /// <param name="textureSampler">The texture sampler to compare for changes.</param>
         private void CheckPrimitiveStateChange(GorgonTexture2DView texture, GorgonSamplerState textureSampler)
         {
-            var alphaTestData = new AlphaTestData(true, GorgonRangeF.Empty);
+            var alphaTestData = new AlphaTestData(false, GorgonRangeF.Empty);
 
             // The state has already been marked as changed, so we don't need to test further.
             if (_primitiveRenderable.StateChanged)
@@ -265,7 +265,7 @@ namespace Gorgon.Renderers
             _defaultCamera = new Gorgon2DOrthoCamera(this, new DX.Size2F(Graphics.Viewports[0].Width, Graphics.Viewports[0].Height), 0, 1.0f, "Gorgon2D.Default_Camera");
             _defaultCamera.Update();
             _defaultCamera.NeedsUpload = false;
-            _viewProjection = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _defaultCamera.ViewProjectionMatrix, "[Gorgon2D] View * Projection Matrix Buffer");
+            _viewProjection = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _defaultCamera.ViewProjectionMatrix, "[Gorgon2D] View * Projection Matrix Buffer", ResourceUsage.Dynamic);
 
             _defaultTextSprite = new GorgonTextSprite(_defaultFontFactory.Value.DefaultFont);
 
@@ -316,10 +316,16 @@ namespace Gorgon.Renderers
                     camera = _defaultCamera;
                 }
 
+                // If we change the camera we have to upload the projection/view matrix to the GPU regardless.
+                if (cameraChanged)
+                {
+                    camera.NeedsUpload = true;
+                }
+
                 camera.Update();
 
                 // If we changed the camera, then we need to re-upload the matrix data to the GPU.
-                if ((cameraChanged) || (camera.NeedsUpload))
+                if (camera.NeedsUpload)
                 {
                     UploadCameraData(camera);
                 }
@@ -420,11 +426,6 @@ namespace Gorgon.Renderers
         /// <param name="camera">The camera containing the data to upload.</param>
         private void UploadCameraData(Gorgon2DCamera camera)
         {
-            if (!camera.NeedsUpload)
-            {
-                return;
-            }
-
             _viewProjection.Buffer.SetData(ref camera.ViewProjectionMatrix);
             camera.NeedsUpload = false;
         }
@@ -447,11 +448,20 @@ namespace Gorgon.Renderers
             if (camera.AllowUpdateOnResize)
             {
                 DX.ViewportF viewPort = Graphics.Viewports[0];
-                camera.ViewDimensions = new DX.Size2F(viewPort.Width, viewPort.Height);
-                camera.Update();
+
+                // If the view port is different than our camera dimensions, then resize the camera to match the viewport.
+                if ((viewPort.Width != camera.ViewDimensions.Width)
+                    || (viewPort.Height != camera.ViewDimensions.Height))
+                {
+                    camera.ViewDimensions = new DX.Size2F(viewPort.Width, viewPort.Height);
+                    camera.Update();
+                }
             }
 
-            UploadCameraData(camera);
+            if (camera.NeedsUpload)
+            {
+                UploadCameraData(camera);
+            }
         }
 
         /// <summary>
@@ -765,7 +775,7 @@ namespace Gorgon.Renderers
             _primitiveRenderable.Bounds = region;
             _primitiveRenderable.ActualVertexCount = 4;
             _primitiveRenderable.IndexCount = 6;
-            _primitiveRenderable.AlphaTestData = new AlphaTestData(true, GorgonRangeF.Empty);
+            _primitiveRenderable.AlphaTestData = new AlphaTestData(false, GorgonRangeF.Empty);
             _primitiveRenderable.Texture = texture;
             _primitiveRenderable.TextureSampler = textureSampler;
 
@@ -809,7 +819,7 @@ namespace Gorgon.Renderers
                                                    Position = new DX.Vector4(point3.Position, depth, 1.0f),
                                                    UV = texture != null ? new DX.Vector3(point3.TextureCoordinate, point3.TextureArrayIndex) : DX.Vector3.Zero
                                                };
-            _primitiveRenderable.AlphaTestData = new AlphaTestData(true, GorgonRangeF.Empty);
+            _primitiveRenderable.AlphaTestData = new AlphaTestData(false, GorgonRangeF.Empty);
             _primitiveRenderable.Texture = texture ?? _defaultTexture;
             _primitiveRenderable.TextureSampler = textureSampler;
             
@@ -1068,7 +1078,7 @@ namespace Gorgon.Renderers
 
             _primitiveRenderable.ActualVertexCount = 4;
             _primitiveRenderable.IndexCount = 6;
-            _primitiveRenderable.AlphaTestData = new AlphaTestData(true, GorgonRangeF.Empty);
+            _primitiveRenderable.AlphaTestData = new AlphaTestData(false, GorgonRangeF.Empty);
             _primitiveRenderable.Texture = texture;
             _primitiveRenderable.TextureSampler = textureSampler;
 
@@ -1108,6 +1118,7 @@ namespace Gorgon.Renderers
             _primitiveRenderable.IndexCount = 0;
             _primitiveRenderable.ActualVertexCount = (quality * 2) + 2;
             _primitiveRenderable.Texture = texture ?? _defaultTexture;
+            _primitiveRenderable.AlphaTestData = new AlphaTestData(false, GorgonRangeF.Empty);
 
             // Ensure the primitive batch object is large enough to hold our vertex list.
             if ((_primitiveRenderable.Vertices == null) || (_primitiveRenderable.Vertices.Length < _primitiveRenderable.ActualVertexCount))
@@ -1219,6 +1230,7 @@ namespace Gorgon.Renderers
             _primitiveRenderable.IndexCount = 0;
             _primitiveRenderable.ActualVertexCount = (quality * 2) + 2;
             _primitiveRenderable.Texture = texture ?? _defaultTexture;
+            _primitiveRenderable.AlphaTestData = new AlphaTestData(false, GorgonRangeF.Empty);
 
             // Ensure the primitive batch object is large enough to hold our vertex list.
             if ((_primitiveRenderable.Vertices == null) || (_primitiveRenderable.Vertices.Length < _primitiveRenderable.ActualVertexCount))
@@ -1334,6 +1346,7 @@ namespace Gorgon.Renderers
             _primitiveRenderable.IndexCount = 0;
             _primitiveRenderable.ActualVertexCount = (quality * 2) + 2;
             _primitiveRenderable.Texture = texture ?? _defaultTexture;
+            _primitiveRenderable.AlphaTestData = new AlphaTestData(false, GorgonRangeF.Empty);
 
             // Ensure the primitive batch object is large enough to hold our vertex list.
             if ((_primitiveRenderable.Vertices == null) || (_primitiveRenderable.Vertices.Length < _primitiveRenderable.ActualVertexCount))
@@ -1430,6 +1443,7 @@ namespace Gorgon.Renderers
             _primitiveRenderable.IndexCount = 0;
             _primitiveRenderable.ActualVertexCount = (quality * 2) + 2;
             _primitiveRenderable.Texture = texture ?? _defaultTexture;
+            _primitiveRenderable.AlphaTestData = new AlphaTestData(false, GorgonRangeF.Empty);
 
             // Ensure the primitive batch object is large enough to hold our vertex list.
             if ((_primitiveRenderable.Vertices == null) || (_primitiveRenderable.Vertices.Length < _primitiveRenderable.ActualVertexCount))
@@ -1520,7 +1534,6 @@ namespace Gorgon.Renderers
             _lastBatchState.DepthStencilState = null;
             _lastBatchState.PixelShader = null;
             _lastBatchState.VertexShader = null;
-            CurrentCamera = null;
         }
 
         /// <summary>

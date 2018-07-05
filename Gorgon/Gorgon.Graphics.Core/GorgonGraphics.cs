@@ -1192,7 +1192,7 @@ namespace Gorgon.Graphics.Core
             {
                 GorgonConstantBufferView view = constantBuffers[i + start];
 
-                if (!view.ViewAdjusted)
+                if ((view == null) || (!view.ViewAdjusted))
                 {
                     continue;
                 }

@@ -124,6 +124,24 @@
   <data name="FilmGrain" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\FilmGrain.hlsl;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
+  <data name="GOR2D_EFFECT_GAUSS_BLUR" xml:space="preserve">
+    <value>Gaussian Blur Effect</value>
+  </data>
+  <data name="GOR2D_EFFECT_GAUSS_BLUT_DESC" xml:space="preserve">
+    <value>Blurs a texture using a gaussian blurring technique and sends the blurred data to the effect output.</value>
+  </data>
+  <data name="GOR2D_EFFECT_GRAYSCALE" xml:space="preserve">
+    <value>Grayscale Effect</value>
+  </data>
+  <data name="GOR2D_EFFECT_GRAYSCALE_DESC" xml:space="preserve">
+    <value>Renders sprites, primitives, etc... as grayscale.</value>
+  </data>
+  <data name="GOR2D_EFFECT_WAVE" xml:space="preserve">
+    <value>Wave Effect</value>
+  </data>
+  <data name="GOR2D_EFFECT_WAVE_DESC" xml:space="preserve">
+    <value>Causes a waving effect on a texture.</value>
+  </data>
   <data name="GOR2D_ERR_BEGIN_NOT_CALLED" xml:space="preserve">
     <value>The Begin() method must be called prior to calling this method.</value>
   </data>
@@ -132,6 +150,12 @@
   </data>
   <data name="GOR2D_ERR_CBUFFER_SLOT_INVALID" xml:space="preserve">
     <value>The constant buffer slot must be 0 or less than {0}.</value>
+  </data>
+  <data name="GOR2D_ERR_EFFECT_BLUR_KERNEL_SIZE_INVALID" xml:space="preserve">
+    <value>The kernel size must be between 3 and 81 (inclusive).</value>
+  </data>
+  <data name="GOR2D_ERR_EFFECT_BLUR_RENDER_TARGET_FORMAT_NOT_SUPPORTED" xml:space="preserve">
+    <value>The format [{0}] is not supported for render targets.</value>
   </data>
   <data name="GOR2D_ERR_INVALID_SAMPLER_INDEX" xml:space="preserve">
     <value>The sampler index must be 0 or less than {1}.</value>

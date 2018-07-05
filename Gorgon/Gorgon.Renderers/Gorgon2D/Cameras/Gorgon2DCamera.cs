@@ -187,15 +187,6 @@ namespace Gorgon.Renderers
 		/// </summary>
 		public ref readonly DX.Matrix View => ref ViewMatrix;
 
-		/// <summary>
-		/// Property to set or return whether the dimensions of the camera should be automatically adjusted to match the current render target.
-		/// </summary>
-		public bool AutoUpdate
-		{
-			get;
-			set;
-		}
-
 	    /// <summary>
 	    /// Property to return the width of the current target.
 	    /// </summary>

@@ -63,7 +63,6 @@ namespace Gorgon.Renderers.Properties {
         /// <summary>
         ///   Looks up a localized string similar to #define REJECT_ALPHA(alpha) if (alphaTestEnabled) clip((alpha &lt;= alphaTestValueHi &amp;&amp; alpha &gt;= alphaTestValueLow) ? -1 : 1);
         ///#define RANGE_BW(colorValue) (colorValue &lt; oneBitRange.x || colorValue &gt; oneBitRange.y) ? 0.0f : 1.0f;
-        ///#define MAX_KERNEL_SIZE 13
         ///
         ///// Our default texture and sampler.
         ///Texture2DArray _gorgonTexture : register(t0);
@@ -73,7 +72,9 @@ namespace Gorgon.Renderers.Properties {
         ///Texture2D _gorgonEffectTexture : register(t1);
         ///
         ///// Our default sprite vertex.
-        ///str [rest of string was truncated]&quot;;.
+        ///struct GorgonSpriteVertex
+        ///{
+        ///  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string BasicSprite {
             get {
@@ -104,6 +105,60 @@ namespace Gorgon.Renderers.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Gaussian Blur Effect.
+        /// </summary>
+        internal static string GOR2D_EFFECT_GAUSS_BLUR {
+            get {
+                return ResourceManager.GetString("GOR2D_EFFECT_GAUSS_BLUR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Blurs a texture using a gaussian blurring technique and sends the blurred data to the effect output..
+        /// </summary>
+        internal static string GOR2D_EFFECT_GAUSS_BLUT_DESC {
+            get {
+                return ResourceManager.GetString("GOR2D_EFFECT_GAUSS_BLUT_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Grayscale Effect.
+        /// </summary>
+        internal static string GOR2D_EFFECT_GRAYSCALE {
+            get {
+                return ResourceManager.GetString("GOR2D_EFFECT_GRAYSCALE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Renders sprites, primitives, etc... as grayscale..
+        /// </summary>
+        internal static string GOR2D_EFFECT_GRAYSCALE_DESC {
+            get {
+                return ResourceManager.GetString("GOR2D_EFFECT_GRAYSCALE_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Wave Effect.
+        /// </summary>
+        internal static string GOR2D_EFFECT_WAVE {
+            get {
+                return ResourceManager.GetString("GOR2D_EFFECT_WAVE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Causes a waving effect on a texture..
+        /// </summary>
+        internal static string GOR2D_EFFECT_WAVE_DESC {
+            get {
+                return ResourceManager.GetString("GOR2D_EFFECT_WAVE_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The Begin() method must be called prior to calling this method..
         /// </summary>
         internal static string GOR2D_ERR_BEGIN_NOT_CALLED {
@@ -127,6 +182,24 @@ namespace Gorgon.Renderers.Properties {
         internal static string GOR2D_ERR_CBUFFER_SLOT_INVALID {
             get {
                 return ResourceManager.GetString("GOR2D_ERR_CBUFFER_SLOT_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The kernel size must be between 3 and 81 (inclusive)..
+        /// </summary>
+        internal static string GOR2D_ERR_EFFECT_BLUR_KERNEL_SIZE_INVALID {
+            get {
+                return ResourceManager.GetString("GOR2D_ERR_EFFECT_BLUR_KERNEL_SIZE_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The format [{0}] is not supported for render targets..
+        /// </summary>
+        internal static string GOR2D_ERR_EFFECT_BLUR_RENDER_TARGET_FORMAT_NOT_SUPPORTED {
+            get {
+                return ResourceManager.GetString("GOR2D_ERR_EFFECT_BLUR_RENDER_TARGET_FORMAT_NOT_SUPPORTED", resourceCulture);
             }
         }
         
