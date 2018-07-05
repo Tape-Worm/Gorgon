@@ -165,9 +165,6 @@ namespace Gorgon.Graphics.Core
             null
         };
 
-        // The list of available shader types.
-        private readonly ShaderType[] _shaderType = (ShaderType[])Enum.GetValues(typeof(ShaderType));
-
         // The D3D 11.4 device context.
         private D3D11.DeviceContext4 _d3DDeviceContext;
 
@@ -1909,118 +1906,6 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Function to unbind a render target that is bound as a shader input.
-        /// </summary>
-        private void UnbindShaderInputs(int rtvCount)
-        {
-            // This can happen quite easily due to how we're handling draw calls (i.e. stateless).  So we won't log anything here and we'll just unbind for the time being.
-            // This may have a small performance penalty.
-            for (int i = 0; i < rtvCount; ++i)
-            {
-                GorgonGraphicsResource view = _renderTargets[i]?.Resource;
-
-                if ((view == null) || ((_renderTargets[i].Binding & TextureBinding.ShaderResource) != TextureBinding.ShaderResource))
-                {
-                    continue;
-                }
-
-                for (int s = 0; s < _shaderType.Length; ++s)
-                {
-                    ShaderType shaderType = _shaderType[s];
-                    GorgonShaderResourceViews srvs = GetSrvs(_lastState, shaderType);
-                    UnbindFromSrvs(view, srvs, shaderType);
-                }
-
-                GorgonReadWriteViewBindings uavs = _lastState.ReadWriteViews;
-                UnbindFromUavs(view, uavs, false);
-                uavs = _lastState.CsReadWriteViews;
-                UnbindFromUavs(view, uavs, true);
-            }
-
-            // Function to retrieve the shader resource views from the specified draw.
-            GorgonShaderResourceViews GetSrvs(D3DState state, ShaderType shaderType)
-            {
-                switch (shaderType)
-                {
-                    case ShaderType.Vertex:
-                        return state.VsSrvs;
-                    case ShaderType.Pixel:
-                        return state.PsSrvs;
-                    case ShaderType.Geometry:
-                        return state.GsSrvs;
-                    case ShaderType.Domain:
-                        return state.DsSrvs;
-                    case ShaderType.Hull:
-                        return state.HsSrvs;
-                    case ShaderType.Compute:
-                        return state.CsSrvs;
-                    default:
-                        return null;
-                }
-            }
-
-            // Unbinds shader resources.
-            void UnbindFromSrvs(GorgonGraphicsResource renderTarget, GorgonShaderResourceViews srvs, ShaderType shaderType)
-            {
-                if (srvs == null)
-                {
-                    return;
-                }
-
-                bool srvChanged = false;
-                (int start, int count) = srvs.GetDirtyItems();
-
-                for (int i = start; i < start + count; ++i)
-                {
-                    GorgonGraphicsResource srv = srvs[i]?.Resource;
-                    
-                    if ((srv == null) || (renderTarget != srv))
-                    {
-                        continue;
-                    }
-
-                    srvs[i] = null;
-                    srvChanged = true;
-                }
-
-                if (srvChanged)
-                {
-                    BindSrvs(shaderType, srvs);
-                }
-            }
-
-            // Unbinds uavs.
-            void UnbindFromUavs(GorgonGraphicsResource renderTarget, GorgonReadWriteViewBindings uavs, bool useCs)
-            {
-                if (uavs == null)
-                {
-                    return;
-                }
-
-                bool uavChanged = false;
-                (int start, int count) = uavs.GetDirtyItems();
-
-                for (int i = start; i < start + count; ++i)
-                {
-                    GorgonGraphicsResource uav = uavs[i].ReadWriteView?.Resource;
-                    
-                    if ((uav == null) || (renderTarget != uav))
-                    {
-                        continue;
-                    }
-
-                    uavs[i] = default;
-                    uavChanged = true;
-                }
-
-                if (uavChanged)
-                {
-                    BindUavs(uavs, useCs);
-                }
-            }
-        }
-
-        /// <summary>
         /// Function to initialize a <see cref="GorgonPipelineState" /> object with Direct 3D 11 state objects by creating new objects for the unassigned values.
         /// </summary>
         /// <param name="pipelineState">The pipeline state.</param>
@@ -2070,8 +1955,6 @@ namespace Gorgon.Graphics.Core
 
             if (_isTargetUpdated.RtvsChanged)
             {
-                UnbindShaderInputs(rtvCount);
-
                 if (rtvCount == 0)
                 {
                     Array.Clear(_d3DRtvs, 0, _d3DRtvs.Length);
@@ -2366,6 +2249,10 @@ namespace Gorgon.Graphics.Core
             _lastState.HsConstantBuffers = null;
             _lastState.CsConstantBuffers = null;
             _lastState.CsReadWriteViews = null;
+
+            _depthStencilReference = 0;
+            _blendFactor = GorgonColor.White;
+            _blendSampleMask = int.MinValue;
         }
 
         /// <summary>
@@ -2393,6 +2280,9 @@ namespace Gorgon.Graphics.Core
 
             _isTargetUpdated = (false, true);
             DepthStencilView = depthStencil;
+
+            ClearState();
+
             SetRenderTargetAndDepthViews(_renderTargets.Length);
         }
 
@@ -2430,6 +2320,12 @@ namespace Gorgon.Graphics.Core
             }
 
             _isTargetUpdated = (_renderTargets[0] != renderTarget, DepthStencilView != depthStencil);
+
+            // We need to clear the current state when we switch in order to avoid resource hazards.
+            if ((_isTargetUpdated.RtvsChanged) || (_isTargetUpdated.DepthViewChanged))
+            {
+                ClearState();
+            }
 
             if (_isTargetUpdated.RtvsChanged)
             {
@@ -2488,6 +2384,7 @@ namespace Gorgon.Graphics.Core
             if ((renderTargets == null)
                 || (renderTargets.Length == 0))
             {
+                ClearState();
                 Array.Clear(_renderTargets, 0, _renderTargets.Length);
                 DepthStencilView = depthStencil;
                 SetRenderTargetAndDepthViews(0);
@@ -2513,6 +2410,9 @@ namespace Gorgon.Graphics.Core
             {
                 return;
             }
+
+            // We need to clear the current state when we switch in order to avoid resource hazards.
+            ClearState();
 
             if (_isTargetUpdated.RtvsChanged)
             {
