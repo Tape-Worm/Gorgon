@@ -180,6 +180,9 @@ namespace Gorgon.Graphics.Core
         // The render targets currently bound to the pipeline.
         private readonly GorgonRenderTargetView[] _renderTargets = new GorgonRenderTargetView[D3D11.OutputMergerStage.SimultaneousRenderTargetCount];
 
+        // The render targets currently bound to the pipeline.
+        private readonly GorgonRenderTargetView[] _renderTargetHazardBackup = new GorgonRenderTargetView[D3D11.OutputMergerStage.SimultaneousRenderTargetCount];
+
         // The Native render targets.
         private readonly D3D11.RenderTargetView[] _d3DRtvs = new D3D11.RenderTargetView[D3D11.OutputMergerStage.SimultaneousRenderTargetCount];
 
@@ -731,6 +734,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         private void ClearResourceCaches()
         {
+            DepthStencilView = null;
             Array.Clear(_renderTargets, 0, _renderTargets.Length);
             Array.Clear(_scissors, 0, _scissors.Length);
             Array.Clear(_viewports, 0, _viewports.Length);
@@ -1944,28 +1948,20 @@ namespace Gorgon.Graphics.Core
         /// <param name="rtvCount">The number of render targets to update.</param>
         private void SetRenderTargetAndDepthViews(int rtvCount)
         {
-            if ((!_isTargetUpdated.RtvsChanged) && (!_isTargetUpdated.DepthViewChanged))
-            {
-                return;
-            }
-
 #if DEBUG
             ValidateRtvAndDsv(DepthStencilView, RenderTargets.FirstOrDefault(item => item != null));
 #endif
 
-            if (_isTargetUpdated.RtvsChanged)
+            if (rtvCount == 0)
             {
-                if (rtvCount == 0)
+                Array.Clear(_d3DRtvs, 0, _d3DRtvs.Length);
+                rtvCount = _d3DRtvs.Length;
+            }
+            else
+            {
+                for (int i = 0; i < rtvCount; ++i)
                 {
-                    Array.Clear(_d3DRtvs, 0, _d3DRtvs.Length);
-                    rtvCount = _d3DRtvs.Length;
-                }
-                else
-                {
-                    for (int i = 0; i < rtvCount; ++i)
-                    {
-                        _d3DRtvs[i] = _renderTargets[i]?.Native;
-                    }
+                    _d3DRtvs[i] = _renderTargets[i]?.Native;
                 }
             }
 
@@ -2278,12 +2274,14 @@ namespace Gorgon.Graphics.Core
                 return;
             }
 
-            _isTargetUpdated = (false, true);
-            DepthStencilView = depthStencil;
-
+            // Remember the last set of render targets.
+            Array.Copy(_renderTargets, _renderTargetHazardBackup, _renderTargets.Length);
             ClearState();
+            // Restore the render targets (our state is now clean).
+            Array.Copy(_renderTargetHazardBackup, _renderTargets, _renderTargets.Length);
+            _isTargetUpdated = (true, true);
 
-            SetRenderTargetAndDepthViews(_renderTargets.Length);
+            SetRenderTargets(_renderTargets, depthStencil);
         }
 
         /// <summary>
@@ -2322,24 +2320,31 @@ namespace Gorgon.Graphics.Core
             _isTargetUpdated = (_renderTargets[0] != renderTarget, DepthStencilView != depthStencil);
 
             // We need to clear the current state when we switch in order to avoid resource hazards.
-            if ((_isTargetUpdated.RtvsChanged) || (_isTargetUpdated.DepthViewChanged))
+            // Remember the render target states if we're only changing the depth/stencil.
+            if (!_isTargetUpdated.RtvsChanged)
             {
-                ClearState();
+                Array.Copy(_renderTargets, _renderTargetHazardBackup, _renderTargets.Length);
             }
 
-            if (_isTargetUpdated.RtvsChanged)
+            ClearState();
+
+            if (!_isTargetUpdated.RtvsChanged)
             {
-                Array.Clear(_renderTargets, 1, _renderTargets.Length - 1);
-                _renderTargets[0] = renderTarget;
-
-                DX.ViewportF viewport = default;
-                if (_renderTargets[0] != null)
-                {
-                    viewport = new DX.ViewportF(0, 0, _renderTargets[0].Width, _renderTargets[0].Height);
-                }
-
-                SetViewport(ref viewport);
+                Array.Copy(_renderTargetHazardBackup, _renderTargets, _renderTargets.Length);
+                Array.Clear(_renderTargetHazardBackup, 0, _renderTargetHazardBackup.Length);
+                _isTargetUpdated = (true, true);
             }
+
+            Array.Clear(_renderTargets, 1, _renderTargets.Length - 1);
+            _renderTargets[0] = renderTarget;
+
+            DX.ViewportF viewport = default;
+            if (_renderTargets[0] != null)
+            {
+                viewport = new DX.ViewportF(0, 0, _renderTargets[0].Width, _renderTargets[0].Height);
+            }
+
+            SetViewport(ref viewport);
 
             DepthStencilView = depthStencil;
             SetRenderTargetAndDepthViews(1);
@@ -2385,7 +2390,7 @@ namespace Gorgon.Graphics.Core
                 || (renderTargets.Length == 0))
             {
                 ClearState();
-                Array.Clear(_renderTargets, 0, _renderTargets.Length);
+                _isTargetUpdated = (true, true);
                 DepthStencilView = depthStencil;
                 SetRenderTargetAndDepthViews(0);
                 return;
@@ -2395,15 +2400,13 @@ namespace Gorgon.Graphics.Core
 
             for (int i = 0; i < rtvCount; ++i)
             {
-                ref GorgonRenderTargetView view = ref _renderTargets[i];
-
-                if (view == renderTargets[i])
+                if (_renderTargets[i] == renderTargets[i])
                 {
                     continue;
                 }
 
-                view = renderTargets[i];
                 _isTargetUpdated = (true, depthStencil != DepthStencilView);
+                break;
             }
 
             if ((!_isTargetUpdated.DepthViewChanged) && (!_isTargetUpdated.RtvsChanged))
@@ -2411,28 +2414,35 @@ namespace Gorgon.Graphics.Core
                 return;
             }
 
-            // We need to clear the current state when we switch in order to avoid resource hazards.
+            // We have either a render target change or depth/stencil change.  Either way, we need to clear state to avoid hazards.
+            Array.Copy(_renderTargets, _renderTargetHazardBackup, _renderTargets.Length);
             ClearState();
+            Array.Copy(_renderTargetHazardBackup, _renderTargets, _renderTargets.Length);
+            Array.Clear(_renderTargetHazardBackup, 0, _renderTargetHazardBackup.Length);
 
-            if (_isTargetUpdated.RtvsChanged)
+            // These slots will now be empty.
+            for (int i = 0; i < rtvCount; ++i)
             {
-                if (rtvCount < _renderTargets.Length)
-                {
-                    for (int i = rtvCount; i < _renderTargets.Length; ++i)
-                    {
-                        _renderTargets[i] = null;
-                    }
-                }
-
-                DX.ViewportF viewport = default;
-
-                if (_renderTargets[0] != null)
-                {
-                    viewport = new DX.ViewportF(0, 0, renderTargets[0].Width, renderTargets[0].Height);
-                }
-
-                SetViewport(ref viewport);
+                ref GorgonRenderTargetView view = ref _renderTargets[i];
+                view = renderTargets[i];
             }
+
+            if (rtvCount < _renderTargets.Length)
+            {
+                for (int i = rtvCount; i < _renderTargets.Length; ++i)
+                {
+                    _renderTargets[i] = null;
+                }
+            }
+
+            DX.ViewportF viewport = default;
+
+            if (_renderTargets[0] != null)
+            {
+                viewport = new DX.ViewportF(0, 0, renderTargets[0].Width, renderTargets[0].Height);
+            }
+
+            SetViewport(ref viewport);
 
             DepthStencilView = depthStencil;
             SetRenderTargetAndDepthViews(rtvCount);
