@@ -773,6 +773,7 @@ namespace Gorgon.Renderers
 
             CheckPrimitiveStateChange(texture, textureSampler);
 
+            _primitiveRenderable.PrimitiveType = PrimitiveType.TriangleList;
             _primitiveRenderable.Bounds = region;
             _primitiveRenderable.ActualVertexCount = 4;
             _primitiveRenderable.IndexCount = 6;
@@ -1077,6 +1078,7 @@ namespace Gorgon.Renderers
 
             CheckPrimitiveStateChange(texture, textureSampler);
 
+            _primitiveRenderable.PrimitiveType = PrimitiveType.TriangleList;
             _primitiveRenderable.ActualVertexCount = 4;
             _primitiveRenderable.IndexCount = 6;
             _primitiveRenderable.AlphaTestData = new AlphaTestData(false, GorgonRangeF.Empty);

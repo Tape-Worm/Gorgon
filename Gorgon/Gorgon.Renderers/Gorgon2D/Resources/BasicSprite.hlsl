@@ -227,11 +227,6 @@ float4 GorgonPixelShaderGaussBlurNoAlpha(GorgonSpriteVertex vertex) : SV_Target
 // Function to gather a single pass of the separable gaussian blur.
 float4 GorgonPixelShaderGaussBlur(GorgonSpriteVertex vertex) : SV_Target
 {
-	if (_blurRadius > 6.0f)
-	{
-		return float4(_blurRadius / 6.0f, 0, 0, 1.0f);
-	}
-
 	float4 blurSample = 0.0f;
 	int kernelSize = (_blurRadius * 2) + 1;
 	float totalWeight = 0.0f;

@@ -529,9 +529,6 @@ namespace Gorgon.Renderers
         protected override void OnAfterRender()
         {
             // Restore the previous render target.
-            _prev = Graphics.RenderTargets[0];
-            _prevDepthStencil = Graphics.DepthStencilView;
-
             if ((_prev == Graphics.RenderTargets[0]) && (_prevDepthStencil == Graphics.DepthStencilView))
             {
                 return;

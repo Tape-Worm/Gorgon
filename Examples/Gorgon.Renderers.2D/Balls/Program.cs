@@ -84,6 +84,8 @@ namespace Gorgon.Examples
 	    private static GorgonFontFactory _fontFactory;
 	    // Render target for the balls.
 		private static GorgonRenderTarget2DView _ballTarget;
+        // The texture view for the ball target.
+	    private static GorgonTexture2DView _ballTargetView;
         // The view for rendering the stats render target.
 	    private static GorgonTexture2DView _statsTexture;
 	    // Frames per second text.
@@ -94,6 +96,10 @@ namespace Gorgon.Examples
 		private static bool _showHelp = true;																    
 	    // Flag to indicate that the animation is paused.
 		private static bool _paused;
+        // The blur effect.
+	    private static Gorgon2DGaussBlurEffect _blur;
+        // Blending state for the blurred data.
+	    private static Gorgon2DBatchState _blurBlend;
 
         /// <summary>
         /// Property to return the path to the resources for the example.
@@ -292,29 +298,27 @@ namespace Gorgon.Examples
 		/// </summary>
 		private static void DrawBlurred()
 		{
-			/*_2D.Target = _ballTarget;
-			_2D.Clear(GorgonColor.Transparent);
+            _graphics.SetRenderTarget(_ballTarget);
+            _ballTarget.Clear(GorgonColor.BlackTransparent);
+            
+            _2D.Begin(_blurBlend);
+            DrawNoBlur();
+            _2D.End();
 
-			DrawNoBlur();
+            for (int i = 0; i < _blur.BlurRadius; ++i)
+		    {
+		        _blur.Blur(_ballTargetView);
 
-			_2D.Target = null;
+		        // Copy the result back to the render target.
+                _2D.Begin();
+		        _2D.DrawFilledRectangle(new DX.RectangleF(0, 0, _ballTarget.Width, _ballTarget.Height), GorgonColor.White, _blur.Output, new DX.RectangleF(0, 0, 1, 1));
+                _2D.End();
+		    }
 
-			if (_2D.Effects.GaussianBlur.RenderScene == null)
-			{
-				// Draw using the blur effect.
-				_2D.Effects.GaussianBlur.RenderScene = pass =>
-				{
-					_2D.Drawing.SmoothingMode = SmoothingMode.Smooth;
-					_2D.Drawing.Blit(_ballTarget, new RectangleF(DX.Vector2.Zero, _2D.Effects.GaussianBlur.BlurRenderTargetsSize));
-				};
-			}
-
-			_2D.Effects.GaussianBlur.Render();
-
-			// Copy the blur output to our main target.
-            _2D.Drawing.SmoothingMode = SmoothingMode.None;
-			_2D.Drawing.Blit(_2D.Effects.GaussianBlur.Output, new RectangleF(DX.Vector2.Zero, new SizeF(_mainScreen.Settings.Width, _mainScreen.Settings.Height)));*/
-            // TODO: Not implemented yet.
+		    _graphics.SetRenderTarget(_mainScreen.RenderTargetView);
+		    _2D.Begin();
+		    _2D.DrawFilledRectangle(new DX.RectangleF(0, 0, _ballTarget.Width, _ballTarget.Height), GorgonColor.White, _blur.Output, new DX.RectangleF(0, 0, 1, 1));
+            _2D.End();
 		}
 
 		/// <summary>
@@ -362,29 +366,26 @@ namespace Gorgon.Examples
 
             // Begin our rendering.
             _2D.Begin();
-
 			DrawBackground();
+            _2D.End();
 
-            // TODO: Not supported.
-			/*if (_2D.Effects.GaussianBlur.BlurAmount >= 10.0f)
+			if (_blur.BlurRadius == 0)
 			{
+                _2D.Begin();
 				DrawNoBlur();
+                _2D.End();
 			}
 			else
 			{
 				DrawBlurred();
-			}*/
+			}
 
-		    DrawNoBlur();
-
+		    _2D.Begin();
 		    if (_showHelp)
 		    {
 		        _2D.DrawTextSprite(_helpTextSprite);
 		    }
 
-			_2D.End();
-
-		    _2D.Begin();
 		    DrawOverlay();
 		    _2D.End();
 
@@ -467,14 +468,20 @@ namespace Gorgon.Examples
                                                                                      Height = Settings.Default.ScreenHeight,
                                                                                      Format = BufferFormat.R8G8B8A8_UNorm
                                                                                  });
+		    _ballTargetView = _ballTarget.Texture.GetShaderResourceView();
 
-            // TODO: Not supported yet.
-            /*
-			_2D.Effects.GaussianBlur.BlurRenderTargetsSize = new Size(512, 512);
-			_2D.Effects.GaussianBlur.BlurAmount = 10.0f;
-            */
+            // Create our blur effect.
+            _blur = new Gorgon2DGaussBlurEffect(_2D, 15)
+		            {
+		                BlurRenderTargetsSize = new DX.Size2(512, 512),
+                        BlurRadius = 0
+		            };
 
-            _mainScreen.BeforeSwapChainResized += (sender, args) => _ballTarget.Dispose();
+            _mainScreen.BeforeSwapChainResized += (sender, args) =>
+                                                  {
+                                                      _ballTargetView.Dispose();
+                                                      _ballTarget.Dispose();
+                                                  };
 			
 			// Ensure that our secondary camera gets updated.
 			_mainScreen.AfterSwapChainResized += (sender, args) =>
@@ -492,15 +499,13 @@ namespace Gorgon.Examples
 			                                                                             Height = args.Size.Height,
 			                                                                             Format = BufferFormat.R8G8B8A8_UNorm
 			                                                                         });
+			    _ballTargetView = _ballTarget.Texture.GetShaderResourceView();
 
-                // TODO: Not supported yet.
-                /*
-				DX.Vector2 newTargetSize;
-				newTargetSize.X = (512.0f * (args.Size.Width / (float)Settings.Default.ScreenWidth)).Min(512);
-				newTargetSize.Y = (512.0f * (args.Size.Height / (float)Settings.Default.ScreenHeight)).Min(512);
+				DX.Size2 newTargetSize;
+				newTargetSize.Width = (int)((512.0f * (args.Size.Width / (float)Settings.Default.ScreenWidth)).Min(512));
+				newTargetSize.Height = (int)((512.0f * (args.Size.Height / (float)Settings.Default.ScreenHeight)).Min(512));
 
-				_2D.Effects.GaussianBlur.BlurRenderTargetsSize = (Size)newTargetSize;
-				_2D.Effects.Displacement.BackgroundImage = _ballTarget;*/
+                _blur.BlurRenderTargetsSize = newTargetSize;
 			};
 
 			// Generate the ball list.
@@ -556,6 +561,14 @@ namespace Gorgon.Examples
 		        _2D.DrawRectangle(new DX.RectangleF(0, 0, rtv.Width, rtv.Height), new GorgonColor(0.86667f, 0.84314f, 0.7451f, 1.0f));
 		        _2D.End();
 		    }
+
+            var stateBuilder = new Gorgon2DBatchStateBuilder();
+            var blendStateBuilder = new GorgonBlendStateBuilder();
+
+		    _blurBlend = stateBuilder.BlendState(blendStateBuilder.ResetTo(GorgonBlendState.Default)
+		                                                          .DestinationBlend(alpha: Blend.InverseSourceAlpha)
+		                                                          .Build())
+		                             .Build();
 
 		    // Set our main render target.
             _graphics.SetRenderTarget(_mainScreen.RenderTargetView);
@@ -625,17 +638,22 @@ namespace Gorgon.Examples
 				    }
 
 				    break;
-                // TODO: Not supported yet
-				/*case Keys.OemMinus:
-					_2D.Effects.GaussianBlur.BlurAmount += 0.25f;
-					if (_2D.Effects.GaussianBlur.BlurAmount > 10)
-						_2D.Effects.GaussianBlur.BlurAmount = 10;
+                case Keys.OemMinus:
+                    _blur.BlurRadius--;
+
+                    if (_blur.BlurRadius < 0)
+                    {
+                        _blur.BlurRadius = 0;
+                    }
 					break;
 				case Keys.Oemplus:
-					_2D.Effects.GaussianBlur.BlurAmount -= 0.25f;
-					if (_2D.Effects.GaussianBlur.BlurAmount < 2)
-						_2D.Effects.GaussianBlur.BlurAmount = 2;
-					break;*/
+				    _blur.BlurRadius++;
+                    
+				    if (_blur.BlurRadius > _blur.MaximumBlurRadius)
+				    {
+				        _blur.BlurRadius = _blur.MaximumBlurRadius;
+				    }
+					break;
 			}
 		}
 
