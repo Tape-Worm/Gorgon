@@ -124,6 +124,18 @@
   <data name="FilmGrain" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\FilmGrain.hlsl;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
+  <data name="GOR2D_EFFECT_1BIT" xml:space="preserve">
+    <value>1-bit Effect</value>
+  </data>
+  <data name="GOR2D_EFFECT_1BIT_DESC" xml:space="preserve">
+    <value>Draws an image with 1-bit color information (2 colors).</value>
+  </data>
+  <data name="GOR2D_EFFECT_BURN_DODGE" xml:space="preserve">
+    <value>Burn/Dodge Effect</value>
+  </data>
+  <data name="GOR2D_EFFECT_BURN_DODGE_DESC" xml:space="preserve">
+    <value>Applies a burn or dodge processing to the image being rendered.</value>
+  </data>
   <data name="GOR2D_EFFECT_DISPLACEMENT" xml:space="preserve">
     <value>Displacement Effect</value>
   </data>

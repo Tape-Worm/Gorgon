@@ -105,6 +105,42 @@ namespace Gorgon.Renderers.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 1-bit Effect.
+        /// </summary>
+        internal static string GOR2D_EFFECT_1BIT {
+            get {
+                return ResourceManager.GetString("GOR2D_EFFECT_1BIT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Draws an image with 1-bit color information (2 colors)..
+        /// </summary>
+        internal static string GOR2D_EFFECT_1BIT_DESC {
+            get {
+                return ResourceManager.GetString("GOR2D_EFFECT_1BIT_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Burn/Dodge Effect.
+        /// </summary>
+        internal static string GOR2D_EFFECT_BURN_DODGE {
+            get {
+                return ResourceManager.GetString("GOR2D_EFFECT_BURN_DODGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Applies a burn or dodge processing to the image being rendered..
+        /// </summary>
+        internal static string GOR2D_EFFECT_BURN_DODGE_DESC {
+            get {
+                return ResourceManager.GetString("GOR2D_EFFECT_BURN_DODGE_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Displacement Effect.
         /// </summary>
         internal static string GOR2D_EFFECT_DISPLACEMENT {

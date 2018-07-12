@@ -45,15 +45,6 @@ cbuffer GorgonSharpenEmbossEffect : register(b1)
 	float sharpEmbossAmount = 10.0f;
 }
 
-// 1 bit color effect.
-cbuffer Gorgon1BitEffect : register(b1)
-{	
-	bool oneBitUseAverage;
-	bool oneBitInvert;
-	bool oneBitUseAlpha;
-	float2 oneBitRange;
-}
-
 // Invert effect variables.
 cbuffer GorgonInvertEffect : register(b1)
 {
@@ -101,6 +92,68 @@ float4 GorgonPixelShaderTextured(GorgonSpriteVertex vertex) : SV_Target
 		
 	return color;
 }
+
+#ifdef GRAYSCALE_EFFECT
+// A pixel shader that converts to gray scale.
+float4 GorgonPixelShaderGrayScale(GorgonSpriteVertex vertex) : SV_Target
+{
+	float4 color = _gorgonTexture.Sample(_gorgonSampler, vertex.uv) * vertex.color;
+
+	REJECT_ALPHA(color.a);
+
+	float grayValue = color.r * 0.3f + color.g * 0.59f + color.b * 0.11f;
+
+	return float4(grayValue, grayValue, grayValue, color.a);
+}
+#endif
+
+#ifdef ONEBIT_EFFECT
+// 1 bit color effect.
+cbuffer Gorgon1BitEffect : register(b1)
+{	
+	bool oneBitUseAverage;
+	bool oneBitInvert;
+	bool oneBitUseAlpha;
+	float2 oneBitRange;
+}
+
+// A pixel shader to show the texture data as 1 bit data.
+float4 GorgonPixelShader1Bit(GorgonSpriteVertex vertex) : SV_Target
+{
+	float4 color = 0;
+
+	if (oneBitUseAverage)
+	{
+		color = _gorgonTexture.Sample(_gorgonSampler, vertex.uv) * vertex.color;
+		color.rgb = (color.r + color.g + color.b) / 3.0f;
+	}
+	else
+	{
+		color = GorgonPixelShaderGrayScale(vertex);
+	}
+
+	color.r = RANGE_BW(color.r);
+	color.g = RANGE_BW(color.g);
+	color.b = RANGE_BW(color.b);
+
+	if (oneBitUseAlpha)
+	{
+		color.a = RANGE_BW(color.a);
+	}
+
+	if (oneBitInvert)
+	{
+		if (oneBitUseAlpha)
+			color = 1.0f - color;
+		else
+			color.rgb = 1.0f - color.rgb;
+	}
+
+	REJECT_ALPHA(color.a);
+
+	return color;
+}
+#endif
 
 #ifdef WAVE_EFFECT
 // Wave effect variables.
@@ -165,20 +218,6 @@ float4 GorgonPixelShaderDisplacementDecoder(GorgonSpriteVertex vertex) : SV_Targ
 	REJECT_ALPHA(color.a);
 
 	return color;
-}
-#endif
-
-#ifdef GRAYSCALE_EFFECT
-// A pixel shader that converts to gray scale.
-float4 GorgonPixelShaderGrayScale(GorgonSpriteVertex vertex) : SV_Target
-{
-	float4 color = _gorgonTexture.Sample(_gorgonSampler, vertex.uv) * vertex.color;
-
-	REJECT_ALPHA(color.a);
-
-	float grayValue = color.r * 0.3f + color.g * 0.59f + color.b * 0.11f;
-
-	return float4(grayValue, grayValue, grayValue, color.a);
 }
 #endif
 
@@ -334,42 +373,6 @@ float4 GorgonPixelShaderEmboss(GorgonSpriteVertex vertex) : SV_Target
 	return color;
 }
 
-// A pixel shader to show the texture data as 1 bit data.
-float4 GorgonPixelShader1Bit(GorgonSpriteVertex vertex) : SV_Target
-{
-	float4 color = 0;
-	
-	if (oneBitUseAverage)
-	{
-		color = _gorgonTexture.Sample(_gorgonSampler, vertex.uv) * vertex.color;
-		color.rgb = (color.r + color.g + color.b) / 3.0f;
-	}
-	else
-	{
-		color = GorgonPixelShaderGrayScale(vertex);
-	}
-
-	color.r = RANGE_BW(color.r);
-	color.g = RANGE_BW(color.g);
-	color.b = RANGE_BW(color.b);
-
-	if (oneBitUseAlpha)
-	{
-		color.a = RANGE_BW(color.a);
-	}
-
-	if (oneBitInvert)
-	{
-		if (oneBitUseAlpha)
-			color = 1.0f - color;
-		else
-			color.rgb = 1.0f - color.rgb;
-	}
-
-	REJECT_ALPHA(color.a);
-
-	return color;
-}
 
 // Function to posterize texture data.
 float4 GorgonPixelShaderPosterize(GorgonSpriteVertex vertex) : SV_Target
