@@ -1246,6 +1246,7 @@ namespace Gorgon.Graphics.Core
             }
 
             (int start, int count) = uavs.GetDirtyItems();
+            CheckForHazards(uavs, start, count + start);
 
             if (_d3DUavs.Item1.Length != count)
             {
@@ -1257,8 +1258,7 @@ namespace Gorgon.Graphics.Core
                 _d3DUavs.Item1[i] = uavs.Native[i];
                 _d3DUavs.Item2[i] = uavs.Counts[i];
             }
-
-            CheckForHazards(_d3DUavs.Item1);
+            
 
             if (!useCs)
             {
@@ -1281,21 +1281,23 @@ namespace Gorgon.Graphics.Core
         /// Function to check for shader resources that are bound as a input, as well as bound for output.
         /// </summary>
         /// <param name="uavs">The unordered access views to be assigned as inputs.</param>
-        private void CheckForHazards(D3D11.UnorderedAccessView[] uavs)
+        /// <param name="startIndex">The starting index in the view list to read from.</param>
+        /// <param name="endIndex">The ending index in the view list to read from.</param>
+        private void CheckForHazards(GorgonReadWriteViewBindings uavs, int startIndex, int endIndex)
         {
             if (!IsHazardTrackingEnabled)
             {
                 return;
             }
 
-            for (int i = 0; i < uavs.Length; ++i)
+            for (int i = startIndex; i < endIndex; ++i)
             {
-                D3D11.UnorderedAccessView uav = uavs[i];
+                GorgonReadWriteViewBinding uav = uavs[i];
 
                 // Check for depth/stencil output.
-                if ((DepthStencilView != null) && (DepthStencilView.Resource.D3DResource == uav?.Resource))
+                if ((DepthStencilView != null) && (DepthStencilView.Resource == uav.ReadWriteView?.Resource))
                 {
-                    throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_INPUT_BOUND_AS_DSV, DepthStencilView.Resource.Name));
+                    throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_INPUT_BOUND_AS_DSV, DepthStencilView.Texture.Name));
                 }
 
                 // Check for rtv output.
@@ -1303,10 +1305,13 @@ namespace Gorgon.Graphics.Core
                 {
                     GorgonRenderTargetView rtv = _renderTargets[j];
 
-                    if ((rtv != null) && (uav?.Resource == rtv.Resource.D3DResource))
+                    if ((rtv == null) || (uav.ReadWriteView?.Resource != rtv.Resource))
                     {
-                        throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_INPUT_BOUND_AS_RTV, rtv.Resource.Name));
+                        continue;
                     }
+
+                    Debug.Assert(rtv.Resource != null, "Render target view resource is NULL.  This is not right.");
+                    throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_INPUT_BOUND_AS_RTV, rtv.Resource.Name));
                 }
             }
         }
@@ -1316,21 +1321,23 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="srvs">The shader resource views to be assigned as inputs.</param>
         /// <param name="useCs"><b>true</b> if this check is for a compute shader, or <b>false</b> if not.</param>
-        private void CheckForHazards(D3D11.ShaderResourceView[] srvs, bool useCs)
+        /// <param name="startIndex">The starting index in the view list to read from.</param>
+        /// <param name="endIndex">The ending index in the view list to read from.</param>
+        private void CheckForHazards(GorgonShaderResourceViews srvs, bool useCs, int startIndex, int endIndex)
         {
             if (!IsHazardTrackingEnabled)
             {
                 return;
             }
 
-            for (int i = 0; i < srvs.Length; ++i)
+            for (int i = startIndex; i < endIndex; ++i)
             {
-                D3D11.ShaderResourceView srv = srvs[i];
+                GorgonShaderResourceView srv = srvs[i];
 
                 // Check for depth/stencil output.
-                if ((DepthStencilView != null) && (DepthStencilView.Resource.D3DResource == srv?.Resource))
+                if ((DepthStencilView != null) && (DepthStencilView.Resource == srv?.Resource))
                 {
-                    throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_INPUT_BOUND_AS_DSV, DepthStencilView.Resource.Name));
+                    throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_INPUT_BOUND_AS_DSV, DepthStencilView.Texture.Name));
                 }
 
                 // Check for rtv output.
@@ -1338,10 +1345,13 @@ namespace Gorgon.Graphics.Core
                 {
                     GorgonRenderTargetView rtv = _renderTargets[j];
 
-                    if ((rtv != null) && (srv?.Resource == rtv.Resource.D3DResource))
+                    if ((rtv == null) || (srv?.Resource != rtv.Resource))
                     {
-                        throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_INPUT_BOUND_AS_RTV, rtv.Resource.Name));
+                        continue;
                     }
+
+                    Debug.Assert(rtv.Resource != null, "Render target view resource is NULL.  This is not right.");
+                    throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_INPUT_BOUND_AS_RTV, rtv.Resource?.Name));
                 }
 
                 GorgonReadWriteViewBindings uavs = useCs ? _lastState?.ReadWriteViews : _lastState?.CsReadWriteViews;
@@ -1357,11 +1367,14 @@ namespace Gorgon.Graphics.Core
                 {
                     GorgonReadWriteViewBinding uav = uavs[j];
 
-                    if ((uav.ReadWriteView != null) && (uav.ReadWriteView.Resource.D3DResource == srv?.Resource))
+                    if ((uav.ReadWriteView == null) || (uav.ReadWriteView.Resource != srv?.Resource))
                     {
-                        throw new GorgonException(GorgonResult.CannotBind,
-                                                  string.Format(Resources.GORGFX_ERR_INPUT_BOUND_AS_UAV, uav.ReadWriteView.Resource.Name));
+                        continue;
                     }
+
+                    Debug.Assert(uav.ReadWriteView.Resource != null, "Unordered access view resource is NULL.  This is not right.");
+                    throw new GorgonException(GorgonResult.CannotBind,
+                                              string.Format(Resources.GORGFX_ERR_INPUT_BOUND_AS_UAV, uav.ReadWriteView.Resource.Name));
                 }
             }
         }
@@ -1401,6 +1414,7 @@ namespace Gorgon.Graphics.Core
             }
 
             (int start, int count) = srvs.GetDirtyItems();
+            CheckForHazards(srvs, shaderType == ShaderType.Compute, start, count + start);
 
             D3D11.ShaderResourceView[] states = srvs.Native;
 
@@ -1410,7 +1424,6 @@ namespace Gorgon.Graphics.Core
                 count = 1;
             }
 
-            CheckForHazards(states, shaderType == ShaderType.Compute);
 
             switch (shaderType)
             {
