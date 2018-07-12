@@ -125,7 +125,7 @@ namespace Gorgon.Renderers
 	    private Gorgon2DShader<GorgonPixelShader> _filmShader;
         // The batch state to use when rendering.
 	    private Gorgon2DBatchState _batchState;
-        // The current time, in milliseconds.
+        // The current time, in seconds.
 	    private float _time;
         // The texture to draw with the effect.
 	    private GorgonTexture2DView _drawTexture;
@@ -578,15 +578,18 @@ namespace Gorgon.Renderers
 	    /// </remarks>
 	    protected override void OnAfterRenderPass(int passIndex)
 		{
+            Debug.Assert(_drawRegion != null, "No drawing region found.");
+
             Renderer.Begin();
+
 			for (int i = 0; i < DirtAmount; ++i)
 			{
 				float grayDust = GorgonRandom.RandomSingle(0.1f, 0.25f);
 				var dustColor = new GorgonColor(grayDust, grayDust, grayDust, GorgonRandom.RandomSingle(0.25f, 0.95f));
 
 				// Render dust points.
-			    Renderer.DrawFilledRectangle(new DX.RectangleF(GorgonRandom.RandomSingle(0, _currentTargetSize.X - 1),
-			                                                   GorgonRandom.RandomSingle(0, _currentTargetSize.Y - 1),
+			    Renderer.DrawFilledRectangle(new DX.RectangleF(GorgonRandom.RandomSingle(_drawRegion.Value.Left, _drawRegion.Value.Right),
+			                                                   GorgonRandom.RandomSingle(_drawRegion.Value.Top, _drawRegion.Value.Bottom),
 			                                                   1,
 			                                                   1),
 			                                 dustColor);
@@ -597,8 +600,8 @@ namespace Gorgon.Renderers
 				}
 
 				// Render dirt/hair lines.
-				var dirtStart = new DX.Vector2(GorgonRandom.RandomSingle(0, _currentTargetSize.X - 1),
-					GorgonRandom.RandomSingle(0, _currentTargetSize.Y - 1));
+			    var dirtStart = new DX.Vector2(GorgonRandom.RandomSingle(_drawRegion.Value.Left, _drawRegion.Value.Right),
+			                                   GorgonRandom.RandomSingle(_drawRegion.Value.Left, _drawRegion.Value.Right));
 
 				float dirtWidth = GorgonRandom.RandomSingle(1.0f, 3.0f);
 				bool isHair = GorgonRandom.RandomInt32(100) > 50;
