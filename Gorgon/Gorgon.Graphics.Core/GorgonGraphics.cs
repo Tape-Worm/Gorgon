@@ -198,6 +198,9 @@ namespace Gorgon.Graphics.Core
             null
         };
 
+        // Flag to indicate that debugging is turned on.
+        private static bool _isDebugEnabled;
+
         // The D3D 11.4 device context.
         private D3D11.DeviceContext4 _d3DDeviceContext;
 
@@ -403,6 +406,32 @@ namespace Gorgon.Graphics.Core
         /// </para>
         /// </remarks>
         public static bool IsDebugEnabled
+        {
+            get => _isDebugEnabled;
+            set => IsHazardTrackingEnabled = _isDebugEnabled = value;
+        }
+
+        /// <summary>
+        /// Property to set or return whether hazard tracking is enabled.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This property will enable or disable hazard tracking for resources bound on output and input.
+        /// </para>
+        /// <para>
+        /// A hazard can occur when a render target is bound for output, and is also bound for input as a shader resource view.  This can result in nothing showing up on the screen or current render
+        /// target. It is up to the user to ensure that the render target, or depth/stencil resource is unbound prior to rendering while using the resource as a shader resource or read-write
+        /// resource.
+        /// </para>
+        /// <para>
+        /// Hazard tracking is performed when a <see cref="GorgonShaderResourceView"/>, or <see cref="GorgonReadWriteView"/> is bound via a draw call. The <see cref="RenderTargets"/> and
+        /// <see cref="DepthStencilView"/> are checked the current input views and an exception will be thrown if the resource associated with the view is already used as an output.
+        /// </para>
+        /// <para>
+        /// For performance reasons, this value is defaulted to <b>false</b>, but will be set to <b>true</b> if <see cref="IsDebugEnabled"/> is <b>true</b>.
+        /// </para>
+        /// </remarks>
+        public static bool IsHazardTrackingEnabled
         {
             get;
             set;
@@ -1273,6 +1302,8 @@ namespace Gorgon.Graphics.Core
                 _d3DUavs.Item2[i] = uavs.Counts[i];
             }
 
+            CheckForHazards(_d3DUavs.Item1);
+
             if (!useCs)
             {
                 D3DDeviceContext.OutputMerger.SetUnorderedAccessViews(start, _d3DUavs.Item1, _d3DUavs.Item2);
@@ -1286,6 +1317,95 @@ namespace Gorgon.Graphics.Core
                 else
                 {
                     D3DDeviceContext.ComputeShader.SetUnorderedAccessViews(start, _d3DUavs.Item1, _d3DUavs.Item2);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Function to check for shader resources that are bound as a input, as well as bound for output.
+        /// </summary>
+        /// <param name="uavs">The unordered access views to be assigned as inputs.</param>
+        private void CheckForHazards(D3D11.UnorderedAccessView[] uavs)
+        {
+            if (!IsHazardTrackingEnabled)
+            {
+                return;
+            }
+
+            for (int i = 0; i < uavs.Length; ++i)
+            {
+                D3D11.UnorderedAccessView uav = uavs[i];
+
+                // Check for depth/stencil output.
+                if ((DepthStencilView != null) && (DepthStencilView.Resource.D3DResource == uav?.Resource))
+                {
+                    throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_INPUT_BOUND_AS_DSV, DepthStencilView.Resource.Name));
+                }
+
+                // Check for rtv output.
+                for (int j = 0; j < _renderTargets.Length; ++j)
+                {
+                    GorgonRenderTargetView rtv = _renderTargets[j];
+
+                    if ((rtv != null) && (uav?.Resource == rtv.Resource.D3DResource))
+                    {
+                        throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_INPUT_BOUND_AS_RTV, rtv.Resource.Name));
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Function to check for shader resources that are bound as a input, as well as bound for output.
+        /// </summary>
+        /// <param name="srvs">The shader resource views to be assigned as inputs.</param>
+        /// <param name="useCs"><b>true</b> if this check is for a compute shader, or <b>false</b> if not.</param>
+        private void CheckForHazards(D3D11.ShaderResourceView[] srvs, bool useCs)
+        {
+            if (!IsHazardTrackingEnabled)
+            {
+                return;
+            }
+
+            for (int i = 0; i < srvs.Length; ++i)
+            {
+                D3D11.ShaderResourceView srv = srvs[i];
+
+                // Check for depth/stencil output.
+                if ((DepthStencilView != null) && (DepthStencilView.Resource.D3DResource == srv?.Resource))
+                {
+                    throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_INPUT_BOUND_AS_DSV, DepthStencilView.Resource.Name));
+                }
+
+                // Check for rtv output.
+                for (int j = 0; j < _renderTargets.Length; ++j)
+                {
+                    GorgonRenderTargetView rtv = _renderTargets[j];
+
+                    if ((rtv != null) && (srv?.Resource == rtv.Resource.D3DResource))
+                    {
+                        throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_INPUT_BOUND_AS_RTV, rtv.Resource.Name));
+                    }
+                }
+
+                GorgonReadWriteViewBindings uavs = useCs ? _lastState?.ReadWriteViews : _lastState?.CsReadWriteViews;
+
+                if (uavs == null)
+                {
+                    continue;
+                }
+
+                (int uavStart, int uavCount) = uavs.GetDirtyItems();
+
+                for (int j = uavStart; j < uavStart + uavCount; ++j)
+                {
+                    GorgonReadWriteViewBinding uav = uavs[j];
+
+                    if ((uav.ReadWriteView != null) && (uav.ReadWriteView.Resource.D3DResource == srv?.Resource))
+                    {
+                        throw new GorgonException(GorgonResult.CannotBind,
+                                                  string.Format(Resources.GORGFX_ERR_INPUT_BOUND_AS_UAV, uav.ReadWriteView.Resource.Name));
+                    }
                 }
             }
         }
@@ -1333,6 +1453,8 @@ namespace Gorgon.Graphics.Core
                 states = _emptySrvs;
                 count = 1;
             }
+
+            CheckForHazards(states, shaderType == ShaderType.Compute);
 
             switch (shaderType)
             {

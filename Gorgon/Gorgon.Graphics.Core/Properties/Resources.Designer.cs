@@ -590,6 +590,33 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The resource &apos;{0}&apos; is already bound to the pipeline as a depth/stencil view..
+        /// </summary>
+        internal static string GORGFX_ERR_INPUT_BOUND_AS_DSV {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_INPUT_BOUND_AS_DSV", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The resource &apos;{0}&apos; is already bound to the pipeline as a render target..
+        /// </summary>
+        internal static string GORGFX_ERR_INPUT_BOUND_AS_RTV {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_INPUT_BOUND_AS_RTV", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The resource &apos;{0}&apos; is already bound to the pipeline as a read/write resource..
+        /// </summary>
+        internal static string GORGFX_ERR_INPUT_BOUND_AS_UAV {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_INPUT_BOUND_AS_UAV", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The instance count must be greater than 0..
         /// </summary>
         internal static string GORGFX_ERR_INSTANCE_COUNT_INVALID {

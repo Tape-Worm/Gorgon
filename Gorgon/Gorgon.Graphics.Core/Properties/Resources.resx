@@ -645,4 +645,13 @@ Current binding: [{0}]</value>
   <data name="GORGFX_ERR_NO_COMPUTE_SHADER" xml:space="preserve">
     <value>Dispatch calls require a compute shader.</value>
   </data>
+  <data name="GORGFX_ERR_INPUT_BOUND_AS_DSV" xml:space="preserve">
+    <value>The resource '{0}' is already bound to the pipeline as a depth/stencil view.</value>
+  </data>
+  <data name="GORGFX_ERR_INPUT_BOUND_AS_RTV" xml:space="preserve">
+    <value>The resource '{0}' is already bound to the pipeline as a render target.</value>
+  </data>
+  <data name="GORGFX_ERR_INPUT_BOUND_AS_UAV" xml:space="preserve">
+    <value>The resource '{0}' is already bound to the pipeline as a read/write resource.</value>
+  </data>
 </root>
