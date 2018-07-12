@@ -1,4 +1,4 @@
-// This is adopted from the nvidia film grain shader.
+﻿// This is adopted from the nvidia film grain shader.
 //
 // To learn more about shading, shaders, and to bounce ideas off other shader
 //    authors and users, visit the NVIDIA Shader Library Forums at:
@@ -7,6 +7,8 @@
 
 #GorgonInclude "Gorgon2DShaders"
 
+// Additional effect texture buffer.
+Texture2D _filmEffectTexture : register(t1);
 SamplerState _gorgonFilmGrainSampler : register(s1);		// Sampler used for film grain random texture.
 
 cbuffer FilmGrainTiming : register(b1)
@@ -51,7 +53,7 @@ float4 GorgonPixelShaderFilmGrain(GorgonSpriteVertex vertex) : SV_Target
     float4 texel = _gorgonTexture.Sample(_gorgonSampler, vertex.uv) * vertex.color;
 	
 	float2 randomValue = float2(vertex.uv.x + side, scanLine);
-	float scratch = _gorgonEffectTexture.Sample(_gorgonFilmGrainSampler, randomValue).x;
+	float scratch = _filmEffectTexture.Sample(_gorgonFilmGrainSampler, randomValue).x;
     
     scratch = 2.0f * (scratch - filmGrainIntensity) / filmGrainScratchWidth;
     scratch = 1.0f - abs(1.0f - scratch);

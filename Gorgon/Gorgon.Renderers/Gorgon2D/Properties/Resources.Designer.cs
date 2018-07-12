@@ -159,6 +159,24 @@ namespace Gorgon.Renderers.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Old Film Effect.
+        /// </summary>
+        internal static string GOR2D_EFFECT_FILM {
+            get {
+                return ResourceManager.GetString("GOR2D_EFFECT_FILM", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Draws images to make it appear as though those images are from an old film reel..
+        /// </summary>
+        internal static string GOR2D_EFFECT_FILM_DESC {
+            get {
+                return ResourceManager.GetString("GOR2D_EFFECT_FILM_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Gaussian Blur Effect.
         /// </summary>
         internal static string GOR2D_EFFECT_GAUSS_BLUR {

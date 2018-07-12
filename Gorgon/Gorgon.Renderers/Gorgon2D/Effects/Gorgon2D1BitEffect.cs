@@ -285,6 +285,11 @@ namespace Gorgon.Renderers
 		/// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
 		protected override void Dispose(bool disposing)
 	    {
+	        if (!disposing)
+	        {
+	            return;
+	        }
+
 	        GorgonConstantBufferView buffer = Interlocked.Exchange(ref _1BitBuffer, null);
 	        Gorgon2DShader<GorgonPixelShader> shader = Interlocked.Exchange(ref _shader, null);
 	        

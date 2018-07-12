@@ -316,7 +316,7 @@ namespace Gorgon.Renderers
 	        _renderCallback();
             Renderer.End();
 	    }
-
+        
 	    /// <summary>
         /// Function to render the specified texture using waves.
         /// </summary>

@@ -25,14 +25,21 @@
 #endregion
 
 using System;
-using System.Drawing;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Security.AccessControl;
 using System.Text;
+using System.Threading;
+using DX = SharpDX;
 using Gorgon.Core;
+using Gorgon.Diagnostics;
 using Gorgon.Graphics;
-using Gorgon.Native;
+using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Imaging;
+using Gorgon.Math;
 using Gorgon.Renderers.Properties;
-using SlimMath;
+using Gorgon.Timing;
 
 namespace Gorgon.Renderers
 {
@@ -94,19 +101,39 @@ namespace Gorgon.Renderers
 		#endregion
 
 		#region Variables.
-		private bool _disposed;									// Flag to indicate that the effect was disposed.
-		private GorgonTexture2D _randomTexture;					// Texture used to hold random noise for the shader.
-		private GorgonPoint _point;								// Point used for dust.
-		private GorgonConstantBuffer _timingBuffer;				// Constant buffer for timing.
-		private Vector2 _currentTargetSize;						// Current target size.
-		private bool _isScratchUpdated = true;					// Flag to indicate whether the effect has updated parameters or not.
-		private bool _isSepiaUpdated = true;					// Flag to indicate whether the effect has updated parameters or not.
-		private ScratchSettings _scratchSettings;				// Settings for film scratches.
-		private SepiaSettings _sepiaSettings;					// Settings for sepia tone.
-		private GorgonConstantBuffer _scratchBuffer;			// Constant buffer for scratch settings.
-		private GorgonConstantBuffer _sepiaBuffer;				// Constant buffer for sepia settings.
-		private float _noiseFrequency = 42.0f;					// Noise frequency.
-		#endregion
+	    // Texture used to hold random noise for the shader.
+		private GorgonTexture2DView _randomTexture;					
+	    // Constant buffer for timing.
+		private GorgonConstantBufferView _timingBuffer;				
+	    // Current target size.
+		private DX.Vector2 _currentTargetSize;					
+	    // Flag to indicate whether the effect has updated parameters or not.
+		private bool _isScratchUpdated = true;					
+	    // Flag to indicate whether the effect has updated parameters or not.
+		private bool _isSepiaUpdated = true;
+	    // Settings for film scratches.
+		private ScratchSettings _scratchSettings;				
+	    // Settings for sepia tone.
+		private SepiaSettings _sepiaSettings;					
+	    // Constant buffer for scratch settings.
+		private GorgonConstantBufferView _scratchBuffer;			
+	    // Constant buffer for sepia settings.
+		private GorgonConstantBufferView _sepiaBuffer;				
+	    // Noise frequency.
+		private float _noiseFrequency = 42.0f;
+        // The shader used for the film effect.
+	    private Gorgon2DShader<GorgonPixelShader> _filmShader;
+        // The batch state to use when rendering.
+	    private Gorgon2DBatchState _batchState;
+        // The current time, in milliseconds.
+	    private float _time;
+        // The texture to draw with the effect.
+	    private GorgonTexture2DView _drawTexture;
+        // The region to draw into.
+	    private DX.RectangleF? _drawRegion;
+        // The texture coordinates of the texture to draw.
+	    private DX.RectangleF _drawTextureCoordinates;
+	    #endregion
 
 		#region Properties.
 		/// <summary>
@@ -114,48 +141,42 @@ namespace Gorgon.Renderers
 		/// </summary>
 		/// <remarks>It is not recommended to update this value every frame, doing so may have a significant performance hit.</remarks>
 		public float NoiseFrequency
+        {
+            get => _noiseFrequency;
+            set
+            {
+                // ReSharper disable once CompareOfFloatsByEqualityOperator
+                if (_noiseFrequency == value)
+                {
+                    return;
+                }
+
+                if (value < 1)
+                {
+                    value = 1.0f;
+                }
+
+                _noiseFrequency = value;
+
+                // Prepare the random data texture for update.
+                if (_randomTexture == null)
+                {
+                    return;
+                }
+
+                _randomTexture.Dispose();
+                _randomTexture = null;
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the speed of updates to the current set of scratches.
+        /// </summary>
+        /// <remarks>Smaller values keep the current scratches on the screen longer.</remarks>
+        public float UpdateSpeed
 		{
-			get
-			{
-				return _noiseFrequency;
-			}
-			set
-			{
-				// ReSharper disable once CompareOfFloatsByEqualityOperator
-				if (_noiseFrequency == value)
-				{
-					return;
-				}
-
-				if (value < 1)
-				{
-					value = 1.0f;
-				}
-
-				_noiseFrequency = value;
-
-				// Prepare the random data texture for update.
-				if (_randomTexture == null)
-				{
-					return;
-				}
-
-				_randomTexture.Dispose();
-				_randomTexture = null;
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the speed of updates to the current set of scratches.
-		/// </summary>
-		/// <remarks>Smaller values keep the current scratches on the screen longer.</remarks>
-		public float UpdateSpeed
-		{
-			get
-			{
-				return _scratchSettings.ScratchVisibleTime;
-			}
-			set
+			get => _scratchSettings.ScratchVisibleTime;
+            set
 			{
 				// ReSharper disable once CompareOfFloatsByEqualityOperator
 				if (_scratchSettings.ScratchVisibleTime == value)
@@ -173,11 +194,8 @@ namespace Gorgon.Renderers
 		/// </summary>
 		public float ScrollSpeed
 		{
-			get
-			{
-				return _scratchSettings.ScratchScrollSpeed;
-			}
-			set
+			get => _scratchSettings.ScratchScrollSpeed;
+		    set
 			{
 				// ReSharper disable once CompareOfFloatsByEqualityOperator
 				if (_scratchSettings.ScratchVisibleTime == value)
@@ -195,11 +213,8 @@ namespace Gorgon.Renderers
 		/// </summary>
 		public float Intensity
 		{
-			get
-			{
-				return _scratchSettings.ScratchIntensity;
-			}
-			set
+			get => _scratchSettings.ScratchIntensity;
+		    set
 			{
 				// ReSharper disable once CompareOfFloatsByEqualityOperator
 				if (_scratchSettings.ScratchIntensity == value)
@@ -217,11 +232,8 @@ namespace Gorgon.Renderers
 		/// </summary>
 		public float ScratchWidth
 		{
-			get
-			{
-				return _scratchSettings.ScratchWidth;
-			}
-			set
+			get => _scratchSettings.ScratchWidth;
+		    set
 			{
 				// ReSharper disable once CompareOfFloatsByEqualityOperator
 				if (_scratchSettings.ScratchWidth == value)
@@ -239,11 +251,8 @@ namespace Gorgon.Renderers
 		/// </summary>
 		public float DesaturationAmount
 		{
-			get
-			{
-				return _sepiaSettings.SepiaDesaturationAmount;
-			}
-			set
+			get => _sepiaSettings.SepiaDesaturationAmount;
+		    set
 			{
 				// ReSharper disable once CompareOfFloatsByEqualityOperator
 				if (_sepiaSettings.SepiaDesaturationAmount == value)
@@ -261,11 +270,8 @@ namespace Gorgon.Renderers
 		/// </summary>
 		public float ToneAmount
 		{
-			get
-			{
-				return _sepiaSettings.SepiaToneAmount;
-			}
-			set
+			get => _sepiaSettings.SepiaToneAmount;
+		    set
 			{
 				// ReSharper disable once CompareOfFloatsByEqualityOperator
 				if (_sepiaSettings.SepiaToneAmount == value)
@@ -283,13 +289,10 @@ namespace Gorgon.Renderers
 		/// </summary>
 		public GorgonColor SepiaLightColor
 		{
-			get
+			get => _sepiaSettings.SepiaLightColor;
+		    set
 			{
-				return _sepiaSettings.SepiaLightColor;
-			}
-			set
-			{
-				if (GorgonColor.Equals(ref _sepiaSettings.SepiaLightColor, ref value))
+				if (GorgonColor.Equals(in _sepiaSettings.SepiaLightColor, in value))
 				{
 					return;
 				}
@@ -304,13 +307,10 @@ namespace Gorgon.Renderers
 		/// </summary>
 		public GorgonColor SepiaDarkColor
 		{
-			get
+			get => _sepiaSettings.SepiaDarkColor;
+		    set
 			{
-				return _sepiaSettings.SepiaDarkColor;
-			}
-			set
-			{
-				if (GorgonColor.Equals(ref _sepiaSettings.SepiaDarkColor, ref value))
+				if (GorgonColor.Equals(in _sepiaSettings.SepiaDarkColor, in value))
 				{
 					return;
 				}
@@ -338,29 +338,23 @@ namespace Gorgon.Renderers
 			set;
 		}
 
-		/// <summary>
-		/// Property to set or return the function used to render the scene with the effect.
-		/// </summary>
-		public Action<GorgonEffectPass> RenderScene
-		{
-			get
-			{
-				return Passes[0].RenderAction;
-			}
-			set
-			{
-				Passes[0].RenderAction = value;
-			}
-		}
+	    /// <summary>
+	    /// Property to set or return the current time for the effect in seconds.
+	    /// </summary>
+	    public float Time
+	    {
+	        get => _time;
+	        set => _time = value;
+	    }
 
-		/// <summary>
-		/// Property to set or return the current time for the effect in seconds.
-		/// </summary>
-		public float Time
-		{
-			get;
-			set;
-		}
+	    /// <summary>
+	    /// Property to set or return the noise texture width and height.
+	    /// </summary>
+	    public int NoiseTextureSize
+	    {
+	        get;
+	        set;
+	    } = 128;
 		#endregion
 
 		#region Methods.
@@ -369,60 +363,50 @@ namespace Gorgon.Renderers
 		/// </summary>
 		private void GenerateRandomNoise()
 		{
-			int textureSize = 128;
-		    object parameter;
+			int textureSize = NoiseTextureSize.Min(128).Max(16);
 
-		    if ((Parameters.TryGetValue("TextureSize", out parameter))
-		        && (parameter != null))
+		    using (var image = new GorgonImage(new GorgonImageInfo(ImageType.Image2D, BufferFormat.R8_UNorm)
+		                                       {
+                                                   Width = textureSize,
+                                                   Height = textureSize
+		                                       }))
 		    {
-		        var size = (int)parameter;
+		        IGorgonImageBuffer imageBuffer = image.Buffers[0];
 
-		        if (size > 16)
+		        for (int y = 0; y < textureSize; ++y)
 		        {
-		            textureSize = size;
+		            for (int x = 0; x < textureSize; ++x)
+		            {
+		                float simplexNoise = GorgonRandom.SimplexNoise(x * (1.0f / _noiseFrequency), y * (1.0f / _noiseFrequency));
+
+		                if (simplexNoise < -0.75f)
+		                {
+		                    simplexNoise *= -1;
+		                }
+		                else
+		                {
+		                    simplexNoise *= 0.95f;
+		                }
+
+		                if (simplexNoise < 0.125f)
+		                {
+		                    simplexNoise = 0.0f;
+		                }
+
+
+		                image.Buffers[0].Data[y * imageBuffer.PitchInformation.RowPitch + x] = (byte)(simplexNoise * 255.0f);
+		            }
 		        }
+
+                _randomTexture = GorgonTexture2DView.CreateTexture(Graphics, new GorgonTexture2DInfo("Gorgon2D Old Film Effect Random Noise Texture")
+                                                                             {
+                                                                                 Width = textureSize,
+                                                                                 Height = textureSize,
+                                                                                 Usage = ResourceUsage.Immutable,
+                                                                                 Binding = TextureBinding.ShaderResource,
+                                                                                 Format = BufferFormat.R8_UNorm
+                                                                             }, image);
 		    }
-
-		    using(var image = new GorgonImageData(new GorgonTexture2DSettings
-			{
-				Width = textureSize,
-				Height = textureSize,
-				Format = BufferFormat.R8_UNorm,
-				Usage = BufferUsage.Default
-			}))
-			{
-				unsafe
-				{
-					var dataPtr = (byte*)image.Buffers[0].Data.Address;
-
-					// Write perlin noise to the texture.
-					for (int y = 0; y < textureSize; ++y)
-					{
-						for (int x = 0; x < textureSize; ++x)
-						{
-							float simplexNoise = GorgonRandom.SimplexNoise(new System.Numerics.Vector2(x * (1.0f / _noiseFrequency), y * (1.0f / _noiseFrequency)));
-
-							if (simplexNoise < -0.75f)
-							{
-								simplexNoise *= -1;
-							}
-							else
-							{
-								simplexNoise *= 0.95f;
-							}
-
-							if (simplexNoise < 0.125f)
-							{
-								simplexNoise = 0.0f;
-							}
-
-							*(dataPtr++) = (byte)(simplexNoise * 255.0f);
-						}
-					}
-				}
-
-				_randomTexture = Graphics.Textures.CreateTexture<GorgonTexture2D>("Effect.OldFilm.RandomTexture", image);
-			}
 		}
 
 		/// <summary>
@@ -434,49 +418,57 @@ namespace Gorgon.Renderers
 		/// </remarks>
 		protected override void OnInitialize()
 		{
-			base.OnInitialize();
+		    DirtPercent = 5;
+		    DirtAmount = 10;
 
-			_point = Gorgon2D.Renderables.CreatePoint("Effect.OldFilm.DustPoint", Vector2.Zero, GorgonColor.Black);
+		    _scratchSettings = new ScratchSettings
+		                       {
+		                           ScratchIntensity = 0.49f,
+		                           ScratchScrollSpeed = 0.01f,
+		                           ScratchVisibleTime = 0.003f,
+		                           ScratchWidth = 0.01f
+		                       };
 
-			// Create pixel shader.
-			Passes[0].PixelShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("Effect.OldFilm.PS",
-				"GorgonPixelShaderFilmGrain", Encoding.UTF8.GetString(Resources.FilmGrain));
+		    _sepiaSettings = new SepiaSettings
+		                     {
+		                         SepiaDesaturationAmount = 0.0f,
+		                         SepiaToneAmount = 0.5f,
+		                         SepiaLightColor = new GorgonColor(1, 0.9f, 0.65f, 1.0f),
+		                         SepiaDarkColor = new GorgonColor(0.2f, 0.102f, 0, 1.0f)
+		                     };
 
-			_timingBuffer = Graphics.Buffers.CreateConstantBuffer("Effect.OldFilm.TimingBuffer", new GorgonConstantBufferSettings
-			{
-				SizeInBytes = 16
-			});
+		    GenerateRandomNoise();
 
-			_scratchBuffer = Graphics.Buffers.CreateConstantBuffer("Effect.OldFilm.ScratchSettingsBuffer",
-				new GorgonConstantBufferSettings
-				{
-					SizeInBytes = DirectAccess.SizeOf<ScratchSettings>()
-				});
+			_timingBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, new GorgonConstantBufferInfo("Gorgon 2D Old Film Effect - Timing data")
+			                                                                        {
+                                                                                        Usage = ResourceUsage.Dynamic,
+                                                                                        SizeInBytes = 16
+			                                                                        });
 
-			_sepiaBuffer = Graphics.Buffers.CreateConstantBuffer("Effect.OldFilm.SepaSettingsBuffer",
-				new GorgonConstantBufferSettings
-				{
-					SizeInBytes = DirectAccess.SizeOf<SepiaSettings>()
-				});
+            _scratchBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _scratchSettings, "Gorgon 2D Old Film Effect - Scratch settings");
+		    _sepiaBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _sepiaSettings, "Gorgon 2D Old Film Effect - Sepia settings");
 
-			DirtPercent = 5;
-			DirtAmount = 10;
+		    var shaderBuilder = new Gorgon2DShaderBuilder<GorgonPixelShader>();
+            var batchStateBuilder = new Gorgon2DBatchStateBuilder();
 
-			_scratchSettings = new ScratchSettings
-			{
-				ScratchIntensity = 0.49f,
-				ScratchScrollSpeed = 0.01f,
-				ScratchVisibleTime = 0.003f,
-				ScratchWidth = 0.01f
-			};
+		    // Create pixel shader.
+		    _filmShader = shaderBuilder
+		                  .ConstantBuffer(_timingBuffer, 1)
+		                  .ConstantBuffer(_scratchBuffer, 2)
+		                  .ConstantBuffer(_sepiaBuffer, 3)
+		                  .ShaderResource(_randomTexture, 1)
+		                  .SamplerState(GorgonSamplerState.Wrapping, 1)
+		                  .Shader(GorgonShaderFactory.Compile<GorgonPixelShader>(Graphics,
+		                                                                         Resources.FilmGrain,
+		                                                                         "GorgonPixelShaderFilmGrain",
+		                                                                         GorgonGraphics.IsDebugEnabled))
+		                  .Build();
 
-			_sepiaSettings = new SepiaSettings
-			{
-				SepiaDesaturationAmount = 0.0f,
-				SepiaToneAmount = 0.5f,
-				SepiaLightColor = new GorgonColor(1, 0.9f, 0.65f, 1.0f),
-				SepiaDarkColor = new GorgonColor(0.2f, 0.102f, 0, 1.0f)
-			};
+            // Build our state.
+		    _batchState = batchStateBuilder
+		                  .BlendState(GorgonBlendState.NoBlending)
+		                  .PixelShader(_filmShader)
+		                  .Build();
 		}
 
 		/// <summary>
@@ -487,121 +479,117 @@ namespace Gorgon.Renderers
 		/// </returns>
 		protected override bool OnBeforeRender()
 		{
-			GorgonRenderTargetView target = Gorgon2D.Target;
+		    if (Graphics.RenderTargets[0] == null)
+		    {
+		        return false;
+		    }
 
-			if (_randomTexture == null)
-			{
-				GenerateRandomNoise();
-			}
+		    _currentTargetSize = new DX.Vector2(Graphics.RenderTargets[0].Width, Graphics.RenderTargets[0].Height);
 
-			if (target == null)
-			{
-				target = Gorgon2D.DefaultTarget;
-			}
 
-			switch (target.Resource.ResourceType)
-			{
-				case ResourceType.Buffer:
-					var buffer = (GorgonBuffer)target.Resource;
-					var info = new GorgonBufferFormatInfo(buffer.Settings.DefaultShaderViewFormat);
+		    if (_drawRegion == null)
+		    {
+		        _drawRegion = new DX.RectangleF(0, 0, _currentTargetSize.X, _currentTargetSize.Y);
+		    }
 
-					_currentTargetSize = new Vector2(buffer.SizeInBytes / info.BitDepth, 1);
-					break;
-				case ResourceType.Texture1D:
-				case ResourceType.Texture2D:
-				case ResourceType.Texture3D:
-					var texture = (GorgonTexture)target.Resource;
-					_currentTargetSize = new Vector2(texture.Settings.Width, texture.Settings.Height);
-					break;
-			}
+		    if (_isScratchUpdated)
+		    {
+		        _scratchBuffer.Buffer.SetData(ref _scratchSettings);
+		        _isScratchUpdated = false;
+		    }
 
-            RememberTextureSampler(ShaderType.Pixel, 1);
-            RememberShaderResource(ShaderType.Pixel, 1);
-            RememberConstantBuffer(ShaderType.Pixel, 1);
-            RememberConstantBuffer(ShaderType.Pixel, 2);
-            RememberConstantBuffer(ShaderType.Pixel, 3);
+		    if (_isSepiaUpdated)
+		    {
+		        _sepiaBuffer.Buffer.SetData(ref _sepiaSettings);
+		        _isSepiaUpdated = false;
+		    }
 
-			Gorgon2D.PixelShader.Resources[1] = _randomTexture;
-			Gorgon2D.PixelShader.TextureSamplers[1] = new GorgonTextureSamplerStates
-			{
-				TextureFilter = TextureFilter.Linear,
-				HorizontalAddressing = TextureAddressing.Wrap,
-				VerticalAddressing = TextureAddressing.Wrap,
-				DepthAddressing = TextureAddressing.Clamp,
-				MipLODBias = 0.0f,
-				MaxAnisotropy = 1,
-				ComparisonFunction = ComparisonOperator.Never,
-				BorderColor = Color.White,
-				MinLOD = -3.402823466e+38f,
-				MaxLOD = 3.402823466e+38f
-			};
-			
-			Gorgon2D.PixelShader.ConstantBuffers[1] = _timingBuffer;
-			Gorgon2D.PixelShader.ConstantBuffers[2] = _scratchBuffer;
-			Gorgon2D.PixelShader.ConstantBuffers[3] = _sepiaBuffer;
+		    _timingBuffer.Buffer.SetData(ref _time);
 
-			return base.OnBeforeRender();
+		    return true;
 		}
 
-		/// <summary>
-		/// Function called before a pass is rendered.
-		/// </summary>
-		/// <param name="pass">Pass to render.</param>
-		/// <returns>
-		/// <b>true</b> to continue rendering, <b>false</b> to stop.
-		/// </returns>
-		protected override bool OnBeforePassRender(GorgonEffectPass pass)
+	    /// <summary>
+	    /// Function called to build a new (or return an existing) 2D batch state.
+	    /// </summary>
+	    /// <param name="passIndex">The index of the current rendering pass.</param>
+	    /// <param name="statesChanged"><b>true</b> if the blend, raster, or depth/stencil state was changed. <b>false</b> if not.</param>
+	    /// <returns>The 2D batch state.</returns>
+	    protected override Gorgon2DBatchState OnGetBatchState(int passIndex, bool statesChanged)
+	    {
+	        return _batchState;
+	    }
+
+	    /// <summary>
+	    /// Function called to render a single effect pass.
+	    /// </summary>
+	    /// <param name="passIndex">The index of the pass being rendered.</param>
+	    /// <param name="batchState">The current batch state for the pass.</param>
+	    /// <param name="camera">The current camera to use when rendering.</param>
+	    /// <remarks>
+	    /// <para>
+	    /// Applications must implement this in order to see any results from the effect.
+	    /// </para>
+	    /// </remarks>
+	    protected override void OnRenderPass(int passIndex, Gorgon2DBatchState batchState, Gorgon2DCamera camera)
+	    {
+            Debug.Assert(_drawRegion != null, "Draw region should never be NULL.");
+
+	        Renderer.Begin(_batchState, camera);
+            Renderer.DrawFilledRectangle(_drawRegion.Value, GorgonColor.White, _drawTexture, _drawTextureCoordinates);
+            Renderer.End();
+	    }
+
+        /// <summary>
+        /// Function to draw a texture using the old film effect.
+        /// </summary>
+        /// <param name="texture">The texture to draw.</param>
+        /// <param name="region">[Optional] The destination region to draw the texture into.</param>
+        /// <param name="textureCoordinates">[Optional] The texture coordinates, in texels, to use when drawing the texture.</param>
+        /// <remarks>
+        /// <para>
+        /// If the <paramref name="region"/> parameter is omitted, then the entire size of the current render target is used.
+        /// </para>
+        /// <para>
+        /// If the <paramref name="textureCoordinates"/> parameter is omitted, then the entire size of the texture is used.
+        /// </para>
+        /// </remarks>
+	    public void OldFilm(GorgonTexture2DView texture, DX.RectangleF? region = null, DX.RectangleF? textureCoordinates = null)
+        {
+            texture.ValidateObject(nameof(texture));
+
+            _drawTexture = texture;
+            _drawRegion = region;
+            _drawTextureCoordinates = textureCoordinates ?? new DX.RectangleF(0, 0, 1, 1);
+
+            Render();
+
+            _drawTexture = null;
+        }
+
+	    /// <summary>
+	    /// Function called after a pass is finished rendering.
+	    /// </summary>
+	    /// <param name="passIndex">The index of the pass that was rendered.</param>
+	    /// <remarks>
+	    /// <para>
+	    /// Applications can use this to clean up and/or restore any states after the pass completes.
+	    /// </para>
+	    /// </remarks>
+	    protected override void OnAfterRenderPass(int passIndex)
 		{
-			float renderTime = Time;
-
-			if (_isScratchUpdated)
-			{
-				_scratchBuffer.Update(ref _scratchSettings);
-				_isScratchUpdated = false;
-			}
-
-			if (_isSepiaUpdated)
-			{
-				_sepiaBuffer.Update(ref _sepiaSettings);
-				_isSepiaUpdated = false;
-			}
-
-			_timingBuffer.Update(ref renderTime);
-
-			return base.OnBeforePassRender(pass);
-		}
-
-		/// <summary>
-		/// Function called after a pass has been rendered.
-		/// </summary>
-		/// <param name="pass">Pass that was rendered.</param>
-		protected override void OnAfterPassRender(GorgonEffectPass pass)
-		{
-			// We must set the pixel shader back to the default here.
-			// Otherwise our current shader may not like that we're trying to 
-			// render lines and points with no textures attached.
-
-			// If this shader is nested with another (e.g. gauss blur), then 
-			// this situation can throw warnings up in the debug spew.
-
-			// Setting the pixel shader to the proper shader when rendering
-			// primitives with no textures is the best way to correct this.
-			Gorgon2D.PixelShader.Current = null;
-
-			var blend = Gorgon2D.Drawing.Blending;
-
-			// Render dust and dirt.
+            Renderer.Begin();
 			for (int i = 0; i < DirtAmount; ++i)
 			{
 				float grayDust = GorgonRandom.RandomSingle(0.1f, 0.25f);
 				var dustColor = new GorgonColor(grayDust, grayDust, grayDust, GorgonRandom.RandomSingle(0.25f, 0.95f));
 
 				// Render dust points.
-				_point.Color = dustColor;
-				_point.PointThickness = new Vector2(1);
-				_point.Position = new Vector2(GorgonRandom.RandomSingle(0, _currentTargetSize.X - 1),
-					GorgonRandom.RandomSingle(0, _currentTargetSize.Y - 1));
-				_point.Draw();
+			    Renderer.DrawFilledRectangle(new DX.RectangleF(GorgonRandom.RandomSingle(0, _currentTargetSize.X - 1),
+			                                                   GorgonRandom.RandomSingle(0, _currentTargetSize.Y - 1),
+			                                                   1,
+			                                                   1),
+			                                 dustColor);
 
 				if (GorgonRandom.RandomInt32(100) >= DirtPercent)
 				{
@@ -609,7 +597,7 @@ namespace Gorgon.Renderers
 				}
 
 				// Render dirt/hair lines.
-				var dirtStart = new Vector2(GorgonRandom.RandomSingle(0, _currentTargetSize.X - 1),
+				var dirtStart = new DX.Vector2(GorgonRandom.RandomSingle(0, _currentTargetSize.X - 1),
 					GorgonRandom.RandomSingle(0, _currentTargetSize.Y - 1));
 
 				float dirtWidth = GorgonRandom.RandomSingle(1.0f, 3.0f);
@@ -621,10 +609,8 @@ namespace Gorgon.Renderers
 				
 				for (int j = 0; j < GorgonRandom.RandomInt32(4, (int)_currentTargetSize.X / 4); j++)
 				{
-					_point.Color = dustColor;
-					_point.Position = new Vector2(dirtStart.X, dirtStart.Y);
-					_point.PointThickness = isHair ? new Vector2(1) : new Vector2(dirtWidth, dirtWidth);
-					_point.Draw();
+                    DX.Size2F size = isHair ? new DX.Size2F(1, 1) : new DX.Size2F(dirtWidth, dirtWidth);
+				    Renderer.DrawFilledRectangle(new DX.RectangleF(dirtStart.X, dirtStart.Y, size.Width, size.Height), dustColor);
 
 					if ((!isHair) || (isHairVertical))
 					{
@@ -673,25 +659,7 @@ namespace Gorgon.Renderers
 					}
 				}
 			}
-
-			// Restore the previous blend state.
-			Gorgon2D.Drawing.Blending = blend;
-
-			base.OnAfterPassRender(pass);
-		}
-
-		/// <summary>
-		/// Function called after rendering ends.
-		/// </summary>
-		protected override void OnAfterRender()
-		{
-            RestoreTextureSampler(ShaderType.Pixel, 1);
-            RestoreShaderResource(ShaderType.Pixel, 1);
-            RestoreConstantBuffer(ShaderType.Pixel, 1);
-            RestoreConstantBuffer(ShaderType.Pixel, 2);
-            RestoreConstantBuffer(ShaderType.Pixel, 3);
-
-			base.OnAfterRender();
+            Renderer.End();
 		}
 
 		/// <summary>
@@ -700,67 +668,34 @@ namespace Gorgon.Renderers
 		/// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
 		protected override void Dispose(bool disposing)
 		{
-			if (!_disposed)
-			{
-			    if (disposing)
-			    {
-			        FreeResources();
+		    if (!disposing)
+		    {
+		        return;
+		    }
 
-			        if (Passes[0].PixelShader != null)
-			        {
-			            Passes[0].PixelShader.Dispose();
-			            Passes[0].PixelShader = null;
-			        }
+		    Gorgon2DShader<GorgonPixelShader> shader = Interlocked.Exchange(ref _filmShader, null);
+		    GorgonTexture2DView texture = Interlocked.Exchange(ref _randomTexture, null);
+		    GorgonConstantBufferView buffer1 = Interlocked.Exchange(ref _timingBuffer, null);
+		    GorgonConstantBufferView buffer2 = Interlocked.Exchange(ref _scratchBuffer, null);
+		    GorgonConstantBufferView buffer3 = Interlocked.Exchange(ref _sepiaBuffer, null);
 
-			        if (_timingBuffer != null)
-			        {
-			            _timingBuffer.Dispose();
-			            _timingBuffer = null;
-			        }
-
-			        if (_scratchBuffer != null)
-			        {
-			            _scratchBuffer.Dispose();
-			            _scratchBuffer = null;
-			        }
-
-			        if (_sepiaBuffer != null)
-			        {
-			            _sepiaBuffer.Dispose();
-			            _sepiaBuffer = null;
-			        }
-			    }
-
-			    _disposed = true;
-			}
-			base.Dispose(disposing);
-		}
-
-		/// <summary>
-		/// Function to clean up resources used by the effect.
-		/// </summary>
-		public void FreeResources()
-		{
-			if (_randomTexture == null)
-			{
-				return;
-			}
-
-			_randomTexture.Dispose();
-			_randomTexture = null;
+            shader?.Shader.Dispose();
+            texture?.Dispose();
+            buffer1?.Dispose();
+		    buffer2?.Dispose();
+		    buffer3?.Dispose();
 		}
 		#endregion
 
 		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Gorgon2DOldFilmEffect"/> class.
-		/// </summary>
-		/// <param name="graphics">The graphics interface that owns this effect.</param>
-		/// <param name="name">The name of the effect.</param>
-		internal Gorgon2DOldFilmEffect(GorgonGraphics graphics, string name)
-			: base(graphics, name, 1)
-		{
-		}
-		#endregion
+	    /// <summary>
+	    /// Initializes a new instance of the <see cref="Gorgon2DOldFilmEffect"/> class.
+	    /// </summary>
+	    /// <param name="renderer">The renderer used to draw with this effect.</param>
+	    public Gorgon2DOldFilmEffect(Gorgon2D renderer)
+	        : base(renderer, Resources.GOR2D_EFFECT_FILM, Resources.GOR2D_EFFECT_FILM_DESC, 1)
+	    {
+	    }
+	    #endregion
 	}
 }

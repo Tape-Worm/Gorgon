@@ -67,6 +67,7 @@
     <Compile Include="Effects\Gorgon2DEffect.cs" />
     <Compile Include="Effects\Gorgon2DGaussBlurEffect.cs" />
     <Compile Include="Effects\Gorgon2DGrayScaleEffect.cs" />
+    <Compile Include="Effects\Gorgon2DOldFilmEffect.cs" />
     <Compile Include="Effects\Gorgon2DWaveEffect.cs" />
     <Compile Include="Gorgon2D.cs" />
     <Compile Include="Renderables\GorgonTrianglePoint.cs" />
