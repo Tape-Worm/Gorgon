@@ -67,12 +67,6 @@ cbuffer GorgonSobelEdgeDetectEffect : register(b1)
 	float4 sobelLineColor = float4(0, 0, 0, 1);
 }
 
-// Burn/dodge effect.
-cbuffer GorgonBurnDodgeEffect : register(b1)
-{
-	bool burnDodgeUseDodge;
-}
-
 // Our default vertex shader.
 GorgonSpriteVertex GorgonVertexShader(GorgonSpriteVertex vertex)
 {
@@ -92,6 +86,58 @@ float4 GorgonPixelShaderTextured(GorgonSpriteVertex vertex) : SV_Target
 		
 	return color;
 }
+
+#ifdef BURN_DODGE_EFFECT
+// Burn/dodge effect.
+cbuffer GorgonBurnDodgeEffect : register(b1)
+{
+	bool burnDodgeUseDodge;
+}
+
+// Function to perform a linear image burn/dodge.
+float4 GorgonPixelShaderLinearBurnDodge(GorgonSpriteVertex vertex) : SV_Target
+{
+	float4 color = _gorgonTexture.Sample(_gorgonSampler, vertex.uv) * vertex.color;
+	
+	color.rgb = color.rgb * 2.0f;
+
+	if (!burnDodgeUseDodge)
+	{
+		color.rgb = color.rgb - 1.0f;
+	}
+
+	REJECT_ALPHA(color.a);
+	
+	return saturate(color);
+}
+
+// Function to perform an image burn/dodge.
+float4 GorgonPixelShaderBurnDodge(GorgonSpriteVertex vertex) : SV_Target
+{
+	float4 color = _gorgonTexture.Sample(_gorgonSampler, vertex.uv) * vertex.color;
+	
+	if (burnDodgeUseDodge)
+	{
+		float3 invColor = float3(color.r < 1.0f ? 1.0f - color.r : 1.0f, 
+								color.g < 1.0f ? 1.0f - color.g : 1.0f, 
+								color.b < 1.0f ? 1.0f - color.b : 1.0f);
+
+		color.r = min(color.r / invColor.r, 1.0f);
+		color.g = min(color.g / invColor.g, 1.0f);
+		color.b = min(color.b / invColor.b, 1.0f);		
+	}
+	else
+	{
+		color.r = color.r == 0 ? 0 : max((1.0f - ((1.0f - color.r) / color.r)), 0); 
+		color.g = color.g == 0 ? 0 : max((1.0f - ((1.0f - color.g) / color.g)), 0); 
+		color.b = color.b == 0 ? 0 : max((1.0f - ((1.0f - color.b) / color.b)), 0); 
+	}
+
+	REJECT_ALPHA(color.a);
+	
+	return saturate(color);
+}
+#endif
 
 #ifdef GRAYSCALE_EFFECT
 // A pixel shader that converts to gray scale.
@@ -422,47 +468,4 @@ float4 GorgonPixelShaderSobelEdge(GorgonSpriteVertex vertex) : SV_Target
 	return color;
 }
 
-// Function to perform a linear image burn/dodge.
-float4 GorgonPixelShaderLinearBurnDodge(GorgonSpriteVertex vertex) : SV_Target
-{
-	float4 color = _gorgonTexture.Sample(_gorgonSampler, vertex.uv) * vertex.color;
-	
-	color.rgb = color.rgb * 2.0f;
-
-	if (!burnDodgeUseDodge)
-	{
-		color.rgb = color.rgb - 1.0f;
-	}
-
-	REJECT_ALPHA(color.a);
-	
-	return saturate(color);
-}
-
-// Function to perform an image burn/dodge.
-float4 GorgonPixelShaderBurnDodge(GorgonSpriteVertex vertex) : SV_Target
-{
-	float4 color = _gorgonTexture.Sample(_gorgonSampler, vertex.uv) * vertex.color;
-	
-	if (burnDodgeUseDodge)
-	{
-		float3 invColor = float3(color.r < 1.0f ? 1.0f - color.r : 1.0f, 
-								color.g < 1.0f ? 1.0f - color.g : 1.0f, 
-								color.b < 1.0f ? 1.0f - color.b : 1.0f);
-
-		color.r = min(color.r / invColor.r, 1.0f);
-		color.g = min(color.g / invColor.g, 1.0f);
-		color.b = min(color.b / invColor.b, 1.0f);		
-	}
-	else
-	{
-		color.r = color.r == 0 ? 0 : max((1.0f - ((1.0f - color.r) / color.r)), 0); 
-		color.g = color.g == 0 ? 0 : max((1.0f - ((1.0f - color.g) / color.g)), 0); 
-		color.b = color.b == 0 ? 0 : max((1.0f - ((1.0f - color.b) / color.b)), 0); 
-	}
-
-	REJECT_ALPHA(color.a);
-	
-	return saturate(color);
-}
 */

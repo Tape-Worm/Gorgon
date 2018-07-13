@@ -105,8 +105,6 @@ namespace Gorgon.Renderers
 		private GorgonTexture2DView _randomTexture;					
 	    // Constant buffer for timing.
 		private GorgonConstantBufferView _timingBuffer;				
-	    // Current target size.
-		private DX.Vector2 _currentTargetSize;					
 	    // Flag to indicate whether the effect has updated parameters or not.
 		private bool _isScratchUpdated = true;					
 	    // Flag to indicate whether the effect has updated parameters or not.
@@ -449,7 +447,6 @@ namespace Gorgon.Renderers
 		    _sepiaBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _sepiaSettings, "Gorgon 2D Old Film Effect - Sepia settings");
 
 		    var shaderBuilder = new Gorgon2DShaderBuilder<GorgonPixelShader>();
-            var batchStateBuilder = new Gorgon2DBatchStateBuilder();
 
 		    // Create pixel shader.
 		    _filmShader = shaderBuilder
@@ -465,7 +462,7 @@ namespace Gorgon.Renderers
 		                  .Build();
 
             // Build our state.
-		    _batchState = batchStateBuilder
+		    _batchState = BatchStateBuilder
 		                  .BlendState(GorgonBlendState.NoBlending)
 		                  .PixelShader(_filmShader)
 		                  .Build();
@@ -484,14 +481,6 @@ namespace Gorgon.Renderers
 		    if (currentTarget == null)
 		    {
 		        return false;
-		    }
-
-		    _currentTargetSize = new DX.Vector2(currentTarget.Width, currentTarget.Height);
-
-
-		    if (_drawRegion == null)
-		    {
-		        _drawRegion = new DX.RectangleF(0, 0, _currentTargetSize.X, _currentTargetSize.Y);
 		    }
 
 		    if (_isScratchUpdated)
@@ -535,10 +524,10 @@ namespace Gorgon.Renderers
 	    /// </remarks>
 	    protected override void OnRenderPass(int passIndex, Gorgon2DBatchState batchState, Gorgon2DCamera camera)
 	    {
-            Debug.Assert(_drawRegion != null, "Draw region should never be NULL.");
+	        DX.RectangleF region = _drawRegion ?? new DX.RectangleF(0, 0, CurrentTargetSize.Width, CurrentTargetSize.Height);
 
 	        Renderer.Begin(_batchState, camera);
-            Renderer.DrawFilledRectangle(_drawRegion.Value, GorgonColor.White, _drawTexture, _drawTextureCoordinates);
+            Renderer.DrawFilledRectangle(region, GorgonColor.White, _drawTexture, _drawTextureCoordinates);
             Renderer.End();
 	    }
 
@@ -548,6 +537,7 @@ namespace Gorgon.Renderers
         /// <param name="texture">The texture to draw.</param>
         /// <param name="region">[Optional] The destination region to draw the texture into.</param>
         /// <param name="textureCoordinates">[Optional] The texture coordinates, in texels, to use when drawing the texture.</param>
+        /// <param name="camera">[Optional] The camera used to render the image.</param>
         /// <remarks>
         /// <para>
         /// If the <paramref name="region"/> parameter is omitted, then the entire size of the current render target is used.
@@ -556,7 +546,7 @@ namespace Gorgon.Renderers
         /// If the <paramref name="textureCoordinates"/> parameter is omitted, then the entire size of the texture is used.
         /// </para>
         /// </remarks>
-	    public void OldFilm(GorgonTexture2DView texture, DX.RectangleF? region = null, DX.RectangleF? textureCoordinates = null)
+	    public void OldFilm(GorgonTexture2DView texture, DX.RectangleF? region = null, DX.RectangleF? textureCoordinates = null, Gorgon2DCamera camera = null)
         {
             texture.ValidateObject(nameof(texture));
 
@@ -564,7 +554,7 @@ namespace Gorgon.Renderers
             _drawRegion = region;
             _drawTextureCoordinates = textureCoordinates ?? new DX.RectangleF(0, 0, 1, 1);
 
-            Render();
+            Render(camera: camera);
 
             _drawTexture = null;
         }
@@ -612,7 +602,7 @@ namespace Gorgon.Renderers
 				grayDust = GorgonRandom.RandomSingle(0.1f, 0.15f);
 				dustColor = new GorgonColor(grayDust, grayDust, grayDust, GorgonRandom.RandomSingle(0.25f, 0.95f));
 				
-				for (int j = 0; j < GorgonRandom.RandomInt32(4, (int)_currentTargetSize.X / 4); j++)
+				for (int j = 0; j < GorgonRandom.RandomInt32(4, CurrentTargetSize.Width / 4); j++)
 				{
                     DX.Size2F size = isHair ? new DX.Size2F(1, 1) : new DX.Size2F(dirtWidth, dirtWidth);
 				    Renderer.DrawFilledRectangle(new DX.RectangleF(dirtStart.X, dirtStart.Y, size.Width, size.Height), dustColor);

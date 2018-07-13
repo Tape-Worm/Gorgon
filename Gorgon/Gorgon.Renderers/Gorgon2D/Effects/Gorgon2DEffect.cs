@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
@@ -58,6 +59,15 @@ namespace Gorgon.Renderers
         {
             get;
         } = new Gorgon2DBatchStateBuilder();
+
+        /// <summary>
+        /// Property to return the width and height of the current render target.
+        /// </summary>
+        protected DX.Size2 CurrentTargetSize
+        {
+            get;
+            private set;
+        }
 
         /// <summary>
         /// Property to return the renderer used to render the effect.
@@ -200,6 +210,15 @@ namespace Gorgon.Renderers
             {
                 return;
             }
+
+            GorgonRenderTargetView firstTarget = Graphics.RenderTargets[0];
+
+            if (firstTarget == null)
+            {
+                return;
+            }
+
+            CurrentTargetSize = new DX.Size2(firstTarget.Width, firstTarget.Height);
 
             bool stateChanged = false;
             _camera = camera;

@@ -92,11 +92,11 @@ namespace Gorgon.Renderers.Properties {
         ///
         ///#GorgonInclude &quot;Gorgon2DShaders&quot;
         ///
+        ///// Additional effect texture buffer.
+        ///Texture2D _filmEffectTexture : register(t1);
         ///SamplerState _gorgonFilmGrainSampler : register(s1);		// Sampler used for film grain random texture.
         ///
-        ///cbuffer FilmGrainTiming : register(b1)
-        ///{
-        ///	float filmGrainTime = 0.0f;								// Delta time - Used to animate the e [rest of string was truncated]&quot;;.
+        ///cbuffer FilmGrainTiming : regist [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string FilmGrain {
             get {
@@ -209,6 +209,78 @@ namespace Gorgon.Renderers.Properties {
         internal static string GOR2D_EFFECT_GRAYSCALE_DESC {
             get {
                 return ResourceManager.GetString("GOR2D_EFFECT_GRAYSCALE_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invert Color Effect.
+        /// </summary>
+        internal static string GOR2D_EFFECT_INVERT {
+            get {
+                return ResourceManager.GetString("GOR2D_EFFECT_INVERT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Inverts the colors of an image..
+        /// </summary>
+        internal static string GOR2D_EFFECT_INVERT_DESC {
+            get {
+                return ResourceManager.GetString("GOR2D_EFFECT_INVERT_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Posterize Effect.
+        /// </summary>
+        internal static string GOR2D_EFFECT_POSTERIZE {
+            get {
+                return ResourceManager.GetString("GOR2D_EFFECT_POSTERIZE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Performs a reduction in colors for an image..
+        /// </summary>
+        internal static string GOR2D_EFFECT_POSTERIZE_DESC {
+            get {
+                return ResourceManager.GetString("GOR2D_EFFECT_POSTERIZE_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sharpen/Emboss Effect.
+        /// </summary>
+        internal static string GOR2D_EFFECT_SHARPEMBOSS {
+            get {
+                return ResourceManager.GetString("GOR2D_EFFECT_SHARPEMBOSS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sharpens or embosses an image..
+        /// </summary>
+        internal static string GOR2D_EFFECT_SHARPEMBOSS_DESC {
+            get {
+                return ResourceManager.GetString("GOR2D_EFFECT_SHARPEMBOSS_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sobel Edge Detection Effect.
+        /// </summary>
+        internal static string GOR2D_EFFECT_SOBEL {
+            get {
+                return ResourceManager.GetString("GOR2D_EFFECT_SOBEL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Renders the edges of an image using a Sobel filter..
+        /// </summary>
+        internal static string GOR2D_EFFECT_SOBEL_DESC {
+            get {
+                return ResourceManager.GetString("GOR2D_EFFECT_SOBEL_DESC", resourceCulture);
             }
         }
         

@@ -109,9 +109,7 @@ namespace Gorgon.Renderers
 	    private Gorgon2DShader<GorgonPixelShader> _shader;
         // The batch state to render.
 	    private Gorgon2DBatchState _batchState;
-        // The builder used to create a new batch state.
-	    private readonly Gorgon2DBatchStateBuilder _batchStateBuilder = new Gorgon2DBatchStateBuilder();
-	    // A method used to render data while the effect is active.
+        // A method used to render data while the effect is active.
 	    private Action _renderCallback;
 		#endregion
 
@@ -219,7 +217,7 @@ namespace Gorgon.Renderers
 	                                                                                      macros))
 	                               .Build();
 
-	        _batchState = _batchStateBuilder.PixelShader(_shader)
+	        _batchState = BatchStateBuilder.PixelShader(_shader)
 	                                       .Build();
 	    }
 
@@ -255,7 +253,7 @@ namespace Gorgon.Renderers
 	    {
 	        if (statesChanged)
 	        {
-	            _batchState = _batchStateBuilder.Build();
+	            _batchState = BatchStateBuilder.Build();
 	        }
 
 	        return _batchState;
