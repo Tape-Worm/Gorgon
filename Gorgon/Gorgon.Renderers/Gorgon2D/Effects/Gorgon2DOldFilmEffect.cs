@@ -446,19 +446,14 @@ namespace Gorgon.Renderers
             _scratchBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _scratchSettings, "Gorgon 2D Old Film Effect - Scratch settings");
 		    _sepiaBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _sepiaSettings, "Gorgon 2D Old Film Effect - Sepia settings");
 
-		    var shaderBuilder = new Gorgon2DShaderBuilder<GorgonPixelShader>();
-
 		    // Create pixel shader.
-		    _filmShader = shaderBuilder
+		    _filmShader = PixelShaderBuilder
 		                  .ConstantBuffer(_timingBuffer, 1)
 		                  .ConstantBuffer(_scratchBuffer, 2)
 		                  .ConstantBuffer(_sepiaBuffer, 3)
 		                  .ShaderResource(_randomTexture, 1)
 		                  .SamplerState(GorgonSamplerState.Wrapping, 1)
-		                  .Shader(GorgonShaderFactory.Compile<GorgonPixelShader>(Graphics,
-		                                                                         Resources.FilmGrain,
-		                                                                         "GorgonPixelShaderFilmGrain",
-		                                                                         GorgonGraphics.IsDebugEnabled))
+		                  .Shader(CompileShader<GorgonPixelShader>(Resources.FilmGrain, "GorgonPixelShaderFilmGrain"))
 		                  .Build();
 
             // Build our state.
@@ -674,7 +669,7 @@ namespace Gorgon.Renderers
 		    GorgonConstantBufferView buffer2 = Interlocked.Exchange(ref _scratchBuffer, null);
 		    GorgonConstantBufferView buffer3 = Interlocked.Exchange(ref _sepiaBuffer, null);
 
-            shader?.Shader.Dispose();
+            shader?.Dispose();
             texture?.Dispose();
             buffer1?.Dispose();
 		    buffer2?.Dispose();

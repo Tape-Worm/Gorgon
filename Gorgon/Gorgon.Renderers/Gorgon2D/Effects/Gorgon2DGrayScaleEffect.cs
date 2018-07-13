@@ -56,20 +56,10 @@ namespace Gorgon.Renderers
         /// </remarks>
 	    protected override void OnInitialize()
 	    {
-	        // A macro used to define the size of the kernel weight data structure.
-	        GorgonShaderMacro[] weightsMacro = {
-	                                               new GorgonShaderMacro("GRAYSCALE_EFFECT")
-	                                           };
-
 	        // Compile our blur shader.
-            var shaderBuilder = new Gorgon2DShaderBuilder<GorgonPixelShader>();
-	        _grayScaleShader = shaderBuilder.Shader(GorgonShaderFactory.Compile<GorgonPixelShader>(Graphics,
-	                                                                                               Resources.BasicSprite,
-	                                                                                               "GorgonPixelShaderGrayScale",
-	                                                                                               GorgonGraphics.IsDebugEnabled,
-	                                                                                               weightsMacro))
-	                                        .Build();
-
+	        _grayScaleShader = PixelShaderBuilder
+	                           .Shader(CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderGrayScale"))
+	                           .Build();
 
 	        _batchState = BatchStateBuilder
 	                      .PixelShader(_grayScaleShader)
@@ -88,7 +78,7 @@ namespace Gorgon.Renderers
 		    }
 
 		    Gorgon2DShader<GorgonPixelShader> shader = Interlocked.Exchange(ref _grayScaleShader, null);
-		    shader?.Shader.Dispose();
+		    shader?.Dispose();
 		}
 
 	    /// <summary>
@@ -160,6 +150,8 @@ namespace Gorgon.Renderers
 		public Gorgon2DGrayScaleEffect(Gorgon2D renderer)
 			: base(renderer, Resources.GOR2D_EFFECT_GRAYSCALE, Resources.GOR2D_EFFECT_GRAYSCALE_DESC, 1)
 		{
+		    // A macro used to define the size of the kernel weight data structure.
+            Macros.Add(new GorgonShaderMacro("GRAYSCALE_EFFECT"));
 		}
 		#endregion
 	}

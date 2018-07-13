@@ -62,8 +62,6 @@ namespace Gorgon.Renderers
 	    private GorgonRenderTargetView _prevRtv;
         // The previously active depth/stencil view.
 	    private GorgonDepthStencil2DView _prevDsv;
-        // The builder used to build up shader state.
-	    private readonly Gorgon2DShaderBuilder<GorgonPixelShader> _shaderBuilder = new Gorgon2DShaderBuilder<GorgonPixelShader>();
         // The batch state.
 	    private Gorgon2DBatchState _batchState;
 		#endregion
@@ -138,8 +136,13 @@ namespace Gorgon.Renderers
 		    _displacementView = _displacementTarget.Texture.GetShaderResourceView();
 
             // We store this in the 1st slot so we can read back from it when necessary.
-		    _displacementShader = _shaderBuilder.ShaderResource(_displacementView, 1).Build();
-		    _batchState = BatchStateBuilder.PixelShader(_displacementShader).Build();
+		    _displacementShader = PixelShaderBuilder
+		                          .ShaderResource(_displacementView, 1)
+		                          .Build();
+
+		    _batchState = BatchStateBuilder
+		                  .PixelShader(_displacementShader)
+		                  .Build();
 
 			_isUpdated = true;
 		}
@@ -159,17 +162,8 @@ namespace Gorgon.Renderers
                                                                                             Usage = ResourceUsage.Dynamic,
                                                                                             SizeInBytes = DX.Vector4.SizeInBytes
                                                                                         });
-	        var macros = new []
-	                     {
-	                         new GorgonShaderMacro("DISPLACEMENT_EFFECT"),
-	                     };
-
-	        _displacementShader = _shaderBuilder
-	                              .Shader(GorgonShaderFactory.Compile<GorgonPixelShader>(Graphics,
-	                                                                                     Resources.BasicSprite,
-	                                                                                     "GorgonPixelShaderDisplacementDecoder",
-	                                                                                     GorgonGraphics.IsDebugEnabled,
-	                                                                                     macros))
+	        _displacementShader = PixelShaderBuilder
+	                              .Shader(CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderDisplacementDecoder"))
 	                              .ConstantBuffer(_displacementSettingsBuffer, 1)
 	                              .Build();
 
@@ -317,9 +311,28 @@ namespace Gorgon.Renderers
 		    Gorgon2DShader<GorgonPixelShader> shader = Interlocked.Exchange(ref _displacementShader, null);
 
             displacementBuffer?.Dispose();
-		    shader?.Shader.Dispose();
+		    shader?.Dispose();
 		}
 
+        /// <summary>
+        /// Function to displace the pixels on an image by using another image as a displacement map.
+        /// </summary>
+        /// <param name="displacementRender">The method used to render into the displacement map.</param>
+        /// <param name="backgroundImage">The image that will be distorted by the displacement.</param>
+        /// <param name="camera">[Optional] The camera to use when rendering.</param>
+        /// <remarks>
+        /// <para>
+        /// The <paramref name="displacementRender"/> is a method that users can define to draw whatever is needed as grayscale.  When this method is called, the <see cref="Gorgon2D.Begin"/> and
+        /// <see cref="Gorgon2D.End"/> methods are already taken care of by the effect and will not need to be called during the callback.
+        /// </para>
+        /// <para>
+        /// <note type="warning">
+        /// <para>
+        /// For performance reasons, any exceptions thrown from this method will only be thrown when Gorgon is compiled in <b>DEBUG</b> mode.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
 	    public void Displace(Action displacementRender, GorgonTexture2DView backgroundImage, Gorgon2DCamera camera = null)
 	    {
             displacementRender.ValidateObject(nameof(displacementRender));
@@ -340,6 +353,7 @@ namespace Gorgon.Renderers
 		public Gorgon2DDisplacementEffect(Gorgon2D renderer)
 			: base(renderer, Resources.GOR2D_EFFECT_DISPLACEMENT, Resources.GOR2D_EFFECT_DISPLACEMENT_DESC, 2)
 		{
+		    Macros.Add(new GorgonShaderMacro("DISPLACEMENT_EFFECT"));
 		}
 		#endregion
 	}

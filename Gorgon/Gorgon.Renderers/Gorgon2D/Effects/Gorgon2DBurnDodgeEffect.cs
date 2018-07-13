@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System;
 using System.Threading;
 using Gorgon.Diagnostics;
 using DX = SharpDX;
@@ -114,29 +113,13 @@ namespace Gorgon.Renderers
 	                                                                             SizeInBytes = 16
 	                                                                         });
 
-	        var shaderBuilder = new Gorgon2DShaderBuilder<GorgonPixelShader>();
-
-	        var macros = new[]
-	                     {
-	                         new GorgonShaderMacro("BURN_DODGE_EFFECT")
-	                     };
-
-	        _linearDodgeBurn = shaderBuilder
-	                           .Shader(GorgonShaderFactory.Compile<GorgonPixelShader>(Graphics,
-	                                                                                  Resources.BasicSprite,
-	                                                                                  "GorgonPixelShaderLinearBurnDodge",
-	                                                                                  GorgonGraphics.IsDebugEnabled,
-	                                                                                  macros))
+	        _linearDodgeBurn = PixelShaderBuilder
+	                           .Shader(CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderLinearBurnDodge"))
 	                           .ConstantBuffer(_burnDodgeBuffer, 1)
 	                           .Build();
 
-	        _dodgeBurn = shaderBuilder
-	                     .Shader(GorgonShaderFactory.Compile<GorgonPixelShader>(Graphics,
-	                                                                            Resources.BasicSprite,
-	                                                                            "GorgonPixelShaderBurnDodge",
-	                                                                            GorgonGraphics.IsDebugEnabled,
-	                                                                            macros
-	                                                                           ))
+	        _dodgeBurn = PixelShaderBuilder
+	                     .Shader(CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderBurnDodge"))
 	                     .Build();
 
 	        _batchStateLinearDodgeBurn = BatchStateBuilder.PixelShader(_linearDodgeBurn)
@@ -153,6 +136,7 @@ namespace Gorgon.Renderers
 	    /// <returns>The 2D batch state.</returns>
 	    protected override Gorgon2DBatchState OnGetBatchState(int passIndex, bool statesChanged)
 	    {
+	        // ReSharper disable once InvertIf
 	        if (statesChanged)
 	        {
 	            _batchStateLinearDodgeBurn = BatchStateBuilder.Build();
@@ -223,8 +207,8 @@ namespace Gorgon.Renderers
 		    Gorgon2DShader<GorgonPixelShader> shader2 = Interlocked.Exchange(ref _dodgeBurn, null);
 
             buffer?.Dispose();
-            shader1?.Shader.Dispose();
-            shader2?.Shader.Dispose();
+            shader1?.Dispose();
+            shader2?.Dispose();
 		}
 
         /// <summary>
@@ -269,6 +253,7 @@ namespace Gorgon.Renderers
 		public Gorgon2DBurnDodgeEffect(Gorgon2D renderer)
 			: base(renderer, Resources.GOR2D_EFFECT_BURN_DODGE, Resources.GOR2D_EFFECT_BURN_DODGE_DESC, 1)
 		{
+		    Macros.Add(new GorgonShaderMacro("BURN_DODGE_EFFECT"));
 		}
 		#endregion
 	}

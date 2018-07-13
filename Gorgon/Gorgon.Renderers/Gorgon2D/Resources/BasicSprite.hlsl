@@ -38,35 +38,6 @@ cbuffer GorgonMaterial : register(b1)
 	float4 matTextureTransform;
 }
 
-// Sharpen/emboss effect variables.
-cbuffer GorgonSharpenEmbossEffect : register(b1)
-{
-	float2 sharpEmbossTexelDistance = 0.0f;
-	float sharpEmbossAmount = 10.0f;
-}
-
-// Invert effect variables.
-cbuffer GorgonInvertEffect : register(b1)
-{
-	bool invertUseAlpha = false;
-}
-
-// Posterize effect variables.
-cbuffer GorgonPosterizeEffect : register(b1)
-{
-	bool posterizeUseAlpha;
-	float posterizeExponent;
-	int posterizeBits;
-}
-
-// Sobel edge detection effect variables.
-cbuffer GorgonSobelEdgeDetectEffect : register(b1)
-{
-	float2 sobelOffset = float2(0, 0);
-	float sobelThreshold = 0.75f;
-	float4 sobelLineColor = float4(0, 0, 0, 1);
-}
-
 // Our default vertex shader.
 GorgonSpriteVertex GorgonVertexShader(GorgonSpriteVertex vertex)
 {
@@ -86,6 +57,33 @@ float4 GorgonPixelShaderTextured(GorgonSpriteVertex vertex) : SV_Target
 		
 	return color;
 }
+
+#ifdef INVERSE_EFFECT
+// Invert effect variables.
+cbuffer GorgonInvertEffect : register(b1)
+{
+	bool invertUseAlpha = false;
+}
+
+// A pixel shader to invert the color on a texture.
+float4 GorgonPixelShaderInvert(GorgonSpriteVertex vertex) : SV_Target
+{
+	float4 color = _gorgonTexture.Sample(_gorgonSampler, vertex.uv) * vertex.color;
+
+	if (invertUseAlpha)
+	{
+		color = 1.0f - color;
+	}
+	else
+	{
+		color = float4(1.0f - color.rgb, color.a);
+	}
+		
+	REJECT_ALPHA(color.a);
+
+	return color;
+}
+#endif
 
 #ifdef BURN_DODGE_EFFECT
 // Burn/dodge effect.
@@ -344,50 +342,12 @@ float4 GorgonPixelShaderGaussBlur(GorgonSpriteVertex vertex) : SV_Target
 }
 #endif
 
-// Our default pixel shader with textures, alpha testing and materials.
-/*float4 GorgonPixelShaderTexturedMaterial(GorgonSpriteVertex vertex) : SV_Target
+#ifdef SHARPEN_EMBOSS_EFFECT
+// Sharpen/emboss effect variables.
+cbuffer GorgonSharpenEmbossEffect : register(b1)
 {
-	float4 color = _gorgonTexture.Sample(_gorgonSampler, (vertex.uv * matTextureTransform.zw) + matTextureTransform.xy) * vertex.color * matDiffuse;
-
-	REJECT_ALPHA(color.a);
-		
-	return color;
-}
-
-// Our default pixel shader with diffuse, alpha testing and materials.
-float4 GorgonPixelShaderDiffuseMaterial(GorgonSpriteVertex vertex) : SV_Target
-{
-	float4 color = vertex.color * matDiffuse;
-
-	REJECT_ALPHA(color.a);
-		
-	return color;
-}
-
-// Our default pixel shader without textures with alpha testing.
-float4 GorgonPixelShaderDiffuse(GorgonSpriteVertex vertex)  : SV_Target
-{
-   REJECT_ALPHA(vertex.color.a);
-
-   return vertex.color;
-}
-
-// These functions are some basic effects for textured images.
-
-
-// A pixel shader to invert the color on a texture.
-float4 GorgonPixelShaderInvert(GorgonSpriteVertex vertex) : SV_Target
-{
-	float4 color = _gorgonTexture.Sample(_gorgonSampler, vertex.uv) * vertex.color;
-
-	if (invertUseAlpha)
-		color = 1.0f - color;
-	else
-		color = float4(1.0f - color.rgb, color.a);
-		
-	REJECT_ALPHA(color.a);
-
-	return color;
+	float2 sharpEmbossTexelDistance = 0.0f;
+	float sharpEmbossAmount = 10.0f;
 }
 
 // A pixel shader to sharpen the color on a texture.
@@ -418,7 +378,16 @@ float4 GorgonPixelShaderEmboss(GorgonSpriteVertex vertex) : SV_Target
 	
 	return color;
 }
+#endif
 
+#ifdef POSTERIZE_EFFECT
+// Posterize effect variables.
+cbuffer GorgonPosterizeEffect : register(b1)
+{
+	bool posterizeUseAlpha;
+	float posterizeExponent;
+	int posterizeBits;
+}
 
 // Function to posterize texture data.
 float4 GorgonPixelShaderPosterize(GorgonSpriteVertex vertex) : SV_Target
@@ -433,6 +402,16 @@ float4 GorgonPixelShaderPosterize(GorgonSpriteVertex vertex) : SV_Target
 	REJECT_ALPHA(color.a);
 
 	return color;
+}
+#endif
+
+#ifdef SOBEL_EDGE_EFFECT
+// Sobel edge detection effect variables.
+cbuffer GorgonSobelEdgeDetectEffect : register(b1)
+{
+	float2 sobelOffset = float2(0, 0);
+	float sobelThreshold = 0.75f;
+	float4 sobelLineColor = float4(0, 0, 0, 1);
 }
 
 // Function to perform a sobel edge detection.
@@ -466,6 +445,35 @@ float4 GorgonPixelShaderSobelEdge(GorgonSpriteVertex vertex) : SV_Target
 	REJECT_ALPHA(color.a);
 
 	return color;
+}
+#endif
+
+// Our default pixel shader with textures, alpha testing and materials.
+/*float4 GorgonPixelShaderTexturedMaterial(GorgonSpriteVertex vertex) : SV_Target
+{
+	float4 color = _gorgonTexture.Sample(_gorgonSampler, (vertex.uv * matTextureTransform.zw) + matTextureTransform.xy) * vertex.color * matDiffuse;
+
+	REJECT_ALPHA(color.a);
+		
+	return color;
+}
+
+// Our default pixel shader with diffuse, alpha testing and materials.
+float4 GorgonPixelShaderDiffuseMaterial(GorgonSpriteVertex vertex) : SV_Target
+{
+	float4 color = vertex.color * matDiffuse;
+
+	REJECT_ALPHA(color.a);
+		
+	return color;
+}
+
+// Our default pixel shader without textures with alpha testing.
+float4 GorgonPixelShaderDiffuse(GorgonSpriteVertex vertex)  : SV_Target
+{
+   REJECT_ALPHA(vertex.color.a);
+
+   return vertex.color;
 }
 
 */

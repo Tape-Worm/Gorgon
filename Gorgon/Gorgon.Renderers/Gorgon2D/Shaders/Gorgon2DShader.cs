@@ -24,6 +24,8 @@
 // 
 #endregion
 
+using System;
+using System.Threading;
 using Gorgon.Collections;
 using Gorgon.Graphics.Core;
 
@@ -33,6 +35,7 @@ namespace Gorgon.Renderers
     /// A pixel shader for use with the <see cref="Gorgon2D"/> interface.
     /// </summary>
     public sealed class Gorgon2DShader<T>
+        : IDisposable
         where T : GorgonShader
     {
         #region Variables.
@@ -48,6 +51,9 @@ namespace Gorgon.Renderers
         /// The shader resource views, with read/write access.
         /// </summary>
         internal GorgonArray<GorgonShaderResourceView> RwSrvs = new GorgonArray<GorgonShaderResourceView>(16);
+
+        // The basic shader.
+        private T _shader;
         #endregion
 
         #region Properties.
@@ -56,8 +62,8 @@ namespace Gorgon.Renderers
         /// </summary>
         public T Shader
         {
-            get;
-            internal set;
+            get => _shader;
+            internal set => _shader = value;
         }
 
         /// <summary>
@@ -74,6 +80,17 @@ namespace Gorgon.Renderers
         /// Property to return the list of shader resources for the shader.
         /// </summary>
         public IGorgonReadOnlyArray<GorgonShaderResourceView> ShaderResources => RwSrvs;
+        #endregion
+
+        #region Methods.
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            T shader = Interlocked.Exchange(ref _shader, null);
+            shader?.Dispose();
+        }
         #endregion
 
         #region Constructor.

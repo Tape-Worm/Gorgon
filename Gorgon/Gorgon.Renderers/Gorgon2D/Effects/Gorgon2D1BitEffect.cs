@@ -202,20 +202,9 @@ namespace Gorgon.Renderers
 	        _settings = new Settings(new GorgonRangeF(0.5f, 1.0f), false, false, true);
 	        _1BitBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _settings, "Gorgon2D1BitEffect Constant Buffer");
 
-            var shaderBuilder = new Gorgon2DShaderBuilder<GorgonPixelShader>();
-
-	        GorgonShaderMacro[] macros = {
-	                                         new GorgonShaderMacro("GRAYSCALE_EFFECT"),
-	                                         new GorgonShaderMacro("ONEBIT_EFFECT"),
-	                                     };
-
-	        _shader = shaderBuilder.ConstantBuffer(_1BitBuffer, 1)
-	                               .Shader(GorgonShaderFactory.Compile<GorgonPixelShader>(Graphics,
-	                                                                                      Resources.BasicSprite,
-	                                                                                      "GorgonPixelShader1Bit",
-	                                                                                      GorgonGraphics.IsDebugEnabled,
-	                                                                                      macros))
-	                               .Build();
+	        _shader = PixelShaderBuilder.ConstantBuffer(_1BitBuffer, 1)
+	                                    .Shader(CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShader1Bit"))
+	                                    .Build();
 
 	        _batchState = BatchStateBuilder.PixelShader(_shader)
 	                                       .Build();
@@ -292,7 +281,7 @@ namespace Gorgon.Renderers
 	        Gorgon2DShader<GorgonPixelShader> shader = Interlocked.Exchange(ref _shader, null);
 	        
             buffer?.Dispose();
-            shader?.Shader.Dispose();
+            shader?.Dispose();
 		}
 
         /// <summary>
@@ -334,6 +323,8 @@ namespace Gorgon.Renderers
         public Gorgon2D1BitEffect(Gorgon2D renderer)
 			: base(renderer, Resources.GOR2D_EFFECT_1BIT, Resources.GOR2D_EFFECT_1BIT_DESC, 1)
 		{
+		    Macros.Add(new GorgonShaderMacro("GRAYSCALE_EFFECT"));
+		    Macros.Add(new GorgonShaderMacro("ONEBIT_EFFECT"));
 		}
 		#endregion
 	}

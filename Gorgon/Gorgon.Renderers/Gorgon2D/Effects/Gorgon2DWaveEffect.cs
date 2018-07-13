@@ -235,15 +235,15 @@ namespace Gorgon.Renderers
                          {
                              new GorgonShaderMacro("WAVE_EFFECT"),
                          };
-            
-            var shaderBuilder = new Gorgon2DShaderBuilder<GorgonPixelShader>();
-            _waveShader = shaderBuilder.Shader(GorgonShaderFactory.Compile<GorgonPixelShader>(Graphics,
-                                                                                              Resources.BasicSprite,
-                                                                                              "GorgonPixelShaderWaveEffect",
-                                                                                              GorgonGraphics.IsDebugEnabled,
-                                                                                              macros))
-                                       .ConstantBuffer(_waveBuffer, 1)
-                                       .Build();
+
+            _waveShader = PixelShaderBuilder
+                          .Shader(GorgonShaderFactory.Compile<GorgonPixelShader>(Graphics,
+                                                                                 Resources.BasicSprite,
+                                                                                 "GorgonPixelShaderWaveEffect",
+                                                                                 GorgonGraphics.IsDebugEnabled,
+                                                                                 macros))
+                          .ConstantBuffer(_waveBuffer, 1)
+                          .Build();
 
             _batchState = BatchStateBuilder
                           .PixelShader(_waveShader)
@@ -284,7 +284,7 @@ namespace Gorgon.Renderers
 		    Gorgon2DShader<GorgonPixelShader> shader = Interlocked.Exchange(ref _waveShader, null);
 
             waveBuffer?.Dispose();
-            shader?.Shader.Dispose();
+            shader?.Dispose();
 		}
 
 	    /// <summary>

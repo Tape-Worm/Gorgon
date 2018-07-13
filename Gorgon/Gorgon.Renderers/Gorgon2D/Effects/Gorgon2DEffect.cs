@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
@@ -59,6 +60,30 @@ namespace Gorgon.Renderers
         {
             get;
         } = new Gorgon2DBatchStateBuilder();
+
+        /// <summary>
+        /// Property to return the pixel shader builder used to create our pixel shader(s) for the effect.
+        /// </summary>
+        protected Gorgon2DShaderBuilder<GorgonPixelShader> PixelShaderBuilder
+        {
+            get;
+        } = new Gorgon2DShaderBuilder<GorgonPixelShader>();
+
+        /// <summary>
+        /// Property to return the macros to apply to the shader.
+        /// </summary>
+        protected List<GorgonShaderMacro> Macros
+        {
+            get;
+        } = new List<GorgonShaderMacro>();
+
+        /// <summary>
+        /// Property to return the vertex shader builder used to create our vertex shader(s) for the effect.
+        /// </summary>
+        protected Gorgon2DShaderBuilder<GorgonVertexShader> VertexShaderBuilder
+        {
+            get;
+        } = new Gorgon2DShaderBuilder<GorgonVertexShader>();
 
         /// <summary>
         /// Property to return the width and height of the current render target.
@@ -100,6 +125,19 @@ namespace Gorgon.Renderers
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to create a shader for use with the effect.
+        /// </summary>
+        /// <typeparam name="T">The type of shader. Must inherit from <see cref="GorgonShader"/>.</typeparam>
+        /// <param name="shaderSource">The source code for the shader.</param>
+        /// <param name="entryPoint">The entry point function in the shader to execute.</param>
+        /// <returns>A new shader.</returns>
+        protected T CompileShader<T>(string shaderSource, string entryPoint)
+            where T : GorgonShader
+        {
+            return GorgonShaderFactory.Compile<T>(Graphics, shaderSource, entryPoint, GorgonGraphics.IsDebugEnabled, Macros);
+        }
+
         /// <summary>
         /// Function called to initialize the effect.
         /// </summary>

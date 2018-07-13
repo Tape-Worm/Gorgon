@@ -25,7 +25,12 @@
 #endregion
 
 using System;
+using System.Threading;
+using Gorgon.Diagnostics;
+using DX = SharpDX;
 using Gorgon.Graphics;
+using Gorgon.Graphics.Core;
+using Gorgon.Renderers.Properties;
 
 namespace Gorgon.Renderers
 {
@@ -36,9 +41,20 @@ namespace Gorgon.Renderers
 		: Gorgon2DEffect
 	{
 		#region Variables.
-		private bool _disposed;										// Flag to indicate that the object was disposed.
-		private GorgonConstantBuffer _invertBuffer;		            // Buffer for the inversion effect.
-		private bool _invertAlpha;									// Flag to invert the alpha channel.
+	    // Buffer for the inversion effect.
+		private GorgonConstantBufferView _invertBuffer;
+	    // Flag to invert the alpha channel.
+        private bool _invertAlpha;
+        // The pixel shader for the effect.
+	    private Gorgon2DShader<GorgonPixelShader> _shader;
+        // The batch render state.
+	    private Gorgon2DBatchState _batchState;
+	    // The region to draw the image into.
+	    private DX.RectangleF? _region;
+	    // The texture coordinates of the image to render.
+	    private DX.RectangleF _textureCoordinates;
+	    // The texture to draw.
+	    private GorgonTexture2DView _drawTexture;
 		#endregion
 
 		#region Properties.
@@ -47,11 +63,8 @@ namespace Gorgon.Renderers
 		/// </summary>
 		public bool InvertAlpha
 		{
-			get
-			{
-				return _invertAlpha;
-			}
-			set
+			get => _invertAlpha;
+		    set
 			{
 				if (_invertAlpha == value)
 				{
@@ -59,29 +72,29 @@ namespace Gorgon.Renderers
 				}
 				
 				_invertAlpha = value;
-				_invertBuffer.Update(ref _invertAlpha);
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the function used to render the scene when inverting.
-		/// </summary>
-		/// <remarks>Use this to render the image to be blurred.</remarks>
-		public Action<GorgonEffectPass> RenderScene
-		{
-			get
-			{
-				return Passes[0].RenderAction;
-			}
-			set
-			{
-				Passes[0].RenderAction = value;
+				_invertBuffer.Buffer.SetData(ref _invertAlpha);
 			}
 		}
 		#endregion
 
 		#region Methods.
-        /// <summary>
+	    /// <summary>
+	    /// Function called to build a new (or return an existing) 2D batch state.
+	    /// </summary>
+	    /// <param name="passIndex">The index of the current rendering pass.</param>
+	    /// <param name="statesChanged"><b>true</b> if the blend, raster, or depth/stencil state was changed. <b>false</b> if not.</param>
+	    /// <returns>The 2D batch state.</returns>
+	    protected override Gorgon2DBatchState OnGetBatchState(int passIndex, bool statesChanged)
+	    {
+	        if (statesChanged)
+	        {
+	            _batchState = BatchStateBuilder.Build();
+	        }
+
+	        return _batchState;
+	    }
+
+	    /// <summary>
         /// Function called when the effect is being initialized.
         /// </summary>
         /// <remarks>
@@ -89,80 +102,95 @@ namespace Gorgon.Renderers
         /// <para>When creating a custom effect, use this method to initialize the effect.  Do not put initialization code in the effect constructor.</para>
         /// </remarks>
 	    protected override void OnInitialize()
-	    {
-	        base.OnInitialize();
+        {
+            _invertBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _invertAlpha, "Gorgon2DInvertEffect Constant Buffer");
 
-            Passes[0].PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.Invert.PS", "GorgonPixelShaderInvert", "#GorgonInclude \"Gorgon2DShaders\"");
+            _shader = PixelShaderBuilder
+                      .ConstantBuffer(_invertBuffer, 1)
+                      .Shader(CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderInvert"))
+                      .Build();
 
-            _invertBuffer = Graphics.ImmediateContext.Buffers.CreateConstantBuffer("Gorgon2DInvertEffect Constant Buffer",
-                                                                new GorgonConstantBufferSettings
-                                                                {
-                                                                    SizeInBytes = 16
-                                                                });
+            _batchState = BatchStateBuilder
+                          .PixelShader(_shader)
+                          .Build();
         }
 
 	    /// <summary>
-		/// Function called before rendering begins.
-		/// </summary>
-		/// <returns>
-		/// <b>true</b> to continue rendering, <b>false</b> to exit.
-		/// </returns>
-		protected override bool OnBeforeRender()
-		{
-            RememberConstantBuffer(ShaderType.Pixel, 1);
-			Gorgon2D.PixelShader.ConstantBuffers[1] = _invertBuffer;
-
-			return base.OnBeforeRender();
-		}
-
-        /// <summary>
-        /// Function called after rendering ends.
-        /// </summary>
-	    protected override void OnAfterRender()
+	    /// Function called to render a single effect pass.
+	    /// </summary>
+	    /// <param name="passIndex">The index of the pass being rendered.</param>
+	    /// <param name="batchState">The current batch state for the pass.</param>
+	    /// <param name="camera">The current camera to use when rendering.</param>
+	    /// <remarks>
+	    /// <para>
+	    /// Applications must implement this in order to see any results from the effect.
+	    /// </para>
+	    /// </remarks>
+	    protected override void OnRenderPass(int passIndex, Gorgon2DBatchState batchState, Gorgon2DCamera camera)
 	    {
-            RestoreConstantBuffer(ShaderType.Pixel, 1);
-	        base.OnAfterRender();
+	        DX.RectangleF region = _region ?? new DX.RectangleF(0, 0, CurrentTargetSize.Width, CurrentTargetSize.Height);
+
+	        Renderer.Begin(batchState, camera);
+	        Renderer.DrawFilledRectangle(region, GorgonColor.White, _drawTexture, _textureCoordinates);
+            Renderer.End();
 	    }
 
-	    /// <summary>
+        /// <summary>
 		/// Releases unmanaged and - optionally - managed resources
 		/// </summary>
 		/// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
 		protected override void Dispose(bool disposing)
-		{
-			if (!_disposed)
-			{
-				if (disposing)
-				{
-					if (_invertBuffer != null)
-					{
-						_invertBuffer.Dispose();
-					}
+	    {
+	        GorgonConstantBufferView buffer = Interlocked.Exchange(ref _invertBuffer, null);
+	        Gorgon2DShader<GorgonPixelShader> pixelShader = Interlocked.Exchange(ref _shader, null);
 
-					if (Passes[0].PixelShader != null)
-					{
-						Passes[0].PixelShader.Dispose();
-					}
-				}
-
-			    _invertBuffer = null;
-				Passes[0].PixelShader = null;
-				_disposed = true;
-			}
-
-			base.Dispose(disposing);
+            buffer?.Dispose();
+            pixelShader?.Dispose();
 		}
+
+	    /// <summary>
+	    /// Function to invert an image.
+	    /// </summary>
+	    /// <param name="texture">The texture containing the image to burn or dodge.</param>
+	    /// <param name="region">[Optional] The region to draw the texture info.</param>
+	    /// <param name="textureCoordinates">[Optional] The texture coordinates, in texels, to use when drawing the texture.</param>
+	    /// <param name="blendState">[Optional] The blend state to use when rendering.</param>
+	    /// <param name="camera">[Optional] The camera used to render the image.</param>
+	    /// <remarks>
+	    /// <para>
+	    /// If the <paramref name="region"/> parameter is omitted, then the entire size of the current render target is used.
+	    /// </para>
+	    /// <para>
+	    /// If the <paramref name="textureCoordinates"/> parameter is omitted, then the entire size of the texture is used.
+	    /// </para>
+	    /// </remarks>
+	    public void Invert(GorgonTexture2DView texture,
+	                       DX.RectangleF? region = null,
+	                       DX.RectangleF? textureCoordinates = null,
+	                       GorgonBlendState blendState = null,
+	                       Gorgon2DCamera camera = null)
+	    {
+	        texture.ValidateObject(nameof(texture));
+
+	        _drawTexture = texture;
+	        _region = region;
+	        _textureCoordinates = textureCoordinates ?? new DX.RectangleF(0, 0, 1, 1);
+
+	        Render(blendState, camera: camera);
+
+	        _drawTexture = null;
+	    }
 		#endregion
 
 		#region Constructor/Destructor.
         /// <summary>
         /// Initializes a new instance of the <see cref="Gorgon2DInvertEffect" /> class.
         /// </summary>
-        /// <param name="graphics">The graphics interface that owns this effect.</param>
-        /// <param name="name">The name of the effect.</param>
-		internal Gorgon2DInvertEffect(GorgonGraphics graphics, string name)
-			: base(graphics, name, 1)
+        /// <param name="renderer">The renderer used to draw with this effect.</param>
+		public Gorgon2DInvertEffect(Gorgon2D renderer)
+			: base(renderer, Resources.GOR2D_EFFECT_INVERT, Resources.GOR2D_EFFECT_INVERT_DESC, 1)
 		{
+            Macros.Add(new GorgonShaderMacro("INVERSE_EFFECT"));
 		}
 		#endregion
 	}

@@ -432,36 +432,17 @@ namespace Gorgon.Renderers
                                                                                 SizeInBytes = 16
                                                                             });
 
-
             // Set up the constants used by our pixel shader.
-            var shaderBuilder = new Gorgon2DShaderBuilder<GorgonPixelShader>();
-            shaderBuilder.SamplerState(GorgonSamplerState.Default);
-            shaderBuilder.ConstantBuffer(_blurBufferKernel, 1);
-            shaderBuilder.ConstantBuffer(_blurBufferPass, 2);
-            
+            PixelShaderBuilder.SamplerState(GorgonSamplerState.Default)
+                              .ConstantBuffer(_blurBufferKernel, 1)
+                              .ConstantBuffer(_blurBufferPass, 2)
+                              .Shader(CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderGaussBlur"));
 
-            // A macro used to define the size of the kernel weight data structure.
-            GorgonShaderMacro[] weightsMacro = {
-                                   new GorgonShaderMacro("GAUSS_BLUR_EFFECT"),
-                                   new GorgonShaderMacro("MAX_KERNEL_SIZE", KernelSize.ToString(CultureInfo.InvariantCulture))
-                               };
+            _blurShader = PixelShaderBuilder.Build();
 
-            // Compile our blur shader.
-            shaderBuilder.Shader(GorgonShaderFactory.Compile<GorgonPixelShader>(Graphics,
-                                                                                Resources.BasicSprite,
-                                                                                "GorgonPixelShaderGaussBlur",
-                                                                                GorgonGraphics.IsDebugEnabled,
-                                                                                weightsMacro));
+            PixelShaderBuilder.Shader(CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderGaussBlurNoAlpha"));
 
-            _blurShader = shaderBuilder.Build();
-
-            shaderBuilder.Shader(GorgonShaderFactory.Compile<GorgonPixelShader>(Graphics,
-                                                                                Resources.BasicSprite,
-                                                                                "GorgonPixelShaderGaussBlurNoAlpha",
-                                                                                GorgonGraphics.IsDebugEnabled,
-                                                                                weightsMacro));
-
-            _blurShaderNoAlpha = shaderBuilder.Build();
+            _blurShaderNoAlpha = PixelShaderBuilder.Build();
             
             UpdateRenderTarget();
             UpdateKernelWeights();
@@ -610,8 +591,8 @@ namespace Gorgon.Renderers
             GorgonConstantBufferView kernelBuffer = Interlocked.Exchange(ref _blurBufferKernel, null);
             GorgonConstantBufferView passBuffer = Interlocked.Exchange(ref _blurBufferPass, null);
 
-            blurShader?.Shader.Dispose();
-            blurShaderNoAlpha?.Shader.Dispose();
+            blurShader?.Dispose();
+            blurShaderNoAlpha?.Dispose();
             kernelData?.Dispose();
             kernelBuffer?.Dispose();
             passBuffer?.Dispose();
@@ -652,12 +633,16 @@ namespace Gorgon.Renderers
                 throw new ArgumentOutOfRangeException(nameof(kernelSize), Resources.GOR2D_ERR_EFFECT_BLUR_KERNEL_SIZE_INVALID);
             }
 
+            // A macro used to define the size of the kernel weight data structure.
             KernelSize = kernelSize;
             MaximumBlurRadius = ((kernelSize - 1) / 2).Max(1);
 
             // Adjust offset size to start on a 4 float boundary.
             _offsetSize = ((2 * KernelSize) + 3) & ~3; 
             _blurRadius = MaximumBlurRadius;
+
+            Macros.Add(new GorgonShaderMacro("GAUSS_BLUR_EFFECT"));
+            Macros.Add(new GorgonShaderMacro("MAX_KERNEL_SIZE", KernelSize.ToString(CultureInfo.InvariantCulture)));
         }
         #endregion
     }
