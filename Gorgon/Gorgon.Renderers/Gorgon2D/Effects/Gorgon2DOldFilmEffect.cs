@@ -479,12 +479,14 @@ namespace Gorgon.Renderers
 		/// </returns>
 		protected override bool OnBeforeRender()
 		{
-		    if (Graphics.RenderTargets[0] == null)
+		    GorgonRenderTargetView currentTarget = Graphics.RenderTargets[0];
+
+		    if (currentTarget == null)
 		    {
 		        return false;
 		    }
 
-		    _currentTargetSize = new DX.Vector2(Graphics.RenderTargets[0].Width, Graphics.RenderTargets[0].Height);
+		    _currentTargetSize = new DX.Vector2(currentTarget.Width, currentTarget.Height);
 
 
 		    if (_drawRegion == null)
