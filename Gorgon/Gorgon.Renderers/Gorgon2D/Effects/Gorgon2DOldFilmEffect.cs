@@ -24,12 +24,8 @@
 // 
 #endregion
 
-using System;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Security.AccessControl;
-using System.Text;
 using System.Threading;
 using DX = SharpDX;
 using Gorgon.Core;
@@ -39,13 +35,17 @@ using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
 using Gorgon.Renderers.Properties;
-using Gorgon.Timing;
 
 namespace Gorgon.Renderers
 {
 	/// <summary>
 	/// A post process effect to give an old scratched film effect.
 	/// </summary>
+	/// <remarks>
+	/// <para>
+	/// This effect animates an image to appear as though it is being displayed on old film. To animate the image, the <see cref="Time"/> property needs to be updated with a time value (in seconds) every frame.
+	/// </para>
+	/// </remarks>
 	public class Gorgon2DOldFilmEffect
 		: Gorgon2DEffect
 	{
