@@ -305,19 +305,21 @@ namespace Gorgon.Examples
             DrawNoBlur();
             _2D.End();
 
+		    GorgonTexture2DView output = null;
+
             for (int i = 0; i < _blur.BlurRadius; ++i)
 		    {
-		        _blur.Blur(_ballTargetView);
+		        output = _blur.RenderEffect(_ballTargetView);
 
 		        // Copy the result back to the render target.
                 _2D.Begin();
-		        _2D.DrawFilledRectangle(new DX.RectangleF(0, 0, _ballTarget.Width, _ballTarget.Height), GorgonColor.White, _blur.Output, new DX.RectangleF(0, 0, 1, 1));
+		        _2D.DrawFilledRectangle(new DX.RectangleF(0, 0, _ballTarget.Width, _ballTarget.Height), GorgonColor.White, output, new DX.RectangleF(0, 0, 1, 1));
                 _2D.End();
 		    }
 
 		    _graphics.SetRenderTarget(_mainScreen.RenderTargetView);
 		    _2D.Begin();
-		    _2D.DrawFilledRectangle(new DX.RectangleF(0, 0, _ballTarget.Width, _ballTarget.Height), GorgonColor.White, _blur.Output, new DX.RectangleF(0, 0, 1, 1));
+		    _2D.DrawFilledRectangle(new DX.RectangleF(0, 0, _ballTarget.Width, _ballTarget.Height), GorgonColor.White, output, new DX.RectangleF(0, 0, 1, 1));
             _2D.End();
 		}
 

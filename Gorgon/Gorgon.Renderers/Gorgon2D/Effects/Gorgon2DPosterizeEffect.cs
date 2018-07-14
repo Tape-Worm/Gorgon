@@ -26,15 +26,23 @@
 
 using System;
 using System.Runtime.InteropServices;
-using Gorgon.Graphics;
+using System.Threading;
+using Gorgon.Graphics.Core;
+using Gorgon.Renderers.Properties;
+using SharpDX;
 
 namespace Gorgon.Renderers
 {
 	/// <summary>
 	/// An effect that renders a posterized image.
 	/// </summary>
+	/// <remarks>
+	/// <para>
+	/// This will perform a posterize operation, which will reduce the number of colors in the image.
+	/// </para>
+	/// </remarks>
 	public class Gorgon2DPosterizedEffect
-		: Gorgon2DEffect
+		: Gorgon2DEffect, IGorgon2DTextureDrawEffect
 	{
 		#region Value Types.
 		/// <summary>
@@ -75,10 +83,16 @@ namespace Gorgon.Renderers
 		#endregion
 
 		#region Variables.
-		private bool _disposed;										// Flag to indicate that the object was disposed.
-		private GorgonConstantBuffer _posterizeBuffer;		        // Buffer for the posterize effect.
-		private Settings _settings;									// Settings for the effect shader.
-		private bool _isUpdated = true;								// Flag to indicate that the parameters have been updated.
+	    // Buffer for the posterize effect.
+		private GorgonConstantBufferView _posterizeBuffer;
+        // The shader used to render the effect.
+	    private Gorgon2DShader<GorgonPixelShader> _shader;
+        // The renderer batch state.
+	    private Gorgon2DBatchState _batchState;
+	    // Settings for the effect shader.
+		private Settings _settings;									
+	    // Flag to indicate that the parameters have been updated.
+		private bool _isUpdated = true;								
 		#endregion
 
 		#region Properties.
@@ -87,11 +101,8 @@ namespace Gorgon.Renderers
 		/// </summary>
 		public bool UseAlpha
 		{
-			get
-			{
-				return _settings.PosterizeAlpha;
-			}
-			set
+			get => _settings.PosterizeAlpha;
+		    set
 			{
 				if (_settings.PosterizeAlpha == value)
 				{
@@ -103,43 +114,37 @@ namespace Gorgon.Renderers
 			}
 		}
 
-		/// <summary>
-		/// Property to set or return the exponent power for the effect.
-		/// </summary>
-		public float Power
-		{
-			get
-			{
-				return _settings.PosterizeExponent;
-			}
-			set
-			{
-				// ReSharper disable once CompareOfFloatsByEqualityOperator
-				if (_settings.PosterizeExponent == value)
-				{
-					return;
-				}
+	    /// <summary>
+	    /// Property to set or return the exponent power for the effect.
+	    /// </summary>
+	    public float Power
+	    {
+	        get => _settings.PosterizeExponent;
+	        set
+	        {
+	            // ReSharper disable once CompareOfFloatsByEqualityOperator
+	            if (_settings.PosterizeExponent == value)
+	            {
+	                return;
+	            }
 
-				if (value < 1e-6f)
-				{
-					value = 1e-6f;
-				}
+	            if (value < 1e-6f)
+	            {
+	                value = 1e-6f;
+	            }
 
-				_settings = new Settings(_settings.PosterizeAlpha, value, _settings.PosterizeBits);
-				_isUpdated = true;
-			}
-		}
+	            _settings = new Settings(_settings.PosterizeAlpha, value, _settings.PosterizeBits);
+	            _isUpdated = true;
+	        }
+	    }
 
 		/// <summary>
 		/// Property to set or return the number of bits to reduce down to for the effect.
 		/// </summary>
 		public int Bits
 		{
-			get
-			{
-				return _settings.PosterizeBits;
-			}
-			set
+			get => _settings.PosterizeBits;
+		    set
 			{
 				if (_settings.PosterizeBits == value)
 				{
@@ -155,23 +160,6 @@ namespace Gorgon.Renderers
 				_isUpdated = true;
 			}
 		}
-
-		/// <summary>
-		/// Property to set or return the function used to render the scene when posterizing.
-		/// </summary>
-		/// <remarks>Use this to render the image to be blurred.</remarks>
-		public Action<GorgonEffectPass> RenderScene
-		{
-			get
-			{
-				return Passes[0].RenderAction;
-			}
-			set
-			{
-				Passes[0].RenderAction = value;
-			}
-		}
-
 		#endregion
 
 		#region Methods.
@@ -184,17 +172,33 @@ namespace Gorgon.Renderers
         /// </remarks>
 	    protected override void OnInitialize()
 	    {
-	        base.OnInitialize();
-            Passes[0].PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.Posterized.PS", "GorgonPixelShaderPosterize", "#GorgonInclude \"Gorgon2DShaders\"");
+	        _posterizeBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _settings, "Gorgon 2D Posterize Effect Constant Buffer");
 
-            _posterizeBuffer = Graphics.ImmediateContext.Buffers.CreateConstantBuffer("Gorgon2DPosterizedEffect Constant Buffer",
-                                                                new GorgonConstantBufferSettings
-                                                                {
-                                                                    SizeInBytes = 16
-                                                                });
+	        _shader = PixelShaderBuilder
+	                  .ConstantBuffer(_posterizeBuffer, 1)
+	                  .Shader(CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderPosterize"))
+	                  .Build();
 
-            _settings = new Settings(false, 1.0f, 8);
-        }
+	        _batchState = BatchStateBuilder
+	                      .PixelShader(_shader)
+	                      .Build();
+	    }
+
+	    /// <summary>
+	    /// Function called to build a new (or return an existing) 2D batch state.
+	    /// </summary>
+	    /// <param name="passIndex">The index of the current rendering pass.</param>
+	    /// <param name="statesChanged"><b>true</b> if the blend, raster, or depth/stencil state was changed. <b>false</b> if not.</param>
+	    /// <returns>The 2D batch state.</returns>
+	    protected override Gorgon2DBatchState OnGetBatchState(int passIndex, bool statesChanged)
+	    {
+	        if (statesChanged)
+	        {
+	            _batchState = BatchStateBuilder.Build();
+	        }
+
+	        return _batchState;
+	    }
 
 	    /// <summary>
 		/// Function called before rendering begins.
@@ -204,65 +208,90 @@ namespace Gorgon.Renderers
 		/// </returns>
 		protected override bool OnBeforeRender()
 		{
-			if (_isUpdated)
+			if (!_isUpdated)
 			{
-				_posterizeBuffer.Update(ref _settings);
-				_isUpdated = false;
+			    return true;
 			}
 
-            RememberConstantBuffer(ShaderType.Pixel , 1);
-			Gorgon2D.PixelShader.ConstantBuffers[1] = _posterizeBuffer;
-			return base.OnBeforeRender();
-		}
+		    _posterizeBuffer.Buffer.SetData(ref _settings);
+		    _isUpdated = false;
 
-        /// <summary>
-        /// Function called after rendering ends.
-        /// </summary>
-	    protected override void OnAfterRender()
-	    {
-            RestoreConstantBuffer(ShaderType.Pixel, 1);
-	        base.OnAfterRender();
-	    }
+		    return true;
+		}
 
 	    /// <summary>
 		/// Releases unmanaged and - optionally - managed resources
 		/// </summary>
 		/// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
 		protected override void Dispose(bool disposing)
-		{
-			if (!_disposed)
-			{
-				if (disposing)
-				{
-					if (_posterizeBuffer != null)
-					{
-						_posterizeBuffer.Dispose();
-					}
+	    {
+	        GorgonConstantBufferView buffer = Interlocked.Exchange(ref _posterizeBuffer, null);
+	        Gorgon2DShader<GorgonPixelShader> shader = Interlocked.Exchange(ref _shader, null);
 
-					if (Passes[0].PixelShader != null)
-					{
-						Passes[0].PixelShader.Dispose();
-					}
-				}
+            buffer?.Dispose();
+	        shader?.Dispose();
+	    }
 
-				Passes[0].PixelShader = null;
-				_disposed = true;
-			}
+	    /// <summary>
+	    /// Function to render the effect.
+	    /// </summary>
+	    /// <param name="texture">The texture containing the image to burn or dodge.</param>
+	    /// <param name="region">[Optional] The region to draw the texture info.</param>
+	    /// <param name="textureCoordinates">[Optional] The texture coordinates, in texels, to use when drawing the texture.</param>
+	    /// <param name="samplerStateOverride">[Optional] An override for the current texture sampler.</param>
+	    /// <param name="blendStateOverride">[Optional] The blend state to use when rendering.</param>
+	    /// <param name="camera">[Optional] The camera used to render the image.</param>
+	    /// <remarks>
+	    /// <para>
+	    /// Renders the specified <paramref name="texture"/> using 1 bit color.
+	    /// </para>
+	    /// <para>
+	    /// If the <paramref name="region"/> parameter is omitted, then the texture will be rendered to the full size of the current render target.  If it is provided, then texture will be rendered to the
+	    /// location specified, and with the width and height specified.
+	    /// </para>
+	    /// <para>
+	    /// If the <paramref name="textureCoordinates"/> parameter is omitted, then the full size of the texture is rendered.
+	    /// </para>
+	    /// <para>
+	    /// If the <paramref name="samplerStateOverride"/> parameter is omitted, then the <see cref="GorgonSamplerState.Default"/> is used.  When provided, this will alter how the pixel shader samples our
+	    /// texture in slot 0.
+	    /// </para>
+	    /// <para>
+	    /// If the <paramref name="blendStateOverride"/>, parameter is omitted, then the <see cref="GorgonBlendState.Default"/> is used. 
+	    /// </para>
+	    /// <para>
+	    /// The <paramref name="camera"/> parameter is used to render the texture using a different view, and optionally, a different coordinate set.  
+	    /// </para>
+	    /// <para>
+	    /// <note type="important">
+	    /// <para>
+	    /// For performance reasons, any exceptions thrown by this method will only be thrown when Gorgon is compiled as DEBUG.
+	    /// </para>
+	    /// </note>
+	    /// </para>
+	    /// </remarks>
+	    public void RenderEffect(GorgonTexture2DView texture,
+	                             RectangleF? region = null,
+	                             RectangleF? textureCoordinates = null,
+	                             GorgonSamplerState samplerStateOverride = null,
+	                             GorgonBlendState blendStateOverride = null,
+	                             Gorgon2DCamera camera = null)
+	    {
+	        RenderTexture(texture, region, textureCoordinates, samplerStateOverride, blendStateOverride, camera: camera);
+	    }
+	    #endregion
 
-			base.Dispose(disposing);
-		}
-		#endregion
-
-		#region Constructor/Destructor.
+        #region Constructor/Destructor.
         /// <summary>
         /// Initializes a new instance of the <see cref="Gorgon2DPosterizedEffect" /> class.
         /// </summary>
-        /// <param name="graphics">The graphics interface that owns the effect.</param>
-        /// <param name="name">The name of the effect.</param>
-		internal Gorgon2DPosterizedEffect(GorgonGraphics graphics, string name)
-			: base(graphics, name, 1)
-		{
-		}
-		#endregion
+        /// <param name="renderer">The renderer used to render this effect.</param>
+        public Gorgon2DPosterizedEffect(Gorgon2D renderer)
+	        : base(renderer, Resources.GOR2D_EFFECT_POSTERIZE, Resources.GOR2D_EFFECT_POSTERIZE_DESC, 1)
+	    {
+            _settings = new Settings(false, 1.0f, 8);
+            Macros.Add(new GorgonShaderMacro("POSTERIZE_EFFECT"));
+	    }
+	    #endregion
 	}
 }

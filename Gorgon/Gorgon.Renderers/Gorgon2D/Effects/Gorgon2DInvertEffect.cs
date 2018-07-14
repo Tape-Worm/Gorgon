@@ -24,11 +24,8 @@
 // 
 #endregion
 
-using System;
 using System.Threading;
-using Gorgon.Diagnostics;
 using DX = SharpDX;
-using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers.Properties;
 
@@ -38,7 +35,7 @@ namespace Gorgon.Renderers
 	/// An effect that renders an inverted image.
 	/// </summary>
 	public class Gorgon2DInvertEffect
-		: Gorgon2DEffect
+		: Gorgon2DEffect, IGorgon2DTextureDrawEffect
 	{
 		#region Variables.
 	    // Buffer for the inversion effect.
@@ -49,12 +46,6 @@ namespace Gorgon.Renderers
 	    private Gorgon2DShader<GorgonPixelShader> _shader;
         // The batch render state.
 	    private Gorgon2DBatchState _batchState;
-	    // The region to draw the image into.
-	    private DX.RectangleF? _region;
-	    // The texture coordinates of the image to render.
-	    private DX.RectangleF _textureCoordinates;
-	    // The texture to draw.
-	    private GorgonTexture2DView _drawTexture;
 		#endregion
 
 		#region Properties.
@@ -115,26 +106,6 @@ namespace Gorgon.Renderers
                           .Build();
         }
 
-	    /// <summary>
-	    /// Function called to render a single effect pass.
-	    /// </summary>
-	    /// <param name="passIndex">The index of the pass being rendered.</param>
-	    /// <param name="batchState">The current batch state for the pass.</param>
-	    /// <param name="camera">The current camera to use when rendering.</param>
-	    /// <remarks>
-	    /// <para>
-	    /// Applications must implement this in order to see any results from the effect.
-	    /// </para>
-	    /// </remarks>
-	    protected override void OnRenderPass(int passIndex, Gorgon2DBatchState batchState, Gorgon2DCamera camera)
-	    {
-	        DX.RectangleF region = _region ?? new DX.RectangleF(0, 0, CurrentTargetSize.Width, CurrentTargetSize.Height);
-
-	        Renderer.Begin(batchState, camera);
-	        Renderer.DrawFilledRectangle(region, GorgonColor.White, _drawTexture, _textureCoordinates);
-            Renderer.End();
-	    }
-
         /// <summary>
 		/// Releases unmanaged and - optionally - managed resources
 		/// </summary>
@@ -148,46 +119,54 @@ namespace Gorgon.Renderers
             pixelShader?.Dispose();
 		}
 
-	    /// <summary>
-	    /// Function to invert an image.
-	    /// </summary>
-	    /// <param name="texture">The texture containing the image to burn or dodge.</param>
-	    /// <param name="region">[Optional] The region to draw the texture info.</param>
-	    /// <param name="textureCoordinates">[Optional] The texture coordinates, in texels, to use when drawing the texture.</param>
-	    /// <param name="blendState">[Optional] The blend state to use when rendering.</param>
-	    /// <param name="camera">[Optional] The camera used to render the image.</param>
-	    /// <remarks>
-	    /// <para>
-	    /// If the <paramref name="region"/> parameter is omitted, then the entire size of the current render target is used.
-	    /// </para>
-	    /// <para>
-	    /// If the <paramref name="textureCoordinates"/> parameter is omitted, then the entire size of the texture is used.
-	    /// </para>
-	    /// </remarks>
-	    public void Invert(GorgonTexture2DView texture,
-	                       DX.RectangleF? region = null,
-	                       DX.RectangleF? textureCoordinates = null,
-	                       GorgonBlendState blendState = null,
-	                       Gorgon2DCamera camera = null)
-	    {
-	        texture.ValidateObject(nameof(texture));
+        /// <summary>
+        /// Function to render the effect.
+        /// </summary>
+        /// <param name="texture">The texture containing the image to burn or dodge.</param>
+        /// <param name="region">[Optional] The region to draw the texture info.</param>
+        /// <param name="textureCoordinates">[Optional] The texture coordinates, in texels, to use when drawing the texture.</param>
+        /// <param name="samplerStateOverride">[Optional] An override for the current texture sampler.</param>
+        /// <param name="blendStateOverride">[Optional] The blend state to use when rendering.</param>
+        /// <param name="camera">[Optional] The camera used to render the image.</param>
+        /// <remarks><para>
+        /// Renders the specified <paramref name="texture" /> using 1 bit color.
+        /// </para>
+        /// <para>
+        /// If the <paramref name="region" /> parameter is omitted, then the texture will be rendered to the full size of the current render target.  If it is provided, then texture will be rendered to the
+        /// location specified, and with the width and height specified.
+        /// </para>
+        /// <para>
+        /// If the <paramref name="textureCoordinates" /> parameter is omitted, then the full size of the texture is rendered.
+        /// </para>
+        /// <para>
+        /// If the <paramref name="samplerStateOverride" /> parameter is omitted, then the <see cref="GorgonSamplerState.Default" /> is used.  When provided, this will alter how the pixel shader samples our
+        /// texture in slot 0.
+        /// </para>
+        /// <para>
+        /// If the <paramref name="blendStateOverride" />, parameter is omitted, then the <see cref="GorgonBlendState.Default" /> is used.
+        /// </para>
+        /// <para>
+        /// The <paramref name="camera" /> parameter is used to render the texture using a different view, and optionally, a different coordinate set.
+        /// </para>
+        /// <para>
+        ///   <note type="important">
+        ///     <para>
+        /// For performance reasons, any exceptions thrown by this method will only be thrown when Gorgon is compiled as DEBUG.
+        /// </para>
+        ///   </note>
+        /// </para></remarks>
+        public void RenderEffect(GorgonTexture2DView texture, DX.RectangleF? region = null, DX.RectangleF? textureCoordinates = null, GorgonSamplerState samplerStateOverride = null, GorgonBlendState blendStateOverride = null, Gorgon2DCamera camera = null)
+        {
+            RenderTexture(texture, region, textureCoordinates, samplerStateOverride, camera: camera);
+        }
+        #endregion
 
-	        _drawTexture = texture;
-	        _region = region;
-	        _textureCoordinates = textureCoordinates ?? new DX.RectangleF(0, 0, 1, 1);
-
-	        Render(blendState, camera: camera);
-
-	        _drawTexture = null;
-	    }
-		#endregion
-
-		#region Constructor/Destructor.
+        #region Constructor/Destructor.
         /// <summary>
         /// Initializes a new instance of the <see cref="Gorgon2DInvertEffect" /> class.
         /// </summary>
         /// <param name="renderer">The renderer used to draw with this effect.</param>
-		public Gorgon2DInvertEffect(Gorgon2D renderer)
+        public Gorgon2DInvertEffect(Gorgon2D renderer)
 			: base(renderer, Resources.GOR2D_EFFECT_INVERT, Resources.GOR2D_EFFECT_INVERT_DESC, 1)
 		{
             Macros.Add(new GorgonShaderMacro("INVERSE_EFFECT"));

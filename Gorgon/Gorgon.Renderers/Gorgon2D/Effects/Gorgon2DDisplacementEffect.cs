@@ -333,7 +333,7 @@ namespace Gorgon.Renderers
         /// </note>
         /// </para>
         /// </remarks>
-	    public void Displace(Action displacementRender, GorgonTexture2DView backgroundImage, Gorgon2DCamera camera = null)
+	    public void RenderEffect(Action displacementRender, GorgonTexture2DView backgroundImage, Gorgon2DCamera camera = null)
 	    {
             displacementRender.ValidateObject(nameof(displacementRender));
             backgroundImage.ValidateObject(nameof(backgroundImage));

@@ -90,11 +90,6 @@ namespace Gorgon.Renderers
 
         #region Properties.
         /// <summary>
-        /// Property to return the output of the effect as a texture.
-        /// </summary>
-        public GorgonTexture2DView Output => _vPassView;
-
-        /// <summary>
         /// Property to return the size of the convolution kernel used to apply weighting against pixel samples when blurring.
         /// </summary>
         public int KernelSize
@@ -546,13 +541,15 @@ namespace Gorgon.Renderers
         }
 
         /// <summary>
-        /// Function to render this effect using the source <see cref="GorgonTexture2DView"/> and the output <see cref="GorgonRenderTargetView"/>.
+        /// Function to blur the provided texture and return the result as a separate texture view.
         /// </summary>
         /// <param name="sourceTexture">The texture containing the image data to blur.</param>
+        /// <returns>The <see cref="GorgonTexture2DView"/></returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="sourceTexture"/> parameter is <b>null</b>.</exception>
         /// <remarks>
         /// <para>
-        /// This will take the <paramref name="sourceTexture"/>, blur it, and then copy the blurred result into the texture <see cref="Output"/> property. 
+        /// This will take the <paramref name="sourceTexture"/>, blur it, and then return the blurred image as a <see cref="GorgonTexture2DView"/>. Applications can then take the resulting output and
+        /// combine it with other images for post processing.
         /// </para>
         /// <para>
         /// <note type="warning">
@@ -563,13 +560,15 @@ namespace Gorgon.Renderers
         /// </para>
         /// </remarks>
         /// <seealso cref="GorgonRenderTarget2DView"/>
-        /// <seealso cref="GorgonTexture2D"/>
-        public void Blur(GorgonTexture2DView sourceTexture)
+        /// <seealso cref="GorgonTexture2DView"/>
+        public GorgonTexture2DView RenderEffect(GorgonTexture2DView sourceTexture)
         {
             sourceTexture.ValidateObject(nameof(sourceTexture));
 
             _inputTexture = sourceTexture;
             Render();
+
+            return _vPassView;
         }
 
         /// <summary>

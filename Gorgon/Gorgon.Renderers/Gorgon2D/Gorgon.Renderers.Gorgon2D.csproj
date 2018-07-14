@@ -70,7 +70,9 @@
     <Compile Include="Effects\Gorgon2DGrayScaleEffect.cs" />
     <Compile Include="Effects\Gorgon2DInvertEffect.cs" />
     <Compile Include="Effects\Gorgon2DOldFilmEffect.cs" />
+    <Compile Include="Effects\Gorgon2DPosterizeEffect.cs" />
     <Compile Include="Effects\Gorgon2DWaveEffect.cs" />
+    <Compile Include="Effects\_Interfaces\IGorgon2DTextureDrawEffect.cs" />
     <Compile Include="Gorgon2D.cs" />
     <Compile Include="Renderables\GorgonTrianglePoint.cs" />
     <Compile Include="Renderables\GorgonTextSprite.cs" />

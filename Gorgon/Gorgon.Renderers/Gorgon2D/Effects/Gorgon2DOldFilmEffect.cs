@@ -318,23 +318,23 @@ namespace Gorgon.Renderers
 			}
 		}
 
-		/// <summary>
-		/// Property to set or return the percentage that random dirt will appear.
-		/// </summary>
-		public int DirtPercent
-		{
-			get;
-			set;
-		}
+	    /// <summary>
+	    /// Property to set or return the percentage that random dirt will appear.
+	    /// </summary>
+	    public int DirtPercent
+	    {
+	        get;
+	        set;
+	    } = 5;
 
-		/// <summary>
-		/// Property to set or return the amount of dirt and dust that will appear.
-		/// </summary>
-		public int DirtAmount
-		{
-			get;
-			set;
-		}
+	    /// <summary>
+	    /// Property to set or return the amount of dirt and dust that will appear.
+	    /// </summary>
+	    public int DirtAmount
+	    {
+	        get;
+	        set;
+	    } = 10;
 
 	    /// <summary>
 	    /// Property to set or return the current time for the effect in seconds.
@@ -416,25 +416,6 @@ namespace Gorgon.Renderers
 		/// </remarks>
 		protected override void OnInitialize()
 		{
-		    DirtPercent = 5;
-		    DirtAmount = 10;
-
-		    _scratchSettings = new ScratchSettings
-		                       {
-		                           ScratchIntensity = 0.49f,
-		                           ScratchScrollSpeed = 0.01f,
-		                           ScratchVisibleTime = 0.003f,
-		                           ScratchWidth = 0.01f
-		                       };
-
-		    _sepiaSettings = new SepiaSettings
-		                     {
-		                         SepiaDesaturationAmount = 0.0f,
-		                         SepiaToneAmount = 0.5f,
-		                         SepiaLightColor = new GorgonColor(1, 0.9f, 0.65f, 1.0f),
-		                         SepiaDarkColor = new GorgonColor(0.2f, 0.102f, 0, 1.0f)
-		                     };
-
 		    GenerateRandomNoise();
 
 			_timingBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, new GorgonConstantBufferInfo("Gorgon 2D Old Film Effect - Timing data")
@@ -541,7 +522,7 @@ namespace Gorgon.Renderers
         /// If the <paramref name="textureCoordinates"/> parameter is omitted, then the entire size of the texture is used.
         /// </para>
         /// </remarks>
-	    public void OldFilm(GorgonTexture2DView texture, DX.RectangleF? region = null, DX.RectangleF? textureCoordinates = null, Gorgon2DCamera camera = null)
+	    public void RenderEffect(GorgonTexture2DView texture, DX.RectangleF? region = null, DX.RectangleF? textureCoordinates = null, Gorgon2DCamera camera = null)
         {
             texture.ValidateObject(nameof(texture));
 
@@ -552,6 +533,7 @@ namespace Gorgon.Renderers
             Render(camera: camera);
 
             _drawTexture = null;
+            _drawRegion = null;
         }
 
 	    /// <summary>
@@ -685,6 +667,21 @@ namespace Gorgon.Renderers
 	    public Gorgon2DOldFilmEffect(Gorgon2D renderer)
 	        : base(renderer, Resources.GOR2D_EFFECT_FILM, Resources.GOR2D_EFFECT_FILM_DESC, 1)
 	    {
+	        _scratchSettings = new ScratchSettings
+	                           {
+	                               ScratchIntensity = 0.49f,
+	                               ScratchScrollSpeed = 0.01f,
+	                               ScratchVisibleTime = 0.003f,
+	                               ScratchWidth = 0.01f
+	                           };
+
+	        _sepiaSettings = new SepiaSettings
+	                         {
+	                             SepiaDesaturationAmount = 0.0f,
+	                             SepiaToneAmount = 0.5f,
+	                             SepiaLightColor = new GorgonColor(1, 0.9f, 0.65f, 1.0f),
+	                             SepiaDarkColor = new GorgonColor(0.2f, 0.102f, 0, 1.0f)
+	                         };
 	    }
 	    #endregion
 	}

@@ -2514,11 +2514,13 @@ namespace Gorgon.Graphics.Core
         /// </para>
         /// </note>
         /// </para>
+        /// <para>
         /// <note type="important">
         /// <para>
         /// For performance reasons, any exceptions thrown from this method will only be thrown when Gorgon is compiled as DEBUG.
         /// </para>
         /// </note>
+        /// </para>
         /// </remarks>
         /// <seealso cref="GorgonDepthStencil2DView"/>
         /// <seealso cref="GorgonTexture2D"/>
