@@ -444,16 +444,17 @@ cbuffer GorgonSobelEdgeDetectEffect : register(b1)
 // Function to perform a sobel edge detection.
 float4 GorgonPixelShaderSobelEdge(GorgonSpriteVertex vertex) : SV_Target
 {
-	float4 s00 = _gorgonTexture.Sample(_gorgonSampler, vertex.uv + -sobelOffset);
-	float4 s01 = _gorgonTexture.Sample(_gorgonSampler, vertex.uv + float2( 0,   -sobelOffset.y));
-	float4 s02 = _gorgonTexture.Sample(_gorgonSampler, vertex.uv + float2( sobelOffset.x, -sobelOffset.y));
+	float2 uv = vertex.uv.xy;
+	float4 s00 = _gorgonTexture.Sample(_gorgonSampler, float3(uv + -sobelOffset, vertex.uv.z));
+	float4 s01 = _gorgonTexture.Sample(_gorgonSampler, float3(uv + float2( 0,   -sobelOffset.y), vertex.uv.z));
+	float4 s02 = _gorgonTexture.Sample(_gorgonSampler, float3(uv + float2( sobelOffset.x, -sobelOffset.y), vertex.uv.z));
 
-	float4 s10 = _gorgonTexture.Sample(_gorgonSampler, vertex.uv + float2(-sobelOffset.x,  0));
-	float4 s12 = _gorgonTexture.Sample(_gorgonSampler, vertex.uv + float2( sobelOffset.x,  0));
+	float4 s10 = _gorgonTexture.Sample(_gorgonSampler, float3(uv + float2(-sobelOffset.x,  0), vertex.uv.z));
+	float4 s12 = _gorgonTexture.Sample(_gorgonSampler, float3(uv + float2( sobelOffset.x,  0), vertex.uv.z));
 
-	float4 s20 = _gorgonTexture.Sample(_gorgonSampler, vertex.uv + float2(-sobelOffset.x,  sobelOffset.y));
-	float4 s21 = _gorgonTexture.Sample(_gorgonSampler, vertex.uv + float2( 0,    sobelOffset.y));
-	float4 s22 = _gorgonTexture.Sample(_gorgonSampler, vertex.uv + sobelOffset);
+	float4 s20 = _gorgonTexture.Sample(_gorgonSampler, float3(uv + float2(-sobelOffset.x,  sobelOffset.y), vertex.uv.z));
+	float4 s21 = _gorgonTexture.Sample(_gorgonSampler, float3(uv + float2( 0,    sobelOffset.y), vertex.uv.z));
+	float4 s22 = _gorgonTexture.Sample(_gorgonSampler, float3(uv + sobelOffset, vertex.uv.z));
 
 	float4 sobelX = s00 + 2 * s10 + s20 - s02 - 2 * s12 - s22;
 	float4 sobelY = s00 + 2 * s01 + s02 - s20 - 2 * s21 - s22;
@@ -465,9 +466,13 @@ float4 GorgonPixelShaderSobelEdge(GorgonSpriteVertex vertex) : SV_Target
 							0));
 
 	if ((color.r > 0) || (color.g > 0) || (color.b > 0))
+	{
 		color = sobelLineColor;
+	}
 	else
+	{
 		color = 0;
+	}
 	
 	REJECT_ALPHA(color.a);
 

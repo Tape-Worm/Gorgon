@@ -226,7 +226,7 @@ namespace Gorgon.Renderers
 
         #region Constructor/Destructor.
         /// <summary>
-        /// Initializes a new instance of the <see cref="Gorgon2DWaveEffect" /> class.
+        /// Initializes a new instance of the <see cref="Gorgon2DSharpenEmbossEffect" /> class.
         /// </summary>
         /// <param name="renderer">The renderer used to render this effect.</param>
         public Gorgon2DSharpenEmbossEffect(Gorgon2D renderer)
