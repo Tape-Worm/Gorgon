@@ -346,34 +346,61 @@ float4 GorgonPixelShaderGaussBlur(GorgonSpriteVertex vertex) : SV_Target
 // Sharpen/emboss effect variables.
 cbuffer GorgonSharpenEmbossEffect : register(b1)
 {
-	float2 sharpEmbossTexelDistance = 0.0f;
-	float sharpEmbossAmount = 10.0f;
+	float2 sharpEmbossTexelDistance;
+	float sharpEmbossAmount;
 }
+
 
 // A pixel shader to sharpen the color on a texture.
 float4 GorgonPixelShaderSharpen(GorgonSpriteVertex vertex) : SV_Target
 {
-	float4 color = _gorgonTexture.Sample(_gorgonSampler, vertex.uv) * vertex.color;
-	float alpha = color.a;
-	float amount = 3.5f * sharpEmbossAmount;
-	float2 texelPosition;
-			
-	REJECT_ALPHA(alpha);
-	
-	texelPosition = vertex.uv + sharpEmbossTexelDistance;
-	color -= (_gorgonTexture.Sample(_gorgonSampler, texelPosition) * amount);
-	texelPosition = vertex.uv - sharpEmbossTexelDistance;
-	color += (_gorgonTexture.Sample(_gorgonSampler, texelPosition) * amount);
+	static float kernel[9] =
+	{
+		0.0f, -1.0f, 0.0f, 
+		-1.0f, 5.0f, -1.0f, 
+		0.0f, -1.0f, 0.0f
+	};
 
-	color.a = alpha;
-	return color;
+	float2 offset[9] =
+	{
+		float2(-sharpEmbossTexelDistance.x, -sharpEmbossTexelDistance.y),
+		float2(0.0, -sharpEmbossTexelDistance.y),
+		float2(sharpEmbossTexelDistance.x, -sharpEmbossTexelDistance.y),
+		float2(-sharpEmbossTexelDistance.x, 0.0),
+		float2(0.0, 0.0),
+		float2(sharpEmbossTexelDistance.x, 0.0),
+		float2(-sharpEmbossTexelDistance.x, sharpEmbossTexelDistance.y),
+		float2(0.0, sharpEmbossTexelDistance.y),
+		float2(sharpEmbossTexelDistance.x, sharpEmbossTexelDistance.y)
+	};
+
+	float4 result = 0;
+	
+	for (int i = 0; i < 9; i++) 
+	{
+		float4 color = _gorgonTexture.Sample(_gorgonSampler, float3(vertex.uv.xy + offset[i], vertex.uv.z));
+		result += float4((color.rgb * sharpEmbossAmount) * kernel[i], color.a);
+	}
+
+	return result;
 }
 
 // A pixel shader to sharpen the color on a texture.
 float4 GorgonPixelShaderEmboss(GorgonSpriteVertex vertex) : SV_Target
 {
-	float4 color = GorgonPixelShaderSharpen(vertex);
+	float4 color = _gorgonTexture.Sample(_gorgonSampler, vertex.uv) * vertex.color;
+	float alpha = color.a;
+	float amount = 3.5f * sharpEmbossAmount;
+	float3 texelPosition;
+			
+	REJECT_ALPHA(alpha);
+	
+	texelPosition = float3(vertex.uv.xy + sharpEmbossTexelDistance, vertex.uv.z);
+	color -= (_gorgonTexture.Sample(_gorgonSampler, texelPosition) * amount);
+	texelPosition = float3(vertex.uv.xy - sharpEmbossTexelDistance, vertex.uv.z);
+	color += (_gorgonTexture.Sample(_gorgonSampler, texelPosition) * amount);
 
+	color.a = alpha;
 	color.rgb = (color.r + color.g + color.b) / 3.0f;
 	
 	return color;
