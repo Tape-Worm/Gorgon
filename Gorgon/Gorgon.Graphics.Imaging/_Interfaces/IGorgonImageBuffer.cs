@@ -177,5 +177,11 @@ namespace Gorgon.Graphics.Imaging
         /// </remarks>
         /// <seealso cref="IGorgonImage"/>
 	    IGorgonImageBuffer GetRegion(in DX.Rectangle clipRegion);
+
+        /// <summary>
+        /// Function to fill the entire buffer with the specified byte value.
+        /// </summary>
+        /// <param name="value">The byte value used to fill the buffer.</param>
+	    void Fill(byte value);
 	}
 }
