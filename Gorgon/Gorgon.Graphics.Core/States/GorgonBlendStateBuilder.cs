@@ -145,10 +145,18 @@ namespace Gorgon.Graphics.Core
         /// <param name="color">[Optional] The color blend operation to assign.</param>
         /// <param name="alpha">[Optional] The alpha blend operation to assign.</param>
         /// <returns>The fluent builder interface.</returns>
-        public GorgonBlendStateBuilder BlendOperation(BlendOperation color = Core.BlendOperation.Add, BlendOperation alpha = Core.BlendOperation.Add)
+        public GorgonBlendStateBuilder BlendOperation(BlendOperation? color = null, BlendOperation? alpha = null)
         {
-            WorkingState.ColorBlendOperation = color;
-            WorkingState.AlphaBlendOperation = alpha;
+            if (color != null)
+            {
+                WorkingState.ColorBlendOperation = color.Value;
+            }
+
+            if (alpha != null)
+            {
+                WorkingState.AlphaBlendOperation = alpha.Value;
+            }
+
             return this;
         }
 
@@ -158,10 +166,18 @@ namespace Gorgon.Graphics.Core
         /// <param name="color">[Optional] The color blend operation to assign.</param>
         /// <param name="alpha">[Optional] The alpha blend operation to assign.</param>
         /// <returns>The fluent builder interface.</returns>
-        public GorgonBlendStateBuilder SourceBlend(Blend color = Blend.SourceAlpha, Blend alpha = Blend.One)
+        public GorgonBlendStateBuilder SourceBlend(Blend? color = null, Blend? alpha = null)
         {
-            WorkingState.SourceColorBlend = color;
-            WorkingState.SourceAlphaBlend = alpha;
+            if (color != null)
+            {
+                WorkingState.SourceColorBlend = color.Value;
+            }
+
+            if (alpha != null)
+            {
+                WorkingState.SourceAlphaBlend = alpha.Value;
+            }
+
             return this;
         }
 
@@ -171,10 +187,18 @@ namespace Gorgon.Graphics.Core
         /// <param name="color">[Optional] The color blend operation to assign.</param>
         /// <param name="alpha">[Optional] The alpha blend operation to assign.</param>
         /// <returns>The fluent builder interface.</returns>
-        public GorgonBlendStateBuilder DestinationBlend(Blend color = Blend.InverseSourceAlpha, Blend alpha = Blend.Zero)
+        public GorgonBlendStateBuilder DestinationBlend(Blend? color = null, Blend? alpha = null)
         {
-            WorkingState.DestinationColorBlend = color;
-            WorkingState.DestinationAlphaBlend = alpha;
+            if (color != null)
+            {
+                WorkingState.DestinationColorBlend = color.Value;
+            }
+
+            if (alpha != null)
+            {
+                WorkingState.DestinationAlphaBlend = alpha.Value;
+            }
+
             return this;
         }
         #endregion
