@@ -213,6 +213,12 @@ namespace Gorgon.Input.DirectInput
 		/// </summary>
 		public override void Dispose()
 		{
+		    if (_directInput == null)
+		    {
+                base.Dispose();
+		        return;
+		    }
+
 			if (_directInput.IsValueCreated)
 			{
 				_directInput.Value.Dispose();
