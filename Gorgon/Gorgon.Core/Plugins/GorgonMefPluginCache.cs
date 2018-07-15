@@ -290,13 +290,6 @@ namespace Gorgon.Plugins
 	            }
 	            else
 	            {
-	                _builder.ForTypesDerivedFrom<GorgonPlugin>().Export<GorgonPlugin>(b =>
-	                                                                                  {
-	                                                                                      b.AddMetadata("Name", t => t.FullName);
-	                                                                                      b.AddMetadata("Assembly", t => t.Assembly.GetName());
-	                                                                                      b.Inherited();
-	                                                                                  });// .AddMetadata("Name", t => t.FullName);
-
 	                catalog = new DirectoryCatalog(directory.FullName, filePattern, _builder);
 	                _rootCatalog.Catalogs.Add(catalog);
 
@@ -334,6 +327,12 @@ namespace Gorgon.Plugins
 		/// <param name="log">[Optional] The application log file to use.</param>
 		public GorgonMefPluginCache(IGorgonLog log = null)
 		{
+		    _builder.ForTypesDerivedFrom<GorgonPlugin>().Export<GorgonPlugin>(b =>
+		                                                                      {
+		                                                                          b.AddMetadata("Name", t => t.FullName);
+		                                                                          b.AddMetadata("Assembly", t => t.Assembly.GetName());
+		                                                                          b.Inherited();
+		                                                                      });
 		    _log = log ?? GorgonLog.NullLog;
             _container = new CompositionContainer(_rootCatalog, CompositionOptions.DisableSilentRejection | CompositionOptions.IsThreadSafe);
 		}
