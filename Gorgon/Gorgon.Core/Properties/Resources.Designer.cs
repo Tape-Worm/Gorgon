@@ -539,6 +539,15 @@ namespace Gorgon.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Operation already initialized..
+        /// </summary>
+        internal static string GOR_RESULT_DESC_ALREADY_INITIALIZED {
+            get {
+                return ResourceManager.GetString("GOR_RESULT_DESC_ALREADY_INITIALIZED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was an error during binding..
         /// </summary>
         internal static string GOR_RESULT_DESC_CANNOT_BIND {

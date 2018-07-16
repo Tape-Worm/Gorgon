@@ -44,6 +44,11 @@ namespace Gorgon.Core
 		/// </summary>
 		public static GorgonResult NotInitialized => new GorgonResult(nameof(NotInitialized), ErrorBase + 1, Resources.GOR_RESULT_DESC_NOT_INITIALIZED);
 
+	    /// <summary>
+	    /// Initialization was already performed.
+	    /// </summary>
+	    public static GorgonResult AlreadyInitialized => new GorgonResult(nameof(AlreadyInitialized), ErrorBase + 1, Resources.GOR_RESULT_DESC_NOT_INITIALIZED);
+
 		/// <summary>
 		/// There was an error during creation.
 		/// </summary>

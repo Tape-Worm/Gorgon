@@ -351,4 +351,7 @@ Code: 0x{2}</value>
   <data name="GOR_ERR_ARRAY_READ_ONLY" xml:space="preserve">
     <value>The array is read only.</value>
   </data>
+  <data name="GOR_RESULT_DESC_ALREADY_INITIALIZED" xml:space="preserve">
+    <value>Operation already initialized.</value>
+  </data>
 </root>

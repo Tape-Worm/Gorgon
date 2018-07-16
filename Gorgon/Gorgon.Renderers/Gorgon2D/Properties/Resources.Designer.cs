@@ -375,6 +375,15 @@ namespace Gorgon.Renderers.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Begin() was called previously. Call End() prior to calling Begin() again..
+        /// </summary>
+        internal static string GOR2D_ERR_RENDER_ALREADY_STARTED {
+            get {
+                return ResourceManager.GetString("GOR2D_ERR_RENDER_ALREADY_STARTED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The shader resource slot must be 0 or less than {0}..
         /// </summary>
         internal static string GOR2D_ERR_SRV_SLOT_INVALID {

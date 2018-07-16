@@ -283,6 +283,12 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="batchState">[Optional] Defines common global state to use when rendering a batch of objects.</param>
         /// <param name="camera">[Optional] A camera to use when rendering.</param>
+        /// <exception cref="GorgonException">Thrown if <see cref="Begin"/> is called more than once without calling <see cref=" End"/>.</exception>
+        /// <remarks>
+        /// <para>
+        /// // TODO:
+        /// </para>
+        /// </remarks>
         public void Begin(Gorgon2DBatchState batchState = null, Gorgon2DCamera camera = null)
         {
             // If we attempt to render with no render target, then reset to our primary.
@@ -294,7 +300,7 @@ namespace Gorgon.Renderers
 
             if (Interlocked.Exchange(ref _beginCalled, 1) == 1)
             {
-                return;
+                throw new GorgonException(GorgonResult.AlreadyInitialized, Resources.GOR2D_ERR_RENDER_ALREADY_STARTED);
             }
 
             // If we're not initialized, then do so now.
