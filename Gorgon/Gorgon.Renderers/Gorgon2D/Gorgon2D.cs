@@ -1525,6 +1525,11 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Function to end rendering.
         /// </summary>
+        /// <remarks>
+        /// <para>
+        /// TODO:
+        /// </para>
+        /// </remarks>
         public void End()
         {
             if (Interlocked.Exchange(ref _beginCalled, 0) == 0)

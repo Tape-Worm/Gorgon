@@ -26,9 +26,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using Gorgon.Core;
@@ -64,12 +62,10 @@ namespace Gorgon.Examples
 		/// </summary>
 		private void DrawAPrettyPicture()
 		{
-		    Color paintColor;		// Paint color.
-			float sin = 0.0f;		// Sin.
-			float cos = 0.0f;		// Cosine.			
-			int colorSwitch = 0;	// Color component for the points.
+		    // Paint color.
+		    Color paintColor;		
 
-			// Clear the back buffer.
+		    // Clear the back buffer.
 		    _screen.RenderTargetView.Clear(Color.FromArgb(0,0,64));
             
 		    // First, we need to inform the renderer that we're about draw some stuff.
@@ -79,7 +75,7 @@ namespace Gorgon.Examples
 			for (int x = 0; x < 1000; x++)
 			{
 				// Color.
-				colorSwitch = GorgonRandom.RandomInt32(160) + 95;
+				int colorSwitch = GorgonRandom.RandomInt32(160) + 95;	// Color component for the points.
 
 				// Get the star color.
 				paintColor = Color.FromArgb(colorSwitch, colorSwitch, colorSwitch);
@@ -90,8 +86,8 @@ namespace Gorgon.Examples
 			// Draw lines.
 			for (int x = 0; x < 360; x++)
 			{
-			    cos = (x + (x / 2.0f)).FastCos();
-			    sin = (x + (x / 3.0f)).FastSin();
+			    float cos = (x + (x / 2.0f)).FastCos();		// Cosine.			
+			    float sin = (x + (x / 3.0f)).FastSin();		// Sin.
 
 				// Set up a random color.				
 				paintColor = Color.FromArgb((byte)GorgonRandom.RandomInt32(128, 255), GorgonRandom.RandomInt32(64, 255), GorgonRandom.RandomInt32(64, 255), 0);
