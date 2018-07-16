@@ -102,6 +102,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Balls", "Examples\Gorgon.Re
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "INeedYourInput", "Examples\Gorgon.Input\INeedYourInput\INeedYourInput.csproj", "{0498130A-C954-434E-A02E-4E2733358717}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FunWithShapes", "Examples\Gorgon.Renderers.2D\FunWithShapes\FunWithShapes.csproj", "{42FB08F0-AE69-4CA9-A682-953C2DF73DBD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -367,6 +369,12 @@ Global
 		{0498130A-C954-434E-A02E-4E2733358717}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0498130A-C954-434E-A02E-4E2733358717}.ReleaseAndDeploy|Any CPU.ActiveCfg = ReleaseAndDeploy|Any CPU
 		{0498130A-C954-434E-A02E-4E2733358717}.ReleaseAndDeploy|Any CPU.Build.0 = ReleaseAndDeploy|Any CPU
+		{42FB08F0-AE69-4CA9-A682-953C2DF73DBD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42FB08F0-AE69-4CA9-A682-953C2DF73DBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42FB08F0-AE69-4CA9-A682-953C2DF73DBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42FB08F0-AE69-4CA9-A682-953C2DF73DBD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42FB08F0-AE69-4CA9-A682-953C2DF73DBD}.ReleaseAndDeploy|Any CPU.ActiveCfg = Release|Any CPU
+		{42FB08F0-AE69-4CA9-A682-953C2DF73DBD}.ReleaseAndDeploy|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -411,6 +419,7 @@ Global
 		{324C46F5-D8B6-4711-ABB7-8E22BD9EAE10} = {E656298C-C1C6-4274-87B5-A19C6BA689CB}
 		{8A074000-EA1B-4D08-9B1D-A9369AA27544} = {324C46F5-D8B6-4711-ABB7-8E22BD9EAE10}
 		{0498130A-C954-434E-A02E-4E2733358717} = {E110A495-36C7-44AB-9748-A8C29EFA276C}
+		{42FB08F0-AE69-4CA9-A682-953C2DF73DBD} = {324C46F5-D8B6-4711-ABB7-8E22BD9EAE10}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BA39288E-AC40-4B74-8AE3-AB6E94D02D77}
