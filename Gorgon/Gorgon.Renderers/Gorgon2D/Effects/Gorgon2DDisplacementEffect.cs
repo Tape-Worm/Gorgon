@@ -49,13 +49,13 @@ namespace Gorgon.Renderers
         // The displacement texture view.
 	    private GorgonTexture2DView _displacementView;
         // The texture that contains the pixels to displace.
-		private GorgonTexture2DView _backgroundTarget;								
+		private GorgonTexture2DView _backgroundView;
         // The constant buffer for displacement settings.
 		private GorgonConstantBufferView _displacementSettingsBuffer;				
 	    // Flag to indicate that the parameters have been updated.
 		private bool _isUpdated = true;											
 	    // Strength of the displacement map.
-		private float _displacementStrength = 1.0f;
+		private float _displacementStrength = 0.25f;
         // Method called to render the displacement effect.
 	    private Action _displacementRender;
         // The previously active render target view.
@@ -99,10 +99,10 @@ namespace Gorgon.Renderers
 		private void UpdateDisplacementMap()
 		{
 		    if ((_displacementView != null) 
-		        && (_backgroundTarget != null) 
-		        && (_displacementView.Width == _backgroundTarget.Width) 
-		        && (_displacementView.Height == _backgroundTarget.Height) 
-		        && (_displacementView.Format == _backgroundTarget.Format))
+		        && (_backgroundView != null) 
+		        && (_displacementView.Width == _backgroundView.Width) 
+		        && (_displacementView.Height == _backgroundView.Height) 
+		        && (_displacementView.Format == _backgroundView.Format))
 		    {
 		        return;
 		    }
@@ -112,25 +112,25 @@ namespace Gorgon.Renderers
 			_displacementTarget = null;
 		    _displacementView = null;
 
-			if (_backgroundTarget == null)
+			if (_backgroundView == null)
 			{
 				return;
 			}
 
 #if DEBUG
-		    if (!Graphics.FormatSupport[_backgroundTarget.Format].IsRenderTargetFormat)
+		    if (!Graphics.FormatSupport[_backgroundView.Format].IsRenderTargetFormat)
 		    {
 		        throw new GorgonException(GorgonResult.CannotWrite,
-		                                  string.Format(Resources.GOR2D_ERR_EFFECT_DISPLACEMENT_UNSUPPORTED_FORMAT, _backgroundTarget.Format));
+		                                  string.Format(Resources.GOR2D_ERR_EFFECT_DISPLACEMENT_UNSUPPORTED_FORMAT, _backgroundView.Format));
 		    }
 #endif
 
 		    _displacementTarget = GorgonRenderTarget2DView.CreateRenderTarget(Graphics,
 		                                                                      new GorgonTexture2DInfo("Effect.Displacement.RT")
 		                                                                      {
-		                                                                          Width = _backgroundTarget.Width,
-		                                                                          Height = _backgroundTarget.Height,
-		                                                                          Format = _backgroundTarget.Format,
+		                                                                          Width = _backgroundView.Width,
+		                                                                          Height = _backgroundView.Height,
+		                                                                          Format = _backgroundView.Format,
 		                                                                          Binding = TextureBinding.ShaderResource
 		                                                                      });
 		    _displacementView = _displacementTarget.Texture.GetShaderResourceView();
@@ -178,7 +178,6 @@ namespace Gorgon.Renderers
 		/// </summary>
 		public void FreeResources()
 	    {
-	        Interlocked.Exchange(ref _backgroundTarget, null);
 	        GorgonTexture2DView view = Interlocked.Exchange(ref _displacementView, null);
 	        GorgonRenderTarget2DView rtv = Interlocked.Exchange(ref _displacementTarget, null);
             view?.Dispose();
@@ -203,7 +202,7 @@ namespace Gorgon.Renderers
 				return base.OnBeforeRender();
 			}
 
-			var settings = new DX.Vector4(1.0f / _backgroundTarget.Width, 1.0f / _backgroundTarget.Height, _displacementStrength, 0);
+			var settings = new DX.Vector4(1.0f / _backgroundView.Width, 1.0f / _backgroundView.Height, _displacementStrength * 100, 0);
 			_displacementSettingsBuffer.Buffer.SetData(ref settings);
 			_isUpdated = false;
 
@@ -236,7 +235,7 @@ namespace Gorgon.Renderers
 	    /// </remarks>
 	    protected override bool OnBeforeRenderPass(int passIndex)
 	    {
-			if ((_displacementTarget == null) || (_backgroundTarget == null))
+			if ((_displacementTarget == null) || (_backgroundView == null))
 			{
 				return false;
 			}
@@ -276,7 +275,7 @@ namespace Gorgon.Renderers
 	                _displacementRender();
 	                break;
                 case 1:
-                    Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _backgroundTarget.Width, _backgroundTarget.Height), GorgonColor.White, _backgroundTarget);
+                    Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _backgroundView.Width, _backgroundView.Height), GorgonColor.White, _backgroundView);
                     break;
 	        }
 
@@ -338,10 +337,12 @@ namespace Gorgon.Renderers
             displacementRender.ValidateObject(nameof(displacementRender));
             backgroundImage.ValidateObject(nameof(backgroundImage));
 
-	        _backgroundTarget = backgroundImage;
+	        _backgroundView = backgroundImage;
 	        _displacementRender = displacementRender;
 
 	        Render(camera: camera);
+
+	        _backgroundView = null;
 	    }
 		#endregion
 

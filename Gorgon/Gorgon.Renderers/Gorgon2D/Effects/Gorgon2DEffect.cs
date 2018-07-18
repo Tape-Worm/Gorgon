@@ -246,11 +246,6 @@ namespace Gorgon.Renderers
                 _isInitialized = true;
             }
 
-            if (!OnBeforeRender())
-            {
-                return false;
-            }
-
             GorgonRenderTargetView firstTarget = Graphics.RenderTargets[0];
 
             if (firstTarget == null)
@@ -259,6 +254,11 @@ namespace Gorgon.Renderers
             }
 
             CurrentTargetSize = new DX.Size2(firstTarget.Width, firstTarget.Height);
+
+            if (!OnBeforeRender())
+            {
+                return false;
+            }
 
             if ((blendStateOverride == _blendStateOverride) 
                 && (depthStencilStateOverride == _depthStencilStateOverride) 
