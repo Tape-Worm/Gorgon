@@ -70,9 +70,15 @@ Gorgon provides a set of libraries that are capable of handling pretty much any 
 
   In addition to the support above, applications can introduce their own codecs to read/write whatever font types they wish by extending the [GorgonFontCodec](Gorgon/Gorgon.Graphics.Fonts/Codecs/GorgonFontCodec.cs) type. (Plug in support is pending at this time)
   
-  - [ ] __[TBD]__ 
+  - [x] __[Gorgon.Renderers.Gorgon2D](Gorgon/Gorgon.Renderers/Gorgon2D)__ _**(In Development)**_
   
-  A 2D renderer that sits on top of the graphics module to make developing 2D games/applications much easier.  
+  A 2D renderer that sits on top of the graphics module to make developing 2D games/applications much easier. It supports:
+   * Sprites
+   * Primitives (triangles, lines, ellipses, arcs, and rectangles)
+   * Text rendering
+   * A shader based effects system
+  
+  All of these are provided using batched rendering, similar to [MonoGame](http://www.monogame.net/) for maximum performance.   
   
   - [ ] __[TBD]__ 
   
