@@ -34,6 +34,30 @@ namespace Gorgon.Renderers
     public sealed class Gorgon2DBatchState
     {
         /// <summary>
+        /// A default batch state that turns off blending.
+        /// </summary>
+        public static readonly Gorgon2DBatchState NoBlend = new Gorgon2DBatchState
+                                                            {
+                                                                BlendState = GorgonBlendState.NoBlending
+                                                            };
+
+        /// <summary>
+        /// A default batch state that sets up additive blending.
+        /// </summary>
+        public static readonly Gorgon2DBatchState AdditiveBlend = new Gorgon2DBatchState
+                                                                  {
+                                                                      BlendState = GorgonBlendState.Additive
+                                                                  };
+
+        /// <summary>
+        /// A default batch state that sets up premultiplied blending.
+        /// </summary>
+        public static readonly Gorgon2DBatchState PremultipliedBlend = new Gorgon2DBatchState
+                                                                       {
+                                                                           BlendState = GorgonBlendState.Premultiplied
+                                                                       };
+
+        /// <summary>
         /// Property to return the current blending state to apply.
         /// </summary>
         public GorgonBlendState BlendState

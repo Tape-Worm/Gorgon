@@ -389,6 +389,26 @@ namespace Gorgon.Renderers
         }
 
         /// <summary>
+        /// Function to precache resources and initlaize the effect prior to renderering.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// For most effects, there's not a lot to set up or initialize when the rendering starts. But, in some cases, some effects have a considerable amount of work to do prior to rendering. This method
+        /// allows an application to pre cache any initialization data after the effect is created, instead of on the 1st render frame (where it may introduce a stutter).
+        /// </para>
+        /// </remarks>
+        public void Precache()
+        {
+            if (_isInitialized)
+            {
+                return;
+            }
+
+            _isInitialized = true;
+            OnInitialize();
+        }
+
+        /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         public void Dispose()

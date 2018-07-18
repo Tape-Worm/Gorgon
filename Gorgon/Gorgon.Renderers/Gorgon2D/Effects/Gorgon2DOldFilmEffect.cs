@@ -500,10 +500,10 @@ namespace Gorgon.Renderers
 	    /// </remarks>
 	    protected override void OnRenderPass(int passIndex, Gorgon2DBatchState batchState, Gorgon2DCamera camera)
 	    {
-	        DX.RectangleF region = _drawRegion ?? new DX.RectangleF(0, 0, CurrentTargetSize.Width, CurrentTargetSize.Height);
+	        Debug.Assert(_drawRegion != null, "No drawing region found.");
 
 	        Renderer.Begin(_batchState, camera);
-            Renderer.DrawFilledRectangle(region, GorgonColor.White, _drawTexture, _drawTextureCoordinates);
+            Renderer.DrawFilledRectangle(_drawRegion.Value, GorgonColor.White, _drawTexture, _drawTextureCoordinates);
             Renderer.End();
 	    }
 
@@ -527,7 +527,7 @@ namespace Gorgon.Renderers
             texture.ValidateObject(nameof(texture));
 
             _drawTexture = texture;
-            _drawRegion = region;
+            _drawRegion = region ?? new DX.RectangleF(0, 0, CurrentTargetSize.Width, CurrentTargetSize.Height);
             _drawTextureCoordinates = textureCoordinates ?? new DX.RectangleF(0, 0, 1, 1);
 
             Render(camera: camera);

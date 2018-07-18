@@ -20,27 +20,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: July 18, 2018 4:02:16 PM
+// Created: July 18, 2018 4:03:46 PM
 // 
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+using System.Reflection;
+using System.Runtime.InteropServices;
 
-namespace Gorgon.Examples
-{
-    public partial class FormMain : Form
-    {
-        public FormMain()
-        {
-            InitializeComponent();
-        }
-    }
-}
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+[assembly: AssemblyTitle("Sprites.")]
+[assembly: AssemblyDescription("An example demonstrating how to use sprites and other drawing functionality in Gorgon's 2D renderer.")]
+[assembly: AssemblyCulture("")]
+[assembly: CLSCompliant(false)]
+
+// The following GUID is for the ID of the typelib if this project is exposed to COM
+[assembly: Guid("0ba16c6a-d278-4218-97d2-6a094185dc90")]

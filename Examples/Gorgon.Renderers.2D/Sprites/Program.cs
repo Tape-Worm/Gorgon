@@ -20,27 +20,45 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: July 18, 2018 4:02:16 PM
+// Created: July 18, 2018 4:04:19 PM
 // 
 #endregion
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Gorgon.Core;
+using Gorgon.UI;
 
 namespace Gorgon.Examples
 {
-    public partial class FormMain : Form
+    /// <summary>
+    /// Our example entry point.
+    /// </summary>
+    static class Program
     {
-        public FormMain()
+        /// <summary>
+        /// The main entry point for the application.
+        /// </summary>
+        [STAThread]
+        static void Main()
         {
-            InitializeComponent();
+            try
+            {
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+
+                GorgonApplication.Run(new FormMain());
+            }
+            catch (Exception ex)
+            {
+                ex.Catch(e => GorgonDialogs.ErrorBox(null, "There was an error running the application and it must now close.", "Error", ex));
+            }
+            finally
+            {
+            }
         }
     }
 }
