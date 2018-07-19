@@ -88,12 +88,12 @@ namespace Gorgon.Examples
         /// <returns><b>true</b> to continue executing, <b>false</b> to stop.</returns>
         private static bool Idle()
         {
-            _background.Position = new DX.Vector2(_background.Position.X, _background.Position.Y + (0.25f * GorgonTiming.Delta));
+            _background.Position = new DX.Vector2(_background.Position.X, _background.Position.Y + (0.3f * GorgonTiming.Delta));
 
             // Just wrap around if we hit the top of the background.
-            if (_background.Position.Y > -_screen.Height)
+            if (_background.Position.Y > _background.Bounds.Height)
             {
-                _background.Position = new DX.Vector2(_background.Position.X, -_spaceBackground.Height + _screen.Height);
+                _background.Position = new DX.Vector2(_background.Position.X, _screen.Height);
             }
 
             if (_floatLeft)
@@ -156,6 +156,7 @@ namespace Gorgon.Examples
 
             _screen.Present(1);
 
+            // Swap flow animation frames after 33 milliseconds.
             if (_glowAnimTimer.Milliseconds > 33)
             {
                 ++_glowIndex;
@@ -268,11 +269,12 @@ namespace Gorgon.Examples
                 _background = new GorgonSprite
                               {
                                   Texture = _spaceBackground,
-                                  Bounds = new DX.RectangleF((-_spaceBackground.Width / 2) - (_screen.Width / 2),
-                                                             -_spaceBackground.Height + _screen.Height,
+                                  Bounds = new DX.RectangleF(_screen.Width / 2,
+                                                             _screen.Height,
                                                              _spaceBackground.Width,
                                                              _spaceBackground.Height),
-                                  TextureRegion = new DX.RectangleF(0, 0, 1, 1)
+                                  TextureRegion = new DX.RectangleF(0, 0, 1, 1),
+                                  Anchor = new DX.Vector2(0.5f, 1.0f)
                               };
 
                 for (int i = 0; i < _stars.Length; ++i)
@@ -299,10 +301,8 @@ namespace Gorgon.Examples
         /// <param name="e">The <see cref="AfterSwapChainResizedEventArgs"/> instance containing the event data.</param>
         private static void Screen_AfterSwapChainResized(object sender, AfterSwapChainResizedEventArgs e)
         {
-            float minSize = -_spaceBackground.Height + e.Size.Height;
-            float offset = (_spaceBackground.Height + _background.Position.Y) - e.OldSize.Height;
             // We'll need to readjust the background scroller.
-            _background.Position = new DX.Vector2(_background.Position.X, minSize + offset);
+            _background.Position = new DX.Vector2(_background.Position.X, e.Size.Height + (_background.Position.Y - e.OldSize.Height));
         }
 
         /// <summary>
