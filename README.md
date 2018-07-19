@@ -130,6 +130,6 @@ http://millionthvector.blogspot.com/
 
 This following image(s) is/are not redistributable without permission from the original author.
 
-["HotPocket.dds"](Resources\Textures\HotPocket.DDS) by Starkiteckt 
+["HotPocket.dds"](Resources/Textures/HotPocket.DDS) by Starkiteckt 
 https://www.deviantart.com/starkiteckt/art/Hot-Pocket-433337115
 
