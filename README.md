@@ -125,3 +125,5 @@ http://www.iconarchive.com/show/oxygen-icons-by-oxygen-icons.org.html
 Onebit 4 icons may be obtained from:  
 http://www.icojam.com/blog/?p=231  
 http://www.iconarchive.com/show/onebit-4-icons-by-icojam.html
+
+hiec1501a.dds image by ESA/Hubble.  Converted, recoloured and resized by Tape_Worm

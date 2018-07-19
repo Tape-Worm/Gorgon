@@ -338,7 +338,7 @@ namespace Gorgon.Examples
 
                 // Load our texture with our space background in it.
                 _background = GorgonTexture2DView.FromFile(_graphics,
-                                                           GetResourcePath(@"Textures\Effects\space_bg.dds"),
+                                                           GetResourcePath(@"Textures\Effects\heic1501a.dds"),
                                                            new GorgonCodecDds(),
                                                            new GorgonTextureLoadOptions
                                                            {
