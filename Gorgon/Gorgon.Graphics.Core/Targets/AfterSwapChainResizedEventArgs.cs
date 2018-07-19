@@ -43,6 +43,14 @@ namespace Gorgon.Graphics.Core
         {
             get;
         }
+
+        /// <summary>
+        /// Property to return the previous size of the swap chain backbuffers.
+        /// </summary>
+        public DX.Size2 OldSize
+        {
+            get;
+        }
         #endregion
 
         #region Constructor/Finalizer.
@@ -50,9 +58,11 @@ namespace Gorgon.Graphics.Core
         /// Initializes a new instance of the <see cref="BeforeSwapChainResizedEventArgs"/> class.
         /// </summary>
         /// <param name="newSize">The new size.</param>
-        public AfterSwapChainResizedEventArgs(DX.Size2 newSize)
+        /// <param name="oldSize">The old size.</param>
+        public AfterSwapChainResizedEventArgs(DX.Size2 newSize, DX.Size2 oldSize)
         {
             Size = newSize;
+            OldSize = oldSize;
         }
         #endregion
     }

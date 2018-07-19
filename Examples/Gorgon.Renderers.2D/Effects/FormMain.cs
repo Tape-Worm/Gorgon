@@ -38,6 +38,15 @@ namespace Gorgon.Examples
 {
     public partial class FormMain : Form
     {
+        /// <summary>
+        /// Property to set or return whether the please wait label is visible.
+        /// </summary>
+        public bool IsLoaded
+        {
+            get => !LabelPleaseWait.Visible;
+            set => LabelPleaseWait.Visible = !value;
+        }
+
         public FormMain()
         {
             InitializeComponent();

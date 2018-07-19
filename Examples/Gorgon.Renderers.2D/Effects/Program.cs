@@ -286,6 +286,9 @@ namespace Gorgon.Examples
                          };
             window.Show();
 
+            // Process any pending events so the window shows properly.
+            Application.DoEvents();
+
             try
             {
                 IReadOnlyList<IGorgonVideoAdapterInfo> videoDevices = GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log);
@@ -338,7 +341,7 @@ namespace Gorgon.Examples
 
                 // Load our texture with our space background in it.
                 _background = GorgonTexture2DView.FromFile(_graphics,
-                                                           GetResourcePath(@"Textures\Effects\heic1501a.dds"),
+                                                           GetResourcePath(@"Textures\heic1501a.dds"),
                                                            new GorgonCodecDds(),
                                                            new GorgonTextureLoadOptions
                                                            {
@@ -370,6 +373,8 @@ namespace Gorgon.Examples
                 window.MouseMove += Window_MouseMove;
                 window.MouseWheel += Window_MouseWheel;
                 window.KeyUp += Window_KeyUp;
+
+                window.IsLoaded = true;
 
                 return window;
             }

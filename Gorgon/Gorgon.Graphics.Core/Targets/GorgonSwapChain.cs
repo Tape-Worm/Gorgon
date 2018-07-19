@@ -998,12 +998,13 @@ namespace Gorgon.Graphics.Core
 
 			DXGISwapChain.ResizeBuffers(IsWindowed ? 2 : 3, newWidth, newHeight, (DXGI.Format)Format, DXGI.SwapChainFlags.AllowModeSwitch);
 
+            var oldSize = new DX.Size2(_info.Width, _info.Height);
 			_info.Width = newWidth;
 			_info.Height = newHeight;
 
             CreateResources(rtvIndex);
 
-			AfterSwapChainResized?.Invoke(this, new AfterSwapChainResizedEventArgs(new DX.Size2(newWidth, newHeight)));
+			AfterSwapChainResized?.Invoke(this, new AfterSwapChainResizedEventArgs(new DX.Size2(newWidth, newHeight), oldSize));
 
 			Graphics.Log.Print($"SwapChain '{Name}': Back buffers resized.", LoggingLevel.Verbose);
 		}

@@ -22,5 +22,23 @@ namespace Gorgon.Examples.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1280, 800")]
+        public global::System.Drawing.Size Resolution {
+            get {
+                return ((global::System.Drawing.Size)(this["Resolution"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("..\\..\\..\\..\\..\\Resources\\")]
+        public string ResourceLocation {
+            get {
+                return ((string)(this["ResourceLocation"]));
+            }
+        }
     }
 }
