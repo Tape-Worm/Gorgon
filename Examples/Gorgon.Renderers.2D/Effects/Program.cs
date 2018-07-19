@@ -278,8 +278,6 @@ namespace Gorgon.Examples
         /// <returns>The main window for the application.</returns>
         private static FormMain Initialize()
         {
-            Cursor.Current = Cursors.WaitCursor;
-
             var window = new FormMain
                          {
                              ClientSize = Settings.Default.Resolution
@@ -288,6 +286,8 @@ namespace Gorgon.Examples
 
             // Process any pending events so the window shows properly.
             Application.DoEvents();
+
+            Cursor.Current = Cursors.WaitCursor;
 
             try
             {
