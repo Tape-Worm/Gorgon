@@ -128,4 +128,8 @@ http://www.iconarchive.com/show/onebit-4-icons-by-icojam.html
 Sprites example textures from:
 http://millionthvector.blogspot.com/
 
-hiec1501a.dds image by ESA/Hubble.  Converted, recoloured and resized by Tape_Worm
+This following image(s) is/are not redistributable without permission from the original author.
+
+["HotPocket.dds"](Resources\Textures\HotPocket.DDS) by Starkiteckt 
+https://www.deviantart.com/starkiteckt/art/Hot-Pocket-433337115
+

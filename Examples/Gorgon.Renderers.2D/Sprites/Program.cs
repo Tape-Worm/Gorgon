@@ -222,7 +222,7 @@ namespace Gorgon.Examples
 
                 // Re-use the background texture from the Effects example.
                 _spaceBackground = GorgonTexture2DView.FromFile(_graphics,
-                                                                GetResourcePath(@"Textures\heic1501a.dds"),
+                                                                GetResourcePath(@"Textures\HotPocket.dds"),
                                                                 new GorgonCodecDds(),
                                                                 new GorgonTextureLoadOptions
                                                                 {
