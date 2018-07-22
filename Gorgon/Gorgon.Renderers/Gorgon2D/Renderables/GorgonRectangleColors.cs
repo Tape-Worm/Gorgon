@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using Gorgon.Core;
 using Gorgon.Graphics;
 
 namespace Gorgon.Renderers

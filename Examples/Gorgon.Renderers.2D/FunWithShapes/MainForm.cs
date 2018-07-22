@@ -148,6 +148,11 @@ namespace Gorgon.Examples
 		{
 			base.OnPaint(e);
 
+		    if (_renderer == null)
+		    {
+		        return;
+		    }
+
 			// If we get repainted we can redraw the image.
 			DrawAPrettyPicture();
 		}
@@ -178,40 +183,55 @@ namespace Gorgon.Examples
 		{
 			base.OnLoad(e);
 
-			try
-			{
-				// Initialize Gorgon
-				// Set it up so that we won't be rendering in the background, but allow the screensaver to activate.
-			    IReadOnlyList<IGorgonVideoAdapterInfo> adapters = GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log);
-			    if (adapters.Count == 0)
-			    {
-			        throw new GorgonException(GorgonResult.CannotCreate, "No suitable video adapter found in the system.\nGorgon requires a minimum of a Direct3D 11.4 capable video device.");
-			    }
-                _graphics = new GorgonGraphics(adapters[0]);
+		    Cursor.Current = Cursors.WaitCursor;
 
-				// Set the video mode.
-				ClientSize = new Size(640, 400);
-                _screen = new GorgonSwapChain(_graphics, this, new GorgonSwapChainInfo("FunWithShapes SwapChain")
-                                                               {
-                                                                   Width = ClientSize.Width,
-                                                                   Height = ClientSize.Height,
-                                                                   Format = BufferFormat.R8G8B8A8_UNorm
-                                                               });
-                _screen.AfterSwapChainResized += Screen_AfterSwapChainResized;
-                _graphics.SetRenderTarget(_screen.RenderTargetView);
-                _halfSize = new DX.Size2F(_screen.Width / 2.0f, _screen.Height / 2.0f);
+		    try
+		    {
+                Show();
+                Application.DoEvents();
 
-                // Create our 2D renderer so we can draw stuff.
-                _renderer = new Gorgon2D(_screen.RenderTargetView);
+		        // Initialize Gorgon
+		        // Set it up so that we won't be rendering in the background, but allow the screensaver to activate.
+		        IReadOnlyList<IGorgonVideoAdapterInfo> adapters = GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log);
+		        if (adapters.Count == 0)
+		        {
+		            throw new GorgonException(GorgonResult.CannotCreate,
+		                                      "No suitable video adapter found in the system.\nGorgon requires a minimum of a Direct3D 11.4 capable video device.");
+		        }
 
-				// Draw the image.
-				DrawAPrettyPicture();
-			}
-			catch (Exception ex)
-			{
-                ex.Catch(_ => GorgonDialogs.ErrorBox(this, "Unable to initialize the application."), GorgonApplication.Log);
-                GorgonApplication.Quit();
-			}
+		        _graphics = new GorgonGraphics(adapters[0]);
+
+		        // Set the video mode.
+		        ClientSize = new Size(640, 400);
+		        _screen = new GorgonSwapChain(_graphics,
+		                                      this,
+		                                      new GorgonSwapChainInfo("FunWithShapes SwapChain")
+		                                      {
+		                                          Width = ClientSize.Width,
+		                                          Height = ClientSize.Height,
+		                                          Format = BufferFormat.R8G8B8A8_UNorm
+		                                      });
+		        _screen.AfterSwapChainResized += Screen_AfterSwapChainResized;
+		        _graphics.SetRenderTarget(_screen.RenderTargetView);
+		        _halfSize = new DX.Size2F(_screen.Width / 2.0f, _screen.Height / 2.0f);
+
+		        // Create our 2D renderer so we can draw stuff.
+		        _renderer = new Gorgon2D(_screen.RenderTargetView);
+
+		        LabelPleaseWait.Visible = false;
+
+		        // Draw the image.
+		        DrawAPrettyPicture();
+		    }
+		    catch (Exception ex)
+		    {
+		        ex.Catch(_ => GorgonDialogs.ErrorBox(this, "Unable to initialize the application."), GorgonApplication.Log);
+		        GorgonApplication.Quit();
+		    }
+		    finally
+		    {
+		        Cursor.Current = Cursors.Default;
+		    }
 		}
 
         /// <summary>

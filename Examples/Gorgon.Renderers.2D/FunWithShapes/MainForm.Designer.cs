@@ -55,13 +55,27 @@ namespace Gorgon.Examples
 		private void InitializeComponent()
 		{
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
+            this.LabelPleaseWait = new System.Windows.Forms.Label();
             this.SuspendLayout();
+            // 
+            // LabelPleaseWait
+            // 
+            this.LabelPleaseWait.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.LabelPleaseWait.Location = new System.Drawing.Point(0, 0);
+            this.LabelPleaseWait.Name = "LabelPleaseWait";
+            this.LabelPleaseWait.Size = new System.Drawing.Size(640, 400);
+            this.LabelPleaseWait.TabIndex = 2;
+            this.LabelPleaseWait.Text = "Example is loading, please wait...";
+            this.LabelPleaseWait.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(284, 264);
+            this.BackColor = System.Drawing.Color.White;
+            this.ClientSize = new System.Drawing.Size(640, 400);
+            this.Controls.Add(this.LabelPleaseWait);
+            this.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -70,7 +84,9 @@ namespace Gorgon.Examples
 
 		}
 
-		#endregion
-	}
+        #endregion
+
+        private System.Windows.Forms.Label LabelPleaseWait;
+    }
 }
 
