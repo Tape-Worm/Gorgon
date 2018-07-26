@@ -64,9 +64,9 @@ namespace Gorgon.Renderers
         [InputElement(2, "TEXCOORD")]
         public Vector3 UV;
         /// <summary>
-        /// Angle of rotation (in radians).
+        /// The Cosine and Sine for the angle of rotation.
         /// </summary>
         [InputElement(3, "ANGLE")]
-        public float Angle;
+        public Vector2 Angle;
     }
 }

@@ -219,11 +219,6 @@ namespace Gorgon.Renderers
                 return;
             }
 
-            if (!GorgonShaderFactory.Includes.ContainsKey("Gorgon2DShaders"))
-            {
-                GorgonShaderFactory.Includes["Gorgon2DShaders"] = new GorgonShaderInclude("Gorgon2DShaders", Resources.BasicSprite);
-            }
-
             _defaultVertexShader.Shader = GorgonShaderFactory.Compile<GorgonVertexShader>(Graphics, Resources.BasicSprite, "GorgonVertexShader", GorgonGraphics.IsDebugEnabled);
             _defaultPixelShader.Shader = GorgonShaderFactory.Compile<GorgonPixelShader>(Graphics, Resources.BasicSprite, "GorgonPixelShaderTextured", GorgonGraphics.IsDebugEnabled);
 
@@ -1596,6 +1591,11 @@ namespace Gorgon.Renderers
             _primaryTarget = defaultTarget ?? throw new ArgumentNullException(nameof(defaultTarget));
             Graphics = _primaryTarget.Graphics;
             _defaultFontFactory = new Lazy<GorgonFontFactory>(() => new GorgonFontFactory(Graphics), true);
+
+            if (!GorgonShaderFactory.Includes.ContainsKey("Gorgon2DShaders"))
+            {
+                GorgonShaderFactory.Includes["Gorgon2DShaders"] = new GorgonShaderInclude("Gorgon2DShaders", Resources.BasicSprite);
+            }
         }
         #endregion
     }

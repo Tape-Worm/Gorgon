@@ -108,6 +108,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Effects", "Examples\Gorgon.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sprites", "Examples\Gorgon.Renderers.2D\Sprites\Sprites.csproj", "{0BA16C6A-D278-4218-97D2-6A094185DC90}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NormalSprite", "..\..\..\Temp Code\NormalSprite\NormalSprite.csproj", "{D7895746-CA33-435E-B116-AAAA94DEC664}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -298,6 +300,10 @@ Global
 		{0BA16C6A-D278-4218-97D2-6A094185DC90}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0BA16C6A-D278-4218-97D2-6A094185DC90}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0BA16C6A-D278-4218-97D2-6A094185DC90}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7895746-CA33-435E-B116-AAAA94DEC664}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7895746-CA33-435E-B116-AAAA94DEC664}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7895746-CA33-435E-B116-AAAA94DEC664}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7895746-CA33-435E-B116-AAAA94DEC664}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

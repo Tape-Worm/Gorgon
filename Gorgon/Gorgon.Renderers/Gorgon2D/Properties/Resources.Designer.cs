@@ -403,6 +403,28 @@ namespace Gorgon.Renderers.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to #GorgonInclude &quot;Gorgon2DShaders&quot;
+        ///
+        ///// A texture array to allow access to the diffuse, normal map, and specular map.
+        ///Texture2DArray _gorgonDiffSpecNormTexture : register(t0);
+        ///
+        ///// Texture and sampler used for normal mapping.
+        ///Texture2D _gorgonNormalTexture : register(t1);
+        ///SamplerState _gorgonNormalSampler : register(s1);
+        ///
+        ///// Texture and sampler used for specular mapping.
+        ///Texture2D _gorgonSpecTexture : register(t2);
+        ///SamplerState _gorgonSpecSampler : register(s2);
+        ///
+        ///// Output data from our vertex shad [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string Lighting {
+            get {
+                return ResourceManager.GetString("Lighting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap White_2x2 {

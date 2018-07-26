@@ -210,39 +210,39 @@ namespace Gorgon.Renderers
                                              (glyphBounds.Left * angleSin + glyphBounds.Top * angleCos) + spriteBounds.Y,
                                              depth,
                                              1.0f);
-                v0.Angle = angleRads;
+                v0.Angle = new DX.Vector2(angleCos, angleSin);
 
                 v1.Position = new DX.Vector4((glyphBounds.Right * angleCos - glyphBounds.Top * angleSin) + spriteBounds.X,
                                              (glyphBounds.Right * angleSin + glyphBounds.Top * angleCos) + spriteBounds.Y,
                                              depth,
                                              1.0f);
-                v1.Angle = angleRads;
+                v1.Angle = new DX.Vector2(angleCos, angleSin);
 
                 v2.Position = new DX.Vector4((glyphBounds.Left * angleCos - glyphBounds.Bottom * angleSin) + spriteBounds.X,
                                              (glyphBounds.Left * angleSin + glyphBounds.Bottom * angleCos) + spriteBounds.Y,
                                              depth,
                                              1.0f);
-                v2.Angle = angleRads;
+                v2.Angle = new DX.Vector2(angleCos, angleSin);
 
                 v3.Position = new DX.Vector4((glyphBounds.Right * angleCos - glyphBounds.Bottom * angleSin) + spriteBounds.X,
                                              (glyphBounds.Right * angleSin + glyphBounds.Bottom * angleCos) + spriteBounds.Y,
                                              depth,
                                              1.0f);
-                v3.Angle = angleRads;
+                v3.Angle = new DX.Vector2(angleCos, angleSin);
             }
             else
             {
                 v0.Position = new DX.Vector4(glyphBounds.Left + spriteBounds.X, glyphBounds.Top + spriteBounds.Y, depth, 1.0f);
-                v0.Angle = 0;
+                v0.Angle = DX.Vector2.Zero;
 
                 v1.Position = new DX.Vector4(glyphBounds.Right + spriteBounds.X, glyphBounds.Top + spriteBounds.Y, depth, 1.0f);
-                v1.Angle = 0;
+                v1.Angle = DX.Vector2.Zero;
 
                 v2.Position = new DX.Vector4(glyphBounds.Left + spriteBounds.X, glyphBounds.Bottom + spriteBounds.Y, depth, 1.0f);
-                v2.Angle = 0;
+                v2.Angle = DX.Vector2.Zero;
 
                 v3.Position = new DX.Vector4(glyphBounds.Right + spriteBounds.X, glyphBounds.Bottom + spriteBounds.Y, depth, 1.0f);
-                v3.Angle = 0;
+                v3.Angle = DX.Vector2.Zero;
             }
         }
 
@@ -281,7 +281,7 @@ namespace Gorgon.Renderers
                 vertex.Position = new DX.Vector4(DX.Vector3.Zero, 1.0f);
                 vertex.Color = GorgonColor.White;
                 vertex.UV = DX.Vector3.Zero;
-                vertex.Angle = 0;
+                vertex.Angle = DX.Vector2.Zero;
             }
         }
 

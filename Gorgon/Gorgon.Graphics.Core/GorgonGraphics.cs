@@ -2719,26 +2719,17 @@ namespace Gorgon.Graphics.Core
             // These slots will now be empty.
             for (int i = 0; i < rtvCount; ++i)
             {
-                ref GorgonRenderTargetView view = ref _renderTargets[i];
-                view = renderTargets[i];
+                _renderTargets[i] = i < rtvCount ? renderTargets[i] : null;
             }
 
-                if (rtvCount < _renderTargets.Length)
-                {
-                    for (int i = rtvCount; i < _renderTargets.Length; ++i)
-                    {
-                        _renderTargets[i] = null;
-                    }
-                }
+            DX.ViewportF viewport = default;
 
-                DX.ViewportF viewport = default;
+            if (_renderTargets[0] != null)
+            {
+                viewport = new DX.ViewportF(0, 0, renderTargets[0].Width, renderTargets[0].Height);
+            }
 
-                if (_renderTargets[0] != null)
-                {
-                    viewport = new DX.ViewportF(0, 0, renderTargets[0].Width, renderTargets[0].Height);
-                }
-
-                SetViewport(ref viewport);
+            SetViewport(ref viewport);
 
             OnDepthStencilChanging();
 
