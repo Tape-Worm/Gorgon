@@ -75,7 +75,7 @@
     <Compile Include="Effects\Gorgon2DSharpenEmbossEffect.cs" />
     <Compile Include="Effects\Gorgon2DSobelEdgeDetectEffect.cs" />
     <Compile Include="Effects\Gorgon2DWaveEffect.cs" />
-    <Compile Include="Effects\Gorgon2DPointLight.cs" />
+    <Compile Include="Effects\Gorgon2DLight.cs" />
     <Compile Include="Effects\_Interfaces\IGorgon2DTextureDrawEffect.cs" />
     <Compile Include="Gorgon2D.cs" />
     <Compile Include="Renderables\GorgonTrianglePoint.cs" />

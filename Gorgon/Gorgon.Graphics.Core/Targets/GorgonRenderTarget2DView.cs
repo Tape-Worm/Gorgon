@@ -180,7 +180,7 @@ namespace Gorgon.Graphics.Core
         private D3D11.RenderTargetViewDescription1 GetDesc2D(bool isMultisampled)
         {
             // Set up for arrayed and multisampled texture.
-            if (ArrayCount > 1)
+            if (Texture.ArrayCount > 1)
             {
                 return new D3D11.RenderTargetViewDescription1
                 {
@@ -293,6 +293,8 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="graphics">The graphics interface to use when creating the target.</param>
         /// <param name="info">The information about the texture.</param>
+        /// <param name="arrayIndex">[Optional] The index of a texture array to slice the view at.</param>
+        /// <param name="arrayCount">[Optioanl] The number of array indices to view.</param>
         /// <returns>A new <see cref="GorgonRenderTarget2DView"/>.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, or <paramref name="info"/> parameter is <b>null</b>.</exception>
         /// <remarks>
@@ -307,7 +309,7 @@ namespace Gorgon.Graphics.Core
         /// </para>
         /// </remarks>
         /// <seealso cref="GorgonTexture2D"/>
-        public static GorgonRenderTarget2DView CreateRenderTarget(GorgonGraphics graphics, IGorgonTexture2DInfo info)
+        public static GorgonRenderTarget2DView CreateRenderTarget(GorgonGraphics graphics, IGorgonTexture2DInfo info, int arrayIndex = 0, int? arrayCount = null)
         {
             if (graphics == null)
             {
@@ -339,7 +341,7 @@ namespace Gorgon.Graphics.Core
                           };
 
             var texture = new GorgonTexture2D(graphics, newInfo);
-            GorgonRenderTarget2DView result = texture.GetRenderTargetView();
+            GorgonRenderTarget2DView result = texture.GetRenderTargetView(arrayIndex: arrayIndex, arrayCount: arrayCount ?? texture.ArrayCount);
             result.OwnsResource = true;
 
             return result;

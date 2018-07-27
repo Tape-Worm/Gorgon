@@ -318,8 +318,8 @@ namespace Gorgon.Renderers
         /// <param name="camera">[Optional] The camera to use when rendering.</param>
         /// <remarks>
         /// <para>
-        /// The <paramref name="displacementRender"/> is a method that users can define to draw whatever is needed as grayscale.  When this method is called, the <see cref="Gorgon2D.Begin"/> and
-        /// <see cref="Gorgon2D.End"/> methods are already taken care of by the effect and will not need to be called during the callback.
+        /// The <paramref name="displacementRender"/> is a method that users can define to draw whatever will displace the underlying <paramref name="backgroundImage"/>.  When this method is called, the
+        /// <see cref="Gorgon2D.Begin"/> and <see cref="Gorgon2D.End"/> methods are already taken care of by the effect and will not need to be called during the callback.
         /// </para>
         /// <para>
         /// <note type="warning">

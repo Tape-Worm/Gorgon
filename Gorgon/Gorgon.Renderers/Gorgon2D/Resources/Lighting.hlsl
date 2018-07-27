@@ -20,14 +20,15 @@ cbuffer LightData : register(b2)
 {
 	float4 lightPosition;
 	float4 lightColor;		
-	float specEnable;
-	float specPower;
-	float atten;
 	float4 dirLightDirection;
+	float specularPower;
+	float attenuation;	
+	int enableSpecular;
+	int lightType;
 };
 
 // Output data from our vertex shader for lighting.
-struct GorgonSpriteLightData
+struct GorgonLitVertex
 {
 	float4 position : SV_POSITION;
 	float4 color : COLOR;
@@ -37,9 +38,9 @@ struct GorgonSpriteLightData
 };
 
 // Updated vertex shader that will perform tangent and bitangent transforms.
-GorgonSpriteLightData GorgonVertexLightingShader(GorgonSpriteVertex vertex)
+GorgonLitVertex GorgonVertexLightingShader(GorgonSpriteVertex vertex)
 {
-	GorgonSpriteLightData output;
+	GorgonLitVertex output;
 	
 	output.position = mul(WorldViewProjection, vertex.position);
 	output.uv = vertex.uv;
@@ -64,16 +65,6 @@ float4 TransformNormal(float4 texel, float3 tangent, float3 biTangent)
 	return float4(normal, texel.a);
 }
 
-// First, we draw our normal mapped sprites with this shader to the normal map layer.
-float4 GorgonPixelShaderNormalSprite(GorgonSpriteLightData vertex) : SV_Target
-{
-	float4 worldNormal = _gorgonTexture.Sample(_gorgonSampler, vertex.uv);
-
-	REJECT_ALPHA(worldNormal.a);
-
-	return TransformNormal(worldNormal, vertex.tangent, vertex.bitangent);
-}
-
 #ifdef DEFERRED_LIGHTING
 // The 3 render targets we use for our g-buffer.
 struct DeferredRenderOutput
@@ -83,10 +74,9 @@ struct DeferredRenderOutput
 	float4 Normal : SV_Target2;
 };
 
-
 // This will render our scene data into 3 targets simultaneously, and perform the needed transformation on 
 // the normal mapping output.
-DeferredRenderOutput GorgonPixelShaderDeferred(GorgonSpriteLightData vertex)
+DeferredRenderOutput GorgonPixelShaderDeferred(GorgonLitVertex vertex)
 {
 	DeferredRenderOutput result;
 	float4 diffuse = _gorgonDiffSpecNormTexture.Sample(_gorgonSampler, float3(vertex.uv.xy, 0)) * vertex.color;
@@ -104,42 +94,45 @@ DeferredRenderOutput GorgonPixelShaderDeferred(GorgonSpriteLightData vertex)
 }
 #endif
 
-#ifdef DIRECTIONAL_LIGHT
+#ifdef LIGHTS
+#ifdef NO_ARRAY
+// Gets the specular value based on the specular map supplied.
+float4 GetSpecularValue1(float2 uv, float4 diffuseValue, float lightAmount, float specularPower)
+{
+	float4 specTexCol = _gorgonSpecTexture.Sample(_gorgonSampler, uv);
+	float specularAmount = pow(lightAmount, specularPower);		
+	return 2.0f * (specTexCol * specularAmount * diffuseValue);
+}
+
 // Simulates a directional light (e.g. the sun) with optional specular highlighting.
-float4 GorgonPixelShaderDirLight(GorgonSpriteLightData vertex) : SV_Target
+float4 DirectionalLight1(GorgonLitVertex vertex)
 {
 	float4 color = _gorgonTexture.Sample(_gorgonSampler, vertex.uv);
 
 	REJECT_ALPHA(color.a);
 
-	float3 normal = ((_gorgonNormalTexture.Sample(_gorgonNormalSampler, vertex.uv).xyz) * 2.0f) - 1.0f;
+	float3 normal = ((_gorgonNormalTexture.Sample(_gorgonSampler, vertex.uv).xyz) * 2.0f) - 1.0f;
 	float4 result = float4(0, 0, 0, 1);
 	float4 diffuse;
 	float3 lightDir = dirLightDirection;
 	float lightAmount;
 	float specularAmount;	
 
-	lightAmount = saturate(dot(normal, lightDir)) * atten;	
+	lightAmount = saturate(dot(normal, lightDir)) * attenuation;	
 
 	diffuse = (color * lightAmount * lightColor);
 	result += diffuse;
-
-	if (specEnable != 0)
+	if (enableSpecular != 0)
 	{
-		float4 specTexCol = _gorgonSpecTexture.Sample(_gorgonSpecSampler, vertex.uv);
-		specularAmount = pow(lightAmount, specPower);		
-		result += 2.0f * (specTexCol * specularAmount * diffuse);
+		result += GetSpecularValue(vertex.uv, diffuse, lightAmount, specularPower);
 	}
-
 	result.a = color.a;
 
 	return saturate(result);
 }
-#endif
 
-#ifdef POINT_LIGHT
-// Simulates a point light with attenuation falloff and optional specular highlighting.
-float4 GorgonPixelShaderPointLight(GorgonSpriteLightData vertex) : SV_Target
+// Simulates a point light with attenuationuation falloff and optional specular highlighting.
+float4 PointLight1(GorgonLitVertex vertex)
 {
 	float4 color = _gorgonTexture.Sample(_gorgonSampler, vertex.uv);
 
@@ -155,18 +148,92 @@ float4 GorgonPixelShaderPointLight(GorgonSpriteLightData vertex) : SV_Target
 	
 	lightDir = normalize(lightPosition.xyz - pixelPosition);
 
-	lightAmount = saturate(dot(normal, lightDir) * (((lightPosition.z * lightPosition.z) * atten) / dot(distance, distance)));
+	lightAmount = saturate(dot(normal, lightDir) * (((lightPosition.z * lightPosition.z) * attenuation) / dot(distance, distance)));
 	result = (color * lightAmount * lightColor);
-
-	if (specEnable != 0)
+	if (enableSpecular != 0)
 	{
-		float4 specTexCol = _gorgonSpecTexture.Sample(_gorgonSampler, vertex.uv);
-		specularAmount = pow(lightAmount, specPower);		
-		result += 2.0f * (specTexCol * specularAmount * result);
+		result += GetSpecularValue(vertex.uv, result, lightAmount, specularPower);
 	}
-
 	result.a = color.a;
 
 	return saturate(result);
+}
+#endif
+
+// Gets the specular value based on the specular map supplied.
+float4 GetSpecularValue(float3 uv, float4 diffuseValue, float lightAmount, float specularPower)
+{
+	float4 specTexCol = _gorgonTexture.Sample(_gorgonSampler, uv);
+	float specularAmount = pow(lightAmount, specularPower);		
+	return 2.0f * (specTexCol * specularAmount * diffuseValue);
+}
+
+// Simulates a point light with attenuationuation falloff and optional specular highlighting.
+float4 PointLight(float2 uv)
+{
+	float4 color = _gorgonTexture.Sample(_gorgonSampler, float3(uv, 0));
+
+	REJECT_ALPHA(color.a);
+		
+	float3 normal = ((_gorgonTexture.Sample(_gorgonSampler, float3(uv, 2)).xyz) * 2.0f) - 1.0f;	
+	float3 pixelPosition = float3(screenSize.x * uv.x, screenSize.y * uv.y, 0);
+	float4 result;
+	float3 lightDir;
+	float lightAmount;
+	float specularAmount;
+	float3 distance = pixelPosition - lightPosition;
+	
+	lightDir = normalize(lightPosition.xyz - pixelPosition);
+
+	lightAmount = saturate(dot(normal, lightDir) * (((lightPosition.z * lightPosition.z) * attenuation) / dot(distance, distance)));
+	result = (color * lightAmount * lightColor);
+	if (enableSpecular != 0)
+	{
+		result += GetSpecularValue(float3(uv, 1), result, lightAmount, specularPower);
+	}
+	result.a = color.a;
+
+	return saturate(result);
+}
+
+// Simulates a directional light (e.g. the sun) with optional specular highlighting.
+float4 DirectionalLight(float2 uv)
+{
+	float4 color = _gorgonTexture.Sample(_gorgonSampler, float3(uv, 0));
+
+	REJECT_ALPHA(color.a);
+
+	float3 normal = ((_gorgonTexture.Sample(_gorgonSampler, float3(uv, 2)).xyz) * 2.0f) - 1.0f;
+	float4 result = float4(0, 0, 0, 1);
+	float4 diffuse;
+	float3 lightDir = dirLightDirection;
+	float lightAmount;
+	float specularAmount;	
+
+	lightAmount = saturate(dot(normal, lightDir)) * attenuation;	
+
+	diffuse = (color * lightAmount * lightColor);
+	result += diffuse;
+	if (enableSpecular != 0)
+	{
+		result += GetSpecularValue(float3(uv, 1), diffuse, lightAmount, specularPower);
+	}
+	result.a = color.a;
+
+	return saturate(result);
+}
+
+// Entry point for lighting shader.
+float4 GorgonPixelShaderLighting(GorgonSpriteVertex vertex) : SV_Target
+{
+	switch(lightType)
+	{
+		// Directional lights.
+		case 1:
+			return DirectionalLight(vertex.uv.xy);
+		// Point lights.
+		default:
+			return PointLight(vertex.uv.xy);
+	}
 }
 #endif

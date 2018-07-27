@@ -30,7 +30,22 @@ using DX = SharpDX;
 namespace Gorgon.Renderers
 {
     /// <summary>
-    /// Defines the properties for a 2D point light.
+    /// Defines the type of light used when rendering.
+    /// </summary>
+    public enum LightType
+    {
+        /// <summary>
+        /// A point light.
+        /// </summary>
+        Point = 0,
+        /// <summary>
+        /// A directional light.
+        /// </summary>
+        Directional = 1
+    }
+
+    /// <summary>
+    /// Defines the properties for a 2D light.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -38,12 +53,24 @@ namespace Gorgon.Renderers
     /// </para>
     /// </remarks>
     /// <seealso cref="Gorgon2DDeferredLightingEffect"/>
-	public class Gorgon2DPointLight
+	public class Gorgon2DLight
 	{
 		#region Properties.
+        /// <summary>
+        /// Property to set or return the type of light to render.
+        /// </summary>
+	    public LightType LightType
+	    {
+	        get;
+	        set;
+	    }
+
 		/// <summary>
 		/// Property to set or return the direction of the light for directional lighting.
 		/// </summary>
+		/// <remarks>
+		/// This property is ignored when the <see cref="LightType"/> property is set to <see cref="Renderers.LightType.Point"/>.
+		/// </remarks>
 		public DX.Vector3 LightDirection
 		{
 			get;
@@ -98,9 +125,9 @@ namespace Gorgon.Renderers
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Gorgon2DPointLight"/> class.
+		/// Initializes a new instance of the <see cref="Gorgon2DLight"/> class.
 		/// </summary>
-		public Gorgon2DPointLight()
+		public Gorgon2DLight()
 		{
 		    Color = GorgonColor.White;
 		    Position = DX.Vector3.Zero;
