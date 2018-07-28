@@ -233,16 +233,16 @@ namespace Gorgon.Renderers
             else
             {
                 v0.Position = new DX.Vector4(glyphBounds.Left + spriteBounds.X, glyphBounds.Top + spriteBounds.Y, depth, 1.0f);
-                v0.Angle = DX.Vector2.Zero;
+                v0.Angle = DX.Vector2.UnitX;
 
                 v1.Position = new DX.Vector4(glyphBounds.Right + spriteBounds.X, glyphBounds.Top + spriteBounds.Y, depth, 1.0f);
-                v1.Angle = DX.Vector2.Zero;
+                v1.Angle = DX.Vector2.UnitX;
 
                 v2.Position = new DX.Vector4(glyphBounds.Left + spriteBounds.X, glyphBounds.Bottom + spriteBounds.Y, depth, 1.0f);
-                v2.Angle = DX.Vector2.Zero;
+                v2.Angle = DX.Vector2.UnitX;
 
                 v3.Position = new DX.Vector4(glyphBounds.Right + spriteBounds.X, glyphBounds.Bottom + spriteBounds.Y, depth, 1.0f);
-                v3.Angle = DX.Vector2.Zero;
+                v3.Angle = DX.Vector2.UnitX;
             }
         }
 

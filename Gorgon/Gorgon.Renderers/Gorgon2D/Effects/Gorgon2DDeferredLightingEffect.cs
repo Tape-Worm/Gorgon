@@ -110,6 +110,8 @@ namespace Gorgon.Renderers
         private Gorgon2DBatchState _lightingState;
         // The color used to clear the normal map render target.
         private readonly GorgonColor _normalClearColor = new GorgonColor(127.0f / 255.0f, 127.0f / 255.0f, 254.0f / 255.0f, 1.0f);
+        // Previous size for a render target.
+        private DX.Size2 _previousRtSize;
         #endregion
 
         #region Properties.
@@ -167,7 +169,7 @@ namespace Gorgon.Renderers
         private void CheckForOutputSizeChange(int width, int height)
         {
             // The size is the same, we don't need to do anything.
-            if ((_finalOutput != null) && (_finalOutput.Width == width) && (_finalOutput.Height == height))
+            if ((_gbuffer != null) && (_finalOutput != null) && (_previousRtSize.Width == width) && (_previousRtSize.Height == height))
             {
                 return;
             }
@@ -176,6 +178,8 @@ namespace Gorgon.Renderers
             BuildRenderTargets(width, height);
 
             var screenSize = new DX.Vector4(width, height, 0, 0);
+            _previousRtSize = new DX.Size2(width, height);
+
             _screenSizeData.Buffer.SetData(ref screenSize);
         }
 
@@ -306,6 +310,23 @@ namespace Gorgon.Renderers
         }
 
         /// <summary>
+        /// Function called prior to rendering.
+        /// </summary>
+        /// <returns><b>true</b> if rendering should continue, or <b>false</b> if not.</returns>
+        /// <remarks>
+        /// <para>
+        /// Applications can use this to set up common states and other configuration settings prior to executing the render passes.
+        /// </para>
+        /// </remarks>
+        protected override bool OnBeforeRender()
+        {
+            // If the output has changed size since last render, then we need to adjust our render target(s) and shader data.
+            CheckForOutputSizeChange(_finalOutput.Width, _finalOutput.Height);
+
+            return true;
+        }
+
+        /// <summary>
         /// Function called to render a single effect pass.
         /// </summary>
         /// <param name="passIndex">The index of the pass being rendered.</param>
@@ -417,9 +438,6 @@ namespace Gorgon.Renderers
         {
             renderAction.ValidateObject(nameof(renderAction));
             output.ValidateObject(nameof(output));
-
-            // If the output has changed size since last render, then we need to adjust our render target(s) and shader data.
-            CheckForOutputSizeChange(output.Width, output.Height);
 
             _finalOutput = output;
             _renderAction = renderAction;

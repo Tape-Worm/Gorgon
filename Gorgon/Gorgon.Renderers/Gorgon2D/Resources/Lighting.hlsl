@@ -1,14 +1,5 @@
 #GorgonInclude "Gorgon2DShaders"
 
-// A texture array to allow access to the diffuse, normal map, and specular map.
-Texture2DArray _gorgonDiffSpecNormTexture : register(t0);
-
-// Texture used for normal mapping.
-Texture2D _gorgonNormalTexture : register(t1);
-
-// Texture used for specular mapping.
-Texture2D _gorgonSpecTexture : register(t2);
-
 // Data for the final output.
 cbuffer FinalOutputData : register(b1)
 {
@@ -79,12 +70,12 @@ struct DeferredRenderOutput
 DeferredRenderOutput GorgonPixelShaderDeferred(GorgonLitVertex vertex)
 {
 	DeferredRenderOutput result;
-	float4 diffuse = _gorgonDiffSpecNormTexture.Sample(_gorgonSampler, float3(vertex.uv.xy, 0)) * vertex.color;
+	float4 diffuse = _gorgonTexture.Sample(_gorgonSampler, float3(vertex.uv.xy, 0)) * vertex.color;
 
 	REJECT_ALPHA(diffuse.a);
 
-	float4 specular = _gorgonDiffSpecNormTexture.Sample(_gorgonSampler, float3(vertex.uv.xy, 1));
-	float4 normal = _gorgonDiffSpecNormTexture.Sample(_gorgonSampler, float3(vertex.uv.xy, 2));
+	float4 specular = _gorgonTexture.Sample(_gorgonSampler, float3(vertex.uv.xy, 1));
+	float4 normal = _gorgonTexture.Sample(_gorgonSampler, float3(vertex.uv.xy, 2));
 		
 	result.Diffuse = diffuse;
 	result.Specular = specular;
