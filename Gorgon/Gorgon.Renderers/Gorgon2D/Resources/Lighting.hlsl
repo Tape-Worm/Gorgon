@@ -110,6 +110,8 @@ float4 PointLight(float2 uv)
 	float3 distance = pixelPosition - lightPosition;
 	
 	lightDir = normalize(lightPosition.xyz - pixelPosition);
+	// Reverse Y direction, otherwise the light will be flipped vertically.
+	lightDir.y = -lightDir.y;
 
 	lightAmount = saturate(dot(normal, lightDir) * (((lightPosition.z * lightPosition.z) * attenuation) / dot(distance, distance)));
 	result = (color * lightAmount * lightColor);
