@@ -27,7 +27,7 @@
 
 using System.Collections.Generic;
 using Gorgon.Graphics.Imaging.Properties;
-using WIC = SharpDX.WIC;
+using SharpDX.WIC;
 
 namespace Gorgon.Graphics.Imaging.Codecs
 {
@@ -90,7 +90,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// </summary>
         /// <param name="encodingOptions">[Optional] Options used when encoding the image data.</param>
         public GorgonCodecPng(GorgonPngEncodingOptions encodingOptions = null)
-            : base("PNG", Resources.GORIMG_DESC_PNG_CODEC, new[] { "png" }, WIC.ContainerFormatGuids.Png, encodingOptions, null)
+            : base("PNG", Resources.GORIMG_DESC_PNG_CODEC, new[] { "png" }, ContainerFormatGuids.Png, encodingOptions, null)
         {
         }
         #endregion

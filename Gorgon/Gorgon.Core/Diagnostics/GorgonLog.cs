@@ -28,15 +28,16 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using Gorgon.Core;
-using Gorgon.Properties;
-using Gorgon.IO;
 using Gorgon.Diagnostics.LogProviders;
+using Gorgon.IO;
+using Gorgon.Properties;
 
 namespace Gorgon.Diagnostics
 {
@@ -428,7 +429,7 @@ namespace Gorgon.Diagnostics
         /// If calling this method from a thread that is <b>not</b> the thread that created the object, then no new file will be created.
         /// </para>
         /// </remarks>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "Gorgon.Core.Diagnostics.IGorgonLogProvider.SendMessage(System.String)")]
+        [SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "Gorgon.Core.Diagnostics.IGorgonLogProvider.SendMessage(System.String)")]
         public void LogStart()
 		{
 		    if (ThreadID != Environment.CurrentManagedThreadId)

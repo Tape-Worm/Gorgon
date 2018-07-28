@@ -27,18 +27,18 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
-using Drawing = System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using Gorgon.Core;
-using DX = SharpDX;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Example.Properties;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
 using Gorgon.Timing;
 using Gorgon.UI;
+using DX = SharpDX;
 
 namespace Gorgon.Graphics.Example
 {
@@ -188,7 +188,7 @@ namespace Gorgon.Graphics.Example
             UpdatedWorldProjection();
 
             // Clear our render target.
-            _swap.RenderTargetView.Clear(Drawing.Color.CornflowerBlue);
+            _swap.RenderTargetView.Clear(Color.CornflowerBlue);
             _depthStencil.ClearDepth(1.0f);
 
             _graphics.Submit(_drawCall);
@@ -209,7 +209,7 @@ namespace Gorgon.Graphics.Example
             // Build the form so we can actually show something.
             _mainForm = new FormMain
                         {
-                            ClientSize = new Drawing.Size(1280, 800)
+                            ClientSize = new Size(1280, 800)
                         };
 
             // Now we create and enumerate the list of video devices installed in the computer.

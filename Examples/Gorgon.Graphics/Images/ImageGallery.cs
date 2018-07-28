@@ -25,17 +25,16 @@
 #endregion
 
 using System;
+using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Threading;
-using Drawing = System.Drawing;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Graphics.Imaging.GdiPlus;
 using Gorgon.Math;
-
 
 namespace Gorgon.Examples
 {
@@ -47,7 +46,7 @@ namespace Gorgon.Examples
     {
         #region Variables.
         // The content font with bolding.
-        private readonly Drawing.Font _boldContentFont;
+        private readonly Font _boldContentFont;
         // Our image list.
         private readonly IGorgonImage[] _images = new IGorgonImage[6];
         // Descriptions for each image.
@@ -60,17 +59,17 @@ namespace Gorgon.Examples
                                                       "BMP Image"
                                                   };
         // The size of the image.
-        private Drawing.Size _imageSize;
+        private Size _imageSize;
         // The destination bitmap to draw on the screen.
-        private Drawing.Bitmap _destBitmap;
+        private Bitmap _destBitmap;
         // The device DPI.
         private readonly int _dpi;
         // The image frames for the animated gif.
-        private Drawing.Bitmap _gifBuffer;
+        private Bitmap _gifBuffer;
         // GIF animator.
         private readonly GifAnimator _gifAnim;
         // GIF position.
-        private Drawing.Point _gifPosition;
+        private Point _gifPosition;
         // Counter for drawing frames.
         private int _isDrawing;
         #endregion
@@ -87,17 +86,17 @@ namespace Gorgon.Examples
         /// <param name="x">The horizontal position of the text.</param>
         /// <param name="y">The vertical position of the text.</param>
         /// <param name="text">The text to render.</param>
-        private void DrawOutlinedText(Drawing.Graphics graphics, int x, int y, string text)
+        private void DrawOutlinedText(System.Drawing.Graphics graphics, int x, int y, string text)
         {
             for (int i = -2; i <= 2; ++i)
             {
-                graphics.DrawString(text, _boldContentFont, Drawing.Brushes.Black, x + i, y);
-                graphics.DrawString(text, _boldContentFont, Drawing.Brushes.Black, x, y + i);
-                graphics.DrawString(text, _boldContentFont, Drawing.Brushes.Black, x + i, y + i);
-                graphics.DrawString(text, _boldContentFont, Drawing.Brushes.Black, x - i, y + i);
+                graphics.DrawString(text, _boldContentFont, Brushes.Black, x + i, y);
+                graphics.DrawString(text, _boldContentFont, Brushes.Black, x, y + i);
+                graphics.DrawString(text, _boldContentFont, Brushes.Black, x + i, y + i);
+                graphics.DrawString(text, _boldContentFont, Brushes.Black, x - i, y + i);
             }
 
-            graphics.DrawString(text, _boldContentFont, Drawing.Brushes.White, x, y);
+            graphics.DrawString(text, _boldContentFont, Brushes.White, x, y);
         }
 
         /// <summary>
@@ -171,10 +170,10 @@ namespace Gorgon.Examples
 
             // The GIF animation frames are stored in an image array, so in order to access them we need to index through 
             // the image array below.
-            _gifBuffer = new Drawing.Bitmap(_imageSize.Width, _imageSize.Height, PixelFormat.Format32bppArgb);
+            _gifBuffer = new Bitmap(_imageSize.Width, _imageSize.Height, PixelFormat.Format32bppArgb);
 
             float imageAspect = _images[3].Info.Height / (float)_images[3].Info.Width;
-            Drawing.Size newSize = new Drawing.Size(_imageSize.Width, (int)(_imageSize.Width * imageAspect));
+            Size newSize = new Size(_imageSize.Width, (int)(_imageSize.Width * imageAspect));
 
             // With this one, the source image isn't in the same aspect ratio as our thumbnail size.
             // So we need to expand the image boundaries to fit.  The expand method will do just that.
@@ -191,7 +190,7 @@ namespace Gorgon.Examples
         /// </summary>
         /// <param name="graphics">The graphics context that will receive the image data.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
-        public void RefreshGif(Drawing.Graphics graphics)
+        public void RefreshGif(System.Drawing.Graphics graphics)
         {
             if (graphics == null)
             {
@@ -203,7 +202,7 @@ namespace Gorgon.Examples
                 graphics.CompositingMode = CompositingMode.SourceOver;
             }
 
-            Drawing.Graphics bufferGraphics = Drawing.Graphics.FromImage(_gifBuffer);
+            System.Drawing.Graphics bufferGraphics = System.Drawing.Graphics.FromImage(_gifBuffer);
 
             try
             {
@@ -263,7 +262,7 @@ namespace Gorgon.Examples
 
             // This is going to be used to display the images on the screen.
             // We use GDI+ here simply because it's there.  
-            _destBitmap = new Drawing.Bitmap(_imageSize.Width, _imageSize.Height, PixelFormat.Format32bppArgb);
+            _destBitmap = new Bitmap(_imageSize.Width, _imageSize.Height, PixelFormat.Format32bppArgb);
         }
 
         /// <summary>
@@ -272,7 +271,7 @@ namespace Gorgon.Examples
         /// <param name="graphics">The graphics interface that will receive our images.</param>
         /// <param name="clientSize">The size of the area to draw into.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
-        public void DrawGallery(Drawing.Graphics graphics, Drawing.Size clientSize)
+        public void DrawGallery(System.Drawing.Graphics graphics, Size clientSize)
         {
             if (graphics == null)
             {
@@ -289,7 +288,7 @@ namespace Gorgon.Examples
                 Interlocked.Increment(ref _isDrawing);
 
                 // Our position for the current image.
-                var position = new Drawing.Point(0, 0);
+                var position = new Point(0, 0);
 
                 for (int i = 0; i < _images.Length; ++i)
                 {
@@ -315,11 +314,11 @@ namespace Gorgon.Examples
                         DrawOutlinedText(graphics, position.X, position.Y, _descriptions[i]);
                     }
 
-                    position = new Drawing.Point(position.X + image.Info.Width, position.Y);
+                    position = new Point(position.X + image.Info.Width, position.Y);
 
                     if ((position.X + _imageSize.Width) >= clientSize.Width)
                     {
-                        position = new Drawing.Point(0, position.Y + image.Info.Height);
+                        position = new Point(0, position.Y + image.Info.Height);
                     }
                 }
             }
@@ -355,7 +354,7 @@ namespace Gorgon.Examples
         /// <param name="deviceDpi">The DPI for the device.</param>
         /// <param name="animator">The animator used to animate a GIF file.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="baseFont"/>, or the <paramref name="animator"/> parameter is <b>null</b>.</exception>
-        public ImageGallery(Drawing.Font baseFont, int deviceDpi, GifAnimator animator)
+        public ImageGallery(Font baseFont, int deviceDpi, GifAnimator animator)
         {
             if (baseFont == null)
             {
@@ -363,11 +362,11 @@ namespace Gorgon.Examples
             }
 
             _gifAnim = animator ?? throw new ArgumentNullException(nameof(animator));
-            _boldContentFont = new Drawing.Font(baseFont, Drawing.FontStyle.Bold);
+            _boldContentFont = new Font(baseFont, FontStyle.Bold);
             _dpi = 96.Max(deviceDpi);
             float newScaleWidth = deviceDpi / 96.0f;
-            var dpiScale = new Drawing.SizeF(newScaleWidth, newScaleWidth);
-            _imageSize = new Drawing.Size((int)(dpiScale.Width * 320), (int)(dpiScale.Height * 240));
+            var dpiScale = new SizeF(newScaleWidth, newScaleWidth);
+            _imageSize = new Size((int)(dpiScale.Width * 320), (int)(dpiScale.Height * 240));
         }
         #endregion
     }

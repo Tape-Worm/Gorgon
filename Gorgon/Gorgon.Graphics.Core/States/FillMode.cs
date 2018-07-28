@@ -24,12 +24,14 @@
 // 
 #endregion
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace Gorgon.Graphics.Core
 {
     /// <summary>
     /// Defines how a triangle primitive should be rendered.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue")]
+    [SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue")]
     public enum FillMode
     {
         /// <summary>

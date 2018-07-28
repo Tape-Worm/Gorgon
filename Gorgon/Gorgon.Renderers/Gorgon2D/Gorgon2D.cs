@@ -31,7 +31,6 @@ using System.Text;
 using System.Threading;
 using System.Windows;
 using Gorgon.Core;
-using DX = SharpDX;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -39,6 +38,7 @@ using Gorgon.Graphics.Fonts;
 using Gorgon.Math;
 using Gorgon.Renderers.Properties;
 using Gorgon.UI;
+using DX = SharpDX;
 
 namespace Gorgon.Renderers
 {
@@ -217,11 +217,6 @@ namespace Gorgon.Renderers
             if (_initialized)
             {
                 return;
-            }
-
-            if (!GorgonShaderFactory.Includes.ContainsKey("Gorgon2DShaders"))
-            {
-                GorgonShaderFactory.Includes["Gorgon2DShaders"] = new GorgonShaderInclude("Gorgon2DShaders", Resources.BasicSprite);
             }
 
             _defaultVertexShader.Shader = GorgonShaderFactory.Compile<GorgonVertexShader>(Graphics, Resources.BasicSprite, "GorgonVertexShader", GorgonGraphics.IsDebugEnabled);
@@ -1596,6 +1591,11 @@ namespace Gorgon.Renderers
             _primaryTarget = defaultTarget ?? throw new ArgumentNullException(nameof(defaultTarget));
             Graphics = _primaryTarget.Graphics;
             _defaultFontFactory = new Lazy<GorgonFontFactory>(() => new GorgonFontFactory(Graphics), true);
+
+            if (!GorgonShaderFactory.Includes.ContainsKey("Gorgon2DShaders"))
+            {
+                GorgonShaderFactory.Includes["Gorgon2DShaders"] = new GorgonShaderInclude("Gorgon2DShaders", Resources.BasicSprite);
+            }
         }
         #endregion
     }

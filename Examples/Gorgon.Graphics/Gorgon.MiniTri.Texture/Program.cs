@@ -26,10 +26,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
-using Drawing = System.Drawing;
 using System.Windows.Forms;
-using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Example.Properties;
@@ -37,6 +36,7 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 using Gorgon.Math;
 using Gorgon.UI;
+using DX = SharpDX;
 
 namespace Gorgon.Graphics.Example
 {
@@ -125,7 +125,7 @@ namespace Gorgon.Graphics.Example
 		private static bool Idle()
 		{
 			// This will clear the swap chain to the specified color.  
-			_swap.RenderTargetView.Clear(Drawing.Color.CornflowerBlue);
+			_swap.RenderTargetView.Clear(Color.CornflowerBlue);
 
 			// Draw our triangle.
 			_graphics.Submit(_drawCall);
@@ -209,7 +209,7 @@ namespace Gorgon.Graphics.Example
 			// Create our form and center on the primary monitor.
 			_mainForm = new formMain();
 
-			_mainForm.Location = new Drawing.Point(Screen.PrimaryScreen.WorkingArea.Width / 2 - _mainForm.Width / 2,
+			_mainForm.Location = new Point(Screen.PrimaryScreen.WorkingArea.Width / 2 - _mainForm.Width / 2,
 				Screen.PrimaryScreen.WorkingArea.Height / 2 - _mainForm.Height / 2);
 
 		    // First we create and enumerate the list of video devices installed in the computer.

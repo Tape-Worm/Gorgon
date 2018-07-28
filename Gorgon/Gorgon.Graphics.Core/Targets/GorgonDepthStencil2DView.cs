@@ -28,10 +28,10 @@ using System;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Math;
+using SharpDX.DXGI;
 using SharpDX.Mathematics.Interop;
 using DX = SharpDX;
 using D3D11 = SharpDX.Direct3D11;
-using DXGI = SharpDX.DXGI;
 
 
 namespace Gorgon.Graphics.Core
@@ -251,7 +251,7 @@ namespace Gorgon.Graphics.Core
 			{
 				return new D3D11.DepthStencilViewDescription
 				{
-					Format = (DXGI.Format)Format,
+					Format = (Format)Format,
 					Dimension = isMultisampled
 									? D3D11.DepthStencilViewDimension.Texture2DMultisampledArray
 									: D3D11.DepthStencilViewDimension.Texture2DArray,
@@ -266,7 +266,7 @@ namespace Gorgon.Graphics.Core
 
 			return new D3D11.DepthStencilViewDescription
 			{
-				Format = (DXGI.Format)Format,
+				Format = (Format)Format,
 				Dimension = isMultisampled
 								? D3D11.DepthStencilViewDimension.Texture2DMultisampled
 								: D3D11.DepthStencilViewDimension.Texture2D,

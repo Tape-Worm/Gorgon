@@ -26,8 +26,8 @@
 
 using System;
 using System.Globalization;
-using Gorgon.Properties;
 using Gorgon.Math;
+using Gorgon.Properties;
 
 namespace Gorgon.Core
 {

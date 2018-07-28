@@ -28,9 +28,9 @@ using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
-using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Properties;
+using DX = SharpDX;
 
 namespace Gorgon.Graphics
 {

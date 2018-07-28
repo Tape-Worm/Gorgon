@@ -27,11 +27,11 @@
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using DX = SharpDX;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts.Properties;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.GdiPlus;
+using DX = SharpDX;
 
 namespace Gorgon.Graphics.Fonts
 {

@@ -42,9 +42,7 @@ using Gorgon.Renderers;
 using Gorgon.Timing;
 using Gorgon.UI;
 using DX = SharpDX;
-using Color = System.Drawing.Color;
 using FontStyle = Gorgon.Graphics.Fonts.FontStyle;
-using Point = System.Drawing.Point;
 
 namespace Gorgon.Examples
 {

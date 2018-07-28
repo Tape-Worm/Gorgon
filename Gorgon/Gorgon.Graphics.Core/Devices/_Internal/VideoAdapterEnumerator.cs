@@ -30,7 +30,7 @@ using System.Linq;
 using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
-using DXGI = SharpDX.DXGI;
+using SharpDX.DXGI;
 using D3D = SharpDX.Direct3D;
 using D3D11 = SharpDX.Direct3D11;
 
@@ -48,7 +48,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="factory">The factory used to query the adapter.</param>
 		/// <param name="log">The log interface used to send messages to a debug log.</param>
 		/// <returns>The video adapter used for WARP software rendering.</returns>
-		private static VideoAdapterInfo GetWARPSoftwareDevice(int index, DXGI.Factory5 factory, IGorgonLog log)
+		private static VideoAdapterInfo GetWARPSoftwareDevice(int index, Factory5 factory, IGorgonLog log)
 		{
 			D3D11.DeviceCreationFlags flags = D3D11.DeviceCreationFlags.None;
 
@@ -57,8 +57,8 @@ namespace Gorgon.Graphics.Core
 				flags = D3D11.DeviceCreationFlags.Debug;
 			}
 
-            using (DXGI.Adapter warp = factory.GetWarpAdapter())
-            using (DXGI.Adapter4 warpAdapter4 = warp.QueryInterface<DXGI.Adapter4>())
+            using (Adapter warp = factory.GetWarpAdapter())
+            using (Adapter4 warpAdapter4 = warp.QueryInterface<Adapter4>())
             using (D3D11.Device D3DDevice = new D3D11.Device(warpAdapter4, flags))
             using (D3D11.Device5 D3DDevice5 = D3DDevice.QueryInterface<D3D11.Device5>())
             {
@@ -130,22 +130,22 @@ namespace Gorgon.Graphics.Core
 		/// <param name="D3DDevice">D3D device for filtering supported display modes.</param>
 		/// <param name="giOutput">Output that contains the video modes.</param>
 		/// <returns>A list of display compatible full screen video modes.</returns>
-		private static IEnumerable<DXGI.ModeDescription1> GetVideoModes(D3D11.Device1 D3DDevice, DXGI.Output1 giOutput)
+		private static IEnumerable<ModeDescription1> GetVideoModes(D3D11.Device1 D3DDevice, Output1 giOutput)
 		{
-		    var formats = ((DXGI.Format[])Enum.GetValues(typeof(DXGI.Format)))
+		    var formats = ((Format[])Enum.GetValues(typeof(Format)))
 		        .Where(item => (D3DDevice.CheckFormatSupport(item) & D3D11.FormatSupport.Display) == D3D11.FormatSupport.Display)
 		        .ToArray();
 
-		    IEnumerable<DXGI.ModeDescription1> result = Enumerable.Empty<DXGI.ModeDescription1>();
+		    IEnumerable<ModeDescription1> result = Enumerable.Empty<ModeDescription1>();
 
 			// Test each format for display compatibility.
 		    return formats.Aggregate(result,
 		                             (current, format) =>
 		                                 current.Concat(giOutput.GetDisplayModeList1(format,
-		                                                                             DXGI.DisplayModeEnumerationFlags.Scaling |
-		                                                                             DXGI.DisplayModeEnumerationFlags.Stereo |
-		                                                                             DXGI.DisplayModeEnumerationFlags.DisabledStereo |
-		                                                                             DXGI.DisplayModeEnumerationFlags.Interlaced)
+		                                                                             DisplayModeEnumerationFlags.Scaling |
+		                                                                             DisplayModeEnumerationFlags.Stereo |
+		                                                                             DisplayModeEnumerationFlags.DisabledStereo |
+		                                                                             DisplayModeEnumerationFlags.Interlaced)
 		                                                        .Where(item => (D3DDevice.CheckFormatSupport(format) & D3D11.FormatSupport.Display) == D3D11.FormatSupport.Display)));
 		}
 
@@ -175,7 +175,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="outputCount">The number of outputs for the device.</param>
 		/// <param name="log">The logging interface used to capture debug messages.</param>
 		/// <returns>A list if video output info values.</returns>
-		private static Dictionary<string, VideoOutputInfo> GetOutputs(D3D11.Device5 device, DXGI.Adapter4 adapter, int outputCount, IGorgonLog log)
+		private static Dictionary<string, VideoOutputInfo> GetOutputs(D3D11.Device5 device, Adapter4 adapter, int outputCount, IGorgonLog log)
 		{
 			var result = new Dictionary<string, VideoOutputInfo>(StringComparer.OrdinalIgnoreCase);
 
@@ -188,8 +188,8 @@ namespace Gorgon.Graphics.Core
 
 			for (int i = 0; i < outputCount; ++i)
 			{
-				using (DXGI.Output output = adapter.GetOutput(i))
-				using (DXGI.Output6 output6 = output.QueryInterface<DXGI.Output6>())
+				using (Output output = adapter.GetOutput(i))
+				using (Output6 output6 = output.QueryInterface<Output6>())
 				{
                     var outputInfo = new VideoOutputInfo(i, output6, GetVideoModes(device, output6));
 
@@ -231,8 +231,8 @@ namespace Gorgon.Graphics.Core
 		        log = GorgonLog.NullLog;
 		    }
 
-            using (var factory2 = new DXGI.Factory2(GorgonGraphics.IsDebugEnabled))
-            using (DXGI.Factory5 factory5 = factory2.QueryInterface<DXGI.Factory5>())
+            using (var factory2 = new Factory2(GorgonGraphics.IsDebugEnabled))
+            using (Factory5 factory5 = factory2.QueryInterface<Factory5>())
             {
                 int adapterCount = factory5.GetAdapterCount1();
 
@@ -242,12 +242,12 @@ namespace Gorgon.Graphics.Core
                 for (int i = 0; i < adapterCount; i++)
                 {
                     // Get the video adapter information.
-                    using (DXGI.Adapter1 adapter1 = factory5.GetAdapter1(i))
-                    using (DXGI.Adapter4 adapter = adapter1.QueryInterface<DXGI.Adapter4>())
+                    using (Adapter1 adapter1 = factory5.GetAdapter1(i))
+                    using (Adapter4 adapter = adapter1.QueryInterface<Adapter4>())
                     {
                         // ReSharper disable BitwiseOperatorOnEnumWithoutFlags
-                        if (((adapter.Desc3.Flags & DXGI.AdapterFlags.Remote) == DXGI.AdapterFlags.Remote)
-                            || ((adapter.Desc3.Flags & DXGI.AdapterFlags.Software) == DXGI.AdapterFlags.Software))
+                        if (((adapter.Desc3.Flags & AdapterFlags.Remote) == AdapterFlags.Remote)
+                            || ((adapter.Desc3.Flags & AdapterFlags.Software) == AdapterFlags.Software))
                         {
                             continue;
                         }

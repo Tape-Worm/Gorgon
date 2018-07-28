@@ -29,7 +29,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
@@ -39,6 +38,7 @@ using Gorgon.IO;
 using Gorgon.Renderers;
 using Gorgon.Timing;
 using Gorgon.UI;
+using DX = SharpDX;
 
 namespace Gorgon.Examples
 {
@@ -67,7 +67,7 @@ namespace Gorgon.Examples
         // The engine glow for the sprite.
         private static readonly GorgonSprite[] _engineGlow = new GorgonSprite[3];
         // The index for the glow animation frame.
-        private static int _glowIndex = 0;
+        private static int _glowIndex;
         // The last time index.
         private static IGorgonTimer _glowAnimTimer;
         // Flag to indicate that the ship should float left.

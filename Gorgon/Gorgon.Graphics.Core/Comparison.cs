@@ -25,6 +25,7 @@
 #endregion
 
 // ReSharper disable InconsistentNaming
+using System.Diagnostics.CodeAnalysis;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
@@ -32,7 +33,7 @@ namespace Gorgon.Graphics.Core
     /// <summary>
     /// Defines a type of comparison to perform for a comparison operation (e.g. depth compare).
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue")]
+    [SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue")]
     public enum Comparison
     {
         /// <summary>

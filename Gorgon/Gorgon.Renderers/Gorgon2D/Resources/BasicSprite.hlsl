@@ -14,7 +14,7 @@ struct GorgonSpriteVertex
    float4 position : SV_POSITION;
    float4 color : COLOR;
    float3 uv : TEXCOORD;
-   float angle : ANGLE;
+   float2 angle : ANGLE;
 };
 
 // The transformation matrices (for vertex shader).

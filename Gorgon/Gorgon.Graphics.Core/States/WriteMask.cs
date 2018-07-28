@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
 {
@@ -35,14 +36,14 @@ namespace Gorgon.Graphics.Core
     public enum WriteMask
     {
         /// <summary>The red channel will be written.</summary>
-        Red = SharpDX.Direct3D11.ColorWriteMaskFlags.Red,
+        Red = ColorWriteMaskFlags.Red,
         /// <summary>The green channel will be written.</summary>
-        Green = SharpDX.Direct3D11.ColorWriteMaskFlags.Green,
+        Green = ColorWriteMaskFlags.Green,
         /// <summary>The blue channel will be written.</summary>
-        Blue = SharpDX.Direct3D11.ColorWriteMaskFlags.Blue,
+        Blue = ColorWriteMaskFlags.Blue,
         /// <summary>The alpha channel will be written.</summary>
-        Alpha = SharpDX.Direct3D11.ColorWriteMaskFlags.Alpha,
+        Alpha = ColorWriteMaskFlags.Alpha,
         /// <summary>All channels will be written.</summary>
-        All = SharpDX.Direct3D11.ColorWriteMaskFlags.All
+        All = ColorWriteMaskFlags.All
     }
 }

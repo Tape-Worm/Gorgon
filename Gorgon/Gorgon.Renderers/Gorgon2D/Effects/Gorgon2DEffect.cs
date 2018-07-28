@@ -26,15 +26,34 @@
 
 using System;
 using System.Collections.Generic;
-using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
+using DX = SharpDX;
 
 namespace Gorgon.Renderers
 {
+    /// <summary>
+    /// A state that tells the effect how to proceed prior to rendering a pass.
+    /// </summary>
+    public enum PassContinuationState
+    {
+        /// <summary>
+        /// Continue to the next pass.
+        /// </summary>
+        Continue = 0,
+        /// <summary>
+        /// Skip this pass and move on to the next.
+        /// </summary>
+        Skip = 1,
+        /// <summary>
+        /// Stop rendering entirely.
+        /// </summary>
+        Stop = 2
+    }
+
     /// <summary>
     /// A base class used to implement special effects for 2D rendering.
     /// </summary>
@@ -184,15 +203,16 @@ namespace Gorgon.Renderers
         /// Function called prior to rendering a pass.
         /// </summary>
         /// <param name="passIndex">The index of the pass to render.</param>
-        /// <returns><b>true</b> if rendering the current pass should continue, or <b>false</b> if not.</returns>
+        /// <returns>A <see cref="PassContinuationState"/> to instruct the effect on how to proceed.</returns>
         /// <remarks>
         /// <para>
         /// Applications can use this to set up per-pass states and other configuration settings prior to executing a single render pass.
         /// </para>
         /// </remarks>
-        protected virtual bool OnBeforeRenderPass(int passIndex)
+        /// <seealso cref="PassContinuationState"/>
+        protected virtual PassContinuationState OnBeforeRenderPass(int passIndex)
         {
-            return true;
+            return PassContinuationState.Continue;
         }
 
         /// <summary>
@@ -294,7 +314,14 @@ namespace Gorgon.Renderers
             {
                 Gorgon2DBatchState batchState = OnGetBatchState(i, stateChanged);
 
-                OnBeforeRenderPass(i);
+                switch (OnBeforeRenderPass(i))
+                {
+                    case PassContinuationState.Skip:
+                        continue;
+                    case PassContinuationState.Stop:
+                        return;
+                }
+
                 OnRenderPass(i, batchState, camera);
                 OnAfterRenderPass(i);
             }
@@ -376,7 +403,13 @@ namespace Gorgon.Renderers
             {
                 Gorgon2DBatchState batchState = OnGetBatchState(i, stateChanged);
 
-                OnBeforeRenderPass(i);
+                switch (OnBeforeRenderPass(i))
+                {
+                    case PassContinuationState.Skip:
+                        continue;
+                    case PassContinuationState.Stop:
+                        return;
+                }
 
                 Renderer.Begin(batchState, camera);
                 Renderer.DrawFilledRectangle(region.Value, GorgonColor.White, texture, textureCoordinates, textureSampler: samplerStateOverride);

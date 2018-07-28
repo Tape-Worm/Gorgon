@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Security;
 using System.Security.Cryptography;
@@ -25,7 +26,7 @@ namespace Gorgon.Security
         /// </summary>
         /// <param name="keyData">Key data to extract.</param>
         /// <returns>A tuple containing the initialization vector, and the key.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "Once again, this thing has no fucking clue that the reader does not close the stream.")]
+        [SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "Once again, this thing has no fucking clue that the reader does not close the stream.")]
         private (byte[] IV, byte[] Key) GetSymmetricKey(byte[] keyData)
 		{
 		    if ((_ivKey.IV != null) && (_ivKey.Key != null) && (_ivKey.IV.Length > 0) && (_ivKey.Key.Length > 0))
@@ -62,7 +63,7 @@ namespace Gorgon.Security
 		/// <param name="data">The encrypted data stored in a byte array.</param>
 		/// <returns>The decrypted data as a byte array.</returns>
 		/// <exception cref="SecurityException">Thrown if no symmetric key was provided, or is invalid.</exception>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "This is fine.")]
+		[SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "This is fine.")]
 		public byte[] Decrypt(byte[] data)
 		{
 		    if ((_ivKey.IV == null) || (_ivKey.Key == null) || (_ivKey.IV.Length == 0) || (_ivKey.Key.Length == 0))
@@ -97,7 +98,7 @@ namespace Gorgon.Security
 		/// <param name="data">The data to encrypt, stored in a byte array.</param>
 		/// <returns>The encrypted data as a byte array.</returns>
 		/// <exception cref="SecurityException">Thrown if no symmetric key was provided, or is invalid.</exception>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "This is fine.")]
+		[SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "This is fine.")]
 		public byte[] Encrypt(byte[] data)
 		{
 			if ((_ivKey.IV == null) || (_ivKey.Key == null) || (_ivKey.IV.Length == 0) || (_ivKey.Key.Length == 0))

@@ -29,7 +29,7 @@ using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
 using SharpDX;
-using DXGI = SharpDX.DXGI;
+using SharpDX.DXGI;
 
 namespace Gorgon.Graphics.Core
 {
@@ -41,15 +41,15 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// No scaling type is specified.
         /// </summary>
-        Unspecified = DXGI.DisplayModeScaling.Unspecified,
+        Unspecified = DisplayModeScaling.Unspecified,
         /// <summary>
         /// Center the image on the display and keep the width and height.
         /// </summary>
-        Center = DXGI.DisplayModeScaling.Centered,
+        Center = DisplayModeScaling.Centered,
         /// <summary>
         /// Stretch the image to the full width and height of the native display width and height.
         /// </summary>
-        Stretch = DXGI.DisplayModeScaling.Stretched
+        Stretch = DisplayModeScaling.Stretched
     }
 
     /// <summary>
@@ -60,19 +60,19 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// The scanline ordering is not defined.
         /// </summary>
-        Unspecified = DXGI.DisplayModeScanlineOrder.Unspecified,
+        Unspecified = DisplayModeScanlineOrder.Unspecified,
         /// <summary>
         /// The image is scanned beginning with the lower field.
         /// </summary>
-        LowerFirst = DXGI.DisplayModeScanlineOrder.LowerFieldFirst,
+        LowerFirst = DisplayModeScanlineOrder.LowerFieldFirst,
         /// <summary>
         /// The image is scanned beginning with the upper field.
         /// </summary>
-        UpperFirst = DXGI.DisplayModeScanlineOrder.UpperFieldFirst,
+        UpperFirst = DisplayModeScanlineOrder.UpperFieldFirst,
         /// <summary>
         /// The image is progressively scanned.
         /// </summary>
-        Progressive = DXGI.DisplayModeScanlineOrder.Progressive
+        Progressive = DisplayModeScanlineOrder.Progressive
     }
 
     /// <summary>
@@ -264,7 +264,7 @@ namespace Gorgon.Graphics.Core
         /// Initializes a new instance of the <see cref="GorgonVideoMode" /> struct.
         /// </summary>
         /// <param name="modeDesc">The DXGI mode description to copy.</param>
-        internal GorgonVideoMode(DXGI.ModeDescription1 modeDesc)
+        internal GorgonVideoMode(ModeDescription1 modeDesc)
         {
             Width = modeDesc.Width;
             Height = modeDesc.Height;

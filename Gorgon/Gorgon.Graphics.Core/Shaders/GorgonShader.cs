@@ -31,7 +31,7 @@ using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.IO;
-using D3DCompiler = SharpDX.D3DCompiler;
+using SharpDX.D3DCompiler;
 
 namespace Gorgon.Graphics.Core
 {
@@ -91,14 +91,14 @@ namespace Gorgon.Graphics.Core
         // Flag to indicate whether the shader is compiled for debug.
 	    private bool _isDebug;
         // The D3D byte code for the shader.
-	    private D3DCompiler.ShaderBytecode _byteCode;
+	    private ShaderBytecode _byteCode;
         #endregion
 
         #region Properties.
 	    /// <summary>
 	    /// Property to return the shader byte code.
 	    /// </summary>
-	    internal D3DCompiler.ShaderBytecode D3DByteCode => _byteCode;
+	    internal ShaderBytecode D3DByteCode => _byteCode;
 
         /// <summary>
         /// Property to return the ID for the shader.
@@ -260,7 +260,7 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		public virtual void Dispose()
 		{
-		    D3DCompiler.ShaderBytecode byteCode = Interlocked.Exchange(ref _byteCode, null);
+		    ShaderBytecode byteCode = Interlocked.Exchange(ref _byteCode, null);
 
 		    if (byteCode == null)
 		    {
@@ -286,7 +286,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="name">The name for this shader.</param>
         /// <param name="isDebug"><b>true</b> if debug information is included in the byte code, <b>false</b> if not.</param>
         /// <param name="byteCode">The byte code for the shader.</param>
-        internal GorgonShader(GorgonGraphics graphics, string name, bool isDebug, D3DCompiler.ShaderBytecode byteCode)
+        internal GorgonShader(GorgonGraphics graphics, string name, bool isDebug, ShaderBytecode byteCode)
 			: base(name)
         {
             Graphics = graphics;

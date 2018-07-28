@@ -27,7 +27,7 @@
 using System;
 using System.Collections.Generic;
 using SharpDX.Direct3D;
-using DXGI = SharpDX.DXGI;
+using SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
@@ -93,10 +93,10 @@ namespace Gorgon.Graphics.Core
                 return;
             }
             
-            using (DXGI.Factory1 factory = new DXGI.Factory1())
-            using (DXGI.Adapter1 adapter = factory.GetAdapter1(output.Adapter.Index))
-            using (DXGI.Output giOutput = adapter.GetOutput(output.Index))
-            using (DXGI.Output1 giOutput1 = giOutput.QueryInterface<DXGI.Output1>())
+            using (Factory1 factory = new Factory1())
+            using (Adapter1 adapter = factory.GetAdapter1(output.Adapter.Index))
+            using (Output giOutput = adapter.GetOutput(output.Index))
+            using (Output1 giOutput1 = giOutput.QueryInterface<Output1>())
             using (D3D11.Device device = new D3D11.Device(adapter,
                                                             GorgonGraphics.IsDebugEnabled
                                                                 ? D3D11.DeviceCreationFlags.Debug
@@ -104,9 +104,9 @@ namespace Gorgon.Graphics.Core
                                                             FeatureLevel.Level_12_1,
                                                             FeatureLevel.Level_12_0))
             {
-                DXGI.ModeDescription1 matchMode = videoMode.ToModeDesc1();
+                ModeDescription1 matchMode = videoMode.ToModeDesc1();
 
-                giOutput1.FindClosestMatchingMode1(ref matchMode, out DXGI.ModeDescription1 mode, device);
+                giOutput1.FindClosestMatchingMode1(ref matchMode, out ModeDescription1 mode, device);
 
                 mode.ToGorgonVideoMode(out suggestedMode);
             }

@@ -26,9 +26,9 @@
 
 using System.Collections.Generic;
 using Gorgon.Graphics;
-using DX = SharpDX;
 using Gorgon.Graphics.Fonts;
 using Gorgon.UI;
+using DX = SharpDX;
 
 namespace Gorgon.Renderers
 {

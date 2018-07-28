@@ -31,8 +31,8 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.IO;
 using Gorgon.Math;
-using DX = SharpDX;
 using Gorgon.Properties;
+using DX = SharpDX;
 
 namespace Gorgon.Native
 {
@@ -269,10 +269,7 @@ namespace Gorgon.Native
                 throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, destIndex, count.Value));
             }
 
-            unsafe
-            {
-                Unsafe.CopyBlock(destination._memoryBlock + (destIndex * _typeSize), _memoryBlock + (sourceIndex * _typeSize), (uint)(count * _typeSize));
-            }
+            Unsafe.CopyBlock(destination._memoryBlock + (destIndex * _typeSize), _memoryBlock + (sourceIndex * _typeSize), (uint)(count * _typeSize));
         }
 
         /// <summary>
@@ -332,12 +329,9 @@ namespace Gorgon.Native
                 throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, destIndex, count.Value));
             }
 
-            unsafe
+            fixed (T* destPtr = &destination[destIndex])
             {
-                fixed (T* destPtr = &destination[destIndex])
-                {
-                    Unsafe.CopyBlock(destPtr, _memoryBlock + (sourceIndex * _typeSize), (uint)(count * _typeSize));
-                }                
+                Unsafe.CopyBlock(destPtr, _memoryBlock + (sourceIndex * _typeSize), (uint)(count * _typeSize));
             }
         }
 
@@ -382,13 +376,10 @@ namespace Gorgon.Native
             }
 
             var result = new T[count.Value];
-            
-            unsafe
+
+            fixed (T* destPtr = &result[0])
             {
-                fixed (T* destPtr = &result[0])
-                {
-                    Unsafe.CopyBlock(destPtr, _memoryBlock + (startIndex * _typeSize), (uint)(count * _typeSize));
-                }
+                Unsafe.CopyBlock(destPtr, _memoryBlock + (startIndex * _typeSize), (uint)(count * _typeSize));
             }
 
             return result;

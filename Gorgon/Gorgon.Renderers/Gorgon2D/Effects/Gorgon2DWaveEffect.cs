@@ -233,7 +233,7 @@ namespace Gorgon.Renderers
 
             var macros = new []
                          {
-                             new GorgonShaderMacro("WAVE_EFFECT"),
+                             new GorgonShaderMacro("WAVE_EFFECT")
                          };
 
             _waveShader = PixelShaderBuilder

@@ -30,11 +30,11 @@ using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics;
-using DX = SharpDX;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Native;
 using Gorgon.Renderers.Properties;
+using DX = SharpDX;
 
 namespace Gorgon.Renderers
 {
@@ -514,15 +514,17 @@ namespace Gorgon.Renderers
         }
 
         /// <summary>
-        /// Function called before a rendering pass begins.
+        /// Function called prior to rendering a pass.
         /// </summary>
-        /// <param name="passIndex">The current pass index.</param>
-        /// <returns><b>true</b> to continue rendering, or <b>false</b> to skip this pass and move to the next.</returns>
-        protected override bool OnBeforeRenderPass(int passIndex)
+        /// <param name="passIndex">The index of the pass to render.</param>
+        /// <returns>A <see cref="PassContinuationState" /> to instruct the effect on how to proceed.</returns>
+        /// <seealso cref="PassContinuationState" />
+        /// <remarks>Applications can use this to set up per-pass states and other configuration settings prior to executing a single render pass.</remarks>
+        protected override PassContinuationState OnBeforeRenderPass(int passIndex)
         {
             if (_blurRadius == 0)
             {
-                return false;
+                return PassContinuationState.Stop;
             }
 
             switch (passIndex)
@@ -537,7 +539,7 @@ namespace Gorgon.Renderers
                     break;
             }
 
-            return true;
+            return PassContinuationState.Continue;
         }
 
         /// <summary>

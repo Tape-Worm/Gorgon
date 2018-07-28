@@ -27,9 +27,9 @@
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using Gorgon.Windows.Properties;
 using Gorgon.Native;
 using Gorgon.UI;
+using Gorgon.Windows.Properties;
 
 namespace Gorgon.Timing
 {

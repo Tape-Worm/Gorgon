@@ -25,10 +25,10 @@
 #endregion
 
 using System;
-using DX = SharpDX;
 using System.Collections.Generic;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
+using DX = SharpDX;
 
 
 namespace Gorgon.Graphics.Core

@@ -223,21 +223,18 @@ namespace Gorgon.Renderers
             Graphics.SetRenderTarget(_prevRtv, _prevDsv);
 	    }
 
-	    /// <summary>
-	    /// Function called prior to rendering a pass.
-	    /// </summary>
-	    /// <param name="passIndex">The index of the pass to render.</param>
-	    /// <returns><b>true</b> if rendering the current pass should continue, or <b>false</b> if not.</returns>
-	    /// <remarks>
-	    /// <para>
-	    /// Applications can use this to set up per-pass states and other configuration settings prior to executing a single render pass.
-	    /// </para>
-	    /// </remarks>
-	    protected override bool OnBeforeRenderPass(int passIndex)
+        /// <summary>
+        /// Function called prior to rendering a pass.
+        /// </summary>
+        /// <param name="passIndex">The index of the pass to render.</param>
+        /// <returns>A <see cref="PassContinuationState" /> to instruct the effect on how to proceed.</returns>
+        /// <seealso cref="PassContinuationState" />
+        /// <remarks>Applications can use this to set up per-pass states and other configuration settings prior to executing a single render pass.</remarks>
+        protected override PassContinuationState OnBeforeRenderPass(int passIndex)
 	    {
 			if ((_displacementTarget == null) || (_backgroundView == null))
 			{
-				return false;
+				return PassContinuationState.Stop;
 			}
 
 	        switch (passIndex)
@@ -251,7 +248,7 @@ namespace Gorgon.Renderers
                     break;
 	        }
 
-			return true;
+			return PassContinuationState.Continue;
 		}
 
 	    /// <summary>
@@ -321,8 +318,8 @@ namespace Gorgon.Renderers
         /// <param name="camera">[Optional] The camera to use when rendering.</param>
         /// <remarks>
         /// <para>
-        /// The <paramref name="displacementRender"/> is a method that users can define to draw whatever is needed as grayscale.  When this method is called, the <see cref="Gorgon2D.Begin"/> and
-        /// <see cref="Gorgon2D.End"/> methods are already taken care of by the effect and will not need to be called during the callback.
+        /// The <paramref name="displacementRender"/> is a method that users can define to draw whatever will displace the underlying <paramref name="backgroundImage"/>.  When this method is called, the
+        /// <see cref="Gorgon2D.Begin"/> and <see cref="Gorgon2D.End"/> methods are already taken care of by the effect and will not need to be called during the callback.
         /// </para>
         /// <para>
         /// <note type="warning">

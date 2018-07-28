@@ -26,9 +26,9 @@
 
 using System;
 using Gorgon.Core;
-using Gorgon.Math;
 using Gorgon.Graphics.Core.Properties;
-using DXGI = SharpDX.DXGI;
+using Gorgon.Math;
+using SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
@@ -179,7 +179,7 @@ namespace Gorgon.Graphics.Core
 		/// Initializes a new instance of the <see cref="GorgonMultisampleInfo"/> struct.
 		/// </summary>
 		/// <param name="sampleDesc">The DXGI sample description.</param>
-		internal GorgonMultisampleInfo(DXGI.SampleDescription sampleDesc)
+		internal GorgonMultisampleInfo(SampleDescription sampleDesc)
 		{
 			Count = sampleDesc.Count.Max(1).Min(D3D11.Device.MultisampleCountMaximum);
 			Quality = sampleDesc.Quality;

@@ -24,10 +24,10 @@
 // 
 #endregion
 
-using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Math;
+using DX = SharpDX;
 
 namespace Gorgon.Renderers
 {

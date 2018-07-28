@@ -25,11 +25,11 @@
 #endregion
 
 using System;
-using DX = SharpDX;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Example;
 using Gorgon.Math;
 using Gorgon.Native;
+using DX = SharpDX;
 
 namespace GorgonLibrary.Example
 {

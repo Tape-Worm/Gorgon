@@ -24,6 +24,8 @@
 // 
 #endregion
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace Gorgon.Core
 {
 	/// <summary>
@@ -55,7 +57,7 @@ namespace Gorgon.Core
 		/// </code>
 		/// </para>
 		/// </remarks>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", MessageId = "397*previousHash", Justification = "We DON'T CARE if this overflows.  That's why we have unchecked you idiot.")]
+		[SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", MessageId = "397*previousHash", Justification = "We DON'T CARE if this overflows.  That's why we have unchecked you idiot.")]
 		public static int GenerateHash<T>(this int previousHash, T item)
 		{
 			unchecked

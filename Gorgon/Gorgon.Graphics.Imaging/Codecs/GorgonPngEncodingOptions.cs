@@ -24,9 +24,9 @@
 // 
 #endregion
 
-using WIC = SharpDX.WIC;
 using Gorgon.Configuration;
 using Gorgon.Graphics.Imaging.Properties;
+using SharpDX.WIC;
 
 namespace Gorgon.Graphics.Imaging.Codecs
 {
@@ -38,31 +38,31 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <summary>
 		/// The system will chose the best filter based on the image data.
 		/// </summary>
-		DontCare = WIC.PngFilterOption.Unspecified,
+		DontCare = PngFilterOption.Unspecified,
 		/// <summary>
 		/// No filtering.
 		/// </summary>
-		None = WIC.PngFilterOption.None,
+		None = PngFilterOption.None,
 		/// <summary>
 		/// Sub filtering.
 		/// </summary>
-		Sub = WIC.PngFilterOption.Sub,
+		Sub = PngFilterOption.Sub,
 		/// <summary>
 		/// Up filtering.
 		/// </summary>
-		Up = WIC.PngFilterOption.Up,
+		Up = PngFilterOption.Up,
 		/// <summary>
 		/// Average filtering.
 		/// </summary>
-		Average = WIC.PngFilterOption.Average,
+		Average = PngFilterOption.Average,
 		/// <summary>
 		/// Paeth filtering.
 		/// </summary>
-		Paeth = WIC.PngFilterOption.Paeth,
+		Paeth = PngFilterOption.Paeth,
 		/// <summary>
 		/// Adaptive filtering.  The system will choose the best filter based on a per-scanline basis.
 		/// </summary>
-		Adaptive = WIC.PngFilterOption.Adaptive
+		Adaptive = PngFilterOption.Adaptive
 	}
 
 	/// <summary>

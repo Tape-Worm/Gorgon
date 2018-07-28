@@ -28,11 +28,11 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.Timing;
 using Gorgon.UI;
+using DX = SharpDX;
 
 namespace Gorgon.Graphics.Example
 {

@@ -26,7 +26,7 @@
 
 using System.Collections.Generic;
 using Gorgon.Graphics.Imaging.Properties;
-using WIC = SharpDX.WIC;
+using SharpDX.WIC;
 
 namespace Gorgon.Graphics.Imaging.Codecs
 {
@@ -80,7 +80,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// Initializes a new instance of the <see cref="GorgonCodecBmp"/> class.
         /// </summary>
         public GorgonCodecBmp()
-            : base("BMP", Resources.GORIMG_DESC_BMP_CODEC, new[] { "bmp", "dib" }, WIC.ContainerFormatGuids.Bmp, null, null)
+            : base("BMP", Resources.GORIMG_DESC_BMP_CODEC, new[] { "bmp", "dib" }, ContainerFormatGuids.Bmp, null, null)
         {
         }
         #endregion

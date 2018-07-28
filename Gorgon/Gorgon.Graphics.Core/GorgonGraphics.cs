@@ -35,11 +35,11 @@ using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
 using Gorgon.Native;
+using SharpDX.DXGI;
 using SharpDX.Mathematics.Interop;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D;
 using D3D11 = SharpDX.Direct3D11;
-using DXGI =  SharpDX.DXGI;
 
 namespace Gorgon.Graphics.Core
 {
@@ -208,10 +208,10 @@ namespace Gorgon.Graphics.Core
         private D3D11.Device5 _d3DDevice;
 
         // The DXGI adapter.
-        private DXGI.Adapter4 _dxgiAdapter;
+        private Adapter4 _dxgiAdapter;
 
         // The DXGI factory
-        private DXGI.Factory5 _dxgiFactory;
+        private Factory5 _dxgiFactory;
 
         // The render targets currently bound to the pipeline.
         private readonly GorgonRenderTargetView[] _renderTargets = new GorgonRenderTargetView[D3D11.OutputMergerStage.SimultaneousRenderTargetCount];
@@ -290,12 +290,12 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the selected DXGI video adapter for this graphics instance.
         /// </summary>
-        internal DXGI.Adapter4 DXGIAdapter => _dxgiAdapter;
+        internal Adapter4 DXGIAdapter => _dxgiAdapter;
 
         /// <summary>
         /// Property to return the DXGI factory used to create DXGI objects.
         /// </summary>
-        internal DXGI.Factory5 DXGIFactory => _dxgiFactory;
+        internal Factory5 DXGIFactory => _dxgiFactory;
 
         /// <summary>
         /// Property to return the number of draw calls since the last frame.
@@ -927,12 +927,12 @@ namespace Gorgon.Graphics.Core
             if (indexBuffer != null)
             {
                 D3DDeviceContext.InputAssembler.SetIndexBuffer(indexBuffer.Native,
-                                                               indexBuffer.Use16BitIndices ? DXGI.Format.R16_UInt : DXGI.Format.R32_UInt,
+                                                               indexBuffer.Use16BitIndices ? Format.R16_UInt : Format.R32_UInt,
                                                                0);
             }
             else
             {
-                D3DDeviceContext.InputAssembler.SetIndexBuffer(null, DXGI.Format.Unknown, 0);
+                D3DDeviceContext.InputAssembler.SetIndexBuffer(null, Format.Unknown, 0);
             }
         }
 
@@ -1897,7 +1897,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="device">The D3D 11 device to use.</param>
         /// <param name="format">The DXGI format support to evaluate.</param>
         /// <returns>A <see cref="GorgonMultisampleInfo"/> value containing the max count and max quality level.</returns>
-        private GorgonMultisampleInfo GetMultisampleSupport(D3D11.Device5 device, DXGI.Format format)
+        private GorgonMultisampleInfo GetMultisampleSupport(D3D11.Device5 device, Format format)
         {
             try
             {
@@ -1927,22 +1927,22 @@ namespace Gorgon.Graphics.Core
         /// <param name="adapterInfo">The adapter to use.</param>
         /// <param name="requestedFeatureLevel">The requested feature set for the device.</param>
         /// <returns>A tuple containing the Direct3D device object, DXGI factory, DXGI video adapter, and actual feature set.</returns>
-        private (D3D11.Device5, DXGI.Factory5, DXGI.Adapter4) CreateDevice(IGorgonVideoAdapterInfo adapterInfo, D3D.FeatureLevel requestedFeatureLevel)
+        private (D3D11.Device5, Factory5, Adapter4) CreateDevice(IGorgonVideoAdapterInfo adapterInfo, D3D.FeatureLevel requestedFeatureLevel)
         {
             D3D11.DeviceCreationFlags flags = IsDebugEnabled ? D3D11.DeviceCreationFlags.Debug : D3D11.DeviceCreationFlags.None;
-            DXGI.Factory5 resultFactory;
-            DXGI.Adapter4 resultAdapter;
+            Factory5 resultFactory;
+            Adapter4 resultAdapter;
             D3D11.Device5 resultDevice;
 
-            using (DXGI.Factory2 factory2 = new DXGI.Factory2(IsDebugEnabled))
+            using (Factory2 factory2 = new Factory2(IsDebugEnabled))
             {
-                resultFactory = factory2.QueryInterface<DXGI.Factory5>();
+                resultFactory = factory2.QueryInterface<Factory5>();
 
-                using (DXGI.Adapter adapter = (adapterInfo.VideoDeviceType == VideoDeviceType.Hardware
+                using (Adapter adapter = (adapterInfo.VideoDeviceType == VideoDeviceType.Hardware
                                                    ? resultFactory.GetAdapter1(adapterInfo.Index)
                                                    : resultFactory.GetWarpAdapter()))
                 {
-                    resultAdapter = adapter.QueryInterface<DXGI.Adapter4>();
+                    resultAdapter = adapter.QueryInterface<Adapter4>();
 
                     using (D3D11.Device device = new D3D11.Device(resultAdapter, flags, requestedFeatureLevel)
                                                  {
@@ -1974,7 +1974,7 @@ namespace Gorgon.Graphics.Core
             // Get support values for each format.
             foreach (BufferFormat format in formats)
             {
-                DXGI.Format dxgiFormat = (DXGI.Format)format;
+                Format dxgiFormat = (Format)format;
 
                 // NOTE: NV12 seems to come back as value of -92093664, no idea what the extra flags might be, the documentation for D3D doesn't
                 //       specify the flags.
@@ -2719,26 +2719,17 @@ namespace Gorgon.Graphics.Core
             // These slots will now be empty.
             for (int i = 0; i < rtvCount; ++i)
             {
-                ref GorgonRenderTargetView view = ref _renderTargets[i];
-                view = renderTargets[i];
+                _renderTargets[i] = i < rtvCount ? renderTargets[i] : null;
             }
 
-                if (rtvCount < _renderTargets.Length)
-                {
-                    for (int i = rtvCount; i < _renderTargets.Length; ++i)
-                    {
-                        _renderTargets[i] = null;
-                    }
-                }
+            DX.ViewportF viewport = default;
 
-                DX.ViewportF viewport = default;
+            if (_renderTargets[0] != null)
+            {
+                viewport = new DX.ViewportF(0, 0, renderTargets[0].Width, renderTargets[0].Height);
+            }
 
-                if (_renderTargets[0] != null)
-                {
-                    viewport = new DX.ViewportF(0, 0, renderTargets[0].Width, renderTargets[0].Height);
-                }
-
-                SetViewport(ref viewport);
+            SetViewport(ref viewport);
 
             OnDepthStencilChanging();
 
@@ -3194,8 +3185,8 @@ namespace Gorgon.Graphics.Core
         {
             D3D11.DeviceContext4 context = Interlocked.Exchange(ref _d3DDeviceContext, null);
             D3D11.Device5 device = Interlocked.Exchange(ref _d3DDevice, null);
-            DXGI.Adapter4 adapter = Interlocked.Exchange(ref _dxgiAdapter, null);
-            DXGI.Factory5 factory = Interlocked.Exchange(ref _dxgiFactory, null);
+            Adapter4 adapter = Interlocked.Exchange(ref _dxgiAdapter, null);
+            Factory5 factory = Interlocked.Exchange(ref _dxgiFactory, null);
             Lazy<TextureBlitter> blitter = Interlocked.Exchange(ref _textureBlitter, null);
 
             // If these are all gone, then we've already disposed.
@@ -3312,7 +3303,7 @@ namespace Gorgon.Graphics.Core
             Log.Print($"Using video adapter '{videoAdapterInfo.Name}' at feature set [{featureSet.Value}] for Direct 3D 11.4.", LoggingLevel.Simple);
 
             // Build up the required device objects to pass in to the constructor.
-            (D3D11.Device5 device, DXGI.Factory5 factory, DXGI.Adapter4 adapter) = CreateDevice(videoAdapterInfo, (D3D.FeatureLevel)featureSet.Value);
+            (D3D11.Device5 device, Factory5 factory, Adapter4 adapter) = CreateDevice(videoAdapterInfo, (D3D.FeatureLevel)featureSet.Value);
             _dxgiFactory = factory;
             _dxgiAdapter = adapter;
             _d3DDevice = device;

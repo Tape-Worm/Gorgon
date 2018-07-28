@@ -27,9 +27,9 @@
 using System.Runtime.CompilerServices;
 using Gorgon.Core;
 using Gorgon.Graphics;
-using DX = SharpDX;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
+using DX = SharpDX;
 
 namespace Gorgon.Renderers
 {

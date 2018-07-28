@@ -25,7 +25,7 @@
 #endregion
 
 using System;
-using DXGI = SharpDX.DXGI;
+using SharpDX.DXGI;
 
 namespace Gorgon.Graphics.Core
 {
@@ -122,14 +122,14 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="desc">The DXGI swap chain description to copy from.</param>
         /// <param name="name">[Optional] The name of the swap chain.</param>
-        internal GorgonSwapChainInfo(in DXGI.SwapChainDescription1 desc, string name = null)
+        internal GorgonSwapChainInfo(in SwapChainDescription1 desc, string name = null)
                     : this(name)
         {
             Format = (BufferFormat)desc.Format;
             Width = desc.Width;
             Height = desc.Height;
-            UseFlipMode = desc.SwapEffect == DXGI.SwapEffect.FlipSequential;
-            StretchBackBuffer = desc.Scaling != DXGI.Scaling.None;
+            UseFlipMode = desc.SwapEffect == SwapEffect.FlipSequential;
+            StretchBackBuffer = desc.Scaling != Scaling.None;
         }
 
         /// <summary>

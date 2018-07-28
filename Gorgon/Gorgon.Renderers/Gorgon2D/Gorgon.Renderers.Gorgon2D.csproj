@@ -64,6 +64,7 @@
     <Compile Include="Cameras\Gorgon2DPerspectiveCamera.cs" />
     <Compile Include="Effects\Gorgon2D1BitEffect.cs" />
     <Compile Include="Effects\Gorgon2DBurnDodgeEffect.cs" />
+    <Compile Include="Effects\Gorgon2DDeferredLightingEffect.cs" />
     <Compile Include="Effects\Gorgon2DDisplacementEffect.cs" />
     <Compile Include="Effects\Gorgon2DEffect.cs" />
     <Compile Include="Effects\Gorgon2DGaussBlurEffect.cs" />
@@ -74,6 +75,7 @@
     <Compile Include="Effects\Gorgon2DSharpenEmbossEffect.cs" />
     <Compile Include="Effects\Gorgon2DSobelEdgeDetectEffect.cs" />
     <Compile Include="Effects\Gorgon2DWaveEffect.cs" />
+    <Compile Include="Effects\Gorgon2DLight.cs" />
     <Compile Include="Effects\_Interfaces\IGorgon2DTextureDrawEffect.cs" />
     <Compile Include="Gorgon2D.cs" />
     <Compile Include="Renderables\GorgonTrianglePoint.cs" />
@@ -106,6 +108,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\Lighting.hlsl" />
     <None Include="Resources\White_2x2.png" />
     <None Include="Resources\Icons.png" />
     <None Include="Resources\FilmGrain.hlsl" />

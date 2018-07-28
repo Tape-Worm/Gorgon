@@ -25,9 +25,9 @@
 #endregion
 
 using System;
+using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.CompilerServices;
-using Drawing = System.Drawing;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.Math;
@@ -121,7 +121,7 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
         /// <exception cref="GorgonException">Thrown if the <paramref name="buffer"/> is not a 32 bit <c>R8G8B8A8</c> format, or <c>B8G8R8*</c> format.</exception>
         /// <remarks>
         /// <para>
-        /// This method will take a <see cref="IGorgonImageBuffer"/> and copy its data into a new 2D <seealso cref="Drawing.Bitmap"/>. 
+        /// This method will take a <see cref="IGorgonImageBuffer"/> and copy its data into a new 2D <seealso cref="System.Drawing.Bitmap"/>. 
         /// </para>
         /// <para>
         /// Some format conversion is performed on the <paramref name="buffer"/> when it is imported. The format conversion will always convert to a pixel format of <c>Format32bppArgb</c> or 
@@ -172,7 +172,7 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
         /// If the source <paramref name="buffer"/> does not support any of the formats on the lists, then an exception will be thrown.
         /// </para>
         /// </remarks>
-	    public static Drawing.Bitmap ToBitmap(this IGorgonImageBuffer buffer)
+	    public static Bitmap ToBitmap(this IGorgonImageBuffer buffer)
 	    {
 	        if (buffer == null)
 	        {
@@ -207,11 +207,11 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
 	                throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, buffer.Format));
 	        }
 
-            var result = new Drawing.Bitmap(buffer.Width, buffer.Height, pixelFormat);
+            var result = new Bitmap(buffer.Width, buffer.Height, pixelFormat);
 
 	        unsafe
 	        {
-	            BitmapData destData = result.LockBits(new Drawing.Rectangle(0, 0, result.Width, result.Height), ImageLockMode.WriteOnly, pixelFormat);
+	            BitmapData destData = result.LockBits(new Rectangle(0, 0, result.Width, result.Height), ImageLockMode.WriteOnly, pixelFormat);
 
 	            try
 	            {
@@ -263,7 +263,7 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
         /// </exception>
         /// <remarks>
         /// <para>
-        /// This method will take a <see cref="IGorgonImageBuffer"/> and copy its data into a new 2D <see cref="Drawing.Bitmap"/>. The <paramref name="buffer"/> and the <paramref name="bitmap"/> must have 
+        /// This method will take a <see cref="IGorgonImageBuffer"/> and copy its data into a new 2D <see cref="System.Drawing.Bitmap"/>. The <paramref name="buffer"/> and the <paramref name="bitmap"/> must have 
         /// an identical width and height. Otherwise, an exception will be thrown.
         /// </para>
         /// <para>
@@ -312,7 +312,7 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
         /// If the source <paramref name="buffer"/> does not support any of the formats on the lists, then an exception will be thrown.
         /// </para>
         /// </remarks>
-	    public static void CopyTo(this IGorgonImageBuffer buffer, Drawing.Bitmap bitmap)
+	    public static void CopyTo(this IGorgonImageBuffer buffer, Bitmap bitmap)
 	    {
 	        if (buffer == null)
 	        {
@@ -361,7 +361,7 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
 
 	        unsafe
 	        {
-	            BitmapData destData = bitmap.LockBits(new Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.WriteOnly, bitmap.PixelFormat);
+	            BitmapData destData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.WriteOnly, bitmap.PixelFormat);
 
 	            try
 	            {
@@ -403,7 +403,7 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
         /// </exception>
         /// <remarks>
         /// <para>
-        /// This method will take a <see cref="IGorgonImageBuffer"/> and copy its data into a new 2D <see cref="Drawing.Bitmap"/>. The <paramref name="buffer"/> and the <paramref name="bitmap"/> must have 
+        /// This method will take a <see cref="IGorgonImageBuffer"/> and copy its data into a new 2D <see cref="System.Drawing.Bitmap"/>. The <paramref name="buffer"/> and the <paramref name="bitmap"/> must have 
         /// an identical width and height. Otherwise, an exception will be thrown.
         /// </para>
         /// <para>
@@ -452,7 +452,7 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
         /// If the source <paramref name="buffer"/> does not support any of the formats on the lists, then an exception will be thrown.
         /// </para>
         /// </remarks>
-	    public static void CopyTo(this Drawing.Bitmap bitmap, IGorgonImageBuffer buffer)
+	    public static void CopyTo(this Bitmap bitmap, IGorgonImageBuffer buffer)
 	    {
 	        if (bitmap == null)
 	        {
@@ -501,7 +501,7 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
 
 	        unsafe
 	        {
-	            BitmapData srcData = bitmap.LockBits(new Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
+	            BitmapData srcData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
 
 	            try
 	            {
@@ -530,15 +530,15 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
 	    }
 
         /// <summary>
-        /// Function to convert a <see cref="Drawing.Bitmap"/> into a <seealso cref="IGorgonImage"/>.
+        /// Function to convert a <see cref="System.Drawing.Bitmap"/> into a <seealso cref="IGorgonImage"/>.
         /// </summary>
-        /// <param name="bitmap">The <seealso cref="Drawing.Bitmap"/> to convert.</param>
-        /// <returns>A new <seealso cref="IGorgonImage"/> containing the data from the <seealso cref="Drawing.Bitmap"/>.</returns>
+        /// <param name="bitmap">The <seealso cref="System.Drawing.Bitmap"/> to convert.</param>
+        /// <returns>A new <seealso cref="IGorgonImage"/> containing the data from the <seealso cref="System.Drawing.Bitmap"/>.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="bitmap"/> parameter is <b>null</b>.</exception>
         /// <exception cref="GorgonException">Thrown if the <paramref name="bitmap"/> is not <see cref="PixelFormat.Format32bppArgb"/>.</exception>
         /// <remarks>
         /// <para>
-        /// This method will take a 2D <see cref="Drawing.Bitmap"/> and copy its data into a new 2D <seealso cref="IGorgonImage"/>. The resulting <seealso cref="IGorgonImage"/> will only contain 1 array level, 
+        /// This method will take a 2D <see cref="System.Drawing.Bitmap"/> and copy its data into a new 2D <seealso cref="IGorgonImage"/>. The resulting <seealso cref="IGorgonImage"/> will only contain 1 array level, 
         /// and no mip map levels.
         /// </para>
         /// <para>
@@ -561,7 +561,7 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
         /// If the source <paramref name="bitmap"/> does not support any of the formats on the list, then an exception will be thrown.
         /// </para>
         /// </remarks>
-        public static IGorgonImage ToGorgonImage(this Drawing.Bitmap bitmap)
+        public static IGorgonImage ToGorgonImage(this Bitmap bitmap)
 		{
 			if (bitmap == null)
 			{
@@ -587,7 +587,7 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
 
 			try
 			{
-				bitmapLock = bitmap.LockBits(new Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
+				bitmapLock = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
 
 			    if ((bitmap.PixelFormat == PixelFormat.Format32bppArgb)
                     || (bitmap.PixelFormat == PixelFormat.Format32bppPArgb)

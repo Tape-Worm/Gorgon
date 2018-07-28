@@ -26,7 +26,8 @@
 
 using Gorgon.Core;
 using Gorgon.Diagnostics;
-using DXGI = SharpDX.DXGI;
+using SharpDX.Direct3D;
+using SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
@@ -129,8 +130,8 @@ namespace Gorgon.Graphics.Core
 
             var desc = new D3D11.ShaderResourceViewDescription1
                        {
-                           Format = DXGI.Format.Unknown,
-                           Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.ExtendedBuffer,
+                           Format = Format.Unknown,
+                           Dimension = ShaderResourceViewDimension.ExtendedBuffer,
                            BufferEx = new D3D11.ShaderResourceViewDescription.ExtendedBufferResource
                                       {
                                           FirstElement = StartElement,

@@ -28,8 +28,8 @@ using System;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Math;
+using SharpDX.DXGI;
 using DX = SharpDX;
-using DXGI = SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
@@ -170,7 +170,7 @@ namespace Gorgon.Graphics.Core
 
             D3D11.RenderTargetViewDescription1 desc = new D3D11.RenderTargetViewDescription1
                                                       {
-                                                          Format = (DXGI.Format)Format,
+                                                          Format = (Format)Format,
                                                           Dimension = D3D11.RenderTargetViewDimension.Texture3D,
                                                           Texture3D =
                                                           {

@@ -25,10 +25,10 @@
 #endregion
 
 using System;
-using DXGI = SharpDX.DXGI;
-using D3D11 = SharpDX.Direct3D11;
-using Gorgon.Diagnostics;
 using Gorgon.Core;
+using Gorgon.Diagnostics;
+using SharpDX.DXGI;
+using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
 {
@@ -112,7 +112,7 @@ namespace Gorgon.Graphics.Core
                                                                  ElementCount = ElementCount,
                                                                  Flags = D3D11.UnorderedAccessViewBufferFlags.None
                                                              },
-                                                             Format = (DXGI.Format)Format
+                                                             Format = (Format)Format
                                                          };
 
             Native = new D3D11.UnorderedAccessView1(Resource.Graphics.D3DDevice, Resource.D3DResource, desc)

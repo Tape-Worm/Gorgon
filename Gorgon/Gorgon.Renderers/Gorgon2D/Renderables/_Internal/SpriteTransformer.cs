@@ -24,8 +24,8 @@
 // 
 #endregion
 
-using DX = SharpDX;
 using Gorgon.Graphics;
+using DX = SharpDX;
 
 namespace Gorgon.Renderers
 {
@@ -150,41 +150,41 @@ namespace Gorgon.Renderers
                 v1.Position.X = (localCorners.X * angleCos - localCorners.Y * angleSin) + bounds.X + cornerUpperLeft.X;
                 v1.Position.Y = (localCorners.X * angleSin + localCorners.Y * angleCos) + bounds.Y + cornerUpperLeft.Y;
                 v1.Position.Z = depth + cornerUpperLeft.Z;
-                v1.Angle = angleRads;
+                v1.Angle = new DX.Vector2(angleCos, angleSin);
 
                 v2.Position.X = (localCorners.Z * angleCos - localCorners.Y * angleSin) + bounds.X + cornerUpperRight.X;
                 v2.Position.Y = (localCorners.Z * angleSin + localCorners.Y * angleCos) + bounds.Y + cornerUpperRight.Y;
                 v2.Position.Z = depth + cornerUpperRight.Z;
-                v2.Angle = angleRads;
+                v2.Angle = new DX.Vector2(angleCos, angleSin);
 
                 v3.Position.X = (localCorners.X * angleCos - localCorners.W * angleSin) + bounds.X + cornerLowerLeft.X;
                 v3.Position.Y = (localCorners.X * angleSin + localCorners.W * angleCos) + bounds.Y + cornerLowerLeft.Y;
                 v3.Position.Z = depth + cornerLowerLeft.Z;
-                v3.Angle = angleRads;
+                v3.Angle = new DX.Vector2(angleCos, angleSin);
 
                 v4.Position.X = (localCorners.Z * angleCos - localCorners.W * angleSin) + bounds.X + cornerLowerRight.X;
                 v4.Position.Y = (localCorners.Z * angleSin + localCorners.W * angleCos) + bounds.Y + cornerLowerRight.Y;
                 v4.Position.Z = depth + cornerLowerRight.Z;
-                v4.Angle = angleRads;
+                v4.Angle = new DX.Vector2(angleCos, angleSin);
             }
             else
             {
                 v1.Position.X = localCorners.X + bounds.X + cornerUpperLeft.X;
                 v1.Position.Y = localCorners.Y + bounds.Y + cornerUpperLeft.Y;
                 v1.Position.Z = depth + cornerUpperLeft.Z;
-                v1.Angle = 0.0f;
+                v1.Angle = DX.Vector2.UnitX;
                 v2.Position.X = localCorners.Z + bounds.X + cornerUpperRight.X;
                 v2.Position.Y = localCorners.Y + bounds.Y + cornerUpperRight.Y;
                 v2.Position.Z = depth + cornerUpperRight.Z;
-                v2.Angle = 0.0f;
+                v2.Angle = DX.Vector2.UnitX;
                 v3.Position.X = localCorners.X + bounds.X + cornerLowerLeft.X;
                 v3.Position.Y = localCorners.W + bounds.Y + cornerLowerLeft.Y;
                 v3.Position.Z = depth + cornerLowerLeft.Z;
-                v3.Angle = 0.0f;
+                v3.Angle = DX.Vector2.UnitX;
                 v4.Position.X = localCorners.Z + bounds.X + cornerLowerRight.X;
                 v4.Position.Y = localCorners.W + bounds.Y + cornerLowerRight.Y;
                 v4.Position.Z = depth + cornerLowerRight.Z;
-                v4.Angle = 0.0f;
+                v4.Angle = DX.Vector2.UnitX;
             }
         }
 

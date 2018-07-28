@@ -27,8 +27,8 @@
 using System.IO;
 using System.Threading;
 using Gorgon.Diagnostics;
+using SharpDX.D3DCompiler;
 using D3D11 = SharpDX.Direct3D11;
-using D3DCompiler = SharpDX.D3DCompiler;
 
 namespace Gorgon.Graphics.Core
 {
@@ -91,7 +91,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="name">The name for this shader.</param>
         /// <param name="isDebug"><b>true</b> if debug information is included in the byte code, <b>false</b> if not.</param>
         /// <param name="byteCode">The byte code for the shader.</param>
-        internal GorgonHullShader(GorgonGraphics graphics, string name, bool isDebug, D3DCompiler.ShaderBytecode byteCode)
+        internal GorgonHullShader(GorgonGraphics graphics, string name, bool isDebug, ShaderBytecode byteCode)
             : base(graphics, name, isDebug, byteCode)
         {
             graphics.Log.Print($"Creating {ShaderType} '{name}' ({ID})", LoggingLevel.Verbose);

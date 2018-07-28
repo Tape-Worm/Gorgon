@@ -30,15 +30,15 @@ using System.Drawing;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
-using DX = SharpDX;
-using DXGI = SharpDX.DXGI;
-using D3D11 = SharpDX.Direct3D11;
-using Gorgon.Core;
 using Gorgon.Collections;
+using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
 using Gorgon.Native;
+using SharpDX.DXGI;
+using DX = SharpDX;
+using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
 {
@@ -154,7 +154,7 @@ namespace Gorgon.Graphics.Core
 
         #region Variables.
         // The DXGI swap chain that this object will wrap.
-        private DXGI.SwapChain4 _swapChain;
+        private SwapChain4 _swapChain;
         // The textures used by the back buffer.
         private readonly GorgonTexture2D[] _backBufferTextures;
         // The information used to create the swap chain.
@@ -188,7 +188,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the internal DXGI swap chain.
         /// </summary>
-        internal DXGI.SwapChain4 DXGISwapChain => _swapChain;
+        internal SwapChain4 DXGISwapChain => _swapChain;
 
         /// <summary>
         /// Property to return the back buffer texture to use as a render target.
@@ -727,10 +727,10 @@ namespace Gorgon.Graphics.Core
 				// Before every call to ResizeTarget, we must indicate that we want to handle the resize event on the control.
 				// Failure to do so will bring up warnings in the debug log output about presentation inefficiencies.
                 _resizeState.IsScreenStateTransition = true;
-			    DXGI.ModeDescription modeDesc = videoMode.ToModeDesc();
+			    ModeDescription modeDesc = videoMode.ToModeDesc();
 				DXGISwapChain.ResizeTarget(ref modeDesc);
 
-				modeDesc = new DXGI.ModeDescription(modeDesc.Width, modeDesc.Height, new DXGI.Rational(0, 0), modeDesc.Format);
+				modeDesc = new ModeDescription(modeDesc.Width, modeDesc.Height, new Rational(0, 0), modeDesc.Format);
 				DXGISwapChain.ResizeTarget(ref modeDesc);
 
 				// Ensure that we have an up-to-date copy of the video mode information.
@@ -748,12 +748,12 @@ namespace Gorgon.Graphics.Core
 			{
 				switch (sdEx.ResultCode.Code)
 				{
-					case (int)DXGI.DXGIStatus.ModeChangeInProgress:
+					case (int)DXGIStatus.ModeChangeInProgress:
 						Graphics.Log.Print($"SwapChain '{Name}': Could not switch to full screen borderless windowed mode because the device was busy switching to full screen on another output.",
 								   LoggingLevel.All);
 						break;
 					default:
-						if (sdEx.ResultCode != DXGI.ResultCode.NotCurrentlyAvailable)
+						if (sdEx.ResultCode != ResultCode.NotCurrentlyAvailable)
 						{
 							throw;
 						}
@@ -818,21 +818,21 @@ namespace Gorgon.Graphics.Core
 				return;
 			}
 
-			DXGI.Output dxgiOutput = null;
-			DXGI.Output1 dxgiOutput6 = null;
+			Output dxgiOutput = null;
+			Output1 dxgiOutput6 = null;
 
 			try
 			{
 				Graphics.Log.Print($"SwapChain '{Name}': Entering full screen mode.  Requested mode {desiredMode} on output {output.Name}.", LoggingLevel.Verbose);
 
 				dxgiOutput = Graphics.DXGIAdapter.GetOutput(output.Index);
-				dxgiOutput6 = dxgiOutput.QueryInterface<DXGI.Output6>();
+				dxgiOutput6 = dxgiOutput.QueryInterface<Output6>();
 
 				// Try to find something resembling the video mode we asked for.
-			    DXGI.ModeDescription1 desiredDxGiMode = desiredMode.ToModeDesc1();
-				dxgiOutput6.FindClosestMatchingMode1(ref desiredDxGiMode, out DXGI.ModeDescription1 actualMode, Graphics.D3DDevice);
+			    ModeDescription1 desiredDxGiMode = desiredMode.ToModeDesc1();
+				dxgiOutput6.FindClosestMatchingMode1(ref desiredDxGiMode, out ModeDescription1 actualMode, Graphics.D3DDevice);
 
-				DXGI.ModeDescription resizeMode = actualMode.ToModeDesc();
+				ModeDescription resizeMode = actualMode.ToModeDesc();
 
 				// Switch to the format we want so that ResizeBackBuffers will work correctly.
 				_info.Format = desiredMode.Format;
@@ -849,12 +849,12 @@ namespace Gorgon.Graphics.Core
                 _resizeState.IsScreenStateTransition = true;
 				DXGISwapChain.ResizeTarget(ref resizeMode);
 
-				DXGI.Rational refreshRate = resizeMode.RefreshRate;
+				Rational refreshRate = resizeMode.RefreshRate;
 				DXGISwapChain.SetFullscreenState(true, dxgiOutput6);
 
 				// The MSDN documentation says to call resize targets again with a zeroed refresh rate after setting the mode: 
 				// https://msdn.microsoft.com/en-us/library/windows/desktop/ee417025(v=vs.85).aspx.
-				resizeMode = new DXGI.ModeDescription(resizeMode.Width, resizeMode.Height, new DXGI.Rational(0, 0), resizeMode.Format);
+				resizeMode = new ModeDescription(resizeMode.Width, resizeMode.Height, new Rational(0, 0), resizeMode.Format);
 				DXGISwapChain.ResizeTarget(ref resizeMode);
 
 				// Ensure that we have an up-to-date copy of the video mode information.
@@ -872,12 +872,12 @@ namespace Gorgon.Graphics.Core
 			{
 				switch (sdEx.ResultCode.Code)
 				{
-					case (int)DXGI.DXGIStatus.ModeChangeInProgress:
+					case (int)DXGIStatus.ModeChangeInProgress:
 						Graphics.Log.Print($"SwapChain '{Name}': Could not switch to full screen mode because the device was busy switching to full screen on another output.",
 								   LoggingLevel.All);
 						break;
 					default:
-						if (sdEx.ResultCode != DXGI.ResultCode.NotCurrentlyAvailable)
+						if (sdEx.ResultCode != ResultCode.NotCurrentlyAvailable)
 						{
 							throw;
 						}
@@ -923,7 +923,7 @@ namespace Gorgon.Graphics.Core
                 
                 _resizeState.IsScreenStateTransition = true;
 
-                DXGI.ModeDescription desc = FullScreenVideoMode.Value.ToModeDesc();
+                ModeDescription desc = FullScreenVideoMode.Value.ToModeDesc();
 
 				if (_isFullScreenBorderless)
 			    {
@@ -996,7 +996,7 @@ namespace Gorgon.Graphics.Core
 
 			int rtvIndex = DestroyResources(false);
 
-			DXGISwapChain.ResizeBuffers(IsWindowed ? 2 : 3, newWidth, newHeight, (DXGI.Format)Format, DXGI.SwapChainFlags.AllowModeSwitch);
+			DXGISwapChain.ResizeBuffers(IsWindowed ? 2 : 3, newWidth, newHeight, (Format)Format, SwapChainFlags.AllowModeSwitch);
 
             var oldSize = new DX.Size2(_info.Width, _info.Height);
 			_info.Width = newWidth;
@@ -1027,7 +1027,7 @@ namespace Gorgon.Graphics.Core
         /// <exception cref="GorgonException">Thrown when the method encounters an unrecoverable error.</exception>
         public void Present(int interval = 0)
 		{
-			DXGI.PresentFlags flags = !IsInStandBy ? DXGI.PresentFlags.None : DXGI.PresentFlags.Test;
+			PresentFlags flags = !IsInStandBy ? PresentFlags.None : PresentFlags.Test;
 
 			interval.ValidateRange(nameof(interval), 0, 4, true, true);
 
@@ -1068,11 +1068,11 @@ namespace Gorgon.Graphics.Core
 			}
 			catch (DX.SharpDXException sdex)
 			{
-				if ((sdex.ResultCode == DXGI.ResultCode.DeviceReset)
-					|| (sdex.ResultCode == DXGI.ResultCode.DeviceRemoved)
-					|| (sdex.ResultCode == DXGI.ResultCode.ModeChangeInProgress)
-					|| (sdex.ResultCode.Code == (int)DXGI.DXGIStatus.ModeChangeInProgress)
-					|| (sdex.ResultCode.Code == (int)DXGI.DXGIStatus.Occluded))
+				if ((sdex.ResultCode == ResultCode.DeviceReset)
+					|| (sdex.ResultCode == ResultCode.DeviceRemoved)
+					|| (sdex.ResultCode == ResultCode.ModeChangeInProgress)
+					|| (sdex.ResultCode.Code == (int)DXGIStatus.ModeChangeInProgress)
+					|| (sdex.ResultCode.Code == (int)DXGIStatus.Occluded))
 				{
 					IsInStandBy = true;
 					return;
@@ -1095,7 +1095,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         public void Dispose()
         {
-            DXGI.SwapChain4 swapChain = Interlocked.Exchange(ref _swapChain, null);
+            SwapChain4 swapChain = Interlocked.Exchange(ref _swapChain, null);
 
             BeforeSwapChainResized = null;
             AfterSwapChainResized = null;
@@ -1157,22 +1157,22 @@ namespace Gorgon.Graphics.Core
 
             Debug.Assert(ParentForm != null, "No parent form found for control.");
 
-            DXGI.SwapChainDescription1 desc = info.ToSwapChainDesc();
+            SwapChainDescription1 desc = info.ToSwapChainDesc();
 
             this.RegisterDisposable(graphics);
 
-            using (DXGI.SwapChain1 dxgiSwapChain = new DXGI.SwapChain1(Graphics.DXGIFactory, Graphics.D3DDevice, control.Handle, ref desc)
+            using (SwapChain1 dxgiSwapChain = new SwapChain1(Graphics.DXGIFactory, Graphics.D3DDevice, control.Handle, ref desc)
                                                    {
                                                        DebugName = $"{info.Name}_DXGISwapChain4"
                                                    })
             {
-                _swapChain = dxgiSwapChain.QueryInterface<DXGI.SwapChain4>();
+                _swapChain = dxgiSwapChain.QueryInterface<SwapChain4>();
             }
 
             _info = new GorgonSwapChainInfo(in desc);
             _backBufferTextures = new GorgonTexture2D[_info.UseFlipMode ? 2 : 1];
 
-            Graphics.DXGIFactory.MakeWindowAssociation(control.Handle, DXGI.WindowAssociationFlags.IgnoreAll);
+            Graphics.DXGIFactory.MakeWindowAssociation(control.Handle, WindowAssociationFlags.IgnoreAll);
             
             CreateResources(-1);
 

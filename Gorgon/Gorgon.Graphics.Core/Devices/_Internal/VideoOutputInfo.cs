@@ -28,7 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SharpDX;
-using DXGI = SharpDX.DXGI;
+using SharpDX.DXGI;
 
 namespace Gorgon.Graphics.Core
 {
@@ -43,7 +43,7 @@ namespace Gorgon.Graphics.Core
 	{
 		#region Variables.
 		// Output description.
-		private DXGI.OutputDescription _desc;
+		private OutputDescription _desc;
 		#endregion
 
 		#region Properties.
@@ -114,7 +114,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="index">The index of the output.</param>
 		/// <param name="output">The output used to provide information.</param>
 		/// <param name="modes">The list of full screen display modes supported by this output on the video adapter.</param>
-		public VideoOutputInfo(int index, DXGI.Output6 output, IEnumerable<DXGI.ModeDescription1> modes)
+		public VideoOutputInfo(int index, Output6 output, IEnumerable<ModeDescription1> modes)
 		{
 			Index = index;
 			_desc = output.Description;

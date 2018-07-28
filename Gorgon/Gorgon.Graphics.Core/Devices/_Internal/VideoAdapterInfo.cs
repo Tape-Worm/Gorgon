@@ -26,7 +26,7 @@
 
 using System;
 using System.Collections.Generic;
-using DXGI = SharpDX.DXGI;
+using SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
@@ -44,7 +44,7 @@ namespace Gorgon.Graphics.Core
 	{
 		#region Variables.
 		// The DXGI adapter description
-		private readonly DXGI.AdapterDescription2 _adapterDesc;
+		private readonly AdapterDescription2 _adapterDesc;
         #endregion
 
         #region Properties.
@@ -172,7 +172,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="outputs">The list of outputs attached to the video adapter.</param>
         /// <param name="deviceType">The type of video adapter.</param>
         public VideoAdapterInfo(int index,
-		                       DXGI.Adapter2 adapter,
+		                       Adapter2 adapter,
 		                       FeatureSet featureSet,
 		                       Dictionary<string, VideoOutputInfo> outputs,
 		                       VideoDeviceType deviceType)

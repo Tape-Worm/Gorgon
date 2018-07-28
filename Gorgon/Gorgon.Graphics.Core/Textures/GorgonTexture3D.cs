@@ -26,18 +26,19 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using DX = SharpDX;
-using D3D11 = SharpDX.Direct3D11;
-using DXGI = SharpDX.DXGI;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
+using SharpDX.DXGI;
+using DX = SharpDX;
+using D3D11 = SharpDX.Direct3D11;
 
 
 namespace Gorgon.Graphics.Core
@@ -368,7 +369,7 @@ namespace Gorgon.Graphics.Core
 
 		    var tex3DDesc = new D3D11.Texture3DDescription1
 		                    {
-		                        Format = (DXGI.Format)Format,
+		                        Format = (Format)Format,
 		                        Width = Width,
 		                        Height = Height,
 		                        Depth = Depth,
@@ -1111,7 +1112,7 @@ namespace Gorgon.Graphics.Core
         /// ]]>
         /// </code>
         /// </example>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", MessageId = "destSlice+1")]
+        [SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", MessageId = "destSlice+1")]
         public void SetData(IGorgonImageBuffer imageBuffer, DX.Rectangle? destRectangle = null, int destSlice = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
         {
             #if DEBUG
