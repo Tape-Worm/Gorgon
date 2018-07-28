@@ -1134,7 +1134,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 					&& (pitchFlags == PitchFlags.None))
 			{
                 // First mip, array and depth slice is at the start of our image memory buffer.
-			    reader.ReadRange(image.Buffers[0].Data, count: sizeInBytes);
+			    reader.ReadRange(image.ImageData, count: sizeInBytes);
                 return;
 			}
 
