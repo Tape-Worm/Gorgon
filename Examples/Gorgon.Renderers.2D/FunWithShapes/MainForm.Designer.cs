@@ -24,6 +24,9 @@
 // 
 #endregion
 
+using System.ComponentModel;
+using System.Windows.Forms;
+
 namespace Gorgon.Examples
 {
 	partial class MainForm
@@ -31,7 +34,7 @@ namespace Gorgon.Examples
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
-		private System.ComponentModel.IContainer components = null;
+		private IContainer components = null;
 
 		/// <summary>
 		/// Clean up any resources being used.
@@ -86,7 +89,7 @@ namespace Gorgon.Examples
 
         #endregion
 
-        private System.Windows.Forms.Label LabelPleaseWait;
+        private Label LabelPleaseWait;
     }
 }
 

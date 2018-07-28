@@ -24,8 +24,8 @@
 // 
 #endregion
 
-using DX = SharpDX;
 using SharpDX.Mathematics.Interop;
+using DX = SharpDX;
 
 namespace Gorgon.Graphics.Core
 {

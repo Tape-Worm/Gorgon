@@ -116,7 +116,7 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         /// <seealso cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>
         /// <seealso cref="GorgonReflectionExtensions.IsSafeForNative(Type)"/>
-        /// <seealso cref="GorgonReflectionExtensions.IsSafeForNative(Type,out IReadOnlyList{FieldInfo})"/>
+        /// <seealso cref="GorgonReflectionExtensions.IsSafeForNative(Type,out System.Collections.Generic.IReadOnlyList{System.Reflection.FieldInfo})"/>
         public static IGorgonConstantBufferInfo CreateFromType<T>(string name = null, int count = 1, ResourceUsage usage = ResourceUsage.Default)
 			where T : unmanaged
 		{

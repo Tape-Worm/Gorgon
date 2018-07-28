@@ -24,12 +24,14 @@
 // 
 #endregion
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace Gorgon.Graphics.Core
 {
     /// <summary>
     /// Defines the type of operation to perform while blending colors.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue")]
+    [SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue")]
     public enum BlendOperation
     {
         /// <summary>

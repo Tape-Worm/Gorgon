@@ -27,7 +27,7 @@
 using System;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
-using DXGI = SharpDX.DXGI;
+using SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
@@ -290,7 +290,7 @@ namespace Gorgon.Graphics.Core
 		    Format = format;
 			D3DInputElement = new D3D11.InputElement(context,
 			                                         index,
-			                                         (DXGI.Format)format,
+			                                         (Format)format,
 			                                         offset,
 			                                         slot,
 			                                         instanced ? D3D11.InputClassification.PerInstanceData : D3D11.InputClassification.PerVertexData,

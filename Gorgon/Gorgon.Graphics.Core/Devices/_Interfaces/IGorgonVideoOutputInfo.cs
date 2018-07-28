@@ -27,8 +27,8 @@
 using System;
 using System.Collections.Generic;
 using Gorgon.Core;
+using SharpDX.DXGI;
 using DX = SharpDX;
-using DXGI = SharpDX.DXGI;
 
 namespace Gorgon.Graphics.Core
 {
@@ -40,23 +40,23 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// No rotation mode specified.
         /// </summary>
-        Unspecified = DXGI.DisplayModeRotation.Unspecified,
+        Unspecified = DisplayModeRotation.Unspecified,
         /// <summary>
         /// No rotation.
         /// </summary>
-        Identity = DXGI.DisplayModeRotation.Identity,
+        Identity = DisplayModeRotation.Identity,
         /// <summary>
         /// Rotated 90 degrees.
         /// </summary>
-        Rotate90 = DXGI.DisplayModeRotation.Rotate90,
+        Rotate90 = DisplayModeRotation.Rotate90,
         /// <summary>
         /// Rotated 180 degrees.
         /// </summary>
-        Rotate180 = DXGI.DisplayModeRotation.Rotate180,
+        Rotate180 = DisplayModeRotation.Rotate180,
         /// <summary>
         /// Rotated 270 degrees.
         /// </summary>
-        Rotate270 = DXGI.DisplayModeRotation.Rotate270
+        Rotate270 = DisplayModeRotation.Rotate270
     }
 
     /// <summary>

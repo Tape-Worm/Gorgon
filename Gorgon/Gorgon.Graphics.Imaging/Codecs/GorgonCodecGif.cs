@@ -30,7 +30,7 @@ using System.IO;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.Math;
-using WIC = SharpDX.WIC;
+using SharpDX.WIC;
 
 namespace Gorgon.Graphics.Imaging.Codecs
 {
@@ -214,7 +214,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <param name="encodingOptions">[Optional] Options to use when encoding a GIF file.</param>
 		/// <param name="decodingOptions">[Optional] Options to use when decoding a GIF file.</param>
 		public GorgonCodecGif(GorgonGifEncodingOptions encodingOptions = null, GorgonGifDecodingOptions decodingOptions = null)
-			: base("GIF", Resources.GORIMG_DESC_GIF_CODEC, new[] { "gif" }, WIC.ContainerFormatGuids.Gif, encodingOptions, decodingOptions)
+			: base("GIF", Resources.GORIMG_DESC_GIF_CODEC, new[] { "gif" }, ContainerFormatGuids.Gif, encodingOptions, decodingOptions)
 		{
 		}
 		#endregion

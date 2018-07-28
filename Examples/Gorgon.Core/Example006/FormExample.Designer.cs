@@ -1,11 +1,14 @@
-﻿namespace Gorgon.Examples
+﻿using System.ComponentModel;
+using System.Windows.Forms;
+
+namespace Gorgon.Examples
 {
     partial class FormExample
     {
         /// <summary>
         /// Required designer variable.
         /// </summary>
-        private System.ComponentModel.IContainer components = null;
+        private IContainer components = null;
 
         /// <summary>
         /// Clean up any resources being used.
@@ -93,8 +96,8 @@
         }
 
         #endregion
-        private System.Windows.Forms.Button ButtonThemeColors;
-        private System.Windows.Forms.TextBox TextText;
+        private Button ButtonThemeColors;
+        private TextBox TextText;
     }
 }
 

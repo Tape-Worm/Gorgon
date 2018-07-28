@@ -26,7 +26,7 @@
 
 using System.Collections.Generic;
 using Gorgon.Graphics.Imaging.Properties;
-using WIC = SharpDX.WIC;
+using SharpDX.WIC;
 
 namespace Gorgon.Graphics.Imaging.Codecs
 {
@@ -105,7 +105,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// </summary>
         /// <param name="encodingOptions">[Optional] Options to use when encoding a JPEG image.</param>
         public GorgonCodecJpeg(GorgonJpegEncodingOptions encodingOptions = null)
-            : base("JPEG", Resources.GORIMG_DESC_JPG_CODEC, new[] { "jpg", "jpeg", "jpe", "jif", "jfif", "jfi" }, WIC.ContainerFormatGuids.Jpeg, encodingOptions, null)
+            : base("JPEG", Resources.GORIMG_DESC_JPG_CODEC, new[] { "jpg", "jpeg", "jpe", "jif", "jfif", "jfi" }, ContainerFormatGuids.Jpeg, encodingOptions, null)
         {
         }
         #endregion

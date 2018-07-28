@@ -32,7 +32,7 @@ using Gorgon.Graphics.Core.Properties;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
-using DXGI = SharpDX.DXGI;
+using SharpDX.DXGI;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D;
 using D3D11 = SharpDX.Direct3D11;
@@ -186,7 +186,7 @@ namespace Gorgon.Graphics.Core
 			{
 				return new D3D11.ShaderResourceViewDescription1
 				       {
-					       Format = (DXGI.Format)Format,
+					       Format = (Format)Format,
 					       Dimension = Texture.ArrayCount > 1
 						                   ? D3D.ShaderResourceViewDimension.Texture2DArray
 						                   : D3D.ShaderResourceViewDimension.Texture2D,
@@ -206,7 +206,7 @@ namespace Gorgon.Graphics.Core
 
 			return new D3D11.ShaderResourceViewDescription1
 			       {
-				       Format = (DXGI.Format)Format,
+				       Format = (Format)Format,
 				       Dimension = Texture.ArrayCount > 1
 					                   ? D3D.ShaderResourceViewDimension.Texture2DMultisampledArray
 					                   : D3D.ShaderResourceViewDimension.Texture2DMultisampled,
@@ -240,7 +240,7 @@ namespace Gorgon.Graphics.Core
 
 			return new D3D11.ShaderResourceViewDescription1
 			       {
-				       Format = (DXGI.Format)Format,
+				       Format = (Format)Format,
 				       Dimension =
 					       cubeArrayCount > 1
 						       ? D3D.ShaderResourceViewDimension.TextureCubeArray

@@ -24,12 +24,14 @@
 // 
 #endregion
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace Gorgon.Graphics.Core
 {
     /// <summary>
     /// Defines a type of operation to perform when masking using the stencil buffer.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue")]
+    [SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue")]
     public enum StencilOperation
     {
         /// <summary>

@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Gorgon.Core;
 using Gorgon.IO.Properties;
 using Gorgon.IO.Providers;
@@ -46,7 +47,7 @@ namespace Gorgon.IO
 		/// <summary>
 		/// The provider for this mount point.
 		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "Nothing can change this object outside of the API.")]
+		[SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "Nothing can change this object outside of the API.")]
 		public readonly IGorgonFileSystemProvider Provider;
 		/// <summary>
 		/// The physical location of the mount point.

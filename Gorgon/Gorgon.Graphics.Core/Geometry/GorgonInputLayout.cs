@@ -31,11 +31,11 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
-using DX = SharpDX;
-using D3D11 = SharpDX.Direct3D11;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Reflection;
+using DX = SharpDX;
+using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
 {

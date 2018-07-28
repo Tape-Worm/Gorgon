@@ -28,7 +28,6 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
@@ -40,6 +39,8 @@ using Gorgon.Math;
 using Gorgon.Plugins;
 using Gorgon.Renderers;
 using Gorgon.UI;
+using DX = SharpDX;
+using FontStyle = Gorgon.Graphics.Fonts.FontStyle;
 using GorgonMouseButtons = Gorgon.Input.MouseButtons;
 using MouseButtons = System.Windows.Forms.MouseButtons;
 
@@ -639,7 +640,7 @@ namespace Gorgon.Examples
                 var fontFactory = new GorgonFontFactory(_graphics);
 			    _font = fontFactory.GetFont(new GorgonFontInfo("Arial", 9.0f, FontHeightMode.Points, "Arial 9pt")
 			                                {
-			                                    FontStyle = Graphics.Fonts.FontStyle.Bold,
+			                                    FontStyle = FontStyle.Bold,
 			                                    AntiAliasingMode = FontAntiAliasMode.AntiAlias
 			                                });
 

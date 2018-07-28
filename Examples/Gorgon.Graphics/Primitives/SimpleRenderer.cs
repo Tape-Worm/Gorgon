@@ -31,9 +31,9 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using DX = SharpDX;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
+using DX = SharpDX;
 
 namespace Gorgon.Graphics.Example
 {

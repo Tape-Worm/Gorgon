@@ -110,7 +110,6 @@ namespace Gorgon.Graphics.Core
         /// </remarks>
         public void Clear(GorgonColor color)
         {
-            base.
             Graphics.D3DDeviceContext.ClearRenderTargetView(Native, color.ToRawColor4());
         }
         #endregion

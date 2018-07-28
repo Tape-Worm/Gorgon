@@ -30,11 +30,11 @@ using System.IO;
 using System.Threading;
 using System.Windows.Forms;
 using Gorgon.Core;
-using Gorgon.Windows.Properties;
 using Gorgon.Diagnostics;
 using Gorgon.IO;
 using Gorgon.Native;
 using Gorgon.Timing;
+using Gorgon.Windows.Properties;
 
 namespace Gorgon.UI
 {

@@ -30,11 +30,11 @@ using System.Linq;
 using System.Text;
 using Gorgon.Core;
 using Gorgon.Graphics;
-using DX = SharpDX;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
 using Gorgon.Math;
 using Gorgon.UI;
+using DX = SharpDX;
 
 namespace Gorgon.Renderers
 {

@@ -27,7 +27,6 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -37,6 +36,7 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
 using Gorgon.Timing;
 using Gorgon.UI;
+using DX = SharpDX;
 
 namespace GorgonLibrary.Example
 {

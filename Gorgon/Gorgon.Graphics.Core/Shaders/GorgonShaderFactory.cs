@@ -33,9 +33,9 @@ using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.IO;
 using Gorgon.Reflection;
+using SharpDX.D3DCompiler;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D;
-using D3DCompiler = SharpDX.D3DCompiler;
 
 namespace Gorgon.Graphics.Core
 {
@@ -175,7 +175,7 @@ namespace Gorgon.Graphics.Core
 				                                                    BinaryShaderFileHeader.ChunkID()
 			                                                    });
 
-			D3DCompiler.ShaderBytecode byteCode = null;
+			ShaderBytecode byteCode = null;
 
 			try
 			{
@@ -246,7 +246,7 @@ namespace Gorgon.Graphics.Core
 				reader.Read(data, 0, byteCodeChunk.Size);
 
 			    graphics.Log.Print($"Compiling {shaderType} '{entryPoint}'.", LoggingLevel.Simple);
-				byteCode = new D3DCompiler.ShaderBytecode(data);
+				byteCode = new ShaderBytecode(data);
 
 			    ObjectActivator<GorgonShader> shaderCtor = _shaderFactory[shaderType];
 
@@ -419,7 +419,7 @@ namespace Gorgon.Graphics.Core
 			}
 
 			// Get shader flags based on our feature set and whether we want debug info or not.
-			D3DCompiler.ShaderFlags flags = debug ? D3DCompiler.ShaderFlags.Debug : D3DCompiler.ShaderFlags.OptimizationLevel3;
+			ShaderFlags flags = debug ? ShaderFlags.Debug : ShaderFlags.OptimizationLevel3;
 
 			// Make compatible macros for the shader compiler.
 			D3D.ShaderMacro[] actualMacros = null;
@@ -433,11 +433,11 @@ namespace Gorgon.Graphics.Core
 
 			try
 			{
-				D3DCompiler.CompilationResult byteCode = D3DCompiler.ShaderBytecode.Compile(processedSource,
+				CompilationResult byteCode = ShaderBytecode.Compile(processedSource,
 				                                                                         entryPoint,
 				                                                                         shaderType.Value.Profile,
 				                                                                         flags,
-				                                                                         D3DCompiler.EffectFlags.None,
+				                                                                         EffectFlags.None,
 				                                                                         actualMacros,
 				                                                                         null,
 				                                                                         sourceFileName);
@@ -477,7 +477,7 @@ namespace Gorgon.Graphics.Core
                 _shaderFactory[Shader] = Type.CreateActivator<GorgonShader>(typeof(GorgonGraphics),
                                                                             typeof(string),
                                                                             typeof(bool),
-                                                                            typeof(D3DCompiler.ShaderBytecode));
+                                                                            typeof(ShaderBytecode));
             }
         }
         #endregion

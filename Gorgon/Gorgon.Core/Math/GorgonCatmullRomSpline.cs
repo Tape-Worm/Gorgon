@@ -26,8 +26,9 @@
 
 using System;
 using System.Collections.Generic;
-using DX = SharpDX;
+using System.Diagnostics.CodeAnalysis;
 using Gorgon.Diagnostics;
+using DX = SharpDX;
 
 namespace Gorgon.Math
 {
@@ -121,7 +122,7 @@ namespace Gorgon.Math
         /// </para>
         /// </remarks>
         /// <exception cref="ArgumentOutOfRangeException"><c>[Debug only]</c> Thrown when the <paramref name="startPointIndex"/> is less than 0, or greater than/equal to the number of points - 1 in the <see cref="IGorgonSpline.Points"/> parameter.</exception>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", MessageId = "startPointIndex+1")]
+        [SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", MessageId = "startPointIndex+1")]
 		public DX.Vector4 GetInterpolatedValue(int startPointIndex, float delta)
         {
             DX.Matrix calculations = DX.Matrix.Identity;

@@ -70,10 +70,10 @@ namespace Gorgon.Graphics.Core
 	    private readonly List<int> _changedIndices = new List<int>(16);
 
         // The first index mask (bits 0 - 63).
-	    private ulong _indexMask1 = 0;
+	    private ulong _indexMask1;
 
 	    // The second index mask (bits 0 - 63).
-	    private ulong _indexMask2 = 0;
+	    private ulong _indexMask2;
 
         // Native views.
         private D3D11.ShaderResourceView[] _native = new D3D11.ShaderResourceView[16];

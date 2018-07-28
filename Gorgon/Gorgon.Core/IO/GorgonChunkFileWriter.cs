@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Gorgon.Properties;
 
@@ -113,7 +114,7 @@ namespace Gorgon.IO
 	/// </code>
 	/// </example>
 	/// <conceptualLink target="7b81343e-e2fc-4f0f-926a-d9193ae481fe">Gorgon Chunk File Format (GCFF) details</conceptualLink>
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable"
+	[SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable"
 		, Justification = "This is not correct. GorgonBinaryWriter does not close its underlying stream, thus Dispose does not need to be called.")]
 	public sealed class GorgonChunkFileWriter
 		: GorgonChunkFile<GorgonBinaryWriter>

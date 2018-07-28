@@ -24,8 +24,9 @@
 // 
 #endregion
 
-using D3D = SharpDX.Direct3D;
+using System.Diagnostics.CodeAnalysis;
 using Gorgon.Core;
+using D3D = SharpDX.Direct3D;
 
 namespace Gorgon.Graphics.Core
 {
@@ -44,7 +45,7 @@ namespace Gorgon.Graphics.Core
 	/// Applications can use this to define a minimum supported video adapter, or take an alternate code (potentially slower) path to achieve the same result.
 	/// </para>
 	/// </remarks>
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue")]
+	[SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue")]
 	public enum FeatureSet
 	{
 	    /// <summary>
@@ -54,7 +55,7 @@ namespace Gorgon.Graphics.Core
 	    /// <summary>
 	    /// Device supports the equivalent of Direct 3D 12.1 functionality.
 	    /// </summary>
-	    Level_12_1 = D3D.FeatureLevel.Level_12_1,
+	    Level_12_1 = D3D.FeatureLevel.Level_12_1
     }
 
     /// <summary>

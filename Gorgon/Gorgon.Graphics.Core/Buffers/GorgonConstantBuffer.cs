@@ -27,10 +27,10 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using D3D11 = SharpDX.Direct3D11;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Native;
+using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
 {

@@ -104,7 +104,7 @@ namespace Gorgon.Graphics.Core
         /// A resource that supports data transfer (copy) from the GPU to the CPU.
         /// </para>
         /// </summary>
-        Staging = D3D11.ResourceUsage.Staging,
+        Staging = D3D11.ResourceUsage.Staging
     }
 
 

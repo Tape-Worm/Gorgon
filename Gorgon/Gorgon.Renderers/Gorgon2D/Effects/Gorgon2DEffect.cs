@@ -26,12 +26,12 @@
 
 using System;
 using System.Collections.Generic;
-using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
+using DX = SharpDX;
 
 namespace Gorgon.Renderers
 {

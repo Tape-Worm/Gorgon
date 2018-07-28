@@ -27,6 +27,7 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Graphics.Core;
+using SharpDX;
 
 namespace Gorgon.Graphics.Example
 {
@@ -45,21 +46,21 @@ namespace Gorgon.Graphics.Example
         /// Vertex position.
         /// </summary>
         [InputElement(0, "SV_POSITION")]
-        public SharpDX.Vector4 Position;
+        public Vector4 Position;
         /// <summary>
         /// Texture coordinate.
         /// </summary>
         [InputElement(1, "TEXCOORD")]
-        public SharpDX.Vector2 UV;
+        public Vector2 UV;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BoingerVertex" /> struct.
         /// </summary>
         /// <param name="position">The position.</param>
         /// <param name="uv">The texture coordinate.</param>
-        public BoingerVertex(SharpDX.Vector3 position, SharpDX.Vector2 uv)
+        public BoingerVertex(Vector3 position, Vector2 uv)
         {
-            Position = new SharpDX.Vector4(position, 1.0f);
+            Position = new Vector4(position, 1.0f);
             UV = uv;
         }
     }

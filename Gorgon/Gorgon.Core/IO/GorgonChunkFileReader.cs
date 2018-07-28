@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using Gorgon.Core;
@@ -124,7 +125,7 @@ namespace Gorgon.IO
 	/// ]]>
 	/// </code>
 	/// </example>
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable"
+	[SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable"
 		, Justification = "This is not correct. GorgonBinaryReader does not close its underlying stream, thus Dispose does not need to be called.")]
 	public sealed class GorgonChunkFileReader
 		: GorgonChunkFile<GorgonBinaryReader>

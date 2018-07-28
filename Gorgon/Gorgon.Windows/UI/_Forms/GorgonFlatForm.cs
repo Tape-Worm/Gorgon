@@ -35,11 +35,11 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
-using Gorgon.Windows.Properties;
 using Gorgon.Design;
 using Gorgon.Math;
 using Gorgon.Native;
 using Gorgon.UI.Design;
+using Gorgon.Windows.Properties;
 using DrawingGraphics = System.Drawing.Graphics;
 
 namespace Gorgon.UI

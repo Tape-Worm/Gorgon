@@ -31,7 +31,6 @@ using System.Text;
 using System.Threading;
 using System.Windows;
 using Gorgon.Core;
-using DX = SharpDX;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -39,6 +38,7 @@ using Gorgon.Graphics.Fonts;
 using Gorgon.Math;
 using Gorgon.Renderers.Properties;
 using Gorgon.UI;
+using DX = SharpDX;
 
 namespace Gorgon.Renderers
 {

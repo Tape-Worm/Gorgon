@@ -55,6 +55,17 @@ namespace Gorgon.Renderers
         }
 
         /// <summary>
+        /// Function to assign the blend state to the batch state.
+        /// </summary>
+        /// <param name="blendState">The blend state to assign, or <b>null</b> for a default state.</param>
+        /// <returns>The fluent builder interface.</returns>
+        public Gorgon2DBatchStateBuilder BlendState(GorgonBlendStateBuilder blendState)
+        {
+            _worker.BlendState = blendState?.Build();
+            return this;
+        }
+
+        /// <summary>
         /// Function to assign a raster state to the batch state.
         /// </summary>
         /// <param name="rasterState">The raster state to assign, or <b>null</b> for a default state.</param>
@@ -66,6 +77,17 @@ namespace Gorgon.Renderers
         }
 
         /// <summary>
+        /// Function to assign a raster state to the batch state.
+        /// </summary>
+        /// <param name="rasterState">The raster state to assign, or <b>null</b> for a default state.</param>
+        /// <returns>The fluent builder interface.</returns>
+        public Gorgon2DBatchStateBuilder RasterState(GorgonRasterStateBuilder rasterState)
+        {
+            _worker.RasterState = rasterState?.Build();
+            return this;
+        }
+
+        /// <summary>
         /// Function to assign a depth/stencil state to the batch state.
         /// </summary>
         /// <param name="depthStencilState">The depth/stencil state to assign, or <b>null</b> for a default state.</param>
@@ -73,6 +95,17 @@ namespace Gorgon.Renderers
         public Gorgon2DBatchStateBuilder DepthStencilState(GorgonDepthStencilState depthStencilState)
         {
             _worker.DepthStencilState = depthStencilState;
+            return this;
+        }
+
+        /// <summary>
+        /// Function to assign a depth/stencil state to the batch state.
+        /// </summary>
+        /// <param name="depthStencilState">The depth/stencil state to assign, or <b>null</b> for a default state.</param>
+        /// <returns>The fluent builder interface.</returns>
+        public Gorgon2DBatchStateBuilder DepthStencilState(GorgonDepthStencilStateBuilder depthStencilState)
+        {
+            _worker.DepthStencilState = depthStencilState?.Build();
             return this;
         }
 

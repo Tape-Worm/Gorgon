@@ -24,12 +24,15 @@
 // 
 #endregion
 
+using System.Diagnostics.CodeAnalysis;
+using SharpDX.Direct3D11;
+
 namespace Gorgon.Graphics.Core
 {
     /// <summary>
     /// Defines how a triangle primitive should be culled from rendering.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue")]
+    [SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue")]
     public enum CullingMode
     {
         /// <summary>
@@ -37,18 +40,18 @@ namespace Gorgon.Graphics.Core
         /// Always draw all triangles.
         /// </para>
         /// </summary>
-        None = SharpDX.Direct3D11.CullMode.None,
+        None = CullMode.None,
         /// <summary>
         /// <para>
         /// Do not draw triangles that are front-facing.
         /// </para>
         /// </summary>
-        Front = SharpDX.Direct3D11.CullMode.Front,
+        Front = CullMode.Front,
         /// <summary>
         /// <para>
         /// Do not draw triangles that are back-facing.
         /// </para>
         /// </summary>
-        Back = SharpDX.Direct3D11.CullMode.Back
+        Back = CullMode.Back
     }
 }

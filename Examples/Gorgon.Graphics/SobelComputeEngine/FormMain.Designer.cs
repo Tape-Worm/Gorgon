@@ -1,11 +1,14 @@
-﻿namespace SobelComputeEngine
+﻿using System.ComponentModel;
+using System.Windows.Forms;
+
+namespace SobelComputeEngine
 {
     partial class FormMain
     {
         /// <summary>
         /// Required designer variable.
         /// </summary>
-        private System.ComponentModel.IContainer components = null;
+        private IContainer components = null;
 
         /// <summary>
         /// Clean up any resources being used.
@@ -237,18 +240,18 @@
         }
 
         #endregion
-        private System.Windows.Forms.TextBox TextImagePath;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button ButtonImagePath;
-        private System.Windows.Forms.Panel PanelDisplay;
-        private System.Windows.Forms.OpenFileDialog DialogOpenPng;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TrackBar TrackThickness;
-        private System.Windows.Forms.TrackBar TrackThreshold;
-        private System.Windows.Forms.TableLayoutPanel TableSliderControls;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private System.Windows.Forms.Panel panel1;
+        private TextBox TextImagePath;
+        private Label label1;
+        private Button ButtonImagePath;
+        private Panel PanelDisplay;
+        private OpenFileDialog DialogOpenPng;
+        private Label label3;
+        private Label label2;
+        private TrackBar TrackThickness;
+        private TrackBar TrackThreshold;
+        private TableLayoutPanel TableSliderControls;
+        private TableLayoutPanel tableLayoutPanel2;
+        private Panel panel1;
     }
 }
 

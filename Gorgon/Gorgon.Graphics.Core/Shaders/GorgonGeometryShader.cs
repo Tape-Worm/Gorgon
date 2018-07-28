@@ -30,7 +30,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using Gorgon.Diagnostics;
-using D3DCompiler = SharpDX.D3DCompiler;
+using SharpDX.D3DCompiler;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
@@ -104,7 +104,7 @@ namespace Gorgon.Graphics.Core
 
 	        int[] strideList = strides?.Take(4).ToArray() ?? new int[0];
             // Clone the byte code just in case we decide to destroy the original.
-	        D3DCompiler.ShaderBytecode byteCode = new D3DCompiler.ShaderBytecode(D3DByteCode.Data);
+	        ShaderBytecode byteCode = new ShaderBytecode(D3DByteCode.Data);
 
             Graphics.Log.Print($"Converting '{Name}' to Stream-Out.", LoggingLevel.Verbose);
 
@@ -147,7 +147,7 @@ namespace Gorgon.Graphics.Core
 	    /// <param name="isDebug"><b>true</b> if debug information is included in the byte code, <b>false</b> if not.</param>
 	    /// <param name="byteCode">The byte code for the shader.</param>
 	    /// <param name="soShader">The stream out shader.</param>
-	    private GorgonGeometryShader(GorgonGraphics graphics, string name, bool isDebug, D3DCompiler.ShaderBytecode byteCode, D3D11.GeometryShader soShader)
+	    private GorgonGeometryShader(GorgonGraphics graphics, string name, bool isDebug, ShaderBytecode byteCode, D3D11.GeometryShader soShader)
 	        : base(graphics, name, isDebug, byteCode)
 	    {
 	        graphics.Log.Print($"Creating {ShaderType} '{name}' ({ID})", LoggingLevel.Verbose);
@@ -161,7 +161,7 @@ namespace Gorgon.Graphics.Core
 		/// <param name="name">The name for this shader.</param>
 		/// <param name="isDebug"><b>true</b> if debug information is included in the byte code, <b>false</b> if not.</param>
 		/// <param name="byteCode">The byte code for the shader.</param>
-		internal GorgonGeometryShader(GorgonGraphics graphics, string name, bool isDebug, D3DCompiler.ShaderBytecode byteCode)
+		internal GorgonGeometryShader(GorgonGraphics graphics, string name, bool isDebug, ShaderBytecode byteCode)
 			: base(graphics, name, isDebug, byteCode)
 		{
 		    graphics.Log.Print($"Creating {ShaderType} '{name}' ({ID})", LoggingLevel.Verbose);

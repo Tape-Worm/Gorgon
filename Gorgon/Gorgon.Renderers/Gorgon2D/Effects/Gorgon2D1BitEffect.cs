@@ -27,10 +27,10 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Threading;
-using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers.Properties;
+using DX = SharpDX;
 
 namespace Gorgon.Renderers
 {

@@ -24,6 +24,8 @@
 // 
 #endregion
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace Gorgon.IO
 {
 	/// <summary>
@@ -37,7 +39,7 @@ namespace Gorgon.IO
 		/// <summary>
 		/// The current file being copied.
 		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "Yes, it is immutable")]
+		[SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "Yes, it is immutable")]
 		public readonly IGorgonVirtualFile File;
 		/// <summary>
 		/// The total number of files being copied.

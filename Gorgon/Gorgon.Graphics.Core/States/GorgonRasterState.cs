@@ -26,9 +26,9 @@
 
 using System;
 using System.Collections.Generic;
+using Gorgon.Math;
 using DX = SharpDX;
 using D3D11 = SharpDX.Direct3D11;
-using Gorgon.Math;
 
 namespace Gorgon.Graphics.Core
 {

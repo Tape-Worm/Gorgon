@@ -26,9 +26,9 @@
 
 using System;
 using Gorgon.Core;
-using D3D11 = SharpDX.Direct3D11;
-using DXGI = SharpDX.DXGI;
 using Gorgon.Diagnostics;
+using SharpDX.DXGI;
+using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core
 {
@@ -179,7 +179,7 @@ namespace Gorgon.Graphics.Core
                                ElementCount = ElementCount,
                                Flags = (D3D11.UnorderedAccessViewBufferFlags)ReadWriteViewType
                            },
-                           Format = DXGI.Format.Unknown
+                           Format = Format.Unknown
                        };
 
             Native = new D3D11.UnorderedAccessView1(Resource.Graphics.D3DDevice, Resource.D3DResource, desc)

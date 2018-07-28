@@ -27,8 +27,8 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using DX = SharpDX;
 using Gorgon.Graphics.Core;
+using DX = SharpDX;
 
 
 namespace Gorgon.Graphics.Example

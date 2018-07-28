@@ -28,8 +28,8 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
-using Gorgon.Windows.Properties;
 using Gorgon.Native;
+using Gorgon.Windows.Properties;
 
 namespace Gorgon.Diagnostics.LogProviders
 {

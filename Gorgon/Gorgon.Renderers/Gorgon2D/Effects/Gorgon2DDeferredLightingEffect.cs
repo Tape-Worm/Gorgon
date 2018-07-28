@@ -32,9 +32,9 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics;
-using DX = SharpDX;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers.Properties;
+using DX = SharpDX;
 
 namespace Gorgon.Renderers
 {
@@ -323,7 +323,6 @@ namespace Gorgon.Renderers
             if (passIndex == 0)
             {
                 _renderAction();
-                Renderer.End();
             }
             else
             {
@@ -382,9 +381,11 @@ namespace Gorgon.Renderers
                                                 .BlendState(GorgonBlendState.Additive)
                                                 .Build();
 
+            var blendBuilder = new GorgonBlendStateBuilder();
+
             _deferredState = BatchStateBuilder.PixelShader(_deferredShader)
                                               .VertexShader(_vertexShader)
-                                              .BlendState(GorgonBlendState.Default)
+                                              .BlendState(blendBuilder.DestinationBlend(alpha: Blend.InverseSourceAlpha))
                                               .Build();
         }
 

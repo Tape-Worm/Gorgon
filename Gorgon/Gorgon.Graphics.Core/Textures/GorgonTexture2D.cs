@@ -29,15 +29,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using DX = SharpDX;
-using D3D11 = SharpDX.Direct3D11;
-using DXGI = SharpDX.DXGI;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
+using SharpDX.DXGI;
+using DX = SharpDX;
+using D3D11 = SharpDX.Direct3D11;
 
 
 namespace Gorgon.Graphics.Core
@@ -466,7 +466,7 @@ namespace Gorgon.Graphics.Core
 
 		    var tex2DDesc = new D3D11.Texture2DDescription1
 		                    {
-		                        Format = (DXGI.Format)Format,
+		                        Format = (Format)Format,
 		                        Width = Width,
 		                        Height = Height,
 		                        ArraySize = ArrayCount,
@@ -1196,7 +1196,7 @@ namespace Gorgon.Graphics.Core
 			int sourceIndex = D3D11.Resource.CalculateSubResourceIndex(srcMipLevel, srcArrayIndex, MipLevels);
 			int destIndex = D3D11.Resource.CalculateSubResourceIndex(destMipLevel, destArrayIndex, destination.MipLevels);
 
-			Graphics.D3DDeviceContext.ResolveSubresource(D3DResource, sourceIndex, destination.D3DResource, destIndex, (DXGI.Format)resolveFormat);
+			Graphics.D3DDeviceContext.ResolveSubresource(D3DResource, sourceIndex, destination.D3DResource, destIndex, (Format)resolveFormat);
 		}
 
 		/// <summary>

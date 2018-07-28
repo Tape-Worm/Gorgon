@@ -32,8 +32,8 @@ using Gorgon.Graphics.Core.Properties;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
+using SharpDX.DXGI;
 using SharpDX.Mathematics.Interop;
-using DXGI = SharpDX.DXGI;
 using DX = SharpDX;
 using D3D11 = SharpDX.Direct3D11;
 
@@ -190,7 +190,7 @@ namespace Gorgon.Graphics.Core
             return texture.ArrayCount == 1
                        ? new D3D11.UnorderedAccessViewDescription1
                          {
-                             Format = (DXGI.Format)Format,
+                             Format = (Format)Format,
                              Dimension = D3D11.UnorderedAccessViewDimension.Texture2D,
                              Texture2D = 
                              {
@@ -200,7 +200,7 @@ namespace Gorgon.Graphics.Core
                          }
                        : new D3D11.UnorderedAccessViewDescription1
                          {
-                             Format = (DXGI.Format)Format,
+                             Format = (Format)Format,
                              Dimension = D3D11.UnorderedAccessViewDimension.Texture2DArray,
                              Texture2DArray =
                              {

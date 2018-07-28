@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Gorgon.Core;
-using WIC = SharpDX.WIC;
 using Gorgon.Native;
+using SharpDX.WIC;
 
 namespace Gorgon.Graphics.Imaging
 {
@@ -14,7 +14,7 @@ namespace Gorgon.Graphics.Imaging
 		/// <summary>
 		/// No dithering.
 		/// </summary>
-		None = WIC.BitmapDitherType.None,
+		None = BitmapDitherType.None,
 		/// <summary>
 		/// <para>
 		/// An error diffusion algorithm.
@@ -23,7 +23,7 @@ namespace Gorgon.Graphics.Imaging
 		/// This should be used with images that make use of a color palette, such as 8 bit images.
 		/// </para>
 		/// </summary>
-		ErrorDiffusion = WIC.BitmapDitherType.ErrorDiffusion,
+		ErrorDiffusion = BitmapDitherType.ErrorDiffusion,
 		/// <summary>
 		/// <para>
 		/// A 4x4 ordered dither algorithm.
@@ -32,15 +32,15 @@ namespace Gorgon.Graphics.Imaging
 		/// This should be used with images that use 5 or 6 bits of color depth for their color channels.
 		/// </para>
 		/// </summary>
-		Ordered4x4 = WIC.BitmapDitherType.Ordered4x4,
+		Ordered4x4 = BitmapDitherType.Ordered4x4,
 		/// <summary>
 		/// An 8x8 ordered dither algorithm.
 		/// </summary>
-		Ordered8x8 = WIC.BitmapDitherType.Ordered8x8,
+		Ordered8x8 = BitmapDitherType.Ordered8x8,
 		/// <summary>
 		/// A 16x16 ordered dither algorithm.
 		/// </summary>
-		Ordered16x16 = WIC.BitmapDitherType.Ordered16x16
+		Ordered16x16 = BitmapDitherType.Ordered16x16
 	}
 
 	/// <summary>
@@ -51,19 +51,19 @@ namespace Gorgon.Graphics.Imaging
 		/// <summary>
 		/// The output pixel is assigned the value of the pixel that the point falls within. No other pixels are considered.
 		/// </summary>
-		Point = WIC.BitmapInterpolationMode.NearestNeighbor,
+		Point = BitmapInterpolationMode.NearestNeighbor,
 		/// <summary>
 		/// The output pixel values are computed as a weighted average of the nearest four pixels in a 2x2 grid.
 		/// </summary>
-		Linear = WIC.BitmapInterpolationMode.Linear,
+		Linear = BitmapInterpolationMode.Linear,
 		/// <summary>
 		/// Destination pixel values are computed as a weighted average of the nearest sixteen pixels in a 4x4 grid.
 		/// </summary>
-		Cubic = WIC.BitmapInterpolationMode.Cubic,
+		Cubic = BitmapInterpolationMode.Cubic,
 		/// <summary>
 		/// Destination pixel values are computed as a weighted average of the all the pixels that map to the new pixel.
 		/// </summary>
-		Fant = WIC.BitmapInterpolationMode.Fant
+		Fant = BitmapInterpolationMode.Fant
 	}
 
 	/// <summary>

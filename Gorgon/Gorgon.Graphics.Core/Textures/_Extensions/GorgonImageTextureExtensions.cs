@@ -25,7 +25,7 @@
 #endregion
 
 using System;
-using Drawing = System.Drawing;
+using System.Drawing;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.GdiPlus;
 
@@ -75,7 +75,7 @@ namespace Gorgon.Graphics.Core
 	    /// </list>
 	    /// </para>
 	    /// </remarks>
-	    public static GorgonTexture2D ToTexture2D(this Drawing.Bitmap gdiBitmap,
+	    public static GorgonTexture2D ToTexture2D(this Bitmap gdiBitmap,
 	                                              GorgonGraphics graphics,
 	                                              GorgonTextureLoadOptions options = null)
 	    {
