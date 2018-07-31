@@ -83,9 +83,26 @@ namespace Gorgon.Renderers
     public class Gorgon2D
         : IDisposable, IGorgonGraphicsObject
     {
+        #region Constants.
+        /// <summary>
+        /// The renderer is not initialized.
+        /// </summary>
+        private const int Uninitialized = 0;
+
+        /// <summary>
+        /// The renderer is initializing.
+        /// </summary>
+        private const int Initializing = 1;
+
+        /// <summary>
+        /// The renderer is initialized.
+        /// </summary>
+        private const int Initialized = 2;
+        #endregion
+
         #region Variables.
         // The flag to indicate that the renderer is initialized.
-        private bool _initialized;
+        private int _initialized = Uninitialized;
         // The primary render target.
         private readonly GorgonRenderTarget2DView _primaryTarget;
         // The default vertex shader used by the renderer.
@@ -214,63 +231,93 @@ namespace Gorgon.Renderers
         /// </summary>
         private void Initialize()
         {
-            if (_initialized)
+            // Spin wait until we're fully initialized.
+            var wait = new SpinWait();
+
+            while (Interlocked.Exchange(ref _initialized, Initializing) == Initializing)
+            {
+                // If a thread is currently initialzing the renderer, make it wait until we've finalized initialization before continuing.
+                wait.SpinOnce();
+            }
+            
+            // We're already initialized, then we don't need to continue any further.
+            if (_initialized == Initialized)
             {
                 return;
             }
 
-            _defaultVertexShader.Shader = GorgonShaderFactory.Compile<GorgonVertexShader>(Graphics, Resources.BasicSprite, "GorgonVertexShader", GorgonGraphics.IsDebugEnabled);
-            _defaultPixelShader.Shader = GorgonShaderFactory.Compile<GorgonPixelShader>(Graphics, Resources.BasicSprite, "GorgonPixelShaderTextured", GorgonGraphics.IsDebugEnabled);
-
-            _vertexLayout = GorgonInputLayout.CreateUsingType<Gorgon2DVertex>(Graphics, _defaultVertexShader.Shader);
-
-            // We need to ensure that we have a default texture in case we decide not to send a texture in.
-            GorgonTexture2D textureResource = Resources.White_2x2.ToTexture2D(Graphics,
-                                                                              new GorgonTextureLoadOptions
-                                                                              {
-                                                                                  Name = "Default White 2x2 Texture",
-                                                                                  Binding = TextureBinding.ShaderResource,
-                                                                                  Usage = ResourceUsage.Immutable
-                                                                              });
-            _defaultTexture = textureResource.GetShaderResourceView();
-
-            _alphaTestData = new AlphaTestData(true, GorgonRangeF.Empty);
-            _alphaTest = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _alphaTestData, "Alpha Test Buffer");
-
-            _batchRenderer = new BatchRenderer(Graphics);
-            _drawCallFactory = new DrawCallFactory(Graphics, _defaultTexture, _vertexLayout)
-                               {
-                                   ProjectionViewBuffer = _viewProjection,
-                                   AlphaTestBuffer = _alphaTest
-                               };
-
-            // Set up the initial state.
-            _lastBatchState.PixelShader = _defaultPixelShader;
-            _lastBatchState.VertexShader = _defaultVertexShader;
-            _lastBatchState.BlendState = GorgonBlendState.Default;
-            _lastBatchState.RasterState = GorgonRasterState.Default;
-            _lastBatchState.DepthStencilState = GorgonDepthStencilState.Default;
-
-            // Set the initial render target.
-            if (Graphics.RenderTargets[0] == null)
+            try
             {
-                Graphics.SetRenderTarget(_primaryTarget);
+                _defaultVertexShader.Shader =
+                    GorgonShaderFactory.Compile<GorgonVertexShader>(Graphics, Resources.BasicSprite, "GorgonVertexShader", GorgonGraphics.IsDebugEnabled);
+                _defaultPixelShader.Shader =
+                    GorgonShaderFactory.Compile<GorgonPixelShader>(Graphics, Resources.BasicSprite, "GorgonPixelShaderTextured", GorgonGraphics.IsDebugEnabled);
+
+                _vertexLayout = GorgonInputLayout.CreateUsingType<Gorgon2DVertex>(Graphics, _defaultVertexShader.Shader);
+
+                // We need to ensure that we have a default texture in case we decide not to send a texture in.
+                GorgonTexture2D textureResource = Resources.White_2x2.ToTexture2D(Graphics,
+                                                                                  new GorgonTextureLoadOptions
+                                                                                  {
+                                                                                      Name = "Default White 2x2 Texture",
+                                                                                      Binding = TextureBinding.ShaderResource,
+                                                                                      Usage = ResourceUsage.Immutable
+                                                                                  });
+                _defaultTexture = textureResource.GetShaderResourceView();
+
+                _alphaTestData = new AlphaTestData(true, GorgonRangeF.Empty);
+                _alphaTest = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _alphaTestData, "Alpha Test Buffer");
+
+                _batchRenderer = new BatchRenderer(Graphics);
+                _drawCallFactory = new DrawCallFactory(Graphics, _defaultTexture, _vertexLayout)
+                                   {
+                                       ProjectionViewBuffer = _viewProjection,
+                                       AlphaTestBuffer = _alphaTest
+                                   };
+
+                // Set up the initial state.
+                _lastBatchState.PixelShader = _defaultPixelShader;
+                _lastBatchState.VertexShader = _defaultVertexShader;
+                _lastBatchState.BlendState = GorgonBlendState.Default;
+                _lastBatchState.RasterState = GorgonRasterState.Default;
+                _lastBatchState.DepthStencilState = GorgonDepthStencilState.Default;
+
+                // Set the initial render target.
+                if (Graphics.RenderTargets[0] == null)
+                {
+                    Graphics.SetRenderTarget(_primaryTarget);
+                }
+
+                _defaultCamera = new Gorgon2DOrthoCamera(this,
+                                                         new DX.Size2F(Graphics.Viewports[0].Width, Graphics.Viewports[0].Height),
+                                                         0,
+                                                         1.0f,
+                                                         "Gorgon2D.Default_Camera");
+                _defaultCamera.Update();
+                _defaultCamera.NeedsUpload = false;
+                _viewProjection = GorgonConstantBufferView.CreateConstantBuffer(Graphics,
+                                                                                ref _defaultCamera.ViewProjectionMatrix,
+                                                                                "[Gorgon2D] View * Projection Matrix Buffer",
+                                                                                ResourceUsage.Dynamic);
+
+                _defaultTextSprite = new GorgonTextSprite(_defaultFontFactory.Value.DefaultFont);
+
+                WeakEventManager<GorgonGraphics, EventArgs>.AddHandler(Graphics, nameof(GorgonGraphics.RenderTargetChanged), RenderTarget_Changed);
+                WeakEventManager<GorgonGraphics, EventArgs>.AddHandler(Graphics, nameof(GorgonGraphics.ViewportChanged), RenderTarget_Changed);
+                WeakEventManager<GorgonGraphics, CancelEventArgs>.AddHandler(Graphics, nameof(GorgonGraphics.RenderTargetChanging), ValidateBeginEndCall);
+                WeakEventManager<GorgonGraphics, CancelEventArgs>.AddHandler(Graphics, nameof(GorgonGraphics.ViewportChanging), ValidateBeginEndCall);
+                WeakEventManager<GorgonGraphics, CancelEventArgs>.AddHandler(Graphics, nameof(GorgonGraphics.DepthStencilChanging), ValidateBeginEndCall);
+
+                Interlocked.Exchange(ref _initialized, 2);
             }
+            catch(Exception ex)
+            {
+                // Get rid of any objects that we've already built.
+                Dispose();
 
-            _defaultCamera = new Gorgon2DOrthoCamera(this, new DX.Size2F(Graphics.Viewports[0].Width, Graphics.Viewports[0].Height), 0, 1.0f, "Gorgon2D.Default_Camera");
-            _defaultCamera.Update();
-            _defaultCamera.NeedsUpload = false;
-            _viewProjection = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _defaultCamera.ViewProjectionMatrix, "[Gorgon2D] View * Projection Matrix Buffer", ResourceUsage.Dynamic);
-
-            _defaultTextSprite = new GorgonTextSprite(_defaultFontFactory.Value.DefaultFont);
-
-            WeakEventManager<GorgonGraphics, EventArgs>.AddHandler(Graphics, nameof(GorgonGraphics.RenderTargetChanged), RenderTarget_Changed);
-            WeakEventManager<GorgonGraphics, EventArgs>.AddHandler(Graphics, nameof(GorgonGraphics.ViewportChanged), RenderTarget_Changed);
-            WeakEventManager<GorgonGraphics, CancelEventArgs>.AddHandler(Graphics, nameof(GorgonGraphics.RenderTargetChanging), ValidateBeginEndCall);
-            WeakEventManager<GorgonGraphics, CancelEventArgs>.AddHandler(Graphics, nameof(GorgonGraphics.ViewportChanging), ValidateBeginEndCall);
-            WeakEventManager<GorgonGraphics, CancelEventArgs>.AddHandler(Graphics, nameof(GorgonGraphics.DepthStencilChanging), ValidateBeginEndCall);
-
-            _initialized = true;
+                Log.LogException(ex);
+                throw;
+            }
         }
 
         /// <summary>
@@ -286,13 +333,6 @@ namespace Gorgon.Renderers
         /// </remarks>
         public void Begin(Gorgon2DBatchState batchState = null, Gorgon2DCamera camera = null)
         {
-            // If we attempt to render with no render target, then reset to our primary.
-            if (Graphics.RenderTargets[0] == null)
-            {
-                // This will trigger the event that will update the camera.
-                Graphics.SetRenderTarget(_primaryTarget, Graphics.DepthStencilView);
-            }
-
             if (Interlocked.Exchange(ref _beginCalled, 1) == 1)
             {
                 throw new GorgonException(GorgonResult.AlreadyInitialized, Resources.GOR2D_ERR_RENDER_ALREADY_STARTED);
@@ -300,14 +340,20 @@ namespace Gorgon.Renderers
 
             // If we're not initialized, then do so now.
             // Note that this is not thread safe.
-            if (!_initialized)
+            if (_initialized != Initialized)
             {
                 Initialize();
             }
+            else if (Graphics.RenderTargets[0] == null)
+            {
+                // If we attempt to render with no render target, then reset to our primary.
+                // This will trigger the event that will update the camera.
+                Graphics.SetRenderTarget(_primaryTarget, Graphics.DepthStencilView);
+            }
 
             bool cameraChanged = camera != CurrentCamera;
-            bool updateCamera = (cameraChanged) ||
-                                ((camera != null) && (camera.NeedsUpdate));
+            bool updateCamera = ((cameraChanged) ||
+                                ((camera != null) && (camera.NeedsUpdate)));
 
             CurrentCamera = camera;
 
@@ -440,7 +486,7 @@ namespace Gorgon.Renderers
         private void RenderTarget_Changed(object sender, EventArgs e)
         {
             // If we've not been initialized yet, do so now.
-            if (!_initialized)
+            if (_initialized != Initialized)
             {
                 Initialize();
             }
@@ -451,7 +497,7 @@ namespace Gorgon.Renderers
             {
                 DX.ViewportF viewPort = Graphics.Viewports[0];
 
-                // If the view port is different than our camera dimensions, then resize the camera to match the viewport.
+                // If the viewport is different than our camera dimensions, then resize the camera to match the viewport.
                 if ((viewPort.Width != camera.ViewDimensions.Width)
                     || (viewPort.Height != camera.ViewDimensions.Height))
                 {
@@ -1544,7 +1590,7 @@ namespace Gorgon.Renderers
             _lastBatchState.PixelShader = null;
             _lastBatchState.VertexShader = null;
         }
-
+        
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
@@ -1577,6 +1623,8 @@ namespace Gorgon.Renderers
             layout?.Dispose();
             vertexShader?.Shader?.Dispose();
             pixelShader?.Shader?.Dispose();
+
+            Interlocked.Exchange(ref _initialized, Uninitialized);
         }
         #endregion
 
