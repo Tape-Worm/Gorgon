@@ -92,8 +92,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ComputeEngine", "Examples\G
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SobelComputeEngine", "Examples\Gorgon.Graphics\SobelComputeEngine\SobelComputeEngine.csproj", "{111F8BBB-87E9-4FE0-9176-01CE36CC05B1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test2DApp", "Test\Test2DApp\Test2DApp.csproj", "{40E1E768-7087-4C8D-8B79-7C50741CDC0F}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Renderers.Gorgon2D", "Gorgon\Gorgon.Renderers\Gorgon2D\Gorgon.Renderers.Gorgon2D.csproj", "{4BB4EF41-1F32-4C50-BCBF-43C02F9600BD}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Gorgon2D", "Gorgon2D", "{324C46F5-D8B6-4711-ABB7-8E22BD9EAE10}"
@@ -107,8 +105,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Effects", "Examples\Gorgon.Renderers.2D\Effects\Effects.csproj", "{7689F725-74BF-4C71-87A0-60F225688C5F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sprites", "Examples\Gorgon.Renderers.2D\Sprites\Sprites.csproj", "{0BA16C6A-D278-4218-97D2-6A094185DC90}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NormalSprite", "..\..\..\Temp Code\NormalSprite\NormalSprite.csproj", "{D7895746-CA33-435E-B116-AAAA94DEC664}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lights", "Examples\Gorgon.Renderers.2D\Lights\Lights.csproj", "{DDCECB25-AD3F-405C-BE3D-84EF027D1B70}"
 EndProject
@@ -274,10 +270,6 @@ Global
 		{111F8BBB-87E9-4FE0-9176-01CE36CC05B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{111F8BBB-87E9-4FE0-9176-01CE36CC05B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{111F8BBB-87E9-4FE0-9176-01CE36CC05B1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{40E1E768-7087-4C8D-8B79-7C50741CDC0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{40E1E768-7087-4C8D-8B79-7C50741CDC0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{40E1E768-7087-4C8D-8B79-7C50741CDC0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{40E1E768-7087-4C8D-8B79-7C50741CDC0F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4BB4EF41-1F32-4C50-BCBF-43C02F9600BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4BB4EF41-1F32-4C50-BCBF-43C02F9600BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4BB4EF41-1F32-4C50-BCBF-43C02F9600BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -302,10 +294,6 @@ Global
 		{0BA16C6A-D278-4218-97D2-6A094185DC90}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0BA16C6A-D278-4218-97D2-6A094185DC90}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0BA16C6A-D278-4218-97D2-6A094185DC90}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D7895746-CA33-435E-B116-AAAA94DEC664}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D7895746-CA33-435E-B116-AAAA94DEC664}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D7895746-CA33-435E-B116-AAAA94DEC664}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D7895746-CA33-435E-B116-AAAA94DEC664}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DDCECB25-AD3F-405C-BE3D-84EF027D1B70}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DDCECB25-AD3F-405C-BE3D-84EF027D1B70}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DDCECB25-AD3F-405C-BE3D-84EF027D1B70}.Release|Any CPU.ActiveCfg = Release|Any CPU
