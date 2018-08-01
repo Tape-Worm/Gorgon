@@ -217,6 +217,7 @@ namespace Gorgon.Renderers
         #endregion
 
         #region Methods.
+
         /// <summary>
         /// Function to set up state prior to rendering.
         /// </summary>
@@ -224,7 +225,7 @@ namespace Gorgon.Renderers
         /// <param name="depthStencilStateOverride">An override for the current depth/stencil state.</param>
         /// <param name="rasterStateOverride">An override for the current raster state.</param>
         /// <returns><b>true</b> if state was overridden, <b>false</b> if not or <b>null</b> if rendering is canceled.</returns>
-        private bool SetupRenderStates(GorgonBlendState blendStateOverride, GorgonDepthStencilState depthStencilStateOverride, GorgonRasterState rasterStateOverride)
+        private bool PreRender(GorgonBlendState blendStateOverride, GorgonDepthStencilState depthStencilStateOverride, GorgonRasterState rasterStateOverride)
         {
             if (!_isInitialized)
             {
@@ -239,12 +240,10 @@ namespace Gorgon.Renderers
                 return false;
             }
 
+            // Cache this size so that we can detect size changes on the current render target.
             CurrentTargetSize = new DX.Size2(firstTarget.Width, firstTarget.Height);
 
-            if (!OnBeforeRender())
-            {
-                return false;
-            }
+            OnBeforeRender();
 
             if ((blendStateOverride == _blendStateOverride) 
                 && (depthStencilStateOverride == _depthStencilStateOverride) 
@@ -297,15 +296,13 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Function called prior to rendering.
         /// </summary>
-        /// <returns><b>true</b> if rendering should continue, or <b>false</b> if not.</returns>
         /// <remarks>
         /// <para>
         /// Applications can use this to set up common states and other configuration settings prior to executing the render passes.
         /// </para>
         /// </remarks>
-        protected virtual bool OnBeforeRender()
+        protected virtual void OnBeforeRender()
         {
-            return true;
         }
 
         /// <summary>
@@ -381,7 +378,7 @@ namespace Gorgon.Renderers
         /// <param name="camera">[Optional] The camera to use when rendering.</param>
         protected void Render(GorgonBlendState blendStateOverride = null, GorgonDepthStencilState depthStencilStateOverride = null, GorgonRasterState rasterStateOverride = null, Gorgon2DCamera camera = null)
         {
-            bool stateChanged = SetupRenderStates(blendStateOverride, depthStencilStateOverride, rasterStateOverride);
+            bool stateChanged = PreRender(blendStateOverride, depthStencilStateOverride, rasterStateOverride);
 
             for (int i = 0; i < PassCount; ++i)
             {
@@ -461,7 +458,7 @@ namespace Gorgon.Renderers
         {
             texture.ValidateObject(nameof(texture));
 
-            bool stateChanged = SetupRenderStates(blendStateOverride, depthStencilStateOverride, rasterStateOverride);
+            bool stateChanged = PreRender(blendStateOverride, depthStencilStateOverride, rasterStateOverride);
 
             if (region == null)
             {

@@ -206,17 +206,15 @@ namespace Gorgon.Renderers
 		/// <returns>
 		/// <b>true</b> to continue rendering, <b>false</b> to exit.
 		/// </returns>
-		protected override bool OnBeforeRender()
+		protected override void OnBeforeRender()
 		{
 			if (!_isUpdated)
 			{
-			    return true;
+			    return;
 			}
 
 		    _posterizeBuffer.Buffer.SetData(ref _settings);
 		    _isUpdated = false;
-
-		    return true;
 		}
 
 	    /// <summary>

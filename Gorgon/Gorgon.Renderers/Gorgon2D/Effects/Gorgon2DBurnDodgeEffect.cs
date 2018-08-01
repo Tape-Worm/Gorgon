@@ -144,23 +144,15 @@ namespace Gorgon.Renderers
 		/// <returns>
 		/// <b>true</b> to continue rendering, <b>false</b> to exit.
 		/// </returns>
-		protected override bool OnBeforeRender()
+		protected override void OnBeforeRender()
 		{
-		    GorgonRenderTargetView currentTarget = Graphics.RenderTargets[0];
-
-		    if (currentTarget == null)
-		    {
-		        return false;
-		    }
-
 		    if (!_isUpdated)
 		    {
-		        return true;
+		        return;
 		    }
 
 		    _burnDodgeBuffer.Buffer.SetData(ref _useDodge);
 			_isUpdated = false;
-		    return true;
 		}
 
 		/// <summary>

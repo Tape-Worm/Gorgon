@@ -216,17 +216,15 @@ namespace Gorgon.Renderers
 	    /// Applications can use this to set up common states and other configuration settings prior to executing the render passes.
 	    /// </para>
 	    /// </remarks>
-	    protected override bool OnBeforeRender()
+	    protected override void OnBeforeRender()
 		{
 		    if (!_isUpdated)
 		    {
-		        return true;
+		        return;
 		    }
 
 		    _1BitBuffer.Buffer.SetData(ref _settings);
 		    _isUpdated = false;
-
-		    return true;
 		}
 
 	    /// <summary>

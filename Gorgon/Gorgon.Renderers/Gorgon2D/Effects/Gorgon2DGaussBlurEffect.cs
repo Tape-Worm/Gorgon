@@ -455,7 +455,7 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <returns><b>true</b> to continue rendering, <b>false</b> to stop.</returns>
         /// <exception cref="GorgonException">Thrown if the render target could not be created due to an incompatible <see cref="BlurTargetFormat"/>.</exception>
-        protected override bool OnBeforeRender()
+        protected override void OnBeforeRender()
         {
 #if DEBUG
             if ((_needTargetUpdate) && (!Graphics.FormatSupport[BlurTargetFormat].IsRenderTargetFormat))
@@ -476,12 +476,11 @@ namespace Gorgon.Renderers
 
             if (!_needTargetUpdate)
             {
-                return true;
+                return;
             }
 
             // Update the render target prior to rendering.
             UpdateRenderTarget();
-            return true;
         }
 
         /// <summary>

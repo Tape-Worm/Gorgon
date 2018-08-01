@@ -188,20 +188,18 @@ namespace Gorgon.Renderers
 		/// <returns>
 		/// <b>true</b> to continue rendering, <b>false</b> to exit.
 		/// </returns>
-		protected override bool OnBeforeRender()
+		protected override void OnBeforeRender()
 		{
 			UpdateDisplacementMap();
 
 			if (!_isUpdated)
 			{
-				return base.OnBeforeRender();
+				return;
 			}
 
 			var settings = new DX.Vector4(1.0f / _backgroundView.Width, 1.0f / _backgroundView.Height, _displacementStrength * 100, 0);
 			_displacementSettingsBuffer.Buffer.SetData(ref settings);
 			_isUpdated = false;
-
-			return base.OnBeforeRender();
 		}
 
         /// <summary>

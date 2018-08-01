@@ -143,19 +143,17 @@ namespace Gorgon.Renderers
 		/// <returns>
 		/// <b>true</b> to continue rendering, <b>false</b> to exit.
 		/// </returns>
-		protected override bool OnBeforeRender()
+		protected override void OnBeforeRender()
 		{
 			if (!_isUpdated)
 			{
-			    return true;
+			    return;
 			}
 
 		    var settings = new DX.Vector3(1.0f / _size.Width, 1.0f / _size.Height, _amount);
 
 		    _sharpenEmbossBuffer.Buffer.SetData(ref settings);
 		    _isUpdated = false;
-
-		    return true;
 		}
 
 		/// <summary>

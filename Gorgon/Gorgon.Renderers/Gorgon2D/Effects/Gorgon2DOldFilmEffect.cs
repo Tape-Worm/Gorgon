@@ -457,13 +457,13 @@ namespace Gorgon.Renderers
 		/// <returns>
 		/// <b>true</b> to continue rendering, <b>false</b> to exit.
 		/// </returns>
-		protected override bool OnBeforeRender()
+		protected override void OnBeforeRender()
 		{
 		    GorgonRenderTargetView currentTarget = Graphics.RenderTargets[0];
 
 		    if (currentTarget == null)
 		    {
-		        return false;
+		        return;
 		    }
 
 		    if (_isScratchUpdated)
@@ -479,8 +479,6 @@ namespace Gorgon.Renderers
 		    }
 
 		    _timingBuffer.Buffer.SetData(ref _time);
-
-		    return true;
 		}
 
 	    /// <summary>

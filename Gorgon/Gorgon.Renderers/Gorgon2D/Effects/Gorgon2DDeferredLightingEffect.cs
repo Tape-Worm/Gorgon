@@ -325,12 +325,10 @@ namespace Gorgon.Renderers
         /// Applications can use this to set up common states and other configuration settings prior to executing the render passes.
         /// </para>
         /// </remarks>
-        protected override bool OnBeforeRender()
+        protected override void OnBeforeRender()
         {
             // If the output has changed size since last render, then we need to adjust our render target(s) and shader data.
             CheckForOutputSizeChange(_finalOutput.Width, _finalOutput.Height);
-
-            return true;
         }
 
         /// <summary>
