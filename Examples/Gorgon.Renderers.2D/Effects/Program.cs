@@ -99,6 +99,41 @@ namespace Gorgon.Examples
 
         #region Methods.
         /// <summary>
+        /// Function to draw the displacement effect.
+        /// </summary>
+        /// <param name="passIndex">The current pass index.</param>
+        private static void DrawDisplacement(int passIndex)
+        {
+            switch (passIndex)
+            {
+                // For this effect, we first draw whatever items we wish to use for displacing the image data.
+                case 0:
+                    DrawDisplacementSprite();
+                    break;
+                // Then, we draw the background that will have the displaced pixels.
+                case 1:
+                    DrawDisplacementBackground();
+                    break;
+            }
+
+            // Function to draw the sprite that will displace the background image.
+            void DrawDisplacementSprite()
+            {
+                _shipSprite.Color = GorgonColor.White;
+                _renderer.DrawSprite(_shipSprite);
+            }
+
+            // Function to draw the displacement background.
+            void DrawDisplacementBackground()
+            {
+                _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _postView1.Width, _postView1.Height),
+                                              GorgonColor.White,
+                                              _postView1,
+                                              new DX.RectangleF(0, 0, 1, 1));
+            }
+        }
+
+        /// <summary>
         /// Function to perform operations while the CPU is idle.
         /// </summary>
         /// <returns><b>true</b> to continue processing, <b>false</b> to stop.</returns>
@@ -127,13 +162,8 @@ namespace Gorgon.Examples
             {
                 // Don't bother recording the current state, we're going to be updating it shortly, so it'd be redundant.
                 _displacement.Strength = strength;
-                _displacement.RenderEffect(() =>
-                                           {
-                                               _shipSprite.Color = GorgonColor.White;
-                                               _renderer.DrawSprite(_shipSprite);
-                                           },
-                                           _postView1,
-                                           _postTarget2);
+                _displacement.Render((passIndex, _, __) => DrawDisplacement(passIndex),
+                                     _postTarget2);
             }
             else
             {

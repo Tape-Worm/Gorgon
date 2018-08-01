@@ -27,7 +27,6 @@
 using System;
 using System.Threading;
 using Gorgon.Core;
-using Gorgon.Diagnostics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers.Properties;
@@ -48,18 +47,12 @@ namespace Gorgon.Renderers
 		private GorgonRenderTarget2DView _displacementTarget;
         // The displacement texture view.
 	    private GorgonTexture2DView _displacementView;
-        // The texture that contains the pixels to displace.
-		private GorgonTexture2DView _backgroundView;
         // The constant buffer for displacement settings.
 		private GorgonConstantBufferView _displacementSettingsBuffer;				
 	    // Flag to indicate that the parameters have been updated.
 		private bool _isUpdated = true;											
 	    // Strength of the displacement map.
 		private float _displacementStrength = 0.25f;
-        // Method called to render the displacement effect.
-	    private Action _displacementRender;
-        // The final output render target.
-	    private GorgonRenderTargetView _outputRtv;
         // The batch state.
 	    private Gorgon2DBatchState _batchState;
 		#endregion
@@ -94,13 +87,13 @@ namespace Gorgon.Renderers
 		/// <summary>
 		/// Function to update the displacement map render target.
 		/// </summary>
-		private void UpdateDisplacementMap()
+		/// <param name="output">The final output render target.</param>
+		private void UpdateDisplacementMap(GorgonRenderTargetView output)
 		{
 		    if ((_displacementView != null) 
-		        && (_backgroundView != null) 
-		        && (_displacementView.Width == _backgroundView.Width) 
-		        && (_displacementView.Height == _backgroundView.Height) 
-		        && (_displacementView.Format == _backgroundView.Format))
+		        && (_displacementView.Width == output.Width) 
+		        && (_displacementView.Height == output.Height)
+		        && (_displacementView.Format == output.Format))
 		    {
 		        return;
 		    }
@@ -110,25 +103,20 @@ namespace Gorgon.Renderers
 			_displacementTarget = null;
 		    _displacementView = null;
 
-			if (_backgroundView == null)
-			{
-				return;
-			}
-
 #if DEBUG
-		    if (!Graphics.FormatSupport[_backgroundView.Format].IsRenderTargetFormat)
+		    if (!Graphics.FormatSupport[output.Format].IsRenderTargetFormat)
 		    {
 		        throw new GorgonException(GorgonResult.CannotWrite,
-		                                  string.Format(Resources.GOR2D_ERR_EFFECT_DISPLACEMENT_UNSUPPORTED_FORMAT, _backgroundView.Format));
+		                                  string.Format(Resources.GOR2D_ERR_EFFECT_DISPLACEMENT_UNSUPPORTED_FORMAT, output.Format));
 		    }
 #endif
 
 		    _displacementTarget = GorgonRenderTarget2DView.CreateRenderTarget(Graphics,
 		                                                                      new GorgonTexture2DInfo("Effect.Displacement.RT")
 		                                                                      {
-		                                                                          Width = _backgroundView.Width,
-		                                                                          Height = _backgroundView.Height,
-		                                                                          Format = _backgroundView.Format,
+		                                                                          Width = output.Width,
+		                                                                          Height = output.Height,
+		                                                                          Format = output.Format,
 		                                                                          Binding = TextureBinding.ShaderResource
 		                                                                      });
 		    _displacementView = _displacementTarget.Texture.GetShaderResourceView();
@@ -182,36 +170,45 @@ namespace Gorgon.Renderers
             rtv?.Dispose();
 	    }
 
-		/// <summary>
-		/// Function called before rendering begins.
-		/// </summary>
-		/// <returns>
-		/// <b>true</b> to continue rendering, <b>false</b> to exit.
-		/// </returns>
-		protected override void OnBeforeRender()
+	    /// <summary>
+	    /// Function called prior to rendering.
+	    /// </summary>
+	    /// <param name="output">The final render target that will receive the rendering from the effect.</param>
+	    /// <remarks>
+	    /// <para>
+	    /// Applications can use this to set up common states and other configuration settings prior to executing the render passes. This is an ideal method to initialize and resize your internal render
+	    /// targets (if applicable).
+	    /// </para>
+	    /// </remarks>
+	    protected override void OnBeforeRender(GorgonRenderTargetView output)
 		{
-			UpdateDisplacementMap();
+			UpdateDisplacementMap(output);
 
 			if (!_isUpdated)
 			{
 				return;
 			}
 
-			var settings = new DX.Vector4(1.0f / _backgroundView.Width, 1.0f / _backgroundView.Height, _displacementStrength * 100, 0);
+			var settings = new DX.Vector4(1.0f / output.Width, 1.0f / output.Height, _displacementStrength * 100, 0);
 			_displacementSettingsBuffer.Buffer.SetData(ref settings);
 			_isUpdated = false;
 		}
 
-        /// <summary>
-        /// Function called prior to rendering a pass.
-        /// </summary>
-        /// <param name="passIndex">The index of the pass to render.</param>
-        /// <returns>A <see cref="PassContinuationState" /> to instruct the effect on how to proceed.</returns>
-        /// <seealso cref="PassContinuationState" />
-        /// <remarks>Applications can use this to set up per-pass states and other configuration settings prior to executing a single render pass.</remarks>
-        protected override PassContinuationState OnBeforeRenderPass(int passIndex)
+	    /// <summary>
+	    /// Function called prior to rendering a pass.
+	    /// </summary>
+	    /// <param name="passIndex">The index of the pass to render.</param>
+	    /// <param name="output">The final render target that will receive the rendering from the effect.</param>
+	    /// <returns>A <see cref="PassContinuationState"/> to instruct the effect on how to proceed.</returns>
+	    /// <remarks>
+	    /// <para>
+	    /// Applications can use this to set up per-pass states and other configuration settings prior to executing a single render pass.
+	    /// </para>
+	    /// </remarks>
+	    /// <seealso cref="PassContinuationState"/>
+	    protected override PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output)
 	    {
-			if ((_displacementTarget == null) || (_backgroundView == null))
+			if (_displacementTarget == null)
 			{
 				return PassContinuationState.Stop;
 			}
@@ -223,7 +220,7 @@ namespace Gorgon.Renderers
                     Graphics.SetRenderTarget(_displacementTarget, Graphics.DepthStencilView);
 	                break;
                 case 1:
-                    Graphics.SetRenderTarget(_outputRtv, Graphics.DepthStencilView);
+                    Graphics.SetRenderTarget(output, Graphics.DepthStencilView);
                     break;
 	        }
 
@@ -234,28 +231,16 @@ namespace Gorgon.Renderers
 	    /// Function called to render a single effect pass.
 	    /// </summary>
 	    /// <param name="passIndex">The index of the pass being rendered.</param>
-	    /// <param name="batchState">The current batch state for the pass.</param>
-	    /// <param name="camera">The current camera to use when rendering.</param>
+	    /// <param name="renderMethod">The method used to render a scene for the effect.</param>
+	    /// <param name="output">The render target that will receive the final render data.</param>
 	    /// <remarks>
 	    /// <para>
 	    /// Applications must implement this in order to see any results from the effect.
 	    /// </para>
 	    /// </remarks>
-	    protected override void OnRenderPass(int passIndex, Gorgon2DBatchState batchState, Gorgon2DCamera camera)
+	    protected override void OnRenderPass(int passIndex, Action<int, int, DX.Size2> renderMethod, GorgonRenderTargetView output)
 	    {
-            Renderer.Begin(batchState, camera);
-
-	        switch (passIndex)
-	        {
-	            case 0:
-	                _displacementRender();
-	                break;
-                case 1:
-                    Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _backgroundView.Width, _backgroundView.Height), GorgonColor.White, _backgroundView);
-                    break;
-	        }
-
-            Renderer.End();
+            renderMethod(passIndex, PassCount, new DX.Size2(output.Width, output.Height));
 	    }
 
 	    /// <summary>
@@ -288,42 +273,6 @@ namespace Gorgon.Renderers
             displacementBuffer?.Dispose();
 		    shader?.Dispose();
 		}
-
-        /// <summary>
-        /// Function to displace the pixels on an image by using another image as a displacement map.
-        /// </summary>
-        /// <param name="displacementRender">The method used to render into the displacement map.</param>
-        /// <param name="backgroundImage">The image that will be distorted by the displacement.</param>
-        /// <param name="outputTarget">The render target that will receive the displaced image.</param>
-        /// <param name="camera">[Optional] The camera to use when rendering.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="displacementRender"/>, <paramref name="backgroundImage"/>, or the <paramref name="outputTarget"/> parameter is <b>null</b>.</exception>
-        /// <remarks>
-        /// <para>
-        /// The <paramref name="displacementRender"/> is a method that users can define to draw whatever will displace the underlying <paramref name="backgroundImage"/>.  When this method is called, the
-        /// <see cref="Gorgon2D.Begin"/> and <see cref="Gorgon2D.End"/> methods are already taken care of by the effect and will not need to be called during the callback.
-        /// </para>
-        /// <para>
-        /// <note type="warning">
-        /// <para>
-        /// For performance reasons, any exceptions thrown from this method will only be thrown when Gorgon is compiled in <b>DEBUG</b> mode.
-        /// </para>
-        /// </note>
-        /// </para>
-        /// </remarks>
-	    public void RenderEffect(Action displacementRender, GorgonTexture2DView backgroundImage, GorgonRenderTargetView outputTarget, Gorgon2DCamera camera = null)
-	    {
-            displacementRender.ValidateObject(nameof(displacementRender));
-            backgroundImage.ValidateObject(nameof(backgroundImage));
-            outputTarget.ValidateObject(nameof(outputTarget));
-
-	        _outputRtv = outputTarget;
-	        _backgroundView = backgroundImage;
-	        _displacementRender = displacementRender;
-
-	        Render(camera: camera);
-
-	        _backgroundView = null;
-	    }
 		#endregion
 
 		#region Constructor/Destructor.

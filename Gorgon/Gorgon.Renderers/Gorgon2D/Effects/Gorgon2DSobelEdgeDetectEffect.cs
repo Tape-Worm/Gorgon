@@ -288,7 +288,7 @@ namespace Gorgon.Renderers
 	            _isUpdated = true;
 	        }
 
-	        RenderTexture(texture, region, textureCoordinates, samplerStateOverride, blendStateOverride, camera: camera);
+	        BlitTexture(texture, region, textureCoordinates, samplerStateOverride, blendStateOverride, camera: camera);
 	    }
 		#endregion
 

@@ -82,9 +82,12 @@ namespace Gorgon.Examples
         /// <summary>
         /// Function to draw the scene that needs lighting.
         /// </summary>
-        private static void DrawLitScene()
+        /// <param name="pass">Not used.</param>
+        /// <param name="passCount">Not used.</param>
+        /// <param name="outputSize">The size of the output render target.</param>
+        private static void DrawLitScene(int pass, int passCount, DX.Size2 outputSize)
         {
-            _logoSprite.Position = new DX.Vector2(_screen.Width / 2.0f, _screen.Height / 2.0f);
+            _logoSprite.Position = new DX.Vector2(outputSize.Width / 2.0f, outputSize.Height / 2.0f);
             _renderer.DrawSprite(_logoSprite);
         }
 
@@ -131,7 +134,7 @@ namespace Gorgon.Examples
             _screen.RenderTargetView.Clear(GorgonColor.Black);
 
             // Render the lit sprite.
-            _lightEffect.RenderEffect(DrawLitScene, _finalTarget);
+            _lightEffect.Render(DrawLitScene, _finalTarget);
 
             // Blit our final texture to the main screen.
             _graphics.SetRenderTarget(_screen.RenderTargetView);

@@ -137,7 +137,7 @@ namespace Gorgon.Renderers
 	                             GorgonBlendState blendStateOverride = null,
 	                             Gorgon2DCamera camera = null)
 	    {
-	        RenderTexture(texture, region, textureCoordinates, samplerStateOverride, blendStateOverride, camera: camera);
+	        BlitTexture(texture, region, textureCoordinates, samplerStateOverride, blendStateOverride, camera: camera);
 	    }
 	    #endregion
 

@@ -218,7 +218,7 @@ namespace Gorgon.Renderers
 	    {
 	        _size = region?.Size ?? new DX.Size2F(CurrentTargetSize.Width, CurrentTargetSize.Height);
 
-	        RenderTexture(texture, region, textureCoordinates, samplerStateOverride, blendStateOverride, camera: camera);
+	        BlitTexture(texture, region, textureCoordinates, samplerStateOverride, blendStateOverride, camera: camera);
 	    }
 	    #endregion
 

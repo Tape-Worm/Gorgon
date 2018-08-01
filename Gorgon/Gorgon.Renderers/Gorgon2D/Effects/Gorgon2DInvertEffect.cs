@@ -157,7 +157,7 @@ namespace Gorgon.Renderers
         /// </para></remarks>
         public void RenderEffect(GorgonTexture2DView texture, DX.RectangleF? region = null, DX.RectangleF? textureCoordinates = null, GorgonSamplerState samplerStateOverride = null, GorgonBlendState blendStateOverride = null, Gorgon2DCamera camera = null)
         {
-            RenderTexture(texture, region, textureCoordinates, samplerStateOverride, camera: camera);
+            BlitTexture(texture, region, textureCoordinates, samplerStateOverride, camera: camera);
         }
         #endregion
 

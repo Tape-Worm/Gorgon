@@ -44,7 +44,7 @@ namespace Gorgon.Renderers
 	/// </para>
 	/// </remarks>
 	public class Gorgon2D1BitEffect
-		: Gorgon2DEffect, IGorgon2DTextureDrawEffect
+		: Gorgon2DEffect
 	{
 		#region Value Types.
 		/// <summary>
@@ -188,6 +188,22 @@ namespace Gorgon.Renderers
 
 		#region Methods.
 	    /// <summary>
+	    /// Function called to render a single effect pass.
+	    /// </summary>
+	    /// <param name="passIndex">The index of the pass being rendered.</param>
+	    /// <param name="renderMethod">The method used to render a scene for the effect.</param>
+	    /// <param name="output">The render target that will receive the final render data.</param>
+	    /// <remarks>
+	    /// <para>
+	    /// Applications must implement this in order to see any results from the effect.
+	    /// </para>
+	    /// </remarks>
+	    protected override void OnRenderPass(int passIndex, Action<int, int, DX.Size2> renderMethod, GorgonRenderTargetView output)
+	    {
+	        renderMethod(passIndex, PassCount, new DX.Size2(output.Width, output.Height));
+	    }
+
+	    /// <summary>
 	    /// Function called to initialize the effect.
 	    /// </summary>
 	    /// <remarks>
@@ -210,23 +226,29 @@ namespace Gorgon.Renderers
 	    /// <summary>
 	    /// Function called prior to rendering.
 	    /// </summary>
-	    /// <returns><b>true</b> if rendering should continue, or <b>false</b> if not.</returns>
+	    /// <param name="output">The final render target that will receive the rendering from the effect.</param>
 	    /// <remarks>
 	    /// <para>
-	    /// Applications can use this to set up common states and other configuration settings prior to executing the render passes.
+	    /// Applications can use this to set up common states and other configuration settings prior to executing the render passes. This is an ideal method to initialize and resize your internal render
+	    /// targets (if applicable).
 	    /// </para>
 	    /// </remarks>
-	    protected override void OnBeforeRender()
+	    protected override void OnBeforeRender(GorgonRenderTargetView output)
 		{
+		    if (Graphics.RenderTargets[0] != output)
+		    {
+		        Graphics.SetRenderTarget(output, Graphics.DepthStencilView);
+		    }
+
 		    if (!_isUpdated)
 		    {
 		        return;
 		    }
-
+            
 		    _1BitBuffer.Buffer.SetData(ref _settings);
 		    _isUpdated = false;
 		}
-
+        
 	    /// <summary>
 	    /// Function called to build a new (or return an existing) 2D batch state.
 	    /// </summary>
@@ -260,54 +282,6 @@ namespace Gorgon.Renderers
             buffer?.Dispose();
             shader?.Dispose();
 		}
-
-	    /// <summary>
-	    /// Function to render the effect.
-	    /// </summary>
-	    /// <param name="texture">The texture containing the image to burn or dodge.</param>
-	    /// <param name="region">[Optional] The region to draw the texture info.</param>
-	    /// <param name="textureCoordinates">[Optional] The texture coordinates, in texels, to use when drawing the texture.</param>
-	    /// <param name="samplerStateOverride">[Optional] An override for the current texture sampler.</param>
-	    /// <param name="blendStateOverride">[Optional] The blend state to use when rendering.</param>
-	    /// <param name="camera">[Optional] The camera used to render the image.</param>
-	    /// <remarks>
-	    /// <para>
-	    /// Renders the specified <paramref name="texture"/> using 1 bit color.
-	    /// </para>
-	    /// <para>
-	    /// If the <paramref name="region"/> parameter is omitted, then the texture will be rendered to the full size of the current render target.  If it is provided, then texture will be rendered to the
-	    /// location specified, and with the width and height specified.
-	    /// </para>
-	    /// <para>
-	    /// If the <paramref name="textureCoordinates"/> parameter is omitted, then the full size of the texture is rendered.
-	    /// </para>
-	    /// <para>
-	    /// If the <paramref name="samplerStateOverride"/> parameter is omitted, then the <see cref="GorgonSamplerState.Default"/> is used.  When provided, this will alter how the pixel shader samples our
-	    /// texture in slot 0.
-	    /// </para>
-	    /// <para>
-	    /// If the <paramref name="blendStateOverride"/>, parameter is omitted, then the <see cref="GorgonBlendState.Default"/> is used. 
-	    /// </para>
-	    /// <para>
-	    /// The <paramref name="camera"/> parameter is used to render the texture using a different view, and optionally, a different coordinate set.  
-	    /// </para>
-	    /// <para>
-	    /// <note type="important">
-	    /// <para>
-	    /// For performance reasons, any exceptions thrown by this method will only be thrown when Gorgon is compiled as DEBUG.
-	    /// </para>
-	    /// </note>
-	    /// </para>
-	    /// </remarks>
-	    public void RenderEffect(GorgonTexture2DView texture,
-	                             DX.RectangleF? region = null,
-	                             DX.RectangleF? textureCoordinates = null,
-	                             GorgonSamplerState samplerStateOverride = null,
-	                             GorgonBlendState blendStateOverride = null,
-	                             Gorgon2DCamera camera = null)
-	    {
-	        RenderTexture(texture, region, textureCoordinates, samplerStateOverride, blendStateOverride, camera: camera);
-	    }
 	    #endregion
 
         #region Constructor/Destructor.

@@ -101,12 +101,8 @@ namespace Gorgon.Renderers
         private GorgonConstantBufferView _screenSizeData;
         // The buffer that will hold the lighting data.
         private GorgonConstantBufferView _lightData;
-        // The action used to render the scene data to the various buffers.
-        private Action _renderAction;
         // The gbuffer data.
         private GorgonTexture2D _gbuffer;
-        // The final output target.
-        private GorgonRenderTargetView _finalOutput;
         // The render target for the gbuffer channels.
         private GorgonRenderTargetView[] _gbufferTargets = new GorgonRenderTargetView[3];
         // The texture used to draw the gbuffer data.
@@ -176,7 +172,7 @@ namespace Gorgon.Renderers
         private void CheckForOutputSizeChange(int width, int height)
         {
             // The size is the same, we don't need to do anything.
-            if ((_gbuffer != null) && (_finalOutput != null) && (_previousRtSize.Width == width) && (_previousRtSize.Height == height))
+            if ((_gbuffer != null) && (_previousRtSize.Width == width) && (_previousRtSize.Height == height))
             {
                 return;
             }
@@ -220,14 +216,11 @@ namespace Gorgon.Renderers
         /// Function to send the gbuffer to the final output target and perform the lighting calculations.
         /// </summary>
         /// <param name="lightIndex">The index of the light to render.</param>
-        private void RenderToOutput(int lightIndex)
+        /// <param name="output">The output render target to render into.</param>
+        private void RenderToOutput(int lightIndex, GorgonRenderTargetView output)
         {
             UpdateLight(lightIndex);
-
-            Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _finalOutput.Width, _finalOutput.Height),
-                                         GorgonColor.White,
-                                         _gbufferTexture,
-                                         new DX.RectangleF(0, 0, 1, 1));
+            BlitTexture(_gbufferTexture, output);
         }
 
         /// <summary>
@@ -241,7 +234,6 @@ namespace Gorgon.Renderers
                 return;
             }
 
-            Interlocked.Exchange(ref _finalOutput, null);
             Gorgon2DShader<GorgonVertexShader> vertexShader = Interlocked.Exchange(ref _vertexShader, null);
             Gorgon2DShader<GorgonPixelShader> deferredShader = Interlocked.Exchange(ref _deferredShader, null);
             Gorgon2DShader<GorgonPixelShader> lightShader = Interlocked.Exchange(ref _lightShader, null);
@@ -287,10 +279,15 @@ namespace Gorgon.Renderers
         /// Function called prior to rendering a pass.
         /// </summary>
         /// <param name="passIndex">The index of the pass to render.</param>
-        /// <returns>A <see cref="T:Gorgon.Renderers.PassContinuationState" /> to instruct the effect on how to proceed.</returns>
-        /// <seealso cref="T:Gorgon.Renderers.PassContinuationState" />
-        /// <remarks>Applications can use this to set up per-pass states and other configuration settings prior to executing a single render pass.</remarks>
-        protected override PassContinuationState OnBeforeRenderPass(int passIndex)
+        /// <param name="output">The final render target that will receive the rendering from the effect.</param>
+        /// <returns>A <see cref="PassContinuationState"/> to instruct the effect on how to proceed.</returns>
+        /// <remarks>
+        /// <para>
+        /// Applications can use this to set up per-pass states and other configuration settings prior to executing a single render pass.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="PassContinuationState"/>
+        protected override PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output)
         {
             Debug.Assert(passIndex >= 0, "Illegal pass index.");
 
@@ -309,7 +306,7 @@ namespace Gorgon.Renderers
                     Graphics.SetRenderTargets(_gbufferTargets, Graphics.DepthStencilView);
                     return PassContinuationState.Continue;
                 case 1:
-                    Graphics.SetRenderTarget(_finalOutput, Graphics.DepthStencilView);
+                    Graphics.SetRenderTarget(output, Graphics.DepthStencilView);
                     return PassContinuationState.Continue;
                 default:
                     return Lights[lightIndex ] != null ? PassContinuationState.Continue : PassContinuationState.Skip;
@@ -319,44 +316,41 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Function called prior to rendering.
         /// </summary>
-        /// <returns><b>true</b> if rendering should continue, or <b>false</b> if not.</returns>
+        /// <param name="output">The final render target that will receive the rendering from the effect.</param>
         /// <remarks>
         /// <para>
-        /// Applications can use this to set up common states and other configuration settings prior to executing the render passes.
+        /// Applications can use this to set up common states and other configuration settings prior to executing the render passes. This is an ideal method to initialize and resize your internal render
+        /// targets (if applicable).
         /// </para>
         /// </remarks>
-        protected override void OnBeforeRender()
+        protected override void OnBeforeRender(GorgonRenderTargetView output)
         {
             // If the output has changed size since last render, then we need to adjust our render target(s) and shader data.
-            CheckForOutputSizeChange(_finalOutput.Width, _finalOutput.Height);
+            CheckForOutputSizeChange(output.Width, output.Height);
         }
 
         /// <summary>
         /// Function called to render a single effect pass.
         /// </summary>
         /// <param name="passIndex">The index of the pass being rendered.</param>
-        /// <param name="batchState">The current batch state for the pass.</param>
-        /// <param name="camera">The current camera to use when rendering.</param>
+        /// <param name="renderMethod">The method used to render a scene for the effect.</param>
+        /// <param name="output">The render target that will receive the final render data.</param>
         /// <remarks>
         /// <para>
         /// Applications must implement this in order to see any results from the effect.
         /// </para>
         /// </remarks>
-        protected override void OnRenderPass(int passIndex, Gorgon2DBatchState batchState, Gorgon2DCamera camera)
+        protected override void OnRenderPass(int passIndex, Action<int, int, DX.Size2> renderMethod, GorgonRenderTargetView output)
         {
-            Renderer.Begin(batchState, camera);
-
             if (passIndex == 0)
             {
-                _renderAction();
+                renderMethod(passIndex, PassCount, _previousRtSize);
             }
             else
             {
                 // The actual lighting will be done in this method.
-                RenderToOutput(passIndex - 1);
+                RenderToOutput(passIndex - 1, output);
             }
-
-            Renderer.End();
         }
 
         /// <summary>
@@ -413,43 +407,6 @@ namespace Gorgon.Renderers
                                               .VertexShader(_vertexShader)
                                               .BlendState(blendBuilder.DestinationBlend(alpha: Blend.InverseSourceAlpha))
                                               .Build();
-        }
-
-        /// <summary>
-        /// Function to render the effect.
-        /// </summary>
-        /// <param name="renderAction">The action used to render the scene.</param>
-        /// <param name="output">The render target view that will receive the final rendered output.</param>
-        /// <param name="camera">[Optional] The camera to use when rendering.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderAction"/>, or the <paramref name="output"/> parameter is <b>null</b>.</exception>
-        /// <remarks>
-        /// <para>
-        /// The <paramref name="renderAction"/> is a method that users can define to draw whatever objects that need to be lit.  When this method is called, the <see cref="Gorgon2D.Begin"/> and
-        /// <see cref="Gorgon2D.End"/> methods are already taken care of by the effect and will not need to be called during the callback.
-        /// </para>
-        /// <para>
-        /// When rendering, the texture used by the objects being rendered must be a 3 level array texture, where the first layer contains the diffuse texture, the second contains the specular texture and
-        /// the third contains the normal map texture.  By doing this, only a single texture, instead of 3, needs to be bound to the GPU. This will provide a performance increase. 
-        /// </para>
-        /// <para>
-        /// <note type="warning">
-        /// <para>
-        /// For performance reasons, any exceptions thrown from this method will only be thrown when Gorgon is compiled in <b>DEBUG</b> mode.
-        /// </para>
-        /// </note>
-        /// </para>
-        /// </remarks>
-        public void RenderEffect(Action renderAction, GorgonRenderTargetView output, Gorgon2DCamera camera = null)
-        {
-            renderAction.ValidateObject(nameof(renderAction));
-            output.ValidateObject(nameof(output));
-
-            _finalOutput = output;
-            _renderAction = renderAction;
-
-            Render(camera: camera);
-
-            _renderAction = null;
         }
         #endregion
 
