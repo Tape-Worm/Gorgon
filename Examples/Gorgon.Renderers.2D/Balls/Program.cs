@@ -307,7 +307,9 @@ namespace Gorgon.Examples
 
             for (int i = 0; i < _blur.BlurRadius; ++i)
 		    {
+                _blur.RecordState(RecordedState.RenderTargets);
 		        output = _blur.RenderEffect(_ballTargetView);
+                _blur.RecallState();
 
 		        // Copy the result back to the render target.
                 _2D.Begin();

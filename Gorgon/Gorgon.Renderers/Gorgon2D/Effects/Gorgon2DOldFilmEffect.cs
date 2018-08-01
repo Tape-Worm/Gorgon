@@ -49,6 +49,13 @@ namespace Gorgon.Renderers
 	public class Gorgon2DOldFilmEffect
 		: Gorgon2DEffect
 	{
+        #region Constants.
+	    /// <summary>
+	    /// The name of the shader include for Gorgon's <see cref="Gorgon2DOldFilmEffect"/>.
+	    /// </summary>
+	    public const string Gorgon2DFilmGrainIncludeName = "FilmGrainShaders";
+        #endregion
+
 		#region Value Types.
 		/// <summary>
 		/// Settings for scratches.

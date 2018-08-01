@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics;
@@ -55,6 +56,42 @@ namespace Gorgon.Renderers
     }
 
     /// <summary>
+    /// Flags to indicate which states are recorded by the effect.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This is a bit flag enum, so multiple states can be recorded by ORing the values together.
+    /// </para>
+    /// </remarks>
+    [Flags]
+    public enum RecordedState
+    {
+        /// <summary>
+        /// Do not record any states.
+        /// <para>
+        /// This flag is mutally exclusive.
+        /// </para>
+        /// </summary>
+        None = 0,
+        /// <summary>
+        /// Record render target states.
+        /// </summary>
+        RenderTargets = 1,
+        /// <summary>
+        /// Record depth/stencil state.
+        /// </summary>
+        DepthStencil = 2,
+        /// <summary>
+        /// Record viewport state.
+        /// </summary>
+        Viewports = 4,
+        /// <summary>
+        /// Record all states.
+        /// </summary>
+        All = RenderTargets | DepthStencil | Viewports
+    }
+    
+    /// <summary>
     /// A base class used to implement special effects for 2D rendering.
     /// </summary>
     public abstract class Gorgon2DEffect
@@ -69,9 +106,45 @@ namespace Gorgon.Renderers
         private GorgonRasterState _rasterStateOverride;
         // The currently overridden depth/stencil state.
         private GorgonDepthStencilState _depthStencilStateOverride;
+        // The recall targets.
+        private GorgonRenderTargetView[] _targets;
+        // The recall viewports.
+        private DX.ViewportF[] _viewports;
+        // The enumerator for render targets.
+        private readonly IEnumerable<GorgonRenderTargetView> _targetEnumerator;
+        // The enumerator for viewports.
+        private readonly IEnumerable<DX.ViewportF> _viewportEnumerator;
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to return the list of recorded render targets.
+        /// </summary>
+        protected IReadOnlyList<GorgonRenderTargetView> RecordedRenderTargets => _targets;
+
+        /// <summary>
+        /// Property to return the recorded depth/stencil.
+        /// </summary>
+        protected GorgonDepthStencil2DView RecordedDepthStencil
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Property to return the list of recorded viewports.
+        /// </summary>
+        protected IReadOnlyList<DX.ViewportF> RecordedViewports => _viewports;
+
+        /// <summary>
+        /// Property to return the currently recorded states.
+        /// </summary>
+        protected RecordedState RecordedStates
+        {
+            get;
+            private set;
+        }
+
         /// <summary>
         /// Property to return the batch state builder used to create custom batch states.
         /// </summary>
@@ -144,6 +217,54 @@ namespace Gorgon.Renderers
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to set up state prior to rendering.
+        /// </summary>
+        /// <param name="blendStateOverride">An override for the current blending state.</param>
+        /// <param name="depthStencilStateOverride">An override for the current depth/stencil state.</param>
+        /// <param name="rasterStateOverride">An override for the current raster state.</param>
+        /// <returns><b>true</b> if state was overridden, <b>false</b> if not or <b>null</b> if rendering is canceled.</returns>
+        private bool SetupRenderStates(GorgonBlendState blendStateOverride, GorgonDepthStencilState depthStencilStateOverride, GorgonRasterState rasterStateOverride)
+        {
+            if (!_isInitialized)
+            {
+                OnInitialize();
+                _isInitialized = true;
+            }
+
+            GorgonRenderTargetView firstTarget = Graphics.RenderTargets[0];
+
+            if (firstTarget == null)
+            {
+                return false;
+            }
+
+            CurrentTargetSize = new DX.Size2(firstTarget.Width, firstTarget.Height);
+
+            if (!OnBeforeRender())
+            {
+                return false;
+            }
+
+            if ((blendStateOverride == _blendStateOverride) 
+                && (depthStencilStateOverride == _depthStencilStateOverride) 
+                && (rasterStateOverride == _rasterStateOverride))
+            {
+                return false;
+            }
+
+            BatchStateBuilder.BlendState(blendStateOverride ?? GorgonBlendState.Default)
+                             .DepthStencilState(depthStencilStateOverride ?? GorgonDepthStencilState.Default)
+                             .RasterState(rasterStateOverride ?? GorgonRasterState.Default);
+
+            _blendStateOverride = blendStateOverride;
+            _depthStencilStateOverride = depthStencilStateOverride;
+            _rasterStateOverride = rasterStateOverride;
+
+            return true;
+
+        }
+
         /// <summary>
         /// Function to create a shader for use with the effect.
         /// </summary>
@@ -249,55 +370,7 @@ namespace Gorgon.Renderers
         /// <param name="passIndex">The index of the current rendering pass.</param>
         /// <param name="statesChanged"><b>true</b> if the blend, raster, or depth/stencil state was changed. <b>false</b> if not.</param>
         /// <returns>The 2D batch state.</returns>
-        protected abstract  Gorgon2DBatchState OnGetBatchState(int passIndex, bool statesChanged);
-
-        /// <summary>
-        /// Function to set up state prior to rendering.
-        /// </summary>
-        /// <param name="blendStateOverride">An override for the current blending state.</param>
-        /// <param name="depthStencilStateOverride">An override for the current depth/stencil state.</param>
-        /// <param name="rasterStateOverride">An override for the current raster state.</param>
-        /// <returns><b>true</b> if state was overridden, or <b>false</b> if not.</returns>
-        private bool PreRender(GorgonBlendState blendStateOverride, GorgonDepthStencilState depthStencilStateOverride, GorgonRasterState rasterStateOverride)
-        {
-            if (!_isInitialized)
-            {
-                OnInitialize();
-                _isInitialized = true;
-            }
-
-            GorgonRenderTargetView firstTarget = Graphics.RenderTargets[0];
-
-            if (firstTarget == null)
-            {
-                return false;
-            }
-
-            CurrentTargetSize = new DX.Size2(firstTarget.Width, firstTarget.Height);
-
-            if (!OnBeforeRender())
-            {
-                return false;
-            }
-
-            if ((blendStateOverride == _blendStateOverride) 
-                && (depthStencilStateOverride == _depthStencilStateOverride) 
-                && (rasterStateOverride == _rasterStateOverride))
-            {
-                return false;
-            }
-
-            BatchStateBuilder.BlendState(blendStateOverride ?? GorgonBlendState.Default)
-                             .DepthStencilState(depthStencilStateOverride ?? GorgonDepthStencilState.Default)
-                             .RasterState(rasterStateOverride ?? GorgonRasterState.Default);
-
-            _blendStateOverride = blendStateOverride;
-            _depthStencilStateOverride = depthStencilStateOverride;
-            _rasterStateOverride = rasterStateOverride;
-
-            return true;
-
-        }
+        protected abstract Gorgon2DBatchState OnGetBatchState(int passIndex, bool statesChanged);
 
         /// <summary>
         /// Function called to render the effect.
@@ -308,7 +381,7 @@ namespace Gorgon.Renderers
         /// <param name="camera">[Optional] The camera to use when rendering.</param>
         protected void Render(GorgonBlendState blendStateOverride = null, GorgonDepthStencilState depthStencilStateOverride = null, GorgonRasterState rasterStateOverride = null, Gorgon2DCamera camera = null)
         {
-            bool stateChanged = PreRender(blendStateOverride, depthStencilStateOverride, rasterStateOverride);
+            bool stateChanged = SetupRenderStates(blendStateOverride, depthStencilStateOverride, rasterStateOverride);
 
             for (int i = 0; i < PassCount; ++i)
             {
@@ -320,10 +393,11 @@ namespace Gorgon.Renderers
                         continue;
                     case PassContinuationState.Stop:
                         return;
+                    default:
+                        OnRenderPass(i, batchState, camera);
+                        OnAfterRenderPass(i);
+                        break;
                 }
-
-                OnRenderPass(i, batchState, camera);
-                OnAfterRenderPass(i);
             }
 
             OnAfterRender();
@@ -387,7 +461,7 @@ namespace Gorgon.Renderers
         {
             texture.ValidateObject(nameof(texture));
 
-            bool stateChanged = PreRender(blendStateOverride, depthStencilStateOverride, rasterStateOverride);
+            bool stateChanged = SetupRenderStates(blendStateOverride, depthStencilStateOverride, rasterStateOverride);
 
             if (region == null)
             {
@@ -409,16 +483,124 @@ namespace Gorgon.Renderers
                         continue;
                     case PassContinuationState.Stop:
                         return;
-                }
-
-                Renderer.Begin(batchState, camera);
-                Renderer.DrawFilledRectangle(region.Value, GorgonColor.White, texture, textureCoordinates, textureSampler: samplerStateOverride);
-                Renderer.End();
+                    default:
+                        Renderer.Begin(batchState, camera);
+                        Renderer.DrawFilledRectangle(region.Value, GorgonColor.White, texture, textureCoordinates, textureSampler: samplerStateOverride);
+                        Renderer.End();
                 
-                OnAfterRenderPass(i);
+                        OnAfterRenderPass(i);
+                        break;
+                }
             }
 
             OnAfterRender();
+        }
+
+        /// <summary>
+        /// Function to remember the current state of the graphics interface so that it can be reset after rendering.
+        /// </summary>
+        /// <param name="states">The states to record.</param>
+        /// <remarks>
+        /// <para>
+        /// Applications should use this in order to remember the current set of render targets, depth/stencil or set of view ports on the <see cref="GorgonGraphics"/> interface prior to rendering a scene.
+        /// When this method is called, it should be paired with a call to <see cref="RecallState"/> in order to restore the state.
+        /// </para>
+        /// <para>
+        /// The <paramref name="states"/> parameter indicates which state to record based on the value from <see cref="RecordedState"/> enumeration. This enumeration is a bit flag, and the values can be
+        /// combined via OR so that multiple states are stored.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="RecordedState"/>
+        /// <seealso cref="GorgonGraphics"/>
+        public void RecordState(RecordedState states)
+        {
+            if (states == RecordedState.None)
+            {
+                RecordedStates = RecordedState.None;
+                RecordedDepthStencil = null;
+                Array.Clear(_targets, 0, _targets.Length);
+                Array.Clear(_viewports, 0, _viewports.Length);
+                return;
+            }
+
+            if ((states & RecordedState.RenderTargets) == RecordedState.RenderTargets)
+            {
+                int targetCount = _targetEnumerator.Count();
+
+                if (_targets.Length != targetCount)
+                {
+                    Array.Resize(ref _targets, targetCount);
+                }
+
+                for (int i = 0; i < targetCount; ++i)
+                {
+                    _targets[i] = Graphics.RenderTargets[i];
+                }
+            }
+
+            if ((states & RecordedState.Viewports) == RecordedState.Viewports)
+            {
+                int viewportCount = _viewportEnumerator.Count();
+
+                if (_viewports.Length != viewportCount)
+                {
+                    Array.Resize(ref _viewports, viewportCount);
+                }
+
+                for (int i = 0; i < viewportCount; i++)
+                {
+                    _viewports[i] = Graphics.Viewports[i];
+                }
+            }
+
+            if ((states & RecordedState.DepthStencil) == RecordedState.DepthStencil)
+            {
+                RecordedDepthStencil = Graphics.DepthStencilView;
+            }
+
+            RecordedStates = states;
+        }
+
+        /// <summary>
+        /// Function to recall the previous state of the graphics interface so that it can be reset after rendering.
+        /// </summary>
+        /// <param name="state">[Optional] The state(s) to recall.</param>
+        public void RecallState(RecordedState state = RecordedState.All)
+        {
+            if (RecordedStates == RecordedState.None)
+            {
+                return;
+            }
+
+            // Restore our states.
+            bool resetDepthStencil = (((RecordedStates & RecordedState.DepthStencil) == RecordedState.DepthStencil)
+                                      && ((state & RecordedState.DepthStencil) == RecordedState.DepthStencil));
+            
+            if (((RecordedStates & RecordedState.RenderTargets) == RecordedState.RenderTargets)
+                && ((state & RecordedState.RenderTargets) == RecordedState.RenderTargets))
+            {
+                Graphics.SetRenderTargets(_targets, resetDepthStencil ? RecordedDepthStencil : Graphics.DepthStencilView);
+                RecordedStates &= ~RecordedState.RenderTargets;
+
+                if (resetDepthStencil)
+                {
+                    RecordedStates &= ~RecordedState.DepthStencil;
+                }
+            } else if (((RecordedStates & RecordedState.DepthStencil) == RecordedState.DepthStencil)
+                       && ((state & RecordedState.DepthStencil) == RecordedState.DepthStencil))
+            {
+                Graphics.SetDepthStencil(RecordedDepthStencil);
+                RecordedStates &= ~RecordedState.DepthStencil;
+            }
+
+            if (((RecordedStates & RecordedState.Viewports) != RecordedState.Viewports) 
+                || ((state & RecordedState.Viewports) != RecordedState.Viewports))
+            {
+                return;
+            }
+
+            Graphics.SetViewports(_viewports);
+            RecordedStates &= ~RecordedState.Viewports;
         }
 
         /// <summary>
@@ -466,9 +648,15 @@ namespace Gorgon.Renderers
         {
             Renderer = renderer ?? throw new ArgumentNullException(nameof(renderer));
 
+            _targets = new GorgonRenderTargetView[1];
+            _viewports = new DX.ViewportF[1];
+
             // Ensure no less than 1 pass.
             PassCount = passCount.Max(1);
             Description = effectDescription ?? string.Empty;
+
+            _targetEnumerator = Graphics.RenderTargets.TakeWhile(item => item != null);
+            _viewportEnumerator = Graphics.Viewports.TakeWhile(item => (!item.Width.EqualsEpsilon(0)) && (!item.Height.EqualsEpsilon(0)));
         }
         #endregion
     }

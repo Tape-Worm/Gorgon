@@ -58,10 +58,8 @@ namespace Gorgon.Renderers
 		private float _displacementStrength = 0.25f;
         // Method called to render the displacement effect.
 	    private Action _displacementRender;
-        // The previously active render target view.
-	    private GorgonRenderTargetView _prevRtv;
-        // The previously active depth/stencil view.
-	    private GorgonDepthStencil2DView _prevDsv;
+        // The final output render target.
+	    private GorgonRenderTargetView _outputRtv;
         // The batch state.
 	    private Gorgon2DBatchState _batchState;
 		#endregion
@@ -192,9 +190,6 @@ namespace Gorgon.Renderers
 		/// </returns>
 		protected override bool OnBeforeRender()
 		{
-		    _prevRtv = Graphics.RenderTargets[0];
-		    _prevDsv = Graphics.DepthStencilView;
-
 			UpdateDisplacementMap();
 
 			if (!_isUpdated)
@@ -208,20 +203,6 @@ namespace Gorgon.Renderers
 
 			return base.OnBeforeRender();
 		}
-
-        /// <summary>
-        /// Function called after rendering ends.
-        /// </summary>
-	    protected override void OnAfterRender()
-	    {
-	        if ((_prevRtv == Graphics.RenderTargets[0])
-	            && (_prevDsv == Graphics.DepthStencilView))
-	        {
-	            return;
-	        }
-
-            Graphics.SetRenderTarget(_prevRtv, _prevDsv);
-	    }
 
         /// <summary>
         /// Function called prior to rendering a pass.
@@ -241,10 +222,10 @@ namespace Gorgon.Renderers
 	        {
 	            case 0:
                     _displacementTarget.Clear(GorgonColor.BlackTransparent);
-                    Graphics.SetRenderTarget(_displacementTarget, _prevDsv);
+                    Graphics.SetRenderTarget(_displacementTarget, Graphics.DepthStencilView);
 	                break;
                 case 1:
-                    Graphics.SetRenderTarget(_prevRtv, _prevDsv);
+                    Graphics.SetRenderTarget(_outputRtv, Graphics.DepthStencilView);
                     break;
 	        }
 
@@ -315,7 +296,9 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="displacementRender">The method used to render into the displacement map.</param>
         /// <param name="backgroundImage">The image that will be distorted by the displacement.</param>
+        /// <param name="outputTarget">The render target that will receive the displaced image.</param>
         /// <param name="camera">[Optional] The camera to use when rendering.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="displacementRender"/>, <paramref name="backgroundImage"/>, or the <paramref name="outputTarget"/> parameter is <b>null</b>.</exception>
         /// <remarks>
         /// <para>
         /// The <paramref name="displacementRender"/> is a method that users can define to draw whatever will displace the underlying <paramref name="backgroundImage"/>.  When this method is called, the
@@ -329,11 +312,13 @@ namespace Gorgon.Renderers
         /// </note>
         /// </para>
         /// </remarks>
-	    public void RenderEffect(Action displacementRender, GorgonTexture2DView backgroundImage, Gorgon2DCamera camera = null)
+	    public void RenderEffect(Action displacementRender, GorgonTexture2DView backgroundImage, GorgonRenderTargetView outputTarget, Gorgon2DCamera camera = null)
 	    {
             displacementRender.ValidateObject(nameof(displacementRender));
             backgroundImage.ValidateObject(nameof(backgroundImage));
+            outputTarget.ValidateObject(nameof(outputTarget));
 
+	        _outputRtv = outputTarget;
 	        _backgroundView = backgroundImage;
 	        _displacementRender = displacementRender;
 

@@ -120,23 +120,26 @@ namespace Gorgon.Examples
             _renderer.DrawSprite(_shipSprite);
             _renderer.End();
 
-            // Send the result of the cloaking effect to the old film render target.
-            _graphics.SetRenderTarget(_postTarget2);
-
             // No sense in rendering the effect if it's not present.
             float strength = _cloakController.CloakAmount;
+            _displacement.RecordState(RecordedState.RenderTargets);
             if (strength > 0.0f)
             {
+                // Don't bother recording the current state, we're going to be updating it shortly, so it'd be redundant.
                 _displacement.Strength = strength;
                 _displacement.RenderEffect(() =>
                                            {
                                                _shipSprite.Color = GorgonColor.White;
                                                _renderer.DrawSprite(_shipSprite);
                                            },
-                                           _postView1);
+                                           _postView1,
+                                           _postTarget2);
             }
             else
             {
+                // Send the result of the cloaking effect to the old film render target.
+                _graphics.SetRenderTarget(_postTarget2);
+
                 _renderer.Begin();
                 _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _postTarget1.Width, _postTarget1.Height),
                                               GorgonColor.White,
@@ -146,7 +149,7 @@ namespace Gorgon.Examples
             }
 
             // Send to our final post process target.
-            _graphics.SetRenderTarget(_postTarget1);
+            _displacement.RecallState();
 
             // Smooth our results.
             int blurRadiusUpdate = GorgonRandom.RandomInt32(0, 1000000);
@@ -159,7 +162,9 @@ namespace Gorgon.Examples
             }
 
             // If we didn't blur (radius = 0), then just use the original view.
+            _gaussBlur.RecordState(RecordedState.RenderTargets);
             GorgonTexture2DView blurred = _gaussBlur.BlurRadius > 0 ? _gaussBlur.RenderEffect(_postView2) : _postView2;
+            _gaussBlur.RecallState();
 
             // Render as an old film effect.
             _oldFilm.Time = GorgonTiming.SecondsSinceStart * 2;
@@ -408,16 +413,14 @@ namespace Gorgon.Examples
         /// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
         private static void Window_KeyUp(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Escape)
+            switch (e.KeyCode)
             {
-                GorgonApplication.Quit();
-                return;
-            }
-
-            if (e.KeyCode == Keys.F1)
-            {
-                _showHelp = !_showHelp;
-                return;
+                case Keys.Escape:
+                    GorgonApplication.Quit();
+                    return;
+                case Keys.F1:
+                    _showHelp = !_showHelp;
+                    return;
             }
 
             if (e.KeyCode != Keys.C)
@@ -488,7 +491,7 @@ namespace Gorgon.Examples
 
             if (string.IsNullOrEmpty(resourceItem))
             {
-                throw new ArgumentException(@"The resource was not specified.", nameof(resourceItem));
+                throw new ArgumentException("The resource was not specified.", nameof(resourceItem));
             }
 
             path = path.FormatDirectory(Path.DirectorySeparatorChar);

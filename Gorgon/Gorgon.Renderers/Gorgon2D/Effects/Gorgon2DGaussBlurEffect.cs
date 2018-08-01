@@ -61,10 +61,6 @@ namespace Gorgon.Renderers
         private GorgonTexture2DView _hPassView;
         // The shader resource to use for a horizontal pass.
         private GorgonTexture2DView _vPassView;
-        // The original render target that was applied prior to rendering.
-        private GorgonRenderTargetView _prev;
-        // The previously active depth/stencil.
-        private GorgonDepthStencil2DView _prevDepthStencil;
         // The kernel data to upload into the constant buffer.
         private GorgonNativeBuffer<float> _blurKernelData;
         // Radius for the blur.
@@ -480,37 +476,12 @@ namespace Gorgon.Renderers
 
             if (!_needTargetUpdate)
             {
-                _prev = Graphics.RenderTargets[0];
-                _prevDepthStencil = Graphics.DepthStencilView;
-
                 return true;
             }
 
             // Update the render target prior to rendering.
             UpdateRenderTarget();
-
-            _prev = Graphics.RenderTargets[0];
-            _prevDepthStencil = Graphics.DepthStencilView;
             return true;
-        }
-
-        /// <summary>
-        /// Function called after rendering is complete.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// Applications can use this to clean up and/or restore any states when rendering is finished.
-        /// </para>
-        /// </remarks>
-        protected override void OnAfterRender()
-        {
-            // Restore the previous render target.
-            if ((_prev == Graphics.RenderTargets[0]) && (_prevDepthStencil == Graphics.DepthStencilView))
-            {
-                return;
-            }
-
-            Graphics.SetRenderTarget(_prev, _prevDepthStencil);
         }
 
         /// <summary>

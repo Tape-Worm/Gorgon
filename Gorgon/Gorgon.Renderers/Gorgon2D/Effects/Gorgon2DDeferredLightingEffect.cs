@@ -44,6 +44,13 @@ namespace Gorgon.Renderers
     public class Gorgon2DDeferredLightingEffect
         : Gorgon2DEffect
     {
+        #region Constants.
+        /// <summary>
+        /// The name of the shader include for Gorgon's <see cref="Gorgon2DDeferredLightingEffect"/>.
+        /// </summary>
+        public const string Gorgon2DDeferredLightIncludeName = "DeferredLightShaders";
+        #endregion
+
         #region Value Types.
         // Constant buffer data for a point light.
         [StructLayout(LayoutKind.Sequential, Size = 64)]
