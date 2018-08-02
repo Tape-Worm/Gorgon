@@ -25,14 +25,11 @@
 #endregion
 
 using System;
-using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Threading;
-using Gorgon.Diagnostics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using Gorgon.Math;
 using Gorgon.Renderers.Properties;
 using DX = SharpDX;
 
@@ -210,26 +207,24 @@ namespace Gorgon.Renderers
 	    /// Function called prior to rendering.
 	    /// </summary>
 	    /// <param name="output">The final render target that will receive the rendering from the effect.</param>
+	    /// <param name="sizeChanged"><b>true</b> if the output size changed since the last render, or <b>false</b> if it's the same.</param>
 	    /// <remarks>
 	    /// <para>
 	    /// Applications can use this to set up common states and other configuration settings prior to executing the render passes. This is an ideal method to initialize and resize your internal render
 	    /// targets (if applicable).
 	    /// </para>
 	    /// </remarks>
-	    protected override void OnBeforeRender(GorgonRenderTargetView output)
+	    protected override void OnBeforeRender(GorgonRenderTargetView output, bool sizeChanged)
 	    {
-	        GorgonRenderTargetView current = Graphics.RenderTargets[0];
 
-		    if ((current != output)
-                || ((current.Width != output.Width) && (current.Height != output.Height))
-		        || (_settings.TexelSize.X.EqualsEpsilon(0))
-		        || (_settings.TexelSize.Y.EqualsEpsilon(0)))
+		    if (Graphics.RenderTargets[0] != output)
 		    {
-		        if (current != output)
-		        {
-		            Graphics.SetRenderTarget(output, Graphics.DepthStencilView);
-		        }
+		        Graphics.SetRenderTarget(output, Graphics.DepthStencilView);
+		        _isUpdated = true;
+		    }
 
+            if (sizeChanged)
+            {
 		        _settings = new Settings(_settings.LineColor, new DX.Vector2((1.0f / output.Width) * LineThickness, (1.0f / output.Height) * LineThickness), _settings.Threshold);
 		        _isUpdated = true;
 		    }

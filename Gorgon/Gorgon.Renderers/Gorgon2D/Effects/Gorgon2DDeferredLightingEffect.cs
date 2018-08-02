@@ -30,7 +30,6 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
-using Gorgon.Diagnostics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers.Properties;
@@ -110,8 +109,6 @@ namespace Gorgon.Renderers
         private Gorgon2DBatchState _lightingState;
         // The color used to clear the normal map render target.
         private readonly GorgonColor _normalClearColor = new GorgonColor(127.0f / 255.0f, 127.0f / 255.0f, 254.0f / 255.0f, 1.0f);
-        // Previous size for a render target.
-        private DX.Size2 _previousRtSize;
         #endregion
 
         #region Properties.
@@ -159,28 +156,6 @@ namespace Gorgon.Renderers
             _gbufferTargets[2] = _gbuffer.GetRenderTargetView(arrayIndex: 2, arrayCount: 1);
 
             _gbufferTexture = _gbuffer.GetShaderResourceView();
-        }
-
-        /// <summary>
-        /// Function to adjust the targets and screen size buffer when the render target changes size.
-        /// </summary>
-        /// <param name="width">The width of the output render target.</param>
-        /// <param name="height">The height of the output render target.</param>
-        private void CheckForOutputSizeChange(int width, int height)
-        {
-            // The size is the same, we don't need to do anything.
-            if ((_gbuffer != null) && (_previousRtSize.Width == width) && (_previousRtSize.Height == height))
-            {
-                return;
-            }
-
-            // We need to rebuild the render targets to match our output size.
-            BuildRenderTargets(width, height);
-
-            var screenSize = new DX.Vector4(width, height, 0, 0);
-            _previousRtSize = new DX.Size2(width, height);
-
-            _screenSizeData.Buffer.SetData(ref screenSize);
         }
 
         /// <summary>
@@ -314,16 +289,25 @@ namespace Gorgon.Renderers
         /// Function called prior to rendering.
         /// </summary>
         /// <param name="output">The final render target that will receive the rendering from the effect.</param>
+        /// <param name="sizeChanged"><b>true</b> if the output size changed since the last render, or <b>false</b> if it's the same.</param>
         /// <remarks>
         /// <para>
         /// Applications can use this to set up common states and other configuration settings prior to executing the render passes. This is an ideal method to initialize and resize your internal render
         /// targets (if applicable).
         /// </para>
         /// </remarks>
-        protected override void OnBeforeRender(GorgonRenderTargetView output)
+        protected override void OnBeforeRender(GorgonRenderTargetView output, bool sizeChanged)
         {
-            // If the output has changed size since last render, then we need to adjust our render target(s) and shader data.
-            CheckForOutputSizeChange(output.Width, output.Height);
+            if ((!sizeChanged) && (_gbuffer != null))
+            {
+                return;
+            }
+            
+            // We need to rebuild the render targets to match our output size.
+            BuildRenderTargets(output.Width, output.Height);
+
+            var screenSize = new DX.Vector4(output.Width, output.Height, 0, 0);
+            _screenSizeData.Buffer.SetData(ref screenSize);
         }
 
         /// <summary>
@@ -341,7 +325,7 @@ namespace Gorgon.Renderers
         {
             if (passIndex == 0)
             {
-                renderMethod(passIndex, PassCount, _previousRtSize);
+                renderMethod(passIndex, PassCount, new DX.Size2(output.Width, output.Height));
             }
             else
             {

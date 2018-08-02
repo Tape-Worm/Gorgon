@@ -90,14 +90,6 @@ namespace Gorgon.Renderers
 		/// <param name="output">The final output render target.</param>
 		private void UpdateDisplacementMap(GorgonRenderTargetView output)
 		{
-		    if ((_displacementView != null) 
-		        && (_displacementView.Width == output.Width) 
-		        && (_displacementView.Height == output.Height)
-		        && (_displacementView.Format == output.Format))
-		    {
-		        return;
-		    }
-
             _displacementView?.Dispose();
 			_displacementTarget?.Dispose();
 			_displacementTarget = null;
@@ -174,17 +166,21 @@ namespace Gorgon.Renderers
 	    /// Function called prior to rendering.
 	    /// </summary>
 	    /// <param name="output">The final render target that will receive the rendering from the effect.</param>
+	    /// <param name="sizeChanged"><b>true</b> if the output size changed since the last render, or <b>false</b> if it's the same.</param>
 	    /// <remarks>
 	    /// <para>
 	    /// Applications can use this to set up common states and other configuration settings prior to executing the render passes. This is an ideal method to initialize and resize your internal render
 	    /// targets (if applicable).
 	    /// </para>
 	    /// </remarks>
-	    protected override void OnBeforeRender(GorgonRenderTargetView output)
+	    protected override void OnBeforeRender(GorgonRenderTargetView output, bool sizeChanged)
 		{
-			UpdateDisplacementMap(output);
+		    if ((_displacementView == null) || (sizeChanged))
+		    {
+		        UpdateDisplacementMap(output);
+		    }
 
-			if (!_isUpdated)
+		    if (!_isUpdated)
 			{
 				return;
 			}

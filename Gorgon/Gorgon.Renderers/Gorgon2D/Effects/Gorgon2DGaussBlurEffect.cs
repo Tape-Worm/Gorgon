@@ -27,8 +27,6 @@
 using System;
 using System.Globalization;
 using System.Threading;
-using Gorgon.Core;
-using Gorgon.Diagnostics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
@@ -453,21 +451,15 @@ namespace Gorgon.Renderers
         /// Function called prior to rendering.
         /// </summary>
         /// <param name="output">The final render target that will receive the rendering from the effect.</param>
+        /// <param name="sizeChanged"><b>true</b> if the output size changed since the last render, or <b>false</b> if it's the same.</param>
         /// <remarks>
         /// <para>
         /// Applications can use this to set up common states and other configuration settings prior to executing the render passes. This is an ideal method to initialize and resize your internal render
         /// targets (if applicable).
         /// </para>
         /// </remarks>
-        protected override void OnBeforeRender(GorgonRenderTargetView output)
+        protected override void OnBeforeRender(GorgonRenderTargetView output, bool sizeChanged)
         {
-#if DEBUG
-            if ((_needTargetUpdate) && (!Graphics.FormatSupport[BlurTargetFormat].IsRenderTargetFormat))
-            {
-                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GOR2D_ERR_EFFECT_BLUR_RENDER_TARGET_FORMAT_NOT_SUPPORTED, BlurTargetFormat));
-            }
-#endif
-
             if (_needKernelUpdate)
             {
                 UpdateKernelWeights();

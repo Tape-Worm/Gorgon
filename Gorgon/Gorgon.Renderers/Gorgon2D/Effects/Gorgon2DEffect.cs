@@ -114,6 +114,8 @@ namespace Gorgon.Renderers
         private readonly IEnumerable<GorgonRenderTargetView> _targetEnumerator;
         // The enumerator for viewports.
         private readonly IEnumerable<DX.ViewportF> _viewportEnumerator;
+        // The previous size of the output.
+        private DX.Size2 _prevOutputSize;
         #endregion
 
         #region Properties.
@@ -224,7 +226,16 @@ namespace Gorgon.Renderers
                 _isInitialized = true;
             }
 
-            OnBeforeRender(output);
+            bool outputSizeChanged = false;
+
+            if ((_prevOutputSize.Width != output.Width)
+                || (_prevOutputSize.Height != output.Height))
+            {
+                _prevOutputSize = new DX.Size2(output.Width, output.Height);
+                outputSizeChanged = true;
+            }
+
+            OnBeforeRender(output, outputSizeChanged);
 
             if ((blendStateOverride == _blendStateOverride) 
                 && (depthStencilStateOverride == _depthStencilStateOverride) 
@@ -277,40 +288,15 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Function called prior to rendering.
         /// </summary>
-        /// <remarks>
-        /// <para>
-        /// Applications can use this to set up common states and other configuration settings prior to executing the render passes.
-        /// </para>
-        /// </remarks>
-        [Obsolete("Get rid of this")]
-        protected virtual void OnBeforeRender()
-        {
-        }
-
-        /// <summary>
-        /// Function called after rendering is complete.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// Applications can use this to clean up and/or restore any states when rendering is finished.
-        /// </para>
-        /// </remarks>
-        [Obsolete("Get rid of this")]
-        protected virtual void OnAfterRender()
-        {
-        }
-
-        /// <summary>
-        /// Function called prior to rendering.
-        /// </summary>
         /// <param name="output">The final render target that will receive the rendering from the effect.</param>
+        /// <param name="sizeChanged"><b>true</b> if the output size changed since the last render, or <b>false</b> if it's the same.</param>
         /// <remarks>
         /// <para>
         /// Applications can use this to set up common states and other configuration settings prior to executing the render passes. This is an ideal method to initialize and resize your internal render
         /// targets (if applicable).
         /// </para>
         /// </remarks>
-        protected virtual void OnBeforeRender(GorgonRenderTargetView output)
+        protected virtual void OnBeforeRender(GorgonRenderTargetView output, bool sizeChanged)
         {
         }
 

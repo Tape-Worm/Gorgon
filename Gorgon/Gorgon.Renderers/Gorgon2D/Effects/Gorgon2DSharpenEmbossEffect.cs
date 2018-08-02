@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using System.Diagnostics;
 using System.Threading;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers.Properties;
@@ -141,32 +140,22 @@ namespace Gorgon.Renderers
 	    /// Function called prior to rendering.
 	    /// </summary>
 	    /// <param name="output">The final render target that will receive the rendering from the effect.</param>
+	    /// <param name="sizeChanged"><b>true</b> if the output size changed since the last render, or <b>false</b> if it's the same.</param>
 	    /// <remarks>
 	    /// <para>
 	    /// Applications can use this to set up common states and other configuration settings prior to executing the render passes. This is an ideal method to initialize and resize your internal render
 	    /// targets (if applicable).
 	    /// </para>
 	    /// </remarks>
-	    protected override void OnBeforeRender(GorgonRenderTargetView output)
+	    protected override void OnBeforeRender(GorgonRenderTargetView output, bool sizeChanged)
 	    {
-            Debug.Assert(output != null, "Output should not be null.");
-
-	        GorgonRenderTargetView current = Graphics.RenderTargets[0];
-
-            // TODO: This is not working if output == current (always same width and height).
-            // TODO: Sobel has this problem too.
-	        if ((current != null) && (current.Width != output.Width) && (current.Height != output.Height))
-	        {
-	            _isUpdated = true;
-	        }
-
-		    if (current != output)
+		    if (Graphics.RenderTargets[0] != output)
 		    {
                 Graphics.SetRenderTarget(output, Graphics.DepthStencilView);
 		        _isUpdated = true;
 		    }
 
-			if (!_isUpdated)
+			if ((!_isUpdated) && (!sizeChanged))
 			{
 			    return;
 			}
