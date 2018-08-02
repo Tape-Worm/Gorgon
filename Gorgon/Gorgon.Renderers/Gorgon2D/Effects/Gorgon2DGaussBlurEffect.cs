@@ -80,8 +80,6 @@ namespace Gorgon.Renderers
         private Gorgon2DBatchState _batchStateNoAlpha;
         // The number of floats for the offset data.
         private readonly int _offsetSize;
-        // The texture to blur.
-        private GorgonTexture2DView _inputTexture;
         #endregion
 
         #region Properties.
@@ -378,26 +376,27 @@ namespace Gorgon.Renderers
         }
 
         /// <summary>
-        /// Function called when a pass is rendered.
+        /// Function called to render a single effect pass.
         /// </summary>
-        /// <param name="passIndex">The current index of the pass being rendered.</param>
-        /// <param name="batchState">The current batch state for the pass.</param>
-        /// <param name="camera">The current camera to use when rendering.</param>
-        protected override void OnRenderPass(int passIndex, Gorgon2DBatchState batchState, Gorgon2DCamera camera)
+        /// <param name="passIndex">The index of the pass being rendered.</param>
+        /// <param name="renderMethod">The method used to render a scene for the effect.</param>
+        /// <param name="output">The render target that will receive the final render data.</param>
+        /// <remarks>
+        /// <para>
+        /// Applications must implement this in order to see any results from the effect.
+        /// </para>
+        /// </remarks>
+        protected override void OnRenderPass(int passIndex, Action<int, int, DX.Size2> renderMethod, GorgonRenderTargetView output)
         {
-            Renderer.Begin(batchState, camera);
-
             switch (passIndex)
             {
                 case 0:
-                    Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _vPassView.Width, _vPassView.Height), GorgonColor.White, _inputTexture, new DX.RectangleF(0, 0, 1, 1));
+                    renderMethod(passIndex, PassCount, new DX.Size2(_vPassView.Width, _vPassView.Height));
                     break;
                 case 1:
-                    Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _hPassView.Width, _hPassView.Height), GorgonColor.White, _hPassView, new DX.RectangleF(0, 0, 1, 1));
+                    BlitTexture(_hPassView, new DX.Size2(_hPass.Width, _hPass.Height));
                     break;
             }
-
-            Renderer.End();
         }
 
         /// <summary>
@@ -451,11 +450,16 @@ namespace Gorgon.Renderers
         }
 
         /// <summary>
-        /// Function called before rendering begins.
+        /// Function called prior to rendering.
         /// </summary>
-        /// <returns><b>true</b> to continue rendering, <b>false</b> to stop.</returns>
-        /// <exception cref="GorgonException">Thrown if the render target could not be created due to an incompatible <see cref="BlurTargetFormat"/>.</exception>
-        protected override void OnBeforeRender()
+        /// <param name="output">The final render target that will receive the rendering from the effect.</param>
+        /// <remarks>
+        /// <para>
+        /// Applications can use this to set up common states and other configuration settings prior to executing the render passes. This is an ideal method to initialize and resize your internal render
+        /// targets (if applicable).
+        /// </para>
+        /// </remarks>
+        protected override void OnBeforeRender(GorgonRenderTargetView output)
         {
 #if DEBUG
             if ((_needTargetUpdate) && (!Graphics.FormatSupport[BlurTargetFormat].IsRenderTargetFormat))
@@ -487,10 +491,15 @@ namespace Gorgon.Renderers
         /// Function called prior to rendering a pass.
         /// </summary>
         /// <param name="passIndex">The index of the pass to render.</param>
-        /// <returns>A <see cref="PassContinuationState" /> to instruct the effect on how to proceed.</returns>
-        /// <seealso cref="PassContinuationState" />
-        /// <remarks>Applications can use this to set up per-pass states and other configuration settings prior to executing a single render pass.</remarks>
-        protected override PassContinuationState OnBeforeRenderPass(int passIndex)
+        /// <param name="output">The final render target that will receive the rendering from the effect.</param>
+        /// <returns>A <see cref="PassContinuationState"/> to instruct the effect on how to proceed.</returns>
+        /// <remarks>
+        /// <para>
+        /// Applications can use this to set up per-pass states and other configuration settings prior to executing a single render pass.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="PassContinuationState"/>
+        protected override PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output)
         {
             if (_blurRadius == 0)
             {
@@ -513,34 +522,24 @@ namespace Gorgon.Renderers
         }
 
         /// <summary>
-        /// Function to blur the provided texture and return the result as a separate texture view.
+        /// Function called after rendering is complete.
         /// </summary>
-        /// <param name="sourceTexture">The texture containing the image data to blur.</param>
-        /// <returns>The <see cref="GorgonTexture2DView"/></returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="sourceTexture"/> parameter is <b>null</b>.</exception>
+        /// <param name="output">The final render target that will receive the rendering from the effect.</param>
         /// <remarks>
         /// <para>
-        /// This will take the <paramref name="sourceTexture"/>, blur it, and then return the blurred image as a <see cref="GorgonTexture2DView"/>. Applications can then take the resulting output and
-        /// combine it with other images for post processing.
-        /// </para>
-        /// <para>
-        /// <note type="warning">
-        /// <para>
-        /// For performance reasons, any exceptions thrown from this method will only be thrown when Gorgon is compiled in <b>DEBUG</b> mode.
-        /// </para>
-        /// </note>
+        /// Applications can use this to clean up and/or restore any states when rendering is finished. This is an ideal method to copy any rendering imagery to the final output render target.
         /// </para>
         /// </remarks>
-        /// <seealso cref="GorgonRenderTarget2DView"/>
-        /// <seealso cref="GorgonTexture2DView"/>
-        public GorgonTexture2DView RenderEffect(GorgonTexture2DView sourceTexture)
+        protected override void OnAfterRender(GorgonRenderTargetView output)
         {
-            sourceTexture.ValidateObject(nameof(sourceTexture));
+            if (Graphics.RenderTargets[0] != output)
+            {
+                Graphics.SetRenderTarget(output, Graphics.DepthStencilView);
+            }
 
-            _inputTexture = sourceTexture;
-            Render();
-
-            return _vPassView;
+            Renderer.Begin(Gorgon2DBatchState.NoBlend);
+            BlitTexture(_vPassView, new DX.Size2(output.Width, output.Height));
+            Renderer.End();
         }
 
         /// <summary>

@@ -24,11 +24,10 @@
 // 
 #endregion
 
-using System.Diagnostics;
+using System;
 using System.Runtime.InteropServices;
 using System.Threading;
 using Gorgon.Core;
-using Gorgon.Diagnostics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
@@ -132,12 +131,6 @@ namespace Gorgon.Renderers
 	    private Gorgon2DBatchState _batchState;
         // The current time, in seconds.
 	    private float _time;
-        // The texture to draw with the effect.
-	    private GorgonTexture2DView _drawTexture;
-        // The region to draw into.
-	    private DX.RectangleF? _drawRegion;
-        // The texture coordinates of the texture to draw.
-	    private DX.RectangleF _drawTextureCoordinates;
 	    #endregion
 
 		#region Properties.
@@ -326,13 +319,13 @@ namespace Gorgon.Renderers
 		}
 
 	    /// <summary>
-	    /// Property to set or return the percentage that random dirt will appear.
+	    /// Property to set or return the percentage that random hair will appear.
 	    /// </summary>
-	    public int DirtPercent
+	    public int HairPercent
 	    {
 	        get;
 	        set;
-	    } = 5;
+	    } = 70;
 
 	    /// <summary>
 	    /// Property to set or return the amount of dirt and dust that will appear.
@@ -341,7 +334,7 @@ namespace Gorgon.Renderers
 	    {
 	        get;
 	        set;
-	    } = 10;
+	    } = 25;
 
 	    /// <summary>
 	    /// Property to set or return the current time for the effect in seconds.
@@ -353,13 +346,27 @@ namespace Gorgon.Renderers
 	    }
 
 	    /// <summary>
-	    /// Property to set or return the noise texture width and height.
+	    /// Property to return the noise texture width and height.
 	    /// </summary>
+	    /// <remarks>
+	    /// This determines how often and how many vertical scratch lines appear on the effect. A larger value will yield more scratch lines, while a smaller value will yield less.
+	    /// </remarks>
 	    public int NoiseTextureSize
 	    {
 	        get;
+	    }
+
+        /// <summary>
+        /// Property to set or return the dirt/hair region to draw in on the output render target.
+        /// </summary>
+        /// <remarks>
+        /// If this value is <b>null</b>, then the entire output render target region is used to draw the dirt/hair.
+        /// </remarks>
+	    public DX.RectangleF? DirtRegion
+	    {
+	        get;
 	        set;
-	    } = 128;
+	    }
 		#endregion
 
 		#region Methods.
@@ -451,19 +458,21 @@ namespace Gorgon.Renderers
 		                  .Build();
 		}
 
-		/// <summary>
-		/// Function called before rendering begins.
-		/// </summary>
-		/// <returns>
-		/// <b>true</b> to continue rendering, <b>false</b> to exit.
-		/// </returns>
-		protected override void OnBeforeRender()
+	    /// <summary>
+	    /// Function called prior to rendering.
+	    /// </summary>
+	    /// <param name="output">The final render target that will receive the rendering from the effect.</param>
+	    /// <remarks>
+	    /// <para>
+	    /// Applications can use this to set up common states and other configuration settings prior to executing the render passes. This is an ideal method to initialize and resize your internal render
+	    /// targets (if applicable).
+	    /// </para>
+	    /// </remarks>
+	    protected override void OnBeforeRender(GorgonRenderTargetView output)
 		{
-		    GorgonRenderTargetView currentTarget = Graphics.RenderTargets[0];
-
-		    if (currentTarget == null)
+		    if (Graphics.RenderTargets[0] != output)
 		    {
-		        return;
+                Graphics.SetRenderTarget(output, Graphics.DepthStencilView);
 		    }
 
 		    if (_isScratchUpdated)
@@ -496,63 +505,42 @@ namespace Gorgon.Renderers
 	    /// Function called to render a single effect pass.
 	    /// </summary>
 	    /// <param name="passIndex">The index of the pass being rendered.</param>
-	    /// <param name="batchState">The current batch state for the pass.</param>
-	    /// <param name="camera">The current camera to use when rendering.</param>
+	    /// <param name="renderMethod">The method used to render a scene for the effect.</param>
+	    /// <param name="output">The render target that will receive the final render data.</param>
 	    /// <remarks>
 	    /// <para>
 	    /// Applications must implement this in order to see any results from the effect.
 	    /// </para>
 	    /// </remarks>
-	    protected override void OnRenderPass(int passIndex, Gorgon2DBatchState batchState, Gorgon2DCamera camera)
+	    protected override void OnRenderPass(int passIndex, Action<int, int, DX.Size2> renderMethod, GorgonRenderTargetView output)
 	    {
-	        Debug.Assert(_drawRegion != null, "No drawing region found.");
-
-	        Renderer.Begin(_batchState, camera);
-            Renderer.DrawFilledRectangle(_drawRegion.Value, GorgonColor.White, _drawTexture, _drawTextureCoordinates);
-            Renderer.End();
+            renderMethod(passIndex, PassCount, new DX.Size2(output.Width, output.Height));
 	    }
 
-        /// <summary>
-        /// Function to draw a texture using the old film effect.
-        /// </summary>
-        /// <param name="texture">The texture to draw.</param>
-        /// <param name="region">[Optional] The destination region to draw the texture into.</param>
-        /// <param name="textureCoordinates">[Optional] The texture coordinates, in texels, to use when drawing the texture.</param>
-        /// <param name="camera">[Optional] The camera used to render the image.</param>
-        /// <remarks>
-        /// <para>
-        /// If the <paramref name="region"/> parameter is omitted, then the entire size of the current render target is used.
-        /// </para>
-        /// <para>
-        /// If the <paramref name="textureCoordinates"/> parameter is omitted, then the entire size of the texture is used.
-        /// </para>
-        /// </remarks>
-	    public void RenderEffect(GorgonTexture2DView texture, DX.RectangleF? region = null, DX.RectangleF? textureCoordinates = null, Gorgon2DCamera camera = null)
-        {
-            texture.ValidateObject(nameof(texture));
-
-            _drawTexture = texture;
-            _drawRegion = region ?? new DX.RectangleF(0, 0, CurrentTargetSize.Width, CurrentTargetSize.Height);
-            _drawTextureCoordinates = textureCoordinates ?? new DX.RectangleF(0, 0, 1, 1);
-
-            Render(camera: camera);
-
-            _drawTexture = null;
-            _drawRegion = null;
-        }
-
 	    /// <summary>
-	    /// Function called after a pass is finished rendering.
+	    /// Function called after rendering is complete.
 	    /// </summary>
-	    /// <param name="passIndex">The index of the pass that was rendered.</param>
+	    /// <param name="output">The final render target that will receive the rendering from the effect.</param>
 	    /// <remarks>
 	    /// <para>
-	    /// Applications can use this to clean up and/or restore any states after the pass completes.
+	    /// Applications can use this to clean up and/or restore any states when rendering is finished. This is an ideal method to copy any rendering imagery to the final output render target.
 	    /// </para>
 	    /// </remarks>
-	    protected override void OnAfterRenderPass(int passIndex)
+	    protected override void OnAfterRender(GorgonRenderTargetView output)
 		{
-            Debug.Assert(_drawRegion != null, "No drawing region found.");
+		    if (Graphics.RenderTargets[0] != output)
+		    {
+                Graphics.SetRenderTarget(output, Graphics.DepthStencilView);
+		    }
+
+		    DX.RectangleF region = DirtRegion ?? new DX.RectangleF(0, 0, output.Width, output.Height);
+
+            // If we've specified no region, then don't draw anything.
+		    if ((region.Width.EqualsEpsilon(0))
+		        || (region.Height.EqualsEpsilon(0)))
+		    {
+		        return;
+		    }
 
             Renderer.Begin();
 
@@ -562,33 +550,33 @@ namespace Gorgon.Renderers
 				var dustColor = new GorgonColor(grayDust, grayDust, grayDust, GorgonRandom.RandomSingle(0.25f, 0.95f));
 
 				// Render dust points.
-			    Renderer.DrawFilledRectangle(new DX.RectangleF(GorgonRandom.RandomSingle(_drawRegion.Value.Left, _drawRegion.Value.Right),
-			                                                   GorgonRandom.RandomSingle(_drawRegion.Value.Top, _drawRegion.Value.Bottom),
+			    Renderer.DrawFilledRectangle(new DX.RectangleF(GorgonRandom.RandomSingle(region.Left, region.Right),
+			                                                   GorgonRandom.RandomSingle(region.Top, region.Bottom),
 			                                                   1,
 			                                                   1),
 			                                 dustColor);
 
-				if (GorgonRandom.RandomInt32(100) >= DirtPercent)
+				if (GorgonRandom.RandomInt32(100) > HairPercent)
 				{
 					continue;
 				}
 
 				// Render dirt/hair lines.
-			    var dirtStart = new DX.Vector2(GorgonRandom.RandomSingle(_drawRegion.Value.Left, _drawRegion.Value.Right),
-			                                   GorgonRandom.RandomSingle(_drawRegion.Value.Left, _drawRegion.Value.Right));
+			    var dirtStart = new DX.Vector2(GorgonRandom.RandomSingle(region.Left, region.Right),
+			                                   GorgonRandom.RandomSingle(region.Top, region.Bottom));
 
 				float dirtWidth = GorgonRandom.RandomSingle(1.0f, 3.0f);
 				bool isHair = GorgonRandom.RandomInt32(100) > 50;
-				bool isHairVertical = isHair && GorgonRandom.RandomInt32(100) > 50;
+				bool isHairVertical = (isHair) && (GorgonRandom.RandomInt32(100) > 50);
 
 				grayDust = GorgonRandom.RandomSingle(0.1f, 0.15f);
 				dustColor = new GorgonColor(grayDust, grayDust, grayDust, GorgonRandom.RandomSingle(0.25f, 0.95f));
 				
-				for (int j = 0; j < GorgonRandom.RandomInt32(4, CurrentTargetSize.Width / 4); j++)
+				for (int j = 0; j < GorgonRandom.RandomInt32(4, (int)(region.Width * 0.10f).Min(4)); j++)
 				{
                     DX.Size2F size = isHair ? new DX.Size2F(1, 1) : new DX.Size2F(dirtWidth, dirtWidth);
 				    Renderer.DrawFilledRectangle(new DX.RectangleF(dirtStart.X, dirtStart.Y, size.Width, size.Height), dustColor);
-
+                    
 					if ((!isHair) || (isHairVertical))
 					{
 						if (GorgonRandom.RandomInt32(100) > 50)
@@ -669,9 +657,18 @@ namespace Gorgon.Renderers
 	    /// Initializes a new instance of the <see cref="Gorgon2DOldFilmEffect"/> class.
 	    /// </summary>
 	    /// <param name="renderer">The renderer used to draw with this effect.</param>
-	    public Gorgon2DOldFilmEffect(Gorgon2D renderer)
+	    /// <param name="noiseTextureSize">[Optional] The size (width and height) of the texture used for the random noise for scratch line generation</param>
+	    /// <remarks>
+	    /// <para>
+	    /// The <paramref name="noiseTextureSize"/> will determine how often and how many vertical scratch lines appear on the effect. A larger value will yield more scratch lines, while a smaller value
+	    /// will yield less.
+	    /// </para>
+	    /// </remarks>
+	    public Gorgon2DOldFilmEffect(Gorgon2D renderer, int noiseTextureSize = 64)
 	        : base(renderer, Resources.GOR2D_EFFECT_FILM, Resources.GOR2D_EFFECT_FILM_DESC, 1)
 	    {
+	        NoiseTextureSize = noiseTextureSize;
+
 	        _scratchSettings = new ScratchSettings
 	                           {
 	                               ScratchIntensity = 0.49f,

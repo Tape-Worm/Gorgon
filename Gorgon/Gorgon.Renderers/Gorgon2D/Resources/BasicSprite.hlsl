@@ -378,7 +378,7 @@ float4 GorgonPixelShaderSharpen(GorgonSpriteVertex vertex) : SV_Target
 	
 	for (int i = 0; i < 9; i++) 
 	{
-		float4 color = _gorgonTexture.Sample(_gorgonSampler, float3(vertex.uv.xy + offset[i], vertex.uv.z));
+		float4 color = _gorgonTexture.Sample(_gorgonSampler, float3(vertex.uv.xy + offset[i], vertex.uv.z)) * vertex.color;
 		result += float4((color.rgb * sharpEmbossAmount) * kernel[i], color.a);
 	}
 

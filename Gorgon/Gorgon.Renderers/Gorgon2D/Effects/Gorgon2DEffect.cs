@@ -178,16 +178,6 @@ namespace Gorgon.Renderers
         } = new Gorgon2DShaderBuilder<GorgonVertexShader>();
 
         /// <summary>
-        /// Property to return the width and height of the current render target.
-        /// </summary>
-        [Obsolete("This should be removed and passed to the various methods.")]
-        protected DX.Size2 CurrentTargetSize
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
         /// Property to return the renderer used to render the effect.
         /// </summary>
         public Gorgon2D Renderer
@@ -218,45 +208,6 @@ namespace Gorgon.Renderers
         #endregion
 
         #region Methods.
-        /// <summary>
-        /// Function to set up state prior to rendering.
-        /// </summary>
-        /// <param name="blendStateOverride">An override for the current blending state.</param>
-        /// <param name="depthStencilStateOverride">An override for the current depth/stencil state.</param>
-        /// <param name="rasterStateOverride">An override for the current raster state.</param>
-        /// <returns><b>true</b> if state was overridden, <b>false</b> if not or <b>null</b> if rendering is canceled.</returns>
-        [Obsolete("Get rid of this.")]
-        private bool PreRender(GorgonBlendState blendStateOverride, GorgonDepthStencilState depthStencilStateOverride, GorgonRasterState rasterStateOverride)
-        {
-            if (!_isInitialized)
-            {
-                OnInitialize();
-                _isInitialized = true;
-            }
-
-            CurrentTargetSize = new DX.Size2(Graphics.RenderTargets[0].Width, Graphics.RenderTargets[0].Height);
-
-            OnBeforeRender();
-
-            if ((blendStateOverride == _blendStateOverride) 
-                && (depthStencilStateOverride == _depthStencilStateOverride) 
-                && (rasterStateOverride == _rasterStateOverride))
-            {
-                return false;
-            }
-
-            BatchStateBuilder.BlendState(blendStateOverride ?? GorgonBlendState.Default)
-                             .DepthStencilState(depthStencilStateOverride ?? GorgonDepthStencilState.Default)
-                             .RasterState(rasterStateOverride ?? GorgonRasterState.Default);
-
-            _blendStateOverride = blendStateOverride;
-            _depthStencilStateOverride = depthStencilStateOverride;
-            _rasterStateOverride = rasterStateOverride;
-
-            return true;
-
-        }
-
         /// <summary>
         /// Function to set up state prior to rendering.
         /// </summary>
@@ -415,126 +366,16 @@ namespace Gorgon.Renderers
         /// Function called after a pass is finished rendering.
         /// </summary>
         /// <param name="passIndex">The index of the pass that was rendered.</param>
+        /// <param name="output">The final render target that will receive the rendering from the effect.</param>
         /// <remarks>
         /// <para>
         /// Applications can use this to clean up and/or restore any states after the pass completes.
         /// </para>
         /// </remarks>
-        protected virtual void OnAfterRenderPass(int passIndex)
+        protected virtual void OnAfterRenderPass(int passIndex, GorgonRenderTargetView output)
         {
         }
-
-        /// <summary>
-        /// Function called to render a single effect pass.
-        /// </summary>
-        /// <param name="passIndex">The index of the pass being rendered.</param>
-        /// <param name="batchState">The current batch state for the pass.</param>
-        /// <param name="camera">The current camera to use when rendering.</param>
-        /// <remarks>
-        /// <para>
-        /// Applications must implement this in order to see any results from the effect.
-        /// </para>
-        /// </remarks>
-        [Obsolete("Subscribers for this need to be moved to the new method.")]
-        protected virtual void OnRenderPass(int passIndex, Gorgon2DBatchState batchState, Gorgon2DCamera camera)
-        {
-
-        }
-
-        /// <summary>
-        /// Function to render a texture to the current render target.
-        /// </summary>
-        /// <param name="texture">The texture to render.</param>
-        /// <param name="region">[Optional] The region that the texture will be drawn into.</param>
-        /// <param name="textureCoordinates">[Optional] The texture coordinates to use with the texture.</param>
-        /// <param name="samplerStateOverride">[Optional] An override for the current texture sampler.</param>
-        /// <param name="blendStateOverride">[Optional] An override for the current blending state.</param>
-        /// <param name="depthStencilStateOverride">[Optional] An override for the current depth/stencil state.</param>
-        /// <param name="rasterStateOverride">[Optional] An override for the current raster state.</param>
-        /// <param name="camera">[Optional] The camera used to render the image.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is <b>null</b>.</exception>
-        /// <remarks>
-        /// <para>
-        /// This will render a texture to the current set render target in slot 0.  
-        /// </para>
-        /// <para>
-        /// If the <paramref name="region"/> parameter is omitted, then the texture will be rendered to the full size of the current render target.  If it is provided, then texture will be rendered to the
-        /// location specified, and with the width and height specified.
-        /// </para>
-        /// <para>
-        /// If the <paramref name="textureCoordinates"/> parameter is omitted, then the full size of the texture is rendered.
-        /// </para>
-        /// <para>
-        /// If the <paramref name="samplerStateOverride"/> parameter is omitted, then the <see cref="GorgonSamplerState.Default"/> is used.  When provided, this will alter how the pixel shader samples our
-        /// texture in slot 0.
-        /// </para>
-        /// <para>
-        /// If the <paramref name="blendStateOverride"/>, <paramref name="depthStencilStateOverride"/> or the <paramref name="rasterStateOverride"/> parameters are omitted, then the
-        /// <see cref="GorgonBlendState.Default"/>, <see cref="GorgonDepthStencilState.Default"/> and the <see cref="GorgonRasterState.Default"/> states are used, respectively. 
-        /// </para>
-        /// <para>
-        /// The <paramref name="camera"/> parameter is used to render the texture using a different view, and optionally, a different coordinate set.  
-        /// </para>
-        /// <para>
-        /// <note type="important">
-        /// <para>
-        /// For performance reasons, any exceptions thrown by this method will only be thrown when Gorgon is compiled as DEBUG.
-        /// </para>
-        /// </note>
-        /// </para>
-        /// </remarks>
-        /// <seealso cref="GorgonBlendState"/>
-        /// <seealso cref="GorgonDepthStencilState"/>
-        /// <seealso cref="GorgonRasterState"/>
-        /// <seealso cref="Gorgon2DOrthoCamera"/>
-        /// <seealso cref="Gorgon2DPerspectiveCamera"/>
-        [Obsolete("Subscribers for this need to be moved to the new method.")]
-        protected void BlitTexture(GorgonTexture2DView texture,
-                                     DX.RectangleF? region = null,
-                                     DX.RectangleF? textureCoordinates = null,
-                                     GorgonSamplerState samplerStateOverride = null,
-                                     GorgonBlendState blendStateOverride = null,
-                                     GorgonDepthStencilState depthStencilStateOverride = null,
-                                     GorgonRasterState rasterStateOverride = null,
-                                     Gorgon2DCamera camera = null)
-        {
-            texture.ValidateObject(nameof(texture));
-
-            bool stateChanged = PreRender(blendStateOverride, depthStencilStateOverride, rasterStateOverride);
-
-            if (region == null)
-            {
-                region = new DX.RectangleF(0, 0, CurrentTargetSize.Width, CurrentTargetSize.Height);
-            }
-
-            if (textureCoordinates == null)
-            {
-                textureCoordinates = new DX.RectangleF(0, 0, 1, 1);
-            }
-
-            for (int i = 0; i < PassCount; ++i)
-            {
-                Gorgon2DBatchState batchState = OnGetBatchState(i, stateChanged);
-
-                switch (OnBeforeRenderPass(i))
-                {
-                    case PassContinuationState.Skip:
-                        continue;
-                    case PassContinuationState.Stop:
-                        return;
-                    default:
-                        Renderer.Begin(batchState, camera);
-                        Renderer.DrawFilledRectangle(region.Value, GorgonColor.White, texture, textureCoordinates, textureSampler: samplerStateOverride);
-                        Renderer.End();
-                
-                        OnAfterRenderPass(i);
-                        break;
-                }
-            }
-
-            OnAfterRender();
-        }
-
+       
         /// <summary>
         /// Function called to render a single effect pass.
         /// </summary>
@@ -557,38 +398,6 @@ namespace Gorgon.Renderers
         /// <param name="statesChanged"><b>true</b> if the blend, raster, or depth/stencil state was changed. <b>false</b> if not.</param>
         /// <returns>The 2D batch state.</returns>
         protected abstract Gorgon2DBatchState OnGetBatchState(int passIndex, bool statesChanged);
-
-        /// <summary>
-        /// Function called to render the effect.
-        /// </summary>
-        /// <param name="blendStateOverride">[Optional] An override for the current blending state.</param>
-        /// <param name="depthStencilStateOverride">[Optional] An override for the current depth/stencil state.</param>
-        /// <param name="rasterStateOverride">[Optional] An override for the current raster state.</param>
-        /// <param name="camera">[Optional] The camera to use when rendering.</param>
-        [Obsolete("Subscribers for this need to be moved to the new method.")]
-        protected void Render(GorgonBlendState blendStateOverride = null, GorgonDepthStencilState depthStencilStateOverride = null, GorgonRasterState rasterStateOverride = null, Gorgon2DCamera camera = null)
-        {
-            bool stateChanged = PreRender(blendStateOverride, depthStencilStateOverride, rasterStateOverride);
-
-            for (int i = 0; i < PassCount; ++i)
-            {
-                Gorgon2DBatchState batchState = OnGetBatchState(i, stateChanged);
-
-                switch (OnBeforeRenderPass(i))
-                {
-                    case PassContinuationState.Skip:
-                        continue;
-                    case PassContinuationState.Stop:
-                        return;
-                    default:
-                        OnRenderPass(i, batchState, camera);
-                        OnAfterRenderPass(i);
-                        break;
-                }
-            }
-
-            OnAfterRender();
-        }
 
         /// <summary>
         /// Function called to render the effect.
@@ -663,7 +472,7 @@ namespace Gorgon.Renderers
                         OnRenderPass(i, renderMethod, output);
                         Renderer.End();
 
-                        OnAfterRenderPass(i);
+                        OnAfterRenderPass(i, output);
                         break;
                     case PassContinuationState.Skip:
                         continue;
@@ -679,11 +488,11 @@ namespace Gorgon.Renderers
         /// Function to render a texture to the current render target using the current effect.
         /// </summary>
         /// <param name="texture">The texture to render.</param>
-        /// <param name="output">The output render target that the blit will render into.</param>
+        /// <param name="outputSize">The size of the output render target that the blit will render into.</param>
         /// <param name="destinationRegion">[Optional] The region that the texture will be drawn into.</param>
         /// <param name="textureCoordinates">[Optional] The texture coordinates to use with the texture.</param>
         /// <param name="samplerStateOverride">[Optional] An override for the current texture sampler.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="texture"/>, or the <paramref name="output"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is <b>null</b>.</exception>
         /// <remarks>
         /// <para>
         /// This method is a convenience method that will render a texture to the current set render target in slot 0. 
@@ -713,27 +522,21 @@ namespace Gorgon.Renderers
         /// <seealso cref="Gorgon2DOrthoCamera"/>
         /// <seealso cref="Gorgon2DPerspectiveCamera"/>
         protected void BlitTexture(GorgonTexture2DView texture,
-                                   GorgonRenderTargetView output,
+                                   DX.Size2 outputSize,
                                      DX.RectangleF? destinationRegion = null,
                                      DX.RectangleF? textureCoordinates = null,
                                      GorgonSamplerState samplerStateOverride = null)
         {
             texture.ValidateObject(nameof(texture));
-            output.ValidateObject(nameof(output));
-
+            
             if (destinationRegion == null)
             {
-                destinationRegion = new DX.RectangleF(0, 0, output.Width, output.Height);
+                destinationRegion = new DX.RectangleF(0, 0, outputSize.Width, outputSize.Height);
             }
 
             if (textureCoordinates == null)
             {
                 textureCoordinates = new DX.RectangleF(0, 0, 1, 1);
-            }
-
-            if (Graphics.RenderTargets[0] != output)
-            {
-                Graphics.SetRenderTarget(output, Graphics.DepthStencilView);
             }
 
             Renderer.DrawFilledRectangle(destinationRegion.Value, GorgonColor.White, texture, textureCoordinates, textureSampler: samplerStateOverride);

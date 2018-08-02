@@ -139,7 +139,6 @@ namespace Gorgon.Examples
         /// <returns><b>true</b> to continue processing, <b>false</b> to stop.</returns>
         private static bool Idle()
         {
-
             _postTarget1.Clear(GorgonColor.Black);
 
             DX.Vector2 textureSize = _background.Texture.ToTexel(new DX.Vector2(_postTarget1.Width, _postTarget1.Height));
@@ -157,7 +156,7 @@ namespace Gorgon.Examples
 
             // No sense in rendering the effect if it's not present.
             float strength = _cloakController.CloakAmount;
-            _displacement.RecordState(RecordedState.RenderTargets);
+
             if (strength > 0.0f)
             {
                 // Don't bother recording the current state, we're going to be updating it shortly, so it'd be redundant.
@@ -167,7 +166,7 @@ namespace Gorgon.Examples
             }
             else
             {
-                // Send the result of the cloaking effect to the old film render target.
+                // Send the undisplaced image to the 2nd post process target.
                 _graphics.SetRenderTarget(_postTarget2);
 
                 _renderer.Begin();
@@ -177,9 +176,6 @@ namespace Gorgon.Examples
                                               new DX.RectangleF(0, 0, 1, 1));
                 _renderer.End();
             }
-
-            // Send to our final post process target.
-            _displacement.RecallState();
 
             // Smooth our results.
             int blurRadiusUpdate = GorgonRandom.RandomInt32(0, 1000000);
@@ -192,9 +188,17 @@ namespace Gorgon.Examples
             }
 
             // If we didn't blur (radius = 0), then just use the original view.
-            _gaussBlur.RecordState(RecordedState.RenderTargets);
-            GorgonTexture2DView blurred = _gaussBlur.BlurRadius > 0 ? _gaussBlur.RenderEffect(_postView2) : _postView2;
-            _gaussBlur.RecallState();
+            if (_gaussBlur.BlurRadius > 0)
+            {
+                _gaussBlur.Render((_, __, outputSize) =>
+                                  {
+                                      _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, outputSize.Width, outputSize.Height),
+                                                                    GorgonColor.White,
+                                                                    _postView2,
+                                                                    new DX.RectangleF(0, 0, 1, 1));
+                                  },
+                                  _postTarget2);
+            }
 
             // Render as an old film effect.
             _oldFilm.Time = GorgonTiming.SecondsSinceStart * 2;
@@ -203,7 +207,13 @@ namespace Gorgon.Examples
             {
                offset = new DX.Vector2(GorgonRandom.RandomSingle(-2.0f, 2.0f), GorgonRandom.RandomSingle(-1.5f, 1.5f));
             }
-            _oldFilm.RenderEffect(blurred, new DX.RectangleF(offset.X, offset.Y, _postView2.Width, _postView2.Height));
+
+            _oldFilm.Render((_, __, size) =>
+                                _renderer.DrawFilledRectangle(new DX.RectangleF(offset.X, offset.Y, size.Width, size.Height),
+                                                              GorgonColor.White,
+                                                              _postView2,
+                                                              new DX.RectangleF(0, 0, 1, 1)),
+                            _postTarget1);
 
             // Send to our screen.
             _screen.RenderTargetView.Clear(GorgonColor.Black);

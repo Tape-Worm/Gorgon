@@ -27,7 +27,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Threading;
-using Gorgon.Diagnostics;
+using DX = SharpDX;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers.Properties;
@@ -121,8 +121,6 @@ namespace Gorgon.Renderers
 	    private Gorgon2DShader<GorgonPixelShader> _waveShader;
         // The batch state for rendering.
 	    private Gorgon2DBatchState _batchState;
-	    // A method used to render data while the effect is active.
-	    private Action _renderCallback;
 		#endregion
 
 		#region Properties.
@@ -251,12 +249,16 @@ namespace Gorgon.Renderers
         }
 
 	    /// <summary>
-		/// Function called before rendering begins.
-		/// </summary>
-		/// <returns>
-		/// <b>true</b> to continue rendering, <b>false</b> to exit.
-		/// </returns>
-		protected override void OnBeforeRender()
+	    /// Function called prior to rendering.
+	    /// </summary>
+	    /// <param name="output">The final render target that will receive the rendering from the effect.</param>
+	    /// <remarks>
+	    /// <para>
+	    /// Applications can use this to set up common states and other configuration settings prior to executing the render passes. This is an ideal method to initialize and resize your internal render
+	    /// targets (if applicable).
+	    /// </para>
+	    /// </remarks>
+	    protected override void OnBeforeRender(GorgonRenderTargetView output)
 		{
 		    if (!_isUpdated)
 		    {
@@ -266,6 +268,28 @@ namespace Gorgon.Renderers
 		    _waveBuffer.Buffer.SetData(ref _settings);
 		    _isUpdated = false;
 		}
+
+	    /// <summary>
+	    /// Function called prior to rendering a pass.
+	    /// </summary>
+	    /// <param name="passIndex">The index of the pass to render.</param>
+	    /// <param name="output">The final render target that will receive the rendering from the effect.</param>
+	    /// <returns>A <see cref="PassContinuationState"/> to instruct the effect on how to proceed.</returns>
+	    /// <remarks>
+	    /// <para>
+	    /// Applications can use this to set up per-pass states and other configuration settings prior to executing a single render pass.
+	    /// </para>
+	    /// </remarks>
+	    /// <seealso cref="PassContinuationState"/>
+	    protected override PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output)
+	    {
+	        if (Graphics.RenderTargets[0] != output)
+	        {
+                Graphics.SetRenderTarget(output, Graphics.DepthStencilView);
+	        }
+
+	        return PassContinuationState.Continue;
+	    }
 
 	    /// <summary>
 		/// Releases unmanaged and - optionally - managed resources
@@ -302,44 +326,19 @@ namespace Gorgon.Renderers
 	    }
 
 	    /// <summary>
-        /// Function called to render a single effect pass.
-        /// </summary>
-        /// <param name="passIndex">The index of the pass being rendered.</param>
-        /// <param name="batchState">The current batch state for the pass.</param>
-        /// <param name="camera">The current camera to use when rendering.</param>
-        /// <remarks>Applications must implement this in order to see any results from the effect.</remarks>
-        protected override void OnRenderPass(int passIndex, Gorgon2DBatchState batchState, Gorgon2DCamera camera)
-	    {
-	        Renderer.Begin(batchState, camera);
-	        _renderCallback();
-            Renderer.End();
-	    }
-        
-	    /// <summary>
-        /// Function to render the specified texture using waves.
-        /// </summary>
-	    /// <param name="renderCallback">A method that is executed to render image data as gray scale.</param>
-	    /// <param name="blendState">[Optional] A blending state used to override the default blending state.</param>
-	    /// <param name="camera">[Optional] The camera to use when rendering.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderCallback"/> parameter is <b>null</b>.</exception>
+	    /// Function called to render a single effect pass.
+	    /// </summary>
+	    /// <param name="passIndex">The index of the pass being rendered.</param>
+	    /// <param name="renderMethod">The method used to render a scene for the effect.</param>
+	    /// <param name="output">The render target that will receive the final render data.</param>
 	    /// <remarks>
 	    /// <para>
-	    /// The <paramref name="renderCallback"/> is a method that users can define to draw whatever is needed as grayscale.  When this method is called, the <see cref="Gorgon2D.Begin"/> and
-	    /// <see cref="Gorgon2D.End"/> methods are already taken care of by the effect and will not need to be called during the callback.
-	    /// </para>
-	    /// <para>
-	    /// <note type="warning">
-	    /// <para>
-	    /// For performance reasons, any exceptions thrown from this method will only be thrown when Gorgon is compiled in <b>DEBUG</b> mode.
-	    /// </para>
-	    /// </note>
+	    /// Applications must implement this in order to see any results from the effect.
 	    /// </para>
 	    /// </remarks>
-	    public void Wave(Action renderCallback, GorgonBlendState blendState = null, Gorgon2DCamera camera = null)
+	    protected override void OnRenderPass(int passIndex, Action<int, int, DX.Size2> renderMethod, GorgonRenderTargetView output)
 	    {
-            renderCallback.ValidateObject(nameof(renderCallback));
-	        _renderCallback = renderCallback;
-            Render(blendState, camera: camera);
+            renderMethod(passIndex, PassCount, new DX.Size2(output.Width, output.Height));
 	    }
 		#endregion
 

@@ -299,27 +299,29 @@ namespace Gorgon.Examples
             _graphics.SetRenderTarget(_ballTarget);
             _ballTarget.Clear(GorgonColor.BlackTransparent);
             
+            // Set up the initial ball render target with an unblurred version of our ball scene.
             _2D.Begin(_blurBlend);
             DrawNoBlur();
             _2D.End();
 
-		    GorgonTexture2DView output = null;
-
             for (int i = 0; i < _blur.BlurRadius; ++i)
 		    {
-                _blur.RecordState(RecordedState.RenderTargets);
-		        output = _blur.RenderEffect(_ballTargetView);
-                _blur.RecallState();
-
-		        // Copy the result back to the render target.
-                _2D.Begin();
-		        _2D.DrawFilledRectangle(new DX.RectangleF(0, 0, _ballTarget.Width, _ballTarget.Height), GorgonColor.White, output, new DX.RectangleF(0, 0, 1, 1));
-                _2D.End();
+                // This will blur the ball render target, and copy the results back into the ball render target texture.
+                // This way we can recycle the texture to blur even more on the next iteration.
+		        _blur.Render((_, __, outputSize) =>
+                                 // The output size width and height must be used here so the ball render target is 
+                                 // shrunk down to the size of the blur internal render targets.
+		                         _2D.DrawFilledRectangle(new DX.RectangleF(0, 0, outputSize.Width, outputSize.Height),
+		                                                 GorgonColor.White,
+		                                                 _ballTargetView,
+		                                                 new DX.RectangleF(0, 0, 1, 1)),
+		                     _ballTarget);
 		    }
 
+            // Once we have the target blurred to our satisfaction, we need to send that target to our screen target.
 		    _graphics.SetRenderTarget(_mainScreen.RenderTargetView);
 		    _2D.Begin();
-		    _2D.DrawFilledRectangle(new DX.RectangleF(0, 0, _ballTarget.Width, _ballTarget.Height), GorgonColor.White, output, new DX.RectangleF(0, 0, 1, 1));
+		    _2D.DrawFilledRectangle(new DX.RectangleF(0, 0, _ballTarget.Width, _ballTarget.Height), GorgonColor.White, _ballTargetView, new DX.RectangleF(0, 0, 1, 1));
             _2D.End();
 		}
 

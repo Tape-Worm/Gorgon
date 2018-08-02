@@ -44,13 +44,6 @@ namespace Gorgon.Renderers
     public class Gorgon2DDeferredLightingEffect
         : Gorgon2DEffect
     {
-        #region Constants.
-        /// <summary>
-        /// The name of the shader include for Gorgon's <see cref="Gorgon2DDeferredLightingEffect"/>.
-        /// </summary>
-        public const string Gorgon2DDeferredLightIncludeName = "DeferredLightShaders";
-        #endregion
-
         #region Value Types.
         // Constant buffer data for a point light.
         [StructLayout(LayoutKind.Sequential, Size = 64)]
@@ -85,9 +78,13 @@ namespace Gorgon.Renderers
 
         #region Constants.
         /// <summary>
+        /// The name of the shader include for Gorgon's <see cref="Gorgon2DDeferredLightingEffect"/>.
+        /// </summary>
+        public const string Gorgon2DDeferredLightIncludeName = "DeferredLightShaders";
+        /// <summary>
         /// The maximum number of lights that can be used at one time.
         /// </summary>
-        public const int MaxLightCount = 256;
+        public const int MaxLightCount = int.MaxValue / 16;
         #endregion
 
         #region Variables.
@@ -220,7 +217,7 @@ namespace Gorgon.Renderers
         private void RenderToOutput(int lightIndex, GorgonRenderTargetView output)
         {
             UpdateLight(lightIndex);
-            BlitTexture(_gbufferTexture, output);
+            BlitTexture(_gbufferTexture, new DX.Size2(output.Width, output.Height));
         }
 
         /// <summary>
