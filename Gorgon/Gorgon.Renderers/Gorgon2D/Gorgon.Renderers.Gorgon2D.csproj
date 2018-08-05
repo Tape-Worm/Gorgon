@@ -72,12 +72,14 @@
     <Compile Include="Effects\Gorgon2DInvertEffect.cs" />
     <Compile Include="Effects\Gorgon2DOldFilmEffect.cs" />
     <Compile Include="Effects\Gorgon2DPosterizeEffect.cs" />
+    <Compile Include="Effects\Gorgon2DCompositor.cs" />
     <Compile Include="Effects\Gorgon2DSharpenEmbossEffect.cs" />
     <Compile Include="Effects\Gorgon2DSobelEdgeDetectEffect.cs" />
     <Compile Include="Effects\Gorgon2DWaveEffect.cs" />
     <Compile Include="Effects\Gorgon2DLight.cs" />
     <Compile Include="Effects\_Interfaces\IGorgon2DTextureDrawEffect.cs" />
     <Compile Include="Gorgon2D.cs" />
+    <Compile Include="Effects\Gorgon2DCompositionPass.cs" />
     <Compile Include="Renderables\GorgonTrianglePoint.cs" />
     <Compile Include="Renderables\GorgonTextSprite.cs" />
     <Compile Include="Renderables\_Internal\TextCodeParser.cs" />

@@ -186,7 +186,7 @@ namespace Gorgon.Renderers
         /// <remarks>
         /// <para>
         /// This is the default texture surface format for the internal render targets used for blurring. This value may be any type of format supported by a render target (see 
-        /// <see cref="GorgonGraphics.FormatSupport"/> for determing an acceptable format).
+        /// <see cref="GorgonGraphics.FormatSupport"/> for determining an acceptable format).
         /// </para>
         /// <para>
         /// If this value is set to an unacceptable format, then the effect will throw an exception during rendering.

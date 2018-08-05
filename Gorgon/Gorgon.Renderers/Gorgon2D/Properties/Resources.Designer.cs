@@ -90,15 +90,15 @@ namespace Gorgon.Renderers.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to // This is adopted from the nvidia film grain shader.
-        /////
-        ///// To learn more about shading, shaders, and to bounce ideas off other shader
-        /////    authors and users, visit the NVIDIA Shader Library Forums at:
-        /////
-        /////    http://developer.nvidia.com/forums/
+        ///
+        /// To learn more about shading, shaders, and to bounce ideas off other shader
+        ///    authors and users, visit the NVIDIA Shader Library Forums at:
+        ///
+        ///    http://developer.nvidia.com/forums/
         ///
         ///#GorgonInclude &quot;Gorgon2DShaders&quot;
         ///
-        ///// Additional effect texture buffer.
+        /// Additional effect texture buffer.
         ///Texture2D _filmEffectTexture : register(t1);
         ///SamplerState _gorgonFilmGrainSampler : register(s1);		// Sampler used for film grain random texture.
         ///
