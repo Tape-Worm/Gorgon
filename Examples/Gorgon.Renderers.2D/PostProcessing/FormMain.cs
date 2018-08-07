@@ -20,13 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: July 28, 2018 11:34:42 AM
+// Created: August 6, 2018 2:39:25 PM
 // 
 #endregion
 
 using System.Windows.Forms;
 
-namespace Gorgon.Examples
+namespace PostProcessing
 {
     public partial class FormMain : Form
     {

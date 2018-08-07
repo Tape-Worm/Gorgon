@@ -216,8 +216,7 @@ namespace Gorgon.Renderers
 	    /// </remarks>
 	    protected override void OnBeforeRender(GorgonRenderTargetView output, bool sizeChanged)
 	    {
-
-		    if (Graphics.RenderTargets[0] != output)
+            if (Graphics.RenderTargets[0] != output)
 		    {
 		        Graphics.SetRenderTarget(output, Graphics.DepthStencilView);
 		        _isUpdated = true;

@@ -540,6 +540,27 @@ namespace Gorgon.Renderers
         }
 
         /// <summary>
+        /// Function to retrieve the width and height of a string with the specified font or the default font.
+        /// </summary>
+        /// <param name="text">The text to measure.</param>
+        /// <param name="font">[Optional] The font to use.</param>
+        /// <returns>The width and height of the text.</returns>
+        public DX.Size2F MeasureString(string text, GorgonFont font = null)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                return DX.Size2F.Zero;
+            }
+
+            if (font == null)
+            {
+                font = _defaultFontFactory.Value.DefaultFont;
+            }
+
+            return font.MeasureText(text, font.HasOutline);
+        }
+
+        /// <summary>
         /// Function to draw text.
         /// </summary>
         /// <param name="text">The text to render.</param>

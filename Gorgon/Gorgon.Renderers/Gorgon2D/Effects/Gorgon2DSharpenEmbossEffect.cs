@@ -109,13 +109,6 @@ namespace Gorgon.Renderers
 	                        .Shader(CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderEmboss"))
 	                        .Build();
 
-	        _sharpenBatchState = BatchStateBuilder
-	                             .PixelShader(_sharpenShader)
-	                             .Build();
-
-	        _embossBatchState = BatchStateBuilder
-	                            .PixelShader(_embossShader)
-	                            .Build();
         }
 
 	    /// <summary>
@@ -129,8 +122,12 @@ namespace Gorgon.Renderers
 	        // ReSharper disable once InvertIf
 	        if (statesChanged)
 	        {
-	            _sharpenBatchState = BatchStateBuilder.Build();
-	            _embossBatchState = BatchStateBuilder.Build();
+	            _sharpenBatchState = BatchStateBuilder
+	                                 .PixelShader(_sharpenShader)
+	                                 .Build();
+	            _embossBatchState = BatchStateBuilder
+	                                .PixelShader(_embossShader)
+	                                .Build();
 	        }
 
 	        return UseEmbossing ? _embossBatchState : _sharpenBatchState;

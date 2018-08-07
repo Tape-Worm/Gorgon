@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{DDCECB25-AD3F-405C-BE3D-84EF027D1B70}</ProjectGuid>
+    <ProjectGuid>{85B13540-CBB5-4CBD-8149-50762578A710}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>Gorgon.Examples</RootNamespace>
-    <AssemblyName>Lights</AssemblyName>
+    <RootNamespace>PostProcessing</RootNamespace>
+    <AssemblyName>PostProcessing</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -42,9 +42,6 @@
   <PropertyGroup>
     <ApplicationManifest>D:\Mike\Code\GitHubRepos\Gorgon\WIP\Examples\app.manifest</ApplicationManifest>
   </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject>Gorgon.Examples.Program</StartupObject>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -62,6 +59,7 @@
     <Compile Include="..\..\..\Gorgon\Gorgon.Core\SharedAssemblyInfo.cs">
       <Link>SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Button.cs" />
     <Compile Include="FormMain.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -98,9 +96,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Gorgon2.ico" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="SharpDX">
@@ -141,6 +136,10 @@
       <Project>{a19cb981-2d25-4316-9542-1d2bd7064f2b}</Project>
       <Name>Gorgon.Windows</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Gorgon2.ico" />
+    <None Include="Resources\Gorgon_Logo_Small.DDS" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

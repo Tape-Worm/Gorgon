@@ -657,7 +657,7 @@ namespace Gorgon.Renderers
         public Gorgon2DCompositor MovePass(int passIndex, int newPassIndex)
         {
             passIndex = passIndex.Max(0).Min(_effects.Count - 1);
-            newPassIndex = newPassIndex.Max(0).Min(_effects.Count - 1);
+            newPassIndex = newPassIndex.Max(0).Min(_effects.Count);
 
             if (newPassIndex == passIndex)
             {
@@ -666,8 +666,9 @@ namespace Gorgon.Renderers
 
             Gorgon2DCompositionPass pass = _effectList[passIndex];
 
-            _effectList.Remove(pass);
+            _effectList[passIndex] = null;
             _effectList.Insert(newPassIndex, pass);
+            _effectList.Remove((Gorgon2DCompositionPass)null);
 
             for (int i = 0; i < _effectList.Count; ++i)
             {

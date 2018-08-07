@@ -95,11 +95,10 @@ namespace Gorgon.Collections.Specialized
 		/// </summary>
 		/// <param name="index">Index to insert at.</param>
 		/// <param name="item">Item to insert.</param>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is less than 0, or greater than/equal to the <see cref="GorgonBaseNamedObjectList{T}.Count"/></exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is less than 0.</exception>
 		public void Insert(int index, T item)
 		{
-			if ((index < 0)
-			    || (index >= Count))
+			if (index < 0)
 			{
 				throw new ArgumentOutOfRangeException();
 			}

@@ -77,7 +77,7 @@ namespace Gorgon.Collections
 
 			if (index == -1)
 			{
-				throw new KeyNotFoundException(string.Format(Resources.GOR_ERR_KEY_NOT_FOUND, "name"));
+				throw new KeyNotFoundException(string.Format(Resources.GOR_ERR_KEY_NOT_FOUND, name));
 			}
 
 			return _list[index];

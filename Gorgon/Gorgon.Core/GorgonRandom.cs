@@ -228,7 +228,7 @@ namespace Gorgon.Core
 		/// Function to return a non-negative random <see cref="int"/>.
 		/// </summary>
 		/// <param name="start">Starting value for the random number.</param>
-		/// <param name="end">Ending value for the random number range.  This value is not inclusive.</param>
+		/// <param name="end">Ending value for the random number range.  This value is inclusive.</param>
 		/// <returns>The random <see cref="int"/> value within the range of <paramref name="start"/> to <paramref name="end"/>.</returns>
 		/// <remarks>
 		/// This overload generates a random <see cref="int"/> number between the range of <paramref name="start"/> and <paramref name="end"/>-1.
@@ -241,7 +241,7 @@ namespace Gorgon.Core
 		/// <summary>
 		/// Function to return a non-negative random <see cref="int"/>.
 		/// </summary>
-		/// <param name="maxValue">The highest number for random values, this value is not inclusive.</param>
+		/// <param name="maxValue">The highest number for random values, this value is inclusive.</param>
 		/// <returns>A random number</returns>.
 		/// <remarks>
 		/// This overload generates a random <see cref="int"/> number between the range of 0 and <paramref name="maxValue"/>-1.
