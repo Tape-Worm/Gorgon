@@ -142,8 +142,9 @@ namespace Gorgon.Renderers
         public DrawCallFactory(GorgonGraphics graphics, GorgonTexture2DView defaultTexture, GorgonInputLayout inputLayout)
         {
             _inputLayout = inputLayout;
-            _drawIndexAllocator = new GorgonDrawCallPoolAllocator<GorgonDrawIndexCall>(16);
-            _drawAllocator = new GorgonDrawCallPoolAllocator<GorgonDrawCall>(16);
+            // TODO: Find out why this thing is fucking up with a pool size of 16 or less.
+            _drawIndexAllocator = new GorgonDrawCallPoolAllocator<GorgonDrawIndexCall>(2);
+            _drawAllocator = new GorgonDrawCallPoolAllocator<GorgonDrawCall>(2);
             _drawIndexBuilder = new GorgonDrawIndexCallBuilder();
             _drawBuilder = new GorgonDrawCallBuilder();
             _stateBuilder = new GorgonPipelineStateBuilder(graphics);

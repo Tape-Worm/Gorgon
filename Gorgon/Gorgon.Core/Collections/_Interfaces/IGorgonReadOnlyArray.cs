@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using Gorgon.Graphics.Core;
 
 namespace Gorgon.Collections
 {
@@ -35,6 +36,7 @@ namespace Gorgon.Collections
     /// <typeparam name="T">The type of data in the array.</typeparam>
     public interface IGorgonReadOnlyArray<T>
         : IReadOnlyList<T>, IEquatable<IReadOnlyList<T>>
+        where T : IEquatable<T>
     {
         #region Properties.
         /// <summary>

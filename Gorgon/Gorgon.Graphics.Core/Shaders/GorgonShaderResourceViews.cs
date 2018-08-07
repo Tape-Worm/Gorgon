@@ -379,6 +379,32 @@ namespace Gorgon.Graphics.Core
 			}
 		}
 
+	    /// <summary>
+	    /// Function to copy the dirty entries for this array into the specified array.
+	    /// </summary>
+	    /// <param name="array">The array that will receive the dirty entries.</param>
+	    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="array"/> parameter is <b>null</b>.</exception>
+	    public void CopyDirty(GorgonShaderResourceViews array)
+	    {
+	        if (array == null)
+	        {
+	            throw new ArgumentNullException(nameof(array));
+	        }
+
+	        // Find all the dirty entries (if we haven't already).
+	        if (_dirtyItems.Count == 0)
+	        {
+	            GetDirtyItems(true);
+	        }
+
+	        int end = (_dirtyItems.Count + _dirtyItems.Start).Min(array.Length);
+
+	        for (int i = _dirtyItems.Start; i < end; ++i)
+	        {
+	            array[i] = _backingArray[i];
+	        }
+	    }
+
 		/// <summary>Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
 		/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only. </exception>
 		public void Clear()

@@ -230,227 +230,127 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Property to return the stream out bindings.
         /// </summary>
-        public GorgonStreamOutBindings StreamOutBindings
-        {
-            get;
-            set;
-        }
+        public GorgonStreamOutBindings StreamOutBindings;
 
         /// <summary>
         /// Property to return the unordered access views.
         /// </summary>
-        public GorgonReadWriteViewBindings ReadWriteViews
-        {
-            get;
-            set;
-        }
+        public GorgonReadWriteViewBindings ReadWriteViews;
 
         /// <summary>
         /// Property to return the compute shader unordered access views.
         /// </summary>
-        public GorgonReadWriteViewBindings CsReadWriteViews
-        {
-            get;
-            set;
-        }
+        public GorgonReadWriteViewBindings CsReadWriteViews;
 
         /// <summary>
         /// Property to return the pixel shader sampler states.
         /// </summary>
-        public GorgonSamplerStates PsSamplers
-        {
-            get; 
-            set;
-        }
+        public GorgonSamplerStates PsSamplers;
 
         /// <summary>
         /// Property to return the vertex shader sampler states.
         /// </summary>
-        public GorgonSamplerStates VsSamplers
-        {
-            get; 
-            set;
-        }
+        public GorgonSamplerStates VsSamplers;
 
         /// <summary>
         /// Property to return the geometry shader sampler states.
         /// </summary>
-        public GorgonSamplerStates GsSamplers
-        {
-            get; 
-            set;
-        }
+        public GorgonSamplerStates GsSamplers;
 
         /// <summary>
         /// Property to return the domain shader sampler states.
         /// </summary>
-        public GorgonSamplerStates DsSamplers
-        {
-            get; 
-            set;
-        }
+        public GorgonSamplerStates DsSamplers;
 
         /// <summary>
         /// Property to return the hull shader sampler states.
         /// </summary>
-        public GorgonSamplerStates HsSamplers
-        {
-            get; 
-            set;
-        }
+        public GorgonSamplerStates HsSamplers;
 
         /// <summary>
         /// Property to return the compute shader sampler states.
         /// </summary>
-        public GorgonSamplerStates CsSamplers
-        {
-            get; 
-            set;
-        }
+        public GorgonSamplerStates CsSamplers;
 
         /// <summary>
         /// Property to set or return constant buffers for a pixel shader.
         /// </summary>
-        public GorgonConstantBuffers PsConstantBuffers
-        {
-            get;
-            set;
-        }
+        public GorgonConstantBuffers PsConstantBuffers;
 
         /// <summary>
         /// Property to set or return constant buffers for a vertex shader.
         /// </summary>
-        public GorgonConstantBuffers VsConstantBuffers
-        {
-            get;
-            set;
-        }
-        
+        public GorgonConstantBuffers VsConstantBuffers;
+
         /// <summary>
         /// Property to set or return constant buffers for a geometry shader.
         /// </summary>
-        public GorgonConstantBuffers GsConstantBuffers
-        {
-            get;
-            set;
-        }
+        public GorgonConstantBuffers GsConstantBuffers;
 
         /// <summary>
         /// Property to set or return constant buffers for a hull shader.
         /// </summary>
-        public GorgonConstantBuffers HsConstantBuffers
-        {
-            get;
-            set;
-        }
+        public GorgonConstantBuffers HsConstantBuffers;
 
         /// <summary>
         /// Property to set or return constant buffers for a domain shader.
         /// </summary>
-        public GorgonConstantBuffers DsConstantBuffers
-        {
-            get;
-            set;
-        }
+        public GorgonConstantBuffers DsConstantBuffers;
 
         /// <summary>
         /// Property to set or return constant buffers for a compute shader.
         /// </summary>
-        public GorgonConstantBuffers CsConstantBuffers
-        {
-            get;
-            set;
-        }
+        public GorgonConstantBuffers CsConstantBuffers;
 
         /// <summary>
         /// Property to set or return resource views for a pixel shader.
         /// </summary>
-        public GorgonShaderResourceViews PsSrvs
-        {
-            get;
-            set;
-        }
+        public GorgonShaderResourceViews PsSrvs;
 
         /// <summary>
         /// Property to set or return resource views for a vertex shader.
         /// </summary>
-        public GorgonShaderResourceViews VsSrvs
-        {
-            get;
-            set;
-        }
-        
+        public GorgonShaderResourceViews VsSrvs;
+
         /// <summary>
         /// Property to set or return resource views for a geometry shader.
         /// </summary>
-        public GorgonShaderResourceViews GsSrvs
-        {
-            get;
-            set;
-        }
+        public GorgonShaderResourceViews GsSrvs;
 
         /// <summary>
         /// Property to set or return resource views for a hull shader.
         /// </summary>
-        public GorgonShaderResourceViews HsSrvs
-        {
-            get;
-            set;
-        }
+        public GorgonShaderResourceViews HsSrvs;
 
         /// <summary>
         /// Property to set or return resource views for a domain shader.
         /// </summary>
-        public GorgonShaderResourceViews DsSrvs
-        {
-            get;
-            set;
-        }
+        public GorgonShaderResourceViews DsSrvs;
 
         /// <summary>
         /// Property to set or return resource views for a compute shader.
         /// </summary>
-        public GorgonShaderResourceViews CsSrvs
-        {
-            get;
-            set;
-        }
+        public GorgonShaderResourceViews CsSrvs;
 
         /// <summary>
         /// Property to return the current list of vertex buffers.
         /// </summary>
-        public GorgonVertexBufferBindings VertexBuffers
-        {
-            get;
-            set;
-        }
+        public GorgonVertexBufferBindings VertexBuffers;
 
         /// <summary>
         /// Property to set or return the index buffer.
         /// </summary>
-        public GorgonIndexBuffer IndexBuffer
-        {
-            get;
-            set;
-        }
+        public GorgonIndexBuffer IndexBuffer;
 
         /// <summary>
         /// Property to set or return the current pipeline state.
         /// </summary>
-        public GorgonPipelineState PipelineState
-        {
-            get;
-            set;
-        }
+        public GorgonPipelineState PipelineState;
 
         /// <summary>
         /// Property to set or return the current compute shader.
         /// </summary>
-        public GorgonComputeShader ComputeShader
-        {
-            get;
-            set;
-        }
+        public GorgonComputeShader ComputeShader;
 
         /// <summary>
         /// Property to return the current input layout.

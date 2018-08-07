@@ -287,12 +287,6 @@ namespace Gorgon.Graphics.Core
                 throw new ArgumentNullException(nameof(array));
             }
 
-            // Nothing to copy.
-            if (_dirtyIndices == 0)
-            {
-                return;
-            }
-
             // Find all the dirty entries (if we haven't already).
             if (_dirtyItems.Count == 0)
             {

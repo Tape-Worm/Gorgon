@@ -223,6 +223,28 @@ namespace Gorgon.Graphics.Core
         // directly (for a tiny performance gain, hopefully).
         private readonly D3DState _lastState = new D3DState
                                                {
+                                                   CsReadWriteViews = new GorgonReadWriteViewBindings(),
+                                                   PsSamplers = new GorgonSamplerStates(),
+                                                   VsSrvs = new GorgonShaderResourceViews(),
+                                                   CsConstantBuffers = new GorgonConstantBuffers(),
+                                                   CsSamplers = new GorgonSamplerStates(),
+                                                   CsSrvs = new GorgonShaderResourceViews(),
+                                                   DsConstantBuffers = new GorgonConstantBuffers(),
+                                                   DsSamplers = new GorgonSamplerStates(),
+                                                   DsSrvs = new GorgonShaderResourceViews(),
+                                                   GsConstantBuffers = new GorgonConstantBuffers(),
+                                                   GsSamplers = new GorgonSamplerStates(),
+                                                   GsSrvs = new GorgonShaderResourceViews(),
+                                                   HsConstantBuffers = new GorgonConstantBuffers(),
+                                                   HsSamplers = new GorgonSamplerStates(),
+                                                   HsSrvs = new GorgonShaderResourceViews(),
+                                                   PsConstantBuffers = new GorgonConstantBuffers(),
+                                                   PsSrvs = new GorgonShaderResourceViews(),
+                                                   ReadWriteViews = new GorgonReadWriteViewBindings(),
+                                                   StreamOutBindings = new GorgonStreamOutBindings(),
+                                                   VertexBuffers = new GorgonVertexBufferBindings(),
+                                                   VsConstantBuffers = new GorgonConstantBuffers(),
+                                                   VsSamplers = new GorgonSamplerStates(),
                                                    PipelineState = new GorgonPipelineState
                                                                    {
                                                                        PrimitiveType = PrimitiveType.None
@@ -951,15 +973,15 @@ namespace Gorgon.Graphics.Core
                 return;
             }
 
-            (int start, int count) range = uavs.GetDirtyItems();
-            CheckForHazards(uavs, range.start, range.count + range.start);
+            (int start, int count) = uavs.GetDirtyItems();
+            CheckForHazards(uavs, start, count + start);
 
-            if (_d3DUavs.Item1.Length != range.count)
+            if (_d3DUavs.Item1.Length != count)
             {
-                _d3DUavs = (new D3D11.UnorderedAccessView[range.count], new int[range.count]);
+                _d3DUavs = (new D3D11.UnorderedAccessView[count], new int[count]);
             }
 
-            for (int i = 0; i < range.count; ++i)
+            for (int i = 0; i < count; ++i)
             {
                 _d3DUavs.Item1[i] = uavs.Native[i];
                 _d3DUavs.Item2[i] = uavs.Counts[i];
@@ -968,7 +990,7 @@ namespace Gorgon.Graphics.Core
 
             if (!useCs)
             {
-                D3DDeviceContext.OutputMerger.SetUnorderedAccessViews(range.start, _d3DUavs.Item1, _d3DUavs.Item2);
+                D3DDeviceContext.OutputMerger.SetUnorderedAccessViews(start, _d3DUavs.Item1, _d3DUavs.Item2);
             }
             else
             {
@@ -978,7 +1000,7 @@ namespace Gorgon.Graphics.Core
                 }
                 else
                 {
-                    D3DDeviceContext.ComputeShader.SetUnorderedAccessViews(range.start, _d3DUavs.Item1, _d3DUavs.Item2);
+                    D3DDeviceContext.ComputeShader.SetUnorderedAccessViews(start, _d3DUavs.Item1, _d3DUavs.Item2);
                 }
             }
         }
@@ -996,9 +1018,9 @@ namespace Gorgon.Graphics.Core
                 return;
             }
 
-            (int uavStart, int uavCount) range = uaViews.GetDirtyItems();
+            (int uavStart, int uavCount) = uaViews.GetDirtyItems();
 
-            for (int i = range.uavStart; i < range.uavStart + range.uavCount; ++i)
+            for (int i = uavStart; i < uavStart + uavCount; ++i)
             {
                 GorgonGraphicsResource ua = uaViews[i].ReadWriteView?.Resource;
 
@@ -1533,6 +1555,42 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
+        /// Function to update a shader resource list on the by copying the dirty index data from one list to another.
+        /// </summary>
+        /// <param name="destList">The list that will receive the dirty entries from the source.</param>
+        /// <param name="srcList">The source list that will be copied.</param>
+        private static void UpdateLastCallList(GorgonShaderResourceViews destList, GorgonShaderResourceViews srcList)
+        {
+            if (srcList == null)
+            {
+                destList.Clear();
+                return;
+            }
+            
+            srcList.CopyDirty(destList);
+        }
+
+        /// <summary>
+        /// Function to update a resource list on the by copying the dirty index data from one list to another.
+        /// </summary>
+        /// <typeparam name="T">The type of resource list, must inherit from <see cref="GorgonArray{TE}"/></typeparam> 
+        /// <typeparam name="TE">The type of element in the resource list.</typeparam>
+        /// <param name="destList">The list that will receive the dirty entries from the source.</param>
+        /// <param name="srcList">The source list that will be copied.</param>
+        private static void UpdateLastCallList<T, TE>(T destList, T srcList)
+            where T : GorgonArray<TE>
+            where TE : IEquatable<TE>
+        {
+            if (srcList == null)
+            {
+                destList.Clear();
+                return;
+            }
+
+            srcList.CopyDirty(destList);
+        }
+
+        /// <summary>
         /// Function to build a merged draw state.
         /// </summary>
         /// <param name="currentState">The current state.</param>
@@ -1567,7 +1625,12 @@ namespace Gorgon.Graphics.Core
             if ((ChangeBuilder(currentState.VertexBuffers.DirtyEquals(_lastState.VertexBuffers), DrawCallChanges.VertexBuffers, ref changes))
                 || ((changes & DrawCallChanges.InputLayout) == DrawCallChanges.InputLayout))
             {
-                _lastState.VertexBuffers = currentState.VertexBuffers;
+                if ((changes & DrawCallChanges.VertexBuffers) == DrawCallChanges.VertexBuffers)
+                {
+                    UpdateLastCallList<GorgonVertexBufferBindings, GorgonVertexBufferBinding>(_lastState.VertexBuffers, currentState.VertexBuffers);
+                }
+
+                _lastState.VertexBuffers.InputLayout = currentState.VertexBuffers.InputLayout;
             }
 
             if (ChangeBuilder(_lastState.IndexBuffer == currentState.IndexBuffer, DrawCallChanges.IndexBuffer, ref changes))
@@ -1577,7 +1640,7 @@ namespace Gorgon.Graphics.Core
 
             if (ChangeBuilder(currentState.StreamOutBindings.DirtyEquals(_lastState.StreamOutBindings), DrawCallChanges.StreamOutBuffers, ref changes))
             {
-                _lastState.StreamOutBindings = currentState.StreamOutBindings;
+                UpdateLastCallList<GorgonStreamOutBindings, GorgonStreamOutBinding>(_lastState.StreamOutBindings, currentState.StreamOutBindings);
             }
 
             // Check vertex shader resources if we have a vertex shader assigned.
@@ -1588,29 +1651,21 @@ namespace Gorgon.Graphics.Core
                                   DrawCallChanges.VsConstants,
                                   ref changes))
                 {
-                    _lastState.VsConstantBuffers = currentState.VsConstantBuffers;
+                    UpdateLastCallList<GorgonConstantBuffers, GorgonConstantBufferView>(_lastState.VsConstantBuffers, currentState.VsConstantBuffers);
                 }
 
                 if (ChangeBuilder(currentState.VsSrvs.DirtyEquals(_lastState.VsSrvs),
                                   DrawCallChanges.VsResourceViews,
                                   ref changes))
                 {
-                    _lastState.VsSrvs = currentState.VsSrvs;
+                    UpdateLastCallList(_lastState.VsSrvs, currentState.VsSrvs);
                 }
 
                 if (ChangeBuilder(currentState.VsSamplers.DirtyEquals(_lastState.VsSamplers),
                                   DrawCallChanges.VsSamplers,
                                   ref changes))
                 {
-                    _lastState.VsSamplers = currentState.VsSamplers;
-                }
-
-                if (ChangeBuilder(currentState.ReadWriteViews.DirtyEquals(_lastState.ReadWriteViews),
-                                  DrawCallChanges.Uavs,
-                                  ref changes))
-                {
-                    FixUavHazards(currentState.CsReadWriteViews, ShaderType.Vertex);
-                    _lastState.ReadWriteViews = currentState.ReadWriteViews;
+                    UpdateLastCallList<GorgonSamplerStates, GorgonSamplerState>(_lastState.VsSamplers, currentState.VsSamplers);
                 }
             }
 
@@ -1622,30 +1677,21 @@ namespace Gorgon.Graphics.Core
                                   DrawCallChanges.PsResourceViews,
                                   ref changes))
                 {
-                    _lastState.PsSrvs = currentState.PsSrvs;
+                    UpdateLastCallList(_lastState.PsSrvs, currentState.PsSrvs);
                 }
 
                 if (ChangeBuilder(currentState.PsSamplers.DirtyEquals(_lastState.PsSamplers),
                                   DrawCallChanges.PsSamplers,
                                   ref changes))
                 {
-                    _lastState.PsSamplers = currentState.PsSamplers;
+                    UpdateLastCallList<GorgonSamplerStates, GorgonSamplerState>(_lastState.PsSamplers, currentState.PsSamplers);
                 }
 
                 if (ChangeBuilder(currentState.PsConstantBuffers.DirtyEquals(_lastState.PsConstantBuffers),
                                   DrawCallChanges.PsConstants,
                                   ref changes))
                 {
-                    _lastState.PsConstantBuffers = currentState.PsConstantBuffers;
-                }
-
-                if (((changes & DrawCallChanges.Uavs) != DrawCallChanges.Uavs) &&
-                    (ChangeBuilder(currentState.ReadWriteViews.DirtyEquals(_lastState.ReadWriteViews),
-                                   DrawCallChanges.Uavs,
-                                   ref changes)))
-                {
-                    FixUavHazards(currentState.CsReadWriteViews, ShaderType.Pixel);
-                    _lastState.ReadWriteViews = currentState.ReadWriteViews;
+                    UpdateLastCallList<GorgonConstantBuffers, GorgonConstantBufferView>(_lastState.PsConstantBuffers, currentState.PsConstantBuffers);
                 }
             }
 
@@ -1657,30 +1703,21 @@ namespace Gorgon.Graphics.Core
                                   DrawCallChanges.GsConstants,
                                   ref changes))
                 {
-                    _lastState.GsConstantBuffers = currentState.GsConstantBuffers;
+                    UpdateLastCallList<GorgonConstantBuffers, GorgonConstantBufferView>(_lastState.GsConstantBuffers, currentState.GsConstantBuffers);
                 }
 
                 if (ChangeBuilder(currentState.GsSrvs.DirtyEquals(_lastState.GsSrvs),
                                   DrawCallChanges.GsResourceViews,
                                   ref changes))
                 {
-                    _lastState.GsSrvs = currentState.GsSrvs;
+                    UpdateLastCallList(_lastState.GsSrvs, currentState.GsSrvs);
                 }
 
                 if (ChangeBuilder(currentState.GsSamplers.DirtyEquals(_lastState.GsSamplers),
                                   DrawCallChanges.GsSamplers,
                                   ref changes))
                 {
-                    _lastState.GsSamplers = currentState.GsSamplers;
-                }
-
-                if (((changes & DrawCallChanges.Uavs) != DrawCallChanges.Uavs) &&
-                    (ChangeBuilder(currentState.ReadWriteViews.DirtyEquals(_lastState.ReadWriteViews),
-                                   DrawCallChanges.Uavs,
-                                   ref changes)))
-                {
-                    FixUavHazards(currentState.CsReadWriteViews, ShaderType.Geometry);
-                    _lastState.ReadWriteViews = currentState.ReadWriteViews;
+                    UpdateLastCallList<GorgonSamplerStates, GorgonSamplerState>(_lastState.GsSamplers, currentState.GsSamplers);
                 }
             }
 
@@ -1693,14 +1730,14 @@ namespace Gorgon.Graphics.Core
                                   DrawCallChanges.DsConstants,
                                   ref changes))
                 {
-                    _lastState.DsConstantBuffers = currentState.DsConstantBuffers;
+                    UpdateLastCallList<GorgonConstantBuffers, GorgonConstantBufferView>(_lastState.DsConstantBuffers, currentState.DsConstantBuffers);
                 }
 
                 if (ChangeBuilder(currentState.DsSrvs.DirtyEquals(_lastState.DsSrvs),
                                   DrawCallChanges.DsResourceViews,
                                   ref changes))
                 {
-                    _lastState.DsSrvs = currentState.DsSrvs;
+                    UpdateLastCallList(_lastState.DsSrvs, currentState.DsSrvs);
                 }
 
 
@@ -1708,16 +1745,7 @@ namespace Gorgon.Graphics.Core
                                   DrawCallChanges.DsSamplers,
                                   ref changes))
                 {
-                    _lastState.DsSamplers = currentState.DsSamplers;
-                }
-
-                if (((changes & DrawCallChanges.Uavs) != DrawCallChanges.Uavs) &&
-                    (ChangeBuilder(currentState.ReadWriteViews.DirtyEquals(_lastState.ReadWriteViews),
-                                   DrawCallChanges.Uavs,
-                                   ref changes)))
-                {
-                    FixUavHazards(currentState.CsReadWriteViews, ShaderType.Domain);
-                    _lastState.ReadWriteViews = currentState.ReadWriteViews;
+                    UpdateLastCallList<GorgonSamplerStates, GorgonSamplerState>(_lastState.DsSamplers, currentState.DsSamplers);
                 }
             }
 
@@ -1729,37 +1757,42 @@ namespace Gorgon.Graphics.Core
                                   DrawCallChanges.HsConstants,
                                   ref changes))
                 {
-                    _lastState.HsConstantBuffers = currentState.HsConstantBuffers;
+                    UpdateLastCallList<GorgonConstantBuffers, GorgonConstantBufferView>(_lastState.HsConstantBuffers, currentState.HsConstantBuffers);
                 }
 
                 if (ChangeBuilder(currentState.HsSrvs.DirtyEquals(_lastState.HsSrvs),
                                   DrawCallChanges.HsResourceViews,
                                   ref changes))
                 {
-                    _lastState.HsSrvs = currentState.HsSrvs;
+                    UpdateLastCallList(_lastState.HsSrvs, currentState.HsSrvs);
                 }
 
                 if (ChangeBuilder(currentState.HsSamplers.DirtyEquals(_lastState.HsSamplers),
                                   DrawCallChanges.HsSamplers,
                                   ref changes))
                 {
-                    _lastState.HsSamplers = currentState.HsSamplers;
-                }
-
-                if (((changes & DrawCallChanges.Uavs) != DrawCallChanges.Uavs) &&
-                    (ChangeBuilder(currentState.ReadWriteViews.DirtyEquals(_lastState.ReadWriteViews),
-                                   DrawCallChanges.Uavs,
-                                   ref changes)))
-                {
-                    FixUavHazards(currentState.CsReadWriteViews, ShaderType.Hull);
-                    _lastState.ReadWriteViews = currentState.ReadWriteViews;
+                    UpdateLastCallList<GorgonSamplerStates, GorgonSamplerState>(_lastState.HsSamplers, currentState.HsSamplers);
                 }
             }
-
+            
             // Check compute shader resources if we have or had a compute shader assigned.
             if (ChangeBuilder(currentState.ComputeShader == _lastState.ComputeShader, DrawCallChanges.ComputeShader, ref changes))
             {
                 _lastState.ComputeShader = currentState.ComputeShader;
+            }
+            else
+            {
+                if (ChangeBuilder(currentState.ReadWriteViews.DirtyEquals(_lastState.ReadWriteViews),
+                                  DrawCallChanges.Uavs,
+                                  ref changes))
+                {
+                    FixUavHazards(currentState.ReadWriteViews, ShaderType.Vertex);
+                    FixUavHazards(currentState.ReadWriteViews, ShaderType.Pixel);
+                    FixUavHazards(currentState.ReadWriteViews, ShaderType.Geometry);
+                    FixUavHazards(currentState.ReadWriteViews, ShaderType.Domain);
+                    FixUavHazards(currentState.ReadWriteViews, ShaderType.Hull);
+                    UpdateLastCallList<GorgonReadWriteViewBindings, GorgonReadWriteViewBinding>(_lastState.ReadWriteViews, currentState.ReadWriteViews);
+                }
             }
 
             // If we turned off the compute shader, and it was done in a prior call, then there's no need to execute the code below (we hope).
@@ -1778,14 +1811,14 @@ namespace Gorgon.Graphics.Core
                               DrawCallChanges.CsSamplers,
                               ref changes))
             {
-                _lastState.CsSamplers = currentState.CsSamplers;
+                UpdateLastCallList<GorgonSamplerStates, GorgonSamplerState>(_lastState.CsSamplers, currentState.CsSamplers);
             }
 
             if (ChangeBuilder(currentState.CsConstantBuffers.DirtyEquals(_lastState.CsConstantBuffers),
                               DrawCallChanges.CsConstants,
                               ref changes))
             {
-                _lastState.CsConstantBuffers = currentState.CsConstantBuffers;
+                UpdateLastCallList<GorgonConstantBuffers, GorgonConstantBufferView>(_lastState.CsConstantBuffers, currentState.CsConstantBuffers);
             }
 
             if (!ChangeBuilder(currentState.CsSrvs.DirtyEquals(_lastState.CsSrvs),
@@ -1795,7 +1828,7 @@ namespace Gorgon.Graphics.Core
                 return changes;
             }
 
-            _lastState.CsSrvs = currentState.CsSrvs;
+            UpdateLastCallList(_lastState.CsSrvs, currentState.CsSrvs);
 
             return changes;
         }
@@ -2378,30 +2411,30 @@ namespace Gorgon.Graphics.Core
 
             ClearResourceCaches();
 
-            _lastState.VertexBuffers = null;
-            _lastState.StreamOutBindings = null;
+            _lastState.VertexBuffers.Clear();
+            _lastState.StreamOutBindings.Clear();
             _lastState.IndexBuffer = null;
             _lastState.PipelineState.Clear();
-            _lastState.ReadWriteViews = null;
-            _lastState.PsSamplers = null;
-            _lastState.VsSamplers = null;
-            _lastState.GsSamplers = null;
-            _lastState.DsSamplers = null;
-            _lastState.HsSamplers = null;
-            _lastState.CsSamplers = null;
-            _lastState.VsSrvs = null;
-            _lastState.PsSrvs = null;
-            _lastState.GsSrvs = null;
-            _lastState.DsSrvs = null;
-            _lastState.HsSrvs = null;
-            _lastState.CsSrvs = null;
-            _lastState.VsConstantBuffers = null;
-            _lastState.PsConstantBuffers = null;
-            _lastState.GsConstantBuffers = null;
-            _lastState.DsConstantBuffers = null;
-            _lastState.HsConstantBuffers = null;
-            _lastState.CsConstantBuffers = null;
-            _lastState.CsReadWriteViews = null;
+            _lastState.ReadWriteViews.Clear();
+            _lastState.PsSamplers.Clear();
+            _lastState.VsSamplers.Clear();
+            _lastState.GsSamplers.Clear();
+            _lastState.DsSamplers.Clear();
+            _lastState.HsSamplers.Clear();
+            _lastState.CsSamplers.Clear();
+            _lastState.VsSrvs.Clear();
+            _lastState.PsSrvs.Clear();
+            _lastState.GsSrvs.Clear();
+            _lastState.DsSrvs.Clear();
+            _lastState.HsSrvs.Clear();
+            _lastState.CsSrvs.Clear();
+            _lastState.VsConstantBuffers.Clear();
+            _lastState.PsConstantBuffers.Clear();
+            _lastState.GsConstantBuffers.Clear();
+            _lastState.DsConstantBuffers.Clear();
+            _lastState.HsConstantBuffers.Clear();
+            _lastState.CsConstantBuffers.Clear();
+            _lastState.CsReadWriteViews.Clear();
 
             _depthStencilReference = 0;
             _blendFactor = GorgonColor.White;
