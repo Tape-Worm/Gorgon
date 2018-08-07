@@ -135,6 +135,15 @@ namespace Gorgon.Graphics.Core
 		{
 		}
 
+	    /// <summary>
+	    /// Function called when an item is reset at an index.
+	    /// </summary>
+	    /// <param name="index">The index of the item that was assigned.</param>
+	    /// <param name="oldItem">The previous item in the slot.</param>
+	    protected virtual void OnItemReset(int index, T oldItem)
+	    {
+	    }
+
 		/// <summary>
 		/// Function called when the array is cleared.
 		/// </summary>
@@ -221,14 +230,34 @@ namespace Gorgon.Graphics.Core
 		    return ref _dirtyItems;
 		}
 
+        /// <summary>
+        /// Function to reset the value at the specified index, and remove it from the dirty range.
+        /// </summary>
+        /// <param name="index">The index of the item to reset.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        /// <paramref name="index" /> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1" />.</exception>
+	    public void ResetAt(int index)
+	    {
+	        if ((index < 0) || (index >= BackingArray.Length))
+	        {
+	            throw new ArgumentOutOfRangeException();
+	        }
+
+	        T oldValue = BackingArray[index];
+	        BackingArray[index] = default;
+	        _dirtyIndices &= ~(1 << index);
+	        _dirtyItems = (0, 0);
+
+            OnItemReset(index, oldValue);
+	    }
+
 		/// <summary>Removes the <see cref="T:System.Collections.Generic.IList`1" /> item at the specified index.</summary>
 		/// <param name="index">The zero-based index of the item to remove.</param>
 		/// <exception cref="T:System.ArgumentOutOfRangeException">
 		/// <paramref name="index" /> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1" />.</exception>
-		/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IList`1" /> is read-only.</exception>
 		void IList<T>.RemoveAt(int index)
 		{
-			throw new NotSupportedException();
+            ResetAt(index);
 		}
 
 		/// <summary>Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>

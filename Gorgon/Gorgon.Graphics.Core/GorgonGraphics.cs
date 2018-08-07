@@ -1006,19 +1006,25 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
-        /// Function to fix the unordered access view resource sharing hazards prior to setting the uav.
+        /// Function to fix the compute shader unordered access view resource sharing hazards prior to setting a srv.
         /// </summary>
         /// <param name="uaViews">The unordered access views being assigned.</param>
-        /// <param name="shaderType">The shader that is using the UAVs.</param>
+        /// <param name="currentSrvs">The current list of shader resources.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "shader")]
-        private void FixUavHazards(GorgonReadWriteViewBindings uaViews, ShaderType shaderType)
+        private void FixCsUavSrvHazards(GorgonReadWriteViewBindings uaViews, GorgonShaderResourceViews currentSrvs)
         {
-            if ((_lastState == null) || (uaViews == null))
+            if ((_lastState == null) || (uaViews == null) || (currentSrvs == null))
             {
                 return;
             }
 
             (int uavStart, int uavCount) = uaViews.GetDirtyItems();
+            (int srvStart, int srvCount) = currentSrvs.GetDirtyItems(true);
+
+            if ((uavCount == 0) || (srvCount == 0))
+            {
+                return;
+            }
 
             for (int i = uavStart; i < uavStart + uavCount; ++i)
             {
@@ -1030,87 +1036,137 @@ namespace Gorgon.Graphics.Core
                     continue;
                 }
 
-                // Check shader resources.
-                D3D11.CommonShaderStage stage;
-                GorgonShaderResourceViews lastSrvs;
-
-                switch (shaderType)
+                for (int j = srvStart; j < srvStart + srvCount; ++j)
                 {
-                    case ShaderType.Vertex:
-                        stage = D3DDeviceContext.VertexShader;
-                        lastSrvs = _lastState.VsSrvs;
-                        break;
-                    case ShaderType.Pixel:
-                        stage = D3DDeviceContext.PixelShader;
-                        lastSrvs = _lastState.PsSrvs;
-                        break;
-                    case ShaderType.Geometry:
-                        stage = D3DDeviceContext.GeometryShader;
-                        lastSrvs = _lastState.GsSrvs;
-                        break;
-                    case ShaderType.Domain:
-                        stage = D3DDeviceContext.DomainShader;
-                        lastSrvs = _lastState.DsSrvs;
-                        break;
-                    case ShaderType.Hull:
-                        stage = D3DDeviceContext.HullShader;
-                        lastSrvs = _lastState.HsSrvs;
-                        break;
-                    case ShaderType.Compute:
-                        stage = D3DDeviceContext.ComputeShader;
-                        lastSrvs = _lastState.CsSrvs;
-                        break;
-                    default:
-                        throw new Exception(@"This should not happen.  But we cannot find an appropriate shader stage.");
-                }
+                    GorgonGraphicsResource resource = currentSrvs[j]?.Resource;
 
-                if (lastSrvs != null)
-                {
-                    (int srvStart, int srvCount) = lastSrvs.GetDirtyItems(true);
-
-                    for (int j = srvStart; j < srvStart + srvCount; ++j)
-                    {
-                        GorgonGraphicsResource resource = lastSrvs[j]?.Resource;
-
-                        // If we have a resource, and it's attached to either the render target or depth/stencil being bound, 
-                        // then reset it on the shader stage to avoid a hazard.
-                        if (resource == null)
-                        {
-                            continue;
-                        }
-
-                        if (resource != ua)
-                        {
-                            continue;
-                        }
-
-                        stage.SetShaderResource(j, null);
-                        lastSrvs[j] = null;
-                    }
-                }
-
-                // If the UAV is already bound as a render target or depth/stencil, then unbind.
-                bool changeRtvs = false;
-                bool changeDsv = DepthStencilView?.Resource == ua;
-
-                for (int j = 0; j < _renderTargets.Length; ++j)
-                {
-                    GorgonGraphicsResource rt = _renderTargets[i]?.Resource;
-
-                    if (rt != ua)
+                    // If we have a resource, and it's attached to either the render target or depth/stencil being bound, 
+                    // then reset it on the shader stage to avoid a hazard.
+                    if (resource == null)
                     {
                         continue;
                     }
 
-                    _renderTargets[j] = null;
-                    _d3DRtvs[j] = null;
-                    changeRtvs = true;
+                    if (resource != ua)
+                    {
+                        continue;
+                    }
+                    
+                    D3DDeviceContext.ComputeShader.SetUnorderedAccessView(j, null, -1);
+                    _lastState.CsReadWriteViews.ResetAt(j);
                 }
+            }
+        }
 
-                if ((changeRtvs) || (changeDsv))
+        /// <summary>
+        /// Function to fix the unordered access view resource sharing hazards prior to setting the uav.
+        /// </summary>
+        /// <param name="uaViews">The unordered access views being assigned.</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "shader")]
+        private void FixUavHazards(GorgonReadWriteViewBindings uaViews)
+        {
+            if ((_lastState == null) || (uaViews == null))
+            {
+                return;
+            }
+
+            (int uavStart, int uavCount) = uaViews.GetDirtyItems();
+
+            for (int st = 0; st < _shaderTypes.Length; ++st)
+            {
+                ShaderType shaderType = _shaderTypes[st];
+                for (int i = uavStart; i < uavStart + uavCount; ++i)
                 {
-                    D3DDeviceContext.OutputMerger.SetRenderTargets(changeDsv ? null : DepthStencilView?.Native, _d3DRtvs);
-                } 
+                    GorgonGraphicsResource ua = uaViews[i].ReadWriteView?.Resource;
+
+                    // If there's no resource, then skip.
+                    if (ua == null)
+                    {
+                        continue;
+                    }
+
+                    // Check shader resources.
+                    D3D11.CommonShaderStage stage;
+                    GorgonShaderResourceViews lastSrvs;
+
+                    switch (shaderType)
+                    {
+                        case ShaderType.Vertex:
+                            stage = D3DDeviceContext.VertexShader;
+                            lastSrvs = _lastState.VsSrvs;
+                            break;
+                        case ShaderType.Pixel:
+                            stage = D3DDeviceContext.PixelShader;
+                            lastSrvs = _lastState.PsSrvs;
+                            break;
+                        case ShaderType.Geometry:
+                            stage = D3DDeviceContext.GeometryShader;
+                            lastSrvs = _lastState.GsSrvs;
+                            break;
+                        case ShaderType.Domain:
+                            stage = D3DDeviceContext.DomainShader;
+                            lastSrvs = _lastState.DsSrvs;
+                            break;
+                        case ShaderType.Hull:
+                            stage = D3DDeviceContext.HullShader;
+                            lastSrvs = _lastState.HsSrvs;
+                            break;
+                        case ShaderType.Compute:
+                            stage = D3DDeviceContext.ComputeShader;
+                            lastSrvs = _lastState.CsSrvs;
+                            break;
+                        default:
+                            throw new Exception(@"This should not happen.  But we cannot find an appropriate shader stage.");
+                    }
+
+                    if (lastSrvs != null)
+                    {
+                        (int srvStart, int srvCount) = lastSrvs.GetDirtyItems(true);
+
+                        for (int j = srvStart; j < srvStart + srvCount; ++j)
+                        {
+                            GorgonGraphicsResource resource = lastSrvs[j]?.Resource;
+
+                            // If we have a resource, and it's attached to either the render target or depth/stencil being bound, 
+                            // then reset it on the shader stage to avoid a hazard.
+                            if (resource == null)
+                            {
+                                continue;
+                            }
+
+                            if (resource != ua)
+                            {
+                                continue;
+                            }
+
+                            stage.SetShaderResource(j, null);
+                            lastSrvs.ResetAt(j);
+                        }
+                    }
+
+                    // If the UAV is already bound as a render target or depth/stencil, then unbind.
+                    bool changeRtvs = false;
+                    bool changeDsv = DepthStencilView?.Resource == ua;
+
+                    for (int j = 0; j < _renderTargets.Length; ++j)
+                    {
+                        GorgonGraphicsResource rt = _renderTargets[i]?.Resource;
+
+                        if (rt != ua)
+                        {
+                            continue;
+                        }
+
+                        _renderTargets[j] = null;
+                        _d3DRtvs[j] = null;
+                        changeRtvs = true;
+                    }
+
+                    if ((changeRtvs) || (changeDsv))
+                    {
+                        D3DDeviceContext.OutputMerger.SetRenderTargets(changeDsv ? null : DepthStencilView?.Native, _d3DRtvs);
+                    }
+                }
             }
         }
 
@@ -1205,7 +1261,7 @@ namespace Gorgon.Graphics.Core
                             }
 
                             stage.SetShaderResource(j, null);
-                            lastSrvs[j] = null;
+                            lastSrvs.ResetAt(j);
                         }
                     }
 
@@ -1316,14 +1372,14 @@ namespace Gorgon.Graphics.Core
                     Debug.Assert(rtv.Resource != null, "Render target view resource is NULL.  This is not right.");
                     throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_INPUT_BOUND_AS_RTV, rtv.Resource?.Name));
                 }
-
-                GorgonReadWriteViewBindings uavs = useCs ? _lastState?.ReadWriteViews : _lastState?.CsReadWriteViews;
+                
+                GorgonReadWriteViewBindings uavs = useCs ? _lastState?.CsReadWriteViews : _lastState?.ReadWriteViews;
 
                 if (uavs == null)
                 {
                     continue;
                 }
-
+                
                 (int uavStart, int uavCount) = uavs.GetDirtyItems();
 
                 for (int j = uavStart; j < uavStart + uavCount; ++j)
@@ -1559,8 +1615,15 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="destList">The list that will receive the dirty entries from the source.</param>
         /// <param name="srcList">The source list that will be copied.</param>
-        private static void UpdateLastCallList(GorgonShaderResourceViews destList, GorgonShaderResourceViews srcList)
+        private void UpdateLastCallList(GorgonShaderResourceViews destList, GorgonShaderResourceViews srcList)
         {
+            // For compute shaders, we skip this step.
+            if (_lastState.ComputeShader == null)
+            {
+                // Ensure the SRV resource is not bound to the compute shader stage as a UAV.
+                FixCsUavSrvHazards(_lastState.CsReadWriteViews, srcList);
+            }
+
             if (srcList == null)
             {
                 destList.Clear();
@@ -1774,25 +1837,19 @@ namespace Gorgon.Graphics.Core
                     UpdateLastCallList<GorgonSamplerStates, GorgonSamplerState>(_lastState.HsSamplers, currentState.HsSamplers);
                 }
             }
+
+            if (ChangeBuilder(currentState.ReadWriteViews.DirtyEquals(_lastState.ReadWriteViews),
+                              DrawCallChanges.Uavs,
+                              ref changes))
+            {
+                FixUavHazards(currentState.ReadWriteViews);
+                UpdateLastCallList<GorgonReadWriteViewBindings, GorgonReadWriteViewBinding>(_lastState.ReadWriteViews, currentState.ReadWriteViews);
+            }
             
             // Check compute shader resources if we have or had a compute shader assigned.
             if (ChangeBuilder(currentState.ComputeShader == _lastState.ComputeShader, DrawCallChanges.ComputeShader, ref changes))
             {
                 _lastState.ComputeShader = currentState.ComputeShader;
-            }
-            else
-            {
-                if (ChangeBuilder(currentState.ReadWriteViews.DirtyEquals(_lastState.ReadWriteViews),
-                                  DrawCallChanges.Uavs,
-                                  ref changes))
-                {
-                    FixUavHazards(currentState.ReadWriteViews, ShaderType.Vertex);
-                    FixUavHazards(currentState.ReadWriteViews, ShaderType.Pixel);
-                    FixUavHazards(currentState.ReadWriteViews, ShaderType.Geometry);
-                    FixUavHazards(currentState.ReadWriteViews, ShaderType.Domain);
-                    FixUavHazards(currentState.ReadWriteViews, ShaderType.Hull);
-                    UpdateLastCallList<GorgonReadWriteViewBindings, GorgonReadWriteViewBinding>(_lastState.ReadWriteViews, currentState.ReadWriteViews);
-                }
             }
 
             // If we turned off the compute shader, and it was done in a prior call, then there's no need to execute the code below (we hope).
@@ -1803,8 +1860,8 @@ namespace Gorgon.Graphics.Core
 
             if (ChangeBuilder(currentState.CsReadWriteViews.DirtyEquals(_lastState.CsReadWriteViews), DrawCallChanges.CsUavs, ref changes))
             {
-                FixUavHazards(currentState.CsReadWriteViews, ShaderType.Compute);
-                _lastState.CsReadWriteViews = currentState.CsReadWriteViews;
+                FixUavHazards(currentState.CsReadWriteViews);
+                UpdateLastCallList<GorgonReadWriteViewBindings, GorgonReadWriteViewBinding>(_lastState.CsReadWriteViews, currentState.CsReadWriteViews);
             }
 
             if (ChangeBuilder(currentState.CsSamplers.DirtyEquals(_lastState.CsSamplers),
@@ -1828,6 +1885,7 @@ namespace Gorgon.Graphics.Core
                 return changes;
             }
 
+            // We previously had a compute shader active, so dismiss its UAVs.
             UpdateLastCallList(_lastState.CsSrvs, currentState.CsSrvs);
 
             return changes;

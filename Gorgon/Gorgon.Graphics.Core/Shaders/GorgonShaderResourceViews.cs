@@ -171,6 +171,39 @@ namespace Gorgon.Graphics.Core
                 _changedIndices.Add(index);
 	        }
 	    }
+
+	    /// <summary>
+	    /// Function to reset the value at the specified index, and remove it from the dirty range.
+	    /// </summary>
+	    /// <param name="index">The index of the item to reset.</param>
+	    /// <exception cref="T:System.ArgumentOutOfRangeException">
+	    /// <paramref name="index" /> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1" />.</exception>
+	    public void ResetAt(int index)
+	    {
+	        if ((index < 0) || (index >= MaximumShaderResourceViewCount))
+	        {
+	            throw new ArgumentOutOfRangeException();
+	        }
+
+	        if (index >= _backingArray.Length)
+	        {
+	            return;
+	        }
+
+	        _changedIndices.Remove(index);
+	        _backingArray[index] = null;
+
+	        if (index > 63)
+	        {
+	            _indexMask2 &= ~((ulong)(1 << (index - 63)));
+	        }
+	        else
+	        {
+	            _indexMask1 &= ~((ulong)(1 << index));
+	        }
+	        
+	        _dirtyItems = (0, 0);
+	    }
 	    #endregion
 
         #region Methods.
