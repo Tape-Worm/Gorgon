@@ -234,9 +234,9 @@ namespace Gorgon.Graphics.Core
 	        for (int i = 0; i < count; ++i)
 	        {
 	            GorgonBlendState state = RwBlendStates[start + i];
-	            
-	            if (state == null)
-	            {
+
+                if (state == null)
+                {
 	                continue;
 	            }
 
@@ -252,6 +252,23 @@ namespace Gorgon.Graphics.Core
 	                                       SourceBlend = (D3D11.BlendOption)state.SourceColorBlend,
 	                                       DestinationAlphaBlend = (D3D11.BlendOption)state.DestinationAlphaBlend,
 	                                       DestinationBlend = (D3D11.BlendOption)state.DestinationColorBlend
+	                                   };
+	        }
+
+	        for (int i = count; i < D3D11.OutputMergerStage.SimultaneousRenderTargetCount; ++i)
+	        {
+	            desc.RenderTarget[i] = new D3D11.RenderTargetBlendDescription1
+	                                   {
+	                                       AlphaBlendOperation = D3D11.BlendOperation.Add,
+	                                       BlendOperation = D3D11.BlendOperation.Add,
+	                                       IsLogicOperationEnabled = false,
+	                                       IsBlendEnabled = false,
+	                                       RenderTargetWriteMask = D3D11.ColorWriteMaskFlags.All,
+	                                       LogicOperation = D3D11.LogicOperation.Noop,
+	                                       SourceAlphaBlend = D3D11.BlendOption.One,
+	                                       SourceBlend = D3D11.BlendOption.One,
+	                                       DestinationAlphaBlend = D3D11.BlendOption.Zero,
+	                                       DestinationBlend = D3D11.BlendOption.Zero
 	                                   };
 	        }
 
