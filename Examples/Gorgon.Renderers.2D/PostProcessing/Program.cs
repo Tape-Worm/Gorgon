@@ -112,7 +112,7 @@ namespace PostProcessing
             
             _renderer.Begin();
             _fpsString.Length = 0;
-            _fpsString.AppendFormat("FPS: {0:0.0}\nFrame delta: {1:0.000} seconds.", GorgonTiming.AverageFPS, GorgonTiming.Delta);
+            _fpsString.AppendFormat("FPS: {0:0.0}\nFrame delta: {1:0.000} ms.", GorgonTiming.AverageFPS, GorgonTiming.Delta * 1000);
 
             DX.Size2F textSize = _renderer.MeasureString(_fpsString.ToString());
 
@@ -343,6 +343,16 @@ namespace PostProcessing
                              {
                                  BlendOverride = GorgonBlendState.Default, ClearColor = GorgonColor.White
                              })
+                       .RenderPass("Sobel Blend Pass",
+                                   (sobelTexture, pass, passCount, size) =>
+                                   {
+                                       // This is a custom pass that does nothing but rendering.  No effect is applied here, just straight rendering to
+                                       // the currently active render target.
+                                       var rectPosition = new DX.RectangleF(0, 0, size.Width, size.Height);
+                                       var texCoords = new DX.RectangleF(0, 0, 1, 1);
+                                       _renderer.DrawFilledRectangle(rectPosition, GorgonColor.White, _images[_currentImage], texCoords);
+                                       _renderer.DrawFilledRectangle(rectPosition, GorgonColor.White, sobelTexture, texCoords);
+                                   })
                        .Pass(new Gorgon2DCompositionPass("Olde Film", _oldFilmEffect)
                              {
                                  BlendOverride = GorgonBlendState.Additive,
@@ -367,31 +377,15 @@ namespace PostProcessing
                                                 }
 
                              })
-                       .RenderPass("Sobel Blend Pass",
-                                   (sobelTexture, pass, passCount, size) =>
-                                   {
-                                       // This is a custom pass that does nothing but rendering.  No effect is applied here, just straight rendering to
-                                       // the currently active render target.
-                                       var rectPosition = new DX.RectangleF(0, 0, size.Width, size.Height);
-                                       var texCoords = new DX.RectangleF(0, 0, 1, 1);
-                                       _renderer.DrawFilledRectangle(rectPosition, GorgonColor.White, _images[_currentImage], texCoords);
-                                       _renderer.DrawFilledRectangle(rectPosition, GorgonColor.White, sobelTexture, texCoords);
-                                   })
                        .InitialClearColor(GorgonColor.White)
                        .FinalClearColor(GorgonColor.White);
-
-            // Let's just turn these off for the time being.
-            for (int i = 0; i < _compositor.Passes.Count - 3; ++i)
-            {
-                _compositor.Passes[i].Enabled = false;
-            }
 
             _compositor.Passes["Posterize"].Enabled = false;
             _compositor.Passes["Grayscale"].Enabled = false;
             _compositor.Passes["1-Bit Color"].Enabled = false;
             _compositor.Passes["Emboss"].Enabled = false;
             _compositor.Passes["Dodge"].Enabled = false;
-            _compositor.Passes["Olde Film"].Enabled = true;
+            _compositor.Passes["Olde Film"].Enabled = false;
         }
 
         /// <summary>

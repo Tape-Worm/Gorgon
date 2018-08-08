@@ -123,7 +123,7 @@
   </data>
   <data name="FPSLine" xml:space="preserve">
     <value>FPS: {0:0.0}
-Frame delta: {1:0.0#} ms
+Frame delta: {1:0.0#} msec.
 Ball count: {2}
 Draw calls: {3}</value>
   </data>

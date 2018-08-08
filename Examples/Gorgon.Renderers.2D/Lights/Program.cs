@@ -146,7 +146,7 @@ namespace Gorgon.Examples
 
             _renderer.DrawSprite(_torchSprite);
             
-            _renderer.DrawString($"FPS: {GorgonTiming.AverageFPS:0.0}\nFrame delta: {GorgonTiming.Delta:0.000} seconds.\nSpecular Power: {_lightEffect.Lights[0].SpecularPower:0.0#####}\nLight Z: {_lightEffect.Lights[0].Position.Z:0.0}", DX.Vector2.Zero);
+            _renderer.DrawString($"FPS: {GorgonTiming.AverageFPS:0.0}\nFrame Delta: {GorgonTiming.Delta * 1000:0.000} msec.\nSpecular Power: {_lightEffect.Lights[0].SpecularPower:0.0#####}\nLight Z: {_lightEffect.Lights[0].Position.Z:0.0}", DX.Vector2.Zero);
             _renderer.End();
 
             _screen.Present(1);

@@ -232,7 +232,7 @@ namespace Gorgon.Examples
             _renderer.End();
 
             _renderer.Begin();
-            _renderer.DrawString($"FPS: {GorgonTiming.AverageFPS:0.0}\nFrame Delta: {GorgonTiming.Delta: 0.000}", DX.Vector2.Zero);
+            _renderer.DrawString($"FPS: {GorgonTiming.AverageFPS:0.0}\nFrame Delta: {(GorgonTiming.Delta * 1000): 0.000} msec.", DX.Vector2.Zero);
 
             if (_showHelp)
             {

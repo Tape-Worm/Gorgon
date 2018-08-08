@@ -271,7 +271,7 @@ namespace Gorgon.Graphics.Example
             _2D.DrawFilledRectangle(new DX.RectangleF(0, 0, _mainForm.ClientSize.Width - 1.0f, 64.0f), Color.FromArgb(128, 0, 0, 0));
             _2D.DrawRectangle(new DX.RectangleF(0, 0, _mainForm.ClientSize.Width, 64.0f), Color.White);
 		    _2D.DrawString("FPS: " + GorgonTiming.AverageFPS.ToString("0.0")
-		                           + "\nDelta: " + (GorgonTiming.AverageDelta * 1000.0f).ToString("0.0##") + " milliseconds",
+		                           + "\nDelta: " + (GorgonTiming.AverageDelta * 1000.0f).ToString("0.0##") + " msec.",
 		                   new DX.Vector2(3.0f, 0.0f));
             _2D.End();
 

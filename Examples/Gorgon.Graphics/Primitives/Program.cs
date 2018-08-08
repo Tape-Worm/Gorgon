@@ -140,7 +140,7 @@ namespace Gorgon.Graphics.Example
             _renderer.Render();
 
             _2DRenderer.Begin();
-		    _textSprite.Text = $@"FPS: {GorgonTiming.FPS:0.0}, Delta: {GorgonTiming.Delta * 1000:0.000} ms " +
+		    _textSprite.Text = $@"FPS: {GorgonTiming.FPS:0.0}, Delta: {(GorgonTiming.Delta * 1000):0.000} msec. " +
 		                       $@"Tris: {
 		                               ((_triangle.TriangleCount) + (_plane.TriangleCount) + (_cube.TriangleCount) + (_sphere.TriangleCount) + (_icoSphere.TriangleCount) +
 		                                (_clouds.TriangleCount))
