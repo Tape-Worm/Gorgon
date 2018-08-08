@@ -71,7 +71,7 @@ namespace Gorgon.Graphics.Core
 	    /// <param name="value">The dirty value.</param>
 	    protected override void OnDirtyItemAdded(int dirtyIndex, GorgonSamplerState value)
 	    {
-	        Native[dirtyIndex] = value.Native;
+	        Native[dirtyIndex] = value?.Native;
 	    }
 
 	    /// <summary>

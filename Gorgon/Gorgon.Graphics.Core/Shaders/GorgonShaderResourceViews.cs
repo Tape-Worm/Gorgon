@@ -263,18 +263,22 @@ namespace Gorgon.Graphics.Core
 		        return ref _dirtyItems;
 		    }
 
-		    int start = 0;
-		    
+		    int minSlot = int.MaxValue;
+
             // Find the lowest start value.
 		    for (int i = 0; i < _changedIndices.Count; ++i)
 		    {
 		        int index = _changedIndices[i];
-
-		        Native[index] = _backingArray[index]?.Native;
-		        start = index.Min(start);
+		        minSlot = minSlot.Min(index);
+		        Native[i] = _backingArray[index]?.Native;
 		    }
 
-		    _dirtyItems = (start, _changedIndices.Count);
+		    if (minSlot == int.MaxValue)
+		    {
+		        minSlot = 0;
+		    }
+
+		    _dirtyItems = (minSlot, _changedIndices.Count);
 
 		    if (!peek)
 		    {
