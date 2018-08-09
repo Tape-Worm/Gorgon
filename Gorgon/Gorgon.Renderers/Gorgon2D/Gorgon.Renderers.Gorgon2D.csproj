@@ -103,10 +103,16 @@
     <Compile Include="Renderables\_Internal\_ValueTypes\ColorBlock.cs" />
     <Compile Include="Shaders\Gorgon2DShader.cs" />
     <Compile Include="Shaders\Gorgon2DShaderBuilder.cs" />
+    <Compile Include="_Internal\_Triangulator\CyclicalList.cs" />
     <Compile Include="_Internal\DrawCallFactory.cs" />
+    <Compile Include="_Internal\_Triangulator\IndexableCyclicalLinkedList.cs" />
+    <Compile Include="_Internal\_Triangulator\LineSegment.cs" />
     <Compile Include="_Internal\ObjectRenderer.cs" />
     <Compile Include="Renderables\_Internal\BatchRenderableStateEqualityComparer.cs" />
     <Compile Include="_Internal\BatchRenderer.cs" />
+    <Compile Include="_Internal\_Triangulator\Triangle.cs" />
+    <Compile Include="_Internal\_Triangulator\Triangulator.cs" />
+    <Compile Include="_Internal\_Triangulator\Vertex.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
