@@ -10,10 +10,12 @@ using System.Diagnostics;
 using System.Text;
 using Gorgon.Diagnostics;
 using Gorgon.Math;
+using Gorgon.Native;
+using Gorgon.Renderers;
 using SharpDX;
 
 
-namespace Triangulator
+namespace GorgonTriangulator
 {
 	/// <summary>
 	/// A class exposing methods for triangulating 2D polygons. This is the sole public
@@ -36,7 +38,7 @@ namespace Triangulator
 	    private readonly IndexableCyclicalLinkedList<Vertex> _earVertices = new IndexableCyclicalLinkedList<Vertex>();
 	    private readonly CyclicalList<Vertex> _convexVertices = new CyclicalList<Vertex>();
 	    private readonly CyclicalList<Vertex> _reflexVertices = new CyclicalList<Vertex>();
-	    private (IReadOnlyList<Vector2> outputVertices, IReadOnlyList<int> outputIndices, RectangleF bounds) _result;
+        private readonly List<Triangle> _triangles = new List<Triangle>();
         // The log used for debug messages.
 	    private readonly IGorgonLog _log;
         #endregion
@@ -61,30 +63,24 @@ namespace Triangulator
 		/// <param name="inputVertices">The polygon vertices in counter-clockwise winding order.</param>
 		/// <param name="desiredWindingOrder">The desired output winding order.</param>
 		/// <returns>A tuple containing a list of vertices, indices and bounds.</returns>
-		public ref readonly (IReadOnlyList<Vector2> vertices, IReadOnlyList<int> indices, RectangleF bounds) Triangulate(
-			Vector2[] inputVertices,
-			WindingOrder desiredWindingOrder)
+		public (GorgonNativeBuffer<int> indices, RectangleF bounds) Triangulate(Gorgon2DVertex[] inputVertices, WindingOrder desiredWindingOrder)
 		{
 			Log("\nBeginning triangulation...");
-
-			List<Triangle> triangles = new List<Triangle>();
-		    Vector2[] outputVertices;
-
+            
 		    //make sure we have our vertices wound properly
 			if (DetermineWindingOrder(inputVertices) == WindingOrder.Clockwise)
-				outputVertices = ReverseWindingOrder(inputVertices);
-			else
-			    outputVertices = (Vector2[])inputVertices.Clone();
-
+				ReverseWindingOrder(inputVertices);
+			
 			//clear all of the lists
+		    _triangles.Clear();
 			_polygonVertices.Clear();
 			_earVertices.Clear();
 			_convexVertices.Clear();
 			_reflexVertices.Clear();
 
 			//generate the cyclical list of vertices in the polygon
-			for (int i = 0; i < outputVertices.Length; i++)
-				_polygonVertices.AddLast(new Vertex(_result.outputVertices[i], i));
+			for (int i = 0; i < inputVertices.Length; i++)
+				_polygonVertices.AddLast(new Vertex((Vector2)inputVertices[i].Position, i));
 
 			//categorize all of the vertices as convex, reflex, and ear
 			FindConvexAndReflexVertices();
@@ -92,45 +88,46 @@ namespace Triangulator
 
 			//clip all the ear vertices
 			while (_polygonVertices.Count > 3 && _earVertices.Count > 0)
-				ClipNextEar(triangles);
+				ClipNextEar();
 
 			//if there are still three points, use that for the last triangle
 			if (_polygonVertices.Count == 3)
-				triangles.Add(new Triangle(
+				_triangles.Add(new Triangle(
 					_polygonVertices[0].Value,
 					_polygonVertices[1].Value,
 					_polygonVertices[2].Value));
 
 			//add all of the triangle indices to the output array
-			var outputIndices = new int[triangles.Count * 3];
-
+            var outputIndices = new GorgonNativeBuffer<int>(_triangles.Count * 3);
 			//move the if statement out of the loop to prevent all the
 			//redundant comparisons
 			if (desiredWindingOrder == WindingOrder.CounterClockwise)
 			{
-				for (int i = 0; i < triangles.Count; i++)
+				for (int i = 0; i < _triangles.Count; i++)
 				{
-				    outputIndices[(i * 3)] = triangles[i].A.Index;
-				    outputIndices[(i * 3) + 1] = triangles[i].B.Index;
-				    outputIndices[(i * 3) + 2] = triangles[i].C.Index;
+				    Triangle triangle = _triangles[i];
+				    outputIndices[(i * 3)] = triangle.A.Index;
+				    outputIndices[(i * 3) + 1] = triangle.B.Index;
+				    outputIndices[(i * 3) + 2] = triangle.C.Index;
 				}
 			}
 			else
 			{
-				for (int i = 0; i < triangles.Count; i++)
+				for (int i = 0; i < _triangles.Count; i++)
 				{
-				    outputIndices[(i * 3)] = triangles[i].C.Index;
-				    outputIndices[(i * 3) + 1] = triangles[i].B.Index;
-				    outputIndices[(i * 3) + 2] = triangles[i].A.Index;
+				    Triangle triangle = _triangles[i];
+				    outputIndices[(i * 3)] = triangle.C.Index;
+				    outputIndices[(i * 3) + 1] = triangle.B.Index;
+				    outputIndices[(i * 3) + 2] = triangle.A.Index;
 				}
 			}
 
 		    var minMax = new RectangleF();
 
             // Calculate bounds.
-		    for (int i = 0; i < outputVertices.Length; ++i)
+		    for (int i = 0; i < inputVertices.Length; ++i)
 		    {
-		        Vector2 pos = _result.outputVertices[i];
+		        ref Vector4 pos = ref inputVertices[i].Position;
 
 		        minMax.Left = minMax.Left.Min(pos.X);
 		        minMax.Top = minMax.Top.Min(pos.Y);
@@ -138,24 +135,23 @@ namespace Triangulator
 		        minMax.Bottom = minMax.Bottom.Max(pos.Y);
 		    }
 
-		    _result = (outputVertices, outputIndices, minMax);
-
-		    return ref _result;
+		    return (outputIndices, minMax);
 		}
 
-		/// <summary>
+	    #region Not needed - Only works on concave polygons.
+		/*/// <summary>
 		/// Cuts a hole into a shape.
 		/// </summary>
 		/// <param name="shapeVerts">An array of vertices for the primary shape.</param>
 		/// <param name="holeVerts">An array of vertices for the hole to be cut. It is assumed that these vertices lie completely within the shape verts.</param>
 		/// <returns>The new array of vertices that can be passed to Triangulate to properly triangulate the shape with the hole.</returns>
-		public Vector2[] CutHoleInShape(Vector2[] shapeVerts, Vector2[] holeVerts)
+		public Vector2[] CutHoleInShape(Gorgon2DVertex[] shapeVerts, Vector2[] holeVerts)
 		{
 			Log("\nCutting hole into shape...");
 
 			//make sure the shape vertices are wound counter clockwise and the hole vertices clockwise
-			shapeVerts = EnsureWindingOrder(shapeVerts, WindingOrder.CounterClockwise);
-			holeVerts = EnsureWindingOrder(holeVerts, WindingOrder.Clockwise);
+			EnsureWindingOrder(shapeVerts, WindingOrder.CounterClockwise);
+			EnsureWindingOrder(holeVerts, WindingOrder.Clockwise);
 
 			//clear all of the lists
 			_polygonVertices.Clear();
@@ -300,7 +296,8 @@ namespace Triangulator
 				newShapeVerts[i] = _polygonVertices[i].Value.Position;
 
 			return newShapeVerts;
-		}
+		}*/
+	    #endregion
 
 		/// <summary>
 		/// Ensures that a set of vertices are wound in a particular order, reversing them if necessary.
@@ -308,17 +305,18 @@ namespace Triangulator
 		/// <param name="vertices">The vertices of the polygon.</param>
 		/// <param name="windingOrder">The desired winding order.</param>
 		/// <returns>A new set of vertices if the winding order didn't match; otherwise the original set.</returns>
-		public Vector2[] EnsureWindingOrder(Vector2[] vertices, WindingOrder windingOrder)
+		public void EnsureWindingOrder(Gorgon2DVertex[] vertices, WindingOrder windingOrder)
 		{
 			Log("\nEnsuring winding order of {0}...", windingOrder);
 			if (DetermineWindingOrder(vertices) != windingOrder)
 			{
 				Log("Reversing vertices...");
-				return ReverseWindingOrder(vertices);
+				ReverseWindingOrder(vertices);
 			}
-
-			Log("No reversal needed.");
-			return vertices;
+		    else
+		    {
+		        Log("No reversal needed.");
+		    }
 		}
 
 		/// <summary>
@@ -326,30 +324,34 @@ namespace Triangulator
 		/// </summary>
 		/// <param name="vertices">The vertices of the polygon.</param>
 		/// <returns>The new vertices for the polygon with the opposite winding order.</returns>
-		public Vector2[] ReverseWindingOrder(Vector2[] vertices)
+		public void ReverseWindingOrder(Gorgon2DVertex[] vertices)
 		{
 			Log("\nReversing winding order...");
-			Vector2[] newVerts = new Vector2[vertices.Length];
-
+			
 #if DEBUG
 			StringBuilder vString = new StringBuilder();
-			foreach (Vector2 v in vertices)
-				vString.Append($"{v}, ");
+			foreach (Gorgon2DVertex v in vertices)
+				vString.Append($"{v.Position}, ");
 			Log("Original Vertices: {0}", vString);
 #endif
+		    int end = vertices.Length - 1;
+		    int start = 0;
 
-			newVerts[0] = vertices[0];
-			for (int i = 1; i < newVerts.Length; i++)
-				newVerts[i] = vertices[vertices.Length - i];
+		    while (end > start)
+		    {
+                Gorgon2DVertex temp = vertices[end];
+		        vertices[end] = vertices[start];
+		        vertices[start] = temp;
+		        --end;
+		        ++start;
+		    }
 
 #if DEBUG
 			vString = new StringBuilder();
-			foreach (Vector2 v in newVerts)
-				vString.Append($"{v}, ");
+			foreach (Gorgon2DVertex v in vertices)
+				vString.Append($"{v.Position}, ");
 			Log("New Vertices After Reversal: {0}\n", vString);
 #endif
-
-			return newVerts;
 		}
 
 		/// <summary>
@@ -357,19 +359,19 @@ namespace Triangulator
 		/// </summary>
 		/// <param name="vertices">The vertices of the polygon.</param>
 		/// <returns>The calculated winding order of the polygon.</returns>
-		public WindingOrder DetermineWindingOrder(Vector2[] vertices)
+		public WindingOrder DetermineWindingOrder(Gorgon2DVertex[] vertices)
 		{
 			int clockWiseCount = 0;
 			int counterClockWiseCount = 0;
-			Vector2 p1 = vertices[0];
+			Vector4 p1 = vertices[0].Position;
 
 			for (int i = 1; i < vertices.Length; i++)
 			{
-				Vector2 p2 = vertices[i];
-				Vector2 p3 = vertices[(i + 1) % vertices.Length];
+				Vector4 p2 = vertices[i].Position;
+				Vector4 p3 = vertices[(i + 1) % vertices.Length].Position;
 
-				Vector2 e1 = p1 - p2;
-				Vector2 e2 = p3 - p2;
+			    Vector4.Subtract(ref p1, ref p2, out Vector4 e1);
+                Vector4.Subtract(ref p3, ref p2, out Vector4 e2);
 
 				if (e1.X * e2.Y - e1.Y * e2.X >= 0)
 					clockWiseCount++;
@@ -384,13 +386,13 @@ namespace Triangulator
 				: WindingOrder.CounterClockwise;
 		}
 
-		private void ClipNextEar(ICollection<Triangle> triangles)
+		private void ClipNextEar()
 		{
 			//find the triangle
 			Vertex ear = _earVertices[0].Value;
 			Vertex prev = _polygonVertices[_polygonVertices.IndexOf(ear) - 1].Value;
 			Vertex next = _polygonVertices[_polygonVertices.IndexOf(ear) + 1].Value;
-			triangles.Add(new Triangle(ear, next, prev));
+			_triangles.Add(new Triangle(ear, next, prev));
 
 			//remove the ear from the shape
 			_earVertices.RemoveAt(0);

@@ -100,8 +100,15 @@ namespace Gorgon.Renderers
                                                .DepthStencilState(batchState.DepthStencilState)
                                                .RasterState(batchState.RasterState)
                                                .BlendState(batchState.BlendState)
-                                               .PrimitiveType(renderable.PrimitiveType))
-                   .VertexBuffer(_inputLayout, renderer.VertexBuffer);
+                                               .PrimitiveType(renderable.PrimitiveType));
+
+            // If we don't supply a renderer type, then don't assign a vertex buffer.
+            if (renderer == null)
+            {
+                return;
+            }
+
+            builder.VertexBuffer(_inputLayout, renderer.VertexBuffer);
         }
 
         /// <summary>
@@ -128,6 +135,23 @@ namespace Gorgon.Renderers
         {
             SetCommonStates(_drawIndexBuilder, renderable, batchState, renderer);
             return _drawIndexBuilder.IndexBuffer(renderer.IndexBuffer)
+                                    .Build(_drawIndexAllocator);
+        }
+
+        /// <summary>
+        /// Function to retrieve a draw indexed call from the pool and,  initialize it.
+        /// </summary>
+        /// <param name="renderable">The renderable to evaluate.</param>
+        /// <param name="batchState">The current global state for the batch.</param>
+        /// <param name="indexBuffer">The index buffer to use when creating the draw call.</param>
+        /// <param name="vertexBuffer">The vertex buffer binding to use when creating the draw call.</param>
+        /// <param name="layout">The vertex input layout.</param>
+        /// <returns>The draw call.</returns>
+        public GorgonDrawIndexCall GetDrawIndexCall(BatchRenderable renderable, Gorgon2DBatchState batchState, GorgonIndexBuffer indexBuffer, GorgonVertexBufferBinding vertexBuffer, GorgonInputLayout layout)
+        {
+            SetCommonStates(_drawIndexBuilder, renderable, batchState, null);
+            return _drawIndexBuilder.VertexBuffer(layout, vertexBuffer)
+                                    .IndexBuffer(indexBuffer)
                                     .Build(_drawIndexAllocator);
         }
         #endregion

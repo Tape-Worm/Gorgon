@@ -1,4 +1,4 @@
-﻿ #region MIT
+﻿#region MIT
 // 
 // Gorgon.
 // Copyright (C) 2018 Michael Winsor
@@ -24,7 +24,10 @@
 // 
 #endregion
 
+using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -34,19 +37,38 @@ using DX = SharpDX;
 namespace Gorgon.Renderers
 {
     /// <summary>
-    /// A class that defines a rectangluar region to display a 2D image.
+    /// A class that defines a polygonal region to display a 2D image.
     /// </summary>
-    public class GorgonSprite
+    public class GorgonPolySprite
+        : IDisposable
     {
         #region Variables.
         // The angle of rotation, in degrees.
         private float _angle;
+
         // The renderable data for this sprite.
         // It is exposed as an internal variable (which goes against C# best practices) for performance reasons (property accesses add up over time).
-        internal readonly BatchRenderable Renderable = new BatchRenderable();
+        internal PolySpriteRenderable Renderable = new PolySpriteRenderable
+                                                   {
+                                                       WorldMatrix = DX.Matrix.Identity,
+                                                       TextureTransform = new DX.Vector4(0, 0, 1, 1)
+                                                   };
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to return the read/write list of vertices for the poly sprite.
+        /// </summary>
+        internal List<GorgonPolySpriteVertex> RwVertices
+        {
+            get;
+        } = new List<GorgonPolySpriteVertex>(256);
+
+        /// <summary>
+        /// Property to set or return the list of vertices used by the poly sprite.
+        /// </summary>
+        public IReadOnlyList<GorgonPolySpriteVertex> Vertices => RwVertices;
+
         /// <summary>
         /// Property to return whether or not the sprite has had its position, size, texture information, or object space vertices updated since it was last drawn.
         /// </summary>
@@ -56,31 +78,12 @@ namespace Gorgon.Renderers
                                  || Renderable.HasVertexColorChanges;
 
         /// <summary>
-        /// Property to return the interface that allows colors to be assigned to each corner of the sprite.
-        /// </summary>
-        public GorgonRectangleColors CornerColors
-        {
-            get;
-        }
-
-        /// <summary>
         /// Property to set or return the color of the sprite.
         /// </summary>
-        /// <remarks>
-        /// This sets the color for the entire sprite.  To assign colors to each corner of the sprite, use the <see cref="CornerColors"/> property.
-        /// </remarks>
         public GorgonColor Color
         {
             get => Renderable.UpperLeftColor;
-            set => CornerColors.SetAll(in value);
-        }
-
-        /// <summary>
-        /// Property to return the interface that allows an offset to be applied to each corner of the sprite.
-        /// </summary>
-        public GorgonRectangleOffsets CornerOffsets
-        {
-            get;
+            set => Renderable.UpperLeftColor = Renderable.LowerLeftColor = Renderable.UpperRightColor = Renderable.LowerRightColor = value;
         }
 
         /// <summary>
@@ -98,6 +101,44 @@ namespace Gorgon.Renderers
 
                 Renderable.Texture = value;
                 Renderable.StateChanged = true;
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the offset to apply to a texture.
+        /// </summary>
+        public DX.Vector2 TextureOffset
+        {
+            get => (DX.Vector2)Renderable.TextureTransform;
+            set
+            {
+                if ((Renderable.TextureTransform.X == value.X)
+                    && (Renderable.TextureTransform.Y == value.Y))
+                {
+                    return;
+                }
+
+                Renderable.TextureTransform = new DX.Vector4(value.X, value.Y, Renderable.TextureTransform.Z, Renderable.TextureTransform.W);
+                Renderable.HasTextureChanges = true;
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the scale to apply to a texture.
+        /// </summary>
+        public DX.Vector2 TextureScale
+        {
+            get => new DX.Vector2(Renderable.TextureTransform.Z, Renderable.TextureTransform.W);
+            set
+            {
+                if ((Renderable.TextureTransform.Z == value.X)
+                    && (Renderable.TextureTransform.W == value.Y))
+                {
+                    return;
+                }
+
+                Renderable.TextureTransform = new DX.Vector4(Renderable.TextureTransform.X, Renderable.TextureTransform.Y, value.X, value.Y);
+                Renderable.HasTextureChanges = true;
             }
         }
 
@@ -120,12 +161,12 @@ namespace Gorgon.Renderers
         }
 
         /// <summary>
-        /// Property to set or return the boundaries of the sprite.
+        /// Property to return the boundaries of the sprite.
         /// </summary>
         public DX.RectangleF Bounds
         {
             get => Renderable.Bounds;
-            set
+            internal set
             {
                 ref DX.RectangleF bounds = ref Renderable.Bounds;
 
@@ -138,7 +179,6 @@ namespace Gorgon.Renderers
                 }
 
                 bounds = value;
-                Renderable.HasVertexChanges = true;
             }
         }
 
@@ -157,8 +197,13 @@ namespace Gorgon.Renderers
                     return;
                 }
 
+                ref DX.Matrix matrix = ref Renderable.WorldMatrix;
+
                 bounds.X = value.X;
                 bounds.Y = value.Y;
+                matrix.M41 = bounds.X - (Anchor.X * Bounds.Width);
+                matrix.M42 = bounds.Y - (Anchor.Y * Bounds.Height);
+
                 Renderable.HasTransformChanges = true;
             }
         }
@@ -181,6 +226,8 @@ namespace Gorgon.Renderers
             }
         }
 
+        
+
         /// <summary>
         /// Property to set or return the point around which the sprite will pivot when rotated.
         /// </summary>
@@ -200,72 +247,19 @@ namespace Gorgon.Renderers
                 }
 
                 anchor = value;
-                Renderable.HasVertexChanges = true;
+
+                ref DX.Matrix matrix = ref Renderable.WorldMatrix;
+                matrix.M41 = Renderable.Bounds.X - (Anchor.X * Bounds.Width);
+                matrix.M42 = Renderable.Bounds.Y - (Anchor.Y * Bounds.Height);
+                
+                Renderable.HasTransformChanges = true;
             }
         }
 
         /// <summary>
         /// Property to set or return the size of the sprite.
         /// </summary>
-        public DX.Size2F Size
-        {
-            get => Bounds.Size;
-            set
-            {
-                ref DX.RectangleF bounds = ref Renderable.Bounds;
-                if ((bounds.Size.Width == value.Width)
-                    && (bounds.Size.Height == value.Height))
-                {
-                    return;
-                }
-
-                bounds = new DX.RectangleF(Bounds.X, Bounds.Y, value.Width, value.Height);
-                Renderable.HasVertexChanges = true;
-            }
-        }
-
-        /// <summary>
-        /// Property to set or return the region of the texture to use when drawing the sprite.
-        /// </summary>
-        /// <remarks>
-        /// These values are in texel coordinates.
-        /// </remarks>
-        public DX.RectangleF TextureRegion
-        {
-            get => Renderable.TextureRegion;
-            set
-            {
-                ref DX.RectangleF region = ref Renderable.TextureRegion;
-                if ((region.Left == value.Left)
-                    && (region.Top == value.Top)
-                    && (region.Right == value.Right)
-                    && (region.Bottom == value.Bottom))
-                {
-                    return;
-                }
-
-                region = value;
-                Renderable.HasTextureChanges = true;
-            }
-        }
-
-        /// <summary>
-        /// Property to set or return which index within a texture array to use.
-        /// </summary>
-        public int TextureArrayIndex
-        {
-            get => Renderable.TextureArrayIndex;
-            set
-            {
-                if (Renderable.TextureArrayIndex == value)
-                {
-                    return;
-                }
-
-                Renderable.TextureArrayIndex = value;
-                Renderable.HasTextureChanges = true;
-            }
-        }
+        public DX.Size2F Size => Bounds.Size;
 
         /// <summary>
         /// Property to set or return the size of the renderable after scaling has been applied.
@@ -309,6 +303,10 @@ namespace Gorgon.Renderers
                 }
 
                 scale = value;
+
+                ref DX.Matrix matrix = ref Renderable.WorldMatrix;
+                matrix.M11 = scale.X;
+                matrix.M22 = scale.Y;
                 Renderable.HasTransformChanges = true;
             }
         }
@@ -331,6 +329,9 @@ namespace Gorgon.Renderers
                 Renderable.AngleRads = rads;
                 Renderable.AngleSin = rads.FastSin();
                 Renderable.AngleCos = rads.FastCos();
+
+
+
                 Renderable.HasTransformChanges = true;
             }
         }
@@ -420,23 +421,24 @@ namespace Gorgon.Renderers
         }
         #endregion
 
+        #region Methods.
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            PolySpriteRenderable renderable = Interlocked.Exchange(ref Renderable, null);
+            renderable?.VertexBuffer.VertexBuffer?.Dispose();
+            renderable?.IndexBuffer?.Dispose();
+        }
+        #endregion
+
         #region Constructor/Finalizer.
         /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonSprite"/> class.
+        /// Initializes a new instance of the <see cref="GorgonPolySprite"/> class.
         /// </summary>
-        public GorgonSprite()
+        internal GorgonPolySprite()
         {
-            CornerColors = new GorgonRectangleColors(GorgonColor.White, Renderable);
-            CornerOffsets = new GorgonRectangleOffsets(Renderable);
-
-            Renderable.Vertices = new Gorgon2DVertex[4];
-            Renderable.ActualVertexCount = 4;
-            Renderable.IndexCount = 6;
-
-            for (int i = 0; i < Renderable.Vertices.Length; ++i)
-            {
-                Renderable.Vertices[i].Position.W = 1.0f;
-            }
         }
         #endregion
     }

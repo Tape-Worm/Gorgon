@@ -105,6 +105,10 @@ namespace Gorgon.Renderers
         private int _initialized = Uninitialized;
         // The primary render target.
         private readonly GorgonRenderTarget2DView _primaryTarget;
+        // World matrix vertex shader.
+        private Gorgon2DShader<GorgonVertexShader> _polyTransformVertexShader = new Gorgon2DShader<GorgonVertexShader>();
+        // The default pixel shader used by the renderer.
+        private Gorgon2DShader<GorgonPixelShader> _polyPixelShader = new Gorgon2DShader<GorgonPixelShader>();
         // The default vertex shader used by the renderer.
         private Gorgon2DShader<GorgonVertexShader> _defaultVertexShader = new Gorgon2DShader<GorgonVertexShader>();
         // The default pixel shader used by the renderer.
@@ -146,6 +150,10 @@ namespace Gorgon.Renderers
                                                                 };
         // The 2D camera used to render the data.
         private Gorgon2DOrthoCamera _defaultCamera;
+        // The world matrix buffer for objects that use a world matrix.
+        private GorgonConstantBufferView _polySpriteDataBuffer;
+        // The transformer used for polygons.
+        private readonly PolySpriteTransformer _polyTransformer = new PolySpriteTransformer();
         #endregion
 
         #region Properties.
@@ -173,6 +181,119 @@ namespace Gorgon.Renderers
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to update the alpha testing values and render the active draw call.
+        /// </summary>
+        private void UpdateAlphaTestAndRender()
+        {
+            if ((_currentDrawCall == null) && (_currentDrawIndexCall == null))
+            {
+                return;
+            }
+
+            if (_lastRenderable != null)
+            {
+                UpdateAlphaTest(ref _lastRenderable.AlphaTestData);
+            }
+
+            if (_currentDrawIndexCall != null)
+            {
+                _batchRenderer.RenderBatches(_currentDrawIndexCall);
+            }
+            else if (_currentDrawCall != null)
+            {
+                _batchRenderer.RenderBatches(_currentDrawCall);
+            }
+        }
+
+        /// <summary>
+        /// Function to check for changes in the batch state, and render the previous batch if necessary.
+        /// </summary>
+        /// <param name="renderable">The renderable object that needs to be evaluated.</param>
+        /// <param name="useIndices"><b>true</b> if the renderable requires indices, or <b>false</b> if not.</param>
+        /// <param name="createDrawCall"><b>true</b> if a new draw call should be created, <b>false</b> if it should not.</param>
+        private void RenderBatchOnChange(BatchRenderable renderable, bool useIndices, bool createDrawCall = true)
+        {
+            // Check for alpha test, sampler[0], and texture[0] changes.  We only need a new draw call when those states change.
+            if ((_lastRenderable != null) 
+                && (_batchRenderer.RenderableStateComparer.Equals(_lastRenderable, renderable))
+                && (((useIndices) && (_currentDrawIndexCall != null))
+                     || ((!useIndices) && (_currentDrawCall != null))))
+            {
+                return;
+            }
+
+            // Flush any pending draw calls.
+            UpdateAlphaTestAndRender();
+
+            if (createDrawCall)
+            {
+                if (useIndices)
+                {
+                    _currentDrawCall = null;
+                    _currentDrawIndexCall = _drawCallFactory.GetDrawIndexCall(renderable, _lastBatchState, _batchRenderer);
+                }
+                else
+                {
+                    _currentDrawIndexCall = null;
+                    _currentDrawCall = _drawCallFactory.GetDrawCall(renderable, _lastBatchState, _batchRenderer);
+                }
+            }
+            else
+            {
+                _currentDrawCall = null;
+                _currentDrawIndexCall = null;
+            }
+
+            _lastRenderable = renderable;
+            // All states are reconciled, so reset the change flag.
+            _lastRenderable.StateChanged = false;
+        }
+
+        /// <summary>
+        /// Function to upload the data from the camera to the GPU.
+        /// </summary>
+        /// <param name="camera">The camera containing the data to upload.</param>
+        private void UploadCameraData(Gorgon2DCamera camera)
+        {
+            _viewProjection.Buffer.SetData(ref camera.ViewProjectionMatrix);
+            camera.NeedsUpload = false;
+        }
+
+        /// <summary>
+        /// Function called when a render target is changed on the main graphics interface.
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="e">The event parameters.</param>
+        private void RenderTarget_Changed(object sender, EventArgs e)
+        {
+            // If we've not been initialized yet, do so now.
+            if (_initialized != Initialized)
+            {
+                Initialize();
+            }
+
+            Gorgon2DCamera camera = CurrentCamera ?? _defaultCamera;
+
+            if (camera.AllowUpdateOnResize)
+            {
+                DX.ViewportF viewPort = Graphics.Viewports[0];
+
+                // If the viewport is different than our camera dimensions, then resize the camera to match the viewport.
+                if ((viewPort.Width != camera.ViewDimensions.Width)
+                    || (viewPort.Height != camera.ViewDimensions.Height))
+                {
+                    camera.ViewDimensions = new DX.Size2F(viewPort.Width, viewPort.Height);
+                    camera.Update();
+                }
+            }
+
+            if (camera.NeedsUpload)
+            {
+                UploadCameraData(camera);
+            }
+        }
+
         /// <summary>
         /// Function called when a render target, depth/stencil or view port is changed on the primary graphics object.
         /// </summary>
@@ -252,6 +373,10 @@ namespace Gorgon.Renderers
                     GorgonShaderFactory.Compile<GorgonVertexShader>(Graphics, Resources.BasicSprite, "GorgonVertexShader", GorgonGraphics.IsDebugEnabled);
                 _defaultPixelShader.Shader =
                     GorgonShaderFactory.Compile<GorgonPixelShader>(Graphics, Resources.BasicSprite, "GorgonPixelShaderTextured", GorgonGraphics.IsDebugEnabled);
+                _polyTransformVertexShader.Shader =
+                    GorgonShaderFactory.Compile<GorgonVertexShader>(Graphics, Resources.BasicSprite, "GorgonVertexShaderPoly", GorgonGraphics.IsDebugEnabled);
+                _polyPixelShader.Shader =
+                    GorgonShaderFactory.Compile<GorgonPixelShader>(Graphics, Resources.BasicSprite, "GorgonPixelShaderPoly", GorgonGraphics.IsDebugEnabled);
 
                 _vertexLayout = GorgonInputLayout.CreateUsingType<Gorgon2DVertex>(Graphics, _defaultVertexShader.Shader);
 
@@ -300,7 +425,24 @@ namespace Gorgon.Renderers
                                                                                 "[Gorgon2D] View * Projection Matrix Buffer",
                                                                                 ResourceUsage.Dynamic);
 
+                var polyData = new PolyVertexShaderData
+                               {
+                                   World = DX.Matrix.Identity,
+                                   Color = GorgonColor.White,
+                                   TextureTransform = new DX.Vector4(0, 0, 1, 1),
+                                   MiscInfo = new DX.Vector4(0, 0, 1, 0)
+                               };
+                
+                _polySpriteDataBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics,
+                                                                                   ref polyData,
+                                                                                   "[Gorgon2D] Polygon Sprite Data Buffer",
+                                                                                   ResourceUsage.Dynamic);
+
                 _defaultTextSprite = new GorgonTextSprite(_defaultFontFactory.Value.DefaultFont);
+
+                _polyTransformVertexShader.RwConstantBuffers[0] = _viewProjection;
+                _polyTransformVertexShader.RwConstantBuffers[1] = _polySpriteDataBuffer;
+                _polyPixelShader.RwConstantBuffers[0] = _alphaTest;
 
                 WeakEventManager<GorgonGraphics, EventArgs>.AddHandler(Graphics, nameof(GorgonGraphics.RenderTargetChanged), RenderTarget_Changed);
                 WeakEventManager<GorgonGraphics, EventArgs>.AddHandler(Graphics, nameof(GorgonGraphics.ViewportChanged), RenderTarget_Changed);
@@ -321,16 +463,66 @@ namespace Gorgon.Renderers
         }
 
         /// <summary>
-        /// Function to begin rendering.
+        /// Function to begin rendering a batch.
         /// </summary>
-        /// <param name="batchState">[Optional] Defines common global state to use when rendering a batch of objects.</param>
+        /// <param name="batchState">[Optional] Defines common state to use when rendering a batch of objects.</param>
         /// <param name="camera">[Optional] A camera to use when rendering.</param>
         /// <exception cref="GorgonException">Thrown if <see cref="Begin"/> is called more than once without calling <see cref=" End"/>.</exception>
         /// <remarks>
         /// <para>
-        /// // TODO:
+        /// The 2D renderer uses batching for performance. This means that drawing items with common states (e.g. blending) can all be sent to the GPU at the same time. To faciliate this, applications
+        /// must call this method prior to drawing.
+        /// </para>
+        /// <para>
+        /// When batching occurs, all drawing that shares the same state and texture will be drawn in one deferred draw call to the GPU. However, if too many items are drawn (~10,000 sprites), or the item 
+        /// being drawn has a different texture than the previous item, then the batch is broken up and the previous items  will be drawn to the GPU first.  So, best practice is to ensure that everything
+        /// that is drawn shares the same texture.  This is typically achieved by using a sprite sheet where multiple sprite images are pack into a single texture.
+        /// </para>
+        /// <para>
+        /// <note type="information">
+        /// <para>
+        /// One exception to this is the <see cref="GorgonPolySprite"/> object, which is drawn immediately.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// <para>
+        /// Once rendering is done, the user must call <see cref="End"/> to finalize the rendering. Otherwise, items drawn in the batch will not appear.
+        /// </para>
+        /// <para>
+        /// This method takes an optional <see cref="Gorgon2DBatchState"/> object which allows an application to override the blend state, depth/stencil state (if applicable), rasterization state, and
+        /// pixel/vertex shaders and their associated resources. This means that if an application wants to, for example, change blending modes, then a separate call to this method is required after
+        /// drawing items with the previous blend state.  
+        /// </para>
+        /// <para>
+        /// The other optional parameter, <paramref name="camera"/>, allows an application to change the view in which the items are drawn for a batch. This takes a <see cref="Gorgon2DCamera"/> object
+        /// that defines the projection and view of the scene being rendered. It is possible with this object to change the coordinate system, and to allow perspective rendering for a batch.
+        /// </para>
+        /// <para>
+        /// <note type="important">
+        /// <para>
+        /// There are a few things to be aware of when rendering:
+        /// </para>
+        /// <para>
+        /// <list type="bullet">
+        ///     <item>
+        ///         <description>Batches <b>cannot</b> be nested.  Attempting to do so will cause an exception.</description>
+        ///     </item>
+        ///     <item>
+        ///         <description>Applications <b>must</b> call this method prior to drawing anything. Failure to do so will result in an exception.</description>
+        ///     </item>
+        ///     <item>
+        ///         <description>Calls to <see cref="GorgonGraphics.SetRenderTarget"/>, <see cref="GorgonGraphics.SetRenderTargets"/>, <see cref="GorgonGraphics.SetDepthStencil"/>,
+        /// <see cref="GorgonGraphics.SetViewport"/>, or <see cref="GorgonGraphics.SetViewports"/> while a batch is in progress is not allowed and will result in an exception if attempted.</description>
+        ///     </item>
+        /// </list>
+        /// </para>
+        /// </note>
         /// </para>
         /// </remarks>
+        /// <seealso cref="Gorgon2DBatchState"/>
+        /// <seealso cref="Gorgon2DCamera"/>
+        /// <seealso cref="GorgonPolySprite"/>
+        /// <seealso cref="GorgonGraphics"/>
         public void Begin(Gorgon2DBatchState batchState = null, Gorgon2DCamera camera = null)
         {
             if (Interlocked.Exchange(ref _beginCalled, 1) == 1)
@@ -339,7 +531,6 @@ namespace Gorgon.Renderers
             }
 
             // If we're not initialized, then do so now.
-            // Note that this is not thread safe.
             if (_initialized != Initialized)
             {
                 Initialize();
@@ -406,110 +597,110 @@ namespace Gorgon.Renderers
             {
                 _lastBatchState.VertexShader.RwConstantBuffers[0] = _viewProjection;
             }
-        }
 
-        /// <summary>
-        /// Function to update the alpha testing values and render the active draw call.
-        /// </summary>
-        private void UpdateAlphaTestAndRender()
-        {
-            if ((_currentDrawCall == null) && (_currentDrawIndexCall == null))
+            if (_lastBatchState.VertexShader.RwConstantBuffers[1] == null)
             {
-                return;
-            }
-
-            if (_lastRenderable != null)
-            {
-                UpdateAlphaTest(ref _lastRenderable.AlphaTestData);
-            }
-
-            if (_currentDrawIndexCall != null)
-            {
-                _batchRenderer.RenderBatches(_currentDrawIndexCall);
-            }
-            else if (_currentDrawCall != null)
-            {
-                _batchRenderer.RenderBatches(_currentDrawCall);
+                _lastBatchState.VertexShader.RwConstantBuffers[1] = _polySpriteDataBuffer;
             }
         }
 
         /// <summary>
-        /// Function to check for changes in the batch state, and render the previous batch if necessary.
+        /// Function to end rendering.
         /// </summary>
-        /// <param name="renderable">The renderable object that needs to be evaluated.</param>
-        /// <param name="useIndices"><b>true</b> if the renderable requires indices, or <b>false</b> if not.</param>
-        private void RenderBatchOnChange(BatchRenderable renderable, bool useIndices)
+        /// <remarks>
+        /// <para>
+        /// This finalizes rendering and flushes the current batch data to the GPU. Effectively, this is the method that performs the actual rendering for anything the user has drawn.
+        /// </para>
+        /// <para>
+        /// The 2D renderer uses batching to achieve its performance. Because of this, we define a batch with a call to <see cref="Begin"/> and <c>End</c>. So, for optimal performance, it is best to draw
+        /// as much drawing as possible within the Begin/End batch body.
+        /// </para>
+        /// <para>
+        /// This method must be paired with a call to <see cref="Begin"/>, if it is not, it will do nothing. If this method is not called after a call to <see cref="Begin"/>, then nothing (in most cases) 
+        /// will be drawn. If a previous call to <see cref="Begin"/> is made, and this method is not called, and another call to <see cref="Begin"/> is made, an exception is thrown.
+        /// </para>
+        /// </remarks>
+        public void End()
         {
-            // Check for alpha test, sampler[0], and texture[0] changes.  We only need a new draw call when those states change.
-            if ((_lastRenderable != null) 
-                && (_batchRenderer.RenderableStateComparer.Equals(_lastRenderable, renderable))
-                && (((useIndices) && (_currentDrawIndexCall != null))
-                     || ((!useIndices) && (_currentDrawCall != null))))
+            if (Interlocked.Exchange(ref _beginCalled, 0) == 0)
             {
                 return;
             }
 
-            // Flush any pending draw calls.
             UpdateAlphaTestAndRender();
 
-            if (useIndices)
-            {
-                _currentDrawCall = null;
-                _currentDrawIndexCall = _drawCallFactory.GetDrawIndexCall(renderable, _lastBatchState, _batchRenderer);
-            }
-            else
-            {
-                _currentDrawIndexCall = null;
-                _currentDrawCall = _drawCallFactory.GetDrawCall(renderable, _lastBatchState, _batchRenderer);
-            }
+            _currentDrawCall = null;
+            _currentDrawIndexCall = null;
 
-            _lastRenderable = renderable;
-            // All states are reconciled, so reset the change flag.
-            _lastRenderable.StateChanged = false;
+            // Reset the last batch state so we can enter again with a clean setup.
+            _lastBatchState.RasterState = null;
+            _lastBatchState.BlendState = null;
+            _lastBatchState.DepthStencilState = null;
+            _lastBatchState.PixelShader = null;
+            _lastBatchState.VertexShader = null;
         }
 
-        /// <summary>
-        /// Function to upload the data from the camera to the GPU.
-        /// </summary>
-        /// <param name="camera">The camera containing the data to upload.</param>
-        private void UploadCameraData(Gorgon2DCamera camera)
+        public void DrawPolygonSprite(GorgonPolySprite sprite)
         {
-            _viewProjection.Buffer.SetData(ref camera.ViewProjectionMatrix);
-            camera.NeedsUpload = false;
-        }
+            sprite.ValidateObject(nameof(sprite));
 
-        /// <summary>
-        /// Function called when a render target is changed on the main graphics interface.
-        /// </summary>
-        /// <param name="sender">The sender of the event.</param>
-        /// <param name="e">The event parameters.</param>
-        private void RenderTarget_Changed(object sender, EventArgs e)
-        {
-            // If we've not been initialized yet, do so now.
-            if (_initialized != Initialized)
+            if (_beginCalled == 0)
             {
-                Initialize();
+                throw new InvalidOperationException(Resources.GOR2D_ERR_BEGIN_NOT_CALLED);
             }
 
-            Gorgon2DCamera camera = CurrentCamera ?? _defaultCamera;
+            PolySpriteRenderable renderable = sprite.Renderable;
+            
+            RenderBatchOnChange(renderable, true, false);
 
-            if (camera.AllowUpdateOnResize)
+            Gorgon2DShader<GorgonVertexShader> prevVShader = _lastBatchState.VertexShader;
+            Gorgon2DShader<GorgonPixelShader> prevPShader = _lastBatchState.PixelShader;
+            
+            // This type is drawn immediately since it uses its own vertex/index buffer.  
+
+            // Remember our previous vertex shader (assuming we haven't overridden it elsewhere).
+            if ((_lastBatchState.VertexShader == null) || (_lastBatchState.VertexShader == _defaultVertexShader))
             {
-                DX.ViewportF viewPort = Graphics.Viewports[0];
-
-                // If the viewport is different than our camera dimensions, then resize the camera to match the viewport.
-                if ((viewPort.Width != camera.ViewDimensions.Width)
-                    || (viewPort.Height != camera.ViewDimensions.Height))
-                {
-                    camera.ViewDimensions = new DX.Size2F(viewPort.Width, viewPort.Height);
-                    camera.Update();
-                }
+                _lastBatchState.VertexShader = _polyTransformVertexShader;
             }
 
-            if (camera.NeedsUpload)
+            if ((_lastBatchState.PixelShader == null) || (_lastBatchState.PixelShader == _defaultPixelShader))
             {
-                UploadCameraData(camera);
+                _lastBatchState.PixelShader = _polyPixelShader;
             }
+
+            if ((renderable.HasTransformChanges) || (renderable.HasTextureChanges) || (renderable.HasVertexColorChanges))
+            {
+                _polyTransformer.Transform(renderable);
+                var polyData = new PolyVertexShaderData
+                               {
+                                   World = renderable.WorldMatrix,
+                                   Color = renderable.LowerLeftColor,
+                                   TextureTransform = renderable.TextureTransform,
+                                   MiscInfo = new DX.Vector4(renderable.HorizontalFlip ? 1 : 0, renderable.VerticalFlip ? 1 : 0, renderable.AngleCos, renderable.AngleSin),
+                                   TextureArrayIndex = renderable.TextureArrayIndex
+                               };
+                
+                _polySpriteDataBuffer.Buffer.SetData(ref polyData);
+            }
+            
+            GorgonDrawIndexCall call = _drawCallFactory.GetDrawIndexCall(renderable, _lastBatchState, renderable.IndexBuffer, renderable.VertexBuffer, _vertexLayout);
+            call.IndexStart = 0;
+            call.IndexCount = renderable.IndexCount;
+            Graphics.Submit(call);
+
+            if (prevVShader != null)
+            {
+                // Restore the shader.
+                _lastBatchState.VertexShader = prevVShader;
+            }
+
+            if (prevPShader == null)
+            {
+                return;
+            }
+
+            _lastBatchState.PixelShader = prevPShader;
         }
 
         /// <summary>
@@ -1587,46 +1778,21 @@ namespace Gorgon.Renderers
 
             _batchRenderer.QueueRenderable(_primitiveRenderable);
         }
-
-        /// <summary>
-        /// Function to end rendering.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// TODO:
-        /// </para>
-        /// </remarks>
-        public void End()
-        {
-            if (Interlocked.Exchange(ref _beginCalled, 0) == 0)
-            {
-                return;
-            }
-
-            UpdateAlphaTestAndRender();
-
-            _currentDrawCall = null;
-            _currentDrawIndexCall = null;
-
-            // Reset the last batch state so we can enter again with a clean setup.
-            _lastBatchState.RasterState = null;
-            _lastBatchState.BlendState = null;
-            _lastBatchState.DepthStencilState = null;
-            _lastBatchState.PixelShader = null;
-            _lastBatchState.VertexShader = null;
-        }
         
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         public void Dispose()
         {
+            Gorgon2DShader<GorgonVertexShader> worldShader = Interlocked.Exchange(ref _polyTransformVertexShader, null);
             Gorgon2DShader<GorgonVertexShader> vertexShader = Interlocked.Exchange(ref _defaultVertexShader, null);
             Gorgon2DShader<GorgonPixelShader> pixelShader = Interlocked.Exchange(ref _defaultPixelShader, null);
+            Gorgon2DShader<GorgonPixelShader> polyPShader = Interlocked.Exchange(ref _polyPixelShader, null);
             GorgonInputLayout layout = Interlocked.Exchange(ref _vertexLayout, null);
             BatchRenderer spriteRenderer = Interlocked.Exchange(ref _batchRenderer, null);
             GorgonTexture2DView texture = Interlocked.Exchange(ref _defaultTexture, null);
             GorgonConstantBufferView viewProj = Interlocked.Exchange(ref _viewProjection, null);
+            GorgonConstantBufferView world = Interlocked.Exchange(ref _polySpriteDataBuffer, null);
             GorgonConstantBufferView alphaTest = Interlocked.Exchange(ref _alphaTest, null);
             Lazy<GorgonFontFactory> defaultFont = Interlocked.Exchange(ref _defaultFontFactory, null);
 
@@ -1643,11 +1809,14 @@ namespace Gorgon.Renderers
 
             spriteRenderer?.Dispose();
             alphaTest?.Buffer?.Dispose();
+            world?.Buffer?.Dispose();
             viewProj?.Buffer?.Dispose();
             texture?.Texture?.Dispose();
             layout?.Dispose();
-            vertexShader?.Shader?.Dispose();
-            pixelShader?.Shader?.Dispose();
+            polyPShader?.Dispose();
+            worldShader?.Dispose();
+            vertexShader?.Dispose();
+            pixelShader?.Dispose();
 
             Interlocked.Exchange(ref _initialized, Uninitialized);
         }

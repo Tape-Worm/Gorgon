@@ -79,18 +79,18 @@ namespace Gorgon.Renderers
         /// <remarks>
         /// This allows an application to define custom rendering when the effect is being rendered. The method assigned to this property has 4 parameters:
         /// <list type="number">
-        ///     <listitem>
+        ///     <item>
         ///         <description>The last texture that was processed by a previous effect.</description>
-        ///     </listitem>
-        ///     <listitem>
+        ///     </item>
+        ///     <item>
         ///         <description>The current pass index being rendered.</description>
-        ///     </listitem>
-        ///     <listitem>
+        ///     </item>
+        ///     <item>
         ///         <description>Total number of passes in the effect.</description>
-        ///     </listitem>
-        ///     <listitem>
+        ///     </item>
+        ///     <item>
         ///         <description>The size of the current render target.</description>
-        ///     </listitem>
+        ///     </item>
         /// </list>
         /// </remarks>
         public Action<GorgonTexture2DView, int, int, DX.Size2> RenderMethod

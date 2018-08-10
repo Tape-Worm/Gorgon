@@ -20,23 +20,48 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: June 6, 2018 12:50:43 PM
+// Created: August 9, 2018 9:32:15 PM
 // 
 #endregion
 
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using DX = SharpDX;
+using Gorgon.Graphics;
 
-// General Information about an assembly is controlled through the following
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-[assembly: AssemblyTitle("Gorgon.Renderers.Graphics2D")]
-[assembly: AssemblyDescription("A renderer used to draw two dimensional graphics using Direct 3D 11.4 for hardware accelation.")]
-[assembly: AssemblyCulture("")]
 
-// The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("4bb4ef41-1f32-4c50-bcbf-43c02f9600bd")]
+namespace Gorgon.Renderers
+{
+    /// <summary>
+    /// Provides vertex shader data for polygon sprites.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    struct PolyVertexShaderData
+    {
+        /// <summary>
+        /// The size of the data structure, in bytes.
+        /// </summary>
+        public static readonly int SizeInBytes = Unsafe.SizeOf<PolyVertexShaderData>();
 
-#warning Remove this later
-[assembly: InternalsVisibleTo("PolySpriteTesting")]  
+        /// <summary>
+        /// World matrix.
+        /// </summary>
+        public DX.Matrix World;
+        /// <summary>
+        /// Color information.
+        /// </summary>
+        public GorgonColor Color;
+        /// <summary>
+        /// Texture transformation data.
+        /// </summary>
+        public DX.Vector4 TextureTransform;
+        /// <summary>
+        /// Flags used for flipping the texture and rotation values.
+        /// </summary>
+        public DX.Vector4 MiscInfo;
+        /// <summary>
+        /// The texture array index to use.
+        /// </summary>
+        public float TextureArrayIndex;
+    }
+}

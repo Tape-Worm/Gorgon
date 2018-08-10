@@ -399,15 +399,15 @@ namespace Gorgon.Renderers
         /// <para>
         /// The <paramref name="renderMethod"/> is a callback to a method with 3 parameters:
         /// <list type="number">
-        ///     <listitem>
+        ///     <item>
         ///         <description>The current pass index.</description>
-        ///     </listitem>
-        ///     <listitem>
+        ///     </item>
+        ///     <item>
         ///         <description>The total number of passes.</description>
-        ///     </listitem>
-        ///     <listitem>
+        ///     </item>
+        ///     <item>
         ///         <description>The size of the current render target.</description>
-        ///     </listitem>
+        ///     </item>
         /// </list>
         /// Users should pass a method that will render the items they want to use with this effect.
         /// </para>

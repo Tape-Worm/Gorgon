@@ -6,7 +6,7 @@
 
 using SharpDX;
 
-namespace Triangulator
+namespace GorgonTriangulator
 {
     internal struct Vertex
 	{

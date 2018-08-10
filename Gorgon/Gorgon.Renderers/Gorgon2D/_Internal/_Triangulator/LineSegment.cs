@@ -7,7 +7,7 @@
 using Gorgon.Math;
 using SharpDX;
 
-namespace Triangulator
+namespace GorgonTriangulator
 {
     internal struct LineSegment
 	{

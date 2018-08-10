@@ -6,7 +6,7 @@
 
 using System.Collections.Generic;
 
-namespace Triangulator
+namespace GorgonTriangulator
 {
 	/// <summary>
 	/// Implements a LinkedList that is both indexable as well as cyclical. Thus

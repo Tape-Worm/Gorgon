@@ -565,18 +565,18 @@ namespace Gorgon.Renderers
         /// <para>
         /// This allows an application to render a scene without applying any kind of effect.  The <paramref name="renderMethod"/> is a method that will take the following parameters:
         /// <list type="number">
-        ///     <listitem>
+        ///     <item>
         ///         <description>The last texture that was processed by a previous effect.</description>
-        ///     </listitem>
-        ///     <listitem>
+        ///     </item>
+        ///     <item>
         ///         <description>The current pass index being rendered.</description>
-        ///     </listitem>
-        ///     <listitem>
+        ///     </item>
+        ///     <item>
         ///         <description>Total number of passes in the effect.</description>
-        ///     </listitem>
-        ///     <listitem>
+        ///     </item>
+        ///     <item>
         ///         <description>The size of the current render target.</description>
-        ///     </listitem>
+        ///     </item>
         /// </list>
         /// </para>
         /// </remarks>

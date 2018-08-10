@@ -17,10 +17,33 @@ struct GorgonSpriteVertex
    float2 angle : ANGLE;
 };
 
+// The output for the polygon sprite from the vertex to the pixel shader.
+struct GorgonPolySpriteVertex
+{
+	float4 position : SV_POSITION;
+	float4 color : COLOR;
+	float4 textureTransform : TEXTRANSFORM;
+	float3 uv : TEXCOORD;
+	float2 angle : ANGLE;
+};
+
 // The transformation matrices (for vertex shader).
 cbuffer GorgonViewProjection : register(b0)
 {
-	float4x4 WorldViewProjection;
+	float4x4 ViewProjection;
+}
+
+// The world matrix, and other information for polygon sprites.
+cbuffer GorgonPolyData : register(b1)
+{
+	float4x4 World = float4x4(1, 0, 0, 0, 
+							  0, 1, 0, 0, 
+							  0, 0, 1, 0, 
+							  0, 0, 0, 1);
+	float4 PolyColor;
+	float4 PolyTextureTransform;
+	float4 PolyMiscData;
+	float PolyTextureArrayIndex;
 }
 
 // Alpha test value (for pixel shader).
@@ -31,11 +54,13 @@ cbuffer GorgonAlphaTest : register(b0)
 	float alphaTestValueHi = 0.0f;
 }
 
-// Material.
-cbuffer GorgonMaterial : register(b1)
+// Creates a 4x4 matrix from the 4, 4 component floating point values (columns).
+float4x4 CreateFrom4x4FromFloat4(float4 c0, float4 c1, float4 c2, float4 c3)
 {
-	float4 matDiffuse;
-	float4 matTextureTransform;
+	return float4x4(c0.x, c1.x, c2.x, c3.x,
+					c0.y, c1.y, c2.y, c3.y,
+					c0.z, c1.z, c2.z, c3.z,
+					c0.w, c1.w, c2.w, c3.w);
 }
 
 // Our default vertex shader.
@@ -43,7 +68,22 @@ GorgonSpriteVertex GorgonVertexShader(GorgonSpriteVertex vertex)
 {
 	GorgonSpriteVertex output = vertex;
 
-	output.position = mul(WorldViewProjection, output.position);
+	output.position = mul(ViewProjection, output.position);
+
+	return output;
+}
+
+// Our default vertex shader for polygon sprites.
+GorgonPolySpriteVertex GorgonVertexShaderPoly(GorgonSpriteVertex vertex)
+{
+	GorgonPolySpriteVertex output;
+	
+	float4x4 final = mul(ViewProjection, World);
+	output.position = mul(final, vertex.position);
+	output.color = PolyColor * vertex.color;
+	output.uv = float3(PolyMiscData.x == 1.0f ? 1.0f - vertex.uv.x : vertex.uv.x, PolyMiscData.y == 1.0f ? 1.0f - vertex.uv.y : vertex.uv.y, PolyTextureArrayIndex);
+	output.textureTransform = PolyTextureTransform;
+	output.angle = float2(PolyMiscData.z, PolyMiscData.w);
 
 	return output;
 }
@@ -52,6 +92,17 @@ GorgonSpriteVertex GorgonVertexShader(GorgonSpriteVertex vertex)
 float4 GorgonPixelShaderTextured(GorgonSpriteVertex vertex) : SV_Target
 {
 	float4 color = _gorgonTexture.Sample(_gorgonSampler, vertex.uv) * vertex.color;
+
+	REJECT_ALPHA(color.a);
+		
+	return color;
+}
+
+// Our default pixel shader for poly sprites with textures with alpha testing.
+float4 GorgonPixelShaderPoly(GorgonPolySpriteVertex vertex) : SV_Target
+{
+	float2 texCoords = (vertex.uv.xy * vertex.textureTransform.zw) + vertex.textureTransform.xy;
+	float4 color = _gorgonTexture.Sample(_gorgonSampler, float3(texCoords, vertex.uv.z)) * vertex.color;
 
 	REJECT_ALPHA(color.a);
 		

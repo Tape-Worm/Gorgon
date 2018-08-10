@@ -80,8 +80,13 @@
     <Compile Include="Effects\_Interfaces\IGorgon2DTextureDrawEffect.cs" />
     <Compile Include="Gorgon2D.cs" />
     <Compile Include="Effects\Gorgon2DCompositionPass.cs" />
+    <Compile Include="Renderables\GorgonPolySprite.cs" />
+    <Compile Include="Renderables\GorgonPolySpriteBuilder.cs" />
+    <Compile Include="Renderables\GorgonPolySpriteVertex.cs" />
     <Compile Include="Renderables\GorgonTrianglePoint.cs" />
     <Compile Include="Renderables\GorgonTextSprite.cs" />
+    <Compile Include="Renderables\_Internal\PolySpriteRenderable.cs" />
+    <Compile Include="Renderables\_Internal\PolySpriteTransformer.cs" />
     <Compile Include="Renderables\_Internal\TextCodeParser.cs" />
     <Compile Include="Renderables\_Internal\TextRenderable.cs" />
     <Compile Include="Renderables\_Internal\TextSpriteTransformer.cs" />
@@ -101,6 +106,7 @@
     <Compile Include="Renderables\_Internal\SpriteTransformer.cs" />
     <Compile Include="Renderables\_Internal\_ValueTypes\AlphaTestData.cs" />
     <Compile Include="Renderables\_Internal\_ValueTypes\ColorBlock.cs" />
+    <Compile Include="Renderables\_Internal\_ValueTypes\PolyVertexShaderData.cs" />
     <Compile Include="Shaders\Gorgon2DShader.cs" />
     <Compile Include="Shaders\Gorgon2DShaderBuilder.cs" />
     <Compile Include="_Internal\_Triangulator\CyclicalList.cs" />

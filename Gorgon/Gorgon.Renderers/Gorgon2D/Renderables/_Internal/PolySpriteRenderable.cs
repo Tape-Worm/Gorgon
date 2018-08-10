@@ -20,23 +20,39 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: June 6, 2018 12:50:43 PM
+// Created: August 9, 2018 11:37:42 AM
 // 
 #endregion
 
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
+using DX = SharpDX;
+using Gorgon.Graphics.Core;
 
-// General Information about an assembly is controlled through the following
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-[assembly: AssemblyTitle("Gorgon.Renderers.Graphics2D")]
-[assembly: AssemblyDescription("A renderer used to draw two dimensional graphics using Direct 3D 11.4 for hardware accelation.")]
-[assembly: AssemblyCulture("")]
+namespace Gorgon.Renderers
+{
+    /// <summary>
+    /// A renderable used by a polygon sprite.
+    /// </summary>
+    class PolySpriteRenderable
+        : BatchRenderable
+    {
+        /// <summary>
+        /// The vertex buffer for the polygon renderable.
+        /// </summary>
+        public GorgonVertexBufferBinding VertexBuffer;
 
-// The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("4bb4ef41-1f32-4c50-bcbf-43c02f9600bd")]
+        /// <summary>
+        /// The index buffer for the polygon renderable.
+        /// </summary>
+        public GorgonIndexBuffer IndexBuffer;
 
-#warning Remove this later
-[assembly: InternalsVisibleTo("PolySpriteTesting")]  
+        /// <summary>
+        /// The world matrix for the polygon renderable.
+        /// </summary>
+        public DX.Matrix WorldMatrix;
+
+        /// <summary>
+        /// The transformation data for textures.
+        /// </summary>
+        public DX.Vector4 TextureTransform;
+    }
+}

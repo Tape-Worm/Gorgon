@@ -4,7 +4,7 @@
 // Licensed under the MIT license.
 // https://github.com/nickgravelyn/Triangulator/blob/master/LICENSE
 
-namespace Triangulator
+namespace GorgonTriangulator
 {
 	/// <summary>
 	/// A basic triangle structure that holds the three vertices that make up a given triangle.

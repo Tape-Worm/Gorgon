@@ -1105,8 +1105,8 @@ namespace Gorgon.Math
 	    [MethodImpl(MethodImplOptions.AggressiveInlining)]
 	    public static byte Clamp(this byte value, byte minValue, byte maxValue)
 	    {
-	        value = value.Max(maxValue);
-	        return value.Min(minValue);
+	        value = value.Min(maxValue);
+	        return value.Max(minValue);
 	    }
 
 	    /// <summary>
@@ -1119,8 +1119,8 @@ namespace Gorgon.Math
 	    [MethodImpl(MethodImplOptions.AggressiveInlining)]
 	    public static short Clamp(this short value, short minValue, short maxValue)
 	    {
-	        value = value.Max(maxValue);
-	        return value.Min(minValue);
+	        value = value.Min(maxValue);
+	        return value.Max(minValue);
 	    }
 
 	    /// <summary>
@@ -1133,8 +1133,8 @@ namespace Gorgon.Math
 	    [MethodImpl(MethodImplOptions.AggressiveInlining)]
 	    public static ushort Clamp(this ushort value, ushort minValue, ushort maxValue)
 	    {
-	        value = value.Max(maxValue);
-	        return value.Min(minValue);
+	        value = value.Min(maxValue);
+	        return value.Max(minValue);
 	    }
 
         /// <summary>
@@ -1147,8 +1147,8 @@ namespace Gorgon.Math
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 	    public static int Clamp(this int value, int minValue, int maxValue)
         {
-            value = value.Max(maxValue);
-            return value.Min(minValue);
+            value = value.Min(maxValue);
+            return value.Max(minValue);
         }
 
 	    /// <summary>
@@ -1161,8 +1161,8 @@ namespace Gorgon.Math
 	    [MethodImpl(MethodImplOptions.AggressiveInlining)]
 	    public static uint Clamp(this uint value, uint minValue, uint maxValue)
 	    {
-	        value = value.Max(maxValue);
-	        return value.Min(minValue);
+	        value = value.Min(maxValue);
+	        return value.Max(minValue);
 	    }
 
 	    /// <summary>
@@ -1175,8 +1175,8 @@ namespace Gorgon.Math
 	    [MethodImpl(MethodImplOptions.AggressiveInlining)]
 	    public static long Clamp(this long value, long minValue, long maxValue)
 	    {
-	        value = value.Max(maxValue);
-	        return value.Min(minValue);
+	        value = value.Min(maxValue);
+	        return value.Max(minValue);
 	    }
 
 	    /// <summary>
@@ -1189,8 +1189,8 @@ namespace Gorgon.Math
 	    [MethodImpl(MethodImplOptions.AggressiveInlining)]
 	    public static ulong Clamp(this ulong value, ulong minValue, ulong maxValue)
 	    {
-	        value = value.Max(maxValue);
-	        return value.Min(minValue);
+	        value = value.Min(maxValue);
+	        return value.Max(minValue);
 	    }
 
 	    /// <summary>
@@ -1203,8 +1203,8 @@ namespace Gorgon.Math
 	    [MethodImpl(MethodImplOptions.AggressiveInlining)]
 	    public static float Clamp(this float value, float minValue, float maxValue)
 	    {
-	        value = value.Max(maxValue);
-	        return value.Min(minValue);
+	        value = value.Min(maxValue);
+	        return value.Max(minValue);
 	    }
 
 	    /// <summary>
@@ -1217,8 +1217,8 @@ namespace Gorgon.Math
 	    [MethodImpl(MethodImplOptions.AggressiveInlining)]
 	    public static double Clamp(this double value, double minValue, double maxValue)
 	    {
-	        value = value.Max(maxValue);
-	        return value.Min(minValue);
+	        value = value.Min(maxValue);
+	        return value.Max(minValue);
 	    }
 
 	    /// <summary>
@@ -1231,8 +1231,8 @@ namespace Gorgon.Math
 	    [MethodImpl(MethodImplOptions.AggressiveInlining)]
 	    public static decimal Clamp(this decimal value, decimal minValue, decimal maxValue)
 	    {
-	        value = value.Max(maxValue);
-	        return value.Min(minValue);
+	        value = value.Min(maxValue);
+	        return value.Max(minValue);
 	    }
 		#endregion
 	}
