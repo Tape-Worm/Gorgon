@@ -1476,11 +1476,11 @@ namespace Gorgon.Renderers
             }
 
             CheckPrimitiveStateChange(texture, textureSampler);
-            
-            RenderBatchOnChange(_primitiveRenderable, false);
             _primitiveRenderable.Texture = texture ?? _defaultTexture;
             _primitiveRenderable.TextureSampler = textureSampler ?? GorgonSamplerState.Default;
             _primitiveRenderable.AlphaTestData = new AlphaTestData(false, GorgonRangeF.Empty);
+            
+            RenderBatchOnChange(_primitiveRenderable, false);
 
             _batchRenderer.QueueRenderable(_primitiveRenderable);
         }
@@ -1579,11 +1579,11 @@ namespace Gorgon.Renderers
             }
 
             CheckPrimitiveStateChange(texture, textureSampler);
-            
-            RenderBatchOnChange(_primitiveRenderable, false);
             _primitiveRenderable.Texture = texture ?? _defaultTexture;
             _primitiveRenderable.TextureSampler = textureSampler ?? GorgonSamplerState.Default;
             _primitiveRenderable.AlphaTestData = new AlphaTestData(false, GorgonRangeF.Empty);
+            
+            RenderBatchOnChange(_primitiveRenderable, false);
 
             _batchRenderer.QueueRenderable(_primitiveRenderable);
         }
