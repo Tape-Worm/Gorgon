@@ -1188,8 +1188,6 @@ namespace Gorgon.Renderers
             _primitiveRenderable.PrimitiveType = PrimitiveType.TriangleStrip;
             _primitiveRenderable.IndexCount = 0;
             _primitiveRenderable.ActualVertexCount = (quality * 2) + 2;
-            _primitiveRenderable.Texture = texture ?? _defaultTexture;
-            _primitiveRenderable.AlphaTestData = new AlphaTestData(false, GorgonRangeF.Empty);
 
             // Ensure the primitive batch object is large enough to hold our vertex list.
             if ((_primitiveRenderable.Vertices == null) || (_primitiveRenderable.Vertices.Length < _primitiveRenderable.ActualVertexCount))
@@ -1248,6 +1246,9 @@ namespace Gorgon.Renderers
             }
 
             CheckPrimitiveStateChange(texture, textureSampler);
+            _primitiveRenderable.Texture = texture ?? _defaultTexture;
+            _primitiveRenderable.TextureSampler = textureSampler ?? GorgonSamplerState.Default;
+            _primitiveRenderable.AlphaTestData = new AlphaTestData(false, GorgonRangeF.Empty);
 
             RenderBatchOnChange(_primitiveRenderable, false);
 
@@ -1300,8 +1301,6 @@ namespace Gorgon.Renderers
             _primitiveRenderable.PrimitiveType = PrimitiveType.TriangleStrip;
             _primitiveRenderable.IndexCount = 0;
             _primitiveRenderable.ActualVertexCount = (quality * 2) + 2;
-            _primitiveRenderable.Texture = texture ?? _defaultTexture;
-            _primitiveRenderable.AlphaTestData = new AlphaTestData(false, GorgonRangeF.Empty);
 
             // Ensure the primitive batch object is large enough to hold our vertex list.
             if ((_primitiveRenderable.Vertices == null) || (_primitiveRenderable.Vertices.Length < _primitiveRenderable.ActualVertexCount))
@@ -1365,6 +1364,9 @@ namespace Gorgon.Renderers
             }
 
             CheckPrimitiveStateChange(texture, textureSampler);
+            _primitiveRenderable.Texture = texture ?? _defaultTexture;
+            _primitiveRenderable.TextureSampler = textureSampler ?? GorgonSamplerState.Default;
+            _primitiveRenderable.AlphaTestData = new AlphaTestData(false, GorgonRangeF.Empty);
 
             RenderBatchOnChange(_primitiveRenderable, false);
 
@@ -1416,8 +1418,6 @@ namespace Gorgon.Renderers
             _primitiveRenderable.PrimitiveType = PrimitiveType.TriangleStrip;
             _primitiveRenderable.IndexCount = 0;
             _primitiveRenderable.ActualVertexCount = (quality * 2) + 2;
-            _primitiveRenderable.Texture = texture ?? _defaultTexture;
-            _primitiveRenderable.AlphaTestData = new AlphaTestData(false, GorgonRangeF.Empty);
 
             // Ensure the primitive batch object is large enough to hold our vertex list.
             if ((_primitiveRenderable.Vertices == null) || (_primitiveRenderable.Vertices.Length < _primitiveRenderable.ActualVertexCount))
@@ -1478,6 +1478,9 @@ namespace Gorgon.Renderers
             CheckPrimitiveStateChange(texture, textureSampler);
             
             RenderBatchOnChange(_primitiveRenderable, false);
+            _primitiveRenderable.Texture = texture ?? _defaultTexture;
+            _primitiveRenderable.TextureSampler = textureSampler ?? GorgonSamplerState.Default;
+            _primitiveRenderable.AlphaTestData = new AlphaTestData(false, GorgonRangeF.Empty);
 
             _batchRenderer.QueueRenderable(_primitiveRenderable);
         }
@@ -1513,8 +1516,6 @@ namespace Gorgon.Renderers
             _primitiveRenderable.PrimitiveType = PrimitiveType.TriangleStrip;
             _primitiveRenderable.IndexCount = 0;
             _primitiveRenderable.ActualVertexCount = (quality * 2) + 2;
-            _primitiveRenderable.Texture = texture ?? _defaultTexture;
-            _primitiveRenderable.AlphaTestData = new AlphaTestData(false, GorgonRangeF.Empty);
 
             // Ensure the primitive batch object is large enough to hold our vertex list.
             if ((_primitiveRenderable.Vertices == null) || (_primitiveRenderable.Vertices.Length < _primitiveRenderable.ActualVertexCount))
@@ -1580,6 +1581,9 @@ namespace Gorgon.Renderers
             CheckPrimitiveStateChange(texture, textureSampler);
             
             RenderBatchOnChange(_primitiveRenderable, false);
+            _primitiveRenderable.Texture = texture ?? _defaultTexture;
+            _primitiveRenderable.TextureSampler = textureSampler ?? GorgonSamplerState.Default;
+            _primitiveRenderable.AlphaTestData = new AlphaTestData(false, GorgonRangeF.Empty);
 
             _batchRenderer.QueueRenderable(_primitiveRenderable);
         }
