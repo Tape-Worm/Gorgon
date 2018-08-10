@@ -680,6 +680,8 @@ namespace Gorgon.Renderers
             PolySpriteRenderable renderable = sprite.Renderable;
             
             RenderBatchOnChange(renderable, true, false);
+            
+            UpdateAlphaTest(ref renderable.AlphaTestData);
 
             Gorgon2DShader<GorgonVertexShader> prevVShader = _lastBatchState.VertexShader;
             Gorgon2DShader<GorgonPixelShader> prevPShader = _lastBatchState.PixelShader;
@@ -697,25 +699,29 @@ namespace Gorgon.Renderers
                 _lastBatchState.PixelShader = _polyPixelShader;
             }
 
-            if ((renderable.HasTransformChanges) || (renderable.HasTextureChanges) || (renderable.HasVertexColorChanges))
-            {
-                _polyTransformer.Transform(renderable);
-                var polyData = new PolyVertexShaderData
-                               {
-                                   World = renderable.WorldMatrix,
-                                   Color = renderable.LowerLeftColor,
-                                   TextureTransform = renderable.TextureTransform,
-                                   MiscInfo = new DX.Vector4(renderable.HorizontalFlip ? 1 : 0, renderable.VerticalFlip ? 1 : 0, renderable.AngleCos, renderable.AngleSin),
-                                   TextureArrayIndex = renderable.TextureArrayIndex
-                               };
-                
-                _polySpriteDataBuffer.Buffer.SetData(ref polyData);
-            }
+            _polyTransformer.Transform(renderable);
+            var polyData = new PolyVertexShaderData
+                           {
+                               World = renderable.WorldMatrix,
+                               Color = renderable.LowerLeftColor,
+                               TextureTransform = renderable.TextureTransform,
+                               MiscInfo = new DX.Vector4(renderable.HorizontalFlip ? 1 : 0, renderable.VerticalFlip ? 1 : 0, renderable.AngleCos, renderable.AngleSin),
+                               TextureArrayIndex = renderable.TextureArrayIndex
+                           };
             
-            GorgonDrawIndexCall call = _drawCallFactory.GetDrawIndexCall(renderable, _lastBatchState, renderable.IndexBuffer, renderable.VertexBuffer, _vertexLayout);
-            call.IndexStart = 0;
-            call.IndexCount = renderable.IndexCount;
-            Graphics.Submit(call);
+            _polySpriteDataBuffer.Buffer.SetData(ref polyData);
+
+            if ((_currentDrawIndexCall == null) 
+                || (!_currentDrawIndexCall.VertexBufferBindings[0].Equals(in renderable.VertexBuffer)) 
+                || (_currentDrawIndexCall.IndexBuffer != renderable.IndexBuffer))
+            {
+                _currentDrawIndexCall =
+                    _drawCallFactory.GetDrawIndexCall(renderable, _lastBatchState, renderable.IndexBuffer, renderable.VertexBuffer, _vertexLayout);
+                _currentDrawIndexCall.IndexStart = 0;
+                _currentDrawIndexCall.IndexCount = renderable.IndexCount;
+            }
+
+            Graphics.Submit(_currentDrawIndexCall);
 
             if (prevVShader != null)
             {

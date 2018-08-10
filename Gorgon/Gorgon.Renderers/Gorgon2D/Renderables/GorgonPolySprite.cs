@@ -197,12 +197,8 @@ namespace Gorgon.Renderers
                     return;
                 }
 
-                ref DX.Matrix matrix = ref Renderable.WorldMatrix;
-
                 bounds.X = value.X;
                 bounds.Y = value.Y;
-                matrix.M41 = bounds.X - (Anchor.X * Bounds.Width);
-                matrix.M42 = bounds.Y - (Anchor.Y * Bounds.Height);
 
                 Renderable.HasTransformChanges = true;
             }

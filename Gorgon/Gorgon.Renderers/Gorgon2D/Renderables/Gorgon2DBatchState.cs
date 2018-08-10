@@ -58,6 +58,14 @@ namespace Gorgon.Renderers
                                                                        };
 
         /// <summary>
+        /// A default batch state that sets up wirefame mode with no culling.
+        /// </summary>
+        public static readonly Gorgon2DBatchState WireFrameNoCulling = new Gorgon2DBatchState
+                                                                       {
+                                                                           RasterState = GorgonRasterState.WireFrameNoCulling
+                                                                       };
+
+        /// <summary>
         /// Property to return the current blending state to apply.
         /// </summary>
         public GorgonBlendState BlendState

@@ -506,7 +506,7 @@ namespace Gorgon.Renderers
                                                                                                            }, vertexData);
                 newSprite.Renderable.ActualVertexCount = newSprite.RwVertices.Count;
                 newSprite.Renderable.IndexCount = indices.Length;
-                newSprite.Bounds = bounds;
+                newSprite.Bounds = new DX.RectangleF(newSprite.Position.X, newSprite.Position.Y, bounds.Width, bounds.Height);
             }
             finally
             {
