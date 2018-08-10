@@ -33,14 +33,35 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Native;
+using Gorgon.Renderers.Properties;
 using GorgonTriangulator;
 
 
 namespace Gorgon.Renderers
 {
     /// <summary>
-    /// A builder used to create a new <see cref="GorgonPolySprite"/>.
+    /// A builder used to create a new <see cref="GorgonPolySprite"/> object.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Because the <see cref="GorgonPolySprite"/> cannot be created using the <see langword="new"/> keyword, this builder is used to build <see cref="GorgonPolySprite"/> objects. 
+    /// </para>
+    /// <para>
+    /// The polygonal sprite created by this builder is built up by adding multiple <see cref="GorgonPolySpriteVertex"/> objects to the builder and calling the <see cref="Build"/> method. These vertices 
+    /// make up the "hull" of the polygon, which gets turned into triangles so it can be rendered by Gorgon. Vertex manipulation is not the only functionality provided by the builder, other initial values 
+    /// may also be assigned for the created sprite as well.
+    /// <para>
+    /// <note type="important">
+    /// A minimum of 3 vertices are required to build a polygonal sprite. Attempting to do so with less will cause an exception.
+    /// </note>
+    /// </para>
+    /// </para>
+    /// <para>
+    /// The resulting polygonal sprite from this builder implements <see cref="IDisposable"/>. Therefore, it is the user's responsibility to dispose of the object when they are done with it.
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="GorgonPolySpriteVertex"/>
+    /// <seealso cref="GorgonPolySprite"/>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable", Justification = "The internal worker object NEVER contains a disposable object. Only the Build method creates them on the new sprite when returning to the user.  It is the user's responsibility to dispose the object after that point.")]
     public class GorgonPolySpriteBuilder
         : IGorgonFluentBuilder<GorgonPolySpriteBuilder, GorgonPolySprite>, IEnumerable<GorgonPolySpriteVertex>, IGorgonGraphicsObject
@@ -421,8 +442,29 @@ namespace Gorgon.Renderers
         /// Function to return the object.
         /// </summary>
         /// <returns>The object created or updated by this builder.</returns>
+        /// <exception cref="GorgonException">Thrown if the polygonal sprite has less than 3 vertices.</exception>
+        /// <remarks>
+        /// <para>
+        /// This will return a <see cref="GorgonPolySprite"/> for use with the <see cref="Gorgon2D.DrawPolygonSprite"/> method. The object returned implements <see cref="IDisposable"/>, so it is the
+        /// responsibility of the user to dispose of the object when they are done with it.
+        /// </para>
+        /// <para>
+        /// <note type="warning">
+        /// <para>
+        /// A polygon sprite must have a minimum of 3 vertices.  If it does not, then this method will throw an exception.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="GorgonPolySprite"/>
+        /// <seealso cref="Gorgon2D"/>
         public GorgonPolySprite Build()
         {
+            if (_workingSprite.RwVertices.Count < 3)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GOR2D_ERR_POLY_SPRITE_NOT_ENOUGH_VERTS);
+            }
+
             var newSprite = new GorgonPolySprite();
 
             CopySprite(newSprite, _workingSprite);

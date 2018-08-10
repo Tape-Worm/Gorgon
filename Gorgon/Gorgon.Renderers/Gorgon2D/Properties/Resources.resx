@@ -214,6 +214,9 @@
   <data name="GOR2D_ERR_NO_RTV" xml:space="preserve">
     <value>Could not initialize the 2D renderer because there was no render target assigned to slot 0 on the graphics interface.</value>
   </data>
+  <data name="GOR2D_ERR_POLY_SPRITE_NOT_ENOUGH_VERTS" xml:space="preserve">
+    <value>A minimum of 3 vertices is required for a polygonal sprite.</value>
+  </data>
   <data name="GOR2D_ERR_RENDER_ALREADY_STARTED" xml:space="preserve">
     <value>Begin() was called previously. Call End() prior to calling Begin() again.</value>
   </data>

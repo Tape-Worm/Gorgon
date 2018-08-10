@@ -644,6 +644,30 @@ namespace Gorgon.Renderers
         /// Function to draw a polygonal sprite.
         /// </summary>
         /// <param name="sprite">The polygon sprite to draw.</param>
+        /// <remarks>
+        /// <para>
+        /// This method draws a sprite using a polygon as its surface. This is different from other sprite rendering in that:
+        /// <list type="bullet">
+        ///     <item>
+        ///         <description>The surface is not rectangular.</description>
+        ///     </item>
+        ///     <item>
+        ///         <description>It is not batched with other drawing types, and is drawn immediately.  This may be a performance hit.</description>
+        ///     </item>
+        /// </list>
+        /// </para>
+        /// <para>
+        /// The method takes a <see cref="GorgonPolySprite"/> object which contains <see cref="GorgonPolySpriteVertex"/> objects to define the outer shape (hull) of the polygon. Gorgon will triangulate
+        /// the hull into a mesh that can be rendered. 
+        /// </para>
+        /// <para>
+        /// <see cref="GorgonPolySprite"/> objects cannot be created directly, but can be built using the <see cref="GorgonPolySpriteBuilder"/> object.  Please note that these objects implement
+        /// <see cref="IDisposable"/>, so users should call the <c>Dispose</c> method when they are done with the objects.
+        /// </para> 
+        /// </remarks>
+        /// <seealso cref="GorgonPolySpriteBuilder"/>
+        /// <seealso cref="GorgonPolySprite"/>
+        /// <seealso cref="GorgonPolySpriteVertex"/>
         public void DrawPolygonSprite(GorgonPolySprite sprite)
         {
             sprite.ValidateObject(nameof(sprite));

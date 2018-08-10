@@ -8,16 +8,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-using System.CodeDom.Compiler;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Drawing;
-using System.Globalization;
-using System.Resources;
-using System.Runtime.CompilerServices;
-
 namespace Gorgon.Renderers.Properties {
+    using System;
+    
+    
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -25,27 +19,27 @@ namespace Gorgon.Renderers.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [GeneratedCode("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
-    [DebuggerNonUserCode()]
-    [CompilerGenerated()]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+    [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
         
-        private static ResourceManager resourceMan;
+        private static global::System.Resources.ResourceManager resourceMan;
         
-        private static CultureInfo resourceCulture;
+        private static global::System.Globalization.CultureInfo resourceCulture;
         
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         internal Resources() {
         }
         
         /// <summary>
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
-        internal static ResourceManager ResourceManager {
+        [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
+        internal static global::System.Resources.ResourceManager ResourceManager {
             get {
-                if (ReferenceEquals(resourceMan, null)) {
-                    ResourceManager temp = new ResourceManager("Gorgon.Renderers.Properties.Resources", typeof(Resources).Assembly);
+                if (object.ReferenceEquals(resourceMan, null)) {
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Gorgon.Renderers.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -56,8 +50,8 @@ namespace Gorgon.Renderers.Properties {
         ///   Overrides the current thread's CurrentUICulture property for all
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
-        internal static CultureInfo Culture {
+        [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
+        internal static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -90,15 +84,15 @@ namespace Gorgon.Renderers.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to // This is adopted from the nvidia film grain shader.
-        ///
-        /// To learn more about shading, shaders, and to bounce ideas off other shader
-        ///    authors and users, visit the NVIDIA Shader Library Forums at:
-        ///
-        ///    http://developer.nvidia.com/forums/
+        /////
+        ///// To learn more about shading, shaders, and to bounce ideas off other shader
+        /////    authors and users, visit the NVIDIA Shader Library Forums at:
+        /////
+        /////    http://developer.nvidia.com/forums/
         ///
         ///#GorgonInclude &quot;Gorgon2DShaders&quot;
         ///
-        /// Additional effect texture buffer.
+        ///// Additional effect texture buffer.
         ///Texture2D _filmEffectTexture : register(t1);
         ///SamplerState _gorgonFilmGrainSampler : register(s1);		// Sampler used for film grain random texture.
         ///
@@ -381,6 +375,15 @@ namespace Gorgon.Renderers.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A minimum of 3 vertices is required for a polygonal sprite..
+        /// </summary>
+        internal static string GOR2D_ERR_POLY_SPRITE_NOT_ENOUGH_VERTS {
+            get {
+                return ResourceManager.GetString("GOR2D_ERR_POLY_SPRITE_NOT_ENOUGH_VERTS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Begin() was called previously. Call End() prior to calling Begin() again..
         /// </summary>
         internal static string GOR2D_ERR_RENDER_ALREADY_STARTED {
@@ -401,28 +404,39 @@ namespace Gorgon.Renderers.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static Bitmap Icons {
+        internal static System.Drawing.Bitmap Icons {
             get {
                 object obj = ResourceManager.GetObject("Icons", resourceCulture);
-                return ((Bitmap)(obj));
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to #GorgonInclude &quot;Gorgon2DShaders&quot;
         ///
-        ///// A texture array to allow access to the diffuse, normal map, and specular map.
-        ///Texture2DArray _gorgonDiffSpecNormTexture : register(t0);
+        ///// Data for the final output.
+        ///cbuffer FinalOutputData : register(b1)
+        ///{
+        ///	float2 screenSize;
+        ///};
         ///
-        ///// Texture and sampler used for normal mapping.
-        ///Texture2D _gorgonNormalTexture : register(t1);
-        ///SamplerState _gorgonNormalSampler : register(s1);
+        ///// Information about the light being rendered.
+        ///cbuffer LightData : register(b2)
+        ///{
+        ///	float4 lightPosition;
+        ///	float4 lightColor;		
+        ///	float4 dirLightDirection;
+        ///	float specularPower;
+        ///	float attenuation;	
+        ///	int enableSpecular;
+        ///	int lightType;
+        ///};
         ///
-        ///// Texture and sampler used for specular mapping.
-        ///Texture2D _gorgonSpecTexture : register(t2);
-        ///SamplerState _gorgonSpecSampler : register(s2);
-        ///
-        ///// Output data from our vertex shad [rest of string was truncated]&quot;;.
+        ///// Output data from our vertex shader for lighting.
+        ///struct GorgonLitVertex
+        ///{
+        ///	float4 position : SV_POSITION;
+        ///	float4 colo [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Lighting {
             get {
@@ -433,10 +447,10 @@ namespace Gorgon.Renderers.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static Bitmap White_2x2 {
+        internal static System.Drawing.Bitmap White_2x2 {
             get {
                 object obj = ResourceManager.GetObject("White_2x2", resourceCulture);
-                return ((Bitmap)(obj));
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
     }
