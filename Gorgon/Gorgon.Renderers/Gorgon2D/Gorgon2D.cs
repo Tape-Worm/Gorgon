@@ -640,6 +640,10 @@ namespace Gorgon.Renderers
             _lastBatchState.VertexShader = null;
         }
 
+        /// <summary>
+        /// Function to draw a polygonal sprite.
+        /// </summary>
+        /// <param name="sprite">The polygon sprite to draw.</param>
         public void DrawPolygonSprite(GorgonPolySprite sprite)
         {
             sprite.ValidateObject(nameof(sprite));
