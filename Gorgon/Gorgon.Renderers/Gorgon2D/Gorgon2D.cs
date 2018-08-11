@@ -81,7 +81,7 @@ namespace Gorgon.Renderers
     /// <seealso cref="GorgonGraphics"/>
     /// <seealso cref="Gorgon2DBatchState"/>
     public class Gorgon2D
-        : IDisposable, IGorgonGraphicsObject
+        : IGorgon2DFluent, IGorgon2DDrawingFluent
     {
         #region Constants.
         /// <summary>
@@ -781,31 +781,6 @@ namespace Gorgon.Renderers
 
             _batchRenderer.QueueRenderable(renderable);
         }
-
-        /*
-        /// <summary>
-        /// Function to retrieve the width and height of a string with the specified font or the default font.
-        /// </summary>
-        /// <param name="text">The text to measure.</param>
-        /// <param name="font">[Optional] The font to use.</param>
-        /// <returns>The width and height of the text.</returns>
-        private DX.Size2F MeasureString(string text, GorgonFont font = null)
-        {
-            // TODO: This is private for now, I don't see much need for it since the default font is exposed as a property.
-            // TODO: However, this could be useful in a fluent interface.
-            if (string.IsNullOrWhiteSpace(text))
-            {
-                return DX.Size2F.Zero;
-            }
-
-            if (font == null)
-            {
-                font = _defaultFontFactory.Value.DefaultFont;
-            }
-
-            return font.MeasureText(text, font.HasOutline);
-        }
-        */
 
         /// <summary>
         /// Function to draw text.
@@ -1910,6 +1885,341 @@ namespace Gorgon.Renderers
 
             Interlocked.Exchange(ref _initialized, Uninitialized);
         }
+
+        #region Fluent
+        /// <summary>
+        /// Function to begin rendering a batch.
+        /// </summary>
+        /// <param name="batchState">[Optional] Defines common state to use when rendering a batch of objects.</param>
+        /// <param name="camera">[Optional] A camera to use when rendering.</param>
+        /// <returns>The fluent interface for the 2D interface.</returns>
+        /// <exception cref="GorgonException">Thrown if <see cref="IGorgon2DFluent.Begin"/> is called more than once without calling <see cref="IGorgon2DDrawingFluent.End"/>.</exception>
+        /// <remarks>
+        /// <para>
+        /// The 2D renderer uses batching for performance. This means that drawing items with common states (e.g. blending) can all be sent to the GPU at the same time. To faciliate this, applications
+        /// must call this method prior to drawing.
+        /// </para>
+        /// <para>
+        /// When batching occurs, all drawing that shares the same state and texture will be drawn in one deferred draw call to the GPU. However, if too many items are drawn (~10,000 sprites), or the item 
+        /// being drawn has a different texture than the previous item, then the batch is broken up and the previous items  will be drawn to the GPU first.  So, best practice is to ensure that everything
+        /// that is drawn shares the same texture.  This is typically achieved by using a sprite sheet where multiple sprite images are pack into a single texture.
+        /// </para>
+        /// <para>
+        /// <note type="information">
+        /// <para>
+        /// One exception to this is the <see cref="GorgonPolySprite"/> object, which is drawn immediately.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// <para>
+        /// Once rendering is done, the user must call <see cref="IGorgon2DDrawingFluent.End"/> to finalize the rendering. Otherwise, items drawn in the batch will not appear.
+        /// </para>
+        /// <para>
+        /// This method takes an optional <see cref="Gorgon2DBatchState"/> object which allows an application to override the blend state, depth/stencil state (if applicable), rasterization state, and
+        /// pixel/vertex shaders and their associated resources. This means that if an application wants to, for example, change blending modes, then a separate call to this method is required after
+        /// drawing items with the previous blend state.  
+        /// </para>
+        /// <para>
+        /// The other optional parameter, <paramref name="camera"/>, allows an application to change the view in which the items are drawn for a batch. This takes a <see cref="Gorgon2DCamera"/> object
+        /// that defines the projection and view of the scene being rendered. It is possible with this object to change the coordinate system, and to allow perspective rendering for a batch.
+        /// </para>
+        /// <para>
+        /// <note type="important">
+        /// <para>
+        /// There are a few things to be aware of when rendering:
+        /// </para>
+        /// <para>
+        /// <list type="bullet">
+        ///     <item>
+        ///         <description>Batches <b>cannot</b> be nested.  Attempting to do so will cause an exception.</description>
+        ///     </item>
+        ///     <item>
+        ///         <description>Applications <b>must</b> call this method prior to drawing anything. Failure to do so will result in an exception.</description>
+        ///     </item>
+        ///     <item>
+        ///         <description>Calls to <see cref="GorgonGraphics.SetRenderTarget"/>, <see cref="GorgonGraphics.SetRenderTargets"/>, <see cref="GorgonGraphics.SetDepthStencil"/>,
+        /// <see cref="GorgonGraphics.SetViewport"/>, or <see cref="GorgonGraphics.SetViewports"/> while a batch is in progress is not allowed and will result in an exception if attempted.</description>
+        ///     </item>
+        /// </list>
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="Gorgon2DBatchState"/>
+        /// <seealso cref="Gorgon2DCamera"/>
+        /// <seealso cref="GorgonPolySprite"/>
+        /// <seealso cref="GorgonGraphics"/>
+        IGorgon2DDrawingFluent IGorgon2DFluent.Begin(Gorgon2DBatchState batchState, Gorgon2DCamera camera)
+        {
+            Begin(batchState, camera);
+            return this;
+        }
+
+        /// <summary>
+        /// Function to draw a polygonal sprite.
+        /// </summary>
+        /// <param name="sprite">The polygon sprite to draw.</param>
+        /// <returns>The fluent interface for drawing.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="sprite"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="InvalidOperationException">Thrown if this method was called without having called <see cref="IGorgon2DFluent.Begin"/> first.</exception>
+        /// <remarks>
+        /// <para>
+        /// This method draws a sprite using a polygon as its surface. This is different from other sprite rendering in that:
+        /// <list type="bullet">
+        ///     <item>
+        ///         <description>The surface is not rectangular.</description>
+        ///     </item>
+        ///     <item>
+        ///         <description>It is not batched with other drawing types, and is drawn immediately.  This may be a performance hit.</description>
+        ///     </item>
+        /// </list>
+        /// </para>
+        /// <para>
+        /// The method takes a <see cref="GorgonPolySprite"/> object which contains <see cref="GorgonPolySpriteVertex"/> objects to define the outer shape (hull) of the polygon. Gorgon will triangulate
+        /// the hull into a mesh that can be rendered. 
+        /// </para>
+        /// <para>
+        /// <see cref="GorgonPolySprite"/> objects cannot be created directly, but can be built using the <see cref="GorgonPolySpriteBuilder"/> object.  Please note that these objects implement
+        /// <see cref="IDisposable"/>, so users should call the <c>Dispose</c> method when they are done with the objects.
+        /// </para>
+        /// <para>
+        /// <note type="caution">
+        /// <para>
+        /// For performance reasons, any exceptions thrown from this method will only be thrown when Gorgon is compiled as DEBUG.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="GorgonPolySpriteBuilder"/>
+        /// <seealso cref="GorgonPolySprite"/>
+        /// <seealso cref="GorgonPolySpriteVertex"/>
+        IGorgon2DDrawingFluent IGorgon2DDrawingFluent.DrawPolygonSprite(GorgonPolySprite sprite)
+        {
+            DrawPolygonSprite(sprite);
+            return this;
+        }
+
+        /// <summary>
+        /// Function to draw a sprite.
+        /// </summary>
+        /// <param name="sprite">The sprite object to draw.</param>
+        /// <returns>The fluent interface for drawing.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="sprite"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="InvalidOperationException">Thrown if this method was called without having called <see cref="IGorgon2DFluent.Begin"/> first.</exception>
+        IGorgon2DDrawingFluent IGorgon2DDrawingFluent.DrawSprite(GorgonSprite sprite)
+        {
+            DrawSprite(sprite);
+            return this;
+        }
+
+        /// <summary>
+        /// Function to draw text.
+        /// </summary>
+        /// <param name="text">The text to render.</param>
+        /// <param name="position">The position of the text.</param>
+        /// <param name="font">[Optional] The font to use.</param>
+        /// <param name="color">[Optional] The color of the text.</param>
+        /// <returns>The fluent interface for drawing.</returns>
+        IGorgon2DDrawingFluent IGorgon2DDrawingFluent.DrawString(string text, DX.Vector2 position, GorgonFont font, GorgonColor? color)
+        {
+            DrawString(text, position, font, color);
+            return this;
+        }
+
+        /// <summary>
+        /// Function to draw text.
+        /// </summary>
+        /// <param name="sprite">The text sprite to render.</param>
+        /// <returns>The fluent interface for drawing.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="sprite"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="InvalidOperationException">Thrown if this method was called without having called <see cref="IGorgon2DFluent.Begin"/> first.</exception>
+        IGorgon2DDrawingFluent IGorgon2DDrawingFluent.DrawTextSprite(GorgonTextSprite sprite)
+        {
+            DrawTextSprite(sprite);
+            return this;
+        }
+
+        /// <summary>
+        /// Function to draw a filled rectangle.
+        /// </summary>
+        /// <param name="region">The region for the rectangle.</param>
+        /// <param name="color">The color of the rectangle.</param>
+        /// <param name="texture">[Optional] The texture for the rectangle.</param>
+        /// <param name="textureRegion">[Optional] The texture coordinates to map to the rectangle.</param>
+        /// <param name="textureArrayIndex">[Optional] The array index for a texture array to use.</param>
+        /// <param name="textureSampler">[Optional] The texture sampler to apply to the texture.</param>
+        /// <param name="depth">[Optional] The depth value for the rectangle.</param>
+        /// <returns>The fluent interface for drawing.</returns>
+        /// <exception cref="InvalidOperationException">Thrown if this method was called without having called <see cref="IGorgon2DFluent.Begin"/> first.</exception> 
+        IGorgon2DDrawingFluent IGorgon2DDrawingFluent.DrawFilledRectangle(DX.RectangleF region, GorgonColor color, GorgonTexture2DView texture, DX.RectangleF? textureRegion, int textureArrayIndex, GorgonSamplerState textureSampler, float depth)
+        {
+            DrawFilledRectangle(region, color, texture, textureRegion, textureArrayIndex, textureSampler, depth);
+            return this;
+        }
+
+        /// <summary>
+        /// Function to draw a simple triangle.
+        /// </summary>
+        /// <param name="point1">The vertex for the first point in the triangle.</param>
+        /// <param name="point2">The vertex for the second point in the triangle.</param>
+        /// <param name="point3">The vertex for the third point in the triangle.</param>
+        /// <param name="texture">[Optional] The texture for the rectangle.</param>
+        /// <param name="textureRegion">[Optional] The texture coordinates to map to the rectangle.</param>
+        /// <param name="textureArrayIndex">[Optional] The array index for a texture array to use.</param>
+        /// <param name="textureSampler">[Optional] The texture sampler to apply to the texture.</param>
+        /// <param name="depth">[Optional] The depth value for the rectangle.</param>
+        /// <exception cref="InvalidOperationException">Thrown if this method was called without having called <see cref="IGorgon2DFluent.Begin"/> first.</exception>
+        IGorgon2DDrawingFluent IGorgon2DDrawingFluent.DrawTriangle(in GorgonTriangleVertex point1, in GorgonTriangleVertex point2, in GorgonTriangleVertex point3, GorgonTexture2DView texture, DX.RectangleF? textureRegion, int textureArrayIndex, GorgonSamplerState textureSampler, float depth)
+        {
+            DrawTriangle(point1, point2, point3, texture, textureRegion, textureArrayIndex, textureSampler, depth);
+            return this;
+        }
+
+        /// <summary>
+        /// Function to draw a filled rectangle.
+        /// </summary>
+        /// <param name="region">The region for the rectangle.</param>
+        /// <param name="color">The color of the rectangle.</param>
+        /// <param name="thickness">[Optional] The line thickness.</param>
+        /// <param name="texture">[Optional] The texture for the rectangle.</param>
+        /// <param name="textureRegion">[Optional] The texture coordinates to map to the rectangle.</param>
+        /// <param name="textureArrayIndex">[Optional] The array index for a texture array to use.</param>
+        /// <param name="textureSampler">[Optional] The texture sampler to apply to the texture.</param>
+        /// <param name="depth">[Optional] The depth value for the rectangle.</param>
+        /// <returns>The fluent interface for drawing.</returns>
+        /// <exception cref="InvalidOperationException">Thrown if this method was called without having called <see cref="IGorgon2DFluent.Begin"/> first.</exception>
+        IGorgon2DDrawingFluent IGorgon2DDrawingFluent.DrawRectangle(DX.RectangleF region, GorgonColor color, float thickness, GorgonTexture2DView texture, DX.RectangleF? textureRegion, int textureArrayIndex, GorgonSamplerState textureSampler, float depth)
+        {
+            DrawRectangle(region, color, thickness, texture, textureRegion, textureArrayIndex, textureSampler, depth);
+            return this;
+        }
+
+        /// <summary>
+        /// Function to draw a line.
+        /// </summary>
+        /// <param name="x1">The starting horizontal position.</param>
+        /// <param name="y1">The starting vertical position.</param>
+        /// <param name="x2">The ending horizontal position.</param>
+        /// <param name="y2">The ending vertical position.</param>
+        /// <param name="color">The color of the line.</param>
+        /// <param name="thickness">[Optional] The line thickness.</param>
+        /// <param name="texture">[Optional] The texture to render on the line.</param>
+        /// <param name="textureRegion">[Optional] The texture coordinates to map to the rectangle.</param>
+        /// <param name="textureArrayIndex">[Optional] The array index for a texture array to use.</param>
+        /// <param name="textureSampler">[Optional] The texture sampler to apply to the texture.</param>
+        /// <param name="startDepth">[Optional] The depth value for the starting point of the line.</param>
+        /// <param name="endDepth">[Optional] The depth value for the ending point of the line.</param>
+        /// <exception cref="InvalidOperationException">Thrown if this method was called without having called <see cref="IGorgon2DFluent.Begin"/> first.</exception>
+        IGorgon2DDrawingFluent IGorgon2DDrawingFluent.DrawLine(float x1, float y1, float x2, float y2, GorgonColor color, float thickness, GorgonTexture2DView texture, DX.RectangleF? textureRegion, int textureArrayIndex, GorgonSamplerState textureSampler, float startDepth, float endDepth)
+        {
+            DrawLine(x1, y1, x2, y2, color, thickness, texture, textureRegion, textureArrayIndex, textureSampler, startDepth, endDepth);
+            return this;
+        }
+
+        /// <summary>
+        /// Function to draw an ellipse.
+        /// </summary>
+        /// <param name="region">The region that will contain the ellipse.</param>
+        /// <param name="color">The color of the ellipse.</param>
+        /// <param name="smoothness">[Optional] The smoothness of the ellipse.</param>
+        /// <param name="texture">[Optional] The texture to render on the ellipse.</param>
+        /// <param name="textureRegion">[Optional] The texture coordinates to map to the rectangle.</param>
+        /// <param name="textureArrayIndex">[Optional] The array index for a texture array to use.</param>
+        /// <param name="textureSampler">[Optional] The texture sampler to apply to the texture.</param>
+        /// <param name="depth">[Optional] The depth value for the ellipse.</param>
+        /// <returns>The fluent interface for drawing.</returns>
+        /// <exception cref="InvalidOperationException">Thrown if this method was called without having called <see cref="IGorgon2DFluent.Begin"/> first.</exception>
+        IGorgon2DDrawingFluent IGorgon2DDrawingFluent.DrawFilledEllipse(DX.RectangleF region, GorgonColor color, float smoothness, GorgonTexture2DView texture, DX.RectangleF? textureRegion, int textureArrayIndex, GorgonSamplerState textureSampler, float depth)
+        {
+            DrawFilledEllipse(region, color, smoothness, texture, textureRegion, textureArrayIndex, textureSampler, depth);
+            return this;
+        }
+
+        /// <summary>
+        /// Function to draw an ellipse.
+        /// </summary>
+        /// <param name="region">The region that will contain the ellipse.</param>
+        /// <param name="color">The color of the ellipse.</param>
+        /// <param name="startAngle">The starting angle of the arc, in degrees.</param>
+        /// <param name="endAngle">The ending angle of the arc, in degrees.</param>
+        /// <param name="smoothness">[Optional] The smoothness of the ellipse.</param>
+        /// <param name="thickness">[Optional] The ellipse line thickness.</param>
+        /// <param name="texture">[Optional] The texture to render on the ellipse.</param>
+        /// <param name="textureRegion">[Optional] The texture coordinates to map to the rectangle.</param>
+        /// <param name="textureArrayIndex">[Optional] The array index for a texture array to use.</param>
+        /// <param name="textureSampler">[Optional] The texture sampler to apply to the texture.</param>
+        /// <param name="depth">[Optional] The depth value for the ellipse.</param>
+        /// <returns>The fluent interface for drawing.</returns>
+        /// <exception cref="InvalidOperationException">Thrown if this method was called without having called <see cref="IGorgon2DFluent.Begin"/> first.</exception>
+        IGorgon2DDrawingFluent IGorgon2DDrawingFluent.DrawArc(DX.RectangleF region, GorgonColor color, float startAngle, float endAngle, float smoothness, float thickness, GorgonTexture2DView texture, DX.RectangleF? textureRegion, int textureArrayIndex, GorgonSamplerState textureSampler, float depth)
+        {
+            DrawArc(region, color, startAngle, endAngle, smoothness, thickness, texture, textureRegion, textureArrayIndex, textureSampler, depth);
+            return this;
+        }
+
+        /// <summary>
+        /// Function to draw an ellipse.
+        /// </summary>
+        /// <param name="region">The region that will contain the ellipse.</param>
+        /// <param name="color">The color of the ellipse.</param>
+        /// <param name="startAngle">The starting angle of the arc, in degrees.</param>
+        /// <param name="endAngle">The ending angle of the arc, in degrees.</param>
+        /// <param name="smoothness">[Optional] The smoothness of the ellipse.</param>
+        /// <param name="texture">[Optional] The texture to render on the ellipse.</param>
+        /// <param name="textureRegion">[Optional] The texture coordinates to map to the rectangle.</param>
+        /// <param name="textureArrayIndex">[Optional] The array index for a texture array to use.</param>
+        /// <param name="textureSampler">[Optional] The texture sampler to apply to the texture.</param>
+        /// <param name="depth">[Optional] The depth value for the ellipse.</param>
+        /// <exception cref="InvalidOperationException">Thrown if this method was called without having called <see cref="IGorgon2DFluent.Begin"/> first.</exception>
+        IGorgon2DDrawingFluent IGorgon2DDrawingFluent.DrawFilledArc(DX.RectangleF region, GorgonColor color, float startAngle, float endAngle, float smoothness, GorgonTexture2DView texture, DX.RectangleF? textureRegion, int textureArrayIndex, GorgonSamplerState textureSampler, float depth)
+        {
+            DrawFilledArc(region, color, startAngle, endAngle, smoothness, texture, textureRegion, textureArrayIndex, textureSampler, depth);
+            return this;
+        }
+
+        /// <summary>
+        /// Function to draw an ellipse.
+        /// </summary>
+        /// <param name="region">The region that will contain the ellipse.</param>
+        /// <param name="color">The color of the ellipse.</param>
+        /// <param name="smoothness">[Optional] The smoothness of the ellipse.</param>
+        /// <param name="thickness">[Optional] The ellipse line thickness.</param>
+        /// <param name="texture">[Optional] The texture to render on the ellipse.</param>
+        /// <param name="textureRegion">[Optional] The texture coordinates to map to the rectangle.</param>
+        /// <param name="textureArrayIndex">[Optional] The array index for a texture array to use.</param>
+        /// <param name="textureSampler">[Optional] The texture sampler to apply to the texture.</param>
+        /// <param name="depth">[Optional] The depth value for the ellipse.</param>
+        /// <returns>The fluent interface for drawing.</returns>
+        /// <exception cref="InvalidOperationException">Thrown if this method was called without having called <see cref="IGorgon2DFluent.Begin"/> first.</exception>
+        IGorgon2DDrawingFluent IGorgon2DDrawingFluent.DrawEllipse(DX.RectangleF region, GorgonColor color, float smoothness, float thickness, GorgonTexture2DView texture, DX.RectangleF? textureRegion, int textureArrayIndex, GorgonSamplerState textureSampler, float depth)
+        {
+            DrawEllipse(region, color, smoothness, thickness, texture, textureRegion, textureArrayIndex, textureSampler, depth);
+            return this;
+        }
+
+        /// <summary>
+        /// Function to end rendering.
+        /// </summary>
+        /// <returns>The <see cref="IGorgon2DFluent"/> interface to allow continuation of rendering.</returns>
+        /// <remarks>
+        /// <para>
+        /// This finalizes rendering and flushes the current batch data to the GPU. Effectively, this is the method that performs the actual rendering for anything the user has drawn.
+        /// </para>
+        /// <para>
+        /// The 2D renderer uses batching to achieve its performance. Because of this, we define a batch with a call to <see cref="IGorgon2DFluent.Begin"/> and <c>End</c>. So, for optimal performance, it is best to draw
+        /// as much drawing as possible within the Begin/End batch body.
+        /// </para>
+        /// <para>
+        /// This method must be paired with a call to <see cref="IGorgon2DFluent.Begin"/>, if it is not, it will do nothing. If this method is not called after a call to <see cref="IGorgon2DFluent.Begin"/>, then nothing (in most cases) 
+        /// will be drawn. If a previous call to <see cref="IGorgon2DFluent.Begin"/> is made, and this method is not called, and another call to <see cref="IGorgon2DFluent.Begin"/> is made, an exception is thrown.
+        /// </para>
+        /// </remarks>
+        IGorgon2DFluent IGorgon2DDrawingFluent.End()
+        {
+            End();
+            return this;
+        }
+        #endregion
         #endregion
 
         #region Constructor/Finalizer.

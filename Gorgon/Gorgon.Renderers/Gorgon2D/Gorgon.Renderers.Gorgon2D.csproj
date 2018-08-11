@@ -109,6 +109,7 @@
     <Compile Include="Renderables\_Internal\_ValueTypes\PolyVertexShaderData.cs" />
     <Compile Include="Shaders\Gorgon2DShader.cs" />
     <Compile Include="Shaders\Gorgon2DShaderBuilder.cs" />
+    <Compile Include="_Interfaces\IGorgon2DFluent.cs" />
     <Compile Include="_Internal\_Triangulator\CyclicalList.cs" />
     <Compile Include="_Internal\DrawCallFactory.cs" />
     <Compile Include="_Internal\_Triangulator\IndexableCyclicalLinkedList.cs" />
