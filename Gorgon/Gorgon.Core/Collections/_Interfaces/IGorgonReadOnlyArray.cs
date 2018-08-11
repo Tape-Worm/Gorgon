@@ -26,7 +26,6 @@
 
 using System;
 using System.Collections.Generic;
-using Gorgon.Graphics.Core;
 
 namespace Gorgon.Collections
 {
