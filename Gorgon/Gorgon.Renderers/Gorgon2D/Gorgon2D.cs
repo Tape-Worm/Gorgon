@@ -782,6 +782,7 @@ namespace Gorgon.Renderers
             _batchRenderer.QueueRenderable(renderable);
         }
 
+        /*
         /// <summary>
         /// Function to retrieve the width and height of a string with the specified font or the default font.
         /// </summary>
@@ -804,6 +805,7 @@ namespace Gorgon.Renderers
 
             return font.MeasureText(text, font.HasOutline);
         }
+        */
 
         /// <summary>
         /// Function to draw text.
