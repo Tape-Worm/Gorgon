@@ -161,7 +161,7 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="sprite">The sprite object to draw.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="sprite"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="InvalidOperationException">Thrown if this method was called without having called <see cref="Begin"/> first.</exception>
+        /// <exception cref="InvalidOperationException">Thrown if this method was called without having called <see cref="IGorgon2DFluent.Begin"/> first.</exception>
         /// <remarks>
         /// <para>
         /// This method draws a regular rectangular <see cref="GorgonSprite"/> object. 
@@ -180,13 +180,13 @@ namespace Gorgon.Renderers
         /// <param name="position">The position of the text.</param>
         /// <param name="font">[Optional] The font to use.</param>
         /// <param name="color">[Optional] The color of the text.</param>
-        /// <exception cref="InvalidOperationException">Thrown if this method was called without having called <see cref="Begin"/> first.</exception>
+        /// <exception cref="InvalidOperationException">Thrown if this method was called without having called <see cref="IGorgon2DFluent.Begin"/> first.</exception>
         /// <remarks>
         /// <para>
         /// This is a convenience method that allows an application to draw text directly to the currently assigned render target.  
         /// </para>
         /// <para>
-        /// If the <paramref name="font"/> parameter is not specified, then the <see cref="DefaultFont"/> is used to render the text.
+        /// If the <paramref name="font"/> parameter is not specified, then the <see cref="Gorgon2D.DefaultFont"/> is used to render the text.
         /// </para>
         /// <para>
         /// If the <paramref name="color"/> parameter is not specified, then the <see cref="GorgonColor.White"/> color is used.
@@ -199,7 +199,7 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="sprite">The text sprite to render.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="sprite"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="InvalidOperationException">Thrown if this method was called without having called <see cref="Begin"/> first.</exception>
+        /// <exception cref="InvalidOperationException">Thrown if this method was called without having called <see cref="IGorgon2DFluent.Begin"/> first.</exception>
         /// <remarks>
         /// <para>
         /// This method is used to draw a <see cref="GorgonTextSprite"/> to the current render target. A <see cref="GorgonTextSprite"/> is similar to a <see cref="GorgonSprite"/> in that it allows an

@@ -37,6 +37,3 @@ using System.Runtime.InteropServices;
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("4bb4ef41-1f32-4c50-bcbf-43c02f9600bd")]
-
-#warning Remove this later
-[assembly: InternalsVisibleTo("PolySpriteTesting")]  
