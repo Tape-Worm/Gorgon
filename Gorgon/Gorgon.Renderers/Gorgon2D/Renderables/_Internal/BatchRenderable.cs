@@ -51,22 +51,22 @@ namespace Gorgon.Renderers
         /// <summary>
         /// The color of the upper left corner of the renderable.
         /// </summary>
-        public GorgonColor UpperLeftColor;
+        public GorgonColor UpperLeftColor = GorgonColor.White;
 
         /// <summary>
         /// The color of the upper right corner of the renderable.
         /// </summary>
-        public GorgonColor UpperRightColor;
+        public GorgonColor UpperRightColor = GorgonColor.White;
         
         /// <summary>
         /// The color of the lower left corner of the renderable.
         /// </summary>
-        public GorgonColor LowerLeftColor;
+        public GorgonColor LowerLeftColor = GorgonColor.White;
         
         /// <summary>
         /// The color of the lower right corner of the renderable.
         /// </summary>
-        public GorgonColor LowerRightColor;
+        public GorgonColor LowerRightColor = GorgonColor.White;
 
         /// <summary>
         /// The offset of the upper left corner of the renderable.

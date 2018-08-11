@@ -4,13 +4,28 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{85B13540-CBB5-4CBD-8149-50762578A710}</ProjectGuid>
+    <ProjectGuid>{41F1A64C-95E2-445A-B377-C4C9F2AB147C}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>Gorgon.Examples</RootNamespace>
-    <AssemblyName>PostProcessing</AssemblyName>
+    <AssemblyName>PolySprites</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -37,10 +52,13 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
+    <ApplicationManifest>D:\Mike\Code\GitHubRepos\Gorgon\WIP\Examples\app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <PropertyGroup>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationManifest>D:\Mike\Code\GitHubRepos\Gorgon\WIP\Examples\app.manifest</ApplicationManifest>
+    <StartupObject>Gorgon.Examples.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -59,13 +77,13 @@
     <Compile Include="..\..\..\Gorgon\Gorgon.Core\SharedAssemblyInfo.cs">
       <Link>SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Button.cs" />
     <Compile Include="FormMain.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="FormMain.Designer.cs">
       <DependentUpon>FormMain.cs</DependentUpon>
     </Compile>
+    <Compile Include="PolygonHullParser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="FormMain.resx">
@@ -96,6 +114,22 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Gorgon2.ico" />
+    <None Include="Resources\Gorgon_Logo_Small.DDS" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.7.1">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.7.1 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="SharpDX">
@@ -136,10 +170,6 @@
       <Project>{a19cb981-2d25-4316-9542-1d2bd7064f2b}</Project>
       <Name>Gorgon.Windows</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Gorgon2.ico" />
-    <None Include="Resources\Gorgon_Logo_Small.DDS" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -41,9 +41,9 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.Timing;
-using PostProcessing.Properties;
+using Gorgon.Examples.Properties;
 
-namespace PostProcessing
+namespace Gorgon.Examples
 {
     /// <summary>
     /// The main entry point for the application.

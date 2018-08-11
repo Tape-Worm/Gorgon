@@ -25,19 +25,19 @@ namespace Gorgon.Examples.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1280, 800")]
-        public global::System.Drawing.Size Resolution {
+        [global::System.Configuration.DefaultSettingValueAttribute("..\\..\\..\\..\\..\\Resources\\")]
+        public string ResourceLocation {
             get {
-                return ((global::System.Drawing.Size)(this["Resolution"]));
+                return ((string)(this["ResourceLocation"]));
             }
         }
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("..\\..\\..\\..\\..\\Resources\\")]
-        public string ResourceLocation {
+        [global::System.Configuration.DefaultSettingValueAttribute("1280, 800")]
+        public global::System.Drawing.Size Resolution {
             get {
-                return ((string)(this["ResourceLocation"]));
+                return ((global::System.Drawing.Size)(this["Resolution"]));
             }
         }
     }

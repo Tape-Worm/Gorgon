@@ -52,9 +52,10 @@
             this.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.MinimumSize = new System.Drawing.Size(816, 639);
             this.Name = "FormMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Post Processing";
+            this.Text = "Polygonal Sprites";
             this.ResumeLayout(false);
 
         }

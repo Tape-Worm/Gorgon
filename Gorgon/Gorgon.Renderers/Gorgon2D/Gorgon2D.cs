@@ -212,6 +212,26 @@ namespace Gorgon.Renderers
         }
 
         /// <summary>
+        /// Function to check for changes in the batch state with the current poly sprite, and render the previous batch if necessary.
+        /// </summary>
+        /// <param name="renderable"></param>
+        private void RenderBatchOnChange(PolySpriteRenderable renderable)
+        {
+            // If the vertex buffer is different than the previous buffer
+            if ((_currentDrawIndexCall != null)
+                && (_currentDrawIndexCall.VertexBufferBindings[0].Equals(_batchRenderer.VertexBuffer))
+                && (_currentDrawIndexCall.IndexBuffer == _batchRenderer.IndexBuffer))
+            {
+                UpdateAlphaTestAndRender();
+                _lastRenderable = renderable;
+                _lastRenderable.StateChanged = false;
+                return;
+            }
+
+            RenderBatchOnChange(renderable, true, false);
+        }
+
+        /// <summary>
         /// Function to check for changes in the batch state, and render the previous batch if necessary.
         /// </summary>
         /// <param name="renderable">The renderable object that needs to be evaluated.</param>
@@ -699,7 +719,7 @@ namespace Gorgon.Renderers
 
             PolySpriteRenderable renderable = sprite.Renderable;
             
-            RenderBatchOnChange(renderable, true, false);
+            RenderBatchOnChange(renderable);
             
             UpdateAlphaTest(ref renderable.AlphaTestData);
 

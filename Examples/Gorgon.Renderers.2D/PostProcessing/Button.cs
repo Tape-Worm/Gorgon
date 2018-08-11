@@ -29,7 +29,7 @@ using Gorgon.Graphics;
 using Gorgon.Renderers;
 using DX = SharpDX;
 
-namespace PostProcessing
+namespace Gorgon.Examples
 {
     /// <summary>
     /// The states for the button.

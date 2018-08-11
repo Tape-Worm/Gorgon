@@ -20,28 +20,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: August 6, 2018 2:39:25 PM
+// Created: August 10, 2018 9:20:12 PM
 // 
 #endregion
 
-using System.Windows.Forms;
+using System.Reflection;
+using System.Runtime.InteropServices;
 
-namespace Gorgon.Examples
-{
-    public partial class FormMain : Form
-    {
-        /// <summary>
-        /// Property to set or return whether the please wait label is visible.
-        /// </summary>
-        public bool IsLoaded
-        {
-            get => !LabelPleaseWait.Visible;
-            set => LabelPleaseWait.Visible = !value;
-        }
+// General Information about an assembly is controlled through the following
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+[assembly: AssemblyTitle("PolySprites")]
+[assembly: AssemblyDescription("An example showing how to use polygonal sprites.")]
+[assembly: AssemblyCulture("")]
 
-        public FormMain()
-        {
-            InitializeComponent();
-        }
-    }
-}
+// The following GUID is for the ID of the typelib if this project is exposed to COM
+[assembly: Guid("41f1a64c-95e2-445a-b377-c4c9f2ab147c")]
