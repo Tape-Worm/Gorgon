@@ -661,6 +661,9 @@ namespace Gorgon.Renderers
         ///     <item>
         ///         <description>It is not batched with other drawing types, and is drawn immediately.  This may be a performance hit.</description>
         ///     </item>
+        ///     <item>
+        ///         <description>Unlike a <see cref="GorgonSprite"/>, which uses a rectangle, this type of sprite produces an irregular shape that can be used to match the texture being drawn.</description>
+        ///     </item>
         /// </list>
         /// </para>
         /// <para>
@@ -682,6 +685,7 @@ namespace Gorgon.Renderers
         /// <seealso cref="GorgonPolySpriteBuilder"/>
         /// <seealso cref="GorgonPolySprite"/>
         /// <seealso cref="GorgonPolySpriteVertex"/>
+        /// <seealso cref="GorgonSprite"/>
         public void DrawPolygonSprite(GorgonPolySprite sprite)
         {
             sprite.ValidateObject(nameof(sprite));
@@ -759,6 +763,15 @@ namespace Gorgon.Renderers
         /// <param name="sprite">The sprite object to draw.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="sprite"/> parameter is <b>null</b>.</exception>
         /// <exception cref="InvalidOperationException">Thrown if this method was called without having called <see cref="Begin"/> first.</exception>
+        /// <remarks>
+        /// <para>
+        /// This method draws a regular rectangular <see cref="GorgonSprite"/> object. 
+        /// </para>
+        /// <para>
+        /// A <see cref="GorgonSprite"/> is a data object that provides a means to rotate, scale and translate a texture region when rendering. 
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="GorgonSprite"/>
         public void DrawSprite(GorgonSprite sprite)
         {
             sprite.ValidateObject(nameof(sprite));
@@ -789,6 +802,18 @@ namespace Gorgon.Renderers
         /// <param name="position">The position of the text.</param>
         /// <param name="font">[Optional] The font to use.</param>
         /// <param name="color">[Optional] The color of the text.</param>
+        /// <exception cref="InvalidOperationException">Thrown if this method was called without having called <see cref="Begin"/> first.</exception>
+        /// <remarks>
+        /// <para>
+        /// This is a convenience method that allows an application to draw text directly to the currently assigned render target.  
+        /// </para>
+        /// <para>
+        /// If the <paramref name="font"/> parameter is not specified, then the <see cref="DefaultFont"/> is used to render the text.
+        /// </para>
+        /// <para>
+        /// If the <paramref name="color"/> parameter is not specified, then the <see cref="GorgonColor.White"/> color is used.
+        /// </para>
+        /// </remarks>
         public void DrawString(string text, DX.Vector2 position, GorgonFont font = null, GorgonColor? color = null)
         {
             // We have nothing to render.
@@ -813,6 +838,18 @@ namespace Gorgon.Renderers
         /// <param name="sprite">The text sprite to render.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="sprite"/> parameter is <b>null</b>.</exception>
         /// <exception cref="InvalidOperationException">Thrown if this method was called without having called <see cref="Begin"/> first.</exception>
+        /// <remarks>
+        /// <para>
+        /// This method is used to draw a <see cref="GorgonTextSprite"/> to the current render target. A <see cref="GorgonTextSprite"/> is similar to a <see cref="GorgonSprite"/> in that it allows an
+        /// application to take a block of text and translate, scale, and rotate the block of text.  
+        /// </para>
+        /// <para>
+        /// Unlike the <see cref="DrawString"/> method, which just renders whatever text is sent to it, a <see cref="GorgonTextSprite"/> can also be used to align text to a boundary (e.g. center, left
+        /// align, etc...). 
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="GorgonTextSprite"/>
+        /// <seealso cref="GorgonSprite"/>
         public void DrawTextSprite(GorgonTextSprite sprite)
         {
             sprite.ValidateObject(nameof(sprite));
@@ -2003,9 +2040,17 @@ namespace Gorgon.Renderers
         /// Function to draw a sprite.
         /// </summary>
         /// <param name="sprite">The sprite object to draw.</param>
-        /// <returns>The fluent interface for drawing.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="sprite"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="InvalidOperationException">Thrown if this method was called without having called <see cref="IGorgon2DFluent.Begin"/> first.</exception>
+        /// <exception cref="InvalidOperationException">Thrown if this method was called without having called <see cref="Begin"/> first.</exception>
+        /// <remarks>
+        /// <para>
+        /// This method draws a regular rectangular <see cref="GorgonSprite"/> object. 
+        /// </para>
+        /// <para>
+        /// A <see cref="GorgonSprite"/> is a data object that provides a means to rotate, scale and translate a texture region when rendering. 
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="GorgonSprite"/>
         IGorgon2DDrawingFluent IGorgon2DDrawingFluent.DrawSprite(GorgonSprite sprite)
         {
             DrawSprite(sprite);
@@ -2019,7 +2064,18 @@ namespace Gorgon.Renderers
         /// <param name="position">The position of the text.</param>
         /// <param name="font">[Optional] The font to use.</param>
         /// <param name="color">[Optional] The color of the text.</param>
-        /// <returns>The fluent interface for drawing.</returns>
+        /// <exception cref="InvalidOperationException">Thrown if this method was called without having called <see cref="Begin"/> first.</exception>
+        /// <remarks>
+        /// <para>
+        /// This is a convenience method that allows an application to draw text directly to the currently assigned render target.  
+        /// </para>
+        /// <para>
+        /// If the <paramref name="font"/> parameter is not specified, then the <see cref="DefaultFont"/> is used to render the text.
+        /// </para>
+        /// <para>
+        /// If the <paramref name="color"/> parameter is not specified, then the <see cref="GorgonColor.White"/> color is used.
+        /// </para>
+        /// </remarks>
         IGorgon2DDrawingFluent IGorgon2DDrawingFluent.DrawString(string text, DX.Vector2 position, GorgonFont font, GorgonColor? color)
         {
             DrawString(text, position, font, color);
@@ -2030,9 +2086,20 @@ namespace Gorgon.Renderers
         /// Function to draw text.
         /// </summary>
         /// <param name="sprite">The text sprite to render.</param>
-        /// <returns>The fluent interface for drawing.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="sprite"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="InvalidOperationException">Thrown if this method was called without having called <see cref="IGorgon2DFluent.Begin"/> first.</exception>
+        /// <exception cref="InvalidOperationException">Thrown if this method was called without having called <see cref="Begin"/> first.</exception>
+        /// <remarks>
+        /// <para>
+        /// This method is used to draw a <see cref="GorgonTextSprite"/> to the current render target. A <see cref="GorgonTextSprite"/> is similar to a <see cref="GorgonSprite"/> in that it allows an
+        /// application to take a block of text and translate, scale, and rotate the block of text.  
+        /// </para>
+        /// <para>
+        /// Unlike the <see cref="IGorgon2DDrawingFluent.DrawString"/> method, which just renders whatever text is sent to it, a <see cref="GorgonTextSprite"/> can also be used to align text to a boundary (e.g. center, left
+        /// align, etc...). 
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="GorgonTextSprite"/>
+        /// <seealso cref="GorgonSprite"/>
         IGorgon2DDrawingFluent IGorgon2DDrawingFluent.DrawTextSprite(GorgonTextSprite sprite)
         {
             DrawTextSprite(sprite);
