@@ -102,6 +102,13 @@ namespace Gorgon.Renderers
         /// <seealso cref="GorgonPolySprite"/>
         /// <seealso cref="GorgonGraphics"/>
         IGorgon2DDrawingFluent Begin(Gorgon2DBatchState batchState = null, Gorgon2DCamera camera = null);
+
+        /// <summary>
+        /// Function to perform an arbitrary update of any required logic prior to rendering.
+        /// </summary>
+        /// <param name="updateMethod">A method supplied by the user to perform some custom logic on objects that need to be rendered.</param>
+        /// <returns>The fluent interface for the 2D interface.</returns>
+        IGorgon2DFluent Update(Action updateMethod);
     }
 
     /// <summary>
