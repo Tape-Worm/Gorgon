@@ -171,4 +171,7 @@
     <Folder Include="__OLDE__\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>$(SolutionDir)ResourceCommentCleaner $(ProjectDir)Properties\</PreBuildEvent>
+  </PropertyGroup>
 </Project>
