@@ -2198,6 +2198,17 @@ namespace Gorgon.Renderers
         }
 
         /// <summary>
+        /// Function to perform an arbitrary update of any required logic prior to rendering.
+        /// </summary>
+        /// <param name="updateMethod">A method supplied by the user to perform some custom logic on objects that need to be rendered.</param>
+        /// <returns>The fluent interface for the 2D interface.</returns>
+        IGorgon2DFluent IGorgon2DFluent.Update(Action updateMethod)
+        {
+            updateMethod?.Invoke();
+            return this;
+        }
+
+        /// <summary>
         /// Function to end rendering.
         /// </summary>
         /// <returns>The <see cref="IGorgon2DFluent"/> interface to allow continuation of rendering.</returns>
