@@ -114,7 +114,7 @@ namespace PostProcessing
             _fpsString.Length = 0;
             _fpsString.AppendFormat("FPS: {0:0.0}\nFrame delta: {1:0.000} ms.", GorgonTiming.AverageFPS, GorgonTiming.Delta * 1000);
 
-            DX.Size2F textSize = _renderer.MeasureString(_fpsString.ToString());
+            DX.Size2F textSize = _renderer.DefaultFont.MeasureText(_fpsString.ToString(), false);
 
             _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _screen.Width, textSize.Height + 4), new GorgonColor(0, 0, 0, 0.5f));
             _renderer.DrawLine(0, textSize.Height + 4, _screen.Width, textSize.Height + 4, GorgonColor.White, 1.5f);
@@ -230,7 +230,7 @@ namespace PostProcessing
                 }
 
                 _buttons[i] = new Button(_compositor.Passes[i]);
-                DX.Size2F size = _renderer.MeasureString(_buttons[i].Text);
+                DX.Size2F size = _renderer.DefaultFont.MeasureText(_buttons[i].Text, false);
                 maxWidth = maxWidth.Max(size.Width);
                 _buttons[i].Bounds = new DX.RectangleF(0, position.Y, 0, size.Height);
                 position = new DX.Vector2(0, position.Y + size.Height + 2);

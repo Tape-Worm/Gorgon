@@ -158,6 +158,11 @@ namespace Gorgon.Renderers
 
         #region Properties.
         /// <summary>
+        /// Property to return the default font used for text rendering if the user did not specify a font with text drawing routines.
+        /// </summary>
+        public GorgonFont DefaultFont => _defaultFontFactory.Value.DefaultFont;
+
+        /// <summary>
         /// Property to return the log used to log debug messages.
         /// </summary>
         public IGorgonLog Log => Graphics.Log;
@@ -644,6 +649,8 @@ namespace Gorgon.Renderers
         /// Function to draw a polygonal sprite.
         /// </summary>
         /// <param name="sprite">The polygon sprite to draw.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="sprite"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="InvalidOperationException">Thrown if this method was called without having called <see cref="Begin"/> first.</exception>
         /// <remarks>
         /// <para>
         /// This method draws a sprite using a polygon as its surface. This is different from other sprite rendering in that:
@@ -663,7 +670,14 @@ namespace Gorgon.Renderers
         /// <para>
         /// <see cref="GorgonPolySprite"/> objects cannot be created directly, but can be built using the <see cref="GorgonPolySpriteBuilder"/> object.  Please note that these objects implement
         /// <see cref="IDisposable"/>, so users should call the <c>Dispose</c> method when they are done with the objects.
-        /// </para> 
+        /// </para>
+        /// <para>
+        /// <note type="caution">
+        /// <para>
+        /// For performance reasons, any exceptions thrown from this method will only be thrown when Gorgon is compiled as DEBUG.
+        /// </para>
+        /// </note>
+        /// </para>
         /// </remarks>
         /// <seealso cref="GorgonPolySpriteBuilder"/>
         /// <seealso cref="GorgonPolySprite"/>
@@ -672,10 +686,12 @@ namespace Gorgon.Renderers
         {
             sprite.ValidateObject(nameof(sprite));
 
+#if DEBUG
             if (_beginCalled == 0)
             {
                 throw new InvalidOperationException(Resources.GOR2D_ERR_BEGIN_NOT_CALLED);
             }
+#endif
 
             PolySpriteRenderable renderable = sprite.Renderable;
             
@@ -740,17 +756,19 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Function to draw a sprite.
         /// </summary>
-        /// <param name="sprite"></param>
-        /// <exception cref="ArgumentNullException"></exception>
-        /// <exception cref="InvalidOperationException">Thrown if <see cref="Begin"/> has not been called prior to calling this method.</exception>
+        /// <param name="sprite">The sprite object to draw.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="sprite"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="InvalidOperationException">Thrown if this method was called without having called <see cref="Begin"/> first.</exception>
         public void DrawSprite(GorgonSprite sprite)
         {
             sprite.ValidateObject(nameof(sprite));
 
+#if DEBUG
             if (_beginCalled == 0)
             {
                 throw new InvalidOperationException(Resources.GOR2D_ERR_BEGIN_NOT_CALLED);
             }
+#endif
 
             BatchRenderable renderable = sprite.Renderable;
 
@@ -770,8 +788,10 @@ namespace Gorgon.Renderers
         /// <param name="text">The text to measure.</param>
         /// <param name="font">[Optional] The font to use.</param>
         /// <returns>The width and height of the text.</returns>
-        public DX.Size2F MeasureString(string text, GorgonFont font = null)
+        private DX.Size2F MeasureString(string text, GorgonFont font = null)
         {
+            // TODO: This is private for now, I don't see much need for it since the default font is exposed as a property.
+            // TODO: However, this could be useful in a fluent interface.
             if (string.IsNullOrWhiteSpace(text))
             {
                 return DX.Size2F.Zero;
@@ -814,19 +834,24 @@ namespace Gorgon.Renderers
         /// Function to draw text.
         /// </summary>
         /// <param name="sprite">The text sprite to render.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="sprite"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="InvalidOperationException">Thrown if this method was called without having called <see cref="Begin"/> first.</exception>
         public void DrawTextSprite(GorgonTextSprite sprite)
         {
+            sprite.ValidateObject(nameof(sprite));
+#if DEBUG
+            if (_beginCalled == 0)
+            {
+                throw new InvalidOperationException(Resources.GOR2D_ERR_BEGIN_NOT_CALLED);
+            }
+#endif
+
             // The number of characters evaluated.
             int charCount = 0;
             // The index into the vertex array for the sprite.
             int vertexOffset = 0;
             // The position of the current glyph.
             DX.Vector2 position = DX.Vector2.Zero;
-
-            if (_beginCalled == 0)
-            {
-                throw new InvalidOperationException(Resources.GOR2D_ERR_BEGIN_NOT_CALLED);
-            }
 
             sprite.ValidateObject(nameof(sprite));
 
@@ -1001,12 +1026,15 @@ namespace Gorgon.Renderers
         /// <param name="textureArrayIndex">[Optional] The array index for a texture array to use.</param>
         /// <param name="textureSampler">[Optional] The texture sampler to apply to the texture.</param>
         /// <param name="depth">[Optional] The depth value for the rectangle.</param>
+        /// <exception cref="InvalidOperationException">Thrown if this method was called without having called <see cref="Begin"/> first.</exception>
         public void DrawFilledRectangle(DX.RectangleF region, GorgonColor color, GorgonTexture2DView texture = null, DX.RectangleF? textureRegion = null, int textureArrayIndex = 0, GorgonSamplerState textureSampler = null, float depth = 0)
         {
+#if DEBUG
             if (_beginCalled == 0)
             {
                 throw new InvalidOperationException(Resources.GOR2D_ERR_BEGIN_NOT_CALLED);
             }
+#endif
 
             // If there's no width/height, then there's nothing to draw.
             if (region.IsEmpty)
@@ -1090,8 +1118,16 @@ namespace Gorgon.Renderers
         /// <param name="textureArrayIndex">[Optional] The array index for a texture array to use.</param>
         /// <param name="textureSampler">[Optional] The texture sampler to apply to the texture.</param>
         /// <param name="depth">[Optional] The depth value for the rectangle.</param>
-        public void DrawTriangle(in GorgonTrianglePoint point1, in GorgonTrianglePoint point2, in GorgonTrianglePoint point3, GorgonTexture2DView texture = null, DX.RectangleF? textureRegion = null, int textureArrayIndex = 0, GorgonSamplerState textureSampler = null, float depth = 0)
+        /// <exception cref="InvalidOperationException">Thrown if this method was called without having called <see cref="Begin"/> first.</exception>
+        public void DrawTriangle(in GorgonTriangleVertex point1, in GorgonTriangleVertex point2, in GorgonTriangleVertex point3, GorgonTexture2DView texture = null, DX.RectangleF? textureRegion = null, int textureArrayIndex = 0, GorgonSamplerState textureSampler = null, float depth = 0)
         {
+#if DEBUG
+            if (_beginCalled == 0)
+            {
+                throw new InvalidOperationException(Resources.GOR2D_ERR_BEGIN_NOT_CALLED);
+            }
+#endif
+            
             CheckPrimitiveStateChange(texture, textureSampler);
 
             _primitiveRenderable.ActualVertexCount = 3;
@@ -1134,6 +1170,7 @@ namespace Gorgon.Renderers
         /// <param name="textureArrayIndex">[Optional] The array index for a texture array to use.</param>
         /// <param name="textureSampler">[Optional] The texture sampler to apply to the texture.</param>
         /// <param name="depth">[Optional] The depth value for the rectangle.</param>
+        /// <exception cref="InvalidOperationException">Thrown if this method was called without having called <see cref="Begin"/> first.</exception>
         public void DrawRectangle(DX.RectangleF region,
                                   GorgonColor color,
                                   float thickness = 1.0f,
@@ -1143,10 +1180,12 @@ namespace Gorgon.Renderers
                                   GorgonSamplerState textureSampler = null,
                                   float depth = 0)
         {
+#if DEBUG
             if (_beginCalled == 0)
             {
                 throw new InvalidOperationException(Resources.GOR2D_ERR_BEGIN_NOT_CALLED);
             }
+#endif
 
             // If there's no width/height or thickness, then there's nothing to draw.
             if ((region.IsEmpty) || (thickness <= 0.0f))
@@ -1260,12 +1299,15 @@ namespace Gorgon.Renderers
         /// <param name="textureSampler">[Optional] The texture sampler to apply to the texture.</param>
         /// <param name="startDepth">[Optional] The depth value for the starting point of the line.</param>
         /// <param name="endDepth">[Optional] The depth value for the ending point of the line.</param>
+        /// <exception cref="InvalidOperationException">Thrown if this method was called without having called <see cref="Begin"/> first.</exception>
         public void DrawLine(float x1, float y1, float x2, float y2, GorgonColor color, float thickness = 1.0f, GorgonTexture2DView texture = null, DX.RectangleF? textureRegion = null, int textureArrayIndex = 0, GorgonSamplerState textureSampler = null, float startDepth = 0, float endDepth = 0)
         {
+#if DEBUG
             if (_beginCalled == 0)
             {
                 throw new InvalidOperationException(Resources.GOR2D_ERR_BEGIN_NOT_CALLED);
             }
+#endif
 
             // There's nothing to render.
             if (((x2 == x1) && (y2 == y1)) || (thickness <= 0.0f))
@@ -1394,12 +1436,15 @@ namespace Gorgon.Renderers
         /// <param name="textureArrayIndex">[Optional] The array index for a texture array to use.</param>
         /// <param name="textureSampler">[Optional] The texture sampler to apply to the texture.</param>
         /// <param name="depth">[Optional] The depth value for the ellipse.</param>
+        /// <exception cref="InvalidOperationException">Thrown if this method was called without having called <see cref="Begin"/> first.</exception>
         public void DrawFilledEllipse(DX.RectangleF region, GorgonColor color, float smoothness = 1.0f, GorgonTexture2DView texture = null, DX.RectangleF? textureRegion = null, int textureArrayIndex = 0, GorgonSamplerState textureSampler = null, float depth = 0)
         {
+#if DEBUG
             if (_beginCalled == 0)
             {
                 throw new InvalidOperationException(Resources.GOR2D_ERR_BEGIN_NOT_CALLED);
             }
+#endif
 
             int quality = (int)(smoothness * 64.0f).FastCeiling().Max(8).Min(2048);
 
@@ -1494,12 +1539,15 @@ namespace Gorgon.Renderers
         /// <param name="textureArrayIndex">[Optional] The array index for a texture array to use.</param>
         /// <param name="textureSampler">[Optional] The texture sampler to apply to the texture.</param>
         /// <param name="depth">[Optional] The depth value for the ellipse.</param>
+        /// <exception cref="InvalidOperationException">Thrown if this method was called without having called <see cref="Begin"/> first.</exception>
         public void DrawArc(DX.RectangleF region, GorgonColor color, float startAngle, float endAngle, float smoothness = 1.0f, float thickness = 1.0f, GorgonTexture2DView texture = null, DX.RectangleF? textureRegion = null, int textureArrayIndex = 0, GorgonSamplerState textureSampler = null, float depth = 0)
         {
+#if DEBUG
             if (_beginCalled == 0)
             {
                 throw new InvalidOperationException(Resources.GOR2D_ERR_BEGIN_NOT_CALLED);
             }
+#endif
 
             // Ensure we don't get overdraw by limiting the angle sizes.
             while (startAngle > 360.0f)
@@ -1611,12 +1659,15 @@ namespace Gorgon.Renderers
         /// <param name="textureArrayIndex">[Optional] The array index for a texture array to use.</param>
         /// <param name="textureSampler">[Optional] The texture sampler to apply to the texture.</param>
         /// <param name="depth">[Optional] The depth value for the ellipse.</param>
+        /// <exception cref="InvalidOperationException">Thrown if this method was called without having called <see cref="Begin"/> first.</exception>
         public void DrawFilledArc(DX.RectangleF region, GorgonColor color, float startAngle, float endAngle, float smoothness = 1.0f, GorgonTexture2DView texture = null, DX.RectangleF? textureRegion = null, int textureArrayIndex = 0, GorgonSamplerState textureSampler = null, float depth = 0)
         {
+#if DEBUG
             if (_beginCalled == 0)
             {
                 throw new InvalidOperationException(Resources.GOR2D_ERR_BEGIN_NOT_CALLED);
             }
+#endif
 
             // Ensure we don't get overdraw by limiting the angle sizes.
             while (startAngle > 360.0f)
@@ -1722,12 +1773,15 @@ namespace Gorgon.Renderers
         /// <param name="textureArrayIndex">[Optional] The array index for a texture array to use.</param>
         /// <param name="textureSampler">[Optional] The texture sampler to apply to the texture.</param>
         /// <param name="depth">[Optional] The depth value for the ellipse.</param>
+        /// <exception cref="InvalidOperationException">Thrown if this method was called without having called <see cref="Begin"/> first.</exception>
         public void DrawEllipse(DX.RectangleF region, GorgonColor color, float smoothness = 1.0f, float thickness = 1.0f, GorgonTexture2DView texture = null, DX.RectangleF? textureRegion = null, int textureArrayIndex = 0, GorgonSamplerState textureSampler = null, float depth = 0)
         {
+#if DEBUG
             if (_beginCalled == 0)
             {
                 throw new InvalidOperationException(Resources.GOR2D_ERR_BEGIN_NOT_CALLED);
             }
+#endif
 
             int quality = (int)(smoothness * 64.0f).FastCeiling().Max(8).Min(2048);
 

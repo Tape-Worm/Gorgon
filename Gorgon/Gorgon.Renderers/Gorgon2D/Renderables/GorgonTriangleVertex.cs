@@ -32,10 +32,10 @@ using DX = SharpDX;
 namespace Gorgon.Renderers
 {
     /// <summary>
-    /// A value that defines a point for a triangle.
+    /// A value that defines a vertex for a triangle draw using the <see cref="Gorgon2D.DrawTriangle"/> method.
     /// </summary>
-    public readonly struct GorgonTrianglePoint
-        : IGorgonEquatableByRef<GorgonTrianglePoint>
+    public readonly struct GorgonTriangleVertex
+        : IGorgonEquatableByRef<GorgonTriangleVertex>
     {
         #region Variables.
         /// <summary>
@@ -76,7 +76,7 @@ namespace Gorgon.Renderers
         /// <see langword="true" /> if <paramref name="obj" /> and this instance are the same type and represent the same value; otherwise, <see langword="false" />. </returns>
         public override bool Equals(object obj)
         {
-            return obj is GorgonTrianglePoint point ? point.Equals(in this) : base.Equals(obj);
+            return obj is GorgonTriangleVertex point ? point.Equals(in this) : base.Equals(obj);
         }
 
         /// <summary>
@@ -85,7 +85,7 @@ namespace Gorgon.Renderers
         /// <param name="left">The left point to compare.</param>
         /// <param name="right">The right point to compare.</param>
         /// <returns><b>true</b> if the points are equal, <b>false</b> if not.</returns>
-        public static bool Equals(in GorgonTrianglePoint left, in GorgonTrianglePoint right)
+        public static bool Equals(in GorgonTriangleVertex left, in GorgonTriangleVertex right)
         {
             return GorgonColor.Equals(in left.Color, in right.Color)
                    && left.TextureArrayIndex == right.TextureArrayIndex
@@ -99,7 +99,7 @@ namespace Gorgon.Renderers
         /// <param name="other">An object to compare with this object.</param>
         /// <returns>
         /// <see langword="true" /> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <see langword="false" />.</returns>
-        public bool Equals(GorgonTrianglePoint other)
+        public bool Equals(GorgonTriangleVertex other)
         {
             return Equals(in this, in other);
         }
@@ -109,7 +109,7 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="other">The other instance to use for comparison.</param>
         /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-        public bool Equals(in GorgonTrianglePoint other)
+        public bool Equals(in GorgonTriangleVertex other)
         {
             return Equals(in this, in other);
         }
@@ -120,7 +120,7 @@ namespace Gorgon.Renderers
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
         /// <returns><b>true</b> if both instances are equal, <b>false</b> if not.</returns>
-        public static bool operator ==(in GorgonTrianglePoint left, in GorgonTrianglePoint right)
+        public static bool operator ==(in GorgonTriangleVertex left, in GorgonTriangleVertex right)
         {
             return Equals(in left, in right);
         }
@@ -131,7 +131,7 @@ namespace Gorgon.Renderers
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
         /// <returns><b>true</b> if both instances are not equal, <b>false</b> if equal.</returns>
-        public static bool operator !=(in GorgonTrianglePoint left, in GorgonTrianglePoint right)
+        public static bool operator !=(in GorgonTriangleVertex left, in GorgonTriangleVertex right)
         {
             return !Equals(in left, in right);
         }
@@ -139,13 +139,13 @@ namespace Gorgon.Renderers
 
         #region Constructor/Finalizer.
         /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonTrianglePoint" /> struct.
+        /// Initializes a new instance of the <see cref="GorgonTriangleVertex" /> struct.
         /// </summary>
         /// <param name="position">The position of the triangle point.</param>
         /// <param name="color">The color of the triangle pint.</param>
         /// <param name="textureCoordinate">[Optional] The texture coordinate to map to the point.</param>
         /// <param name="textureArrayIndex">[Optional] The index in a texture array to map to the point.</param>
-        public GorgonTrianglePoint(DX.Vector2 position, GorgonColor color, DX.Vector2? textureCoordinate = null, int textureArrayIndex = 0)
+        public GorgonTriangleVertex(DX.Vector2 position, GorgonColor color, DX.Vector2? textureCoordinate = null, int textureArrayIndex = 0)
         {
             Position = position;
             Color = color;

@@ -83,7 +83,7 @@
     <Compile Include="Renderables\GorgonPolySprite.cs" />
     <Compile Include="Renderables\GorgonPolySpriteBuilder.cs" />
     <Compile Include="Renderables\GorgonPolySpriteVertex.cs" />
-    <Compile Include="Renderables\GorgonTrianglePoint.cs" />
+    <Compile Include="Renderables\GorgonTriangleVertex.cs" />
     <Compile Include="Renderables\GorgonTextSprite.cs" />
     <Compile Include="Renderables\_Internal\PolySpriteRenderable.cs" />
     <Compile Include="Renderables\_Internal\PolySpriteTransformer.cs" />
