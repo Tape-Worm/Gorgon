@@ -182,6 +182,11 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
+        /// Property to return whether or not the resource is disposed.
+        /// </summary>
+        public bool IsDisposed => _resource == null;
+
+        /// <summary>
         /// Property to return the usage for the resource.
         /// </summary>
         public abstract ResourceUsage Usage

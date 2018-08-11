@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Gorgon.Graphics.Core
 {
@@ -42,6 +43,19 @@ namespace Gorgon.Graphics.Core
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to retrieve the list of disposables for a given graphics instance.
+        /// </summary>
+        /// <param name="graphics">The graphics instance that owns the disposable resources.</param>
+        /// <returns>An enumerable containing the list of resources for the graphics instance.</returns>
+        public static IEnumerable<WeakReference<IDisposable>> GetDisposables(this GorgonGraphics graphics)
+        {
+            lock (_syncLock)
+            {
+                return _disposables[graphics];
+            }
+        }
+
         /// <summary>
         /// Function to register a disposable object with the graphics interface.
         /// </summary>
