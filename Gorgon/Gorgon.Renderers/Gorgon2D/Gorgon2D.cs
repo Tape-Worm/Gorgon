@@ -1161,7 +1161,11 @@ namespace Gorgon.Renderers
                 throw new InvalidOperationException(Resources.GOR2D_ERR_BEGIN_NOT_CALLED);
             }
 #endif
-            
+            if (textureSampler == null)
+            {
+                textureSampler = GorgonSamplerState.Wrapping;
+            }
+
             CheckPrimitiveStateChange(texture, textureSampler);
 
             _primitiveRenderable.ActualVertexCount = 3;
@@ -1549,9 +1553,14 @@ namespace Gorgon.Renderers
                 c.UV = uvCenter;
             }
 
+            if (textureSampler == null)
+            {
+                textureSampler = GorgonSamplerState.Wrapping;
+            }
+
             CheckPrimitiveStateChange(texture, textureSampler);
             _primitiveRenderable.Texture = texture ?? _defaultTexture;
-            _primitiveRenderable.TextureSampler = textureSampler ?? GorgonSamplerState.Default;
+            _primitiveRenderable.TextureSampler = textureSampler;
             _primitiveRenderable.AlphaTestData = new AlphaTestData(false, GorgonRangeF.Empty);
 
             RenderBatchOnChange(_primitiveRenderable, false);
@@ -1670,9 +1679,14 @@ namespace Gorgon.Renderers
                 vInner.UV = uvInner;
             }
 
+            if (textureSampler == null)
+            {
+                textureSampler = GorgonSamplerState.Wrapping;
+            }
+
             CheckPrimitiveStateChange(texture, textureSampler);
             _primitiveRenderable.Texture = texture ?? _defaultTexture;
-            _primitiveRenderable.TextureSampler = textureSampler ?? GorgonSamplerState.Default;
+            _primitiveRenderable.TextureSampler = textureSampler;
             _primitiveRenderable.AlphaTestData = new AlphaTestData(false, GorgonRangeF.Empty);
 
             RenderBatchOnChange(_primitiveRenderable, false);
@@ -1785,9 +1799,14 @@ namespace Gorgon.Renderers
                 c.UV = uvCenter;
             }
 
+            if (textureSampler == null)
+            {
+                textureSampler = GorgonSamplerState.Wrapping;
+            }
+
             CheckPrimitiveStateChange(texture, textureSampler);
             _primitiveRenderable.Texture = texture ?? _defaultTexture;
-            _primitiveRenderable.TextureSampler = textureSampler ?? GorgonSamplerState.Default;
+            _primitiveRenderable.TextureSampler = textureSampler;
             _primitiveRenderable.AlphaTestData = new AlphaTestData(false, GorgonRangeF.Empty);
             
             RenderBatchOnChange(_primitiveRenderable, false);
@@ -1891,9 +1910,14 @@ namespace Gorgon.Renderers
                 vInner.UV = uvInner;
             }
 
+            if (textureSampler == null)
+            {
+                textureSampler = GorgonSamplerState.Wrapping;
+            }
+
             CheckPrimitiveStateChange(texture, textureSampler);
             _primitiveRenderable.Texture = texture ?? _defaultTexture;
-            _primitiveRenderable.TextureSampler = textureSampler ?? GorgonSamplerState.Default;
+            _primitiveRenderable.TextureSampler = textureSampler;
             _primitiveRenderable.AlphaTestData = new AlphaTestData(false, GorgonRangeF.Empty);
             
             RenderBatchOnChange(_primitiveRenderable, false);

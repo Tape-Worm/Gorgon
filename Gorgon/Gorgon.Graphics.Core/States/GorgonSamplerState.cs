@@ -84,7 +84,18 @@ namespace Gorgon.Graphics.Core
 	                                                                     {
 	                                                                         Filter = SampleFilter.Anisotropic
 	                                                                     };
-        #endregion
+
+	    /// <summary>
+	    /// A sampler state that turns on texture wrapping when texture coordinates exceed the range of the texture size.
+	    /// </summary>
+	    public static readonly GorgonSamplerState PointFilteringWrapping = new GorgonSamplerState
+	                                                         {
+                                                                 Filter = SampleFilter.MinMagMipPoint,
+	                                                             WrapU = TextureWrap.Wrap,
+	                                                             WrapV = TextureWrap.Wrap,
+	                                                             WrapW = TextureWrap.Wrap
+	                                                         };
+	    #endregion
 
         #region Properties.
         /// <summary>

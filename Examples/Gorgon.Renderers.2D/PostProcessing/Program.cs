@@ -155,6 +155,17 @@ namespace Gorgon.Examples
                 }
 
                 _renderer.DrawFilledRectangle(button.Bounds, button.BackColor);
+            }
+
+            for (int i = 0; i < _buttons.Length; ++i)
+            {
+                Button button = _buttons[i];
+
+                if (button.IsDragging)
+                {
+                    continue;
+                }
+            
                 _renderer.DrawString(button.Text, button.Bounds.TopLeft, color: button.ForeColor);
             }
 
