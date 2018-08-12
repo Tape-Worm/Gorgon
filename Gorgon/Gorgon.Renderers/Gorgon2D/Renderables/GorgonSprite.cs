@@ -24,11 +24,15 @@
 // 
 #endregion
 
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
+using Gorgon.IO;
 using Gorgon.Math;
+using Newtonsoft.Json;
 using DX = SharpDX;
 
 namespace Gorgon.Renderers
@@ -38,6 +42,13 @@ namespace Gorgon.Renderers
     /// </summary>
     public class GorgonSprite
     {
+        #region Constants.
+        /// <summary>
+        /// The header for a sprite file.
+        /// </summary>
+        public const string FileHeaderValue = "GORSPR30";
+        #endregion
+
         #region Variables.
         // The angle of rotation, in degrees.
         private float _angle;
@@ -48,8 +59,15 @@ namespace Gorgon.Renderers
 
         #region Properties.
         /// <summary>
+        /// Property to return the header for the sprite when serializing/deserializing.
+        /// </summary>
+        [JsonProperty("header")]
+        private ulong Header => FileHeaderValue.ChunkID();
+
+        /// <summary>
         /// Property to return whether or not the sprite has had its position, size, texture information, or object space vertices updated since it was last drawn.
         /// </summary>
+        [JsonIgnore]
         public bool IsUpdated => Renderable.HasTextureChanges 
                                  || Renderable.HasTransformChanges 
                                  || Renderable.HasVertexChanges 
@@ -69,6 +87,7 @@ namespace Gorgon.Renderers
         /// <remarks>
         /// This sets the color for the entire sprite.  To assign colors to each corner of the sprite, use the <see cref="CornerColors"/> property.
         /// </remarks>
+        [JsonIgnore]
         public GorgonColor Color
         {
             get => Renderable.UpperLeftColor;
@@ -122,6 +141,7 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to set or return the boundaries of the sprite.
         /// </summary>
+        [JsonIgnore]
         public DX.RectangleF Bounds
         {
             get => Renderable.Bounds;
@@ -145,6 +165,7 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to set or return the position of the sprite.
         /// </summary>
+        [JsonIgnore]
         public DX.Vector2 Position
         {
             get => Renderable.Bounds.TopLeft;
@@ -166,6 +187,7 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to set or return the depth value for this sprite.
         /// </summary>
+        [JsonIgnore]
         public float Depth
         {
             get => Renderable.Depth;
@@ -207,6 +229,7 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to set or return the size of the sprite.
         /// </summary>
+        [JsonConverter(typeof(JsonSize2FConverter))]
         public DX.Size2F Size
         {
             get => Bounds.Size;
@@ -274,6 +297,7 @@ namespace Gorgon.Renderers
         /// This property will set or return the actual size of the renderable.  This means that if a <see cref="Scale"/> has been set, then this property will return the size of the renderable with
         /// multiplied by the scale.  When assigning a value, the scale be set on value derived from the current size of the renderable.
         /// </remarks>
+        [JsonIgnore]
         public DX.Size2F ScaledSize
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -296,6 +320,7 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to set or return the scale factor to apply to the sprite.
         /// </summary>
+        [JsonIgnore]
         public DX.Vector2 Scale
         {
             get => Renderable.Scale;
@@ -316,6 +341,7 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to set or return the angle of rotation, in degrees.
         /// </summary>
+        [JsonIgnore]
         public float Angle
         {
             get => _angle;
@@ -417,6 +443,53 @@ namespace Gorgon.Renderers
                 Renderable.VerticalFlip = value;
                 Renderable.HasTextureChanges = true;
             }
+        }
+        #endregion
+
+        #region Methods.
+        public static GorgonSprite FromJson(Gorgon2D renderer, string json)
+        {
+            var settings = new JsonSerializerSettings
+                           {
+                               CheckAdditionalContent = false
+                           };
+
+            if (!json.Contains($"\"header\": {FileHeaderValue.ChunkID()}"))
+            {
+                throw new GorgonException(GorgonResult.CannotRead, "ERR");
+            }
+
+            settings.Converters.Add(new JsonVector3Converter());
+            settings.Converters.Add(new JsonVector2Converter());
+            settings.Converters.Add(new JsonSize2FConverter());
+            settings.Converters.Add(new JsonRectangleFConverter());
+            settings.Converters.Add(new JsonTextureConverter
+                                    {
+                                        Graphics = renderer.Graphics
+                                    });
+            settings.Converters.Add(new JsonSamplerConverter
+                                    {
+                                        Graphics = renderer.Graphics
+                                    });
+
+            return JsonConvert.DeserializeObject<GorgonSprite>(json, settings);
+        }
+
+        public string ToJson()
+        {
+            var settings = new JsonSerializerSettings
+                           {
+                               CheckAdditionalContent = false,
+                               Formatting = Formatting.Indented
+                           };
+
+            settings.Converters.Add(new JsonVector3Converter());
+            settings.Converters.Add(new JsonVector2Converter());
+            settings.Converters.Add(new JsonSize2FConverter());
+            settings.Converters.Add(new JsonRectangleFConverter());
+            settings.Converters.Add(new JsonTextureConverter());
+            settings.Converters.Add(new JsonSamplerConverter());
+            return JsonConvert.SerializeObject(this, settings);
         }
         #endregion
 

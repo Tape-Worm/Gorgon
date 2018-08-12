@@ -28,6 +28,7 @@ using System;
 using System.Runtime.InteropServices;
 using Gorgon.Math;
 using Gorgon.Properties;
+using Newtonsoft.Json;
 
 namespace Gorgon.Core
 {
@@ -63,13 +64,14 @@ namespace Gorgon.Core
         /// <summary>
         /// Property to return whether the range is empty or not.
         /// </summary>
+        [JsonIgnore]
         public bool IsEmpty => ((Maximum.EqualsEpsilon(0.0)) && (Minimum.EqualsEpsilon(0.0)));
 
 		/// <summary>
         /// Property to return the range between the two values.
         /// </summary>
+		[JsonIgnore]
         public double Range => (Minimum < Maximum) ? (Maximum - Minimum) : (Minimum - Maximum);
-
 		#endregion
 
         #region Methods.
@@ -599,13 +601,14 @@ namespace Gorgon.Core
 		/// <summary>
 		/// Property to return whether the range is empty or not.
 		/// </summary>
+		[JsonIgnore]
 		public bool IsEmpty => Maximum == 0 && Minimum == 0;
 
 		/// <summary>
 		/// Property to return the range between the two values.
 		/// </summary>
+		[JsonIgnore]
 		public decimal Range => (Minimum < Maximum) ? (Maximum - Minimum) : (Minimum - Maximum);
-
 		#endregion
 
 		#region Methods.
@@ -1136,11 +1139,13 @@ namespace Gorgon.Core
 		/// <summary>
 		/// Property to return whether the range is empty or not.
 		/// </summary>
+		[JsonIgnore]
 		public bool IsEmpty => ((Maximum.EqualsEpsilon(0.0f)) && (Minimum.EqualsEpsilon(0.0f)));
 
 		/// <summary>
 		/// Property to return the range between the two values.
 		/// </summary>
+		[JsonIgnore]
 		public float Range => (Minimum < Maximum) ? (Maximum - Minimum) : (Minimum - Maximum);
 
 		#endregion
@@ -1672,13 +1677,14 @@ namespace Gorgon.Core
 		/// <summary>
 		/// Property to return whether the range is empty or not.
 		/// </summary>
+		[JsonIgnore]
 		public bool IsEmpty => Maximum == 0 && Minimum == 0;
 
 		/// <summary>
 		/// Property to return the range between the two values.
 		/// </summary>
+		[JsonIgnore]
 		public int Range => (Minimum < Maximum) ? (Maximum - Minimum) : (Minimum - Maximum);
-
 		#endregion
 
 		#region Methods.

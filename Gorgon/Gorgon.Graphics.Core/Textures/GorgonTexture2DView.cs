@@ -546,6 +546,13 @@ namespace Gorgon.Graphics.Core
 
             using (IGorgonImage image = codec.LoadFromFile(filePath))
             {
+                if (options == null)
+                {
+                    options = new GorgonTextureLoadOptions
+                              {
+                                  Name = Path.GetFileNameWithoutExtension(filePath), Usage = ResourceUsage.Default, Binding = TextureBinding.ShaderResource
+                              };
+                }
                 GorgonTexture2D texture = image.ToTexture2D(graphics, options);
                 GorgonTexture2DView view = texture.GetShaderResourceView();
                 view.OwnsResource = true;

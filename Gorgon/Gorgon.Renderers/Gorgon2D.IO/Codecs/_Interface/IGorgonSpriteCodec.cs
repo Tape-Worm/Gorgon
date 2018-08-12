@@ -1,0 +1,86 @@
+﻿#region MIT
+// 
+// Gorgon.
+// Copyright (C) 2018 Michael Winsor
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+// 
+// Created: August 11, 2018 3:36:34 PM
+// 
+#endregion
+
+using System;
+using System.IO;
+using Gorgon.Graphics.Core;
+using Gorgon.Renderers;
+
+namespace Gorgon.IO.Codecs
+{
+    /// <summary>
+    /// An interface used to serialize and deserialize <see cref="GorgonSprite"/> objects.
+    /// </summary>
+    /// <seealso cref="GorgonSprite"/>
+    public interface IGorgonSpriteCodec
+        : IGorgonGraphicsObject
+    {
+        /// <summary>
+        /// Property to return the renderer used to create objects.
+        /// </summary>
+        Gorgon2D Renderer
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return whether or not the codec can decode sprite data.
+        /// </summary>
+        bool CanDecode
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return whether or not the codec can encode sprite data.
+        /// </summary>
+        bool CanEncode
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the version of sprite data that the codec supports.
+        /// </summary>
+        Version Version
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Function to read the sprite data from a stream.
+        /// </summary>
+        /// <param name="stream">The stream containing the sprite.</param>
+        /// <returns>A new <see cref="GorgonSprite"/>.</returns>
+        GorgonSprite FromStream(Stream stream);
+
+        /// <summary>
+        /// Function to save the sprite data to a stream.
+        /// </summary>
+        /// <param name="stream">The stream that will contain the sprite.</param>
+        void Save(Stream stream);
+    }
+}
