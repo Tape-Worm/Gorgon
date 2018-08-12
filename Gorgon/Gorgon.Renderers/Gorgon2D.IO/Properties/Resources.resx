@@ -126,11 +126,29 @@
   <data name="GOR2DIO_ERR_INVALID_HEADER" xml:space="preserve">
     <value>The header for the sprite data is invalid.</value>
   </data>
+  <data name="GOR2DIO_ERR_STREAM_UNSEEKABLE" xml:space="preserve">
+    <value>The stream requires seek capability.</value>
+  </data>
   <data name="GOR2DIO_ERR_VERSION_MISMATCH" xml:space="preserve">
     <value>This sprite data cannot be read.
 Invalid version '{0}'.</value>
   </data>
-  <data name="GOR2D_ERR_STREAM_UNSEEKABLE" xml:space="preserve">
-    <value>The stream requires seek capability.</value>
+  <data name="GOR2DIO_V1_CODEC" xml:space="preserve">
+    <value>Gorgon Sprite v1.x Codec</value>
+  </data>
+  <data name="GOR2DIO_V1_CODEC_DESCRIPTION" xml:space="preserve">
+    <value>Gorgon binary sprite codec for version 1.0 - 1.2 of Gorgon.</value>
+  </data>
+  <data name="GOR2DIO_V2_CODEC" xml:space="preserve">
+    <value>Gorgon Sprite v2 Codec</value>
+  </data>
+  <data name="GOR2DIO_V2_CODEC_DESCRIPTION" xml:space="preserve">
+    <value>Gorgon sprite codec for version 2.0 of Gorgon.</value>
+  </data>
+  <data name="GOR2DIO_V3_JSON_CODEC" xml:space="preserve">
+    <value>Gorgon Sprite v3 JSON Codec</value>
+  </data>
+  <data name="GOR2DIO_V3_JSON_CODEC_DESCRIPTION" xml:space="preserve">
+    <value>Gorgon v3 sprite codec for reading and writing sprites as JSON data.</value>
   </data>
 </root>

@@ -38,17 +38,11 @@ namespace Gorgon.Renderers
     /// <summary>
     /// A converter used to convert a texture to and from a string.
     /// </summary>
-    internal class JsonTextureConverter
+    internal class JsonTexture2DConverter
         : JsonConverter<GorgonTexture2DView>
     {
-        /// <summary>
-        /// Property to set or return the graphics object to use for resource look up.
-        /// </summary>
-        public GorgonGraphics Graphics
-        {
-            get;
-            set;
-        }
+        // The graphics object to use for resource look up.
+        private readonly GorgonGraphics _graphics;
         
         /// <summary>Writes the JSON representation of the object.</summary>
         /// <param name="writer">The <see cref="T:Newtonsoft.Json.JsonWriter" /> to write to.</param>
@@ -87,34 +81,63 @@ namespace Gorgon.Renderers
         /// <returns>The object value.</returns>
         public override GorgonTexture2DView ReadJson(JsonReader reader, Type objectType, GorgonTexture2DView existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
-            if (reader.TokenType == JsonToken.Null)
+            if ((reader.TokenType != JsonToken.StartObject)
+                || (_graphics == null)
+                || (!reader.Read()))
             {
                 return null;
             }
-
-            reader.Read();
+            
             string name = reader.ReadAsString();
 
-            GorgonTexture2D texture = Graphics?.LocateResourcesByName<GorgonTexture2D>(name).FirstOrDefault();
+            GorgonTexture2D texture = _graphics?.LocateResourcesByName<GorgonTexture2D>(name).FirstOrDefault();
 
             if (texture == null)
             {
                 return null;
             }
 
-            reader.Read();
+            if (!reader.Read())
+            {
+                return null;
+            }
+
             int arrayStart = reader.ReadAsInt32() ?? 0;
-            reader.Read();
+            if (!reader.Read())
+            {
+                return null;
+            }
             int arrayCount = reader.ReadAsInt32() ?? 1;
-            reader.Read();
+            if (!reader.Read())
+            {
+                return null;
+            }
+
             int mipStart = reader.ReadAsInt32() ?? 0;
-            reader.Read();
+            if (!reader.Read())
+            {
+                return null;
+            }
+
             int mipCount = reader.ReadAsInt32() ?? 1;
-            reader.Read();
+            if (!reader.Read())
+            {
+                return null;
+            }
+
             var format = (BufferFormat)(reader.ReadAsInt32() ?? (int)BufferFormat.R8G8B8A8_UNorm);
             reader.Read();
 
             return texture.GetShaderResourceView(format, mipStart, mipCount, arrayStart, arrayCount);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="JsonTexture2DConverter"/> class.
+        /// </summary>
+        /// <param name="graphics">The graphics interface used for resource lookup.</param>
+        public JsonTexture2DConverter(GorgonGraphics graphics)
+        {
+            _graphics = graphics;
         }
     }
 }

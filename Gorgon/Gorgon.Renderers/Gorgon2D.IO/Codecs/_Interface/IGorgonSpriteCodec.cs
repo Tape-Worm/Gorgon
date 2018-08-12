@@ -26,6 +26,7 @@
 
 using System;
 using System.IO;
+using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
 
@@ -36,8 +37,24 @@ namespace Gorgon.IO.Codecs
     /// </summary>
     /// <seealso cref="GorgonSprite"/>
     public interface IGorgonSpriteCodec
-        : IGorgonGraphicsObject
+        : IGorgonGraphicsObject, IGorgonNamedObject
     {
+        /// <summary>
+        /// Property to return the friendly description of the format.
+        /// </summary>
+        string CodecDescription
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the abbreviated name of the codec (e.g. PNG).
+        /// </summary>
+        string Codec
+        {
+            get;
+        }
+
         /// <summary>
         /// Property to return the renderer used to create objects.
         /// </summary>
@@ -74,13 +91,29 @@ namespace Gorgon.IO.Codecs
         /// Function to read the sprite data from a stream.
         /// </summary>
         /// <param name="stream">The stream containing the sprite.</param>
+        /// <param name="byteCount">[Optional] The number of bytes to read from the stream.</param>
         /// <returns>A new <see cref="GorgonSprite"/>.</returns>
-        GorgonSprite FromStream(Stream stream);
+        GorgonSprite FromStream(Stream stream, int? byteCount = null);
+
+        /// <summary>
+        /// Function to read the sprite data from a file on the physical file system.
+        /// </summary>
+        /// <param name="filePath">The path to the file to read.</param>
+        /// <returns>A new <see cref="GorgonSprite"/>.</returns>
+        GorgonSprite FromFile(string filePath);
 
         /// <summary>
         /// Function to save the sprite data to a stream.
         /// </summary>
+        /// <param name="sprite">The sprite to serialize into the stream.</param>
         /// <param name="stream">The stream that will contain the sprite.</param>
-        void Save(Stream stream);
+        void Save(GorgonSprite sprite, Stream stream);
+
+        /// <summary>
+        /// Function to save the sprite data to a file on a physical file system.
+        /// </summary>
+        /// <param name="sprite">The sprite to serialize into the file.</param>
+        /// <param name="filePath">The path to the file.</param>
+        void Save(GorgonSprite sprite, string filePath);
     }
 }

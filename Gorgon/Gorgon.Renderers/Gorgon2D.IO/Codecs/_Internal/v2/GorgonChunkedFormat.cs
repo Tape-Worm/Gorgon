@@ -302,7 +302,7 @@ namespace GorgonLibrary.IO
 
             if (!stream.CanSeek)
             {
-                throw new ArgumentException(Resources.GOR2D_ERR_STREAM_UNSEEKABLE, nameof(stream));
+                throw new ArgumentException(Resources.GOR2DIO_ERR_STREAM_UNSEEKABLE, nameof(stream));
             }
 
 			if (accessMode == ChunkAccessMode.Write)

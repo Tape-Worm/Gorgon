@@ -42,7 +42,7 @@ namespace Gorgon.IO.Codecs
     /// A codec that can read version 2 sprite data.
     /// </summary>
     public class GorgonV2SpriteCodec
-        : IGorgonSpriteCodec
+        : GorgonCodecCommon
     {
         #region Enums.
         /// <summary>
@@ -112,35 +112,22 @@ namespace Gorgon.IO.Codecs
 
         #region Properties.
         /// <summary>
-        /// Property to return the renderer used to create objects.
-        /// </summary>
-        public Gorgon2D Renderer
-        {
-            get;
-        }
-
-        /// <summary>
         /// Property to return whether or not the codec can decode sprite data.
         /// </summary>
-        public bool CanDecode => true;
+        public override bool CanDecode => true;
 
         /// <summary>
         /// Property to return whether or not the codec can encode sprite data.
         /// </summary>
-        public bool CanEncode => false;
+        public override bool CanEncode => false;
 
         /// <summary>
         /// Property to return the version of sprite data that the codec supports.
         /// </summary>
-        public Version Version
+        public override Version Version
         {
             get;
         } = new Version(2, 0);
-
-        /// <summary>
-        /// Property to return the graphics interface that built this object.
-        /// </summary>
-        public GorgonGraphics Graphics => Renderer.Graphics;
         #endregion
 
         #region Methods.
@@ -442,28 +429,15 @@ namespace Gorgon.IO.Codecs
         /// Function to read the sprite data from a stream.
         /// </summary>
         /// <param name="stream">The stream containing the sprite.</param>
+        /// <param name="byteCount">The number of bytes to read from the stream.</param>
         /// <returns>A new <see cref="GorgonSprite"/>.</returns>
-        public GorgonSprite FromStream(Stream stream)
+        protected override GorgonSprite OnReadFromStream(Stream stream, int byteCount)
         {
-            if (stream == null)
-            {
-                throw new ArgumentNullException(nameof(stream));
-            }
-
-            if (!stream.CanRead)
-            {
-                throw new GorgonException(GorgonResult.CannotRead, Resources.GO2DIO_ERR_STREAM_IS_WRITE_ONLY);
-            }
-
-            if (stream.Position >= stream.Length)
-            {
-                throw new EndOfStreamException();
-            }
-
             var reader = new GorgonChunkReader(stream);
 
             try
             {
+                // We don't need byte count for this.
                 return LoadSprite(Graphics, reader);
             }
             finally
@@ -475,9 +449,9 @@ namespace Gorgon.IO.Codecs
         /// <summary>
         /// Function to save the sprite data to a stream.
         /// </summary>
+        /// <param name="sprite">The sprite to serialize into the stream.</param>
         /// <param name="stream">The stream that will contain the sprite.</param>
-        /// <exception cref="NotSupportedException">This method is not supported by this codec.</exception>
-        public void Save(Stream stream)
+        protected override void OnSaveToStream(GorgonSprite sprite, Stream stream)
         {
             throw new NotSupportedException();
         }
@@ -487,13 +461,12 @@ namespace Gorgon.IO.Codecs
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonV2SpriteCodec"/> class.
         /// </summary>
-        /// <param name="renderer">The renderer.</param>
-        /// <exception cref="ArgumentNullException">renderer</exception>
+        /// <param name="renderer">The renderer used for resource handling.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> parameter is <b>null</b>.</exception>
         public GorgonV2SpriteCodec(Gorgon2D renderer)
+            : base(renderer, Resources.GOR2DIO_V2_CODEC, Resources.GOR2DIO_V2_CODEC_DESCRIPTION)
         {
-            Renderer = renderer ?? throw new ArgumentNullException(nameof(renderer));
         }
         #endregion
-
     }
 }

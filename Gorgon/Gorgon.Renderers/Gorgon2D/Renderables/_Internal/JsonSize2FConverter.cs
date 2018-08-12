@@ -66,15 +66,19 @@ namespace Gorgon.Renderers
         /// <returns>The object value.</returns>
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            if (reader.TokenType == JsonToken.Null)
+            if ((reader.TokenType != JsonToken.StartObject)
+                || (!reader.Read()))
             {
                 return DX.Size2F.Zero;
             }
 
-            reader.Read();
-            float w = (float)(reader.ReadAsDouble() ?? 0);
-            reader.Read();
-            float h = (float)(reader.ReadAsDouble() ?? 0);
+            var w = (float)(reader.ReadAsDouble() ?? 0);
+            if (!reader.Read())
+            {
+                return new DX.Size2F(w, 0);
+            }
+
+            var h = (float)(reader.ReadAsDouble() ?? 0);
             reader.Read();
 
             return new DX.Size2F(w, h);
@@ -89,11 +93,6 @@ namespace Gorgon.Renderers
         /// </returns>
         public override bool CanConvert(Type objectType)
         {
-            if ((objectType == typeof(DX.Size2F)))
-            {
-                Debugger.Break();
-            }
-
             return (objectType == typeof(DX.Size2F));
         }
     }

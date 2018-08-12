@@ -70,59 +70,38 @@ namespace Gorgon.Renderers
         /// <returns>The object value.</returns>
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            if (reader.TokenType == JsonToken.Null)
+            if ((reader.TokenType != JsonToken.StartObject)
+                || (!reader.Read()))
             {
                 return DX.RectangleF.Empty;
             }
 
-            float l = 0;
-            float t = 0;
-            float r = 0;
-            float b = 0;
+            var l = (float)(reader.ReadAsDouble() ?? 0);
 
-            if (reader.Read())
-            {
-                l = (float)(reader.ReadAsDouble() ?? 0);
-            }
-            else
-            {
-                return DX.RectangleF.Empty;
-            }
-
-            if (reader.Read())
-            {
-                t = (float)(reader.ReadAsDouble() ?? 0);
-                
-            }
-            else
+            if (!reader.Read())
             {
                 return new DX.RectangleF(l, 0, 0, 0);
             }
 
-            if (reader.Read())
-            {
-                r = (float)(reader.ReadAsDouble() ?? 0);
-            }
-            else
+            var t = (float)(reader.ReadAsDouble() ?? 0);
+
+            if (!reader.Read())
             {
                 return new DX.RectangleF(l, t, 0, 0);
-
             }
 
-            if (reader.Read())
-            {
-                b = (float)(reader.ReadAsDouble() ?? 0);
+            var r = (float)(reader.ReadAsDouble() ?? 0);
                 
-            }
-            else
+            if (!reader.Read())
             {
                 return new DX.RectangleF
                        {
                            Left = l, Top = t, Right = r
                        };
-
             }
-            
+
+            var b = (float)(reader.ReadAsDouble() ?? 0);
+
             var result = new DX.RectangleF
                          {
                              Left = l,

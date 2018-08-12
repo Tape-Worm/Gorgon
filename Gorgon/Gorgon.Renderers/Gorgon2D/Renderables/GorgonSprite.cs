@@ -1,4 +1,4 @@
-﻿ #region MIT
+﻿#region MIT
 // 
 // Gorgon.
 // Copyright (C) 2018 Michael Winsor
@@ -24,15 +24,17 @@
 // 
 #endregion
 
-using System.Collections.Generic;
-using System.Diagnostics;
+using System;
 using System.Runtime.CompilerServices;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.IO;
 using Gorgon.Math;
+using Gorgon.Renderers.Properties;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
 using DX = SharpDX;
 
 namespace Gorgon.Renderers
@@ -43,6 +45,11 @@ namespace Gorgon.Renderers
     public class GorgonSprite
     {
         #region Constants.
+        // The property name for the header value.
+        private const string JsonHeaderProp = "header";
+        // The property name for the header value.
+        private const string JsonVersionProp = "version";
+        
         /// <summary>
         /// The header for a sprite file.
         /// </summary>
@@ -50,6 +57,9 @@ namespace Gorgon.Renderers
         #endregion
 
         #region Variables.
+        // The serialization version for the object.
+        private static readonly Version _serializeVersion = new Version(3, 0);
+
         // The angle of rotation, in degrees.
         private float _angle;
         // The renderable data for this sprite.
@@ -61,8 +71,14 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to return the header for the sprite when serializing/deserializing.
         /// </summary>
-        [JsonProperty("header")]
+        [JsonProperty(JsonHeaderProp)]
         private ulong Header => FileHeaderValue.ChunkID();
+
+        /// <summary>
+        /// Property to return the version number for serialization.
+        /// </summary>
+        [JsonProperty(JsonVersionProp)]
+        public Version SerializationVersion => _serializeVersion;
 
         /// <summary>
         /// Property to return whether or not the sprite has had its position, size, texture information, or object space vertices updated since it was last drawn.
@@ -229,7 +245,6 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to set or return the size of the sprite.
         /// </summary>
-        [JsonConverter(typeof(JsonSize2FConverter))]
         public DX.Size2F Size
         {
             get => Bounds.Size;
@@ -447,48 +462,84 @@ namespace Gorgon.Renderers
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to convert a JSON string into a sprite object.
+        /// </summary>
+        /// <param name="renderer">The renderer for the sprite.</param>
+        /// <param name="json">The JSON string containing the sprite data.</param>
+        /// <returns>A new <see cref="GorgonSprite"/>.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/>, or the <paramref name="json"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="json"/> parameter is empty.</exception>
+        /// <exception cref="GorgonException">Thrown if the JSON string does not contain sprite data, or there is a version mismatch.</exception>
         public static GorgonSprite FromJson(Gorgon2D renderer, string json)
         {
-            var settings = new JsonSerializerSettings
-                           {
-                               CheckAdditionalContent = false
-                           };
-
-            if (!json.Contains($"\"header\": {FileHeaderValue.ChunkID()}"))
+            if (renderer == null)
             {
-                throw new GorgonException(GorgonResult.CannotRead, "ERR");
+                throw new ArgumentNullException(nameof(renderer));
             }
 
-            settings.Converters.Add(new JsonVector3Converter());
-            settings.Converters.Add(new JsonVector2Converter());
-            settings.Converters.Add(new JsonSize2FConverter());
-            settings.Converters.Add(new JsonRectangleFConverter());
-            settings.Converters.Add(new JsonTextureConverter
-                                    {
-                                        Graphics = renderer.Graphics
-                                    });
-            settings.Converters.Add(new JsonSamplerConverter
-                                    {
-                                        Graphics = renderer.Graphics
-                                    });
+            if (json == null)
+            {
+                throw new ArgumentNullException(nameof(json));
+            }
 
-            return JsonConvert.DeserializeObject<GorgonSprite>(json, settings);
+            if (string.IsNullOrWhiteSpace(json))
+            {
+                throw new ArgumentEmptyException(nameof(json));
+            }
+
+            // Set up serialization so we can convert our more complicated structures.
+            var serializer = new JsonSerializer
+                             {
+                                 CheckAdditionalContent = false
+                             };
+
+            serializer.Converters.Add(new JsonVector2Converter());
+            serializer.Converters.Add(new JsonVector3Converter());
+            serializer.Converters.Add(new JsonSize2FConverter());
+            serializer.Converters.Add(new JsonRectangleFConverter());
+            serializer.Converters.Add(new JsonSamplerConverter(renderer.Graphics));
+            serializer.Converters.Add(new JsonTexture2DConverter(renderer.Graphics));
+            serializer.Converters.Add(new VersionConverter());
+
+            // Parse the string so we can extract our header/version for comparison.
+            JObject jobj = JObject.Parse(json);
+            ulong jsonID = jobj[JsonHeaderProp].Value<ulong>();
+            Version jsonVersion = jobj[JsonVersionProp].ToObject<Version>(serializer);
+
+            if (jsonID != FileHeaderValue.ChunkID())
+            {
+                throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2D_ERR_JSON_NOT_SPRITE);
+            }
+
+            if (!jsonVersion.Equals(_serializeVersion))
+            {
+                throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR2D_ERR_SPRITE_VERSION_MISMATCH, _serializeVersion, jsonVersion));
+            }
+
+            return jobj.ToObject<GorgonSprite>(serializer);
         }
 
-        public string ToJson()
+        /// <summary>
+        /// Function to convert the data in the sprite to a JSON formatted string.
+        /// </summary>
+        /// <returns>The sprite data as a JSON string.</returns>
+        public string ToJson(bool prettyFormat = false)
         {
             var settings = new JsonSerializerSettings
                            {
                                CheckAdditionalContent = false,
-                               Formatting = Formatting.Indented
+                               Formatting = prettyFormat ? Formatting.Indented : Formatting.None
                            };
 
-            settings.Converters.Add(new JsonVector3Converter());
             settings.Converters.Add(new JsonVector2Converter());
+            settings.Converters.Add(new JsonVector3Converter());
             settings.Converters.Add(new JsonSize2FConverter());
             settings.Converters.Add(new JsonRectangleFConverter());
-            settings.Converters.Add(new JsonTextureConverter());
-            settings.Converters.Add(new JsonSamplerConverter());
+            settings.Converters.Add(new JsonSamplerConverter(null));
+            settings.Converters.Add(new JsonTexture2DConverter(null));
+            settings.Converters.Add(new VersionConverter());
+
             return JsonConvert.SerializeObject(this, settings);
         }
         #endregion

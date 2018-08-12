@@ -67,17 +67,26 @@ namespace Gorgon.Renderers
         /// <returns>The object value.</returns>
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            if (reader.TokenType == JsonToken.Null)
+            if ((reader.TokenType != JsonToken.StartObject)
+                || (!reader.Read()))
             {
                 return DX.Vector3.Zero;
             }
 
-            reader.Read();
-            float x = (float)(reader.ReadAsDouble() ?? 0);
-            reader.Read();
-            float y = (float)(reader.ReadAsDouble() ?? 0);
-            reader.Read();
-            float z = (float)(reader.ReadAsDouble() ?? 0);
+            var x = (float)(reader.ReadAsDouble() ?? 0);
+            if (!reader.Read())
+            {
+                return new DX.Vector3(x, 0, 0);
+            }
+
+            var y = (float)(reader.ReadAsDouble() ?? 0);
+
+            if (!reader.Read())
+            {
+                return new DX.Vector3(x, y, 0);
+            }
+
+            var z = (float)(reader.ReadAsDouble() ?? 0);
             reader.Read();
 
             return new DX.Vector3(x, y, z);

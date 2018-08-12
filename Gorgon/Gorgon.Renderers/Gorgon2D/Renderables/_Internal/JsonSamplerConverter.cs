@@ -37,14 +37,8 @@ namespace Gorgon.Renderers
     internal class JsonSamplerConverter
         : JsonConverter<GorgonSamplerState>
     {
-        /// <summary>
-        /// Property to set or return the graphics object to use for resource look up.
-        /// </summary>
-        public GorgonGraphics Graphics
-        {
-            get;
-            set;
-        }
+        // The graphics object to use for resource look up.
+        private readonly GorgonGraphics _graphics;
         
         /// <summary>Writes the JSON representation of the object.</summary>
         /// <param name="writer">The <see cref="T:Newtonsoft.Json.JsonWriter" /> to write to.</param>
@@ -91,41 +85,80 @@ namespace Gorgon.Renderers
         /// <returns>The object value.</returns>
         public override GorgonSamplerState ReadJson(JsonReader reader, Type objectType, GorgonSamplerState existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
-            if ((reader.TokenType == JsonToken.Null)
-                || (Graphics == null))
+            if ((reader.TokenType != JsonToken.StartObject)
+                || (_graphics == null)
+                || (!reader.Read()))
             {
                 return null;
             }
 
-            reader.Read();
             var borderColor = new GorgonColor(reader.ReadAsInt32() ?? -1);
-            reader.Read();
+            if (!reader.Read())
+            {
+                return null;
+            }
             var compareFunction = (Comparison)(reader.ReadAsInt32() ?? (int)Comparison.Always);
-            reader.Read();
+            if (!reader.Read())
+            {
+                return null;
+            }
             var filter = (SampleFilter)(reader.ReadAsInt32() ?? (int)SampleFilter.MinMagMipLinear);
-            reader.Read();
+            if (!reader.Read())
+            {
+                return null;
+            }
             int maxAnisotropy = reader.ReadAsInt32() ?? 0;
-            reader.Read();
-            float maxLod = (float)(reader.ReadAsDouble() ?? float.MaxValue);
-            reader.Read();
-            float minLod = (float)(reader.ReadAsDouble() ?? float.MinValue);
-            reader.Read();
-            float mipLodBias = (float)(reader.ReadAsDouble() ?? 0);
-            reader.Read();
-            TextureWrap wrapU = (TextureWrap)(reader.ReadAsInt32() ?? (int)TextureWrap.Clamp);
-            reader.Read();
-            TextureWrap wrapV = (TextureWrap)(reader.ReadAsInt32() ?? (int)TextureWrap.Clamp);
-            reader.Read();
-            TextureWrap wrapW = (TextureWrap)(reader.ReadAsInt32() ?? (int)TextureWrap.Clamp);
-            reader.Read();
+            if (!reader.Read())
+            {
+                return null;
+            }
+            var maxLod = (float)(reader.ReadAsDouble() ?? float.MaxValue);
+            if (!reader.Read())
+            {
+                return null;
+            }
+            var minLod = (float)(reader.ReadAsDouble() ?? float.MinValue);
+            if (!reader.Read())
+            {
+                return null;
+            }
+            var mipLodBias = (float)(reader.ReadAsDouble() ?? 0);
+            if (!reader.Read())
+            {
+                return null;
+            }
+            var wrapU = (TextureWrap)(reader.ReadAsInt32() ?? (int)TextureWrap.Clamp);
+            if (!reader.Read())
+            {
+                return null;
+            }
+            var wrapV = (TextureWrap)(reader.ReadAsInt32() ?? (int)TextureWrap.Clamp);
+            if (!reader.Read())
+            {
+                return null;
+            }
+            var wrapW = (TextureWrap)(reader.ReadAsInt32() ?? (int)TextureWrap.Clamp);
+            if (!reader.Read())
+            {
+                return null;
+            }
 
-            var builder = new GorgonSamplerStateBuilder(Graphics);
+            var builder = new GorgonSamplerStateBuilder(_graphics);
             return builder.Wrapping(wrapU, wrapV, wrapW, borderColor)
                           .MaxAnisotropy(maxAnisotropy)
                           .ComparisonFunction(compareFunction)
                           .Filter(filter)
                           .MipLevelOfDetail(minLod, maxLod, mipLodBias)
                           .Build();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="JsonSamplerConverter"/> class.
+        /// </summary>
+        /// <param name="graphics">The graphics interface used for resource look up.</param>
+        public JsonSamplerConverter(GorgonGraphics graphics)
+        {
+            _graphics = graphics;
         }
     }
 }

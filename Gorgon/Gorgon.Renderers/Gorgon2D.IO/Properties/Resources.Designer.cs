@@ -79,20 +79,20 @@ namespace Gorgon.IO.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The stream requires seek capability..
-        /// </summary>
-        internal static string GOR2D_ERR_STREAM_UNSEEKABLE {
-            get {
-                return ResourceManager.GetString("GOR2D_ERR_STREAM_UNSEEKABLE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The header for the sprite data is invalid..
         /// </summary>
         internal static string GOR2DIO_ERR_INVALID_HEADER {
             get {
                 return ResourceManager.GetString("GOR2DIO_ERR_INVALID_HEADER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The stream requires seek capability..
+        /// </summary>
+        internal static string GOR2DIO_ERR_STREAM_UNSEEKABLE {
+            get {
+                return ResourceManager.GetString("GOR2DIO_ERR_STREAM_UNSEEKABLE", resourceCulture);
             }
         }
         
@@ -103,6 +103,60 @@ namespace Gorgon.IO.Properties {
         internal static string GOR2DIO_ERR_VERSION_MISMATCH {
             get {
                 return ResourceManager.GetString("GOR2DIO_ERR_VERSION_MISMATCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gorgon Sprite v1.x Codec.
+        /// </summary>
+        internal static string GOR2DIO_V1_CODEC {
+            get {
+                return ResourceManager.GetString("GOR2DIO_V1_CODEC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gorgon binary sprite codec for version 1.0 - 1.2 of Gorgon..
+        /// </summary>
+        internal static string GOR2DIO_V1_CODEC_DESCRIPTION {
+            get {
+                return ResourceManager.GetString("GOR2DIO_V1_CODEC_DESCRIPTION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gorgon Sprite v2 Codec.
+        /// </summary>
+        internal static string GOR2DIO_V2_CODEC {
+            get {
+                return ResourceManager.GetString("GOR2DIO_V2_CODEC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gorgon sprite codec for version 2.0 of Gorgon..
+        /// </summary>
+        internal static string GOR2DIO_V2_CODEC_DESCRIPTION {
+            get {
+                return ResourceManager.GetString("GOR2DIO_V2_CODEC_DESCRIPTION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gorgon Sprite v3 JSON Codec.
+        /// </summary>
+        internal static string GOR2DIO_V3_JSON_CODEC {
+            get {
+                return ResourceManager.GetString("GOR2DIO_V3_JSON_CODEC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gorgon v3 sprite codec for reading and writing sprites as JSON data..
+        /// </summary>
+        internal static string GOR2DIO_V3_JSON_CODEC_DESCRIPTION {
+            get {
+                return ResourceManager.GetString("GOR2DIO_V3_JSON_CODEC_DESCRIPTION", resourceCulture);
             }
         }
     }
