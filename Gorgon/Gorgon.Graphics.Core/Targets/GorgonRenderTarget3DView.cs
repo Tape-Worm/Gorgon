@@ -27,6 +27,7 @@
 using System;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
+using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
 using SharpDX.DXGI;
 using DX = SharpDX;
@@ -50,9 +51,46 @@ namespace Gorgon.Graphics.Core
     /// <seealso cref="GorgonTexture2D"/>
     /// <seealso cref="GorgonTexture3D"/>
     public sealed class GorgonRenderTarget3DView
-		: GorgonRenderTargetView, IGorgonTexture3DInfo
+		: GorgonRenderTargetView, IGorgonTexture3DInfo, IGorgonImageInfo
     {
 		#region Properties.
+        /// <summary>
+        /// Property to return the type of image data.
+        /// </summary>
+        ImageType IGorgonImageInfo.ImageType => ImageType.Image3D;
+
+        /// <summary>
+        /// Property to return whether the image data is using premultiplied alpha.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This value has no meaning for this type.
+        /// </para>
+        /// </remarks>
+        bool IGorgonImageInfo.HasPreMultipliedAlpha => false;
+
+        /// <summary>
+        /// Property to return the number of mip map levels in the image.
+        /// </summary>
+        int IGorgonImageInfo.MipCount => Texture?.Depth ?? 0;
+
+        /// <summary>
+        /// Property to return the total number of images there are in an image array.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This only applies to 1D and 2D images.  This parameter will be set to a value of 1 for a 3D image.
+        /// </para>
+        /// </remarks>
+        int IGorgonImageInfo.ArrayCount => 1;
+
+        /// <summary>
+        /// Property to return whether the size of the texture is a power of 2 or not.
+        /// </summary>
+        bool IGorgonImageInfo.IsPowerOfTwo => ((Width == 0) || (Width & (Width - 1)) == 0)
+                                              && ((Height == 0) || (Height & (Height - 1)) == 0)
+                                              && ((Depth == 0) || (Depth & (Depth - 1)) == 0);
+
         /// <summary>
         /// Property to return the texture bound to this render target view.
         /// </summary>

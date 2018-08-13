@@ -25,16 +25,11 @@
 #endregion
 
 using System;
-using System.Diagnostics;
-using System.IO;
-using Gorgon.Core;
-using Gorgon.IO;
-using Gorgon.IO.Properties;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
+using Gorgon.IO;
 
-namespace Gorgon.Renderers
+namespace Gorgon.Renderers.Extensions
 {
     /// <summary>
     /// Extension methods for the <see cref="GorgonSprite"/> object.

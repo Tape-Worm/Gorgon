@@ -134,7 +134,7 @@ namespace Gorgon.Graphics.Imaging
 		/// For more information see: <a href="https://blogs.msdn.microsoft.com/shawnhar/2009/11/06/premultiplied-alpha/">Shawn Hargreaves Blog</a>
 		/// </para>
 		/// </remarks>
-		bool HasPremultipliedAlpha
+		bool HasPreMultipliedAlpha
 		{
 			get;
 		}
@@ -160,7 +160,7 @@ namespace Gorgon.Graphics.Imaging
 		}
 
 		/// <summary>
-		/// Property to set or return the total number of images there are in an image array.
+		/// Property to return the total number of images there are in an image array.
 		/// </summary>
 		/// <remarks>
 		/// <para>

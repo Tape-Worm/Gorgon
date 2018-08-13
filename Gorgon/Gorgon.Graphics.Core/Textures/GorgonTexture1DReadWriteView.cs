@@ -63,7 +63,7 @@ namespace Gorgon.Graphics.Core
     /// <seealso cref="GorgonDrawCallCommon"/>
     /// <seealso cref="GorgonMultisampleInfo"/>
     public sealed class GorgonTexture1DReadWriteView
-        : GorgonReadWriteView, IGorgonTexture1DInfo
+        : GorgonReadWriteView, IGorgonTexture1DInfo, IGorgonImageInfo
     {
         #region Variables.
         // Rectangles used for clearing the view.
@@ -71,6 +71,71 @@ namespace Gorgon.Graphics.Core
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to return the type of image data.
+        /// </summary>
+        ImageType IGorgonImageInfo.ImageType => ImageType.Image1D;
+
+        /// <summary>
+        /// Property to return the height of an image, in pixels.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This applies to 2D and 3D images only.  This parameter will be set to a value of 1 for a 1D image.
+        /// </para>
+        /// </remarks>
+        int IGorgonImageInfo.Height => 1;
+
+        /// <summary>
+        /// Property to return the depth of an image, in pixels.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This applies to 3D images only.  This parameter will be set to a value of 1 for a 1D or 2D image.
+        /// </para>
+        /// </remarks>
+        int IGorgonImageInfo.Depth => 1;
+
+        /// <summary>
+        /// Property to return whether the image data is using premultiplied alpha.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This value has no meaning for this type.
+        /// </para>
+        /// </remarks>
+        bool IGorgonImageInfo.HasPreMultipliedAlpha => false;
+
+        /// <summary>
+        /// Property to return the number of mip map levels in the image.
+        /// </summary>
+        int IGorgonImageInfo.MipCount => Texture?.MipLevels ?? 0;
+
+        /// <summary>
+        /// Property to return the total number of images there are in an image array.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This only applies to 1D and 2D images.  This parameter will be set to a value of 1 for a 3D image.
+        /// </para>
+        /// </remarks>
+        int IGorgonImageInfo.ArrayCount => Texture?.ArrayCount ?? 0;
+
+        /// <summary>
+        /// Property to return whether the size of the texture is a power of 2 or not.
+        /// </summary>
+        bool IGorgonImageInfo.IsPowerOfTwo => ((Width == 0) || (Width & (Width - 1)) == 0); 
+
+        /// <summary>
+        /// Property to return the pixel format for an image.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// If the value is set to <see cref="BufferFormat.Unknown"/>, then an exception will be thrown upon image creation.
+        /// </para>
+        /// </remarks>
+        BufferFormat IGorgonImageInfo.Format => Texture?.Format ?? BufferFormat.Unknown;
+
         /// <summary>
         /// Property to return the format used to interpret this view.
         /// </summary>

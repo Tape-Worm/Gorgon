@@ -28,7 +28,6 @@ using System;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Native;
-using D3D = SharpDX.Direct3D;
 using DX = SharpDX;
 
 namespace Gorgon.Graphics.Example

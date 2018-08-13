@@ -218,12 +218,12 @@ namespace Gorgon.Graphics.Imaging.Codecs
 
 			try
 			{
-				if (SupportedPixelFormats.All(item => item != imageData.Info.Format))
+				if (SupportedPixelFormats.All(item => item != imageData.Format))
 				{
-					throw new NotSupportedException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, imageData.Info.Format));
+					throw new NotSupportedException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, imageData.Format));
 				}
 
-				IReadOnlyDictionary<string, object> metaData = GetCustomEncodingMetadata(0, imageData.Info);
+				IReadOnlyDictionary<string, object> metaData = GetCustomEncodingMetadata(0, imageData);
 				wic.EncodeImageData(imageData, stream, SupportedFileFormat, EncodingOptions, metaData);
 			}
 			finally

@@ -160,7 +160,7 @@ namespace Gorgon.Graphics.Imaging
 		/// The default value is <b>false</b>.
 		/// </para>
 		/// </remarks>
-		public bool HasPremultipliedAlpha
+		public bool HasPreMultipliedAlpha
 		{
 			get;
 			set;
@@ -218,7 +218,7 @@ namespace Gorgon.Graphics.Imaging
 			Width = info.Width;
 			ImageType = info.ImageType;
 			MipCount = info.MipCount.Max(1);
-			HasPremultipliedAlpha = info.HasPremultipliedAlpha;
+			HasPreMultipliedAlpha = info.HasPreMultipliedAlpha;
 		}
 		#endregion
 	}

@@ -74,11 +74,6 @@ namespace Gorgon.Graphics.Imaging
 	        private set => _imageData = value;
 	    }
 
-	    /// <summary>
-	    /// Property to return the information used to create the image.
-	    /// </summary>
-	    public IGorgonImageInfo Info => _imageInfo;
-
 		/// <summary>
 		/// Property to return information about the pixel format for this image.
 		/// </summary>
@@ -101,15 +96,83 @@ namespace Gorgon.Graphics.Imaging
 		/// Property to return the list of image buffers for this image.
 		/// </summary>
 		public IGorgonImageBufferList Buffers => _imageBuffers;
-		#endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to return the pointer to the image data.
-		/// </summary>
-		/// <param name="data">The image data base pointer.</param>
-		/// <param name="copy"><b>true</b> to copy the data in the base pointer to a new pointer, or <b>false</b> to alias the existing base pointer.</param>
-		private void GetImagePointer(GorgonReadOnlyPointer data, bool copy)
+	    /// <summary>
+	    /// Property to return the type of image data.
+	    /// </summary>
+	    public ImageType ImageType => _imageInfo.ImageType;
+
+	    /// <summary>
+	    /// Property to return the width of an image, in pixels.
+	    /// </summary>
+	    public int Width => _imageInfo.Width;
+
+	    /// <summary>
+	    /// Property to return the height of an image, in pixels.
+	    /// </summary>
+	    /// <remarks>
+	    /// <para>
+	    /// This applies to 2D and 3D images only.  This parameter will be set to a value of 1 for a 1D image.
+	    /// </para>
+	    /// </remarks>
+	    public int Height => _imageInfo.Height;
+
+	    /// <summary>
+	    /// Property to return the depth of an image, in pixels.
+	    /// </summary>
+	    /// <remarks>
+	    /// <para>
+	    /// This applies to 3D images only.  This parameter will be set to a value of 1 for a 1D or 2D image.
+	    /// </para>
+	    /// </remarks>
+	    public int Depth => _imageInfo.Depth;
+
+	    /// <summary>
+	    /// Property to return the pixel format for an image.
+	    /// </summary>
+	    public BufferFormat Format => _imageInfo.Format;
+
+	    /// <summary>
+	    /// Property to return whether the image data is using premultiplied alpha.
+	    /// </summary>
+	    /// <remarks>
+	    /// <para>
+	    /// Premultiplied alpha is used to display correct alpha blending. This flag indicates that the data in the image has already been transformed to use premultiplied alpha.
+	    /// </para>
+	    /// <para>
+	    /// For more information see: <a href="https://blogs.msdn.microsoft.com/shawnhar/2009/11/06/premultiplied-alpha/">Shawn Hargreaves Blog</a>
+	    /// </para>
+	    /// </remarks>
+	    public bool HasPreMultipliedAlpha => _imageInfo.HasPreMultipliedAlpha;
+
+	    /// <summary>
+	    /// Property to return the number of mip map levels in the image.
+	    /// </summary>
+	    public int MipCount => _imageInfo.MipCount;
+
+	    /// <summary>
+	    /// Property to return whether the size of the texture is a power of 2 or not.
+	    /// </summary>
+	    public bool IsPowerOfTwo => _imageInfo.IsPowerOfTwo;
+
+	    /// <summary>
+	    /// Property to return the total number of images there are in an image array.
+	    /// </summary>
+	    /// <remarks>
+	    /// <para>
+	    /// This only applies to 1D and 2D images.  This parameter will be set to a value of 1 for a 3D image.
+	    /// </para>
+	    /// </remarks>
+	    public int ArrayCount => _imageInfo.ArrayCount;
+        #endregion
+
+        #region Methods.
+        /// <summary>
+        /// Function to return the pointer to the image data.
+        /// </summary>
+        /// <param name="data">The image data base pointer.</param>
+        /// <param name="copy"><b>true</b> to copy the data in the base pointer to a new pointer, or <b>false</b> to alias the existing base pointer.</param>
+        private void GetImagePointer(GorgonReadOnlyPointer data, bool copy)
 		{
 			// Create a buffer large enough to hold our data.
 			if ((!data.IsNull) && (!copy))
@@ -182,7 +245,7 @@ namespace Gorgon.Graphics.Imaging
 		/// <param name="imageType">The type of image.</param>
 		/// <param name="width">Width of the image.</param>
 		/// <param name="height">Height of the image.</param>
-		/// <param name="depthOrArrayCount">Depth (for <see cref="ImageType.Image3D"/>) or array count (for <see cref="ImageType.Image1D"/> or <see cref="ImageType.Image2D"/>) of the image.</param>
+		/// <param name="depthOrArrayCount">Depth (for <see cref="Imaging.ImageType.Image3D"/>) or array count (for <see cref="Imaging.ImageType.Image1D"/> or <see cref="Imaging.ImageType.Image2D"/>) of the image.</param>
 		/// <param name="format">Format of the image.</param>
 		/// <param name="mipCount">[Optional] Number of mip-map levels in the image.</param>
 		/// <param name="pitchFlags">[Optional] Flags used to influence the row pitch of the image.</param>
@@ -362,12 +425,12 @@ namespace Gorgon.Graphics.Imaging
 		public int GetDepthCount(int mipLevel)
 		{
 			if ((mipLevel < 0)
-				|| (mipLevel >= Info.MipCount))
+				|| (mipLevel >= _imageInfo.MipCount))
 			{
-				throw new ArgumentOutOfRangeException(nameof(mipLevel), mipLevel, string.Format(Resources.GORIMG_ERR_INDEX_OUT_OF_RANGE, 0, Info.MipCount));
+				throw new ArgumentOutOfRangeException(nameof(mipLevel), mipLevel, string.Format(Resources.GORIMG_ERR_INDEX_OUT_OF_RANGE, 0, _imageInfo.MipCount));
 			}
 
-			return Info.Depth <= 1 ? 1 : _imageBuffers.MipOffsetSize[mipLevel].MipDepth;
+			return _imageInfo.Depth <= 1 ? 1 : _imageBuffers.MipOffsetSize[mipLevel].MipDepth;
 		}
 
 		/// <summary>
@@ -382,12 +445,12 @@ namespace Gorgon.Graphics.Imaging
 				return false;
 			}
 
-			if (format == Info.Format)
+			if (format == _imageInfo.Format)
 			{
 				return true;
 			}
 
-			BufferFormat sourceFormat = Info.Format;
+			BufferFormat sourceFormat = _imageInfo.Format;
 
 			// If we want to convert from B4G4R4A4 to another format, then we first have to upsample to B8R8G8A8.
 			if (sourceFormat == BufferFormat.B4G4R4A4_UNorm)
@@ -419,7 +482,7 @@ namespace Gorgon.Graphics.Imaging
 			}
 
 			// If we're converting from B4G4R4A4, then we need to use another path.
-			if (Info.Format == BufferFormat.B4G4R4A4_UNorm)
+			if (_imageInfo.Format == BufferFormat.B4G4R4A4_UNorm)
 			{
 				using (WicUtilities wic = new WicUtilities())
 				{
@@ -429,7 +492,7 @@ namespace Gorgon.Graphics.Imaging
 
 			using (WicUtilities wic = new WicUtilities())
 			{
-				return wic.CanConvertFormats(Info.Format, destFormats);
+				return wic.CanConvertFormats(_imageInfo.Format, destFormats);
 			}
 		}
 
@@ -452,7 +515,7 @@ namespace Gorgon.Graphics.Imaging
 
             Dispose();
 
-	        _imageInfo = new GorgonImageInfo(source.Info);
+	        _imageInfo = new GorgonImageInfo(source);
 	        FormatInfo = new GorgonFormatInfo(_imageInfo.Format);
 	        SizeInBytes = CalculateSizeInBytes(_imageInfo);
 	        Initialize((GorgonReadOnlyPointer)source.ImageData, true);

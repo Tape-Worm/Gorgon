@@ -25,16 +25,15 @@
 #endregion
 
 using System.Collections.Generic;
-using System.Windows.Forms;
 using Gorgon.Core;
 using XI = SharpDX.XInput;
 
 namespace Gorgon.Input.XInput
 {
-	/// <summary>
-	/// XInput XBOX 360 controller device.
-	/// </summary>
-	internal class XInputDevice
+    /// <summary>
+    /// XInput XBOX 360 controller device.
+    /// </summary>
+    internal class XInputDevice
 		: GorgonGamingDevice
 	{
 		#region Variables.

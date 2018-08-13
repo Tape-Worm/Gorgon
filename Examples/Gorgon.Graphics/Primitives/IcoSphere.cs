@@ -30,14 +30,13 @@ using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Native;
 using DX = SharpDX;
-using D3D = SharpDX.Direct3D;
 
 namespace Gorgon.Graphics.Example
 {
-	/// <summary>
-	/// An ico sphere object.
-	/// </summary>
-	internal class IcoSphere
+    /// <summary>
+    /// An ico sphere object.
+    /// </summary>
+    internal class IcoSphere
 		: MoveableMesh
 	{
 		#region Variables.

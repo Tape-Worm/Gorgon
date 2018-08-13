@@ -160,13 +160,13 @@ namespace Gorgon.Graphics.Imaging
 			BufferFormat tempFormat = ((destFormat != BufferFormat.B8G8R8A8_UNorm) && (destFormat != BufferFormat.R8G8B8A8_UNorm)) ? BufferFormat.B8G8R8A8_UNorm : destFormat;
 			
 			// Create an worker image in B8G8R8A8 format.
-			IGorgonImageInfo destInfo = new GorgonImageInfo(baseImage.Info.ImageType, tempFormat)
+			IGorgonImageInfo destInfo = new GorgonImageInfo(baseImage.ImageType, tempFormat)
 				                        {
-					                        Depth = baseImage.Info.Depth,
-					                        Height = baseImage.Info.Height,
-					                        Width = baseImage.Info.Width,
-					                        ArrayCount = baseImage.Info.ArrayCount,
-					                        MipCount = baseImage.Info.MipCount
+					                        Depth = baseImage.Depth,
+					                        Height = baseImage.Height,
+					                        Width = baseImage.Width,
+					                        ArrayCount = baseImage.ArrayCount,
+					                        MipCount = baseImage.MipCount
 				                        };
 
 			// Our destination image for B8G8R8A8 or R8G8B8A8.
@@ -176,16 +176,16 @@ namespace Gorgon.Graphics.Imaging
 			{
 				// We have to manually upsample from R4G4B4A4 to B8R8G8A8.
 				// Because we're doing this manually, dithering won't be an option unless 
-				for (int array = 0; array < baseImage.Info.ArrayCount; ++array)
+				for (int array = 0; array < baseImage.ArrayCount; ++array)
 				{
-					for (int mip = 0; mip < baseImage.Info.MipCount; ++mip)
+					for (int mip = 0; mip < baseImage.MipCount; ++mip)
 					{
 						int depthCount = baseImage.GetDepthCount(mip);
 
 						for (int depth = 0; depth < depthCount; depth++)
 						{
-							IGorgonImageBuffer destBuffer = destImage.Buffers[mip, baseImage.Info.ImageType == ImageType.Image3D ? depth : array];
-							IGorgonImageBuffer srcBuffer = baseImage.Buffers[mip, baseImage.Info.ImageType == ImageType.Image3D ? depth : array];
+							IGorgonImageBuffer destBuffer = destImage.Buffers[mip, baseImage.ImageType == ImageType.Image3D ? depth : array];
+							IGorgonImageBuffer srcBuffer = baseImage.Buffers[mip, baseImage.ImageType == ImageType.Image3D ? depth : array];
 
 							ConvertPixelsFromB4G4R4A4(destBuffer, srcBuffer);
 						}
@@ -193,7 +193,7 @@ namespace Gorgon.Graphics.Imaging
 				}
 
 				// If the destination format is not R8G8B8A8 or B8G8R8A8, then we need to do more conversion.
-				if (destFormat != destImage.Info.Format)
+				if (destFormat != destImage.Format)
 				{
 					ConvertToFormat(destImage, destFormat);
 				}
@@ -220,13 +220,13 @@ namespace Gorgon.Graphics.Imaging
 			// This temporary image will be used to convert to B8G8R8A8.
 			IGorgonImage newImage = baseImage;
 
-			IGorgonImageInfo destInfo = new GorgonImageInfo(baseImage.Info.ImageType, BufferFormat.B4G4R4A4_UNorm)
+			IGorgonImageInfo destInfo = new GorgonImageInfo(baseImage.ImageType, BufferFormat.B4G4R4A4_UNorm)
 			{
-				Depth = baseImage.Info.Depth,
-				Height = baseImage.Info.Height,
-				Width = baseImage.Info.Width,
-				ArrayCount = baseImage.Info.ArrayCount,
-				MipCount = baseImage.Info.MipCount
+				Depth = baseImage.Depth,
+				Height = baseImage.Height,
+				Width = baseImage.Width,
+				ArrayCount = baseImage.ArrayCount,
+				MipCount = baseImage.MipCount
 			};
 
 			// This is our working buffer for B4G4R4A4.
@@ -235,8 +235,8 @@ namespace Gorgon.Graphics.Imaging
 			try
 			{
 				// If necessary, convert to B8G8R8A8. Otherwise, we'll just downsample directly.
-				if ((newImage.Info.Format != BufferFormat.B8G8R8A8_UNorm)
-					&& (newImage.Info.Format != BufferFormat.R8G8B8A8_UNorm))
+				if ((newImage.Format != BufferFormat.B8G8R8A8_UNorm)
+					&& (newImage.Format != BufferFormat.R8G8B8A8_UNorm))
 				{
 					newImage = baseImage.Clone();
 					ConvertToFormat(newImage, BufferFormat.B8G8R8A8_UNorm, dithering);
@@ -244,16 +244,16 @@ namespace Gorgon.Graphics.Imaging
 
 				// The next step is to manually downsample to R4G4B4A4.
 				// Because we're doing this manually, dithering won't be an option unless unless we've downsampled from a much higher bit format when converting to B8G8R8A8.
-				for (int array = 0; array < newImage.Info.ArrayCount; ++array)
+				for (int array = 0; array < newImage.ArrayCount; ++array)
 				{
-					for (int mip = 0; mip < newImage.Info.MipCount; ++mip)
+					for (int mip = 0; mip < newImage.MipCount; ++mip)
 					{
 						int depthCount = newImage.GetDepthCount(mip);
 
 						for (int depth = 0; depth < depthCount; depth++)
 						{
 							IGorgonImageBuffer destBuffer = destImage.Buffers[mip, destInfo.ImageType == ImageType.Image3D ? depth : array];
-							IGorgonImageBuffer srcBuffer = newImage.Buffers[mip, newImage.Info.ImageType == ImageType.Image3D ? depth : array];
+							IGorgonImageBuffer srcBuffer = newImage.Buffers[mip, newImage.ImageType == ImageType.Image3D ? depth : array];
 
 							ConvertPixelsToB4G4R4A4(destBuffer, srcBuffer);
 						}
@@ -289,7 +289,7 @@ namespace Gorgon.Graphics.Imaging
 		/// adjusted to use the requested number of mip maps. If 0 is passed to <paramref name="mipCount"/>, then a full mip map chain is generated.
 		/// </para>
 		/// <para>
-		/// Note that the <paramref name="mipCount"/> may not be honored depending on the current width, height, and depth of the image. Check the <see cref="IGorgonImage.Info"/> property on the returned 
+		/// Note that the <paramref name="mipCount"/> may not be honored depending on the current width, height, and depth of the image. Check the width, height and/or depth property on the returned 
 		/// <see cref="IGorgonImage"/> to determine how many mip levels were actually generated.
 		/// </para>
 		/// </remarks>
@@ -300,7 +300,7 @@ namespace Gorgon.Graphics.Imaging
 				throw new ArgumentNullException(nameof(baseImage));
 			}
 
-			int maxMips = GorgonImage.CalculateMaxMipCount(baseImage.Info);
+			int maxMips = GorgonImage.CalculateMaxMipCount(baseImage);
 
 			// If we specify 0, then generate a full chain.
 			if ((mipCount <= 0) || (mipCount > maxMips))
@@ -308,7 +308,7 @@ namespace Gorgon.Graphics.Imaging
 				mipCount = maxMips;
 			}
 
-			GorgonImageInfo destSettings = new GorgonImageInfo(baseImage.Info)
+			GorgonImageInfo destSettings = new GorgonImageInfo(baseImage)
 			                               {
 				                               MipCount = mipCount
 			                               };
@@ -319,10 +319,10 @@ namespace Gorgon.Graphics.Imaging
 			try
 			{
 				// Copy the top mip level from the source image to the dest image.
-				for (int array = 0; array < baseImage.Info.ArrayCount; ++array)
+				for (int array = 0; array < baseImage.ArrayCount; ++array)
 				{
 				    baseImage.Buffers[0, array].Data.CopyTo(newImage.Buffers[0, array].Data,
-				                                            newImage.Buffers[0, array].Data.SizeInBytes * newImage.Info.Depth);
+				                                            newImage.Buffers[0, array].Data.SizeInBytes * newImage.Depth);
 				}
 
 				if (mipCount < 2)
@@ -365,28 +365,28 @@ namespace Gorgon.Graphics.Imaging
 				throw new ArgumentNullException(nameof(baseImage));
 			}
 
-			if ((newDepth < 1) && (baseImage.Info.ImageType == ImageType.Image3D))
+			if ((newDepth < 1) && (baseImage.ImageType == ImageType.Image3D))
 			{
 				throw new ArgumentOutOfRangeException(Resources.GORIMG_ERR_IMAGE_DEPTH_TOO_SMALL, nameof(newDepth));
 			}
 
 			// Only use the appropriate dimensions.
-			switch (baseImage.Info.ImageType)
+			switch (baseImage.ImageType)
 			{
 				case ImageType.Image1D:
-					cropRect.Height = baseImage.Info.Height;
+					cropRect.Height = baseImage.Height;
 					break;
 				case ImageType.Image2D:
 				case ImageType.ImageCube:
-					newDepth = baseImage.Info.Depth;
+					newDepth = baseImage.Depth;
 					break;
 			}
 
 			// If the intersection of the crop rectangle and the source buffer are the same (and the depth is the same), then we don't need to crop.
-			DX.Rectangle bufferRect = new DX.Rectangle(0, 0, baseImage.Info.Width, baseImage.Info.Height);
+			DX.Rectangle bufferRect = new DX.Rectangle(0, 0, baseImage.Width, baseImage.Height);
 			DX.Rectangle clipRect = DX.Rectangle.Intersect(cropRect, bufferRect);
 
-			if ((bufferRect.Equals(ref clipRect)) && (newDepth == baseImage.Info.Depth))
+			if ((bufferRect.Equals(ref clipRect)) && (newDepth == baseImage.Depth))
 			{
 				return baseImage;
 			}
@@ -397,7 +397,7 @@ namespace Gorgon.Graphics.Imaging
 
 			try
 			{
-				int calcMipLevels = GorgonImage.CalculateMaxMipCount(cropRect.Width, cropRect.Height, newDepth).Min(baseImage.Info.MipCount);
+				int calcMipLevels = GorgonImage.CalculateMaxMipCount(cropRect.Width, cropRect.Height, newDepth).Min(baseImage.MipCount);
 				newImage = wic.Resize(baseImage, cropRect.X, cropRect.Y, cropRect.Width, cropRect.Height, newDepth, calcMipLevels, ImageFilter.Point, ResizeMode.Crop);
 
 				// Send the data over to the new image.
@@ -443,31 +443,31 @@ namespace Gorgon.Graphics.Imaging
 	        try
 	        {
 	            // Constrain to the correct sizes.
-	            newWidth = newWidth.Max(baseImage.Info.Width);
-	            newHeight = newHeight.Max(baseImage.Info.Height);
-	            newDepth = newDepth.Max(baseImage.Info.Depth);
+	            newWidth = newWidth.Max(baseImage.Width);
+	            newHeight = newHeight.Max(baseImage.Height);
+	            newDepth = newDepth.Max(baseImage.Depth);
 
 	            // Only use the appropriate dimensions.
-	            switch (baseImage.Info.ImageType)
+	            switch (baseImage.ImageType)
 	            {
 	                case ImageType.Image1D:
-	                    newHeight = baseImage.Info.Height;
+	                    newHeight = baseImage.Height;
 	                    break;
 	                case ImageType.Image2D:
 	                case ImageType.ImageCube:
-	                    newDepth = baseImage.Info.Depth;
+	                    newDepth = baseImage.Depth;
 	                    break;
 	            }
 
 	            // We don't shink with this method, use the Crop method for that.
-	            if ((newWidth <= baseImage.Info.Width) && (newHeight <= baseImage.Info.Height) && (newDepth <= baseImage.Info.Depth))
+	            if ((newWidth <= baseImage.Width) && (newHeight <= baseImage.Height) && (newDepth <= baseImage.Depth))
 	            {
 	                return baseImage;
 	            }
 
 	            wic = new WicUtilities();
 
-                workingImage = new GorgonImage(new GorgonImageInfo(baseImage.Info)
+                workingImage = new GorgonImage(new GorgonImageInfo(baseImage)
                                                {
                                                    Width = newWidth,
                                                    Height = newHeight,
@@ -479,32 +479,32 @@ namespace Gorgon.Graphics.Imaging
 	            switch (anchor)
 	            {
 	                case ImageExpandAnchor.UpperMiddle:
-	                    position = new DX.Point(newWidth / 2 - baseImage.Info.Width / 2, 0);
+	                    position = new DX.Point(newWidth / 2 - baseImage.Width / 2, 0);
 	                    break;
                     case ImageExpandAnchor.UpperRight:
-                        position = new DX.Point(newWidth - baseImage.Info.Width, 0);
+                        position = new DX.Point(newWidth - baseImage.Width, 0);
 	                    break;
                     case ImageExpandAnchor.MiddleLeft:
-                        position = new DX.Point(0, newHeight / 2 - baseImage.Info.Height / 2);
+                        position = new DX.Point(0, newHeight / 2 - baseImage.Height / 2);
 	                    break;
                     case ImageExpandAnchor.Center:
-                        position = new DX.Point(newWidth / 2 - baseImage.Info.Width / 2, newHeight / 2 - baseImage.Info.Height / 2);
+                        position = new DX.Point(newWidth / 2 - baseImage.Width / 2, newHeight / 2 - baseImage.Height / 2);
 	                    break;
                     case ImageExpandAnchor.MiddleRight:
-                        position = new DX.Point(newWidth - baseImage.Info.Width, newHeight / 2 - baseImage.Info.Height / 2);
+                        position = new DX.Point(newWidth - baseImage.Width, newHeight / 2 - baseImage.Height / 2);
 	                    break;
                     case ImageExpandAnchor.BottomLeft:
-                        position = new DX.Point(0, newHeight - baseImage.Info.Height);
+                        position = new DX.Point(0, newHeight - baseImage.Height);
 	                    break;
                     case ImageExpandAnchor.BottomMiddle:
-                        position = new DX.Point(newWidth / 2 - baseImage.Info.Width / 2, newHeight - baseImage.Info.Height);
+                        position = new DX.Point(newWidth / 2 - baseImage.Width / 2, newHeight - baseImage.Height);
 	                    break;
                     case ImageExpandAnchor.BottomRight:
-                        position = new DX.Point(newWidth - baseImage.Info.Width, newHeight - baseImage.Info.Height);
+                        position = new DX.Point(newWidth - baseImage.Width, newHeight - baseImage.Height);
 	                    break;
 	            }
 
-	            int calcMipLevels = GorgonImage.CalculateMaxMipCount(newWidth, newHeight, newDepth).Min(baseImage.Info.MipCount);
+	            int calcMipLevels = GorgonImage.CalculateMaxMipCount(newWidth, newHeight, newDepth).Min(baseImage.MipCount);
 	            workingImage = wic.Resize(baseImage, position.X, position.Y, newWidth, newHeight, newDepth, calcMipLevels, ImageFilter.Point, ResizeMode.Expand);
 
 	            // Send the data over to the new image.
@@ -548,30 +548,30 @@ namespace Gorgon.Graphics.Imaging
 				throw new ArgumentOutOfRangeException(Resources.GORIMG_ERR_IMAGE_WIDTH_TOO_SMALL, nameof(newWidth));
 			}
 
-			if ((newHeight < 1) && ((baseImage.Info.ImageType == ImageType.Image2D) || (baseImage.Info.ImageType == ImageType.ImageCube)))
+			if ((newHeight < 1) && ((baseImage.ImageType == ImageType.Image2D) || (baseImage.ImageType == ImageType.ImageCube)))
 			{
 				throw new ArgumentOutOfRangeException(Resources.GORIMG_ERR_IMAGE_HEIGHT_TOO_SMALL, nameof(newHeight));
 			}
 
-			if ((newDepth < 1) && (baseImage.Info.ImageType == ImageType.Image3D))
+			if ((newDepth < 1) && (baseImage.ImageType == ImageType.Image3D))
 			{
 				throw new ArgumentOutOfRangeException(Resources.GORIMG_ERR_IMAGE_DEPTH_TOO_SMALL, nameof(newDepth));
 			}
 
 			// Only use the appropriate dimensions.
-			switch (baseImage.Info.ImageType)
+			switch (baseImage.ImageType)
 			{
 				case ImageType.Image1D:
-					newHeight = baseImage.Info.Height;
+					newHeight = baseImage.Height;
 					break;
 				case ImageType.Image2D:
 				case ImageType.ImageCube:
-					newDepth = baseImage.Info.Depth;
+					newDepth = baseImage.Depth;
 					break;
 			}
 
 			// If we haven't actually changed the size, then skip out.
-			if ((newWidth == baseImage.Info.Width) && (newHeight == baseImage.Info.Height) && (newDepth == baseImage.Info.Depth))
+			if ((newWidth == baseImage.Width) && (newHeight == baseImage.Height) && (newDepth == baseImage.Depth))
 			{
 				return baseImage;
 			}
@@ -581,7 +581,7 @@ namespace Gorgon.Graphics.Imaging
 			IGorgonImage newImage = null;
 			try
 			{
-				int calcMipLevels = GorgonImage.CalculateMaxMipCount(newWidth, newHeight, newDepth).Min(baseImage.Info.MipCount);
+				int calcMipLevels = GorgonImage.CalculateMaxMipCount(newWidth, newHeight, newDepth).Min(baseImage.MipCount);
 				newImage = wic.Resize(baseImage, 0, 0, newWidth, newHeight, newDepth, calcMipLevels, filter, ResizeMode.Scale);
 
 				newImage.CopyTo(baseImage);
@@ -631,7 +631,7 @@ namespace Gorgon.Graphics.Imaging
 				throw new ArgumentException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, format), nameof(format));
 			}
 
-			if (format == baseImage.Info.Format)
+			if (format == baseImage.Format)
 			{
 				return baseImage;
 			}
@@ -643,7 +643,7 @@ namespace Gorgon.Graphics.Imaging
 			}
 
 			// If we're currently using B4G4R4A4, then manually convert (no support in WIC).
-			if (baseImage.Info.Format == BufferFormat.B4G4R4A4_UNorm)
+			if (baseImage.Format == BufferFormat.B4G4R4A4_UNorm)
 			{
 				return ConvertFromB4G4R4A4(baseImage, format);
 			}
@@ -697,14 +697,14 @@ namespace Gorgon.Graphics.Imaging
 			try
 			{
 				// Worker image.
-				GorgonImageInfo cloneImageInfo = new GorgonImageInfo(baseImage.Info)
+				GorgonImageInfo cloneImageInfo = new GorgonImageInfo(baseImage)
 				                     {
-					                     HasPremultipliedAlpha = true
+					                     HasPreMultipliedAlpha = true
 				                     };
 				newImage = new GorgonImage(cloneImageInfo);
 				baseImage.CopyTo(newImage);			
 
-				if (newImage.Info.Format != BufferFormat.R8G8B8A8_UNorm)
+				if (newImage.Format != BufferFormat.R8G8B8A8_UNorm)
 				{
 					if (!newImage.CanConvertToFormat(BufferFormat.R8G8B8A8_UNorm))
 					{
@@ -727,9 +727,9 @@ namespace Gorgon.Graphics.Imaging
 					}
 				}
 
-				if (newImage.Info.Format != baseImage.Info.Format)
+				if (newImage.Format != baseImage.Format)
 				{
-					newImage.ConvertToFormat(baseImage.Info.Format);
+					newImage.ConvertToFormat(baseImage.Format);
 				}
 				
 				newImage.CopyTo(baseImage);

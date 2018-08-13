@@ -745,11 +745,11 @@ namespace Gorgon.Graphics.Imaging
 
 			try
 			{
-				Guid pixelFormat = GetGUID(imageData.Info.Format);
+				Guid pixelFormat = GetGUID(imageData.Format);
 
 				if (pixelFormat == Guid.Empty)
 				{
-					throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, imageData.Info.Format));
+					throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, imageData.Format));
 				}
 
 				encoder = new BitmapEncoder(_factory, imageFileFormat);
@@ -757,7 +757,7 @@ namespace Gorgon.Graphics.Imaging
 
 				encoderInfo = encoder.EncoderInfo;
 
-				bool saveAllFrames = encoderInfo.IsMultiframeSupported && imageData.Info.ArrayCount > 1;
+				bool saveAllFrames = encoderInfo.IsMultiframeSupported && imageData.ArrayCount > 1;
 
 				if ((saveAllFrames) 
 					&& (options != null) 
@@ -768,7 +768,7 @@ namespace Gorgon.Graphics.Imaging
 
 				if (saveAllFrames)
 				{
-					frameCount = imageData.Info.ArrayCount;
+					frameCount = imageData.ArrayCount;
 				}
 
 				for (int i = 0; i < frameCount; ++i)
@@ -804,7 +804,7 @@ namespace Gorgon.Graphics.Imaging
 			{
 			    unsafe
 			    {
-			        for (int i = 0; i < data.Info.ArrayCount; ++i)
+			        for (int i = 0; i < data.ArrayCount; ++i)
 			        {
 			            IGorgonImageBuffer buffer = data.Buffers[0, i];
 
@@ -1161,11 +1161,11 @@ namespace Gorgon.Graphics.Imaging
 		/// <param name="filter">The filter to apply when resizing the buffers.</param>
 		public void GenerateMipImages(IGorgonImage destImageData, ImageFilter filter)
 		{
-			Guid pixelFormat = GetGUID(destImageData.Info.Format);
+			Guid pixelFormat = GetGUID(destImageData.Format);
 
 			if (pixelFormat == Guid.Empty)
 			{
-				throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, destImageData.Info.Format));
+				throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, destImageData.Format));
 			}
 
 			Bitmap bitmap = null;
@@ -1173,17 +1173,17 @@ namespace Gorgon.Graphics.Imaging
 			try
 			{
 				// Begin scaling.
-				for (int array = 0; array < destImageData.Info.ArrayCount; ++array)
+				for (int array = 0; array < destImageData.ArrayCount; ++array)
 				{
-					int mipDepth = destImageData.Info.Depth;
+					int mipDepth = destImageData.Depth;
 
 					// Start at 1 because we're copying from the first mip level..
-					for (int mipLevel = 1; mipLevel < destImageData.Info.MipCount; ++mipLevel)
+					for (int mipLevel = 1; mipLevel < destImageData.MipCount; ++mipLevel)
 					{
 						for (int depth = 0; depth < mipDepth; ++depth)
 						{
-							IGorgonImageBuffer sourceBuffer = destImageData.Buffers[0, destImageData.Info.ImageType == ImageType.Image3D ? (destImageData.Info.Depth / mipDepth) * depth : array];
-							IGorgonImageBuffer destBuffer = destImageData.Buffers[mipLevel, destImageData.Info.ImageType == ImageType.Image3D ? depth : array];
+							IGorgonImageBuffer sourceBuffer = destImageData.Buffers[0, destImageData.ImageType == ImageType.Image3D ? (destImageData.Depth / mipDepth) * depth : array];
+							IGorgonImageBuffer destBuffer = destImageData.Buffers[mipLevel, destImageData.ImageType == ImageType.Image3D ? depth : array];
 
 							bitmap = GetBitmap(sourceBuffer, pixelFormat);
 
@@ -1221,19 +1221,19 @@ namespace Gorgon.Graphics.Imaging
 		/// <returns>A new <see cref="IGorgonImage"/> containing the resized data.</returns>
 		public IGorgonImage Resize(IGorgonImage imageData, int offsetX, int offsetY, int newWidth, int newHeight, int newDepth, int calculatedMipLevels, ImageFilter scaleFilter, ResizeMode resizeMode)
 		{
-			Guid pixelFormat = GetGUID(imageData.Info.Format);
+			Guid pixelFormat = GetGUID(imageData.Format);
 
 			if (pixelFormat == Guid.Empty)
 			{
-				throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, imageData.Info.Format));
+				throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, imageData.Format));
 			}
 
-			GorgonImageInfo imageInfo = new GorgonImageInfo(imageData.Info.ImageType, imageData.Info.Format)
+			GorgonImageInfo imageInfo = new GorgonImageInfo(imageData.ImageType, imageData.Format)
 			                {
 				                Width = newWidth,
 				                Height = newHeight,
 				                Depth = newDepth.Max(1),
-				                ArrayCount = imageData.Info.ArrayCount,
+				                ArrayCount = imageData.ArrayCount,
 				                MipCount = calculatedMipLevels
 			                };
 
@@ -1244,14 +1244,14 @@ namespace Gorgon.Graphics.Imaging
 			{
 				for (int array = 0; array < imageInfo.ArrayCount; ++array)
 				{
-					for (int mip = 0; mip < calculatedMipLevels.Min(imageData.Info.MipCount); ++mip)
+					for (int mip = 0; mip < calculatedMipLevels.Min(imageData.MipCount); ++mip)
 					{
-						int mipDepth = result.GetDepthCount(mip).Min(imageData.Info.Depth);
+						int mipDepth = result.GetDepthCount(mip).Min(imageData.Depth);
 
 						for (int depth = 0; depth < mipDepth; ++depth)
 						{
-							IGorgonImageBuffer destBuffer = result.Buffers[mip, imageData.Info.ImageType == ImageType.Image3D ? depth : array];
-							IGorgonImageBuffer srcBuffer = imageData.Buffers[mip, imageData.Info.ImageType == ImageType.Image3D ? depth : array];
+							IGorgonImageBuffer destBuffer = result.Buffers[mip, imageData.ImageType == ImageType.Image3D ? depth : array];
+							IGorgonImageBuffer srcBuffer = imageData.Buffers[mip, imageData.ImageType == ImageType.Image3D ? depth : array];
 							
 							bitmap = GetBitmap(srcBuffer, pixelFormat);
 
@@ -1298,17 +1298,17 @@ namespace Gorgon.Graphics.Imaging
 		/// <returns>A <see cref="IGorgonImage"/> containing the converted image data.</returns>
 		public IGorgonImage ConvertToFormat(IGorgonImage imageData, BufferFormat format, ImageDithering dithering, bool isSrcSRgb, bool isDestSRgb)
 		{
-			Guid sourceFormat = GetGUID(imageData.Info.Format);
+			Guid sourceFormat = GetGUID(imageData.Format);
 			Guid destFormat = GetGUID(format);
 
 			// Duplicate the settings, and update the format.
-			GorgonImageInfo resultInfo = new GorgonImageInfo(imageData.Info.ImageType, format)
+			GorgonImageInfo resultInfo = new GorgonImageInfo(imageData.ImageType, format)
 			                             {
-				                             Width = imageData.Info.Width,
-				                             Height = imageData.Info.Height,
-				                             ArrayCount = imageData.Info.ArrayCount,
-				                             Depth = imageData.Info.Depth,
-				                             MipCount = imageData.Info.MipCount
+				                             Width = imageData.Width,
+				                             Height = imageData.Height,
+				                             ArrayCount = imageData.ArrayCount,
+				                             Depth = imageData.Depth,
+				                             MipCount = imageData.MipCount
 			                             };
 
 			GorgonImage result = new GorgonImage(resultInfo);

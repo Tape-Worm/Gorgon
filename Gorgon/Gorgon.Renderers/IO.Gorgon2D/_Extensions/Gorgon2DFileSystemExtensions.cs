@@ -34,12 +34,12 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO.Properties;
 using Gorgon.Renderers;
 
-namespace Gorgon.IO.FileSystemExtensions
+namespace Gorgon.IO.Extensions
 {
     /// <summary>
     /// Extension methods for loading sprite data from file systems.
     /// </summary>
-    public static class GorgonFileSystemExtensions
+    public static class Gorgon2DFileSystemExtensions
     {
         /// <summary>
         /// Function to determine the sprite codec to use when loading the sprite.

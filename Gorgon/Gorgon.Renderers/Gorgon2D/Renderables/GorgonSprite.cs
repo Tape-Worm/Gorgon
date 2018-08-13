@@ -24,17 +24,12 @@
 // 
 #endregion
 
-using System;
 using System.Runtime.CompilerServices;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using Gorgon.IO;
 using Gorgon.Math;
-using Gorgon.Renderers.Properties;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Linq;
 using DX = SharpDX;
 
 namespace Gorgon.Renderers

@@ -85,7 +85,7 @@ namespace Gorgon.Graphics.Imaging
 	/// </para>
 	/// </remarks>
 	public interface IGorgonImage 
-		: IDisposable, IGorgonCloneable<IGorgonImage>
+		: IDisposable, IGorgonCloneable<IGorgonImage>, IGorgonImageInfo
 	{
 	    /// <summary>
 	    /// Property to return the pointer to the beginning of the internal buffer.
@@ -94,14 +94,6 @@ namespace Gorgon.Graphics.Imaging
 	    {
 	        get;
 	    }
-
-		/// <summary>
-		/// Property to return the information used to create the image.
-		/// </summary>
-		IGorgonImageInfo Info
-		{
-			get;
-		}
 
 		/// <summary>
 		/// Property to return information about the pixel format for this image.

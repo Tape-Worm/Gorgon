@@ -1095,7 +1095,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <param name="palette">Palette used in indexed conversion.</param>
 		private void CopyImageData(GorgonBinaryReader reader, GorgonImage image, PitchFlags pitchFlags, DdsConversionFlags conversionFlags, uint[] palette)
 		{
-			GorgonFormatInfo formatInfo = new GorgonFormatInfo(image.Info.Format);
+			GorgonFormatInfo formatInfo = new GorgonFormatInfo(image.Format);
 
 			// Get copy flag bits per pixel if we have an expansion.
 			if ((conversionFlags & DdsConversionFlags.Expand) == DdsConversionFlags.Expand)
@@ -1121,7 +1121,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 			}
 
 			// Get the size of the source image in bytes, and its pitch information.
-			int sizeInBytes = GorgonImage.CalculateSizeInBytes(image.Info, pitchFlags);
+			int sizeInBytes = GorgonImage.CalculateSizeInBytes(image, pitchFlags);
 
 			if (sizeInBytes > image.SizeInBytes)
 			{
@@ -1150,16 +1150,16 @@ namespace Gorgon.Graphics.Imaging.Codecs
 				expFlags |= ImageBitFlags.Legacy;
 			}
 
-			int depth = image.Info.Depth;
+			int depth = image.Depth;
 			GorgonNativeBuffer<byte> lineBuffer = null;
 
 			unsafe
 			{
 				try
 				{
-					for (int array = 0; array < image.Info.ArrayCount; array++)
+					for (int array = 0; array < image.ArrayCount; array++)
 					{
-						for (int mipLevel = 0; mipLevel < image.Info.MipCount; mipLevel++)
+						for (int mipLevel = 0; mipLevel < image.MipCount; mipLevel++)
 						{
 							// Get our destination buffer.
 							IGorgonImageBuffer destBuffer = image.Buffers[mipLevel, array];
@@ -1195,7 +1195,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 										               destPointer,
 										               pitchInfo.RowPitch,
 										               destBuffer.PitchInformation.RowPitch,
-										               image.Info.Format,
+										               image.Format,
 										               conversionFlags,
 										               expFlags,
 										               palette);
@@ -1203,12 +1203,12 @@ namespace Gorgon.Graphics.Imaging.Codecs
 									else if ((conversionFlags & DdsConversionFlags.Swizzle) == DdsConversionFlags.Swizzle)
 									{
 										// Perform swizzle.
-										ImageUtilities.SwizzleScanline(srcPointer, pitchInfo.RowPitch, destPointer, destBuffer.PitchInformation.RowPitch, image.Info.Format, expFlags);
+										ImageUtilities.SwizzleScanline(srcPointer, pitchInfo.RowPitch, destPointer, destBuffer.PitchInformation.RowPitch, image.Format, expFlags);
 									}
 									else
 									{
 										// Copy and set constant alpha (if necessary).
-										ImageUtilities.CopyScanline(srcPointer, pitchInfo.RowPitch, destPointer, destBuffer.PitchInformation.RowPitch, image.Info.Format, expFlags);
+										ImageUtilities.CopyScanline(srcPointer, pitchInfo.RowPitch, destPointer, destBuffer.PitchInformation.RowPitch, image.Format, expFlags);
 									}
 
 									// Increment our pointer data by one line.
@@ -1444,26 +1444,26 @@ namespace Gorgon.Graphics.Imaging.Codecs
 				throw new ArgumentException(Resources.GORIMG_ERR_STREAM_IS_READONLY);
 			}
 
-			if (Array.IndexOf(_formats, imageData.Info.Format) == -1)
+			if (Array.IndexOf(_formats, imageData.Format) == -1)
 			{
-				throw new ArgumentException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, imageData.Info.Format));
+				throw new ArgumentException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, imageData.Format));
 			}
             
 			// Use a binary writer.
 			using (GorgonBinaryWriter writer = new GorgonBinaryWriter(stream, true))
 			{
 				// Write the header for the file.
-				WriteHeader(imageData.Info, writer, DdsLegacyFlags.None);
+				WriteHeader(imageData, writer, DdsLegacyFlags.None);
 
 				// Write image data.
-				switch (imageData.Info.ImageType)
+				switch (imageData.ImageType)
 				{
 					case ImageType.Image1D:
 					case ImageType.Image2D:
 					case ImageType.ImageCube:
-						for (int array = 0; array < imageData.Info.ArrayCount; array++)
+						for (int array = 0; array < imageData.ArrayCount; array++)
 						{
-							for (int mipLevel = 0; mipLevel < imageData.Info.MipCount; mipLevel++)
+							for (int mipLevel = 0; mipLevel < imageData.MipCount; mipLevel++)
 							{
 								IGorgonImageBuffer buffer = imageData.Buffers[mipLevel, array];
 								writer.WriteRange(buffer.Data, count: buffer.PitchInformation.SlicePitch);
@@ -1471,8 +1471,8 @@ namespace Gorgon.Graphics.Imaging.Codecs
 						}
 						break;
 					case ImageType.Image3D:
-						int depth = imageData.Info.Depth;
-						for (int mipLevel = 0; mipLevel < imageData.Info.MipCount; mipLevel++)
+						int depth = imageData.Depth;
+						for (int mipLevel = 0; mipLevel < imageData.MipCount; mipLevel++)
 						{
 							for (int slice = 0; slice < depth; slice++)
 							{

@@ -30,6 +30,7 @@ using System.Text;
 using Gorgon.Core;
 using Gorgon.IO.Properties;
 using Gorgon.Renderers;
+using Gorgon.Renderers.Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;

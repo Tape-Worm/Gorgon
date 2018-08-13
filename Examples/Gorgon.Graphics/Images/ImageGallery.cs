@@ -112,13 +112,13 @@ namespace Gorgon.Examples
                                               });
 
             // Draw something pretty...
-            float width = sourceImage.Info.Width;
-            float height = sourceImage.Info.Height;
-            for (int x = 0; x < sourceImage.Info.Width; ++x)
+            float width = sourceImage.Width;
+            float height = sourceImage.Height;
+            for (int x = 0; x < sourceImage.Width; ++x)
             {
                 float rColorFade = ((x / width) * 1.5f).Cos();
 
-                for (int y = 0; y < sourceImage.Info.Height; ++y)
+                for (int y = 0; y < sourceImage.Height; ++y)
                 {
                     float bColorFade = ((y / height) * 1.5f).Sin();
 
@@ -172,7 +172,7 @@ namespace Gorgon.Examples
             // the image array below.
             _gifBuffer = new Bitmap(_imageSize.Width, _imageSize.Height, PixelFormat.Format32bppArgb);
 
-            float imageAspect = _images[3].Info.Height / (float)_images[3].Info.Width;
+            float imageAspect = _images[3].Height / (float)_images[3].Width;
             Size newSize = new Size(_imageSize.Width, (int)(_imageSize.Width * imageAspect));
 
             // With this one, the source image isn't in the same aspect ratio as our thumbnail size.
@@ -314,11 +314,11 @@ namespace Gorgon.Examples
                         DrawOutlinedText(graphics, position.X, position.Y, _descriptions[i]);
                     }
 
-                    position = new Point(position.X + image.Info.Width, position.Y);
+                    position = new Point(position.X + image.Width, position.Y);
 
                     if ((position.X + _imageSize.Width) >= clientSize.Width)
                     {
-                        position = new Point(0, position.Y + image.Info.Height);
+                        position = new Point(0, position.Y + image.Height);
                     }
                 }
             }

@@ -710,11 +710,11 @@ namespace Gorgon.Graphics.Imaging.Codecs
 			IGorgonImageBuffer buffer = image.Buffers[0];	        
 			
 			// Determine how large a row is, in bytes.
-			GorgonFormatInfo formatInfo = new GorgonFormatInfo(image.Info.Format);
+			GorgonFormatInfo formatInfo = new GorgonFormatInfo(image.Format);
 
 			GorgonPitchLayout srcPitch = (conversionFlags & TGAConversionFlags.Expand) == TGAConversionFlags.Expand
-				                             ? new GorgonPitchLayout(image.Info.Width * 3, image.Info.Width * 3 * image.Info.Height)
-				                             : formatInfo.GetPitchForFormat(image.Info.Width, image.Info.Height);
+				                             ? new GorgonPitchLayout(image.Width * 3, image.Width * 3 * image.Height)
+				                             : formatInfo.GetPitchForFormat(image.Width, image.Height);
 
 		    unsafe
 		    {
@@ -729,7 +729,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 
 		        if ((conversionFlags & TGAConversionFlags.InvertY) != TGAConversionFlags.InvertY)
 		        {
-		            destPtr += (image.Info.Height - 1) * buffer.PitchInformation.RowPitch;
+		            destPtr += (image.Height - 1) * buffer.PitchInformation.RowPitch;
 		        }
 
 		        // Used to counter the number of lines to force as opaque.
@@ -739,14 +739,14 @@ namespace Gorgon.Graphics.Imaging.Codecs
 
 		        try
 		        {
-		            for (int y = 0; y < image.Info.Height; y++)
+		            for (int y = 0; y < image.Height; y++)
 		            {
 		                // Indicates that the scanline has an alpha of 0 for the entire run.
 		                bool lineHasZeroAlpha;
 
 		                if ((conversionFlags & TGAConversionFlags.RLE) == TGAConversionFlags.RLE)
 		                {
-		                    lineHasZeroAlpha = ReadCompressed(reader, image.Info.Width, destPtr, image.Info.Format, conversionFlags);
+		                    lineHasZeroAlpha = ReadCompressed(reader, image.Width, destPtr, image.Format, conversionFlags);
 		                }
 		                else
 		                {
@@ -758,7 +758,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 
 		                    reader.ReadRange(lineBuffer, count: srcPitch.RowPitch);
 
-		                    lineHasZeroAlpha = ReadUncompressed((byte*)lineBuffer, srcPitch.RowPitch, destPtr, image.Info.Format, conversionFlags);
+		                    lineHasZeroAlpha = ReadUncompressed((byte*)lineBuffer, srcPitch.RowPitch, destPtr, image.Format, conversionFlags);
 		                }
 
 		                if ((lineHasZeroAlpha) && ((conversionFlags & TGAConversionFlags.SetOpaqueAlpha) == TGAConversionFlags.SetOpaqueAlpha))
@@ -773,7 +773,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		                                                   buffer.PitchInformation.RowPitch,
 		                                                   destPtr,
 		                                                   buffer.PitchInformation.RowPitch,
-		                                                   image.Info.Format,
+		                                                   image.Format,
 		                                                   ImageBitFlags.None);
 		                }
 
@@ -792,20 +792,20 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		            lineBuffer?.Dispose();
 		        }
 
-		        if (opaqueLineCount != image.Info.Height)
+		        if (opaqueLineCount != image.Height)
 		        {
 		            return;
 		        }
 
 		        // Set the alpha to opaque if we don't have any alpha values (i.e. alpha = 0 for all pixels).
 		        destPtr = (byte*)buffer.Data;
-		        for (int y = 0; y < image.Info.Height; y++)
+		        for (int y = 0; y < image.Height; y++)
 		        {
 		            ImageUtilities.CopyScanline(destPtr,
 		                                        buffer.PitchInformation.RowPitch,
 		                                        destPtr,
 		                                        buffer.PitchInformation.RowPitch,
-		                                        image.Info.Format,
+		                                        image.Format,
 		                                        ImageBitFlags.OpaqueAlpha);
 		            destPtr += buffer.PitchInformation.RowPitch;
 		        }
@@ -863,26 +863,26 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		{
 			// Ensure that we can actually read this format.  We do not perform total pixel conversion on behalf of the user, they are responsible for that.
 			// We will, however, support swizzling and pixel compression (e.g. 32 -> 24 bit).
-			if (Array.IndexOf(_supportedFormats, imageData.Info.Format) == -1)
+			if (Array.IndexOf(_supportedFormats, imageData.Format) == -1)
 			{
-				throw new NotSupportedException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, imageData.Info.Format));
+				throw new NotSupportedException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, imageData.Format));
 			}
 
 		    using (GorgonBinaryWriter writer = new GorgonBinaryWriter(stream, true))
 		    {
 		        // Write the header for the file before we dump the file contents.
-		        TgaHeader header = GetHeader(imageData.Info, out TGAConversionFlags conversionFlags);
+		        TgaHeader header = GetHeader(imageData, out TGAConversionFlags conversionFlags);
 
 		        GorgonPitchLayout destPitch;
 
 		        if ((conversionFlags & TGAConversionFlags.RGB888) == TGAConversionFlags.RGB888)
 		        {
-		            destPitch = new GorgonPitchLayout(imageData.Info.Width * 3, imageData.Info.Width * 3 * imageData.Info.Height);
+		            destPitch = new GorgonPitchLayout(imageData.Width * 3, imageData.Width * 3 * imageData.Height);
 		        }
 		        else
 		        {
-		            GorgonFormatInfo formatInfo = new GorgonFormatInfo(imageData.Info.Format);
-		            destPitch = formatInfo.GetPitchForFormat(imageData.Info.Width, imageData.Info.Height);
+		            GorgonFormatInfo formatInfo = new GorgonFormatInfo(imageData.Format);
+		            destPitch = formatInfo.GetPitchForFormat(imageData.Width, imageData.Height);
 		        }
 
 		        GorgonPitchLayout srcPitch = imageData.Buffers[0].PitchInformation;
@@ -908,7 +908,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		                writer.WriteValue(ref header);
 
 		                // Write out each scan line.					
-		                for (int y = 0; y < imageData.Info.Height; y++)
+		                for (int y = 0; y < imageData.Height; y++)
 		                {
 		                    if (lineBuffer == null)
 		                    {
@@ -927,11 +927,11 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		                    }
 		                    else if ((conversionFlags & TGAConversionFlags.Swizzle) == TGAConversionFlags.Swizzle)
 		                    {
-		                        ImageUtilities.SwizzleScanline(srcPointer, srcPitch.RowPitch, destPtr, destPitch.RowPitch, imageData.Info.Format, ImageBitFlags.None);
+		                        ImageUtilities.SwizzleScanline(srcPointer, srcPitch.RowPitch, destPtr, destPitch.RowPitch, imageData.Format, ImageBitFlags.None);
 		                    }
 		                    else
 		                    {
-		                        ImageUtilities.CopyScanline(srcPointer, srcPitch.RowPitch, destPtr, destPitch.RowPitch, imageData.Info.Format, ImageBitFlags.None);
+		                        ImageUtilities.CopyScanline(srcPointer, srcPitch.RowPitch, destPtr, destPitch.RowPitch, imageData.Format, ImageBitFlags.None);
 		                    }
 
 		                    destPtr += destPitch.RowPitch;

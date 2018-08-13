@@ -88,17 +88,17 @@ namespace Gorgon.Graphics.Imaging
 			{
 				(int, int) offsetSize;
 
-				mipLevel.ValidateRange("mipLevel", 0, _image.Info.MipCount);
+				mipLevel.ValidateRange("mipLevel", 0, _image.MipCount);
 
-				if (_image.Info.ImageType == ImageType.Image3D)
+				if (_image.ImageType == ImageType.Image3D)
 				{
-					depthSliceOrArrayIndex.ValidateRange("arrayIndexDepthSlice", 0, _image.Info.Depth);
+					depthSliceOrArrayIndex.ValidateRange("arrayIndexDepthSlice", 0, _image.Depth);
 					offsetSize = MipOffsetSize[mipLevel];
 					return _buffers[offsetSize.Item1 + depthSliceOrArrayIndex];
 				}
 
-				depthSliceOrArrayIndex.ValidateRange("arrayIndexDepthSlice", 0, _image.Info.ArrayCount);
-				offsetSize = MipOffsetSize[mipLevel + (depthSliceOrArrayIndex * _image.Info.MipCount)];
+				depthSliceOrArrayIndex.ValidateRange("arrayIndexDepthSlice", 0, _image.ArrayCount);
+				offsetSize = MipOffsetSize[mipLevel + (depthSliceOrArrayIndex * _image.MipCount)];
 				return _buffers[offsetSize.Item1];
 			}
 		}
@@ -112,29 +112,29 @@ namespace Gorgon.Graphics.Imaging
 		internal void CreateBuffers(GorgonNativeBuffer<byte> data)
 		{
 			int bufferIndex = 0;
-			GorgonFormatInfo formatInfo = new GorgonFormatInfo(_image.Info.Format);	// Format information.
+			GorgonFormatInfo formatInfo = new GorgonFormatInfo(_image.Format);	// Format information.
 			
 			// Allocate enough room for the array and mip levels.
-			_buffers = new IGorgonImageBuffer[GorgonImage.CalculateDepthSliceCount(_image.Info.Depth, _image.Info.MipCount) * _image.Info.ArrayCount];
+			_buffers = new IGorgonImageBuffer[GorgonImage.CalculateDepthSliceCount(_image.Depth, _image.MipCount) * _image.ArrayCount];
 
 			// Offsets for the mip maps.
-			MipOffsetSize = new (int BufferIndex, int MipDepth)[_image.Info.MipCount * _image.Info.ArrayCount];
+			MipOffsetSize = new (int BufferIndex, int MipDepth)[_image.MipCount * _image.ArrayCount];
 
 		    unsafe
 		    {
 		        byte* dataAddress = (byte*)data;
 
 		        // Enumerate array indices. (For 1D and 2D only, 3D will always be 1)
-		        for (int array = 0; array < _image.Info.ArrayCount; array++)
+		        for (int array = 0; array < _image.ArrayCount; array++)
 		        {
-		            int mipWidth = _image.Info.Width;
-		            int mipHeight = _image.Info.Height;
-		            int mipDepth = _image.Info.Depth;
+		            int mipWidth = _image.Width;
+		            int mipHeight = _image.Height;
+		            int mipDepth = _image.Depth;
 
 		            // Enumerate mip map levels.
-		            for (int mip = 0; mip < _image.Info.MipCount; mip++)
+		            for (int mip = 0; mip < _image.MipCount; mip++)
 		            {
-		                int arrayIndex = mip + (array * _image.Info.MipCount);
+		                int arrayIndex = mip + (array * _image.MipCount);
 		                GorgonPitchLayout pitchInformation = formatInfo.GetPitchForFormat(mipWidth, mipHeight);
 
 		                // Calculate buffer offset by mip.
@@ -152,7 +152,7 @@ namespace Gorgon.Graphics.Imaging
 		                                                                  mipWidth,
 		                                                                  mipHeight,
 		                                                                  mipDepth,
-		                                                                  _image.Info.Format,
+		                                                                  _image.Format,
 		                                                                  _image.FormatInfo);
 
 		                    dataAddress += pitchInformation.SlicePitch;
@@ -229,18 +229,18 @@ namespace Gorgon.Graphics.Imaging
 		{
 			(int, int) offsetSize;
 
-			mipLevel = mipLevel.Max(0).Min(_image.Info.MipCount - 1);
+			mipLevel = mipLevel.Max(0).Min(_image.MipCount - 1);
 
-			if (_image.Info.ImageType == ImageType.Image3D)
+			if (_image.ImageType == ImageType.Image3D)
 			{
-				depthSliceOrArrayIndex = depthSliceOrArrayIndex.Max(0).Min(_image.Info.Depth - 1);
+				depthSliceOrArrayIndex = depthSliceOrArrayIndex.Max(0).Min(_image.Depth - 1);
 				offsetSize = MipOffsetSize[mipLevel];
 
 				return offsetSize.Item1 + depthSliceOrArrayIndex;
 			}
 
-			depthSliceOrArrayIndex = depthSliceOrArrayIndex.Max(0).Min(_image.Info.ArrayCount - 1);
-			offsetSize = MipOffsetSize[mipLevel + (depthSliceOrArrayIndex * _image.Info.MipCount)];
+			depthSliceOrArrayIndex = depthSliceOrArrayIndex.Max(0).Min(_image.ArrayCount - 1);
+			offsetSize = MipOffsetSize[mipLevel + (depthSliceOrArrayIndex * _image.MipCount)];
 			return offsetSize.Item1;
 		}
 

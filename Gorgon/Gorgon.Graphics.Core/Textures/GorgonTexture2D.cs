@@ -46,7 +46,7 @@ namespace Gorgon.Graphics.Core
     /// A texture used to project an image onto a graphic primitive such as a triangle.
     /// </summary>
     public sealed class GorgonTexture2D
-        : GorgonGraphicsResource, IGorgonTexture2DInfo
+        : GorgonGraphicsResource, IGorgonTexture2DInfo, IGorgonImageInfo
     {
         #region Constants.
         /// <summary>
@@ -85,6 +85,42 @@ namespace Gorgon.Graphics.Core
         /// Property to return the bind flags used for the D3D 11 resource.
         /// </summary>
         internal override D3D11.BindFlags BindFlags => (D3D11.BindFlags)Binding;
+
+        /// <summary>
+        /// Property to return the type of image data.
+        /// </summary>
+        ImageType IGorgonImageInfo.ImageType => IsCubeMap ? ImageType.ImageCube : ImageType.Image2D ;
+
+        /// <summary>
+        /// Property to return the depth of an image, in pixels.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This applies to 3D images only.  This parameter will be set to a value of 1 for a 1D or 2D image.
+        /// </para>
+        /// </remarks>
+        int IGorgonImageInfo.Depth => 1;
+
+        /// <summary>
+        /// Property to return whether the image data is using premultiplied alpha.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This value has no meaning for this type.
+        /// </para>
+        /// </remarks>
+        bool IGorgonImageInfo.HasPreMultipliedAlpha => false;
+
+        /// <summary>
+        /// Property to return the number of mip map levels in the image.
+        /// </summary>
+        int IGorgonImageInfo.MipCount => MipLevels;
+
+        /// <summary>
+        /// Property to return whether the size of the texture is a power of 2 or not.
+        /// </summary>
+        bool IGorgonImageInfo.IsPowerOfTwo => ((Width == 0) || (Width & (Width - 1)) == 0)
+                                              && ((Height == 0) || (Height & (Height - 1)) == 0);
 
 		/// <summary>
 		/// Property to return the ID for this texture.
@@ -1294,9 +1330,9 @@ namespace Gorgon.Graphics.Core
         /// IGorgonImage image = ... // Load an image from a source.
         /// var texture = new GorgonTexture2D(graphics, new GorgonTexture2DInfo
         /// {
-        ///    Width = image.Info.Width,
-        ///    Height = image.Info.Height,
-        ///    Format = image.Info.Format,
+        ///    Width = image.Width,
+        ///    Height = image.Height,
+        ///    Format = image.Format,
         ///    ArrayCount = 4,
         ///    MipLevels = 4,
         ///    // This will trigger a direct upload to the GPU, use Dynamic or Staging for CPU writable uploads.
@@ -1484,7 +1520,7 @@ namespace Gorgon.Graphics.Core
 
 
                 // Copy the data from the texture.
-                for (int i = index; i < image.Info.ArrayCount; ++i)
+                for (int i = index; i < image.ArrayCount; ++i)
                 {
                     GetTextureData(stagingTexture, i, mipLevel, image.Buffers[mipLevel, i]);
                 }
@@ -2317,14 +2353,14 @@ namespace Gorgon.Graphics.Core
 		{
 		    _info = new GorgonTexture2DInfo(options.Name)
 		            {
-		                Format = image.Info.Format,
-		                Width = image.Info.Width,
-		                Height = image.Info.Height,
+		                Format = image.Format,
+		                Width = image.Width,
+		                Height = image.Height,
 		                Usage = options.Usage,
-		                ArrayCount = image.Info.ArrayCount,
+		                ArrayCount = image.ArrayCount,
 		                Binding = options.Binding,
-		                IsCubeMap = image.Info.ImageType == ImageType.ImageCube,
-		                MipLevels = image.Info.MipCount,
+		                IsCubeMap = image.ImageType == ImageType.ImageCube,
+		                MipLevels = image.MipCount,
 		                MultisampleInfo = options.MultisampleInfo
 		            };
 
