@@ -114,7 +114,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PolySprites", "Examples\Gor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test2DApp", "Test\Test2DApp\Test2DApp.csproj", "{40E1E768-7087-4C8D-8B79-7C50741CDC0F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon2D.IO", "Gorgon\Gorgon.Renderers\Gorgon2D.IO\Gorgon2D.IO.csproj", "{E5506A64-62C5-4AA3-ADCB-766AB0CD5528}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.IO.Gorgon2D", "Gorgon\Gorgon.Renderers\IO.Gorgon2D\Gorgon.IO.Gorgon2D.csproj", "{E5506A64-62C5-4AA3-ADCB-766AB0CD5528}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

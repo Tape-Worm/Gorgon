@@ -30,7 +30,7 @@ using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
 
-namespace Gorgon.IO.Codecs
+namespace Gorgon.IO
 {
     /// <summary>
     /// An interface used to serialize and deserialize <see cref="GorgonSprite"/> objects.
@@ -39,6 +39,7 @@ namespace Gorgon.IO.Codecs
     public interface IGorgonSpriteCodec
         : IGorgonGraphicsObject, IGorgonNamedObject
     {
+        #region Properties.
         /// <summary>
         /// Property to return the friendly description of the format.
         /// </summary>
@@ -86,21 +87,32 @@ namespace Gorgon.IO.Codecs
         {
             get;
         }
+        #endregion
+
+        #region Methods.
+        /// <summary>
+        /// Function to retrieve the name of the associated texture.
+        /// </summary>
+        /// <param name="stream">The stream containing the texture data.</param>
+        /// <returns>The name of the texture associated with the sprite, or <b>null</b> if no texture was found.</returns>
+        string GetAssociatedTextureName(Stream stream);
 
         /// <summary>
         /// Function to read the sprite data from a stream.
         /// </summary>
         /// <param name="stream">The stream containing the sprite.</param>
+        /// <param name="overrideTexture">[Optional] The texture to use as an override for the sprite.</param>
         /// <param name="byteCount">[Optional] The number of bytes to read from the stream.</param>
         /// <returns>A new <see cref="GorgonSprite"/>.</returns>
-        GorgonSprite FromStream(Stream stream, int? byteCount = null);
+        GorgonSprite FromStream(Stream stream, GorgonTexture2DView overrideTexture = null, int? byteCount = null);
 
         /// <summary>
         /// Function to read the sprite data from a file on the physical file system.
         /// </summary>
         /// <param name="filePath">The path to the file to read.</param>
+        /// <param name="overrideTexture">[Optional] The texture to use as an override for the sprite.</param>
         /// <returns>A new <see cref="GorgonSprite"/>.</returns>
-        GorgonSprite FromFile(string filePath);
+        GorgonSprite FromFile(string filePath, GorgonTexture2DView overrideTexture = null);
 
         /// <summary>
         /// Function to save the sprite data to a stream.
@@ -115,5 +127,13 @@ namespace Gorgon.IO.Codecs
         /// <param name="sprite">The sprite to serialize into the file.</param>
         /// <param name="filePath">The path to the file.</param>
         void Save(GorgonSprite sprite, string filePath);
+
+        /// <summary>
+        /// Function to determine if the data in a stream is readable by this codec.
+        /// </summary>
+        /// <param name="stream">The stream containing the data.</param>
+        /// <returns><b>true</b> if the data can be read, or <b>false</b> if not.</returns>
+        bool IsReadable(Stream stream);
+        #endregion
     }
 }

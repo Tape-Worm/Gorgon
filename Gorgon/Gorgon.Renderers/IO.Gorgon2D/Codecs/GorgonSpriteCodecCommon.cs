@@ -31,12 +31,12 @@ using Gorgon.Graphics.Core;
 using Gorgon.IO.Properties;
 using Gorgon.Renderers;
 
-namespace Gorgon.IO.Codecs
+namespace Gorgon.IO
 {
     /// <summary>
     /// A base class containing common codec functionality.
     /// </summary>
-    public abstract class GorgonCodecCommon
+    public abstract class GorgonSpriteCodecCommon
         : IGorgonSpriteCodec
     {
         #region Properties.
@@ -116,16 +116,29 @@ namespace Gorgon.IO.Codecs
         protected abstract GorgonSprite OnReadFromStream(Stream stream, int byteCount);
 
         /// <summary>
-        /// Function to read the sprite data from a stream.
+        /// Function to determine if the data in a stream is readable by this codec.
         /// </summary>
-        /// <param name="stream">The stream containing the sprite.</param>
-        /// <param name="byteCount">[Optional] The number of bytes to read from the stream.</param>
-        /// <returns>A new <see cref="GorgonSprite"/>.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
+        /// <param name="stream">The stream containing the data.</param>
+        /// <returns><b>true</b> if the data can be read, or <b>false</b> if not.</returns>
+        protected abstract bool OnIsReadable(Stream stream);
+
+        /// <summary>
+        /// Function to retrieve the name of the associated texture.
+        /// </summary>
+        /// <param name="stream">The stream containing the texture data.</param>
+        /// <returns>The name of the texture associated with the sprite, or <b>null</b> if no texture was found.</returns>
+        protected abstract string OnGetAssociatedTextureName(Stream stream);
+
+        /// <summary>
+        /// Function to retrieve the name of the associated texture.
+        /// </summary>
+        /// <param name="stream">The stream containing the texture data.</param>
+        /// <returns>The name of the texture associated with the sprite, or <b>null</b> if no texture was found.</returns>
+        /// <exception cref="ArgumentNullException">Thrown if the <paramref name="stream"/> parameter is <b>null</b></exception>
         /// <exception cref="GorgonException">Thrown if the <paramref name="stream"/> is write only.</exception>
         /// <exception cref="EndOfStreamException">Thrown if the current <paramref name="stream"/> position, plus the size of the data exceeds the length of the stream.</exception>
         /// <exception cref="NotSupportedException">This method is not supported by this codec.</exception>
-        public GorgonSprite FromStream(Stream stream, int? byteCount = null)
+        public string GetAssociatedTextureName(Stream stream)
         {
             if (!CanDecode)
             {
@@ -139,7 +152,52 @@ namespace Gorgon.IO.Codecs
 
             if (!stream.CanRead)
             {
-                throw new GorgonException(GorgonResult.CannotRead, Resources.GO2DIO_ERR_STREAM_IS_WRITE_ONLY);
+                throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2DIO_ERR_STREAM_IS_WRITE_ONLY);
+            }
+
+            if (!stream.CanSeek)
+            {
+                throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2DIO_ERR_STREAM_UNSEEKABLE);
+            }
+
+            long pos = stream.Position;
+
+            try
+            {
+                return OnGetAssociatedTextureName(stream);
+            }
+            finally
+            {
+                stream.Position = pos;
+            }
+        }
+
+        /// <summary>
+        /// Function to read the sprite data from a stream.
+        /// </summary>
+        /// <param name="stream">The stream containing the sprite.</param>
+        /// <param name="overrideTexture">[Optional] The texture to use as an override for the sprite.</param>
+        /// <param name="byteCount">[Optional] The number of bytes to read from the stream.</param>
+        /// <returns>A new <see cref="GorgonSprite"/>.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="GorgonException">Thrown if the <paramref name="stream"/> is write only.</exception>
+        /// <exception cref="EndOfStreamException">Thrown if the current <paramref name="stream"/> position, plus the size of the data exceeds the length of the stream.</exception>
+        /// <exception cref="NotSupportedException">This method is not supported by this codec.</exception>
+        public GorgonSprite FromStream(Stream stream, GorgonTexture2DView overrideTexture = null, int? byteCount = null)
+        {
+            if (!CanDecode)
+            {
+                throw new NotSupportedException();
+            }
+
+            if (stream == null)
+            {
+                throw new ArgumentNullException(nameof(stream));
+            }
+
+            if (!stream.CanRead)
+            {
+                throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2DIO_ERR_STREAM_IS_WRITE_ONLY);
             }
 
             if (byteCount == null)
@@ -152,18 +210,26 @@ namespace Gorgon.IO.Codecs
                 throw new EndOfStreamException();
             }
 
-            return OnReadFromStream(stream, byteCount.Value);
+            GorgonSprite result = OnReadFromStream(stream, byteCount.Value);
+
+            if ((result.Texture != overrideTexture)  && (overrideTexture != null))
+            {
+                result.Texture = overrideTexture;
+            }
+
+            return result;
         }
 
         /// <summary>
         /// Function to read the sprite data from a file on the physical file system.
         /// </summary>
         /// <param name="filePath">The path to the file to read.</param>
+        /// <param name="overrideTexture">[Optional] The texture to use as an override for the sprite.</param>
         /// <returns>A new <see cref="GorgonSprite"/>.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="filePath"/> parameter is empty.</exception>
         /// <exception cref="NotSupportedException">This method is not supported by this codec.</exception>
-        public GorgonSprite FromFile(string filePath)
+        public GorgonSprite FromFile(string filePath, GorgonTexture2DView overrideTexture = null)
         {
             if (!CanDecode)
             {
@@ -182,7 +248,7 @@ namespace Gorgon.IO.Codecs
 
             using (FileStream stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
-                return FromStream(stream, (int)stream.Length);
+                return FromStream(stream, overrideTexture, (int)stream.Length);
             }
         }
 
@@ -213,7 +279,7 @@ namespace Gorgon.IO.Codecs
 
             if (!stream.CanWrite)
             {
-                throw new GorgonException(GorgonResult.CannotWrite, Resources.GO2DIO_ERR_STREAM_IS_READ_ONLY);
+                throw new GorgonException(GorgonResult.CannotWrite, Resources.GOR2DIO_ERR_STREAM_IS_READ_ONLY);
             }
 
             OnSaveToStream(sprite, stream);
@@ -249,6 +315,49 @@ namespace Gorgon.IO.Codecs
                 Save(sprite, stream);
             }
         }
+
+        /// <summary>
+        /// Function to determine if the data in a stream is readable by this codec.
+        /// </summary>
+        /// <param name="stream">The stream containing the data.</param>
+        /// <returns><b>true</b> if the data can be read, or <b>false</b> if not.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="GorgonException">Thrown if the <paramref name="stream"/> is write only.</exception>
+        /// <exception cref="EndOfStreamException">Thrown if the current <paramref name="stream"/> position, plus the size of the data exceeds the length of the stream.</exception>
+        /// <exception cref="NotSupportedException">This method is not supported by this codec.</exception>
+        public bool IsReadable(Stream stream)
+        {
+            if (!CanDecode)
+            {
+                throw new NotSupportedException();
+            }
+
+            if (stream == null)
+            {
+                throw new ArgumentNullException(nameof(stream));
+            }
+
+            if (!stream.CanRead)
+            {
+                throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2DIO_ERR_STREAM_IS_WRITE_ONLY);
+            }
+
+            if (!stream.CanSeek)
+            {
+                throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2DIO_ERR_STREAM_UNSEEKABLE);
+            }
+
+            long position = stream.Position;
+
+            try
+            {
+                return OnIsReadable(stream);
+            }
+            finally
+            {
+                stream.Position = position;
+            }
+        }
         #endregion
 
         #region Constructor/Finalizer.
@@ -260,7 +369,7 @@ namespace Gorgon.IO.Codecs
         /// <param name="description">The friendly description for the codec.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/>, or the <paramref name="name"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
-        protected GorgonCodecCommon(Gorgon2D renderer, string name, string description)
+        protected GorgonSpriteCodecCommon(Gorgon2D renderer, string name, string description)
         {
             Renderer = renderer ?? throw new ArgumentNullException(nameof(renderer));
 

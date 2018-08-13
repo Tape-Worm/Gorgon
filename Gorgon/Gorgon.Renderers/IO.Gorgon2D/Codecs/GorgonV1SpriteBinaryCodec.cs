@@ -34,13 +34,13 @@ using Gorgon.Graphics.Core;
 using Gorgon.IO.Properties;
 using Gorgon.Renderers;
 
-namespace Gorgon.IO.Codecs
+namespace Gorgon.IO
 {
     /// <summary>
     /// A codec that can read version 1 sprite data.
     /// </summary>
     public class GorgonV1SpriteBinaryCodec
-        : GorgonCodecCommon
+        : GorgonSpriteCodecCommon
     {
         #region Properties.
         /// <summary>
@@ -412,6 +412,84 @@ namespace Gorgon.IO.Codecs
 		}
 
         /// <summary>
+        /// Function to determine if the data in a stream is readable by this codec.
+        /// </summary>
+        /// <param name="stream">The stream containing the data.</param>
+        /// <returns><b>true</b> if the data can be read, or <b>false</b> if not.</returns>
+        protected override bool OnIsReadable(Stream stream)
+        {
+            using (var reader = new GorgonBinaryReader(stream, true))
+            {
+                // If we don't have at least 10 bytes, then this file is not valid.
+                if ((stream.Length - stream.Position) < 16)
+                {
+                    return false;
+                }
+                
+                string headerVersion = reader.ReadString();
+                if ((!headerVersion.StartsWith("GORSPR", StringComparison.OrdinalIgnoreCase)) 
+                    || (headerVersion.Length < 7) 
+                    || (headerVersion.Length > 9))
+                {
+                    return false;
+                }
+
+                // Get the version information.
+                switch (headerVersion.ToUpperInvariant())
+                {
+                    case "GORSPR1":
+                    case "GORSPR1.1":
+                    case "GORSPR1.2":
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Function to retrieve the name of the associated texture.
+        /// </summary>
+        /// <param name="stream">The stream containing the texture data.</param>
+        /// <returns>The name of the texture associated with the sprite, or <b>null</b> if no texture was found.</returns>
+        protected override string OnGetAssociatedTextureName(Stream stream)
+        {
+            using (GorgonBinaryReader reader = new GorgonBinaryReader(stream, true))
+            {
+                string headerVersion = reader.ReadString();
+                if ((!headerVersion.StartsWith("GORSPR", StringComparison.OrdinalIgnoreCase))
+                    || (headerVersion.Length < 7)
+                    || (headerVersion.Length > 9))
+                {
+                    return null;
+                }
+
+                // Get the version information.
+                switch (headerVersion.ToUpperInvariant())
+                {
+                    case "GORSPR1":
+                    case "GORSPR1.1":
+                    case "GORSPR1.2":
+                        break;
+                    default:
+                        return null;
+                }
+
+                // We don't need the sprite name.
+                reader.ReadString();
+
+                // Find out if we have an image.
+                if (!reader.ReadBoolean())
+                {
+                    return null;
+                }
+
+                reader.ReadBoolean();
+                return reader.ReadString();
+            }
+        }
+
+        /// <summary>
         /// Function to read the sprite data from a stream.
         /// </summary>
         /// <param name="stream">The stream containing the sprite.</param>
@@ -419,7 +497,7 @@ namespace Gorgon.IO.Codecs
         /// <returns>A new <see cref="GorgonSprite"/>.</returns>
         protected override GorgonSprite OnReadFromStream(Stream stream, int byteCount)
         {
-            using (var reader = new GorgonBinaryReader(stream))
+            using (var reader = new GorgonBinaryReader(stream, true))
             {
                 // We don't need the byte count here.
                 return LoadSprite(Graphics, reader);

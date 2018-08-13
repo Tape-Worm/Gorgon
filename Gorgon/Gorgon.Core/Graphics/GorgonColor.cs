@@ -26,6 +26,7 @@
 
 using System;
 using System.Drawing;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using Gorgon.Core;
@@ -67,6 +68,10 @@ namespace Gorgon.Graphics
 		/// The color black.
 		/// </summary>
 		public static readonly GorgonColor Black = new GorgonColor(0, 0, 0, 1);
+        /// <summary>
+        /// The size of the value, in bytes.
+        /// </summary>
+	    public static readonly int SizeInBytes = Unsafe.SizeOf<GorgonColor>();
 
 		/// <summary>
 		/// The Red color channel component.

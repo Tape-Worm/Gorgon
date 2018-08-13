@@ -26,18 +26,24 @@
 
 using System;
 using System.Buffers;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
+using Gorgon.Core;
 using Gorgon.IO.Properties;
 using Gorgon.Renderers;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
 
-namespace Gorgon.IO.Codecs
+namespace Gorgon.IO
 {
     /// <summary>
     /// A codec that can read and write a JSON formatted version of Gorgon v3 sprite data.
     /// </summary>
     public class GorgonV3SpriteJsonCodec
-        : GorgonCodecCommon
+        : GorgonSpriteCodecCommon
+    
     {
         #region Properties.
         /// <summary>
@@ -60,6 +66,66 @@ namespace Gorgon.IO.Codecs
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to retrieve the stream as JSON.Net object.
+        /// </summary>
+        /// <param name="stream">The stream containing the data.</param>
+        /// <returns>The data as a JSON.Net object.</returns>
+        private static JsonReader GetJsonReader(Stream stream)
+        {
+            var reader = new StreamReader(stream, Encoding.UTF8, true, 1024, true);
+            var jsonReader = new JsonTextReader(reader)
+                             {
+                                 CloseInput = true
+                             };
+            return jsonReader;
+        }
+
+        /// <summary>
+        /// Function to determine if the jason object has the data we need.
+        /// </summary>
+        /// <param name="reader">The reader for the JSON data.</param>
+        /// <returns><b>true</b> if the data is for a sprite, <b>false</b> if not.</returns>
+        private bool IsReadableJObject(JsonReader reader)
+        {
+            // Find the header node.
+            while (reader.Read())
+            {
+                if ((string.Equals(reader.Path, "header", StringComparison.Ordinal))
+                    && (reader.TokenType == JsonToken.PropertyName))
+                {
+                    var id = (ulong?)reader.ReadAsDecimal();
+
+                    if ((id == null) || (id != GorgonSprite.FileHeaderValue.ChunkID()))
+                    {
+                        return false;
+                    }
+
+                    if (!reader.Read())
+                    {
+                        return false;
+                    }
+                }
+
+                // These must come right after each other.
+                if ((!string.Equals(reader.Path, "version", StringComparison.Ordinal))
+                    || (reader.TokenType != JsonToken.PropertyName))
+                {
+                    continue;
+                }
+
+                if (!reader.Read())
+                {
+                    return false;
+                }
+
+                return (Version.TryParse(reader.Value.ToString(), out Version version)) 
+                       && (version.Equals(Version));
+            }
+
+            return false;
+        }
+
         /// <summary>
         /// Function to read the sprite data from a stream.
         /// </summary>
@@ -105,6 +171,68 @@ namespace Gorgon.IO.Codecs
             using (var writer = new StreamWriter(stream, Encoding.UTF8, 1024, true))
             {
                 writer.Write(sprite.ToJson());
+            }
+        }
+
+        /// <summary>
+        /// Function to determine if the data in a stream is readable by this codec.
+        /// </summary>
+        /// <param name="stream">The stream containing the data.</param>
+        /// <returns><b>true</b> if the data can be read, or <b>false</b> if not.</returns>
+        protected override bool OnIsReadable(Stream stream)
+        {
+            JsonReader reader = null;
+
+            try
+            {
+                reader = GetJsonReader(stream);
+                return IsReadableJObject(reader);
+            }
+            catch (JsonException)
+            {
+                return false;
+            }
+            finally
+            {
+                reader?.Close();
+            }
+        }
+
+        /// <summary>
+        /// Function to retrieve the name of the associated texture.
+        /// </summary>
+        /// <param name="stream">The stream containing the texture data.</param>
+        /// <returns>The name of the texture associated with the sprite, or <b>null</b> if no texture was found.</returns>
+        protected override string OnGetAssociatedTextureName(Stream stream)
+        {
+            using (JsonReader reader = GetJsonReader(stream))
+            {
+                if (!IsReadableJObject(reader))
+                {
+                    return null;
+                }
+
+                while (reader.Read())
+                {
+                    if ((!string.Equals(reader.Path, "Texture", StringComparison.Ordinal))
+                        || (reader.TokenType != JsonToken.PropertyName))
+                    {
+                        continue;
+                    }
+
+                    while (reader.Read())
+                    {
+                        if ((!string.Equals(reader.Path, "Texture.name", StringComparison.Ordinal))
+                            || (reader.TokenType != JsonToken.PropertyName))
+                        {
+                            continue;
+                        }
+
+                        return !reader.Read() ? null : reader.Value?.ToString();
+                    }
+                }
+
+                return null;
             }
         }
         #endregion

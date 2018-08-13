@@ -25,6 +25,8 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Newtonsoft.Json;
@@ -39,7 +41,21 @@ namespace Gorgon.Renderers
     {
         // The graphics object to use for resource look up.
         private readonly GorgonGraphics _graphics;
-        
+        // The property names for the object.
+        private readonly HashSet<string> _propNames = new HashSet<string>(StringComparer.Ordinal)
+                                                      {
+                                                          "borderColor",
+                                                          "compareFunc",
+                                                          "filter",
+                                                          "maxAnisotropy",
+                                                          "maxLod",
+                                                          "minLod",
+                                                          "mipLodBias",
+                                                          "wrapU",
+                                                          "wrapV",
+                                                          "wrapW"
+                                                      };
+
         /// <summary>Writes the JSON representation of the object.</summary>
         /// <param name="writer">The <see cref="T:Newtonsoft.Json.JsonWriter" /> to write to.</param>
         /// <param name="value">The value.</param>
@@ -53,26 +69,47 @@ namespace Gorgon.Renderers
             }
 
             writer.WriteStartObject();
-            writer.WritePropertyName("borderColor");
-            writer.WriteValue(value.BorderColor.ToARGB());
-            writer.WritePropertyName("compareFunc");
-            writer.WriteValue(value.ComparisonFunction);
-            writer.WritePropertyName("filter");
-            writer.WriteValue(value.Filter);
-            writer.WritePropertyName("maxAnisotropy");
-            writer.WriteValue(value.MaxAnisotropy);
-            writer.WritePropertyName("maxLod");
-            writer.WriteValue(value.MaximumLevelOfDetail);
-            writer.WritePropertyName("minLod");
-            writer.WriteValue(value.MinimumLevelOfDetail);
-            writer.WritePropertyName("mipLodBias");
-            writer.WriteValue(value.MipLevelOfDetailBias);
-            writer.WritePropertyName("wrapU");
-            writer.WriteValue(value.WrapU);
-            writer.WritePropertyName("wrapV");
-            writer.WriteValue(value.WrapV);
-            writer.WritePropertyName("wrapW");
-            writer.WriteValue(value.WrapW);
+
+            foreach (string propName in _propNames)
+            {
+                writer.WritePropertyName(propName);
+                switch (propName)
+                {
+                    case "borderColor":
+                        writer.WriteValue(value.BorderColor.ToARGB());
+                        break;
+                    case "compareFunc":
+                        writer.WriteValue(value.ComparisonFunction);
+                        break;
+                    case "filter":
+                        writer.WriteValue(value.Filter);
+                        break;
+                    case "maxAnisotropy":
+                        writer.WriteValue(value.MaxAnisotropy);
+                        break;
+                    case "maxLod":
+                        writer.WriteValue(value.MaximumLevelOfDetail);
+                        break;
+                    case "minLod":
+                        writer.WriteValue(value.MinimumLevelOfDetail);
+                        break;
+                    case "mipLodBias":
+                        writer.WriteValue(value.MipLevelOfDetailBias);
+                        break;
+                    case "wrapU":
+                        writer.WriteValue(value.WrapU);
+                        break;
+                    case "wrapV":
+                        writer.WriteValue(value.WrapV);
+                        break;
+                    case "wrapW":
+                        writer.WriteValue(value.WrapW);
+                        break;
+                    default:
+                        throw new GorgonException(GorgonResult.CannotWrite, $@"Unknown property name {propName}.");
+                }
+            }
+
             writer.WriteEndObject();
         }
 
@@ -86,69 +123,71 @@ namespace Gorgon.Renderers
         public override GorgonSamplerState ReadJson(JsonReader reader, Type objectType, GorgonSamplerState existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             if ((reader.TokenType != JsonToken.StartObject)
-                || (_graphics == null)
-                || (!reader.Read()))
+                || (_graphics == null))
             {
                 return null;
             }
-
-            var borderColor = new GorgonColor(reader.ReadAsInt32() ?? -1);
-            if (!reader.Read())
-            {
-                return null;
-            }
-            var compareFunction = (Comparison)(reader.ReadAsInt32() ?? (int)Comparison.Always);
-            if (!reader.Read())
-            {
-                return null;
-            }
-            var filter = (SampleFilter)(reader.ReadAsInt32() ?? (int)SampleFilter.MinMagMipLinear);
-            if (!reader.Read())
-            {
-                return null;
-            }
-            int maxAnisotropy = reader.ReadAsInt32() ?? 0;
-            if (!reader.Read())
-            {
-                return null;
-            }
-            var maxLod = (float)(reader.ReadAsDouble() ?? float.MaxValue);
-            if (!reader.Read())
-            {
-                return null;
-            }
-            var minLod = (float)(reader.ReadAsDouble() ?? float.MinValue);
-            if (!reader.Read())
-            {
-                return null;
-            }
-            var mipLodBias = (float)(reader.ReadAsDouble() ?? 0);
-            if (!reader.Read())
-            {
-                return null;
-            }
-            var wrapU = (TextureWrap)(reader.ReadAsInt32() ?? (int)TextureWrap.Clamp);
-            if (!reader.Read())
-            {
-                return null;
-            }
-            var wrapV = (TextureWrap)(reader.ReadAsInt32() ?? (int)TextureWrap.Clamp);
-            if (!reader.Read())
-            {
-                return null;
-            }
-            var wrapW = (TextureWrap)(reader.ReadAsInt32() ?? (int)TextureWrap.Clamp);
-            if (!reader.Read())
-            {
-                return null;
-            }
-
+            
+            GorgonColor? borderColor = null;
+            Comparison? compareFunction = null;
+            SampleFilter? filter = null;
+            int? maxAnisotropy = null;
+            float? maxLod = null;
+            float? minLod = null;
+            float? mipLodBias = null;
+            TextureWrap? wrapU = null;
+            TextureWrap? wrapV = null;
+            TextureWrap? wrapW = null;
+            
             var builder = new GorgonSamplerStateBuilder(_graphics);
+
+            while (reader.Read())
+            {
+                if (reader.TokenType != JsonToken.PropertyName)
+                {
+                    continue;
+                }
+
+                switch (reader.Value.ToString())
+                {
+                    case "borderColor":
+                        borderColor = reader.ReadAsInt32();
+                        break;
+                    case "compareFunc":
+                        compareFunction = (Comparison?)reader.ReadAsInt32();
+                        break;
+                    case "filter":
+                        filter = (SampleFilter?)reader.ReadAsInt32();
+                        break;
+                    case "maxAnisotropy":
+                        maxAnisotropy = reader.ReadAsInt32();
+                        break;
+                    case "maxLod":
+                        maxLod = (float?)reader.ReadAsDouble();
+                        break;
+                    case "minLod":
+                        minLod = (float?)reader.ReadAsDouble();
+                        break;
+                    case "mipLodBias":
+                        mipLodBias = (float?)reader.ReadAsDouble();
+                        break;
+                    case "wrapU":
+                        wrapU = (TextureWrap?)reader.ReadAsInt32();
+                        break;
+                    case "wrapV":
+                        wrapV = (TextureWrap?)reader.ReadAsInt32();
+                        break;
+                    case "wrapW":
+                        wrapW = (TextureWrap?)reader.ReadAsInt32();
+                        break;
+                }
+            }
+
             return builder.Wrapping(wrapU, wrapV, wrapW, borderColor)
-                          .MaxAnisotropy(maxAnisotropy)
-                          .ComparisonFunction(compareFunction)
-                          .Filter(filter)
-                          .MipLevelOfDetail(minLod, maxLod, mipLodBias)
+                          .MaxAnisotropy(maxAnisotropy ?? 1)
+                          .ComparisonFunction(compareFunction ?? Comparison.Never)
+                          .Filter(filter ?? SampleFilter.MinMagMipLinear)
+                          .MipLevelOfDetail(minLod ?? float.MinValue, maxLod ?? float.MaxValue, mipLodBias ?? 0)
                           .Build();
         }
 

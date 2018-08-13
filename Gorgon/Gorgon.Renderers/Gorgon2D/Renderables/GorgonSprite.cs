@@ -57,9 +57,6 @@ namespace Gorgon.Renderers
         #endregion
 
         #region Variables.
-        // The serialization version for the object.
-        private static readonly Version _serializeVersion = new Version(3, 0);
-
         // The angle of rotation, in degrees.
         private float _angle;
         // The renderable data for this sprite.
@@ -78,7 +75,10 @@ namespace Gorgon.Renderers
         /// Property to return the version number for serialization.
         /// </summary>
         [JsonProperty(JsonVersionProp)]
-        public Version SerializationVersion => _serializeVersion;
+        public static Version SerializationVersion
+        {
+            get;
+        } = new Version(3, 0);
 
         /// <summary>
         /// Property to return whether or not the sprite has had its position, size, texture information, or object space vertices updated since it was last drawn.
@@ -512,9 +512,9 @@ namespace Gorgon.Renderers
                 throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2D_ERR_JSON_NOT_SPRITE);
             }
 
-            if (!jsonVersion.Equals(_serializeVersion))
+            if (!jsonVersion.Equals(SerializationVersion))
             {
-                throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR2D_ERR_SPRITE_VERSION_MISMATCH, _serializeVersion, jsonVersion));
+                throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR2D_ERR_SPRITE_VERSION_MISMATCH, SerializationVersion, jsonVersion));
             }
 
             return jobj.ToObject<GorgonSprite>(serializer);

@@ -36,13 +36,13 @@ using Gorgon.IO.Properties;
 using Gorgon.Renderers;
 using GorgonLibrary.IO;
 
-namespace Gorgon.IO.Codecs
+namespace Gorgon.IO
 {
     /// <summary>
     /// A codec that can read version 2 sprite data.
     /// </summary>
     public class GorgonV2SpriteCodec
-        : GorgonCodecCommon
+        : GorgonSpriteCodecCommon
     {
         #region Enums.
         /// <summary>
@@ -424,6 +424,64 @@ namespace Gorgon.IO.Codecs
 
 		    return sprite;
 		}
+
+        /// <summary>
+        /// Function to determine if the data in a stream is readable by this codec.
+        /// </summary>
+        /// <param name="stream">The stream containing the data.</param>
+        /// <returns><b>true</b> if the data can be read, or <b>false</b> if not.</returns>
+        protected override bool OnIsReadable(Stream stream)
+        {
+            using (var reader = new GorgonBinaryReader(stream, true))
+            {
+                if ((stream.Length - stream.Position) < sizeof(ulong) * 2)
+                {
+                    return false;
+                }
+
+                ulong chunkHeader = reader.ReadUInt64();
+                // Skip the size, we don't need it.
+                reader.ReadUInt32();
+                ulong chunkFileData = reader.ReadUInt64();
+
+                return (chunkHeader == FileHeader.ChunkID()) && (chunkFileData == SpriteDataChunk.ChunkID());
+            }
+        }
+
+        /// <summary>
+        /// Function to retrieve the name of the associated texture.
+        /// </summary>
+        /// <param name="stream">The stream containing the texture data.</param>
+        /// <returns>The name of the texture associated with the sprite, or <b>null</b> if no texture was found.</returns>
+        protected override string OnGetAssociatedTextureName(Stream stream)
+        {
+            using (var reader = new GorgonChunkReader(stream))
+            {
+                if (!reader.HasChunk(FileHeader))
+                {
+                    throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2DIO_ERR_INVALID_HEADER);
+                }
+
+                reader.Begin(FileHeader);
+                reader.Begin(SpriteDataChunk);
+                reader.SkipBytes(DX.Vector2.SizeInBytes
+                                 + Unsafe.SizeOf<DX.Size2F>()
+                                 + sizeof(bool) * 2
+                                 + GorgonColor.SizeInBytes * 4
+                                 + DX.Vector2.SizeInBytes * 4);
+                reader.End();
+
+                // Read rendering information.
+                reader.Begin(RenderDataChunk);
+                reader.SkipBytes(Unsafe.SizeOf<CullingMode>() + Unsafe.SizeOf<GorgonRangeF>() + 91);
+                reader.End();
+
+                // Read texture information.
+                reader.Begin(TextureDataChunk);
+                reader.SkipBytes(GorgonColor.SizeInBytes + sizeof(int) * 2 + Unsafe.SizeOf<TextureFilter>());
+                return reader.ReadString();
+            }
+        }
 
         /// <summary>
         /// Function to read the sprite data from a stream.

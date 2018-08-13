@@ -123,12 +123,12 @@ namespace GorgonLibrary.IO
 		{
 			if ((isWrite) && (Writer == null))
 			{
-				throw new IOException(Resources.GO2DIO_ERR_STREAM_IS_READ_ONLY);
+				throw new IOException(Resources.GOR2DIO_ERR_STREAM_IS_READ_ONLY);
 			}
 
 			if ((!isWrite) && (Reader == null))
 			{
-                throw new IOException(Resources.GO2DIO_ERR_STREAM_IS_WRITE_ONLY);
+                throw new IOException(Resources.GOR2DIO_ERR_STREAM_IS_WRITE_ONLY);
 			}
 		}
 
@@ -219,11 +219,11 @@ namespace GorgonLibrary.IO
 			}
 		}
 
-		/// <summary>
-		/// Function to end the chunk stream.
-		/// </summary>
-		/// <exception cref="System.IO.IOException">Thrown when the stream cannot seek and reading has prematurely ended before getting the end of the chunk.</exception>
-		public void End()
+        /// <summary>
+        /// Function to end the chunk stream.
+        /// </summary>
+        /// <exception cref="IOException">Thrown when the stream cannot seek and reading has prematurely ended before getting the end of the chunk.</exception>
+        public void End()
 		{
 			// We don't have a chunk being processed right now, so leave.
 			if (_currentChunk == 0)
@@ -309,7 +309,7 @@ namespace GorgonLibrary.IO
 			{
 				if (!stream.CanWrite)
 				{
-					throw new ArgumentException(Resources.GO2DIO_ERR_STREAM_IS_READ_ONLY, nameof(accessMode));
+					throw new ArgumentException(Resources.GOR2DIO_ERR_STREAM_IS_READ_ONLY, nameof(accessMode));
 				}
 
 				Writer = new GorgonBinaryWriter(stream, true);
@@ -318,7 +318,7 @@ namespace GorgonLibrary.IO
 			{
 				if (!stream.CanRead)
 				{
-					throw new ArgumentException(Resources.GO2DIO_ERR_STREAM_IS_WRITE_ONLY, nameof(accessMode));
+					throw new ArgumentException(Resources.GOR2DIO_ERR_STREAM_IS_WRITE_ONLY, nameof(accessMode));
 				}
 
 				Reader = new GorgonBinaryReader(stream, true);

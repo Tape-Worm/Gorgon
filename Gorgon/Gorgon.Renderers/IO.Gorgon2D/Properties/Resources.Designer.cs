@@ -61,20 +61,29 @@ namespace Gorgon.IO.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The stream is read only..
+        ///   Looks up a localized string similar to The codec &apos;{0}&apos; is not capable of decoding data..
         /// </summary>
-        internal static string GO2DIO_ERR_STREAM_IS_READ_ONLY {
+        internal static string GOR2DIO_ERR_CODEC_CANNOT_DECODE {
             get {
-                return ResourceManager.GetString("GO2DIO_ERR_STREAM_IS_READ_ONLY", resourceCulture);
+                return ResourceManager.GetString("GOR2DIO_ERR_CODEC_CANNOT_DECODE", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The stream is write only..
+        ///   Looks up a localized string similar to The codec &apos;{0}&apos; is not capable of encoding data..
         /// </summary>
-        internal static string GO2DIO_ERR_STREAM_IS_WRITE_ONLY {
+        internal static string GOR2DIO_ERR_CODEC_CANNOT_ENCODE {
             get {
-                return ResourceManager.GetString("GO2DIO_ERR_STREAM_IS_WRITE_ONLY", resourceCulture);
+                return ResourceManager.GetString("GOR2DIO_ERR_CODEC_CANNOT_ENCODE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The file &apos;{0}&apos; was not found on any of the physical or virtual file systems..
+        /// </summary>
+        internal static string GOR2DIO_ERR_FILE_NOT_FOUND {
+            get {
+                return ResourceManager.GetString("GOR2DIO_ERR_FILE_NOT_FOUND", resourceCulture);
             }
         }
         
@@ -84,6 +93,42 @@ namespace Gorgon.IO.Properties {
         internal static string GOR2DIO_ERR_INVALID_HEADER {
             get {
                 return ResourceManager.GetString("GOR2DIO_ERR_INVALID_HEADER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No suitable sprite codec was found for the file &apos;{0}&apos;..
+        /// </summary>
+        internal static string GOR2DIO_ERR_NO_SUITABLE_CODEC_FOUND {
+            get {
+                return ResourceManager.GetString("GOR2DIO_ERR_NO_SUITABLE_CODEC_FOUND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The file &apos;{0}&apos; is not a Gorgon Sprite..
+        /// </summary>
+        internal static string GOR2DIO_ERR_NOT_A_SPRITE {
+            get {
+                return ResourceManager.GetString("GOR2DIO_ERR_NOT_A_SPRITE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The stream is read only..
+        /// </summary>
+        internal static string GOR2DIO_ERR_STREAM_IS_READ_ONLY {
+            get {
+                return ResourceManager.GetString("GOR2DIO_ERR_STREAM_IS_READ_ONLY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The stream is write only..
+        /// </summary>
+        internal static string GOR2DIO_ERR_STREAM_IS_WRITE_ONLY {
+            get {
+                return ResourceManager.GetString("GOR2DIO_ERR_STREAM_IS_WRITE_ONLY", resourceCulture);
             }
         }
         

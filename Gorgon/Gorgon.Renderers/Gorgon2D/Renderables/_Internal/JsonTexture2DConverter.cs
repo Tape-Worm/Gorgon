@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Security.Permissions;
@@ -32,6 +33,7 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 
 namespace Gorgon.Renderers
 {
@@ -43,6 +45,21 @@ namespace Gorgon.Renderers
     {
         // The graphics object to use for resource look up.
         private readonly GorgonGraphics _graphics;
+        // The list of properties for the type.
+        private readonly HashSet<string> _propNames = new HashSet<string>(StringComparer.Ordinal)
+                                                      {
+                                                          "name",
+                                                          "texWidth",
+                                                          "texHeight",
+                                                          "texFormat",
+                                                          "texArrayCount",
+                                                          "texMipCount",
+                                                          "arrayStart",
+                                                          "arrayCount",
+                                                          "mipStart",
+                                                          "mipCount",
+                                                          "format"
+                                                      };
         
         /// <summary>Writes the JSON representation of the object.</summary>
         /// <param name="writer">The <see cref="T:Newtonsoft.Json.JsonWriter" /> to write to.</param>
@@ -57,18 +74,46 @@ namespace Gorgon.Renderers
             }
 
             writer.WriteStartObject();
-            writer.WritePropertyName("name");
-            writer.WriteValue(value.Texture.Name);
-            writer.WritePropertyName("arrayStart");
-            writer.WriteValue(value.ArrayIndex);
-            writer.WritePropertyName("arrayCount");
-            writer.WriteValue(value.ArrayCount);
-            writer.WritePropertyName("mipStart");
-            writer.WriteValue(value.MipSlice);
-            writer.WritePropertyName("mipCount");
-            writer.WriteValue(value.MipCount);
-            writer.WritePropertyName("format");
-            writer.WriteValue(value.Format);
+            foreach (string propName in _propNames)
+            {
+                writer.WritePropertyName(propName);
+                switch (propName)
+                {
+                    case "name":
+                        writer.WriteValue(value.Texture.Name);
+                        break;
+                    case "texWidth":
+                        writer.WriteValue(value.Texture.Width);
+                        break;
+                    case "texHeight":
+                        writer.WriteValue(value.Texture.Height);
+                        break;
+                    case "texFormat":
+                        writer.WriteValue(value.Texture.Format);
+                        break;
+                    case "texArrayCount":
+                        writer.WriteValue(value.Texture.ArrayCount);
+                        break;
+                    case "texMipCount":
+                        writer.WriteValue(value.Texture.MipLevels);
+                        break;
+                    case "arrayStart":
+                        writer.WriteValue(value.ArrayIndex);
+                        break;
+                    case "arrayCount":
+                        writer.WriteValue(value.ArrayCount);
+                        break;
+                    case "mipStart":
+                        writer.WriteValue(value.MipSlice);
+                        break;
+                    case "mipCount":
+                        writer.WriteValue(value.MipCount);
+                        break;
+                    case "format":
+                        writer.WriteValue(value.Format);
+                        break;
+                }
+            }
             writer.WriteEndObject();
         }
 
@@ -82,53 +127,90 @@ namespace Gorgon.Renderers
         public override GorgonTexture2DView ReadJson(JsonReader reader, Type objectType, GorgonTexture2DView existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             if ((reader.TokenType != JsonToken.StartObject)
-                || (_graphics == null)
-                || (!reader.Read()))
+                || (_graphics == null))
             {
                 return null;
             }
+
+            string name = null;
+            int? texWidth = null;
+            int? texHeight = null;
+            int? texMipCount = null;
+            int? texArrayCount = null;
+            BufferFormat? texFormat = null;
+            int? viewMipStart = null;
+            int? viewMipCount = null;
+            int? viewArrayStart = null;
+            int? viewArrayCount = null;
+            BufferFormat? viewFormat = null;
             
-            string name = reader.ReadAsString();
+            while (reader.Read())
+            {
+                if (reader.TokenType != JsonToken.PropertyName)
+                {
+                    continue;
+                }
 
-            GorgonTexture2D texture = _graphics?.LocateResourcesByName<GorgonTexture2D>(name).FirstOrDefault();
+                switch (reader.Value.ToString())
+                {
+                    case "name":
+                        name = reader.ReadAsString();
+                        break;
+                    case "texWidth":
+                        texWidth = reader.ReadAsInt32();
+                        break;
+                    case "texHeight":
+                        texHeight = reader.ReadAsInt32();
+                        break;
+                    case "texFormat":
+                        texFormat = (BufferFormat?)reader.ReadAsInt32();
+                        break;
+                    case "texArrayCount":
+                        texArrayCount = reader.ReadAsInt32();
+                        break;
+                    case "texMipCount":
+                        texMipCount = reader.ReadAsInt32();
+                        break;
+                    case "arrayStart":
+                        viewArrayStart = reader.ReadAsInt32();
+                        break;
+                    case "arrayCount":
+                        viewArrayCount = reader.ReadAsInt32();
+                        break;
+                    case "mipStart":
+                        viewMipStart = reader.ReadAsInt32();
+                        break;
+                    case "mipCount":
+                        viewMipCount = reader.ReadAsInt32();
+                        break;
+                    case "format":
+                        viewFormat = (BufferFormat?)reader.ReadAsInt32();
+                        break;
+                }
+            }
 
-            if (texture == null)
+            if ((string.IsNullOrWhiteSpace(name))
+                || (texWidth == null)
+                || (texHeight == null)
+                || (texFormat == null)
+                || (texArrayCount == null)
+                || (texMipCount == null)
+                || (viewArrayStart == null)
+                || (viewArrayCount == null)
+                || (viewMipStart == null)
+                || (viewMipCount == null)
+                || (viewFormat == null))
             {
                 return null;
             }
 
-            if (!reader.Read())
-            {
-                return null;
-            }
+            GorgonTexture2D texture = _graphics?.LocateResourcesByName<GorgonTexture2D>(name).FirstOrDefault(item => (item.Width == texWidth)
+                                                                                                                     && (item.Height == texHeight)
+                                                                                                                     && (item.Format == texFormat)
+                                                                                                                     && (item.MipLevels == texMipCount)
+                                                                                                                     && (item.ArrayCount == texArrayCount));
 
-            int arrayStart = reader.ReadAsInt32() ?? 0;
-            if (!reader.Read())
-            {
-                return null;
-            }
-            int arrayCount = reader.ReadAsInt32() ?? 1;
-            if (!reader.Read())
-            {
-                return null;
-            }
-
-            int mipStart = reader.ReadAsInt32() ?? 0;
-            if (!reader.Read())
-            {
-                return null;
-            }
-
-            int mipCount = reader.ReadAsInt32() ?? 1;
-            if (!reader.Read())
-            {
-                return null;
-            }
-
-            var format = (BufferFormat)(reader.ReadAsInt32() ?? (int)BufferFormat.R8G8B8A8_UNorm);
-            reader.Read();
-
-            return texture.GetShaderResourceView(format, mipStart, mipCount, arrayStart, arrayCount);
+            return texture?.GetShaderResourceView(viewFormat.Value, viewMipStart.Value, viewMipCount.Value, viewArrayStart.Value, viewArrayCount.Value);
         }
 
         /// <summary>

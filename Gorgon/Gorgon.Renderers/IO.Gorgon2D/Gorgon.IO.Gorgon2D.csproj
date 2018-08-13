@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Gorgon.IO</RootNamespace>
-    <AssemblyName>Gorgon2D.IO</AssemblyName>
+    <AssemblyName>Gorgon.IO.Gorgon2D</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -20,7 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\Gorgon2D.IO.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\Gorgon.IO.Gorgon2D.xml</DocumentationFile>
     <LangVersion>latest</LangVersion>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
@@ -31,7 +31,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\Gorgon2D.IO.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\Gorgon.IO.Gorgon2D.xml</DocumentationFile>
     <LangVersion>latest</LangVersion>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
@@ -53,7 +53,7 @@
     <Compile Include="..\..\Gorgon.Core\SharedAssemblyInfo.cs">
       <Link>SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Codecs\GorgonCodecCommon.cs" />
+    <Compile Include="Codecs\GorgonSpriteCodecCommon.cs" />
     <Compile Include="Codecs\GorgonV3SpriteJsonCodec.cs" />
     <Compile Include="Codecs\GorgonV2SpriteCodec.cs" />
     <Compile Include="Codecs\GorgonV1SpriteBinaryCodec.cs" />
@@ -66,6 +66,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="_Extensions\GorgonFileSystemExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
@@ -77,6 +78,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>11.0.2</Version>
+    </PackageReference>
     <PackageReference Include="SharpDX">
       <Version>4.1.0</Version>
     </PackageReference>
@@ -116,8 +120,6 @@
       <Name>Gorgon.Renderers.Gorgon2D</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="_Extensions\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
