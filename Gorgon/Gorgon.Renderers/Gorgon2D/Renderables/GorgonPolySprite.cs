@@ -28,11 +28,12 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using Newtonsoft.Json;
+using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers
 {
@@ -67,11 +68,13 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to set or return the list of vertices used by the poly sprite.
         /// </summary>
+        [JsonIgnore]
         public IReadOnlyList<GorgonPolySpriteVertex> Vertices => RwVertices;
 
         /// <summary>
         /// Property to return whether or not the sprite has had its position, size, texture information, or object space vertices updated since it was last drawn.
         /// </summary>
+        [JsonIgnore]
         public bool IsUpdated => Renderable.HasTextureChanges 
                                  || Renderable.HasTransformChanges 
                                  || Renderable.HasVertexChanges 
@@ -163,6 +166,7 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to return the boundaries of the sprite.
         /// </summary>
+        [JsonIgnore]
         public DX.RectangleF Bounds
         {
             get => Renderable.Bounds;
@@ -185,6 +189,7 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to set or return the position of the sprite.
         /// </summary>
+        [JsonIgnore]
         public DX.Vector2 Position
         {
             get => Renderable.Bounds.TopLeft;
@@ -207,6 +212,7 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to set or return the depth value for this sprite.
         /// </summary>
+        [JsonIgnore]
         public float Depth
         {
             get => Renderable.Depth;
@@ -221,8 +227,6 @@ namespace Gorgon.Renderers
                 Renderable.HasTransformChanges = true;
             }
         }
-
-        
 
         /// <summary>
         /// Property to set or return the point around which the sprite will pivot when rotated.
@@ -243,11 +247,6 @@ namespace Gorgon.Renderers
                 }
 
                 anchor = value;
-
-                ref DX.Matrix matrix = ref Renderable.WorldMatrix;
-                matrix.M41 = Renderable.Bounds.X - (Anchor.X * Bounds.Width);
-                matrix.M42 = Renderable.Bounds.Y - (Anchor.Y * Bounds.Height);
-                
                 Renderable.HasTransformChanges = true;
             }
         }
@@ -255,6 +254,7 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to set or return the size of the sprite.
         /// </summary>
+        [JsonIgnore]
         public DX.Size2F Size => Bounds.Size;
 
         /// <summary>
@@ -264,6 +264,7 @@ namespace Gorgon.Renderers
         /// This property will set or return the actual size of the renderable.  This means that if a <see cref="Scale"/> has been set, then this property will return the size of the renderable with
         /// multiplied by the scale.  When assigning a value, the scale be set on value derived from the current size of the renderable.
         /// </remarks>
+        [JsonIgnore]
         public DX.Size2F ScaledSize
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -286,6 +287,7 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to set or return the scale factor to apply to the sprite.
         /// </summary>
+        [JsonIgnore]
         public DX.Vector2 Scale
         {
             get => Renderable.Scale;
@@ -310,6 +312,7 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to set or return the angle of rotation, in degrees.
         /// </summary>
+        [JsonIgnore]
         public float Angle
         {
             get => _angle;

@@ -46,15 +46,6 @@ namespace Gorgon.Renderers
         public DX.Vector2 Position => (DX.Vector2)Vertex.Position;
 
         /// <summary>
-        /// Property to return the depth of the vertex.
-        /// </summary>
-        public float Depth
-        {
-            get => Vertex.Position.Z;
-            internal set => Vertex.Position = new DX.Vector4(Vertex.Position.X, Vertex.Position.Y, value, 1.0f);
-        }
-
-        /// <summary>
         /// Property to return the color of the vertex.
         /// </summary>
         public GorgonColor Color
