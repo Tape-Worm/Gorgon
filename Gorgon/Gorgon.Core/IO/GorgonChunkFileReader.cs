@@ -289,10 +289,16 @@ namespace Gorgon.IO
 		/// validating the data that lives within the chunk.
 		/// </para>
 		/// </remarks>
+		/// <exception cref="IOException">Thrown if the chunk was opened without calling <see cref="GorgonChunkFile{T}.Open"/> first.</exception>
 		/// <exception cref="GorgonException">Thrown when the <paramref name="chunkId" /> does not match the chunk in the file.</exception>
 		/// <exception cref="KeyNotFoundException">Thrown when the <paramref name="chunkId" /> was not found in the chunk table.</exception>
 		public override GorgonBinaryReader OpenChunk(ulong chunkId)
 		{
+		    if (!IsOpen)
+		    {
+		        throw new IOException(Resources.GOR_ERR_CHUNK_FILE_NOT_OPEN);
+		    }
+
 			ValidateChunkID(chunkId);
 
 			GorgonChunk chunk = Chunks[chunkId];

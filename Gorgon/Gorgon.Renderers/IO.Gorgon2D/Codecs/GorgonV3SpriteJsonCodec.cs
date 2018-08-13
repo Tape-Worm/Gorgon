@@ -26,15 +26,12 @@
 
 using System;
 using System.Buffers;
-using System.Diagnostics;
 using System.IO;
 using System.Text;
-using Gorgon.Core;
 using Gorgon.IO.Properties;
+using Gorgon.Native;
 using Gorgon.Renderers;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Linq;
 
 namespace Gorgon.IO
 {
@@ -96,7 +93,7 @@ namespace Gorgon.IO
                 {
                     var id = (ulong?)reader.ReadAsDecimal();
 
-                    if ((id == null) || (id != GorgonSprite.FileHeaderValue.ChunkID()))
+                    if ((id == null) || (id != CurrentFileHeader))
                     {
                         return false;
                     }
@@ -134,30 +131,13 @@ namespace Gorgon.IO
         /// <returns>A new <see cref="GorgonSprite"/>.</returns>
         protected override GorgonSprite OnReadFromStream(Stream stream, int byteCount)
         {
-            StringWriter writer = null;
-            StreamReader reader = null;
-            char[] buffer = ArrayPool<char>.Shared.Rent(1024);
-
-            try
+            using (var wrappedStream = new GorgonStreamWrapper(stream, stream.Position, byteCount, false))
             {
-                writer = new StringWriter();
-                reader = new StreamReader(stream, Encoding.UTF8, true, 1024, true);
-                long pos = stream.Position;
-
-                while (pos < byteCount)
+                using (StreamReader reader = new StreamReader(wrappedStream, Encoding.UTF8, true, 80192, true))
                 {
-                    int charsRead = reader.Read(buffer, 0, buffer.Length);
-                    writer.Write(buffer, 0, charsRead);
-                    pos = stream.Position;
+                    string jsonString = reader.ReadToEnd();
+                    return GorgonSprite.FromJson(Renderer, jsonString);
                 }
-
-                return GorgonSprite.FromJson(Renderer, writer.ToString());
-            }
-            finally
-            {
-                reader?.Dispose();
-                writer?.Dispose();
-                ArrayPool<char>.Shared.Return(buffer);
             }
         }
 

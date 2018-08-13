@@ -51,9 +51,9 @@ namespace Gorgon.Renderers
         private const string JsonVersionProp = "version";
         
         /// <summary>
-        /// The header for a sprite file.
+        /// The value for the header property on the JSON output.
         /// </summary>
-        public const string FileHeaderValue = "GORSPR30";
+        public const string JsonHeaderValue = "GORSPR30";
         #endregion
 
         #region Variables.
@@ -69,7 +69,7 @@ namespace Gorgon.Renderers
         /// Property to return the header for the sprite when serializing/deserializing.
         /// </summary>
         [JsonProperty(JsonHeaderProp)]
-        private ulong Header => FileHeaderValue.ChunkID();
+        private ulong Header => JsonHeaderValue.ChunkID();
 
         /// <summary>
         /// Property to return the version number for serialization.
@@ -507,7 +507,7 @@ namespace Gorgon.Renderers
             ulong jsonID = jobj[JsonHeaderProp].Value<ulong>();
             Version jsonVersion = jobj[JsonVersionProp].ToObject<Version>(serializer);
 
-            if (jsonID != FileHeaderValue.ChunkID())
+            if (jsonID != JsonHeaderValue.ChunkID())
             {
                 throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2D_ERR_JSON_NOT_SPRITE);
             }

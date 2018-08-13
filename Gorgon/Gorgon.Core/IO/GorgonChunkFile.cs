@@ -89,18 +89,13 @@ namespace Gorgon.IO
 		/// The chunk table chunk ID (CHUNKTBL)
 		/// </summary>
 		public const ulong ChunkTableID = 0x4C42544B4E554843;
-		#endregion
+        #endregion
 
-		#region Variables.
-		// Flag to indicate that the file is open.
-		private bool _isOpen;
-		#endregion
-
-		#region Properties.
-		/// <summary>
-		/// Property to set or return the mode for accessing the chunk file format.
-		/// </summary>
-		protected ChunkFileMode Mode
+        #region Properties.
+        /// <summary>
+        /// Property to set or return the mode for accessing the chunk file format.
+        /// </summary>
+        protected ChunkFileMode Mode
 		{
 			get;
 			set;
@@ -122,13 +117,22 @@ namespace Gorgon.IO
 			get;
 		}
 
-		/// <summary>
-		/// Property to return the list of chunks available in the file.
-		/// </summary>
-		/// <remarks>
-		/// Use this property to determine if a chunk exists when reading a chunk file.
-		/// </remarks>
-		public IGorgonReadOnlyChunkCollection Chunks => ChunkList;
+        /// <summary>
+        /// Property to return whether or not the file is open.
+        /// </summary>
+	    public bool IsOpen
+	    {
+	        get; 
+	        private set; 
+	    }
+
+        /// <summary>
+        /// Property to return the list of chunks available in the file.
+        /// </summary>
+        /// <remarks>
+        /// Use this property to determine if a chunk exists when reading a chunk file.
+        /// </remarks>
+        public IGorgonReadOnlyChunkCollection Chunks => ChunkList;
 		#endregion
 
 		#region Methods.
@@ -192,7 +196,7 @@ namespace Gorgon.IO
 		/// </exception>
 		public void Open()
 		{
-			if (_isOpen)
+			if (IsOpen)
 			{
 				Close();
 			}
@@ -215,7 +219,7 @@ namespace Gorgon.IO
 					throw new ArgumentException(Resources.GOR_ERR_CHUNK_ILLEGAL_OPEN_MODE);
 			}
 
-		    _isOpen = true;
+		    IsOpen = true;
 		}
 
 		/// <summary>
@@ -252,7 +256,7 @@ namespace Gorgon.IO
 		/// </remarks>
 		public void Close()
 		{
-			if (!_isOpen)
+			if (!IsOpen)
 			{
 				return;
 			}

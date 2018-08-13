@@ -141,7 +141,7 @@ namespace Gorgon.Renderers
             
             var builder = new GorgonSamplerStateBuilder(_graphics);
 
-            while (reader.Read())
+            while ((reader.Read()) && (reader.TokenType != JsonToken.EndObject))
             {
                 if (reader.TokenType != JsonToken.PropertyName)
                 {

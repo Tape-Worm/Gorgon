@@ -211,8 +211,14 @@ namespace Gorgon.IO
 		/// This method should always be paired with a call to <see cref="GorgonChunkFile{T}.CloseChunk"/>. Failure to do so will keep the chunk table from being updated properly, and corrupt the file.
 		/// </note>
 		/// </remarks>
+		/// <exception cref="IOException">Thrown if the chunk was opened without calling <see cref="GorgonChunkFile{T}.Open"/> first.</exception>
 		public override GorgonBinaryWriter OpenChunk(ulong chunkId)
 		{
+		    if (!IsOpen)
+		    {
+                throw new IOException(Resources.GOR_ERR_CHUNK_FILE_NOT_OPEN);
+		    }
+
 			ValidateChunkID(chunkId);
 
 			if (_activeChunk.ID != 0)

@@ -144,7 +144,7 @@ namespace Gorgon.Renderers
             int? viewArrayCount = null;
             BufferFormat? viewFormat = null;
             
-            while (reader.Read())
+            while ((reader.Read()) && (reader.TokenType != JsonToken.EndObject))
             {
                 if (reader.TokenType != JsonToken.PropertyName)
                 {

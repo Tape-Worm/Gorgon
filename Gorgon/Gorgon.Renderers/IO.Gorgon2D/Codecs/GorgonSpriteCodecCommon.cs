@@ -39,6 +39,13 @@ namespace Gorgon.IO
     public abstract class GorgonSpriteCodecCommon
         : IGorgonSpriteCodec
     {
+        #region Variables.
+        /// <summary>
+        /// The ID for the file header for the most current version of the sprite format.
+        /// </summary>
+        public static readonly ulong CurrentFileHeader = "GORSPR30".ChunkID();
+        #endregion
+
         #region Properties.
         /// <summary>
         /// Property to return the friendly description of the format.
@@ -310,7 +317,7 @@ namespace Gorgon.IO
                 throw new ArgumentEmptyException(nameof(filePath));
             }
 
-            using (FileStream stream = File.Open(filePath, FileMode.Open, FileAccess.Write, FileShare.None))
+            using (FileStream stream = File.Open(filePath, FileMode.Create, FileAccess.Write, FileShare.None))
             {
                 Save(sprite, stream);
             }
