@@ -44,6 +44,11 @@ namespace Gorgon.IO
         /// The ID for the file header for the most current version of the sprite format.
         /// </summary>
         public static readonly ulong CurrentFileHeader = "GORSPR30".ChunkID();
+
+        /// <summary>
+        /// The highest currently supported version for sprite serialization.
+        /// </summary>
+        public static readonly Version CurrentVersion = new Version(3, 0);
         #endregion
 
         #region Properties.

@@ -26,14 +26,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Security.Permissions;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
 
 namespace Gorgon.Renderers
 {

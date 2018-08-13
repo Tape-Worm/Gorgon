@@ -25,12 +25,8 @@
 #endregion
 
 using System;
-using System.Buffers;
-using System.Data;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Graphics;
@@ -45,7 +41,6 @@ namespace Gorgon.IO
     /// </summary>
     public class GorgonV3SpriteBinaryCodec
         : GorgonSpriteCodecCommon
-    
     {
         #region Properties.
         /// <summary>
@@ -78,10 +73,7 @@ namespace Gorgon.IO
         /// <summary>
         /// Property to return the version of sprite data that the codec supports.
         /// </summary>
-        public override Version Version
-        {
-            get;
-        } = new Version(3, 0);
+        public override Version Version => CurrentVersion;
         #endregion
 
         #region Methods.

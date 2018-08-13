@@ -129,11 +129,17 @@
   <data name="GOR2DIO_ERR_INVALID_HEADER" xml:space="preserve">
     <value>The header for the sprite data is invalid.</value>
   </data>
+  <data name="GOR2DIO_ERR_JSON_NOT_SPRITE" xml:space="preserve">
+    <value>The JSON string does not contain any sprite data.</value>
+  </data>
   <data name="GOR2DIO_ERR_NOT_A_SPRITE" xml:space="preserve">
     <value>The file '{0}' is not a Gorgon Sprite.</value>
   </data>
   <data name="GOR2DIO_ERR_NO_SUITABLE_CODEC_FOUND" xml:space="preserve">
     <value>No suitable sprite codec was found for the file '{0}'.</value>
+  </data>
+  <data name="GOR2DIO_ERR_SPRITE_VERSION_MISMATCH" xml:space="preserve">
+    <value>The sprite version is '{0}', but version '{1}' is expected.</value>
   </data>
   <data name="GOR2DIO_ERR_STREAM_IS_READ_ONLY" xml:space="preserve">
     <value>The stream is read only.</value>

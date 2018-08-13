@@ -368,15 +368,6 @@ namespace Gorgon.Renderers.Properties {
         // Comment stripped.
         // Comment stripped.
         // Comment stripped.
-        internal static string GOR2D_ERR_JSON_NOT_SPRITE {
-            get {
-                return ResourceManager.GetString("GOR2D_ERR_JSON_NOT_SPRITE", resourceCulture);
-            }
-        }
-        
-        // Comment stripped.
-        // Comment stripped.
-        // Comment stripped.
         internal static string GOR2D_ERR_NO_RTV {
             get {
                 return ResourceManager.GetString("GOR2D_ERR_NO_RTV", resourceCulture);
@@ -398,15 +389,6 @@ namespace Gorgon.Renderers.Properties {
         internal static string GOR2D_ERR_RENDER_ALREADY_STARTED {
             get {
                 return ResourceManager.GetString("GOR2D_ERR_RENDER_ALREADY_STARTED", resourceCulture);
-            }
-        }
-        
-        // Comment stripped.
-        // Comment stripped.
-        // Comment stripped.
-        internal static string GOR2D_ERR_SPRITE_VERSION_MISMATCH {
-            get {
-                return ResourceManager.GetString("GOR2D_ERR_SPRITE_VERSION_MISMATCH", resourceCulture);
             }
         }
         

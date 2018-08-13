@@ -25,13 +25,14 @@
 #endregion
 
 using System;
-using System.Buffers;
 using System.IO;
 using System.Text;
+using Gorgon.Core;
 using Gorgon.IO.Properties;
-using Gorgon.Native;
 using Gorgon.Renderers;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
 
 namespace Gorgon.IO
 {
@@ -40,7 +41,6 @@ namespace Gorgon.IO
     /// </summary>
     public class GorgonV3SpriteJsonCodec
         : GorgonSpriteCodecCommon
-    
     {
         #region Properties.
         /// <summary>
@@ -56,10 +56,7 @@ namespace Gorgon.IO
         /// <summary>
         /// Property to return the version of sprite data that the codec supports.
         /// </summary>
-        public override Version Version
-        {
-            get;
-        } = new Version(3, 0);
+        public override Version Version => CurrentVersion;
         #endregion
 
         #region Methods.
@@ -136,7 +133,7 @@ namespace Gorgon.IO
                 using (StreamReader reader = new StreamReader(wrappedStream, Encoding.UTF8, true, 80192, true))
                 {
                     string jsonString = reader.ReadToEnd();
-                    return GorgonSprite.FromJson(Renderer, jsonString);
+                    return FromJson(Renderer, jsonString);
                 }
             }
         }
@@ -214,6 +211,64 @@ namespace Gorgon.IO
 
                 return null;
             }
+        }
+
+        /// <summary>
+        /// Function to convert a JSON string into a sprite object.
+        /// </summary>
+        /// <param name="renderer">The renderer for the sprite.</param>
+        /// <param name="json">The JSON string containing the sprite data.</param>
+        /// <returns>A new <see cref="GorgonSprite"/>.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/>, or the <paramref name="json"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="json"/> parameter is empty.</exception>
+        /// <exception cref="GorgonException">Thrown if the JSON string does not contain sprite data, or there is a version mismatch.</exception>
+        public static GorgonSprite FromJson(Gorgon2D renderer, string json)
+        {
+            if (renderer == null)
+            {
+                throw new ArgumentNullException(nameof(renderer));
+            }
+
+            if (json == null)
+            {
+                throw new ArgumentNullException(nameof(json));
+            }
+
+            if (string.IsNullOrWhiteSpace(json))
+            {
+                throw new ArgumentEmptyException(nameof(json));
+            }
+
+            // Set up serialization so we can convert our more complicated structures.
+            var serializer = new JsonSerializer
+                             {
+                                 CheckAdditionalContent = false
+                             };
+
+            serializer.Converters.Add(new JsonVector2Converter());
+            serializer.Converters.Add(new JsonVector3Converter());
+            serializer.Converters.Add(new JsonSize2FConverter());
+            serializer.Converters.Add(new JsonRectangleFConverter());
+            serializer.Converters.Add(new JsonSamplerConverter(renderer.Graphics));
+            serializer.Converters.Add(new JsonTexture2DConverter(renderer.Graphics));
+            serializer.Converters.Add(new VersionConverter());
+
+            // Parse the string so we can extract our header/version for comparison.
+            JObject jobj = JObject.Parse(json);
+            ulong jsonID = jobj[GorgonSpriteExtensions.JsonHeaderProp].Value<ulong>();
+            Version jsonVersion = jobj[GorgonSpriteExtensions.JsonVersionProp].ToObject<Version>(serializer);
+
+            if (jsonID != CurrentFileHeader)
+            {
+                throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2DIO_ERR_JSON_NOT_SPRITE);
+            }
+
+            if (!jsonVersion.Equals(CurrentVersion))
+            {
+                throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR2DIO_ERR_SPRITE_VERSION_MISMATCH, CurrentVersion, jsonVersion));
+            }
+
+            return jobj.ToObject<GorgonSprite>(serializer);
         }
         #endregion
 

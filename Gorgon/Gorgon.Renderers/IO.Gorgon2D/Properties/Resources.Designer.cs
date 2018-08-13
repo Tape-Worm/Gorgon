@@ -97,6 +97,15 @@ namespace Gorgon.IO.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The JSON string does not contain any sprite data..
+        /// </summary>
+        internal static string GOR2DIO_ERR_JSON_NOT_SPRITE {
+            get {
+                return ResourceManager.GetString("GOR2DIO_ERR_JSON_NOT_SPRITE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No suitable sprite codec was found for the file &apos;{0}&apos;..
         /// </summary>
         internal static string GOR2DIO_ERR_NO_SUITABLE_CODEC_FOUND {
@@ -111,6 +120,15 @@ namespace Gorgon.IO.Properties {
         internal static string GOR2DIO_ERR_NOT_A_SPRITE {
             get {
                 return ResourceManager.GetString("GOR2DIO_ERR_NOT_A_SPRITE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The sprite version is &apos;{0}&apos;, but version &apos;{1}&apos; is expected..
+        /// </summary>
+        internal static string GOR2DIO_ERR_SPRITE_VERSION_MISMATCH {
+            get {
+                return ResourceManager.GetString("GOR2DIO_ERR_SPRITE_VERSION_MISMATCH", resourceCulture);
             }
         }
         

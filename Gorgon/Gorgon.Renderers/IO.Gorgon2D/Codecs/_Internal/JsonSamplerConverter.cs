@@ -31,7 +31,7 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Newtonsoft.Json;
 
-namespace Gorgon.Renderers
+namespace Gorgon.IO
 {
     /// <summary>
     /// A converter used to convert a texture sampler to and from a string.

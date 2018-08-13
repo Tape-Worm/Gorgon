@@ -20,27 +20,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: August 11, 2018 7:56:31 PM
+// Created: August 11, 2018 7:58:40 PM
 // 
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using DX = SharpDX;
-using Gorgon.Graphics.Core;
 
-namespace Gorgon.Renderers
+namespace Gorgon.IO
 {
     /// <summary>
-    /// A converter used to convert a rectangle to and from a string.
+    /// A converter used to convert a size to and from a string.
     /// </summary>
-    internal class JsonRectangleFConverter
+    internal class JsonSize2FConverter
         : JsonConverter
     {
         /// <summary>Writes the JSON representation of the object.</summary>
@@ -49,16 +42,12 @@ namespace Gorgon.Renderers
         /// <param name="serializer">The calling serializer.</param>
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            var rect = (DX.RectangleF)value;
+            var v2 = (DX.Size2F)value;
             writer.WriteStartObject();
-            writer.WritePropertyName("l");
-            writer.WriteValue(rect.Left);
-            writer.WritePropertyName("t");
-            writer.WriteValue(rect.Top);
-            writer.WritePropertyName("r");
-            writer.WriteValue(rect.Right);
-            writer.WritePropertyName("b");
-            writer.WriteValue(rect.Bottom);
+            writer.WritePropertyName("w");
+            writer.WriteValue(v2.Width);
+            writer.WritePropertyName("h");
+            writer.WriteValue(v2.Height);
             writer.WriteEndObject();
         }
 
@@ -73,45 +62,19 @@ namespace Gorgon.Renderers
             if ((reader.TokenType != JsonToken.StartObject)
                 || (!reader.Read()))
             {
-                return DX.RectangleF.Empty;
+                return DX.Size2F.Zero;
             }
 
-            var l = (float)(reader.ReadAsDouble() ?? 0);
-
+            var w = (float)(reader.ReadAsDouble() ?? 0);
             if (!reader.Read())
             {
-                return new DX.RectangleF(l, 0, 0, 0);
+                return new DX.Size2F(w, 0);
             }
 
-            var t = (float)(reader.ReadAsDouble() ?? 0);
-
-            if (!reader.Read())
-            {
-                return new DX.RectangleF(l, t, 0, 0);
-            }
-
-            var r = (float)(reader.ReadAsDouble() ?? 0);
-                
-            if (!reader.Read())
-            {
-                return new DX.RectangleF
-                       {
-                           Left = l, Top = t, Right = r
-                       };
-            }
-
-            var b = (float)(reader.ReadAsDouble() ?? 0);
-
-            var result = new DX.RectangleF
-                         {
-                             Left = l,
-                             Top = t,
-                             Right = r,
-                             Bottom = b
-                         };
+            var h = (float)(reader.ReadAsDouble() ?? 0);
             reader.Read();
 
-            return result;
+            return new DX.Size2F(w, h);
         }
 
         /// <summary>
@@ -123,7 +86,7 @@ namespace Gorgon.Renderers
         /// </returns>
         public override bool CanConvert(Type objectType)
         {
-            return (objectType == typeof(DX.RectangleF));
+            return (objectType == typeof(DX.Size2F));
         }
     }
 }

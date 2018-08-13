@@ -85,12 +85,6 @@
     <Compile Include="Renderables\GorgonPolySpriteVertex.cs" />
     <Compile Include="Renderables\GorgonTriangleVertex.cs" />
     <Compile Include="Renderables\GorgonTextSprite.cs" />
-    <Compile Include="Renderables\_Internal\JsonRectangleFConverter.cs" />
-    <Compile Include="Renderables\_Internal\JsonSize2FConverter.cs" />
-    <Compile Include="Renderables\_Internal\JsonSamplerConverter.cs" />
-    <Compile Include="Renderables\_Internal\JsonVector2Converter.cs" />
-    <Compile Include="Renderables\_Internal\JsonVector3Converter.cs" />
-    <Compile Include="Renderables\_Internal\JsonTexture2DConverter.cs" />
     <Compile Include="Renderables\_Internal\PolySpriteRenderable.cs" />
     <Compile Include="Renderables\_Internal\PolySpriteTransformer.cs" />
     <Compile Include="Renderables\_Internal\TextCodeParser.cs" />
