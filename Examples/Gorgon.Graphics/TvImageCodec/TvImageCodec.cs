@@ -257,7 +257,7 @@ namespace Gorgon.Graphics.Example
 	    /// </remarks>
 	    public override void SaveToStream(IGorgonImage imageData, Stream stream)
         {
-	        if (imageData.Info.Format != BufferFormat.R8G8B8A8_UNorm)
+	        if (imageData.Format != BufferFormat.R8G8B8A8_UNorm)
 	        {
 				throw new ArgumentException(@"The image format must be R8G8B8A8_UNorm", nameof(imageData));    
 	        }
@@ -266,8 +266,8 @@ namespace Gorgon.Graphics.Example
 	        TvHeader header = new TvHeader
 	                     {
 		                     MagicValueData = MagicValue,
-		                     Width = imageData.Info.Width,
-		                     Height = imageData.Info.Height
+		                     Width = imageData.Width,
+		                     Height = imageData.Height
 	                     };
 
 			// Write the metadata to the stream.
@@ -281,7 +281,7 @@ namespace Gorgon.Graphics.Example
 			    //IGorgonPointer imagePtr = imageData.ImageData;
 
 			    // For each scan line in the image we'll encode the data as described above.
-			    for (int y = 0; y < imageData.Info.Height; ++y)
+			    for (int y = 0; y < imageData.Height; ++y)
 			    {
 					// Ensure that we move to the next line by the row pitch and not the amount of pixels.
 					// Some images put padding in for alignment reasons which can throw off the data offsets.
@@ -289,7 +289,7 @@ namespace Gorgon.Graphics.Example
 					int pointerPos = (y * imageData.Buffers[0].PitchInformation.RowPitch);
 
 				    // Loop through the scan line until we're at its end.
-				    for (int x = 0; x < imageData.Info.Width; ++x)
+				    for (int x = 0; x < imageData.Width; ++x)
 				    {
 					    // We're assuming our image data is 4 bytes/pixel, but in real world scenarios this is dependent upon 
 					    // the format of the data.

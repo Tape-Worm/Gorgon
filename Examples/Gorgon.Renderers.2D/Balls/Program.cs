@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using Gorgon.Core;
@@ -414,8 +415,14 @@ namespace Gorgon.Examples
 			// Create the graphics interface.
 		    IReadOnlyList<IGorgonVideoAdapterInfo> adapters = GorgonGraphics.EnumerateAdapters();
 
-            // TODO: Check to ensure we actually have something we can use.
-			_graphics = new GorgonGraphics(adapters[0]);
+		    if (adapters.Count == 0)
+		    {
+		        throw new GorgonException(GorgonResult.CannotCreate,
+		                                  "Gorgon requires at least a Direct3D 11.4 capable video device.\nThere is no suitable device installed on the system.");
+		    }
+
+		    // Find the best video device.
+		    _graphics = new GorgonGraphics(adapters.OrderByDescending(item => item.FeatureSet).First());
 
 			// Create the primary swap chain.
 		    _mainScreen = new GorgonSwapChain(_graphics,

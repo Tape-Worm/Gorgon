@@ -138,7 +138,7 @@ namespace Gorgon.Graphics.Fonts
 				// Clone the image data and convert it into a GDI+ compatible bitmap so we can use it as a brush.
 			    brushBitmap = Image.Buffers[0].ToBitmap();
 
-				var textureRect = new RectangleF(0, 0, Image.Info.Width, Image.Info.Height);
+				var textureRect = new RectangleF(0, 0, Image.Width, Image.Height);
 				var imageRect = new RectangleF(TextureRegion.X * textureRect.Width,
 				                               TextureRegion.Y * textureRect.Height,
 				                               TextureRegion.Width * textureRect.Width,
@@ -182,15 +182,15 @@ namespace Gorgon.Graphics.Fonts
 				throw new ArgumentNullException(nameof(textureImage));	
 			}
 
-			if ((textureImage.Info.Format != BufferFormat.R8G8B8A8_UNorm_SRgb)
-				&& (textureImage.Info.Format != BufferFormat.R8G8B8A8_UNorm)
-				&& (textureImage.Info.Format != BufferFormat.B8G8R8A8_UNorm)
-				&& (textureImage.Info.Format != BufferFormat.B8G8R8A8_UNorm_SRgb))
+			if ((textureImage.Format != BufferFormat.R8G8B8A8_UNorm_SRgb)
+				&& (textureImage.Format != BufferFormat.R8G8B8A8_UNorm)
+				&& (textureImage.Format != BufferFormat.B8G8R8A8_UNorm)
+				&& (textureImage.Format != BufferFormat.B8G8R8A8_UNorm_SRgb))
 			{
-				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_FORMAT_NOT_SUPPORTED, textureImage.Info.Format), nameof(textureImage));
+				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_FORMAT_NOT_SUPPORTED, textureImage.Format), nameof(textureImage));
 			}
 
-			if (textureImage.Info.ImageType != ImageType.Image2D)
+			if (textureImage.ImageType != ImageType.Image2D)
 			{
 				throw new ArgumentException(Resources.GORGFX_ERR_FONT_GLYPH_IMAGE_NOT_2D, nameof(textureImage));
 			}

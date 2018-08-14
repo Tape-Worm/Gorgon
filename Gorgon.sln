@@ -116,6 +116,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test2DApp", "Test\Test2DApp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.IO.Gorgon2D", "Gorgon\Gorgon.Renderers\IO.Gorgon2D\Gorgon.IO.Gorgon2D.csproj", "{E5506A64-62C5-4AA3-ADCB-766AB0CD5528}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FolderFileSystemOPower", "Examples\Gorgon.FileSystem\FolderFileSystemOPower\FolderFileSystemOPower.csproj", "{26EE1436-3763-446C-AEDA-1E03D76B7C58}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BZipFileSystemOPower", "Examples\Gorgon.FileSystem\BZipFileSystemOPower\BZipFileSystemOPower.csproj", "{569A0F18-DFB1-4507-8DAE-26C1A7DBCEE2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -322,6 +326,14 @@ Global
 		{E5506A64-62C5-4AA3-ADCB-766AB0CD5528}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E5506A64-62C5-4AA3-ADCB-766AB0CD5528}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E5506A64-62C5-4AA3-ADCB-766AB0CD5528}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26EE1436-3763-446C-AEDA-1E03D76B7C58}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26EE1436-3763-446C-AEDA-1E03D76B7C58}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26EE1436-3763-446C-AEDA-1E03D76B7C58}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26EE1436-3763-446C-AEDA-1E03D76B7C58}.Release|Any CPU.Build.0 = Release|Any CPU
+		{569A0F18-DFB1-4507-8DAE-26C1A7DBCEE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{569A0F18-DFB1-4507-8DAE-26C1A7DBCEE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{569A0F18-DFB1-4507-8DAE-26C1A7DBCEE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{569A0F18-DFB1-4507-8DAE-26C1A7DBCEE2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -372,6 +384,8 @@ Global
 		{DDCECB25-AD3F-405C-BE3D-84EF027D1B70} = {324C46F5-D8B6-4711-ABB7-8E22BD9EAE10}
 		{85B13540-CBB5-4CBD-8149-50762578A710} = {324C46F5-D8B6-4711-ABB7-8E22BD9EAE10}
 		{41F1A64C-95E2-445A-B377-C4C9F2AB147C} = {324C46F5-D8B6-4711-ABB7-8E22BD9EAE10}
+		{26EE1436-3763-446C-AEDA-1E03D76B7C58} = {D4582ECC-614C-484F-9CF9-2D88C4B57EE0}
+		{569A0F18-DFB1-4507-8DAE-26C1A7DBCEE2} = {D4582ECC-614C-484F-9CF9-2D88C4B57EE0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BA39288E-AC40-4B74-8AE3-AB6E94D02D77}

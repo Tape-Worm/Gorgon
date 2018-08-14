@@ -31,32 +31,8 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Folder FileSystem of Power.")]
-[assembly: AssemblyDescription("Example showing how to use the virtual file system.  This was a version 1.x example, converted to version 2.x of Gorgon.")]
-#if DEBUG
-[assembly: AssemblyConfiguration("DEBUG")]
-#else
-[assembly: AssemblyConfiguration("RELEASE")]
-#endif
-[assembly: AssemblyProduct("Version 1.x Gorgon Example.")]
-[assembly: AssemblyCompany("Michael Winsor")]
-[assembly: AssemblyCopyright("Copyright © Michael Winsor")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyDescription("Example showing how to use the virtual file system.  This was a version 1.x example, converted to version 3.x of Gorgon.")]
 [assembly: AssemblyCulture("")]
-
-// Setting ComVisible to false makes the types in this assembly not visible 
-// to COM components.  If you need to access a type in this assembly from 
-// COM, set the ComVisible attribute to true on that type.
-[assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("0099a968-8152-43d9-98f2-213a21efc80e")]
-
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-[assembly: AssemblyVersion("2.0.*")]
-[assembly: AssemblyFileVersion("2.0.0.0")]
