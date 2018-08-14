@@ -60,6 +60,7 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to return the read/write list of vertices for the poly sprite.
         /// </summary>
+        [JsonProperty("verts")]
         internal List<GorgonPolySpriteVertex> RwVertices
         {
             get;
@@ -87,6 +88,24 @@ namespace Gorgon.Renderers
         {
             get => Renderable.UpperLeftColor;
             set => Renderable.UpperLeftColor = Renderable.LowerLeftColor = Renderable.UpperRightColor = Renderable.LowerRightColor = value;
+        }
+
+        /// <summary>
+        /// Property to set or return the texture array index for the sprite.
+        /// </summary>
+        public int TextureArrayIndex
+        {
+            get => Renderable.TextureArrayIndex;
+            set
+            {
+                if (Renderable.TextureArrayIndex == value)
+                {
+                    return;
+                }
+
+                Renderable.TextureArrayIndex = value;
+                Renderable.HasTextureChanges = true;
+            }
         }
 
         /// <summary>

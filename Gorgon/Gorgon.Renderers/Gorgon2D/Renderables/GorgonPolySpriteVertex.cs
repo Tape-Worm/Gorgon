@@ -62,15 +62,6 @@ namespace Gorgon.Renderers
             get => (DX.Vector2)Vertex.UV;
             internal set => Vertex.UV = new DX.Vector3(value, Vertex.UV.Z);
         }
-
-        /// <summary>
-        /// Property to return the index to use within a texture array.
-        /// </summary>
-        public int TextureArrayIndex
-        {
-            get => (int)Vertex.UV.Z;
-            internal set => Vertex.UV = new DX.Vector3(Vertex.UV.X, Vertex.UV.Y, value);
-        }
         #endregion
 
         #region Constructor/Finalizer.
@@ -79,14 +70,14 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="position">The position of the vertex.</param>
         /// <param name="color">The color for the vertex.</param>
-        /// <param name="textureCoordinates">The texture coordinates.</param>
-        public GorgonPolySpriteVertex(DX.Vector2 position, GorgonColor color, DX.Vector2 textureCoordinates)
+        /// <param name="textureCoordinate">The texture coordinates.</param>
+        public GorgonPolySpriteVertex(DX.Vector2 position, GorgonColor color, DX.Vector2 textureCoordinate)
         {
             Vertex = new Gorgon2DVertex
             {
                 Position = new DX.Vector4(position, 0, 1.0f),
                 Color = color,
-                UV = new DX.Vector3(textureCoordinates, 0)
+                UV = new DX.Vector3(textureCoordinate, 0)
             };
         }
         #endregion

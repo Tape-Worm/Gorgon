@@ -80,6 +80,10 @@ Gorgon provides a set of libraries that are capable of handling pretty much any 
   
   All of these are provided using batched rendering, similar to [MonoGame](http://www.monogame.net/) for maximum performance.   
   
+  - [x] __[Gorgon.IO.Gorgon2D](Gorgon/Gorgon.Renderers/IO.Gorgon2D)__ _**(In Development)**_
+  
+  IO functionality for serializing sprite and polysprite data to and from various formats using codecs.
+
   - [ ] __[TBD]__ 
   
   An animation module that allows the creation of flexible animations for various types of objects.

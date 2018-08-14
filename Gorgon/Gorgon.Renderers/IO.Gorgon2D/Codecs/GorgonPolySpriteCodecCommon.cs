@@ -36,14 +36,14 @@ namespace Gorgon.IO
     /// <summary>
     /// A base class containing common codec functionality.
     /// </summary>
-    public abstract class GorgonSpriteCodecCommon
-        : IGorgonSpriteCodec
+    public abstract class GorgonPolySpriteCodecCommon
+        : IGorgonPolySpriteCodec
     {
         #region Variables.
         /// <summary>
         /// The ID for the file header for the most current version of the sprite format.
         /// </summary>
-        public static readonly ulong CurrentFileHeader = "GORSPR30".ChunkID();
+        public static readonly ulong CurrentFileHeader = "GORPSP30".ChunkID();
 
         /// <summary>
         /// The highest currently supported version for sprite serialization.
@@ -117,15 +117,15 @@ namespace Gorgon.IO
         /// </summary>
         /// <param name="sprite">The sprite to serialize into the stream.</param>
         /// <param name="stream">The stream that will contain the sprite.</param>
-        protected abstract void OnSaveToStream(GorgonSprite sprite, Stream stream);
+        protected abstract void OnSaveToStream(GorgonPolySprite sprite, Stream stream);
 
         /// <summary>
         /// Function to read the sprite data from a stream.
         /// </summary>
         /// <param name="stream">The stream containing the sprite.</param>
         /// <param name="byteCount">The number of bytes to read from the stream.</param>
-        /// <returns>A new <see cref="GorgonSprite"/>.</returns>
-        protected abstract GorgonSprite OnReadFromStream(Stream stream, int byteCount);
+        /// <returns>A new <see cref="GorgonPolySprite"/>.</returns>
+        protected abstract GorgonPolySprite OnReadFromStream(Stream stream, int byteCount);
 
         /// <summary>
         /// Function to determine if the data in a stream is readable by this codec.
@@ -190,12 +190,12 @@ namespace Gorgon.IO
         /// <param name="stream">The stream containing the sprite.</param>
         /// <param name="overrideTexture">[Optional] The texture to use as an override for the sprite.</param>
         /// <param name="byteCount">[Optional] The number of bytes to read from the stream.</param>
-        /// <returns>A new <see cref="GorgonSprite"/>.</returns>
+        /// <returns>A new <see cref="GorgonPolySprite"/>.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
         /// <exception cref="GorgonException">Thrown if the <paramref name="stream"/> is write only.</exception>
         /// <exception cref="EndOfStreamException">Thrown if the current <paramref name="stream"/> position, plus the size of the data exceeds the length of the stream.</exception>
         /// <exception cref="NotSupportedException">This method is not supported by this codec.</exception>
-        public GorgonSprite FromStream(Stream stream, GorgonTexture2DView overrideTexture = null, int? byteCount = null)
+        public GorgonPolySprite FromStream(Stream stream, GorgonTexture2DView overrideTexture = null, int? byteCount = null)
         {
             if (!CanDecode)
             {
@@ -222,7 +222,7 @@ namespace Gorgon.IO
                 throw new EndOfStreamException();
             }
 
-            GorgonSprite result = OnReadFromStream(stream, byteCount.Value);
+            GorgonPolySprite result = OnReadFromStream(stream, byteCount.Value);
 
             if ((result.Texture != overrideTexture)  && (overrideTexture != null))
             {
@@ -237,11 +237,11 @@ namespace Gorgon.IO
         /// </summary>
         /// <param name="filePath">The path to the file to read.</param>
         /// <param name="overrideTexture">[Optional] The texture to use as an override for the sprite.</param>
-        /// <returns>A new <see cref="GorgonSprite"/>.</returns>
+        /// <returns>A new <see cref="GorgonPolySprite"/>.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="filePath"/> parameter is empty.</exception>
         /// <exception cref="NotSupportedException">This method is not supported by this codec.</exception>
-        public GorgonSprite FromFile(string filePath, GorgonTexture2DView overrideTexture = null)
+        public GorgonPolySprite FromFile(string filePath, GorgonTexture2DView overrideTexture = null)
         {
             if (!CanDecode)
             {
@@ -272,7 +272,7 @@ namespace Gorgon.IO
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="sprite"/>, or the <paramref name="stream"/> parameter is <b>null</b>.</exception>
         /// <exception cref="GorgonException">Thrown if the stream is read only.</exception>
         /// <exception cref="NotSupportedException">This method is not supported by this codec.</exception>
-        public void Save(GorgonSprite sprite, Stream stream)
+        public void Save(GorgonPolySprite sprite, Stream stream)
         {
             if (!CanEncode)
             {
@@ -305,7 +305,7 @@ namespace Gorgon.IO
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath" /> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="filePath" /> parameter is empty.</exception>
         /// <exception cref="NotSupportedException">This method is not supported by this codec.</exception>
-        public void Save(GorgonSprite sprite, string filePath)
+        public void Save(GorgonPolySprite sprite, string filePath)
         {
             if (!CanEncode)
             {
@@ -374,14 +374,14 @@ namespace Gorgon.IO
 
         #region Constructor/Finalizer.
         /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonSpriteCodecCommon"/> class.
+        /// Initializes a new instance of the <see cref="GorgonPolySpriteCodecCommon"/> class.
         /// </summary>
         /// <param name="renderer">The renderer used for resource handling.</param>
         /// <param name="name">The codec name.</param>
         /// <param name="description">The friendly description for the codec.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/>, or the <paramref name="name"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
-        protected GorgonSpriteCodecCommon(Gorgon2D renderer, string name, string description)
+        protected GorgonPolySpriteCodecCommon(Gorgon2D renderer, string name, string description)
         {
             Renderer = renderer ?? throw new ArgumentNullException(nameof(renderer));
 

@@ -38,10 +38,10 @@ using Newtonsoft.Json.Linq;
 namespace Gorgon.IO
 {
     /// <summary>
-    /// A codec that can read and write a JSON formatted version of Gorgon v3 sprite data.
+    /// A codec that can read and write a JSON formatted version of Gorgon v3 polygonal sprite data.
     /// </summary>
-    public class GorgonV3SpriteJsonCodec
-        : GorgonSpriteCodecCommon
+    public class GorgonV3PolySpriteJsonCodec
+        : GorgonPolySpriteCodecCommon
     {
         #region Properties.
         /// <summary>
@@ -126,8 +126,8 @@ namespace Gorgon.IO
         /// </summary>
         /// <param name="stream">The stream containing the sprite.</param>
         /// <param name="byteCount">The number of bytes to read from the stream.</param>
-        /// <returns>A new <see cref="GorgonSprite"/>.</returns>
-        protected override GorgonSprite OnReadFromStream(Stream stream, int byteCount)
+        /// <returns>A new <see cref="GorgonPolySprite"/>.</returns>
+        protected override GorgonPolySprite OnReadFromStream(Stream stream, int byteCount)
         {
             using (var wrappedStream = new GorgonStreamWrapper(stream, stream.Position, byteCount, false))
             {
@@ -144,7 +144,7 @@ namespace Gorgon.IO
         /// </summary>
         /// <param name="sprite">The sprite to serialize into the stream.</param>
         /// <param name="stream">The stream that will contain the sprite.</param>
-        protected override void OnSaveToStream(GorgonSprite sprite, Stream stream)
+        protected override void OnSaveToStream(GorgonPolySprite sprite, Stream stream)
         {
             using (var writer = new StreamWriter(stream, Encoding.UTF8, 1024, true))
             {
@@ -219,11 +219,11 @@ namespace Gorgon.IO
         /// </summary>
         /// <param name="renderer">The renderer for the sprite.</param>
         /// <param name="json">The JSON string containing the sprite data.</param>
-        /// <returns>A new <see cref="GorgonSprite"/>.</returns>
+        /// <returns>A new <see cref="GorgonPolySprite"/>.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/>, or the <paramref name="json"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="json"/> parameter is empty.</exception>
         /// <exception cref="GorgonException">Thrown if the JSON string does not contain sprite data, or there is a version mismatch.</exception>
-        public static GorgonSprite FromJson(Gorgon2D renderer, string json)
+        public static GorgonPolySprite FromJson(Gorgon2D renderer, string json)
         {
             if (renderer == null)
             {
@@ -270,20 +270,25 @@ namespace Gorgon.IO
                 throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR2DIO_ERR_SPRITE_VERSION_MISMATCH, CurrentVersion, jsonVersion));
             }
 
-            return jobj.ToObject<GorgonSprite>(serializer);
+            GorgonPolySprite workingSpriteData = jobj.ToObject<GorgonPolySprite>(serializer);
+
+            // We have to rebuild the sprite because it's only data at this point and we need to build up its vertex/index buffers before we can render it.
+            var builder = new GorgonPolySpriteBuilder(renderer);
+            builder.ResetTo(workingSpriteData);
+
+            return builder.Build();
         }
         #endregion
 
         #region Constructor/Finalizer.
         /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonV3SpriteJsonCodec"/> class.
+        /// Initializes a new instance of the <see cref="GorgonV3PolySpriteJsonCodec"/> class.
         /// </summary>
         /// <param name="renderer">The renderer used for resource handling.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> parameter is <b>null</b>.</exception>
-        public GorgonV3SpriteJsonCodec(Gorgon2D renderer)
+        public GorgonV3PolySpriteJsonCodec(Gorgon2D renderer)
             : base(renderer, Resources.GOR2DIO_V3_JSON_CODEC, Resources.GOR2DIO_V3_JSON_CODEC_DESCRIPTION)
         {
-            
         }
         #endregion
     }

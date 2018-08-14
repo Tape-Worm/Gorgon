@@ -166,10 +166,28 @@ Invalid version '{0}'.</value>
   <data name="GOR2DIO_V2_CODEC_DESCRIPTION" xml:space="preserve">
     <value>Gorgon sprite codec for version 2.0 of Gorgon.</value>
   </data>
+  <data name="GOR2DIO_V3_BIN_CODEC" xml:space="preserve">
+    <value>Gorgon Sprite v3 Binary Codec</value>
+  </data>
+  <data name="GOR2DIO_V3_BIN_CODEC_DESCRIPTION" xml:space="preserve">
+    <value>Gorgon v3 sprite codec for reading and writing sprites as binary data.</value>
+  </data>
   <data name="GOR2DIO_V3_JSON_CODEC" xml:space="preserve">
     <value>Gorgon Sprite v3 JSON Codec</value>
   </data>
   <data name="GOR2DIO_V3_JSON_CODEC_DESCRIPTION" xml:space="preserve">
     <value>Gorgon v3 sprite codec for reading and writing sprites as JSON data.</value>
+  </data>
+  <data name="GOR2DIO_V3_POLYSPRITE_BIN_CODEC" xml:space="preserve">
+    <value>Gorgon Polygonal Sprite v3 Binary Codec</value>
+  </data>
+  <data name="GOR2DIO_V3_POLYSPRITE_BIN_CODEC_DESCRIPTION" xml:space="preserve">
+    <value>Gorgon v3 sprite codec for reading and writing polygonal sprites as binary data.</value>
+  </data>
+  <data name="GOR2DIO_V3_POLYSPRITE_JSON_CODEC" xml:space="preserve">
+    <value>Gorgon Polygonal Sprite v3 JSON Codec</value>
+  </data>
+  <data name="GOR2DIO_V3_POLYSPRITE_JSON_CODEC_DESCRIPTION" xml:space="preserve">
+    <value>Gorgon v3 sprite codec for reading and writing polygonal sprites as JSON data.</value>
   </data>
 </root>

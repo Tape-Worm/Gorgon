@@ -23,6 +23,7 @@
     <DocumentationFile>bin\Debug\Gorgon.IO.Gorgon2D.xml</DocumentationFile>
     <LangVersion>latest</LangVersion>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -53,16 +54,21 @@
     <Compile Include="..\..\Gorgon.Core\SharedAssemblyInfo.cs">
       <Link>SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Codecs\GorgonPolySpriteCodecCommon.cs" />
     <Compile Include="Codecs\GorgonSpriteCodecCommon.cs" />
+    <Compile Include="Codecs\GorgonV3PolySpriteBinaryCodec.cs" />
     <Compile Include="Codecs\GorgonV3SpriteBinaryCodec.cs" />
+    <Compile Include="Codecs\GorgonV3PolySpriteJsonCodec.cs" />
     <Compile Include="Codecs\GorgonV3SpriteJsonCodec.cs" />
     <Compile Include="Codecs\GorgonV2SpriteCodec.cs" />
     <Compile Include="Codecs\GorgonV1SpriteBinaryCodec.cs" />
+    <Compile Include="Codecs\_Interface\IGorgonPolySpriteCodec.cs" />
     <Compile Include="Codecs\_Interface\IGorgonSpriteCodec.cs" />
     <Compile Include="Codecs\_Internal\JsonRectangleFConverter.cs" />
     <Compile Include="Codecs\_Internal\JsonSamplerConverter.cs" />
     <Compile Include="Codecs\_Internal\JsonSize2FConverter.cs" />
     <Compile Include="Codecs\_Internal\JsonTexture2DConverter.cs" />
+    <Compile Include="Codecs\_Internal\JsonGorgonColorConverter.cs" />
     <Compile Include="Codecs\_Internal\JsonVector2Converter.cs" />
     <Compile Include="Codecs\_Internal\JsonVector3Converter.cs" />
     <Compile Include="Codecs\_Internal\v2\GorgonChunkedFormat.cs" />

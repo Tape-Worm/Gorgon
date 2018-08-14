@@ -116,6 +116,23 @@ namespace Gorgon.Renderers
             dest.TextureSampler = src.TextureSampler;
             dest.TextureOffset = src.TextureOffset;
             dest.TextureScale = src.TextureScale;
+            dest.TextureArrayIndex = src.TextureArrayIndex;
+        }
+
+        /// <summary>
+        /// Function to assign the inital alpha test value for the sprite.
+        /// </summary>
+        /// <param name="alphaTest">[Optional] The alpha test value to assign.</param>
+        /// <returns>The fluent interface for this builder.</returns>
+        /// <remarks>
+        /// <para>
+        /// If the <paramref name="alphaTest"/> value is <b>null</b>, then alpha testing will be turned off for the sprite.
+        /// </para>
+        /// </remarks>
+        public GorgonPolySpriteBuilder AlphaTest(GorgonRangeF? alphaTest = null)
+        {
+            _workingSprite.AlphaTest = alphaTest;
+            return this;
         }
 
         /// <summary>
@@ -343,10 +360,7 @@ namespace Gorgon.Renderers
                 throw new ArgumentOutOfRangeException(nameof(textureArrayIndex));
             }
 
-            for (int i = 0; i < _workingSprite.RwVertices.Count; ++i)
-            {
-                _workingSprite.RwVertices[i].TextureArrayIndex = textureArrayIndex;
-            }
+            _workingSprite.TextureArrayIndex = textureArrayIndex;
             return this;
         }
 

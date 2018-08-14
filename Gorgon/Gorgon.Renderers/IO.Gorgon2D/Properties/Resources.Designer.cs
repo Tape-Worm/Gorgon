@@ -206,6 +206,24 @@ namespace Gorgon.IO.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Gorgon Sprite v3 Binary Codec.
+        /// </summary>
+        internal static string GOR2DIO_V3_BIN_CODEC {
+            get {
+                return ResourceManager.GetString("GOR2DIO_V3_BIN_CODEC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gorgon v3 sprite codec for reading and writing sprites as binary data..
+        /// </summary>
+        internal static string GOR2DIO_V3_BIN_CODEC_DESCRIPTION {
+            get {
+                return ResourceManager.GetString("GOR2DIO_V3_BIN_CODEC_DESCRIPTION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Gorgon Sprite v3 JSON Codec.
         /// </summary>
         internal static string GOR2DIO_V3_JSON_CODEC {
@@ -220,6 +238,42 @@ namespace Gorgon.IO.Properties {
         internal static string GOR2DIO_V3_JSON_CODEC_DESCRIPTION {
             get {
                 return ResourceManager.GetString("GOR2DIO_V3_JSON_CODEC_DESCRIPTION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gorgon Polygonal Sprite v3 Binary Codec.
+        /// </summary>
+        internal static string GOR2DIO_V3_POLYSPRITE_BIN_CODEC {
+            get {
+                return ResourceManager.GetString("GOR2DIO_V3_POLYSPRITE_BIN_CODEC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gorgon v3 sprite codec for reading and writing polygonal sprites as binary data..
+        /// </summary>
+        internal static string GOR2DIO_V3_POLYSPRITE_BIN_CODEC_DESCRIPTION {
+            get {
+                return ResourceManager.GetString("GOR2DIO_V3_POLYSPRITE_BIN_CODEC_DESCRIPTION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gorgon Polygonal Sprite v3 JSON Codec.
+        /// </summary>
+        internal static string GOR2DIO_V3_POLYSPRITE_JSON_CODEC {
+            get {
+                return ResourceManager.GetString("GOR2DIO_V3_POLYSPRITE_JSON_CODEC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gorgon v3 sprite codec for reading and writing polygonal sprites as JSON data..
+        /// </summary>
+        internal static string GOR2DIO_V3_POLYSPRITE_JSON_CODEC_DESCRIPTION {
+            get {
+                return ResourceManager.GetString("GOR2DIO_V3_POLYSPRITE_JSON_CODEC_DESCRIPTION", resourceCulture);
             }
         }
     }
