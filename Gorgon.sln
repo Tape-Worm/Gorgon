@@ -112,8 +112,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PostProcessing", "Examples\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PolySprites", "Examples\Gorgon.Renderers.2D\PolySprites\PolySprites.csproj", "{41F1A64C-95E2-445A-B377-C4C9F2AB147C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test2DApp", "Test\Test2DApp\Test2DApp.csproj", "{40E1E768-7087-4C8D-8B79-7C50741CDC0F}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.IO.Gorgon2D", "Gorgon\Gorgon.Renderers\IO.Gorgon2D\Gorgon.IO.Gorgon2D.csproj", "{E5506A64-62C5-4AA3-ADCB-766AB0CD5528}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FolderFileSystemOPower", "Examples\Gorgon.FileSystem\FolderFileSystemOPower\FolderFileSystemOPower.csproj", "{26EE1436-3763-446C-AEDA-1E03D76B7C58}"
@@ -318,10 +316,6 @@ Global
 		{41F1A64C-95E2-445A-B377-C4C9F2AB147C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{41F1A64C-95E2-445A-B377-C4C9F2AB147C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{41F1A64C-95E2-445A-B377-C4C9F2AB147C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{40E1E768-7087-4C8D-8B79-7C50741CDC0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{40E1E768-7087-4C8D-8B79-7C50741CDC0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{40E1E768-7087-4C8D-8B79-7C50741CDC0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{40E1E768-7087-4C8D-8B79-7C50741CDC0F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E5506A64-62C5-4AA3-ADCB-766AB0CD5528}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E5506A64-62C5-4AA3-ADCB-766AB0CD5528}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E5506A64-62C5-4AA3-ADCB-766AB0CD5528}.Release|Any CPU.ActiveCfg = Release|Any CPU
