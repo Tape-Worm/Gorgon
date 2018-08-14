@@ -210,9 +210,6 @@ namespace Gorgon.Examples
 		                                  _blurredImage[index],
 		                                  new DX.RectangleF(0, 0, 1, 1));
 
-            _renderer.End();
-
-            _renderer.Begin();
 			// Draw help text.
 			if (_showHelp)
 			{

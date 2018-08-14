@@ -220,7 +220,7 @@ namespace Gorgon.Examples
 
 		    // Draw text.
 		    _poetry.Position = _textPosition;
-            _renderer.DrawTextSprite(_poetry);
+            //_renderer.DrawTextSprite(_poetry);
 
 			_sprites[0].Position = new DX.Vector2(width / 4, height / 4);
 
@@ -239,9 +239,6 @@ namespace Gorgon.Examples
 		                                  _blurredImage[index],
 		                                  new DX.RectangleF(0, 0, 1, 1));
 
-            _renderer.End();
-
-            _renderer.Begin();
 			// Draw help text.
 			if (_showHelp)
 			{
