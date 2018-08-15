@@ -137,10 +137,11 @@ This following image(s) is/are not redistributable without permission from the o
 ["HotPocket.dds"](Resources/Textures/HotPocket.DDS) by Starkiteckt 
 https://www.deviantart.com/starkiteckt/art/Hot-Pocket-433337115
 
-True Type fonts by:
-Tequila	by [uZiMweB(http://www.zimina.net/)
-A Charming Font	by [GemFonts](http://www.moorstation.org/typoasis/designers/gemnew/)
-Sunset by [Harold's Fonts](http://haroldsfonts.com/)
-Monsters Attack ! by [The Empire of the Claw](http://www.empire-of-the-claw.com/)
-Grunja by Apostrophic Labs
-The Bold Font author: Unknown
+Third Party True Type fonts:
+
+Tequila	by [uZiMweB](http://www.zimina.net/) \
+A Charming Font	by [GemFonts](http://www.moorstation.org/typoasis/designers/gemnew/) \
+Sunset by [Harold's Fonts](http://haroldsfonts.com/) \
+Monsters Attack ! by [The Empire of the Claw](http://www.empire-of-the-claw.com/) \
+Grunja by Apostrophic Labs \
+The Bold Font by ??? 
