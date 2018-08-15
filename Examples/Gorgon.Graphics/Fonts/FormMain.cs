@@ -1,7 +1,7 @@
-﻿#region MIT.
+﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2013 Michael Winsor
+// Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,19 +20,28 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Tuesday, October 8, 2013 11:26:17 PM
+// Created: August 6, 2018 2:39:25 PM
 // 
 #endregion
 
 using System.Windows.Forms;
 
-namespace Fonts
+namespace Gorgon.Examples
 {
-	public partial class formMain : Form
-	{
-		public formMain()
-		{
-			InitializeComponent();
-		}
-	}
+    public partial class FormMain : Form
+    {
+        /// <summary>
+        /// Property to set or return whether the please wait label is visible.
+        /// </summary>
+        public bool IsLoaded
+        {
+            get => !LabelPleaseWait.Visible;
+            set => LabelPleaseWait.Visible = !value;
+        }
+
+        public FormMain()
+        {
+            InitializeComponent();
+        }
+    }
 }
