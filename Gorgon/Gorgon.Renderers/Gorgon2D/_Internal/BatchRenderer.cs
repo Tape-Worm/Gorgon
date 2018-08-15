@@ -139,10 +139,20 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Function to expand the vertex cache if it is full.
         /// </summary>
-        private void ExpandCache()
+        /// <param name="increaseBy">The number of vertices to increase by.</param>
+        private void ExpandCache(int increaseBy)
         {
-            int previousSize = _vertexCache.Length / 4;
-            int newSize = previousSize + (previousSize / 2);
+            int newSize;
+
+            if (increaseBy <= 0)
+            {
+                newSize = _vertexCache.Length + (_vertexCache.Length / 8);
+            }
+            else
+            {
+                newSize = _vertexCache.Length + increaseBy + (increaseBy / 4);
+            }
+
             // Move to the next 
             newSize = ((newSize + 63) & ~63) * 4;
 
@@ -162,7 +172,7 @@ namespace Gorgon.Renderers
             // Ensure we actually have the room to cache the renderable vertices.
             if (lastVertex >= _vertexCache.Length)
             {
-                ExpandCache();
+                ExpandCache(lastVertex - _vertexCache.Length);
             }
 
             for (int i = 0; i < vertexCount; ++i, ++_allocatedVertexCount)
