@@ -123,6 +123,9 @@
   <data name="GOR2DIO_ERR_CODEC_CANNOT_ENCODE" xml:space="preserve">
     <value>The codec '{0}' is not capable of encoding data.</value>
   </data>
+  <data name="GOR2DIO_ERR_CODEC_NOT_IN_PLUGIN" xml:space="preserve">
+    <value>The codec '{0}' was not found in the plug in.</value>
+  </data>
   <data name="GOR2DIO_ERR_FILE_NOT_FOUND" xml:space="preserve">
     <value>The file '{0}' was not found on any of the physical or virtual file systems.</value>
   </data>
@@ -153,6 +156,9 @@
   <data name="GOR2DIO_ERR_VERSION_MISMATCH" xml:space="preserve">
     <value>This sprite data cannot be read.
 Invalid version '{0}'.</value>
+  </data>
+  <data name="GOR2DIO_TOSTR_SPRITE_CODEC_PLUGIN_DESC" xml:space="preserve">
+    <value>Gorgon Sprite Codec {0} ({1})</value>
   </data>
   <data name="GOR2DIO_V1_CODEC" xml:space="preserve">
     <value>Gorgon Sprite v1.x Codec</value>

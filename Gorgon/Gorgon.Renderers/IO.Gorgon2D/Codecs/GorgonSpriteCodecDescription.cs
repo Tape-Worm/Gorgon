@@ -25,15 +25,15 @@
 #endregion
 
 using System;
-using Gorgon.Graphics.Imaging.Properties;
+using Gorgon.IO.Properties;
 
-namespace Gorgon.Graphics.Imaging.Codecs
+namespace Gorgon.IO
 {
 	/// <summary>
-	/// A name and description for an image codec within a <see cref="GorgonImageCodecPlugin"/>.
+	/// A name and description for an image codec within a <see cref="GorgonSpriteCodecPlugin"/>.
 	/// </summary>
-	public struct GorgonImageCodecDescription
-		: IEquatable<GorgonImageCodecDescription>
+	public struct GorgonSpriteCodecDescription
+		: IEquatable<GorgonSpriteCodecDescription>
 	{
 		#region Variables.
 		/// <summary>
@@ -54,7 +54,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <param name="left">The left instance to compare.</param>
 		/// <param name="right">The right instance to compare.</param>
 		/// <returns><b>true</b> if the two instances are equal, <b>false</b> if not.</returns>
-		public static bool Equals(GorgonImageCodecDescription left, GorgonImageCodecDescription right)
+		public static bool Equals(GorgonSpriteCodecDescription left, GorgonSpriteCodecDescription right)
 		{
 			return string.Equals(left.Name, right.Name, StringComparison.OrdinalIgnoreCase);
 		}
@@ -63,7 +63,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <returns>A <see cref="T:System.String" /> containing a fully qualified type name.</returns>
 		public override string ToString()
 		{
-			return string.Format(Resources.GORIMG_TOSTR_IMAGE_CODEC_PLUGIN_DESC, Name, Description);
+			return string.Format(Resources.GOR2DIO_TOSTR_SPRITE_CODEC_PLUGIN_DESC, Name, Description);
 		}
 
 		/// <summary>Indicates whether this instance and a specified object are equal.</summary>
@@ -71,7 +71,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <param name="obj">The object to compare with the current instance. </param>
 		public override bool Equals(object obj)
 		{
-			if (obj is GorgonImageCodecDescription codecDesc)
+			if (obj is GorgonSpriteCodecDescription codecDesc)
 			{
 				return codecDesc.Equals(this);
 			}
@@ -92,7 +92,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <param name="other">An object to compare with this object.</param>
 		/// <returns>true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.</returns>
 		/// <exception cref="NotImplementedException"></exception>
-		public bool Equals(GorgonImageCodecDescription other)
+		public bool Equals(GorgonSpriteCodecDescription other)
 		{
 			return Equals(this, other);
 		}
@@ -103,7 +103,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <param name="left">The left instance to compare.</param>
 		/// <param name="right">The right instance to compare.</param>
 		/// <returns><b>true</b> if the two instances are equal, <b>false</b> if not.</returns>
-		public static bool operator ==(GorgonImageCodecDescription left, GorgonImageCodecDescription right)
+		public static bool operator ==(GorgonSpriteCodecDescription left, GorgonSpriteCodecDescription right)
 		{
 			return Equals(left, right);
 		}
@@ -114,7 +114,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// <param name="left">The left instance to compare.</param>
 		/// <param name="right">The right instance to compare.</param>
 		/// <returns><b>true</b> if the two instances are not equal, <b>false</b> if they are.</returns>
-		public static bool operator !=(GorgonImageCodecDescription left, GorgonImageCodecDescription right)
+		public static bool operator !=(GorgonSpriteCodecDescription left, GorgonSpriteCodecDescription right)
 		{
 			return !Equals(left, right);
 		}
@@ -122,10 +122,10 @@ namespace Gorgon.Graphics.Imaging.Codecs
 
 		#region Constructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonImageCodecDescription"/> struct.
+		/// Initializes a new instance of the <see cref="GorgonSpriteCodecDescription"/> struct.
 		/// </summary>
 		/// <param name="type">The type of codec object.</param>
-		public GorgonImageCodecDescription(Type type)
+		public GorgonSpriteCodecDescription(Type type)
 		{
 			if (type == null)
 			{

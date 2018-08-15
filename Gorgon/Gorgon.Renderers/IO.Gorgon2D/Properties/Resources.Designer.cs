@@ -79,6 +79,15 @@ namespace Gorgon.IO.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The codec &apos;{0}&apos; was not found in the plug in..
+        /// </summary>
+        internal static string GOR2DIO_ERR_CODEC_NOT_IN_PLUGIN {
+            get {
+                return ResourceManager.GetString("GOR2DIO_ERR_CODEC_NOT_IN_PLUGIN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The file &apos;{0}&apos; was not found on any of the physical or virtual file systems..
         /// </summary>
         internal static string GOR2DIO_ERR_FILE_NOT_FOUND {
@@ -166,6 +175,15 @@ namespace Gorgon.IO.Properties {
         internal static string GOR2DIO_ERR_VERSION_MISMATCH {
             get {
                 return ResourceManager.GetString("GOR2DIO_ERR_VERSION_MISMATCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gorgon Sprite Codec {0} ({1}).
+        /// </summary>
+        internal static string GOR2DIO_TOSTR_SPRITE_CODEC_PLUGIN_DESC {
+            get {
+                return ResourceManager.GetString("GOR2DIO_TOSTR_SPRITE_CODEC_PLUGIN_DESC", resourceCulture);
             }
         }
         

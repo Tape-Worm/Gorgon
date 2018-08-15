@@ -54,8 +54,10 @@
     <Compile Include="..\..\Gorgon.Core\SharedAssemblyInfo.cs">
       <Link>SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Codecs\GorgonSpriteCodecDescription.cs" />
     <Compile Include="Codecs\GorgonPolySpriteCodecCommon.cs" />
     <Compile Include="Codecs\GorgonSpriteCodecCommon.cs" />
+    <Compile Include="Codecs\GorgonSpriteCodecPlugin.cs" />
     <Compile Include="Codecs\GorgonV3PolySpriteBinaryCodec.cs" />
     <Compile Include="Codecs\GorgonV3SpriteBinaryCodec.cs" />
     <Compile Include="Codecs\GorgonV3PolySpriteJsonCodec.cs" />
