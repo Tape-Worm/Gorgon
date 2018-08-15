@@ -68,7 +68,204 @@ namespace Gorgon.Graphics
 		/// The color black.
 		/// </summary>
 		public static readonly GorgonColor Black = new GorgonColor(0, 0, 0, 1);
-        /// <summary>
+	    /// <summary>
+	    /// Pure red (Red = 1, Green = 0, Blue = 0).
+	    /// </summary>
+	    public static readonly GorgonColor RedPure = new GorgonColor(1, 0, 0);
+	    /// <summary>
+	    /// Pure green (Red = 0, Green = 1, Blue = 0).
+	    /// </summary>
+	    public static readonly GorgonColor GreenPure = new GorgonColor(0, 1, 0);
+	    /// <summary>
+	    /// Pure blue (Red = 0, Green = 0, Blue = 1).
+	    /// </summary>
+	    public static readonly GorgonColor BluePure = new GorgonColor(0, 0, 1);
+	    /// <summary>
+	    /// Pure purple (Red = 1, Green = 0, Blue = 1).
+	    /// </summary>
+	    public static readonly GorgonColor PurplePure = new GorgonColor(1, 0, 1);
+	    /// <summary>
+	    /// Pure yellow (Red = 1, Green = 1, Blue = 0).
+	    /// </summary>
+	    public static readonly GorgonColor YellowPure = new GorgonColor(1, 1, 0);
+	    /// <summary>
+	    /// Pure cyan (Red = 0, Green = 1, Blue = 1).
+	    /// </summary>
+	    public static readonly GorgonColor CyanPure = new GorgonColor(0, 1, 1);
+	    /// <summary>
+	    /// 90% gray.
+	    /// </summary>
+	    public static readonly GorgonColor Gray90 = new GorgonColor(0.9f, 0.9f, 0.9f);
+	    /// <summary>
+	    /// 80% gray.
+	    /// </summary>
+	    public static readonly GorgonColor Gray80 = new GorgonColor(0.8f, 0.8f, 0.8f);
+	    /// <summary>
+	    /// 75% gray.
+	    /// </summary>
+	    public static readonly GorgonColor Gray75 = new GorgonColor(0.75f, 0.75f, 0.75f);
+	    /// <summary>
+	    /// 70% gray.
+	    /// </summary>
+	    public static readonly GorgonColor Gray70 = new GorgonColor(0.7f, 0.7f, 0.7f);
+	    /// <summary>
+	    /// 60% gray.
+	    /// </summary>
+	    public static readonly GorgonColor Gray60 = new GorgonColor(0.6f, 0.6f, 0.6f);
+	    /// <summary>
+	    /// 50% gray.
+	    /// </summary>
+	    public static readonly GorgonColor Gray50 = new GorgonColor(0.5f, 0.5f, 0.5f);
+	    /// <summary>
+	    /// 40% gray.
+	    /// </summary>
+	    public static readonly GorgonColor Gray40 = new GorgonColor(0.4f, 0.4f, 0.4f);
+	    /// <summary>
+	    /// 30% gray.
+	    /// </summary>
+	    public static readonly GorgonColor Gray30 = new GorgonColor(0.3f, 0.3f, 0.3f);
+	    /// <summary>
+	    /// 25% gray.
+	    /// </summary>
+	    public static readonly GorgonColor Gray25 = new GorgonColor(0.25f, 0.25f, 0.25f);
+	    /// <summary>
+	    /// 20% gray.
+	    /// </summary>
+	    public static readonly GorgonColor Gray20 = new GorgonColor(0.2f, 0.2f, 0.2f);
+	    /// <summary>
+	    /// 10% gray.
+	    /// </summary>
+	    public static readonly GorgonColor Gray10 = new GorgonColor(0.1f, 0.1f, 0.1f);
+	    /// <summary>
+	    /// Corn flower blue.
+	    /// </summary>
+	    public static readonly GorgonColor CornFlowerBlue = Color.CornflowerBlue;
+	    /// <summary>
+	    /// Steel blue.
+	    /// </summary>
+	    public static readonly GorgonColor SteelBlue = Color.SteelBlue;
+	    /// <summary>
+	    /// Yellow green.
+	    /// </summary>
+	    public static readonly GorgonColor YellowGreen = Color.YellowGreen;
+	    /// <summary>
+	    /// Saddle brown.
+	    /// </summary>
+	    public static readonly GorgonColor SaddleBrown = Color.SaddleBrown;
+	    /// <summary>
+	    /// Orange.
+	    /// </summary>
+	    public static readonly GorgonColor Orange = Color.Orange;
+	    /// <summary>
+	    /// Aquamarine.
+	    /// </summary>
+	    public static readonly GorgonColor Aquamarine = Color.Aquamarine;
+	    /// <summary>
+	    /// Beige.
+	    /// </summary>
+	    public static readonly GorgonColor Beige = Color.Beige;
+	    /// <summary>
+	    /// BlueViolet.
+	    /// </summary>
+	    public static readonly GorgonColor BlueViolet = Color.BlueViolet;
+	    /// <summary>
+	    /// CadetBlue.
+	    /// </summary>
+	    public static readonly GorgonColor CadetBlue = Color.CadetBlue;
+	    /// <summary>
+	    /// Brown.
+	    /// </summary>
+	    public static readonly GorgonColor Brown = Color.Brown;
+	    /// <summary>
+	    /// Crimson.
+	    /// </summary>
+	    public static readonly GorgonColor Crimson = Color.Crimson;
+	    /// <summary>
+	    /// Chartreuse.
+	    /// </summary>
+	    public static readonly GorgonColor Chartreuse = Color.Chartreuse;
+	    /// <summary>
+	    /// Gold.
+	    /// </summary>
+	    public static readonly GorgonColor Gold = Color.Gold;
+	    /// <summary>
+	    /// Dark cyan.
+	    /// </summary>
+	    public static readonly GorgonColor DarkCyan = Color.DarkCyan;
+	    /// <summary>
+	    /// Dark purple.
+	    /// </summary>
+	    public static readonly GorgonColor DarkPurple = Color.DarkMagenta;
+	    /// <summary>
+	    /// Dark yellow.
+	    /// </summary>
+	    public static readonly GorgonColor DarkYellow = new GorgonColor(0.5f, 0.5f , 0); 
+	    /// <summary>
+	    /// Dark red.
+	    /// </summary>
+	    public static readonly GorgonColor DarkRed = Color.DarkRed;
+	    /// <summary>
+	    /// Dark green.
+	    /// </summary>
+	    public static readonly GorgonColor DarkGreen = Color.DarkGreen;
+	    /// <summary>
+	    /// Dark blue.
+	    /// </summary>
+	    public static readonly GorgonColor DarkBlue = Color.DarkBlue;
+	    /// <summary>
+	    /// Light cyan.
+	    /// </summary>
+	    public static readonly GorgonColor LightCyan = Color.LightCyan;
+	    /// <summary>
+	    /// Light purple.
+	    /// </summary>
+	    public static readonly GorgonColor LightPurple = new GorgonColor(1, 0.5f, 1);
+	    /// <summary>
+	    /// Light yellow.
+	    /// </summary>
+	    public static readonly GorgonColor LightYellow = new GorgonColor(1, 1, 0.5f);
+	    /// <summary>
+	    /// Light red.
+	    /// </summary>
+	    public static readonly GorgonColor LightRed = new GorgonColor(1, 0.5f, 0.5f);
+	    /// <summary>
+	    /// Light green.
+	    /// </summary>
+	    public static readonly GorgonColor LightGreen = new GorgonColor(0.5f, 1.0f, 0.5f);
+	    /// <summary>
+	    /// Light blue.
+	    /// </summary>
+	    public static readonly GorgonColor LightBlue = new GorgonColor(0.5f, 0.5f, 1.0f);
+	    /// <summary>
+	    /// DeepPink.
+	    /// </summary>
+	    public static readonly GorgonColor DeepPink = Color.DeepPink;
+	    /// <summary>
+	    /// DeepSkyBlue.
+	    /// </summary>
+	    public static readonly GorgonColor DeepSkyBlue = Color.DeepSkyBlue;
+	    /// <summary>
+	    /// Firebrick.
+	    /// </summary>
+	    public static readonly GorgonColor Firebrick = Color.Firebrick;
+	    /// <summary>
+	    /// OrangeRed.
+	    /// </summary>
+	    public static readonly GorgonColor OrangeRed = Color.OrangeRed;
+	    /// <summary>
+	    /// SeaGreen.
+	    /// </summary>
+	    public static readonly GorgonColor SeaGreen = Color.SeaGreen;
+	    /// <summary>
+	    /// WhiteSmoke.
+	    /// </summary>
+	    public static readonly GorgonColor WhiteSmoke = Color.WhiteSmoke;
+	    /// <summary>
+	    /// WhiteSmoke.
+	    /// </summary>
+	    public static readonly GorgonColor BlanchedAlmond = Color.BlanchedAlmond;
+        
+	    /// <summary>
         /// The size of the value, in bytes.
         /// </summary>
 	    public static readonly int SizeInBytes = Unsafe.SizeOf<GorgonColor>();

@@ -237,10 +237,12 @@ namespace Gorgon.Renderers
         /// <param name="renderable">The renderable object that needs to be evaluated.</param>
         /// <param name="useIndices"><b>true</b> if the renderable requires indices, or <b>false</b> if not.</param>
         /// <param name="createDrawCall"><b>true</b> if a new draw call should be created, <b>false</b> if it should not.</param>
-        private void RenderBatchOnChange(BatchRenderable renderable, bool useIndices, bool createDrawCall = true)
+        /// <param name="flush"><b>true</b> to force a flush of the batch, or <b>false</b> to try to detect a batch flush.</param>
+        private void RenderBatchOnChange(BatchRenderable renderable, bool useIndices, bool createDrawCall = true, bool flush = false)
         {
             // Check for alpha test, sampler[0], and texture[0] changes.  We only need a new draw call when those states change.
-            if ((_lastRenderable != null) 
+            if ((!flush)
+                && (_lastRenderable != null) 
                 && (_batchRenderer.RenderableStateComparer.Equals(_lastRenderable, renderable))
                 && (((useIndices) && (_currentDrawIndexCall != null))
                      || ((!useIndices) && (_currentDrawCall != null))))
@@ -841,11 +843,12 @@ namespace Gorgon.Renderers
             {
                 return;
             }
-
+            
             _defaultTextSprite.Text = text;
             _defaultTextSprite.Color = color ?? GorgonColor.White;
             _defaultTextSprite.Position = position;
             _defaultTextSprite.Font = font ?? _defaultFontFactory.Value.DefaultFont;
+            _defaultTextSprite.DrawMode = _defaultTextSprite.Font.HasOutline ? TextDrawMode.OutlinedGlyphs : TextDrawMode.GlyphsOnly;
             _defaultTextSprite.AllowColorCodes = (text.IndexOf("[c", StringComparison.CurrentCultureIgnoreCase) > -1)
                                                  && (text.IndexOf("[/c]", StringComparison.CurrentCultureIgnoreCase) > -1);
 

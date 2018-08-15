@@ -392,7 +392,6 @@ namespace Gorgon.Renderers
             get => Renderable.Font;
             set
             {
-                // TODO: Perhaps have a default font and NULL will be used to represent that.
                 if ((Renderable.Font == value)
                     || (value == null))
                 {
@@ -405,6 +404,7 @@ namespace Gorgon.Renderers
                 Renderable.HasVertexChanges = true;
                 Renderable.HasTextureChanges = true;
                 Renderable.HasVertexColorChanges = true;
+                Renderable.StateChanged = true;
 
                 FormatText();
             }
