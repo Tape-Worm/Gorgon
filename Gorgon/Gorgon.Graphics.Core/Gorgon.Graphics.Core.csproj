@@ -9,7 +9,7 @@
     <AssemblyName>Gorgon.Graphics.Core</AssemblyName>
     <OutputType>Library</OutputType>
     <RootNamespace>Gorgon.Graphics.Core</RootNamespace>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
