@@ -26,8 +26,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Threading;
+using System.Drawing.Text;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts.Properties;
@@ -67,6 +69,8 @@ namespace Gorgon.Graphics.Fonts
 		private readonly object _syncLock = new object();
 		// The cache used to hold previously created font data.
 		private readonly Dictionary<string, GorgonFont> _fontCache = new Dictionary<string, GorgonFont>(StringComparer.OrdinalIgnoreCase);
+        // The list of external fonts loaded from the file system.
+        private PrivateFontCollection _externalFonts = new PrivateFontCollection();
 		#endregion
 
 		#region Properties.
@@ -110,7 +114,7 @@ namespace Gorgon.Graphics.Fonts
 					                              OutlineSize = 0
 				                              });
 
-			        _default.GenerateFont();
+			        _default.GenerateFont(new [] { _externalFonts });
 			    }
 
 			    return _default;
@@ -272,6 +276,35 @@ namespace Gorgon.Graphics.Fonts
 			}
 		}
 
+        /// <summary>
+        /// Function to load a try type font into the font factory for rasterization.
+        /// </summary>
+        /// <param name="path">The path to the font on the file system.</param>
+        /// <returns>The font family for loaded font.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
+        /// <remarks>
+        /// <para>
+        /// Use this to load a true type from the disk into the factory. The factory will use this to build a <see cref="GorgonFont"/> based on your font.
+        /// </para>
+        /// </remarks>
+	    public FontFamily LoadTrueTypeFontFamily(string path)
+	    {
+	        if (path == null)
+	        {
+                throw new ArgumentNullException(nameof(path));
+	        }
+
+	        if (string.IsNullOrWhiteSpace(path))
+	        {
+                throw new ArgumentEmptyException(nameof(path));
+	        }
+
+            _externalFonts.AddFontFile(path);
+
+	        return _externalFonts.Families[_externalFonts.Families.Length - 1];
+	    }
+
 		/// <summary>
 		/// Function to return or create a new <see cref="GorgonFont"/>.
 		/// </summary>
@@ -289,12 +322,13 @@ namespace Gorgon.Graphics.Fonts
 		/// Kerning information (the proper spacing for a glyph), advances, etc... are all included for the glyphs with font.
 		/// </para>
 		/// <para>
-		/// The <see cref="IGorgonNamedObject.Name"/> value on the <paramref name="fontInfo"/> parameter is used in caching, and is user defined. It is not necessary to have it share the same name as the font family name in the
-		/// <paramref name="fontInfo"/> parameter, however it is best practice to indicate the font family name in the name for ease of use. By default, this parameter is set to the font family, height and unit of measure.
+		/// The <see cref="IGorgonNamedObject.Name"/> value on the <paramref name="fontInfo"/> parameter is used in caching, and is user defined. It is not necessary to have it share the same name as the
+		/// font family name in the <paramref name="fontInfo"/> parameter, however it is best practice to indicate the font family name in the name for ease of use. By default, this parameter is set to the
+		/// font family, height and unit of measure.
 		/// </para>
 		/// <para>
-		/// If a font with the same name was previously created by this factory, then that font will be returned if the <paramref name="fontInfo"/> is the same as the cached version. If no font with the same 
-		/// name or the <paramref name="fontInfo"/> is different, then a new font is generated. If the names are the same, then the new font will replace the old.
+		/// If a font with the same name was previously created by this factory, then that font will be returned if the <paramref name="fontInfo"/> is the same as the cached version. If no font with the
+		/// same  name or the <paramref name="fontInfo"/> is different, then a new font is generated. If the names are the same, then the new font will replace the old.
 		/// </para>
 		/// </remarks>
 		public GorgonFont GetFont(IGorgonFontInfo fontInfo)
@@ -338,7 +372,7 @@ namespace Gorgon.Graphics.Fonts
 
 				// If not found, then create a new font and cache it.
 				_fontCache[fontInfo.Name] = result = new GorgonFont(fontInfo.Name, this, fontInfo);
-				result.GenerateFont();
+				result.GenerateFont(new[] { _externalFonts });
 
 				return result;
 			}
@@ -349,8 +383,10 @@ namespace Gorgon.Graphics.Fonts
 		/// </summary>
 		public void Dispose()
 		{
+		    PrivateFontCollection ttFonts = Interlocked.Exchange(ref _externalFonts, null);
 			GorgonFont defaultFont = Interlocked.Exchange(ref _default, null);
 
+            ttFonts?.Dispose();
 			defaultFont?.Dispose();
 
 			InvalidateCache();

@@ -66,7 +66,7 @@ namespace Gorgon.Examples
         // The logo for Gorgon.
         private static GorgonTexture2DView _logo;
         // The list of built-in Windows font family names to use.
-        private static readonly string[] _fontFamilies =
+        private static readonly List<string> _fontFamilies = new List<string>
         {
             "Usuzi",
             "Algerian",
@@ -212,9 +212,27 @@ namespace Gorgon.Examples
                 // We need to create a font factory so we can create/load (and cache) fonts.
                 _fontFactory = new GorgonFontFactory(_graphics);
 
-                Drawing.FontFamily[] fontFamilies = Drawing.FontFamily.Families;
+                // Load in a bunch of true type fonts.
+                var dirInfo = new DirectoryInfo(GetResourcePath("Fonts"));
+                FileInfo[] files = dirInfo.GetFiles("*.ttf", SearchOption.TopDirectoryOnly);
+
+                // TODO: Put this in separate function
+                var fontFamilies = new List<Drawing.FontFamily>();
                 
-                for (int i = 0; i < _fontFamilies.Length; ++i)
+                // Load all external true type fonts for this example.
+                // This takes a while...
+                foreach (FileInfo file in files)
+                {
+                    Drawing.FontFamily externFont = _fontFactory.LoadTrueTypeFontFamily(file.FullName);
+                    _fontFamilies.Insert(0, externFont.Name);
+                    fontFamilies.Add(externFont);
+                }
+                
+                fontFamilies.AddRange(Drawing.FontFamily.Families);
+                // TODO: End
+
+                // TODO: Put in separate function.
+                for (int i = 0; i < _fontFamilies.Count; ++i)
                 {
                     string fontFamily = _fontFamilies[i];
                     
@@ -222,13 +240,17 @@ namespace Gorgon.Examples
                     if (fontFamilies.All(item => !string.Equals(item.Name, fontFamily, StringComparison.InvariantCultureIgnoreCase)))
                     {
                         // Can't locate this one, move on...
-                        Debugger.Break();
                         continue;
                     }
 
+                    // TODO: Pick specific fonts for special effects like outline, glow, texture, and gradient.
                     bool hasOutline = GorgonRandom.RandomInt32(0, 100) > 50;
+                    bool isExternal = Drawing.FontFamily.Families.All(item => !string.Equals(item.Name, fontFamily, StringComparison.InvariantCultureIgnoreCase));
 
-                    IGorgonFontInfo fontInfo = new GorgonFontInfo(fontFamily, 32.0f, name: $"{fontFamily} 32px {(hasOutline ? "Outlined" : string.Empty)}")
+                    IGorgonFontInfo fontInfo = new GorgonFontInfo(fontFamily,
+                                                                  32.0f,
+                                                                  name:
+                                                                  $"{fontFamily} 32px{(hasOutline ? " Outlined" : string.Empty)}{(isExternal ? " External TTF" : string.Empty)}")
                                                {
                                                    AntiAliasingMode = FontAntiAliasMode.AntiAlias,
                                                    OutlineSize = hasOutline ? 3 : 0,
@@ -238,6 +260,9 @@ namespace Gorgon.Examples
 
                     _font.Add(_fontFactory.GetFont(fontInfo));
                 }
+                // TODO: End
+
+                // TODO: Use TextSprite and animate line spacing for giggles.
 
                 window.IsLoaded = true;
 

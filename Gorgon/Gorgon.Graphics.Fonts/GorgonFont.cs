@@ -809,6 +809,7 @@ namespace Gorgon.Graphics.Fonts
 		/// <summary>
 		/// Function to create or update the font.
 		/// </summary>
+		/// <param name="externalFontCollections">The external font collections from the application.</param>
 		/// <remarks>
 		/// <para>
 		/// This is used to generate a new set of font textures, and essentially "create" the font object.
@@ -826,7 +827,7 @@ namespace Gorgon.Graphics.Fonts
 		/// <para>-or-</para>
 		/// <para>Thrown when the font family name is <b>null</b> or Empty.</para>
 		/// </exception>
-		internal void GenerateFont()
+		internal void GenerateFont(IEnumerable<System.Drawing.Text.PrivateFontCollection> externalFontCollections)
 		{
 			Bitmap setupBitmap = null;
 			System.Drawing.Graphics graphics = null;
@@ -843,7 +844,7 @@ namespace Gorgon.Graphics.Fonts
 				graphics.PageUnit = GraphicsUnit.Pixel;
 
 				// Build up the information using a GDI+ font.
-				fontData = GdiFontData.GetFontData(graphics, Info);
+				fontData = GdiFontData.GetFontData(graphics, Info, externalFontCollections);
 
 				// Remove control characters and anything below a space.
 				List<char> availableCharacters = GetAvailableCharacters();
