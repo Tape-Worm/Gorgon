@@ -702,7 +702,7 @@ namespace Gorgon.Graphics.Fonts
 				lineWidth += Info.OutlineSize;
 			}
 
-			return new DX.Size2F(lineWidth, FontHeight * lineSpacing);
+			return new DX.Size2F(lineWidth, FontHeight.FastFloor() * lineSpacing);
 		}
 
 		/// <summary>
@@ -750,6 +750,7 @@ namespace Gorgon.Graphics.Fonts
 			}
 
 			string[] lines = formattedText.GetLines();
+		    float fontHeight = FontHeight.FastFloor();
 
 			if (lines.Length == 0)
 			{
@@ -758,12 +759,12 @@ namespace Gorgon.Graphics.Fonts
 
 			if (lineSpacing.EqualsEpsilon(1.0f))
 			{
-				result.Height = lines.Length * FontHeight;
+				result.Height = lines.Length * fontHeight;
 			}
 			else
 			{
 				// For a modified line spacing, we have to adjust for the last line not being affected by the line spacing.
-				result.Height = (lines.Length - 1) * (((FontHeight) * lineSpacing)) + (FontHeight);
+				result.Height = (lines.Length - 1) * (((fontHeight) * lineSpacing)) + (fontHeight);
 			}
 
 			if ((HasOutline) && (useOutline))

@@ -30,6 +30,9 @@ namespace Gorgon.Examples
 {
     public partial class FormMain : Form
     {
+        // The text to display when loading.
+        private string _loadingText;
+
         /// <summary>
         /// Property to set or return whether the please wait label is visible.
         /// </summary>
@@ -39,9 +42,28 @@ namespace Gorgon.Examples
             set => LabelPleaseWait.Visible = !value;
         }
 
+        /// <summary>
+        /// Property to set or return the text to display on the loading screen.
+        /// </summary>
+        public string LoadingText
+        {
+            get => LabelPleaseWait.Text;
+            set
+            {
+                LabelPleaseWait.Text = string.IsNullOrWhiteSpace(value) ? _loadingText : value;
+
+                LabelPleaseWait.Refresh();
+                Application.DoEvents();
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FormMain"/> class.
+        /// </summary>
         public FormMain()
         {
             InitializeComponent();
+            _loadingText = LabelPleaseWait.Text;
         }
     }
 }

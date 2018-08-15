@@ -211,6 +211,7 @@ namespace Gorgon.Renderers
                 }
 
                 Renderable.LineSpaceMultiplier = value;
+                Renderable.HasTransformChanges = true;
                 UpdateBounds();
             }
         }

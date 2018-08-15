@@ -912,7 +912,7 @@ namespace Gorgon.Renderers
             GorgonFont font = renderable.Font;
             bool drawOutlines = ((renderable.DrawMode != TextDrawMode.GlyphsOnly) && (font.HasOutline));
             int drawCount = ((drawOutlines) && (renderable.DrawMode == TextDrawMode.OutlinedGlyphs))? 2 : 1;
-            float fontHeight = font.FontHeight;
+            float fontHeight = font.FontHeight.FastFloor();
             bool hasKerning = (font.Info.UseKerningPairs) && (font.KerningPairs.Count > 0);
             IDictionary<GorgonKerningPair, int> kerningValues = font.KerningPairs;
             float lineSpaceMultiplier = renderable.LineSpaceMultiplier;

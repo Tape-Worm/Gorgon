@@ -142,5 +142,5 @@ Tequila	by [uZiMweB(http://www.zimina.net/)
 A Charming Font	by [GemFonts](http://www.moorstation.org/typoasis/designers/gemnew/)
 Sunset by [Harold's Fonts](http://haroldsfonts.com/)
 Monsters Attack ! by [The Empire of the Claw](http://www.empire-of-the-claw.com/)
-FFF Tusj by [Magnus Cederholm](http://www.formfett.net/)
+Grunja by Apostrophic Labs
 The Bold Font author: Unknown
