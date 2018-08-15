@@ -9,7 +9,7 @@
     <AssemblyName>Gorgon.Core</AssemblyName>
     <OutputType>Library</OutputType>
     <RootNamespace>Gorgon</RootNamespace>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>bin\Debug\</OutputPath>

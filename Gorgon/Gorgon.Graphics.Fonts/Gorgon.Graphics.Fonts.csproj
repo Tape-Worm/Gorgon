@@ -10,7 +10,7 @@
     <RootNamespace>Gorgon.Graphics.Fonts</RootNamespace>
     <AssemblyName>Gorgon.Graphics.Fonts</AssemblyName>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
