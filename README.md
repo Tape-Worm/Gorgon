@@ -84,11 +84,11 @@ Gorgon provides a set of libraries that are capable of handling pretty much any 
   
   IO functionality for serializing sprite and polysprite data to and from various formats using codecs.
 
-  - [x] __[Gorgon.Animation](Gorgon/Gorgon.Animation)__ 
+  - [x] __[Gorgon.Animation](Gorgon/Gorgon.Animation)__ _**(In Development)**_
   
   An animation module that allows the creation and playback of key framed animations for various types of objects. 
   
-  Animation controllers for the 2D renderer are provided by the [Gorgon.Animation.Gorgon2D](Gorgon/Gorgon.Renderers/Animation.Gorgon2D) assembly.
+  Animation controllers for the 2D renderer are provided by the [Gorgon.Animation.Gorgon2D](Gorgon/Gorgon.Renderers/Animation.Gorgon2D) assembly _**(In Development)**_.
   
   - [ ] __[TBD]__ 
   
