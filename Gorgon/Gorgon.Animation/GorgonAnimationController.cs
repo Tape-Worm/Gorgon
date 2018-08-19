@@ -26,32 +26,44 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
+using DX = SharpDX;
 using Gorgon.Animation.Properties;
-using Gorgon.Collections;
-using Gorgon.IO;
+using Gorgon.Core;
+using Gorgon.Graphics;
+using Gorgon.Graphics.Core;
+using Gorgon.Math;
 using Gorgon.Timing;
 
 namespace Gorgon.Animation
 {
-	/// <summary>
+    /// <summary>
 	/// Manages and controls animations for an object.
 	/// </summary>
 	/// <typeparam name="T">The type of object that this controller will use.  The type passed in must be a reference type (i.e. a class).</typeparam>
 	/// <remarks>
-	/// A controller will force the object to update its properties over a certain time frame (or continuously if looped).  It does this by placing its animated properties into the <see cref="GorgonAnimation{T}.Tracks"/> of an 
-	/// <see cref="GorgonAnimation{T}"/>.  These tracks will take <see cref="GorgonAnimationTrack{T}.KeyFrames"/> which correspond to the type of the property.  For example, the Angle property
-	/// of a sprite uses a floating point value, so a <see cref="GorgonKeySingle"/>, or floating point key frame should be added to the Angle track.
-	/// <para>To ensure the object will animate, it should have a <see cref="AnimatedPropertyAttribute"/> applied to one of its properties.  Otherwise, no animations will play.  Currently, Gorgon's graphical objects (e.g. sprites, text, etc...)
-	/// all have appropriate attributes assigned to their properties.</para>
-	/// <para>A user may add a custom track by inheriting from <see cref="GorgonAnimationTrack{T}"/> and creating a custom key frame type that implements <see cref="IKeyFrame"/>, and then adding a instance of the 
-	/// custom track to the animation (not the controller).</para>
+	/// <para>
+	/// A controller will update the object properties over a certain time frame (or continuously if looped).
+	/// </para>
+	/// <para>
+	/// This is done by placing its animated properties into the <see cref="Animation.Tracks"/> of an <see cref="Animation"/>. These tracks will take
+	/// <see cref="GorgonAnimationTrack{T}.KeyFrames"/> which correspond to the type of the property being animated.  For example, the Angle property of a sprite uses a floating point value, so a
+	/// <see cref="GorgonKeyFloat"/> should be added to the Angle track.
+	/// </para>
+	/// <para>
+	/// To ensure the object will animate, it should have a <see cref="PropertyTagAttribute"/> applied to at least one of its properties, specifying a tag of
+	/// <see cref="GorgonReservedPropertyTags.GorgonAnimation"/>.  Otherwise, no animations will play.
+	/// </para>
+	/// <para>
+	/// A user may add a custom track by inheriting from <see cref="GorgonAnimationTrack{T}"/> and creating a custom key frame type that implements <see cref="IGorgonKeyFrame"/>, and then adding a instance of
+	/// the  custom track to the animation (not the controller).
+	/// </para>
 	/// </remarks>
-	public class GorgonAnimationController<T>
-		: GorgonBaseNamedObjectDictionary<GorgonAnimation<T>>
-		where T : class
+	/// <seealso cref="PropertyTagAttribute"/>
+	/// <seealso cref="GorgonReservedPropertyTags"/>
+	/// <seealso cref="Animation{T}"/>
+	/// <seealso cref="GorgonKeyFloat"/>
+	public abstract class GorgonAnimationController<T>
+        where T : class
 	{
 		#region Constants.
 		// Animation data chunk.
@@ -63,102 +75,140 @@ namespace Gorgon.Animation
 		public const string AnimationVersion = "GORANM10";
 		#endregion
 
+        #region Variables.
+        // The ID for the controller.
+	    private readonly Guid _id = Guid.NewGuid();
+        // The animations available to the controller.
+	    private readonly AnimationCollection _animations;
+        // The time index.
+	    private float _time;
+        // The loop count for the current animation.
+        private int _loopCount;
+	    // The object that is to be animated.
+	    private T _animatedObject;
+        #endregion
+
 		#region Properties.
-		/// <summary>
-		/// Property to return the list of animated properties for the type specified by the generic parameter.
-		/// </summary>
-		internal IDictionary<string, GorgonAnimatedProperty> AnimatedProperties
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the type of object that this controller will animate.
-		/// </summary>
-		public Type AnimatedObjectType
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the object that is to be animated.
-		/// </summary>
-		public T AnimatedObject
-		{
-			get;
-			private set;
-		}
+	    /// <summary>
+	    /// Property to return the list of animations available to this controller.
+	    /// </summary>
+	    public IGorgonAnimationCollection Animations => _animations;
 
 		/// <summary>
 		/// Property to return the currently playing animation.
 		/// </summary>
-		public GorgonAnimation<T> CurrentAnimation
+		public IGorgonAnimation CurrentAnimation
 		{
 			get;
 			private set;
 		}
 
-		/// <summary>
-		/// Property to set or return an animation by name.
-		/// </summary>
-		public GorgonAnimation<T> this[string name]
-		{
-			get
-			{
-				return Items[name];
-			}
-			set
-			{
-				if (value == null)
-				{
-					if (Contains(name))
-					{
-						Items.Remove(name);
-					}
-					return;
-				}
+        /// <summary>
+        /// Property to set or return the current time index.
+        /// </summary>
+	    public float Time
+        {
+            get => _time;
+            set
+            {
+                if (_time.EqualsEpsilon(value))
+                {
+                    return;
+                }
 
-				if (Contains(name))
-					SetItem(name, value);
-				else
-					Add(value);
-			}
-		}
+                _time = value.Max(0);
+
+                if (CurrentAnimation == null)
+                {
+                    return;
+                }
+
+                if (((CurrentAnimation.IsLooped) && (_time > CurrentAnimation.Length)) || (value < 0))
+                {
+                    // Loop the animation.
+                    if ((CurrentAnimation.LoopCount != 0) && (_loopCount == CurrentAnimation.LoopCount))
+                    {
+                        return;
+                    }
+
+                    _loopCount++;
+                    _time = _time % CurrentAnimation.Length;
+
+                    if (CurrentAnimation.Speed < 0)
+                    {
+                        _time += CurrentAnimation.Length;
+                    }
+
+                    NotifyAnimation();
+                    return;
+                }
+
+                if (_time < 0)
+                {
+                    _time = 0;
+                }
+
+                if (_time > CurrentAnimation.Length)
+                {
+                    _time = CurrentAnimation.Length;
+                }
+
+                NotifyAnimation();
+            }
+	    }
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Function to set an item by its name.
-		/// </summary>
-		/// <param name="name">Name of the item to set.</param>
-		/// <param name="value">Value to set.</param>
-		private void SetItem(string name, GorgonAnimation<T> value)
-		{
-			if (CurrentAnimation == this[name])
-			{
-				Stop();
-			}
+        /// <summary>
+        /// Function to update the animation.
+        /// </summary>
+	    private void NotifyAnimation()
+	    {
+            // Update each track.
+	        if (TrackKeyProcessor.TryUpdateVector3(CurrentAnimation, CurrentAnimation.PositionTrack, _time, out DX.Vector3 posValue))
+	        {
+                OnPositionUpdate(_animatedObject, posValue);
+	        }
 
-			// Remove the clip from the other 
-		    if ((value != null) && (value.AnimationController != null) && (value.AnimationController != this) &&
-		        (value.AnimationController.Contains(value)))
-		    {
-		        value.AnimationController.Remove(value);
-		    }
+	        if (TrackKeyProcessor.TryUpdateVector3(CurrentAnimation, CurrentAnimation.ScaleTrack, _time, out DX.Vector3 scaleValue))
+	        {
+                OnScaleUpdate(_animatedObject, scaleValue);
+	        }
 
-		    this[name].AnimationController = this;
+	        if (TrackKeyProcessor.TryUpdateVector3(CurrentAnimation, CurrentAnimation.RotationTrack, _time, out DX.Vector3 rotValue))
+	        {
+	            OnRotationUpdate(_animatedObject, rotValue);
+	        }
 
-			UpdateItem(name, value);
-		}
+	        if (TrackKeyProcessor.TryUpdateColor(CurrentAnimation, CurrentAnimation.ColorTrack, _time, out GorgonColor colorValue))
+	        {
+                OnColorUpdate(_animatedObject, colorValue);
+	        }
 
+	        if (TrackKeyProcessor.TryUpdateRectBounds(CurrentAnimation, CurrentAnimation.RectBoundsTrack, _time, out DX.RectangleF rectValue))
+	        {
+	            OnRectBoundsUpdate(_animatedObject, rectValue);
+	        }
+
+	        if (TrackKeyProcessor.TryUpdateTexture2D(CurrentAnimation,
+	                                                 _time,
+                                                     CurrentAnimation.Texture2DTrack,
+	                                                 out GorgonTexture2DView texture,
+	                                                 out DX.RectangleF textureCoordinates,
+	                                                 out int textureArrayIndex))
+	        {
+                OnTexture2DUpdate(_animatedObject, texture, textureCoordinates, textureArrayIndex);
+	        }
+	    }
+
+        // TODO: Put into codec.
+        /*
 		/// <summary>
 		/// Function to load an animation from a stream.
 		/// </summary>
 		/// <param name="stream">Stream to load from.</param>
 		/// <returns>The animation in the stream.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the stream parameter does not contain a Gorgon animation file.
 		/// <para>-or-</para>
 		/// <para>Thrown when the name of the animation is already present in the controller animation collection.</para>
@@ -172,7 +222,7 @@ namespace Gorgon.Animation
 
 			if (stream == null)
 			{
-				throw new ArgumentNullException("stream");
+				throw new ArgumentNullException(nameof(stream));
 			}
 
 			IGorgonChunkFileReader animFile = new GorgonChunkFileReader(stream,
@@ -200,7 +250,7 @@ namespace Gorgon.Animation
 				if (Contains(animationName))
 				{
 					throw new ArgumentException(string.Format(Resources.GORANM_ANIMATION_ALREADY_EXISTS, animationName),
-												"stream");
+												nameof(stream));
 				}
 
 				animation = new GorgonAnimation<T>(this, animationName, reader.ReadSingle())
@@ -228,7 +278,7 @@ namespace Gorgon.Animation
 		/// </summary>
 		/// <param name="fileName">Path and file name for the animation file.</param>
 		/// <returns>The loaded animation from the file.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileName"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileName"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the fileName parameter is an empty string.
 		/// <para>-or-</para>
 		/// <para>Thrown when the stream parameter does not contain a Gorgon animation file.</para>
@@ -242,12 +292,12 @@ namespace Gorgon.Animation
 		{
 			if (fileName == null)
 			{
-				throw new ArgumentNullException("fileName");
+				throw new ArgumentNullException(nameof(fileName));
 			}
 
 			if (string.IsNullOrWhiteSpace(fileName))
 			{
-				throw new ArgumentException(Resources.GORANM_PARAMETER_MUST_NOT_BE_EMPTY, "fileName");
+				throw new ArgumentException(Resources.GORANM_PARAMETER_MUST_NOT_BE_EMPTY, nameof(fileName));
 			}
 
 		    using (FileStream file = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.Read))
@@ -255,25 +305,94 @@ namespace Gorgon.Animation
 		        return FromStream(file);
 		    }
 		}
+        */
+
+        /// <summary>
+        /// Function to handle when an animation is removed or the animations list is cleared.
+        /// </summary>
+        /// <param name="animation">The animation to stop, or <b>null</b> if the collection was cleared.</param>
+	    private void AnimationRemovedCleared(IGorgonAnimation animation)
+	    {
+            // If null is passed, then any playing animation should stop.
+	        if ((animation == null) || (animation == CurrentAnimation))
+	        {
+                Stop();
+	        }
+	    }
+
+	    /// <summary>
+	    /// Function called when a rectangle boundary needs to be updated on the object.
+	    /// </summary>
+	    /// <param name="animObject">The object being animated.</param>
+	    /// <param name="bounds">The new bounds.</param>
+	    protected abstract void OnRectBoundsUpdate(T animObject, DX.RectangleF bounds);
+
+	    /// <summary>
+	    /// Function called when a texture needs to be updated on the object.
+	    /// </summary>
+	    /// <param name="animObject">The object being animated.</param>
+	    /// <param name="texture">The texture to switch to.</param>
+	    /// <param name="textureCoordinates">The new texture coordinates to apply.</param>
+	    /// <param name="textureArrayIndex">The texture array index.</param>
+	    protected abstract void OnTexture2DUpdate(T animObject, GorgonTexture2DView texture, DX.RectangleF textureCoordinates, int textureArrayIndex);
+
+        /// <summary>
+        /// Function called when a position needs to be updated on the object.
+        /// </summary>
+        /// <param name="animObject">The object being animated.</param>
+        /// <param name="position">The new position.</param>
+	    protected abstract void OnPositionUpdate(T animObject, DX.Vector3 position);
+
+	    /// <summary>
+	    /// Function called when a scale needs to be updated on the object.
+	    /// </summary>
+	    /// <param name="animObject">The object being animated.</param>
+	    /// <param name="scale">The new scale.</param>
+	    protected abstract void OnScaleUpdate(T animObject, DX.Vector3 scale);
+
+	    /// <summary>
+	    /// Function called when the angle of rotation needs to be updated on the object.
+	    /// </summary>
+	    /// <param name="animObject">The object being animated.</param>
+	    /// <param name="rotation">The new angle of rotation, in degrees, on the x, y and z axes.</param>
+	    protected abstract void OnRotationUpdate(T animObject, DX.Vector3 rotation);
+
+        /// <summary>
+        /// Function called when the color needs to be updated on the object.
+        /// </summary>
+        /// <param name="animObject">The object being animated.</param>
+        /// <param name="color">The new color.</param>
+	    protected abstract void OnColorUpdate(T animObject, GorgonColor color);
 
 		/// <summary>
 		/// Function to update the currently playing animation time and bound properties.
 		/// </summary>
-		/// <remarks>This will update the animation time using the <see cref="P:GorgonLibrary.Diagnostics.GorgonTiming.Delta">Delta</see> time.  Note that the animation time is not affected by <see cref="P:GorgonLibrary.Diagnostics.GorgonTiming.ScaledDelta">ScaledDelta</see>.</remarks>
+		/// <remarks>
+		/// <para>
+		/// This will update the animation time using the <see cref="GorgonTiming.Delta">Delta</see> time.  Note that the animation time is not affected by
+		/// <see cref="GorgonTiming.ScaledDelta">ScaledDelta</see>.
+		/// </para>
+		/// <para>
+		/// Users should call this method once per frame in order to update the current state of the playing (by calling <see cref="Play(T,IGorgonAnimation)"/> animation.  If no animation is playing,
+		/// then this method will do nothing.
+		/// </para>
+		/// </remarks>
+		/// <seealso cref="GorgonTiming"/>
 		public void Update()
 		{
-		    if ((Count == 0) || (CurrentAnimation == null))
-				return;
+		    if ((Animations.Count == 0) || (CurrentAnimation == null))
+		    {
+		        return;
+		    }
 
-			float lastTime = CurrentAnimation.Time;
+		    float lastTime = Time;
 			float increment = (CurrentAnimation.Speed * GorgonTiming.Delta);
 
 			// Push the animation time forward (or backward, depending on the Speed modifier).
-			CurrentAnimation.Time += increment;
+		    Time += increment;
+		    lastTime += increment;
 
-			// If we're not looping, put the animation into a stopped state.
-			lastTime += increment;
-			
+		    // If we're not looping, put the animation into a stopped state.
 			if ((CurrentAnimation.IsLooped) || ((lastTime < CurrentAnimation.Length) && (lastTime > 0)))
 			{
 				return;
@@ -287,21 +406,21 @@ namespace Gorgon.Animation
 		/// </summary>
 		/// <param name="animatedObject">The object to apply the animation onto.</param>
 		/// <param name="animation">Animation to play.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="animation"/> or <paramref name="animatedObject"/> parameters are <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when the animation could not be found in the collection.</exception>
-		public void Play(T animatedObject, GorgonAnimation<T> animation)
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="animation"/> or <paramref name="animatedObject"/> parameters are <b>null</b>.</exception>
+		/// <exception cref="KeyNotFoundException">Thrown when the animation could not be found in the collection.</exception>
+		/// <remarks>
+		/// <para>
+		/// Applications should call this method to start an animation for an object. Otherwise, no animation will play when <see cref="Update"/> is called.
+		/// </para>
+		/// </remarks>
+		public void Play(T animatedObject, IGorgonAnimation animation)
 		{
 			if (animation == null)
 			{
-				throw new ArgumentNullException("animation");
+				throw new ArgumentNullException(nameof(animation));
 			}
 
-			if (animatedObject == null)
-			{
-				throw new ArgumentNullException("animatedObject");
-			}
-
-		    if (!Contains(animation))
+            if (!Animations.Contains(animation))
 		    {
 		        throw new KeyNotFoundException(string.Format(Resources.GORANM_ANIMATION_DOES_NOT_EXIST, animation.Name));
 		    }
@@ -318,11 +437,22 @@ namespace Gorgon.Animation
 		        Stop();
 		    }
 
-		    AnimatedObject = animatedObject;
+		    if (Time > animation.Length)
+		    {
+		        Time = animation.Length;
+		    }
+
+		    if (animation.Speed < 0)
+		    {
+		        Time = animation.Length - Time;
+		    }
+            
+		    _animatedObject = animatedObject ?? throw new ArgumentNullException(nameof(animatedObject));
 			CurrentAnimation = animation;
+		    _loopCount = 0;
 
 			// Update to the first frame.
-			CurrentAnimation.UpdateObject();
+		    NotifyAnimation();
 		}
 
 		/// <summary>
@@ -330,32 +460,39 @@ namespace Gorgon.Animation
 		/// </summary>
 		/// <param name="animatedObject">The object to apply the animation onto.</param>
 		/// <param name="animationName">Name of the animation to start playing.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="animationName"/> or <paramref name="animatedObject"/> parameters are <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the animation parameter is an empty string.</exception>
-		/// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when the animation could not be found in the collection.</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="animationName"/> or <paramref name="animatedObject"/> parameters are <b>null</b>.</exception>
+		/// <exception cref="ArgumentEmptyException">Thrown when the animation parameter is an empty string.</exception>
+		/// <exception cref="KeyNotFoundException">Thrown when the animation could not be found in the collection.</exception>
+		/// <remarks>
+		/// <para>
+		/// Applications should call this method to start an animation for an object. Otherwise, no animation will play when <see cref="Update"/> is called.
+		/// </para>
+		/// </remarks>
 		public void Play(T animatedObject, string animationName)
 		{
 			if (animationName == null)
 			{
-				throw new ArgumentNullException("animationName");
+				throw new ArgumentNullException(nameof(animationName));
 			}
 
 			if (string.IsNullOrWhiteSpace(animationName))
 			{
-				throw new ArgumentException(Resources.GORANM_PARAMETER_MUST_NOT_BE_EMPTY, "animationName");
+				throw new ArgumentEmptyException(nameof(animationName));
 			}
 
 			if (animatedObject == null)
 			{
-				throw new ArgumentNullException("animatedObject");
+				throw new ArgumentNullException(nameof(animatedObject));
 			}
 
-			if (!Contains(animationName))
+			if (!Animations.Contains(animationName))
             {
                 throw new KeyNotFoundException(string.Format(Resources.GORANM_ANIMATION_DOES_NOT_EXIST, animationName));
             }
+
+		    IGorgonAnimation animation = Animations[animationName];
       
-			Play(animatedObject, this[animationName]);
+			Play(animatedObject, animation);
 		}
 
 		/// <summary>
@@ -368,167 +505,9 @@ namespace Gorgon.Animation
 				return;
 			}
 
-			AnimatedObject = null;
+		    _loopCount = 0;
+			_animatedObject = null;
 			CurrentAnimation = null;
-		}
-
-		/// <summary>
-		/// Function to add a list of animations to the collection.
-		/// </summary>
-		/// <param name="animations">Animations to add.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="animations"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when an animation in the list already exists in this collection.</exception>
-		public void AddRange(IEnumerable<GorgonAnimation<T>> animations)
-		{
-			if (animations == null)
-			{
-				throw new ArgumentNullException("animations");
-			}
-
-			foreach (GorgonAnimation<T> item in animations)
-			{
-				Add(item);
-			}
-		}
-
-		/// <summary>
-		/// Function to add an animation to the collection.
-		/// </summary>
-		/// <param name="animation">Animation to add to the collection.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="animation"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the animation already exists in this collection.</exception>
-		public void Add(GorgonAnimation<T> animation)
-		{
-			if (animation == null)
-			{
-				throw new ArgumentNullException("animation");
-			}
-			
-		    if (Contains(animation.Name))
-		    {
-                throw new ArgumentException(string.Format(Resources.GORANM_ANIMATION_ALREADY_EXISTS, animation.Name), "animation");
-		    }
-
-			if ((animation.AnimationController != null) && (animation.AnimationController != this) &&
-				(animation.AnimationController.Contains(animation)))
-			{
-				animation.AnimationController.Remove(animation);
-				animation.AnimationController = this;
-			}
-
-			Items.Add(animation.Name, animation);
-		}
-
-		/// <summary>
-		/// Function to add an animation to the collection.
-		/// </summary>
-		/// <param name="name">Name of the animation to add.</param>
-		/// <param name="length">Length of the animation, in seconds.</param>
-		/// <returns>The newly created animation.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.
-		/// <para>-or-</para>
-		/// <para>Thrown when the animation already exists in this collection.</para></exception>
-		public GorgonAnimation<T> Add(string name, float length)
-		{
-			if (name == null)
-			{
-				throw new ArgumentNullException("name");
-			}
-
-			if (string.IsNullOrWhiteSpace(name))
-			{
-				throw new ArgumentException(Resources.GORANM_PARAMETER_MUST_NOT_BE_EMPTY, "name");
-			}
-
-			if (Contains(name))
-		    {
-		        throw new ArgumentException(string.Format(Resources.GORANM_ANIMATION_ALREADY_EXISTS, name), "name");
-		    }
-
-		    var result = new GorgonAnimation<T>(this, name, length);
-
-			Add(result);
-
-			return result;
-		}
-
-		/// <summary>
-		/// Function to clear the animation collection.
-		/// </summary>
-		public void Clear()
-		{
-			// Stop the current animation.
-			Stop();
-			
-			foreach (var item in this)
-				item.AnimationController = null;
-
-			Items.Clear();
-		}
-
-		/// <summary>
-		/// Function to remove an animation from the collection.
-		/// </summary>
-		/// <param name="animation">Animation to remove.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="animation"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when the animation was not found in the collection.</exception>
-		public void Remove(GorgonAnimation<T> animation)
-		{
-			if (animation == null)
-			{
-				throw new ArgumentNullException("animation");
-			}
-			
-		    if (!Contains(animation))
-		    {
-		        throw new KeyNotFoundException(string.Format(Resources.GORANM_ANIMATION_DOES_NOT_EXIST, animation.Name));
-		    }
-
-			if (CurrentAnimation == animation)
-			{
-				Stop();
-			}
-
-			animation.AnimationController = null;
-
-		    RemoveItem(animation);
-		}
-
-		/// <summary>
-		/// Function to remove an animation from the collection.
-		/// </summary>
-		/// <param name="animationName">Name of the animation to remove.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="animationName"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the animation parameter is an empty string.</exception>
-		/// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when the animation was not found in the collection.</exception>
-		public void Remove(string animationName)
-		{
-			GorgonAnimation<T> animation;
-
-			if (animationName == null)
-			{
-				throw new ArgumentNullException("animationName");
-			}
-
-			if (string.IsNullOrWhiteSpace(animationName))
-			{
-				throw new ArgumentException(Resources.GORANM_PARAMETER_MUST_NOT_BE_EMPTY, "animationName");
-			}
-
-			if (!Items.TryGetValue(animationName, out animation))
-			{
-		        throw new KeyNotFoundException(string.Format(Resources.GORANM_ANIMATION_DOES_NOT_EXIST, animationName));
-		    }
-
-			if (CurrentAnimation == animation)
-			{
-				Stop();
-			}
-
-			animation.AnimationController = null;
-
-			Items.Remove(animationName);
 		}
 		#endregion
 
@@ -536,16 +515,9 @@ namespace Gorgon.Animation
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonAnimationController{T}" /> class.
 		/// </summary>
-		public GorgonAnimationController()
-			: base(false)
+		protected GorgonAnimationController()
 		{
-			AnimatedObjectType = typeof(T);
-
-			AnimatedProperties = (from property in AnimatedObjectType.GetProperties()
-			                      let attrib = property.GetCustomAttribute<AnimatedPropertyAttribute>(true)
-			                      where attrib != null
-			                      select new GorgonAnimatedProperty(property, attrib.DisplayName, attrib.DataType))
-				.ToDictionary(key => key.Property.Name, value => value);
+            _animations = new AnimationCollection(AnimationRemovedCleared);
 		}
 		#endregion
 	}

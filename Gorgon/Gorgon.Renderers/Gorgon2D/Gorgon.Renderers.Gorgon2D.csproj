@@ -154,6 +154,10 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Gorgon.Animation\Gorgon.Animation.csproj">
+      <Project>{8cfa9634-9ed5-4d30-a9b1-6cbae73aa1ca}</Project>
+      <Name>Gorgon.Animation</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Gorgon.Core\Gorgon.Core.csproj">
       <Project>{933569ed-52a9-4232-a929-1d4c4489b5a1}</Project>
       <Name>Gorgon.Core</Name>
@@ -172,6 +176,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Animation\" />
     <Folder Include="__OLDE__\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

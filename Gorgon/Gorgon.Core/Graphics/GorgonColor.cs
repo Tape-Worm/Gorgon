@@ -30,6 +30,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using Gorgon.Core;
+using Gorgon.Math;
 using Gorgon.Properties;
 using DX = SharpDX;
 
@@ -385,6 +386,33 @@ namespace Gorgon.Graphics
 		{
 		    return string.Format(Resources.GOR_TOSTR_GORGONCOLOR, Red, Green, Blue, Alpha);
 		}
+
+        /// <summary>
+        /// Function to clamp the color ranges from 0 to 1.
+        /// </summary>
+        /// <param name="color">The color to clamp.</param>
+        /// <returns>The clamped color.</returns>
+	    public static GorgonColor Clamp(GorgonColor color)
+	    {
+	        return new GorgonColor(color.Red.Max(0).Min(1),
+	                               color.Green.Max(0).Min(1),
+	                               color.Blue.Max(0).Min(1),
+	                               color.Alpha.Max(0).Min(1));
+	    }
+
+	    /// <summary>
+	    /// Function to clamp the color ranges from 0 to 1.
+	    /// </summary>
+	    /// <param name="color">The color to clamp.</param>
+	    /// <param name="result">The clamped color.</param>
+	    /// <returns>The clamped color.</returns>
+	    public static void Clamp(in GorgonColor color, out GorgonColor result)
+	    {
+	        result = new GorgonColor(color.Red.Max(0).Min(1),
+	                                 color.Green.Max(0).Min(1),
+	                                 color.Blue.Max(0).Min(1),
+	                                 color.Alpha.Max(0).Min(1));
+	    }
 
         /// <summary>
 		/// Function to apply an alpha value to the specified <see cref="GorgonColor"/>.

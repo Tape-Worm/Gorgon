@@ -20,38 +20,55 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Wednesday, October 3, 2012 9:16:10 PM
+// Created: Wednesday, October 3, 2012 9:14:18 PM
 // 
 #endregion
 
 using System;
-using Gorgon.Graphics;
+using DX = SharpDX;
+using Gorgon.Graphics.Core;
 
 namespace Gorgon.Animation
 {
-    /// <summary>
-    /// A key frame that manipulates a GorgonColor data type.
-    /// </summary>
-    public class GorgonKeyGorgonColor
+	/// <summary>
+	/// A key frame that manipulates a 2D texture data type.
+	/// </summary>
+	public class GorgonKeyTexture2D
 		: IGorgonKeyFrame
 	{
 		#region Variables.
-        // The value for the key frame.
-	    private GorgonColor _value = GorgonColor.White;
+        // The texture coordinates.
+	    private DX.RectangleF _textureCoordinates;
+        // The texture array index.
+	    private int _textureArrayIndex;
         #endregion
 
         #region Properties.
 	    /// <summary>
-	    /// Property to set or return the value to store in the key frame.
+	    /// Property to set or return the texture view to use.
 	    /// </summary>
-	    public ref GorgonColor Value => ref _value;
+	    public GorgonTexture2DView Value
+	    {
+	        get;
+	        set;
+	    }
+
+        /// <summary>
+        /// Property to return the texture array index to use on a texture array.
+        /// </summary>
+	    public ref int TextureArrayIndex => ref _textureArrayIndex;
 
 	    /// <summary>
-	    /// Property to return the time for the key frame in the animation.
+	    /// Property to return the texture coordinates.
+	    /// </summary>
+	    public ref DX.RectangleF TextureCoordinates => ref _textureCoordinates;
+
+	    /// <summary>
+	    /// Property to return the time at which the key frame is stored.
 	    /// </summary>
 	    public float Time
 	    {
-	        get;
+            get;
 	    }
 
 	    /// <summary>
@@ -60,32 +77,35 @@ namespace Gorgon.Animation
 	    public Type DataType
 	    {
 	        get;
-	    } = typeof(GorgonColor);
+	    } = typeof(GorgonTexture2DView);
 		#endregion
 
         #region Methods.
 	    /// <summary>
-	    /// Function to clone an object.
+	    /// Function to clone the key.
 	    /// </summary>
-	    /// <returns>The cloned object.</returns>
+	    /// <returns>The cloned key.</returns>
 	    public IGorgonKeyFrame Clone()
 	    {
-	        return new GorgonKeyGorgonColor(Time, Value);
+	        return new GorgonKeyTexture2D(Time, Value, _textureCoordinates, _textureArrayIndex);
 	    }
         #endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonKeyGorgonColor" /> struct.
+		/// Initializes a new instance of the <see cref="GorgonKeyTexture2D" /> struct.
 		/// </summary>
 		/// <param name="time">The time for the key frame.</param>
 		/// <param name="value">The value to apply to the key frame.</param>
-		public GorgonKeyGorgonColor(float time, GorgonColor value)
+		/// <param name="textureCoordinates">Region on the texture to update.</param>
+		/// <param name="textureArrayIndex">The texture array index to use with a texture array.</param>
+		public GorgonKeyTexture2D(float time, GorgonTexture2DView value, DX.RectangleF textureCoordinates, int textureArrayIndex)
 		{
 			Time = time;
 			Value = value;
+			_textureCoordinates = textureCoordinates;
+		    _textureArrayIndex = textureArrayIndex;
 		}
-
-        #endregion
-    }
+		#endregion
+	}
 }

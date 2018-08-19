@@ -1,7 +1,7 @@
-﻿#region MIT.
+﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2005 Michael Winsor
+// Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,58 +20,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Saturday, October 04, 2012 6:45:10 AM
+// Created: August 15, 2018 10:57:48 PM
 // 
 #endregion
 
-//#define BETA
-
 using System.Reflection;
-using System.Resources;
 using System.Runtime.InteropServices;
 
-//
-// General Information about an assembly is controlled through the following 
+// General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-//
-#if DEBUG
-[assembly: AssemblyTitle("Gorgon Animation [DEBUG VERSION]")]
-[assembly: AssemblyDescription("An interface used to animate objects. [DEBUG VERSION]")]
-[assembly: AssemblyConfiguration("DEBUG")]
-#else
-[assembly: AssemblyTitle("Gorgon Animation")]
-[assembly: AssemblyDescription("An interface used to animate objects.")]
-[assembly: AssemblyConfiguration("RELEASE")]
-#endif
-[assembly: AssemblyCompany("Michael Winsor")]
-#if DEBUG
-[assembly: AssemblyProduct("Gorgon [DEBUG VERSON]")]
-#else
-[assembly: AssemblyProduct("Gorgon")]
-#endif
-[assembly: AssemblyCopyright("Copyright © Michael Winsor 2012")]
-[assembly: AssemblyTrademark("")]
-
-// Setting ComVisible to false makes the types in this assembly not visible 
-// to COM components.  If you need to access a type in this assembly from 
-// COM, set the ComVisible attribute to true on that type.
-[assembly: ComVisible(false)]
+[assembly: AssemblyTitle("Gorgon.Animation")]
+[assembly: AssemblyDescription("An interface used to provide animation to specific property types on objects.")]
+[assembly: AssemblyCulture("")]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("850FCA24-C086-4396-A304-42454546EF53")]
-
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("2.0.*")]
-[assembly: AssemblyFileVersion("2.0.0.0")]
-[assembly: NeutralResourcesLanguage("en-US")]
+[assembly: Guid("8cfa9634-9ed5-4d30-a9b1-6cbae73aa1ca")]

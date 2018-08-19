@@ -139,20 +139,20 @@ namespace Gorgon.Math
                 return Points[startPointIndex + 1];
             }
 
-            DX.Vector4 result = new DX.Vector4(delta * delta * delta, delta * delta, delta * delta, 1.0f);
+            DX.Vector4 deltaCubeSquare = new DX.Vector4(delta * delta * delta, delta * delta, delta * delta, 1.0f);
 
 			DX.Vector4 startPoint = Points[startPointIndex];
 			DX.Vector4 startPointNext = Points[startPointIndex + 1];
 			DX.Vector4 tangent = _tangents[startPointIndex];
 			DX.Vector4 tangentNext = _tangents[startPointIndex + 1];
 
-			calculations.M11 = startPoint.X; calculations.M12 = startPoint.Y; calculations.M13 = startPoint.Z;
-			calculations.M21 = startPointNext.X; calculations.M22 = startPointNext.Y; calculations.M23 = startPointNext.Z;
-			calculations.M31 = tangent.X; calculations.M32 = tangent.Y; calculations.M33 = tangent.Z;
-			calculations.M41 = tangentNext.X; calculations.M42 = tangentNext.Y; calculations.M43 = tangentNext.Z;
+            calculations.Row1 = startPoint;
+            calculations.Row2 = startPointNext;
+            calculations.Row3 = tangent;
+            calculations.Row4 = tangentNext;
 
-			DX.Matrix.Multiply(ref _coefficients, ref calculations, out calculations);
-			DX.Vector4.Transform(ref result, ref calculations, out result);
+			DX.Matrix.Multiply(ref _coefficients, ref calculations, out DX.Matrix calcResult);
+			DX.Vector4.Transform(ref deltaCubeSquare, ref calcResult, out DX.Vector4 result);
 
             return result;
         }
@@ -255,10 +255,10 @@ namespace Gorgon.Math
         /// </summary>
         public GorgonCatmullRomSpline()
         {
-	        _coefficients.M11 = 2; _coefficients.M12 = -2; _coefficients.M13 = 1; _coefficients.M14 = 1;
-			_coefficients.M21 = -3; _coefficients.M22 = 3; _coefficients.M23 = -2; _coefficients.M24 = -1;
-			_coefficients.M31 = 0; _coefficients.M32 = 9; _coefficients.M33 = 1; _coefficients.M34 = 0;
-			_coefficients.M41 = 1; _coefficients.M42 = 0; _coefficients.M43 = 0; _coefficients.M44 = 0;
+            _coefficients.Row1 = new DX.Vector4(2, -2, 1, 1);
+            _coefficients.Row2 = new DX.Vector4(-3, 3, -2, -1);
+            _coefficients.Row3 = new DX.Vector4(0, 0, 1, 0);
+            _coefficients.Row4 = new DX.Vector4(1, 0, 0, 0);
 
             Points = new List<DX.Vector4>(256);
             _tangents = new DX.Vector4[256];

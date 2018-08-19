@@ -26,17 +26,15 @@
 
 using System;
 using Gorgon.Core;
-using Gorgon.IO;
 
 namespace Gorgon.Animation
 {
 	/// <summary>
 	/// An animation key frame.
 	/// </summary>
-	public interface IKeyFrame
-		: IGorgonCloneable<IKeyFrame>
+	public interface IGorgonKeyFrame
+        : IGorgonCloneable<IGorgonKeyFrame>
 	{
-		#region Properties.
 		/// <summary>
 		/// Property to return the time at which the key frame is stored.
 		/// </summary>
@@ -52,20 +50,5 @@ namespace Gorgon.Animation
 		{
 			get;
 		}
-		#endregion
-
-		#region Methods.
-		/// <summary>
-		/// Function to retrieve key frame data from data chunk.
-		/// </summary>
-		/// <param name="chunk">Chunk to read.</param>
-		void FromChunk(GorgonBinaryReader chunk);
-
-		/// <summary>
-		/// Function to send the key frame data to the data chunk.
-		/// </summary>
-		/// <param name="chunk">Chunk to write.</param>
-		void ToChunk(GorgonBinaryWriter chunk);
-		#endregion
 	}
 }
