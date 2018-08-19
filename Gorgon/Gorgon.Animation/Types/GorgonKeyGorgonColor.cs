@@ -30,8 +30,18 @@ using Gorgon.Graphics;
 namespace Gorgon.Animation
 {
     /// <summary>
-    /// A key frame that manipulates a GorgonColor data type.
+    /// An animation key frame for a <see cref="GorgonColor"/> value.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A key frame represents a value for an object property at a given time. 
+    /// </para>
+    /// <para>
+    /// The track that the key frame is on is used to interpolate the value between key frames. This method makes it so that only a few keyframes are required for an animation rather then setting a value
+    /// for every time index.
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="IGorgonTrack{T}"/>
     public class GorgonKeyGorgonColor
 		: IGorgonKeyFrame
 	{

@@ -30,9 +30,22 @@ using Gorgon.Graphics.Core;
 
 namespace Gorgon.Animation
 {
-	/// <summary>
-	/// A key frame that manipulates a 2D texture data type.
-	/// </summary>
+    /// <summary>
+    /// An animation key frame for a <see cref="GorgonTexture2DView"/>, texture coordinates and a texture array index.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A key frame represents a value for an object property at a given time. 
+    /// </para>
+    /// <para>
+    /// The track that the key frame is on is used to interpolate the value between key frames. This method makes it so that only a few keyframes are required for an animation rather then setting a value
+    /// for every time index.
+    /// </para>
+    /// <para>
+    /// The track for this key frame does not use interpolation. This means that there is no smooth transition between values and each value is "snapped" to when animating.
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="IGorgonTrack{T}"/>
 	public class GorgonKeyTexture2D
 		: IGorgonKeyFrame
 	{

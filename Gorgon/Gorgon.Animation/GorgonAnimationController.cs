@@ -27,8 +27,6 @@
 using System;
 using System.Collections.Generic;
 using DX = SharpDX;
-using Gorgon.Animation.Properties;
-using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
@@ -37,31 +35,32 @@ using Gorgon.Timing;
 namespace Gorgon.Animation
 {
     /// <summary>
-	/// Manages and controls animations for an object.
+	/// Base class for applying animations to an object.
 	/// </summary>
 	/// <typeparam name="T">The type of object that this controller will use.  The type passed in must be a reference type (i.e. a class).</typeparam>
 	/// <remarks>
 	/// <para>
-	/// A controller will update the object properties over a certain time frame (or continuously if looped).
+	/// A controller will update the object properties over a certain time frame (or continuously if looped) using a <see cref="IGorgonAnimation"/>.
 	/// </para>
 	/// <para>
-	/// This is done by placing its animated properties into the <see cref="Animation.Tracks"/> of an <see cref="Animation"/>. These tracks will take
-	/// <see cref="GorgonAnimationTrack{T}.KeyFrames"/> which correspond to the type of the property being animated.  For example, the Angle property of a sprite uses a floating point value, so a
-	/// <see cref="GorgonKeyFloat"/> should be added to the Angle track.
+	/// This controller will advance the time for an animation, and coordinate the changes from interpolation (if supported) between <see cref="IGorgonKeyFrame"/> items on a <see cref="IGorgonTrack{T}"/>.
+	/// The values from the animation will then by applied to the object properties.
 	/// </para>
 	/// <para>
-	/// To ensure the object will animate, it should have a <see cref="PropertyTagAttribute"/> applied to at least one of its properties, specifying a tag of
-	/// <see cref="GorgonReservedPropertyTags.GorgonAnimation"/>.  Otherwise, no animations will play.
+	/// Applications can force the playing animation to jump to a specific <see cref="Time"/>, or increment the time step smoothly using the <see cref="Update"/> method.
 	/// </para>
 	/// <para>
-	/// A user may add a custom track by inheriting from <see cref="GorgonAnimationTrack{T}"/> and creating a custom key frame type that implements <see cref="IGorgonKeyFrame"/>, and then adding a instance of
-	/// the  custom track to the animation (not the controller).
+	/// <note type="important">
+	/// Please note that this is an abstract class. Applications will provide specific controllers for specific types.
+	/// </note>
 	/// </para>
+    /// <para>
+    /// <note type="information">
+    /// Because this is a base class, not all controllers will support all track types, or even components of a track key frame.
+    /// </note>
+    /// </para>
 	/// </remarks>
-	/// <seealso cref="PropertyTagAttribute"/>
-	/// <seealso cref="GorgonReservedPropertyTags"/>
-	/// <seealso cref="Animation{T}"/>
-	/// <seealso cref="GorgonKeyFloat"/>
+	/// <seealso cref="IGorgonAnimation"/>
 	public abstract class GorgonAnimationController<T>
         where T : class
 	{
@@ -76,10 +75,6 @@ namespace Gorgon.Animation
 		#endregion
 
         #region Variables.
-        // The ID for the controller.
-	    private readonly Guid _id = Guid.NewGuid();
-        // The animations available to the controller.
-	    private readonly AnimationCollection _animations;
         // The time index.
 	    private float _time;
         // The loop count for the current animation.
@@ -89,11 +84,6 @@ namespace Gorgon.Animation
         #endregion
 
 		#region Properties.
-	    /// <summary>
-	    /// Property to return the list of animations available to this controller.
-	    /// </summary>
-	    public IGorgonAnimationCollection Animations => _animations;
-
 		/// <summary>
 		/// Property to return the currently playing animation.
 		/// </summary>
@@ -201,125 +191,6 @@ namespace Gorgon.Animation
 	        }
 	    }
 
-        // TODO: Put into codec.
-        /*
-		/// <summary>
-		/// Function to load an animation from a stream.
-		/// </summary>
-		/// <param name="stream">Stream to load from.</param>
-		/// <returns>The animation in the stream.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the stream parameter does not contain a Gorgon animation file.
-		/// <para>-or-</para>
-		/// <para>Thrown when the name of the animation is already present in the controller animation collection.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when a track type cannot be associated with a property on the object type that the controller was declared with.</para>
-		/// </exception>
-		/// <exception cref="System.InvalidCastException">Thrown when the animation being loaded is for a different type than the controller was declared with.</exception>
-		public GorgonAnimation<T> FromStream(Stream stream)
-		{
-			GorgonAnimation<T> animation;
-
-			if (stream == null)
-			{
-				throw new ArgumentNullException(nameof(stream));
-			}
-
-			IGorgonChunkFileReader animFile = new GorgonChunkFileReader(stream,
-			                                                          new[]
-			                                                          {
-				                                                          AnimationVersion.ChunkID()
-			                                                          });
-
-			try
-			{
-				animFile.Open();
-				GorgonBinaryReader reader = animFile.OpenChunk(AnimationChunk);
-
-				// Ensure this type matches the data in the animation file.
-				string typeString = reader.ReadString();
-				if (!string.Equals(typeString, AnimatedObjectType.FullName, StringComparison.OrdinalIgnoreCase))
-				{
-					throw new InvalidCastException(string.Format(Resources.GORANM_ANIMATION_TYPE_MISMATCH,
-																 typeString,
-																 AnimatedObjectType.FullName));
-				}
-
-				// Read name.
-				string animationName = reader.ReadString();
-				if (Contains(animationName))
-				{
-					throw new ArgumentException(string.Format(Resources.GORANM_ANIMATION_ALREADY_EXISTS, animationName),
-												nameof(stream));
-				}
-
-				animation = new GorgonAnimation<T>(this, animationName, reader.ReadSingle())
-				            {
-					            IsLooped = reader.ReadBoolean()
-				            };
-
-				animFile.CloseChunk();
-
-				// Read tracks.
-				GorgonAnimationTrack<T>.FromChunk(animFile, animation);
-			}
-			finally
-			{
-				animFile.Close();
-			}
-
-			Add(animation);
-
-			return animation;
-		}
-
-		/// <summary>
-		/// Function to load an animation from a file.
-		/// </summary>
-		/// <param name="fileName">Path and file name for the animation file.</param>
-		/// <returns>The loaded animation from the file.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileName"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the fileName parameter is an empty string.
-		/// <para>-or-</para>
-		/// <para>Thrown when the stream parameter does not contain a Gorgon animation file.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when the name of the animation is already present in the controller animation collection.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when a track type cannot be associated with a property on the object type that the controller was declared with.</para>
-		/// </exception>
-		/// <exception cref="System.InvalidCastException">Thrown when the animation being loaded is for a different type than the controller was declared with.</exception>
-		public GorgonAnimation<T> FromFile(string fileName)
-		{
-			if (fileName == null)
-			{
-				throw new ArgumentNullException(nameof(fileName));
-			}
-
-			if (string.IsNullOrWhiteSpace(fileName))
-			{
-				throw new ArgumentException(Resources.GORANM_PARAMETER_MUST_NOT_BE_EMPTY, nameof(fileName));
-			}
-
-		    using (FileStream file = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.Read))
-		    {
-		        return FromStream(file);
-		    }
-		}
-        */
-
-        /// <summary>
-        /// Function to handle when an animation is removed or the animations list is cleared.
-        /// </summary>
-        /// <param name="animation">The animation to stop, or <b>null</b> if the collection was cleared.</param>
-	    private void AnimationRemovedCleared(IGorgonAnimation animation)
-	    {
-            // If null is passed, then any playing animation should stop.
-	        if ((animation == null) || (animation == CurrentAnimation))
-	        {
-                Stop();
-	        }
-	    }
-
 	    /// <summary>
 	    /// Function called when a rectangle boundary needs to be updated on the object.
 	    /// </summary>
@@ -380,7 +251,7 @@ namespace Gorgon.Animation
 		/// <seealso cref="GorgonTiming"/>
 		public void Update()
 		{
-		    if ((Animations.Count == 0) || (CurrentAnimation == null))
+		    if (CurrentAnimation == null)
 		    {
 		        return;
 		    }
@@ -402,10 +273,10 @@ namespace Gorgon.Animation
 		}
 		
 		/// <summary>
-		/// Function to set an animation playing.
+		/// Function to set an animation playing on an object.
 		/// </summary>
 		/// <param name="animatedObject">The object to apply the animation onto.</param>
-		/// <param name="animation">Animation to play.</param>
+		/// <param name="animation">The <see cref="IGorgonAnimation"/> to play.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="animation"/> or <paramref name="animatedObject"/> parameters are <b>null</b>.</exception>
 		/// <exception cref="KeyNotFoundException">Thrown when the animation could not be found in the collection.</exception>
 		/// <remarks>
@@ -419,11 +290,6 @@ namespace Gorgon.Animation
 			{
 				throw new ArgumentNullException(nameof(animation));
 			}
-
-            if (!Animations.Contains(animation))
-		    {
-		        throw new KeyNotFoundException(string.Format(Resources.GORANM_ANIMATION_DOES_NOT_EXIST, animation.Name));
-		    }
 
 			// This animation is already playing.
 		    if (animation == CurrentAnimation)
@@ -456,46 +322,6 @@ namespace Gorgon.Animation
 		}
 
 		/// <summary>
-		/// Function to set an animation playing.
-		/// </summary>
-		/// <param name="animatedObject">The object to apply the animation onto.</param>
-		/// <param name="animationName">Name of the animation to start playing.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="animationName"/> or <paramref name="animatedObject"/> parameters are <b>null</b>.</exception>
-		/// <exception cref="ArgumentEmptyException">Thrown when the animation parameter is an empty string.</exception>
-		/// <exception cref="KeyNotFoundException">Thrown when the animation could not be found in the collection.</exception>
-		/// <remarks>
-		/// <para>
-		/// Applications should call this method to start an animation for an object. Otherwise, no animation will play when <see cref="Update"/> is called.
-		/// </para>
-		/// </remarks>
-		public void Play(T animatedObject, string animationName)
-		{
-			if (animationName == null)
-			{
-				throw new ArgumentNullException(nameof(animationName));
-			}
-
-			if (string.IsNullOrWhiteSpace(animationName))
-			{
-				throw new ArgumentEmptyException(nameof(animationName));
-			}
-
-			if (animatedObject == null)
-			{
-				throw new ArgumentNullException(nameof(animatedObject));
-			}
-
-			if (!Animations.Contains(animationName))
-            {
-                throw new KeyNotFoundException(string.Format(Resources.GORANM_ANIMATION_DOES_NOT_EXIST, animationName));
-            }
-
-		    IGorgonAnimation animation = Animations[animationName];
-      
-			Play(animatedObject, animation);
-		}
-
-		/// <summary>
 		/// Function to stop the currently playing animation.
 		/// </summary>
 		public void Stop()
@@ -508,16 +334,6 @@ namespace Gorgon.Animation
 		    _loopCount = 0;
 			_animatedObject = null;
 			CurrentAnimation = null;
-		}
-		#endregion
-
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonAnimationController{T}" /> class.
-		/// </summary>
-		protected GorgonAnimationController()
-		{
-            _animations = new AnimationCollection(AnimationRemovedCleared);
 		}
 		#endregion
 	}

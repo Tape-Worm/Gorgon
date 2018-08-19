@@ -30,7 +30,7 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Gorgon2D.IO")]
+[assembly: AssemblyTitle("Gorgon.IO.Gorgon2D")]
 [assembly: AssemblyDescription("Provides IO functionality used to serialize and deserialize 2D objects using streams, and the Gorgon file system.")]
 [assembly: AssemblyCulture("")]
 

@@ -27,12 +27,12 @@
 using System.Collections.Generic;
 using Gorgon.Math;
 
-namespace Gorgon.Animation
+namespace Gorgon.Collections
 {
     /// <summary>
     /// A comparer for comparing floating point values using epsilon equality.
     /// </summary>
-    internal class EpsilonFloatComparer
+    public class GorgonEpsilonFloatComparer
         : IComparer<float>
     {
         /// <summary>

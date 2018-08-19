@@ -124,6 +124,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Animation", "Gorgon\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAnimationTrackInterpolation", "Test\TestAnimationTrackInterpolation\TestAnimationTrackInterpolation.csproj", "{A46056E6-4A4F-410B-AAFB-D3C7BFB9ED89}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Animation.Gorgon2D", "Gorgon\Gorgon.Renderers\Animation.Gorgon2D\Gorgon.Animation.Gorgon2D.csproj", "{06F3A8A5-5C46-4F5A-8B17-DDBDCDD49745}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -455,6 +457,12 @@ Global
 		{A46056E6-4A4F-410B-AAFB-D3C7BFB9ED89}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A46056E6-4A4F-410B-AAFB-D3C7BFB9ED89}.ReleaseAndDeploy|Any CPU.ActiveCfg = Release|Any CPU
 		{A46056E6-4A4F-410B-AAFB-D3C7BFB9ED89}.ReleaseAndDeploy|Any CPU.Build.0 = Release|Any CPU
+		{06F3A8A5-5C46-4F5A-8B17-DDBDCDD49745}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06F3A8A5-5C46-4F5A-8B17-DDBDCDD49745}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06F3A8A5-5C46-4F5A-8B17-DDBDCDD49745}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06F3A8A5-5C46-4F5A-8B17-DDBDCDD49745}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06F3A8A5-5C46-4F5A-8B17-DDBDCDD49745}.ReleaseAndDeploy|Any CPU.ActiveCfg = Release|Any CPU
+		{06F3A8A5-5C46-4F5A-8B17-DDBDCDD49745}.ReleaseAndDeploy|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

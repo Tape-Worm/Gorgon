@@ -26,7 +26,6 @@
 
 using System.Collections.Generic;
 using DX = SharpDX;
-using Gorgon.Animation.Properties;
 using Gorgon.Core;
 using Gorgon.Math;
 

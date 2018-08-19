@@ -27,7 +27,6 @@
 using System;
 using System.Linq;
 using Gorgon.Animation.Properties;
-using Gorgon.Animation._Internal;
 using Gorgon.Core;
 using Gorgon.Math;
 
@@ -36,6 +35,11 @@ namespace Gorgon.Animation
     /// <summary>
     /// A builder used to create <see cref="IGorgonAnimation"/> objects.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This builder is used to create and configure an animation with key frames for the various tracks. 
+    /// </para>
+    /// </remarks>
     public class GorgonAnimationBuilder
         :  IGorgonFluentBuilder<GorgonAnimationBuilder, IGorgonAnimation>
     {
@@ -65,60 +69,114 @@ namespace Gorgon.Animation
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to edit the <see cref="IGorgonAnimation.PositionTrack">position track</see> of an animation.
+        /// </summary>
+        /// <returns>A <see cref="IGorgonTrackKeyBuilder{GorgonKeyVector3}"/> fluent interface for building track keys.</returns>
         public IGorgonTrackKeyBuilder<GorgonKeyVector3> EditPositions()
         {
             return _trackPositions;
         }
 
+        /// <summary>
+        /// Function to edit the <see cref="IGorgonAnimation.ScaleTrack">scaling track</see> of an animation.
+        /// </summary>
+        /// <returns>A <see cref="IGorgonTrackKeyBuilder{GorgonKeyVector3}"/> fluent interface for building track keys.</returns>
         public IGorgonTrackKeyBuilder<GorgonKeyVector3> EditScale()
         {
             return _trackScale;
         }
 
+        /// <summary>
+        /// Function to edit the <see cref="IGorgonAnimation.RotationTrack">rotation track</see> of an animation.
+        /// </summary>
+        /// <returns>A <see cref="IGorgonTrackKeyBuilder{GorgonKeyVector3}"/> fluent interface for building track keys.</returns>
+        /// <remarks>
+        /// <para>
+        /// The values for the key frame use a 3 component vector representing the X, Y, and Z axis of rotation. Each axis is in degrees.
+        /// </para>
+        /// </remarks>
         public IGorgonTrackKeyBuilder<GorgonKeyVector3> EditRotation()
         {
             return _trackRotation;
         }
 
+        /// <summary>
+        /// Function to edit the <see cref="IGorgonAnimation.ColorTrack">color track</see> of an animation.
+        /// </summary>
+        /// <returns>A <see cref="IGorgonTrackKeyBuilder{GorgonKeyGorgonColor}"/> fluent interface for building track keys.</returns>
         public IGorgonTrackKeyBuilder<GorgonKeyGorgonColor> EditColors()
         {
             return _trackColors;
         }
 
+        /// <summary>
+        /// Function to edit the <see cref="IGorgonAnimation.RectBoundsTrack">rectangular boundaries track</see> of an animation.
+        /// </summary>
+        /// <returns>A <see cref="IGorgonTrackKeyBuilder{GorgonKeyRectangle}"/> fluent interface for building track keys.</returns>
+        /// <remarks>
+        /// <para>
+        /// Some controllers will not use this track, while others may only use the width/height.
+        /// </para>
+        /// </remarks>
         public IGorgonTrackKeyBuilder<GorgonKeyRectangle> EditRectangularBounds()
         {
             return _trackRectBounds;
         }
 
+        /// <summary>
+        /// Function to edit the <see cref="IGorgonAnimation.Texture2DTrack">rectangular boundaries track</see> of an animation.
+        /// </summary>
+        /// <returns>A <see cref="IGorgonTrackKeyBuilder{GorgonKeyTexture2D}"/> fluent interface for building track keys.</returns>
         public IGorgonTrackKeyBuilder<GorgonKeyTexture2D> Edit2DTexture()
         {
             return _trackTexture2D;
         }
 
+        /// <summary>
+        /// Function to change the interpolation mode of the <see cref="IGorgonAnimation.PositionTrack"/>.
+        /// </summary>
+        /// <returns>The fluent interface for this builder.</returns>
         public GorgonAnimationBuilder PositionInterpolationMode(TrackInterpolationMode mode)
         {
             _positionMode = mode;
             return this;
         }
 
+        /// <summary>
+        /// Function to change the interpolation mode of the <see cref="IGorgonAnimation.RotationTrack"/>.
+        /// </summary>
+        /// <returns>The fluent interface for this builder.</returns>
         public GorgonAnimationBuilder RotationInterpolationMode(TrackInterpolationMode mode)
         {
             _rotationMode = mode;
             return this;
         }
 
+        /// <summary>
+        /// Function to change the interpolation mode of the <see cref="IGorgonAnimation.ScaleTrack"/>.
+        /// </summary>
+        /// <returns>The fluent interface for this builder.</returns>
         public GorgonAnimationBuilder ScaleInterpolationMode(TrackInterpolationMode mode)
         {
             _scaleMode = mode;
             return this;
         }
 
+        /// <summary>
+        /// Function to change the interpolation mode of the <see cref="IGorgonAnimation.ColorTrack"/>.
+        /// </summary>
+        /// <returns>The fluent interface for this builder.</returns>
         public GorgonAnimationBuilder ColorInterpolationMode(TrackInterpolationMode mode)
         {
             _colorMode = mode;
             return this;
         }
 
+        /// <summary>
+        /// Function to change the interpolation mode of the <see cref="IGorgonAnimation.RectBoundsTrack"/>.
+        /// </summary>
+        /// <returns>The fluent interface for this builder.</returns>
         public GorgonAnimationBuilder RectBoundsInterpolationMode(TrackInterpolationMode mode)
         {
             _rectBoundsMode = mode;
@@ -159,34 +217,30 @@ namespace Gorgon.Animation
                                         .Max(item => item.Time);
             }
 
-            var newAnimation = new Animation(name, length.Value)
-                               {
-                                   PositionTrack = new Vector3Track(_trackPositions.GetSortedKeys(length.Value), Resources.GORANM_NAME_POSITION)
-                                                   {
-                                                       InterpolationMode = _positionMode
-                                                   },
-                                   ColorTrack = new ColorTrack(_trackColors.GetSortedKeys(length.Value))
-                                                {
-                                                    InterpolationMode = _colorMode
-                                                },
-                                   RectBoundsTrack = new RectBoundsTrack(_trackRectBounds.GetSortedKeys(length.Value))
-                                                     {
-                                                         InterpolationMode = _rectBoundsMode
-                                                     },
-                                   Texture2DTrack = new Texture2DViewTrack(_trackTexture2D.GetSortedKeys(length.Value)),
-                                   ScaleTrack = new Vector3Track(_trackScale.GetSortedKeys(length.Value), Resources.GORANM_NAME_SCALE)
-                                                {
-                                                    InterpolationMode = _scaleMode
-                                                },
-                                   RotationTrack = new Vector3Track(_trackRotation.GetSortedKeys(length.Value), Resources.GORANM_NAME_ROTATION)
-                                                   {
-                                                       InterpolationMode = _rotationMode
-                                                   }
-                               };
-
-            // Sort the list of keys from the position track.
-
-            return newAnimation;
+            return new Animation(name, length.Value)
+                   {
+                       PositionTrack = new Vector3Track(_trackPositions.GetSortedKeys(length.Value), Resources.GORANM_NAME_POSITION)
+                                       {
+                                           InterpolationMode = _positionMode
+                                       },
+                       ColorTrack = new ColorTrack(_trackColors.GetSortedKeys(length.Value))
+                                    {
+                                        InterpolationMode = _colorMode
+                                    },
+                       RectBoundsTrack = new RectBoundsTrack(_trackRectBounds.GetSortedKeys(length.Value))
+                                         {
+                                             InterpolationMode = _rectBoundsMode
+                                         },
+                       Texture2DTrack = new Texture2DViewTrack(_trackTexture2D.GetSortedKeys(length.Value)),
+                       ScaleTrack = new Vector3Track(_trackScale.GetSortedKeys(length.Value), Resources.GORANM_NAME_SCALE)
+                                    {
+                                        InterpolationMode = _scaleMode
+                                    },
+                       RotationTrack = new Vector3Track(_trackRotation.GetSortedKeys(length.Value), Resources.GORANM_NAME_ROTATION)
+                                       {
+                                           InterpolationMode = _rotationMode
+                                       }
+                   };
         }
 
         /// <summary>

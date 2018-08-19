@@ -25,16 +25,15 @@
 #endregion
 
 using System;
-using System.Linq;
 using Gorgon.Core;
 using Gorgon.Math;
 
 namespace Gorgon.Animation
 {
     /// <summary>
-    /// An animation clip for an animated object.
+    /// A base class for a <see cref="IGorgonAnimation"/> implementation.
     /// </summary>
-    internal class Animation
+    public class Animation
         : GorgonNamedObject, IGorgonAnimation
     {
         #region Variables.
@@ -44,20 +43,99 @@ namespace Gorgon.Animation
 
         #region Properties.
         /// <summary>
+        /// Property to return the editable track used to update positioning of an object.
+        /// </summary>
+        protected internal IGorgonTrack<GorgonKeyVector3> PositionTrack
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to return the editable track used to update the rotation of an object.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This track is read/write and should only be used by a corresponding <see cref="IGorgonTrackKeyBuilder{T}"/>. Any other usage is not supported and will have unintended side effects.
+        /// </para>
+        /// <para>
+        /// The rotation track is made up of <see cref="GorgonKeyVector3"/> key frame types where the X, Y and Z values represent the x axis, y axis and z axis of rotation. All values are in degrees.
+        /// </para>
+        /// <para>
+        /// Note that not all controller types will use every axis when rotating. 
+        /// </para>
+        /// <para>
+        /// </para>
+        /// </remarks>
+        protected internal IGorgonTrack<GorgonKeyVector3> RotationTrack
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to return the editable track used to update the scale of an object.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This track is read/write and should only be used by a corresponding <see cref="IGorgonTrackKeyBuilder{T}"/>. Any other usage is not supported and will have unintended side effects.
+        /// </para>
+        /// </remarks>
+        protected internal IGorgonTrack<GorgonKeyVector3> ScaleTrack
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to return the editable track used to update the color of an object.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This track is read/write and should only be used by a corresponding <see cref="IGorgonTrackKeyBuilder{T}"/>. Any other usage is not supported and will have unintended side effects.
+        /// </para>
+        /// </remarks>
+        protected internal IGorgonTrack<GorgonKeyGorgonColor> ColorTrack
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to return the editable track used for rectangular boundaries of an object.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This track is read/write and should only be used by a corresponding <see cref="IGorgonTrackKeyBuilder{T}"/>. Any other usage is not supported and will have unintended side effects.
+        /// </para>
+        /// </remarks>
+        protected internal IGorgonTrack<GorgonKeyRectangle> RectBoundsTrack
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to return the editable track used for updating a 2D texture on an object.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This track is read/write and should only be used by a corresponding <see cref="IGorgonTrackKeyBuilder{T}"/>. Any other usage is not supported and will have unintended side effects.
+        /// </para>
+        /// </remarks>
+        protected internal IGorgonTrack<GorgonKeyTexture2D> Texture2DTrack
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Property to set or return the number of times to loop an animation.
         /// </summary>
         public int LoopCount
         {
             get => _loopCount;
-            set
-            {
-                if (value < 0)
-                {
-                    value = 0;
-                }
-
-                _loopCount = value;
-            }
+            set => _loopCount = value.Max(0);
         }
 
         /// <summary>
@@ -90,56 +168,40 @@ namespace Gorgon.Animation
         /// <summary>
         /// Property to return the track used to update positioning of an object.
         /// </summary>
-        public IGorgonTrack<GorgonKeyVector3> PositionTrack
-        {
-            get;
-            set;
-        }
+        IGorgonTrack<GorgonKeyVector3> IGorgonAnimation.PositionTrack => PositionTrack;
 
         /// <summary>
         /// Property to return the track used to update the rotation of an object.
         /// </summary>
-        public IGorgonTrack<GorgonKeyVector3> RotationTrack
-        {
-            get;
-            set;
-        }
+        /// <remarks>
+        /// <para>
+        /// The rotation track is made up of <see cref="GorgonKeyVector3"/> key frame types where the X, Y and Z values represent the x axis, y axis and z axis of rotation. All values are in degrees.
+        /// </para>
+        /// <para>
+        /// Note that not all controller types will use every axis when rotating. 
+        /// </para>
+        /// </remarks>
+        IGorgonTrack<GorgonKeyVector3> IGorgonAnimation.RotationTrack => RotationTrack;
 
         /// <summary>
         /// Property to return the track used to update the scale of an object.
         /// </summary>
-        public IGorgonTrack<GorgonKeyVector3> ScaleTrack
-        {
-            get;
-            set;
-        }
+        IGorgonTrack<GorgonKeyVector3> IGorgonAnimation.ScaleTrack => ScaleTrack;
 
         /// <summary>
         /// Property to return the track used to update the color of an object.
         /// </summary>
-        public IGorgonTrack<GorgonKeyGorgonColor> ColorTrack
-        {
-            get;
-            set;
-        }
+        IGorgonTrack<GorgonKeyGorgonColor> IGorgonAnimation.ColorTrack => ColorTrack;
 
         /// <summary>
         /// Property to return the track used for rectangular boundaries of an object.
         /// </summary>
-        public IGorgonTrack<GorgonKeyRectangle> RectBoundsTrack
-        {
-            get;
-            set;
-        }
+        IGorgonTrack<GorgonKeyRectangle> IGorgonAnimation.RectBoundsTrack => RectBoundsTrack;
 
         /// <summary>
         /// Property to return the track used for updating a 2D texture on an object.
         /// </summary>
-        public IGorgonTrack<GorgonKeyTexture2D> Texture2DTrack
-        {
-            get;
-            set;
-        }
+        IGorgonTrack<GorgonKeyTexture2D> IGorgonAnimation.Texture2DTrack => Texture2DTrack;
         #endregion
 
         #region Methods.
