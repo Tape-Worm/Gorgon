@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
 using DX = SharpDX;
 
 namespace Gorgon.Math

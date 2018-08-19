@@ -78,7 +78,7 @@ namespace Gorgon.Animation
         /// </summary>
         /// <param name="keyFrames">The list of key frames for the track.</param>
         internal Texture2DViewTrack(IReadOnlyList<GorgonKeyTexture2D> keyFrames)
-            : base(Resources.GORANM_NAME_BOUNDS)
+            : base(Resources.GORANM_NAME_TEXTURE_2D)
         {
             KeyFrames = keyFrames;
         }
