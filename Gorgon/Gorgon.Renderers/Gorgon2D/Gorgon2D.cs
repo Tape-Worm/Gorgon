@@ -490,6 +490,53 @@ namespace Gorgon.Renderers
         }
 
         /// <summary>
+        /// Function to check the current camera against the one being assigned to see if an update is needed.
+        /// </summary>
+        /// <param name="camera">The camera being assigned.</param>
+        private void CheckCameraState(Gorgon2DCamera camera)
+        {
+            bool cameraChanged = camera != CurrentCamera;
+            bool updateCamera = ((cameraChanged) ||
+                                 ((camera != null) && (camera.NeedsUpdate)));
+
+            if (!updateCamera)
+            {
+                return;
+            }
+
+            if (camera == null)
+            {
+                camera = _defaultCamera;
+            }
+
+            // If we change the camera we have to upload the projection/view matrix to the GPU regardless.
+            if (cameraChanged)
+            {
+                var currentViewSize = new DX.Size2F(Graphics.Viewports[0].Width, Graphics.Viewports[0].Height);
+
+                // Force the camera to resize to the current viewport.
+                if ((camera.AllowUpdateOnResize) && (!currentViewSize.Equals(camera.ViewDimensions)))
+                {
+                    camera.ViewDimensions = currentViewSize;
+                }
+                else
+                {
+                    camera.NeedsUpload = true;
+                }
+            }
+
+            camera.Update();
+
+            // If we changed the camera, then we need to re-upload the matrix data to the GPU.
+            if (camera.NeedsUpload)
+            {
+                UploadCameraData(camera);
+            }
+
+            CurrentCamera = camera;
+        }
+
+        /// <summary>
         /// Function to begin rendering a batch.
         /// </summary>
         /// <param name="batchState">[Optional] Defines common state to use when rendering a batch of objects.</param>
@@ -569,33 +616,7 @@ namespace Gorgon.Renderers
                 Graphics.SetRenderTarget(_primaryTarget, Graphics.DepthStencilView);
             }
 
-            bool cameraChanged = camera != CurrentCamera;
-            bool updateCamera = ((cameraChanged) ||
-                                ((camera != null) && (camera.NeedsUpdate)));
-
-            CurrentCamera = camera;
-
-            if (updateCamera)
-            {
-                if (camera == null)
-                {
-                    camera = _defaultCamera;
-                }
-
-                // If we change the camera we have to upload the projection/view matrix to the GPU regardless.
-                if (cameraChanged)
-                {
-                    camera.NeedsUpload = true;
-                }
-
-                camera.Update();
-
-                // If we changed the camera, then we need to re-upload the matrix data to the GPU.
-                if (camera.NeedsUpload)
-                {
-                    UploadCameraData(camera);
-                }
-            }
+            CheckCameraState(camera);
             
             _lastRenderable = null;
             _lastBatchState.PixelShader = batchState?.PixelShader ?? _defaultPixelShader;

@@ -171,9 +171,7 @@
       <Name>Gorgon.Graphics.Imaging</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="__OLDE__\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>$(SolutionDir)ResourceCommentCleaner $(ProjectDir)Properties\</PreBuildEvent>
