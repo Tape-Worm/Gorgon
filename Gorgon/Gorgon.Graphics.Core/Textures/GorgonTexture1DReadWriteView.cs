@@ -267,6 +267,110 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
+        /// Function to convert a <see cref="GorgonRangeF"/> of texel coordinates to pixel space.
+        /// </summary>
+        /// <param name="texelCoordinates">The texel coordinates to convert.</param>
+        /// <param name="mipLevel">[Optional] The mip level to use.</param>
+        /// <returns>A <see cref="GorgonRange"/> containing the pixel space coordinates.</returns>
+        /// <remarks>
+        /// <para>
+        /// If specified, the <paramref name="mipLevel"/> only applies to the <see cref="MipSlice"/> for this view, it will be constrained if it falls outside of that range.
+        /// Because of this, the coordinates returned may not be the exact size of the texture bound to the view at mip level 0. If the <paramref name="mipLevel"/> is omitted, then the first mip level
+        /// for the underlying <see cref="Texture"/> is used.
+        /// </para>
+        /// </remarks>
+        public GorgonRange ToPixel(GorgonRangeF texelCoordinates, int? mipLevel = null)
+        {
+            float width = Texture.Width;
+
+            if (mipLevel == null)
+            {
+                return new GorgonRange((int)(texelCoordinates.Minimum * width), (int)(texelCoordinates.Maximum * width));
+            }
+
+            width = GetMipWidth(mipLevel.Value);
+
+            return new GorgonRange((int)(texelCoordinates.Minimum * width), (int)(texelCoordinates.Maximum * width));
+        }
+
+        /// <summary>
+        /// Function to convert a <see cref="GorgonRange"/> of pixel coordinates to texel space.
+        /// </summary>
+        /// <param name="pixelCoordinates">The pixel coordinates to convert.</param>
+        /// <param name="mipLevel">[Optional] The mip level to use.</param>
+        /// <returns>A <see cref="GorgonRangeF"/> containing the texel space coordinates.</returns>
+        /// <remarks>
+        /// <para>
+        /// If specified, the <paramref name="mipLevel"/> only applies to the <see cref="MipSlice"/> for this view, it will be constrained if it falls outside of that range.
+        /// Because of this, the coordinates returned may not be the exact size of the texture bound to the view at mip level 0. If the <paramref name="mipLevel"/> is omitted, then the first mip level
+        /// for the underlying <see cref="Texture"/> is used.
+        /// </para>
+        /// </remarks>
+        public GorgonRangeF ToTexel(GorgonRange pixelCoordinates, int? mipLevel = null)
+        {
+            float width = Texture.Width;
+
+            if (mipLevel == null)
+            {
+                return new GorgonRangeF(pixelCoordinates.Minimum / width, pixelCoordinates.Maximum / width);
+            }
+
+            width = GetMipWidth(mipLevel.Value);
+
+            return new GorgonRangeF(pixelCoordinates.Minimum / width, pixelCoordinates.Maximum / width);
+        }
+
+        /// <summary>
+        /// Function to convert an integer value from pixel coordinates to texel space.
+        /// </summary>
+        /// <param name="pixelOffset">The pixel offset to convert.</param>
+        /// <param name="mipLevel">[Optional] The mip level to use.</param>
+        /// <returns>A floating point value containing the texel space coordinates.</returns>
+        /// <remarks>
+        /// <para>
+        /// If specified, the <paramref name="mipLevel"/> only applies to the <see cref="MipSlice"/> for this view, it will be constrained if it falls outside of that range.
+        /// Because of this, the coordinates returned may not be the exact size of the texture bound to the view at mip level 0. If the <paramref name="mipLevel"/> is omitted, then the first mip level
+        /// for the underlying <see cref="Texture"/> is used.
+        /// </para>
+        /// </remarks>
+        public float ToTexel(int pixelOffset, int? mipLevel = null)
+        {
+            float width = Texture.Width;
+
+            if (mipLevel == null)
+            {
+                return pixelOffset / width;
+            }
+
+            return pixelOffset / GetMipWidth(mipLevel.Value);
+        }
+
+        /// <summary>
+        /// Function to convert a floating point value from texel coordinates to pixel space.
+        /// </summary>
+        /// <param name="texelOffset">The floating point texel to convert.</param>
+        /// <param name="mipLevel">[Optional] The mip level to use.</param>
+        /// <returns>An integer value containing the pixel space coordinates.</returns>
+        /// <remarks>
+        /// <para>
+        /// If specified, the <paramref name="mipLevel"/> only applies to the <see cref="MipSlice"/> for this view, it will be constrained if it falls outside of that range.
+        /// Because of this, the coordinates returned may not be the exact size of the texture bound to the view at mip level 0. If the <paramref name="mipLevel"/> is omitted, then the first mip level
+        /// for the underlying <see cref="Texture"/> is used.
+        /// </para>
+        /// </remarks>
+        public int ToPixel(float texelOffset, int? mipLevel = null)
+        {
+            float width = Texture.Width;
+            
+            if (mipLevel == null)
+            {
+                return (int)(texelOffset * width);
+            }
+
+            return (int)(texelOffset * GetMipWidth(mipLevel.Value));
+        }
+
+        /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         public override void Dispose()

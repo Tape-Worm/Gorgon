@@ -164,7 +164,7 @@ namespace Gorgon.Examples
                                                                                       Binding = TextureBinding.ShaderResource
                                                                                   });
             // And this is the texture we will display at the end of the frame.
-            _finalTexture = _finalTarget.Texture.GetShaderResourceView();
+            _finalTexture = _finalTarget.GetShaderResourceView();
         }
 
         /// <summary>

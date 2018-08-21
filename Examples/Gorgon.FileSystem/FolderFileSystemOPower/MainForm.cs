@@ -383,8 +383,8 @@ namespace Gorgon.Examples
                                                                                             Usage = ResourceUsage.Default
                                                                                         });
                 _blurredTarget[1] = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, _blurredTarget[0]);
-		        _blurredImage[0] = _blurredTarget[0].Texture.GetShaderResourceView();
-		        _blurredImage[1] = _blurredTarget[1].Texture.GetShaderResourceView();
+		        _blurredImage[0] = _blurredTarget[0].GetShaderResourceView();
+		        _blurredImage[1] = _blurredTarget[1].GetShaderResourceView();
 
 		        GorgonApplication.IdleMethod = Idle;
 		    }

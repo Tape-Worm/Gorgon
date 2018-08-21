@@ -111,7 +111,7 @@ namespace Gorgon.Renderers
 		                                                                          Format = output.Format,
 		                                                                          Binding = TextureBinding.ShaderResource
 		                                                                      });
-		    _displacementView = _displacementTarget.Texture.GetShaderResourceView();
+		    _displacementView = _displacementTarget.GetShaderResourceView();
 
             // We store this in the 1st slot so we can read back from it when necessary.
 		    _displacementShader = PixelShaderBuilder

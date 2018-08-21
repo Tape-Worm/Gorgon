@@ -308,13 +308,13 @@ namespace Gorgon.Examples
                                                                                            Height = _screen.Height,
                                                                                            Format = _screen.Format
                                                                                        });
-            _postView1 = _postTarget1.Texture.GetShaderResourceView();
+            _postView1 = _postTarget1.GetShaderResourceView();
 
             _postTarget2 = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo(_postTarget1, "Post process render target #2"));
-            _postView2 = _postTarget2.Texture.GetShaderResourceView();
+            _postView2 = _postTarget2.GetShaderResourceView();
 
             _finalTarget = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo(_postTarget1, "Final post process render target."));
-            _finalView = _finalTarget.Texture.GetShaderResourceView();
+            _finalView = _finalTarget.GetShaderResourceView();
         }
 
         /// <summary>

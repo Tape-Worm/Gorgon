@@ -354,6 +354,152 @@ namespace Gorgon.Graphics.Core
 		    return Native;
 		}
 
+
+        /// <summary>
+        /// Function to create a new <see cref="GorgonDepthStencil2DView"/> for this texture.
+        /// </summary>
+        /// <param name="format">[Optional] The format for the view.</param>
+        /// <param name="flags">[Optional] Flags to define how this view should be accessed by the shader.</param>
+        /// <returns>A <see cref="GorgonDepthStencil2DView"/> used to bind the texture as a depth/stencil buffer.</returns>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="format"/> is not supported as a depth/stencil format.</exception>
+        /// <exception cref="GorgonException">Thrown when this texture does not have a <see cref="TextureBinding"/> of <see cref="TextureBinding.DepthStencil"/>.
+        /// <para>-or-</para>
+        /// <para>Thrown when this texture has a <see cref="GorgonGraphicsResource.Usage"/> of <see cref="ResourceUsage.Staging"/>.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown if this texture has a <see cref="Binding"/> of <see cref="TextureBinding.ShaderResource"/>, but the texture format is not a typeless format.</para>
+        /// </exception>
+        /// <remarks>
+        /// <para>
+        /// The depth/stencil views take a <see cref="DepthStencilViewFlags"/> parameter that determine how a shader can access the depth buffer when it is bound to the pipeline for reading. By specifying 
+        /// a single flag, the depth can write to the opposite plane (e.g. read only depth and write only stencil, write only depth and read only stencil) of the texture. This allows for multiple 
+        /// depth/stencil views to be bound to the pipeline for reading and writing.
+        /// </para>
+        /// <para>
+        /// If the <see cref="Binding"/> for the texture includes <see cref="TextureBinding.ShaderResource"/>, then the <paramref name="format"/> for the view and the <see cref="Format"/> for the texture
+        /// must be specific values.  These values are listed below:
+        /// <list type="table">
+        ///     <listheader><term>Depth Format</term><term>Texture Format</term></listheader>
+        ///     <item><term><see cref="BufferFormat.D32_Float_S8X24_UInt"/></term><term><see cref="BufferFormat.R32G8X24_Typeless"/></term></item>
+        ///     <item><term><see cref="BufferFormat.D24_UNorm_S8_UInt"/></term><term><see cref="BufferFormat.R24G8_Typeless"/></term></item>
+        ///     <item><term><see cref="BufferFormat.D32_Float"/></term><term><see cref="BufferFormat.R32_Typeless"/></term></item>
+        ///     <item><term><see cref="BufferFormat.D16_UNorm"/></term><term><see cref="BufferFormat.R16_Typeless"/></term></item>
+        /// </list>
+        /// </para>
+        /// </remarks>
+        public GorgonDepthStencil2DView GetDepthStencilView(BufferFormat format = BufferFormat.Unknown, DepthStencilViewFlags flags = DepthStencilViewFlags.None)
+        {
+            return Texture.GetDepthStencilView(format, MipSlice, ArrayIndex, ArrayCount, flags);
+	    }
+
+        /// <summary>
+        /// Function to create a new <see cref="GorgonTexture2DView"/> for this texture.
+        /// </summary>
+        /// <param name="format">[Optional] The format for the view.</param>
+        /// <returns>A <see cref="GorgonTexture2DView"/> used to bind the texture to a shader.</returns>
+        /// <exception cref="ArgumentException">Thrown if the <paramref name="format"/> is a typeless format.</exception>
+        /// <exception cref="GorgonException">
+        /// Thrown when this texture does not have a <see cref="TextureBinding"/> of <see cref="TextureBinding.ShaderResource"/>.
+        /// <para>-or-</para>
+        /// <para>Thrown when this texture has a usage of <see cref="ResourceUsage.Staging"/>.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown if the texture <see cref="Format"/> is not typeless, and the <see cref="Binding"/> is set to <see cref="TextureBinding.DepthStencil"/>.</para>
+        /// <para></para>
+        /// </exception>
+        /// <remarks>
+        /// <para>
+        /// This will create a view that makes a texture accessible to shaders. This allows viewing of the texture data in a different format, or even a subsection of the texture from within the shader.
+        /// </para>
+        /// <para>
+        /// The <paramref name="format"/> parameter is used present the texture data as another format type to the shader. If this value is left at the default of <see cref="BufferFormat.Unknown"/>, then 
+        /// the format from the this texture is used. The <paramref name="format"/> must be castable to the format of this texture. If it is not, an exception will be thrown.
+        /// </para>
+        /// </remarks>
+	    public GorgonTexture2DView GetShaderResourceView(BufferFormat format = BufferFormat.Unknown)
+        {
+            return Texture.GetShaderResourceView(format, MipSlice, 1, ArrayIndex, ArrayCount);
+        }
+
+        /// <summary>
+        /// Function to convert a rectangle of texel coordinates to pixel space.
+        /// </summary>
+        /// <param name="texelCoordinates">The texel coordinates to convert.</param>
+        /// <returns>A rectangle containing the pixel space coordinates.</returns>
+        public DX.Rectangle ToPixel(DX.RectangleF texelCoordinates)
+        {
+            float width = Texture.Width;
+            float height = Texture.Height;
+
+            return new DX.Rectangle((int)(texelCoordinates.X * width),
+                                     (int)(texelCoordinates.Y * height),
+                                     (int)(texelCoordinates.Width * width),
+                                     (int)(texelCoordinates.Height * height));
+        }
+
+        /// <summary>
+        /// Function to convert a rectangle of pixel coordinates to texel space.
+        /// </summary>
+        /// <param name="pixelCoordinates">The pixel coordinates to convert.</param>
+        /// <returns>A rectangle containing the texel space coordinates.</returns>
+        public DX.RectangleF ToTexel(DX.Rectangle pixelCoordinates)
+        {
+            float width = Texture.Width;
+            float height = Texture.Height;
+
+            return new DX.RectangleF(pixelCoordinates.X / width, pixelCoordinates.Y / height, pixelCoordinates.Width / width, pixelCoordinates.Height / height);
+        }
+
+        /// <summary>
+        /// Function to convert a size value from pixel coordinates to texel space.
+        /// </summary>
+        /// <param name="pixelSize">The pixel size to convert.</param>
+        /// <returns>A size value containing the texel space coordinates.</returns>
+        public DX.Size2F ToTexel(DX.Size2 pixelSize)
+        {
+            float width = Texture.Width;
+            float height = Texture.Height;
+
+            return new DX.Size2F(pixelSize.Width / width, pixelSize.Height / height);
+        }
+
+        /// <summary>
+        /// Function to convert a size value from texel coordinates to pixel space.
+        /// </summary>
+        /// <param name="texelSize">The texel size to convert.</param>
+        /// <returns>A size value containing the texel space coordinates.</returns>
+        public DX.Size2 ToPixel(DX.Size2F texelSize)
+        {
+            float width = Texture.Width;
+            float height = Texture.Height;
+
+            return new DX.Size2((int)(texelSize.Width * width), (int)(texelSize.Height * height));
+        }
+
+        /// <summary>
+        /// Function to convert a 2D vector value from pixel coordinates to texel space.
+        /// </summary>
+        /// <param name="pixelVector">The pixel size to convert.</param>
+        /// <returns>A 2D vector containing the texel space coordinates.</returns>
+        public DX.Vector2 ToTexel(DX.Vector2 pixelVector)
+        {
+            float width = Texture.Width;
+            float height = Texture.Height;
+
+            return new DX.Vector2(pixelVector.X / width, pixelVector.Y / height);
+        }
+
+        /// <summary>
+        /// Function to convert a 2D vector value from texel coordinates to pixel space.
+        /// </summary>
+        /// <param name="texelVector">The texel size to convert.</param>
+        /// <returns>A 2D vector containing the pixel space coordinates.</returns>
+        public DX.Vector2 ToPixel(DX.Vector2 texelVector)
+        {
+            float width = Texture.Width;
+            float height = Texture.Height;
+
+            return new DX.Vector2(texelVector.X * width, texelVector.Y * height);
+        }
+
 		/// <summary>
 		/// Function to clear the depth and stencil portion of the buffer for this view.
 		/// </summary>

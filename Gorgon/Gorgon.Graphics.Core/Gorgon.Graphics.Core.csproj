@@ -267,9 +267,7 @@
     <Content Include="Gorgon2.ico" />
     <None Include="Resources\White_2x2.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Pipeline\_Extensions\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

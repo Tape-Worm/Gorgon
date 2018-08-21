@@ -229,7 +229,7 @@ namespace Animation
                                                                                  {
                                                                                      Binding = TextureBinding.ShaderResource
                                                                                  });
-                _targetView = _target.Texture.GetShaderResourceView();
+                _targetView = _target.GetShaderResourceView();
                 _target.Clear(GorgonColor.CornFlowerBlue);
                 
                 // Load our textures.

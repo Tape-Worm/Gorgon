@@ -234,6 +234,58 @@ namespace Gorgon.Graphics.Core
             return Native;
         }
         
+		/// <summary>
+		/// Function to convert a texel coordinate into a pixel coordinate and a depth slice.
+		/// </summary>
+		/// <param name="texelCoordinates">The texel coordinates to convert.</param>
+		/// <returns>The pixel coordinates.</returns>
+		public (DX.Point, int) ToPixel(DX.Vector3 texelCoordinates)
+		{
+		    float width = Texture.Width;
+		    float height = Texture.Height;
+
+		    return (new DX.Point((int)(texelCoordinates.X * width), (int)(texelCoordinates.Y * height)), (int)(texelCoordinates.Z * Depth));
+		}
+
+		/// <summary>
+		/// Function to convert a pixel coordinate into a texel coordinate.
+		/// </summary>
+		/// <param name="pixelCoordinates">The pixel coordinate to convert.</param>
+		/// <returns>The texel coordinates.</returns>
+		public DX.Vector3 ToTexel(DX.Point pixelCoordinates)
+		{
+		    float width = Texture.Width;
+		    float height = Texture.Height;
+
+		    return new DX.Vector3(pixelCoordinates.X / width, pixelCoordinates.Y / height, Depth / (float)Depth);
+		}
+
+		/// <summary>
+		/// Function to convert a texel size into a pixel size.
+		/// </summary>
+		/// <param name="texelCoordinates">The texel size to convert.</param>
+		/// <returns>The pixel size.</returns>
+		public DX.Size2 ToPixel(DX.Size2F texelCoordinates)
+		{
+		    float width = Texture.Width;
+		    float height = Texture.Height;
+
+		    return new DX.Size2((int)(texelCoordinates.Width * width), (int)(texelCoordinates.Height * height));
+		}
+
+		/// <summary>
+		/// Function to convert a pixel size into a texel size.
+		/// </summary>
+		/// <param name="pixelCoordinates">The pixel size to convert.</param>
+		/// <returns>The texel size.</returns>
+		public DX.Size2F ToTexel(DX.Size2 pixelCoordinates)
+		{
+		    float width = Texture.Width;
+		    float height = Texture.Height;
+
+		    return new DX.Size2F(pixelCoordinates.Width / width, pixelCoordinates.Height / height);
+		}
+
         /// <summary>
 		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
 		/// </summary>

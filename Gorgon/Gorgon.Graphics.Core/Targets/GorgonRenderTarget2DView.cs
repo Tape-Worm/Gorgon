@@ -302,6 +302,115 @@ namespace Gorgon.Graphics.Core
         }
 
         /// <summary>
+        /// Function to create a new <see cref="GorgonTexture2DView"/> for this texture.
+        /// </summary>
+        /// <param name="format">[Optional] The format for the view.</param>
+        /// <returns>A <see cref="GorgonTexture2DView"/> used to bind the texture to a shader.</returns>
+        /// <exception cref="ArgumentException">Thrown if the <paramref name="format"/> is a typeless format.</exception>
+        /// <exception cref="GorgonException">
+        /// Thrown when this texture does not have a <see cref="TextureBinding"/> of <see cref="TextureBinding.ShaderResource"/>.
+        /// <para>-or-</para>
+        /// <para>Thrown when this texture has a usage of <see cref="ResourceUsage.Staging"/>.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown if the texture <see cref="Format"/> is not typeless, and the <see cref="Binding"/> is set to <see cref="TextureBinding.DepthStencil"/>.</para>
+        /// <para></para>
+        /// </exception>
+        /// <remarks>
+        /// <para>
+        /// This will create a view that makes a texture accessible to shaders. This allows viewing of the texture data in a different format, or even a subsection of the texture from within the shader.
+        /// </para>
+        /// <para>
+        /// The <paramref name="format"/> parameter is used present the texture data as another format type to the shader. If this value is left at the default of <see cref="BufferFormat.Unknown"/>, then 
+        /// the format from the this texture is used. The <paramref name="format"/> must be castable to the format of this texture. If it is not, an exception will be thrown.
+        /// </para>
+        /// </remarks>
+        public GorgonTexture2DView GetShaderResourceView(BufferFormat format = BufferFormat.Unknown)
+        {
+            return Texture.GetShaderResourceView(format, MipSlice, 1, ArrayIndex, ArrayCount);
+        }
+
+        /// <summary>
+        /// Function to convert a rectangle of texel coordinates to pixel space.
+        /// </summary>
+        /// <param name="texelCoordinates">The texel coordinates to convert.</param>
+        /// <returns>A rectangle containing the pixel space coordinates.</returns>
+        public DX.Rectangle ToPixel(DX.RectangleF texelCoordinates)
+        {
+            float width = Texture.Width;
+            float height = Texture.Height;
+
+            return new DX.Rectangle((int)(texelCoordinates.X * width),
+                                     (int)(texelCoordinates.Y * height),
+                                     (int)(texelCoordinates.Width * width),
+                                     (int)(texelCoordinates.Height * height));
+        }
+
+        /// <summary>
+        /// Function to convert a rectangle of pixel coordinates to texel space.
+        /// </summary>
+        /// <param name="pixelCoordinates">The pixel coordinates to convert.</param>
+        /// <returns>A rectangle containing the texel space coordinates.</returns>
+        public DX.RectangleF ToTexel(DX.Rectangle pixelCoordinates)
+        {
+            float width = Texture.Width;
+            float height = Texture.Height;
+
+            return new DX.RectangleF(pixelCoordinates.X / width, pixelCoordinates.Y / height, pixelCoordinates.Width / width, pixelCoordinates.Height / height);
+        }
+
+        /// <summary>
+        /// Function to convert a size value from pixel coordinates to texel space.
+        /// </summary>
+        /// <param name="pixelSize">The pixel size to convert.</param>
+        /// <returns>A size value containing the texel space coordinates.</returns>
+        public DX.Size2F ToTexel(DX.Size2 pixelSize)
+        {
+            float width = Texture.Width;
+            float height = Texture.Height;
+
+            return new DX.Size2F(pixelSize.Width / width, pixelSize.Height / height);
+        }
+
+        /// <summary>
+        /// Function to convert a size value from texel coordinates to pixel space.
+        /// </summary>
+        /// <param name="texelSize">The texel size to convert.</param>
+        /// <returns>A size value containing the texel space coordinates.</returns>
+        public DX.Size2 ToPixel(DX.Size2F texelSize)
+        {
+            float width = Texture.Width;
+            float height = Texture.Height;
+
+            return new DX.Size2((int)(texelSize.Width * width), (int)(texelSize.Height * height));
+        }
+
+        /// <summary>
+        /// Function to convert a 2D vector value from pixel coordinates to texel space.
+        /// </summary>
+        /// <param name="pixelVector">The pixel size to convert.</param>
+        /// <returns>A 2D vector containing the texel space coordinates.</returns>
+        public DX.Vector2 ToTexel(DX.Vector2 pixelVector)
+        {
+            float width = Texture.Width;
+            float height = Texture.Height;
+
+            return new DX.Vector2(pixelVector.X / width, pixelVector.Y / height);
+        }
+
+        /// <summary>
+        /// Function to convert a 2D vector value from texel coordinates to pixel space.
+        /// </summary>
+        /// <param name="texelVector">The texel size to convert.</param>
+        /// <returns>A 2D vector containing the pixel space coordinates.</returns>
+        public DX.Vector2 ToPixel(DX.Vector2 texelVector)
+        {
+            float width = Texture.Width;
+            float height = Texture.Height;
+
+            return new DX.Vector2(texelVector.X * width, texelVector.Y * height);
+        }
+
+        /// <summary>
         /// Function to clear the contents of the render target for this view.
         /// </summary>
         /// <param name="color">Color to use when clearing the render target view.</param>

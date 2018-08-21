@@ -305,6 +305,155 @@ namespace Gorgon.Graphics.Core
             return Native;
         }
 
+
+        /// <summary>
+        /// Function to convert a rectangle of pixel coordinates to texel space.
+        /// </summary>
+        /// <param name="pixelCoordinates">The pixel coordinates to convert.</param>
+        /// <param name="mipLevel">[Optional] The mip level to use.</param>
+        /// <returns>A rectangle containing the texel space coordinates.</returns>
+        /// <remarks>
+        /// <para>
+        /// If specified, the <paramref name="mipLevel"/> only applies to the <see cref="MipSlice"/> for this view, it will be constrained if it falls outside of that range.
+        /// Because of this, the coordinates returned may not be the exact size of the texture bound to the view at mip level 0. If the <paramref name="mipLevel"/> is omitted, then the first mip level
+        /// for the underlying <see cref="Texture"/> is used.
+        /// </para>
+        /// </remarks>
+        public DX.RectangleF ToTexel(DX.Rectangle pixelCoordinates, int? mipLevel = null)
+        {
+            float width = Texture.Width;
+            float height = Texture.Height;
+
+            if (mipLevel == null)
+            {
+                return new DX.RectangleF(pixelCoordinates.X / width,
+                                         pixelCoordinates.Y / height,
+                                         pixelCoordinates.Width / width,
+                                         pixelCoordinates.Height / height);
+            }
+
+            width = GetMipWidth(mipLevel.Value);
+            height = GetMipHeight(mipLevel.Value);
+
+            return new DX.RectangleF(pixelCoordinates.X / width, pixelCoordinates.Y / height, pixelCoordinates.Width / width, pixelCoordinates.Height / height);
+        }
+
+        /// <summary>
+        /// Function to convert a size value from pixel coordinates to texel space.
+        /// </summary>
+        /// <param name="pixelSize">The pixel size to convert.</param>
+        /// <param name="mipLevel">[Optional] The mip level to use.</param>
+        /// <returns>A size value containing the texel space coordinates.</returns>
+        /// <remarks>
+        /// <para>
+        /// If specified, the <paramref name="mipLevel"/> only applies to the <see cref="MipSlice"/> for this view, it will be constrained if it falls outside of that range.
+        /// Because of this, the coordinates returned may not be the exact size of the texture bound to the view at mip level 0. If the <paramref name="mipLevel"/> is omitted, then the first mip level
+        /// for the underlying <see cref="Texture"/> is used.
+        /// </para>
+        /// </remarks>
+        public DX.Size2F ToTexel(DX.Size2 pixelSize, int? mipLevel = null)
+        {
+            float width = Texture.Width;
+            float height = Texture.Height;
+
+            if (mipLevel == null)
+            {
+                return new DX.Size2F(pixelSize.Width / width, pixelSize.Height / height);
+            }
+
+            width = GetMipWidth(mipLevel.Value);
+            height = GetMipHeight(mipLevel.Value);
+
+            return new DX.Size2F(pixelSize.Width / width, pixelSize.Height / height);
+        }
+
+        /// <summary>
+        /// Function to convert a size value from texel coordinates to pixel space.
+        /// </summary>
+        /// <param name="texelSize">The texel size to convert.</param>
+        /// <param name="mipLevel">[Optional] The mip level to use.</param>
+        /// <returns>A size value containing the texel space coordinates.</returns>
+        /// <remarks>
+        /// <para>
+        /// If specified, the <paramref name="mipLevel"/> only applies to the <see cref="MipSlice"/> for this view, it will be constrained if it falls outside of that range.
+        /// Because of this, the coordinates returned may not be the exact size of the texture bound to the view at mip level 0. If the <paramref name="mipLevel"/> is omitted, then the first mip level
+        /// for the underlying <see cref="Texture"/> is used.
+        /// </para>
+        /// </remarks>
+        public DX.Size2 ToPixel(DX.Size2F texelSize, int? mipLevel = null)
+        {
+            float width = Texture.Width;
+            float height = Texture.Height;
+
+            if (mipLevel == null)
+            {
+                return new DX.Size2((int)(texelSize.Width * width), (int)(texelSize.Height * height));
+            }
+
+            width = GetMipWidth(mipLevel.Value);
+            height = GetMipHeight(mipLevel.Value);
+
+            return new DX.Size2((int)(texelSize.Width * width), (int)(texelSize.Height * height));
+        }
+
+        /// <summary>
+        /// Function to convert a 2D vector value from pixel coordinates to texel space.
+        /// </summary>
+        /// <param name="pixelVector">The pixel size to convert.</param>
+        /// <param name="mipLevel">[Optional] The mip level to use.</param>
+        /// <returns>A 2D vector containing the texel space coordinates.</returns>
+        /// <remarks>
+        /// <para>
+        /// If specified, the <paramref name="mipLevel"/> only applies to the <see cref="MipSlice"/> for this view, it will be constrained if it falls outside of that range.
+        /// Because of this, the coordinates returned may not be the exact size of the texture bound to the view at mip level 0. If the <paramref name="mipLevel"/> is omitted, then the first mip level
+        /// for the underlying <see cref="Texture"/> is used.
+        /// </para>
+        /// </remarks>
+        public DX.Vector2 ToTexel(DX.Vector2 pixelVector, int? mipLevel = null)
+        {
+            float width = Texture.Width;
+            float height = Texture.Height;
+
+            if (mipLevel == null)
+            {
+                return new DX.Vector2(pixelVector.X / width, pixelVector.Y / height);
+            }
+
+            width = GetMipWidth(mipLevel.Value);
+            height = GetMipHeight(mipLevel.Value);
+
+            return new DX.Vector2(pixelVector.X / width, pixelVector.Y / height);
+        }
+
+        /// <summary>
+        /// Function to convert a 2D vector value from texel coordinates to pixel space.
+        /// </summary>
+        /// <param name="texelVector">The texel size to convert.</param>
+        /// <param name="mipLevel">[Optional] The mip level to use.</param>
+        /// <returns>A 2D vector containing the pixel space coordinates.</returns>
+        /// <remarks>
+        /// <para>
+        /// If specified, the <paramref name="mipLevel"/> only applies to the <see cref="MipSlice"/> for this view, it will be constrained if it falls outside of that range.
+        /// Because of this, the coordinates returned may not be the exact size of the texture bound to the view at mip level 0. If the <paramref name="mipLevel"/> is omitted, then the first mip level
+        /// for the underlying <see cref="Texture"/> is used.
+        /// </para>
+        /// </remarks>
+        public DX.Vector2 ToPixel(DX.Vector2 texelVector, int? mipLevel = null)
+        {
+            float width = Texture.Width;
+            float height = Texture.Height;
+
+            if (mipLevel == null)
+            {
+                return new DX.Vector2(texelVector.X * width, texelVector.Y * height);
+            }
+
+            width = GetMipWidth(mipLevel.Value);
+            height = GetMipHeight(mipLevel.Value);
+
+            return new DX.Vector2(texelVector.X * width, texelVector.Y * height);
+        }
+
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>

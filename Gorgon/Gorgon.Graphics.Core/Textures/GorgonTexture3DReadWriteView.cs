@@ -257,6 +257,129 @@ namespace Gorgon.Graphics.Core
             return Native;
         }
 
+		/// <summary>
+		/// Function to convert a texel coordinate into a pixel coordinate and a depth slice.
+		/// </summary>
+		/// <param name="texelCoordinates">The texel coordinates to convert.</param>
+		/// <param name="mipLevel">[Optional] The mip level to use.</param>
+		/// <returns>The pixel coordinates.</returns>
+		/// <remarks>
+		/// <para>
+		/// If specified, the <paramref name="mipLevel"/> only applies to the <see cref="MipSlice"/> for this view, it will be constrained if it falls outside of that range.
+		/// Because of this, the coordinates returned may not be the exact size of the texture bound to the view at mip level 0. If the <paramref name="mipLevel"/> is omitted, then the first mip level
+		/// for the underlying <see cref="Texture"/> is used.
+		/// </para>
+		/// </remarks>
+		public (DX.Point, int) ToPixel(DX.Vector3 texelCoordinates, int? mipLevel = null)
+		{
+		    float width = Texture.Width;
+		    float height = Texture.Height;
+
+		    if (mipLevel == null)
+		    {
+		        return (new DX.Point((int)(texelCoordinates.X * width), (int)(texelCoordinates.Y * height)), (int)(texelCoordinates.Z * DepthSliceCount));
+		    }
+
+		    width = GetMipWidth(mipLevel.Value);
+		    height = GetMipHeight(mipLevel.Value);
+
+		    return (new DX.Point((int)(texelCoordinates.X * width), (int)(texelCoordinates.Y * height)), (int)(texelCoordinates.Z * DepthSliceCount));
+		}
+
+		/// <summary>
+		/// Function to convert a pixel coordinate into a texel coordinate.
+		/// </summary>
+		/// <param name="pixelCoordinates">The pixel coordinate to convert.</param>
+		/// <param name="mipLevel">[Optional] The mip level to use.</param>
+		/// <param name="depthSlice">[Optional] The depth slice to use.</param>
+		/// <returns>The texel coordinates.</returns>
+		/// <remarks>
+		/// <para>
+		/// If specified, the <paramref name="mipLevel"/> only applies to the <see cref="MipSlice"/> for this view, it will be constrained if it falls outside of that range.
+		/// Because of this, the coordinates returned may not be the exact size of the texture bound to the view at mip level 0. If the <paramref name="mipLevel"/> is omitted, then the first mip level
+		/// for the underlying <see cref="Texture"/> is used.
+		/// </para>
+		/// <para>
+		/// If specified, the <paramref name="depthSlice"/> only applies to the <see cref="StartDepthSlice"/> and <see cref="DepthSliceCount"/> for this view, it will be constrained if it falls outside of that
+		/// range. Because of this, the coordinates returned may not be the exact size of the texture bound to the view at mip level 0. If the <paramref name="mipLevel"/> is omitted, then the first depth slice
+		/// is used.
+		/// </para>
+		/// </remarks>
+		public DX.Vector3 ToTexel(DX.Point pixelCoordinates, int? mipLevel = null, int? depthSlice = null)
+		{
+		    float width = Texture.Width;
+		    float height = Texture.Height;
+		    float depth = depthSlice ?? 0;
+
+		    depth = depth.Min(DepthSliceCount + StartDepthSlice).Max(StartDepthSlice);
+
+		    if (mipLevel == null)
+		    {
+		        return new DX.Vector3(pixelCoordinates.X / width, pixelCoordinates.Y / height, depth / DepthSliceCount);
+		    }
+
+		    width = GetMipWidth(mipLevel.Value);
+		    height = GetMipHeight(mipLevel.Value);
+
+		    return new DX.Vector3(pixelCoordinates.X / width, pixelCoordinates.Y / height, depth / DepthSliceCount);
+		}
+
+		/// <summary>
+		/// Function to convert a texel size into a pixel size.
+		/// </summary>
+		/// <param name="texelCoordinates">The texel size to convert.</param>
+		/// <param name="mipLevel">[Optional] The mip level to use.</param>
+		/// <returns>The pixel size.</returns>
+		/// <remarks>
+		/// <para>
+		/// If specified, the <paramref name="mipLevel"/> only applies to the <see cref="MipSlice"/> for this view, it will be constrained if it falls outside of that range.
+		/// Because of this, the coordinates returned may not be the exact size of the texture bound to the view at mip level 0. If the <paramref name="mipLevel"/> is omitted, then the first mip level
+		/// for the underlying <see cref="Texture"/> is used.
+		/// </para>
+		/// </remarks>
+		public DX.Size2 ToPixel(DX.Size2F texelCoordinates, int? mipLevel = null)
+		{
+		    float width = Texture.Width;
+		    float height = Texture.Height;
+
+		    if (mipLevel == null)
+		    {
+		        return new DX.Size2((int)(texelCoordinates.Width * width), (int)(texelCoordinates.Height * height));
+		    }
+
+		    width = GetMipWidth(mipLevel.Value);
+		    height = GetMipHeight(mipLevel.Value);
+		    return new DX.Size2((int)(texelCoordinates.Width * width), (int)(texelCoordinates.Height * height));
+		}
+
+		/// <summary>
+		/// Function to convert a pixel size into a texel size.
+		/// </summary>
+		/// <param name="pixelCoordinates">The pixel size to convert.</param>
+		/// <param name="mipLevel">[Optional] The mip level to use.</param>
+		/// <returns>The texel size.</returns>
+		/// <remarks>
+		/// <para>
+		/// If specified, the <paramref name="mipLevel"/> only applies to the <see cref="MipSlice"/> for this view, it will be constrained if it falls outside of that range.
+		/// Because of this, the coordinates returned may not be the exact size of the texture bound to the view at mip level 0. If the <paramref name="mipLevel"/> is omitted, then the first mip level
+		/// for the underlying <see cref="Texture"/> is used.
+		/// </para>
+		/// </remarks>
+		public DX.Size2F ToTexel(DX.Size2 pixelCoordinates, int? mipLevel = null)
+		{
+		    float width = Texture.Width;
+		    float height = Texture.Height;
+
+		    if (mipLevel == null)
+		    {
+		        return new DX.Size2F(pixelCoordinates.Width / width, pixelCoordinates.Height / height);
+		    }
+
+		    width = GetMipWidth(mipLevel.Value);
+		    height = GetMipHeight(mipLevel.Value);
+		    return new DX.Size2F(pixelCoordinates.Width / width, pixelCoordinates.Height / height);
+		}
+
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>

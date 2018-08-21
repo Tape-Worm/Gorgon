@@ -366,7 +366,7 @@ namespace Gorgon.Examples
 	        _backBuffer.Clear(Color.White);
 	        _backupImage.CopyTo(_backBuffer.Texture, new DX.Rectangle(0, 0, _backBuffer.Width, _backBuffer.Height));
 
-	        _backBufferView = _backBuffer.Texture.GetShaderResourceView();
+	        _backBufferView = _backBuffer.GetShaderResourceView();
 	    }
 
 	    /// <summary>
@@ -499,7 +499,7 @@ namespace Gorgon.Examples
 		    _backBuffer.Clear(Color.White);
             _backupImage.CopyTo(_backBuffer.Texture, new DX.Rectangle(0, 0, _backBuffer.Width, _backBuffer.Height));
 
-		    _backBufferView = _backBuffer.Texture.GetShaderResourceView();
+		    _backBufferView = _backBuffer.GetShaderResourceView();
 		}
 
 		/// <summary>
@@ -658,7 +658,7 @@ namespace Gorgon.Examples
                                                                                          Format =  _screen.Format
                                                                                      });
 				_backBuffer.Clear(Color.White);
-			    _backBufferView = _backBuffer.Texture.GetShaderResourceView();
+			    _backBufferView = _backBuffer.GetShaderResourceView();
 
 				// Clear our backup image to white to match our primary screen.
 			    using (IGorgonImage image = new GorgonImage(new GorgonImageInfo(ImageType.Image2D, _screen.Format)

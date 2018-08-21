@@ -273,11 +273,11 @@ namespace Gorgon.Renderers
                                                                      Height = _renderTargetSize.Height,
                                                                      Binding = TextureBinding.ShaderResource
                                                                  });
-            _hPassView = _hPass.Texture.GetShaderResourceView();
+            _hPassView = _hPass.GetShaderResourceView();
 
             _vPass = GorgonRenderTarget2DView.CreateRenderTarget(Graphics,
                                                                    new GorgonTexture2DInfo(_hPass, "Effect.Gauss_BlurVPass"));
-            _vPassView = _vPass.Texture.GetShaderResourceView();
+            _vPassView = _vPass.GetShaderResourceView();
 
             _needTargetUpdate = false;
         }

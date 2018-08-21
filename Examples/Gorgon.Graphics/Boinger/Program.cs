@@ -564,7 +564,7 @@ namespace Gorgon.Graphics.Example
 		    // Here's where we create the 2 planes for our rear wall and floor.  We set the texture size to texel units because that's how the video card expects 
 		    // them.  However, it's a little hard to eyeball 0.67798223f by looking at the texture image display, so we use the ToTexel function to determine our 
 		    // texel size.
-		    DX.Size2F textureSize = _texture.Texture.ToTexel(new DX.Size2(511, 511));
+		    DX.Size2F textureSize = _texture.ToTexel(new DX.Size2(511, 511));
 
 		    // And here we set up the planes with a material, and initial positioning.
 		    _planes = new[]
@@ -592,9 +592,9 @@ namespace Gorgon.Graphics.Example
 
 		    // Create our sphere.
 		    // Again, here we're using texels to align the texture coordinates to the other image packed into the texture (atlasing).  
-		    DX.Vector2 textureOffset = _texture.Texture.ToTexel(new DX.Vector2(516, 0));
+		    DX.Vector2 textureOffset = _texture.ToTexel(new DX.Vector2(516, 0));
 		    // This is to scale our texture coordinates because the actual image is much smaller (255x255) than the full texture (1024x512).
-		    textureSize = _texture.Texture.ToTexel(new DX.Size2(255, 255));
+		    textureSize = _texture.ToTexel(new DX.Size2(255, 255));
 		    // Give the sphere a place to live.
 		    _sphere = new Sphere(_graphics, _inputLayout, 1.0f, textureOffset, textureSize)
 		              {

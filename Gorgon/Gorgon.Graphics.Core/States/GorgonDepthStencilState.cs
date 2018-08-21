@@ -303,7 +303,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonDepthStencilState"/> class.
         /// </summary>
-        public GorgonDepthStencilState()
+        internal GorgonDepthStencilState()
         {
             IsDepthWriteEnabled = true;
             DepthComparison = Comparison.Less;

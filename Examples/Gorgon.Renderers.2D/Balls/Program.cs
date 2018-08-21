@@ -479,7 +479,7 @@ namespace Gorgon.Examples
                                                                                      Height = Settings.Default.ScreenHeight,
                                                                                      Format = BufferFormat.R8G8B8A8_UNorm
                                                                                  });
-		    _ballTargetView = _ballTarget.Texture.GetShaderResourceView();
+		    _ballTargetView = _ballTarget.GetShaderResourceView();
 
             // Create our blur effect.
             _blur = new Gorgon2DGaussBlurEffect(_2D, 15)
@@ -510,7 +510,7 @@ namespace Gorgon.Examples
 			                                                                             Height = args.Size.Height,
 			                                                                             Format = BufferFormat.R8G8B8A8_UNorm
 			                                                                         });
-			    _ballTargetView = _ballTarget.Texture.GetShaderResourceView();
+			    _ballTargetView = _ballTarget.GetShaderResourceView();
 
 				DX.Size2 newTargetSize;
 				newTargetSize.Width = (int)((512.0f * (args.Size.Width / (float)Settings.Default.ScreenWidth)).Min(512));
