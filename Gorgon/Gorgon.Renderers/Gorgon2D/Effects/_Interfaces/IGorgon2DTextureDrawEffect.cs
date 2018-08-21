@@ -77,7 +77,7 @@ namespace Gorgon.Renderers
                                  DX.RectangleF? textureCoordinates = null,
                                  GorgonSamplerState samplerStateOverride = null,
                                  GorgonBlendState blendStateOverride = null,
-                                 Gorgon2DCamera camera = null);
+                                 IGorgon2DCamera camera = null);
 
     }
 }

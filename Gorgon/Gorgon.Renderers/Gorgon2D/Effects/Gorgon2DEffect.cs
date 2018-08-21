@@ -439,7 +439,7 @@ namespace Gorgon.Renderers
                            GorgonBlendState blendStateOverride = null,
                            GorgonDepthStencilState depthStencilStateOverride = null,
                            GorgonRasterState rasterStateOverride = null,
-                           Gorgon2DCamera camera = null)
+                           IGorgon2DCamera camera = null)
         {
             renderMethod.ValidateObject(nameof(renderMethod));
             output.ValidateObject(nameof(output));

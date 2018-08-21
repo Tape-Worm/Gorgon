@@ -129,7 +129,7 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to set or return the camera to use for the effect.
         /// </summary>
-        public Gorgon2DCamera Camera
+        public IGorgon2DCamera Camera
         {
             get;
             set;

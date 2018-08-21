@@ -51,16 +51,6 @@ namespace Gorgon.Renderers
         #endregion
 
         #region Properties.
-
-        /// <summary>
-        /// Property to set or return the projection view matrix buffer.
-        /// </summary>
-        public GorgonConstantBufferView ProjectionViewBuffer
-        {
-            get;
-            set;
-        }
-
         /// <summary>
         /// Property to set or return the buffer used to hold alpha test data.
         /// </summary>

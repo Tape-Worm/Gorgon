@@ -82,7 +82,7 @@ namespace Gorgon.Renderers
         // The batch state for the initial scene.
         private Gorgon2DBatchState _noEffectBatchState = Gorgon2DBatchState.NoBlend;
         // The camera to use with the initial scene render.
-        private Gorgon2DCamera _camera;
+        private IGorgon2DCamera _camera;
         // Flag to indicate that the batch state has changed.
         private bool _hasBatchStateChanged;
         // Flag to indicate that the batch state has changed.
@@ -314,7 +314,7 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="camera">The camera to use.</param>
         /// <returns>The fluent interface for the effects processor.</returns>
-        public Gorgon2DCompositor Camera(Gorgon2DCamera camera)
+        public Gorgon2DCompositor Camera(IGorgon2DCamera camera)
         {
             _camera = camera;
             return this;

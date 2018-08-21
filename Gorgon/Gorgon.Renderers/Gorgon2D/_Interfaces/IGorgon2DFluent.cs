@@ -72,7 +72,7 @@ namespace Gorgon.Renderers
         /// drawing items with the previous blend state.  
         /// </para>
         /// <para>
-        /// The other optional parameter, <paramref name="camera"/>, allows an application to change the view in which the items are drawn for a batch. This takes a <see cref="Gorgon2DCamera"/> object
+        /// The other optional parameter, <paramref name="camera"/>, allows an application to change the view in which the items are drawn for a batch. This takes a <see cref="IGorgon2DCamera"/> object
         /// that defines the projection and view of the scene being rendered. It is possible with this object to change the coordinate system, and to allow perspective rendering for a batch.
         /// </para>
         /// <para>
@@ -98,10 +98,10 @@ namespace Gorgon.Renderers
         /// </para>
         /// </remarks>
         /// <seealso cref="Gorgon2DBatchState"/>
-        /// <seealso cref="Gorgon2DCamera"/>
+        /// <seealso cref="IGorgon2DCamera"/>
         /// <seealso cref="GorgonPolySprite"/>
         /// <seealso cref="GorgonGraphics"/>
-        IGorgon2DDrawingFluent Begin(Gorgon2DBatchState batchState = null, Gorgon2DCamera camera = null);
+        IGorgon2DDrawingFluent Begin(Gorgon2DBatchState batchState = null, IGorgon2DCamera camera = null);
 
         /// <summary>
         /// Function to perform an arbitrary update of any required logic prior to rendering.

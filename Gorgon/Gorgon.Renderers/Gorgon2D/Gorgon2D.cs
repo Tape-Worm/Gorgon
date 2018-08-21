@@ -120,7 +120,7 @@ namespace Gorgon.Renderers
         // The default texture to render.
         private GorgonTexture2DView _defaultTexture;
         // The buffer that holds the view and projection matrices.
-        private GorgonConstantBufferView _viewProjection;
+        private CameraController _cameraController;
         // The buffer used to perform alpha testing.
         private GorgonConstantBufferView _alphaTest;
         // A factory used to create draw calls.
@@ -170,7 +170,7 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to return the currently active camera.
         /// </summary>
-        public Gorgon2DCamera CurrentCamera
+        public IGorgon2DCamera CurrentCamera
         {
             get;
             private set;
@@ -278,16 +278,6 @@ namespace Gorgon.Renderers
         }
 
         /// <summary>
-        /// Function to upload the data from the camera to the GPU.
-        /// </summary>
-        /// <param name="camera">The camera containing the data to upload.</param>
-        private void UploadCameraData(Gorgon2DCamera camera)
-        {
-            _viewProjection.Buffer.SetData(ref camera.ViewProjectionMatrix);
-            camera.NeedsUpload = false;
-        }
-
-        /// <summary>
         /// Function called when a render target is changed on the main graphics interface.
         /// </summary>
         /// <param name="sender">The sender of the event.</param>
@@ -300,25 +290,8 @@ namespace Gorgon.Renderers
                 Initialize();
             }
 
-            Gorgon2DCamera camera = CurrentCamera ?? _defaultCamera;
-
-            if (camera.AllowUpdateOnResize)
-            {
-                DX.ViewportF viewPort = Graphics.Viewports[0];
-
-                // If the viewport is different than our camera dimensions, then resize the camera to match the viewport.
-                if ((viewPort.Width != camera.ViewDimensions.Width)
-                    || (viewPort.Height != camera.ViewDimensions.Height))
-                {
-                    camera.ViewDimensions = new DX.Size2F(viewPort.Width, viewPort.Height);
-                    camera.Update();
-                }
-            }
-
-            if (camera.NeedsUpload)
-            {
-                UploadCameraData(camera);
-            }
+            IGorgon2DCamera camera = CurrentCamera ?? _defaultCamera;
+            _cameraController.UpdateCamera(camera);
         }
 
         /// <summary>
@@ -423,7 +396,6 @@ namespace Gorgon.Renderers
                 _batchRenderer = new BatchRenderer(Graphics);
                 _drawCallFactory = new DrawCallFactory(Graphics, _defaultTexture, _vertexLayout)
                                    {
-                                       ProjectionViewBuffer = _viewProjection,
                                        AlphaTestBuffer = _alphaTest
                                    };
 
@@ -445,12 +417,8 @@ namespace Gorgon.Renderers
                                                          0,
                                                          1.0f,
                                                          "Gorgon2D.Default_Camera");
-                _defaultCamera.Update();
-                _defaultCamera.NeedsUpload = false;
-                _viewProjection = GorgonConstantBufferView.CreateConstantBuffer(Graphics,
-                                                                                ref _defaultCamera.ViewProjectionMatrix,
-                                                                                "[Gorgon2D] View * Projection Matrix Buffer",
-                                                                                ResourceUsage.Dynamic);
+                _cameraController = new CameraController(Graphics);
+                _cameraController.UpdateCamera(_defaultCamera);
 
                 var polyData = new PolyVertexShaderData
                                {
@@ -467,7 +435,7 @@ namespace Gorgon.Renderers
 
                 _defaultTextSprite = new GorgonTextSprite(_defaultFontFactory.Value.DefaultFont);
 
-                _polyTransformVertexShader.RwConstantBuffers[0] = _viewProjection;
+                _polyTransformVertexShader.RwConstantBuffers[0] = _cameraController.CameraBuffer;
                 _polyTransformVertexShader.RwConstantBuffers[1] = _polySpriteDataBuffer;
                 _polyPixelShader.RwConstantBuffers[0] = _alphaTest;
 
@@ -487,53 +455,6 @@ namespace Gorgon.Renderers
                 Log.LogException(ex);
                 throw;
             }
-        }
-
-        /// <summary>
-        /// Function to check the current camera against the one being assigned to see if an update is needed.
-        /// </summary>
-        /// <param name="camera">The camera being assigned.</param>
-        private void CheckCameraState(Gorgon2DCamera camera)
-        {
-            bool cameraChanged = camera != CurrentCamera;
-            bool updateCamera = ((cameraChanged) ||
-                                 ((camera != null) && (camera.NeedsUpdate)));
-
-            if (!updateCamera)
-            {
-                return;
-            }
-
-            if (camera == null)
-            {
-                camera = _defaultCamera;
-            }
-
-            // If we change the camera we have to upload the projection/view matrix to the GPU regardless.
-            if (cameraChanged)
-            {
-                var currentViewSize = new DX.Size2F(Graphics.Viewports[0].Width, Graphics.Viewports[0].Height);
-
-                // Force the camera to resize to the current viewport.
-                if ((camera.AllowUpdateOnResize) && (!currentViewSize.Equals(camera.ViewDimensions)))
-                {
-                    camera.ViewDimensions = currentViewSize;
-                }
-                else
-                {
-                    camera.NeedsUpload = true;
-                }
-            }
-
-            camera.Update();
-
-            // If we changed the camera, then we need to re-upload the matrix data to the GPU.
-            if (camera.NeedsUpload)
-            {
-                UploadCameraData(camera);
-            }
-
-            CurrentCamera = camera;
         }
 
         /// <summary>
@@ -568,7 +489,7 @@ namespace Gorgon.Renderers
         /// drawing items with the previous blend state.  
         /// </para>
         /// <para>
-        /// The other optional parameter, <paramref name="camera"/>, allows an application to change the view in which the items are drawn for a batch. This takes a <see cref="Gorgon2DCamera"/> object
+        /// The other optional parameter, <paramref name="camera"/>, allows an application to change the view in which the items are drawn for a batch. This takes a <see cref="IGorgon2DCamera"/> object
         /// that defines the projection and view of the scene being rendered. It is possible with this object to change the coordinate system, and to allow perspective rendering for a batch.
         /// </para>
         /// <para>
@@ -594,10 +515,10 @@ namespace Gorgon.Renderers
         /// </para>
         /// </remarks>
         /// <seealso cref="Gorgon2DBatchState"/>
-        /// <seealso cref="Gorgon2DCamera"/>
+        /// <seealso cref="IGorgon2DCamera"/>
         /// <seealso cref="GorgonPolySprite"/>
         /// <seealso cref="GorgonGraphics"/>
-        public void Begin(Gorgon2DBatchState batchState = null, Gorgon2DCamera camera = null)
+        public void Begin(Gorgon2DBatchState batchState = null, IGorgon2DCamera camera = null)
         {
             if (Interlocked.Exchange(ref _beginCalled, 1) == 1)
             {
@@ -616,8 +537,9 @@ namespace Gorgon.Renderers
                 Graphics.SetRenderTarget(_primaryTarget, Graphics.DepthStencilView);
             }
 
-            CheckCameraState(camera);
-            
+            _cameraController.UpdateCamera(camera ?? _defaultCamera);
+            CurrentCamera = camera;
+
             _lastRenderable = null;
             _lastBatchState.PixelShader = batchState?.PixelShader ?? _defaultPixelShader;
             _lastBatchState.VertexShader = batchState?.VertexShader ?? _defaultVertexShader;
@@ -643,7 +565,7 @@ namespace Gorgon.Renderers
 
             if (_lastBatchState.VertexShader.RwConstantBuffers[0] == null)
             {
-                _lastBatchState.VertexShader.RwConstantBuffers[0] = _viewProjection;
+                _lastBatchState.VertexShader.RwConstantBuffers[0] = _cameraController.CameraBuffer;
             }
 
             if (_lastBatchState.VertexShader.RwConstantBuffers[1] == null)
@@ -1961,7 +1883,7 @@ namespace Gorgon.Renderers
             GorgonInputLayout layout = Interlocked.Exchange(ref _vertexLayout, null);
             BatchRenderer spriteRenderer = Interlocked.Exchange(ref _batchRenderer, null);
             GorgonTexture2DView texture = Interlocked.Exchange(ref _defaultTexture, null);
-            GorgonConstantBufferView viewProj = Interlocked.Exchange(ref _viewProjection, null);
+            CameraController camController = Interlocked.Exchange(ref _cameraController, null);
             GorgonConstantBufferView world = Interlocked.Exchange(ref _polySpriteDataBuffer, null);
             GorgonConstantBufferView alphaTest = Interlocked.Exchange(ref _alphaTest, null);
             Lazy<GorgonFontFactory> defaultFont = Interlocked.Exchange(ref _defaultFontFactory, null);
@@ -1980,7 +1902,7 @@ namespace Gorgon.Renderers
             spriteRenderer?.Dispose();
             alphaTest?.Buffer?.Dispose();
             world?.Buffer?.Dispose();
-            viewProj?.Buffer?.Dispose();
+            camController?.Dispose();
             texture?.Texture?.Dispose();
             layout?.Dispose();
             polyPShader?.Dispose();
@@ -2025,7 +1947,7 @@ namespace Gorgon.Renderers
         /// drawing items with the previous blend state.  
         /// </para>
         /// <para>
-        /// The other optional parameter, <paramref name="camera"/>, allows an application to change the view in which the items are drawn for a batch. This takes a <see cref="Gorgon2DCamera"/> object
+        /// The other optional parameter, <paramref name="camera"/>, allows an application to change the view in which the items are drawn for a batch. This takes a <see cref="IGorgon2DCamera"/> object
         /// that defines the projection and view of the scene being rendered. It is possible with this object to change the coordinate system, and to allow perspective rendering for a batch.
         /// </para>
         /// <para>
@@ -2051,10 +1973,10 @@ namespace Gorgon.Renderers
         /// </para>
         /// </remarks>
         /// <seealso cref="Gorgon2DBatchState"/>
-        /// <seealso cref="Gorgon2DCamera"/>
+        /// <seealso cref="IGorgon2DCamera"/>
         /// <seealso cref="GorgonPolySprite"/>
         /// <seealso cref="GorgonGraphics"/>
-        IGorgon2DDrawingFluent IGorgon2DFluent.Begin(Gorgon2DBatchState batchState, Gorgon2DCamera camera)
+        IGorgon2DDrawingFluent IGorgon2DFluent.Begin(Gorgon2DBatchState batchState, IGorgon2DCamera camera)
         {
             Begin(batchState, camera);
             return this;
