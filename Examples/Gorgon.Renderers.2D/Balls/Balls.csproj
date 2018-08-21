@@ -46,7 +46,7 @@
     <ApplicationManifest>D:\Mike\Code\GitHubRepos\Gorgon\WIP\Examples\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <PropertyGroup>
-<StartupObject>Gorgon.Examples.Program</StartupObject>
+    <StartupObject>Gorgon.Examples.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />

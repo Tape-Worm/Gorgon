@@ -109,5 +109,13 @@ namespace Gorgon.Renderers
             get;
             internal set;
         }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Gorgon2DBatchState"/> class.
+        /// </summary>
+        internal Gorgon2DBatchState()
+        {
+            // We should not be able to create this outside of the assembly.
+        }
     }
 }
