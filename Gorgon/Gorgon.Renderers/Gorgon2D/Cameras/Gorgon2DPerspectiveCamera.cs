@@ -267,7 +267,7 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Function to update the view matrix.
         /// </summary>
-        private void Update_viewMatrix()
+        private void UpdateViewMatrix()
         {
             DX.Matrix center = DX.Matrix.Identity;
 
@@ -277,7 +277,6 @@ namespace Gorgon.Renderers
 			{
 				center.M11 = _zoom.X;
 				center.M22 = _zoom.Y;
-				center.M33 = 1.0f;
 			}
 
 			if (_angle != 0.0f)
@@ -431,7 +430,7 @@ namespace Gorgon.Renderers
         {
             if (_needsViewUpdate)
             {
-                Update_viewMatrix();
+                UpdateViewMatrix();
             }
             
             view = _viewMatrix;
