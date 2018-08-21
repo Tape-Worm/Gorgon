@@ -35,6 +35,25 @@ using Gorgon.Timing;
 namespace Gorgon.Animation
 {
     /// <summary>
+    /// The current state of the animation.
+    /// </summary>
+    public enum AnimationState
+    {
+        /// <summary>
+        /// The animation is playing.
+        /// </summary>
+        Playing = 0,
+        /// <summary>
+        /// The animation is stopped.  When it starts playing again, it will restart.
+        /// </summary>
+        Stopped = 1,
+        /// <summary>
+        /// The animation is paused.  When it starts playing again, it will continue from where it left off.
+        /// </summary>
+        Paused = 2
+    }
+
+    /// <summary>
 	/// Base class for applying animations to an object.
 	/// </summary>
 	/// <typeparam name="T">The type of object that this controller will use.  The type passed in must be a reference type (i.e. a class).</typeparam>
@@ -81,6 +100,8 @@ namespace Gorgon.Animation
         private int _loopCount;
 	    // The object that is to be animated.
 	    private T _animatedObject;
+        // The current animation state.
+	    private AnimationState _state = AnimationState.Stopped;
         #endregion
 
 		#region Properties.
@@ -92,6 +113,23 @@ namespace Gorgon.Animation
 			get;
 			private set;
 		}
+
+	    /// <summary>
+	    /// Property to return the current state of the animation on the controller.
+	    /// </summary>
+	    public AnimationState State
+	    {
+	        get => CurrentAnimation == null ? AnimationState.Stopped : _state;
+	        private set
+	        {
+	            if (CurrentAnimation == null)
+	            {
+	                return;
+	            }
+
+	            _state = value;
+	        }
+	    }
 
         /// <summary>
         /// Property to set or return the current time index.
@@ -106,14 +144,14 @@ namespace Gorgon.Animation
                     return;
                 }
 
-                _time = value.Max(0);
+                _time = value;
 
                 if (CurrentAnimation == null)
                 {
                     return;
                 }
 
-                if (((CurrentAnimation.IsLooped) && (_time > CurrentAnimation.Length)) || (value < 0))
+                if ((CurrentAnimation.IsLooped) && (_time > CurrentAnimation.Length))
                 {
                     // Loop the animation.
                     if ((CurrentAnimation.LoopCount != 0) && (_loopCount == CurrentAnimation.LoopCount))
@@ -136,11 +174,19 @@ namespace Gorgon.Animation
                 if (_time < 0)
                 {
                     _time = 0;
+                    State = AnimationState.Stopped;
                 }
 
                 if (_time > CurrentAnimation.Length)
                 {
                     _time = CurrentAnimation.Length;
+                    State = AnimationState.Stopped;
+                }
+
+                // Do not update the animation when we're in a paused state.
+                if (State == AnimationState.Paused)
+                {
+                    return;
                 }
 
                 NotifyAnimation();
@@ -251,26 +297,37 @@ namespace Gorgon.Animation
 		/// <seealso cref="GorgonTiming"/>
 		public void Update()
 		{
-		    if (CurrentAnimation == null)
+		    if (State != AnimationState.Playing)
 		    {
 		        return;
 		    }
 
-		    float lastTime = Time;
-			float increment = (CurrentAnimation.Speed * GorgonTiming.Delta);
+		    float increment = (CurrentAnimation.Speed * GorgonTiming.Delta);
 
 			// Push the animation time forward (or backward, depending on the Speed modifier).
 		    Time += increment;
-		    lastTime += increment;
-
-		    // If we're not looping, put the animation into a stopped state.
-			if ((CurrentAnimation.IsLooped) || ((lastTime < CurrentAnimation.Length) && (lastTime > 0)))
-			{
-				return;
-			}
-
-			Stop();
 		}
+
+        /// <summary>
+        /// Function to reset the currently playing animation back to the start of the animation.
+        /// </summary>
+	    public void Reset()
+	    {
+	        if (CurrentAnimation == null)
+	        {
+	            Time = 0;
+	            return;
+	        }
+
+	        if (CurrentAnimation.Speed >= 0)
+	        {
+	            Time = 0;
+	        }
+	        else if (CurrentAnimation.Speed < 0)
+	        {
+	            Time = CurrentAnimation.Length;
+	        }
+	    }
 		
 		/// <summary>
 		/// Function to set an animation playing on an object.
@@ -319,18 +376,36 @@ namespace Gorgon.Animation
 
 			// Update to the first frame.
 		    NotifyAnimation();
+
+		    State = AnimationState.Playing;
 		}
+
+        /// <summary>
+        /// Function to pause the currently executing animation.
+        /// </summary>
+	    public void Pause()
+	    {
+	        if (CurrentAnimation == null)
+	        {
+	            return;
+	        }
+
+	        State = AnimationState.Paused;
+	    }
 
 		/// <summary>
 		/// Function to stop the currently playing animation.
 		/// </summary>
 		public void Stop()
 		{
+            Reset();
+
 			if (CurrentAnimation == null)
 			{
 				return;
 			}
 
+		    State = AnimationState.Stopped;
 		    _loopCount = 0;
 			_animatedObject = null;
 			CurrentAnimation = null;
