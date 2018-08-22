@@ -56,52 +56,6 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         Single = 2
     }
-    
-    /// <summary>
-    /// Defines the available modes for mapping a dynamic resource from GPU to CPU address space.
-    /// </summary>
-    public enum LockMode
-    {
-        /// <summary>
-        /// <para>
-        /// No lock mode.
-        /// </para>
-        /// <para>
-        /// Dynamic resources cannot use this value. If this value is passed, then <see cref="WriteDiscard"/> is substituted in its place.
-        /// </para>
-        /// </summary>
-        None = 0,
-        /// <summary>
-        /// <para>
-        /// Resource is mapped for reading. The resource must have been created with read access
-        /// </para>
-        /// </summary>
-        Read = D3D11.MapMode.Read,
-        /// <summary>
-        /// <para>
-        /// Resource is mapped for writing. The resource must have been created with write
-        /// </para>
-        /// </summary>
-        Write = D3D11.MapMode.Write,
-        /// <summary>
-        /// <para>
-        /// Resource is mapped for reading and writing. The resource must have been created with read and write
-        /// </para>
-        /// </summary>
-        ReadWrite = D3D11.MapMode.ReadWrite,
-        /// <summary>
-        /// <para>
-        /// Resource is mapped for writing; the previous contents of the resource will be undefined. The resource must have been created with write access and dynamic usage
-        /// </para>
-        /// </summary>
-        WriteDiscard = D3D11.MapMode.WriteDiscard,
-        /// <summary>
-        /// <para>
-        /// Resource is mapped for writing; the existing contents of the resource cannot be overwritten. The resource must have been created with write access.
-        /// </para>
-        /// </summary>
-        WriteNoOverwrite = D3D11.MapMode.WriteNoOverwrite
-    }
 
     /// <summary>
     /// A base class that provides functionality that is common across any buffer type.
