@@ -33,7 +33,7 @@ GorgonLitVertex GorgonVertexLightingShader(GorgonSpriteVertex vertex)
 {
 	GorgonLitVertex output;
 	
-	output.position = mul(WorldViewProjection, vertex.position);
+	output.position = mul(ViewProjection, vertex.position);
 	output.uv = vertex.uv;
 	output.color = vertex.color;
 

@@ -26,6 +26,7 @@ Test/*
 !Test/Gorgon.Input.Test/
 Artifacts/
 *.snk
+Tools/Backup/
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
