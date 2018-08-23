@@ -283,11 +283,15 @@ namespace Gorgon.Renderers
 			if (_angle != 0.0f)
 			{
 			    DX.Matrix.RotationZ(_angle.ToRadians(), out DX.Matrix rotation);
+			    // This is the inversion of the rotation matrix.
+			    // We need to invert the matrix in order to apply the correct transformation to the world data.
+                rotation.Transpose();
 				DX.Matrix.Multiply(ref rotation, ref center, out center);
 			}
 			// ReSharper restore CompareOfFloatsByEqualityOperator
 
-			DX.Matrix.Translation(_position.X, _position.Y, 0.0f, out DX.Matrix translation);
+		    // Pass in the inversion of the positioning.
+		    DX.Matrix.Translation(-_position.X, -_position.Y, 0.0f, out DX.Matrix translation);
 			DX.Matrix.Multiply(ref translation, ref center, out _viewMatrix);
 		}
 
@@ -304,8 +308,18 @@ namespace Gorgon.Renderers
         {
             DX.Matrix transformMatrix;
 
-            GetViewMatrix(out _viewMatrix);
-            GetProjectionMatrix(out _projectionMatrix);
+            if (_needsViewUpdate)
+            {
+                GetViewMatrix(out _viewMatrix);
+                // Reset the flag so we can actually use the camera when rendering.
+                _needsViewUpdate = true;
+            }
+
+            if (_needsProjectionUpdate)
+            {
+                GetProjectionMatrix(out _projectionMatrix);
+                _needsProjectionUpdate = true;
+            }
 
             if (includeViewTransform)
             {
@@ -345,8 +359,18 @@ namespace Gorgon.Renderers
         /// be used to convert the position.  This means if the camera is moved or moving, then the converted screen point will not reflect that.</remarks>
         public void Unproject(ref DX.Vector3 worldSpacePosition, out DX.Vector3 result, bool includeViewTransform = true)
         {
-            GetViewMatrix(out _viewMatrix);
-            GetProjectionMatrix(out _projectionMatrix);
+            if (_needsViewUpdate)
+            {
+                GetViewMatrix(out _viewMatrix);
+                // Reset the flag so we can actually use the camera when rendering.
+                _needsViewUpdate = true;
+            }
+
+            if (_needsProjectionUpdate)
+            {
+                GetProjectionMatrix(out _projectionMatrix);
+                _needsProjectionUpdate = true;
+            }
 
             DX.Matrix transformMatrix;
 
@@ -417,7 +441,7 @@ namespace Gorgon.Renderers
 	        {
 	            UpdateViewMatrix();
 	        }
-
+            
 	        view = _viewMatrix;
 	        _needsViewUpdate = false;
 	    }
