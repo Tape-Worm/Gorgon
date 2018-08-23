@@ -1,0 +1,313 @@
+<?xml version="1.0"?>
+<!--Created by exporting the settings of a KryptonPalette instance.-->
+<!--For more information about Krypton visit www.ComponentFactory.com-->
+<!--WARNING: Modifying this file may render it invalid for importing.-->
+<KryptonPalette Version="18" Generated="Thursday, 23 August 2018, 13:35">
+  <Properties>
+    <ButtonStyles>
+      <ButtonCommon>
+        <StateCommon>
+          <Back>
+            <GraphicsHint Type="PaletteGraphicsHint" Value="AntiAlias" />
+            <Color1 Type="Color" Value="Transparent" />
+            <Color2 Type="Color" Value="Transparent" />
+          </Back>
+          <Border>
+            <Draw Type="InheritBool" Value="False" />
+            <DrawBorders Type="PaletteDrawBorders" Value="Top,Bottom,Left,Right" />
+            <GraphicsHint Type="PaletteGraphicsHint" Value="AntiAlias" />
+            <Color1 Type="Color" Value="Black" />
+            <Color2 Type="Color" Value="Black" />
+            <Rounding Type="Int" Value="0" />
+          </Border>
+          <Content>
+            <ShortText>
+              <Color1 Type="Color" Value="White" />
+              <Color2 Type="Color" Value="White" />
+            </ShortText>
+            <LongText>
+              <Color1 Type="Color" Value="White" />
+              <Color2 Type="Color" Value="White" />
+            </LongText>
+          </Content>
+        </StateCommon>
+        <StateDisabled>
+          <Border>
+            <DrawBorders Type="PaletteDrawBorders" Value="Top,Bottom,Left,Right" />
+            <Color1 Type="Color" Value="Transparent" />
+            <Color2 Type="Color" Value="Transparent" />
+            <Rounding Type="Int" Value="0" />
+          </Border>
+          <Content>
+            <ShortText>
+              <Color1 Type="Color" Value="DimGray" />
+              <Color2 Type="Color" Value="DimGray" />
+            </ShortText>
+            <LongText>
+              <Color1 Type="Color" Value="DimGray" />
+              <Color2 Type="Color" Value="DimGray" />
+            </LongText>
+          </Content>
+        </StateDisabled>
+        <StateTracking>
+          <Back>
+            <Color1 Type="Color" Value="SteelBlue" />
+            <Color2 Type="Color" Value="SteelBlue" />
+          </Back>
+          <Content>
+            <ShortText>
+              <Color1 Type="Color" Value="White" />
+              <Color2 Type="Color" Value="White" />
+            </ShortText>
+            <LongText>
+              <Color1 Type="Color" Value="White" />
+              <Color2 Type="Color" Value="White" />
+            </LongText>
+          </Content>
+        </StateTracking>
+        <StatePressed>
+          <Back>
+            <Color1 Type="Color" Value="75, 109, 131" />
+            <Color2 Type="Color" Value="75, 109, 131" />
+          </Back>
+          <Border>
+            <Draw Type="InheritBool" Value="False" />
+            <DrawBorders Type="PaletteDrawBorders" Value="Top,Bottom,Left,Right" />
+          </Border>
+        </StatePressed>
+        <StateCheckedNormal>
+          <Back>
+            <Color1 Type="Color" Value="204, 130, 40" />
+            <Color2 Type="Color" Value="204, 130, 40" />
+          </Back>
+          <Border>
+            <Draw Type="InheritBool" Value="False" />
+            <DrawBorders Type="PaletteDrawBorders" Value="Top,Bottom,Left,Right" />
+          </Border>
+          <Content>
+            <ShortText>
+              <Font Type="Font" Value="Segoe UI, 9pt, style=Bold" />
+            </ShortText>
+          </Content>
+        </StateCheckedNormal>
+        <StateCheckedTracking>
+          <Back>
+            <Color1 Type="Color" Value="158, 146, 121" />
+            <Color2 Type="Color" Value="158, 146, 121" />
+          </Back>
+          <Border>
+            <Draw Type="InheritBool" Value="False" />
+            <DrawBorders Type="PaletteDrawBorders" Value="Top,Bottom,Left,Right" />
+          </Border>
+        </StateCheckedTracking>
+        <StateCheckedPressed>
+          <Back>
+            <Color1 Type="Color" Value="188, 148, 100" />
+            <Color2 Type="Color" Value="188, 148, 100" />
+          </Back>
+          <Border>
+            <Draw Type="InheritBool" Value="False" />
+            <DrawBorders Type="PaletteDrawBorders" Value="Top,Bottom,Left,Right" />
+          </Border>
+        </StateCheckedPressed>
+      </ButtonCommon>
+    </ButtonStyles>
+    <Common>
+      <StateCommon>
+        <Back>
+          <Draw Type="InheritBool" Value="True" />
+          <GraphicsHint Type="PaletteGraphicsHint" Value="AntiAlias" />
+          <Color1 Type="Color" Value="104, 104, 104" />
+          <Color2 Type="Color" Value="104, 104, 104" />
+          <ColorStyle Type="PaletteColorStyle" Value="Solid" />
+          <ColorAlign Type="PaletteRectangleAlign" Value="Form" />
+        </Back>
+        <Content>
+          <ShortText>
+            <Font Type="Font" Value="Segoe UI, 9pt, style=Bold" />
+            <Color1 Type="Color" Value="White" />
+            <Color2 Type="Color" Value="White" />
+          </ShortText>
+          <LongText>
+            <Font Type="Font" Value="Segoe UI, 9pt, style=Bold" />
+            <Color1 Type="Color" Value="White" />
+            <Color2 Type="Color" Value="White" />
+          </LongText>
+        </Content>
+      </StateCommon>
+      <StateDisabled>
+        <Back>
+          <Draw Type="InheritBool" Value="True" />
+          <GraphicsHint Type="PaletteGraphicsHint" Value="AntiAlias" />
+          <Color1 Type="Color" Value="104, 104, 104" />
+          <Color2 Type="Color" Value="104, 104, 104" />
+          <ColorStyle Type="PaletteColorStyle" Value="Solid" />
+          <ColorAlign Type="PaletteRectangleAlign" Value="Form" />
+        </Back>
+        <Content>
+          <ShortText>
+            <Font Type="Font" Value="Segoe UI, 9pt" />
+            <Color1 Type="Color" Value="Silver" />
+            <Color2 Type="Color" Value="Silver" />
+          </ShortText>
+          <LongText>
+            <Font Type="Font" Value="Segoe UI, 9pt" />
+            <Color1 Type="Color" Value="Silver" />
+            <Color2 Type="Color" Value="Silver" />
+          </LongText>
+        </Content>
+      </StateDisabled>
+    </Common>
+    <FormStyles>
+      <FormCommon>
+        <StateCommon>
+          <Back>
+            <Color1 Type="Color" Value="64, 64, 64" />
+            <Color2 Type="Color" Value="64, 64, 64" />
+          </Back>
+          <Border>
+            <DrawBorders Type="PaletteDrawBorders" Value="Top,Bottom,Left,Right" />
+            <Color1 Type="Color" Value="SteelBlue" />
+            <Color2 Type="Color" Value="SteelBlue" />
+            <ColorStyle Type="PaletteColorStyle" Value="Solid" />
+            <ColorAlign Type="PaletteRectangleAlign" Value="Form" />
+            <Width Type="Int" Value="2" />
+            <Rounding Type="Int" Value="0" />
+          </Border>
+        </StateCommon>
+        <StateInactive>
+          <Border>
+            <Draw Type="InheritBool" Value="True" />
+            <DrawBorders Type="PaletteDrawBorders" Value="Top,Bottom,Left,Right" />
+            <GraphicsHint Type="PaletteGraphicsHint" Value="AntiAlias" />
+            <Color1 Type="Color" Value="Black" />
+            <Color2 Type="Color" Value="Black" />
+            <ColorStyle Type="PaletteColorStyle" Value="Solid" />
+            <ColorAlign Type="PaletteRectangleAlign" Value="Form" />
+            <Width Type="Int" Value="1" />
+            <Rounding Type="Int" Value="0" />
+          </Border>
+        </StateInactive>
+      </FormCommon>
+    </FormStyles>
+    <HeaderStyles>
+      <HeaderForm>
+        <StateCommon>
+          <Back>
+            <Color1 Type="Color" Value="64, 64, 64" />
+            <Color2 Type="Color" Value="64, 64, 64" />
+          </Back>
+          <Content>
+            <ShortText>
+              <Font Type="Font" Value="Segoe UI Semibold, 12pt" />
+            </ShortText>
+          </Content>
+        </StateCommon>
+      </HeaderForm>
+    </HeaderStyles>
+    <PanelStyles>
+      <PanelCommon>
+        <StateCommon>
+          <Draw Type="InheritBool" Value="False" />
+        </StateCommon>
+      </PanelCommon>
+    </PanelStyles>
+    <Ribbon>
+      <RibbonAppButton>
+        <StateCommon>
+          <BackColor1 Type="Color" Value="Blue" />
+          <BackColor2 Type="Color" Value="Blue" />
+          <BackColor3 Type="Color" Value="Blue" />
+          <BackColor4 Type="Color" Value="Blue" />
+          <BackColor5 Type="Color" Value="Blue" />
+        </StateCommon>
+      </RibbonAppButton>
+      <RibbonGeneral>
+        <GroupSeparatorDark Type="Color" Value="64, 64, 64" />
+        <GroupSeparatorLight Type="Color" Value="64, 64, 64" />
+        <MinimizeBarDarkColor Type="Color" Value="64, 64, 64" />
+        <MinimizeBarLightColor Type="Color" Value="64, 64, 64" />
+        <TextFont Type="Font" Value="Segoe UI, 9pt" />
+        <TextHint Type="PaletteTextHint" Value="SystemDefault" />
+      </RibbonGeneral>
+      <RibbonGroupArea>
+        <StateCommon>
+          <BackColor1 Type="Color" Value="104, 104, 104" />
+          <BackColor2 Type="Color" Value="104, 104, 104" />
+          <BackColor3 Type="Color" Value="104, 104, 104" />
+          <BackColor4 Type="Color" Value="104, 104, 104" />
+          <BackColor5 Type="Color" Value="104, 104, 104" />
+        </StateCommon>
+      </RibbonGroupArea>
+      <RibbonGroupButtonText>
+        <StateCommon>
+          <TextColor Type="Color" Value="White" />
+        </StateCommon>
+        <StateDisabled>
+          <TextColor Type="Color" Value="DimGray" />
+        </StateDisabled>
+      </RibbonGroupButtonText>
+      <RibbonGroupCheckBoxText>
+        <StateCommon>
+          <TextColor Type="Color" Value="White" />
+        </StateCommon>
+        <StateDisabled>
+          <TextColor Type="Color" Value="DimGray" />
+        </StateDisabled>
+      </RibbonGroupCheckBoxText>
+      <RibbonGroupNormalBorder>
+        <StateCommon>
+          <BackColor1 Type="Color" Value="64, 64, 64" />
+          <BackColor2 Type="Color" Value="64, 64, 64" />
+          <BackColor3 Type="Color" Value="64, 64, 64" />
+          <BackColor4 Type="Color" Value="64, 64, 64" />
+          <BackColor5 Type="Color" Value="64, 64, 64" />
+        </StateCommon>
+      </RibbonGroupNormalBorder>
+      <RibbonGroupNormalTitle>
+        <StateCommon>
+          <TextColor Type="Color" Value="White" />
+        </StateCommon>
+      </RibbonGroupNormalTitle>
+      <RibbonGroupLabelText>
+        <StateCommon>
+          <TextColor Type="Color" Value="White" />
+        </StateCommon>
+        <StateDisabled>
+          <TextColor Type="Color" Value="DimGray" />
+        </StateDisabled>
+      </RibbonGroupLabelText>
+      <RibbonGroupRadioButtonText>
+        <StateCommon>
+          <TextColor Type="Color" Value="White" />
+        </StateCommon>
+        <StateDisabled>
+          <TextColor Type="Color" Value="DimGray" />
+        </StateDisabled>
+      </RibbonGroupRadioButtonText>
+      <RibbonTab>
+        <StateCommon>
+          <BackColor1 Type="Color" Value="104, 104, 104" />
+          <BackColor2 Type="Color" Value="104, 104, 104" />
+          <BackColor3 Type="Color" Value="104, 104, 104" />
+          <BackColor4 Type="Color" Value="104, 104, 104" />
+          <BackColor5 Type="Color" Value="104, 104, 104" />
+          <TextColor Type="Color" Value="White" />
+        </StateCommon>
+        <StateNormal>
+          <TextColor Type="Color" Value="Gray" />
+        </StateNormal>
+        <StateTracking>
+          <BackColor1 Type="Color" Value="SteelBlue" />
+          <BackColor2 Type="Color" Value="SteelBlue" />
+          <BackColor3 Type="Color" Value="SteelBlue" />
+          <BackColor4 Type="Color" Value="SteelBlue" />
+          <BackColor5 Type="Color" Value="SteelBlue" />
+          <TextColor Type="Color" Value="White" />
+        </StateTracking>
+      </RibbonTab>
+    </Ribbon>
+    <BasePaletteMode Type="PaletteMode" Value="Office 2010 - Black" />
+  </Properties>
+  <Images />
+</KryptonPalette>
