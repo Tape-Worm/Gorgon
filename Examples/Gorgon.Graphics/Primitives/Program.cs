@@ -154,6 +154,9 @@ namespace Gorgon.Graphics.Example
 		    return true;
 		}
 
+        /// <summary>
+        /// Function to process the keyboard commands.
+        /// </summary>
 		private static void ProcessKeys()
 		{
 		    DX.Vector3 cameraDir = DX.Vector3.Zero;
@@ -162,19 +165,19 @@ namespace Gorgon.Graphics.Example
 
 			if (_keyboard.KeyStates[Keys.Left] == GI.KeyState.Down)
 			{
-				_cameraRotation.X -= 40.0f * GorgonTiming.Delta;
+				_cameraRotation.Y -= 40.0f * GorgonTiming.Delta;
 			} 
 			else if (_keyboard.KeyStates[Keys.Right] == GI.KeyState.Down)
 			{
-				_cameraRotation.X += 40.0f * GorgonTiming.Delta;
+				_cameraRotation.Y += 40.0f * GorgonTiming.Delta;
 			} 
 			if (_keyboard.KeyStates[Keys.Up] == GI.KeyState.Down)
 			{
-				_cameraRotation.Y -= 40.0f * GorgonTiming.Delta;
+				_cameraRotation.X -= 40.0f * GorgonTiming.Delta;
 			} 
 			else if (_keyboard.KeyStates[Keys.Down] == GI.KeyState.Down)
 			{
-				_cameraRotation.Y += 40.0f * GorgonTiming.Delta;
+				_cameraRotation.X += 40.0f * GorgonTiming.Delta;
 			}
             if (_keyboard.KeyStates[Keys.PageUp] == GI.KeyState.Down)
 			{
@@ -294,8 +297,8 @@ namespace Gorgon.Graphics.Example
         private static void RawMouse_MouseMove(object sender, GI.GorgonMouseEventArgs e)
         {
             Point delta = e.RelativePosition;
-            _cameraRotation.Y += delta.Y.Sign() * (_sensitivity);
-            _cameraRotation.X += delta.X.Sign() * (_sensitivity);
+            _cameraRotation.X += delta.Y.Sign() * (_sensitivity);
+            _cameraRotation.Y += delta.X.Sign() * (_sensitivity);
         }
 
         /// <summary>

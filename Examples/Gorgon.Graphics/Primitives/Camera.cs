@@ -298,7 +298,7 @@ namespace Gorgon.Graphics.Example
 
             if (_target == null)
             {
-                DX.Matrix.RotationYawPitchRoll(_rotation.X.ToRadians(), _rotation.Y.ToRadians(), _rotation.Z.ToRadians(), out DX.Matrix rotation);
+                DX.Matrix.RotationYawPitchRoll(_rotation.Y.ToRadians(), _rotation.X.ToRadians(), _rotation.Z.ToRadians(), out DX.Matrix rotation);
                 DX.Vector3.TransformCoordinate(ref forward, ref rotation, out forward);
                 DX.Vector3.TransformCoordinate(ref right, ref rotation, out right);
                 DX.Vector3.Cross(ref forward, ref right, out up);
@@ -307,12 +307,16 @@ namespace Gorgon.Graphics.Example
             _lookAt = forward;
             _up = up;
 
-            DX.Vector3.Multiply(ref right, _velocity.X, out right);
-            DX.Vector3.Add(ref _eye, ref right, out _eye);
-            DX.Vector3.Multiply(ref forward, _velocity.Z, out forward);
-            DX.Vector3.Add(ref _eye, ref forward, out _eye);
-            DX.Vector3.Multiply(ref up, _velocity.Y, out up);
-            DX.Vector3.Add(ref _eye, ref up, out _eye);
+            // Update our eye position by our velocity.
+            if (_velocity != DX.Vector3.Zero)
+            {
+                DX.Vector3.Multiply(ref right, _velocity.X, out right);
+                DX.Vector3.Add(ref _eye, ref right, out _eye);
+                DX.Vector3.Multiply(ref forward, _velocity.Z, out forward);
+                DX.Vector3.Add(ref _eye, ref forward, out _eye);
+                DX.Vector3.Multiply(ref up, _velocity.Y, out up);
+                DX.Vector3.Add(ref _eye, ref up, out _eye);
+            }
 
             // Offset the look at position by our current eye position.
             if (_target == null)
