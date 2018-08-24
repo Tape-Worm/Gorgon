@@ -29,7 +29,7 @@ using System.Windows.Forms;
 
 namespace Gorgon.Examples
 {
-	partial class MainForm
+	partial class Form
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -57,7 +57,7 @@ namespace Gorgon.Examples
 		/// </summary>
 		private void InitializeComponent()
 		{
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form));
             this.LabelPleaseWait = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 

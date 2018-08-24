@@ -61,16 +61,6 @@ namespace Gorgon.Examples.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] Gorgon_Logo_Small {
-            get {
-                object obj = ResourceManager.GetObject("Gorgon_Logo_Small", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to 0, 110, 0, 0.531401
         ///4, 86, 0.02247191, 0.4154589
         ///26, 66, 0.1460674, 0.3188406

@@ -391,8 +391,6 @@ namespace Gorgon.Examples
                             LineSpace = 0
                         };
 
-                window.IsLoaded = true;
-
                 return window;
             }
             finally

@@ -66,6 +66,7 @@ namespace Gorgon.UI
 	/// Users may also customize the colors of the flat form by adding a <see cref="GorgonFlatFormTheme"/> to the <see cref="Theme"/> property.
 	/// </para>
 	/// </remarks>
+	[Obsolete("Use krypton library instead.  This is no longer going to be used.  Remove once the example updates are done.")]
 	public partial class GorgonFlatForm
 		: Form
 	{

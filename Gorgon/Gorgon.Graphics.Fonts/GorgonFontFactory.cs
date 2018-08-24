@@ -63,14 +63,14 @@ namespace Gorgon.Graphics.Fonts
 		: IDisposable
 	{
 		#region Variables.
-		// The default font.
-		private GorgonFont _default;
-		// Thread synchronization.
-		private readonly object _syncLock = new object();
 		// The cache used to hold previously created font data.
 		private readonly Dictionary<string, GorgonFont> _fontCache = new Dictionary<string, GorgonFont>(StringComparer.OrdinalIgnoreCase);
         // The list of external fonts loaded from the file system.
         private PrivateFontCollection _externalFonts = new PrivateFontCollection();
+        // The default font.
+	    private static Lazy<GorgonFont> _defaultFont;
+        // Synchronization object for multiple threads.
+	    private readonly object _syncLock = new object();
 		#endregion
 
 		#region Properties.
@@ -82,44 +82,18 @@ namespace Gorgon.Graphics.Fonts
 			get;
 		}
 
-		/// <summary>
-		/// Property to return the default font.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// This will return a default font used in applications for quick testing.
-		/// </para>
-		/// <para>
-		/// The font will be based on Segoe UI, have a size of 12 points, and will be bolded and antialiased.
-		/// </para>
-		/// </remarks>
-		public GorgonFont DefaultFont
-		{
-			get
-			{
-			    lock(_syncLock)
-			    {
-			        if (_default != null)
-			        {
-			            return _default;
-			        }
-
-			        // Create the default font.
-				    _default = new GorgonFont("Gorgon.Font.Default.SegoeUI_12pt",
-				                              this,
-				                              new GorgonFontInfo("Segoe UI", 12, FontHeightMode.Points)
-				                              {
-					                              AntiAliasingMode = FontAntiAliasMode.AntiAlias,
-					                              FontStyle = FontStyle.Bold,
-					                              OutlineSize = 0
-				                              });
-
-			        _default.GenerateFont(new [] { _externalFonts });
-			    }
-
-			    return _default;
-			}
-		}
+	    /// <summary>
+	    /// Property to return the default font.
+	    /// </summary>
+	    /// <remarks>
+	    /// <para>
+	    /// This will return a default font used in applications for quick testing.
+	    /// </para>
+	    /// <para>
+	    /// The font will be based on Segoe UI, have a size of 12 points, and will be bolded and antialiased.
+	    /// </para>
+	    /// </remarks>
+	    public GorgonFont DefaultFont => _defaultFont.Value;
 		#endregion
 
 		#region Methods.
@@ -384,11 +358,14 @@ namespace Gorgon.Graphics.Fonts
 		public void Dispose()
 		{
 		    PrivateFontCollection ttFonts = Interlocked.Exchange(ref _externalFonts, null);
-			GorgonFont defaultFont = Interlocked.Exchange(ref _default, null);
+			Lazy<GorgonFont> defaultFont = Interlocked.Exchange(ref _defaultFont, null);
+
+		    if ((defaultFont != null) && (defaultFont.IsValueCreated))
+		    {
+                defaultFont.Value.Dispose();
+		    }
 
             ttFonts?.Dispose();
-			defaultFont?.Dispose();
-
 			InvalidateCache();
 		}
 		#endregion
@@ -402,6 +379,25 @@ namespace Gorgon.Graphics.Fonts
 		public GorgonFontFactory(GorgonGraphics graphics)
 		{
 			Graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
+		    _defaultFont = new Lazy<GorgonFont>(() =>
+		                                        {
+		                                            // Create the default font.
+		                                            var result = new GorgonFont("Gorgon.Font.Default.SegoeUI_9pt",
+		                                                                        this,
+		                                                                        new GorgonFontInfo("Segoe UI", 9, FontHeightMode.Points)
+		                                                                        {
+		                                                                            AntiAliasingMode = FontAntiAliasMode.AntiAlias,
+		                                                                            FontStyle = FontStyle.Bold,
+		                                                                            OutlineSize = 0
+		                                                                        });
+
+		                                            result.GenerateFont(new[]
+		                                                                {
+		                                                                    _externalFonts
+		                                                                });
+		                                            return result;
+		                                        },
+		                                        true);
 		}
 		#endregion
 	}

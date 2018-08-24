@@ -44,7 +44,14 @@ namespace Gorgon.Examples
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
 
-            GorgonApplication.Run(new MainForm());
+		    try
+		    {
+		        GorgonApplication.Run(new Form());
+		    }
+		    catch (Exception ex)
+		    {
+                GorgonExample.HandleException(ex);
+		    }
 		}
 	}
 }

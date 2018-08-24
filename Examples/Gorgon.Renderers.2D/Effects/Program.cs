@@ -34,7 +34,6 @@ using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging.Codecs;
-using Gorgon.IO;
 using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.Timing;
@@ -232,13 +231,13 @@ namespace Gorgon.Examples
             _renderer.End();
 
             _renderer.Begin();
-            _renderer.DrawString($"FPS: {GorgonTiming.AverageFPS:0.0}\nFrame Delta: {(GorgonTiming.Delta * 1000): 0.000} msec.", DX.Vector2.Zero);
-
             if (_showHelp)
             {
-                _renderer.DrawString(HelpText, new DX.Vector2(0, 48), color: new GorgonColor(1.0f, 1.0f, 0));
+                _renderer.DrawString(HelpText, new DX.Vector2(0, 64), color: new GorgonColor(1.0f, 1.0f, 0));
             }
             _renderer.End();
+
+            GorgonExample.DrawStatsAndLogo(_renderer);
 
             // Flip our back buffers over.
             _screen.Present(1);
@@ -323,16 +322,8 @@ namespace Gorgon.Examples
         /// <returns>The main window for the application.</returns>
         private static FormMain Initialize()
         {
-            var window = new FormMain
-                         {
-                             ClientSize = Settings.Default.Resolution
-                         };
-            window.Show();
-
-            // Process any pending events so the window shows properly.
-            Application.DoEvents();
-
-            Cursor.Current = Cursors.WaitCursor;
+            GorgonExample.ResourceBaseDirectory = new DirectoryInfo(Settings.Default.ResourceLocation);
+            var window = GorgonExample.Initialize(new DX.Size2(Settings.Default.Resolution.Width, Settings.Default.Resolution.Height), "Effects");
 
             try
             {
@@ -386,7 +377,7 @@ namespace Gorgon.Examples
 
                 // Load our texture with our space background in it.
                 _background = GorgonTexture2DView.FromFile(_graphics,
-                                                           GetResourcePath(@"Textures\HotPocket.dds"),
+                                                           Path.Combine(GorgonExample.GetResourcePath(@"Textures\").FullName, "HotPocket.dds"),
                                                            new GorgonCodecDds(),
                                                            new GorgonTextureLoadOptions
                                                            {
@@ -396,12 +387,11 @@ namespace Gorgon.Examples
 
                 // Load up our super space ship image.
                 _spaceShipTexture = GorgonTexture2DView.FromFile(_graphics,
-                                                                 GetResourcePath(@"Textures\Effects\ship.png"),
+                                                                 Path.Combine(GorgonExample.GetResourcePath(@"Textures\Effects\").FullName, "ship.png"),
                                                                  new GorgonCodecPng(),
                                                                  new GorgonTextureLoadOptions
                                                                  {
-                                                                     Usage = ResourceUsage.Immutable,
-                                                                     Binding = TextureBinding.ShaderResource
+                                                                     Usage = ResourceUsage.Immutable, Binding = TextureBinding.ShaderResource
                                                                  });
                 _shipSprite = new GorgonSprite
                               {
@@ -415,17 +405,17 @@ namespace Gorgon.Examples
                 BuildRenderTargets();
                 InitializeBackgroundTexturePositioning();
 
+                GorgonExample.LoadResources(_graphics);
+
                 window.MouseMove += Window_MouseMove;
                 window.MouseWheel += Window_MouseWheel;
                 window.KeyUp += Window_KeyUp;
-
-                window.IsLoaded = true;
 
                 return window;
             }
             finally
             {
-                Cursor.Current = Cursors.Default;
+                GorgonExample.EndInit();
             }
         }
 
@@ -521,37 +511,6 @@ namespace Gorgon.Examples
         }
 
         /// <summary>
-        /// Property to return the path to the resources for the example.
-        /// </summary>
-        /// <param name="resourceItem">The directory or file to use as a resource.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="resourceItem"/> was NULL (<i>Nothing</i> in VB.Net) or empty.</exception>
-        public static string GetResourcePath(string resourceItem)
-        {
-            string path = Settings.Default.ResourceLocation;
-
-            if (string.IsNullOrEmpty(resourceItem))
-            {
-                throw new ArgumentException("The resource was not specified.", nameof(resourceItem));
-            }
-
-            path = path.FormatDirectory(Path.DirectorySeparatorChar);
-
-            // If this is a directory, then sanitize it as such.
-            if (resourceItem.EndsWith(Path.DirectorySeparatorChar.ToString()))
-            {
-                path += resourceItem.FormatDirectory(Path.DirectorySeparatorChar);
-            }
-            else
-            {
-                // Otherwise, format the file name.
-                path += resourceItem.FormatPath(Path.DirectorySeparatorChar);
-            }
-
-            // Ensure that we have an absolute path.
-            return Path.GetFullPath(path);
-        }
-
-        /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
@@ -566,10 +525,12 @@ namespace Gorgon.Examples
             }
             catch (Exception ex)
             {
-                ex.Catch(e => GorgonDialogs.ErrorBox(null, "There was an error running the application and it must now close.", "Error", ex));
+                GorgonExample.HandleException(ex);
             }
             finally
             {
+                GorgonExample.UnloadResources();
+
                 _gaussBlur?.Dispose();
                 _oldFilm?.Dispose();
                 _displacement?.Dispose();

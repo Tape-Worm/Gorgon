@@ -135,7 +135,7 @@ namespace Gorgon.Examples
 
                 DX.Vector2 position = new DX.Vector2(star.X * _screen.Width, star.Y * _screen.Height);
 
-                float starColorValue = GorgonRandom.RandomSingle(0.65f, 1.0f);
+                float starColorValue = GorgonRandom.RandomSingle(0.35f, 1.0f);
                 var starColor = new GorgonColor(starColorValue, starColorValue, starColorValue, 1.0f);
 
                 _renderer.DrawFilledRectangle(new DX.RectangleF(position.X, position.Y, 1, 1), starColor);
@@ -152,6 +152,8 @@ namespace Gorgon.Examples
             _renderer.Begin();
             _renderer.DrawSprite(_ship);
             _renderer.End();
+
+            GorgonExample.DrawStatsAndLogo(_renderer);
 
             _screen.Present(1);
 
@@ -177,19 +179,10 @@ namespace Gorgon.Examples
         /// <returns>The form that will display our graphical scene.</returns>
         private static FormMain Initialize()
         {
+            GorgonExample.ResourceBaseDirectory = new DirectoryInfo(Settings.Default.ResourceLocation);
+
             // Create the window, and size it to our resolution.
-            var window = new FormMain
-                         {
-                             ClientSize = Settings.Default.Resolution
-                         };
-
-            // Show it now so users can see that there's something happening.
-            window.Show();
-            
-            // Process any pending events so the window shows properly.
-            Application.DoEvents();
-
-            Cursor.Current = Cursors.WaitCursor;
+            FormMain window = GorgonExample.Initialize(new DX.Size2(Settings.Default.Resolution.Width, Settings.Default.Resolution.Height), "Sprites");
 
             try
             {
@@ -221,7 +214,7 @@ namespace Gorgon.Examples
 
                 // Re-use the background texture from the Effects example.
                 _spaceBackground = GorgonTexture2DView.FromFile(_graphics,
-                                                                GetResourcePath(@"Textures\HotPocket.dds"),
+                                                                Path.Combine(GorgonExample.GetResourcePath(@"Textures\").FullName, "HotPocket.dds"),
                                                                 new GorgonCodecDds(),
                                                                 new GorgonTextureLoadOptions
                                                                 {
@@ -230,7 +223,7 @@ namespace Gorgon.Examples
 
                 // Get our space ship texture.
                 _shipTexture = GorgonTexture2DView.FromFile(_graphics,
-                                                            GetResourcePath(@"Textures\Sprites\wship1.png"),
+                                                            Path.Combine(GorgonExample.GetResourcePath(@"Textures\Sprites\").FullName, "wship1.png"),
                                                             new GorgonCodecPng(),
                                                             new GorgonTextureLoadOptions
                                                             {
@@ -276,6 +269,8 @@ namespace Gorgon.Examples
                                   Anchor = new DX.Vector2(0.5f, 1.0f)
                               };
 
+                GorgonExample.LoadResources(_graphics);
+
                 for (int i = 0; i < _stars.Length; ++i)
                 {
                     _stars[i] = new DX.Vector2(GorgonRandom.RandomSingle(), GorgonRandom.RandomSingle());
@@ -305,37 +300,6 @@ namespace Gorgon.Examples
         }
 
         /// <summary>
-        /// Property to return the path to the resources for the example.
-        /// </summary>
-        /// <param name="resourceItem">The directory or file to use as a resource.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="resourceItem"/> was NULL (<i>Nothing</i> in VB.Net) or empty.</exception>
-        public static string GetResourcePath(string resourceItem)
-        {
-            string path = Settings.Default.ResourceLocation;
-
-            if (string.IsNullOrEmpty(resourceItem))
-            {
-                throw new ArgumentException(@"The resource was not specified.", nameof(resourceItem));
-            }
-
-            path = path.FormatDirectory(Path.DirectorySeparatorChar);
-
-            // If this is a directory, then sanitize it as such.
-            if (resourceItem.EndsWith(Path.DirectorySeparatorChar.ToString()))
-            {
-                path += resourceItem.FormatDirectory(Path.DirectorySeparatorChar);
-            }
-            else
-            {
-                // Otherwise, format the file name.
-                path += resourceItem.FormatPath(Path.DirectorySeparatorChar);
-            }
-
-            // Ensure that we have an absolute path.
-            return Path.GetFullPath(path);
-        }
-
-        /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
@@ -350,10 +314,11 @@ namespace Gorgon.Examples
             }
             catch (Exception ex)
             {
-                ex.Catch(e => GorgonDialogs.ErrorBox(null, "There was an error running the application and it must now close.", "Error", ex));
+                GorgonExample.HandleException(ex);
             }
             finally
             {
+                GorgonExample.UnloadResources();
                 _shipTexture?.Dispose();
                 _spaceBackground?.Dispose();
                 _renderer?.Dispose();

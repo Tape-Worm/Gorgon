@@ -211,9 +211,9 @@ namespace Gorgon.Examples
                 return;
             }
 
-            // +4 for draw call because these will take a minimum of 4 calls.
+            // We won't include these in the draw call count. 
             _statsText.Length = 0;
-            _statsText.AppendFormat("Average FPS: {0:0.0}\nFrame Delta: {1:0.00#} seconds\nDraw Call Count: {2}", GorgonTiming.AverageFPS, GorgonTiming.Delta, renderer.Graphics.DrawCallCount + 4);
+            _statsText.AppendFormat("Average FPS: {0:0.0}\nFrame Delta: {1:0.00#} seconds\nDraw Call Count: {2}", GorgonTiming.AverageFPS, GorgonTiming.Delta, renderer.Graphics.DrawCallCount);
             
             DX.Size2F measure = _statsFont.MeasureText(_statsText.ToString(), true);
             var statsRegion = new DX.RectangleF(0, 0, currentRtv.Width, measure.Height + 4);

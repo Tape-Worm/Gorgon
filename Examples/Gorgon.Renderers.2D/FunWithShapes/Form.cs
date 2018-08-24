@@ -42,8 +42,8 @@ namespace Gorgon.Examples
 	/// <summary>
 	/// Main application form.
 	/// </summary>
-	public partial class MainForm 
-		: Form
+	public partial class Form 
+		: System.Windows.Forms.Form
 	{
 		#region Variables.
         // Half the width and height of the "screen".
@@ -122,6 +122,8 @@ namespace Gorgon.Examples
 			// Tell the renderer that we're done drawing so we can actually render the shapes.
             _renderer.End();
 
+            GorgonExample.DrawStatsAndLogo(_renderer);
+
 		    // Always call this when done or you won't see anything.
             _screen.Present(1);
 		}
@@ -165,6 +167,8 @@ namespace Gorgon.Examples
 		{
 			base.OnFormClosing(e);
 
+            GorgonExample.UnloadResources();
+
 			// Perform clean up.
 		    Gorgon2D renderer = Interlocked.Exchange(ref _renderer, null);
 		    GorgonSwapChain screen = Interlocked.Exchange(ref _screen, null);
@@ -183,13 +187,14 @@ namespace Gorgon.Examples
 		{
 			base.OnLoad(e);
 
+		    GorgonExample.ShowStatistics = false;
 		    Cursor.Current = Cursors.WaitCursor;
 
 		    try
 		    {
                 Show();
                 Application.DoEvents();
-
+                
 		        // Initialize Gorgon
 		        // Set it up so that we won't be rendering in the background, but allow the screensaver to activate.
 		        IReadOnlyList<IGorgonVideoAdapterInfo> adapters = GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log);
@@ -220,12 +225,14 @@ namespace Gorgon.Examples
 
 		        LabelPleaseWait.Visible = false;
 
+                GorgonExample.LoadResources(_graphics);
+
 		        // Draw the image.
 		        DrawAPrettyPicture();
 		    }
 		    catch (Exception ex)
 		    {
-		        ex.Catch(_ => GorgonDialogs.ErrorBox(this, "Unable to initialize the application."), GorgonApplication.Log);
+                GorgonExample.HandleException(ex);
 		        GorgonApplication.Quit();
 		    }
 		    finally
@@ -252,7 +259,7 @@ namespace Gorgon.Examples
 		/// <summary>
 		/// Constructor.
 		/// </summary>
-		public MainForm()
+		public Form()
 		{
 			InitializeComponent();
 		}

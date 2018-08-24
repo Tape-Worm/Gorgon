@@ -64,10 +64,6 @@ namespace Gorgon.Examples
         // Angles of rotation in degrees.
         private static float _angle1;
         private static float _angle2 = 360.0f;
-        // The string builder for the FPS text.
-        private static readonly StringBuilder _fpsString = new StringBuilder();
-        // The logo for Gorgon.
-        private static GorgonTexture2DView _logo;
         #endregion
 
         #region Methods.
@@ -140,20 +136,7 @@ namespace Gorgon.Examples
 
             _renderer.End();
 
-            _renderer.Begin();
-            _fpsString.Length = 0;
-            _fpsString.AppendFormat("FPS: {0:0.0}\nFrame delta: {1:0.000} ms.", GorgonTiming.AverageFPS, GorgonTiming.Delta * 1000);
-
-            DX.Size2F textSize = _renderer.DefaultFont.MeasureText(_fpsString.ToString(), false);
-
-            _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _screen.Width, textSize.Height + 4), new GorgonColor(0, 0, 0, 0.5f));
-            _renderer.DrawLine(0, textSize.Height + 4, _screen.Width, textSize.Height + 4, GorgonColor.White, 1.5f);
-            _renderer.DrawLine(0, textSize.Height + 5, _screen.Width, textSize.Height + 5, new GorgonColor(0, 0, 0, 0.75f));
-
-            _renderer.DrawString(_fpsString.ToString(), DX.Vector2.Zero, color: GorgonColor.White);
-            DX.RectangleF pos = new DX.RectangleF(_screen.Width - _logo.Width - 5, _screen.Height - _logo.Height - 2, _logo.Width, _logo.Height);
-            _renderer.DrawFilledRectangle(pos, GorgonColor.White, _logo, new DX.RectangleF(0, 0, 1, 1));
-            _renderer.End();
+            GorgonExample.DrawStatsAndLogo(_renderer);
 
             _screen.Present(1);
 
@@ -183,18 +166,9 @@ namespace Gorgon.Examples
         /// <returns>The main window for the application.</returns>
         private static FormMain Initialize()
         {
-            var window = new FormMain
-                         {
-                             ClientSize = Settings.Default.Resolution
-                         };
-            window.Show();
-
-            // Process any pending events so the window shows properly.
-            Application.DoEvents();
-
-            Cursor.Current = Cursors.WaitCursor;
-
-            MemoryStream stream = null;
+            GorgonExample.ResourceBaseDirectory = new DirectoryInfo(Settings.Default.ResourceLocation);
+            FormMain window =
+                GorgonExample.Initialize(new DX.Size2(Settings.Default.Resolution.Width, Settings.Default.Resolution.Height), "Polygonal Sprites");
 
             try
             {
@@ -232,19 +206,15 @@ namespace Gorgon.Examples
                                                             Binding = TextureBinding.ShaderResource, Name = "Ship Texture", Usage = ResourceUsage.Immutable
                                                         });
 
-                stream = new MemoryStream(Resources.Gorgon_Logo_Small);
-                _logo = GorgonTexture2DView.FromStream(_graphics, stream, new GorgonCodecDds());
+                GorgonExample.LoadResources(_graphics);
 
                 CreateSprites();
                 
-                
-                window.IsLoaded = true;
                 return window;
             }
             finally
             {
-                stream?.Dispose();
-                Cursor.Current = Cursors.Default;
+                GorgonExample.EndInit();
             }
         }
 
@@ -294,11 +264,11 @@ namespace Gorgon.Examples
             }
             catch (Exception ex)
             {
-                Cursor.Show();
-                ex.Catch(e => GorgonDialogs.ErrorBox(null, "There was an error running the application and it must now close.", "Error", ex));
+                GorgonExample.HandleException(ex);
             }
             finally
             {
+                GorgonExample.UnloadResources();
                 _polySprite?.Dispose();
                 _texture?.Dispose();
                 _renderer?.Dispose();
