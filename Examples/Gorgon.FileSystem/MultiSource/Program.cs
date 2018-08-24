@@ -124,7 +124,7 @@ namespace Gorgon.Examples
 		    {
 		        Application.EnableVisualStyles();
 		        Application.SetCompatibleTextRenderingDefault(false);
-		        Application.Run(new formMain());
+		        Application.Run(new FormMain());
 		    }
 		    catch (Exception ex)
 		    {

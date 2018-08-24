@@ -75,21 +75,13 @@
     </Compile>
     <Compile Include="Timing\GorgonTimerMultimedia.cs" />
     <Compile Include="Timing\GorgonTimerQpc.cs" />
-    <Compile Include="UI\Design\FlatFormThemeConverter.cs" />
     <Compile Include="UI\GorgonApplication.cs" />
     <Compile Include="UI\GorgonDialogs.cs" />
-    <Compile Include="UI\GorgonFlatFormTheme.cs" />
     <Compile Include="UI\_Controls\GorgonSelectablePanel.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="UI\_Extensions\GorgonControlExtensions.cs" />
     <Compile Include="UI\_Extensions\GorgonListViewExtensions.cs" />
-    <Compile Include="UI\_Forms\GorgonFlatForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\_Forms\GorgonFlatForm.Designer.cs">
-      <DependentUpon>GorgonFlatForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="UI\_Forms\_Internal\BaseDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -120,7 +112,6 @@
     <Compile Include="UI\_Forms\_Internal\WarningDialog.designer.cs">
       <DependentUpon>WarningDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\_Forms\_Internal\WindowMessagePreFilter.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
@@ -147,9 +138,6 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\_Forms\GorgonFlatForm.resx">
-      <DependentUpon>GorgonFlatForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\_Forms\_Internal\BaseDialog.resx">
       <DependentUpon>BaseDialog.cs</DependentUpon>

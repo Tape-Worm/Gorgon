@@ -64,8 +64,8 @@ namespace Gorgon.Examples
     /// as a stream (OpenStream) or an array of bytes (ReadFile).  Please note that writing to these file systems is not
     /// supported and can only be done when a write directory is set.  This will be covered in another example.
 	/// </remarks>
-	public partial class formMain 
-	    : GorgonFlatForm
+	public partial class FormMain 
+	    : Form
 	{
 		#region Variables.
 		// Our file system.
@@ -88,7 +88,7 @@ namespace Gorgon.Examples
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="TreeNodeMouseClickEventArgs" /> instance containing the event data.</param>
-		private void treeFileSystem_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
+		private void TreeFileSystem_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
 		{
 		    if (splitFileSystem.Panel2.Controls.Count > 0)
 			{
@@ -161,7 +161,7 @@ namespace Gorgon.Examples
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="TreeViewCancelEventArgs" /> instance containing the event data.</param>
-		private void treeFileSystem_BeforeExpand(object sender, TreeViewCancelEventArgs e)
+		private void TreeFileSystem_BeforeExpand(object sender, TreeViewCancelEventArgs e)
 		{
 			IGorgonVirtualDirectory directory = e.Node.Tag as IGorgonVirtualDirectory;
 
@@ -186,7 +186,7 @@ namespace Gorgon.Examples
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="TreeViewCancelEventArgs" /> instance containing the event data.</param>
-		private void treeFileSystem_BeforeCollapse(object sender, TreeViewCancelEventArgs e)
+		private void TreeFileSystem_BeforeCollapse(object sender, TreeViewCancelEventArgs e)
 		{
 			IGorgonVirtualDirectory directory = e.Node.Tag as IGorgonVirtualDirectory;
 
@@ -265,7 +265,7 @@ namespace Gorgon.Examples
 			parentNode.Tag = directory;			
 
 			// Turn off the expand event.
-			treeFileSystem.BeforeExpand -= treeFileSystem_BeforeExpand;
+			treeFileSystem.BeforeExpand -= TreeFileSystem_BeforeExpand;
 
 			try
 			{
@@ -337,7 +337,7 @@ namespace Gorgon.Examples
 			finally
 			{
 				treeFileSystem.EndUpdate();
-				treeFileSystem.BeforeExpand += treeFileSystem_BeforeExpand;
+				treeFileSystem.BeforeExpand += TreeFileSystem_BeforeExpand;
 			}
 		}
 
@@ -442,9 +442,9 @@ namespace Gorgon.Examples
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="formMain" /> class.
+		/// Initializes a new instance of the <see cref="FormMain" /> class.
 		/// </summary>
-		public formMain()
+		public FormMain()
 		{
 			InitializeComponent();
 		}
