@@ -27,11 +27,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Gorgon.Diagnostics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Newtonsoft.Json;
 
-namespace Gorgon.Renderers
+namespace Gorgon.IO
 {
     /// <summary>
     /// A converter used to convert a texture to and from a string.
@@ -113,22 +114,22 @@ namespace Gorgon.Renderers
             writer.WriteEndObject();
         }
 
-        /// <summary>Reads the JSON representation of the object.</summary>
-        /// <param name="reader">The <see cref="T:Newtonsoft.Json.JsonReader" /> to read from.</param>
-        /// <param name="objectType">Type of the object.</param>
-        /// <param name="existingValue">The existing value of object being read. If there is no existing value then <c>null</c> will be used.</param>
-        /// <param name="hasExistingValue">The existing value has a value.</param>
-        /// <param name="serializer">The calling serializer.</param>
-        /// <returns>The object value.</returns>
-        public override GorgonTexture2DView ReadJson(JsonReader reader, Type objectType, GorgonTexture2DView existingValue, bool hasExistingValue, JsonSerializer serializer)
+        /// <summary>
+        /// Function to read a texture from the JSON data.
+        /// </summary>
+        /// <param name="reader">The JSON reader to use.</param>
+        /// <param name="textureName">The name of the texture.</param>
+        /// <returns></returns>
+        public GorgonTexture2DView ReadTexture(JsonReader reader, out string textureName)
         {
+            textureName = string.Empty;
+
             if ((reader.TokenType != JsonToken.StartObject)
                 || (_graphics == null))
             {
                 return null;
             }
 
-            string name = null;
             int? texWidth = null;
             int? texHeight = null;
             int? texMipCount = null;
@@ -150,7 +151,7 @@ namespace Gorgon.Renderers
                 switch (reader.Value.ToString())
                 {
                     case "name":
-                        name = reader.ReadAsString();
+                        textureName = reader.ReadAsString();
                         break;
                     case "texWidth":
                         texWidth = reader.ReadAsInt32();
@@ -185,7 +186,7 @@ namespace Gorgon.Renderers
                 }
             }
 
-            if ((string.IsNullOrWhiteSpace(name))
+            if ((string.IsNullOrWhiteSpace(textureName))
                 || (texWidth == null)
                 || (texHeight == null)
                 || (texFormat == null)
@@ -197,16 +198,35 @@ namespace Gorgon.Renderers
                 || (viewMipCount == null)
                 || (viewFormat == null))
             {
+                if (string.IsNullOrWhiteSpace(textureName))
+                {
+                    _graphics?.Log.Print("Attempted to load a texture from JSON data, but texture was not in memory and name is unknown, or JSON texture data is not in the correct format.",
+                                         LoggingLevel.Verbose);
+                }
+
                 return null;
             }
 
-            GorgonTexture2D texture = _graphics?.LocateResourcesByName<GorgonTexture2D>(name).FirstOrDefault(item => (item.Width == texWidth)
-                                                                                                                     && (item.Height == texHeight)
-                                                                                                                     && (item.Format == texFormat)
-                                                                                                                     && (item.MipLevels == texMipCount)
-                                                                                                                     && (item.ArrayCount == texArrayCount));
+            GorgonTexture2D texture = _graphics?.LocateResourcesByName<GorgonTexture2D>(textureName)
+                                               .FirstOrDefault(item => (item.Width == texWidth)
+                                                                       && (item.Height == texHeight)
+                                                                       && (item.Format == texFormat)
+                                                                       && (item.MipLevels == texMipCount)
+                                                                       && (item.ArrayCount == texArrayCount));
 
             return texture?.GetShaderResourceView(viewFormat.Value, viewMipStart.Value, viewMipCount.Value, viewArrayStart.Value, viewArrayCount.Value);
+        }
+
+        /// <summary>Reads the JSON representation of the object.</summary>
+        /// <param name="reader">The <see cref="T:Newtonsoft.Json.JsonReader" /> to read from.</param>
+        /// <param name="objectType">Type of the object.</param>
+        /// <param name="existingValue">The existing value of object being read. If there is no existing value then <c>null</c> will be used.</param>
+        /// <param name="hasExistingValue">The existing value has a value.</param>
+        /// <param name="serializer">The calling serializer.</param>
+        /// <returns>The object value.</returns>
+        public override GorgonTexture2DView ReadJson(JsonReader reader, Type objectType, GorgonTexture2DView existingValue, bool hasExistingValue, JsonSerializer serializer)
+        {
+            return ReadTexture(reader, out string _);
         }
 
         /// <summary>

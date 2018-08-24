@@ -25,8 +25,10 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Gorgon.Animation;
 using DX = SharpDX;
 using Gorgon.Core;
 using Gorgon.Graphics;
@@ -42,6 +44,11 @@ namespace Gorgon.IO
     public class GorgonV1SpriteBinaryCodec
         : GorgonSpriteCodecCommon
     {
+        #region Variables.
+        // The animation codec for the sprite.
+        private GorgonV1AnimationCodec _animationCodec;
+        #endregion
+
         #region Properties.
         /// <summary>
         /// Property to return whether or not the codec can decode sprite data.
@@ -513,6 +520,45 @@ namespace Gorgon.IO
         {
             throw new NotSupportedException();
         }
+
+        /// <summary>
+        /// Function to read all of the animations from the v1.x sprite.
+        /// </summary>
+        /// <param name="stream">The stream containing the sprite animation data.</param>
+        /// <param name="size">[Optional] The size of the sprite, in bytes.</param>
+        /// <returns>A list of <see cref="IGorgonAnimation"/> objects.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="GorgonException">Thrown if the <paramref name="stream"/> is write only.</exception>
+        /// <exception cref="EndOfStreamException">Thrown if the current <paramref name="stream"/> position, plus the size of the data exceeds the length of the stream.</exception>
+        public IReadOnlyList<IGorgonAnimation> LoadAnimationsFromStream(Stream stream, int? size = null)
+        {
+            return _animationCodec.AllFromStream(stream, size);
+        }
+
+        /// <summary>
+        /// Function to read all of the animations from the v1.x sprite.
+        /// </summary>
+        /// <param name="filePath">The path to the v1.x sprite file that contains the animations.</param>
+        /// <returns>A list of <see cref="IGorgonAnimation"/> objects.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="filePath"/> parameter is empty.</exception>
+        public IReadOnlyList<IGorgonAnimation> LoadAnimationsFromFile(string filePath)
+        {
+            return _animationCodec.AllFromFile(filePath);
+        }
+
+        /// <summary>
+        /// Function to determine the number of animations in the sprite.
+        /// </summary>
+        /// <param name="stream">The stream containing the sprite data.</param>
+        /// <returns>The number of animations in the sprite.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="GorgonException">Thrown if the <paramref name="stream"/> is write only.</exception>
+        /// <exception cref="EndOfStreamException">Thrown if the current <paramref name="stream"/> position, plus the size of the data exceeds the length of the stream.</exception>
+        public int GetAnimationCount(Stream stream)
+        {
+            return _animationCodec.GetAnimationCount(stream);
+        }
         #endregion
 
         #region Constructor/Finalizer.
@@ -524,6 +570,7 @@ namespace Gorgon.IO
         public GorgonV1SpriteBinaryCodec(Gorgon2D renderer)
             : base(renderer, Resources.GOR2DIO_V1_CODEC, Resources.GOR2DIO_V1_CODEC_DESCRIPTION)
         {
+            _animationCodec = new GorgonV1AnimationCodec(renderer);
         }
         #endregion
 

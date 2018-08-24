@@ -28,7 +28,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Gorgon.Core;
-using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO.Properties;
 using Gorgon.Plugins;
 
@@ -70,7 +69,7 @@ namespace Gorgon.IO
         /// Function to create a new image codec object.
         /// </summary>
         /// <param name="codec">The name of the codec to look up within the plug in.</param>
-        /// <returns>A new instance of a <see cref="IGorgonImageCodec"/>.</returns>
+        /// <returns>A new instance of a <see cref="IGorgonSpriteCodec"/>.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="codec"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="codec"/> parameter is empty.</exception>
         /// <exception cref="KeyNotFoundException">Thrown when the <paramref name="codec"/> was not found in this plug in.</exception>

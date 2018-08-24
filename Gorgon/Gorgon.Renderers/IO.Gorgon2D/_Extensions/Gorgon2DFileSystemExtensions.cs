@@ -28,11 +28,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Gorgon.Animation;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO.Properties;
 using Gorgon.Renderers;
+using SharpDX;
 
 namespace Gorgon.IO.Extensions
 {
@@ -71,6 +73,25 @@ namespace Gorgon.IO.Extensions
         private static IGorgonSpriteCodec GetSpriteCodec(Stream stream, IEnumerable<IGorgonSpriteCodec> codecs)
         {
             foreach (IGorgonSpriteCodec codec in codecs)
+            {
+                if (codec.IsReadable(stream))
+                {
+                    return codec;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Function to determine the animation codec to use when loading the animation.
+        /// </summary>
+        /// <param name="stream">The stream containing the animation data.</param>
+        /// <param name="codecs">The list of codecs to try.</param>
+        /// <returns>The animation codec if found, or <b>null</b> if not.</returns>
+        private static IGorgonAnimationCodec GetAnimationCodec(Stream stream, IEnumerable<IGorgonAnimationCodec> codecs)
+        {
+            foreach (IGorgonAnimationCodec codec in codecs)
             {
                 if (codec.IsReadable(stream))
                 {
@@ -292,7 +313,7 @@ namespace Gorgon.IO.Extensions
 
                 if (spriteCodec == null)
                 {
-                    throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR2DIO_ERR_NO_SUITABLE_CODEC_FOUND, path));
+                    throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR2DIO_ERR_NO_SUITABLE_SPRITE_CODEC_FOUND, path));
                 }
 
                 // Try to locate the texture.
@@ -447,7 +468,7 @@ namespace Gorgon.IO.Extensions
 
                 if (spriteCodec == null)
                 {
-                    throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR2DIO_ERR_NO_SUITABLE_CODEC_FOUND, path));
+                    throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR2DIO_ERR_NO_SUITABLE_SPRITE_CODEC_FOUND, path));
                 }
 
                 // Try to locate the texture.
@@ -489,6 +510,178 @@ namespace Gorgon.IO.Extensions
                 }
 
                 return spriteCodec.FromStream(spriteStream, textureForSprite, (int)file.Size);
+            }
+        }
+
+        /// <summary>
+        /// Function to load a <see cref="IGorgonAnimation"/> from a <see cref="GorgonFileSystem"/>.
+        /// </summary>
+        /// <param name="fileSystem">The file system to load the animation from.</param>
+        /// <param name="renderer">The renderer for the animation.</param>
+        /// <param name="path">The path to the animation file in the file system.</param>
+        /// <param name="animationCodecs">The list of animation codecs to try and load the animation with.</param>
+        /// <param name="imageCodecs">The list of image codecs to try and load the animation texture(s) with.</param>
+        /// <returns>The animation data in the file as a <see cref="IGorgonAnimation"/>.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileSystem"/>, <paramref name="renderer"/>, or <paramref name="path"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
+        /// <exception cref="FileNotFoundException">Thrown if the file in the <paramref name="path"/> was not found.</exception>
+        /// <exception cref="GorgonException">Thrown if the animation data in the file system could not be loaded because a suitable codec was not found.</exception>
+        /// <remarks>
+        /// <para>
+        /// This method extends a <see cref="GorgonFileSystem"/> so that animations can be loaded by calling a method on the file system object itself. This negates the need for users to create complex code
+        /// for loading an animation.  
+        /// </para>
+        /// <para>
+        /// When loading an animation, the method will attempt to locate any <see cref="GorgonTexture2DView"/> objects associated with the animation (if they exist). When loading, it will check:
+        /// <list type="number">
+        ///     <item>
+        ///         <description>For a texture resource with the same name that is already loaded into memory.</description> 
+        ///     </item>
+        ///     <item>
+        ///         <description>Use the local <see cref="IGorgonVirtualDirectory"/> for the sprite file and search for the texture in that directory.</description> 
+        ///     </item>
+        ///     <item>
+        ///         <description>Check the entire <paramref name="fileSystem"/> for a file if the texture name contains path information (this is done by the GorgonEditor from v2).</description>
+        ///     </item>
+        /// </list>
+        /// If the file is found, and can be loaded by one of the <paramref name="imageCodecs"/>, then it is loaded and assigned to the sprite.
+        /// </para>
+        /// <para>
+        /// The <paramref name="animationCodecs"/> is a list of codecs for loading sprite data. If the user specifies this parameter, the only the codecs provided will be used for determining if an 
+        /// animation can be read. If it is not supplied, then all built-in (i.e. not plug-in based) sprite codecs will be used.
+        /// </para>
+        /// <para>
+        /// The <paramref name="imageCodecs"/> is a list of codecs for loading image data. If the user specifies this parameter, the only the codecs provided will be used for determining if an image can be 
+        /// read. If it is not supplied, then all built-in (i.e. not plug-in based) image codecs will be used.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="GorgonFileSystem"/>
+        /// <seealso cref="GorgonTexture2DView"/>
+        /// <seealso cref="IGorgonAnimation"/>
+        public static IGorgonAnimation LoadAnimation(this GorgonFileSystem fileSystem,
+                                              Gorgon2D renderer,
+                                              string path,
+                                              IEnumerable<IGorgonAnimationCodec> animationCodecs = null,
+                                              IEnumerable<IGorgonImageCodec> imageCodecs = null)
+        {
+            if (fileSystem == null)
+            {
+                throw new ArgumentNullException(nameof(fileSystem));
+            }
+
+            IGorgonVirtualFile file = fileSystem.GetFile(path);
+
+            if (file == null)
+            {
+                throw new FileNotFoundException(string.Format(Resources.GOR2DIO_ERR_FILE_NOT_FOUND, path));
+            }
+
+            if ((imageCodecs == null) || (!imageCodecs.Any()))
+            {
+                // If we don't specify any codecs, then use the built in ones.
+                imageCodecs = new IGorgonImageCodec[]
+                         {
+                             new GorgonCodecPng(),
+                             new GorgonCodecBmp(),
+                             new GorgonCodecDds(),
+                             new GorgonCodecGif(),
+                             new GorgonCodecJpeg(),
+                             new GorgonCodecTga(),
+                         };
+            }
+            else
+            {
+                // Only use codecs that can decode image data.
+                imageCodecs = imageCodecs.Where(item => item.CanDecode);
+            }
+
+            if ((animationCodecs == null) || (!animationCodecs.Any()))
+            {
+                // Use all built-in codecs if we haven't asked for any.
+                animationCodecs = new IGorgonAnimationCodec[]
+                               {
+                                   new GorgonV3AnimationBinaryCodec(renderer), 
+                                   new GorgonV3AnimationJsonCodec(renderer),
+                                   new GorgonV1AnimationCodec(renderer)
+                               };
+            }
+            else
+            {
+                // Only use codecs that can decode sprite data.
+                animationCodecs = animationCodecs.Where(item => item.CanDecode);
+            }
+
+            // We need to copy the sprite data into a memory stream since the underlying stream may not be seekable (BZip2 lies and says it is seekable, but it really isn't).
+            using (var animStream = new MemoryStream())
+            {
+                using (Stream stream = file.OpenStream())
+                {
+                    stream.CopyTo(animStream);
+                    animStream.Position = 0;
+                }
+
+                IGorgonAnimationCodec animationCodec = GetAnimationCodec(animStream, animationCodecs);
+
+                if (animationCodec == null)
+                {
+                    throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR2DIO_ERR_NO_SUITABLE_ANIM_CODEC_FOUND, path));
+                }
+
+                // Load the animation.
+                IGorgonAnimation animation = animationCodec.FromStream(animStream, (int)file.Size);
+
+                // We have no textures to update, leave.
+                if (animation.Texture2DTrack.KeyFrames.Count == 0)
+                {
+                    return animation;
+                }
+
+                // Try to locate the textures.
+
+                // V1 sprite animations need texture coordinate correction.
+                bool needsCoordinateFix = animationCodec is GorgonV1AnimationCodec;
+
+                foreach (GorgonKeyTexture2D textureKey in animation.Texture2DTrack.KeyFrames)
+                {
+                    // Let's try and load the texture into memory.
+                    // This does this by:
+                    // 1. Checking to see if a texture resource with the name specified is already available in memory.
+                    // 2. Checking the local directory of the file to see if the texture is there.
+                    // 3. A file system wide search.
+
+                    // ReSharper disable once InvertIf
+                    (IGorgonImageCodec codec, IGorgonVirtualFile textureFile, bool loaded) =
+                        LocateTextureCodecAndFile(fileSystem, file.Directory, renderer, textureKey.TextureName, imageCodecs);
+
+                    // We have not loaded the texture yet.  Do so now.
+                    // ReSharper disable once InvertIf
+                    if ((!loaded) && (textureFile != null) && (codec != null))
+                    {
+                        using (Stream textureStream = textureFile.OpenStream())
+                        {
+                            textureKey.Value  = GorgonTexture2DView.FromStream(renderer.Graphics,
+                                                                              textureStream,
+                                                                              codec,
+                                                                              textureFile.Size,
+                                                                              new GorgonTextureLoadOptions
+                                                                              {
+                                                                                  Name = textureFile.FullPath,
+                                                                                  Usage = ResourceUsage.Default,
+                                                                                  Binding = TextureBinding.ShaderResource
+                                                                              });
+                        }
+                    }
+
+                    if ((needsCoordinateFix) && (textureKey.Value != null))
+                    {
+                        textureKey.TextureCoordinates = new RectangleF(textureKey.TextureCoordinates.X / textureKey.Value.Width,
+                                                                       textureKey.TextureCoordinates.Y / textureKey.Value.Height,
+                                                                       textureKey.TextureCoordinates.Width / textureKey.Value.Width,
+                                                                       textureKey.TextureCoordinates.Height / textureKey.Value.Height);
+                    }
+                }
+
+                return animation;
             }
         }
         // ReSharper restore PossibleMultipleEnumeration

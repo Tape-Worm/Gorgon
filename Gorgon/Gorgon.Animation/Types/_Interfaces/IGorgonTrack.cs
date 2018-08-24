@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using Gorgon.Core;
 using Gorgon.Math;
+using Newtonsoft.Json;
 
 namespace Gorgon.Animation
 {
@@ -68,6 +69,7 @@ namespace Gorgon.Animation
         /// <summary>
         /// Property to return the spline controller (if applicable) for the track.
         /// </summary>
+        [JsonIgnore]
         IGorgonSplineCalculation SplineController
         {
             get;
@@ -76,6 +78,7 @@ namespace Gorgon.Animation
         /// <summary>
         /// Property to return the type of interpolation supported by the track.
         /// </summary>
+        [JsonIgnore]
         TrackInterpolationMode SupportsInterpolation
         {
             get;
@@ -96,6 +99,7 @@ namespace Gorgon.Animation
         /// <summary>
         /// Property to return the key frames for the track.
         /// </summary>
+        [JsonProperty("keyframes")]
         IReadOnlyList<T> KeyFrames
         {
             get;
