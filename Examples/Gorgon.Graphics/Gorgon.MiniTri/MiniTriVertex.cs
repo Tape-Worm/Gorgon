@@ -26,10 +26,11 @@
 
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using DX = SharpDX;
 
-namespace Gorgon.Graphics.Example
+namespace Gorgon.Examples
 {
 	/// <summary>
 	/// This represents a single vertex in our triangle.

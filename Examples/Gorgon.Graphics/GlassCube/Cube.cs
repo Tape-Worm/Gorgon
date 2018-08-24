@@ -26,12 +26,11 @@
 
 using System;
 using Gorgon.Graphics.Core;
-using Gorgon.Graphics.Example;
 using Gorgon.Math;
 using Gorgon.Native;
 using DX = SharpDX;
 
-namespace GorgonLibrary.Example
+namespace Gorgon.Examples
 {
     /// <summary>
     /// Object representing a 3D dimensional cube.

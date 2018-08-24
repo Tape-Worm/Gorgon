@@ -27,7 +27,7 @@
 using Gorgon.Graphics.Core;
 using DX = SharpDX;
 
-namespace Gorgon.Graphics.Example
+namespace Gorgon.Examples
 {
     /// <summary>
     /// A material for a mesh.

@@ -27,7 +27,7 @@
 using Gorgon.Math;
 using DX = SharpDX;
 
-namespace Gorgon.Graphics.Example
+namespace Gorgon.Examples
 {
 	/// <summary>
 	/// The world/view/projection matrix.

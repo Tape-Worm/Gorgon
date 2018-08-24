@@ -8,16 +8,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-using System.CodeDom.Compiler;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Drawing;
-using System.Globalization;
-using System.Resources;
-using System.Runtime.CompilerServices;
-
-namespace Gorgon.Graphics.Example.Properties {
+namespace Gorgon.Examples.Properties {
+    using System;
+    
+    
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -25,27 +19,27 @@ namespace Gorgon.Graphics.Example.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [GeneratedCode("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
-    [DebuggerNonUserCode()]
-    [CompilerGenerated()]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+    [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
         
-        private static ResourceManager resourceMan;
+        private static global::System.Resources.ResourceManager resourceMan;
         
-        private static CultureInfo resourceCulture;
+        private static global::System.Globalization.CultureInfo resourceCulture;
         
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         internal Resources() {
         }
         
         /// <summary>
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
-        internal static ResourceManager ResourceManager {
+        [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
+        internal static global::System.Resources.ResourceManager ResourceManager {
             get {
-                if (ReferenceEquals(resourceMan, null)) {
-                    ResourceManager temp = new ResourceManager("Gorgon.Graphics.Example.Properties.Resources", typeof(Resources).Assembly);
+                if (object.ReferenceEquals(resourceMan, null)) {
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Gorgon.Examples.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -56,8 +50,8 @@ namespace Gorgon.Graphics.Example.Properties {
         ///   Overrides the current thread's CurrentUICulture property for all
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
-        internal static CultureInfo Culture {
+        [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
+        internal static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -67,7 +61,23 @@ namespace Gorgon.Graphics.Example.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to Texture2D&lt;float4&gt; _inputTexture : register(t0);
+        ///RWTexture2D&lt;uint&gt; _outputTexture : register(u0);
+        ///
+        ///// Parameters to control the filter.
+        ///cbuffer SobelParams : register(b0)
+        ///{
+        ///	float Thickness;
+        ///	float Threshold;
+        ///}
+        ///
+        ///// Function to gray scale a pixel.
+        ///float Luminance(float3 sourceRgb)
+        ///{
+        ///	return ((sourceRgb.r + sourceRgb.g + sourceRgb.b) / 3.0f);//dot(sourceRgb, float3(0.2125f, 0.7154f, 0.0721f));
+        ///}
+        ///
+        ///// This method packs a 4-component floating point value into a single unsigned integer for our outp [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string ComputeShader {
             get {
@@ -78,10 +88,10 @@ namespace Gorgon.Graphics.Example.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static Bitmap loadimage_16x16 {
+        internal static System.Drawing.Bitmap loadimage_16x16 {
             get {
                 object obj = ResourceManager.GetObject("loadimage_16x16", resourceCulture);
-                return ((Bitmap)(obj));
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
     }

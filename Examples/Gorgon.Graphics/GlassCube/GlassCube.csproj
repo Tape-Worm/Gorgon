@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{EDC602B0-403D-4A3D-8A60-13992B351C95}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>Gorgon.Graphics.Example</RootNamespace>
+    <RootNamespace>Gorgon.Examples</RootNamespace>
     <AssemblyName>GlassCube</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -60,16 +60,16 @@
     </Compile>
     <Compile Include="Cube.cs" />
     <Compile Include="GlassCubeVertex.cs" />
-    <Compile Include="MainForm.cs">
+    <Compile Include="Form.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MainForm.Designer.cs">
-      <DependentUpon>MainForm.cs</DependentUpon>
+    <Compile Include="Form.Designer.cs">
+      <DependentUpon>Form.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="MainForm.resx">
-      <DependentUpon>MainForm.cs</DependentUpon>
+    <EmbeddedResource Include="Form.resx">
+      <DependentUpon>Form.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -115,6 +115,10 @@
     <ProjectReference Include="..\..\..\Gorgon\Gorgon.Windows\Gorgon.Windows.csproj">
       <Project>{a19cb981-2d25-4316-9542-1d2bd7064f2b}</Project>
       <Name>Gorgon.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ExamplesCommon\ExamplesCommon.csproj">
+      <Project>{9dc4eea9-c32a-4fea-8a52-9cd0ac8ad8ac}</Project>
+      <Name>ExamplesCommon</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -28,7 +28,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using Drawing = System.Drawing;
 using DX =SharpDX;
@@ -39,7 +38,6 @@ using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
-using Gorgon.IO;
 using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.Timing;
@@ -53,8 +51,6 @@ namespace Gorgon.Examples
     static class Program
     {
         #region Variables.
-        // The string builder used for drawing the FPS/frame delta info.
-        private static readonly StringBuilder _fpsString = new StringBuilder();
         // The main graphics interface.
         private static GorgonGraphics _graphics;
         // The swap chain representing our "screen".
@@ -63,8 +59,6 @@ namespace Gorgon.Examples
         private static Gorgon2D _renderer;
         // Our factory used to generate fonts.
         private static GorgonFontFactory _fontFactory;
-        // The logo for Gorgon.
-        private static GorgonTexture2DView _logo;
         // The list of built-in Windows font family names to use.
         private static readonly List<string> _fontFamilies = new List<string>
         {
@@ -118,7 +112,7 @@ namespace Gorgon.Examples
             int fontWithTexture = GorgonRandom.RandomInt32(fontWithGradient + 1, fontWithGradient + 5).Min(_fontFamilies.Count - 1);
             
             var pngCodec = new GorgonCodecPng();
-            using (IGorgonImage texture = pngCodec.LoadFromFile(GetResourcePath(@"Textures\Fonts\Gradient.png")))
+            using (IGorgonImage texture = pngCodec.LoadFromFile(Path.Combine(GorgonExample.GetResourcePath(@"Textures\Fonts\").FullName, "Gradient.png")))
             {
                 for (int i = 0; i < _fontFamilies.Count; ++i)
                 {
@@ -173,7 +167,7 @@ namespace Gorgon.Examples
                         fontName = $"{fontFamily} 32px{(isExternal ? " External TTF" : string.Empty)}";
                     }
 
-                    window.LoadingText = $"Generating Font: {fontFamily}".Ellipses(50);
+                    window.UpdateStatus($"Generating Font: {fontFamily}".Ellipses(50));
 
                     var fontInfo = new GorgonFontInfo(fontFamily,
                                                       30.25f,
@@ -201,7 +195,7 @@ namespace Gorgon.Examples
         private static IReadOnlyList<Drawing.FontFamily> LoadTrueTypeFonts(FormMain window)
         {
             // Load in a bunch of true type fonts.
-            var dirInfo = new DirectoryInfo(GetResourcePath("Fonts"));
+            DirectoryInfo dirInfo = GorgonExample.GetResourcePath("Fonts");
             FileInfo[] files = dirInfo.GetFiles("*.ttf", SearchOption.TopDirectoryOnly);
 
             var fontFamilies = new List<Drawing.FontFamily>();
@@ -210,39 +204,18 @@ namespace Gorgon.Examples
             // This takes a while...
             foreach (FileInfo file in files)
             {
-                window.LoadingText = $"Loading Font: {file.FullName}".Ellipses(50);
+                window.UpdateStatus($"Loading Font: {file.FullName}".Ellipses(50));
                 Drawing.FontFamily externFont = _fontFactory.LoadTrueTypeFontFamily(file.FullName);
                 _fontFamilies.Insert(0, externFont.Name);
                 fontFamilies.Add(externFont);
             }
 
-            window.LoadingText = null;
+            window.UpdateStatus(null);
                 
             fontFamilies.AddRange(Drawing.FontFamily.Families);
 
             return fontFamilies;
         }
-
-        /// <summary>
-        /// Function to draw the FPS bar (and logo).
-        /// </summary>
-        private static void DrawFPS()
-        {
-            _renderer.Begin();
-            _fpsString.Length = 0;
-            _fpsString.AppendFormat("FPS: {0:0.0}\nFrame delta: {1:0.000} ms.", GorgonTiming.AverageFPS, GorgonTiming.Delta * 1000);
-
-            DX.Size2F textSize = _renderer.DefaultFont.MeasureText(_fpsString.ToString(), false);
-
-            _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _screen.Width, textSize.Height + 4), new GorgonColor(0, 0, 0, 0.5f));
-            _renderer.DrawLine(0, textSize.Height + 4, _screen.Width, textSize.Height + 4, GorgonColor.White, 1.5f);
-            _renderer.DrawLine(0, textSize.Height + 5, _screen.Width, textSize.Height + 5, new GorgonColor(0, 0, 0, 0.25f));
-
-            _renderer.DrawString(_fpsString.ToString(), DX.Vector2.Zero, color: GorgonColor.White);
-            DX.RectangleF pos = new DX.RectangleF(_screen.Width - _logo.Width - 5, _screen.Height - _logo.Height - 2, _logo.Width, _logo.Height);
-            _renderer.DrawFilledRectangle(pos, GorgonColor.White, _logo, new DX.RectangleF(0, 0, 1, 1));
-            _renderer.End();
-        } 
 
         /// <summary>
         /// Function called during idle time the application.
@@ -257,15 +230,7 @@ namespace Gorgon.Examples
                 _startTime = GorgonTiming.SecondsSinceStart;
             }
 
-            if (_glowIndex != _fontIndex)
-            {
-                _screen.RenderTargetView.Clear(GorgonColor.CornFlowerBlue);
-            }
-            else
-            {
-                // For glowing text, use a dark background so we can see it.
-                _screen.RenderTargetView.Clear(new GorgonColor(0, 0, 0.2f));
-            }
+            _screen.RenderTargetView.Clear(_glowIndex != _fontIndex ? GorgonColor.CornFlowerBlue : new GorgonColor(0, 0, 0.2f));
 
             DX.Size2F textSize = currentFont.MeasureText(Resources.Lorem_Ipsum, false);
             DX.Vector2 position = new DX.Vector2((int)(_screen.Width / 2.0f - textSize.Width / 2.0f).Max(4.0f), (int)(_screen.Height / 2.0f - textSize.Height / 2.0f).Max(100));
@@ -292,7 +257,7 @@ namespace Gorgon.Examples
             _renderer.DrawTextSprite(_text);
             _renderer.End();
 
-            DrawFPS();
+            GorgonExample.DrawStatsAndLogo(_renderer);
 
             // Animate our glow alpha.
             _glowAlpha += _glowVelocity * GorgonTiming.Delta;
@@ -379,18 +344,9 @@ namespace Gorgon.Examples
         /// <returns>The main window for the application.</returns>
         private static FormMain Initialize()
         {
-            MemoryStream stream = null;
+            GorgonExample.ResourceBaseDirectory = new DirectoryInfo(Settings.Default.ResourceLocation);
 
-            var window = new FormMain
-                         {
-                             ClientSize = Settings.Default.Resolution
-                         };
-            window.Show();
-
-            // Process any pending events so the window shows properly.
-            Application.DoEvents();
-
-            Cursor.Current = Cursors.WaitCursor;
+            FormMain window = GorgonExample.Initialize(new DX.Size2(Settings.Default.Resolution.Width, Settings.Default.Resolution.Height), "Fonts");
 
             try
             {
@@ -421,8 +377,7 @@ namespace Gorgon.Examples
                 _renderer = new Gorgon2D(_screen.RenderTargetView);
 
                 // Load our logo.
-                stream = new MemoryStream(Resources.Gorgon_Logo_Small);
-                _logo = GorgonTexture2DView.FromStream(_graphics, stream, new GorgonCodecDds());
+                GorgonExample.LoadResources(_graphics);
 
                 // We need to create a font factory so we can create/load (and cache) fonts.
                 _fontFactory = new GorgonFontFactory(_graphics);
@@ -442,40 +397,8 @@ namespace Gorgon.Examples
             }
             finally
             {
-                stream?.Dispose();
-                Cursor.Current = Cursors.Default;
+                GorgonExample.EndInit();
             }
-        }
-
-        /// <summary>
-        /// Property to return the path to the resources for the example.
-        /// </summary>
-        /// <param name="resourceItem">The directory or file to use as a resource.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="resourceItem"/> was NULL (<i>Nothing</i> in VB.Net) or empty.</exception>
-        public static string GetResourcePath(string resourceItem)
-        {
-            string path = Settings.Default.ResourceLocation;
-
-            if (string.IsNullOrEmpty(resourceItem))
-            {
-                throw new ArgumentException(@"The resource was not specified.", nameof(resourceItem));
-            }
-
-            path = path.FormatDirectory(Path.DirectorySeparatorChar);
-
-            // If this is a directory, then sanitize it as such.
-            if (resourceItem.EndsWith(Path.DirectorySeparatorChar.ToString()))
-            {
-                path += resourceItem.FormatDirectory(Path.DirectorySeparatorChar);
-            }
-            else
-            {
-                // Otherwise, format the file name.
-                path += resourceItem.FormatPath(Path.DirectorySeparatorChar);
-            }
-
-            // Ensure that we have an absolute path.
-            return Path.GetFullPath(path);
         }
 
         /// <summary>
@@ -493,11 +416,12 @@ namespace Gorgon.Examples
             }
             catch (Exception ex)
             {
-                Cursor.Show();
-                ex.Catch(e => GorgonDialogs.ErrorBox(null, "There was an error running the application and it must now close.", "Error", ex));
+                GorgonExample.HandleException(ex);
             }
             finally
             {
+                GorgonExample.UnloadResources();
+
                 _fontFactory?.Dispose();
                 _renderer?.Dispose();
                 _screen?.Dispose();
