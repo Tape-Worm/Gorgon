@@ -25,12 +25,8 @@
 #endregion
 
 using System;
-using System.IO;
 using System.Windows.Forms;
-using Gorgon.Core;
 using Gorgon.Examples;
-using Gorgon.Graphics.Example.Properties;
-using Gorgon.IO;
 using Gorgon.UI;
 
 namespace CodecPlugIn

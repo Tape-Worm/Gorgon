@@ -29,7 +29,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics.Fonts;

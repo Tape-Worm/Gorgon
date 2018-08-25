@@ -20,38 +20,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: March 31, 2018 1:12:26 PM
+// Created: August 25, 2018 10:55:04 AM
 // 
 #endregion
 
-using System;
-using System.Windows.Forms;
-using Gorgon.UI;
+using System.Reflection;
+using System.Runtime.InteropServices;
 
-namespace Gorgon.Examples
-{
-    /// <summary>
-    /// Main entry point.
-    /// </summary>
-    static class Program
-    {
-        /// <summary>
-        /// The main entry point for the application.
-        /// </summary>
-        [STAThread]
-        static void Main()
-        {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
+// General Information about an assembly is controlled through the following
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+[assembly: AssemblyTitle("TheShadowGn0s")]
+[assembly: AssemblyDescription("An adaptation of the old v1 TheShadowGn0s example. Shows how to use the gaussian blur effect to achieve a soft shadow.")]
+[assembly: AssemblyCulture("")]
 
-            try
-            {
-                GorgonApplication.Run(new Form());
-            }
-            catch (Exception ex)
-            {
-                GorgonExample.HandleException(ex);
-            }
-        }
-    }
-}
+// The following GUID is for the ID of the typelib if this project is exposed to COM
+[assembly: Guid("1a57ef9f-6f3d-4ea8-b9e0-48d9bb79780f")]

@@ -26,13 +26,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Gorgon.Animation;
 using DX = SharpDX;
@@ -43,7 +37,6 @@ using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Renderers;
-using Gorgon.Timing;
 using Gorgon.UI;
 using FontStyle = Gorgon.Graphics.Fonts.FontStyle;
 

@@ -130,6 +130,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExamplesCommon", "Examples\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GiveMeSomeControl", "Examples\Gorgon.Renderers.2D\GiveMeSomeControl\GiveMeSomeControl.csproj", "{6085F98B-EC32-47AD-9318-FF42C5AF131D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheShadowGn0s", "Examples\Gorgon.Renderers.2D\TheShadowGn0s\TheShadowGn0s.csproj", "{1A57EF9F-6F3D-4EA8-B9E0-48D9BB79780F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -473,6 +475,12 @@ Global
 		{6085F98B-EC32-47AD-9318-FF42C5AF131D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6085F98B-EC32-47AD-9318-FF42C5AF131D}.ReleaseAndDeploy|Any CPU.ActiveCfg = Release|Any CPU
 		{6085F98B-EC32-47AD-9318-FF42C5AF131D}.ReleaseAndDeploy|Any CPU.Build.0 = Release|Any CPU
+		{1A57EF9F-6F3D-4EA8-B9E0-48D9BB79780F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A57EF9F-6F3D-4EA8-B9E0-48D9BB79780F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A57EF9F-6F3D-4EA8-B9E0-48D9BB79780F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A57EF9F-6F3D-4EA8-B9E0-48D9BB79780F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A57EF9F-6F3D-4EA8-B9E0-48D9BB79780F}.ReleaseAndDeploy|Any CPU.ActiveCfg = Release|Any CPU
+		{1A57EF9F-6F3D-4EA8-B9E0-48D9BB79780F}.ReleaseAndDeploy|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -528,6 +536,7 @@ Global
 		{98A3C097-12D6-4ADE-BF52-D526E284D045} = {324C46F5-D8B6-4711-ABB7-8E22BD9EAE10}
 		{9DC4EEA9-C32A-4FEA-8A52-9CD0AC8AD8AC} = {E656298C-C1C6-4274-87B5-A19C6BA689CB}
 		{6085F98B-EC32-47AD-9318-FF42C5AF131D} = {324C46F5-D8B6-4711-ABB7-8E22BD9EAE10}
+		{1A57EF9F-6F3D-4EA8-B9E0-48D9BB79780F} = {324C46F5-D8B6-4711-ABB7-8E22BD9EAE10}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BA39288E-AC40-4B74-8AE3-AB6E94D02D77}
