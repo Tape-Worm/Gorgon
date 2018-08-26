@@ -90,7 +90,7 @@ namespace Gorgon.Examples
         public void SprayPoint(Point point)
         {
             Point randomArea = new Point(GorgonRandom.RandomInt32(-10, 10), GorgonRandom.RandomInt32(-10, 10));
-	        _graphics.FillEllipse(_brushes[GorgonRandom.RandomInt32(0, _brushes.Length)], new Rectangle(point.X + randomArea.X, point.Y + randomArea.Y, 10, 10));
+	        _graphics.FillEllipse(_brushes[GorgonRandom.RandomInt32(0, _brushes.Length - 1)], new Rectangle(point.X + randomArea.X, point.Y + randomArea.Y, 10, 10));
         }
         #endregion
 

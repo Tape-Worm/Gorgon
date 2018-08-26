@@ -359,7 +359,7 @@ namespace Gorgon.Diagnostics
 		                                        id => new List<string>());
 		    }
 
-			if (string.IsNullOrEmpty(formatSpecifier) || (formatSpecifier == "\n") || (formatSpecifier == "\r"))
+			if ((string.IsNullOrEmpty(formatSpecifier)) || (formatSpecifier == "\n") || (formatSpecifier == "\r"))
 			{
                 lines.Add($"[{DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}]");
 			}
@@ -375,7 +375,7 @@ namespace Gorgon.Diagnostics
 
 		        foreach (string line in formattedLines)
 		        {
-		            lines.Add($"[{DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}] {string.Format(line.Replace("{", "{{").Replace("}","}}"), arguments)}");
+		            lines.Add($"[{DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}] {string.Format(line, arguments)}");
 		        }
 		    }
 
@@ -391,7 +391,7 @@ namespace Gorgon.Diagnostics
 		public void Print(string formatSpecifier, LoggingLevel level, params object[] arguments)
 		{
 			if ((LogFilterLevel == LoggingLevel.NoLogging) || 
-				((level > LogFilterLevel) && (level != LoggingLevel.All)))
+				((LogFilterLevel != LoggingLevel.All) && (level != LoggingLevel.All) && (level >= LogFilterLevel)))
 			{
 				return;
 			}
