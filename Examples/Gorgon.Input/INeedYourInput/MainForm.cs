@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Examples.Properties;
@@ -566,6 +567,8 @@ namespace Gorgon.Examples
 
 			try
 			{
+			    GorgonExample.PluginLocationDirectory = new DirectoryInfo(Settings.Default.PlugInLocation);
+
 				// Load the assembly.
 				_assemblyCache = new GorgonMefPluginCache(GorgonApplication.Log);
 
@@ -579,8 +582,8 @@ namespace Gorgon.Examples
 				_input = new GorgonRawInput(this, GorgonApplication.Log);
 
 				// Get available gaming device driver plug ins.
-                _assemblyCache.LoadPluginAssemblies(Program.PlugInPath, "Gorgon.Input.DirectInput.dll");
-			    _assemblyCache.LoadPluginAssemblies(Program.PlugInPath, "Gorgon.Input.XInput.dll");
+                _assemblyCache.LoadPluginAssemblies(GorgonExample.GetPlugInPath().FullName, "Gorgon.Input.DirectInput.dll");
+			    _assemblyCache.LoadPluginAssemblies(GorgonExample.GetPlugInPath().FullName, "Gorgon.Input.XInput.dll");
 
 				_drivers = factory.LoadAllDrivers();
 
@@ -731,7 +734,7 @@ namespace Gorgon.Examples
 			}
 			catch (Exception ex)
 			{
-				ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), GorgonApplication.Log);
+				GorgonExample.HandleException(ex);
 				GorgonApplication.Quit();
 			}
 		}

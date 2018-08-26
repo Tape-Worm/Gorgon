@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Diagnostics.Contracts;
 using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -352,7 +353,7 @@ namespace Gorgon.Graphics
 			return new GorgonColor(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
 		}		
 
-		/// <summary>
+        /// <summary>
 		/// Function to compare two colors for equality.
 		/// </summary>
 		/// <param name="left">Left color to compare.</param>
@@ -604,6 +605,21 @@ namespace Gorgon.Graphics
 			                       color.Alpha * value);
 		}
 
+        /// <summary>
+        /// Function to convert this <see cref="GorgonColor"/> value into a hexadecimal formatting string.
+        /// </summary>
+        /// <returns>The color represented as a hexadecimal string.</returns>
+        /// <remarks>
+        /// <para>
+        /// The format of the string will be as follows: AARRGGBB.
+        /// </para>
+        /// </remarks>
+        [Pure]
+	    public string ToHex()
+        {
+            return $"{(int)(Alpha * 255):x2}{(int)(Red * 255):x2}{(int)(Green * 255):x2}{(int)(Blue * 255):x2}".ToUpperInvariant();
+        }
+
 		/// <summary>
 		/// Function to convert this <see cref="GorgonColor"/> value into an <see cref="int"/> value with a ARGB format.
 		/// </summary>
@@ -611,6 +627,7 @@ namespace Gorgon.Graphics
 		/// <remarks>
 		/// The format indicates the byte position of each color component in the <see cref="int"/> value.
 		/// </remarks>
+		[Pure]
 		public int ToARGB()
 		{
 		    uint result = (((uint)(Alpha * 255.0f)) & 0xff) << 24 | (((uint)(Red * 255.0f)) & 0xff) << 16 |
@@ -625,6 +642,7 @@ namespace Gorgon.Graphics
 		/// <remarks>
 		/// The format indicates the byte position of each color component in the <see cref="int"/> value.
 		/// </remarks>
+		[Pure]
 		public int ToRGBA()
 		{
 		    uint result = (((uint)(Red * 255.0f)) & 0xff) << 24 | (((uint)(Green * 255.0f)) & 0xff) << 16 |
@@ -639,6 +657,7 @@ namespace Gorgon.Graphics
 		/// <remarks>
 		/// The format indicates the byte position of each color component in the <see cref="int"/> value.
 		/// </remarks>
+		[Pure]
 		public int ToBGRA()
 		{
 		    uint result = (((uint)(Blue * 255.0f)) & 0xff) << 24 | (((uint)(Green * 255.0f)) & 0xff) << 16 |
@@ -653,6 +672,7 @@ namespace Gorgon.Graphics
 		/// <remarks>
 		/// The format indicates the byte position of each color component in the <see cref="int"/> value.
 		/// </remarks>
+		[Pure]
 		public int ToABGR()
 		{
 		    uint result = (((uint)(Alpha * 255.0f)) & 0xff) << 24 | (((uint)(Blue * 255.0f)) & 0xff) << 16 |
@@ -664,6 +684,7 @@ namespace Gorgon.Graphics
 		/// Function to convert this <see cref="GorgonColor"/> into a <see cref="Color"/>.
 		/// </summary>
 		/// <returns>The <see cref="Color"/> value.</returns>
+		[Pure]
 		public Color ToColor()
 		{
 			return Color.FromArgb(ToARGB());
@@ -676,6 +697,7 @@ namespace Gorgon.Graphics
 		/// <remarks>
 		/// This will map the <see cref="Red"/>, <see cref="Green"/> and <see cref="Blue"/> components to the <see cref="DX.Vector3.X"/>, <see cref="DX.Vector3.Y"/> and <see cref="DX.Vector3.Z"/> values respectively.
 		/// </remarks>
+		[Pure]
 		public DX.Vector3 ToVector3()
 		{
 			return new DX.Vector3(Red, Green, Blue);
@@ -688,6 +710,7 @@ namespace Gorgon.Graphics
 		/// <remarks>
 		/// This will map the <see cref="Red"/>, <see cref="Green"/>, <see cref="Blue"/> and <see cref="Alpha"/> components to the <see cref="DX.Vector4.X"/>, <see cref="DX.Vector4.Y"/>, <see cref="DX.Vector4.Z"/> and <see cref="DX.Vector4.W"/> values respectively.
 		/// </remarks>
+		[Pure]
 		public DX.Vector4 ToVector4()
 		{
 			return new DX.Vector4(Red, Green, Blue, Alpha);

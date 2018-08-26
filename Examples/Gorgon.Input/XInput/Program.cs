@@ -25,10 +25,7 @@
 #endregion
 
 using System;
-using System.IO;
 using System.Windows.Forms;
-using Gorgon.Core;
-using Gorgon.Examples.Properties;
 using Gorgon.UI;
 
 namespace Gorgon.Examples
@@ -40,33 +37,6 @@ namespace Gorgon.Examples
 	internal static class Program
 	{
 		/// <summary>
-		/// Property to return the path to the plug-ins.
-		/// </summary>
-		public static string PlugInPath
-		{
-			get
-			{
-				string path = Settings.Default.PlugInLocation;
-
-				if (path.Contains("{0}"))
-				{
-#if DEBUG
-					path = string.Format(path, "Debug");
-#else
-					path = string.Format(path, "Release");					
-#endif
-				}
-
-				if (!path.EndsWith(Path.DirectorySeparatorChar.ToString()))
-				{
-					path += Path.DirectorySeparatorChar.ToString();
-				}
-
-				return Path.GetFullPath(path);
-			}
-		}
-
-		/// <summary>
 		/// The main entry point for the application.
 		/// </summary>
 		[STAThread]
@@ -77,11 +47,11 @@ namespace Gorgon.Examples
 				Application.EnableVisualStyles();
 				Application.SetCompatibleTextRenderingDefault(false);
 
-				GorgonApplication.Run(new FormMain());
+                GorgonApplication.Run(new Form());
 			}
 			catch (Exception ex)
 			{
-				ex.Catch(_ => GorgonDialogs.ErrorBox(null, _), GorgonApplication.Log);
+                GorgonExample.HandleException(ex);
 			}
 		}
 	}

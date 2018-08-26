@@ -48,11 +48,11 @@ namespace Gorgon.Examples
 				Application.EnableVisualStyles();
 				Application.SetCompatibleTextRenderingDefault(false);
 
-				GorgonApplication.Run(new FormMain());
+                GorgonApplication.Run(new Form());
 			}
 			catch (Exception ex)
 			{
-				ex.Catch(_ => GorgonDialogs.ErrorBox(null, _), GorgonApplication.Log);
+                GorgonExample.HandleException(ex);
 			}
 		}
 	}

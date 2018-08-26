@@ -40,37 +40,6 @@ namespace Gorgon.Examples
 	static class Program
 	{
         #region Methods.
-        /// <summary>
-        /// Property to return the path to the resources for the example.
-        /// </summary>
-        /// <param name="resourceItem">The directory or file to use as a resource.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="resourceItem"/> was NULL (<i>Nothing</i> in VB.Net) or empty.</exception>
-        public static string GetResourcePath(string resourceItem)
-		{
-			string path = Settings.Default.ResourceLocation;
-
-			if (string.IsNullOrEmpty(resourceItem))
-			{
-				throw new ArgumentException("The resource was not specified.", nameof(resourceItem));
-			}
-
-			path = path.FormatDirectory(Path.DirectorySeparatorChar);
-
-			// If this is a directory, then sanitize it as such.
-			if (resourceItem.EndsWith(Path.DirectorySeparatorChar.ToString()))
-			{
-				path += resourceItem.FormatDirectory(Path.DirectorySeparatorChar);
-			}
-			else
-			{
-				// Otherwise, format the file name.
-				path += resourceItem.FormatFileName();
-			}
-
-			// Ensure that we have an absolute path.
-			return Path.GetFullPath(path);
-		}
-
 		/// <summary>
 		/// The main entry point for the application.
 		/// </summary>
@@ -82,7 +51,7 @@ namespace Gorgon.Examples
 				Application.EnableVisualStyles();
 				Application.SetCompatibleTextRenderingDefault(false);
 
-				GorgonApplication.Run(new MainForm());
+                GorgonApplication.Run(new Form());
 			}
 			catch (Exception ex)
 			{

@@ -89,7 +89,7 @@ namespace Gorgon.Examples
 		/// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
 		private void surfaceControl_Resize(object sender, EventArgs e)
 		{
-			Form parentForm = _control.FindForm();
+            System.Windows.Forms.Form parentForm = _control.FindForm();
 
 			if ((parentForm == null) || (parentForm.WindowState == FormWindowState.Minimized))
 			{

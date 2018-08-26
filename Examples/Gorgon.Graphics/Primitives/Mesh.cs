@@ -30,7 +30,7 @@ using Gorgon.Math;
 using Gorgon.Native;
 using DX = SharpDX;
 
-namespace Gorgon.Graphics.Example
+namespace Gorgon.Examples
 {
     /// <summary>
     /// Base class for a mesh object.

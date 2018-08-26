@@ -31,7 +31,7 @@ using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
-using Gorgon.Core;
+using Gorgon.Examples;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Example.Properties;
 using Gorgon.Graphics.Imaging.Codecs;
@@ -94,7 +94,6 @@ namespace Gorgon.Graphics.Example
         /// <summary>
         /// Function to update the world project matrix.
         /// </summary>
-        /// <param name="angle">The angle of rotation, in degrees.</param>
         private static void UpdatedWorldProjection()
         {
             // Update the animated offset for the center point.  We need to put this into a Vector4 because our data needs to be 
@@ -193,6 +192,8 @@ namespace Gorgon.Graphics.Example
 
             _graphics.Submit(_drawCall);
 
+            GorgonExample.BlitLogo(_graphics);
+
             // Send the contents of the swap chain buffers to the screen.
             _swap.Present(1);
 
@@ -204,35 +205,32 @@ namespace Gorgon.Graphics.Example
         /// </summary>
         private static void Initialize()
         {
-            Cursor.Current = Cursors.WaitCursor;
+            GorgonExample.ResourceBaseDirectory = new DirectoryInfo(Settings.Default.ResourceLocation);
 
             // Build the form so we can actually show something.
-            _mainForm = new FormMain
-                        {
-                            ClientSize = new Size(1280, 800)
-                        };
-
-            // Now we create and enumerate the list of video devices installed in the computer.
-            // We must do this in order to tell Gorgon which video device we intend to use. Note that this method may be quite slow (particularly when running DEBUG versions of 
-            // Direct 3D). To counter this, this object and its Enumerate method are thread safe so this can be run in the background while keeping the main UI responsive.
-            //
-            // If no suitable device was found (no Direct 3D 11.4 support) in the computer, this method will return an empty list. However, if it succeeds, then the devices list 
-            // will be populated with an IGorgonVideoDeviceInfo for each suitable video device in the system.
-            //
-            // Using this method, we could also enumerate the WARP software rasterizer, and/of the D3D Reference device (only if the DEBUG functionality provided by the Windows 
-            // SDK is installed). These devices are typically used to determine if there's a driver error, and can be terribly slow to render (reference moreso than WARP). It is 
-            // recommended that these only be used in diagnostic scenarios only.
-            IReadOnlyList<IGorgonVideoAdapterInfo> devices = GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log);
-
-            if (devices.Count == 0)
-            {
-                GorgonDialogs.ErrorBox(_mainForm, "This example requires a video adapter that supports Direct3D 11.4 or better.");
-                GorgonApplication.Quit();
-                return;
-            }
+            _mainForm = GorgonExample.Initialize(new DX.Size2(1280, 800), "Geometry Shaders");
 
             try
             {
+                // Now we create and enumerate the list of video devices installed in the computer.
+                // We must do this in order to tell Gorgon which video device we intend to use. Note that this method may be quite slow (particularly when running DEBUG versions of 
+                // Direct 3D). To counter this, this object and its Enumerate method are thread safe so this can be run in the background while keeping the main UI responsive.
+                //
+                // If no suitable device was found (no Direct 3D 11.4 support) in the computer, this method will return an empty list. However, if it succeeds, then the devices list 
+                // will be populated with an IGorgonVideoDeviceInfo for each suitable video device in the system.
+                //
+                // Using this method, we could also enumerate the WARP software rasterizer, and/of the D3D Reference device (only if the DEBUG functionality provided by the Windows 
+                // SDK is installed). These devices are typically used to determine if there's a driver error, and can be terribly slow to render (reference moreso than WARP). It is 
+                // recommended that these only be used in diagnostic scenarios only.
+                IReadOnlyList<IGorgonVideoAdapterInfo> devices = GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log);
+
+                if (devices.Count == 0)
+                {
+                    GorgonDialogs.ErrorBox(_mainForm, "This example requires a video adapter that supports Direct3D 11.4 or better.");
+                    GorgonApplication.Quit();
+                    return;
+                }
+
                 // Now we create the main graphics interface with the first applicable video device.
                 _graphics = new GorgonGraphics(devices[0], log: GorgonApplication.Log);
 
@@ -256,9 +254,7 @@ namespace Gorgon.Graphics.Example
                                             _mainForm,
                                             new GorgonSwapChainInfo("Main Swap Chain")
                                             {
-                                                Format = BufferFormat.R8G8B8A8_UNorm,
-                                                Width = _mainForm.ClientSize.Width,
-                                                Height = _mainForm.ClientSize.Height
+                                                Format = BufferFormat.R8G8B8A8_UNorm, Width = _mainForm.ClientSize.Width, Height = _mainForm.ClientSize.Height
                                             });
 
                 // Assign events so we can update our projection with our window size.
@@ -272,7 +268,7 @@ namespace Gorgon.Graphics.Example
                     GorgonDialogs.ErrorBox(_mainForm, "A 24 bit depth buffer is required for this example.");
                     return;
                 }
-                
+
                 _depthStencil = GorgonDepthStencil2DView.CreateDepthStencil(_graphics,
                                                                             new GorgonTexture2DInfo
                                                                             {
@@ -287,7 +283,9 @@ namespace Gorgon.Graphics.Example
                 LoadShaders();
 
                 // Load the texture.
-                _texture = GorgonTexture2DView.FromFile(_graphics, Path.Combine(Settings.Default.ResourceLocation, "GSTexture.png"), new GorgonCodecPng());
+                _texture = GorgonTexture2DView.FromFile(_graphics,
+                                                        Path.Combine(GorgonExample.GetResourcePath(@"Textures\GeometryShader\").FullName, "GSTexture.png"),
+                                                        new GorgonCodecPng());
 
                 // Create our builders so we can compose a draw call and pipeline state.
                 _drawCallBuilder = new GorgonDrawCallBuilder();
@@ -295,10 +293,11 @@ namespace Gorgon.Graphics.Example
 
                 // Create a constant buffer so we can adjust the positioning of the data.
                 DX.Matrix.PerspectiveFovLH((65.0f).ToRadians(), (float)_swap.Width / _swap.Height, 0.125f, 1000.0f, out _projection);
-                _vsConstants = GorgonConstantBufferView.CreateConstantBuffer(_graphics, new GorgonConstantBufferInfo("WorldProjection CBuffer")
-                                                                                        {
-                                                                                            SizeInBytes = DX.Matrix.SizeInBytes * 2 + DX.Vector4.SizeInBytes
-                                                                                        });
+                _vsConstants = GorgonConstantBufferView.CreateConstantBuffer(_graphics,
+                                                                             new GorgonConstantBufferInfo("WorldProjection CBuffer")
+                                                                             {
+                                                                                 SizeInBytes = DX.Matrix.SizeInBytes * 2 + DX.Vector4.SizeInBytes
+                                                                             });
                 _vsConstants.Buffer.SetData(ref _projection, copyMode: CopyMode.Discard);
                 _vsConstants.Buffer.SetData(ref _worldMatrix, 64, CopyMode.NoOverwrite);
 
@@ -314,10 +313,12 @@ namespace Gorgon.Graphics.Example
                                             .Build();
                 // Finally set our swap chain as the active rendering target and the depth/stencil buffer.
                 _graphics.SetRenderTarget(_swap.RenderTargetView, _depthStencil);
+
+                GorgonExample.LoadResources(_graphics);
             }
             finally
             {
-                Cursor.Current = Cursors.Default;
+                GorgonExample.EndInit();
             }
         }
 
@@ -338,10 +339,12 @@ namespace Gorgon.Graphics.Example
             }
             catch (Exception ex)
             {
-                ex.Catch(_ => GorgonDialogs.ErrorBox(null, _), GorgonApplication.Log);
+                GorgonExample.HandleException(ex);
             }
             finally
             {
+                GorgonExample.UnloadResources();
+
                 // Always clean up when you're done.
                 // Since Gorgon uses Direct 3D 11.4, we must be careful to dispose of any objects that implement IDisposable. 
                 // Failure to do so can lead to warnings from the Direct 3D runtime when running in DEBUG mode.

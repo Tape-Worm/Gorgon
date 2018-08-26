@@ -246,8 +246,8 @@ namespace Gorgon.Graphics.Core
                     using (Adapter4 adapter = adapter1.QueryInterface<Adapter4>())
                     {
                         // ReSharper disable BitwiseOperatorOnEnumWithoutFlags
-                        if (((adapter.Desc3.Flags & AdapterFlags.Remote) == AdapterFlags.Remote)
-                            || ((adapter.Desc3.Flags & AdapterFlags.Software) == AdapterFlags.Software))
+                        if (((adapter.Desc3.Flags & AdapterFlags3.Remote) == AdapterFlags3.Remote)
+                            || ((adapter.Desc3.Flags & AdapterFlags3.Software) == AdapterFlags3.Software))
                         {
                             continue;
                         }

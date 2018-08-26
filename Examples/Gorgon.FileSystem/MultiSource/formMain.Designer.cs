@@ -3,7 +3,7 @@ using System.Windows.Forms;
 
 namespace Gorgon.Examples
 {
-	partial class formMain
+	partial class FormMain
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -32,22 +32,14 @@ namespace Gorgon.Examples
 		private void InitializeComponent()
 		{
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(formMain));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
             this.splitFileSystem = new System.Windows.Forms.SplitContainer();
             this.treeFileSystem = new System.Windows.Forms.TreeView();
             this.imageTree = new System.Windows.Forms.ImageList(this.components);
-            this.ContentArea.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitFileSystem)).BeginInit();
             this.splitFileSystem.Panel1.SuspendLayout();
             this.splitFileSystem.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // ContentArea
-            // 
-            this.ContentArea.Controls.Add(this.splitFileSystem);
-            this.ContentArea.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            this.ContentArea.Location = new System.Drawing.Point(2, 34);
-            this.ContentArea.Size = new System.Drawing.Size(780, 525);
             // 
             // splitFileSystem
             // 
@@ -75,9 +67,9 @@ namespace Gorgon.Examples
             this.treeFileSystem.ShowRootLines = false;
             this.treeFileSystem.Size = new System.Drawing.Size(200, 525);
             this.treeFileSystem.TabIndex = 0;
-            this.treeFileSystem.BeforeCollapse += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeFileSystem_BeforeCollapse);
-            this.treeFileSystem.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeFileSystem_BeforeExpand);
-            this.treeFileSystem.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeFileSystem_NodeMouseDoubleClick);
+            this.treeFileSystem.BeforeCollapse += new System.Windows.Forms.TreeViewCancelEventHandler(this.TreeFileSystem_BeforeCollapse);
+            this.treeFileSystem.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.TreeFileSystem_BeforeExpand);
+            this.treeFileSystem.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.TreeFileSystem_NodeMouseDoubleClick);
             // 
             // imageTree
             // 
@@ -96,10 +88,9 @@ namespace Gorgon.Examples
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "formMain";
             this.Padding = new System.Windows.Forms.Padding(2);
-            this.ShowBorder = true;
+		    this.Controls.Add(this.splitFileSystem);
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Gorgon Example - Multiple Filesystem Sources";
-            this.ContentArea.ResumeLayout(false);
             this.splitFileSystem.Panel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitFileSystem)).EndInit();
             this.splitFileSystem.ResumeLayout(false);

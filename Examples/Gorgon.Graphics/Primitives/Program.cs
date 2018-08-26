@@ -31,7 +31,7 @@ using System.IO;
 using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
-using Gorgon.Graphics.Example.Properties;
+using Gorgon.Examples.Properties;
 using Gorgon.Graphics.Fonts;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
@@ -41,15 +41,18 @@ using Gorgon.Timing;
 using Gorgon.UI;
 using DX = SharpDX;
 using GI = Gorgon.Input;
+using Gorgon.Graphics;
 
-
-namespace Gorgon.Graphics.Example
+namespace Gorgon.Examples
 {
+    /// <summary>
+    /// Our application entry point.
+    /// </summary>
     internal static class Program
 	{
 	    #region Variables.
-	    // Main application form.
-	    private static FormMain _form;
+        // The main application window.
+	    private static FormMain _window;
 	    // Camera.
 	    private static Camera _camera;
 	    // Rotation value.
@@ -148,6 +151,8 @@ namespace Gorgon.Graphics.Example
 		                       $@"CamRot: {_cameraRotation} Mouse: {_mouse?.Position.X:0}x{_mouse?.Position.Y:0} Sensitivity: {_sensitivity:0.0##}";
             _2DRenderer.DrawTextSprite(_textSprite);
             _2DRenderer.End();
+
+		    GorgonExample.DrawStatsAndLogo(_2DRenderer);
             
 			_swapChain.Present();
 
@@ -280,7 +285,7 @@ namespace Gorgon.Graphics.Example
 			GI.GorgonRawMouse.CursorVisible = false;
 
 			// Capture the cursor so that we can't move it outside the client area.
-			Cursor.Clip = _form.RectangleToScreen(new Rectangle(_form.ClientSize.Width / 2, _form.ClientSize.Height / 2, 1, 1));
+			Cursor.Clip = _window.RectangleToScreen(new Rectangle(_window.ClientSize.Width / 2, _window.ClientSize.Height / 2, 1, 1));
 
 			_mouse = new GI.GorgonRawMouse();
 			_input.RegisterDevice(_mouse);
@@ -327,7 +332,7 @@ namespace Gorgon.Graphics.Example
 			}
 			catch (Exception ex)
 			{
-				GorgonDialogs.ErrorBox(_form, ex);
+				GorgonDialogs.ErrorBox(_window, ex);
 			}
 		}
 
@@ -596,87 +601,92 @@ namespace Gorgon.Graphics.Example
         /// </summary>
         private static void Initialize()
 		{
-			_form = new FormMain();
+		    GorgonExample.ShowStatistics = false;
+		    _window = GorgonExample.Initialize(new DX.Size2(Settings.Default.Resolution.Width, Settings.Default.Resolution.Height), "Primitives");
 
-		    // Find out which devices we have installed in the system.
-		    IReadOnlyList<IGorgonVideoAdapterInfo> deviceList = GorgonGraphics.EnumerateAdapters();
-
-		    if (deviceList.Count == 0)
+		    try
 		    {
-                throw new NotSupportedException("There are no suitable video adapters available in the system. This example is unable to continue and will now exit.");
-		    }
+		        // Find out which devices we have installed in the system.
+		        IReadOnlyList<IGorgonVideoAdapterInfo> deviceList = GorgonGraphics.EnumerateAdapters();
 
-            _graphics = new GorgonGraphics(deviceList[0]);
-		    _renderer = new SimpleRenderer(_graphics);
+		        if (deviceList.Count == 0)
+		        {
+		            throw new
+		                NotSupportedException("There are no suitable video adapters available in the system. This example is unable to continue and will now exit.");
+		        }
 
-            _swapChain = new GorgonSwapChain(_graphics,
-		                                     _form,
-		                                     new GorgonSwapChainInfo("Swap")
+		        _graphics = new GorgonGraphics(deviceList[0]);
+		        _renderer = new SimpleRenderer(_graphics);
+
+		        _swapChain = new GorgonSwapChain(_graphics,
+		                                         _window,
+		                                         new GorgonSwapChainInfo("Swap")
+		                                         {
+		                                             Width = _window.ClientSize.Width, Height = _window.ClientSize.Height, Format = BufferFormat.R8G8B8A8_UNorm
+		                                         });
+
+		        BuildDepthBuffer(_swapChain.Width, _swapChain.Height);
+
+		        _graphics.SetRenderTarget(_swapChain.RenderTargetView, _depthBuffer);
+
+		        LoadShaders();
+
+		        LoadTextures();
+
+		        BuildLights();
+
+		        BuildMeshes();
+
+		        _renderer.Camera = _camera = new Camera
 		                                     {
-		                                         Width = _form.ClientSize.Width,
-		                                         Height = _form.ClientSize.Height,
-		                                         Format = BufferFormat.R8G8B8A8_UNorm
+		                                         Fov = 75.0f, ViewWidth = _swapChain.Width, ViewHeight = _swapChain.Height
+		                                     };
+
+		        _input = new GI.GorgonRawInput(_window);
+		        _keyboard = new GI.GorgonRawKeyboard();
+
+		        _input.RegisterDevice(_keyboard);
+
+		        _keyboard.KeyDown += Keyboard_KeyDown;
+		        _window.MouseDown += Mouse_Down;
+		        _window.MouseWheel += Mouse_Wheel;
+
+		        _swapChain.BeforeSwapChainResized += (sender, args) =>
+		                                             {
+		                                                 _graphics.SetDepthStencil(null);
+		                                             };
+
+		        // When we resize, update the projection and viewport to match our client size.
+		        _swapChain.AfterSwapChainResized += (sender, args) =>
+		                                            {
+		                                                _camera.ViewWidth = args.Size.Width;
+		                                                _camera.ViewHeight = args.Size.Height;
+
+		                                                BuildDepthBuffer(args.Size.Width, args.Size.Height);
+
+		                                                _graphics.SetDepthStencil(_depthBuffer);
+		                                            };
+
+		        // Create a font so we can render some text.
+		        _fontFactory = new GorgonFontFactory(_graphics);
+		        _font = _fontFactory.GetFont(new GorgonFontInfo("Segoe UI", 14.0f, FontHeightMode.Points, "Segoe UI 14pt")
+		                                     {
+		                                         OutlineSize = 2, OutlineColor1 = GorgonColor.Black, OutlineColor2 = GorgonColor.Black
 		                                     });
 
-            BuildDepthBuffer(_swapChain.Width, _swapChain.Height);
+		        _2DRenderer = new Gorgon2D(_swapChain.RenderTargetView);
 
-		    _graphics.SetRenderTarget(_swapChain.RenderTargetView, _depthBuffer);
+		        _textSprite = new GorgonTextSprite(_font)
+		                      {
+		                          DrawMode = TextDrawMode.OutlinedGlyphs
+		                      };
 
-            LoadShaders();
-
-            LoadTextures();
-			
-            BuildLights();
-
-		    BuildMeshes();
-
-		    _renderer.Camera = _camera = new Camera
-		                                 {
-		                                     Fov = 75.0f,
-		                                     ViewWidth = _swapChain.Width,
-		                                     ViewHeight = _swapChain.Height
-		                                 };
-
-			_input = new GI.GorgonRawInput(_form);
-			_keyboard = new GI.GorgonRawKeyboard();
-
-			_input.RegisterDevice(_keyboard);
-
-			_keyboard.KeyDown += Keyboard_KeyDown;
-			_form.MouseDown += Mouse_Down;
-			_form.MouseWheel += Mouse_Wheel;
-
-		    _swapChain.BeforeSwapChainResized += (sender, args) =>
-		                                         {
-                                                    _graphics.SetDepthStencil(null);
-		                                         };
-
-		    // When we resize, update the projection and viewport to match our client size.
-		    _swapChain.AfterSwapChainResized += (sender, args) =>
-		                                        {
-		                                            _camera.ViewWidth = args.Size.Width;
-		                                            _camera.ViewHeight = args.Size.Height;
-
-		                                            BuildDepthBuffer(args.Size.Width, args.Size.Height);
-
-		                                            _graphics.SetDepthStencil(_depthBuffer);
-		                                        };
-
-            // Create a font so we can render some text.
-            _fontFactory = new GorgonFontFactory(_graphics);
-		    _font = _fontFactory.GetFont(new GorgonFontInfo("Segoe UI", 14.0f, FontHeightMode.Points, "Segoe UI 14pt")
-		                                 {
-		                                     OutlineSize = 2,
-		                                     OutlineColor1 = GorgonColor.Black,
-		                                     OutlineColor2 = GorgonColor.Black
-		                                 });
-
-            _2DRenderer = new Gorgon2D(_swapChain.RenderTargetView);
-
-		    _textSprite = new GorgonTextSprite(_font)
-		                  {
-		                      DrawMode = TextDrawMode.OutlinedGlyphs
-		                  };
+                GorgonExample.LoadResources(_graphics);
+		    }
+		    finally
+		    {
+                GorgonExample.EndInit();
+		    }
 		}
 
         /// <summary>
@@ -692,14 +702,16 @@ namespace Gorgon.Graphics.Example
 		    {
 		        Initialize();
 
-		        GorgonApplication.Run(_form, Idle);
+		        GorgonApplication.Run(_window, Idle);
 		    }
 		    catch (Exception ex)
 		    {
-		        ex.Catch(_ => GorgonDialogs.ErrorBox(null, _), GorgonApplication.Log);
+                GorgonExample.HandleException(ex);
 		    }
 		    finally
 		    {
+                GorgonExample.UnloadResources();
+
                 _2DRenderer.Dispose();
                 _fontFactory.Dispose();
 

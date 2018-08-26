@@ -28,14 +28,14 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using Gorgon.Core;
 using Gorgon.Graphics.Core;
-using Gorgon.Graphics.Example.Properties;
+using Gorgon.Examples.Properties;
+using Gorgon.Graphics;
 using Gorgon.Math;
 using Gorgon.UI;
 using DX = SharpDX;
 
-namespace Gorgon.Graphics.Example
+namespace Gorgon.Examples
 {
 	/// <summary>
 	/// This is an example based on the MiniTri example that will draw a single triangle.
@@ -60,8 +60,6 @@ namespace Gorgon.Graphics.Example
 	internal static class Program
 	{
 		#region Variables.
-		// Main application form.
-		private static formMain _mainForm;                                      
 		// The graphics interface for the application.
 		private static GorgonGraphics _graphics;
 		// Our primary swap chain.
@@ -95,6 +93,8 @@ namespace Gorgon.Graphics.Example
 
 			// Draw our triangle.
 			_graphics.Submit(_drawCall);
+
+            GorgonExample.BlitLogo(_graphics);
 
 			// Now we flip our buffers on the swap chain.  
 			// We need to this or we won't see anything at all except the standard window background color. Clearly, we don't want that. 
@@ -149,7 +149,8 @@ namespace Gorgon.Graphics.Example
 		/// <summary>
 		/// Function to create a new constant buffer so we can upload data to the shaders on the GPU.
 		/// </summary>
-		private static void CreateConstantBuffer()
+		/// <param name="window">The application window.</param>
+		private static void CreateConstantBuffer(Form window)
 		{
 			// Our projection matrix.
 
@@ -157,7 +158,7 @@ namespace Gorgon.Graphics.Example
 			// Note that we depth a depth range from 0.001f up to 1000.0f.  This provides a near and far plane for clipping.  
 			// These clipping values must have the world transformed vertex data inside of it or else it will not render. Note that the near/far plane is not a 
 			// linear range and Z accuracy can get worse the further from the near plane that you get (particularly with depth buffers).
-			DX.Matrix.PerspectiveFovLH(65.0f.ToRadians(), _mainForm.ClientSize.Width / (float)_mainForm.ClientSize.Height, 0.125f, 1000f, out DX.Matrix projectionMatrix);
+			DX.Matrix.PerspectiveFovLH(65.0f.ToRadians(), window.ClientSize.Width / (float)window.ClientSize.Height, 0.125f, 1000f, out DX.Matrix projectionMatrix);
 
 			// Create our constant buffer.
 			//
@@ -168,105 +169,113 @@ namespace Gorgon.Graphics.Example
 		/// <summary>
 		/// Function to initialize the application.
 		/// </summary>
-		private static void Initialize()
+		/// <returns>The main window.</returns>
+		private static FormMain Initialize()
 		{
 			// Create our form and center on the primary monitor.
-			_mainForm = new formMain();
+		    FormMain window = GorgonExample.Initialize(new DX.Size2(1280, 800), "Gorgon MiniTri");
 
-			_mainForm.Location = new Point(Screen.PrimaryScreen.WorkingArea.Width / 2 - _mainForm.Width / 2,
-				Screen.PrimaryScreen.WorkingArea.Height / 2 - _mainForm.Height / 2);
-
-            // First we create and enumerate the list of video devices installed in the computer.
-            // We must do this in order to tell Gorgon which video device we intend to use. Note that this method may be quite slow (particularly when running DEBUG versions of 
-            // Direct 3D). To counter this, this object and its Enumerate method are thread safe so this can be run in the background while keeping the main UI responsive.
-            // Find out which devices we have installed in the system.
-
-		    // If no suitable device was found (no Direct 3D 12.0 support) in the computer, this method will throw an exception. However, if it succeeds, then the devices object 
-		    // will be populated with the IGorgonVideoDeviceInfo for each video device in the system.
-		    //
-		    // Using this method, we could also enumerate the software rasterizer. These devices are typically used to determine if there's a driver error, and can be terribly slow to render 
-		    // It is recommended that these only be used in diagnostic scenarios only.
-            IReadOnlyList<IGorgonVideoAdapterInfo> deviceList = GorgonGraphics.EnumerateAdapters();
-
-		    if (deviceList.Count == 0)
+		    try
 		    {
-                throw new NotSupportedException("There are no suitable video adapters available in the system. This example is unable to continue and will now exit.");
+		        // First we create and enumerate the list of video devices installed in the computer.
+		        // We must do this in order to tell Gorgon which video device we intend to use. Note that this method may be quite slow (particularly when running DEBUG versions of 
+		        // Direct 3D). To counter this, this object and its Enumerate method are thread safe so this can be run in the background while keeping the main UI responsive.
+		        // Find out which devices we have installed in the system.
+
+		        // If no suitable device was found (no Direct 3D 12.0 support) in the computer, this method will throw an exception. However, if it succeeds, then the devices object 
+		        // will be populated with the IGorgonVideoDeviceInfo for each video device in the system.
+		        //
+		        // Using this method, we could also enumerate the software rasterizer. These devices are typically used to determine if there's a driver error, and can be terribly slow to render 
+		        // It is recommended that these only be used in diagnostic scenarios only.
+		        IReadOnlyList<IGorgonVideoAdapterInfo> deviceList = GorgonGraphics.EnumerateAdapters();
+
+		        if (deviceList.Count == 0)
+		        {
+		            throw new
+		                NotSupportedException("There are no suitable video adapters available in the system. This example is unable to continue and will now exit.");
+		        }
+
+		        // Now we create the main graphics interface with the first applicable video device.
+		        _graphics = new GorgonGraphics(deviceList[0]);
+
+		        // Check to ensure that we can support the format required for our swap chain.
+		        // If a video device can't support this format, then the odds are good it won't render anything. Since we're asking for a very common display format, this will 
+		        // succeed nearly 100% of the time (unless you've somehow gotten an ancient video device to work with Direct 3D 11.1). Regardless, it's good form to the check for a 
+		        // working display format prior to setting up the swap chain.
+		        //
+		        // This method is also used to determine if a format can be used for other objects (e.g. a texture, render target, etc...) Like the swap chain format, this is also a 
+		        // best practice to check if the object you're creating supports the desired format.
+		        if ((_graphics.FormatSupport[BufferFormat.R8G8B8A8_UNorm].FormatSupport & BufferFormatSupport.Display) != BufferFormatSupport.Display)
+		        {
+		            // We should never see this unless you've performed some form of black magic.
+		            GorgonDialogs.ErrorBox(window, "We should not see this error.");
+		            return window;
+		        }
+
+		        // Finally, create a swap chain to display our output.
+		        // In this case we're setting up our swap chain to bind with our main window, and we use its client size to determine the width/height of the swap chain back buffers.
+		        // This width/height does not need to be the same size as the window, but, except for some scenarios, that would produce undesirable image quality.
+		        _swap = new GorgonSwapChain(_graphics,
+		                                    window,
+		                                    new GorgonSwapChainInfo("Main Swap Chain")
+		                                    {
+		                                        Format = BufferFormat.R8G8B8A8_UNorm, Width = window.ClientSize.Width, Height = window.ClientSize.Height
+		                                    })
+		                {
+		                    DoNotAutoResizeBackBuffer = true
+		                };
+
+		        // Create the shaders used to render the triangle.
+		        // These shaders provide transformation and coloring for the output pixel data.
+		        CreateShaders();
+
+		        // Set up our input layout.
+		        //
+		        // We'll be using this to describe to Direct 3D how the elements of a vertex is laid out in memory. 
+		        // In order to provide synchronization between the layout on the CPU side and the GPU side, we have to pass the vertex shader because it will contain the vertex 
+		        // layout to match with our C# input layout.
+		        _inputLayout = GorgonInputLayout.CreateUsingType<MiniTriVertex>(_graphics, _vertexShader);
+
+		        // Set up the triangle vertices.
+		        CreateVertexBuffer();
+
+		        // Set up the constant buffer.
+		        //
+		        // This is used (but could be used for more) to transform the vertex data from 3D space into 2D space.
+		        CreateConstantBuffer(window);
+
+		        // This defines where to send the pixel data when rendering. For now, this goes to our swap chain.
+		        _graphics.SetRenderTarget(_swap.RenderTargetView);
+
+		        // Create our draw call.
+		        //
+		        // This will pass all the necessary information to the GPU to render the triangle
+		        //
+		        // Since draw calls are immutable objects, we use builders to create them (and any pipeline state). Once a draw
+		        // call is built, it cannot be changed (except for the vertex, and if applicable, index, and instance ranges).
+		        //
+		        // Builders work on a fluent interface.  Much like LINQ and can be used to create multiple draw calls from the same 
+		        // builder.
+		        var drawCallBuilder = new GorgonDrawCallBuilder();
+		        var pipelineStateBuilder = new GorgonPipelineStateBuilder(_graphics);
+
+		        _drawCall = drawCallBuilder.VertexBuffer(_inputLayout, _vertexBuffer)
+		                                   .VertexRange(0, 3)
+		                                   .ConstantBuffer(ShaderType.Vertex, _constantBuffer)
+		                                   .PipelineState(pipelineStateBuilder
+		                                                  .PixelShader(_pixelShader)
+		                                                  .VertexShader(_vertexShader)
+		                                                  .RasterState(GorgonRasterState.NoCulling))
+		                                   .Build();
+
+                GorgonExample.LoadResources(_graphics);
+
+		        return window;
 		    }
-
-			// Now we create the main graphics interface with the first applicable video device.
-			_graphics = new GorgonGraphics(deviceList[0]);
-
-			// Check to ensure that we can support the format required for our swap chain.
-			// If a video device can't support this format, then the odds are good it won't render anything. Since we're asking for a very common display format, this will 
-			// succeed nearly 100% of the time (unless you've somehow gotten an ancient video device to work with Direct 3D 11.1). Regardless, it's good form to the check for a 
-			// working display format prior to setting up the swap chain.
-			//
-			// This method is also used to determine if a format can be used for other objects (e.g. a texture, render target, etc...) Like the swap chain format, this is also a 
-			// best practice to check if the object you're creating supports the desired format.
-			if ((_graphics.FormatSupport[BufferFormat.R8G8B8A8_UNorm].FormatSupport & BufferFormatSupport.Display) != BufferFormatSupport.Display)
-			{
-				// We should never see this unless you've performed some form of black magic.
-				GorgonDialogs.ErrorBox(_mainForm, "We should not see this error.");
-				return;
-			}
-
-			// Finally, create a swap chain to display our output.
-			// In this case we're setting up our swap chain to bind with our main window, and we use its client size to determine the width/height of the swap chain back buffers.
-			// This width/height does not need to be the same size as the window, but, except for some scenarios, that would produce undesirable image quality.
-			_swap = new GorgonSwapChain(_graphics,
-			                            _mainForm,
-			                            new GorgonSwapChainInfo("Main Swap Chain")
-			                            {
-				                            Format = BufferFormat.R8G8B8A8_UNorm,
-				                            Width = _mainForm.ClientSize.Width,
-				                            Height = _mainForm.ClientSize.Height
-			                            })
-			        {
-				        DoNotAutoResizeBackBuffer = true
-			        };
-
-			// Create the shaders used to render the triangle.
-			// These shaders provide transformation and coloring for the output pixel data.
-			CreateShaders();
-
-			// Set up our input layout.
-			//
-			// We'll be using this to describe to Direct 3D how the elements of a vertex is laid out in memory. 
-			// In order to provide synchronization between the layout on the CPU side and the GPU side, we have to pass the vertex shader because it will contain the vertex 
-			// layout to match with our C# input layout.
-			_inputLayout = GorgonInputLayout.CreateUsingType<MiniTriVertex>(_graphics, _vertexShader);
-
-			// Set up the triangle vertices.
-			CreateVertexBuffer();
-
-			// Set up the constant buffer.
-			//
-			// This is used (but could be used for more) to transform the vertex data from 3D space into 2D space.
-			CreateConstantBuffer();
-
-		    // This defines where to send the pixel data when rendering. For now, this goes to our swap chain.
-            _graphics.SetRenderTarget(_swap.RenderTargetView);
-
-			// Create our draw call.
-			//
-			// This will pass all the necessary information to the GPU to render the triangle
-            //
-            // Since draw calls are immutable objects, we use builders to create them (and any pipeline state). Once a draw
-            // call is built, it cannot be changed (except for the vertex, and if applicable, index, and instance ranges).
-            //
-            // Builders work on a fluent interface.  Much like LINQ and can be used to create multiple draw calls from the same 
-            // builder.
-            var drawCallBuilder = new GorgonDrawCallBuilder();
-            var pipelineStateBuilder = new GorgonPipelineStateBuilder(_graphics);
-
-		    _drawCall = drawCallBuilder.VertexBuffer(_inputLayout, _vertexBuffer)
-		                               .VertexRange(0, 3)
-		                               .ConstantBuffer(ShaderType.Vertex, _constantBuffer)
-		                               .PipelineState(pipelineStateBuilder
-		                                              .PixelShader(_pixelShader)
-		                                              .VertexShader(_vertexShader)
-		                                              .RasterState(GorgonRasterState.NoCulling))
-		                               .Build();
+		    finally
+		    {
+                GorgonExample.EndInit();
+		    }
 		}
 		#endregion
 
@@ -281,21 +290,20 @@ namespace Gorgon.Graphics.Example
 
 			try
 			{
-				// Initialize the application.
-				Initialize();
-
 				// Now begin running the application idle loop.
-				GorgonApplication.Run(_mainForm, Idle);
+				GorgonApplication.Run(Initialize(), Idle);
 			}
 			catch (Exception ex)
 			{
-				ex.Catch(_ => GorgonDialogs.ErrorBox(null, _), GorgonApplication.Log);
+				GorgonExample.HandleException(ex);
 			}
 			finally
 			{
 				// Always clean up when you're done.
 				// Since Gorgon uses Direct 3D 11.x, which allocate objects that use native memory and COM objects, we must be careful to dispose of any objects that implement 
 				// IDisposable. Failure to do so can lead to warnings from the Direct 3D runtime when running in DEBUG mode.
+                GorgonExample.UnloadResources();
+
 				_constantBuffer?.Dispose();
 				_vertexBuffer.VertexBuffer?.Dispose();
 				_inputLayout?.Dispose();

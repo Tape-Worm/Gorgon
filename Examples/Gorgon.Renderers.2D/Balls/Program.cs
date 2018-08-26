@@ -58,7 +58,7 @@ namespace Gorgon.Examples
 		private const float MinSimulationFPS = 1 / 30.0f;														
 
 	    // Our application form.
-		private static MainForm _form;																            
+		private static FormMain _window;
 	    // Our main graphics interface.
 		private static GorgonGraphics _graphics;														        
 	    // Our 2D interface.
@@ -394,6 +394,8 @@ namespace Gorgon.Examples
 		    DrawOverlay();
 		    _2D.End();
 
+            GorgonExample.DrawStatsAndLogo(_2D);
+
 			_mainScreen.Present();
 
             _graphics.ResetDrawCallStatistics();
@@ -406,183 +408,194 @@ namespace Gorgon.Examples
 		/// </summary>
 		private static void Initialize()
 		{
-		    _form = new MainForm
-		            {
-		                ClientSize = new Size(Settings.Default.ScreenWidth, Settings.Default.ScreenHeight)
-		            };
-			_form.Show();
+		    GorgonExample.ShowStatistics = false;
 
-			// Create the graphics interface.
-		    IReadOnlyList<IGorgonVideoAdapterInfo> adapters = GorgonGraphics.EnumerateAdapters();
+		    _window = GorgonExample.Initialize(new DX.Size2(Settings.Default.ScreenWidth, Settings.Default.ScreenHeight), "Balls");
 
-		    if (adapters.Count == 0)
+		    try
 		    {
-		        throw new GorgonException(GorgonResult.CannotCreate,
-		                                  "Gorgon requires at least a Direct3D 11.4 capable video device.\nThere is no suitable device installed on the system.");
+		        // Create the graphics interface.
+		        IReadOnlyList<IGorgonVideoAdapterInfo> adapters = GorgonGraphics.EnumerateAdapters();
+
+		        if (adapters.Count == 0)
+		        {
+		            throw new GorgonException(GorgonResult.CannotCreate,
+		                                      "Gorgon requires at least a Direct3D 11.4 capable video device.\nThere is no suitable device installed on the system.");
+		        }
+
+		        // Find the best video device.
+		        _graphics = new GorgonGraphics(adapters.OrderByDescending(item => item.FeatureSet).First());
+
+		        // Create the primary swap chain.
+		        _mainScreen = new GorgonSwapChain(_graphics,
+		                                          _window,
+		                                          new GorgonSwapChainInfo("Main Screen")
+		                                          {
+		                                              Width = Settings.Default.ScreenWidth,
+		                                              Height = Settings.Default.ScreenHeight,
+		                                              Format = BufferFormat.R8G8B8A8_UNorm
+		                                          });
+
+		        // Center the display.
+		        if (_mainScreen.IsWindowed)
+		        {
+		            _window.Location =
+		                new Point(Screen.PrimaryScreen.Bounds.Width / 2 - _window.Width / 2 + Screen.PrimaryScreen.Bounds.Left,
+		                          Screen.PrimaryScreen.Bounds.Height / 2 - _window.Height / 2 + Screen.PrimaryScreen.Bounds.Top);
+		        }
+
+		        // Load the ball texture.
+		        _ballTexture = GorgonTexture2DView.FromFile(_graphics,
+		                                                    GetResourcePath(@"Textures\Balls\BallsTexture.dds"),
+		                                                    new GorgonCodecDds(),
+		                                                    new GorgonTextureLoadOptions
+		                                                    {
+		                                                        Usage = ResourceUsage.Immutable, Name = "Ball Texture"
+		                                                    });
+
+		        // Create the 2D interface.
+		        _2D = new Gorgon2D(_mainScreen.RenderTargetView);
+
+		        // Create the wall sprite.
+		        _wall = new GorgonSprite
+		                {
+		                    Size = new DX.Size2F(63, 63), Texture = _ballTexture, TextureRegion = new DX.RectangleF(0, 0, 0.5f, 0.5f)
+		                };
+
+		        // Create the ball sprite.
+		        _ball = new GorgonSprite
+		                {
+		                    Size = new DX.Size2F(64, 64),
+		                    Texture = _ballTexture,
+		                    TextureRegion = new DX.RectangleF(0, 0, 0.5f, 0.5f),
+		                    Anchor = new DX.Vector2(0.5f, 0.5f)
+		                };
+
+		        // Create the ball render target.
+		        _ballTarget = GorgonRenderTarget2DView.CreateRenderTarget(_graphics,
+		                                                                  new GorgonTexture2DInfo("Ball Target")
+		                                                                  {
+		                                                                      Width = Settings.Default.ScreenWidth,
+		                                                                      Height = Settings.Default.ScreenHeight,
+		                                                                      Format = BufferFormat.R8G8B8A8_UNorm
+		                                                                  });
+		        _ballTargetView = _ballTarget.GetShaderResourceView();
+
+		        // Create our blur effect.
+		        _blur = new Gorgon2DGaussBlurEffect(_2D, 15)
+		                {
+		                    BlurRenderTargetsSize = new DX.Size2(512, 512), BlurRadius = 0
+		                };
+
+		        _mainScreen.BeforeSwapChainResized += (sender, args) =>
+		                                              {
+		                                                  _ballTargetView.Dispose();
+		                                                  _ballTarget.Dispose();
+		                                              };
+
+		        // Ensure that our secondary camera gets updated.
+		        _mainScreen.AfterSwapChainResized += (sender, args) =>
+		                                             {
+		                                                 // Fix any objects caught outside of the main target.
+		                                                 for (int i = 0; i < _ballCount; i++)
+		                                                 {
+		                                                     _ballList[i].Position.X = _ballList[i].Position.X.Max(0).Min(args.Size.Width);
+		                                                     _ballList[i].Position.Y = _ballList[i].Position.Y.Max(0).Min(args.Size.Height);
+		                                                 }
+
+		                                                 _ballTarget = GorgonRenderTarget2DView.CreateRenderTarget(_graphics,
+		                                                                                                           new GorgonTexture2DInfo("Ball Target")
+		                                                                                                           {
+		                                                                                                               Width = args.Size.Width,
+		                                                                                                               Height = args.Size.Height,
+		                                                                                                               Format = BufferFormat.R8G8B8A8_UNorm
+		                                                                                                           });
+		                                                 _ballTargetView = _ballTarget.GetShaderResourceView();
+
+		                                                 DX.Size2 newTargetSize;
+		                                                 newTargetSize.Width =
+		                                                     (int)((512.0f * (args.Size.Width / (float)Settings.Default.ScreenWidth)).Min(512));
+		                                                 newTargetSize.Height =
+		                                                     (int)((512.0f * (args.Size.Height / (float)Settings.Default.ScreenHeight)).Min(512));
+
+		                                                 _blur.BlurRenderTargetsSize = newTargetSize;
+		                                             };
+
+		        // Generate the ball list.
+		        GenerateBalls(Settings.Default.BallCount);
+
+		        // Assign event handlers.
+		        _window.KeyDown += Form_KeyDown;
+
+		        // Create our font.
+		        _fontFactory = new GorgonFontFactory(_graphics);
+		        _ballFont = _fontFactory.GetFont(new GorgonFontInfo("Arial", 9.0f, FontHeightMode.Points, "Arial 9pt Bold")
+		                                         {
+		                                             FontStyle = FontStyle.Bold,
+		                                             Characters = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890()_.-+:\u2191\u2193",
+		                                             OutlineSize = 1,
+		                                             OutlineColor1 = GorgonColor.Black,
+		                                             OutlineColor2 = GorgonColor.Black
+		                                         });
+
+		        // Create statistics render target.
+
+		        _statsTexture = GorgonTexture2DView.CreateTexture(_graphics,
+		                                                          new GorgonTexture2DInfo("Stats Render Target")
+		                                                          {
+		                                                              Width = (int)_ballFont
+		                                                                           .MeasureText(string.Format(Resources.FPSLine,
+		                                                                                                      999999,
+		                                                                                                      999999.999,
+		                                                                                                      _ballCount,
+		                                                                                                      9999),
+		                                                                                        true).Width,
+		                                                              Height = (int)((_ballFont.FontHeight * 4) + _ballFont.Descent),
+		                                                              Format = BufferFormat.R8G8B8A8_UNorm,
+		                                                              Binding = TextureBinding.RenderTarget
+		                                                          });
+
+		        // Statistics text buffer.
+		        _fpsText = new StringBuilder(64);
+
+		        _helpTextSprite = new GorgonTextSprite(_ballFont,
+		                                               string.Format(Resources.HelpText,
+		                                                             _graphics.VideoAdapter.Name,
+		                                                             _graphics.VideoAdapter.FeatureSet,
+		                                                             _graphics.VideoAdapter.Memory.Video.FormatMemory()))
+		                          {
+		                              Color = Color.Yellow,
+		                              Position = new DX.Vector2(3, (_statsTexture.Height + 8.0f).FastFloor()),
+		                              DrawMode = TextDrawMode.OutlinedGlyphs
+		                          };
+
+		        using (GorgonRenderTarget2DView rtv = _statsTexture.Texture.GetRenderTargetView())
+		        {
+		            // Draw our stats window frame.
+		            rtv.Clear(new GorgonColor(0, 0, 0, 0.5f));
+		            _graphics.SetRenderTarget(rtv);
+		            _2D.Begin();
+		            _2D.DrawRectangle(new DX.RectangleF(0, 0, rtv.Width, rtv.Height), new GorgonColor(0.86667f, 0.84314f, 0.7451f, 1.0f));
+		            _2D.End();
+		        }
+
+		        var stateBuilder = new Gorgon2DBatchStateBuilder();
+		        var blendStateBuilder = new GorgonBlendStateBuilder();
+
+		        _blurBlend = stateBuilder.BlendState(blendStateBuilder.ResetTo(GorgonBlendState.Default)
+		                                                              .DestinationBlend(alpha: Blend.InverseSourceAlpha)
+		                                                              .Build())
+		                                 .Build();
+
+                GorgonExample.LoadResources(_graphics);
+
+		        // Set our main render target.
+		        _graphics.SetRenderTarget(_mainScreen.RenderTargetView);
 		    }
-
-		    // Find the best video device.
-		    _graphics = new GorgonGraphics(adapters.OrderByDescending(item => item.FeatureSet).First());
-
-			// Create the primary swap chain.
-		    _mainScreen = new GorgonSwapChain(_graphics,
-		                                      _form,
-		                                      new GorgonSwapChainInfo("Main Screen")
-		                                      {
-		                                          Width = Settings.Default.ScreenWidth,
-		                                          Height = Settings.Default.ScreenHeight,
-                                                  Format = BufferFormat.R8G8B8A8_UNorm
-		                                      });
-
-			// Center the display.
-			if (_mainScreen.IsWindowed)
-			{
-			    _form.Location =
-			        new Point(Screen.PrimaryScreen.Bounds.Width / 2 - _form.Width / 2 + Screen.PrimaryScreen.Bounds.Left,
-			                  Screen.PrimaryScreen.Bounds.Height / 2 - _form.Height / 2 + Screen.PrimaryScreen.Bounds.Top);
-			}
-
-			// Load the ball texture.
-		    _ballTexture = GorgonTexture2DView.FromFile(_graphics,
-		                                                GetResourcePath(@"Textures\Balls\BallsTexture.dds"),
-		                                                new GorgonCodecDds(),
-		                                                new GorgonTextureLoadOptions
-		                                                {
-		                                                    Usage = ResourceUsage.Immutable,
-		                                                    Name = "Ball Texture"
-		                                                });
-
-			// Create the 2D interface.
-            _2D = new Gorgon2D(_mainScreen.RenderTargetView);
-
-			// Create the wall sprite.
-            _wall = new GorgonSprite
-                    {
-                        Size = new DX.Size2F(63, 63),
-                        Texture = _ballTexture,
-                        TextureRegion = new DX.RectangleF(0, 0, 0.5f, 0.5f)
-                    };
-
-			// Create the ball sprite.
-            _ball = new GorgonSprite
-                    {
-                        Size = new DX.Size2F(64, 64),
-                        Texture = _ballTexture,
-                        TextureRegion = new DX.RectangleF(0, 0, 0.5f, 0.5f),
-                        Anchor = new DX.Vector2(0.5f, 0.5f)
-                    };
-
-			// Create the ball render target.
-            _ballTarget = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo("Ball Target")
-                                                                                 {
-                                                                                     Width = Settings.Default.ScreenWidth,
-                                                                                     Height = Settings.Default.ScreenHeight,
-                                                                                     Format = BufferFormat.R8G8B8A8_UNorm
-                                                                                 });
-		    _ballTargetView = _ballTarget.GetShaderResourceView();
-
-            // Create our blur effect.
-            _blur = new Gorgon2DGaussBlurEffect(_2D, 15)
-		            {
-		                BlurRenderTargetsSize = new DX.Size2(512, 512),
-                        BlurRadius = 0
-		            };
-
-            _mainScreen.BeforeSwapChainResized += (sender, args) =>
-                                                  {
-                                                      _ballTargetView.Dispose();
-                                                      _ballTarget.Dispose();
-                                                  };
-			
-			// Ensure that our secondary camera gets updated.
-			_mainScreen.AfterSwapChainResized += (sender, args) =>
-			{
-				// Fix any objects caught outside of the main target.
-				for (int i = 0; i < _ballCount; i++)
-				{
-					_ballList[i].Position.X = _ballList[i].Position.X.Max(0).Min(args.Size.Width);
-					_ballList[i].Position.Y = _ballList[i].Position.Y.Max(0).Min(args.Size.Height);
-				}
-
-			    _ballTarget = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo("Ball Target")
-			                                                                         {
-			                                                                             Width = args.Size.Width,
-			                                                                             Height = args.Size.Height,
-			                                                                             Format = BufferFormat.R8G8B8A8_UNorm
-			                                                                         });
-			    _ballTargetView = _ballTarget.GetShaderResourceView();
-
-				DX.Size2 newTargetSize;
-				newTargetSize.Width = (int)((512.0f * (args.Size.Width / (float)Settings.Default.ScreenWidth)).Min(512));
-				newTargetSize.Height = (int)((512.0f * (args.Size.Height / (float)Settings.Default.ScreenHeight)).Min(512));
-
-                _blur.BlurRenderTargetsSize = newTargetSize;
-			};
-
-			// Generate the ball list.
-			GenerateBalls(Settings.Default.BallCount);
-
-			// Assign event handlers.
-			_form.KeyDown += Form_KeyDown;
-
-			// Create our font.
-            _fontFactory = new GorgonFontFactory(_graphics);
-		    _ballFont = _fontFactory.GetFont(new GorgonFontInfo("Arial", 9.0f, FontHeightMode.Points, "Arial 9pt Bold")
-		                                     {
-		                                         FontStyle = FontStyle.Bold,
-                                                 Characters = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890()_.-+:\u2191\u2193",
-                                                 OutlineSize = 1,
-                                                 OutlineColor1 = GorgonColor.Black,
-                                                 OutlineColor2 = GorgonColor.Black
-		                                     });
-
-			// Create statistics render target.
-
-		    _statsTexture = GorgonTexture2DView.CreateTexture(_graphics,
-		                                                      new GorgonTexture2DInfo("Stats Render Target")
-		                                                      {
-		                                                          Width = (int)_ballFont
-		                                                                       .MeasureText(string.Format(Resources.FPSLine, 999999, 999999.999, _ballCount, 9999),
-		                                                                                    true).Width,
-		                                                          Height = (int)((_ballFont.FontHeight * 4) + _ballFont.Descent),
-		                                                          Format = BufferFormat.R8G8B8A8_UNorm,
-		                                                          Binding = TextureBinding.RenderTarget
-		                                                      });
-
-		    // Statistics text buffer.
-		    _fpsText = new StringBuilder(64);
-
-		    _helpTextSprite = new GorgonTextSprite(_ballFont,
-		                                           string.Format(Resources.HelpText,
-		                                                         _graphics.VideoAdapter.Name,
-		                                                         _graphics.VideoAdapter.FeatureSet,
-		                                                         _graphics.VideoAdapter.Memory.Video.FormatMemory()))
-		                      {
-		                          Color = Color.Yellow,
-		                          Position = new DX.Vector2(3, (_statsTexture.Height + 8.0f).FastFloor()),
-		                          DrawMode = TextDrawMode.OutlinedGlyphs
-		                      };
-
-		    using (GorgonRenderTarget2DView rtv = _statsTexture.Texture.GetRenderTargetView())
+		    finally
 		    {
-		        // Draw our stats window frame.
-		        rtv.Clear(new GorgonColor(0, 0, 0, 0.5f));
-		        _graphics.SetRenderTarget(rtv);
-		        _2D.Begin();
-		        _2D.DrawRectangle(new DX.RectangleF(0, 0, rtv.Width, rtv.Height), new GorgonColor(0.86667f, 0.84314f, 0.7451f, 1.0f));
-		        _2D.End();
+                GorgonExample.EndInit();
 		    }
-
-            var stateBuilder = new Gorgon2DBatchStateBuilder();
-            var blendStateBuilder = new GorgonBlendStateBuilder();
-
-		    _blurBlend = stateBuilder.BlendState(blendStateBuilder.ResetTo(GorgonBlendState.Default)
-		                                                          .DestinationBlend(alpha: Blend.InverseSourceAlpha)
-		                                                          .Build())
-		                             .Build();
-
-		    // Set our main render target.
-            _graphics.SetRenderTarget(_mainScreen.RenderTargetView);
 		}
 
 		/// <summary>
@@ -630,7 +643,7 @@ namespace Gorgon.Examples
 				    {
 				        if (_mainScreen.IsWindowed)
 				        {
-				            IGorgonVideoOutputInfo output = _graphics.VideoAdapter.Outputs[_form.Handle];
+				            IGorgonVideoOutputInfo output = _graphics.VideoAdapter.Outputs[_window.Handle];
 
 				            if (output == null)
 				            {
@@ -638,7 +651,7 @@ namespace Gorgon.Examples
 				            }
 				            else
 				            {
-                                var mode = new GorgonVideoMode(_form.ClientSize.Width, _form.ClientSize.Height, BufferFormat.R8G8B8A8_UNorm);
+                                var mode = new GorgonVideoMode(_window.ClientSize.Width, _window.ClientSize.Height, BufferFormat.R8G8B8A8_UNorm);
                                 _mainScreen.EnterFullScreen(in mode, output);
 				            }
 				        }
@@ -673,7 +686,8 @@ namespace Gorgon.Examples
 		/// </summary>
 		private static void CleanUp()
 		{
-			_form?.Dispose();
+            GorgonExample.UnloadResources();
+			_window?.Dispose();
             _fontFactory?.Dispose();
 			_graphics?.Dispose();
 		}
@@ -691,11 +705,11 @@ namespace Gorgon.Examples
 
 				Initialize();
 
-				GorgonApplication.Run(_form, Idle);
+				GorgonApplication.Run(_window, Idle);
 			}
 			catch (Exception ex)
 			{
-				ex.Catch(_ => GorgonDialogs.ErrorBox(null, _), GorgonApplication.Log);
+				GorgonExample.HandleException(ex);
 			}
 			finally
 			{

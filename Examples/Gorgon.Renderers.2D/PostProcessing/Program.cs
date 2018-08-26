@@ -28,13 +28,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using Drawing = System.Drawing;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using DX = SharpDX;
-using Gorgon.IO;
 using Gorgon.UI;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging.Codecs;
@@ -57,14 +55,10 @@ namespace Gorgon.Examples
         private static GorgonSwapChain _screen;
         // Our 2D renderer.
         private static Gorgon2D _renderer;
-        // The logo for Gorgon.
-        private static GorgonTexture2DView _logo;
         // The images to be displayed.
         private static GorgonTexture2DView[] _images;
         // The current image being rendered.
         private static int _currentImage;
-        // The string builder for the FPS text.
-        private static readonly StringBuilder _fpsString = new StringBuilder();
         // The compositor for drawing our effects.
         private static Gorgon2DCompositor _compositor;
         // The blur effect.
@@ -110,20 +104,7 @@ namespace Gorgon.Examples
                 _graphics.SetRenderTarget(_screen.RenderTargetView);
             }
             
-            _renderer.Begin();
-            _fpsString.Length = 0;
-            _fpsString.AppendFormat("FPS: {0:0.0}\nFrame delta: {1:0.000} ms.", GorgonTiming.AverageFPS, GorgonTiming.Delta * 1000);
-
-            DX.Size2F textSize = _renderer.DefaultFont.MeasureText(_fpsString.ToString(), false);
-
-            _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _screen.Width, textSize.Height + 4), new GorgonColor(0, 0, 0, 0.5f));
-            _renderer.DrawLine(0, textSize.Height + 4, _screen.Width, textSize.Height + 4, GorgonColor.White, 1.5f);
-            _renderer.DrawLine(0, textSize.Height + 5, _screen.Width, textSize.Height + 5, new GorgonColor(0, 0, 0, 0.75f));
-
-            _renderer.DrawString(_fpsString.ToString(), DX.Vector2.Zero, color: GorgonColor.White);
-            DX.RectangleF pos = new DX.RectangleF(_screen.Width - _logo.Width - 5, _screen.Height - _logo.Height - 2, _logo.Width, _logo.Height);
-            _renderer.DrawFilledRectangle(pos, GorgonColor.White, _logo, new DX.RectangleF(0, 0, 1, 1));
-            _renderer.End();
+            GorgonExample.DrawStatsAndLogo(_renderer);
 
             _screen.Present(1);
         }
@@ -196,7 +177,7 @@ namespace Gorgon.Examples
         /// <returns><b>true</b> if files were loaded successfully, <b>false</b> if not.</returns>
         private static bool LoadImageFiles(IGorgonImageCodec codec)
         {
-            var dirInfo = new DirectoryInfo(GetResourcePath(@"\Textures\PostProcess"));
+            var dirInfo = GorgonExample.GetResourcePath(@"\Textures\PostProcess");
             FileInfo[] files = dirInfo.GetFiles("*.dds", SearchOption.TopDirectoryOnly);
 
             if (files.Length == 0)
@@ -231,7 +212,7 @@ namespace Gorgon.Examples
         private static void LayoutGUI()
         {
             float maxWidth = 0;
-            var position = new DX.Vector2(0, 64);
+            var position = new DX.Vector2(0, 70);
 
             for (int i = 0; i < _buttons.Length; ++i)
             {
@@ -405,18 +386,8 @@ namespace Gorgon.Examples
         /// <returns>The main window for the application.</returns>
         private static FormMain Initialize()
         {
-            var window = new FormMain
-                         {
-                             ClientSize = Settings.Default.Resolution
-                         };
-            window.Show();
-
-            // Process any pending events so the window shows properly.
-            Application.DoEvents();
-
-            Cursor.Current = Cursors.WaitCursor;
-
-            MemoryStream stream = null;
+            GorgonExample.ResourceBaseDirectory = new DirectoryInfo(Settings.Default.ResourceLocation);
+            FormMain window = GorgonExample.Initialize(new DX.Size2(Settings.Default.Resolution.Width, Settings.Default.Resolution.Height), "Post Processing");
 
             try
             {
@@ -446,12 +417,11 @@ namespace Gorgon.Examples
                 // Initialize the renderer so that we are able to draw stuff.
                 _renderer = new Gorgon2D(_screen.RenderTargetView);
 
+                GorgonExample.LoadResources(_graphics);
+
                 // Load the Gorgon logo to show in the lower right corner.
                 var ddsCodec = new GorgonCodecDds();
-
-                stream = new MemoryStream(Resources.Gorgon_Logo_Small);
-                _logo = GorgonTexture2DView.FromStream(_graphics, stream, ddsCodec);
-
+                
                 // Import the images we'll use in our post process chain.
                 if (!LoadImageFiles(ddsCodec))
                 {
@@ -478,8 +448,7 @@ namespace Gorgon.Examples
             }
             finally
             {
-                stream?.Dispose();
-                Cursor.Current = Cursors.Default;
+                GorgonExample.EndInit();
             }
         }
 
@@ -633,37 +602,6 @@ namespace Gorgon.Examples
         }
 
         /// <summary>
-        /// Property to return the path to the resources for the example.
-        /// </summary>
-        /// <param name="resourceItem">The directory or file to use as a resource.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="resourceItem"/> was NULL (<i>Nothing</i> in VB.Net) or empty.</exception>
-        public static string GetResourcePath(string resourceItem)
-        {
-            string path = Settings.Default.ResourceLocation;
-
-            if (string.IsNullOrEmpty(resourceItem))
-            {
-                throw new ArgumentException(@"The resource was not specified.", nameof(resourceItem));
-            }
-
-            path = path.FormatDirectory(Path.DirectorySeparatorChar);
-
-            // If this is a directory, then sanitize it as such.
-            if (resourceItem.EndsWith(Path.DirectorySeparatorChar.ToString()))
-            {
-                path += resourceItem.FormatDirectory(Path.DirectorySeparatorChar);
-            }
-            else
-            {
-                // Otherwise, format the file name.
-                path += resourceItem.FormatPath(Path.DirectorySeparatorChar);
-            }
-
-            // Ensure that we have an absolute path.
-            return Path.GetFullPath(path);
-        }
-
-        /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
@@ -678,11 +616,12 @@ namespace Gorgon.Examples
             }
             catch (Exception ex)
             {
-                Cursor.Show();
-                ex.Catch(e => GorgonDialogs.ErrorBox(null, "There was an error running the application and it must now close.", "Error", ex));
+                GorgonExample.HandleException(ex);
             }
             finally
             {
+                GorgonExample.UnloadResources();
+
                 if (_images != null)
                 {
                     for (int i = 0; i < _images.Length; ++i)
@@ -699,7 +638,7 @@ namespace Gorgon.Examples
                     }
                     _compositor.Dispose();
                 }
-                _logo?.Dispose();
+                
                 _renderer?.Dispose();
                 _screen?.Dispose();
                 _graphics?.Dispose();

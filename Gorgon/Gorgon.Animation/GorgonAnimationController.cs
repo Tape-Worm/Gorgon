@@ -385,12 +385,27 @@ namespace Gorgon.Animation
         /// </summary>
 	    public void Pause()
 	    {
-	        if (CurrentAnimation == null)
+	        if ((CurrentAnimation == null) || (_animatedObject == null))
 	        {
+	            State = AnimationState.Stopped;
 	            return;
 	        }
 
 	        State = AnimationState.Paused;
+	    }
+
+	    /// <summary>
+	    /// Function to resume a paused animation.
+	    /// </summary>
+	    public void Resume()
+	    {
+	        if ((CurrentAnimation == null) || (_animatedObject == null))
+	        {
+	            State = AnimationState.Stopped;
+	            return;
+	        }
+
+	        State = AnimationState.Playing;
 	    }
 
 		/// <summary>

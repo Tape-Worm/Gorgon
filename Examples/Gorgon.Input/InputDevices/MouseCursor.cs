@@ -128,7 +128,7 @@ namespace Gorgon.Examples
         private void displayControl_Resize(object sender, EventArgs e)
         {
             Control displayControl = (Control)sender;
-            Form ownerForm = displayControl.FindForm();
+            System.Windows.Forms.Form ownerForm = displayControl.FindForm();
             
             CleanUp();
 

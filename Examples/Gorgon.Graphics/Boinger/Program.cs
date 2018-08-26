@@ -26,11 +26,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
-using Gorgon.Core;
+using Gorgon.Examples;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Example.Properties;
 using Gorgon.Graphics.Imaging;
@@ -81,14 +80,13 @@ namespace Gorgon.Graphics.Example
 	/// effort to get up and running (technically, you barely have to touch the base graphics library to get the 2D renderer doing
 	/// something useful).
 	/// </summary>
-	[SuppressMessage("ReSharper", "LocalizableElement")]
 	internal static class Program
 	{
 		#region Variables.
 		// Format for our depth/stencil buffer.
 		private static BufferFormat _depthFormat;
 		// Main application form.
-		private static formMain _mainForm;
+		private static FormMain _mainForm;
 		// The graphics interface for the application.
 		private static GorgonGraphics _graphics;
 		// Our primary swap chain.
@@ -267,13 +265,7 @@ namespace Gorgon.Graphics.Example
 
 			// Draw our text.
 			// Use this to show how incredibly slow and terrible my 3D code is.
-            _2D.Begin();
-            _2D.DrawFilledRectangle(new DX.RectangleF(0, 0, _mainForm.ClientSize.Width - 1.0f, 64.0f), Color.FromArgb(128, 0, 0, 0));
-            _2D.DrawRectangle(new DX.RectangleF(0, 0, _mainForm.ClientSize.Width, 64.0f), Color.White);
-		    _2D.DrawString("FPS: " + GorgonTiming.AverageFPS.ToString("0.0")
-		                           + "\nDelta: " + (GorgonTiming.AverageDelta * 1000.0f).ToString("0.0##") + " msec.",
-		                   new DX.Vector2(3.0f, 0.0f));
-            _2D.End();
+            GorgonExample.DrawStatsAndLogo(_2D);
 
 			// Now we flip our buffers.
 			// We need to this or we won't see anything.
@@ -487,6 +479,8 @@ namespace Gorgon.Graphics.Example
 	                                                                        });
 	        GorgonColor defaultMaterialColor = GorgonColor.White;
             _materialBuffer.Buffer.SetData(ref defaultMaterialColor);
+
+            GorgonExample.LoadResources(_graphics);
 	    }
 
         /// <summary>
@@ -543,77 +537,73 @@ namespace Gorgon.Graphics.Example
 		/// </summary>
 		private static void Initialize()
 		{
-			// Create our form.
-			_mainForm = new formMain
-			            {
-				            ClientSize = Settings.Default.Resolution
-			            };
+		    try
+		    {
+		        // Create our form.
+		        _mainForm = GorgonExample.Initialize(new DX.Size2(Settings.Default.Resolution.Width, Settings.Default.Resolution.Height), "Boinger");
 
-			// Center on the primary monitor.
-			// This is necessary because we already created the window, so it'll be off center at this point.
-		    _mainForm.Location = new Point(Screen.PrimaryScreen.WorkingArea.Width / 2 - _mainForm.Width / 2,
-		                                   Screen.PrimaryScreen.WorkingArea.Height / 2 - _mainForm.Height / 2);
+		        // Add a keybinding to switch to full screen or windowed.
+		        _mainForm.KeyDown += _mainForm_KeyDown;
 
-			// Add a keybinding to switch to full screen or windowed.
-			_mainForm.KeyDown += _mainForm_KeyDown;
+		        // Set up the swap chain, buffers, and texture(s).
+		        InitializeGpuResources();
 
-            // Set up the swap chain, buffers, and texture(s).
-            InitializeGpuResources();
-            
-		    // Create our planes.
-		    // Here's where we create the 2 planes for our rear wall and floor.  We set the texture size to texel units because that's how the video card expects 
-		    // them.  However, it's a little hard to eyeball 0.67798223f by looking at the texture image display, so we use the ToTexel function to determine our 
-		    // texel size.
-		    DX.Size2F textureSize = _texture.ToTexel(new DX.Size2(511, 511));
+		        // Create our planes.
+		        // Here's where we create the 2 planes for our rear wall and floor.  We set the texture size to texel units because that's how the video card expects 
+		        // them.  However, it's a little hard to eyeball 0.67798223f by looking at the texture image display, so we use the ToTexel function to determine our 
+		        // texel size.
+		        DX.Size2F textureSize = _texture.ToTexel(new DX.Size2(511, 511));
 
-		    // And here we set up the planes with a material, and initial positioning.
-		    _planes = new[]
-		              {
-		                  new Plane(_graphics, _inputLayout, new DX.Vector2(3.5f), new DX.RectangleF(0, 0, textureSize.Width, textureSize.Height))
+		        // And here we set up the planes with a material, and initial positioning.
+		        _planes = new[]
 		                  {
+		                      new Plane(_graphics, _inputLayout, new DX.Vector2(3.5f), new DX.RectangleF(0, 0, textureSize.Width, textureSize.Height))
+		                      {
+		                          Material = new Material
+		                                     {
+		                                         Diffuse = GorgonColor.White, Texture = _texture
+		                                     },
+		                          Position = new DX.Vector3(0, 0, 3.0f)
+		                      },
+		                      new Plane(_graphics, _inputLayout, new DX.Vector2(3.5f), new DX.RectangleF(0, 0, textureSize.Width, textureSize.Height))
+		                      {
+		                          Material = new Material
+		                                     {
+		                                         Diffuse = GorgonColor.White, Texture = _texture
+		                                     },
+		                          Position = new DX.Vector3(0, -3.5f, 3.5f),
+		                          Rotation = new DX.Vector3(90.0f, 0, 0)
+		                      }
+		                  };
+
+		        // Create our sphere.
+		        // Again, here we're using texels to align the texture coordinates to the other image packed into the texture (atlasing).  
+		        DX.Vector2 textureOffset = _texture.ToTexel(new DX.Vector2(516, 0));
+		        // This is to scale our texture coordinates because the actual image is much smaller (255x255) than the full texture (1024x512).
+		        textureSize = _texture.ToTexel(new DX.Size2(255, 255));
+		        // Give the sphere a place to live.
+		        _sphere = new Sphere(_graphics, _inputLayout, 1.0f, textureOffset, textureSize)
+		                  {
+		                      Position = new DX.Vector3(2.2f, 1.5f, 2.5f),
 		                      Material = new Material
 		                                 {
-		                                     Diffuse = GorgonColor.White,
-		                                     Texture = _texture
-		                                 },
-		                      Position = new DX.Vector3(0, 0, 3.0f)
-		                  },
-		                  new Plane(_graphics, _inputLayout, new DX.Vector2(3.5f), new DX.RectangleF(0, 0, textureSize.Width, textureSize.Height))
-		                  {
-		                      Material = new Material
-		                                 {
-		                                     Diffuse = GorgonColor.White,
-		                                     Texture = _texture
-		                                 },
-		                      Position = new DX.Vector3(0, -3.5f, 3.5f),
-		                      Rotation = new DX.Vector3(90.0f, 0, 0)
-		                  }
-		              };
+		                                     Diffuse = GorgonColor.White, Texture = _texture
+		                                 }
+		                  };
 
-		    // Create our sphere.
-		    // Again, here we're using texels to align the texture coordinates to the other image packed into the texture (atlasing).  
-		    DX.Vector2 textureOffset = _texture.ToTexel(new DX.Vector2(516, 0));
-		    // This is to scale our texture coordinates because the actual image is much smaller (255x255) than the full texture (1024x512).
-		    textureSize = _texture.ToTexel(new DX.Size2(255, 255));
-		    // Give the sphere a place to live.
-		    _sphere = new Sphere(_graphics, _inputLayout, 1.0f, textureOffset, textureSize)
-		              {
-		                  Position = new DX.Vector3(2.2f, 1.5f, 2.5f),
-		                  Material = new Material
-		                             {
-		                                 Diffuse = GorgonColor.White,
-		                                 Texture = _texture
-		                             }
-		              };
+		        // Initialize the states used to draw the objects.
+		        InitializeStates();
 
-            // Initialize the states used to draw the objects.
-            InitializeStates();
+		        // Initialize 2D rendering.
+		        _2D = new Gorgon2D(_swap.RenderTargetView);
 
-            // Initialize 2D rendering.
-            _2D = new Gorgon2D(_swap.RenderTargetView);
-
-			// I know, there's a lot in here.  Thing is, if this were Direct 3D 11 code, it'd probably MUCH 
-			// more code and that's even before creating our planes and sphere.
+		        // I know, there's a lot in here.  Thing is, if this were Direct 3D 11 code, it'd probably MUCH 
+		        // more code and that's even before creating our planes and sphere.
+		    }
+		    finally
+		    {
+                GorgonExample.EndInit();
+		    }
 		}
 
         /// <summary>
@@ -689,10 +679,12 @@ namespace Gorgon.Graphics.Example
 			}
 			catch (Exception ex)
 			{
-				ex.Catch(_ => GorgonDialogs.ErrorBox(null, _), GorgonApplication.Log);
+                GorgonExample.HandleException(ex);
 			}
 			finally
 			{
+                GorgonExample.UnloadResources();
+
                 _2D.Dispose();
 
 				// Always call dispose so we can free the native memory allocated for the backing graphics API.

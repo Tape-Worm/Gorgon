@@ -47,11 +47,11 @@ namespace Gorgon.Examples
 
             try
             {
-                GorgonApplication.Run(new FormMain());
+                GorgonApplication.Run(new Form());
             }
             catch (Exception ex)
             {
-                ex.Catch(e => GorgonDialogs.ErrorBox(null, "There was an unrecoverable error\nSee details for more information."));
+                GorgonExample.HandleException(ex);
             }
         }
     }

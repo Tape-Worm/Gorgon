@@ -599,7 +599,7 @@ namespace Gorgon.Graphics.Imaging
 						|| (pixelFormat == PixelFormat.Format1bppIndexed))
 					{
 						paletteInfo = GetEncoderPalette(bitmap, options);
-						frame.SetPalette(paletteInfo?.Palette);
+                        frame.Palette = paletteInfo?.Palette;
 					}
 
 					using (BitmapSource converter = GetFormatConverter(bitmap, pixelFormat, options?.Dithering ?? ImageDithering.None, paletteInfo?.Palette, paletteInfo?.Alpha ?? 0.0f))
@@ -875,9 +875,11 @@ namespace Gorgon.Graphics.Imaging
 				if (paletteInfo != null)
 				{ 
 					// Create a temporary bitmap to convert our indexed image.
-					tempBitmap = new Bitmap(_factory, frame, BitmapCreateCacheOption.NoCache);
-                    tempBitmap.SetPalette(paletteInfo.Value.Palette);
-					formatConverter = GetFormatConverter(tempBitmap, convertFormat, ImageDithering.None, paletteInfo.Value.Palette, paletteInfo.Value.Alpha);
+				    tempBitmap = new Bitmap(_factory, frame, BitmapCreateCacheOption.NoCache)
+				                 {
+				                     Palette = paletteInfo.Value.Palette
+				                 };
+				    formatConverter = GetFormatConverter(tempBitmap, convertFormat, ImageDithering.None, paletteInfo.Value.Palette, paletteInfo.Value.Alpha);
 				}
 				else
 				{

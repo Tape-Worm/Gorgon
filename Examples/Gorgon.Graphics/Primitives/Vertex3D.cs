@@ -29,7 +29,7 @@ using System.Runtime.InteropServices;
 using Gorgon.Graphics.Core;
 using DX = SharpDX;
 
-namespace Gorgon.Graphics.Example
+namespace Gorgon.Examples
 {
 	/// <summary>
 	/// The layout for our vertex.

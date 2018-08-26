@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
@@ -84,6 +85,14 @@ namespace Gorgon.IO
         /// Property to return the version of sprite data that the codec supports.
         /// </summary>
         Version Version
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the common file extensions for a polygonal sprite.
+        /// </summary>
+        IReadOnlyList<GorgonFileExtension> FileExtensions
         {
             get;
         }

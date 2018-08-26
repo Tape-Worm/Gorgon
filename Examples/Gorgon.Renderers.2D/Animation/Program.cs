@@ -28,7 +28,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using Gorgon.Animation;
 using DX = SharpDX;
@@ -37,14 +36,12 @@ using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging.Codecs;
-using Gorgon.IO;
 using Gorgon.Math;
 using Gorgon.Renderers;
-using Gorgon.Timing;
 using Gorgon.UI;
 using WMPLib;
 
-namespace Animation
+namespace Gorgon.Examples
 {
     /// <summary>
     /// Our example entry point.
@@ -60,8 +57,6 @@ namespace Animation
         private static GorgonTexture2DView _metal;
         // Our trooper image.
         private static GorgonTexture2DView _trooper;
-        // Our logo.
-        private static GorgonTexture2DView _logo;
         // Render target for our music video...
         private static GorgonRenderTarget2DView _target;
         // The texture view for the render target.
@@ -76,8 +71,6 @@ namespace Animation
         private static IGorgonAnimation _animation;
         // The sprite to animate.
         private static GorgonSprite _animatedSprite;
-        // The string builder for the FPS text.
-        private static readonly StringBuilder _fpsString = new StringBuilder();
         // The batch state for drawing our render target.
         private static Gorgon2DBatchState _targetBatchState;
         // Player for our mp3.
@@ -190,18 +183,8 @@ namespace Animation
         /// <returns>The main window for the application.</returns>
         private static FormMain Initialize()
         {
-            MemoryStream stream = null;
-
-            var window = new FormMain
-                         {
-                             ClientSize = Settings.Default.Resolution
-                         };
-            window.Show();
-
-            // Process any pending events so the window shows properly.
-            Application.DoEvents();
-
-            Cursor.Current = Cursors.WaitCursor;
+            GorgonExample.ResourceBaseDirectory = new DirectoryInfo(Settings.Default.ResourceLocation);
+            FormMain window = GorgonExample.Initialize(new DX.Size2(Settings.Default.Resolution.Width, Settings.Default.Resolution.Height), "Animation");
 
             try
             {
@@ -240,10 +223,11 @@ namespace Animation
 
                 // Find out how long to display each frame for.
                 // We'll also convert it to milliseconds since GIF stores the delays as 1/100th of a second.
-                _frameDelays = gif.GetFrameDelays(GetResourcePath(@"\Textures\Animation\metal.gif")).Select(item => item / 100.0f).ToArray();
+                _frameDelays = gif.GetFrameDelays(Path.Combine(GorgonExample.GetResourcePath(@"\Textures\Animation\").FullName, "metal.gif"))
+                                  .Select(item => item / 100.0f).ToArray();
 
                 _metal = GorgonTexture2DView.FromFile(_graphics, 
-                                                      GetResourcePath(@"\Textures\Animation\metal.gif"),
+                                                      Path.Combine(GorgonExample.GetResourcePath(@"\Textures\Animation\").FullName, "metal.gif"),
                                                       gif,
                                                       new GorgonTextureLoadOptions
                                                       {
@@ -252,7 +236,7 @@ namespace Animation
                                                           Binding = TextureBinding.ShaderResource
                                                       });
                 _trooper = GorgonTexture2DView.FromFile(_graphics,
-                                                        GetResourcePath(@"\Textures\Animation\trooper.png"),
+                                                        Path.Combine(GorgonExample.GetResourcePath(@"\Textures\Animation\").FullName, "trooper.png"),
                                                         new GorgonCodecPng(),
                                                         new GorgonTextureLoadOptions
                                                         {
@@ -261,8 +245,7 @@ namespace Animation
                                                             Binding = TextureBinding.ShaderResource
                                                         });
 
-                stream = new MemoryStream(Resources.Gorgon_Logo_Small);
-                _logo = GorgonTexture2DView.FromStream(_graphics, stream, new GorgonCodecDds());
+                GorgonExample.LoadResources(_graphics);
 
                 _renderer = new Gorgon2D(_screen.RenderTargetView);
                 _animatedSprite = new GorgonSprite
@@ -283,16 +266,13 @@ namespace Animation
                                                        .Build())
                                            .Build();
 
-                _mp3Player.URL = GetResourcePath("AnimationExample.mp3");
+                _mp3Player.URL = Path.Combine(GorgonExample.ResourceBaseDirectory.FullName, "AnimationExample.mp3");
                 
-                window.IsLoaded = true;
                 return window;
-
             }
             finally
             {
-                stream?.Dispose();
-                Cursor.Current = Cursors.Default;
+                GorgonExample.EndInit();
             }
         }
 
@@ -326,21 +306,9 @@ namespace Animation
                                           GorgonColor.White,
                                           _targetView,
                                           new DX.RectangleF(0, 0, 1, 1));
-
-            _fpsString.Length = 0;
-            _fpsString.AppendFormat("FPS: {0:0.0}\nFrame delta: {1:0.000} ms.", GorgonTiming.AverageFPS, GorgonTiming.Delta * 1000);
-
-            DX.Size2F textSize = _renderer.DefaultFont.MeasureText(_fpsString.ToString(), false);
-
-            _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _screen.Width, textSize.Height + 4), new GorgonColor(0, 0, 0, 0.5f));
-            _renderer.DrawLine(0, textSize.Height + 4, _screen.Width, textSize.Height + 4, GorgonColor.White, 1.5f);
-            _renderer.DrawLine(0, textSize.Height + 5, _screen.Width, textSize.Height + 5, new GorgonColor(0, 0, 0, 0.75f));
-
-            _renderer.DrawString(_fpsString.ToString(), DX.Vector2.Zero, color: GorgonColor.White);
-            DX.RectangleF pos = new DX.RectangleF(_screen.Width - _logo.Width - 5, _screen.Height - _logo.Height - 2, _logo.Width, _logo.Height);
-            _renderer.DrawFilledRectangle(pos, GorgonColor.White, _logo, new DX.RectangleF(0, 0, 1, 1));
-
             _renderer.End();
+
+            GorgonExample.DrawStatsAndLogo(_renderer);
 
             // We need to call this once per frame so the animation will transition properly.
             _animController.Update();
@@ -348,37 +316,6 @@ namespace Animation
             _screen.Present(1);
 
             return true;
-        }
-
-        /// <summary>
-        /// Property to return the path to the resources for the example.
-        /// </summary>
-        /// <param name="resourceItem">The directory or file to use as a resource.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="resourceItem"/> was NULL (<i>Nothing</i> in VB.Net) or empty.</exception>
-        public static string GetResourcePath(string resourceItem)
-        {
-            string path = Settings.Default.ResourceLocation;
-
-            if (string.IsNullOrEmpty(resourceItem))
-            {
-                throw new ArgumentException("The resource was not specified.", nameof(resourceItem));
-            }
-
-            path = path.FormatDirectory(Path.DirectorySeparatorChar);
-
-            // If this is a directory, then sanitize it as such.
-            if (resourceItem.EndsWith(Path.DirectorySeparatorChar.ToString()))
-            {
-                path += resourceItem.FormatDirectory(Path.DirectorySeparatorChar);
-            }
-            else
-            {
-                // Otherwise, format the file name.
-                path += resourceItem.FormatPath(Path.DirectorySeparatorChar);
-            }
-
-            // Ensure that we have an absolute path.
-            return Path.GetFullPath(path);
         }
         #endregion
 
@@ -397,13 +334,14 @@ namespace Animation
             }
             catch (Exception ex)
             {
-                ex.Catch(e => GorgonDialogs.ErrorBox(null, "There was an error running the application and it must now close.", "Error", ex));
+                GorgonExample.HandleException(ex);
             }
             finally
             {
+                GorgonExample.UnloadResources();
+
                 _mp3Player.controls.stop();
                 _renderer?.Dispose();
-                _logo?.Dispose();
                 _trooper?.Dispose();
                 _metal?.Dispose();
                 _targetView?.Dispose();

@@ -28,7 +28,7 @@ using System;
 using System.Windows.Forms;
 using Gorgon.UI;
 
-namespace SobelComputeEngine
+namespace Gorgon.Examples
 {
     /// <summary>
     /// An example using the Gorgon Compute Engine to generate a sobel edge detected image.
@@ -44,7 +44,14 @@ namespace SobelComputeEngine
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            GorgonApplication.Run(new FormMain());
+            try
+            {
+                GorgonApplication.Run(new Form());
+            }
+            catch (Exception ex)
+            {
+                GorgonExample.HandleException(ex);
+            }
         }
     }
 }

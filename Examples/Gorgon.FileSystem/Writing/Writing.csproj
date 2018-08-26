@@ -57,16 +57,16 @@
     <Compile Include="..\..\..\Gorgon\Gorgon.Core\SharedAssemblyInfo.cs">
       <Link>SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="formMain.cs">
+    <Compile Include="Form.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="formMain.Designer.cs">
-      <DependentUpon>formMain.cs</DependentUpon>
+    <Compile Include="Form.Designer.cs">
+      <DependentUpon>Form.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="formMain.resx">
-      <DependentUpon>formMain.cs</DependentUpon>
+    <EmbeddedResource Include="Form.resx">
+      <DependentUpon>Form.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -106,6 +106,10 @@
     <ProjectReference Include="..\..\..\Gorgon\Gorgon.Windows\Gorgon.Windows.csproj">
       <Project>{a19cb981-2d25-4316-9542-1d2bd7064f2b}</Project>
       <Name>Gorgon.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ExamplesCommon\ExamplesCommon.csproj">
+      <Project>{9dc4eea9-c32a-4fea-8a52-9cd0ac8ad8ac}</Project>
+      <Name>ExamplesCommon</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
