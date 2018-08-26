@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
@@ -40,6 +41,14 @@ namespace Gorgon.IO
         : IGorgonGraphicsObject, IGorgonNamedObject
     {
         #region Properties.
+        /// <summary>
+        /// Property to return the common file extensions for this codec.
+        /// </summary>
+        IReadOnlyList<GorgonFileExtension> FileExtensions
+        {
+            get;
+        }
+
         /// <summary>
         /// Property to return the friendly description of the format.
         /// </summary>

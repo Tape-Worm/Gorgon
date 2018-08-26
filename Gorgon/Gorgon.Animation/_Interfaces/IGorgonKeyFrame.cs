@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using Newtonsoft.Json;
 using Gorgon.Core;
 
 namespace Gorgon.Animation
@@ -56,6 +57,7 @@ namespace Gorgon.Animation
 		/// <summary>
 		/// Property to return the type of data for this key frame.
 		/// </summary>
+		[JsonIgnore]
 		Type DataType
 		{
 			get;

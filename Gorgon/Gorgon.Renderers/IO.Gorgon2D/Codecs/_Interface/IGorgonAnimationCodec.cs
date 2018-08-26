@@ -20,25 +20,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: August 11, 2018 3:36:34 PM
+// Created: August 25, 2018 2:35:12 PM
 // 
 #endregion
 
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Gorgon.Animation;
 using Gorgon.Core;
-using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
 
 namespace Gorgon.IO
 {
     /// <summary>
-    /// An interface used to serialize and deserialize <see cref="GorgonPolySprite"/> objects.
+    /// An interface used to serialize or deserialize a <see cref="IGorgonAnimation"/>.
     /// </summary>
-    /// <seealso cref="GorgonPolySprite"/>
-    public interface IGorgonPolySpriteCodec
-        : IGorgonGraphicsObject, IGorgonNamedObject
+    /// <seealso cref="IGorgonAnimation"/>
+    public interface IGorgonAnimationCodec
+        : IGorgonNamedObject
     {
         #region Properties.
         /// <summary>
@@ -90,7 +90,7 @@ namespace Gorgon.IO
         }
 
         /// <summary>
-        /// Property to return the common file extensions for a polygonal sprite.
+        /// Property to return the common file extensions for an animation.
         /// </summary>
         IReadOnlyList<GorgonFileExtension> FileExtensions
         {
@@ -100,48 +100,49 @@ namespace Gorgon.IO
 
         #region Methods.
         /// <summary>
-        /// Function to retrieve the name of the associated texture.
-        /// </summary>
-        /// <param name="stream">The stream containing the texture data.</param>
-        /// <returns>The name of the texture associated with the sprite, or <b>null</b> if no texture was found.</returns>
-        string GetAssociatedTextureName(Stream stream);
-
-        /// <summary>
         /// Function to read the sprite data from a stream.
         /// </summary>
         /// <param name="stream">The stream containing the sprite.</param>
-        /// <param name="overrideTexture">[Optional] The texture to use as an override for the sprite.</param>
         /// <param name="byteCount">[Optional] The number of bytes to read from the stream.</param>
-        /// <returns>A new <see cref="GorgonPolySprite"/>.</returns>
-        GorgonPolySprite FromStream(Stream stream, GorgonTexture2DView overrideTexture = null, int? byteCount = null);
+        /// <returns>A new <see cref="IGorgonAnimation"/>.</returns>
+        IGorgonAnimation FromStream(Stream stream, int? byteCount = null);
 
         /// <summary>
-        /// Function to read the sprite data from a file on the physical file system.
+        /// Function to read the animation data from a file on the physical file system.
         /// </summary>
         /// <param name="filePath">The path to the file to read.</param>
-        /// <param name="overrideTexture">[Optional] The texture to use as an override for the sprite.</param>
-        /// <returns>A new <see cref="GorgonPolySprite"/>.</returns>
-        GorgonPolySprite FromFile(string filePath, GorgonTexture2DView overrideTexture = null);
+        /// <returns>A new <see cref="IGorgonAnimation"/>.</returns>
+        IGorgonAnimation FromFile(string filePath);
 
         /// <summary>
-        /// Function to save the sprite data to a stream.
+        /// Function to save the animation data to a stream.
         /// </summary>
-        /// <param name="sprite">The sprite to serialize into the stream.</param>
-        /// <param name="stream">The stream that will contain the sprite.</param>
-        void Save(GorgonPolySprite sprite, Stream stream);
+        /// <param name="animation">The animation to serialize into the stream.</param>
+        /// <param name="stream">The stream that will contain the animation.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="animation"/>, or the <paramref name="stream"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="GorgonException">Thrown if the stream is read only.</exception>
+        /// <exception cref="NotSupportedException">This method is not supported by this codec.</exception>
+        void Save(IGorgonAnimation animation, Stream stream);
 
         /// <summary>
-        /// Function to save the sprite data to a file on a physical file system.
+        /// Function to save the animation data to a file on a physical file system.
         /// </summary>
-        /// <param name="sprite">The sprite to serialize into the file.</param>
-        /// <param name="filePath">The path to the file.</param>
-        void Save(GorgonPolySprite sprite, string filePath);
+        /// <param name="animation">The animation to serialize into the file.</param>
+        /// <param name="filePath">The path to the file to write.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath" /> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="filePath" /> parameter is empty.</exception>
+        /// <exception cref="NotSupportedException">This method is not supported by this codec.</exception>
+        void Save(IGorgonAnimation animation, string filePath);
 
         /// <summary>
         /// Function to determine if the data in a stream is readable by this codec.
         /// </summary>
         /// <param name="stream">The stream containing the data.</param>
         /// <returns><b>true</b> if the data can be read, or <b>false</b> if not.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="GorgonException">Thrown if the <paramref name="stream"/> is write only.</exception>
+        /// <exception cref="EndOfStreamException">Thrown if the current <paramref name="stream"/> position, plus the size of the data exceeds the length of the stream.</exception>
+        /// <exception cref="NotSupportedException">This method is not supported by this codec.</exception>
         bool IsReadable(Stream stream);
         #endregion
     }
