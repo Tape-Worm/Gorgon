@@ -34,9 +34,9 @@ using Gorgon.Plugins;
 namespace Gorgon.IO
 {
     /// <summary>
-    /// A plug in for allowing users to supply their own 3rd party sprite codecs.
+    /// A plug in for allowing users to supply their own 3rd party animation codecs.
     /// </summary>
-    public abstract class GorgonSpriteCodecPlugin
+    public abstract class GorgonAnimationCodecPlugin
         : GorgonPlugin
     {
         #region Properties.
@@ -54,22 +54,22 @@ namespace Gorgon.IO
 
         #region Methods.
         /// <summary>
-        /// Function to create a new <see cref="IGorgonSpriteCodec"/>.
+        /// Function to create a new <see cref="IGorgonAnimationCodec"/>.
         /// </summary>
         /// <param name="codec">The codec to retrieve from the plug in.</param>
-        /// <returns>A new <see cref="IGorgonSpriteCodec"/> object.</returns>
+        /// <returns>A new <see cref="IGorgonAnimationCodec"/> object.</returns>
         /// <remarks>
         /// <para>
         /// Implementors must implement this method to return the codec from the plug in assembly.
         /// </para>
         /// </remarks>
-        protected abstract IGorgonSpriteCodec OnCreateCodec(string codec);
+        protected abstract IGorgonAnimationCodec OnCreateCodec(string codec);
 
         /// <summary>
         /// Function to create a new image codec object.
         /// </summary>
         /// <param name="codec">The name of the codec to look up within the plug in.</param>
-        /// <returns>A new instance of a <see cref="IGorgonSpriteCodec"/>.</returns>
+        /// <returns>A new instance of a <see cref="IGorgonAnimationCodec"/>.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="codec"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="codec"/> parameter is empty.</exception>
         /// <exception cref="KeyNotFoundException">Thrown when the <paramref name="codec"/> was not found in this plug in.</exception>
@@ -79,7 +79,7 @@ namespace Gorgon.IO
         /// <see cref="Codecs"/> property on the plug in to locate the plug in name.
         /// </para>
         /// </remarks>
-        public IGorgonSpriteCodec CreateCodec(string codec)
+        public IGorgonAnimationCodec CreateCodec(string codec)
         {
             if (codec == null)
             {
@@ -96,7 +96,7 @@ namespace Gorgon.IO
                 throw new KeyNotFoundException(string.Format(Resources.GOR2DIO_ERR_CODEC_NOT_IN_PLUGIN, codec));
             }
 
-            IGorgonSpriteCodec result = OnCreateCodec(codec);
+            IGorgonAnimationCodec result = OnCreateCodec(codec);
 
             if (result == null)
             {
@@ -107,10 +107,9 @@ namespace Gorgon.IO
         }
         #endregion
 
-
         #region Constructor/Finalizer.
         /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonSpriteCodecPlugin"/> class.
+        /// Initializes a new instance of the <see cref="GorgonAnimationCodecPlugin"/> class.
         /// </summary>
         /// <param name="description">Optional description of the plugin.</param>
         /// <remarks>
@@ -118,7 +117,7 @@ namespace Gorgon.IO
         /// Objects that implement this base class should pass in a hard coded description on the base constructor.
         /// </para>
         /// </remarks>
-        protected GorgonSpriteCodecPlugin(string description)
+        protected GorgonAnimationCodecPlugin(string description)
             : base(description)
         {
 

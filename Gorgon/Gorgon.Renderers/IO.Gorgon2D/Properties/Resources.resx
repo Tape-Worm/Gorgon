@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="GOR2DIO_ANIMTION_FILE_EXTENSION_DESC" xml:space="preserve">
+    <value>Gorgon Animation</value>
+  </data>
   <data name="GOR2DIO_ERR_CODEC_CANNOT_DECODE" xml:space="preserve">
     <value>The codec '{0}' is not capable of decoding data.</value>
   </data>
@@ -129,8 +132,14 @@
   <data name="GOR2DIO_ERR_FILE_NOT_FOUND" xml:space="preserve">
     <value>The file '{0}' was not found on any of the physical or virtual file systems.</value>
   </data>
+  <data name="GOR2DIO_ERR_INVALID_ANIM_HEADER" xml:space="preserve">
+    <value>The header for the animation data is invalid.</value>
+  </data>
   <data name="GOR2DIO_ERR_INVALID_HEADER" xml:space="preserve">
     <value>The header for the sprite data is invalid.</value>
+  </data>
+  <data name="GOR2DIO_ERR_JSON_NOT_ANIM" xml:space="preserve">
+    <value>The JSON string does not contain animation data.</value>
   </data>
   <data name="GOR2DIO_ERR_JSON_NOT_SPRITE" xml:space="preserve">
     <value>The JSON string does not contain any sprite data.</value>
@@ -138,7 +147,13 @@
   <data name="GOR2DIO_ERR_NOT_A_SPRITE" xml:space="preserve">
     <value>The file '{0}' is not a Gorgon Sprite.</value>
   </data>
-  <data name="GOR2DIO_ERR_NO_SUITABLE_CODEC_FOUND" xml:space="preserve">
+  <data name="GOR2DIO_ERR_NO_ANIMATIONS_IN_FILE" xml:space="preserve">
+    <value>There are no animations in the data.</value>
+  </data>
+  <data name="GOR2DIO_ERR_NO_SUITABLE_ANIM_CODEC_FOUND" xml:space="preserve">
+    <value>No suitable animation codec was found for the file '{0}'.</value>
+  </data>
+  <data name="GOR2DIO_ERR_NO_SUITABLE_SPRITE_CODEC_FOUND" xml:space="preserve">
     <value>No suitable sprite codec was found for the file '{0}'.</value>
   </data>
   <data name="GOR2DIO_ERR_SPRITE_VERSION_MISMATCH" xml:space="preserve">
@@ -157,8 +172,23 @@
     <value>This sprite data cannot be read.
 Invalid version '{0}'.</value>
   </data>
+  <data name="GOR2DIO_POLYSPRITE_FILE_EXTENSION_DESC" xml:space="preserve">
+    <value>Gorgon Polygonal Sprite</value>
+  </data>
+  <data name="GOR2DIO_SPRITE_FILE_EXTENSION_DESC" xml:space="preserve">
+    <value>Gorgon Sprite</value>
+  </data>
+  <data name="GOR2DIO_TOSTR_ANIMATION_CODEC_PLUGIN_DESC" xml:space="preserve">
+    <value>Gorgon Animation Codec {0} ({1})</value>
+  </data>
   <data name="GOR2DIO_TOSTR_SPRITE_CODEC_PLUGIN_DESC" xml:space="preserve">
     <value>Gorgon Sprite Codec {0} ({1})</value>
+  </data>
+  <data name="GOR2DIO_V1_ANIM_CODEC" xml:space="preserve">
+    <value>Gorgon Sprite v1.x Animation Codec</value>
+  </data>
+  <data name="GOR2DIO_V1_ANIM_CODEC_DESCRIPTION" xml:space="preserve">
+    <value>Gorgon binary sprite animation codec for version 1.0 - 1.2 of Gorgon.</value>
   </data>
   <data name="GOR2DIO_V1_CODEC" xml:space="preserve">
     <value>Gorgon Sprite v1.x Codec</value>
@@ -171,6 +201,18 @@ Invalid version '{0}'.</value>
   </data>
   <data name="GOR2DIO_V2_CODEC_DESCRIPTION" xml:space="preserve">
     <value>Gorgon sprite codec for version 2.0 of Gorgon.</value>
+  </data>
+  <data name="GOR2DIO_V3_ANIM_BIN_CODEC" xml:space="preserve">
+    <value>Gorgon Animation v3 Binary Codec</value>
+  </data>
+  <data name="GOR2DIO_V3_ANIM_BIN_CODEC_DESCRIPTION" xml:space="preserve">
+    <value>Gorgon v3 animation codec for reading and writing animations as binary data.</value>
+  </data>
+  <data name="GOR2DIO_V3_ANIM_JSON_CODEC" xml:space="preserve">
+    <value>Gorgon Animation v3 JSON Codec</value>
+  </data>
+  <data name="GOR2DIO_V3_ANIM_JSON_CODEC_DESCRIPTION" xml:space="preserve">
+    <value>Gorgon v3 animation codec for reading and writing animations as JSON data.</value>
   </data>
   <data name="GOR2DIO_V3_BIN_CODEC" xml:space="preserve">
     <value>Gorgon Sprite v3 Binary Codec</value>

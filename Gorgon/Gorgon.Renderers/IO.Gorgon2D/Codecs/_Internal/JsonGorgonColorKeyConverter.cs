@@ -20,93 +20,76 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: August 11, 2018 7:56:31 PM
+// Created: August 25, 2018 10:30:45 PM
 // 
 #endregion
 
 using System;
+using Gorgon.Animation;
+using Gorgon.Graphics;
 using Newtonsoft.Json;
-using DX = SharpDX;
 
 namespace Gorgon.IO
 {
     /// <summary>
-    /// A converter used to convert a rectangle to and from a string.
+    /// A JSON converter for a <see cref="GorgonKeyGorgonColor"/>
     /// </summary>
-    internal class JsonRectangleFConverter
-        : JsonConverter<DX.RectangleF>
+    class JsonGorgonColorKeyConverter
+        : JsonConverter<GorgonKeyGorgonColor>
     {
         /// <summary>Writes the JSON representation of the object.</summary>
         /// <param name="writer">The <see cref="T:Newtonsoft.Json.JsonWriter" /> to write to.</param>
         /// <param name="value">The value.</param>
         /// <param name="serializer">The calling serializer.</param>
-        public override void WriteJson(JsonWriter writer, DX.RectangleF value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, GorgonKeyGorgonColor value, JsonSerializer serializer)
         {
+            if (value == null)
+            {
+                writer.WriteNull();
+                return;
+            }
+
             writer.WriteStartObject();
-            writer.WritePropertyName("l");
-            writer.WriteValue(value.Left);
-            writer.WritePropertyName("t");
-            writer.WriteValue(value.Top);
-            writer.WritePropertyName("r");
-            writer.WriteValue(value.Right);
-            writer.WritePropertyName("b");
-            writer.WriteValue(value.Bottom);
-            writer.WriteEndObject();
+            writer.WritePropertyName("time");
+            writer.WriteValue(value.Time);
+            writer.WritePropertyName("argb");
+            writer.WriteValue(value.Value.ToARGB());
+            writer.WriteEnd();
         }
 
-        /// <summary>
-        /// Reads the JSON representation of the object.
-        /// </summary>
+        /// <summary>Reads the JSON representation of the object.</summary>
         /// <param name="reader">The <see cref="T:Newtonsoft.Json.JsonReader" /> to read from.</param>
         /// <param name="objectType">Type of the object.</param>
         /// <param name="existingValue">The existing value of object being read. If there is no existing value then <c>null</c> will be used.</param>
         /// <param name="hasExistingValue">The existing value has a value.</param>
         /// <param name="serializer">The calling serializer.</param>
         /// <returns>The object value.</returns>
-        public override DX.RectangleF ReadJson(JsonReader reader, Type objectType, DX.RectangleF existingValue, bool hasExistingValue, JsonSerializer serializer)
+        public override GorgonKeyGorgonColor ReadJson(JsonReader reader, Type objectType, GorgonKeyGorgonColor existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
-            if ((reader.TokenType != JsonToken.StartObject)
-                || (!reader.Read()))
+            int argb = 0;
+            float time = 0;
+
+            while ((reader.Read()) && (reader.TokenType != JsonToken.EndObject))
             {
-                return DX.RectangleF.Empty;
+                if (reader.TokenType != JsonToken.PropertyName)
+                {
+                    continue;
+                }
+
+                string propName = reader.Value.ToString().ToLowerInvariant();
+
+                switch (propName)
+                {
+                        case "time":
+                            time = (float)(reader.ReadAsDecimal() ?? 0);
+                            break;
+                        case "argb":
+                            argb = reader.ReadAsInt32() ?? 0;
+                            break;
+                }
             }
 
-            var l = (float)(reader.ReadAsDouble() ?? 0);
-
-            if (!reader.Read())
-            {
-                return new DX.RectangleF(l, 0, 0, 0);
-            }
-
-            var t = (float)(reader.ReadAsDouble() ?? 0);
-
-            if (!reader.Read())
-            {
-                return new DX.RectangleF(l, t, 0, 0);
-            }
-
-            var r = (float)(reader.ReadAsDouble() ?? 0);
-                
-            if (!reader.Read())
-            {
-                return new DX.RectangleF
-                       {
-                           Left = l, Top = t, Right = r
-                       };
-            }
-
-            var b = (float)(reader.ReadAsDouble() ?? 0);
-
-            var result = new DX.RectangleF
-                         {
-                             Left = l,
-                             Top = t,
-                             Right = r,
-                             Bottom = b
-                         };
-            reader.Read();
-
-            return result;
+            return new GorgonKeyGorgonColor(time, new GorgonColor(argb));
         }
     }
 }

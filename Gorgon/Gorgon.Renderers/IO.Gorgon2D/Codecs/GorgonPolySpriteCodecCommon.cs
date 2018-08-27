@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
@@ -109,6 +110,14 @@ namespace Gorgon.IO
         /// Property to return the name of this object.
         /// </summary>
         string IGorgonNamedObject.Name => Codec;
+
+        /// <summary>
+        /// Property to return the common file extensions for a polygonal sprite.
+        /// </summary>
+        public IReadOnlyList<GorgonFileExtension> FileExtensions
+        {
+            get;
+        }
         #endregion
 
         #region Methods.
@@ -395,6 +404,10 @@ namespace Gorgon.IO
                 throw new ArgumentEmptyException(nameof(name));
             }
             
+            FileExtensions = new[]
+                             {
+                                 new GorgonFileExtension(".gorPSprite", Resources.GOR2DIO_POLYSPRITE_FILE_EXTENSION_DESC)
+                             };
             Codec = name;
             CodecDescription = string.IsNullOrWhiteSpace(description) ? name : description;
         }

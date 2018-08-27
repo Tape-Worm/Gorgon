@@ -54,27 +54,38 @@
     <Compile Include="..\..\Gorgon.Core\SharedAssemblyInfo.cs">
       <Link>SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Codecs\GorgonAnimationCodecCommon.cs" />
+    <Compile Include="Codecs\GorgonAnimationCodecDescription.cs" />
     <Compile Include="Codecs\GorgonSpriteCodecDescription.cs" />
     <Compile Include="Codecs\GorgonPolySpriteCodecCommon.cs" />
     <Compile Include="Codecs\GorgonSpriteCodecCommon.cs" />
     <Compile Include="Codecs\GorgonSpriteCodecPlugin.cs" />
+    <Compile Include="Codecs\GorgonV3AnimationBinaryCodec.cs" />
+    <Compile Include="Codecs\GorgonV3AnimationJsonCodec.cs" />
+    <Compile Include="Codecs\GorgonV1AnimationCodec.cs" />
     <Compile Include="Codecs\GorgonV3PolySpriteBinaryCodec.cs" />
     <Compile Include="Codecs\GorgonV3SpriteBinaryCodec.cs" />
     <Compile Include="Codecs\GorgonV3PolySpriteJsonCodec.cs" />
     <Compile Include="Codecs\GorgonV3SpriteJsonCodec.cs" />
     <Compile Include="Codecs\GorgonV2SpriteCodec.cs" />
     <Compile Include="Codecs\GorgonV1SpriteBinaryCodec.cs" />
+    <Compile Include="Codecs\_Interface\IGorgonAnimationCodec.cs" />
     <Compile Include="Codecs\_Interface\IGorgonPolySpriteCodec.cs" />
     <Compile Include="Codecs\_Interface\IGorgonSpriteCodec.cs" />
+    <Compile Include="Codecs\_Internal\JsonRectKeyConverter.cs" />
     <Compile Include="Codecs\_Internal\JsonRectangleFConverter.cs" />
     <Compile Include="Codecs\_Internal\JsonSamplerConverter.cs" />
     <Compile Include="Codecs\_Internal\JsonSize2FConverter.cs" />
     <Compile Include="Codecs\_Internal\JsonTexture2DConverter.cs" />
     <Compile Include="Codecs\_Internal\JsonGorgonColorConverter.cs" />
+    <Compile Include="Codecs\_Internal\JsonGorgonColorKeyConverter.cs" />
+    <Compile Include="Codecs\_Internal\JsonVector3KeyConverter.cs" />
+    <Compile Include="Codecs\_Internal\JsonTextureKeyConverter.cs" />
     <Compile Include="Codecs\_Internal\JsonVector2Converter.cs" />
     <Compile Include="Codecs\_Internal\JsonVector3Converter.cs" />
     <Compile Include="Codecs\_Internal\v2\GorgonChunkedFormat.cs" />
     <Compile Include="Codecs\_Internal\v2\GorgonChunkReader.cs" />
+    <Compile Include="Codecs\GorgonAnimationCodecPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -82,6 +93,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="_Extensions\Gorgon2DFileSystemExtensions.cs" />
+    <Compile Include="_Extensions\GorgonAnimationExtensions.cs" />
     <Compile Include="_Extensions\GorgonSpriteExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -111,6 +123,10 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Gorgon.Animation\Gorgon.Animation.csproj">
+      <Project>{8cfa9634-9ed5-4d30-a9b1-6cbae73aa1ca}</Project>
+      <Name>Gorgon.Animation</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Gorgon.Core\Gorgon.Core.csproj">
       <Project>{933569ed-52a9-4232-a929-1d4c4489b5a1}</Project>
       <Name>Gorgon.Core</Name>

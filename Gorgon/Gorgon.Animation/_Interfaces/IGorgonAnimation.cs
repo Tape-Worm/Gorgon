@@ -25,6 +25,7 @@
 #endregion
 
 using Gorgon.Core;
+using Newtonsoft.Json;
 
 namespace Gorgon.Animation
 {
@@ -66,6 +67,7 @@ namespace Gorgon.Animation
         /// Property to set or return the speed of the animation.
         /// </summary>
         /// <remarks>Setting this value to a negative value will make the animation play backwards.</remarks>
+        [JsonIgnore]
         float Speed
         {
             get;
@@ -92,6 +94,7 @@ namespace Gorgon.Animation
         /// <summary>
         /// Property to return the track used to update positioning of an object.
         /// </summary>
+        [JsonProperty("positions")]
         IGorgonTrack<GorgonKeyVector3> PositionTrack
         {
             get;
@@ -108,6 +111,7 @@ namespace Gorgon.Animation
         /// Note that not all controller types will use every axis when rotating. 
         /// </para>
         /// </remarks>
+        [JsonProperty("rotations")]
         IGorgonTrack<GorgonKeyVector3> RotationTrack
         {
             get;
@@ -116,6 +120,7 @@ namespace Gorgon.Animation
         /// <summary>
         /// Property to return the track used to update the scale of an object.
         /// </summary>
+        [JsonProperty("scales")]
         IGorgonTrack<GorgonKeyVector3> ScaleTrack
         {
             get;
@@ -124,6 +129,7 @@ namespace Gorgon.Animation
         /// <summary>
         /// Property to return the track used to update the color of an object.
         /// </summary>
+        [JsonProperty("colors")]
         IGorgonTrack<GorgonKeyGorgonColor> ColorTrack
         {
             get;
@@ -132,6 +138,7 @@ namespace Gorgon.Animation
         /// <summary>
         /// Property to return the track used for rectangular boundaries of an object.
         /// </summary>
+        [JsonProperty("bounds")]
         IGorgonTrack<GorgonKeyRectangle> RectBoundsTrack
         {
             get;
@@ -140,6 +147,7 @@ namespace Gorgon.Animation
         /// <summary>
         /// Property to return the track used for updating a 2D texture on an object.
         /// </summary>
+        [JsonProperty("textures")]
         IGorgonTrack<GorgonKeyTexture2D> Texture2DTrack
         {
             get;
