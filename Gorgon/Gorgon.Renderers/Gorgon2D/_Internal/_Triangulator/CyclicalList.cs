@@ -45,9 +45,6 @@ namespace GorgonTriangulator
 		{
 		}
 
-		public new void RemoveAt(int index)
-		{
-			Remove(this[index]);
-		}
-	}
+        public new void RemoveAt(int index) => Remove(this[index]);
+    }
 }

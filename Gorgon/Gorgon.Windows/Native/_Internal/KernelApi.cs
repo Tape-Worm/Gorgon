@@ -242,23 +242,13 @@ namespace Gorgon.Native
 		[DllImport("kernel32", CharSet = CharSet.Auto)]
 		[return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool QueryPerformanceCounter(out long PerformanceCount);
+        #endregion
 
+        #region Constructor.
         /// <summary>
-        /// 
+        /// Initializes static members of the <see cref="KernelApi"/> class.
         /// </summary>
-        /// <returns></returns>
-        [DllImport("kernel32")]
-	    public static extern uint GetLastError();
-		#endregion
-
-		#region Constructor.
-		/// <summary>
-		/// Initializes static members of the <see cref="KernelApi"/> class.
-		/// </summary>
-		static KernelApi()
-		{
-			Marshal.PrelinkAll(typeof(KernelApi));
-		}
-		#endregion
-	}
+        static KernelApi() => Marshal.PrelinkAll(typeof(KernelApi));
+        #endregion
+    }
 }

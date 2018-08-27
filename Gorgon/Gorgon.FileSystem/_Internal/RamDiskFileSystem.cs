@@ -78,19 +78,16 @@ namespace Gorgon.IO
 			: this(file.FullPath, file.Size, file.CreateDate, file.LastModifiedDate)
 		{
 		}
-		
-		/// <summary>
-		/// Indicates whether the current object is equal to another object of the same type.
-		/// </summary>
-		/// <returns>
-		/// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
-		/// </returns>
-		/// <param name="other">An object to compare with this object.</param>
-		public bool Equals(RamDiskFileInfo other)
-		{
-			return string.Equals(other.FullPath, FullPath, StringComparison.OrdinalIgnoreCase);
-		}
-	}
+
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <returns>
+        /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
+        /// </returns>
+        /// <param name="other">An object to compare with this object.</param>
+        public bool Equals(RamDiskFileInfo other) => string.Equals(other.FullPath, FullPath, StringComparison.OrdinalIgnoreCase);
+    }
 
 	/// <summary>
 	/// A file system object for ram disks.
@@ -106,37 +103,31 @@ namespace Gorgon.IO
 
 		// The list of directory paths for the file system.
 		private readonly HashSet<string> _directories;
-		#endregion
+        #endregion
 
-		#region Properties.
-		/// <summary>
-		/// Function to retrieve the list of directories for the file system.
-		/// </summary>
-		/// <returns>A read only list of directories.</returns>
-		public IReadOnlyList<string> GetDirectories()
-		{
-			return _directories.OrderBy(item => item).ThenBy(item => item.Length).ToArray();
-		}
+        #region Properties.
+        /// <summary>
+        /// Function to retrieve the list of directories for the file system.
+        /// </summary>
+        /// <returns>A read only list of directories.</returns>
+        public IReadOnlyList<string> GetDirectories() => _directories.OrderBy(item => item).ThenBy(item => item.Length).ToArray();
 
-		/// <summary>
-		/// Function to retrieve a list of file information for the ram disk.
-		/// </summary>
-		/// <returns>A read only list of file information.</returns>
-		public IEnumerable<RamDiskFileInfo> GetFileInfos()
-		{
-			return _fileInfos
-				.OrderBy(item => item.Value.FullPath)
-				.ThenBy(item => item.Value.FullPath.Length)
-				.Select(item => item.Value)
-				.ToArray();
-		}
+        /// <summary>
+        /// Function to retrieve a list of file information for the ram disk.
+        /// </summary>
+        /// <returns>A read only list of file information.</returns>
+        public IEnumerable<RamDiskFileInfo> GetFileInfos() => _fileInfos
+                .OrderBy(item => item.Value.FullPath)
+                .ThenBy(item => item.Value.FullPath.Length)
+                .Select(item => item.Value)
+                .ToArray();
 
-		/// <summary>
-		/// Function to retrieve file information for a specific file.
-		/// </summary>
-		/// <param name="path">Path to the file.</param>
-		/// <returns>The file information.</returns>
-		public RamDiskFileInfo GetFileInfo(string path)
+        /// <summary>
+        /// Function to retrieve file information for a specific file.
+        /// </summary>
+        /// <param name="path">Path to the file.</param>
+        /// <returns>The file information.</returns>
+        public RamDiskFileInfo GetFileInfo(string path)
 		{
 
 			if (!_fileInfos.TryGetValue(path, out RamDiskFileInfo fileInfo))

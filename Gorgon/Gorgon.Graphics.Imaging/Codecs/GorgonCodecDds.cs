@@ -719,8 +719,8 @@ namespace Gorgon.Graphics.Imaging.Codecs
 						{
 							byte pixel = *(srcPtr++);
 
-							uint alpha = ((bitFlags & ImageBitFlags.OpaqueAlpha) == ImageBitFlags.OpaqueAlpha) ? 0xFF000000 : (uint)(((pixel & 0xF0)  << 24) | ((pixel & 0xF0 << 20)));
-							uint lum = (uint)((pixel & 0x0F << 4) | (pixel & 0x0F));
+							uint alpha = ((bitFlags & ImageBitFlags.OpaqueAlpha) == ImageBitFlags.OpaqueAlpha) ? 0xFF000000 : (uint)(((pixel & 0xF0)  << 24) | ((pixel & (0xF0 << 20))));
+							uint lum = (uint)((pixel & (0x0F << 4)) | (pixel & 0x0F));
 
 							*(destPtr++) = lum | (lum << 8) | (lum << 16) | alpha;
 						}

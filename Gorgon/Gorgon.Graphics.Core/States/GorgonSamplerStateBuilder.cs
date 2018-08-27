@@ -82,17 +82,14 @@ namespace Gorgon.Graphics.Core
         /// Function to update the properties of the state from the working copy to the final copy.
         /// </summary>
         /// <returns>The new render state.</returns>
-        protected override GorgonSamplerState OnUpdate()
-        {
-            return Graphics.CacheSamplerState(WorkingState);
-        }
+        protected override GorgonSamplerState OnUpdate() => Graphics.CacheSamplerState(WorkingState);
 
-	    /// <summary>
-	    /// Function to reset the builder to the specified state.
-	    /// </summary>
-	    /// <param name="state">The state to copy from.</param>
-	    /// <returns>The fluent builder interface.</returns>
-	    protected override GorgonSamplerStateBuilder OnResetTo(GorgonSamplerState state)
+        /// <summary>
+        /// Function to reset the builder to the specified state.
+        /// </summary>
+        /// <param name="state">The state to copy from.</param>
+        /// <returns>The fluent builder interface.</returns>
+        protected override GorgonSamplerStateBuilder OnResetTo(GorgonSamplerState state)
 	    {
             CopyState(WorkingState, state);
 	        return this;
@@ -251,10 +248,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="graphics">The graphics interface used to build sampler states.</param>
         public GorgonSamplerStateBuilder(GorgonGraphics graphics)
-            : base(new GorgonSamplerState())
-        {
-            Graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
-        }
+            : base(new GorgonSamplerState()) => Graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
         #endregion
     }
 }

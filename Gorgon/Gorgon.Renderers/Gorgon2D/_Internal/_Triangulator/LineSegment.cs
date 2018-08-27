@@ -45,10 +45,10 @@ namespace GorgonTriangulator
 			float x4 = b.B.Position.X;
 			float y4 = b.B.Position.Y;
 
-			float denom = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
+			float denom = ((y4 - y3) * (x2 - x1)) - ((x4 - x3) * (y2 - y1));
 
-			float uaNum = (x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3);
-			float ubNum = (x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3);
+			float uaNum = ((x4 - x3) * (y1 - y3)) - ((y4 - y3) * (x1 - x3));
+			float ubNum = ((x2 - x1) * (y1 - y3)) - ((y2 - y1) * (x1 - x3));
 
 			float ua = uaNum / denom;
 			float ub = ubNum / denom;
@@ -59,7 +59,7 @@ namespace GorgonTriangulator
 				return null;
 		    // ReSharper restore CompareOfFloatsByEqualityOperator
 
-			return a.A.Position + (a.B.Position - a.A.Position) * ua;
+			return a.A.Position + ((a.B.Position - a.A.Position) * ua);
 		}
 	}
 }

@@ -122,15 +122,15 @@ The 3.0 branch contains version 3.0 of Gorgon which supports Direct 3D 11.4.
 Acknowledgements
 ================
 
-Gorgon uses icons from the Oxygen and Onebit 4 icon sets.
+Gorgon uses icons from the following sources:
 
-Oxygen icons may be obtained from:  
+Oxygen 
 https://github.com/pasnox/oxygen-icons-png  
 http://www.iconarchive.com/show/oxygen-icons-by-oxygen-icons.org.html  
 
-Onebit 4 icons may be obtained from:  
-http://www.icojam.com/blog/?p=231  
-http://www.iconarchive.com/show/onebit-4-icons-by-icojam.html
+Icons8
+http://https://icons8.com
+
 Sprites example textures from:
 http://millionthvector.blogspot.com/
 

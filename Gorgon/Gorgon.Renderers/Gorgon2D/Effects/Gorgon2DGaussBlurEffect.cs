@@ -368,10 +368,7 @@ namespace Gorgon.Renderers
         /// <param name="passIndex">The index of the current rendering pass.</param>
         /// <param name="statesChanged"><b>true</b> if the blend, raster, or depth/stencil state was changed. <b>false</b> if not.</param>
         /// <returns>The 2D batch state.</returns>
-        protected override Gorgon2DBatchState OnGetBatchState(int passIndex, bool statesChanged)
-        {
-            return PreserveAlpha ? _batchStateNoAlpha : _batchState;
-        }
+        protected override Gorgon2DBatchState OnGetBatchState(int passIndex, bool statesChanged) => PreserveAlpha ? _batchStateNoAlpha : _batchState;
 
         /// <summary>
         /// Function called to render a single effect pass.
@@ -406,8 +403,8 @@ namespace Gorgon.Renderers
             _blurBufferKernel = GorgonConstantBufferView.CreateConstantBuffer(Graphics, new GorgonConstantBufferInfo("Effect.GorgonGaussKernelData")
                                                          {
                                                              Usage = ResourceUsage.Default,
-                                                             SizeInBytes = ((sizeof(float) * KernelSize + 15) & ~15) 
-                                                                           + ((sizeof(float) * _offsetSize + 15) & ~15)
+                                                             SizeInBytes = (((sizeof(float) * KernelSize) + 15) & ~15) 
+                                                                           + (((sizeof(float) * _offsetSize) + 15) & ~15)
                                                                            + sizeof(int)
                                                          });
             _blurKernelData = new GorgonNativeBuffer<float>(_blurBufferKernel.Buffer.SizeInBytes / sizeof(float));

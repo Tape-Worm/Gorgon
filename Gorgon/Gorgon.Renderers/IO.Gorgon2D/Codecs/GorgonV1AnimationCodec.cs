@@ -75,10 +75,7 @@ namespace Gorgon.IO
         /// </summary>
         /// <param name="animation">The animation to serialize into the stream.</param>
         /// <param name="stream">The stream that will contain the animation.</param>
-        protected override void OnSaveToStream(IGorgonAnimation animation, Stream stream)
-        {
-            throw new NotSupportedException();
-        }
+        protected override void OnSaveToStream(IGorgonAnimation animation, Stream stream) => throw new NotSupportedException();
 
         /// <summary>
         /// Function to skip the unnecessary parts of the file and move to the animation section.
@@ -781,10 +778,7 @@ namespace Gorgon.IO
         /// <param name="stream">The stream containing the animation.</param>
         /// <param name="byteCount">The number of bytes to read from the stream.</param>
         /// <returns>A new <see cref="IGorgonAnimation"/>.</returns>
-        protected override IGorgonAnimation OnReadFromStream(Stream stream, int byteCount)
-        {
-            return OnReadMultipleFromStream(stream, true)[0];
-        }
+        protected override IGorgonAnimation OnReadFromStream(Stream stream, int byteCount) => OnReadMultipleFromStream(stream, true)[0];
 
         /// <summary>
         /// Function to determine the number of animations in the sprite.
@@ -997,15 +991,11 @@ namespace Gorgon.IO
         /// </summary>
         /// <param name="renderer">The renderer used for resource handling.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> is <b>null</b>.</exception>
-        public GorgonV1AnimationCodec(Gorgon2D renderer) 
-            : base(renderer, Resources.GOR2DIO_V1_ANIM_CODEC, Resources.GOR2DIO_V1_ANIM_CODEC_DESCRIPTION)
-
-        {
-            FileExtensions = new[]
+        public GorgonV1AnimationCodec(Gorgon2D renderer)
+            : base(renderer, Resources.GOR2DIO_V1_ANIM_CODEC, Resources.GOR2DIO_V1_ANIM_CODEC_DESCRIPTION) => FileExtensions = new[]
                              {
                                  new GorgonFileExtension(".gorSprite", Resources.GOR2DIO_SPRITE_FILE_EXTENSION_DESC),
                              };
-        }
         #endregion
 
 

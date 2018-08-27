@@ -337,24 +337,21 @@ namespace Gorgon.Graphics.Imaging
 			                      pitchFlags);
 		}
 
-		/// <summary>
-		/// Function to return the maximum number of mip levels supported given the specified settings.
-		/// </summary>
-		/// <param name="info">The <see cref="IGorgonImageInfo"/> used to describe the image.</param>
-		/// <returns>The number of possible mip-map levels in the image.</returns>
-		public static int CalculateMaxMipCount(IGorgonImageInfo info)
-		{
-			return info == null ? 0 : CalculateMaxMipCount(info.Width, info.Height, info.Depth);
-		}
+        /// <summary>
+        /// Function to return the maximum number of mip levels supported given the specified settings.
+        /// </summary>
+        /// <param name="info">The <see cref="IGorgonImageInfo"/> used to describe the image.</param>
+        /// <returns>The number of possible mip-map levels in the image.</returns>
+        public static int CalculateMaxMipCount(IGorgonImageInfo info) => info == null ? 0 : CalculateMaxMipCount(info.Width, info.Height, info.Depth);
 
-		/// <summary>
-		/// Function to return the maximum number of mip levels supported in for an image.
-		/// </summary>
-		/// <param name="width">Width of the proposed image.</param>
-		/// <param name="height">Height of the proposed image.</param>
-		/// <param name="depth">Depth of the proposed image.</param>
-		/// <returns>The number of possible mip-map levels in the image.</returns>
-		public static int CalculateMaxMipCount(int width, int height, int depth)
+        /// <summary>
+        /// Function to return the maximum number of mip levels supported in for an image.
+        /// </summary>
+        /// <param name="width">Width of the proposed image.</param>
+        /// <param name="height">Height of the proposed image.</param>
+        /// <param name="depth">Depth of the proposed image.</param>
+        /// <returns>The number of possible mip-map levels in the image.</returns>
+        public static int CalculateMaxMipCount(int width, int height, int depth)
 		{
 			int result = 1;
 			width = 1.Max(width);

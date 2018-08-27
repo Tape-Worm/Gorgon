@@ -61,6 +61,207 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap add_directory_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("add_directory_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap add_directory_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("add_directory_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap back_icon_24x24 {
+            get {
+                object obj = ResourceManager.GetObject("back_icon_24x24", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap back_icon_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("back_icon_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap drive_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("drive_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap drive_cdrom_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("drive_cdrom_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap drive_network_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("drive_network_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap drive_ram_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("drive_ram_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap drive_remove_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("drive_remove_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap file_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("file_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap folder_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("folder_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gorgon Editor - {0}.
+        /// </summary>
+        internal static string GOREDIT_CAPTION_FILE {
+            get {
+                return ResourceManager.GetString("GOREDIT_CAPTION_FILE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gorgon Editor.
+        /// </summary>
+        internal static string GOREDIT_CAPTION_NO_FILE {
+            get {
+                return ResourceManager.GetString("GOREDIT_CAPTION_NO_FILE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This will delete &apos;{0}&apos; and any subdirectories and/or files contained within.
+        ///
+        ///Are you sure you wish to continue?.
+        /// </summary>
+        internal static string GOREDIT_CONFIRM_DELETE_CHILDREN {
+            get {
+                return ResourceManager.GetString("GOREDIT_CONFIRM_DELETE_CHILDREN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you wish to delete &apos;{0}&apos;?
+        ///.
+        /// </summary>
+        internal static string GOREDIT_CONFIRM_DELETE_NO_CHILDREN {
+            get {
+                return ResourceManager.GetString("GOREDIT_CONFIRM_DELETE_NO_CHILDREN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This directory already contains an editor project named &apos;{0}&apos;.
+        ///
+        ///Would you like to overwrite it?.
+        /// </summary>
+        internal static string GOREDIT_CONFIRM_EXISTING_PROJECT {
+            get {
+                return ResourceManager.GetString("GOREDIT_CONFIRM_EXISTING_PROJECT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The editor was unable to locate a workspace location that is accessible to the current user.
+        ///
+        ///The application will now close..
+        /// </summary>
+        internal static string GOREDIT_ERR_CANNOT_AUTO_FIND_WORKSPACE_LOCATION {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_CANNOT_AUTO_FIND_WORKSPACE_LOCATION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error creating the directory.
+        ///Please try again..
+        /// </summary>
+        internal static string GOREDIT_ERR_CANNOT_CREATE_DIR {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_CANNOT_CREATE_DIR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error while creating the project.
+        ///Please try again..
+        /// </summary>
+        internal static string GOREDIT_ERR_CREATE_PROJECT {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_CREATE_PROJECT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error deleting &apos;{0}&apos;.
+        ///Please try again..
+        /// </summary>
+        internal static string GOREDIT_ERR_DELETE {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_DELETE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Error.
         /// </summary>
         internal static string GOREDIT_ERR_ERROR {
@@ -80,12 +281,176 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was an error while showing the New Project screen.
+        ///Please try again..
+        /// </summary>
+        internal static string GOREDIT_ERR_NEW_PROJECT {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_NEW_PROJECT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There is no video adapter on this machine that can be used by Gorgon.
         ///Gorgon requires a video adapter that is compatible with Direct 3D 11.4 or better..
         /// </summary>
         internal static string GOREDIT_ERR_NO_SUITABLE_ADAPTER {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_NO_SUITABLE_ADAPTER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There is already a file or directory with the name &apos;{0}&apos; in this directory.
+        ///Please choose a new name..
+        /// </summary>
+        internal static string GOREDIT_ERR_NODE_EXISTS {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_NODE_EXISTS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The node contains illegal characters.
+        ///
+        ///&apos;{0}&apos; are not allowed in node names..
+        /// </summary>
+        internal static string GOREDIT_ERR_NODE_ILLEGAL_CHARS {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_NODE_ILLEGAL_CHARS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error selecting the item named &apos;{0}&apos; on the tree.
+        ///Please try again..
+        /// </summary>
+        internal static string GOREDIT_ERR_NODE_SELECTION {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_NODE_SELECTION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The path &apos;{0}&apos; is not contained within the project file system workspace &apos;{1}&apos;..
+        /// </summary>
+        internal static string GOREDIT_ERR_PATH_IS_NOT_IN_PROJECT_FILESYSTEM {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_PATH_IS_NOT_IN_PROJECT_FILESYSTEM", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error while renaming the directory.
+        ///Please try again..
+        /// </summary>
+        internal static string GOREDIT_ERR_RENAMING_DIRECTORY {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_RENAMING_DIRECTORY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error while renaming the file.
+        ///Please try again..
+        /// </summary>
+        internal static string GOREDIT_ERR_RENAMING_FILE {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_RENAMING_FILE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unsuitable workspace location: The directory is the root of a disk file system..
+        /// </summary>
+        internal static string GOREDIT_ERR_WORKSPACE_DIRECTORY_IS_ROOT {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_WORKSPACE_DIRECTORY_IS_ROOT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unsuitable workspace location: There was an error accessing the directory: &apos;{0}&apos;.
+        /// </summary>
+        internal static string GOREDIT_ERR_WORKSPACE_EXCEPTION {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_WORKSPACE_EXCEPTION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unsuitable workspace location: No directory was specified..
+        /// </summary>
+        internal static string GOREDIT_ERR_WORKSPACE_NO_DIRECTORY {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_WORKSPACE_NO_DIRECTORY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unsuitable workspace location: The user has no permission to read from or write to the directory..
+        /// </summary>
+        internal static string GOREDIT_ERR_WORKSPACE_NOT_AUTHORIZED {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_WORKSPACE_NOT_AUTHORIZED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unsuitable workspace location: There are files or subdirectories in this directory..
+        /// </summary>
+        internal static string GOREDIT_ERR_WORKSPACE_NOT_EMPTY {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_WORKSPACE_NOT_EMPTY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New Folder.
+        /// </summary>
+        internal static string GOREDIT_NEW_DIR_NAME {
+            get {
+                return ResourceManager.GetString("GOREDIT_NEW_DIR_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enter the name of the project here.
+        ///
+        ///This will serve as the name of the project, and as the file name for the project..
+        /// </summary>
+        internal static string GOREDIT_NEW_NAME_INFO {
+            get {
+                return ResourceManager.GetString("GOREDIT_NEW_NAME_INFO", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Untitled.
+        /// </summary>
+        internal static string GOREDIT_NEW_PROJECT {
+            get {
+                return ResourceManager.GetString("GOREDIT_NEW_PROJECT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A workspace is the temporary directory on your hard drive that is used to work on the content in your project file. And since this is a temporary directory, it will be cleaned up and removed when the application closes, or if the file is opened again.
+        ///
+        ///Please note that only empty directories, that are not the root of a drive can be used as a workspace directory..
+        /// </summary>
+        internal static string GOREDIT_NEW_WORKSPACE_INFO {
+            get {
+                return ResourceManager.GetString("GOREDIT_NEW_WORKSPACE_INFO", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Deleting &apos;{0}&apos;....
+        /// </summary>
+        internal static string GOREDIT_TEXT_DELETING {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_DELETING", resourceCulture);
             }
         }
         
@@ -113,6 +478,96 @@ namespace Gorgon.Editor.Properties {
         internal static System.Drawing.Bitmap Gorgon_2_x_Logo_Full {
             get {
                 object obj = ResourceManager.GetObject("Gorgon_2_x_Logo_Full", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap icons8_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("icons8_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap icons8_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("icons8_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot;?&gt;
+        ///&lt;!--Created by exporting the settings of a KryptonPalette instance.--&gt;
+        ///&lt;!--For more information about Krypton visit www.ComponentFactory.com--&gt;
+        ///&lt;!--WARNING: Modifying this file may render it invalid for importing.--&gt;
+        ///&lt;KryptonPalette Version=&quot;18&quot; Generated=&quot;Tuesday, 04 September 2018, 14:23&quot;&gt;
+        ///  &lt;Properties&gt;
+        ///    &lt;ButtonStyles&gt;
+        ///      &lt;ButtonCommon&gt;
+        ///        &lt;StateCommon&gt;
+        ///          &lt;Back&gt;
+        ///            &lt;GraphicsHint Type=&quot;PaletteGraphicsHint&quot; Value=&quot;AntiAlias&quot; /&gt;
+        ///            &lt;Color [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string Krypton_DarkO2k10Theme {
+            get {
+                return ResourceManager.GetString("Krypton_DarkO2k10Theme", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap newproject_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("newproject_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap open_folder_22x22 {
+            get {
+                object obj = ResourceManager.GetObject("open_folder_22x22", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap openproject_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("openproject_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap recent_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("recent_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap rename_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("rename_16x16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

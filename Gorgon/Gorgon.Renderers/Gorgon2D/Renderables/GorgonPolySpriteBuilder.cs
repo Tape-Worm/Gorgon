@@ -576,19 +576,13 @@ namespace Gorgon.Renderers
         /// Returns an enumerator that iterates through the collection.
         /// </summary>
         /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-        public IEnumerator<GorgonPolySpriteVertex> GetEnumerator()
-        {
-            return _workingSprite.RwVertices.GetEnumerator();
-        }
+        public IEnumerator<GorgonPolySpriteVertex> GetEnumerator() => _workingSprite.RwVertices.GetEnumerator();
 
         /// <summary>
         /// Returns an enumerator that iterates through a collection.
         /// </summary>
         /// <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return ((IEnumerable)_workingSprite.RwVertices).GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)_workingSprite.RwVertices).GetEnumerator();
         #endregion
 
         #region Constructor.
@@ -596,10 +590,7 @@ namespace Gorgon.Renderers
         /// Initializes a new instance of the <see cref="GorgonPolySpriteBuilder" /> class.
         /// </summary>
         /// <param name="renderer">The renderer interface to use for building the polygon sprite.</param>
-        public GorgonPolySpriteBuilder(Gorgon2D renderer)
-        {
-            Graphics = renderer?.Graphics ?? throw new ArgumentNullException(nameof(renderer));
-        }
+        public GorgonPolySpriteBuilder(Gorgon2D renderer) => Graphics = renderer?.Graphics ?? throw new ArgumentNullException(nameof(renderer));
         #endregion
     }
 }

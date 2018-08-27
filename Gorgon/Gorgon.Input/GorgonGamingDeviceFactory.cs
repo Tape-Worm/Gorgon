@@ -44,27 +44,24 @@ namespace Gorgon.Input
 		private readonly IGorgonLog _log;
 		// The plug in service to use when loading drivers.
 		private readonly IGorgonPluginService _plugInService;
-		#endregion
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to load all drivers from the plug in assemblies that are currently loaded.
-		/// </summary>
-		/// <returns>A read only list containing an instance of each driver.</returns>
-		public IReadOnlyList<IGorgonGamingDeviceDriver> LoadAllDrivers()
-		{
-			return _plugInService.GetPlugins<GorgonGamingDeviceDriver>();
-		}
+        #region Methods.
+        /// <summary>
+        /// Function to load all drivers from the plug in assemblies that are currently loaded.
+        /// </summary>
+        /// <returns>A read only list containing an instance of each driver.</returns>
+        public IReadOnlyList<IGorgonGamingDeviceDriver> LoadAllDrivers() => _plugInService.GetPlugins<GorgonGamingDeviceDriver>();
 
-		/// <summary>
-		/// Function to load a gaming device driver from any loaded plug in assembly.
-		/// </summary>
-		/// <param name="driverType">The fully qualified type name of the driver to load.</param>
-		/// <returns>The gaming device driver plug in.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="driverType"/> parameter is <b>null</b></exception>
-		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="driverType"/> parameter is empty.</exception>
-		/// <exception cref="ArgumentException">Thrown when the driver type name specified by <paramref name="driverType"/> was not found in any of the loaded plug in assemblies.</exception>
-		public IGorgonGamingDeviceDriver LoadDriver(string driverType)
+        /// <summary>
+        /// Function to load a gaming device driver from any loaded plug in assembly.
+        /// </summary>
+        /// <param name="driverType">The fully qualified type name of the driver to load.</param>
+        /// <returns>The gaming device driver plug in.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="driverType"/> parameter is <b>null</b></exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="driverType"/> parameter is empty.</exception>
+        /// <exception cref="ArgumentException">Thrown when the driver type name specified by <paramref name="driverType"/> was not found in any of the loaded plug in assemblies.</exception>
+        public IGorgonGamingDeviceDriver LoadDriver(string driverType)
 		{
 			if (driverType == null)
 			{

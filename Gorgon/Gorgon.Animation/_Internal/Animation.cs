@@ -320,10 +320,7 @@ namespace Gorgon.Animation
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
         public Animation(string name, float length)
-            : base(name)
-        {
-            Length = length.Max(0);
-        }
-		#endregion		
-	}
+            : base(name) => Length = length.Max(0);
+        #endregion
+    }
 }

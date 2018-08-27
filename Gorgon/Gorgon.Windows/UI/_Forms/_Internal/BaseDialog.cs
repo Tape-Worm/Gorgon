@@ -281,16 +281,13 @@ namespace Gorgon.UI
                 DrawDialog(e.Graphics);
             }
 		}
-		#endregion
+        #endregion
 
-		#region Constructor
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		public BaseDialog()
-		{
-			InitializeComponent();
-		}
-		#endregion
-	}
+        #region Constructor
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        public BaseDialog() => InitializeComponent();
+        #endregion
+    }
 }

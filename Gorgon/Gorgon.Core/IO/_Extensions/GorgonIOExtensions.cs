@@ -124,46 +124,43 @@ namespace Gorgon.IO
 			return result;
 		}
 
-		/// <summary>
-		/// Function to write a string into a stream with UTF-8 encoding.
-		/// </summary>
-		/// <param name="value">The string to write into the stream.</param>
-		/// <param name="stream">Stream to encode the string into.</param>
-		/// <remarks>
-		/// <para>
-		/// This will encode the string as a series of bytes into a stream.  The length of the string, in bytes, will be prefixed to the string as a series of 7 bit byte values.
-		/// </para>
-		/// <para>
-		/// This method is <b>not</b> thread safe. Use care when using threads with this method.
-		/// </para>
-		/// </remarks>
-		/// <returns>The number of bytes written to the stream.</returns>
-		/// <exception cref="IOException">Thrown when the <paramref name="stream"/> parameter is read-only.</exception>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
-		public static int WriteToStream(this string value, Stream stream)
-		{
-			return WriteToStream(value, stream, null);
-		}
+        /// <summary>
+        /// Function to write a string into a stream with UTF-8 encoding.
+        /// </summary>
+        /// <param name="value">The string to write into the stream.</param>
+        /// <param name="stream">Stream to encode the string into.</param>
+        /// <remarks>
+        /// <para>
+        /// This will encode the string as a series of bytes into a stream.  The length of the string, in bytes, will be prefixed to the string as a series of 7 bit byte values.
+        /// </para>
+        /// <para>
+        /// This method is <b>not</b> thread safe. Use care when using threads with this method.
+        /// </para>
+        /// </remarks>
+        /// <returns>The number of bytes written to the stream.</returns>
+        /// <exception cref="IOException">Thrown when the <paramref name="stream"/> parameter is read-only.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
+        public static int WriteToStream(this string value, Stream stream) => WriteToStream(value, stream, null);
 
-		/// <summary>
-		/// Function to encode a string into a stream with the specified encoding.
-		/// </summary>
-		/// <param name="value">The string to write into the stream.</param>
-		/// <param name="stream">Stream to encode the string into.</param>
-		/// <param name="encoding">Encoding for the string.</param>
-		/// <remarks>
-		/// <para>
-		/// This will encode the string as a series of bytes into a stream.  The length of the string, in bytes, will be prefixed to the string as a series of 7 bit byte values.
-		/// </para>
-		/// <para>If the <paramref name="encoding"/> parameter is <b>null</b>, then UTF-8 encoding will be used.</para>
-		/// <para>
-		/// This method is <b>not</b> thread safe. Use care when using threads with this method.
-		/// </para>
-		/// </remarks>
-		/// <returns>The number of bytes written to the stream.</returns>
-		/// <exception cref="IOException">Thrown when the <paramref name="stream"/> parameter is read-only.</exception>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
-		public static int WriteToStream(this string value, Stream stream, Encoding encoding)
+        /// <summary>
+        /// Function to encode a string into a stream with the specified encoding.
+        /// </summary>
+        /// <param name="value">The string to write into the stream.</param>
+        /// <param name="stream">Stream to encode the string into.</param>
+        /// <param name="encoding">Encoding for the string.</param>
+        /// <remarks>
+        /// <para>
+        /// This will encode the string as a series of bytes into a stream.  The length of the string, in bytes, will be prefixed to the string as a series of 7 bit byte values.
+        /// </para>
+        /// <para>If the <paramref name="encoding"/> parameter is <b>null</b>, then UTF-8 encoding will be used.</para>
+        /// <para>
+        /// This method is <b>not</b> thread safe. Use care when using threads with this method.
+        /// </para>
+        /// </remarks>
+        /// <returns>The number of bytes written to the stream.</returns>
+        /// <exception cref="IOException">Thrown when the <paramref name="stream"/> parameter is read-only.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
+        public static int WriteToStream(this string value, Stream stream, Encoding encoding)
 		{
 			if (string.IsNullOrEmpty(value))
 			{
@@ -203,90 +200,81 @@ namespace Gorgon.IO
 			return result;
 		}
 
-		/// <summary>
-		/// Function to write a string to a stream with the specified encoding.
-		/// </summary>
-		/// <param name="stream">The stream to write the string into.</param>
-		/// <param name="value">The string to write.</param>
-		/// <param name="encoding">The encoding for the string.</param>
-		/// <exception cref="IOException">Thrown when the <paramref name="stream"/> parameter is read-only.</exception>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
-		/// <remarks>
-		/// <para>
-		/// Gorgon stores its strings in a stream by prefixing the string data with the length of the string, in bytes.  This length is encoded as a series of 7-bit bytes.
-		/// </para>
-		/// <para>
-		/// If the <paramref name="encoding"/> parameter is <b>null</b>, then UTF-8 encoding is used.
-		/// </para>
-		/// <para>
-		/// This method is <b>not</b> thread safe. Use care when using threads with this method.
-		/// </para>
-		/// </remarks>
-		public static void WriteString(this Stream stream, string value, Encoding encoding)
-		{
-			WriteToStream(value, stream, encoding);
-		}
+        /// <summary>
+        /// Function to write a string to a stream with the specified encoding.
+        /// </summary>
+        /// <param name="stream">The stream to write the string into.</param>
+        /// <param name="value">The string to write.</param>
+        /// <param name="encoding">The encoding for the string.</param>
+        /// <exception cref="IOException">Thrown when the <paramref name="stream"/> parameter is read-only.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
+        /// <remarks>
+        /// <para>
+        /// Gorgon stores its strings in a stream by prefixing the string data with the length of the string, in bytes.  This length is encoded as a series of 7-bit bytes.
+        /// </para>
+        /// <para>
+        /// If the <paramref name="encoding"/> parameter is <b>null</b>, then UTF-8 encoding is used.
+        /// </para>
+        /// <para>
+        /// This method is <b>not</b> thread safe. Use care when using threads with this method.
+        /// </para>
+        /// </remarks>
+        public static void WriteString(this Stream stream, string value, Encoding encoding) => WriteToStream(value, stream, encoding);
 
-		/// <summary>
-		/// Function to write a string to a stream with UTF-8 encoding.
-		/// </summary>
-		/// <param name="stream">The stream to write the string into.</param>
-		/// <param name="value">The string to write.</param>
-		/// <exception cref="IOException">Thrown when the <paramref name="stream"/> parameter is read-only.</exception>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
-		/// <remarks>
-		/// <para>
-		/// Gorgon stores its strings in a stream by prefixing the string data with the length of the string, in bytes.  This length is encoded as a series of 7-bit bytes.
-		/// </para>
-		/// <para>
-		/// This method is <b>not</b> thread safe. Use care when using threads with this method.
-		/// </para>
-		/// </remarks>
-		public static void WriteString(this Stream stream, string value)
-		{
-			WriteToStream(value, stream, null);
-		}
+        /// <summary>
+        /// Function to write a string to a stream with UTF-8 encoding.
+        /// </summary>
+        /// <param name="stream">The stream to write the string into.</param>
+        /// <param name="value">The string to write.</param>
+        /// <exception cref="IOException">Thrown when the <paramref name="stream"/> parameter is read-only.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
+        /// <remarks>
+        /// <para>
+        /// Gorgon stores its strings in a stream by prefixing the string data with the length of the string, in bytes.  This length is encoded as a series of 7-bit bytes.
+        /// </para>
+        /// <para>
+        /// This method is <b>not</b> thread safe. Use care when using threads with this method.
+        /// </para>
+        /// </remarks>
+        public static void WriteString(this Stream stream, string value) => WriteToStream(value, stream, null);
 
-		/// <summary>
-		/// Function to read a string from a stream using UTF-8 encoding.
-		/// </summary>
-		/// <param name="stream">The stream to read the string from.</param>
-		/// <returns>The string in the stream.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="IOException">Thrown when an attempt to read beyond the end of the <paramref name="stream"/> is made.</exception>
-		/// <remarks>
-		/// <para>
-		/// Gorgon stores its strings in a stream by prefixing the string data with the length of the string.  This length is encoded as a series of 7-bit bytes.
-		/// </para>
-		/// <para>
-		/// This method is <b>not</b> thread safe. Use care when using threads with this method.
-		/// </para>
-		/// </remarks>
-		public static string ReadString(this Stream stream)
-		{
-			return ReadString(stream, null);
-		}
+        /// <summary>
+        /// Function to read a string from a stream using UTF-8 encoding.
+        /// </summary>
+        /// <param name="stream">The stream to read the string from.</param>
+        /// <returns>The string in the stream.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="IOException">Thrown when an attempt to read beyond the end of the <paramref name="stream"/> is made.</exception>
+        /// <remarks>
+        /// <para>
+        /// Gorgon stores its strings in a stream by prefixing the string data with the length of the string.  This length is encoded as a series of 7-bit bytes.
+        /// </para>
+        /// <para>
+        /// This method is <b>not</b> thread safe. Use care when using threads with this method.
+        /// </para>
+        /// </remarks>
+        public static string ReadString(this Stream stream) => ReadString(stream, null);
 
-		/// <summary>
-		/// Function to read a string from a stream with the specified encoding.
-		/// </summary>
-		/// <param name="stream">The stream to read the string from.</param>
-		/// <param name="encoding">The encoding for the string.</param>
-		/// <returns>The string in the stream.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="IOException">Thrown when an attempt to read beyond the end of the <paramref name="stream"/> is made.</exception>
-		/// <remarks>
-		/// <para>
-		/// Gorgon stores its strings in a stream by prefixing the string data with the length of the string.  This length is encoded as a series of 7-bit bytes.
-		/// </para>
-		/// <para>
-		/// If the <paramref name="encoding"/> parameter is <b>null</b>, then UTF-8 encoding is used.
-		/// </para>
-		/// <para>
-		/// This method is <b>not</b> thread safe. Use care when using threads with this method.
-		/// </para>
-		/// </remarks>
-		public static string ReadString(this Stream stream, Encoding encoding)
+        /// <summary>
+        /// Function to read a string from a stream with the specified encoding.
+        /// </summary>
+        /// <param name="stream">The stream to read the string from.</param>
+        /// <param name="encoding">The encoding for the string.</param>
+        /// <returns>The string in the stream.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="IOException">Thrown when an attempt to read beyond the end of the <paramref name="stream"/> is made.</exception>
+        /// <remarks>
+        /// <para>
+        /// Gorgon stores its strings in a stream by prefixing the string data with the length of the string.  This length is encoded as a series of 7-bit bytes.
+        /// </para>
+        /// <para>
+        /// If the <paramref name="encoding"/> parameter is <b>null</b>, then UTF-8 encoding is used.
+        /// </para>
+        /// <para>
+        /// This method is <b>not</b> thread safe. Use care when using threads with this method.
+        /// </para>
+        /// </remarks>
+        public static string ReadString(this Stream stream, Encoding encoding)
 		{
 			int stringLength = 0;
 

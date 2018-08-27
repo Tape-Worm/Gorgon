@@ -184,34 +184,31 @@ namespace Gorgon.Renderers
 				_isUpdated = true;
 			}
 		}
-		#endregion
+        #endregion
 
-		#region Methods.
-	    /// <summary>
-	    /// Function called to render a single effect pass.
-	    /// </summary>
-	    /// <param name="passIndex">The index of the pass being rendered.</param>
-	    /// <param name="renderMethod">The method used to render a scene for the effect.</param>
-	    /// <param name="output">The render target that will receive the final render data.</param>
-	    /// <remarks>
-	    /// <para>
-	    /// Applications must implement this in order to see any results from the effect.
-	    /// </para>
-	    /// </remarks>
-	    protected override void OnRenderPass(int passIndex, Action<int, int, DX.Size2> renderMethod, GorgonRenderTargetView output)
-	    {
-	        renderMethod(passIndex, PassCount, new DX.Size2(output.Width, output.Height));
-	    }
+        #region Methods.
+        /// <summary>
+        /// Function called to render a single effect pass.
+        /// </summary>
+        /// <param name="passIndex">The index of the pass being rendered.</param>
+        /// <param name="renderMethod">The method used to render a scene for the effect.</param>
+        /// <param name="output">The render target that will receive the final render data.</param>
+        /// <remarks>
+        /// <para>
+        /// Applications must implement this in order to see any results from the effect.
+        /// </para>
+        /// </remarks>
+        protected override void OnRenderPass(int passIndex, Action<int, int, DX.Size2> renderMethod, GorgonRenderTargetView output) => renderMethod(passIndex, PassCount, new DX.Size2(output.Width, output.Height));
 
-	    /// <summary>
-	    /// Function called to initialize the effect.
-	    /// </summary>
-	    /// <remarks>
-	    /// <para>
-	    /// Applications must implement this method to ensure that any required resources are created, and configured for the effect.
-	    /// </para>
-	    /// </remarks>
-	    protected override void OnInitialize()
+        /// <summary>
+        /// Function called to initialize the effect.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Applications must implement this method to ensure that any required resources are created, and configured for the effect.
+        /// </para>
+        /// </remarks>
+        protected override void OnInitialize()
 	    {
 	        _1BitBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, ref _settings, "Gorgon2D1BitEffect Constant Buffer");
 

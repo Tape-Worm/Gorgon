@@ -1445,23 +1445,17 @@ namespace Gorgon.Graphics.Imaging
 			}
 		}
 
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		public void Dispose()
-		{
-			_factory?.Dispose();
-		}
-		#endregion
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose() => _factory?.Dispose();
+        #endregion
 
-		#region Constructor/Finalizer.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="WicUtilities"/> class.
-		/// </summary>
-		public WicUtilities()
-		{
-			_factory = new ImagingFactory();
-		}
-		#endregion
-	}
+        #region Constructor/Finalizer.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WicUtilities"/> class.
+        /// </summary>
+        public WicUtilities() => _factory = new ImagingFactory();
+        #endregion
+    }
 }

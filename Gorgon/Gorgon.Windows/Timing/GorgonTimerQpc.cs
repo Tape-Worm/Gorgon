@@ -150,20 +150,16 @@ namespace Gorgon.Timing
 			}
 		}
 
-		/// <summary>
-		/// Function to return whether the system supports the query performance counter.
-		/// </summary>
-		/// <returns><b>true</b> if the system supports the timer, <b>false</b> if it does not.</returns>
-		public static bool SupportsQpc()
-		{
+        /// <summary>
+        /// Function to return whether the system supports the query performance counter.
+        /// </summary>
+        /// <returns><b>true</b> if the system supports the timer, <b>false</b> if it does not.</returns>
+        public static bool SupportsQpc() => KernelApi.QueryPerformanceFrequency(out long _);
 
-			return KernelApi.QueryPerformanceFrequency(out long _);
-		}
-
-		/// <summary>
-		/// Function to reset the timer.
-		/// </summary>
-		public void Reset()
+        /// <summary>
+        /// Function to reset the timer.
+        /// </summary>
+        public void Reset()
 		{
 			if (!KernelApi.QueryPerformanceFrequency(out _frequency))
 			{

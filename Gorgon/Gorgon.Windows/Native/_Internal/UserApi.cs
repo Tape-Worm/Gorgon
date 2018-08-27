@@ -91,16 +91,13 @@ namespace Gorgon.Native
 		/// <returns></returns>
 		[DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
 		public static extern IntPtr SendMessage(IntPtr hWnd, uint msg, IntPtr wParam, ref HDITEM lParam);
-		#endregion
+        #endregion
 
-		#region Constructor/Finalizer.
-		/// <summary>
-		/// Initializes static members of the <see cref="UserApi"/> class.
-		/// </summary>
-		static UserApi()
-		{
-			Marshal.PrelinkAll(typeof(UserApi));
-		}
-		#endregion
-	}
+        #region Constructor/Finalizer.
+        /// <summary>
+        /// Initializes static members of the <see cref="UserApi"/> class.
+        /// </summary>
+        static UserApi() => Marshal.PrelinkAll(typeof(UserApi));
+        #endregion
+    }
 }

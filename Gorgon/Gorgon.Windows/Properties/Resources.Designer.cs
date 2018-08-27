@@ -8,16 +8,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-using System.CodeDom.Compiler;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Drawing;
-using System.Globalization;
-using System.Resources;
-using System.Runtime.CompilerServices;
-
 namespace Gorgon.Windows.Properties {
+    using System;
+    
+    
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -25,27 +19,27 @@ namespace Gorgon.Windows.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [GeneratedCode("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
-    [DebuggerNonUserCode()]
-    [CompilerGenerated()]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+    [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
         
-        private static ResourceManager resourceMan;
+        private static global::System.Resources.ResourceManager resourceMan;
         
-        private static CultureInfo resourceCulture;
+        private static global::System.Globalization.CultureInfo resourceCulture;
         
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         internal Resources() {
         }
         
         /// <summary>
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
-        internal static ResourceManager ResourceManager {
+        [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
+        internal static global::System.Resources.ResourceManager ResourceManager {
             get {
-                if (ReferenceEquals(resourceMan, null)) {
-                    ResourceManager temp = new ResourceManager("Gorgon.Windows.Properties.Resources", typeof(Resources).Assembly);
+                if (object.ReferenceEquals(resourceMan, null)) {
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Gorgon.Windows.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -56,8 +50,8 @@ namespace Gorgon.Windows.Properties {
         ///   Overrides the current thread's CurrentUICulture property for all
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
-        internal static CultureInfo Culture {
+        [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
+        internal static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -69,60 +63,112 @@ namespace Gorgon.Windows.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static Bitmap cancel_16x16 {
+        internal static System.Drawing.Bitmap add_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("add_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap add_24x24 {
+            get {
+                object obj = ResourceManager.GetObject("add_24x24", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap cancel_16x16 {
             get {
                 object obj = ResourceManager.GetObject("cancel_16x16", resourceCulture);
-                return ((Bitmap)(obj));
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static Bitmap Check_Disabled1 {
+        internal static System.Drawing.Bitmap Check_Disabled1 {
             get {
                 object obj = ResourceManager.GetObject("Check_Disabled1", resourceCulture);
-                return ((Bitmap)(obj));
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static Bitmap Check_Enabled1 {
+        internal static System.Drawing.Bitmap Check_Enabled1 {
             get {
                 object obj = ResourceManager.GetObject("Check_Enabled1", resourceCulture);
-                return ((Bitmap)(obj));
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static Bitmap Close {
+        internal static System.Drawing.Bitmap Close {
             get {
                 object obj = ResourceManager.GetObject("Close", resourceCulture);
-                return ((Bitmap)(obj));
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static Bitmap Confirm_48x48 {
+        internal static System.Drawing.Bitmap Confirm_48x48 {
             get {
                 object obj = ResourceManager.GetObject("Confirm_48x48", resourceCulture);
-                return ((Bitmap)(obj));
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static Bitmap Error_48x48 {
+        internal static System.Drawing.Bitmap error_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("error_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Error_48x48 {
             get {
                 object obj = ResourceManager.GetObject("Error_48x48", resourceCulture);
-                return ((Bitmap)(obj));
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The directory &apos;{0}&apos; does not exist.
+        ///
+        ///Would you like to create it now?.
+        /// </summary>
+        internal static string GOR_CONFIRM_CREATE_DIR {
+            get {
+                return ResourceManager.GetString("GOR_CONFIRM_CREATE_DIR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This will delete all files and subdirectories from &apos;{0}&apos;.
+        ///
+        ///Are you sure you wish to delete this directory?.
+        /// </summary>
+        internal static string GOR_CONFIRM_DIR_DELETE {
+            get {
+                return ResourceManager.GetString("GOR_CONFIRM_DIR_DELETE", resourceCulture);
             }
         }
         
@@ -168,6 +214,33 @@ namespace Gorgon.Windows.Properties {
         internal static string GOR_ERR_APPLICATION_RUN_ONLY_FROM_ONE_THREAD {
             get {
                 return ResourceManager.GetString("GOR_ERR_APPLICATION_RUN_ONLY_FROM_ONE_THREAD", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There is already a file or directory named &apos;{0}&apos;..
+        /// </summary>
+        internal static string GOR_ERR_DIR_ALREADY_EXISTS {
+            get {
+                return ResourceManager.GetString("GOR_ERR_DIR_ALREADY_EXISTS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The path &apos;{0}&apos; contains illegal characters..
+        /// </summary>
+        internal static string GOR_ERR_DIR_ILLEGAL_CHARS {
+            get {
+                return ResourceManager.GetString("GOR_ERR_DIR_ILLEGAL_CHARS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The directory &apos;{0}&apos; does not exist..
+        /// </summary>
+        internal static string GOR_ERR_DIR_NOT_FOUND {
+            get {
+                return ResourceManager.GetString("GOR_ERR_DIR_NOT_FOUND", resourceCulture);
             }
         }
         
@@ -352,6 +425,15 @@ namespace Gorgon.Windows.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to New Folder.
+        /// </summary>
+        internal static string GOR_NEW_DIR {
+            get {
+                return ResourceManager.GetString("GOR_NEW_DIR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to (Theme).
         /// </summary>
         internal static string GOR_TEXT_FLAT_THEME {
@@ -397,6 +479,15 @@ namespace Gorgon.Windows.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Free space.
+        /// </summary>
+        internal static string GOR_TEXT_FREE_SPACE {
+            get {
+                return ResourceManager.GetString("GOR_TEXT_FREE_SPACE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Load theme.
         /// </summary>
         internal static string GOR_TEXT_LOAD_THEME {
@@ -406,11 +497,38 @@ namespace Gorgon.Windows.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Last Modified Date.
+        /// </summary>
+        internal static string GOR_TEXT_MODIFIED_DATE {
+            get {
+                return ResourceManager.GetString("GOR_TEXT_MODIFIED_DATE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Save theme as....
         /// </summary>
         internal static string GOR_TEXT_SAVE_THEME {
             get {
                 return ResourceManager.GetString("GOR_TEXT_SAVE_THEME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loading....
+        /// </summary>
+        internal static string GOR_TEXT_WAIT_MESSAGE {
+            get {
+                return ResourceManager.GetString("GOR_TEXT_WAIT_MESSAGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please wait.
+        /// </summary>
+        internal static string GOR_TEXT_WAIT_TITLE {
+            get {
+                return ResourceManager.GetString("GOR_TEXT_WAIT_TITLE", resourceCulture);
             }
         }
         
@@ -426,30 +544,39 @@ namespace Gorgon.Windows.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static Bitmap GorgonSelectablePanel {
+        internal static System.Drawing.Bitmap GorgonSelectablePanel {
             get {
                 object obj = ResourceManager.GetObject("GorgonSelectablePanel", resourceCulture);
-                return ((Bitmap)(obj));
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error: {0}.
+        /// </summary>
+        internal static string GORWIN_ERR_DIR_ACCESS {
+            get {
+                return ResourceManager.GetString("GORWIN_ERR_DIR_ACCESS", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static Bitmap Info_16x16 {
+        internal static System.Drawing.Bitmap Info_16x16 {
             get {
                 object obj = ResourceManager.GetObject("Info_16x16", resourceCulture);
-                return ((Bitmap)(obj));
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static Bitmap Info_48x48 {
+        internal static System.Drawing.Bitmap Info_48x48 {
             get {
                 object obj = ResourceManager.GetObject("Info_48x48", resourceCulture);
-                return ((Bitmap)(obj));
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
@@ -791,10 +918,40 @@ namespace Gorgon.Windows.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static Bitmap Restore {
+        internal static System.Drawing.Bitmap remove_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("remove_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap remove_24x24 {
+            get {
+                object obj = ResourceManager.GetObject("remove_24x24", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Restore {
             get {
                 object obj = ResourceManager.GetObject("Restore", resourceCulture);
-                return ((Bitmap)(obj));
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap up_directory_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("up_directory_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
@@ -819,10 +976,20 @@ namespace Gorgon.Windows.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static Bitmap Warning_48x48 {
+        internal static System.Drawing.Bitmap wait_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("wait_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Warning_48x48 {
             get {
                 object obj = ResourceManager.GetObject("Warning_48x48", resourceCulture);
-                return ((Bitmap)(obj));
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
     }

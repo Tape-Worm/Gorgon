@@ -111,15 +111,12 @@ namespace Gorgon.Examples
             _wvpBuffer.Buffer.SetData(ref wvp);
 		}
 
-		/// <summary>
-		/// Function called after the swap chain is resized.
-		/// </summary>
-		/// <param name="sender">The sender.</param>
-		/// <param name="eventArgs">The <see cref="EventArgs"/> instance containing the event data.</param>
-		private void AfterSwapChainResized(object sender, EventArgs eventArgs)
-		{
-			DX.Matrix.PerspectiveFovLH(60.0f.ToRadians(), (float)ClientSize.Width / ClientSize.Height, 0.1f, 1000.0f, out _projectionMatrix);
-		}
+        /// <summary>
+        /// Function called after the swap chain is resized.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="eventArgs">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void AfterSwapChainResized(object sender, EventArgs eventArgs) => DX.Matrix.PerspectiveFovLH(60.0f.ToRadians(), (float)ClientSize.Width / ClientSize.Height, 0.1f, 1000.0f, out _projectionMatrix);
 
         /// <summary>
 		/// Function to handle idle time for the application.
@@ -350,16 +347,13 @@ namespace Gorgon.Examples
                 GorgonApplication.Quit();
             }
         }
-	    #endregion
+        #endregion
 
         #region Constructor.
         /// <summary>
         /// Constructor.
         /// </summary>
-        public Form()
-        {
-            InitializeComponent();
-        }
+        public Form() => InitializeComponent();
         #endregion
     }
 }

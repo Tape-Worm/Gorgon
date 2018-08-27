@@ -40,12 +40,9 @@ namespace Gorgon.Examples
 			labelText.Refresh();
 		}
 
-	    /// <summary>
-		/// Initializes a new instance of the <see cref="formSplash" /> class.
-		/// </summary>
-		public formSplash()
-		{
-			InitializeComponent();
-		}
-	}
+        /// <summary>
+        /// Initializes a new instance of the <see cref="formSplash" /> class.
+        /// </summary>
+        public formSplash() => InitializeComponent();
+    }
 }

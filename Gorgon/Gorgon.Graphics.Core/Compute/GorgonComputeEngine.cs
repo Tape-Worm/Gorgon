@@ -96,10 +96,7 @@ namespace Gorgon.Graphics.Core
         /// </note>
         /// </para>
         /// </remarks>
-        public void Execute(GorgonDispatchCall dispatchCall, int threadGroupCountX, int threadGroupCountY, int threadGroupCountZ)
-        {
-            Graphics.Dispatch(dispatchCall, threadGroupCountX, threadGroupCountY, threadGroupCountZ);
-        }
+        public void Execute(GorgonDispatchCall dispatchCall, int threadGroupCountX, int threadGroupCountY, int threadGroupCountZ) => Graphics.Dispatch(dispatchCall, threadGroupCountX, threadGroupCountY, threadGroupCountZ);
 
         /// <summary>
         /// Function to execute a <see cref="GorgonComputeShader"/> using a buffer for argument passing.
@@ -131,10 +128,7 @@ namespace Gorgon.Graphics.Core
         /// </note>
         /// </para>
         /// </remarks>
-        public void Execute(GorgonDispatchCall dispatchCall, GorgonBufferCommon indirectArgs, int threadGroupOffset = 0)
-        {
-            Graphics.Dispatch(dispatchCall, indirectArgs, threadGroupOffset);
-        }
+        public void Execute(GorgonDispatchCall dispatchCall, GorgonBufferCommon indirectArgs, int threadGroupOffset = 0) => Graphics.Dispatch(dispatchCall, indirectArgs, threadGroupOffset);
         #endregion
 
         #region Constructor/Finalizer.
@@ -145,10 +139,7 @@ namespace Gorgon.Graphics.Core
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentException">Thrown if the device is not a feature level 11 or better device.</exception>
         /// <seealso cref="GorgonGraphics"/>
-        public GorgonComputeEngine(GorgonGraphics graphics)
-        {
-            Graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
-        }
+        public GorgonComputeEngine(GorgonGraphics graphics) => Graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
         #endregion
     }
 }

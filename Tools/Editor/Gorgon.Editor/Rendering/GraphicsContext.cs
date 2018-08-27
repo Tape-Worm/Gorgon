@@ -40,14 +40,12 @@ namespace Gorgon.Editor.Rendering
     /// <summary>
     /// A graphics context containing the current graphics interface and renderer.
     /// </summary>
-    public class GraphicsContext
+    internal class GraphicsContext
         : IGraphicsContext, IDisposable
     {
         #region Variables.
         // Leases for a swap chain.
         private readonly Dictionary<string, WeakReference<GorgonSwapChain>> _swapChainLeases = new Dictionary<string, WeakReference<GorgonSwapChain>>(StringComparer.OrdinalIgnoreCase);
-        // The renderer factory.
-        private Lazy<Gorgon2D> _rendererFactory;
         #endregion
 
         #region Properties.
@@ -60,6 +58,14 @@ namespace Gorgon.Editor.Rendering
         /// Property to return the graphics interface for the application.
         /// </summary>
         public GorgonGraphics Graphics
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the 2D renderer for the application.
+        /// </summary>
+        public Gorgon2D Renderer2D
         {
             get;
         }
@@ -157,8 +163,6 @@ namespace Gorgon.Editor.Rendering
             return resultSwap;
         }
 
-//        public static
-
         /// <summary>
         /// Function to create the graphics context.
         /// </summary>
@@ -188,11 +192,16 @@ namespace Gorgon.Editor.Rendering
         /// </summary>
         public void Dispose()
         {
-            if ((_rendererFactory != null) && (_rendererFactory.IsValueCreated))
+            foreach (KeyValuePair<string, WeakReference<GorgonSwapChain>> swaps in _swapChainLeases)
             {
-                _rendererFactory.Value.Dispose();
+                if (swaps.Value.TryGetTarget(out GorgonSwapChain swap))
+                {
+                    swap.Dispose();
+                }
             }
 
+            _swapChainLeases.Clear();
+            Renderer2D?.Dispose();
             Graphics?.Dispose();
         }
         #endregion
@@ -205,7 +214,7 @@ namespace Gorgon.Editor.Rendering
         private GraphicsContext(GorgonGraphics graphics)
         {
             Graphics = graphics;
-            _rendererFactory = new Lazy<Gorgon2D>();
+            Renderer2D = new Gorgon2D(graphics);
         }
         #endregion
 

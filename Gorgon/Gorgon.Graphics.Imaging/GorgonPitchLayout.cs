@@ -91,39 +91,33 @@ namespace Gorgon.Graphics.Imaging
         /// the height of the image. For example, if an image has a height of 256 pixels, it would be 64 blocks in the vertical direction.
         /// </remarks>
         public readonly int VerticalBlockCount;
-		#endregion
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to compare two instances for equality.
-		/// </summary>
-		/// <param name="other">The other instance to compare to this one.</param>
-		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-		public bool Equals(GorgonPitchLayout other)
-		{
-			return Equals(this, other);
-		}
+        #region Methods.
+        /// <summary>
+        /// Function to compare two instances for equality.
+        /// </summary>
+        /// <param name="other">The other instance to compare to this one.</param>
+        /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+        public bool Equals(GorgonPitchLayout other) => Equals(this, other);
 
-		/// <summary>
-		/// Function to compare two instances for equality.
-		/// </summary>
-		/// <param name="left">Left instance to compare.</param>
-		/// <param name="right">Right instance to compare.</param>
-		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-		public static bool Equals(GorgonPitchLayout left, GorgonPitchLayout right)
-		{
-			return ((left.RowPitch == right.RowPitch) && (left.SlicePitch == right.SlicePitch)
-			        && (left.HorizontalBlockCount == right.HorizontalBlockCount) && (left.VerticalBlockCount == right.VerticalBlockCount));
-		}
+        /// <summary>
+        /// Function to compare two instances for equality.
+        /// </summary>
+        /// <param name="left">Left instance to compare.</param>
+        /// <param name="right">Right instance to compare.</param>
+        /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+        public static bool Equals(GorgonPitchLayout left, GorgonPitchLayout right) => ((left.RowPitch == right.RowPitch) && (left.SlicePitch == right.SlicePitch)
+                    && (left.HorizontalBlockCount == right.HorizontalBlockCount) && (left.VerticalBlockCount == right.VerticalBlockCount));
 
-		/// <summary>
-		/// Determines whether the specified <see cref="object" /> is equal to this instance.
-		/// </summary>
-		/// <param name="obj">The <see cref="object" /> to compare with this instance.</param>
-		/// <returns>
-		///   <b>true</b> if the specified <see cref="object" /> is equal to this instance; otherwise, <b>false</b>.
-		/// </returns>
-		public override bool Equals(object obj)
+        /// <summary>
+        /// Determines whether the specified <see cref="object" /> is equal to this instance.
+        /// </summary>
+        /// <param name="obj">The <see cref="object" /> to compare with this instance.</param>
+        /// <returns>
+        ///   <b>true</b> if the specified <see cref="object" /> is equal to this instance; otherwise, <b>false</b>.
+        /// </returns>
+        public override bool Equals(object obj)
 		{
 			if (obj is GorgonPitchLayout pitchLayout)
 			{
@@ -133,40 +127,34 @@ namespace Gorgon.Graphics.Imaging
 			return base.Equals(obj);
 		}
 
-		/// <summary>
-		/// Returns a hash code for this instance.
-		/// </summary>
-		/// <returns>
-		/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
-		/// </returns>
-		public override int GetHashCode()
-		{
-			return 281.GenerateHash(RowPitch)
-			          .GenerateHash(SlicePitch)
-			          .GenerateHash(HorizontalBlockCount)
-			          .GenerateHash(VerticalBlockCount);
-		}
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// </returns>
+        public override int GetHashCode() => 281.GenerateHash(RowPitch)
+                      .GenerateHash(SlicePitch)
+                      .GenerateHash(HorizontalBlockCount)
+                      .GenerateHash(VerticalBlockCount);
 
-		/// <summary>
-		/// Returns a <see cref="string" /> that represents this instance.
-		/// </summary>
-		/// <returns>
-		/// A <see cref="string" /> that represents this instance.
-		/// </returns>
-		public override string ToString()
-		{
-			return ((HorizontalBlockCount == 0) && (VerticalBlockCount == 0))
-				       ? string.Format(Resources.GORIMG_TOSTR_FMTPITCH, RowPitch, SlicePitch)
-				       : string.Format(Resources.GORIMG_TOSTR_FMTPITCH_COMPRESSED, RowPitch, SlicePitch, HorizontalBlockCount, VerticalBlockCount);
-		}
+        /// <summary>
+        /// Returns a <see cref="string" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="string" /> that represents this instance.
+        /// </returns>
+        public override string ToString() => ((HorizontalBlockCount == 0) && (VerticalBlockCount == 0))
+                       ? string.Format(Resources.GORIMG_TOSTR_FMTPITCH, RowPitch, SlicePitch)
+                       : string.Format(Resources.GORIMG_TOSTR_FMTPITCH_COMPRESSED, RowPitch, SlicePitch, HorizontalBlockCount, VerticalBlockCount);
 
-		/// <summary>
-		/// Equality operator.
-		/// </summary>
-		/// <param name="left">The left instance to compare.</param>
-		/// <param name="right">The right instance to compare.</param>
-		/// <returns><b>true</b> if equal, <b>false</b> if not</returns>
-		public static bool operator ==(GorgonPitchLayout left, GorgonPitchLayout right)
+        /// <summary>
+        /// Equality operator.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        /// <returns><b>true</b> if equal, <b>false</b> if not</returns>
+        public static bool operator ==(GorgonPitchLayout left, GorgonPitchLayout right)
 		{
 			return Equals(left, right);
 		}

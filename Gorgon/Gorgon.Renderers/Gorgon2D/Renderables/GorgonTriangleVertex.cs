@@ -65,19 +65,13 @@ namespace Gorgon.Renderers
         #region Methods.
         /// <summary>Returns the hash code for this instance.</summary>
         /// <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
-        public override int GetHashCode()
-        {
-            return 281.GenerateHash(Color).GenerateHash(TextureArrayIndex).GenerateHash(TextureCoordinate).GenerateHash(Position);
-        }
+        public override int GetHashCode() => 281.GenerateHash(Color).GenerateHash(TextureArrayIndex).GenerateHash(TextureCoordinate).GenerateHash(Position);
 
         /// <summary>Indicates whether this instance and a specified object are equal.</summary>
         /// <param name="obj">The object to compare with the current instance. </param>
         /// <returns>
         /// <see langword="true" /> if <paramref name="obj" /> and this instance are the same type and represent the same value; otherwise, <see langword="false" />. </returns>
-        public override bool Equals(object obj)
-        {
-            return obj is GorgonTriangleVertex point ? point.Equals(in this) : base.Equals(obj);
-        }
+        public override bool Equals(object obj) => obj is GorgonTriangleVertex point ? point.Equals(in this) : base.Equals(obj);
 
         /// <summary>
         /// Function to compare two points for equality.
@@ -85,34 +79,25 @@ namespace Gorgon.Renderers
         /// <param name="left">The left point to compare.</param>
         /// <param name="right">The right point to compare.</param>
         /// <returns><b>true</b> if the points are equal, <b>false</b> if not.</returns>
-        public static bool Equals(in GorgonTriangleVertex left, in GorgonTriangleVertex right)
-        {
-            return GorgonColor.Equals(in left.Color, in right.Color)
+        public static bool Equals(in GorgonTriangleVertex left, in GorgonTriangleVertex right) => GorgonColor.Equals(in left.Color, in right.Color)
                    && left.TextureArrayIndex == right.TextureArrayIndex
                    && left.TextureCoordinate.X.EqualsEpsilon(right.TextureCoordinate.X)
                    && left.TextureCoordinate.Y.EqualsEpsilon(right.TextureCoordinate.Y)
                    && left.Position.X.EqualsEpsilon(right.Position.X)
                    && left.Position.Y.EqualsEpsilon(right.Position.Y);
-        }
 
         /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
         /// <param name="other">An object to compare with this object.</param>
         /// <returns>
         /// <see langword="true" /> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <see langword="false" />.</returns>
-        public bool Equals(GorgonTriangleVertex other)
-        {
-            return Equals(in this, in other);
-        }
+        public bool Equals(GorgonTriangleVertex other) => Equals(in this, in other);
 
         /// <summary>
         /// Function to compare this instance with another.
         /// </summary>
         /// <param name="other">The other instance to use for comparison.</param>
         /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-        public bool Equals(in GorgonTriangleVertex other)
-        {
-            return Equals(in this, in other);
-        }
+        public bool Equals(in GorgonTriangleVertex other) => Equals(in this, in other);
 
         /// <summary>
         /// Operator to determine if two instances are equal.

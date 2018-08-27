@@ -117,96 +117,84 @@ namespace Gorgon.IO.Providers
 		{
 			get;
 		}
-		#endregion
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to enumerate the files and directories from a physical location and map it to a virtual location.
-		/// </summary>
-		/// <param name="physicalLocation">The physical location containing files and directories to enumerate.</param>
-		/// <param name="mountPoint">A <see cref="IGorgonVirtualDirectory"/> that the directories and files from the physical file system will be mounted into.</param>		
-		/// <returns>A <see cref="GorgonPhysicalFileSystemData"/> object containing information about the directories and files contained within the physical file system.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="physicalLocation"/>, or the <paramref name="mountPoint"/> parameters are <b>null</b>.</exception>
-		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="physicalLocation"/> parameter is empty.</exception>
-		/// <remarks>
-		/// Since this provider holds data in its own block of memory, there's nothing to enumerate when the provider is loaded. Thus, this will always return empty data.
-		/// </remarks>
-		protected virtual GorgonPhysicalFileSystemData OnEnumerate(string physicalLocation, IGorgonVirtualDirectory mountPoint)
-		{
-			return new GorgonPhysicalFileSystemData(FileData.GetDirectories(),
-			                                        FileData.GetFileInfos()
-			                                                .Select(item =>
-			                                                        new PhysicalFileInfo(Prefix + "::" + item.FullPath,
-			                                                                             item.CreateDate,
-			                                                                             item.Size,
-			                                                                             item.FullPath,
-			                                                                             0,
-			                                                                             item.LastModified))
-			                                                .ToArray());
-		}
+        #region Methods.
+        /// <summary>
+        /// Function to enumerate the files and directories from a physical location and map it to a virtual location.
+        /// </summary>
+        /// <param name="physicalLocation">The physical location containing files and directories to enumerate.</param>
+        /// <param name="mountPoint">A <see cref="IGorgonVirtualDirectory"/> that the directories and files from the physical file system will be mounted into.</param>		
+        /// <returns>A <see cref="GorgonPhysicalFileSystemData"/> object containing information about the directories and files contained within the physical file system.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="physicalLocation"/>, or the <paramref name="mountPoint"/> parameters are <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="physicalLocation"/> parameter is empty.</exception>
+        /// <remarks>
+        /// Since this provider holds data in its own block of memory, there's nothing to enumerate when the provider is loaded. Thus, this will always return empty data.
+        /// </remarks>
+        protected virtual GorgonPhysicalFileSystemData OnEnumerate(string physicalLocation, IGorgonVirtualDirectory mountPoint) => new GorgonPhysicalFileSystemData(FileData.GetDirectories(),
+                                                    FileData.GetFileInfos()
+                                                            .Select(item =>
+                                                                    new PhysicalFileInfo(Prefix + "::" + item.FullPath,
+                                                                                         item.CreateDate,
+                                                                                         item.Size,
+                                                                                         item.FullPath,
+                                                                                         0,
+                                                                                         item.LastModified))
+                                                            .ToArray());
 
 
-		/// <summary>
-		/// Function to open a stream to a file on the physical file system from the <see cref="IGorgonVirtualFile"/> passed in.
-		/// </summary>
-		/// <param name="file">The <see cref="IGorgonVirtualFile"/> that will be used to locate the file that will be opened on the physical file system.</param>
-		/// <returns>A <see cref="Stream"/> to the file, or <b>null</b> if the file does not exist.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="file"/> parameter is <b>null</b>.</exception>
-		/// <remarks>
-		/// <para>
-		/// This will take the <see cref="IGorgonVirtualFile"/> and open its corresponding physical file location as a stream for reading. The stream that is returned will be opened, and as such, it is the 
-		/// responsibility of the user to close the stream when finished.
-		/// </para>
-		/// </remarks>
-		protected virtual Stream OnOpenFileStream(IGorgonVirtualFile file)
-		{
-			return FileData.OpenReadStream(file.FullPath);
-		}
+        /// <summary>
+        /// Function to open a stream to a file on the physical file system from the <see cref="IGorgonVirtualFile"/> passed in.
+        /// </summary>
+        /// <param name="file">The <see cref="IGorgonVirtualFile"/> that will be used to locate the file that will be opened on the physical file system.</param>
+        /// <returns>A <see cref="Stream"/> to the file, or <b>null</b> if the file does not exist.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="file"/> parameter is <b>null</b>.</exception>
+        /// <remarks>
+        /// <para>
+        /// This will take the <see cref="IGorgonVirtualFile"/> and open its corresponding physical file location as a stream for reading. The stream that is returned will be opened, and as such, it is the 
+        /// responsibility of the user to close the stream when finished.
+        /// </para>
+        /// </remarks>
+        protected virtual Stream OnOpenFileStream(IGorgonVirtualFile file) => FileData.OpenReadStream(file.FullPath);
 
-		/// <summary>
-		/// Function to determine if a physical file system can be read by this provider.
-		/// </summary>
-		/// <param name="physicalPath">Path to the packed file containing the file system.</param>
-		/// <returns><b>true</b> if the provider can read the packed file, <b>false</b> if not.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="physicalPath"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="physicalPath"/> parameter is an empty string.</exception>
-		/// <remarks>
-		/// This value will return <b>true</b> when the <paramref name="physicalPath"/> is set to <c>::\\Memory</c> on the <c>physicalLocation</c> parameter for the <see cref="IGorgonFileSystem.Mount"/> method.
-		/// </remarks>
-		public bool CanReadFileSystem(string physicalPath)
-		{
-			return physicalPath.StartsWith(Prefix, StringComparison.OrdinalIgnoreCase);
-		}
+        /// <summary>
+        /// Function to determine if a physical file system can be read by this provider.
+        /// </summary>
+        /// <param name="physicalPath">Path to the packed file containing the file system.</param>
+        /// <returns><b>true</b> if the provider can read the packed file, <b>false</b> if not.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="physicalPath"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="physicalPath"/> parameter is an empty string.</exception>
+        /// <remarks>
+        /// This value will return <b>true</b> when the <paramref name="physicalPath"/> is set to <c>::\\Memory</c> on the <c>physicalLocation</c> parameter for the <see cref="IGorgonFileSystem.Mount"/> method.
+        /// </remarks>
+        public bool CanReadFileSystem(string physicalPath) => physicalPath.StartsWith(Prefix, StringComparison.OrdinalIgnoreCase);
 
-		/// <summary>
-		/// Function to enumerate the files and directories from a physical location and map it to a virtual location.
-		/// </summary>
-		/// <param name="physicalLocation">The physical location containing files and directories to enumerate.</param>
-		/// <param name="mountPoint">A <see cref="IGorgonVirtualDirectory"/> that the directories and files from the physical file system will be mounted into.</param>		
-		/// <returns>A <see cref="GorgonPhysicalFileSystemData"/> object containing information about the directories and files contained within the physical file system.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="physicalLocation"/>, or the <paramref name="mountPoint"/> parameters are <b>null</b>.</exception>
-		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="physicalLocation"/> parameter is empty.</exception>
-		/// <remarks>
-		/// Since this provider holds data in its own block of memory, there's nothing to enumerate when the provider is loaded. Thus, this will always return empty data.
-		/// </remarks>
-		public GorgonPhysicalFileSystemData Enumerate(string physicalLocation, IGorgonVirtualDirectory mountPoint)
-		{
-			return OnEnumerate(physicalLocation, mountPoint);
-		}
+        /// <summary>
+        /// Function to enumerate the files and directories from a physical location and map it to a virtual location.
+        /// </summary>
+        /// <param name="physicalLocation">The physical location containing files and directories to enumerate.</param>
+        /// <param name="mountPoint">A <see cref="IGorgonVirtualDirectory"/> that the directories and files from the physical file system will be mounted into.</param>		
+        /// <returns>A <see cref="GorgonPhysicalFileSystemData"/> object containing information about the directories and files contained within the physical file system.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="physicalLocation"/>, or the <paramref name="mountPoint"/> parameters are <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="physicalLocation"/> parameter is empty.</exception>
+        /// <remarks>
+        /// Since this provider holds data in its own block of memory, there's nothing to enumerate when the provider is loaded. Thus, this will always return empty data.
+        /// </remarks>
+        public GorgonPhysicalFileSystemData Enumerate(string physicalLocation, IGorgonVirtualDirectory mountPoint) => OnEnumerate(physicalLocation, mountPoint);
 
-		/// <summary>
-		/// Function to open a stream to a file on the physical file system from the <see cref="IGorgonVirtualFile"/> passed in.
-		/// </summary>
-		/// <param name="file">The <see cref="IGorgonVirtualFile"/> that will be used to locate the file that will be opened on the physical file system.</param>
-		/// <returns>A <see cref="Stream"/> to the file, or <b>null</b> if the file does not exist.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="file"/> parameter is <b>null</b>.</exception>
-		/// <remarks>
-		/// <para>
-		/// This will take the <see cref="IGorgonVirtualFile"/> and open its corresponding physical file location as a stream for reading. The stream that is returned will be opened, and as such, it is the 
-		/// responsibility of the user to close the stream when finished.
-		/// </para>
-		/// </remarks>
-		public Stream OpenFileStream(IGorgonVirtualFile file)
+        /// <summary>
+        /// Function to open a stream to a file on the physical file system from the <see cref="IGorgonVirtualFile"/> passed in.
+        /// </summary>
+        /// <param name="file">The <see cref="IGorgonVirtualFile"/> that will be used to locate the file that will be opened on the physical file system.</param>
+        /// <returns>A <see cref="Stream"/> to the file, or <b>null</b> if the file does not exist.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="file"/> parameter is <b>null</b>.</exception>
+        /// <remarks>
+        /// <para>
+        /// This will take the <see cref="IGorgonVirtualFile"/> and open its corresponding physical file location as a stream for reading. The stream that is returned will be opened, and as such, it is the 
+        /// responsibility of the user to close the stream when finished.
+        /// </para>
+        /// </remarks>
+        public Stream OpenFileStream(IGorgonVirtualFile file)
 		{
 			if (file == null)
 			{

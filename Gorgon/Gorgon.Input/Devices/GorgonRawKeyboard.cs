@@ -209,52 +209,46 @@ namespace Gorgon.Input
 			return result;
 		}
 
-		/// <summary>
-		/// Function to fire the key down event.
-		/// </summary>
-		/// <param name="key">Key that's pressed.</param>
-		/// <param name="scan">Scan code data.</param>
-		private void OnKeyDown(Keys key, int scan)
-		{
-			KeyDown?.Invoke(this, new GorgonKeyboardEventArgs(key, GetModifiers(), scan));
-		}
+        /// <summary>
+        /// Function to fire the key down event.
+        /// </summary>
+        /// <param name="key">Key that's pressed.</param>
+        /// <param name="scan">Scan code data.</param>
+        private void OnKeyDown(Keys key, int scan) => KeyDown?.Invoke(this, new GorgonKeyboardEventArgs(key, GetModifiers(), scan));
 
-		/// <summary>
-		/// Function to fire the key up event.
-		/// </summary>
-		/// <param name="key">Key that's pressed.</param>
-		/// <param name="scan">Scan code data.</param>
-		private void OnKeyUp(Keys key, int scan)
-		{
-			KeyUp?.Invoke(this, new GorgonKeyboardEventArgs(key, GetModifiers(), scan));
-		}
+        /// <summary>
+        /// Function to fire the key up event.
+        /// </summary>
+        /// <param name="key">Key that's pressed.</param>
+        /// <param name="scan">Scan code data.</param>
+        private void OnKeyUp(Keys key, int scan) => KeyUp?.Invoke(this, new GorgonKeyboardEventArgs(key, GetModifiers(), scan));
 
-		/// <summary>
-		/// Function to convert a keyboard key into a character (if applicable).
-		/// </summary>
-		/// <param name="key">The key to convert into a character.</param>
-		/// <param name="modifier">The modifier for that key.</param>
-		/// <returns>The character representation for the key. If no representation is available, an empty string is returned.</returns>
-		/// <remarks>
-		/// <para>
-		/// Use this to retrieve the character associated with a keyboard key. For example, if <see cref="Keys.A"/> is pressed, then 'a' will be returned. A <paramref name="modifier"/> can be 
-		/// passed with the <see cref="Keys.ShiftKey"/> to return 'A'. 
-		/// </para>
-		/// <para>
-		/// This method also supports the AltGr key which is represented by a combination of the <see cref="Keys.ControlKey"/> | <see cref="Keys.Menu"/> keys.
-		/// </para>
-		/// <para>
-		/// This method only returns characters for the currently active keyboard layout (i.e. the system keyboard layout). If this keyboard interface represents another keyboard attached to the computer 
-		/// then it will default to using the system keyboard to retrieve the character.
-		/// </para>
-		/// <para>
-		/// This method is not thread safe. Invalid data will be returned if multiple thread access this method.
-		/// </para>
-		/// <para>
-		/// This method was derived from the answer at <a href="http://stackoverflow.com/questions/6929275/how-to-convert-a-virtual-key-code-to-a-character-according-to-the-current-keyboa"/>.
-		/// </para>
-		/// </remarks>
-		public string KeyToCharacter(Keys key, Keys modifier)
+        /// <summary>
+        /// Function to convert a keyboard key into a character (if applicable).
+        /// </summary>
+        /// <param name="key">The key to convert into a character.</param>
+        /// <param name="modifier">The modifier for that key.</param>
+        /// <returns>The character representation for the key. If no representation is available, an empty string is returned.</returns>
+        /// <remarks>
+        /// <para>
+        /// Use this to retrieve the character associated with a keyboard key. For example, if <see cref="Keys.A"/> is pressed, then 'a' will be returned. A <paramref name="modifier"/> can be 
+        /// passed with the <see cref="Keys.ShiftKey"/> to return 'A'. 
+        /// </para>
+        /// <para>
+        /// This method also supports the AltGr key which is represented by a combination of the <see cref="Keys.ControlKey"/> | <see cref="Keys.Menu"/> keys.
+        /// </para>
+        /// <para>
+        /// This method only returns characters for the currently active keyboard layout (i.e. the system keyboard layout). If this keyboard interface represents another keyboard attached to the computer 
+        /// then it will default to using the system keyboard to retrieve the character.
+        /// </para>
+        /// <para>
+        /// This method is not thread safe. Invalid data will be returned if multiple thread access this method.
+        /// </para>
+        /// <para>
+        /// This method was derived from the answer at <a href="http://stackoverflow.com/questions/6929275/how-to-convert-a-virtual-key-code-to-a-character-according-to-the-current-keyboa"/>.
+        /// </para>
+        /// </remarks>
+        public string KeyToCharacter(Keys key, Keys modifier)
 		{
 			const int shiftKey = (int)Keys.ShiftKey;
 			const int ctrlKey = (int)Keys.ControlKey;

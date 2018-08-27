@@ -166,10 +166,7 @@ namespace Gorgon.Examples
         /// </summary>
         /// <param name="pass">The composition pass.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pass"/> parameter is <b>null</b></exception>
-        public Button(Gorgon2DCompositionPass pass)
-        {
-            Pass = pass ?? throw new ArgumentNullException(nameof(pass));
-        }
+        public Button(Gorgon2DCompositionPass pass) => Pass = pass ?? throw new ArgumentNullException(nameof(pass));
         #endregion
     }
 }

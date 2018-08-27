@@ -96,29 +96,23 @@ namespace Gorgon.UI
 			Invalidate();
 		}
 
-		/// <summary>
-		/// OK button click event.
-		/// </summary>
-		/// <param name="sender">Sender of the event.</param>
-		/// <param name="e">Event arguments.</param>
-		private void OKButton_Click(object sender, EventArgs e)
-		{
-			Close();
-		}
-		
-		/// <summary>
-		/// Function to validate the buttons.
-		/// </summary>
-		protected override void ValidateFunctions()
-		{
-		    checkDetail.Enabled = !string.IsNullOrWhiteSpace(_warningDetails);
-		}
+        /// <summary>
+        /// OK button click event.
+        /// </summary>
+        /// <param name="sender">Sender of the event.</param>
+        /// <param name="e">Event arguments.</param>
+        private void OKButton_Click(object sender, EventArgs e) => Close();
 
-	    /// <summary>
-		/// Raises the <see cref="E:System.Windows.Forms.Form.Load"></see> event.
-		/// </summary>
-		/// <param name="e">An <see cref="T:System.EventArgs"></see> that contains the event data.</param>
-		protected override void OnLoad(EventArgs e)
+        /// <summary>
+        /// Function to validate the buttons.
+        /// </summary>
+        protected override void ValidateFunctions() => checkDetail.Enabled = !string.IsNullOrWhiteSpace(_warningDetails);
+
+        /// <summary>
+        /// Raises the <see cref="E:System.Windows.Forms.Form.Load"></see> event.
+        /// </summary>
+        /// <param name="e">An <see cref="T:System.EventArgs"></see> that contains the event data.</param>
+        protected override void OnLoad(EventArgs e)
 		{
 			base.OnLoad(e);
 

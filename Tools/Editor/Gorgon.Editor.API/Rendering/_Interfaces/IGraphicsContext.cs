@@ -51,6 +51,14 @@ namespace Gorgon.Editor.Rendering
         {
             get;
         }
+
+        /// <summary>
+        /// Property to return the 2D renderer.
+        /// </summary>
+        Gorgon2D Renderer2D
+        {
+            get;
+        }
         #endregion
 
         #region Methods.

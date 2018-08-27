@@ -631,8 +631,8 @@ namespace Gorgon.Graphics.Fonts
 					// Increase size to ensure we have some padding.
 					if ((!char.IsWhiteSpace(updatedChar)) && (hasOutline))
 					{
-						characterRange.Width = characterRange.Width + _fontInfo.OutlineSize * 3;
-						characterRange.Height = characterRange.Height + _fontInfo.OutlineSize * 3;
+						characterRange.Width = characterRange.Width + (_fontInfo.OutlineSize * 3);
+						characterRange.Height = characterRange.Height + (_fontInfo.OutlineSize * 3);
 					}
 					else
 					{

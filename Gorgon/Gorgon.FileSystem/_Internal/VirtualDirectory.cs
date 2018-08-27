@@ -165,43 +165,37 @@ namespace Gorgon.IO
 			}
 		}
 
-		/// <summary>
-		/// Function to retrieve the total number of directories in this directory including any directories under this one.
-		/// </summary>
-		/// <returns>The total number of directories.</returns>
-		/// <remarks>
-		/// Use this to retrieve the total number of <see cref="IGorgonVirtualDirectory"/> entries under this directory. This search includes all sub directories for this and child directories. To get 
-		/// the count of the immediate subdirectories, use the <see cref="IReadOnlyCollection{T}.Count"/> property on the <see cref="IGorgonVirtualDirectory.Directories"/> property.
-		/// </remarks>
-		public int GetDirectoryCount()
-		{
-			return Directories.Count == 0 ? 0 : GorgonFileSystem.FlattenDirectoryHierarchy(this, "*").Count();
-		}
+        /// <summary>
+        /// Function to retrieve the total number of directories in this directory including any directories under this one.
+        /// </summary>
+        /// <returns>The total number of directories.</returns>
+        /// <remarks>
+        /// Use this to retrieve the total number of <see cref="IGorgonVirtualDirectory"/> entries under this directory. This search includes all sub directories for this and child directories. To get 
+        /// the count of the immediate subdirectories, use the <see cref="IReadOnlyCollection{T}.Count"/> property on the <see cref="IGorgonVirtualDirectory.Directories"/> property.
+        /// </remarks>
+        public int GetDirectoryCount() => Directories.Count == 0 ? 0 : GorgonFileSystem.FlattenDirectoryHierarchy(this, "*").Count();
 
-		/// <summary>
-		/// Function to retrieve the total number of files in this directory and any directories under this one.
-		/// </summary>
-		/// <returns>The total number of files.</returns>
-		/// <remarks>
-		/// Use this to retrieve the total number of <see cref="IGorgonVirtualFile"/> entries under this directory. This search includes all sub directories for this and child directories. To get 
-		/// the count of the immediate files, use the <see cref="IReadOnlyCollection{T}.Count"/> property on the <see cref="IGorgonVirtualDirectory.Files"/> property.
-		/// </remarks>
-		public int GetFileCount()
-		{
-			return GorgonFileSystem.FlattenDirectoryHierarchy(this, "*").Sum(item => item.Files.Count) + Files.Count;
-		}
+        /// <summary>
+        /// Function to retrieve the total number of files in this directory and any directories under this one.
+        /// </summary>
+        /// <returns>The total number of files.</returns>
+        /// <remarks>
+        /// Use this to retrieve the total number of <see cref="IGorgonVirtualFile"/> entries under this directory. This search includes all sub directories for this and child directories. To get 
+        /// the count of the immediate files, use the <see cref="IReadOnlyCollection{T}.Count"/> property on the <see cref="IGorgonVirtualDirectory.Files"/> property.
+        /// </remarks>
+        public int GetFileCount() => GorgonFileSystem.FlattenDirectoryHierarchy(this, "*").Sum(item => item.Files.Count) + Files.Count;
 
-		/// <summary>
-		/// Function to determine if this directory, or optionally, any of the sub directories contains the specified file.
-		/// </summary>
-		/// <param name="file">The <see cref="IGorgonVirtualFile"/> to search for.</param>
-		/// <returns><b>true</b> if found, <b>false</b> if not.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="file"/> parameter is <b>null</b>.</exception>
-		/// <remarks>
-		/// Use this to determine if a <see cref="IGorgonVirtualFile"/> exists under this directory or any of its sub directories. This search includes all sub directories for this and child directories. 
-		/// To determine if a file exists in the immediate directory, use the <see cref="IGorgonNamedObjectReadOnlyDictionary{T}.Contains"/> method.
-		/// </remarks>
-		public bool ContainsFile(IGorgonVirtualFile file)
+        /// <summary>
+        /// Function to determine if this directory, or optionally, any of the sub directories contains the specified file.
+        /// </summary>
+        /// <param name="file">The <see cref="IGorgonVirtualFile"/> to search for.</param>
+        /// <returns><b>true</b> if found, <b>false</b> if not.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="file"/> parameter is <b>null</b>.</exception>
+        /// <remarks>
+        /// Use this to determine if a <see cref="IGorgonVirtualFile"/> exists under this directory or any of its sub directories. This search includes all sub directories for this and child directories. 
+        /// To determine if a file exists in the immediate directory, use the <see cref="IGorgonNamedObjectReadOnlyDictionary{T}.Contains"/> method.
+        /// </remarks>
+        public bool ContainsFile(IGorgonVirtualFile file)
 		{
 			if (file == null)
 			{

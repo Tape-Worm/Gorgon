@@ -94,41 +94,38 @@ namespace Gorgon.Graphics.Fonts
 	    /// </para>
 	    /// </remarks>
 	    public GorgonFont DefaultFont => _defaultFont.Value;
-		#endregion
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to compare two <see cref="IGorgonFontInfo"/> types to determine equality.
-		/// </summary>
-		/// <param name="left">The left instance to compare.</param>
-		/// <param name="right">The right instance to compare.</param>
-		/// <returns><b>true</b> if the fonts are different, <b>false</b> if not.</returns>
-		private static bool IsFontDifferent(IGorgonFontInfo left, IGorgonFontInfo right)
-		{
-			return ((left.UseKerningPairs != right.UseKerningPairs)
-					|| (left.FontHeightMode != right.FontHeightMode)
-					|| (left.TextureWidth != right.TextureWidth)
-					|| (left.TextureHeight != right.TextureHeight)
-					|| (left.AntiAliasingMode != right.AntiAliasingMode)
-					|| (left.Brush != right.Brush)
-					|| (left.DefaultCharacter != right.DefaultCharacter)
-					|| (!string.Equals(left.FontFamilyName, right.FontFamilyName, StringComparison.CurrentCultureIgnoreCase))
-					|| (left.FontStyle != right.FontStyle)
-					|| (left.OutlineColor1 != right.OutlineColor1)
-					|| (left.OutlineColor2 != right.OutlineColor2)
-					|| (left.OutlineSize != right.OutlineSize)
-					|| (left.PackingSpacing != right.PackingSpacing)
-					|| (!left.Size.EqualsEpsilon(right.Size))
-					|| (!left.Characters.SequenceEqual(right.Characters)));
-		}
-		
-		/// <summary>
-		/// Function to register a font within the font cache.
-		/// </summary>
-		/// <param name="font">The font to register.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="font"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown if the <paramref name="font"/> is already registered in the factory cache.</exception>
-		internal void RegisterFont(GorgonFont font)
+        #region Methods.
+        /// <summary>
+        /// Function to compare two <see cref="IGorgonFontInfo"/> types to determine equality.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        /// <returns><b>true</b> if the fonts are different, <b>false</b> if not.</returns>
+        private static bool IsFontDifferent(IGorgonFontInfo left, IGorgonFontInfo right) => ((left.UseKerningPairs != right.UseKerningPairs)
+                    || (left.FontHeightMode != right.FontHeightMode)
+                    || (left.TextureWidth != right.TextureWidth)
+                    || (left.TextureHeight != right.TextureHeight)
+                    || (left.AntiAliasingMode != right.AntiAliasingMode)
+                    || (left.Brush != right.Brush)
+                    || (left.DefaultCharacter != right.DefaultCharacter)
+                    || (!string.Equals(left.FontFamilyName, right.FontFamilyName, StringComparison.CurrentCultureIgnoreCase))
+                    || (left.FontStyle != right.FontStyle)
+                    || (left.OutlineColor1 != right.OutlineColor1)
+                    || (left.OutlineColor2 != right.OutlineColor2)
+                    || (left.OutlineSize != right.OutlineSize)
+                    || (left.PackingSpacing != right.PackingSpacing)
+                    || (!left.Size.EqualsEpsilon(right.Size))
+                    || (!left.Characters.SequenceEqual(right.Characters)));
+
+        /// <summary>
+        /// Function to register a font within the font cache.
+        /// </summary>
+        /// <param name="font">The font to register.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="font"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentException">Thrown if the <paramref name="font"/> is already registered in the factory cache.</exception>
+        internal void RegisterFont(GorgonFont font)
 		{
 			if (font == null)
 			{

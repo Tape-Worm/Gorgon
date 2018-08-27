@@ -575,25 +575,22 @@ namespace Gorgon.Graphics.Fonts.Codecs
 			return glyphs;
 		}
 
-		/// <summary>
-		/// Function to write the font data to the stream.
-		/// </summary>
-		/// <param name="fontData">The font data to write.</param>
-		/// <param name="stream">The stream to write into.</param>
-		/// <exception cref="NotSupportedException">This operation is not supported by this codec.</exception>
-		protected override void OnWriteFontData(GorgonFont fontData, Stream stream)
-		{
-			throw new NotSupportedException();
-		}
+        /// <summary>
+        /// Function to write the font data to the stream.
+        /// </summary>
+        /// <param name="fontData">The font data to write.</param>
+        /// <param name="stream">The stream to write into.</param>
+        /// <exception cref="NotSupportedException">This operation is not supported by this codec.</exception>
+        protected override void OnWriteFontData(GorgonFont fontData, Stream stream) => throw new NotSupportedException();
 
-		/// <summary>
-		/// Function to read the meta data for font data within a stream.
-		/// </summary>
-		/// <param name="stream">The stream containing the metadata to read.</param>
-		/// <returns>
-		/// The font meta data as a <see cref="IGorgonFontInfo"/> value.
-		/// </returns>
-		protected override IGorgonFontInfo OnGetMetaData(Stream stream)
+        /// <summary>
+        /// Function to read the meta data for font data within a stream.
+        /// </summary>
+        /// <param name="stream">The stream containing the metadata to read.</param>
+        /// <returns>
+        /// The font meta data as a <see cref="IGorgonFontInfo"/> value.
+        /// </returns>
+        protected override IGorgonFontInfo OnGetMetaData(Stream stream)
 		{
 			using (var reader = new StreamReader(stream, Encoding.ASCII, true, 80000, true))
 			{
@@ -682,22 +679,19 @@ namespace Gorgon.Graphics.Fonts.Codecs
 				stream.Position = position;
 			}
 		}
-		#endregion
+        #endregion
 
-		#region Constructor/Finalizer.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonCodecGorFont" /> class.
-		/// </summary>
-		/// <param name="factory">The font factory that holds cached font information.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="factory"/> parameter is <b>null</b>.</exception>
-		public GorgonCodecBmFont(GorgonFontFactory factory)
-			: base(factory)
-		{
-			CodecCommonExtensions = new[]
-			                        {
-				                        ".fnt"
-			                        };
-		}
-		#endregion
-	}
+        #region Constructor/Finalizer.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonCodecGorFont" /> class.
+        /// </summary>
+        /// <param name="factory">The font factory that holds cached font information.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="factory"/> parameter is <b>null</b>.</exception>
+        public GorgonCodecBmFont(GorgonFontFactory factory)
+            : base(factory) => CodecCommonExtensions = new[]
+                                    {
+                                        ".fnt"
+                                    };
+        #endregion
+    }
 }

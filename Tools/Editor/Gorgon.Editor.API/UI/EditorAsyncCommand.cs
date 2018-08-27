@@ -44,6 +44,10 @@ namespace Gorgon.Editor.UI
         private readonly Func<T, bool> _canExecute;
         // Action called to execute the function.
         private readonly Func<T, Task> _execute;
+        // Function called to determine if a command can be executed or not.
+        private readonly Func<bool> _canExecuteNoArgs;
+        // Action called to execute the function.
+        private readonly Func<Task> _executeNoArgs;
         #endregion
 
         #region Methods.
@@ -51,10 +55,7 @@ namespace Gorgon.Editor.UI
         /// Function to execute the command.
         /// </summary>
         /// <param name="args">The arguments to pass to the command.</param>
-        public async void Execute(T args)
-        {
-            await ExecuteAsync(args);
-        }
+        public async void Execute(T args) => await ExecuteAsync(args);
 
         /// <summary>
         /// Function to execute the command.
@@ -62,7 +63,12 @@ namespace Gorgon.Editor.UI
         /// <param name="args">The arguments to pass to the command.</param>
         public Task ExecuteAsync(T args)
         {
-            return _execute(args);
+            if (_execute != null)
+            {
+                return _execute(args);
+            }
+
+            return _executeNoArgs();
         }
 
         /// <summary>
@@ -72,7 +78,17 @@ namespace Gorgon.Editor.UI
         /// <returns><b>true</b> if the command can be executed, <b>false</b> if not.</returns>
         public bool CanExecute(T args)
         {
-            return (_canExecute == null) || (_canExecute(args));
+            if ((_canExecute == null) && (_canExecuteNoArgs == null))
+            {
+                return true;
+            }
+
+            if (_canExecute != null)
+            {
+                return _canExecute(args);
+            }
+
+            return _canExecuteNoArgs();
         }
         #endregion
 
@@ -87,6 +103,18 @@ namespace Gorgon.Editor.UI
         {
             _execute = execute ?? throw new ArgumentNullException(nameof(execute));
             _canExecute = canExecute;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EditorCommand{T}"/> class.
+        /// </summary>
+        /// <param name="execute">The method to execute when the command is executed.</param>
+        /// <param name="canExecute">The method used to determine if the command can execute.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="execute"/> parameter is <b>null</b>.</exception>
+        public EditorAsyncCommand(Func<Task> execute, Func<bool> canExecute = null)
+        {
+            _executeNoArgs = execute ?? throw new ArgumentNullException(nameof(execute));
+            _canExecuteNoArgs = canExecute;
         }
         #endregion
 

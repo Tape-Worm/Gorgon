@@ -38,21 +38,18 @@ namespace GorgonTriangulator
 			return oddNodes;
 		}
 
-		public static bool ContainsPoint(Vertex a, Vertex b, Vertex c, Vertex point)
-		{
-			return new Triangle(a, b, c).ContainsPoint(point);
-		}
+        public static bool ContainsPoint(Vertex a, Vertex b, Vertex c, Vertex point) => new Triangle(a, b, c).ContainsPoint(point);
 
-	    private static bool CheckPointToSegment(Vertex sA, Vertex sB, Vertex point)
+        private static bool CheckPointToSegment(Vertex sA, Vertex sB, Vertex point)
 		{
 			if ((sA.Position.Y < point.Position.Y && sB.Position.Y >= point.Position.Y) ||
 				(sB.Position.Y < point.Position.Y && sA.Position.Y >= point.Position.Y))
 			{
 				float x = 
 					sA.Position.X + 
-					(point.Position.Y - sA.Position.Y) / 
+					((point.Position.Y - sA.Position.Y) / 
 					(sB.Position.Y - sA.Position.Y) * 
-					(sB.Position.X - sA.Position.X);
+					(sB.Position.X - sA.Position.X));
 				
 				if (x < point.Position.X)
 					return true;
@@ -61,19 +58,13 @@ namespace GorgonTriangulator
 			return false;
 		}
 
-		public override bool Equals(object obj)
-		{
-		    return obj is Triangle triangle ? Equals(triangle) : base.Equals(obj);
-		}
+        public override bool Equals(object obj) => obj is Triangle triangle ? Equals(triangle) : base.Equals(obj);
 
-		public bool Equals(Triangle obj)
-		{
-		    // ReSharper disable ImpureMethodCallOnReadonlyValueField
-		    return obj.A.Equals(A) && obj.B.Equals(B) && obj.C.Equals(C);
-		    // ReSharper restore ImpureMethodCallOnReadonlyValueField
-		}
+        public bool Equals(Triangle obj) =>
+            // ReSharper disable ImpureMethodCallOnReadonlyValueField
+            obj.A.Equals(A) && obj.B.Equals(B) && obj.C.Equals(C);// ReSharper restore ImpureMethodCallOnReadonlyValueField
 
-		public override int GetHashCode()
+        public override int GetHashCode()
 		{
 			unchecked
 			{

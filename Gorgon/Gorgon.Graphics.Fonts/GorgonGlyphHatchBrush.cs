@@ -357,19 +357,16 @@ namespace Gorgon.Graphics.Fonts
 			get;
 			set;
 		}
-		#endregion
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to convert this brush to the equivalent GDI+ brush type.
-		/// </summary>
-		/// <returns>
-		/// The GDI+ brush type for this object.
-		/// </returns>
-		internal override Brush ToGDIBrush()
-		{
-			return new HatchBrush((HatchStyle)HatchStyle, ForegroundColor, BackgroundColor);
-		}
-		#endregion
-	}
+        #region Methods.
+        /// <summary>
+        /// Function to convert this brush to the equivalent GDI+ brush type.
+        /// </summary>
+        /// <returns>
+        /// The GDI+ brush type for this object.
+        /// </returns>
+        internal override Brush ToGDIBrush() => new HatchBrush((HatchStyle)HatchStyle, ForegroundColor, BackgroundColor);
+        #endregion
+    }
 }

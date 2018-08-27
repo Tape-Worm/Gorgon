@@ -96,53 +96,41 @@ namespace Gorgon.Collections
 			_list[value.Name] = value;
 		}
 
-	    /// <summary>
-		/// Function to remove an item from the collection.
-		/// </summary>
-		/// <param name="item">Item to remove.</param>
-		protected void RemoveItem(T item)
-	    {
-		    _list.Remove(item.Name);
-		}
+        /// <summary>
+        /// Function to remove an item from the collection.
+        /// </summary>
+        /// <param name="item">Item to remove.</param>
+        protected void RemoveItem(T item) => _list.Remove(item.Name);
 
-		/// <summary>
-		/// Function to return whether an item with the specified name exists in this collection.
-		/// </summary>
-		/// <param name="name">Name of the item to find.</param>
-		/// <returns><b>true</b> if found, <b>false</b> if not.</returns>
-		public bool Contains(string name)
-		{
-			return _list.ContainsKey(name);
-		}
+        /// <summary>
+        /// Function to return whether an item with the specified name exists in this collection.
+        /// </summary>
+        /// <param name="name">Name of the item to find.</param>
+        /// <returns><b>true</b> if found, <b>false</b> if not.</returns>
+        public bool Contains(string name) => _list.ContainsKey(name);
 
-		/// <summary>
-		/// Function to return whether the specified object exists in the collection.
-		/// </summary>
-		/// <param name="value">The value to find.</param>
-		/// <returns><b>true</b> if found, <b>false</b> if not.</returns>
-		public bool Contains(T value)
-		{
-			return _list.ContainsValue(value);
-		}
+        /// <summary>
+        /// Function to return whether the specified object exists in the collection.
+        /// </summary>
+        /// <param name="value">The value to find.</param>
+        /// <returns><b>true</b> if found, <b>false</b> if not.</returns>
+        public bool Contains(T value) => _list.ContainsValue(value);
 
-		/// <summary>
-		/// Function to return an item from the collection.
-		/// </summary>
-		/// <param name="name">The name of the item to look up.</param>
-		/// <param name="value">The item, if found, or the default value for the type if not.</param>
-		/// <returns><b>true</b> if the item was found, <b>false</b> if not.</returns>
-		public bool TryGetValue(string name, out T value)
-		{
-			return _list.TryGetValue(name, out value);
-		}
-		#endregion
+        /// <summary>
+        /// Function to return an item from the collection.
+        /// </summary>
+        /// <param name="name">The name of the item to look up.</param>
+        /// <param name="value">The item, if found, or the default value for the type if not.</param>
+        /// <returns><b>true</b> if the item was found, <b>false</b> if not.</returns>
+        public bool TryGetValue(string name, out T value) => _list.TryGetValue(name, out value);
+        #endregion
 
-		#region Constructor
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonBaseNamedObjectDictionary{T}"/> class.
-		/// </summary>
-		/// <param name="caseSensitive"><b>true</b> if the key names are case sensitive, <b>false</b> if not.</param>
-		protected GorgonBaseNamedObjectDictionary(bool caseSensitive)
+        #region Constructor
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonBaseNamedObjectDictionary{T}"/> class.
+        /// </summary>
+        /// <param name="caseSensitive"><b>true</b> if the key names are case sensitive, <b>false</b> if not.</param>
+        protected GorgonBaseNamedObjectDictionary(bool caseSensitive)
 		{
 		    _list = new Dictionary<string, T>(caseSensitive ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase);
 		    KeysAreCaseSensitive = caseSensitive;
@@ -198,56 +186,47 @@ namespace Gorgon.Collections
 		/// </summary>
 		bool ICollection<T>.IsReadOnly => false;
 
-		/// <summary>
-		/// Adds an item to the dictionary.
-		/// </summary>
-		/// <param name="item">The object to add to the dictionary.</param>
-		void ICollection<T>.Add(T item)
-		{
-			_list.Add(item?.Name ?? string.Empty, item);
-		}
+        /// <summary>
+        /// Adds an item to the dictionary.
+        /// </summary>
+        /// <param name="item">The object to add to the dictionary.</param>
+        void ICollection<T>.Add(T item) => _list.Add(item?.Name ?? string.Empty, item);
 
-		/// <summary>
-		/// Removes all items from the dictionary.
-		/// </summary>
-		void ICollection<T>.Clear()
-		{
-			_list.Clear();
-		}
+        /// <summary>
+        /// Removes all items from the dictionary.
+        /// </summary>
+        void ICollection<T>.Clear() => _list.Clear();
 
-		/// <summary>
-		/// Copies the elements of the dictionary to an <see cref="T:System.Array"/>, starting at a particular <see cref="T:System.Array"/> index.
-		/// </summary>
-		/// <param name="array">The one-dimensional <see cref="T:System.Array"/> that is the destination of the elements copied from dictionary. The <see cref="T:System.Array"/> must have zero-based indexing.</param>
-		/// <param name="arrayIndex">The zero-based index in <paramref name="array"/> at which copying begins.</param>
-		/// <exception cref="T:System.ArgumentNullException">
-		/// 	<paramref name="array"/> is null.
-		/// </exception>
-		/// <exception cref="T:System.ArgumentOutOfRangeException">
-		/// 	<paramref name="arrayIndex"/> is less than 0.
-		/// </exception>
-		/// <exception cref="T:System.ArgumentException">
-		/// 	<paramref name="array"/> is multidimensional.
-		/// -or-
-		/// <paramref name="arrayIndex"/> is equal to or greater than the length of <paramref name="array"/>.
-		/// -or-
-		/// The number of elements in the source dictionary is greater than the available space from <paramref name="arrayIndex"/> to the end of the destination <paramref name="array"/>.
-		/// -or-
-		/// Type <paramref name="array"/> cannot be cast automatically to the type of the destination <paramref name="array"/>.
-		/// </exception>
-		public void CopyTo(T[] array, int arrayIndex)
-		{
-			_list.Values.CopyTo(array, arrayIndex);
-		}
+        /// <summary>
+        /// Copies the elements of the dictionary to an <see cref="T:System.Array"/>, starting at a particular <see cref="T:System.Array"/> index.
+        /// </summary>
+        /// <param name="array">The one-dimensional <see cref="T:System.Array"/> that is the destination of the elements copied from dictionary. The <see cref="T:System.Array"/> must have zero-based indexing.</param>
+        /// <param name="arrayIndex">The zero-based index in <paramref name="array"/> at which copying begins.</param>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// 	<paramref name="array"/> is null.
+        /// </exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        /// 	<paramref name="arrayIndex"/> is less than 0.
+        /// </exception>
+        /// <exception cref="T:System.ArgumentException">
+        /// 	<paramref name="array"/> is multidimensional.
+        /// -or-
+        /// <paramref name="arrayIndex"/> is equal to or greater than the length of <paramref name="array"/>.
+        /// -or-
+        /// The number of elements in the source dictionary is greater than the available space from <paramref name="arrayIndex"/> to the end of the destination <paramref name="array"/>.
+        /// -or-
+        /// Type <paramref name="array"/> cannot be cast automatically to the type of the destination <paramref name="array"/>.
+        /// </exception>
+        public void CopyTo(T[] array, int arrayIndex) => _list.Values.CopyTo(array, arrayIndex);
 
-		/// <summary>
-		/// Removes the first occurrence of a specific object from the dictionary.
-		/// </summary>
-		/// <param name="item">The object to remove from the dictionary.</param>
-		/// <returns>
-		/// true if <paramref name="item" /> was successfully removed from the dictionary; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original dictionary.
-		/// </returns>
-		bool ICollection<T>.Remove(T item)
+        /// <summary>
+        /// Removes the first occurrence of a specific object from the dictionary.
+        /// </summary>
+        /// <param name="item">The object to remove from the dictionary.</param>
+        /// <returns>
+        /// true if <paramref name="item" /> was successfully removed from the dictionary; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original dictionary.
+        /// </returns>
+        bool ICollection<T>.Remove(T item)
 		{
 			if (!Contains(item))
 			{

@@ -67,9 +67,6 @@ namespace Gorgon.Renderers
         /// <param name="obj">The object for which to get a hash code.</param>
         /// <returns>A hash code for the specified object.</returns>
         /// <exception cref="T:System.ArgumentNullException">The type of <paramref name="obj" /> is a reference type and <paramref name="obj" /> is <see langword="null" />.</exception>
-        public override int GetHashCode(BatchRenderable obj)
-        {
-            return obj == null ? 0 : 281.GenerateHash(obj.Texture).GenerateHash(obj.TextureSampler).GenerateHash(obj.AlphaTestData);
-        }
+        public override int GetHashCode(BatchRenderable obj) => obj == null ? 0 : 281.GenerateHash(obj.Texture).GenerateHash(obj.TextureSampler).GenerateHash(obj.AlphaTestData);
     }
 }

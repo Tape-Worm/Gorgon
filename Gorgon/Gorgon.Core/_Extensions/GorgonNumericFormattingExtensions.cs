@@ -36,56 +36,50 @@ namespace Gorgon.Core
 	/// </summary>
 	public static class GorgonNumericFormattingExtension
 	{
-		#region Methods.
+        #region Methods.
         /// <summary>
         /// FUnction to return a string formatted to the current culture.
         /// </summary>
         /// <param name="value">Value to format.</param>
         /// <param name="sizeType">Size value to use.</param>
         /// <returns>The string formatted to the current UI culture.</returns>
-        private static string GetCultureString(double value, string sizeType)
-        {
-            return string.Format(CultureInfo.CurrentCulture, "{0:0.0} {1}", value, sizeType);
-        }
+        private static string GetCultureString(double value, string sizeType) => string.Format(CultureInfo.CurrentCulture, "{0:0.0#} {1}", value, sizeType);
 
-		/// <summary>
-		/// Function to return a formatted string containing the memory amount.
-		/// </summary>
-		/// <param name="amount">Amount of memory in bytes to format.</param>
-		/// <returns>A string containing the formatted amount of memory in bytes.</returns>
-		/// <remarks>
-		/// This will produce a string value with the number of bytes, suffixed with the word 'bytes'.
-		/// <code language="csharp">
-		/// byte bytes = 128;
-		/// 
-		/// Console.WriteLine(bytes.FormatMemory());
-		/// 
-		/// // Produces: "128 bytes".
-		/// </code>
-		/// </remarks>
-		public static string FormatMemory(this byte amount)
-		{
-		    return GetCultureString(amount, Resources.GOR_UNIT_MEM_BYTES);
-		}
+        /// <summary>
+        /// Function to return a formatted string containing the memory amount.
+        /// </summary>
+        /// <param name="amount">Amount of memory in bytes to format.</param>
+        /// <returns>A string containing the formatted amount of memory in bytes.</returns>
+        /// <remarks>
+        /// This will produce a string value with the number of bytes, suffixed with the word 'bytes'.
+        /// <code language="csharp">
+        /// byte bytes = 128;
+        /// 
+        /// Console.WriteLine(bytes.FormatMemory());
+        /// 
+        /// // Produces: "128 bytes".
+        /// </code>
+        /// </remarks>
+        public static string FormatMemory(this byte amount) => GetCultureString(amount, Resources.GOR_UNIT_MEM_BYTES);
 
-		/// <summary>
-		/// Function to return a formatted string containing the memory amount.
-		/// </summary>
-		/// <param name="amount">Amount of memory in bytes to format.</param>
-		/// <returns>A string containing the formatted amount of memory in kilobytes.</returns>
-		/// <remarks>
-		/// This will produce a string value with the number of bytes suffixed with the word 'bytes' if less than 1023, or the number of kilobytes suffixed with the abbreviation 'KB' if the value is above 1023.
-		/// <code language="csharp">
-		/// short bytes = 999;
-		/// short kilobytes = 2048;
-		/// 
-		/// Console.WriteLine(bytes.FormatMemory());
-		/// Console.WriteLine(kilobytes.FormatMemory());
-		/// 
-		/// // Produces: "128 bytes" and "2.0 KB".
-		/// </code>
-		/// </remarks>
-		public static string FormatMemory(this short amount)
+        /// <summary>
+        /// Function to return a formatted string containing the memory amount.
+        /// </summary>
+        /// <param name="amount">Amount of memory in bytes to format.</param>
+        /// <returns>A string containing the formatted amount of memory in kilobytes.</returns>
+        /// <remarks>
+        /// This will produce a string value with the number of bytes suffixed with the word 'bytes' if less than 1023, or the number of kilobytes suffixed with the abbreviation 'KB' if the value is above 1023.
+        /// <code language="csharp">
+        /// short bytes = 999;
+        /// short kilobytes = 2048;
+        /// 
+        /// Console.WriteLine(bytes.FormatMemory());
+        /// Console.WriteLine(kilobytes.FormatMemory());
+        /// 
+        /// // Produces: "128 bytes" and "2.0 KB".
+        /// </code>
+        /// </remarks>
+        public static string FormatMemory(this short amount)
 		{
 		    double scale = amount.Abs() / 1024.0;
 
@@ -431,208 +425,184 @@ namespace Gorgon.Core
             return GetCultureString(scale >= 1.0 ? scale : amount, scale >= 1.0 ? Resources.GOR_UNIT_MEM_KB : Resources.GOR_UNIT_MEM_BYTES);
         }
 
-		/// <summary>
-		/// Function to format a byte value into a hexadecimal string.
-		/// </summary>
-		/// <param name="value">Byte value to format.</param>
-		/// <returns>The formatted byte value.</returns>
-		/// <remarks>
-		/// This will return a string with the number formatted as a hexadecimal number. This number will be padded with zeroes that represent the size of the type. For example:
-		/// <code language="csharp">
-		/// byte hexValue = 15;
-		/// 
-		/// Console.WriteLine(hexValue.FormatHex()); // Produces "0F"
-		/// 
-		/// int hexValueInt = 127;
-		/// 
-		/// Console.WriteLine(hexValueInt.FormatHex()); // Produces "007F".
-		/// 
-		/// short hexValueShort = 1023;
-		/// 
-		/// Console.WriteLine(hexValueShort.FormatHex()); // Produces "03FF".
-		/// </code>
-		/// </remarks>
-		public static string FormatHex(this byte value)
-		{
-			return value.ToString("x").PadLeft(2, '0');
-		}
+        /// <summary>
+        /// Function to format a byte value into a hexadecimal string.
+        /// </summary>
+        /// <param name="value">Byte value to format.</param>
+        /// <returns>The formatted byte value.</returns>
+        /// <remarks>
+        /// This will return a string with the number formatted as a hexadecimal number. This number will be padded with zeroes that represent the size of the type. For example:
+        /// <code language="csharp">
+        /// byte hexValue = 15;
+        /// 
+        /// Console.WriteLine(hexValue.FormatHex()); // Produces "0F"
+        /// 
+        /// int hexValueInt = 127;
+        /// 
+        /// Console.WriteLine(hexValueInt.FormatHex()); // Produces "007F".
+        /// 
+        /// short hexValueShort = 1023;
+        /// 
+        /// Console.WriteLine(hexValueShort.FormatHex()); // Produces "03FF".
+        /// </code>
+        /// </remarks>
+        public static string FormatHex(this byte value) => value.ToString("x").PadLeft(2, '0');
 
-		/// <summary>
-		/// Function to format a short value into a hexadecimal string.
-		/// </summary>
-		/// <param name="value">Short value to format.</param>
-		/// <returns>The formatted short value.</returns>
-		/// <remarks>
-		/// This will return a string with the number formatted as a hexadecimal number. This number will be padded with zeroes that represent the size of the type. For example:
-		/// <code language="csharp">
-		/// byte hexValue = 15;
-		/// 
-		/// Console.WriteLine(hexValue.FormatHex()); // Produces "0F"
-		/// 
-		/// int hexValueInt = 127;
-		/// 
-		/// Console.WriteLine(hexValueInt.FormatHex()); // Produces "007F".
-		/// 
-		/// short hexValueShort = 1023;
-		/// 
-		/// Console.WriteLine(hexValueShort.FormatHex()); // Produces "03FF".
-		/// </code>
-		/// </remarks>
-		public static string FormatHex(this short value)
-		{
-			return value.ToString("x").PadLeft(4, '0');
-		}
+        /// <summary>
+        /// Function to format a short value into a hexadecimal string.
+        /// </summary>
+        /// <param name="value">Short value to format.</param>
+        /// <returns>The formatted short value.</returns>
+        /// <remarks>
+        /// This will return a string with the number formatted as a hexadecimal number. This number will be padded with zeroes that represent the size of the type. For example:
+        /// <code language="csharp">
+        /// byte hexValue = 15;
+        /// 
+        /// Console.WriteLine(hexValue.FormatHex()); // Produces "0F"
+        /// 
+        /// int hexValueInt = 127;
+        /// 
+        /// Console.WriteLine(hexValueInt.FormatHex()); // Produces "007F".
+        /// 
+        /// short hexValueShort = 1023;
+        /// 
+        /// Console.WriteLine(hexValueShort.FormatHex()); // Produces "03FF".
+        /// </code>
+        /// </remarks>
+        public static string FormatHex(this short value) => value.ToString("x").PadLeft(4, '0');
 
-		/// <summary>
-		/// Function to format an unsigned short value into a hexadecimal string.
-		/// </summary>
-		/// <param name="value">Unsigned short value to format.</param>
-		/// <returns>The formatted unsigned short value.</returns>
-		/// <remarks>
-		/// This will return a string with the number formatted as a hexadecimal number. This number will be padded with zeroes that represent the size of the type. For example:
-		/// <code language="csharp">
-		/// byte hexValue = 15;
-		/// 
-		/// Console.WriteLine(hexValue.FormatHex()); // Produces "0F"
-		/// 
-		/// int hexValueInt = 127;
-		/// 
-		/// Console.WriteLine(hexValueInt.FormatHex()); // Produces "007F".
-		/// 
-		/// short hexValueShort = 1023;
-		/// 
-		/// Console.WriteLine(hexValueShort.FormatHex()); // Produces "03FF".
-		/// </code>
-		/// </remarks>
-		public static string FormatHex(this ushort value)
-		{
-			return value.ToString("x").PadLeft(4, '0');
-		}
+        /// <summary>
+        /// Function to format an unsigned short value into a hexadecimal string.
+        /// </summary>
+        /// <param name="value">Unsigned short value to format.</param>
+        /// <returns>The formatted unsigned short value.</returns>
+        /// <remarks>
+        /// This will return a string with the number formatted as a hexadecimal number. This number will be padded with zeroes that represent the size of the type. For example:
+        /// <code language="csharp">
+        /// byte hexValue = 15;
+        /// 
+        /// Console.WriteLine(hexValue.FormatHex()); // Produces "0F"
+        /// 
+        /// int hexValueInt = 127;
+        /// 
+        /// Console.WriteLine(hexValueInt.FormatHex()); // Produces "007F".
+        /// 
+        /// short hexValueShort = 1023;
+        /// 
+        /// Console.WriteLine(hexValueShort.FormatHex()); // Produces "03FF".
+        /// </code>
+        /// </remarks>
+        public static string FormatHex(this ushort value) => value.ToString("x").PadLeft(4, '0');
 
-		/// <summary>
-		/// Function to format an integer value into a hexadecimal string.
-		/// </summary>
-		/// <param name="value">Integer value to format.</param>
-		/// <returns>The formatted integer value.</returns>
-		/// <remarks>
-		/// This will return a string with the number formatted as a hexadecimal number. This number will be padded with zeroes that represent the size of the type. For example:
-		/// <code language="csharp">
-		/// byte hexValue = 15;
-		/// 
-		/// Console.WriteLine(hexValue.FormatHex()); // Produces "0F"
-		/// 
-		/// int hexValueInt = 127;
-		/// 
-		/// Console.WriteLine(hexValueInt.FormatHex()); // Produces "007F".
-		/// 
-		/// short hexValueShort = 1023;
-		/// 
-		/// Console.WriteLine(hexValueShort.FormatHex()); // Produces "03FF".
-		/// </code>
-		/// </remarks>
-		public static string FormatHex(this int value)
-		{
-			return value.ToString("x").PadLeft(8, '0');
-		}
+        /// <summary>
+        /// Function to format an integer value into a hexadecimal string.
+        /// </summary>
+        /// <param name="value">Integer value to format.</param>
+        /// <returns>The formatted integer value.</returns>
+        /// <remarks>
+        /// This will return a string with the number formatted as a hexadecimal number. This number will be padded with zeroes that represent the size of the type. For example:
+        /// <code language="csharp">
+        /// byte hexValue = 15;
+        /// 
+        /// Console.WriteLine(hexValue.FormatHex()); // Produces "0F"
+        /// 
+        /// int hexValueInt = 127;
+        /// 
+        /// Console.WriteLine(hexValueInt.FormatHex()); // Produces "007F".
+        /// 
+        /// short hexValueShort = 1023;
+        /// 
+        /// Console.WriteLine(hexValueShort.FormatHex()); // Produces "03FF".
+        /// </code>
+        /// </remarks>
+        public static string FormatHex(this int value) => value.ToString("x").PadLeft(8, '0');
 
-		/// <summary>
-		/// Function to format an unsigned integer value into a hexadecimal string.
-		/// </summary>
-		/// <param name="value">Unsigned integer value to format.</param>
-		/// <returns>The formatted unsigned integer value.</returns>
-		/// <remarks>
-		/// This will return a string with the number formatted as a hexadecimal number. This number will be padded with zeroes that represent the size of the type. For example:
-		/// <code language="csharp">
-		/// byte hexValue = 15;
-		/// 
-		/// Console.WriteLine(hexValue.FormatHex()); // Produces "0F"
-		/// 
-		/// int hexValueInt = 127;
-		/// 
-		/// Console.WriteLine(hexValueInt.FormatHex()); // Produces "007F".
-		/// 
-		/// short hexValueShort = 1023;
-		/// 
-		/// Console.WriteLine(hexValueShort.FormatHex()); // Produces "03FF".
-		/// </code>
-		/// </remarks>
-		public static string FormatHex(this uint value)
-		{
-			return value.ToString("x").PadLeft(8, '0');
-		}
+        /// <summary>
+        /// Function to format an unsigned integer value into a hexadecimal string.
+        /// </summary>
+        /// <param name="value">Unsigned integer value to format.</param>
+        /// <returns>The formatted unsigned integer value.</returns>
+        /// <remarks>
+        /// This will return a string with the number formatted as a hexadecimal number. This number will be padded with zeroes that represent the size of the type. For example:
+        /// <code language="csharp">
+        /// byte hexValue = 15;
+        /// 
+        /// Console.WriteLine(hexValue.FormatHex()); // Produces "0F"
+        /// 
+        /// int hexValueInt = 127;
+        /// 
+        /// Console.WriteLine(hexValueInt.FormatHex()); // Produces "007F".
+        /// 
+        /// short hexValueShort = 1023;
+        /// 
+        /// Console.WriteLine(hexValueShort.FormatHex()); // Produces "03FF".
+        /// </code>
+        /// </remarks>
+        public static string FormatHex(this uint value) => value.ToString("x").PadLeft(8, '0');
 
-		/// <summary>
-		/// Function to format a long value into a hexadecimal string.
-		/// </summary>
-		/// <param name="value">Long value to format.</param>
-		/// <returns>The formatted long value.</returns>
-		/// <remarks>
-		/// This will return a string with the number formatted as a hexadecimal number. This number will be padded with zeroes that represent the size of the type. For example:
-		/// <code language="csharp">
-		/// byte hexValue = 15;
-		/// 
-		/// Console.WriteLine(hexValue.FormatHex()); // Produces "0F"
-		/// 
-		/// int hexValueInt = 127;
-		/// 
-		/// Console.WriteLine(hexValueInt.FormatHex()); // Produces "007F".
-		/// 
-		/// short hexValueShort = 1023;
-		/// 
-		/// Console.WriteLine(hexValueShort.FormatHex()); // Produces "03FF".
-		/// </code>
-		/// </remarks>
-		public static string FormatHex(this long value)
-		{
-			return value.ToString("x").PadLeft(16, '0');
-		}
+        /// <summary>
+        /// Function to format a long value into a hexadecimal string.
+        /// </summary>
+        /// <param name="value">Long value to format.</param>
+        /// <returns>The formatted long value.</returns>
+        /// <remarks>
+        /// This will return a string with the number formatted as a hexadecimal number. This number will be padded with zeroes that represent the size of the type. For example:
+        /// <code language="csharp">
+        /// byte hexValue = 15;
+        /// 
+        /// Console.WriteLine(hexValue.FormatHex()); // Produces "0F"
+        /// 
+        /// int hexValueInt = 127;
+        /// 
+        /// Console.WriteLine(hexValueInt.FormatHex()); // Produces "007F".
+        /// 
+        /// short hexValueShort = 1023;
+        /// 
+        /// Console.WriteLine(hexValueShort.FormatHex()); // Produces "03FF".
+        /// </code>
+        /// </remarks>
+        public static string FormatHex(this long value) => value.ToString("x").PadLeft(16, '0');
 
-		/// <summary>
-		/// Function to format an unsigned long value into a hexadecimal string.
-		/// </summary>
-		/// <param name="value">Unsigned long value to format.</param>
-		/// <returns>The formatted unsigned long value.</returns>
-		/// <remarks>
-		/// This will return a string with the number formatted as a hexadecimal number. This number will be padded with zeroes that represent the size of the type. For example:
-		/// <code language="csharp">
-		/// byte hexValue = 15;
-		/// 
-		/// Console.WriteLine(hexValue.FormatHex()); // Produces "0F"
-		/// 
-		/// int hexValueInt = 127;
-		/// 
-		/// Console.WriteLine(hexValueInt.FormatHex()); // Produces "007F".
-		/// 
-		/// short hexValueShort = 1023;
-		/// 
-		/// Console.WriteLine(hexValueShort.FormatHex()); // Produces "03FF".
-		/// </code>
-		/// </remarks>
-		public static string FormatHex(this ulong value)
-		{
-			return value.ToString("x").PadLeft(16, '0');
-		}
+        /// <summary>
+        /// Function to format an unsigned long value into a hexadecimal string.
+        /// </summary>
+        /// <param name="value">Unsigned long value to format.</param>
+        /// <returns>The formatted unsigned long value.</returns>
+        /// <remarks>
+        /// This will return a string with the number formatted as a hexadecimal number. This number will be padded with zeroes that represent the size of the type. For example:
+        /// <code language="csharp">
+        /// byte hexValue = 15;
+        /// 
+        /// Console.WriteLine(hexValue.FormatHex()); // Produces "0F"
+        /// 
+        /// int hexValueInt = 127;
+        /// 
+        /// Console.WriteLine(hexValueInt.FormatHex()); // Produces "007F".
+        /// 
+        /// short hexValueShort = 1023;
+        /// 
+        /// Console.WriteLine(hexValueShort.FormatHex()); // Produces "03FF".
+        /// </code>
+        /// </remarks>
+        public static string FormatHex(this ulong value) => value.ToString("x").PadLeft(16, '0');
 
-		/// <summary>
-		/// Function to format a pointer (IntPtr) value into a hexadecimal string.
-		/// </summary>
-		/// <param name="pointer">Pointer to format.</param>
-		/// <returns>The formatted address of the pointer.</returns>
-		/// <remarks>
-		/// This will return a string with the number formatted as a hexadecimal number. Like other overloads of this method, this will pad zeroes to the left of the value based on the size of the type, but unlike the 
-		/// other overloads, it will use the correct number of zeroes based on the platform (x64, x86).  For example:
-		/// <code language="csharp">
-		/// IntPtr hexValue = new IntPtr(122388812);
-		/// 
-		/// Console.WriteLine(hexValue.FormatHex()); // Produces "074B814C" for x86, and "00000000074B814C" for x64
-		/// </code>
-		/// </remarks>
-		public static string FormatHex(this IntPtr pointer)
-		{
-		    return Environment.Is64BitProcess
-		               ? pointer.ToInt64().ToString("x").PadLeft(16, '0')
-		               : pointer.ToInt32().ToString("x").PadLeft(8, '0');
-		}
-	    #endregion
-	}
+        /// <summary>
+        /// Function to format a pointer (IntPtr) value into a hexadecimal string.
+        /// </summary>
+        /// <param name="pointer">Pointer to format.</param>
+        /// <returns>The formatted address of the pointer.</returns>
+        /// <remarks>
+        /// This will return a string with the number formatted as a hexadecimal number. Like other overloads of this method, this will pad zeroes to the left of the value based on the size of the type, but unlike the 
+        /// other overloads, it will use the correct number of zeroes based on the platform (x64, x86).  For example:
+        /// <code language="csharp">
+        /// IntPtr hexValue = new IntPtr(122388812);
+        /// 
+        /// Console.WriteLine(hexValue.FormatHex()); // Produces "074B814C" for x86, and "00000000074B814C" for x64
+        /// </code>
+        /// </remarks>
+        public static string FormatHex(this IntPtr pointer) => Environment.Is64BitProcess
+                       ? pointer.ToInt64().ToString("x").PadLeft(16, '0')
+                       : pointer.ToInt32().ToString("x").PadLeft(8, '0');
+        #endregion
+    }
 }

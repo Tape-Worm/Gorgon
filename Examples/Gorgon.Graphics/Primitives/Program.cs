@@ -124,7 +124,7 @@ namespace Gorgon.Examples
 		        _objRotation -= 359.9f;
 		    }
 
-            _triangle.Material.TextureOffset = new DX.Vector2(0, _triangle.Material.TextureOffset.Y - 0.125f * GorgonTiming.Delta);
+            _triangle.Material.TextureOffset = new DX.Vector2(0, _triangle.Material.TextureOffset.Y - (0.125f * GorgonTiming.Delta));
 
 			if (_triangle.Material.TextureOffset.Y < 0.0f)
 			{

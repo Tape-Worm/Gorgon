@@ -59,19 +59,16 @@ namespace Gorgon.Examples
 			}
 		}
 
-		/// <summary>
-		/// Function to throw the outer exception.
-		/// </summary>
-		/// <param name="inner">Inner exception.</param>
-		private static void OuterException(Exception inner)
-		{
-			throw inner.Repackage("This will be the outer exception.\n\nLook at the 'Details' to see the full exception stack.");
-		}
+        /// <summary>
+        /// Function to throw the outer exception.
+        /// </summary>
+        /// <param name="inner">Inner exception.</param>
+        private static void OuterException(Exception inner) => throw inner.Repackage("This will be the outer exception.\n\nLook at the 'Details' to see the full exception stack.");
 
-		/// <summary>
-		/// Function to display information about the computer.
-		/// </summary>
-		public static void DisplaySystemInfo()
+        /// <summary>
+        /// Function to display information about the computer.
+        /// </summary>
+        public static void DisplaySystemInfo()
 		{
 			Console.Clear();
 
@@ -136,19 +133,16 @@ namespace Gorgon.Examples
 			GorgonDialogs.InfoBox(null, infoMessage);
 		}
 
-		/// <summary>
-		/// Function to display the warning dialog.
-		/// </summary>
-		public static void DisplayWarning()
-		{
-			GorgonDialogs.WarningBox(null, "This is a warning!");
-		}
+        /// <summary>
+        /// Function to display the warning dialog.
+        /// </summary>
+        public static void DisplayWarning() => GorgonDialogs.WarningBox(null, "This is a warning!");
 
-		/// <summary>
-		/// Function to throw, catch and display exception information.
-		/// </summary>
-		/// <remarks>This will show how to </remarks>
-		public static void DisplayException()
+        /// <summary>
+        /// Function to throw, catch and display exception information.
+        /// </summary>
+        /// <remarks>This will show how to </remarks>
+        public static void DisplayException()
 		{
 			try
 			{

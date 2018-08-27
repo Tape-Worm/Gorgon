@@ -171,10 +171,7 @@ namespace Gorgon.Renderers
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/>, or the <paramref name="effect"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
         public Gorgon2DCompositionPass(string name, Gorgon2DEffect effect = null)
-            : base(name)
-        {
-            Effect = effect;
-        }
+            : base(name) => Effect = effect;
         #endregion
     }
 }

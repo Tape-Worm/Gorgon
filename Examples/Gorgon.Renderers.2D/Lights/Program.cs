@@ -255,7 +255,7 @@ namespace Gorgon.Examples
                                             LightType = LightType.Point,
                                             SpecularEnabled = true,
                                             SpecularPower = 5.0f,
-                                            Position = new DX.Vector3(_screen.Width / 2.0f - 150.0f, _screen.Height / 2.0f - 150.0f, 100)
+                                            Position = new DX.Vector3((_screen.Width / 2.0f) - 150.0f, (_screen.Height / 2.0f) - 150.0f, 100)
                                         });
                 _lightEffect.Lights.Add(new Gorgon2DLight
                                         {
@@ -319,10 +319,7 @@ namespace Gorgon.Examples
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">The <see cref="Gorgon.Graphics.Core.AfterSwapChainResizedEventArgs" /> instance containing the event data.</param>
-        private static void Screen_AfterSwapChainResized(object sender, AfterSwapChainResizedEventArgs e)
-        {
-            UpdateRenderTarget();
-        }
+        private static void Screen_AfterSwapChainResized(object sender, AfterSwapChainResizedEventArgs e) => UpdateRenderTarget();
 
         /// <summary>
         /// Screens the before swap chain resized.

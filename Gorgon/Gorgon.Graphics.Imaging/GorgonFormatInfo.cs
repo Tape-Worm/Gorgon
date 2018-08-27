@@ -951,7 +951,7 @@ namespace Gorgon.Graphics
 						break;
 					case BufferFormat.NV11:
 						rowPitch = ((width + 3) >> 2) << 2;
-						slicePitch = rowPitch * height << 1;
+						slicePitch = (rowPitch * height) << 1;
 						break;
 					default:
 						rowPitch = 0;
@@ -982,27 +982,27 @@ namespace Gorgon.Graphics
 			// properly because of assumptions about pitch alignment.
 			if ((flags & PitchFlags.LegacyDWORD) == PitchFlags.LegacyDWORD)
 			{
-				rowPitch = ((width * bitsPerPixel + 31) / 32) * sizeof(int);
+				rowPitch = (((width * bitsPerPixel) + 31) / 32) * sizeof(int);
 			}
 			else if ((flags & PitchFlags.Align4K) == PitchFlags.Align4K)
 			{
-				rowPitch = ((width * bitsPerPixel + 32767) / 32768) * 4096;
+				rowPitch = (((width * bitsPerPixel) + 32767) / 32768) * 4096;
 			}
 			else if ((flags & PitchFlags.Align64Byte) == PitchFlags.Align64Byte)
 			{
-				rowPitch = ((width * bitsPerPixel + 511) / 512) * 64;
+				rowPitch = (((width * bitsPerPixel) + 511) / 512) * 64;
 			}
 			else if ((flags & PitchFlags.Align32Byte) == PitchFlags.Align32Byte)
 			{
-				rowPitch = ((width * bitsPerPixel + 255) / 256) * 32;
+				rowPitch = (((width * bitsPerPixel) + 255) / 256) * 32;
 			}
 			else if ((flags & PitchFlags.Align16Byte) == PitchFlags.Align16Byte)
 			{
-				rowPitch = ((width * bitsPerPixel + 127) / 128) * 16;
+				rowPitch = (((width * bitsPerPixel) + 127) / 128) * 16;
 			}
 			else
 			{
-				rowPitch = ((width * bitsPerPixel + 7) / 8);
+				rowPitch = (((width * bitsPerPixel) + 7) / 8);
 			}
 
 			return new GorgonPitchLayout(rowPitch, rowPitch * height);

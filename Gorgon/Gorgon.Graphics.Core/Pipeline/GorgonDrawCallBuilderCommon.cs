@@ -149,10 +149,7 @@ namespace Gorgon.Graphics.Core
         /// <see cref="ShaderType.Compute"/> shaders are not supported in this method will throw an exception.
         /// </para>
         /// </remarks>
-        public TB SamplerState(ShaderType shaderType, GorgonSamplerStateBuilder sampler, int index = 0)
-        {
-            return SamplerState(shaderType, sampler.Build(), index);
-        }
+        public TB SamplerState(ShaderType shaderType, GorgonSamplerStateBuilder sampler, int index = 0) => SamplerState(shaderType, sampler.Build(), index);
 
         /// <summary>
         /// Function to assign a sampler to a shader on the pipeline.
@@ -216,10 +213,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="pipelineState">The pipeline state to assign.</param>
         /// <returns>The fluent builder interface.</returns>
-        public TB PipelineState(GorgonPipelineStateBuilder pipelineState)
-        {
-            return PipelineState(pipelineState?.Build());
-        }
+        public TB PipelineState(GorgonPipelineStateBuilder pipelineState) => PipelineState(pipelineState?.Build());
 
         /// <summary>
         /// Function to set a stream out binding for the draw call.
@@ -741,10 +735,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <returns>The draw call created or updated by this builder.</returns>
         /// <exception cref="GorgonException">Thrown if a <see cref="GorgonVertexShader"/> is not assigned to the <see cref="GorgonPipelineState.VertexShader"/> property with the <see cref="PipelineState(Gorgon.Graphics.Core.GorgonPipelineStateBuilder)"/> command.</exception>
-        public TDc Build()
-        {
-            return Build(null);
-        }
+        public TDc Build() => Build(null);
         #endregion
 
         #region Constructor/Finalizer.

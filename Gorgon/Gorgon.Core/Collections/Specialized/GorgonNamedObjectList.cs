@@ -61,42 +61,33 @@ namespace Gorgon.Collections.Specialized
 		/// </summary>
 		public T this[string name] => GetItemByName(name);
 
-		#endregion
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to clear the items from the list.
-		/// </summary>
-		public void Clear()
-		{
-			Items.Clear();
-		}
+        #region Methods.
+        /// <summary>
+        /// Function to clear the items from the list.
+        /// </summary>
+        public void Clear() => Items.Clear();
 
-		/// <summary>
-		/// Function to add an item to the list.
-		/// </summary>
-		/// <param name="item">Item to add to the list.</param>
-		public void Add(T item)
-		{
-			Items.Add(item);
-		}
+        /// <summary>
+        /// Function to add an item to the list.
+        /// </summary>
+        /// <param name="item">Item to add to the list.</param>
+        public void Add(T item) => Items.Add(item);
 
-		/// <summary>
-		/// Function to add a list of items to this list.
-		/// </summary>
-		/// <param name="items">The items to add to this list.</param>
-		public void AddRange(IEnumerable<T> items)
-		{
-			AddItems(items);
-		}
+        /// <summary>
+        /// Function to add a list of items to this list.
+        /// </summary>
+        /// <param name="items">The items to add to this list.</param>
+        public void AddRange(IEnumerable<T> items) => AddItems(items);
 
-		/// <summary>
-		/// Function to insert an item in the list at the specified index.
-		/// </summary>
-		/// <param name="index">Index to insert at.</param>
-		/// <param name="item">Item to insert.</param>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is less than 0.</exception>
-		public void Insert(int index, T item)
+        /// <summary>
+        /// Function to insert an item in the list at the specified index.
+        /// </summary>
+        /// <param name="index">Index to insert at.</param>
+        /// <param name="item">Item to insert.</param>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is less than 0.</exception>
+        public void Insert(int index, T item)
 		{
 			if (index < 0)
 			{
@@ -123,41 +114,32 @@ namespace Gorgon.Collections.Specialized
 			InsertItems(index, items);
 		}
 
-		/// <summary>
-		/// Function to remove an item from this list.
-		/// </summary>
-		/// <param name="item">Item to remove from the list.</param>
-		public void Remove(T item)
-		{
-			Items.Remove(item);
-		}
+        /// <summary>
+        /// Function to remove an item from this list.
+        /// </summary>
+        /// <param name="item">Item to remove from the list.</param>
+        public void Remove(T item) => Items.Remove(item);
 
-		/// <summary>
-		/// Function to remove an item at the specified index.
-		/// </summary>
-		/// <param name="index">Index of the item to remove.</param>
-		public void Remove(int index)
-		{
-			Items.RemoveAt(index);
-		}
+        /// <summary>
+        /// Function to remove an item at the specified index.
+        /// </summary>
+        /// <param name="index">Index of the item to remove.</param>
+        public void Remove(int index) => Items.RemoveAt(index);
 
-		/// <summary>
-		/// Function to remove an item with the specified name from this list.
-		/// </summary>
-		/// <param name="name">Name of the item to remove.</param>
-		/// <exception cref="KeyNotFoundException">Thrown when no item with the specified <paramref name="name"/> can be found.</exception>
-		public void Remove(string name)
-		{
-			RemoveItemByName(name);
-		}
-		#endregion
+        /// <summary>
+        /// Function to remove an item with the specified name from this list.
+        /// </summary>
+        /// <param name="name">Name of the item to remove.</param>
+        /// <exception cref="KeyNotFoundException">Thrown when no item with the specified <paramref name="name"/> can be found.</exception>
+        public void Remove(string name) => RemoveItemByName(name);
+        #endregion
 
-		#region Constructor/Finalizer.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonNamedObjectList{T}"/> class.
-		/// </summary>
-		/// <param name="caseSensitive">[Optional] <b>true</b> to use case sensitive keys, <b>false</b> to ignore casing.</param>
-		public GorgonNamedObjectList(bool caseSensitive = true)
+        #region Constructor/Finalizer.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonNamedObjectList{T}"/> class.
+        /// </summary>
+        /// <param name="caseSensitive">[Optional] <b>true</b> to use case sensitive keys, <b>false</b> to ignore casing.</param>
+        public GorgonNamedObjectList(bool caseSensitive = true)
 			: base(caseSensitive)
 		{
 

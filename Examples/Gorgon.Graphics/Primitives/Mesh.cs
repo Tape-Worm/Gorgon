@@ -157,7 +157,7 @@ namespace Gorgon.Examples
                 DX.Vector2.Subtract(ref vertex2.UV, ref vertex1.UV, out DX.Vector2 deltaUV1);
                 DX.Vector2.Subtract(ref vertex3.UV, ref vertex1.UV, out DX.Vector2 deltaUV2);
 
-                float denom = (deltaUV1.X * deltaUV2.Y - deltaUV1.Y * deltaUV2.X);
+                float denom = ((deltaUV1.X * deltaUV2.Y) - (deltaUV1.Y * deltaUV2.X));
 	            float r = 0.0f;
 
 	            if (!denom.EqualsEpsilon(0))
@@ -165,13 +165,13 @@ namespace Gorgon.Examples
 		            r = 1.0f / denom;
 	            }
 				
-	            DX.Vector3 tangent = new DX.Vector3((deltaUV2.Y * deltaPos1.X - deltaUV1.Y * deltaPos2.X) * r,
-	                                      (deltaUV2.Y * deltaPos1.Y - deltaUV1.Y * deltaPos2.Y) * r,
-	                                      (deltaUV2.Y * deltaPos1.Z - deltaUV1.Y * deltaPos2.Z) * r);
+	            DX.Vector3 tangent = new DX.Vector3(((deltaUV2.Y * deltaPos1.X) - (deltaUV1.Y * deltaPos2.X)) * r,
+	                                      ((deltaUV2.Y * deltaPos1.Y) - (deltaUV1.Y * deltaPos2.Y)) * r,
+	                                      ((deltaUV2.Y * deltaPos1.Z) - (deltaUV1.Y * deltaPos2.Z)) * r);
 
-				DX.Vector3 biTangent = new DX.Vector3((deltaUV1.X * deltaPos2.X - deltaUV2.X * deltaPos1.X) * r,
-	                                        (deltaUV1.X * deltaPos2.Y - deltaUV2.X * deltaPos1.Y) * r,
-	                                        (deltaUV1.X * deltaPos2.Z - deltaUV2.X * deltaPos1.Z) * r);
+				DX.Vector3 biTangent = new DX.Vector3(((deltaUV1.X * deltaPos2.X) - (deltaUV2.X * deltaPos1.X)) * r,
+	                                        ((deltaUV1.X * deltaPos2.Y) - (deltaUV2.X * deltaPos1.Y)) * r,
+	                                        ((deltaUV1.X * deltaPos2.Z) - (deltaUV2.X * deltaPos1.Z)) * r);
 
                 DX.Vector3.Add(ref tanData[index1], ref tangent, out tanData[index1]);
                 DX.Vector3.Add(ref tanData[index2], ref tangent, out tanData[index2]);

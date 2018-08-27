@@ -331,8 +331,8 @@ namespace Gorgon.Renderers
             }
 
             // Calculate relative position of our screen position.
-            var relativePosition = new DX.Vector3(2.0f * screenPosition.X / TargetWidth - 1.0f,
-                                               1.0f - screenPosition.Y / TargetHeight * 2.0f,
+            var relativePosition = new DX.Vector3((2.0f * screenPosition.X / TargetWidth) - 1.0f,
+                                               1.0f - (screenPosition.Y / TargetHeight * 2.0f),
                                                screenPosition.Z / (MaximumDepth - MinimumDepth));
 
             // Transform our screen position by our inverse matrix.
@@ -385,7 +385,7 @@ namespace Gorgon.Renderers
 
             result = new DX.Vector3((transform.X + 1.0f) * 0.5f * TargetWidth,
                 (1.0f - transform.Y) * 0.5f * TargetHeight,
-                transform.Z * (MaximumDepth - MinimumDepth) + MinimumDepth);
+                (transform.Z * (MaximumDepth - MinimumDepth)) + MinimumDepth);
         }
 
         /// <summary>

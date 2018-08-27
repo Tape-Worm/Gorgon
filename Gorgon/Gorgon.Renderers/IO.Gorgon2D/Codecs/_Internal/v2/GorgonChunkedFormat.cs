@@ -35,7 +35,7 @@ namespace GorgonLibrary.IO
 	/// <summary>
 	/// The access mode for the file chunking object.
 	/// </summary>
-	public enum ChunkAccessMode
+	internal enum ChunkAccessMode
 	{
 		/// <summary>
 		/// Chunk object is in read only mode.
@@ -54,7 +54,7 @@ namespace GorgonLibrary.IO
     /// it allows Gorgon's file formats to be future proof.  That is, if a later version of Gorgon has support for a feature
     /// that does not exist in a previous version, then the older version will be able to read the file and skip the 
     /// unnecessary parts.</remarks>
-    abstract class GorgonChunkedFormat
+    internal abstract class GorgonChunkedFormat
         : IDisposable
     {
         #region Constants.
@@ -137,11 +137,7 @@ namespace GorgonLibrary.IO
         /// </summary>
         /// <param name="chunkName">The string containing the code to use.</param>
         /// <returns>The name encoded as an 8 byte unsigned long value.</returns>
-        protected ulong GetChunkCode(string chunkName)
-        {
-            return chunkName.ChunkID();
-
-            /*if (chunkName.Length != 8)
+        protected ulong GetChunkCode(string chunkName) => chunkName.ChunkID();/*if (chunkName.Length != 8)
             {
                 throw new ArgumentException(@"Chunk name too small", nameof(chunkName));
             }
@@ -149,24 +145,23 @@ namespace GorgonLibrary.IO
 
             return ((ulong)chunkName[7] << 56) | ((ulong)chunkName[6] << 48) | ((ulong)chunkName[5] << 40) | ((ulong)chunkName[4] << 32)
                    | ((ulong)chunkName[3] << 24) | ((ulong)chunkName[2] << 16) | ((ulong)chunkName[1] << 8) | chunkName[0];*/
-        }
 
-	    /// <summary>
-		/// Function to begin reading/writing the chunk
-		/// </summary>
-		/// <param name="chunkName">The name of the chunk.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="chunkName"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the chunkName parameter is empty.
-		/// <para>-or-</para>
-		/// <para>Thrown when the chunkName parameter is less than 8 characters.</para>
-		/// </exception>
-		/// <exception cref="System.IO.InvalidDataException">Thrown when reading a chunk ID and it does not match the requested chunk name.</exception>
-		/// <remarks>
-		/// Use this to begin a chunk in the stream.  This method must be called before using any of the read/write methods.
-		/// <para>The <paramref name="chunkName" /> parameter must be 8 characters in length, otherwise an exception will be thrown.  If the name is longer than 8 characters,
-		/// then only the first 8 characters will be used.</para>
-		/// </remarks>
-		public void Begin(string chunkName)
+        /// <summary>
+        /// Function to begin reading/writing the chunk
+        /// </summary>
+        /// <param name="chunkName">The name of the chunk.</param>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="chunkName"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentException">Thrown when the chunkName parameter is empty.
+        /// <para>-or-</para>
+        /// <para>Thrown when the chunkName parameter is less than 8 characters.</para>
+        /// </exception>
+        /// <exception cref="System.IO.InvalidDataException">Thrown when reading a chunk ID and it does not match the requested chunk name.</exception>
+        /// <remarks>
+        /// Use this to begin a chunk in the stream.  This method must be called before using any of the read/write methods.
+        /// <para>The <paramref name="chunkName" /> parameter must be 8 characters in length, otherwise an exception will be thrown.  If the name is longer than 8 characters,
+        /// then only the first 8 characters will be used.</para>
+        /// </remarks>
+        public void Begin(string chunkName)
 		{
 			if (chunkName == null)
 			{

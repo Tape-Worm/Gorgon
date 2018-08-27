@@ -44,28 +44,25 @@ namespace Gorgon.Graphics.Fonts
 			get;
 			private set;
 		}
-		#endregion
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to create the root node.
-		/// </summary>
-		/// <param name="textureWidth">The width of the texture.</param>
-		/// <param name="textureHeight">The height of the texture.</param>
-		public static void CreateRoot(int textureWidth, int textureHeight)
-		{
-			Root = new GlyphNode(null)
-				{
-					Region = new Rectangle(0, 0, textureWidth, textureHeight)
-				};
-		}
+        #region Methods.
+        /// <summary>
+        /// Function to create the root node.
+        /// </summary>
+        /// <param name="textureWidth">The width of the texture.</param>
+        /// <param name="textureHeight">The height of the texture.</param>
+        public static void CreateRoot(int textureWidth, int textureHeight) => Root = new GlyphNode(null)
+        {
+            Region = new Rectangle(0, 0, textureWidth, textureHeight)
+        };
 
-		/// <summary>
-		/// Function to add a node to the 
-		/// </summary>
-		/// <param name="dimensions">The glyph dimensions.</param>
-		/// <returns>A rectangle for the area on the image that the glyph will be located at, or <b>null</b> if there's no room.</returns>
-		public static Rectangle? Add(Size dimensions)
+        /// <summary>
+        /// Function to add a node to the 
+        /// </summary>
+        /// <param name="dimensions">The glyph dimensions.</param>
+        /// <returns>A rectangle for the area on the image that the glyph will be located at, or <b>null</b> if there's no room.</returns>
+        public static Rectangle? Add(Size dimensions)
 		{
 			if ((dimensions.Width > Root.Region.Width) || (dimensions.Height > Root.Region.Height))
 			{

@@ -608,22 +608,19 @@ namespace Gorgon.Graphics.Fonts.Codecs
 				stream.Position = position;
 			}
 		}
-		#endregion
+        #endregion
 
-		#region Constructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonCodecGorFont"/> class.
-		/// </summary>
-		/// <param name="factory">The font factory that holds cached font information.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="factory"/> parameter is <b>null</b>.</exception>
-		public GorgonCodecGorFont(GorgonFontFactory factory)
-			: base(factory)
-		{
-			CodecCommonExtensions = new[]
-			                        {
-				                        ".gorFont"
-			                        };
-		}
-		#endregion
-	}
+        #region Constructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonCodecGorFont"/> class.
+        /// </summary>
+        /// <param name="factory">The font factory that holds cached font information.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="factory"/> parameter is <b>null</b>.</exception>
+        public GorgonCodecGorFont(GorgonFontFactory factory)
+            : base(factory) => CodecCommonExtensions = new[]
+                                    {
+                                        ".gorFont"
+                                    };
+        #endregion
+    }
 }

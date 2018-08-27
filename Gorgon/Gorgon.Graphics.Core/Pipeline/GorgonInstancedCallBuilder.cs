@@ -65,10 +65,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="allocator">The allocator to use when creating draw call objects.</param>
         /// <returns>A new draw call.</returns>
-        protected override GorgonInstancedCall OnCreate(GorgonRingPool<GorgonInstancedCall> allocator)
-        {
-            return allocator == null ? new GorgonInstancedCall() : allocator.Allocate();
-        }
+        protected override GorgonInstancedCall OnCreate(GorgonRingPool<GorgonInstancedCall> allocator) => allocator == null ? new GorgonInstancedCall() : allocator.Allocate();
 
         /// <summary>
         /// Function to reset the properties of the draw call to the draw call passed in.

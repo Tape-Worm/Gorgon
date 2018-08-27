@@ -62,6 +62,7 @@
       <Link>SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Boot.cs" />
+    <Compile Include="CommonCommands.cs" />
     <Compile Include="FormMain.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -74,9 +75,66 @@
     <Compile Include="FormSplash.designer.cs">
       <DependentUpon>FormSplash.cs</DependentUpon>
     </Compile>
+    <Compile Include="Services\FileSystemService.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="ProjectData\Project.cs" />
+    <Compile Include="ProjectData\ProjectManager.cs" />
+    <Compile Include="ProjectData\ProjectMetadata.cs" />
+    <Compile Include="ProjectData\_Interfaces\IProjectManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rendering\GraphicsContext.cs" />
+    <Compile Include="EditorSettings.cs" />
+    <Compile Include="Services\WorkspaceTester.cs" />
+    <Compile Include="Services\_Interfaces\IWorkspaceTester.cs" />
+    <Compile Include="ViewModels\CreateNodeArgs.cs" />
+    <Compile Include="ViewModels\FileExplorerFileNodeVm.cs" />
+    <Compile Include="ViewModels\FileExplorerDirectoryNodeVm.cs" />
+    <Compile Include="ViewModels\FileExplorerNodeRenameArgs.cs" />
+    <Compile Include="ViewModels\FileExplorerVm.cs" />
+    <Compile Include="ViewModels\Main.cs" />
+    <Compile Include="ViewModels\NewProject.cs" />
+    <Compile Include="ViewModels\ProjectCreateArgs.cs" />
+    <Compile Include="ViewModels\ProjectVm.cs" />
+    <Compile Include="ViewModels\ViewModelFactory.cs" />
+    <Compile Include="ViewModels\WorkspaceSelectedArgs.cs" />
+    <Compile Include="ViewModels\_Interfaces\IFileExplorerNodeVm.cs" />
+    <Compile Include="ViewModels\_Interfaces\IFileExplorerVm.cs" />
+    <Compile Include="ViewModels\_Interfaces\IMain.cs" />
+    <Compile Include="ViewModels\_Interfaces\INewProject.cs" />
+    <Compile Include="ViewModels\_Interfaces\IProjectVm.cs" />
+    <Compile Include="Views\EditorProject.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\EditorProject.Designer.cs">
+      <DependentUpon>EditorProject.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\FileExploder.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\FileExploder.Designer.cs">
+      <DependentUpon>FileExploder.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\StageLaunch.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\StageLaunch.Designer.cs">
+      <DependentUpon>StageLaunch.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\StageNew.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\StageNew.Designer.cs">
+      <DependentUpon>StageNew.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\StageRecent.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\StageRecent.Designer.cs">
+      <DependentUpon>StageRecent.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="FormMain.resx">
+      <DependentUpon>FormMain.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FormSplash.resx">
       <DependentUpon>FormSplash.cs</DependentUpon>
     </EmbeddedResource>
@@ -90,6 +148,21 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="Views\EditorProject.resx">
+      <DependentUpon>EditorProject.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\FileExploder.resx">
+      <DependentUpon>FileExploder.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\StageLaunch.resx">
+      <DependentUpon>StageLaunch.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\StageNew.resx">
+      <DependentUpon>StageNew.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\StageRecent.resx">
+      <DependentUpon>StageRecent.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="..\..\..\Examples\app.manifest">
       <Link>app.manifest</Link>
     </None>
@@ -108,6 +181,25 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\icons8_16x16.png" />
+    <None Include="Resources\icons8_48x48.png" />
+    <None Include="Resources\rename_16x16.png" />
+    <None Include="Resources\add_directory_16x16.png" />
+    <None Include="Resources\add_directory_48x48.png" />
+    <None Include="Resources\back_icon_24x24.png" />
+    <None Include="Resources\back_icon_48x48.png" />
+    <None Include="Resources\file_48x48.png" />
+    <None Include="Resources\folder_48x48.png" />
+    <None Include="Resources\drive_remove_48x48.png" />
+    <None Include="Resources\drive_ram_48x48.png" />
+    <None Include="Resources\drive_network_48x48.png" />
+    <None Include="Resources\drive_cdrom_48x48.png" />
+    <None Include="Resources\drive_48x48.png" />
+    <None Include="Resources\open_folder_22x22.png" />
+    <None Include="Resources\recent_48x48.png" />
+    <None Include="Resources\openproject_48x48.png" />
+    <None Include="Resources\newproject_48x48.png" />
+    <None Include="Resources\Krypton_DarkO2k10Theme.xml" />
     <None Include="Resources\Gorgon_2.x_Logo_Full.png" />
   </ItemGroup>
   <ItemGroup>
@@ -161,6 +253,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Krypton.Components.Suite">
+      <Version>4.5.9</Version>
+    </PackageReference>
     <PackageReference Include="SharpDX">
       <Version>4.2.0</Version>
     </PackageReference>
@@ -170,12 +265,13 @@
     <PackageReference Include="System.Buffers">
       <Version>4.5.0</Version>
     </PackageReference>
+    <PackageReference Include="System.Data.SQLite.Core">
+      <Version>1.0.109.1</Version>
+    </PackageReference>
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
       <Version>4.5.1</Version>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Views\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

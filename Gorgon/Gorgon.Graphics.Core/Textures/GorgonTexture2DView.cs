@@ -379,10 +379,7 @@ namespace Gorgon.Graphics.Core
         /// the format from the this texture is used. The <paramref name="format"/> must be castable to the format of this texture. If it is not, an exception will be thrown.
         /// </para>
         /// </remarks>
-        public GorgonTexture2DView GetShaderResourceView(BufferFormat format = BufferFormat.Unknown)
-        {
-            return Texture.GetShaderResourceView(format, MipSlice, MipCount, ArrayIndex, ArrayCount);
-        }
+        public GorgonTexture2DView GetShaderResourceView(BufferFormat format = BufferFormat.Unknown) => Texture.GetShaderResourceView(format, MipSlice, MipCount, ArrayIndex, ArrayCount);
 
         /// <summary>
         /// Function to convert a rectangle of texel coordinates to pixel space.
@@ -586,10 +583,7 @@ namespace Gorgon.Graphics.Core
         /// the format from the this texture is used. The <paramref name="format"/> must be castable to the format of this texture. If it is not, an exception will be thrown.
         /// </para>
         /// </remarks>
-        public GorgonRenderTarget2DView GetRenderTargetView(BufferFormat format = BufferFormat.Unknown)
-        {
-            return Texture.GetRenderTargetView(format, MipSlice, ArrayIndex, ArrayCount);
-	    }
+        public GorgonRenderTarget2DView GetRenderTargetView(BufferFormat format = BufferFormat.Unknown) => Texture.GetRenderTargetView(format, MipSlice, ArrayIndex, ArrayCount);
 
         /// <summary>
         /// Function to convert a 2D point value from pixel coordinates to texel space.

@@ -247,19 +247,19 @@ namespace Gorgon.Examples
             _torusLeft.Scale = DX.Vector2.One;
 
             _torusRight.Color = GorgonColor.RedPure;
-            _torusRight.Position = new DX.Vector2(_rightPanel.Width / 2.0f - 64, _rightPanel.Height / 2.0f - 64);
+            _torusRight.Position = new DX.Vector2((_rightPanel.Width / 2.0f) - 64, (_rightPanel.Height / 2.0f) - 64);
             _renderer.DrawSprite(_torusRight);
 
             _torusRight.Color = GorgonColor.GreenPure;
-            _torusRight.Position = new DX.Vector2(_rightPanel.Width / 2.0f + 64, _rightPanel.Height / 2.0f - 64);
+            _torusRight.Position = new DX.Vector2((_rightPanel.Width / 2.0f) + 64, (_rightPanel.Height / 2.0f) - 64);
             _renderer.DrawSprite(_torusRight);
 
             _torusRight.Color = GorgonColor.BluePure;
-            _torusRight.Position = new DX.Vector2(_rightPanel.Width / 2.0f - 64, _rightPanel.Height / 2.0f + 64);
+            _torusRight.Position = new DX.Vector2((_rightPanel.Width / 2.0f) - 64, (_rightPanel.Height / 2.0f) + 64);
             _renderer.DrawSprite(_torusRight);
 
             _torusRight.Color = GorgonColor.White;
-            _torusRight.Position = new DX.Vector2(_rightPanel.Width / 2.0f + 64, _rightPanel.Height / 2.0f + 64);
+            _torusRight.Position = new DX.Vector2((_rightPanel.Width / 2.0f) + 64, (_rightPanel.Height / 2.0f) + 64);
             _renderer.DrawSprite(_torusRight);
 
             _renderer.DrawString("\u2190Drag me!", new DX.Vector2(0, _rightPanel.Height / 4.0f), _appFont, GorgonColor.White);
@@ -347,10 +347,7 @@ namespace Gorgon.Examples
         /// <summary>
         /// Initializes a new instance of the <see cref="Form"/> class.
         /// </summary>
-        public Form()
-        {
-            InitializeComponent();
-        }
+        public Form() => InitializeComponent();
         #endregion
     }
 }

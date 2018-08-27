@@ -102,35 +102,32 @@ namespace Gorgon.Animation
 	    {
 	        get;
 	    } = typeof(GorgonTexture2DView);
-		#endregion
-
-        #region Methods.
-	    /// <summary>
-	    /// Function to clone the key.
-	    /// </summary>
-	    /// <returns>The cloned key.</returns>
-	    public IGorgonKeyFrame Clone()
-	    {
-	        return new GorgonKeyTexture2D(Time, Value, _textureCoordinates, _textureArrayIndex);
-	    }
         #endregion
 
-		#region Constructor/Destructor.
-	    /// <summary>
-	    /// Initializes a new instance of the <see cref="GorgonKeyTexture2D" /> struct.
-	    /// </summary>
-	    /// <param name="time">The time for the key frame.</param>
-	    /// <param name="textureName">The name of the texture that should be applied to the key frame.</param>
-	    /// <param name="textureCoordinates">Region on the texture to update.</param>
-	    /// <param name="textureArrayIndex">The texture array index to use with a texture array.</param>
-	    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="textureName"/> parameter is <b>null</b>.</exception>
-	    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="textureName"/> parameter is empty.</exception>
-	    /// <remarks>
-	    /// <para>
-	    /// This overload is used to build a key frame that references a texture, but without having that texture loaded into memory. This is useful for serialization scenarios. 
-	    /// </para>
-	    /// </remarks>
-	    public GorgonKeyTexture2D(float time, string textureName, DX.RectangleF textureCoordinates, int textureArrayIndex)
+        #region Methods.
+        /// <summary>
+        /// Function to clone the key.
+        /// </summary>
+        /// <returns>The cloned key.</returns>
+        public IGorgonKeyFrame Clone() => new GorgonKeyTexture2D(Time, Value, _textureCoordinates, _textureArrayIndex);
+        #endregion
+
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonKeyTexture2D" /> struct.
+        /// </summary>
+        /// <param name="time">The time for the key frame.</param>
+        /// <param name="textureName">The name of the texture that should be applied to the key frame.</param>
+        /// <param name="textureCoordinates">Region on the texture to update.</param>
+        /// <param name="textureArrayIndex">The texture array index to use with a texture array.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="textureName"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="textureName"/> parameter is empty.</exception>
+        /// <remarks>
+        /// <para>
+        /// This overload is used to build a key frame that references a texture, but without having that texture loaded into memory. This is useful for serialization scenarios. 
+        /// </para>
+        /// </remarks>
+        public GorgonKeyTexture2D(float time, string textureName, DX.RectangleF textureCoordinates, int textureArrayIndex)
 	    {
 	        if (textureName == null)
 	        {

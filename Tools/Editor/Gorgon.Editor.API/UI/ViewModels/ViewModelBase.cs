@@ -49,6 +49,16 @@ namespace Gorgon.Editor.UI
         /// Event triggered before a property is changed.
         /// </summary>
         public event PropertyChangingEventHandler PropertyChanging;
+
+        /// <summary>
+        /// Event triggered when a wait overlay panel needs to be activated.
+        /// </summary>
+        public event EventHandler<WaitPanelActivateArgs> WaitPanelActivated;
+
+        /// <summary>
+        /// Event triggered when a wait overlay panel needs to be deactivated.
+        /// </summary>
+        public event EventHandler WaitPanelDeactivated;  
         #endregion
 
         #region Variables.
@@ -77,7 +87,6 @@ namespace Gorgon.Editor.UI
         #endregion
 
         #region Methods.
-
 		/// <summary>
 		/// Function to validate whether the specified property exists on this object.
 		/// </summary>
@@ -97,60 +106,74 @@ namespace Gorgon.Editor.UI
 			}
 		}
 
-		/// <summary>
-		/// Function to notify when a property is about to be changed within a property setter.
-		/// </summary>
-		/// <param name="propertyName">[Automatically set by the compiler] The name of the property that called this method.</param>
-		/// <remarks>
-		/// <para>
-		/// Unlike the <see cref="NotifyPropertyChanging"/>, this method will automatically determine the name of the property that called it. Therefore, the user should <u>not</u> set the 
-		/// <paramref name="propertyName"/> parameter manually.
-		/// </para>
-		/// </remarks>
-		protected void OnPropertyChanging([CallerMemberName] string propertyName = "")
-		{
-			NotifyPropertyChanging(propertyName);
-		}
+        /// <summary>
+        /// Function to activate a wait overlay panel on the view, if the view supports it.
+        /// </summary>
+        /// <param name="message">The message for the wait overlay.</param>
+        /// <param name="title">[Optional] The title for the overlay.</param>
+        protected void ShowWaitPanel(string message, string title = null)
+        {
+            EventHandler<WaitPanelActivateArgs> handler = WaitPanelActivated;
+            handler?.Invoke(this, new WaitPanelActivateArgs(message, title));
+        }
 
-		/// <summary>
-		/// Function to notify when a property has been changed within a property setter.
-		/// </summary>
-		/// <param name="propertyName">[Automatically set by the compiler] The name of the property that called this method.</param>
-		/// <remarks>
-		/// <para>
-		/// Unlike the <see cref="NotifyPropertyChanged"/>, this method will automatically determine the name of the property that called it. Therefore, the user should <u>not</u> set the 
-		/// <paramref name="propertyName"/> parameter manually.
-		/// </para>
-		/// </remarks>
-		protected void OnPropertyChanged([CallerMemberName] string propertyName = "")
-		{
-			NotifyPropertyChanged(propertyName);
-		}
+        /// <summary>
+        /// Function to deactivate an active wait panel overlay on the view, if the view supports it.
+        /// </summary>
+        protected void HideWaitPanel()
+        {
+            EventHandler handler = WaitPanelDeactivated;
+            handler?.Invoke(this, EventArgs.Empty);
+        }
 
-		/// <summary>
-		/// Function to notify when a property has been changed.
-		/// </summary>
-		/// <param name="propertyName">Name of the property to change.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="propertyName"/> is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="propertyName"/> is empty.</exception>
-		/// <remarks>
-		/// <para>
-		/// This method used to notify when a property has changed outside of the property setter, or if a property other than the current property has changed inside of a property setter. The 
-		/// user can specify the name of the property manually through the <paramref name="propertyName"/> parameter. 
-		/// </para>
-		/// <para>
-		/// Do not use this method in the setter for the property that is notifying. In that case, call the <see cref="OnPropertyChanged"/> method instead.
-		/// </para>
-		/// <para>
-		/// <note type="warning">
-		/// <para>
-		/// If the name of the property has changed, then calls to this method <u>must</u> be changed to reflect the new property name. Otherwise, functionality will break as the notification will 
-		/// point to an invalid property. To that end, applications should use the C# <see langword="nameof"/> operator when passing a property name to this method. 
-		/// </para>
-		/// </note>
-		/// </para>
-		/// </remarks>
-		public void NotifyPropertyChanged(string propertyName)
+        /// <summary>
+        /// Function to notify when a property is about to be changed within a property setter.
+        /// </summary>
+        /// <param name="propertyName">[Automatically set by the compiler] The name of the property that called this method.</param>
+        /// <remarks>
+        /// <para>
+        /// Unlike the <see cref="NotifyPropertyChanging"/>, this method will automatically determine the name of the property that called it. Therefore, the user should <u>not</u> set the 
+        /// <paramref name="propertyName"/> parameter manually.
+        /// </para>
+        /// </remarks>
+        protected void OnPropertyChanging([CallerMemberName] string propertyName = "") => NotifyPropertyChanging(propertyName);
+
+        /// <summary>
+        /// Function to notify when a property has been changed within a property setter.
+        /// </summary>
+        /// <param name="propertyName">[Automatically set by the compiler] The name of the property that called this method.</param>
+        /// <remarks>
+        /// <para>
+        /// Unlike the <see cref="NotifyPropertyChanged"/>, this method will automatically determine the name of the property that called it. Therefore, the user should <u>not</u> set the 
+        /// <paramref name="propertyName"/> parameter manually.
+        /// </para>
+        /// </remarks>
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = "") => NotifyPropertyChanged(propertyName);
+
+        /// <summary>
+        /// Function to notify when a property has been changed.
+        /// </summary>
+        /// <param name="propertyName">Name of the property to change.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="propertyName"/> is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="propertyName"/> is empty.</exception>
+        /// <remarks>
+        /// <para>
+        /// This method used to notify when a property has changed outside of the property setter, or if a property other than the current property has changed inside of a property setter. The 
+        /// user can specify the name of the property manually through the <paramref name="propertyName"/> parameter. 
+        /// </para>
+        /// <para>
+        /// Do not use this method in the setter for the property that is notifying. In that case, call the <see cref="OnPropertyChanged"/> method instead.
+        /// </para>
+        /// <para>
+        /// <note type="warning">
+        /// <para>
+        /// If the name of the property has changed, then calls to this method <u>must</u> be changed to reflect the new property name. Otherwise, functionality will break as the notification will 
+        /// point to an invalid property. To that end, applications should use the C# <see langword="nameof"/> operator when passing a property name to this method. 
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        public void NotifyPropertyChanged(string propertyName)
 		{
 			if (propertyName == null)
 			{
@@ -216,6 +239,22 @@ namespace Gorgon.Editor.UI
 
 			handler?.Invoke(this, new PropertyChangingEventArgs(propertyName));
 		}
+
+        /// <summary>
+        /// Function called when the associated view is loaded.
+        /// </summary>
+        public virtual void OnLoad()
+        {
+
+        }
+
+        /// <summary>
+        /// Function called when the associated view is unloaded.
+        /// </summary>
+        public virtual void OnUnload()
+        {
+
+        }
         #endregion
 
         #region Constructor.

@@ -615,44 +615,38 @@ namespace Gorgon.UI
 			_log?.LogEnd();
 		}
 
-		/// <summary>
-		/// Function to add a message filter to intercept application messages.
-		/// </summary>
-		/// <param name="filter">A <see cref="IMessageFilter"/> used to intercept an application message.</param>
-		/// <remarks>
-		/// <para>
-		/// This is a pass through for the <see cref="Application.AddMessageFilter"/> method.
-		/// </para>
-		/// </remarks>
-		/// <seealso cref="Application.AddMessageFilter"/>
-		public static void AddMessageFilter(IMessageFilter filter)
-		{
-			Application.AddMessageFilter(filter);
-		}
+        /// <summary>
+        /// Function to add a message filter to intercept application messages.
+        /// </summary>
+        /// <param name="filter">A <see cref="IMessageFilter"/> used to intercept an application message.</param>
+        /// <remarks>
+        /// <para>
+        /// This is a pass through for the <see cref="Application.AddMessageFilter"/> method.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="Application.AddMessageFilter"/>
+        public static void AddMessageFilter(IMessageFilter filter) => Application.AddMessageFilter(filter);
 
-		/// <summary>
-		/// Function to remove a message filter added with the <see cref="AddMessageFilter"/> method.
-		/// </summary>
-		/// <param name="filter">A <see cref="IMessageFilter"/> used to intercept an application message.</param>
-		/// <remarks>
-		/// <para>
-		/// This is a pass through for the <see cref="Application.RemoveMessageFilter"/> method.
-		/// </para>
-		/// </remarks>
-		/// <seealso cref="Application.RemoveMessageFilter"/>
-		public static void RemoveMessageFilter(IMessageFilter filter)
-		{
-			Application.RemoveMessageFilter(filter);
-		}
+        /// <summary>
+        /// Function to remove a message filter added with the <see cref="AddMessageFilter"/> method.
+        /// </summary>
+        /// <param name="filter">A <see cref="IMessageFilter"/> used to intercept an application message.</param>
+        /// <remarks>
+        /// <para>
+        /// This is a pass through for the <see cref="Application.RemoveMessageFilter"/> method.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="Application.RemoveMessageFilter"/>
+        public static void RemoveMessageFilter(IMessageFilter filter) => Application.RemoveMessageFilter(filter);
 
-		/// <summary>
-		/// Function that will signal the application to begin shutdown.
-		/// </summary>
-		/// <remarks>
-		/// This will signal the application to tell it that it is time to shut down. This shut down will not happen immediately as the application needs to finish up whatever processing it is doing 
-		/// before exiting.
-		/// </remarks>
-		public static void Quit()
+        /// <summary>
+        /// Function that will signal the application to begin shutdown.
+        /// </summary>
+        /// <remarks>
+        /// This will signal the application to tell it that it is time to shut down. This shut down will not happen immediately as the application needs to finish up whatever processing it is doing 
+        /// before exiting.
+        /// </remarks>
+        public static void Quit()
 		{
 			_quitSignalled = true;
 			_unfocusedTimeout.Set();

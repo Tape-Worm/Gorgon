@@ -57,10 +57,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>
         /// Initializes static members of the <see cref="GorgonDrawCallPoolAllocator{T}"/> class.
         /// </summary>
-        static GorgonDrawCallPoolAllocator()
-        {
-            _creator = new Lazy<ObjectActivator<T>>(() => typeof(T).CreateActivator<T>(), true);
-        }
+        static GorgonDrawCallPoolAllocator() => _creator = new Lazy<ObjectActivator<T>>(() => typeof(T).CreateActivator<T>(), true);
         #endregion
 
     }

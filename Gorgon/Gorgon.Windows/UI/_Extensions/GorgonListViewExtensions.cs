@@ -79,7 +79,7 @@ namespace Gorgon.UI
 					throw new GorgonException(GorgonResult.CannotEnumerate, Resources.GOR_ERR_LISTVIEW_CANNOT_FIND_HEADER);
 				}
 
-				if (order != SortOrder.None && columnNumber == headerIndex)
+				if ((order != SortOrder.None) && (columnNumber == headerIndex))
 				{
 					switch (order)
 					{

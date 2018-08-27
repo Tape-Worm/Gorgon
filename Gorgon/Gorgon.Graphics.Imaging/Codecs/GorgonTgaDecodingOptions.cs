@@ -83,19 +83,16 @@ namespace Gorgon.Graphics.Imaging.Codecs
 
 			set => Options.SetOptionValue(nameof(SetZeroAlphaAsOpaque), value);
 		}
-		#endregion
+        #endregion
 
-		#region Constructor/Finalizer.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonTgaDecodingOptions"/> class.
-		/// </summary>
-		public GorgonTgaDecodingOptions()
-		{
-			Options = new GorgonOptionBag(new []
-			                              {
-				                              GorgonOption.CreateOption(nameof(SetZeroAlphaAsOpaque), true, Resources.GORIMG_OPT_TGA_SETZEROALPHA_OPAQUE)
-			                              });
-		}
-		#endregion
-	}
+        #region Constructor/Finalizer.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonTgaDecodingOptions"/> class.
+        /// </summary>
+        public GorgonTgaDecodingOptions() => Options = new GorgonOptionBag(new[]
+                                          {
+                                              GorgonOption.CreateOption(nameof(SetZeroAlphaAsOpaque), true, Resources.GORIMG_OPT_TGA_SETZEROALPHA_OPAQUE)
+                                          });
+        #endregion
+    }
 }

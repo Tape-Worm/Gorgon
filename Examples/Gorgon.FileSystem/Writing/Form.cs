@@ -180,17 +180,14 @@ namespace Gorgon.Examples
         /// <summary>
 		/// Function to update the information label.
 		/// </summary>
-		private void UpdateInfo()
-        {
-	        labelInfo.Text = string.Equals(_originalText, textDisplay.Text, StringComparison.CurrentCulture)
-		                         ? $"Using original text from {GorgonExample.GetResourcePath(@"FolderSystem\").FullName.Ellipses(100, true)}"
-		                         : $"Using modified text from {Program.WriteDirectory.FullName.Ellipses(100, true)}";
-        }
+		private void UpdateInfo() => labelInfo.Text = string.Equals(_originalText, textDisplay.Text, StringComparison.CurrentCulture)
+                                 ? $"Using original text from {GorgonExample.GetResourcePath(@"FolderSystem\").FullName.Ellipses(100, true)}"
+                                 : $"Using modified text from {Program.WriteDirectory.FullName.Ellipses(100, true)}";
 
-		/// <summary>
-		/// Function to load the text into the file system.
-		/// </summary>
-		private void LoadText()
+        /// <summary>
+        /// Function to load the text into the file system.
+        /// </summary>
+        private void LoadText()
 		{
 			DirectoryInfo physicalPath = GorgonExample.GetResourcePath(@"FolderSystem\");
 
@@ -261,16 +258,13 @@ namespace Gorgon.Examples
 				UpdateInfo();
 			}
 		}
-		#endregion
+        #endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Form" /> class.
-		/// </summary>
-		public Form()
-		{
-			InitializeComponent();
-		}
-		#endregion
-	}
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Form" /> class.
+        /// </summary>
+        public Form() => InitializeComponent();
+        #endregion
+    }
 }

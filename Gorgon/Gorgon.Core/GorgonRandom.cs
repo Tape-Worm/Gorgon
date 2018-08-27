@@ -105,26 +105,23 @@ namespace Gorgon.Core
                 Noise.Perm = value.ToArray();
 			}
 		}
-		#endregion
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to generate 1 dimensional simplex noise.
-		/// </summary>
-		/// <param name="value">The <see cref="float"/> value to use to generate the simplex noise value.</param>
-		/// <returns>A <see cref="float"/> representing the simplex noise value.</returns>
-		/// <remarks>
-		/// <para>
-		/// Simplex noise values similar to Perlin noise but with fewer artifacts and better performance. 
-		/// </para>
-		/// <para>
-		/// This produces predictable random numbers based on the seed <paramref name="value"/> passed to the method. 
-		/// </para>
-		/// </remarks>
-		public static float SimplexNoise(float value)
-		{
-		    return 1.0f + (Noise.Generate(value) - 1.0f);
-		}
+        #region Methods.
+        /// <summary>
+        /// Function to generate 1 dimensional simplex noise.
+        /// </summary>
+        /// <param name="value">The <see cref="float"/> value to use to generate the simplex noise value.</param>
+        /// <returns>A <see cref="float"/> representing the simplex noise value.</returns>
+        /// <remarks>
+        /// <para>
+        /// Simplex noise values similar to Perlin noise but with fewer artifacts and better performance. 
+        /// </para>
+        /// <para>
+        /// This produces predictable random numbers based on the seed <paramref name="value"/> passed to the method. 
+        /// </para>
+        /// </remarks>
+        public static float SimplexNoise(float value) => 1.0f + (Noise.Generate(value) - 1.0f);
 
         /// <summary>
         /// Function to generate 2 dimensional simplex noise.
@@ -140,10 +137,7 @@ namespace Gorgon.Core
         /// This produces predictable random numbers based on the seed value passed to the method. 
         /// </para>
         /// </remarks>
-        public static float SimplexNoise(float x, float y)
-		{
-		    return 1.0f + (Noise.Generate(x, y) - 1.0f);
-		}
+        public static float SimplexNoise(float x, float y) => 1.0f + (Noise.Generate(x, y) - 1.0f);
 
         /// <summary>
         /// Function to generate 3 dimensional simplex noise.
@@ -160,10 +154,7 @@ namespace Gorgon.Core
         /// This produces predictable random numbers based on the seed values passed to the method. 
         /// </para>
         /// </remarks>
-        public static float SimplexNoise(float x, float y, float z)
-		{
-		    return 1.0f + (Noise.Generate(x, y, z) - 1.0f);
-		}
+        public static float SimplexNoise(float x, float y, float z) => 1.0f + (Noise.Generate(x, y, z) - 1.0f);
 
         /// <summary>
         /// Function to generate 4 dimensional simplex noise.
@@ -181,94 +172,70 @@ namespace Gorgon.Core
         /// This produces predictable random numbers based on the seed values passed to the method. 
         /// </para>
         /// </remarks>
-        public static float SimplexNoise(float x, float y, float z, float w)
-		{
-		    return SimplexNoise(x, y, z);
-		}
-        
-		/// <summary>
-		/// Function to return a random <see cref="float"/> number.
-		/// </summary>
-		/// <param name="start">The starting value for the random number.</param>
-		/// <param name="end">The ending value for the random number range.  This value is inclusive.</param>
-		/// <returns>A random <see cref="float"/> value between <paramref name="start"/> to <paramref name="end"/>.</returns>
-		/// <remarks>
-		/// This overload generates a random <see cref="float"/> number between the range of <paramref name="start"/> and <paramref name="end"/>.
-		/// </remarks>
-		public static float RandomSingle(float start, float end)
-		{
-			return start < end
-				       ? (float)_rnd.NextDouble() * (end - start) + start
-				       : (float)_rnd.NextDouble() * (start - end) + end;
-		}
+        public static float SimplexNoise(float x, float y, float z, float w) => SimplexNoise(x, y, z);
 
-		/// <summary>
-		/// Function to return a random <see cref="float"/> number.
-		/// </summary>
-		/// <param name="maxValue">The highest number for random values, this value is inclusive.</param>
-		/// <returns>A random <see cref="float"/> value.</returns>.
-		/// <remarks>
-		/// This overload generates a random <see cref="float"/> number between the range of 0 and <paramref name="maxValue"/>.
-		/// </remarks>
-		public static float RandomSingle(float maxValue)
-		{
-			return RandomSingle(0, maxValue);
-		}
+        /// <summary>
+        /// Function to return a random <see cref="float"/> number.
+        /// </summary>
+        /// <param name="start">The starting value for the random number.</param>
+        /// <param name="end">The ending value for the random number range.  This value is inclusive.</param>
+        /// <returns>A random <see cref="float"/> value between <paramref name="start"/> to <paramref name="end"/>.</returns>
+        /// <remarks>
+        /// This overload generates a random <see cref="float"/> number between the range of <paramref name="start"/> and <paramref name="end"/>.
+        /// </remarks>
+        public static float RandomSingle(float start, float end) => start < end
+                       ? ((float)_rnd.NextDouble() * (end - start)) + start
+                       : ((float)_rnd.NextDouble() * (start - end)) + end;
 
-		/// <summary>
-		/// Function to return a random <see cref="float"/> number.
-		/// </summary>
-		/// <returns>A random <see cref="float"/> value between 0.0f and 1.0f.</returns>
-		public static float RandomSingle()
-		{
-			return (float)_rnd.NextDouble();
-		}
+        /// <summary>
+        /// Function to return a random <see cref="float"/> number.
+        /// </summary>
+        /// <param name="maxValue">The highest number for random values, this value is inclusive.</param>
+        /// <returns>A random <see cref="float"/> value.</returns>.
+        /// <remarks>
+        /// This overload generates a random <see cref="float"/> number between the range of 0 and <paramref name="maxValue"/>.
+        /// </remarks>
+        public static float RandomSingle(float maxValue) => RandomSingle(0, maxValue);
 
-		/// <summary>
-		/// Function to return a non-negative random <see cref="int"/>.
-		/// </summary>
-		/// <param name="start">Starting value for the random number.</param>
-		/// <param name="end">Ending value for the random number range.  This value is inclusive.</param>
-		/// <returns>The random <see cref="int"/> value within the range of <paramref name="start"/> to <paramref name="end"/>.</returns>
-		/// <remarks>
-		/// This overload generates a random <see cref="int"/> number between the range of <paramref name="start"/> and <paramref name="end"/>-1.
-		/// </remarks>
-		public static int RandomInt32(int start, int end)
-		{
-			return _rnd.Next(start, end);
-		}
+        /// <summary>
+        /// Function to return a random <see cref="float"/> number.
+        /// </summary>
+        /// <returns>A random <see cref="float"/> value between 0.0f and 1.0f.</returns>
+        public static float RandomSingle() => (float)_rnd.NextDouble();
 
-		/// <summary>
-		/// Function to return a non-negative random <see cref="int"/>.
-		/// </summary>
-		/// <param name="maxValue">The highest number for random values, this value is inclusive.</param>
-		/// <returns>A random number</returns>.
-		/// <remarks>
-		/// This overload generates a random <see cref="int"/> number between the range of 0 and <paramref name="maxValue"/>-1.
-		/// </remarks>
-		public static int RandomInt32(int maxValue)
-		{
-			return _rnd.Next(maxValue);
-		}
+        /// <summary>
+        /// Function to return a non-negative random <see cref="int"/>.
+        /// </summary>
+        /// <param name="start">Starting value for the random number.</param>
+        /// <param name="end">Ending value for the random number range.  This value is inclusive.</param>
+        /// <returns>The random <see cref="int"/> value within the range of <paramref name="start"/> to <paramref name="end"/>.</returns>
+        /// <remarks>
+        /// This overload generates a random <see cref="int"/> number between the range of <paramref name="start"/> and <paramref name="end"/>-1.
+        /// </remarks>
+        public static int RandomInt32(int start, int end) => _rnd.Next(start, end);
 
-		/// <summary>
-		/// Function to return a non-negative random <see cref="int"/>.
-		/// </summary>
-		/// <returns>A random <see cref="int"/> value between 0 and <see cref="int.MaxValue"/>-1.</returns>
-		public static int RandomInt32()
-		{
-			return _rnd.Next();
-		}
-		#endregion
+        /// <summary>
+        /// Function to return a non-negative random <see cref="int"/>.
+        /// </summary>
+        /// <param name="maxValue">The highest number for random values, this value is inclusive.</param>
+        /// <returns>A random number</returns>.
+        /// <remarks>
+        /// This overload generates a random <see cref="int"/> number between the range of 0 and <paramref name="maxValue"/>-1.
+        /// </remarks>
+        public static int RandomInt32(int maxValue) => _rnd.Next(maxValue);
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes the <see cref="GorgonRandom" /> class.
-		/// </summary>
-		static GorgonRandom()
-		{
-			Seed = (int)DateTime.Now.TimeOfDay.TotalMilliseconds;
-		}
-		#endregion
-	}
+        /// <summary>
+        /// Function to return a non-negative random <see cref="int"/>.
+        /// </summary>
+        /// <returns>A random <see cref="int"/> value between 0 and <see cref="int.MaxValue"/>-1.</returns>
+        public static int RandomInt32() => _rnd.Next();
+        #endregion
+
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes the <see cref="GorgonRandom" /> class.
+        /// </summary>
+        static GorgonRandom() => Seed = (int)DateTime.Now.TimeOfDay.TotalMilliseconds;
+        #endregion
+    }
 }

@@ -155,39 +155,30 @@ namespace Gorgon.Graphics.Core
 	        return new GorgonVertexBufferBinding(buffer, vertexSize, bindingIndex * vertexSize);
 	    }
 
-	    /// <summary>
-		/// Function to determine if two instances are equal.
-		/// </summary>
-		/// <param name="other">The other instance.</param>
-		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-		public bool Equals(GorgonVertexBufferBinding other)
-		{
-			return Equals(in this, in other);
-		}
+        /// <summary>
+        /// Function to determine if two instances are equal.
+        /// </summary>
+        /// <param name="other">The other instance.</param>
+        /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+        public bool Equals(GorgonVertexBufferBinding other) => Equals(in this, in other);
 
-		/// <summary>
-		/// Returns a <see cref="string"/> that represents this instance.
-		/// </summary>
-		/// <returns>
-		/// A <see cref="string"/> that represents this instance.
-		/// </returns>
-		public override string ToString()
-		{
-			return string.Format(Resources.GORGFX_TOSTR_VERTEXBUFFER_BINDING, Stride, Offset, (VertexBuffer?.Native == null) ? "(NULL)" : VertexBuffer.Name);
-		}
+        /// <summary>
+        /// Returns a <see cref="string"/> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="string"/> that represents this instance.
+        /// </returns>
+        public override string ToString() => string.Format(Resources.GORGFX_TOSTR_VERTEXBUFFER_BINDING, Stride, Offset, (VertexBuffer?.Native == null) ? "(NULL)" : VertexBuffer.Name);
 
-		/// <summary>
-		/// Returns a hash code for this instance.
-		/// </summary>
-		/// <returns>
-		/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
-		/// </returns>
-		public override int GetHashCode()
-		{
-		    return VertexBuffer == null
-		               ? 281.GenerateHash(Stride).GenerateHash(Offset)
-		               : 281.GenerateHash(Stride).GenerateHash(Offset).GenerateHash(VertexBuffer.GetHashCode());
-		}
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// </returns>
+        public override int GetHashCode() => VertexBuffer == null
+                       ? 281.GenerateHash(Stride).GenerateHash(Offset)
+                       : 281.GenerateHash(Stride).GenerateHash(Offset).GenerateHash(VertexBuffer.GetHashCode());
 
         /// <summary>
         /// Determines whether the specified <see cref="object"/> is equal to this instance.
@@ -212,21 +203,15 @@ namespace Gorgon.Graphics.Core
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
         /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-        public static bool Equals(in GorgonVertexBufferBinding left, in GorgonVertexBufferBinding right)
-        {
-            return ((left.VertexBuffer == right.VertexBuffer) && (left.Offset == right.Offset) &&
+        public static bool Equals(in GorgonVertexBufferBinding left, in GorgonVertexBufferBinding right) => ((left.VertexBuffer == right.VertexBuffer) && (left.Offset == right.Offset) &&
                     (left.Stride == right.Stride));
-        }
 
-	    /// <summary>
-	    /// Function to compare this instance with another.
-	    /// </summary>
-	    /// <param name="other">The other instance to use for comparison.</param>
-	    /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-	    public bool Equals(in GorgonVertexBufferBinding other)
-        {
-            return Equals(in this, in other);
-        }
+        /// <summary>
+        /// Function to compare this instance with another.
+        /// </summary>
+        /// <param name="other">The other instance to use for comparison.</param>
+        /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+        public bool Equals(in GorgonVertexBufferBinding other) => Equals(in this, in other);
 
         /// <summary>
         /// Implements the operator ==.

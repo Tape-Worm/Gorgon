@@ -386,10 +386,7 @@ namespace Gorgon.Graphics.Core
         /// </list>
         /// </para>
         /// </remarks>
-        public GorgonDepthStencil2DView GetDepthStencilView(BufferFormat format = BufferFormat.Unknown, DepthStencilViewFlags flags = DepthStencilViewFlags.None)
-        {
-            return Texture.GetDepthStencilView(format, MipSlice, ArrayIndex, ArrayCount, flags);
-	    }
+        public GorgonDepthStencil2DView GetDepthStencilView(BufferFormat format = BufferFormat.Unknown, DepthStencilViewFlags flags = DepthStencilViewFlags.None) => Texture.GetDepthStencilView(format, MipSlice, ArrayIndex, ArrayCount, flags);
 
         /// <summary>
         /// Function to create a new <see cref="GorgonTexture2DView"/> for this texture.
@@ -414,10 +411,7 @@ namespace Gorgon.Graphics.Core
         /// the format from the this texture is used. The <paramref name="format"/> must be castable to the format of this texture. If it is not, an exception will be thrown.
         /// </para>
         /// </remarks>
-	    public GorgonTexture2DView GetShaderResourceView(BufferFormat format = BufferFormat.Unknown)
-        {
-            return Texture.GetShaderResourceView(format, MipSlice, 1, ArrayIndex, ArrayCount);
-        }
+	    public GorgonTexture2DView GetShaderResourceView(BufferFormat format = BufferFormat.Unknown) => Texture.GetShaderResourceView(format, MipSlice, 1, ArrayIndex, ArrayCount);
 
         /// <summary>
         /// Function to convert a rectangle of texel coordinates to pixel space.

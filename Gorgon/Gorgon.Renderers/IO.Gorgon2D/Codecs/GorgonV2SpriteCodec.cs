@@ -466,9 +466,9 @@ namespace Gorgon.IO
                 reader.Begin(SpriteDataChunk);
                 reader.SkipBytes(DX.Vector2.SizeInBytes
                                  + Unsafe.SizeOf<DX.Size2F>()
-                                 + sizeof(bool) * 2
-                                 + GorgonColor.SizeInBytes * 4
-                                 + DX.Vector2.SizeInBytes * 4);
+                                 + (sizeof(bool) * 2)
+                                 + (GorgonColor.SizeInBytes * 4)
+                                 + (DX.Vector2.SizeInBytes * 4));
                 reader.End();
 
                 // Read rendering information.
@@ -478,7 +478,7 @@ namespace Gorgon.IO
 
                 // Read texture information.
                 reader.Begin(TextureDataChunk);
-                reader.SkipBytes(GorgonColor.SizeInBytes + sizeof(int) * 2 + Unsafe.SizeOf<TextureFilter>());
+                reader.SkipBytes(GorgonColor.SizeInBytes + (sizeof(int) * 2) + Unsafe.SizeOf<TextureFilter>());
                 return reader.ReadString();
             }
         }
@@ -509,10 +509,7 @@ namespace Gorgon.IO
         /// </summary>
         /// <param name="sprite">The sprite to serialize into the stream.</param>
         /// <param name="stream">The stream that will contain the sprite.</param>
-        protected override void OnSaveToStream(GorgonSprite sprite, Stream stream)
-        {
-            throw new NotSupportedException();
-        }
+        protected override void OnSaveToStream(GorgonSprite sprite, Stream stream) => throw new NotSupportedException();
         #endregion
 
         #region Constructor/Finalizer.

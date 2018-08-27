@@ -1179,34 +1179,31 @@ namespace Gorgon.IO
 				return MountDirectory(physicalPath, mountPath);
 			}
 		}
-		#endregion
+        #endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonFileSystem"/> class.
-		/// </summary>
-		/// <param name="provider">A single file system provider to assign to this file system.</param>
-		/// <param name="log">[Optional] The application log file.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="provider" /> parameter is <b>null</b>.</exception>
-		/// <remarks>
-		/// To retrieve a <paramref name="provider"/>, use the <see cref="GorgonFileSystemProviderFactory.CreateProvider"/> method.
-		/// </remarks>
-		public GorgonFileSystem(IGorgonFileSystemProvider provider, IGorgonLog log = null)
-			: this(log)
-		{
-            _providers[provider.GetType().FullName ?? throw new ArgumentNullException()] = provider;
-		}
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonFileSystem"/> class.
+        /// </summary>
+        /// <param name="provider">A single file system provider to assign to this file system.</param>
+        /// <param name="log">[Optional] The application log file.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="provider" /> parameter is <b>null</b>.</exception>
+        /// <remarks>
+        /// To retrieve a <paramref name="provider"/>, use the <see cref="GorgonFileSystemProviderFactory.CreateProvider"/> method.
+        /// </remarks>
+        public GorgonFileSystem(IGorgonFileSystemProvider provider, IGorgonLog log = null)
+            : this(log) => _providers[provider.GetType().FullName ?? throw new ArgumentNullException()] = provider;
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonFileSystem"/> class.
-		/// </summary>
-		/// <param name="providers">The providers available to this file system.</param>
-		/// <param name="log">[Optional] The application log file.</param>
-		/// <remarks>
-		/// To get a list of providers to pass in, use the <see cref="GorgonFileSystemProviderFactory"/> object to create the providers.
-		/// </remarks>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="providers"/> parameter is <b>null</b>.</exception>
-		public GorgonFileSystem(IEnumerable<IGorgonFileSystemProvider> providers, IGorgonLog log = null)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonFileSystem"/> class.
+        /// </summary>
+        /// <param name="providers">The providers available to this file system.</param>
+        /// <param name="log">[Optional] The application log file.</param>
+        /// <remarks>
+        /// To get a list of providers to pass in, use the <see cref="GorgonFileSystemProviderFactory"/> object to create the providers.
+        /// </remarks>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="providers"/> parameter is <b>null</b>.</exception>
+        public GorgonFileSystem(IEnumerable<IGorgonFileSystemProvider> providers, IGorgonLog log = null)
 			: this(log)
 		{
 			if (providers == null)

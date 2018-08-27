@@ -35,27 +35,21 @@ namespace Gorgon.Native
 	public class GorgonIntPtrEqualityComparer
 		: IEqualityComparer<IntPtr>
 	{
-		#region IEqualityComparer<IntPtr> Members
-		/// <summary>
-		/// Determines whether the specified objects are equal.
-		/// </summary>
-		/// <param name="x">The first object of type <see cref="IntPtr"/> to compare.</param>
-		/// <param name="y">The second object of type <see cref="IntPtr"/> to compare.</param>
-		/// <returns><b>true</b> if the specified objects are equal; otherwise, <b>false</b> if not.</returns>
-		public bool Equals(IntPtr x, IntPtr y)
-		{
-			return x == y;
-		}
+        #region IEqualityComparer<IntPtr> Members
+        /// <summary>
+        /// Determines whether the specified objects are equal.
+        /// </summary>
+        /// <param name="x">The first object of type <see cref="IntPtr"/> to compare.</param>
+        /// <param name="y">The second object of type <see cref="IntPtr"/> to compare.</param>
+        /// <returns><b>true</b> if the specified objects are equal; otherwise, <b>false</b> if not.</returns>
+        public bool Equals(IntPtr x, IntPtr y) => x == y;
 
-		/// <summary>
-		/// Returns a hash code for this instance.
-		/// </summary>
-		/// <param name="obj">The <see cref="T:System.Object" /> for which a hash code is to be returned.</param>
-		/// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
-		public int GetHashCode(IntPtr obj)
-		{
-			return obj.GetHashCode();
-		}
-		#endregion
-	}
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <param name="obj">The <see cref="T:System.Object" /> for which a hash code is to be returned.</param>
+        /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
+        public int GetHashCode(IntPtr obj) => obj.GetHashCode();
+        #endregion
+    }
 }

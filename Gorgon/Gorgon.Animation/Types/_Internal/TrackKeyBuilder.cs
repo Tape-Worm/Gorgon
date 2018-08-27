@@ -202,10 +202,7 @@ namespace Gorgon.Animation
         /// </summary>
         /// <returns>The <see cref="GorgonAnimationBuilder"/> for the animation containing the track being edited.</returns>
         /// <seealso cref="GorgonAnimationBuilder"/>
-        public GorgonAnimationBuilder EndEdit()
-        {
-            return _parent;
-        }
+        public GorgonAnimationBuilder EndEdit() => _parent;
         #endregion
 
         #region Constructor/Finalizer.

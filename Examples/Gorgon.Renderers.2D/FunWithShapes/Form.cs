@@ -92,7 +92,7 @@ namespace Gorgon.Examples
 				// Set up a random color.				
 				paintColor = Color.FromArgb((byte)GorgonRandom.RandomInt32(128, 255), GorgonRandom.RandomInt32(64, 255), GorgonRandom.RandomInt32(64, 255), 0);
                 DX.Vector2 startPosition = new DX.Vector2(sin + _halfSize.Width, cos + _halfSize.Height);
-                DX.Vector2 endPosition = new DX.Vector2(cos * (GorgonRandom.RandomSingle(_halfSize.Width * 0.82f)) + startPosition.X, sin * (GorgonRandom.RandomSingle(_halfSize.Height * 0.82f)) + startPosition.Y);
+                DX.Vector2 endPosition = new DX.Vector2((cos * (GorgonRandom.RandomSingle(_halfSize.Width * 0.82f))) + startPosition.X, (sin * (GorgonRandom.RandomSingle(_halfSize.Height * 0.82f))) + startPosition.Y);
                 _renderer.DrawLine(startPosition.X, startPosition.Y, endPosition.X, endPosition.Y, paintColor);
 				//Gorgon.Screen.Line(sin + _halfWidth, cos + _halfHeight, cos * (RandomValue * _halfWidth), sin * (RandomValue * _halfHeight), paintColor);
 			}
@@ -108,8 +108,8 @@ namespace Gorgon.Examples
 		        float radius = GorgonRandom.RandomSingle(5.0f);
                 DX.Vector2 spotPosition = new DX.Vector2((GorgonRandom.RandomSingle((_halfSize.Height / 2.0f)) + _halfSize.Width - (_halfSize.Height / 4.0f)),
                                                          (GorgonRandom.RandomSingle((_halfSize.Height / 2.0f)) + _halfSize.Height - (_halfSize.Height / 4.0f)));
-		        _renderer.DrawEllipse(new DX.RectangleF(spotPosition.X - radius * 0.5f,
-		                                                spotPosition.Y - radius * 0.5f,
+		        _renderer.DrawEllipse(new DX.RectangleF(spotPosition.X - (radius * 0.5f),
+		                                                spotPosition.Y - (radius * 0.5f),
 		                                                radius,
 		                                                radius),
 		                              Color.Black);
@@ -253,16 +253,13 @@ namespace Gorgon.Examples
             // Update the image.
             DrawAPrettyPicture();
 	    }
-		#endregion
+        #endregion
 
-		#region Constructor.
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		public Form()
-		{
-			InitializeComponent();
-		}
-		#endregion
-	}
+        #region Constructor.
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        public Form() => InitializeComponent();
+        #endregion
+    }
 }

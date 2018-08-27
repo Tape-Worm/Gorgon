@@ -196,19 +196,16 @@ namespace Gorgon.Examples
 			_imageGraphics = DrawingGraphics.FromImage(_drawing);
 		}
 
-		/// <summary>
-		/// Function to clear the drawing.
-		/// </summary>
-		public void ClearDrawing()
-		{
-			_imageGraphics.Clear(Color.Transparent);
-		}
+        /// <summary>
+        /// Function to clear the drawing.
+        /// </summary>
+        public void ClearDrawing() => _imageGraphics.Clear(Color.Transparent);
 
-		/// <summary>
-		/// Function to clear the control surface.
-		/// </summary>
-		/// <param name="color">Color to clear with.</param>
-		public void Clear(Color color)
+        /// <summary>
+        /// Function to clear the control surface.
+        /// </summary>
+        /// <param name="color">Color to clear with.</param>
+        public void Clear(Color color)
 		{
 			_buffer.Graphics.Clear(color);
 			_buffer.Graphics.DrawImage(_drawing, Point.Empty);
@@ -236,8 +233,8 @@ namespace Gorgon.Examples
 		/// <param name="color">Color to use.</param>
 		public void DrawCursor(Point position, Color color)
 		{			
-			position = new Point(position.X - CursorSize.Width / 2,
-									position.Y - CursorSize.Height / 2);
+			position = new Point(position.X - (CursorSize.Width / 2),
+									position.Y - (CursorSize.Height / 2));
 
 			_cursorTint += GorgonTiming.Delta * (_cursorFlash / 256.0f);
 

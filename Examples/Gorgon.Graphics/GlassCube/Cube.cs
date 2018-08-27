@@ -112,15 +112,12 @@ namespace Gorgon.Examples
         /// <param name="x">X axis translation.</param>
         /// <param name="y">Y axis translation.</param>
         /// <param name="z">Z axis translation.</param>
-        public void Translate(float x, float y, float z)
-        {
-			DX.Matrix.Translation(x, y, z, out _translation);
-        }
+        public void Translate(float x, float y, float z) => DX.Matrix.Translation(x, y, z, out _translation);
 
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		public void Dispose()
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
 		{
 			VertexBuffer[0].VertexBuffer.Dispose();
 			IndexBuffer?.Dispose();

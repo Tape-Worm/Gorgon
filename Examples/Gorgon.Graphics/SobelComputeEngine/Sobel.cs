@@ -83,10 +83,7 @@ namespace Gorgon.Graphics.Example
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
-        public void Dispose()
-        {
-            _sobelData?.Dispose();
-        }
+        public void Dispose() => _sobelData?.Dispose();
         #endregion
 
         #region Constructor/Finalizer.

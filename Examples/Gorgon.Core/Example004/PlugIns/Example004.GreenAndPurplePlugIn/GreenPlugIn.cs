@@ -36,22 +36,19 @@ namespace Gorgon.Examples
 	internal class GreenPlugIn
 		: TextColorPlugIn
 	{
-		#region Methods.
-		/// <summary>
-		/// Function to create the writer that will output our text with a specified color.
-		/// </summary>
-		/// <returns>The writer interface.</returns>
-		public override TextColorWriter CreateWriter()
-		{
-			return new TextMultiColorWriter(ConsoleColor.Green);
-		}
-		#endregion
+        #region Methods.
+        /// <summary>
+        /// Function to create the writer that will output our text with a specified color.
+        /// </summary>
+        /// <returns>The writer interface.</returns>
+        public override TextColorWriter CreateWriter() => new TextMultiColorWriter(ConsoleColor.Green);
+        #endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GreenPlugIn" /> class.
-		/// </summary>
-		public GreenPlugIn()
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GreenPlugIn" /> class.
+        /// </summary>
+        public GreenPlugIn()
 			: base("This plug-in will print green text.")
 		{
 			// Here we can pass a description of the plug-in back to the application.

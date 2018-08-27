@@ -37,25 +37,22 @@ namespace Gorgon.Configuration
 	public sealed class GorgonOptionBag
 		: GorgonNamedObjectList<IGorgonOption>, IGorgonOptionBag
 	{
-		#region Methods.
-		/// <summary>
-		/// Function to retrieve the value for an option.
-		/// </summary>
-		/// <typeparam name="T">The type of data for the option.</typeparam>
-		/// <param name="optionName">The name of the option.</param>
-		/// <returns>The value stored with the option.</returns>
-		public T GetOptionValue<T>(string optionName)
-		{
-			return GetItemByName(optionName).GetValue<T>();
-		}
+        #region Methods.
+        /// <summary>
+        /// Function to retrieve the value for an option.
+        /// </summary>
+        /// <typeparam name="T">The type of data for the option.</typeparam>
+        /// <param name="optionName">The name of the option.</param>
+        /// <returns>The value stored with the option.</returns>
+        public T GetOptionValue<T>(string optionName) => GetItemByName(optionName).GetValue<T>();
 
-		/// <summary>
-		/// Function to assign a value for an option.
-		/// </summary>
-		/// <typeparam name="T">The type of data for the option.</typeparam>
-		/// <param name="optionName">The name of the option.</param>
-		/// <param name="value">The value to assign to the option.</param>
-		public void SetOptionValue<T>(string optionName, T value)
+        /// <summary>
+        /// Function to assign a value for an option.
+        /// </summary>
+        /// <typeparam name="T">The type of data for the option.</typeparam>
+        /// <param name="optionName">The name of the option.</param>
+        /// <param name="value">The value to assign to the option.</param>
+        public void SetOptionValue<T>(string optionName, T value)
 		{
 			if (!Contains(optionName))
 			{

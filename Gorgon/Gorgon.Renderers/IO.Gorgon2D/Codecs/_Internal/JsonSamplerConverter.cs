@@ -195,9 +195,6 @@ namespace Gorgon.IO
         /// Initializes a new instance of the <see cref="JsonSamplerConverter"/> class.
         /// </summary>
         /// <param name="graphics">The graphics interface used for resource look up.</param>
-        public JsonSamplerConverter(GorgonGraphics graphics)
-        {
-            _graphics = graphics;
-        }
+        public JsonSamplerConverter(GorgonGraphics graphics) => _graphics = graphics;
     }
 }

@@ -88,19 +88,16 @@ namespace Gorgon.Graphics.Core
 		/// </para>
 		/// </remarks>
 		public readonly int Quality;
-		#endregion
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to determine if two instances are equal.
-		/// </summary>
-		/// <param name="left">Left value to compare.</param>
-		/// <param name="right">Right value to compare.</param>
-		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-		public static bool Equals(GorgonMultisampleInfo left, GorgonMultisampleInfo right)
-		{
-			return left.Count == right.Count && left.Quality == right.Quality;
-		}
+        #region Methods.
+        /// <summary>
+        /// Function to determine if two instances are equal.
+        /// </summary>
+        /// <param name="left">Left value to compare.</param>
+        /// <param name="right">Right value to compare.</param>
+        /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+        public static bool Equals(GorgonMultisampleInfo left, GorgonMultisampleInfo right) => left.Count == right.Count && left.Quality == right.Quality;
 
         /// <summary>
         /// Determines whether the specified <see cref="object" /> is equal to this instance.
@@ -141,45 +138,36 @@ namespace Gorgon.Graphics.Core
 			return !Equals(left, right);
 		}
 
-		/// <summary>
-		/// Returns a hash code for this instance.
-		/// </summary>
-		/// <returns>
-		/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
-		/// </returns>
-		public override int GetHashCode()
-		{
-			return 281.GenerateHash(Count).GenerateHash(Quality);
-		}
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// </returns>
+        public override int GetHashCode() => 281.GenerateHash(Count).GenerateHash(Quality);
 
-		/// <summary>
-		/// Returns a <see cref="string" /> that represents this instance.
-		/// </summary>
-		/// <returns>
-		/// A <see cref="string" /> that represents this instance.
-		/// </returns>
-		public override string ToString()
-		{
-		    return string.Format(Resources.GORGFX_TOSTR_MULTISAMPLEINFO, Count, Quality);
-		}
+        /// <summary>
+        /// Returns a <see cref="string" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="string" /> that represents this instance.
+        /// </returns>
+        public override string ToString() => string.Format(Resources.GORGFX_TOSTR_MULTISAMPLEINFO, Count, Quality);
 
-		/// <summary>
-		/// Function to determine if two instances are equal.
-		/// </summary>
-		/// <param name="other">Other instance for the equality test.</param>
-		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-		public bool Equals(GorgonMultisampleInfo other)
-		{
-			return Equals(this, other);
-		}
-		#endregion
+        /// <summary>
+        /// Function to determine if two instances are equal.
+        /// </summary>
+        /// <param name="other">Other instance for the equality test.</param>
+        /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+        public bool Equals(GorgonMultisampleInfo other) => Equals(this, other);
+        #endregion
 
-		#region Constructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonMultisampleInfo"/> struct.
-		/// </summary>
-		/// <param name="sampleDesc">The DXGI sample description.</param>
-		internal GorgonMultisampleInfo(SampleDescription sampleDesc)
+        #region Constructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonMultisampleInfo"/> struct.
+        /// </summary>
+        /// <param name="sampleDesc">The DXGI sample description.</param>
+        internal GorgonMultisampleInfo(SampleDescription sampleDesc)
 		{
 			Count = sampleDesc.Count.Max(1).Min(D3D11.Device.MultisampleCountMaximum);
 			Quality = sampleDesc.Quality;

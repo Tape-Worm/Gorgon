@@ -78,19 +78,13 @@ namespace Gorgon.Graphics.Core
         /// Returns a <see cref="string" /> that represents this instance.
         /// </summary>
         /// <returns>A <see cref="string" /> that represents this instance.</returns>
-        public override string ToString()
-        {
-            return string.Format(Resources.GORGFX_TOSTR_UAV_BINDING, InitialCount, (ReadWriteView == null ? "(NULL)" : ReadWriteView.Resource.Name));
-        }
+        public override string ToString() => string.Format(Resources.GORGFX_TOSTR_UAV_BINDING, InitialCount, (ReadWriteView == null ? "(NULL)" : ReadWriteView.Resource.Name));
 
         /// <summary>
         /// Returns a hash code for this instance.
         /// </summary>
         /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
-        public override int GetHashCode()
-        {
-            return 281.GenerateHash(InitialCount).GenerateHash(ReadWriteView?.GetHashCode() ?? 0);
-        }
+        public override int GetHashCode() => 281.GenerateHash(InitialCount).GenerateHash(ReadWriteView?.GetHashCode() ?? 0);
 
         /// <summary>
         /// Function to determine if two instances are equal.
@@ -98,10 +92,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
         /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-        public static bool Equals(in GorgonReadWriteViewBinding left, in GorgonReadWriteViewBinding right)
-        {
-            return (left.InitialCount == right.InitialCount) && (left.ReadWriteView == right.ReadWriteView);
-        }
+        public static bool Equals(in GorgonReadWriteViewBinding left, in GorgonReadWriteViewBinding right) => (left.InitialCount == right.InitialCount) && (left.ReadWriteView == right.ReadWriteView);
 
         /// <summary>Indicates whether this instance and a specified object are equal.</summary>
         /// <param name="obj">The object to compare with the current instance. </param>
@@ -121,20 +112,14 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="other">The other instance to use for comparison.</param>
         /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-        public bool Equals(in GorgonReadWriteViewBinding other)
-        {
-            return Equals(in this, in other);
-        }
+        public bool Equals(in GorgonReadWriteViewBinding other) => Equals(in this, in other);
 
         /// <summary>
         /// Function to compare this instance with another.
         /// </summary>
         /// <param name="other">The other instance to use for comparison.</param>
         /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-        public bool Equals(GorgonReadWriteViewBinding other)
-        {
-            return Equals(in this, in other);
-        }
+        public bool Equals(GorgonReadWriteViewBinding other) => Equals(in this, in other);
 
         /// <summary>
         /// Operator to determine equality between two instances.

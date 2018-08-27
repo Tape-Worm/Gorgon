@@ -111,30 +111,24 @@ namespace Gorgon.Native
         /// Indicates if the current OS version matches, or is greater than, Windows 10 with the specified build number.
         /// </summary>
         /// <returns><b>true</b> if the current OS version matches, or is greater than Windows 10 with the specified build number; otherwise <b>false</b>.</returns>
-	    public static bool IsWindows10OrGreater(int build)
-	    {
-	        return IsWindowsVersionOrGreater(10, 0, (uint)build, null);
-	    }
+	    public static bool IsWindows10OrGreater(int build) => IsWindowsVersionOrGreater(10, 0, (uint)build, null);
 
-		/// <summary>
-		/// Function to retrieve the nearest monitor to the window.
-		/// </summary>
-		/// <param name="hwnd">Handle to the window.</param>
-		/// <param name="flags">Flags to pass in.</param>
-		/// <returns></returns>
-		[DllImport("user32.dll", CharSet=CharSet.Auto)]
+        /// <summary>
+        /// Function to retrieve the nearest monitor to the window.
+        /// </summary>
+        /// <param name="hwnd">Handle to the window.</param>
+        /// <param name="flags">Flags to pass in.</param>
+        /// <returns></returns>
+        [DllImport("user32.dll", CharSet=CharSet.Auto)]
 		public static extern IntPtr MonitorFromWindow(IntPtr hwnd, MonitorFlags flags);
-		#endregion
+        #endregion
 
-		#region Constructor.
-		/// <summary>
-		/// Initializes static members of the <see cref="Win32API"/> class.
-		/// </summary>
-		static Win32API()
-		{
-			Marshal.PrelinkAll(typeof(Win32API));
-		}
-		#endregion
-	}
+        #region Constructor.
+        /// <summary>
+        /// Initializes static members of the <see cref="Win32API"/> class.
+        /// </summary>
+        static Win32API() => Marshal.PrelinkAll(typeof(Win32API));
+        #endregion
+    }
 	// ReSharper restore InconsistentNaming
 }

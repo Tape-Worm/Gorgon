@@ -154,10 +154,7 @@ namespace Gorgon.IO
         /// <param name="left">Left instance to compare.</param>
         /// <param name="right">Right instance to compare.</param>
         /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-        public static bool Equals(GorgonFileExtension left, GorgonFileExtension right)
-        {
-            return string.Equals(left.Extension, right.Extension, StringComparison.OrdinalIgnoreCase);
-        }
+        public static bool Equals(GorgonFileExtension left, GorgonFileExtension right) => string.Equals(left.Extension, right.Extension, StringComparison.OrdinalIgnoreCase);
 
         /// <summary>
         /// Determines whether the specified <see cref="object"/>, is equal to this instance.
@@ -182,10 +179,7 @@ namespace Gorgon.IO
         /// <returns>
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
         /// </returns>
-        public override int GetHashCode()
-        {
-            return 281.GenerateHash(Extension.ToUpperInvariant());
-        }
+        public override int GetHashCode() => 281.GenerateHash(Extension.ToUpperInvariant());
 
         /// <summary>
         /// Returns a <see cref="string" /> that represents this instance.
@@ -193,10 +187,7 @@ namespace Gorgon.IO
         /// <returns>
         /// A <see cref="string" /> that represents this instance.
         /// </returns>
-        public override string ToString()
-        {
-            return string.Format(Resources.GOR_TOSTR_FILE_EXTENSION, Description, Extension);
-        }
+        public override string ToString() => string.Format(Resources.GOR_TOSTR_FILE_EXTENSION, Description, Extension);
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -205,10 +196,7 @@ namespace Gorgon.IO
         /// <returns>
         /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
         /// </returns>
-        public bool Equals(GorgonFileExtension other)
-        {
-            return Equals(this, other);
-        }
+        public bool Equals(GorgonFileExtension other) => Equals(this, other);
 
         /// <summary>
         /// Compares the current object with another object of the same type.
@@ -217,10 +205,7 @@ namespace Gorgon.IO
         /// <returns>
         /// A value that indicates the relative order of the objects being compared. The return value has the following meanings: Value Meaning Less than zero This object is less than the <paramref name="other" /> parameter.Zero This object is equal to <paramref name="other" />. Greater than zero This object is greater than <paramref name="other" />.
         /// </returns>
-        public int CompareTo(GorgonFileExtension other)
-        {
-            return string.Compare(Extension, other.Extension, StringComparison.OrdinalIgnoreCase);
-        }
+        public int CompareTo(GorgonFileExtension other) => string.Compare(Extension, other.Extension, StringComparison.OrdinalIgnoreCase);
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.

@@ -241,32 +241,29 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="texture">Texture to build a view description for.</param>
         /// <returns>The shader view description.</returns>
-        private D3D11.UnorderedAccessViewDescription1 GetDesc2D(GorgonTexture2D texture)
-        {
-            return texture.ArrayCount == 1
+        private D3D11.UnorderedAccessViewDescription1 GetDesc2D(GorgonTexture2D texture) => texture.ArrayCount == 1
                        ? new D3D11.UnorderedAccessViewDescription1
-                         {
-                             Format = (Format)Format,
-                             Dimension = D3D11.UnorderedAccessViewDimension.Texture2D,
-                             Texture2D = 
+                       {
+                           Format = (Format)Format,
+                           Dimension = D3D11.UnorderedAccessViewDimension.Texture2D,
+                           Texture2D =
                              {
                                  MipSlice = MipSlice,
                                  PlaneSlice = 0
                              }
-                         }
+                       }
                        : new D3D11.UnorderedAccessViewDescription1
-                         {
-                             Format = (Format)Format,
-                             Dimension = D3D11.UnorderedAccessViewDimension.Texture2DArray,
-                             Texture2DArray =
+                       {
+                           Format = (Format)Format,
+                           Dimension = D3D11.UnorderedAccessViewDimension.Texture2DArray,
+                           Texture2DArray =
                              {
                                  MipSlice = MipSlice,
                                  FirstArraySlice = ArrayCount,
                                  ArraySize = ArrayIndex,
                                  PlaneSlice = 0
                              }
-                         };
-        }
+                       };
 
         /// <summary>
         /// Function to perform the creation of a specific kind of view.

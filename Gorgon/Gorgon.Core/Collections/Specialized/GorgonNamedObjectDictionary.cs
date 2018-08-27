@@ -73,61 +73,46 @@ namespace Gorgon.Collections.Specialized
 				UpdateItem(name, value);
 			}
 		}
-		#endregion
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to clear the items from the list.
-		/// </summary>
-		public void Clear()
-		{
-			Items.Clear();
-		}
+        #region Methods.
+        /// <summary>
+        /// Function to clear the items from the list.
+        /// </summary>
+        public void Clear() => Items.Clear();
 
-		/// <summary>
-		/// Function to add an item to the list.
-		/// </summary>
-		/// <param name="item">Item to add to the list.</param>
-		public void Add(T item)
-		{
-			Items.Add(item.Name, item);
-		}
+        /// <summary>
+        /// Function to add an item to the list.
+        /// </summary>
+        /// <param name="item">Item to add to the list.</param>
+        public void Add(T item) => Items.Add(item.Name, item);
 
-		/// <summary>
-		/// Function to add a list of items to this list.
-		/// </summary>
-		/// <param name="items">The items to add to this list.</param>
-		public void AddRange(IEnumerable<T> items)
-		{
-			AddItems(items);
-		}
+        /// <summary>
+        /// Function to add a list of items to this list.
+        /// </summary>
+        /// <param name="items">The items to add to this list.</param>
+        public void AddRange(IEnumerable<T> items) => AddItems(items);
 
-		/// <summary>
-		/// Function to remove an item from this list.
-		/// </summary>
-		/// <param name="item">Item to remove from the list.</param>
-		public void Remove(T item)
-		{
-			Items.Remove(item.Name);
-		}
+        /// <summary>
+        /// Function to remove an item from this list.
+        /// </summary>
+        /// <param name="item">Item to remove from the list.</param>
+        public void Remove(T item) => Items.Remove(item.Name);
 
-		/// <summary>
-		/// Function to remove an item with the specified name from this list.
-		/// </summary>
-		/// <param name="name">Name of the item to remove.</param>
-		/// <exception cref="KeyNotFoundException">Thrown when no item with the specified <paramref name="name"/> can be found.</exception>
-		public void Remove(string name)
-		{
-			Items.Remove(name);
-		}
-		#endregion
+        /// <summary>
+        /// Function to remove an item with the specified name from this list.
+        /// </summary>
+        /// <param name="name">Name of the item to remove.</param>
+        /// <exception cref="KeyNotFoundException">Thrown when no item with the specified <paramref name="name"/> can be found.</exception>
+        public void Remove(string name) => Items.Remove(name);
+        #endregion
 
-		#region Constructor/Finalizer.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonNamedObjectDictionary{T}"/> class.
-		/// </summary>
-		/// <param name="caseSensitive">[Optional] <b>true</b> to use case sensitive keys, <b>false</b> to ignore casing.</param>
-		public GorgonNamedObjectDictionary(bool caseSensitive = true)
+        #region Constructor/Finalizer.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonNamedObjectDictionary{T}"/> class.
+        /// </summary>
+        /// <param name="caseSensitive">[Optional] <b>true</b> to use case sensitive keys, <b>false</b> to ignore casing.</param>
+        public GorgonNamedObjectDictionary(bool caseSensitive = true)
 			: base(caseSensitive)
 		{
 		}

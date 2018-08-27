@@ -92,17 +92,14 @@ namespace Gorgon.UI
 
 			DrawMessage(g, maxTextHeight);			
 		}
-		#endregion
+        #endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		public ConfirmationDialogEx()
-		{
-			InitializeComponent();
-		}
-		#endregion
-	}
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        public ConfirmationDialogEx() => InitializeComponent();
+        #endregion
+    }
 }
 

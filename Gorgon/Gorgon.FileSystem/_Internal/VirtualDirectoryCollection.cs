@@ -178,34 +178,28 @@ namespace Gorgon.IO
 			}
 		}
 
-		/// <summary>
-		/// Function to return the internal enumerable for this collection.
-		/// </summary>
-		/// <returns>
-		/// The <see cref="IEnumerable{T}"/> for this collection.
-		/// </returns>
-		internal IEnumerable<VirtualDirectory> InternalEnumerable()
-		{
-			return _directories.Select(item => item.Value);
-		}
+        /// <summary>
+        /// Function to return the internal enumerable for this collection.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="IEnumerable{T}"/> for this collection.
+        /// </returns>
+        internal IEnumerable<VirtualDirectory> InternalEnumerable() => _directories.Select(item => item.Value);
 
-			/// <summary>
-		/// Returns an enumerator that iterates through a collection.
-		/// </summary>
-		/// <returns>
-		/// An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.
-		/// </returns>
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return ((IEnumerable)_directories.Values).GetEnumerator();
-		}
+        /// <summary>
+        /// Returns an enumerator that iterates through a collection.
+        /// </summary>
+        /// <returns>
+        /// An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.
+        /// </returns>
+        IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)_directories.Values).GetEnumerator();
 
-		/// <summary>
-		/// Function to add a new directory to the collection.
-		/// </summary>
-		/// <param name="mountPoint">The mount point that is creating this directory.</param>
-		/// <param name="path">The path to the directory.</param>
-		public VirtualDirectory Add(GorgonFileSystemMountPoint mountPoint, string path)
+        /// <summary>
+        /// Function to add a new directory to the collection.
+        /// </summary>
+        /// <param name="mountPoint">The mount point that is creating this directory.</param>
+        /// <param name="path">The path to the directory.</param>
+        public VirtualDirectory Add(GorgonFileSystemMountPoint mountPoint, string path)
 		{
 			path = path.FormatDirectory('/');
 
@@ -252,20 +246,17 @@ namespace Gorgon.IO
 			return directory;
 		}
 
-		/// <summary>
-		/// Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1" />.
-		/// </summary>
-		public void Clear()
-		{
-			_directories.Clear();
-		}
+        /// <summary>
+        /// Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1" />.
+        /// </summary>
+        public void Clear() => _directories.Clear();
 
-		/// <summary>
-		/// Function to return whether an item with the specified name exists in this collection.
-		/// </summary>
-		/// <param name="name">Name of the item to find.</param>
-		/// <returns><b>true</b>if found, <b>false</b> if not.</returns>
-		public bool Contains(string name)
+        /// <summary>
+        /// Function to return whether an item with the specified name exists in this collection.
+        /// </summary>
+        /// <param name="name">Name of the item to find.</param>
+        /// <returns><b>true</b>if found, <b>false</b> if not.</returns>
+        public bool Contains(string name)
 		{
 			name = name.FormatPathPart();
 
@@ -290,17 +281,14 @@ namespace Gorgon.IO
 			value = directory;
 			return true;
 		}
-		#endregion
+        #endregion
 
-		#region Constructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="VirtualDirectoryCollection" /> class.
-		/// </summary>
-		/// <param name="parent">The parent directory that owns this collection.</param>
-		public VirtualDirectoryCollection(VirtualDirectory parent)
-		{
-			_parent = parent;
-		}
-		#endregion
-	}
+        #region Constructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="VirtualDirectoryCollection" /> class.
+        /// </summary>
+        /// <param name="parent">The parent directory that owns this collection.</param>
+        public VirtualDirectoryCollection(VirtualDirectory parent) => _parent = parent;
+        #endregion
+    }
 }

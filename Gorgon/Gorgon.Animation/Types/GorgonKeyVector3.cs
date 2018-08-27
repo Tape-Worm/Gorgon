@@ -71,26 +71,23 @@ namespace Gorgon.Animation
 	    {
 	        get;
 	    } = typeof(DX.Vector3);
-		#endregion
+        #endregion
 
-	    #region Methods.
-	    /// <summary>
-	    /// Function to clone an object.
-	    /// </summary>
-	    /// <returns>The cloned object.</returns>
-	    public IGorgonKeyFrame Clone()
-	    {
-	        return new GorgonKeyVector3(Time, Value);
-	    }
-	    #endregion
+        #region Methods.
+        /// <summary>
+        /// Function to clone an object.
+        /// </summary>
+        /// <returns>The cloned object.</returns>
+        public IGorgonKeyFrame Clone() => new GorgonKeyVector3(Time, Value);
+        #endregion
 
-		#region Constructor/Destructor.
-	    /// <summary>
-	    /// Initializes a new instance of the <see cref="GorgonKeyVector3" /> struct.
-	    /// </summary>
-	    /// <param name="time">The time for the key frame.</param>
-	    /// <param name="value">The value to apply to the key frame.</param>
-	    public GorgonKeyVector3(float time, DX.Vector2 value)
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonKeyVector3" /> struct.
+        /// </summary>
+        /// <param name="time">The time for the key frame.</param>
+        /// <param name="value">The value to apply to the key frame.</param>
+        public GorgonKeyVector3(float time, DX.Vector2 value)
 	    {
 	        Time = time;
 	        Value = new DX.Vector3(value, 0);

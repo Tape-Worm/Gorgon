@@ -406,7 +406,7 @@ namespace Gorgon.Renderers
 		                }
 
 
-		                image.Buffers[0].Data[y * imageBuffer.PitchInformation.RowPitch + x] = (byte)(simplexNoise * 255.0f);
+		                image.Buffers[0].Data[(y * imageBuffer.PitchInformation.RowPitch) + x] = (byte)(simplexNoise * 255.0f);
 		            }
 		        }
 
@@ -491,43 +491,37 @@ namespace Gorgon.Renderers
 		    _timingBuffer.Buffer.SetData(ref _time);
 		}
 
-	    /// <summary>
-	    /// Function called to build a new (or return an existing) 2D batch state.
-	    /// </summary>
-	    /// <param name="passIndex">The index of the current rendering pass.</param>
-	    /// <param name="statesChanged"><b>true</b> if the blend, raster, or depth/stencil state was changed. <b>false</b> if not.</param>
-	    /// <returns>The 2D batch state.</returns>
-	    protected override Gorgon2DBatchState OnGetBatchState(int passIndex, bool statesChanged)
-	    {
-	        return _batchState;
-	    }
+        /// <summary>
+        /// Function called to build a new (or return an existing) 2D batch state.
+        /// </summary>
+        /// <param name="passIndex">The index of the current rendering pass.</param>
+        /// <param name="statesChanged"><b>true</b> if the blend, raster, or depth/stencil state was changed. <b>false</b> if not.</param>
+        /// <returns>The 2D batch state.</returns>
+        protected override Gorgon2DBatchState OnGetBatchState(int passIndex, bool statesChanged) => _batchState;
 
-	    /// <summary>
-	    /// Function called to render a single effect pass.
-	    /// </summary>
-	    /// <param name="passIndex">The index of the pass being rendered.</param>
-	    /// <param name="renderMethod">The method used to render a scene for the effect.</param>
-	    /// <param name="output">The render target that will receive the final render data.</param>
-	    /// <remarks>
-	    /// <para>
-	    /// Applications must implement this in order to see any results from the effect.
-	    /// </para>
-	    /// </remarks>
-	    protected override void OnRenderPass(int passIndex, Action<int, int, DX.Size2> renderMethod, GorgonRenderTargetView output)
-	    {
-            renderMethod(passIndex, PassCount, new DX.Size2(output.Width, output.Height));
-	    }
+        /// <summary>
+        /// Function called to render a single effect pass.
+        /// </summary>
+        /// <param name="passIndex">The index of the pass being rendered.</param>
+        /// <param name="renderMethod">The method used to render a scene for the effect.</param>
+        /// <param name="output">The render target that will receive the final render data.</param>
+        /// <remarks>
+        /// <para>
+        /// Applications must implement this in order to see any results from the effect.
+        /// </para>
+        /// </remarks>
+        protected override void OnRenderPass(int passIndex, Action<int, int, DX.Size2> renderMethod, GorgonRenderTargetView output) => renderMethod(passIndex, PassCount, new DX.Size2(output.Width, output.Height));
 
-	    /// <summary>
-	    /// Function called after rendering is complete.
-	    /// </summary>
-	    /// <param name="output">The final render target that will receive the rendering from the effect.</param>
-	    /// <remarks>
-	    /// <para>
-	    /// Applications can use this to clean up and/or restore any states when rendering is finished. This is an ideal method to copy any rendering imagery to the final output render target.
-	    /// </para>
-	    /// </remarks>
-	    protected override void OnAfterRender(GorgonRenderTargetView output)
+        /// <summary>
+        /// Function called after rendering is complete.
+        /// </summary>
+        /// <param name="output">The final render target that will receive the rendering from the effect.</param>
+        /// <remarks>
+        /// <para>
+        /// Applications can use this to clean up and/or restore any states when rendering is finished. This is an ideal method to copy any rendering imagery to the final output render target.
+        /// </para>
+        /// </remarks>
+        protected override void OnAfterRender(GorgonRenderTargetView output)
 		{
 		    if (Graphics.RenderTargets[0] != output)
 		    {

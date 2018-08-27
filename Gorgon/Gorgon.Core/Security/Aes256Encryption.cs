@@ -173,35 +173,29 @@ namespace Gorgon.Security
 			return textEncoding.GetString(Decrypt(value));
 		}
 
-	    /// <summary>
-	    /// Function to encrypt a string and return it as a base-64 encoded string.
-	    /// </summary>
-	    /// <param name="value">String value to encrypt.</param>
-	    /// <param name="textEncoding">[Optional] The type of text encoding to use.</param>
-	    /// <returns>The encrypted string as a base-64 encoded string.</returns>
-	    /// <remarks>
-	    /// When the <paramref name="textEncoding"/> is set to <b>null</b> then UTF-8 encoding will be used as the default.
-	    /// </remarks>
-	    /// <exception cref="SecurityException">Thrown if no symmetric key was provided, or is invalid.</exception>
-	    public string EncryptBase64String(string value, Encoding textEncoding = null)
-		{
-			return string.IsNullOrEmpty(value) ? string.Empty : Convert.ToBase64String(EncryptString(value, textEncoding));
-		}
+        /// <summary>
+        /// Function to encrypt a string and return it as a base-64 encoded string.
+        /// </summary>
+        /// <param name="value">String value to encrypt.</param>
+        /// <param name="textEncoding">[Optional] The type of text encoding to use.</param>
+        /// <returns>The encrypted string as a base-64 encoded string.</returns>
+        /// <remarks>
+        /// When the <paramref name="textEncoding"/> is set to <b>null</b> then UTF-8 encoding will be used as the default.
+        /// </remarks>
+        /// <exception cref="SecurityException">Thrown if no symmetric key was provided, or is invalid.</exception>
+        public string EncryptBase64String(string value, Encoding textEncoding = null) => string.IsNullOrEmpty(value) ? string.Empty : Convert.ToBase64String(EncryptString(value, textEncoding));
 
-	    /// <summary>
-	    /// Function to decrypt a base 64 string.
-	    /// </summary>
-	    /// <param name="base64String">A base 64 encoded and encrypted string.</param>
-	    /// <param name="textEncoding">[Optional] The type of text encoding to use.</param>
-	    /// <returns>The decrypted string.</returns>
-	    /// <remarks>
-	    /// When the <paramref name="textEncoding"/> is set to <b>null</b> then encoding UTF-8 will be used as the default.
-	    /// </remarks>
-	    /// <exception cref="SecurityException">Thrown if no symmetric key was provided, or is invalid.</exception>
-	    public string DecryptBase64String(string base64String, Encoding textEncoding = null)
-		{
-			return string.IsNullOrEmpty(base64String) ? string.Empty : DecryptString(Convert.FromBase64String(base64String));
-		}
+        /// <summary>
+        /// Function to decrypt a base 64 string.
+        /// </summary>
+        /// <param name="base64String">A base 64 encoded and encrypted string.</param>
+        /// <param name="textEncoding">[Optional] The type of text encoding to use.</param>
+        /// <returns>The decrypted string.</returns>
+        /// <remarks>
+        /// When the <paramref name="textEncoding"/> is set to <b>null</b> then encoding UTF-8 will be used as the default.
+        /// </remarks>
+        /// <exception cref="SecurityException">Thrown if no symmetric key was provided, or is invalid.</exception>
+        public string DecryptBase64String(string base64String, Encoding textEncoding = null) => string.IsNullOrEmpty(base64String) ? string.Empty : DecryptString(Convert.FromBase64String(base64String));
 
         /// <summary>
         /// Function to generate an initialization vector and key.

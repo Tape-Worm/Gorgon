@@ -439,31 +439,28 @@ namespace Gorgon.Graphics.Core
 			Graphics.D3DDeviceContext.CopyResource(D3DResource, destTexture.D3DResource);
 		}
 
-	    /// <summary>
-	    /// Function to calculate the size of a texture, in bytes with the given parameters.
-	    /// </summary>
-	    /// <param name="width">The width of the texture.</param>
-	    /// <param name="arrayCount">The number of array indices.</param>
-	    /// <param name="format">The format for the texture.</param>
-	    /// <param name="mipCount">The number of mip map levels.</param>
-	    /// <returns>The number of bytes for the texture.</returns>
-	    public static int CalculateSizeInBytes(int width, int arrayCount, BufferFormat format, int mipCount)
-	    {
-	        return GorgonImage.CalculateSizeInBytes(ImageType.Image1D,
-	                                                width,
+        /// <summary>
+        /// Function to calculate the size of a texture, in bytes with the given parameters.
+        /// </summary>
+        /// <param name="width">The width of the texture.</param>
+        /// <param name="arrayCount">The number of array indices.</param>
+        /// <param name="format">The format for the texture.</param>
+        /// <param name="mipCount">The number of mip map levels.</param>
+        /// <returns>The number of bytes for the texture.</returns>
+        public static int CalculateSizeInBytes(int width, int arrayCount, BufferFormat format, int mipCount) => GorgonImage.CalculateSizeInBytes(ImageType.Image1D,
+                                                    width,
                                                     1,
-	                                                arrayCount,
-	                                                format,
-	                                                mipCount);
-	    }
+                                                    arrayCount,
+                                                    format,
+                                                    mipCount);
 
-	    /// <summary>
-	    /// Function to calculate the size of a texture, in bytes with the given parameters.
-	    /// </summary>
-	    /// <param name="info">The <see cref="IGorgonTexture1DInfo"/> used to define a texture.</param>
-	    /// <returns>The number of bytes for the texture.</returns>
-	    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
-	    public static int CalculateSizeInBytes(IGorgonTexture1DInfo info)
+        /// <summary>
+        /// Function to calculate the size of a texture, in bytes with the given parameters.
+        /// </summary>
+        /// <param name="info">The <see cref="IGorgonTexture1DInfo"/> used to define a texture.</param>
+        /// <returns>The number of bytes for the texture.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
+        public static int CalculateSizeInBytes(IGorgonTexture1DInfo info)
 	    {
 	        if (info == null)
 	        {
@@ -1248,47 +1245,35 @@ namespace Gorgon.Graphics.Core
 			}
 		}
 
-		/// <summary>
-		/// Function to convert a texel coordinate into a pixel coordinate.
-		/// </summary>
-		/// <param name="texelCoordinates">The texel coordinates to convert.</param>
-		/// <returns>The pixel coordinates.</returns>
-		public int ToPixel(float texelCoordinates)
-		{
-		    return (int)(texelCoordinates * Width);
-		}
+        /// <summary>
+        /// Function to convert a texel coordinate into a pixel coordinate.
+        /// </summary>
+        /// <param name="texelCoordinates">The texel coordinates to convert.</param>
+        /// <returns>The pixel coordinates.</returns>
+        public int ToPixel(float texelCoordinates) => (int)(texelCoordinates * Width);
 
-		/// <summary>
-		/// Function to convert a pixel coordinate into a texel coordinate.
-		/// </summary>
-		/// <param name="pixelCoordinates">The pixel coordinate to convert.</param>
-		/// <returns>The texel coordinates.</returns>
-		public float ToTexel(int pixelCoordinates)
-		{
-			return pixelCoordinates / (float)Width;
-		}
+        /// <summary>
+        /// Function to convert a pixel coordinate into a texel coordinate.
+        /// </summary>
+        /// <param name="pixelCoordinates">The pixel coordinate to convert.</param>
+        /// <returns>The texel coordinates.</returns>
+        public float ToTexel(int pixelCoordinates) => pixelCoordinates / (float)Width;
 
-		/// <summary>
-		/// Function to convert a texel rectangle into a pixel rectangle.
-		/// </summary>
-		/// <param name="texelCoordinates">The texel rectangle to convert.</param>
-		/// <returns>The pixel rectangle.</returns>
-		public GorgonRange ToPixel(GorgonRangeF texelCoordinates)
-		{
-		    return new GorgonRange((int)(texelCoordinates.Minimum * Width),
-		                           (int)(texelCoordinates.Maximum * Width));
-		}
+        /// <summary>
+        /// Function to convert a texel rectangle into a pixel rectangle.
+        /// </summary>
+        /// <param name="texelCoordinates">The texel rectangle to convert.</param>
+        /// <returns>The pixel rectangle.</returns>
+        public GorgonRange ToPixel(GorgonRangeF texelCoordinates) => new GorgonRange((int)(texelCoordinates.Minimum * Width),
+                                   (int)(texelCoordinates.Maximum * Width));
 
-		/// <summary>
-		/// Function to convert a pixel rectangle into a texel rectangle.
-		/// </summary>
-		/// <param name="pixelCoordinates">The pixel rectangle to convert.</param>
-		/// <returns>The texel rectangle.</returns>
-		public GorgonRangeF ToTexel(GorgonRange pixelCoordinates)
-		{
-		    return new GorgonRangeF(pixelCoordinates.Minimum / (float)Width,
-		                            pixelCoordinates.Maximum / (float)Width);
-		}
+        /// <summary>
+        /// Function to convert a pixel rectangle into a texel rectangle.
+        /// </summary>
+        /// <param name="pixelCoordinates">The pixel rectangle to convert.</param>
+        /// <returns>The texel rectangle.</returns>
+        public GorgonRangeF ToTexel(GorgonRange pixelCoordinates) => new GorgonRangeF(pixelCoordinates.Minimum / (float)Width,
+                                    pixelCoordinates.Maximum / (float)Width);
 
         /// <summary>
         /// Function to create a new <see cref="GorgonTexture1DView"/> for this texture.

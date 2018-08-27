@@ -20,40 +20,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: August 26, 2018 12:07:23 PM
+// Created: August 27, 2018 9:39:56 PM
 // 
 #endregion
 
-namespace Gorgon.Editor.UI
+using System.IO;
+
+namespace Gorgon.Editor.Services
 {
     /// <summary>
-    /// A data context for a view and <see cref="IViewModel"/>
+    /// A locator for finding the most suitable workspace for the project.
     /// </summary>
-    /// <typeparam name="T">The type of view model to use with the view.</typeparam>
-    /// <remarks>
-    /// <para>
-    /// This interface must be applied to views that wish to use a <see cref="IViewModel"/> as a data context. 
-    /// </para>
-    /// </remarks>
-    public interface IDataContext<T>
-        where T : IViewModel
+    internal interface IWorkspaceTester
     {
-        #region Properties.
         /// <summary>
-        /// Property to return the data context assigned to this view.
+        /// Function to test a location for accessibility.
         /// </summary>
-        T DataContext
-        {
-            get;
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to assign a data context to the view.
-        /// </summary>
-        /// <param name="dataContext">The data context to assign.</param>
-        void SetDataContext(T dataContext);
-        #endregion
+        /// <param name="path">The path to the workspace.</param>
+        /// <returns>A tuple containing a <see cref="bool"/> flag to indicate whether the <b>true</b> if the area is accessible or not, and a string containing the reason why it is not acceptable.</returns>
+        /// <remarks>
+        /// <para>
+        /// A workspace path is only accessible if it can be written to, deleted by the current user and is empty. If either of these conditions are not met, then this method will return <b>false</b>.
+        /// </para>
+        /// </remarks>
+        (bool isAcceptable, string reason) TestForAccessibility(DirectoryInfo path);
     }
 }

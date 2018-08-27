@@ -72,29 +72,20 @@ namespace Gorgon.Graphics.Core
         /// Function to return the state.
         /// </summary>
         /// <returns>The state created or updated by this builder.</returns>
-        public TRs Build()
-        {
-            return OnUpdate();
-        }
+        public TRs Build() => OnUpdate();
 
         /// <summary>
         /// Function to reset the builder to the specified state.
         /// </summary>
         /// <param name="state">[Optional] The specified state to copy.</param>
         /// <returns>The fluent builder interface.</returns>
-        public TB ResetTo(TRs state = null)
-        {
-            return state == null ? Clear() : OnResetTo(state);
-        }
+        public TB ResetTo(TRs state = null) => state == null ? Clear() : OnResetTo(state);
 
         /// <summary>
         /// Function to clear the builder to a default state.
         /// </summary>
         /// <returns>The fluent builder interface.</returns>
-        public TB Clear()
-        {
-            return OnClearState();
-        }
+        public TB Clear() => OnClearState();
         #endregion
 
         #region Constructor/Finalizer.
@@ -102,10 +93,7 @@ namespace Gorgon.Graphics.Core
         /// Initializes a new instance of the <see cref="GorgonStateBuilderCommon{TB,TRs}"/> class.
         /// </summary>
         /// <param name="renderState">The render state to use as a worker.</param>
-        private protected GorgonStateBuilderCommon(TRs renderState)
-        {
-            WorkingState = renderState;
-        }
+        private protected GorgonStateBuilderCommon(TRs renderState) => WorkingState = renderState;
         #endregion
     }
 }

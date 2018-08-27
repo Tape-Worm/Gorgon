@@ -145,6 +145,7 @@
     <Compile Include="Diagnostics\_Extensions\GorgonDebugExtensions.cs" />
     <Compile Include="IO\_Extensions\GorgonIOExtensions.cs" />
     <Compile Include="Math\_Extensions\GorgonMathExtensions.cs" />
+    <Compile Include="_Extensions\GorgonNullExtensions.cs" />
     <Compile Include="_Extensions\GorgonNumericFormattingExtensions.cs" />
     <Compile Include="Reflection\_Extensions\GorgonReflectionExtensions.cs" />
     <Compile Include="_Extensions\GorgonStringFormattingExtensions.cs" />

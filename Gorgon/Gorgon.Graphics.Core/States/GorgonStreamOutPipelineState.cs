@@ -122,19 +122,13 @@ namespace Gorgon.Graphics.Core
         /// Initializes a new instance of the <see cref="GorgonStreamOutPipelineState" /> class.
         /// </summary>
         /// <param name="pipelineState">The pipeline state to copy.</param>
-        internal GorgonStreamOutPipelineState(GorgonStreamOutPipelineState pipelineState)
-        {
-            PipelineState = new GorgonPipelineState(pipelineState.PipelineState);
-        }
+        internal GorgonStreamOutPipelineState(GorgonStreamOutPipelineState pipelineState) => PipelineState = new GorgonPipelineState(pipelineState.PipelineState);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonStreamOutPipelineState"/> class.
         /// </summary>
         /// <param name="pipelineState">State of the pipeline.</param>
-        internal GorgonStreamOutPipelineState(GorgonPipelineState pipelineState)
-        {
-            PipelineState = pipelineState;
-        }
+        internal GorgonStreamOutPipelineState(GorgonPipelineState pipelineState) => PipelineState = pipelineState;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonStreamOutPipelineState"/> class.

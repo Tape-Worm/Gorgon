@@ -51,56 +51,47 @@ namespace Gorgon.Math
 		/// The denominator for the number.
 		/// </summary>
 		public readonly int Denominator;
-		#endregion
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to compare two instances for equality.
-		/// </summary>
-		/// <param name="left">Left instance to compare.</param>
-		/// <param name="right">Right instance to compare.</param>
-		/// <returns><b>true</b> if the instances are equal, <b>false</b> if not.</returns>
-		public static bool Equals(GorgonRationalNumber left, GorgonRationalNumber right)
-		{
-			return left.Numerator == right.Numerator
-			       && left.Denominator == right.Denominator;
-		}
+        #region Methods.
+        /// <summary>
+        /// Function to compare two instances for equality.
+        /// </summary>
+        /// <param name="left">Left instance to compare.</param>
+        /// <param name="right">Right instance to compare.</param>
+        /// <returns><b>true</b> if the instances are equal, <b>false</b> if not.</returns>
+        public static bool Equals(GorgonRationalNumber left, GorgonRationalNumber right) => left.Numerator == right.Numerator
+                   && left.Denominator == right.Denominator;
 
-		/// <summary>
-		/// Returns a string that represents the current object.
-		/// </summary>
-		/// <returns>
-		/// A string that represents the current object.
-		/// </returns>
-		/// <filterpriority>2</filterpriority>
-		public override string ToString()
-		{
-			return Denominator == 0
-				       ? string.Format(Resources.GOR_TOSTR_RATIONAL, Numerator, Denominator, "NaN")
-				       : string.Format(Resources.GOR_TOSTR_RATIONAL, Numerator, Denominator, (decimal)Numerator / Denominator);
-		}
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>
+        /// A string that represents the current object.
+        /// </returns>
+        /// <filterpriority>2</filterpriority>
+        public override string ToString() => Denominator == 0
+                       ? string.Format(Resources.GOR_TOSTR_RATIONAL, Numerator, Denominator, "NaN")
+                       : string.Format(Resources.GOR_TOSTR_RATIONAL, Numerator, Denominator, (decimal)Numerator / Denominator);
 
-		/// <summary>
-		/// Serves as the default hash function. 
-		/// </summary>
-		/// <returns>
-		/// A hash code for the current object.
-		/// </returns>
-		/// <filterpriority>2</filterpriority>
-		public override int GetHashCode()
-		{
-			return 281.GenerateHash(Numerator).GenerateHash(Denominator);
-		}
+        /// <summary>
+        /// Serves as the default hash function. 
+        /// </summary>
+        /// <returns>
+        /// A hash code for the current object.
+        /// </returns>
+        /// <filterpriority>2</filterpriority>
+        public override int GetHashCode() => 281.GenerateHash(Numerator).GenerateHash(Denominator);
 
-		/// <summary>
-		/// Determines whether the specified object is equal to the current object.
-		/// </summary>
-		/// <returns>
-		/// true if the specified object  is equal to the current object; otherwise, false.
-		/// </returns>
-		/// <param name="obj">The object to compare with the current object. </param>
-		/// <filterpriority>2</filterpriority>
-		public override bool Equals(object obj)
+        /// <summary>
+        /// Determines whether the specified object is equal to the current object.
+        /// </summary>
+        /// <returns>
+        /// true if the specified object  is equal to the current object; otherwise, false.
+        /// </returns>
+        /// <param name="obj">The object to compare with the current object. </param>
+        /// <filterpriority>2</filterpriority>
+        public override bool Equals(object obj)
 		{
 			if (obj is GorgonRationalNumber rational)
 			{

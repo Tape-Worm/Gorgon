@@ -44,35 +44,29 @@ namespace Gorgon.Core
         #endregion
 
         #region Methods.
-		/// <summary>
-		/// Returns a hash code for this instance.
-		/// </summary>
-		/// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
-		public override int GetHashCode()
-        {
-	        return string.IsNullOrWhiteSpace(Name) ? 0 : 281.GenerateHash(Name);
-        }
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
+        public override int GetHashCode() => string.IsNullOrWhiteSpace(Name) ? 0 : 281.GenerateHash(Name);
 
-		/// <summary>
-		/// Returns a <see cref="T:System.String"/> that represents the current <see cref="GorgonNamedObject"/>.
-		/// </summary>
-		/// <returns>
-		/// A <see cref="T:System.String"/> that represents the current <see cref="GorgonNamedObject"/>.
-		/// </returns>
-		public override string ToString()
-		{
-			return string.Format(Resources.GOR_TOSTR_NAMEDOBJECT, Name);
-		}
-		#endregion
+        /// <summary>
+        /// Returns a <see cref="T:System.String"/> that represents the current <see cref="GorgonNamedObject"/>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.String"/> that represents the current <see cref="GorgonNamedObject"/>.
+        /// </returns>
+        public override string ToString() => string.Format(Resources.GOR_TOSTR_NAMEDOBJECT, Name);
+        #endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonNamedObject"/> class.
-		/// </summary>
-		/// <param name="name">The name of this object.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
-		protected GorgonNamedObject(string name)
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonNamedObject"/> class.
+        /// </summary>
+        /// <param name="name">The name of this object.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
+        protected GorgonNamedObject(string name)
 		{
 			if (name == null)
 			{

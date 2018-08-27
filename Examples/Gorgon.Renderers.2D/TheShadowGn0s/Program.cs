@@ -118,7 +118,7 @@ ESC - Quit.";
             shadowSprite.Scale = new DX.Vector2(0.5f, 0.5f);
 
             shadowSprite.Position = _bgSprite.Position +
-                                    (new DX.Vector2(_bgSprite.Position.X - _screen.Width / 2.0f, _bgSprite.Position.Y - _screen.Height / 2.0f) * _bgSprite.Scale * 0.075f);
+                                    (new DX.Vector2(_bgSprite.Position.X - (_screen.Width / 2.0f), _bgSprite.Position.Y - (_screen.Height / 2.0f)) * _bgSprite.Scale * 0.075f);
 
             var bgRegion = new DX.RectangleF(0, 0, _screen.Width, _screen.Height);
             _renderer.DrawFilledRectangle(bgRegion,
@@ -203,12 +203,12 @@ ESC - Quit.";
                                           new DX.RectangleF(0, 0, 1, 1));
 
             // Draw an ellipse to indicate our light source.
-            var lightPosition = new DX.RectangleF(_screen.Width / 2.0f - 10, _screen.Height / 2.0f - 10, 20, 20);
+            var lightPosition = new DX.RectangleF((_screen.Width / 2.0f) - 10, (_screen.Height / 2.0f) - 10, 20, 20);
             _renderer.DrawFilledEllipse(lightPosition, GorgonColor.White, 0.5f);
 
             // Draw the sprite and its corresponding shadow.
             // We'll adjust the shadow position to be altered by our distance from the light source, and the quadrant of the screen that we're in.
-            shadowSprite.Position = _fgSprite.Position + (new DX.Vector2(_fgSprite.Position.X - _screen.Width / 2.0f, _fgSprite.Position.Y - _screen.Height / 2.0f) * 0.125f);
+            shadowSprite.Position = _fgSprite.Position + (new DX.Vector2(_fgSprite.Position.X - (_screen.Width / 2.0f), _fgSprite.Position.Y - (_screen.Height / 2.0f)) * 0.125f);
 
             _renderer.DrawSprite(shadowSprite);
             _renderer.DrawSprite(_fgSprite);
@@ -294,7 +294,7 @@ ESC - Quit.";
                                                                   });
 
                 // Create our 2D renderer.
-                _renderer = new Gorgon2D(_screen.RenderTargetView);
+                _renderer = new Gorgon2D(_graphics);
 
                 _fontFactory = new GorgonFontFactory(_graphics);
                 _helpFont = _fontFactory.GetFont(new GorgonFontInfo("Segoe UI", 12.0f, FontHeightMode.Points, "Segoe UI 12pt Bold, Outlined")
@@ -450,10 +450,7 @@ ESC - Quit.";
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
-        private static void Window_MouseMove(object sender, MouseEventArgs e)
-        {
-            _fgSprite.Position = new DX.Vector2(e.X, e.Y);
-        }
+        private static void Window_MouseMove(object sender, MouseEventArgs e) => _fgSprite.Position = new DX.Vector2(e.X, e.Y);
         #endregion
 
         #region Constructor/Finalizer.

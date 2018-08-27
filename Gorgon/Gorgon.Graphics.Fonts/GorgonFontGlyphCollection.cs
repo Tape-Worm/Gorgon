@@ -66,35 +66,29 @@ namespace Gorgon.Graphics.Fonts
 			get => _list[character];
 			internal set => _list[character] = value;
 		}
-		#endregion
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.
-		/// </summary>
-		/// <param name="glyph">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="glyph" /> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="glyph" /> parameter already exists in this collection.</exception>
-		internal void Add(GorgonGlyph glyph)
-		{
-			_list.Add(glyph.Character, glyph);
-		}
+        #region Methods.
+        /// <summary>
+        /// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.
+        /// </summary>
+        /// <param name="glyph">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="glyph" /> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="glyph" /> parameter already exists in this collection.</exception>
+        internal void Add(GorgonGlyph glyph) => _list.Add(glyph.Character, glyph);
 
-		/// <summary>
-		/// Function to clear the glyphs.
-		/// </summary>
-		internal void Clear()
-		{
-			_list.Clear();
-		}
+        /// <summary>
+        /// Function to clear the glyphs.
+        /// </summary>
+        internal void Clear() => _list.Clear();
 
-		/// <summary>
-		/// Returns an enumerator that iterates through the collection.
-		/// </summary>
-		/// <returns>
-		/// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
-		/// </returns>
-		public IEnumerator<GorgonGlyph> GetEnumerator()
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
+        /// </returns>
+        public IEnumerator<GorgonGlyph> GetEnumerator()
 		{
 			// ReSharper disable LoopCanBeConvertedToQuery
 			foreach (KeyValuePair<char, GorgonGlyph> item in _list)
@@ -137,33 +131,27 @@ namespace Gorgon.Graphics.Fonts
 			return _list.ContainsValue(glyph);
 		}
 
-		/// <summary>
-		/// Function to return whether the character exists in this collection.
-		/// </summary>
-		/// <param name="character">The character to find.</param>
-		/// <returns><b>true</b> if found, <b>false</b> if not.</returns>
-		public bool Contains(char character)
-		{
-			return _list.ContainsKey(character);
-		}
+        /// <summary>
+        /// Function to return whether the character exists in this collection.
+        /// </summary>
+        /// <param name="character">The character to find.</param>
+        /// <returns><b>true</b> if found, <b>false</b> if not.</returns>
+        public bool Contains(char character) => _list.ContainsKey(character);
 
-		/// <summary>
-		/// Function to return the index of a character in the collection.
-		/// </summary>
-		/// <param name="character">Character to find.</param>
-		/// <returns>The index of the character if found, -1 if not.</returns>
-		public int IndexOf(char character)
-		{
-			return _list.IndexOfKey(character);
-		}
+        /// <summary>
+        /// Function to return the index of a character in the collection.
+        /// </summary>
+        /// <param name="character">Character to find.</param>
+        /// <returns>The index of the character if found, -1 if not.</returns>
+        public int IndexOf(char character) => _list.IndexOfKey(character);
 
-		/// <summary>
-		/// Function to return the index of a glyph in the collection.
-		/// </summary>
-		/// <param name="glyph">Glyph to find.</param>
-		/// <returns>The index of the glyph if found, -1 if not.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="glyph"/> parameter is <b>null</b>.</exception>
-		public int IndexOf(GorgonGlyph glyph)
+        /// <summary>
+        /// Function to return the index of a glyph in the collection.
+        /// </summary>
+        /// <param name="glyph">Glyph to find.</param>
+        /// <returns>The index of the glyph if found, -1 if not.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="glyph"/> parameter is <b>null</b>.</exception>
+        public int IndexOf(GorgonGlyph glyph)
 		{
 			if (glyph == null)
 			{
@@ -179,21 +167,18 @@ namespace Gorgon.Graphics.Fonts
         /// <param name="character">Character for the glyph.</param>
         /// <param name="glyph">The glyph in the list.</param>
         /// <returns><b>true</b> if found, <b>false</b> if not.</returns>
-	    public bool TryGetValue(char character, out GorgonGlyph glyph)
-        {
-            return _list.TryGetValue(character, out glyph);
-        }
+	    public bool TryGetValue(char character, out GorgonGlyph glyph) => _list.TryGetValue(character, out glyph);
 
-		/// <summary>
-		/// Function to retrieve the glyphs in this collection grouped by their respective textures.
-		/// </summary>
-		/// <returns>A grouping containing the texture and the list of glyphs associated with it.</returns>
-		/// <remarks>
-		/// <para>
-		/// This will only return glyphs that are associated with a texture. Glyphs that do not have a texture (e.g. the glyph representing a space character) will not be included in this list.
-		/// </para>
-		/// </remarks>
-		public IReadOnlyDictionary<GorgonTexture2D, IReadOnlyList<GorgonGlyph>> GetGlyphsByTexture()
+        /// <summary>
+        /// Function to retrieve the glyphs in this collection grouped by their respective textures.
+        /// </summary>
+        /// <returns>A grouping containing the texture and the list of glyphs associated with it.</returns>
+        /// <remarks>
+        /// <para>
+        /// This will only return glyphs that are associated with a texture. Glyphs that do not have a texture (e.g. the glyph representing a space character) will not be included in this list.
+        /// </para>
+        /// </remarks>
+        public IReadOnlyDictionary<GorgonTexture2D, IReadOnlyList<GorgonGlyph>> GetGlyphsByTexture()
 		{
 			IEnumerable<IGrouping<GorgonTexture2D, GorgonGlyph>> groupedGlyphs = from glyph in this
 			                    where glyph.TextureView != null
@@ -217,13 +202,10 @@ namespace Gorgon.Graphics.Fonts
 			}
 		}
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonGlyphCollection"/> class.
-		/// </summary>
-		internal GorgonGlyphCollection()
-		{
-			_list = new SortedList<char, GorgonGlyph>(255);
-		}
-		#endregion
-	}
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonGlyphCollection"/> class.
+        /// </summary>
+        internal GorgonGlyphCollection() => _list = new SortedList<char, GorgonGlyph>(255);
+        #endregion
+    }
 }

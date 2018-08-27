@@ -90,11 +90,11 @@ namespace Gorgon.Graphics.Example
             DX.Size2 size = new DX.Size2((int)(scale.Width * texture.Width), (int)(scale.Height * texture.Height));
 
             // Find the position.
-            DX.Rectangle bounds = new DX.Rectangle((_swapChain.Width / 4) - (size.Width / 2), (_swapChain.Height / 2 - size.Height / 2), size.Width, size.Height);
+            DX.Rectangle bounds = new DX.Rectangle((_swapChain.Width / 4) - (size.Width / 2), ((_swapChain.Height / 2) - (size.Height / 2)), size.Width, size.Height);
 
             _graphics.DrawTexture(texture, bounds, blendState: GorgonBlendState.Default, samplerState: GorgonSamplerState.PointFiltering);
 
-            bounds = new DX.Rectangle((_swapChain.Width - (_swapChain.Width / 4)) - (size.Width / 2), (_swapChain.Height / 2 - size.Height / 2), size.Width, size.Height);
+            bounds = new DX.Rectangle((_swapChain.Width - (_swapChain.Width / 4)) - (size.Width / 2), ((_swapChain.Height / 2) - (size.Height / 2)), size.Width, size.Height);
             _graphics.DrawTexture(outputTexture, bounds, blendState: GorgonBlendState.Default, samplerState: GorgonSamplerState.PointFiltering);
 
             _swapChain.Present(1);
@@ -125,10 +125,7 @@ namespace Gorgon.Graphics.Example
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
-        public void Dispose()
-        {
-            _swapChain?.Dispose();
-        }
+        public void Dispose() => _swapChain?.Dispose();
         #endregion
 
         #region Constructor/Finalizer.
@@ -137,10 +134,7 @@ namespace Gorgon.Graphics.Example
         /// </summary>
         /// <param name="graphics">The graphics interface to use.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
-        public GraphicsRenderer(GorgonGraphics graphics)
-        {
-            _graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
-        }
+        public GraphicsRenderer(GorgonGraphics graphics) => _graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
         #endregion
     }
 }

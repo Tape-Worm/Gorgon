@@ -113,8 +113,8 @@ namespace Gorgon.Examples
             //
 	        // See http://tape-worm.net/?page_id=277 for more info.
 
-	        _sprites[2].Position = new DX.Vector2((_blurredImage[0].Width / 2.0f - _sprites[2].Size.Width / 2.0f).FastFloor(),
-	                                              (_blurredImage[0].Height / 2.0f - _sprites[2].Size.Height / 2.0f).FastFloor());
+	        _sprites[2].Position = new DX.Vector2(((_blurredImage[0].Width / 2.0f) - (_sprites[2].Size.Width / 2.0f)).FastFloor(),
+	                                              ((_blurredImage[0].Height / 2.0f) - (_sprites[2].Size.Height / 2.0f)).FastFloor());
 
 	        for (int i = 0; i < _blurredTarget.Length; ++i)
 	        {
@@ -200,8 +200,8 @@ namespace Gorgon.Examples
 		    _renderer.DrawSprite(_sprites[1]);
 
             // Draw our blurred image (we could have used a sprite here as well, but this works just as well).
-		    _renderer.DrawFilledRectangle(new DX.RectangleF(width / 2 - _blurredImage[0].Width / 2.0f,
-		                                                    height / 2 - _blurredImage[0].Height / 2.0f,
+		    _renderer.DrawFilledRectangle(new DX.RectangleF((width / 2) - (_blurredImage[0].Width / 2.0f),
+		                                                    (height / 2) - (_blurredImage[0].Height / 2.0f),
 		                                                    _blurredImage[0].Width,
 		                                                    _blurredImage[0].Height),
 		                                  GorgonColor.White,
@@ -269,8 +269,8 @@ namespace Gorgon.Examples
 		    // Resize and center the screen.
 		    var screen = Screen.FromHandle(Handle);
 		    ClientSize = Settings.Default.Resolution;
-		    Location = new Point(screen.Bounds.Left + screen.WorkingArea.Width / 2 - ClientSize.Width / 2,
-		                         screen.Bounds.Top + screen.WorkingArea.Height / 2 - ClientSize.Height / 2);
+		    Location = new Point(screen.Bounds.Left + (screen.WorkingArea.Width / 2) - (ClientSize.Width / 2),
+		                         screen.Bounds.Top + (screen.WorkingArea.Height / 2) - (ClientSize.Height / 2));
 
 		    // Initialize our graphics.
 		    IReadOnlyList<IGorgonVideoAdapterInfo> videoAdapters = GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log);
@@ -454,16 +454,13 @@ namespace Gorgon.Examples
 				Cursor = Cursors.Default;
 			}
 		}
-		#endregion
+        #endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		public Form()
-		{
-			InitializeComponent();
-		}
-		#endregion
-	}
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        public Form() => InitializeComponent();
+        #endregion
+    }
 }

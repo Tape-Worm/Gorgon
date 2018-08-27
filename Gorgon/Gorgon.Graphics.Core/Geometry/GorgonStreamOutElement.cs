@@ -125,28 +125,25 @@ namespace Gorgon.Graphics.Core
 			return base.Equals(obj);
 		}
 
-		/// <summary>
-		/// Function to determine if two instances are equal.
-		/// </summary>
-		/// <param name="left">The first instance to compare.</param>
-		/// <param name="right">The second instance to compare.</param>
-		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-		public static bool Equals(in GorgonStreamOutElement left, in GorgonStreamOutElement right)
-		{
-			return (string.Equals(left.Context, right.Context, StringComparison.OrdinalIgnoreCase)) && (left.Index == right.Index) &&
-			       (left.StartComponent == right.StartComponent) && (left.ComponentCount == right.ComponentCount) && (left.StreamIndex == right.StreamIndex) &&
-			       (left.Slot == right.Slot);
-		}
+        /// <summary>
+        /// Function to determine if two instances are equal.
+        /// </summary>
+        /// <param name="left">The first instance to compare.</param>
+        /// <param name="right">The second instance to compare.</param>
+        /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+        public static bool Equals(in GorgonStreamOutElement left, in GorgonStreamOutElement right) => (string.Equals(left.Context, right.Context, StringComparison.OrdinalIgnoreCase)) && (left.Index == right.Index) &&
+                   (left.StartComponent == right.StartComponent) && (left.ComponentCount == right.ComponentCount) && (left.StreamIndex == right.StreamIndex) &&
+                   (left.Slot == right.Slot);
 
-		/// <summary>
-		/// Implements the operator ==.
-		/// </summary>
-		/// <param name="left">The left.</param>
-		/// <param name="right">The right.</param>
-		/// <returns>
-		/// The result of the operator.
-		/// </returns>
-		public static bool operator ==(in GorgonStreamOutElement left, in GorgonStreamOutElement right)
+        /// <summary>
+        /// Implements the operator ==.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>
+        /// The result of the operator.
+        /// </returns>
+        public static bool operator ==(in GorgonStreamOutElement left, in GorgonStreamOutElement right)
 		{
 			return Equals(in left, in right);
 		}
@@ -164,44 +161,34 @@ namespace Gorgon.Graphics.Core
 			return !Equals(in left, in right);
 		}
 
-		/// <summary>
-		/// Returns a hash code for this instance.
-		/// </summary>
-		/// <returns>
-		/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
-		/// </returns>
-		public override int GetHashCode()
-		{
-			return
-				281.GenerateHash(Context.GetHashCode())
-				   .GenerateHash(Index)
-				   .GenerateHash(StreamIndex)
-				   .GenerateHash(StartComponent)
-				   .GenerateHash(Slot)
-				   .GenerateHash(ComponentCount);
-		}
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// </returns>
+        public override int GetHashCode() => 281.GenerateHash(Context.GetHashCode())
+                   .GenerateHash(Index)
+                   .GenerateHash(StreamIndex)
+                   .GenerateHash(StartComponent)
+                   .GenerateHash(Slot)
+                   .GenerateHash(ComponentCount);
 
-		/// <summary>
-		/// Indicates whether the current object is equal to another object of the same type.
-		/// </summary>
-		/// <param name="other">An object to compare with this object.</param>
-		/// <returns>
-		/// true if the current object is equal to the other parameter; otherwise, false.
-		/// </returns>
-		public bool Equals(GorgonStreamOutElement other)
-		{
-			return Equals(in this, in other);
-		}
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// true if the current object is equal to the other parameter; otherwise, false.
+        /// </returns>
+        public bool Equals(GorgonStreamOutElement other) => Equals(in this, in other);
 
-	    /// <summary>
-	    /// Function to compare this instance with another.
-	    /// </summary>
-	    /// <param name="other">The other instance to use for comparison.</param>
-	    /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-	    public bool Equals(in GorgonStreamOutElement other)
-        {
-            return Equals(in this, in other);
-        }
+        /// <summary>
+        /// Function to compare this instance with another.
+        /// </summary>
+        /// <param name="other">The other instance to use for comparison.</param>
+        /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+        public bool Equals(in GorgonStreamOutElement other) => Equals(in this, in other);
         #endregion
 
         #region Constructor/Destructor.

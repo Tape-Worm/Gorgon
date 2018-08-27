@@ -83,41 +83,32 @@ namespace Gorgon.Graphics.Core
 		/// Property to return the name of the include file.
 		/// </summary>
 		string IGorgonNamedObject.Name => Name;
-		#endregion
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Returns a <see cref="string" /> that represents this instance.
-		/// </summary>
-		/// <returns>
-		/// A <see cref="string" /> that represents this instance.
-		/// </returns>
-		public override string ToString()
-		{
-			return string.Format(Resources.GORGFX_TOSTR_SHADER_INCLUDE, Name);
-		}
+        #region Methods.
+        /// <summary>
+        /// Returns a <see cref="string" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="string" /> that represents this instance.
+        /// </returns>
+        public override string ToString() => string.Format(Resources.GORGFX_TOSTR_SHADER_INCLUDE, Name);
 
-		/// <summary>
-		/// Returns a hash code for this instance.
-		/// </summary>
-		/// <returns>
-		/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
-		/// </returns>
-		public override int GetHashCode()
-		{
-			return Name.GetHashCode();
-		}
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// </returns>
+        public override int GetHashCode() => Name.GetHashCode();
 
-		/// <summary>
-		/// Function to evaluate two instances for equality.
-		/// </summary>
-		/// <param name="left">The left instance to compare.</param>
-		/// <param name="right">The right instance to compare.</param>
-		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-		public static bool Equals(GorgonShaderInclude left, GorgonShaderInclude right)
-		{
-			return (string.Equals(left.Name, right.Name, StringComparison.OrdinalIgnoreCase));
-		}
+        /// <summary>
+        /// Function to evaluate two instances for equality.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+        public static bool Equals(GorgonShaderInclude left, GorgonShaderInclude right) => (string.Equals(left.Name, right.Name, StringComparison.OrdinalIgnoreCase));
 
         /// <summary>
         /// Determines whether the specified <see cref="object" /> is equal to this instance.
@@ -158,29 +149,26 @@ namespace Gorgon.Graphics.Core
 			return !Equals(left, right);
 		}
 
-		/// <summary>
-		/// Indicates whether the current object is equal to another object of the same type.
-		/// </summary>
-		/// <param name="other">An object to compare with this object.</param>
-		/// <returns>
-		/// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
-		/// </returns>
-		public bool Equals(GorgonShaderInclude other)
-		{
-			return Equals(this, other);
-		}
-		#endregion
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
+        /// </returns>
+        public bool Equals(GorgonShaderInclude other) => Equals(this, other);
+        #endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonShaderInclude"/> struct.
-		/// </summary>
-		/// <param name="includeName">Name of the include file.</param>
-		/// <param name="includeSourceFile">The include source code file.</param>
-		/// <remarks>The <paramref name="includeSourceFile"/> can be set to <b>null</b> or empty if the include line is pointing to a file.</remarks>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="includeName"/> parameters is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when the includeName parameter is empty.</exception>
-		public GorgonShaderInclude(string includeName, string includeSourceFile)
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonShaderInclude"/> struct.
+        /// </summary>
+        /// <param name="includeName">Name of the include file.</param>
+        /// <param name="includeSourceFile">The include source code file.</param>
+        /// <remarks>The <paramref name="includeSourceFile"/> can be set to <b>null</b> or empty if the include line is pointing to a file.</remarks>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="includeName"/> parameters is <b>null</b>.</exception>
+        /// <exception cref="ArgumentException">Thrown when the includeName parameter is empty.</exception>
+        public GorgonShaderInclude(string includeName, string includeSourceFile)
 		{
 			if (includeName == null)
 			{

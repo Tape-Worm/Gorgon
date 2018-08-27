@@ -223,38 +223,32 @@ namespace Gorgon.Renderers
 			return PassContinuationState.Continue;
 		}
 
-	    /// <summary>
-	    /// Function called to render a single effect pass.
-	    /// </summary>
-	    /// <param name="passIndex">The index of the pass being rendered.</param>
-	    /// <param name="renderMethod">The method used to render a scene for the effect.</param>
-	    /// <param name="output">The render target that will receive the final render data.</param>
-	    /// <remarks>
-	    /// <para>
-	    /// Applications must implement this in order to see any results from the effect.
-	    /// </para>
-	    /// </remarks>
-	    protected override void OnRenderPass(int passIndex, Action<int, int, DX.Size2> renderMethod, GorgonRenderTargetView output)
-	    {
-            renderMethod(passIndex, PassCount, new DX.Size2(output.Width, output.Height));
-	    }
+        /// <summary>
+        /// Function called to render a single effect pass.
+        /// </summary>
+        /// <param name="passIndex">The index of the pass being rendered.</param>
+        /// <param name="renderMethod">The method used to render a scene for the effect.</param>
+        /// <param name="output">The render target that will receive the final render data.</param>
+        /// <remarks>
+        /// <para>
+        /// Applications must implement this in order to see any results from the effect.
+        /// </para>
+        /// </remarks>
+        protected override void OnRenderPass(int passIndex, Action<int, int, DX.Size2> renderMethod, GorgonRenderTargetView output) => renderMethod(passIndex, PassCount, new DX.Size2(output.Width, output.Height));
 
-	    /// <summary>
-	    /// Function called to build a new (or return an existing) 2D batch state.
-	    /// </summary>
-	    /// <param name="passIndex">The index of the current rendering pass.</param>
-	    /// <param name="statesChanged"><b>true</b> if the blend, raster, or depth/stencil state was changed. <b>false</b> if not.</param>
-	    /// <returns>The 2D batch state.</returns>
-	    protected override Gorgon2DBatchState OnGetBatchState(int passIndex, bool statesChanged)
-	    {
-            return passIndex == 0 ? null : _batchState;
-	    }
+        /// <summary>
+        /// Function called to build a new (or return an existing) 2D batch state.
+        /// </summary>
+        /// <param name="passIndex">The index of the current rendering pass.</param>
+        /// <param name="statesChanged"><b>true</b> if the blend, raster, or depth/stencil state was changed. <b>false</b> if not.</param>
+        /// <returns>The 2D batch state.</returns>
+        protected override Gorgon2DBatchState OnGetBatchState(int passIndex, bool statesChanged) => passIndex == 0 ? null : _batchState;
 
-	    /// <summary>
-		/// Releases unmanaged and - optionally - managed resources
-		/// </summary>
-		/// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
-		protected override void Dispose(bool disposing)
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources
+        /// </summary>
+        /// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
+        protected override void Dispose(bool disposing)
 		{
 		    if (!disposing)
 		    {
@@ -269,18 +263,15 @@ namespace Gorgon.Renderers
             displacementBuffer?.Dispose();
 		    shader?.Dispose();
 		}
-		#endregion
+        #endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Gorgon2DDisplacementEffect"/> class.
-		/// </summary>
-		/// <param name="renderer">The renderer used to render this effect.</param>
-		public Gorgon2DDisplacementEffect(Gorgon2D renderer)
-			: base(renderer, Resources.GOR2D_EFFECT_DISPLACEMENT, Resources.GOR2D_EFFECT_DISPLACEMENT_DESC, 2)
-		{
-		    Macros.Add(new GorgonShaderMacro("DISPLACEMENT_EFFECT"));
-		}
-		#endregion
-	}
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Gorgon2DDisplacementEffect"/> class.
+        /// </summary>
+        /// <param name="renderer">The renderer used to render this effect.</param>
+        public Gorgon2DDisplacementEffect(Gorgon2D renderer)
+            : base(renderer, Resources.GOR2D_EFFECT_DISPLACEMENT, Resources.GOR2D_EFFECT_DISPLACEMENT_DESC, 2) => Macros.Add(new GorgonShaderMacro("DISPLACEMENT_EFFECT"));
+        #endregion
+    }
 }

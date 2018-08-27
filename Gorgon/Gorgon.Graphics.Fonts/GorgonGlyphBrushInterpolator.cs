@@ -53,44 +53,38 @@ namespace Gorgon.Graphics.Fonts
 		{
 			get;
 		}
-		#endregion
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Returns a <see cref="string" /> that represents this instance.
-		/// </summary>
-		/// <returns>
-		/// A <see cref="string" /> that represents this instance.
-		/// </returns>
-		public override string ToString()
-		{
-			return string.Format(Resources.GORGFX_TOSTR_FONT_BRUSH_INTERPOLATION,
-			                     Weight,
-			                     Color.Red,
-			                     Color.Green,
-			                     Color.Blue,
-			                     Color.Alpha);
-		}
+        #region Methods.
+        /// <summary>
+        /// Returns a <see cref="string" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="string" /> that represents this instance.
+        /// </returns>
+        public override string ToString() => string.Format(Resources.GORGFX_TOSTR_FONT_BRUSH_INTERPOLATION,
+                                 Weight,
+                                 Color.Red,
+                                 Color.Green,
+                                 Color.Blue,
+                                 Color.Alpha);
 
-		/// <summary>
-		/// Returns a hash code for this instance.
-		/// </summary>
-		/// <returns>
-		/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
-		/// </returns>
-		public override int GetHashCode()
-		{
-			return 281.GenerateHash(Weight);
-		}
-		#endregion
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// </returns>
+        public override int GetHashCode() => 281.GenerateHash(Weight);
+        #endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonGlyphBrushInterpolator"/> struct.
-		/// </summary>
-		/// <param name="weight">The weight in the interpolation.</param>
-		/// <param name="color">The color at the interpolation weight.</param>
-		public GorgonGlyphBrushInterpolator(float weight, GorgonColor color)
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonGlyphBrushInterpolator"/> struct.
+        /// </summary>
+        /// <param name="weight">The weight in the interpolation.</param>
+        /// <param name="color">The color at the interpolation weight.</param>
+        public GorgonGlyphBrushInterpolator(float weight, GorgonColor color)
 		{
 			Weight = weight.Min(1.0f).Max(0);
 			Color = color;

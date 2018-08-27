@@ -146,20 +146,17 @@ namespace Gorgon.Graphics.Imaging.Codecs
 				// Intentionally left blank.
 			}
 		}
-		#endregion
+        #endregion
 
-		#region Constructor/Finalizer.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonDdsDecodingOptions"/> class.
-		/// </summary>
-		public GorgonDdsDecodingOptions()
-		{
-			Options = new GorgonOptionBag(new []
-			                              {
-												GorgonOption.CreateOption(nameof(LegacyFormatConversionFlags), DdsLegacyFlags.None),
-												GorgonOption.CreateOption(nameof(Palette), new List<GorgonColor>())
-			                              });
-		}
-		#endregion
-	}
+        #region Constructor/Finalizer.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonDdsDecodingOptions"/> class.
+        /// </summary>
+        public GorgonDdsDecodingOptions() => Options = new GorgonOptionBag(new[]
+                                          {
+                                                GorgonOption.CreateOption(nameof(LegacyFormatConversionFlags), DdsLegacyFlags.None),
+                                                GorgonOption.CreateOption(nameof(Palette), new List<GorgonColor>())
+                                          });
+        #endregion
+    }
 }

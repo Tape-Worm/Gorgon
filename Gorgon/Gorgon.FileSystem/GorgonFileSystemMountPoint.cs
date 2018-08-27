@@ -57,22 +57,19 @@ namespace Gorgon.IO
 		/// The virtual location of the mount point.
 		/// </summary>
 		public readonly string MountLocation;
-		#endregion
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to determine if two instances are equal.
-		/// </summary>
-		/// <param name="left">Left instance to compare.</param>
-		/// <param name="right">Right instance to compare.</param>
-		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-		public static bool Equals(in GorgonFileSystemMountPoint left, in GorgonFileSystemMountPoint right)
-		{
-			return (left.Provider == right.Provider)
-					&& (left.IsFakeMount == right.IsFakeMount)
-					&& (string.Equals(left.MountLocation, right.MountLocation, StringComparison.OrdinalIgnoreCase))
-					&& (string.Equals(left.PhysicalPath, right.PhysicalPath, StringComparison.OrdinalIgnoreCase));
-		}
+        #region Methods.
+        /// <summary>
+        /// Function to determine if two instances are equal.
+        /// </summary>
+        /// <param name="left">Left instance to compare.</param>
+        /// <param name="right">Right instance to compare.</param>
+        /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+        public static bool Equals(in GorgonFileSystemMountPoint left, in GorgonFileSystemMountPoint right) => (left.Provider == right.Provider)
+                    && (left.IsFakeMount == right.IsFakeMount)
+                    && (string.Equals(left.MountLocation, right.MountLocation, StringComparison.OrdinalIgnoreCase))
+                    && (string.Equals(left.PhysicalPath, right.PhysicalPath, StringComparison.OrdinalIgnoreCase));
 
         /// <summary>
         /// Determines whether the specified <see cref="object" /> is equal to this instance.
@@ -91,26 +88,20 @@ namespace Gorgon.IO
 			return base.Equals(obj);
 		}
 
-	    /// <summary>
-	    /// Function to determine if this instance is equal to another instance.
-	    /// </summary>
-	    /// <param name="other">The other instance to compare.</param>
-	    /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-	    public bool Equals(in GorgonFileSystemMountPoint other)
-	    {
-	        return Equals(in this, in other);
-	    }
+        /// <summary>
+        /// Function to determine if this instance is equal to another instance.
+        /// </summary>
+        /// <param name="other">The other instance to compare.</param>
+        /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+        public bool Equals(in GorgonFileSystemMountPoint other) => Equals(in this, in other);
 
-	    /// <summary>
-	    /// Function to compare this instance with another.
-	    /// </summary>
-	    /// <param name="other">The other instance to use for comparison.</param>
-	    /// <returns>
-	    ///   <b>true</b> if equal, <b>false</b> if not.</returns>
-	    public bool Equals(GorgonFileSystemMountPoint other)
-	    {
-	        return Equals(in this, in other);
-	    }
+        /// <summary>
+        /// Function to compare this instance with another.
+        /// </summary>
+        /// <param name="other">The other instance to use for comparison.</param>
+        /// <returns>
+        ///   <b>true</b> if equal, <b>false</b> if not.</returns>
+        public bool Equals(GorgonFileSystemMountPoint other) => Equals(in this, in other);
 
         /// <summary>
         /// Returns a <see cref="string" /> that represents this instance.
@@ -118,18 +109,15 @@ namespace Gorgon.IO
         /// <returns>
         /// A <see cref="string" /> that represents this instance.
         /// </returns>
-        public override string ToString()
-		{
-			return string.Format(Resources.GORFS_TOSTR_MOUNTPOINT, MountLocation, PhysicalPath);
-		}
+        public override string ToString() => string.Format(Resources.GORFS_TOSTR_MOUNTPOINT, MountLocation, PhysicalPath);
 
-		/// <summary>
-		/// Returns a hash code for this instance.
-		/// </summary>
-		/// <returns>
-		/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
-		/// </returns>
-		public override int GetHashCode()
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// </returns>
+        public override int GetHashCode()
 		{
 			if ((Provider == null) || (PhysicalPath == null) || (MountLocation == null))
 			{

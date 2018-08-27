@@ -57,29 +57,23 @@ namespace Gorgon.Graphics.Fonts
 			get;
 			set;
 		}
-		#endregion
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to convert this brush to the equivalent GDI+ brush type.
-		/// </summary>
-		/// <returns>
-		/// The GDI+ brush type for this object.
-		/// </returns>
-		internal override Brush ToGDIBrush()
-		{
-			return new SolidBrush(Color);
-		}
-		#endregion
+        #region Methods.
+        /// <summary>
+        /// Function to convert this brush to the equivalent GDI+ brush type.
+        /// </summary>
+        /// <returns>
+        /// The GDI+ brush type for this object.
+        /// </returns>
+        internal override Brush ToGDIBrush() => new SolidBrush(Color);
+        #endregion
 
-		#region Constructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonGlyphSolidBrush"/> class.
-		/// </summary>
-		public GorgonGlyphSolidBrush()
-		{
-			Color = GorgonColor.White;
-		}
-		#endregion
-	}
+        #region Constructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonGlyphSolidBrush"/> class.
+        /// </summary>
+        public GorgonGlyphSolidBrush() => Color = GorgonColor.White;
+        #endregion
+    }
 }

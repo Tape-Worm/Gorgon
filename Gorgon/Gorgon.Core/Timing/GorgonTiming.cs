@@ -535,35 +535,26 @@ namespace Gorgon.Timing
 			_timer?.Reset();
 		}
 
-		/// <summary>
-		/// Function to convert the desired frames per second to milliseconds.
-		/// </summary>
-		/// <param name="fps">Desired frames per second.</param>
-		/// <returns>Frames per second in milliseconds.</returns>
-		public static double FpsToMilliseconds(double fps)
-		{
-		    return fps > 0 ? 1000/fps : 0;
-		}
+        /// <summary>
+        /// Function to convert the desired frames per second to milliseconds.
+        /// </summary>
+        /// <param name="fps">Desired frames per second.</param>
+        /// <returns>Frames per second in milliseconds.</returns>
+        public static double FpsToMilliseconds(double fps) => fps > 0 ? 1000 / fps : 0;
 
-	    /// <summary>
-		/// Function to convert the desired frames per second to microseconds.
-		/// </summary>
-		/// <param name="fps">Desired frames per second.</param>
-		/// <returns>Frames per second in microseconds.</returns>
-		public static double FpsToMicroseconds(double fps)
-	    {
-	        return fps > 0 ? 1000000/fps : 0;
-	    }
-	    #endregion
+        /// <summary>
+        /// Function to convert the desired frames per second to microseconds.
+        /// </summary>
+        /// <param name="fps">Desired frames per second.</param>
+        /// <returns>Frames per second in microseconds.</returns>
+        public static double FpsToMicroseconds(double fps) => fps > 0 ? 1000000 / fps : 0;
+        #endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes the <see cref="GorgonTiming"/> class.
-		/// </summary>
-		static GorgonTiming()
-		{
-			TimeScale = 1;
-		}
-		#endregion
-	}
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes the <see cref="GorgonTiming"/> class.
+        /// </summary>
+        static GorgonTiming() => TimeScale = 1;
+        #endregion
+    }
 }

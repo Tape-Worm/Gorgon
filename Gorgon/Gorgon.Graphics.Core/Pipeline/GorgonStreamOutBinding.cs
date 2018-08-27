@@ -90,20 +90,14 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="other">The other instance.</param>
         /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-        public bool Equals(GorgonStreamOutBinding other)
-        {
-            return Equals(in this, in other);
-        }
+        public bool Equals(GorgonStreamOutBinding other) => Equals(in this, in other);
 
         /// <summary>
         /// Function to determine if two instances are equal.
         /// </summary>
         /// <param name="other">The other instance.</param>
         /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-        public bool Equals(in GorgonStreamOutBinding other)
-        {
-            return Equals(in this, in other);
-        }
+        public bool Equals(in GorgonStreamOutBinding other) => Equals(in this, in other);
 
         /// <summary>
         /// Returns a <see cref="string"/> that represents this instance.
@@ -111,10 +105,7 @@ namespace Gorgon.Graphics.Core
         /// <returns>
         /// A <see cref="string"/> that represents this instance.
         /// </returns>
-        public override string ToString()
-        {
-            return string.Format(Resources.GORGFX_TOSTR_SO_BINDING, Offset, (Buffer?.Native == null) ? "(NULL)" : Buffer.Name);
-        }
+        public override string ToString() => string.Format(Resources.GORGFX_TOSTR_SO_BINDING, Offset, (Buffer?.Native == null) ? "(NULL)" : Buffer.Name);
 
         /// <summary>
         /// Returns a hash code for this instance.
@@ -122,12 +113,9 @@ namespace Gorgon.Graphics.Core
         /// <returns>
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
         /// </returns>
-        public override int GetHashCode()
-        {
-            return Buffer == null
+        public override int GetHashCode() => Buffer == null
                        ? 281.GenerateHash(Offset)
                        : 281.GenerateHash(Offset).GenerateHash(Buffer.GetHashCode());
-        }
 
         /// <summary>
         /// Determines whether the specified <see cref="object"/> is equal to this instance.
@@ -152,10 +140,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
         /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-        public static bool Equals(in GorgonStreamOutBinding left, in GorgonStreamOutBinding right)
-        {
-            return ((left.Buffer == right.Buffer) && (left.Offset == right.Offset));
-        }
+        public static bool Equals(in GorgonStreamOutBinding left, in GorgonStreamOutBinding right) => ((left.Buffer == right.Buffer) && (left.Offset == right.Offset));
 
         /// <summary>
         /// Implements the operator ==.

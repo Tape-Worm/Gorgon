@@ -235,53 +235,50 @@ namespace Gorgon.IO.GorPack
             }
         }
 
-		/// <summary>
-		/// Function to open a stream to a file on the physical file system from the <see cref="IGorgonVirtualFile"/> passed in.
-		/// </summary>
-		/// <param name="file">The <see cref="IGorgonVirtualFile"/> that will be used to locate the file that will be opened on the physical file system.</param>
-		/// <returns>A <see cref="Stream"/> to the file, or <b>null</b> if the file does not exist.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="file"/> parameter is <b>null</b>.</exception>
-		/// <remarks>
-		/// <para>
-		/// This will take the <see cref="IGorgonVirtualFile"/> and open its corresponding physical file location as a stream for reading. The stream that is returned will be opened, and as such, it is the 
-		/// responsibility of the user to close the stream when finished.
-		/// </para>
-		/// <para>
-		/// If the file does not exist in the physical file system, this method should return <b>null</b>.
-		/// </para>
-		/// <para>
-		/// Implementors of a <see cref="GorgonFileSystemProvider"/> plug in can overload this method to return a stream into a file within their specific native provider (e.g. a Zip file provider will 
-		/// return a stream into the zip file positioned at the location of the compressed file within the zip file).
-		/// </para>
-		/// </remarks>
-		protected override GorgonFileSystemStream OnOpenFileStream(IGorgonVirtualFile file)
-		{
-			return new GorPackFileStream(file,
-			                                   File.Open(file.MountPoint.PhysicalPath, FileMode.Open, FileAccess.Read, FileShare.Read),
-			                                   file.PhysicalFile.CompressedLength);
-		}
+        /// <summary>
+        /// Function to open a stream to a file on the physical file system from the <see cref="IGorgonVirtualFile"/> passed in.
+        /// </summary>
+        /// <param name="file">The <see cref="IGorgonVirtualFile"/> that will be used to locate the file that will be opened on the physical file system.</param>
+        /// <returns>A <see cref="Stream"/> to the file, or <b>null</b> if the file does not exist.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="file"/> parameter is <b>null</b>.</exception>
+        /// <remarks>
+        /// <para>
+        /// This will take the <see cref="IGorgonVirtualFile"/> and open its corresponding physical file location as a stream for reading. The stream that is returned will be opened, and as such, it is the 
+        /// responsibility of the user to close the stream when finished.
+        /// </para>
+        /// <para>
+        /// If the file does not exist in the physical file system, this method should return <b>null</b>.
+        /// </para>
+        /// <para>
+        /// Implementors of a <see cref="GorgonFileSystemProvider"/> plug in can overload this method to return a stream into a file within their specific native provider (e.g. a Zip file provider will 
+        /// return a stream into the zip file positioned at the location of the compressed file within the zip file).
+        /// </para>
+        /// </remarks>
+        protected override GorgonFileSystemStream OnOpenFileStream(IGorgonVirtualFile file) => new GorPackFileStream(file,
+                                               File.Open(file.MountPoint.PhysicalPath, FileMode.Open, FileAccess.Read, FileShare.Read),
+                                               file.PhysicalFile.CompressedLength);
 
-		/// <summary>
-		/// Function to determine if a physical file system can be read by this provider.
-		/// </summary>
-		/// <param name="physicalPath">Path to the packed file containing the file system.</param>
-		/// <returns><b>true</b> if the provider can read the packed file, <b>false</b> if not.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="physicalPath"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="physicalPath"/> parameter is an empty string.</exception>
-		/// <remarks>
-		/// <para>
-		/// This will test a physical file system (e.g. a Zip file) to see if the provider can open it or not. If used with a directory on an operating system file system, this method should always return 
-		/// <b>false</b>.
-		/// </para>
-		/// <para>
-		/// When used with a <see cref="IGorgonFileSystemProvider"/> that supports a non operating system based physical file system, such as the <see cref="GorgonFileSystemRamDiskProvider"/>, then this 
-		/// method should compare the <paramref name="physicalPath"/> with its <see cref="IGorgonFileSystemProvider.Prefix"/> to ensure that the <see cref="IGorgonFileSystem"/> requesting the provider is using the correct provider.
-		/// </para>
-		/// <para>
-		/// Implementors of a <see cref="GorgonFileSystemProvider"/> should override this method to determine if a packed file can be read by reading the header of the file specified in <paramref name="physicalPath"/>.
-		/// </para>
-		/// </remarks>
-		protected override bool OnCanReadFile(string physicalPath)
+        /// <summary>
+        /// Function to determine if a physical file system can be read by this provider.
+        /// </summary>
+        /// <param name="physicalPath">Path to the packed file containing the file system.</param>
+        /// <returns><b>true</b> if the provider can read the packed file, <b>false</b> if not.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="physicalPath"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="physicalPath"/> parameter is an empty string.</exception>
+        /// <remarks>
+        /// <para>
+        /// This will test a physical file system (e.g. a Zip file) to see if the provider can open it or not. If used with a directory on an operating system file system, this method should always return 
+        /// <b>false</b>.
+        /// </para>
+        /// <para>
+        /// When used with a <see cref="IGorgonFileSystemProvider"/> that supports a non operating system based physical file system, such as the <see cref="GorgonFileSystemRamDiskProvider"/>, then this 
+        /// method should compare the <paramref name="physicalPath"/> with its <see cref="IGorgonFileSystemProvider.Prefix"/> to ensure that the <see cref="IGorgonFileSystem"/> requesting the provider is using the correct provider.
+        /// </para>
+        /// <para>
+        /// Implementors of a <see cref="GorgonFileSystemProvider"/> should override this method to determine if a packed file can be read by reading the header of the file specified in <paramref name="physicalPath"/>.
+        /// </para>
+        /// </remarks>
+        protected override bool OnCanReadFile(string physicalPath)
 		{
 			string header;
 
@@ -299,20 +296,17 @@ namespace Gorgon.IO.GorPack
 
 			return (string.Equals(header, GorPackHeader));
 		}
-		#endregion
+        #endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorPackProvider"/> class.
-		/// </summary>
-		public GorPackProvider()
-			: base(Resources.GORFS_GORPACK_DESC)
-		{
-			PreferredExtensions = new GorgonFileExtensionCollection
-			                      {
-				                      new GorgonFileExtension("gorPack", Resources.GORFS_GORPACK_FILE_DESC)
-			                      };
-		}
-		#endregion
-	}
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorPackProvider"/> class.
+        /// </summary>
+        public GorPackProvider()
+            : base(Resources.GORFS_GORPACK_DESC) => PreferredExtensions = new GorgonFileExtensionCollection
+                                  {
+                                      new GorgonFileExtension("gorPack", Resources.GORFS_GORPACK_FILE_DESC)
+                                  };
+        #endregion
+    }
 }

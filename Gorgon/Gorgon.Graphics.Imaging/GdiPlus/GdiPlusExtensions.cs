@@ -220,8 +220,8 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
 
 	                for (int y = 0; y < buffer.Height; ++y)
 	                {
-	                    byte* src = srcPtr + y * buffer.PitchInformation.RowPitch;
-	                    byte* dest = destPtr + y * destData.Stride;
+	                    byte* src = srcPtr + (y * buffer.PitchInformation.RowPitch);
+	                    byte* dest = destPtr + (y * destData.Stride);
 
 	                    switch (pixelFormat)
 	                    {
@@ -370,8 +370,8 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
 
 	                for (int y = 0; y < buffer.Height; ++y)
 	                {
-	                    byte* src = srcPtr + y * buffer.PitchInformation.RowPitch;
-	                    byte* dest = destPtr + y * destData.Stride;
+	                    byte* src = srcPtr + (y * buffer.PitchInformation.RowPitch);
+	                    byte* dest = destPtr + (y * destData.Stride);
 
 	                    if (!needsSwizzle)
 	                    {
@@ -510,8 +510,8 @@ namespace Gorgon.Graphics.Imaging.GdiPlus
 
 	                for (int y = 0; y < buffer.Height; ++y)
 	                {
-	                    byte* src = srcPtr + y * srcData.Stride;
-	                    byte* dest = destPtr + y * buffer.PitchInformation.RowPitch;
+	                    byte* src = srcPtr + (y * srcData.Stride);
+	                    byte* dest = destPtr + (y * buffer.PitchInformation.RowPitch);
 
 	                    if (!needsSwizzle)
 	                    {

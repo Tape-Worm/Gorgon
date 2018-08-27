@@ -96,30 +96,21 @@ namespace Gorgon.Animation
         /// </summary>
         /// <param name="animObject">The object being animated.</param>
         /// <param name="rotation">The new angle of rotation, in degrees, on the x, y and z axes.</param>
-        protected override void OnRotationUpdate(GorgonSprite animObject, DX.Vector3 rotation)
-        {
-            animObject.Angle = rotation.Z;
-        }
+        protected override void OnRotationUpdate(GorgonSprite animObject, DX.Vector3 rotation) => animObject.Angle = rotation.Z;
 
         /// <summary>
         /// Function called when a scale needs to be updated on the object.
         /// </summary>
         /// <param name="animObject">The object being animated.</param>
         /// <param name="scale">The new scale.</param>
-        protected override void OnScaleUpdate(GorgonSprite animObject, DX.Vector3 scale)
-        {
-            animObject.Scale = (DX.Vector2)scale;
-        }
+        protected override void OnScaleUpdate(GorgonSprite animObject, DX.Vector3 scale) => animObject.Scale = (DX.Vector2)scale;
 
         /// <summary>
         /// Function called when a rectangle boundary needs to be updated on the object.
         /// </summary>
         /// <param name="animObject">The object being animated.</param>
         /// <param name="position">The new bounds.</param>
-        protected override void OnRectBoundsUpdate(GorgonSprite animObject, DX.RectangleF position)
-        {
-            animObject.Size = position.Size;
-        }
+        protected override void OnRectBoundsUpdate(GorgonSprite animObject, DX.RectangleF position) => animObject.Size = position.Size;
 
         /// <summary>
         /// Function called when a texture needs to be updated on the object.
@@ -140,9 +131,6 @@ namespace Gorgon.Animation
         /// </summary>
         /// <param name="animObject">The object being animated.</param>
         /// <param name="color">The new color.</param>
-        protected override void OnColorUpdate(GorgonSprite animObject, GorgonColor color)
-        {
-            animObject.Color = color;
-        }
+        protected override void OnColorUpdate(GorgonSprite animObject, GorgonColor color) => animObject.Color = color;
     }
 }

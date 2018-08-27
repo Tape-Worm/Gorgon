@@ -39,21 +39,18 @@ namespace GorgonTriangulator
 			}
 		}
 
-		/// <summary>
-		/// Removes the node at a given index.
-		/// </summary>
-		/// <param name="index">The index of the node to remove.</param>
-		public void RemoveAt(int index)
-		{
-			Remove(this[index]);
-		}
+        /// <summary>
+        /// Removes the node at a given index.
+        /// </summary>
+        /// <param name="index">The index of the node to remove.</param>
+        public void RemoveAt(int index) => Remove(this[index]);
 
-		/// <summary>
-		/// Finds the index of a given item.
-		/// </summary>
-		/// <param name="item">The item to find.</param>
-		/// <returns>The index of the item if found; -1 if the item is not found.</returns>
-		public int IndexOf(T item)
+        /// <summary>
+        /// Finds the index of a given item.
+        /// </summary>
+        /// <param name="item">The item to find.</param>
+        /// <returns>The index of the item if found; -1 if the item is not found.</returns>
+        public int IndexOf(T item)
 		{
 			for (int i = 0; i < Count; i++)
 				if (this[i].Value.Equals(item))

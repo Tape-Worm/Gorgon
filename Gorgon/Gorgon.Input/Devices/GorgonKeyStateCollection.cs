@@ -121,73 +121,58 @@ namespace Gorgon.Input
 		/// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only; otherwise, false.</returns>
 		public bool IsReadOnly => true;
 
-		#endregion
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
-		/// </summary>
-		/// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
-		/// <exception cref="System.NotSupportedException"></exception>
-		void ICollection<KeyState>.Add(KeyState item)
-		{
-			throw new NotSupportedException();
-		}
+        #region Methods.
+        /// <summary>
+        /// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+        /// </summary>
+        /// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
+        /// <exception cref="System.NotSupportedException"></exception>
+        void ICollection<KeyState>.Add(KeyState item) => throw new NotSupportedException();
 
-		/// <summary>
-		/// Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
-		/// </summary>
-		void ICollection<KeyState>.Clear()
-		{
-			Reset();
-		}
+        /// <summary>
+        /// Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+        /// </summary>
+        void ICollection<KeyState>.Clear() => Reset();
 
-		/// <summary>
-		/// Determines whether the <see cref="T:System.Collections.Generic.ICollection`1"></see> contains a specific value.
-		/// </summary>
-		/// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
-		/// <returns>
-		/// true if item is found in the <see cref="T:System.Collections.Generic.ICollection`1"></see>; otherwise, false.
-		/// </returns>
-		bool ICollection<KeyState>.Contains(KeyState item)
-		{
-			return _keys.ContainsValue(item);
-		}
+        /// <summary>
+        /// Determines whether the <see cref="T:System.Collections.Generic.ICollection`1"></see> contains a specific value.
+        /// </summary>
+        /// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
+        /// <returns>
+        /// true if item is found in the <see cref="T:System.Collections.Generic.ICollection`1"></see>; otherwise, false.
+        /// </returns>
+        bool ICollection<KeyState>.Contains(KeyState item) => _keys.ContainsValue(item);
 
-		/// <summary>
-		/// Copies to.
-		/// </summary>
-		/// <param name="array">The array.</param>
-		/// <param name="arrayIndex">Index of the array.</param>
-		/// <exception cref="System.NotSupportedException"></exception>
-		void ICollection<KeyState>.CopyTo(KeyState[] array, int arrayIndex)
-		{
-			throw new NotSupportedException();
-		}
+        /// <summary>
+        /// Copies to.
+        /// </summary>
+        /// <param name="array">The array.</param>
+        /// <param name="arrayIndex">Index of the array.</param>
+        /// <exception cref="System.NotSupportedException"></exception>
+        void ICollection<KeyState>.CopyTo(KeyState[] array, int arrayIndex) => throw new NotSupportedException();
 
-		/// <summary>
-		/// Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
-		/// </summary>
-		/// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
-		/// <returns>
-		/// true if item was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1"></see>; otherwise, false. This method also returns false if item is not found in the original <see cref="T:System.Collections.Generic.ICollection`1"></see>.
-		/// </returns>
-		/// <exception cref="System.NotSupportedException"></exception>
-		bool ICollection<KeyState>.Remove(KeyState item)
-		{
-			return false;
-		}
-		#endregion
-		#endregion
+        /// <summary>
+        /// Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+        /// </summary>
+        /// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
+        /// <returns>
+        /// true if item was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1"></see>; otherwise, false. This method also returns false if item is not found in the original <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+        /// </returns>
+        /// <exception cref="System.NotSupportedException"></exception>
+        bool ICollection<KeyState>.Remove(KeyState item) => false;
+        #endregion
+        #endregion
 
-		#region IEnumerable<KeyState> Members
-		/// <summary>
-		/// Returns an enumerator that iterates through the collection.
-		/// </summary>
-		/// <returns>
-		/// A <see cref="T:System.Collections.Generic.IEnumerator`1"></see> that can be used to iterate through the collection.
-		/// </returns>
-		public IEnumerator<KeyState> GetEnumerator()
+        #region IEnumerable<KeyState> Members
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.Collections.Generic.IEnumerator`1"></see> that can be used to iterate through the collection.
+        /// </returns>
+        public IEnumerator<KeyState> GetEnumerator()
 		{
 			// ReSharper disable once LoopCanBeConvertedToQuery
 			foreach (KeyValuePair<Keys, KeyState> state in _keys)
@@ -195,19 +180,16 @@ namespace Gorgon.Input
 				yield return state.Value;
 			}
 		}
-		#endregion
+        #endregion
 
-		#region IEnumerable Members
-		/// <summary>
-		/// Returns an enumerator that iterates through a collection.
-		/// </summary>
-		/// <returns>
-		/// An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.
-		/// </returns>
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return GetEnumerator();
-		}
-		#endregion
-	}
+        #region IEnumerable Members
+        /// <summary>
+        /// Returns an enumerator that iterates through a collection.
+        /// </summary>
+        /// <returns>
+        /// An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.
+        /// </returns>
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        #endregion
+    }
 }

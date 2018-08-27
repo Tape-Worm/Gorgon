@@ -183,27 +183,24 @@ namespace Gorgon.IO
 			}
 		}
 
-		/// <summary>
-		/// This method is not available for this type.
-		/// </summary>
-		/// <exception cref="NotSupportedException">Writing is not supported by this type.</exception>
-		protected override void WriteHeader()
-		{
-			throw new NotSupportedException();
-		}
+        /// <summary>
+        /// This method is not available for this type.
+        /// </summary>
+        /// <exception cref="NotSupportedException">Writing is not supported by this type.</exception>
+        protected override void WriteHeader() => throw new NotSupportedException();
 
-		/// <summary>
-		/// Function to read in the header information from the chunk file and validate it.
-		/// </summary>
-		/// <exception cref="GorgonException">Thrown when the chunked file format header ID does not match.
-		/// <para>-or-</para>
-		/// <para>Thrown when application specific header ID in the file was not found in the list passed to the constructor.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown if the chunk file table offset is less than or equal to the size of the header.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown if the file size recorded in the header is less than the size of the header.</para>
-		/// </exception>
-		protected override void ReadHeaderValidate()
+        /// <summary>
+        /// Function to read in the header information from the chunk file and validate it.
+        /// </summary>
+        /// <exception cref="GorgonException">Thrown when the chunked file format header ID does not match.
+        /// <para>-or-</para>
+        /// <para>Thrown when application specific header ID in the file was not found in the list passed to the constructor.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown if the chunk file table offset is less than or equal to the size of the header.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown if the file size recorded in the header is less than the size of the header.</para>
+        /// </exception>
+        protected override void ReadHeaderValidate()
 		{
 			using (GorgonBinaryReader reader = new GorgonBinaryReader(Stream, true))
 			{

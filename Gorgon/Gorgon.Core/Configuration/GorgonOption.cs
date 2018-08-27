@@ -665,48 +665,45 @@ namespace Gorgon.Configuration
 			return new GorgonOption(name, typeof(decimal), defaultValue, minValue != null ? (object)minValue.Value : null, maxValue != null ? (object)maxValue.Value : null, description);
 		}
 
-		/// <summary>
-		/// Function to create an option that stores a signed byte value.
-		/// </summary>
-		/// <typeparam name="T">The type of value to store.</typeparam>
-		/// <param name="name">The name of the option.</param>
-		/// <param name="defaultValue">[Optional] The default value for the option.</param>
-		/// <param name="description">[Optional] The friendly description for this option.</param>
-		/// <returns>A new <see cref="IGorgonOption"/>.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> is empty.</exception>
-		/// <remarks>
-		/// <para>
-		/// The <see cref="Text"/> for this option is derived from the <paramref name="description"/> by using the first line of text (ended by a new line character). If the <paramref name="description"/> 
-		/// is a single line, then the <see cref="Text"/> and <see cref="Description"/> fields will be the same.
-		/// </para>
-		/// <para>
-		/// If the <paramref name="defaultValue"/> is omitted, then the default value for the type is used.
-		/// </para>
-		/// </remarks>
-		public static IGorgonOption CreateOption<T>(string name, T defaultValue = default, string description = null)
-		{
-			return new GorgonOption(name, typeof(T), defaultValue, null, null, description);
-		}
+        /// <summary>
+        /// Function to create an option that stores a signed byte value.
+        /// </summary>
+        /// <typeparam name="T">The type of value to store.</typeparam>
+        /// <param name="name">The name of the option.</param>
+        /// <param name="defaultValue">[Optional] The default value for the option.</param>
+        /// <param name="description">[Optional] The friendly description for this option.</param>
+        /// <returns>A new <see cref="IGorgonOption"/>.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> is empty.</exception>
+        /// <remarks>
+        /// <para>
+        /// The <see cref="Text"/> for this option is derived from the <paramref name="description"/> by using the first line of text (ended by a new line character). If the <paramref name="description"/> 
+        /// is a single line, then the <see cref="Text"/> and <see cref="Description"/> fields will be the same.
+        /// </para>
+        /// <para>
+        /// If the <paramref name="defaultValue"/> is omitted, then the default value for the type is used.
+        /// </para>
+        /// </remarks>
+        public static IGorgonOption CreateOption<T>(string name, T defaultValue = default, string description = null) => new GorgonOption(name, typeof(T), defaultValue, null, null, description);
 
-		/// <summary>
-		/// Function to create an option that stores a signed byte value.
-		/// </summary>
-		/// <typeparam name="T">The type of value to store.</typeparam>
-		/// <param name="name">The name of the option.</param>
-		/// <param name="value">The initial value to assign.</param>
-		/// <param name="defaultValue">The default value for the option.</param>
-		/// <param name="description">[Optional] The friendly description for this option.</param>
-		/// <returns>A new <see cref="IGorgonOption"/>.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> is empty.</exception>
-		/// <remarks>
-		/// <para>
-		/// The <see cref="Text"/> for this option is derived from the <paramref name="description"/> by using the first line of text (ended by a new line character). If the <paramref name="description"/> 
-		/// is a single line, then the <see cref="Text"/> and <see cref="Description"/> fields will be the same.
-		/// </para>
-		/// </remarks>
-		public static IGorgonOption CreateOption<T>(string name, T value, T defaultValue, string description = null)
+        /// <summary>
+        /// Function to create an option that stores a signed byte value.
+        /// </summary>
+        /// <typeparam name="T">The type of value to store.</typeparam>
+        /// <param name="name">The name of the option.</param>
+        /// <param name="value">The initial value to assign.</param>
+        /// <param name="defaultValue">The default value for the option.</param>
+        /// <param name="description">[Optional] The friendly description for this option.</param>
+        /// <returns>A new <see cref="IGorgonOption"/>.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> is empty.</exception>
+        /// <remarks>
+        /// <para>
+        /// The <see cref="Text"/> for this option is derived from the <paramref name="description"/> by using the first line of text (ended by a new line character). If the <paramref name="description"/> 
+        /// is a single line, then the <see cref="Text"/> and <see cref="Description"/> fields will be the same.
+        /// </para>
+        /// </remarks>
+        public static IGorgonOption CreateOption<T>(string name, T value, T defaultValue, string description = null)
 		{
 			IGorgonOption result = new GorgonOption(name, typeof(T), defaultValue, null, null, description);
 			result.SetValue(value);

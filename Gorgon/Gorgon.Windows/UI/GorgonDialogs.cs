@@ -225,40 +225,37 @@ namespace Gorgon.UI
 			ErrorBox(owner, message, caption, GetDetailsFromException(exception), autoShowDetails);
 		}
 
-		/// <summary>
-		/// Function to display the enhanced error dialog.
-		/// </summary>
-		/// <param name="owner">The owning window of this dialog.</param>
-		/// <param name="exception">The exception that was thrown.</param>
-		/// <remarks>
-		/// <para>
-		/// This will display an enhanced error dialog with a details button that will have <paramref name="exception"/> information in the details pane.
-		/// </para>
-		/// </remarks>
-		public static void ErrorBox(Form owner, Exception exception)
-		{
-			ErrorBox(owner, null, null, exception);
-		}
+        /// <summary>
+        /// Function to display the enhanced error dialog.
+        /// </summary>
+        /// <param name="owner">The owning window of this dialog.</param>
+        /// <param name="exception">The exception that was thrown.</param>
+        /// <remarks>
+        /// <para>
+        /// This will display an enhanced error dialog with a details button that will have <paramref name="exception"/> information in the details pane.
+        /// </para>
+        /// </remarks>
+        public static void ErrorBox(Form owner, Exception exception) => ErrorBox(owner, null, null, exception);
 
-		/// <summary>
-		/// Function to display the enhanced error dialog.
-		/// </summary>
-		/// <param name="owner">The owning window of this dialog.</param>
-		/// <param name="message">The error message to display.</param>
-		/// <param name="caption">[Optional] The caption for the error box.</param>
-		/// <param name="details">[Optional] The detailed information about the error.</param>
-		/// <param name="autoShowDetails">[Optional] <b>true</b> to open the details pane when the window is made visible, <b>false</b> to leave it closed.</param>
-		/// <remarks>
-		/// <para>
-		/// This will display an enhanced error dialog with a details button. This button will expand the window to show the <paramref name="details"/> passed to the method. If the <paramref name="details"/> 
-		/// are <b>null</b>, or empty, then the details button will not show.
-		/// </para>
-		/// <para>
-		/// If <paramref name="autoShowDetails"/> is set to <b>true</b>, then the details pane will automatically be shown when the window appears. This only applies when the <paramref name="details"/> parameter 
-		/// has information passed to it.
-		/// </para>
-		/// </remarks>
-		public static void ErrorBox(Form owner, string message, string caption = "", string details = "", bool autoShowDetails = false)
+        /// <summary>
+        /// Function to display the enhanced error dialog.
+        /// </summary>
+        /// <param name="owner">The owning window of this dialog.</param>
+        /// <param name="message">The error message to display.</param>
+        /// <param name="caption">[Optional] The caption for the error box.</param>
+        /// <param name="details">[Optional] The detailed information about the error.</param>
+        /// <param name="autoShowDetails">[Optional] <b>true</b> to open the details pane when the window is made visible, <b>false</b> to leave it closed.</param>
+        /// <remarks>
+        /// <para>
+        /// This will display an enhanced error dialog with a details button. This button will expand the window to show the <paramref name="details"/> passed to the method. If the <paramref name="details"/> 
+        /// are <b>null</b>, or empty, then the details button will not show.
+        /// </para>
+        /// <para>
+        /// If <paramref name="autoShowDetails"/> is set to <b>true</b>, then the details pane will automatically be shown when the window appears. This only applies when the <paramref name="details"/> parameter 
+        /// has information passed to it.
+        /// </para>
+        /// </remarks>
+        public static void ErrorBox(Form owner, string message, string caption = "", string details = "", bool autoShowDetails = false)
 		{
 			ErrorDialog errorDialog = null;
 

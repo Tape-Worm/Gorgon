@@ -130,22 +130,19 @@ namespace Gorgon.IO
 		private GorgonChunk _activeChunk;
 		// The active chunk writer.
 		private GorgonBinaryWriter _activeWriter;
-		#endregion
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// This method is not available for this type.
-		/// </summary>
-		/// <exception cref="NotSupportedException">Reading is not supported by this type.</exception>
-		protected override void ReadHeaderValidate()
-		{
-			throw new NotSupportedException();
-		}
+        #region Methods.
+        /// <summary>
+        /// This method is not available for this type.
+        /// </summary>
+        /// <exception cref="NotSupportedException">Reading is not supported by this type.</exception>
+        protected override void ReadHeaderValidate() => throw new NotSupportedException();
 
-		/// <summary>
-		/// Function to write the header information for the chunk file.
-		/// </summary>
-		protected override void WriteHeader()
+        /// <summary>
+        /// Function to write the header information for the chunk file.
+        /// </summary>
+        protected override void WriteHeader()
 		{
 			using (GorgonBinaryWriter writer = new GorgonBinaryWriter(Stream, true))
 			{

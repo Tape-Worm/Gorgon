@@ -260,10 +260,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="prefix">The prefix for the name.</param>
         /// <returns>The generated name.</returns>
-        internal static string GenerateName(string prefix)
-        {
-            return $"{prefix}_{Guid.NewGuid():N}";
-        }
+        internal static string GenerateName(string prefix) => $"{prefix}_{Guid.NewGuid():N}";
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -333,10 +330,7 @@ namespace Gorgon.Graphics.Core
         /// </para>
         /// </remarks>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception> 
-        protected GorgonGraphicsResource(GorgonGraphics graphics)
-        {
-            Graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
-        }
+        protected GorgonGraphicsResource(GorgonGraphics graphics) => Graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
         #endregion
     }
 }

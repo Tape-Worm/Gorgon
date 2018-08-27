@@ -158,31 +158,30 @@ namespace Gorgon.Graphics.Core
 		{
 		}
 
-		/// <summary>
-		/// Function to perform validation on this list prior to applying it.
-		/// </summary>
-		[Conditional("DEBUG")]
-		internal void Validate()
-		{
+        /// <summary>
+        /// Function to perform validation on this list prior to applying it.
+        /// </summary>
+        [Conditional("DEBUG")]
+        internal void Validate() =>
 #if DEBUG
-			OnValidate();
+            OnValidate();
 #endif
-		}
 
-		/// <summary>
-		/// Function to retrieve the dirty items in this list.
-		/// </summary>
-		/// <param name="peek">[Optional] <b>true</b> if the dirty state should not be modified by calling this method, or <b>false</b> if it should be.</param>
-		/// <remarks>
-		/// <para>
-		/// This will return a tuple that contains the start index, and count of the items that have been changed in this collection.  
-		/// </para>
-		/// <para>
-		/// If the <paramref name="peek"/> parameter is set to <b>true</b>, then the state of this collection is not changed when retrieving the modified objects. Otherwise, the state will be reset and a 
-		/// subsequent call to this method will result in a tuple that does not contain any changed values (i.e. the start and count will be 0) until the collection is modified again.
-		/// </para>
-		/// </remarks>
-		public ref readonly (int Start, int Count) GetDirtyItems(bool peek = false)
+
+        /// <summary>
+        /// Function to retrieve the dirty items in this list.
+        /// </summary>
+        /// <param name="peek">[Optional] <b>true</b> if the dirty state should not be modified by calling this method, or <b>false</b> if it should be.</param>
+        /// <remarks>
+        /// <para>
+        /// This will return a tuple that contains the start index, and count of the items that have been changed in this collection.  
+        /// </para>
+        /// <para>
+        /// If the <paramref name="peek"/> parameter is set to <b>true</b>, then the state of this collection is not changed when retrieving the modified objects. Otherwise, the state will be reset and a 
+        /// subsequent call to this method will result in a tuple that does not contain any changed values (i.e. the start and count will be 0) until the collection is modified again.
+        /// </para>
+        /// </remarks>
+        public ref readonly (int Start, int Count) GetDirtyItems(bool peek = false)
 		{
 		    int startSlot = -1;
 		    int count = 0;
@@ -251,58 +250,40 @@ namespace Gorgon.Graphics.Core
             OnItemReset(index, oldValue);
 	    }
 
-		/// <summary>Removes the <see cref="T:System.Collections.Generic.IList`1" /> item at the specified index.</summary>
-		/// <param name="index">The zero-based index of the item to remove.</param>
-		/// <exception cref="T:System.ArgumentOutOfRangeException">
-		/// <paramref name="index" /> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1" />.</exception>
-		void IList<T>.RemoveAt(int index)
-		{
-            ResetAt(index);
-		}
+        /// <summary>Removes the <see cref="T:System.Collections.Generic.IList`1" /> item at the specified index.</summary>
+        /// <param name="index">The zero-based index of the item to remove.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        /// <paramref name="index" /> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1" />.</exception>
+        void IList<T>.RemoveAt(int index) => ResetAt(index);
 
-		/// <summary>Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
-		/// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
-		/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</exception>
-		void ICollection<T>.Add(T item)
-		{
-			throw new NotSupportedException();
-		}
+        /// <summary>Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
+        /// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+        /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</exception>
+        void ICollection<T>.Add(T item) => throw new NotSupportedException();
 
-		/// <summary>Inserts an item to the <see cref="T:System.Collections.Generic.IList`1" /> at the specified index.</summary>
-		/// <param name="index">The zero-based index at which <paramref name="item" /> should be inserted.</param>
-		/// <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1" />.</param>
-		/// <exception cref="T:System.ArgumentOutOfRangeException">
-		/// <paramref name="index" /> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1" />.</exception>
-		/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IList`1" /> is read-only.</exception>
-		void IList<T>.Insert(int index, T item)
-		{
-			throw new NotSupportedException();
-		}
+        /// <summary>Inserts an item to the <see cref="T:System.Collections.Generic.IList`1" /> at the specified index.</summary>
+        /// <param name="index">The zero-based index at which <paramref name="item" /> should be inserted.</param>
+        /// <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1" />.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        /// <paramref name="index" /> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1" />.</exception>
+        /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IList`1" /> is read-only.</exception>
+        void IList<T>.Insert(int index, T item) => throw new NotSupportedException();
 
-		/// <summary>Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
-		/// <returns>true if <paramref name="item" /> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
-		/// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
-		/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</exception>
-		bool ICollection<T>.Remove(T item)
-		{
-			throw new NotSupportedException();
-		}
+        /// <summary>Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
+        /// <returns>true if <paramref name="item" /> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
+        /// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+        /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</exception>
+        bool ICollection<T>.Remove(T item) => throw new NotSupportedException();
 
-		/// <summary>Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1" />.</summary>
-		/// <returns>The index of <paramref name="item" /> if found in the list; otherwise, -1.</returns>
-		/// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.IList`1" />.</param>
-		public int IndexOf(T item)
-		{
-			return Array.IndexOf(BackingArray, item);
-		}
+        /// <summary>Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1" />.</summary>
+        /// <returns>The index of <paramref name="item" /> if found in the list; otherwise, -1.</returns>
+        /// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.IList`1" />.</param>
+        public int IndexOf(T item) => Array.IndexOf(BackingArray, item);
 
-		/// <summary>Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.</summary>
-		/// <returns>true if <paramref name="item" /> is found in the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false.</returns>
-		/// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
-		public bool Contains(T item)
-		{
-			return IndexOf(item) != -1;
-		}
+        /// <summary>Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.</summary>
+        /// <returns>true if <paramref name="item" /> is found in the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false.</returns>
+        /// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+        public bool Contains(T item) => IndexOf(item) != -1;
 
         /// <summary>
         /// Function to copy the dirty entries for this array into the specified array.
@@ -330,24 +311,21 @@ namespace Gorgon.Graphics.Core
             }
         }
 
-		/// <summary>Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1" /> to an <see cref="T:System.Array" />, starting at a particular <see cref="T:System.Array" /> index.</summary>
-		/// <param name="array">The one-dimensional <see cref="T:System.Array" /> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1" />. The <see cref="T:System.Array" /> must have zero-based indexing.</param>
-		/// <param name="arrayIndex">The zero-based index in <paramref name="array" /> at which copying begins.</param>
-		/// <exception cref="T:System.ArgumentNullException">
-		/// <paramref name="array" /> is null.</exception>
-		/// <exception cref="T:System.ArgumentOutOfRangeException">
-		/// <paramref name="arrayIndex" /> is less than 0.</exception>
-		/// <exception cref="T:System.ArgumentException">The number of elements in the source <see cref="T:System.Collections.Generic.ICollection`1" /> is greater than the available space from <paramref name="arrayIndex" /> to the end of the destination <paramref name="array" />.</exception>
-		public void CopyTo(T[] array, int arrayIndex)
-		{
-			BackingArray.CopyTo(array, arrayIndex);
-		}
-		
-		/// <summary>Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1" /> to an <see cref="T:System.Array" />, starting at a particular <see cref="T:System.Array" /> index.</summary>
-		/// <param name="array">The one-dimensional <see cref="T:System.Array" /> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1" />. The <see cref="T:System.Array" /> must have zero-based indexing.</param>
-		/// <param name="destIndex">[Optional] The destination index in this array to start writing into.</param>
-		/// <exception cref="T:System.ArgumentNullException"><paramref name="array" /> is null.</exception>
-		public void CopyTo(GorgonArray<T> array, int destIndex = 0)
+        /// <summary>Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1" /> to an <see cref="T:System.Array" />, starting at a particular <see cref="T:System.Array" /> index.</summary>
+        /// <param name="array">The one-dimensional <see cref="T:System.Array" /> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1" />. The <see cref="T:System.Array" /> must have zero-based indexing.</param>
+        /// <param name="arrayIndex">The zero-based index in <paramref name="array" /> at which copying begins.</param>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// <paramref name="array" /> is null.</exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        /// <paramref name="arrayIndex" /> is less than 0.</exception>
+        /// <exception cref="T:System.ArgumentException">The number of elements in the source <see cref="T:System.Collections.Generic.ICollection`1" /> is greater than the available space from <paramref name="arrayIndex" /> to the end of the destination <paramref name="array" />.</exception>
+        public void CopyTo(T[] array, int arrayIndex) => BackingArray.CopyTo(array, arrayIndex);
+
+        /// <summary>Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1" /> to an <see cref="T:System.Array" />, starting at a particular <see cref="T:System.Array" /> index.</summary>
+        /// <param name="array">The one-dimensional <see cref="T:System.Array" /> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1" />. The <see cref="T:System.Array" /> must have zero-based indexing.</param>
+        /// <param name="destIndex">[Optional] The destination index in this array to start writing into.</param>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="array" /> is null.</exception>
+        public void CopyTo(GorgonArray<T> array, int destIndex = 0)
 		{
 			if (array == null)
 			{
@@ -399,19 +377,16 @@ namespace Gorgon.Graphics.Core
 			}
 		}
 
-		/// <summary>Returns an enumerator that iterates through a collection.</summary>
-		/// <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
-		/// <filterpriority>2</filterpriority>
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return BackingArray.GetEnumerator();
-		}
+        /// <summary>Returns an enumerator that iterates through a collection.</summary>
+        /// <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
+        /// <filterpriority>2</filterpriority>
+        IEnumerator IEnumerable.GetEnumerator() => BackingArray.GetEnumerator();
 
-	    /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
-	    /// <param name="other">An object to compare with this object.</param>
-	    /// <returns>
-	    /// <see langword="true" /> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <see langword="false" />.</returns>
-	    public bool Equals(IReadOnlyList<T> other)
+        /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// <see langword="true" /> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <see langword="false" />.</returns>
+        public bool Equals(IReadOnlyList<T> other)
         {
             if (other == null)
             {

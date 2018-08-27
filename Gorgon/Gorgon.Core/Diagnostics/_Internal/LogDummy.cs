@@ -113,10 +113,7 @@ namespace Gorgon.Diagnostics
         /// <summary>
         /// Initializes a new instance of the <see cref="LogDummy"/> class.
         /// </summary>
-        public LogDummy()
-		{
-			ThreadID = Thread.CurrentThread.ManagedThreadId;
-		}
-		#endregion
-	}
+        public LogDummy() => ThreadID = Thread.CurrentThread.ManagedThreadId;
+        #endregion
+    }
 }

@@ -63,36 +63,30 @@ namespace Gorgon.Core
 
 			info.AddValue("ResultCode", ResultCode, typeof(GorgonResult));
 		}
-		#endregion
+        #endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonException"/> class.
-		/// </summary>
-		/// <param name="errorMessage">Error message to display.</param>
-		/// <param name="innerException">Inner exception to pass through.</param>
-		public GorgonException(string errorMessage, Exception innerException)
-			: base(errorMessage, innerException)
-		{
-			ResultCode = new GorgonResult("GorgonException", HResult, errorMessage);
-		}
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonException"/> class.
+        /// </summary>
+        /// <param name="errorMessage">Error message to display.</param>
+        /// <param name="innerException">Inner exception to pass through.</param>
+        public GorgonException(string errorMessage, Exception innerException)
+            : base(errorMessage, innerException) => ResultCode = new GorgonResult("GorgonException", HResult, errorMessage);
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonException"/> class.
-		/// </summary>
-		/// <param name="errorMessage">Error message to display.</param>
-		public GorgonException(string errorMessage)
-			: base(errorMessage)
-		{
-			ResultCode = new GorgonResult("GorgonException", HResult, errorMessage);
-		}
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonException"/> class.
+        /// </summary>
+        /// <param name="errorMessage">Error message to display.</param>
+        public GorgonException(string errorMessage)
+            : base(errorMessage) => ResultCode = new GorgonResult("GorgonException", HResult, errorMessage);
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonException" /> class with serialized data.
-		/// </summary>
-		/// <param name="info">Serialization info.</param>
-		/// <param name="context">Serialization context.</param>
-		protected GorgonException(SerializationInfo info, StreamingContext context)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonException" /> class with serialized data.
+        /// </summary>
+        /// <param name="info">Serialization info.</param>
+        /// <param name="context">Serialization context.</param>
+        protected GorgonException(SerializationInfo info, StreamingContext context)
 			: base(info, context)
 		{
 			if (info.FullTypeName == typeof(GorgonResult).FullName)
@@ -105,35 +99,29 @@ namespace Gorgon.Core
 			}
 		}
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonException"/> class.
-		/// </summary>
-		/// <param name="result">The result.</param>
-		/// <param name="message">Message data to append to the error.</param>
-		/// <param name="inner">The inner exception.</param>
-		public GorgonException(GorgonResult result, string message, Exception inner)
-			: base(result.Description + (!string.IsNullOrEmpty(message) ? "\n" + message : string.Empty), inner)
-		{
-			ResultCode = result;
-		}
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonException"/> class.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <param name="message">Message data to append to the error.</param>
+        /// <param name="inner">The inner exception.</param>
+        public GorgonException(GorgonResult result, string message, Exception inner)
+            : base(result.Description + (!string.IsNullOrEmpty(message) ? "\n" + message : string.Empty), inner) => ResultCode = result;
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonException"/> class.
-		/// </summary>
-		/// <param name="result">The result.</param>
-		/// <param name="message">Message data to append to the error.</param>
-		public GorgonException(GorgonResult result, string message)
-			: base(result.Description + (!string.IsNullOrEmpty(message) ? "\n" + message : string.Empty))
-		{
-			ResultCode = result;
-		}
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonException"/> class.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <param name="message">Message data to append to the error.</param>
+        public GorgonException(GorgonResult result, string message)
+            : base(result.Description + (!string.IsNullOrEmpty(message) ? "\n" + message : string.Empty)) => ResultCode = result;
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonException"/> class.
-		/// </summary>
-		/// <param name="result">The result.</param>
-		/// <param name="inner">The inner exception.</param>
-		public GorgonException(GorgonResult result, Exception inner)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonException"/> class.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <param name="inner">The inner exception.</param>
+        public GorgonException(GorgonResult result, Exception inner)
 			: this(result, null, inner)
 		{
 		}
@@ -147,13 +135,10 @@ namespace Gorgon.Core
 		{
 		}
 
-		/// <summary>
-		/// Default constructor.
-		/// </summary>
-		public GorgonException()
-		{
-			ResultCode = new GorgonResult("GorgonException", int.MinValue, string.Empty);
-		}
-		#endregion
-	}
+        /// <summary>
+        /// Default constructor.
+        /// </summary>
+        public GorgonException() => ResultCode = new GorgonResult("GorgonException", int.MinValue, string.Empty);
+        #endregion
+    }
 }

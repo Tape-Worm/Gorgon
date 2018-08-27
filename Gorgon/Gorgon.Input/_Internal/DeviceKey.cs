@@ -44,25 +44,22 @@ namespace Gorgon.Input
 		/// </summary>
 		public IntPtr DeviceHandle;
 
-		/// <summary>
-		/// Function to compare two instances for equality.
-		/// </summary>
-		/// <param name="left">Left instance to compare.</param>
-		/// <param name="right">Right instance to compare.</param>
-		/// <returns>true if equal, false if not.</returns>
-		public static bool Equals(ref DeviceKey left, ref DeviceKey right)
-		{
-			return left.DeviceType == right.DeviceType && left.DeviceHandle == right.DeviceHandle;
-		}
+        /// <summary>
+        /// Function to compare two instances for equality.
+        /// </summary>
+        /// <param name="left">Left instance to compare.</param>
+        /// <param name="right">Right instance to compare.</param>
+        /// <returns>true if equal, false if not.</returns>
+        public static bool Equals(ref DeviceKey left, ref DeviceKey right) => left.DeviceType == right.DeviceType && left.DeviceHandle == right.DeviceHandle;
 
-		/// <summary>
-		/// Indicates whether this instance and a specified object are equal.
-		/// </summary>
-		/// <returns>
-		/// true if <paramref name="obj"/> and this instance are the same type and represent the same value; otherwise, false. 
-		/// </returns>
-		/// <param name="obj">The object to compare with the current instance. </param><filterpriority>2</filterpriority>
-		public override bool Equals(object obj)
+        /// <summary>
+        /// Indicates whether this instance and a specified object are equal.
+        /// </summary>
+        /// <returns>
+        /// true if <paramref name="obj"/> and this instance are the same type and represent the same value; otherwise, false. 
+        /// </returns>
+        /// <param name="obj">The object to compare with the current instance. </param><filterpriority>2</filterpriority>
+        public override bool Equals(object obj)
 		{
 			if (obj is DeviceKey devKey)
 			{
@@ -72,30 +69,24 @@ namespace Gorgon.Input
 			return base.Equals(obj);
 		}
 
-		/// <summary>
-		/// Returns the hash code for this instance.
-		/// </summary>
-		/// <returns>
-		/// A 32-bit signed integer that is the hash code for this instance.
-		/// </returns>
-		/// <filterpriority>2</filterpriority>
-		public override int GetHashCode()
-		{
-			// ReSharper disable NonReadonlyMemberInGetHashCode
-			return 281.GenerateHash(DeviceType).GenerateHash(DeviceHandle);
-			// ReSharper enable NonReadonlyMemberInGetHashCode
-		}
+        /// <summary>
+        /// Returns the hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A 32-bit signed integer that is the hash code for this instance.
+        /// </returns>
+        /// <filterpriority>2</filterpriority>
+        public override int GetHashCode() =>
+            // ReSharper disable NonReadonlyMemberInGetHashCode
+            281.GenerateHash(DeviceType).GenerateHash(DeviceHandle);// ReSharper enable NonReadonlyMemberInGetHashCode
 
-		/// <summary>
-		/// Indicates whether the current object is equal to another object of the same type.
-		/// </summary>
-		/// <returns>
-		/// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
-		/// </returns>
-		/// <param name="other">An object to compare with this object.</param>
-		public bool Equals(DeviceKey other)
-		{
-			return Equals(ref this, ref other);
-		}
-	}
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <returns>
+        /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
+        /// </returns>
+        /// <param name="other">An object to compare with this object.</param>
+        public bool Equals(DeviceKey other) => Equals(ref this, ref other);
+    }
 }

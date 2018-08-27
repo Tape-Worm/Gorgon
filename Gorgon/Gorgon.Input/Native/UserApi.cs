@@ -239,58 +239,43 @@ namespace Gorgon.Native
 		[DllImport("user32.dll", EntryPoint = "CallWindowProc", CharSet = CharSet.Unicode)]
 		public static extern IntPtr CallWindowProc(IntPtr wndProc, IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam);
 
-		/// <summary>
-		/// Function to retrieve information about the specified window.
-		/// </summary>
-		/// <param name="hwnd">Window handle to retrieve information from.</param>
-		/// <param name="index">Type of information.</param>
-		/// <returns>A pointer to the information.</returns>
-		public static IntPtr GetWindowLong(HandleRef hwnd, int index)
-		{
-			return IntPtr.Size == 4 ? GetWindowLongx86(hwnd, index) : GetWindowLongx64(hwnd, index);
-		}
+        /// <summary>
+        /// Function to retrieve information about the specified window.
+        /// </summary>
+        /// <param name="hwnd">Window handle to retrieve information from.</param>
+        /// <param name="index">Type of information.</param>
+        /// <returns>A pointer to the information.</returns>
+        public static IntPtr GetWindowLong(HandleRef hwnd, int index) => IntPtr.Size == 4 ? GetWindowLongx86(hwnd, index) : GetWindowLongx64(hwnd, index);
 
-		/// <summary>
-		/// Function to set information for the specified window.
-		/// </summary>
-		/// <param name="hwnd">Window handle to set information on.</param>
-		/// <param name="index">Type of information.</param>
-		/// <param name="info">Information to set.</param>
-		/// <returns>A pointer to the previous information, or 0 if not successful.</returns>
-		public static IntPtr SetWindowLong(HandleRef hwnd, int index, IntPtr info)
-		{
-			return IntPtr.Size == 4 ? SetWindowLongx86(hwnd, index, info) : SetWindowLongx64(hwnd, index, info);
-		}
+        /// <summary>
+        /// Function to set information for the specified window.
+        /// </summary>
+        /// <param name="hwnd">Window handle to set information on.</param>
+        /// <param name="index">Type of information.</param>
+        /// <param name="info">Information to set.</param>
+        /// <returns>A pointer to the previous information, or 0 if not successful.</returns>
+        public static IntPtr SetWindowLong(HandleRef hwnd, int index, IntPtr info) => IntPtr.Size == 4 ? SetWindowLongx86(hwnd, index, info) : SetWindowLongx64(hwnd, index, info);
 
-		/// <summary>
-		/// Function to return the scan code for a virtual key.
-		/// </summary>
-		/// <param name="virtualKey">The virtual key to evaluate.</param>
-		/// <returns>The scan code for the virtual key.</returns>
-		public static int GetScancode(Keys virtualKey)
-		{
-			return MapVirtualKey(virtualKey, 0);
-		}
+        /// <summary>
+        /// Function to return the scan code for a virtual key.
+        /// </summary>
+        /// <param name="virtualKey">The virtual key to evaluate.</param>
+        /// <returns>The scan code for the virtual key.</returns>
+        public static int GetScancode(Keys virtualKey) => MapVirtualKey(virtualKey, 0);
 
-		/// <summary>
-		/// Function to determine if the specified virtual key is pressed or not.
-		/// </summary>
-		/// <param name="virtualKey">The virtual key to evaluate.</param>
-		/// <returns><b>true</b> if down, <b>false</b> if not.</returns>
-		public static bool CheckKeyDown(Keys virtualKey)
-		{
-			return (GetKeyState(virtualKey) & 0x80) == 0x80;
-		}
-		#endregion
+        /// <summary>
+        /// Function to determine if the specified virtual key is pressed or not.
+        /// </summary>
+        /// <param name="virtualKey">The virtual key to evaluate.</param>
+        /// <returns><b>true</b> if down, <b>false</b> if not.</returns>
+        public static bool CheckKeyDown(Keys virtualKey) => (GetKeyState(virtualKey) & 0x80) == 0x80;
+        #endregion
 
-		#region Constructor/Finalizer.
-		/// <summary>
-		/// Initializes static members of the <see cref="UserApi"/> class.
-		/// </summary>
-		static UserApi()
-		{
-			Marshal.PrelinkAll(typeof(UserApi));
-		}
-		#endregion
-	}
+        #region Constructor/Finalizer.
+        /// <summary>
+        /// Initializes static members of the <see cref="UserApi"/> class.
+        /// </summary>
+        static UserApi() => Marshal.PrelinkAll(typeof(UserApi));
+        #endregion
+    }
 }

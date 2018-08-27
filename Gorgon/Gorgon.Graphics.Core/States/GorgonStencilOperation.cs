@@ -94,14 +94,11 @@ namespace Gorgon.Graphics.Core
         /// <param name="other">An object to compare with this object.</param>
         /// <returns>
         /// <see langword="true" /> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <see langword="false" />.</returns>
-        public bool Equals(GorgonStencilOperation other)
-        {
-            return (other == this) || ((other != null)
+        public bool Equals(GorgonStencilOperation other) => (other == this) || ((other != null)
                                        && (Comparison == other.Comparison)
                                        && (DepthFailOperation == other.DepthFailOperation)
                                        && (FailOperation == other.FailOperation)
                                        && (PassOperation == other.PassOperation));
-        }
         #endregion
 
         #region Constructor/Finalizer.

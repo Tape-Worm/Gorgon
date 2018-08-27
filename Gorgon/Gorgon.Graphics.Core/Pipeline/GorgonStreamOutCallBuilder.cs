@@ -103,10 +103,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="sampler">The sampler to assign.</param>
         /// <param name="index">[Optional] The index of the sampler.</param>
         /// <returns>The fluent interface for this builder.</returns>
-        public GorgonStreamOutCallBuilder SamplerState(GorgonSamplerStateBuilder sampler, int index = 0)
-        {
-            return SamplerState(sampler.Build(), index);
-        }
+        public GorgonStreamOutCallBuilder SamplerState(GorgonSamplerStateBuilder sampler, int index = 0) => SamplerState(sampler.Build(), index);
 
         /// <summary>
         /// Function to assign a sampler to a pixel shader on the pipeline.
@@ -143,10 +140,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="pipelineState">The pipeline state to assign.</param>
         /// <returns>The fluent builder interface.</returns>
-        public GorgonStreamOutCallBuilder PipelineState(GorgonStreamOutPipelineStateBuilder pipelineState)
-        {
-            return PipelineState(pipelineState?.Build());
-        }
+        public GorgonStreamOutCallBuilder PipelineState(GorgonStreamOutPipelineStateBuilder pipelineState) => PipelineState(pipelineState?.Build());
 
         /// <summary>
         /// Function to set a vertex buffer binding for the draw call in slot 0.
@@ -337,10 +331,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <returns>The draw call created or updated by this builder.</returns>
         /// <exception cref="GorgonException">Thrown if a <see cref="GorgonVertexShader"/> is not assigned to the <see cref="GorgonPipelineState.VertexShader"/> property with the <see cref="PipelineState(GorgonStreamOutPipelineState)"/> command.</exception>
-        public GorgonStreamOutCall Build()
-        {
-            return Build(null);
-        }
+        public GorgonStreamOutCall Build() => Build(null);
 
         /// <summary>
         /// Function to reset the builder to the specified draw call state.

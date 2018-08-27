@@ -242,17 +242,14 @@ namespace Gorgon.Native
 
 			return result;
 		}
-		#endregion
+        #endregion
 
-		#region Constructor.
-		/// <summary>
-		/// Initializes static members of the <see cref="Win32API"/> class.
-		/// </summary>
-		static Win32API()
-		{
-			Marshal.PrelinkAll(typeof(Win32API));
-		}
-		#endregion
-	}
+        #region Constructor.
+        /// <summary>
+        /// Initializes static members of the <see cref="Win32API"/> class.
+        /// </summary>
+        static Win32API() => Marshal.PrelinkAll(typeof(Win32API));
+        #endregion
+    }
 	// ReSharper restore InconsistentNaming
 }

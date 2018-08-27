@@ -101,7 +101,7 @@ namespace Gorgon.Examples
 		{
 			get
 			{
-				int colorValue = (int)(((uint)0xFF << (Index * 8)) | (uint)SprayAlpha << 24);
+				int colorValue = (int)(((uint)0xFF << (Index * 8)) | ((uint)SprayAlpha << 24));
 
 				return Color.FromArgb(colorValue);
 			}
@@ -249,8 +249,8 @@ namespace Gorgon.Examples
 			PointF sprayVector = new PointF(Controller.Axis[GamingDeviceAxis.RightStickX].Value - Controller.Info.AxisInfo[GamingDeviceAxis.RightStickX].Range.Minimum,
 										Controller.Axis[GamingDeviceAxis.RightStickY].Value - Controller.Info.AxisInfo[GamingDeviceAxis.RightStickY].Range.Minimum);
 
-			sprayVector = new PointF((sprayVector.X / (Controller.Info.AxisInfo[GamingDeviceAxis.RightStickX].Range.Range + 1)) * 2.0f - 1.0f,
-									 -((sprayVector.Y / (Controller.Info.AxisInfo[GamingDeviceAxis.RightStickY].Range.Range + 1)) * 2.0f - 1.0f));
+			sprayVector = new PointF(((sprayVector.X / (Controller.Info.AxisInfo[GamingDeviceAxis.RightStickX].Range.Range + 1)) * 2.0f) - 1.0f,
+									 -(((sprayVector.Y / (Controller.Info.AxisInfo[GamingDeviceAxis.RightStickY].Range.Range + 1)) * 2.0f) - 1.0f));
 
 			// Calculate angle without magnitude.
 			PointF sprayVectorDelta = new PointF(sprayVector.X, sprayVector.Y);

@@ -358,27 +358,24 @@ namespace Gorgon.IO
                 ArrayPool<byte>.Shared.Return(tempBuffer);
 		    }
 		}
-		#endregion
+        #endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonBinaryWriter"/> class.
-		/// </summary>
-		/// <param name="output">Output stream.</param>
-		/// <param name="encoder">Encoding for the binary writer.</param>
-		/// <param name="keepStreamOpen">[Optional] <b>true</b> to keep the underlying stream open when the writer is closed, <b>false</b> to close when done.</param>
-		public GorgonBinaryWriter(Stream output, Encoding encoder, bool keepStreamOpen = false)
-			: base(output, encoder, keepStreamOpen)
-		{
-			KeepStreamOpen = keepStreamOpen;
-		}
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonBinaryWriter"/> class.
+        /// </summary>
+        /// <param name="output">Output stream.</param>
+        /// <param name="encoder">Encoding for the binary writer.</param>
+        /// <param name="keepStreamOpen">[Optional] <b>true</b> to keep the underlying stream open when the writer is closed, <b>false</b> to close when done.</param>
+        public GorgonBinaryWriter(Stream output, Encoding encoder, bool keepStreamOpen = false)
+            : base(output, encoder, keepStreamOpen) => KeepStreamOpen = keepStreamOpen;
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonBinaryWriter"/> class.
-		/// </summary>
-		/// <param name="output">Output stream.</param>
-		/// <param name="keepStreamOpen">[Optional] <b>true</b> to keep the underlying stream open when the writer is closed, <b>false</b> to close when done.</param>
-		public GorgonBinaryWriter(Stream output, bool keepStreamOpen = false)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonBinaryWriter"/> class.
+        /// </summary>
+        /// <param name="output">Output stream.</param>
+        /// <param name="keepStreamOpen">[Optional] <b>true</b> to keep the underlying stream open when the writer is closed, <b>false</b> to close when done.</param>
+        public GorgonBinaryWriter(Stream output, bool keepStreamOpen = false)
 			: this(output, Encoding.UTF8, keepStreamOpen)
 		{
 		}

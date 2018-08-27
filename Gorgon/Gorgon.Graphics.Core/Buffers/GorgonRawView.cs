@@ -197,10 +197,7 @@ namespace Gorgon.Graphics.Core
                                       int startingElement,
                                       int elementCount,
                                       int totalElementCount)
-            : base(buffer, startingElement, elementCount, totalElementCount)
-        {
-            ElementType = elementType;
-        }
+            : base(buffer, startingElement, elementCount, totalElementCount) => ElementType = elementType;
         #endregion
     }
 }

@@ -324,24 +324,21 @@ namespace Gorgon.Graphics.Core
             Native = new D3D11.SamplerState(device, desc);
 	    }
 
-	    /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
-	    /// <param name="other">An object to compare with this object.</param>
-	    /// <returns>
-	    /// <see langword="true" /> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <see langword="false" />.</returns>
-	    public bool Equals(GorgonSamplerState other)
-	    {
-	        return (this == other) || ((other != null)
-	                                   && (other.WrapU == WrapU)
-	                                   && (other.WrapV == WrapV)
-	                                   && (other.WrapW == WrapW)
-	                                   && (other.BorderColor.Equals(BorderColor))
-	                                   && (other.ComparisonFunction == ComparisonFunction)
-	                                   && (other.Filter == Filter)
-	                                   && (other.MaxAnisotropy == MaxAnisotropy)
-	                                   && (other.MinimumLevelOfDetail.EqualsEpsilon(MinimumLevelOfDetail))
-	                                   && (other.MaximumLevelOfDetail.EqualsEpsilon(MaximumLevelOfDetail))
-	                                   && (other.MipLevelOfDetailBias.EqualsEpsilon(MipLevelOfDetailBias)));
-	    }
+        /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// <see langword="true" /> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <see langword="false" />.</returns>
+        public bool Equals(GorgonSamplerState other) => (this == other) || ((other != null)
+                                       && (other.WrapU == WrapU)
+                                       && (other.WrapV == WrapV)
+                                       && (other.WrapW == WrapW)
+                                       && (other.BorderColor.Equals(BorderColor))
+                                       && (other.ComparisonFunction == ComparisonFunction)
+                                       && (other.Filter == Filter)
+                                       && (other.MaxAnisotropy == MaxAnisotropy)
+                                       && (other.MinimumLevelOfDetail.EqualsEpsilon(MinimumLevelOfDetail))
+                                       && (other.MaximumLevelOfDetail.EqualsEpsilon(MaximumLevelOfDetail))
+                                       && (other.MipLevelOfDetailBias.EqualsEpsilon(MipLevelOfDetailBias)));
         #endregion
 
         #region Constructor/Finalizer.

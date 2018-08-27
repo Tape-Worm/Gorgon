@@ -152,28 +152,25 @@ namespace Gorgon.Core
 	    /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
 	    /// </returns>
 	    public bool Equals(in GorgonResult other) => Equals(in this, in other);
-		#endregion
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to compare two instances for equality.
-		/// </summary>
-		/// <param name="left">The left instance to compare.</param>
-		/// <param name="right">The right instance to compare.</param>
-		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-		public static bool Equals(in GorgonResult left, in GorgonResult right)
-		{
-			return ((left.Code == right.Code) && (string.Equals(left.Name, right.Name, StringComparison.OrdinalIgnoreCase)));
-		}
+        #region Methods.
+        /// <summary>
+        /// Function to compare two instances for equality.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+        public static bool Equals(in GorgonResult left, in GorgonResult right) => ((left.Code == right.Code) && (string.Equals(left.Name, right.Name, StringComparison.OrdinalIgnoreCase)));
 
-		/// <summary>
-		/// Indicates whether this instance and a specified object are equal.
-		/// </summary>
-		/// <param name="obj">Another object to compare to.</param>
-		/// <returns>
-		/// true if <paramref name="obj"/> and this instance are the same type and represent the same value; otherwise, false.
-		/// </returns>
-		public override bool Equals(object obj)
+        /// <summary>
+        /// Indicates whether this instance and a specified object are equal.
+        /// </summary>
+        /// <param name="obj">Another object to compare to.</param>
+        /// <returns>
+        /// true if <paramref name="obj"/> and this instance are the same type and represent the same value; otherwise, false.
+        /// </returns>
+        public override bool Equals(object obj)
 		{
 			if (obj is GorgonResult result)
 			{
@@ -183,37 +180,31 @@ namespace Gorgon.Core
 			return false;
 		}
 
-		/// <summary>
-		/// Returns the fully qualified type name of this instance.
-		/// </summary>
-		/// <returns>
-		/// A <see cref="T:System.String"/> containing a fully qualified type name.
-		/// </returns>
-		public override string ToString()
-		{
-			return string.Format(Resources.GOR_TOSTR_GORGONRESULT, Name, Description, Code.FormatHex());
-		}
+        /// <summary>
+        /// Returns the fully qualified type name of this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.String"/> containing a fully qualified type name.
+        /// </returns>
+        public override string ToString() => string.Format(Resources.GOR_TOSTR_GORGONRESULT, Name, Description, Code.FormatHex());
 
-		/// <summary>
-		/// Returns the hash code for this instance.
-		/// </summary>
-		/// <returns>
-		/// A 32-bit signed integer that is the hash code for this instance.
-		/// </returns>
-		public override int GetHashCode()
-		{
-		    return 281.GenerateHash(Code.GenerateHash(Name));
-		}
-		#endregion
+        /// <summary>
+        /// Returns the hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A 32-bit signed integer that is the hash code for this instance.
+        /// </returns>
+        public override int GetHashCode() => 281.GenerateHash(Code.GenerateHash(Name));
+        #endregion
 
-		#region Operators.
-		/// <summary>
-		/// Operator to test for equality.
-		/// </summary>
-		/// <param name="left">The left item to test.</param>
-		/// <param name="right">The right item to test.</param>
-		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-		public static bool operator ==(GorgonResult left, GorgonResult right)
+        #region Operators.
+        /// <summary>
+        /// Operator to test for equality.
+        /// </summary>
+        /// <param name="left">The left item to test.</param>
+        /// <param name="right">The right item to test.</param>
+        /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+        public static bool operator ==(GorgonResult left, GorgonResult right)
 		{
 			return ((left.Code == right.Code) && (string.Equals(left.Name, right.Name, StringComparison.OrdinalIgnoreCase)));
 		}

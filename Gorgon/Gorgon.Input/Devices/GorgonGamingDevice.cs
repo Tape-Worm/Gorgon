@@ -405,31 +405,28 @@ namespace Gorgon.Input
 			}
 		}
 
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// Some gaming devices use native resources to communicate with the physical device. Because of this, it is necessary to call this method to ensure those resources are freed.
-		/// </para>
-		/// <para>
-		/// For implementors of a <see cref="GorgonGamingDeviceDriver"/>, this method should be overridden to free up any native resources required by the device. If the device does 
-		/// not use any native resources, then it is safe to leave this method alone.
-		/// </para>
-		/// </remarks>
-		public virtual void Dispose()
-		{
-			GC.SuppressFinalize(this);
-		}
-		#endregion
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Some gaming devices use native resources to communicate with the physical device. Because of this, it is necessary to call this method to ensure those resources are freed.
+        /// </para>
+        /// <para>
+        /// For implementors of a <see cref="GorgonGamingDeviceDriver"/>, this method should be overridden to free up any native resources required by the device. If the device does 
+        /// not use any native resources, then it is safe to leave this method alone.
+        /// </para>
+        /// </remarks>
+        public virtual void Dispose() => GC.SuppressFinalize(this);
+        #endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonGamingDevice"/> class.
-		/// </summary>
-		/// <param name="deviceInfo">Information about the specific gaming device to use.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="deviceInfo"/> parameter is <b>null</b>.</exception>
-		protected GorgonGamingDevice(IGorgonGamingDeviceInfo deviceInfo)
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonGamingDevice"/> class.
+        /// </summary>
+        /// <param name="deviceInfo">Information about the specific gaming device to use.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="deviceInfo"/> parameter is <b>null</b>.</exception>
+        protected GorgonGamingDevice(IGorgonGamingDeviceInfo deviceInfo)
 		{
 			if (deviceInfo == null)
 			{

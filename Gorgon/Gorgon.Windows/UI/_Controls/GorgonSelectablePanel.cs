@@ -36,7 +36,7 @@ namespace Gorgon.UI
 	/// <summary>
 	/// A <see cref="Panel"/> that can receive keyboard focus.
 	/// </summary>
-	[ToolboxItem(true), ToolboxBitmap(typeof(GorgonApplication), "Resources.GorgonSelectablePanel.bmp")]
+	[ToolboxItem(true), ToolboxBitmap(typeof(GorgonSelectablePanel), "Resources.GorgonSelectablePanel.bmp")]
 	public class GorgonSelectablePanel
 		: Panel
 	{

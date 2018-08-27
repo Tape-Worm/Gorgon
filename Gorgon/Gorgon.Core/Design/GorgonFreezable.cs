@@ -22,24 +22,18 @@ namespace Gorgon.Design
 		/// Property to return whether the object is frozen or not.
 		/// </summary>
 		public bool IsFrozen => _isFrozen != 0;
-		#endregion
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to freeze the object.
-		/// </summary>
-		protected void Freeze()
-		{
-			Interlocked.Exchange(ref _isFrozen, -1);
-		}
+        #region Methods.
+        /// <summary>
+        /// Function to freeze the object.
+        /// </summary>
+        protected void Freeze() => Interlocked.Exchange(ref _isFrozen, -1);
 
-		/// <summary>
-		/// Function to thaw the object.
-		/// </summary>
-		protected void Thaw()
-		{
-			Interlocked.Exchange(ref _isFrozen, 0);
-		}
-		#endregion
-	}
+        /// <summary>
+        /// Function to thaw the object.
+        /// </summary>
+        protected void Thaw() => Interlocked.Exchange(ref _isFrozen, 0);
+        #endregion
+    }
 }

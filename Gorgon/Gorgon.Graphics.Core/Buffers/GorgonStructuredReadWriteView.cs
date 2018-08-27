@@ -238,10 +238,7 @@ namespace Gorgon.Graphics.Core
                                      int elementStart,
                                      int elementCount,
                                      int totalElementCount)
-            : base(buffer, elementStart, elementCount, totalElementCount)
-        {
-            ReadWriteViewType = uavType;
-        }
+            : base(buffer, elementStart, elementCount, totalElementCount) => ReadWriteViewType = uavType;
         #endregion
     }
 }

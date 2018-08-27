@@ -45,31 +45,25 @@ namespace Gorgon.IO
 		/// A friendly description used for display.
 		/// </summary>
 		public string Description;
-		#endregion
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to determine if two instances are equal.
-		/// </summary>
-		/// <param name="left">The left instance to compare.</param>
-		/// <param name="right">The right instance to compare.</param>
-		/// <returns><b>true</b> if the two instances are equal, <b>false</b> if not.</returns>
-		public static bool Equals(GorgonSpriteCodecDescription left, GorgonSpriteCodecDescription right)
-		{
-			return string.Equals(left.Name, right.Name, StringComparison.OrdinalIgnoreCase);
-		}
+        #region Methods.
+        /// <summary>
+        /// Function to determine if two instances are equal.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        /// <returns><b>true</b> if the two instances are equal, <b>false</b> if not.</returns>
+        public static bool Equals(GorgonSpriteCodecDescription left, GorgonSpriteCodecDescription right) => string.Equals(left.Name, right.Name, StringComparison.OrdinalIgnoreCase);
 
-		/// <summary>Returns the fully qualified type name of this instance.</summary>
-		/// <returns>A <see cref="T:System.String" /> containing a fully qualified type name.</returns>
-		public override string ToString()
-		{
-			return string.Format(Resources.GOR2DIO_TOSTR_SPRITE_CODEC_PLUGIN_DESC, Name, Description);
-		}
+        /// <summary>Returns the fully qualified type name of this instance.</summary>
+        /// <returns>A <see cref="T:System.String" /> containing a fully qualified type name.</returns>
+        public override string ToString() => string.Format(Resources.GOR2DIO_TOSTR_SPRITE_CODEC_PLUGIN_DESC, Name, Description);
 
-		/// <summary>Indicates whether this instance and a specified object are equal.</summary>
-		/// <returns>true if <paramref name="obj" /> and this instance are the same type and represent the same value; otherwise, false. </returns>
-		/// <param name="obj">The object to compare with the current instance. </param>
-		public override bool Equals(object obj)
+        /// <summary>Indicates whether this instance and a specified object are equal.</summary>
+        /// <returns>true if <paramref name="obj" /> and this instance are the same type and represent the same value; otherwise, false. </returns>
+        /// <param name="obj">The object to compare with the current instance. </param>
+        public override bool Equals(object obj)
 		{
 			if (obj is GorgonSpriteCodecDescription codecDesc)
 			{
@@ -79,31 +73,25 @@ namespace Gorgon.IO
 			return base.Equals(obj);
 		}
 
-		/// <summary>Returns the hash code for this instance.</summary>
-		/// <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
-		public override int GetHashCode()
-		{
-			return Name?.GetHashCode() ?? 0;
-		}
+        /// <summary>Returns the hash code for this instance.</summary>
+        /// <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
+        public override int GetHashCode() => Name?.GetHashCode() ?? 0;
 
-		/// <summary>
-		/// Indicates whether the current object is equal to another object of the same type.
-		/// </summary>
-		/// <param name="other">An object to compare with this object.</param>
-		/// <returns>true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.</returns>
-		/// <exception cref="NotImplementedException"></exception>
-		public bool Equals(GorgonSpriteCodecDescription other)
-		{
-			return Equals(this, other);
-		}
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.</returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public bool Equals(GorgonSpriteCodecDescription other) => Equals(this, other);
 
-		/// <summary>
-		/// Operator to determine if two instances are equal or not.
-		/// </summary>
-		/// <param name="left">The left instance to compare.</param>
-		/// <param name="right">The right instance to compare.</param>
-		/// <returns><b>true</b> if the two instances are equal, <b>false</b> if not.</returns>
-		public static bool operator ==(GorgonSpriteCodecDescription left, GorgonSpriteCodecDescription right)
+        /// <summary>
+        /// Operator to determine if two instances are equal or not.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        /// <returns><b>true</b> if the two instances are equal, <b>false</b> if not.</returns>
+        public static bool operator ==(GorgonSpriteCodecDescription left, GorgonSpriteCodecDescription right)
 		{
 			return Equals(left, right);
 		}

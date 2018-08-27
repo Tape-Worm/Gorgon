@@ -505,10 +505,7 @@ namespace Gorgon.Examples
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
-        private static void Window_MouseMove(object sender, MouseEventArgs e)
-        {
-            _shipSprite.Position = new DX.Vector2(e.X, e.Y);
-        }
+        private static void Window_MouseMove(object sender, MouseEventArgs e) => _shipSprite.Position = new DX.Vector2(e.X, e.Y);
 
         /// <summary>
         /// The main entry point for the application.

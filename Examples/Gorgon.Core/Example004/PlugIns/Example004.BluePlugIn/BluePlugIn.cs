@@ -32,24 +32,21 @@ namespace Gorgon.Examples
 	internal class BluePlugIn
 		: TextColorPlugIn
 	{
-		#region Methods.
-		/// <summary>
-		/// Now we'll define the method to return our blue text color writer.
-		/// </summary>
-		/// <returns>
-		/// The blue text color writer.
-		/// </returns>
-		public override TextColorWriter CreateWriter()
-		{
-			return new BlueTextColorWriter();
-		}
-		#endregion
+        #region Methods.
+        /// <summary>
+        /// Now we'll define the method to return our blue text color writer.
+        /// </summary>
+        /// <returns>
+        /// The blue text color writer.
+        /// </returns>
+        public override TextColorWriter CreateWriter() => new BlueTextColorWriter();
+        #endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="BluePlugIn" /> class.
-		/// </summary>
-		public BluePlugIn()
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BluePlugIn" /> class.
+        /// </summary>
+        public BluePlugIn()
 			: base("This plug-in will print blue text.")
 		{
 			// Here we can pass a description of the plug-in back to the application.

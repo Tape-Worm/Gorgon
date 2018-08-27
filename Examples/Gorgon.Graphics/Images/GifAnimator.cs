@@ -70,10 +70,7 @@ namespace Gorgon.Examples
         /// <summary>
         /// Function to reset the frame index.
         /// </summary>
-        public void Reset()
-        {
-            Interlocked.Exchange(ref _currentFrame, 0);
-        }
+        public void Reset() => Interlocked.Exchange(ref _currentFrame, 0);
 
         /// <summary>
         /// Function to start the animation.
@@ -140,11 +137,9 @@ namespace Gorgon.Examples
         /// </summary>
         /// <param name="syncContext">The synchronize context.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="syncContext"/> parameter is <b>null</b>.</exception>
-        public GifAnimator(SynchronizationContext syncContext)
-        {
+        public GifAnimator(SynchronizationContext syncContext) =>
             // We use this synchronization context to ensure that we fire the event on the main thread.
             _syncContext = syncContext ?? throw new ArgumentNullException(nameof(syncContext));
-        }
         #endregion
 
     }

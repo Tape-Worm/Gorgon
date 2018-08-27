@@ -129,19 +129,16 @@ namespace Gorgon.Graphics
         /// </summary>
         public int Back => Z + Depth;
 
-		#endregion
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Returns a <see cref="string" /> that represents this instance.
-		/// </summary>
-		/// <returns>
-		/// A <see cref="string" /> that represents this instance.
-		/// </returns>
-		public override string ToString()
-	    {
-	        return string.Format(Resources.GOR_TOSTR_BOX, X, Y, Z, Right, Bottom, Back, Width, Height, Depth);
-	    }
+        #region Methods.
+        /// <summary>
+        /// Returns a <see cref="string" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="string" /> that represents this instance.
+        /// </returns>
+        public override string ToString() => string.Format(Resources.GOR_TOSTR_BOX, X, Y, Z, Right, Bottom, Back, Width, Height, Depth);
 
         // ReSharper disable once InconsistentNaming
         /// <summary>
@@ -154,18 +151,15 @@ namespace Gorgon.Graphics
         /// <param name="bottom">Bottom coordinate.</param>
         /// <param name="back">Back coordinate.</param>
         /// <returns>A new box with the specified coordinates.</returns>
-	    public static GorgonBox FromTLFRBB(int top, int left, int front, int right, int bottom, int back)
-	    {
-	        return new GorgonBox
-	        {
-	            X = left,
-	            Y = top,
-	            Z = front,
-	            Width = right - left,
-	            Height = bottom - top,
-	            Depth = back - front
-	        };
-	    }
+	    public static GorgonBox FromTLFRBB(int top, int left, int front, int right, int bottom, int back) => new GorgonBox
+        {
+            X = left,
+            Y = top,
+            Z = front,
+            Width = right - left,
+            Height = bottom - top,
+            Depth = back - front
+        };
 
         /// <summary>
         /// Function to determine the intersection between 2 boxes.
@@ -225,11 +219,8 @@ namespace Gorgon.Graphics
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
         /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-	    public static bool Equals(in GorgonBox left, in GorgonBox right)
-	    {
-	        return ((left.X == right.X) && (left.Y == right.Y) && (left.Z == right.Z)
-	                && (left.Width == right.Width) && (left.Height == right.Height) && (left.Depth == right.Depth));
-	    }
+	    public static bool Equals(in GorgonBox left, in GorgonBox right) => ((left.X == right.X) && (left.Y == right.Y) && (left.Z == right.Z)
+                    && (left.Width == right.Width) && (left.Height == right.Height) && (left.Depth == right.Depth));
 
         /// <summary>
         /// Determines whether the specified <see cref="object" /> is equal to this instance.
@@ -276,40 +267,30 @@ namespace Gorgon.Graphics
         /// <returns>
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
         /// </returns>
-	    public override int GetHashCode()
-        {
-            return
-                281.GenerateHash(Back)
+	    public override int GetHashCode() => 281.GenerateHash(Back)
                     .GenerateHash(Right)
                     .GenerateHash(Bottom)
                     .GenerateHash(Left)
                     .GenerateHash(Top)
                     .GenerateHash(Front);
-        }
 
-		/// <summary>
-		/// Indicates whether the current object is equal to another object of the same type.
-		/// </summary>
-		/// <param name="other">An object to compare with this object.</param>
-		/// <returns>
-		/// true if the current object is equal to the other parameter; otherwise, false.
-		/// </returns>
-		public bool Equals(GorgonBox other)
-		{
-			return Equals(in this, in other);
-		}
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// true if the current object is equal to the other parameter; otherwise, false.
+        /// </returns>
+        public bool Equals(GorgonBox other) => Equals(in this, in other);
 
-		/// <summary>
-		/// Indicates whether the current object is equal to another object of the same type.
-		/// </summary>
-		/// <param name="other">An object to compare with this object.</param>
-		/// <returns>
-		/// true if the current object is equal to the other parameter; otherwise, false.
-		/// </returns>
-		public bool Equals(in GorgonBox other)
-		{
-			return Equals(in this, in other);
-		}
-		#endregion
-	}
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// true if the current object is equal to the other parameter; otherwise, false.
+        /// </returns>
+        public bool Equals(in GorgonBox other) => Equals(in this, in other);
+        #endregion
+    }
 }

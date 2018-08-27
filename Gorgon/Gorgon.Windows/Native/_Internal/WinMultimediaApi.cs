@@ -74,16 +74,13 @@ namespace Gorgon.Native
 		/// <returns>0 if successful, non-0 if not.</returns>
 		[DllImport("winmm.dll", CharSet = CharSet.Auto)]
 		public static extern int timeGetDevCaps(ref TIMECAPS timeCaps, int size);
-		#endregion
+        #endregion
 
-		#region Constructor.
-		/// <summary>
-		/// Initializes static members of the <see cref="WinMultimediaApi"/> class.
-		/// </summary>
-		static WinMultimediaApi()
-		{
-			Marshal.PrelinkAll(typeof(WinMultimediaApi));
-		}
-		#endregion
-	}
+        #region Constructor.
+        /// <summary>
+        /// Initializes static members of the <see cref="WinMultimediaApi"/> class.
+        /// </summary>
+        static WinMultimediaApi() => Marshal.PrelinkAll(typeof(WinMultimediaApi));
+        #endregion
+    }
 }

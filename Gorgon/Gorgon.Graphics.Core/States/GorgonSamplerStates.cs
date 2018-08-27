@@ -55,33 +55,24 @@ namespace Gorgon.Graphics.Core
         #endregion
 
         #region Methods.
-	    /// <summary>
-	    /// Function called when a dirty item was not found, and is removed from the dirty list.
-	    /// </summary>
-	    /// <param name="dirtyIndex">The index that is considered dirty.</param>
-	    protected override void OnDirtyItemCleaned(int dirtyIndex)
-	    {
-	        Native[dirtyIndex] = null;
-	    }
+        /// <summary>
+        /// Function called when a dirty item was not found, and is removed from the dirty list.
+        /// </summary>
+        /// <param name="dirtyIndex">The index that is considered dirty.</param>
+        protected override void OnDirtyItemCleaned(int dirtyIndex) => Native[dirtyIndex] = null;
 
-	    /// <summary>
-	    /// Function called when a dirty item is found and added.
-	    /// </summary>
-	    /// <param name="dirtyIndex">The index that is considered dirty.</param>
-	    /// <param name="value">The dirty value.</param>
-	    protected override void OnDirtyItemAdded(int dirtyIndex, GorgonSamplerState value)
-	    {
-	        Native[dirtyIndex] = value?.Native;
-	    }
+        /// <summary>
+        /// Function called when a dirty item is found and added.
+        /// </summary>
+        /// <param name="dirtyIndex">The index that is considered dirty.</param>
+        /// <param name="value">The dirty value.</param>
+        protected override void OnDirtyItemAdded(int dirtyIndex, GorgonSamplerState value) => Native[dirtyIndex] = value?.Native;
 
-	    /// <summary>
-	    /// Function called when the array is cleared.
-	    /// </summary>
-	    protected override void OnClear()
-	    {
-            Array.Clear(Native, 0, Native.Length);
-	    }
-	    #endregion
+        /// <summary>
+        /// Function called when the array is cleared.
+        /// </summary>
+        protected override void OnClear() => Array.Clear(Native, 0, Native.Length);
+        #endregion
 
         #region Constructor/Finalizer.
         /// <summary>

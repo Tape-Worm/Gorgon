@@ -115,7 +115,7 @@ namespace Gorgon.Examples
                 _floatLeft = !_floatLeft;
             }
 
-            _ship.Position = new DX.Vector2(_screen.Width / 2 + _floatOffset, _screen.Height - 120);
+            _ship.Position = new DX.Vector2((_screen.Width / 2) + _floatOffset, _screen.Height - 120);
 
             _renderer.Begin();
             _renderer.DrawSprite(_background);
@@ -124,7 +124,7 @@ namespace Gorgon.Examples
             for (int i = 0; i < _stars.Length; ++i)
             {
                 ref DX.Vector2 star = ref _stars[i];
-                star = new DX.Vector2(star.X, star.Y + ((i % 2) == 0 ? 0.3f : 0.4f) * GorgonTiming.Delta);
+                star = new DX.Vector2(star.X, star.Y + (((i % 2) == 0 ? 0.3f : 0.4f) * GorgonTiming.Delta));
 
                 if (star.Y > 1.0f)
                 {
@@ -144,7 +144,7 @@ namespace Gorgon.Examples
             _renderer.Begin(Gorgon2DBatchState.AdditiveBlend);
             GorgonSprite glowSprite = _engineGlow[_glowIndex];
 
-            glowSprite.Position = new DX.Vector2(_ship.Bounds.Left - (_ship.Bounds.Width / 2) - 10, _ship.Position.Y - glowSprite.Bounds.Height / 2.0f);
+            glowSprite.Position = new DX.Vector2(_ship.Bounds.Left - (_ship.Bounds.Width / 2) - 10, _ship.Position.Y - (glowSprite.Bounds.Height / 2.0f));
             _renderer.DrawSprite(glowSprite);
             _renderer.End();
 
@@ -292,11 +292,9 @@ namespace Gorgon.Examples
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="AfterSwapChainResizedEventArgs"/> instance containing the event data.</param>
-        private static void Screen_AfterSwapChainResized(object sender, AfterSwapChainResizedEventArgs e)
-        {
+        private static void Screen_AfterSwapChainResized(object sender, AfterSwapChainResizedEventArgs e) =>
             // We'll need to readjust the background scroller.
             _background.Position = new DX.Vector2(_background.Position.X, e.Size.Height + (_background.Position.Y - e.OldSize.Height));
-        }
 
         /// <summary>
         /// The main entry point for the application.

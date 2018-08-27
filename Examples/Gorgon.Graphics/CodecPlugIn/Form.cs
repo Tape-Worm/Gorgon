@@ -90,7 +90,7 @@ namespace CodecPlugIn
 			DX.Size2 size = new DX.Size2((int)(scale.Width * imageSize.Width), (int)(scale.Height * imageSize.Height));
 
 			// Find the position.
-			DX.Rectangle bounds = new DX.Rectangle((int)(windowSize.Width / 2 - size.Width / 2), (int)(windowSize.Height / 2 - size.Height / 2), size.Width, size.Height);
+			DX.Rectangle bounds = new DX.Rectangle((int)((windowSize.Width / 2) - (size.Width / 2)), (int)((windowSize.Height / 2) - (size.Height / 2)), size.Width, size.Height);
 
             _graphics.DrawTexture(_texture, bounds);
 
@@ -258,16 +258,13 @@ namespace CodecPlugIn
                 Cursor.Current = Cursors.Default;
             }
         }
-	    #endregion
+        #endregion
 
         #region Constructor/Destructor.
         /// <summary>
         /// Initializes a new instance of the <see cref="Form"/> class.
         /// </summary>
-        public Form()
-        {
-            InitializeComponent();
-        }
+        public Form() => InitializeComponent();
         #endregion
     }
 }

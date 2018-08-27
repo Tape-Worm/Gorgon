@@ -442,23 +442,21 @@ namespace Gorgon.Graphics.Core
 			}
 		}
 
-		/// <summary>
-		/// Handles the ResizeBegin event of the ParentForm control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-		private void ParentForm_ResizeBegin(object sender, EventArgs e)
-		{
-			// Set the flag to indicate that we've started a resize operation.
-			_resizeState.Resized = false;
-		}
+        /// <summary>
+        /// Handles the ResizeBegin event of the ParentForm control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ParentForm_ResizeBegin(object sender, EventArgs e) =>
+            // Set the flag to indicate that we've started a resize operation.
+            _resizeState.Resized = false;
 
-		/// <summary>
-		/// Handles the Resize event of the Window control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-		private void Window_Resize(object sender, EventArgs e)
+        /// <summary>
+        /// Handles the Resize event of the Window control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void Window_Resize(object sender, EventArgs e)
 		{
 			try
 			{

@@ -438,16 +438,13 @@ namespace Gorgon.Examples
 	            GorgonApplication.Quit();
 	        }
 	    }
-	    #endregion
+        #endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="FormMain" /> class.
-		/// </summary>
-		public FormMain()
-		{
-			InitializeComponent();
-		}
-		#endregion
-	}
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FormMain" /> class.
+        /// </summary>
+        public FormMain() => InitializeComponent();
+        #endregion
+    }
 }

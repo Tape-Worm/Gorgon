@@ -159,22 +159,19 @@ namespace Gorgon.IO
 			return result;
 		}
 
-		/// <summary>
-		/// Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1" />.
-		/// </summary>
-		public void Clear()
-		{
-			_files.Clear();
-		}
+        /// <summary>
+        /// Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1" />.
+        /// </summary>
+        public void Clear() => _files.Clear();
 
-		/// <summary>
-		/// Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1" />.
-		/// </summary>
-		/// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
-		/// <returns>
-		/// true if <paramref name="item" /> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1" />.
-		/// </returns>
-		public bool Remove(VirtualFile item)
+        /// <summary>
+        /// Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1" />.
+        /// </summary>
+        /// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+        /// <returns>
+        /// true if <paramref name="item" /> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1" />.
+        /// </returns>
+        public bool Remove(VirtualFile item)
 		{
 			if (item == null)
 			{
@@ -191,49 +188,37 @@ namespace Gorgon.IO
 			return true;
 		}
 
-		/// <summary>
-		/// Function to return the internal enumerable for this collection.
-		/// </summary>
-		/// <returns>
-		/// The <see cref="IEnumerable{T}"/> for this collection.
-		/// </returns>
-		internal IEnumerable<VirtualFile> InternalEnumerable()
-		{
-			return _files.Select(item => item.Value);
-		}
+        /// <summary>
+        /// Function to return the internal enumerable for this collection.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="IEnumerable{T}"/> for this collection.
+        /// </returns>
+        internal IEnumerable<VirtualFile> InternalEnumerable() => _files.Select(item => item.Value);
 
-		/// <summary>
-		/// Returns an enumerator that iterates through the collection.
-		/// </summary>
-		/// <returns>
-		/// A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.
-		/// </returns>
-		public IEnumerator<IGorgonVirtualFile> GetEnumerator()
-		{
-			return _files.Select(fileEntry => fileEntry.Value).GetEnumerator();
-		}
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.
+        /// </returns>
+        public IEnumerator<IGorgonVirtualFile> GetEnumerator() => _files.Select(fileEntry => fileEntry.Value).GetEnumerator();
 
-		/// <summary>
-		/// Returns an enumerator that iterates through a collection.
-		/// </summary>
-		/// <returns>
-		/// An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.
-		/// </returns>
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return ((IEnumerable)_files.Values).GetEnumerator();
-		}
-		#endregion
+        /// <summary>
+        /// Returns an enumerator that iterates through a collection.
+        /// </summary>
+        /// <returns>
+        /// An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.
+        /// </returns>
+        IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)_files.Values).GetEnumerator();
+        #endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="VirtualFileCollection"/> class.
-		/// </summary>
-		/// <param name="parent">The parent directory that owns this collection.</param>
-		internal VirtualFileCollection(VirtualDirectory parent)			
-		{
-			_parent = parent;
-		}
-		#endregion
-	}
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="VirtualFileCollection"/> class.
+        /// </summary>
+        /// <param name="parent">The parent directory that owns this collection.</param>
+        internal VirtualFileCollection(VirtualDirectory parent) => _parent = parent;
+        #endregion
+    }
 }

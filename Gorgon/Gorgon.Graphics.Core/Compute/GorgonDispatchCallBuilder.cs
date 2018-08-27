@@ -68,10 +68,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="sampler">The sampler to assign.</param>
         /// <param name="index">[Optional] The index of the sampler.</param>
-        public GorgonDispatchCallBuilder SamplerState(GorgonSamplerStateBuilder sampler, int index = 0)
-        {
-            return SamplerState(sampler.Build(), index);
-        }
+        public GorgonDispatchCallBuilder SamplerState(GorgonSamplerStateBuilder sampler, int index = 0) => SamplerState(sampler.Build(), index);
 
         /// <summary>
         /// Function to assign a sampler to a shader on the pipeline.
@@ -263,10 +260,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <returns>The dispatch call created or updated by this builder.</returns>
         /// <exception cref="GorgonException">Thrown if a <see cref="GorgonComputeShader"/> is not assigned to the <see cref="GorgonComputeShader"/> property with the <see cref="ComputeShader"/> command.</exception>
-        public GorgonDispatchCall Build()
-        {
-            return Build(null);
-        }
+        public GorgonDispatchCall Build() => Build(null);
 
         /// <summary>
         /// Function to reset the builder to the specified dispatch call state.

@@ -194,10 +194,7 @@ namespace Gorgon.Graphics.Core
         /// <param name="totalElementCount">The total number of elements in the buffer.</param>
         /// <param name="elementType">The type of element data in the buffer.</param>
         internal GorgonRawReadWriteView(GorgonBuffer buffer, int elementStart, int elementCount, int totalElementCount, RawBufferElementType elementType)
-            : base(buffer, elementStart, elementCount, totalElementCount)
-        {
-            ElementType = elementType;
-        }
+            : base(buffer, elementStart, elementCount, totalElementCount) => ElementType = elementType;
         #endregion
     }
 }

@@ -464,8 +464,8 @@ namespace Gorgon.Input
 				return button;
 			}
 
-			Rectangle doubleClickArea = new Rectangle(_doubleClickPosition.X - DoubleClickSize.Width / 2,
-													  _doubleClickPosition.Y - DoubleClickSize.Height / 2,
+			Rectangle doubleClickArea = new Rectangle(_doubleClickPosition.X - (DoubleClickSize.Width / 2),
+													  _doubleClickPosition.Y - (DoubleClickSize.Height / 2),
 													  DoubleClickSize.Width,
 													  DoubleClickSize.Height);
 

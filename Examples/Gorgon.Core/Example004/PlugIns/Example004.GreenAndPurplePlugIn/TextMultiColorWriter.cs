@@ -45,13 +45,10 @@ namespace Gorgon.Examples
 			get;
 		}
 
-		/// <summary>
+        /// <summary>
         /// Initializes a new instance of the <see cref="TextMultiColorWriter"/> class.
         /// </summary>
         /// <param name="color">The color to use when printing the text.</param>
-	    public TextMultiColorWriter(ConsoleColor color)
-	    {
-	        TextColor = color;
-	    }
-	}
+        public TextMultiColorWriter(ConsoleColor color) => TextColor = color;
+    }
 }

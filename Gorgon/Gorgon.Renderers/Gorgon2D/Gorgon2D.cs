@@ -1177,10 +1177,10 @@ namespace Gorgon.Renderers
             // If we supply our own texture coordinates, then ensure that the individual lines are mapped appropriately.
             if ((textureRegion != null) && (texture != null))
             {
-                DX.RectangleF innerRect = new DX.RectangleF(thickness, thickness, region.Width - thickness * 2, region.Height - thickness * 2);
+                DX.RectangleF innerRect = new DX.RectangleF(thickness, thickness, region.Width - (thickness * 2), region.Height - (thickness * 2));
 
-                innerRect.Left = innerRect.Left / region.Width + textureRegion.Value.Left;
-                innerRect.Top = innerRect.Top / region.Height + textureRegion.Value.Top;
+                innerRect.Left = (innerRect.Left / region.Width) + textureRegion.Value.Left;
+                innerRect.Top = (innerRect.Top / region.Height) + textureRegion.Value.Top;
                 innerRect.Right = innerRect.Right / region.Width;
                 innerRect.Bottom = innerRect.Bottom / region.Height;
 
@@ -1227,7 +1227,7 @@ namespace Gorgon.Renderers
                                 depth);
 
             // Right down.
-            DrawFilledRectangle(new DX.RectangleF(region.Right - thickness, region.Y + thickness, thickness, region.Height - thickness * 2),
+            DrawFilledRectangle(new DX.RectangleF(region.Right - thickness, region.Y + thickness, thickness, region.Height - (thickness * 2)),
                                 color,
                                 texture,
                                 rightDown,
@@ -1245,7 +1245,7 @@ namespace Gorgon.Renderers
                                 depth);
 
             // Left down.
-            DrawFilledRectangle(new DX.RectangleF(region.X, region.Y + thickness, thickness, region.Height - thickness * 2),
+            DrawFilledRectangle(new DX.RectangleF(region.X, region.Y + thickness, thickness, region.Height - (thickness * 2)),
                                 color,
                                 texture,
                                 leftDown,
@@ -1458,7 +1458,7 @@ namespace Gorgon.Renderers
                 float sin = angle.FastSin();
                 float cos = angle.FastCos();
 
-                var point = new DX.Vector2(sin * radius.X + centerPoint.X, cos * radius.Y + centerPoint.Y);
+                var point = new DX.Vector2((sin * radius.X) + centerPoint.X, (cos * radius.Y) + centerPoint.Y);
 
                 DX.Vector3 uv = DX.Vector3.Zero;
 
@@ -1558,8 +1558,8 @@ namespace Gorgon.Renderers
 
             DX.Vector2 centerPoint = region.Center;
             
-            var outerRadius = new DX.Vector2(region.Width * 0.5f + thickness * 0.5f, region.Height * 0.5f + thickness * 0.5f);
-            var innerRadius = new DX.Vector2(region.Width * 0.5f - thickness * 0.5f, region.Height * 0.5f - thickness * 0.5f);
+            var outerRadius = new DX.Vector2((region.Width * 0.5f) + (thickness * 0.5f), (region.Height * 0.5f) + (thickness * 0.5f));
+            var innerRadius = new DX.Vector2((region.Width * 0.5f) - (thickness * 0.5f), (region.Height * 0.5f) - (thickness * 0.5f));
 
 
             int vertexIndex = 0;
@@ -1569,8 +1569,8 @@ namespace Gorgon.Renderers
                 float sin = angle.FastSin();
                 float cos = angle.FastCos();
 
-                var innerPoint = new DX.Vector2(sin * innerRadius.X + centerPoint.X, cos * innerRadius.Y + centerPoint.Y);
-                var outerPoint = new DX.Vector2(sin * outerRadius.X + centerPoint.X, cos * outerRadius.Y + centerPoint.Y);
+                var innerPoint = new DX.Vector2((sin * innerRadius.X) + centerPoint.X, (cos * innerRadius.Y) + centerPoint.Y);
+                var outerPoint = new DX.Vector2((sin * outerRadius.X) + centerPoint.X, (cos * outerRadius.Y) + centerPoint.Y);
 
                 DX.Vector3 uvInner = DX.Vector3.Zero;
                 DX.Vector3 uvOuter = DX.Vector3.Zero;
@@ -1704,7 +1704,7 @@ namespace Gorgon.Renderers
                 float sin = angle.FastSin();
                 float cos = angle.FastCos();
 
-                var point = new DX.Vector2(sin * radius.X + centerPoint.X, cos * radius.Y + centerPoint.Y);
+                var point = new DX.Vector2((sin * radius.X) + centerPoint.X, (cos * radius.Y) + centerPoint.Y);
 
                 DX.Vector3 uv = DX.Vector3.Zero;
 
@@ -1789,8 +1789,8 @@ namespace Gorgon.Renderers
 
             DX.Vector2 centerPoint = region.Center;
             
-            var outerRadius = new DX.Vector2(region.Width * 0.5f + thickness * 0.5f, region.Height * 0.5f + thickness * 0.5f);
-            var innerRadius = new DX.Vector2(region.Width * 0.5f - thickness * 0.5f, region.Height * 0.5f - thickness * 0.5f);
+            var outerRadius = new DX.Vector2((region.Width * 0.5f) + (thickness * 0.5f), (region.Height * 0.5f) + (thickness * 0.5f));
+            var innerRadius = new DX.Vector2((region.Width * 0.5f) - (thickness * 0.5f), (region.Height * 0.5f) - (thickness * 0.5f));
 
 
             int vertexIndex = 0;
@@ -1800,8 +1800,8 @@ namespace Gorgon.Renderers
                 float sin = angle.FastSin();
                 float cos = angle.FastCos();
 
-                var innerPoint = new DX.Vector2(sin * innerRadius.X + centerPoint.X, cos * innerRadius.Y + centerPoint.Y);
-                var outerPoint = new DX.Vector2(sin * outerRadius.X + centerPoint.X, cos * outerRadius.Y + centerPoint.Y);
+                var innerPoint = new DX.Vector2((sin * innerRadius.X) + centerPoint.X, (cos * innerRadius.Y) + centerPoint.Y);
+                var outerPoint = new DX.Vector2((sin * outerRadius.X) + centerPoint.X, (cos * outerRadius.Y) + centerPoint.Y);
 
                 DX.Vector3 uvInner = DX.Vector3.Zero;
                 DX.Vector3 uvOuter = DX.Vector3.Zero;

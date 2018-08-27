@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -43,6 +44,20 @@ namespace Gorgon.Editor
     static class Program
     {
         #region Variables.
+        /// <summary>
+        /// Property to return the directory used by the application for settings and other functionality.
+        /// </summary>
+        public static DirectoryInfo ApplicationUserDirectory
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Property to return the path to the directory that the executable is running from.
+        /// </summary>
+        public static DirectoryInfo ApplicationDirectory => GorgonApplication.StartupPath;
+
         /// <summary>
         /// Property to return the log used for the application.
         /// </summary>
@@ -130,13 +145,13 @@ namespace Gorgon.Editor
                 {
                     Log = GorgonApplication.Log = new GorgonLogConsole("Gorgon.Editor", typeof(Program).Assembly.GetName().Version)
                                                   {
-                                                      //LogFilterLevel = level
+                                                      LogFilterLevel = level
                                                   };
                 }
 
                 if (string.Equals(logType, "file", StringComparison.OrdinalIgnoreCase))
                 {
-                    Log = GorgonApplication.Log = new GorgonLog("Gorgon.Editor", @"Tape_Worm\Gorgon.Editor", typeof(Program).Assembly.GetName().Version)
+                    Log = GorgonApplication.Log = new GorgonLog("Gorgon.Editor", @"Tape_Worm\Gorgon.Editor\Logging\", typeof(Program).Assembly.GetName().Version)
                                                   {
                                                       LogFilterLevel = level
                                                   };
@@ -146,6 +161,21 @@ namespace Gorgon.Editor
             {
                 Debug.Print($"Couldn't open the log for the editor: {ex.Message}.");
             }
+        }
+
+        /// <summary>
+        /// Function to initialize the application user directory.
+        /// </summary>
+        private static void InitApplicationUserDirectory()
+        {
+            var dir = new DirectoryInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Tape_Worm", "Gorgon.Editor"));
+
+            if (!dir.Exists)
+            {
+                dir.Create();
+            }
+
+            ApplicationUserDirectory = dir;
         }
 
         /// <summary>
@@ -161,6 +191,7 @@ namespace Gorgon.Editor
 
             try
             {
+                InitApplicationUserDirectory();
                 InitializeLogging(args);
 
                 booter = new Boot();
@@ -171,6 +202,10 @@ namespace Gorgon.Editor
             catch (Exception ex)
             {
                 ex.Catch(_ => GorgonDialogs.ErrorBox(null, Resources.GOREDIT_ERR_GENERAL_ERROR, Resources.GOREDIT_ERR_ERROR, ex), Log);
+            }
+            finally
+            {
+                booter?.Dispose();
             }
         }
         #endregion

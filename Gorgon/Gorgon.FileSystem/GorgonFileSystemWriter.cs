@@ -180,26 +180,23 @@ namespace Gorgon.IO
 			return physicalPath.ToString();
 		}
 
-		/// <summary>
-		/// Function to return the write area path for a given virtual file.
-		/// </summary>
-		/// <param name="directoryName">Formatted directory name.</param>
-		/// <param name="fileName">Formatted file name.</param>
-		/// <returns>The location to write.</returns>
-		private string GetWriteFilePath(string directoryName, string fileName)
-		{
-			return GetWriteDirectoryPath(directoryName) + fileName;
-		}
+        /// <summary>
+        /// Function to return the write area path for a given virtual file.
+        /// </summary>
+        /// <param name="directoryName">Formatted directory name.</param>
+        /// <param name="fileName">Formatted file name.</param>
+        /// <returns>The location to write.</returns>
+        private string GetWriteFilePath(string directoryName, string fileName) => GetWriteDirectoryPath(directoryName) + fileName;
 
-		/// <summary>
-		/// Function to copy data from a file system to the file system linked to this writer.
-		/// </summary>
-		/// <param name="sourceFileSystem">The file system to copy from.</param>
-		/// <param name="progress">The callback for copy progress.</param>
-		/// <param name="token">The cancellation token for asynchronous copy.</param>
-		/// <param name="allowOverwrite">Flag to indicate whether to allow overwriting files or not.</param>
-		/// <returns>A tuple containing the count of the directories and files copied.</returns>
-		private (int DirectoryCount, int FileCount)? CopyInternal(IGorgonFileSystem sourceFileSystem,
+        /// <summary>
+        /// Function to copy data from a file system to the file system linked to this writer.
+        /// </summary>
+        /// <param name="sourceFileSystem">The file system to copy from.</param>
+        /// <param name="progress">The callback for copy progress.</param>
+        /// <param name="token">The cancellation token for asynchronous copy.</param>
+        /// <param name="allowOverwrite">Flag to indicate whether to allow overwriting files or not.</param>
+        /// <returns>A tuple containing the count of the directories and files copied.</returns>
+        private (int DirectoryCount, int FileCount)? CopyInternal(IGorgonFileSystem sourceFileSystem,
 		                                                          Func<GorgonWriterCopyProgress, bool> progress,
 		                                                          CancellationToken token,
 		                                                          bool allowOverwrite)

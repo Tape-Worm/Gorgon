@@ -605,16 +605,13 @@ namespace Gorgon.Native
 				return rawInput;
 			}
 		}
-		#endregion
+        #endregion
 
-		#region Constructor.
-		/// <summary>
-		/// Initializes static members of the <see cref="RawInputApi"/> class.
-		/// </summary>
-		static RawInputApi()
-		{
-			Marshal.PrelinkAll(typeof(RawInputApi));
-		}
-		#endregion
-	}
+        #region Constructor.
+        /// <summary>
+        /// Initializes static members of the <see cref="RawInputApi"/> class.
+        /// </summary>
+        static RawInputApi() => Marshal.PrelinkAll(typeof(RawInputApi));
+        #endregion
+    }
 }

@@ -78,10 +78,7 @@ namespace Gorgon.Native
         /// <param name="other">An object to compare with this object.</param>
         /// <returns>
         /// <see langword="true" /> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <see langword="false" />.</returns>
-        public bool Equals(GorgonReadOnlyPointer other)
-        {
-            return other._data == _data;
-        }
+        public bool Equals(GorgonReadOnlyPointer other) => other._data == _data;
 
         /// <summary>
         /// Function to read a value from the memory pointed at by this pointer.
@@ -140,10 +137,7 @@ namespace Gorgon.Native
 
         /// <summary>Returns the hash code for this instance.</summary>
         /// <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
-        public override int GetHashCode()
-        {
-            return (int)_data;
-        }
+        public override int GetHashCode() => (int)_data;
 
         /// <summary>Returns the fully qualified type name of this instance.</summary>
         /// <returns>The fully qualified type name.</returns>
@@ -163,10 +157,7 @@ namespace Gorgon.Native
         /// <param name="left">The left pointer to compare.</param>
         /// <param name="right">The right pointer to compare.</param>
         /// <returns>0 if the pointers are equal, -1 if left is less than right, or 1 if left is greater than right.</returns>
-        public static int Compare(GorgonReadOnlyPointer left, GorgonReadOnlyPointer right)
-        {
-            return ((IComparable<GorgonReadOnlyPointer>)left).CompareTo(right);
-        }
+        public static int Compare(GorgonReadOnlyPointer left, GorgonReadOnlyPointer right) => ((IComparable<GorgonReadOnlyPointer>)left).CompareTo(right);
 
         /// <summary>
         /// Explicit operator to return the pointer to the underlying data pointed at by the pointer.
@@ -300,10 +291,7 @@ namespace Gorgon.Native
         /// Function to return this pointer as a read only reference.
         /// </summary>
         /// <returns>A read only byte reference to the memory pointed at by this pointer.</returns>
-        public ref readonly byte ToRef()
-        {
-            return ref Unsafe.AsRef<byte>(_data);
-        }
+        public ref readonly byte ToRef() => ref Unsafe.AsRef<byte>(_data);
 
         /// <summary>
         /// Function to return a pointer from a reference byte.
@@ -312,10 +300,7 @@ namespace Gorgon.Native
         /// <param name="sizeInBytes">The number of bytes allocated.</param>
         /// <returns>A new <see cref="GorgonReadOnlyPointer"/> pointing at the memory provided by the reference byte.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="sizeInBytes"/> parameter is less than 1.</exception>
-        public static GorgonReadOnlyPointer FromRef(ref byte refData, int sizeInBytes)
-        {
-            return new GorgonReadOnlyPointer(Unsafe.AsPointer(ref refData), sizeInBytes);
-        }
+        public static GorgonReadOnlyPointer FromRef(ref byte refData, int sizeInBytes) => new GorgonReadOnlyPointer(Unsafe.AsPointer(ref refData), sizeInBytes);
 
         /// <summary>
         /// Function to copy the contents of the memory pointed at by this pointer into a <see cref="GorgonNativeBuffer{T}"/>.
@@ -324,10 +309,7 @@ namespace Gorgon.Native
         /// <param name="buffer">The buffer to populate.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="buffer"/> parameter is <b>null</b>.</exception>
         public void CopyTo<T>(GorgonNativeBuffer<T> buffer)
-            where T : unmanaged
-        {
-            Unsafe.CopyBlock((byte *)buffer, _data, (uint)SizeInBytes);
-        }
+            where T : unmanaged => Unsafe.CopyBlock((byte*)buffer, _data, (uint)SizeInBytes);
         #endregion
 
         #region Constructor/Finalizer.

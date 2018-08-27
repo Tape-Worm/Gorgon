@@ -110,7 +110,7 @@ namespace Gorgon.Graphics.Imaging
 					a = (srcPixel & 0xff) >> 4;
 				}
 
-				*(destBufferPtr++) = (ushort)(b << 12 | g << 8 | r << 4 | a);
+				*(destBufferPtr++) = (ushort)((b << 12) | (g << 8) | (r << 4) | a);
 			}
 		}
 
@@ -141,9 +141,9 @@ namespace Gorgon.Graphics.Imaging
 				b = ((b << 4) | b);
 
 				uint value = (uint)((dest.Format == BufferFormat.B8G8R8A8_UNorm)
-						            ? (b << 24 | g << 16 | r << 8 | a)
+						            ? ((b << 24) | (g << 16) | (r << 8) | a)
 						            // Convert to R8G8B8A8 (flipped for little endian).
-						            : (b << 24 | a << 16 | r << 8 | g));
+						            : ((b << 24) | (a << 16) | (r << 8) | g));
 				*(destBufferPtr++) = value;
 			}
 		}
@@ -479,25 +479,25 @@ namespace Gorgon.Graphics.Imaging
 	            switch (anchor)
 	            {
 	                case ImageExpandAnchor.UpperMiddle:
-	                    position = new DX.Point(newWidth / 2 - baseImage.Width / 2, 0);
+	                    position = new DX.Point((newWidth / 2) - (baseImage.Width / 2), 0);
 	                    break;
                     case ImageExpandAnchor.UpperRight:
                         position = new DX.Point(newWidth - baseImage.Width, 0);
 	                    break;
                     case ImageExpandAnchor.MiddleLeft:
-                        position = new DX.Point(0, newHeight / 2 - baseImage.Height / 2);
+                        position = new DX.Point(0, (newHeight / 2) - (baseImage.Height / 2));
 	                    break;
                     case ImageExpandAnchor.Center:
-                        position = new DX.Point(newWidth / 2 - baseImage.Width / 2, newHeight / 2 - baseImage.Height / 2);
+                        position = new DX.Point((newWidth / 2) - (baseImage.Width / 2), (newHeight / 2) - (baseImage.Height / 2));
 	                    break;
                     case ImageExpandAnchor.MiddleRight:
-                        position = new DX.Point(newWidth - baseImage.Width, newHeight / 2 - baseImage.Height / 2);
+                        position = new DX.Point(newWidth - baseImage.Width, (newHeight / 2) - (baseImage.Height / 2));
 	                    break;
                     case ImageExpandAnchor.BottomLeft:
                         position = new DX.Point(0, newHeight - baseImage.Height);
 	                    break;
                     case ImageExpandAnchor.BottomMiddle:
-                        position = new DX.Point(newWidth / 2 - baseImage.Width / 2, newHeight - baseImage.Height);
+                        position = new DX.Point((newWidth / 2) - (baseImage.Width / 2), newHeight - baseImage.Height);
 	                    break;
                     case ImageExpandAnchor.BottomRight:
                         position = new DX.Point(newWidth - baseImage.Width, newHeight - baseImage.Height);

@@ -39,6 +39,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -50,6 +51,13 @@
     <Compile Include="..\..\..\Gorgon\Gorgon.Core\SharedAssemblyInfo.cs">
       <Link>SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="CommonEditorConstants.cs" />
+    <Compile Include="Services\_Interfaces\IFileSystemService.cs" />
+    <Compile Include="Metadata\EditorMetadata.cs" />
+    <Compile Include="Metadata\IncludedPathMetadata.cs" />
+    <Compile Include="Metadata\_Interfaces\IEditorMetadata.cs" />
+    <Compile Include="Metadata\_Interfaces\IProjectMetadata.cs" />
+    <Compile Include="ProjectData\_Interfaces\IProject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -58,13 +66,26 @@
     </Compile>
     <Compile Include="Rendering\_Interfaces\IGraphicsContext.cs" />
     <Compile Include="Rendering\_Interfaces\IRendererControl.cs" />
+    <Compile Include="Services\MessageBoxService.cs" />
+    <Compile Include="Services\WaitCursorBusyState.cs" />
+    <Compile Include="Services\_Interfaces\IBusyStateService.cs" />
+    <Compile Include="Services\_Interfaces\IMessageDisplayService.cs" />
     <Compile Include="UI\EditorAsyncCommand.cs" />
     <Compile Include="UI\EditorCommand.cs" />
+    <Compile Include="UI\CommandRegistry.cs" />
+    <Compile Include="UI\ViewModels\WaitPanelActivateArgs.cs" />
+    <Compile Include="UI\Views\EditorBaseControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\Views\EditorBaseControl.Designer.cs">
+      <DependentUpon>EditorBaseControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\_Interfaces\IEditorAsyncCommand.cs" />
     <Compile Include="UI\_Interfaces\IEditorCommand.cs" />
     <Compile Include="UI\ViewModels\ViewModelBase.cs" />
     <Compile Include="UI\ViewModels\_Interfaces\IViewModel.cs" />
-    <Compile Include="UI\Views\_Interfaces\IGorgonEditorDataContext.cs" />
+    <Compile Include="UI\Views\_Interfaces\IDataContext.cs" />
+    <Compile Include="_Extensions\IOExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
@@ -74,10 +95,16 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="UI\Views\EditorBaseControl.resx">
+      <DependentUpon>EditorBaseControl.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Dapper">
       <Version>1.50.5</Version>
+    </PackageReference>
+    <PackageReference Include="Krypton.Components.Suite">
+      <Version>4.5.9</Version>
     </PackageReference>
     <PackageReference Include="SharpDX">
       <Version>4.2.0</Version>

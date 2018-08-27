@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System;
 using System.ComponentModel;
 
 namespace Gorgon.Editor.UI
@@ -34,6 +35,19 @@ namespace Gorgon.Editor.UI
     public interface IViewModel
         : INotifyPropertyChanged, INotifyPropertyChanging
     {
+        #region Events.
+        /// <summary>
+        /// Event triggered when a wait overlay panel needs to be activated.
+        /// </summary>
+        event EventHandler<WaitPanelActivateArgs> WaitPanelActivated;
+
+        /// <summary>
+        /// Event triggered when a wait overlay panel needs to be deactivated.
+        /// </summary>
+        event EventHandler WaitPanelDeactivated;  
+        #endregion
+
+        #region Methods.
         /// <summary>
         /// Function to notify when a property has been changed.
         /// </summary>
@@ -57,5 +71,16 @@ namespace Gorgon.Editor.UI
         /// </para>
         /// </remarks>
         void NotifyPropertyChanging(string propertyName);
+
+        /// <summary>
+        /// Function called when the associated view is loaded.
+        /// </summary>
+        void OnLoad();
+
+        /// <summary>
+        /// Function called when the associated view is unloaded.
+        /// </summary>
+        void OnUnload();
+        #endregion
     }
 }

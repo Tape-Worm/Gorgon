@@ -56,47 +56,35 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <remarks>This is relative to the header of the file.</remarks>
 		public readonly ulong FileOffset;
-		#endregion
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Returns a <see cref="string" /> that represents this instance.
-		/// </summary>
-		/// <returns>A <see cref="string" /> that represents this instance.</returns>
-		public override string ToString()
-		{
-			return string.Format(Resources.GOR_TOSTR_GORGONCHUNK, ID.FormatHex(), FileOffset.FormatHex(), Size.FormatHex());
-		}
+        #region Methods.
+        /// <summary>
+        /// Returns a <see cref="string" /> that represents this instance.
+        /// </summary>
+        /// <returns>A <see cref="string" /> that represents this instance.</returns>
+        public override string ToString() => string.Format(Resources.GOR_TOSTR_GORGONCHUNK, ID.FormatHex(), FileOffset.FormatHex(), Size.FormatHex());
 
-		/// <summary>
-		/// Returns a hash code for this instance.
-		/// </summary>
-		/// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
-		public override int GetHashCode()
-		{
-			return 281.GenerateHash(ID);
-		}
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
+        public override int GetHashCode() => 281.GenerateHash(ID);
 
-		/// <summary>
-		/// Function to compare two instances for equality.
-		/// </summary>
-		/// <param name="left">The first object of type <see cref="GorgonChunk"/> to compare.</param>
-		/// <param name="right">The second object of type <see cref="GorgonChunk"/> to compare.</param>
-		/// <returns><b>true</b> if the specified objects are equal; otherwise, <b>false</b> if not.</returns>
-		public static bool Equals(in GorgonChunk left, in GorgonChunk right)
-		{
-			return left.ID == right.ID;
-		}
+        /// <summary>
+        /// Function to compare two instances for equality.
+        /// </summary>
+        /// <param name="left">The first object of type <see cref="GorgonChunk"/> to compare.</param>
+        /// <param name="right">The second object of type <see cref="GorgonChunk"/> to compare.</param>
+        /// <returns><b>true</b> if the specified objects are equal; otherwise, <b>false</b> if not.</returns>
+        public static bool Equals(in GorgonChunk left, in GorgonChunk right) => left.ID == right.ID;
 
-		/// <summary>
-		/// Function to compare two instances for equality.
-		/// </summary>
-		/// <param name="other">The object of type <see cref="GorgonChunk"/> to compare.</param>
-		/// <returns><b>true</b> if equal, <b>false</b> otherwise.</returns>
-		public bool Equals(GorgonChunk other)
-		{
-			return Equals(in this, in other);
-		}
+        /// <summary>
+        /// Function to compare two instances for equality.
+        /// </summary>
+        /// <param name="other">The object of type <see cref="GorgonChunk"/> to compare.</param>
+        /// <returns><b>true</b> if equal, <b>false</b> otherwise.</returns>
+        public bool Equals(GorgonChunk other) => Equals(in this, in other);
 
         /// <summary>
         /// Determines whether the specified <see cref="object" /> is equal to this instance.
@@ -112,15 +100,12 @@ namespace Gorgon.IO
 			return base.Equals(obj);
 		}
 
-	    /// <summary>
-	    /// Function to compare this instance with another.
-	    /// </summary>
-	    /// <param name="other">The other instance to use for comparison.</param>
-	    /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-	    public bool Equals(in GorgonChunk other)
-        {
-            return Equals(in this, in other);
-        }
+        /// <summary>
+        /// Function to compare this instance with another.
+        /// </summary>
+        /// <param name="other">The other instance to use for comparison.</param>
+        /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+        public bool Equals(in GorgonChunk other) => Equals(in this, in other);
         #endregion
 
         #region Operators.

@@ -45,28 +45,25 @@ namespace Gorgon.Graphics.Fonts
 		/// Right character.
 		/// </summary>
 		public readonly char RightCharacter;
-		#endregion
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to determine if 2 kerning pairs are the same.
-		/// </summary>
-		/// <param name="left">Left kerning pair to compare.</param>
-		/// <param name="right">Right kerning pair to compare.</param>
-		/// <returns><b>true</b> if the same, <b>false</b> if not.</returns>
-		public static bool Equals(in GorgonKerningPair left, in GorgonKerningPair right)
-		{
-			return ((left.LeftCharacter == right.LeftCharacter) && (left.RightCharacter == right.RightCharacter));
-		}
+        #region Methods.
+        /// <summary>
+        /// Function to determine if 2 kerning pairs are the same.
+        /// </summary>
+        /// <param name="left">Left kerning pair to compare.</param>
+        /// <param name="right">Right kerning pair to compare.</param>
+        /// <returns><b>true</b> if the same, <b>false</b> if not.</returns>
+        public static bool Equals(in GorgonKerningPair left, in GorgonKerningPair right) => ((left.LeftCharacter == right.LeftCharacter) && (left.RightCharacter == right.RightCharacter));
 
-		/// <summary>
-		/// Determines whether the specified <see cref="System.Object"/> is equal to this instance.
-		/// </summary>
-		/// <param name="obj">The <see cref="System.Object"/> to compare with this instance.</param>
-		/// <returns>
-		///   <b>true</b> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <b>false</b>.
-		/// </returns>
-		public override bool Equals(object obj)
+        /// <summary>
+        /// Determines whether the specified <see cref="System.Object"/> is equal to this instance.
+        /// </summary>
+        /// <param name="obj">The <see cref="System.Object"/> to compare with this instance.</param>
+        /// <returns>
+        ///   <b>true</b> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <b>false</b>.
+        /// </returns>
+        public override bool Equals(object obj)
 		{
 			if (obj is GorgonKerningPair kernPair)
 			{
@@ -76,37 +73,31 @@ namespace Gorgon.Graphics.Fonts
 			return base.Equals(obj);
 		}
 
-		/// <summary>
-		/// Returns a hash code for this instance.
-		/// </summary>
-		/// <returns>
-		/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
-		/// </returns>
-		public override int GetHashCode()
-		{
-			return 281.GenerateHash(LeftCharacter).GenerateHash(RightCharacter);
-		}
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// </returns>
+        public override int GetHashCode() => 281.GenerateHash(LeftCharacter).GenerateHash(RightCharacter);
 
-		/// <summary>
-		/// Returns a <see cref="string"/> that represents this instance.
-		/// </summary>
-		/// <returns>
-		/// A <see cref="string"/> that represents this instance.
-		/// </returns>
-		public override string ToString()
-		{
-			return string.Format(Resources.GORGFX_TOSTR_FONT_KERNING_PAIR, LeftCharacter, RightCharacter);
-		}
+        /// <summary>
+        /// Returns a <see cref="string"/> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="string"/> that represents this instance.
+        /// </returns>
+        public override string ToString() => string.Format(Resources.GORGFX_TOSTR_FONT_KERNING_PAIR, LeftCharacter, RightCharacter);
 
-		/// <summary>
-		/// Implements the operator ==.
-		/// </summary>
-		/// <param name="left">The left.</param>
-		/// <param name="right">The right.</param>
-		/// <returns>
-		/// The result of the operator.
-		/// </returns>
-		public static bool operator ==(in GorgonKerningPair left, in GorgonKerningPair right)
+        /// <summary>
+        /// Implements the operator ==.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>
+        /// The result of the operator.
+        /// </returns>
+        public static bool operator ==(in GorgonKerningPair left, in GorgonKerningPair right)
 		{
 			return Equals(in left, in right);
 		}
@@ -124,17 +115,14 @@ namespace Gorgon.Graphics.Fonts
 			return !Equals(in left, in right);
 		}
 
-	    /// <summary>
-	    /// Indicates whether the current object is equal to another object of the same type.
-	    /// </summary>
-	    /// <param name="other">An object to compare with this object.</param>
-	    /// <returns>
-	    /// true if the current object is equal to the <paramin name="other"/> parameter; otherwise, false.
-	    /// </returns>
-	    public bool Equals(GorgonKerningPair other)
-	    {
-	        return Equals(in this, in other);
-	    }
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// true if the current object is equal to the <paramin name="other"/> parameter; otherwise, false.
+        /// </returns>
+        public bool Equals(GorgonKerningPair other) => Equals(in this, in other);
 
         /// <summary>
         /// Function to compare this instance with another.
@@ -142,10 +130,7 @@ namespace Gorgon.Graphics.Fonts
         /// <param name="other">The other instance to use for comparison.</param>
         /// <returns>
         ///   <b>true</b> if equal, <b>false</b> if not.</returns>
-        public bool Equals(in GorgonKerningPair other)
-        {
-            return Equals(in this, in other);
-        }
+        public bool Equals(in GorgonKerningPair other) => Equals(in this, in other);
         #endregion
 
         #region Constructor/Destructor.

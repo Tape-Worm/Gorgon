@@ -99,36 +99,24 @@ namespace Gorgon.Graphics.Core
 
         /// <summary>Returns an enumerator that iterates through the collection.</summary>
         /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-        public IEnumerator<IGorgonVideoOutputInfo> GetEnumerator()
-        {
-            return _outputs.Select(output => output.Value).GetEnumerator();
-        }
+        public IEnumerator<IGorgonVideoOutputInfo> GetEnumerator() => _outputs.Select(output => output.Value).GetEnumerator();
 
         /// <summary>Returns an enumerator that iterates through a collection.</summary>
         /// <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return _outputs.Select(output => output.Value).GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => _outputs.Select(output => output.Value).GetEnumerator();
         #endregion
 
         #region Constructor/Finalizer.
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonVideoAdapterOutputList"/> class.
         /// </summary>
-        internal GorgonVideoAdapterOutputList()
-        {
-            _outputs = new Dictionary<string, IGorgonVideoOutputInfo>();
-        }
+        internal GorgonVideoAdapterOutputList() => _outputs = new Dictionary<string, IGorgonVideoOutputInfo>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonVideoAdapterOutputList"/> class.
         /// </summary>
         /// <param name="outputs">The list of outputs to wrap.</param>
-        internal GorgonVideoAdapterOutputList(IReadOnlyDictionary<string, IGorgonVideoOutputInfo> outputs)
-        {
-            _outputs = outputs;
-        }
+        internal GorgonVideoAdapterOutputList(IReadOnlyDictionary<string, IGorgonVideoOutputInfo> outputs) => _outputs = outputs;
         #endregion
     }
 }

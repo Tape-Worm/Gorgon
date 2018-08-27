@@ -71,26 +71,23 @@ namespace Gorgon.Animation
 	    {
 	        get;
 	    } = typeof(GorgonColor);
-		#endregion
-
-        #region Methods.
-	    /// <summary>
-	    /// Function to clone an object.
-	    /// </summary>
-	    /// <returns>The cloned object.</returns>
-	    public IGorgonKeyFrame Clone()
-	    {
-	        return new GorgonKeyGorgonColor(Time, Value);
-	    }
         #endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonKeyGorgonColor" /> struct.
-		/// </summary>
-		/// <param name="time">The time for the key frame.</param>
-		/// <param name="value">The value to apply to the key frame.</param>
-		public GorgonKeyGorgonColor(float time, GorgonColor value)
+        #region Methods.
+        /// <summary>
+        /// Function to clone an object.
+        /// </summary>
+        /// <returns>The cloned object.</returns>
+        public IGorgonKeyFrame Clone() => new GorgonKeyGorgonColor(Time, Value);
+        #endregion
+
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonKeyGorgonColor" /> struct.
+        /// </summary>
+        /// <param name="time">The time for the key frame.</param>
+        /// <param name="value">The value to apply to the key frame.</param>
+        public GorgonKeyGorgonColor(float time, GorgonColor value)
 		{
 			Time = time;
 			Value = value;

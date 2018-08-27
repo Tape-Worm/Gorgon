@@ -440,8 +440,8 @@ namespace Gorgon.Examples
 		        if (_mainScreen.IsWindowed)
 		        {
 		            _window.Location =
-		                new Point(Screen.PrimaryScreen.Bounds.Width / 2 - _window.Width / 2 + Screen.PrimaryScreen.Bounds.Left,
-		                          Screen.PrimaryScreen.Bounds.Height / 2 - _window.Height / 2 + Screen.PrimaryScreen.Bounds.Top);
+		                new Point((Screen.PrimaryScreen.Bounds.Width / 2) - (_window.Width / 2) + Screen.PrimaryScreen.Bounds.Left,
+		                          (Screen.PrimaryScreen.Bounds.Height / 2) - (_window.Height / 2) + Screen.PrimaryScreen.Bounds.Top);
 		        }
 
 		        // Load the ball texture.

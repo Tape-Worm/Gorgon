@@ -57,27 +57,21 @@ namespace Gorgon.Graphics.Core
 		/// </summary>
 		string IGorgonNamedObject.Name => Name;
 
-		/// <summary>
-		/// Returns a <see cref="string" /> that represents this instance.
-		/// </summary>
-		/// <returns>
-		/// A <see cref="string" /> that represents this instance.
-		/// </returns>
-		public override string ToString()
-		{
-			return string.Format(Resources.GORGFX_TOSTR_SHADER_MACRO, Name);
-		}
+        /// <summary>
+        /// Returns a <see cref="string" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="string" /> that represents this instance.
+        /// </returns>
+        public override string ToString() => string.Format(Resources.GORGFX_TOSTR_SHADER_MACRO, Name);
 
-		/// <summary>
-		/// Function to determine if two instances are equal or not.
-		/// </summary>
-		/// <param name="left">Left instance to compare.</param>
-		/// <param name="right">Right instance to compare.</param>
-		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-		public static bool Equals(GorgonShaderMacro left, GorgonShaderMacro right)
-		{
-			return string.Equals(left.Name, right.Name, StringComparison.Ordinal);
-		}
+        /// <summary>
+        /// Function to determine if two instances are equal or not.
+        /// </summary>
+        /// <param name="left">Left instance to compare.</param>
+        /// <param name="right">Right instance to compare.</param>
+        /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+        public static bool Equals(GorgonShaderMacro left, GorgonShaderMacro right) => string.Equals(left.Name, right.Name, StringComparison.Ordinal);
 
         /// <summary>
         /// Determines whether the specified <see cref="object"/>, is equal to this instance.
@@ -95,24 +89,21 @@ namespace Gorgon.Graphics.Core
 			return base.Equals(obj);
 		}
 
-		/// <summary>
-		/// Returns a hash code for this instance.
-		/// </summary>
-		/// <returns>
-		/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
-		/// </returns>
-		public override int GetHashCode()
-		{
-			return Name.GetHashCode();
-		}
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// </returns>
+        public override int GetHashCode() => Name.GetHashCode();
 
-		/// <summary>
-		/// Operator to compare two instances for equality.
-		/// </summary>
-		/// <param name="left">Left instance to compare.</param>
-		/// <param name="right">Right instance to compare.</param>
-		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-		public static bool operator ==(GorgonShaderMacro left, GorgonShaderMacro right)
+        /// <summary>
+        /// Operator to compare two instances for equality.
+        /// </summary>
+        /// <param name="left">Left instance to compare.</param>
+        /// <param name="right">Right instance to compare.</param>
+        /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+        public static bool operator ==(GorgonShaderMacro left, GorgonShaderMacro right)
 		{
 			return Equals(left, right);
 		}
@@ -128,26 +119,23 @@ namespace Gorgon.Graphics.Core
 			return !Equals(left, right);
 		}
 
-		/// <summary>
-		/// Indicates whether the current object is equal to another object of the same type.
-		/// </summary>
-		/// <param name="other">An object to compare with this object.</param>
-		/// <returns>
-		/// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
-		/// </returns>
-		public bool Equals(GorgonShaderMacro other)
-		{
-			return Equals(this, other);
-		}
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
+        /// </returns>
+        public bool Equals(GorgonShaderMacro other) => Equals(this, other);
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonShaderMacro"/> struct.
-		/// </summary>
-		/// <param name="name">The name of the macro.</param>
-		/// <param name="value">[Optional] The value for the macro.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
-		public GorgonShaderMacro(string name, string value = null)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonShaderMacro"/> struct.
+        /// </summary>
+        /// <param name="name">The name of the macro.</param>
+        /// <param name="value">[Optional] The value for the macro.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+        public GorgonShaderMacro(string name, string value = null)
 		{
 			if (name == null)
 			{

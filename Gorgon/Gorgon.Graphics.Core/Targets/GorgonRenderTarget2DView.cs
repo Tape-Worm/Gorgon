@@ -324,10 +324,7 @@ namespace Gorgon.Graphics.Core
         /// the format from the this texture is used. The <paramref name="format"/> must be castable to the format of this texture. If it is not, an exception will be thrown.
         /// </para>
         /// </remarks>
-        public GorgonTexture2DView GetShaderResourceView(BufferFormat format = BufferFormat.Unknown)
-        {
-            return Texture.GetShaderResourceView(format, MipSlice, 1, ArrayIndex, ArrayCount);
-        }
+        public GorgonTexture2DView GetShaderResourceView(BufferFormat format = BufferFormat.Unknown) => Texture.GetShaderResourceView(format, MipSlice, 1, ArrayIndex, ArrayCount);
 
         /// <summary>
         /// Function to convert a rectangle of texel coordinates to pixel space.

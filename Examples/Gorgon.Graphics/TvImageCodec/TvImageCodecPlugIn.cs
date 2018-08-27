@@ -48,72 +48,60 @@ namespace Gorgon.Graphics.Example
 	    {
 		    get;
 	    }
-		#endregion
+        #endregion
 
-		#region Methods.
-	    /// <summary>
-	    /// Function to create a new <see cref="IGorgonImageCodec"/>.
-	    /// </summary>
-	    /// <param name="codec">The codec to retrieve from the plug in.</param>
-	    /// <returns>A new <see cref="IGorgonImageCodec"/> object.</returns>
-	    /// <remarks>
-	    /// <para>
-	    /// Implementors must implement this method to return the codec from the plug in assembly.
-	    /// </para>
-	    /// </remarks>
-	    protected override IGorgonImageCodec OnCreateCodec(string codec)
-	    {
-		    return new TvImageCodec();
-	    }
+        #region Methods.
+        /// <summary>
+        /// Function to create a new <see cref="IGorgonImageCodec"/>.
+        /// </summary>
+        /// <param name="codec">The codec to retrieve from the plug in.</param>
+        /// <returns>A new <see cref="IGorgonImageCodec"/> object.</returns>
+        /// <remarks>
+        /// <para>
+        /// Implementors must implement this method to return the codec from the plug in assembly.
+        /// </para>
+        /// </remarks>
+        protected override IGorgonImageCodec OnCreateCodec(string codec) => new TvImageCodec();
 
-	    /// <summary>
-	    /// Function to create image decoding options for the codec.
-	    /// </summary>
-	    /// <param name="codec">The name of the codec to which the options will apply.</param>
-	    /// <returns>A new <see cref="IGorgonImageCodecDecodingOptions"/> object.</returns>
-	    /// <remarks>
-	    /// <para>
-	    /// Implementors must implement this method to return any optional decoding options for the codec to use when decoding data. If no decoding options apply to the codec, then this method should 
-	    /// return <b>null</b>.
-	    /// </para>
-	    /// </remarks>
-	    protected override IGorgonImageCodecDecodingOptions OnCreateCodecDecodingOptions(string codec)
-	    {
-		    return null;
-	    }
+        /// <summary>
+        /// Function to create image decoding options for the codec.
+        /// </summary>
+        /// <param name="codec">The name of the codec to which the options will apply.</param>
+        /// <returns>A new <see cref="IGorgonImageCodecDecodingOptions"/> object.</returns>
+        /// <remarks>
+        /// <para>
+        /// Implementors must implement this method to return any optional decoding options for the codec to use when decoding data. If no decoding options apply to the codec, then this method should 
+        /// return <b>null</b>.
+        /// </para>
+        /// </remarks>
+        protected override IGorgonImageCodecDecodingOptions OnCreateCodecDecodingOptions(string codec) => null;
 
-	    /// <summary>
-	    /// Function to create image encoding options for the codec.
-	    /// </summary>
-	    /// <param name="codec">The name of the codec to which the options will apply.</param>
-	    /// <returns>A new <see cref="IGorgonImageCodecEncodingOptions"/> object.</returns>
-	    /// <remarks>
-	    /// <para>
-	    /// Implementors must implement this method to return any optional encoding options for the codec to use when encoding data. If no encoding options apply to the codec, then this method should 
-	    /// return <b>null</b>.
-	    /// </para>
-	    /// </remarks>
-	    protected override IGorgonImageCodecEncodingOptions OnCreateCodecEncodingOptions(string codec)
-	    {
-		    return null;
-	    }
-	    #endregion
+        /// <summary>
+        /// Function to create image encoding options for the codec.
+        /// </summary>
+        /// <param name="codec">The name of the codec to which the options will apply.</param>
+        /// <returns>A new <see cref="IGorgonImageCodecEncodingOptions"/> object.</returns>
+        /// <remarks>
+        /// <para>
+        /// Implementors must implement this method to return any optional encoding options for the codec to use when encoding data. If no encoding options apply to the codec, then this method should 
+        /// return <b>null</b>.
+        /// </para>
+        /// </remarks>
+        protected override IGorgonImageCodecEncodingOptions OnCreateCodecEncodingOptions(string codec) => null;
+        #endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="TvImageCodecPlugIn"/> class.
-		/// </summary>
-		public TvImageCodecPlugIn()
-            : base("A TV image codec, used for example only.")
-        {
-	        Codecs = new[]
-	                 {
-		                 new GorgonImageCodecDescription(typeof(TvImageCodecPlugIn))
-		                 {
-			                 Description = Description
-		                 }
-	                 };
-        }
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TvImageCodecPlugIn"/> class.
+        /// </summary>
+        public TvImageCodecPlugIn()
+            : base("A TV image codec, used for example only.") => Codecs = new[]
+                     {
+                         new GorgonImageCodecDescription(typeof(TvImageCodecPlugIn))
+                         {
+                             Description = Description
+                         }
+                     };
         #endregion
     }
 }

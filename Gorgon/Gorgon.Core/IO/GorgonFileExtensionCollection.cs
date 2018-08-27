@@ -136,20 +136,17 @@ namespace Gorgon.IO
 			RemoveItem(extension);
 		}
 
-		/// <summary>
-		/// Function to clear all items from the collection.
-		/// </summary>
-		public void Clear()
-		{
-			Items.Clear();
-		}
-		#endregion
+        /// <summary>
+        /// Function to clear all items from the collection.
+        /// </summary>
+        public void Clear() => Items.Clear();
+        #endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonFileExtensionCollection"/> class.
-		/// </summary>
-		public GorgonFileExtensionCollection()
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonFileExtensionCollection"/> class.
+        /// </summary>
+        public GorgonFileExtensionCollection()
 			: base(false)
 		{
 		}

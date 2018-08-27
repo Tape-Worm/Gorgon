@@ -19,17 +19,11 @@ namespace GorgonTriangulator
 			Index = index;
 		}
 
-		public override bool Equals(object obj)
-		{
-		    return obj is Vertex vertex ? Equals(vertex) : base.Equals(obj);
-		}
+        public override bool Equals(object obj) => obj is Vertex vertex ? Equals(vertex) : base.Equals(obj);
 
-		public bool Equals(Vertex obj)
-		{
-			return obj.Position.Equals(Position) && obj.Index == Index;
-		}
+        public bool Equals(Vertex obj) => obj.Position.Equals(Position) && obj.Index == Index;
 
-		public override int GetHashCode()
+        public override int GetHashCode()
 		{
 			unchecked
 			{
@@ -37,9 +31,6 @@ namespace GorgonTriangulator
 			}
 		}
 
-		public override string ToString()
-		{
-			return $"{Position} ({Index})";
-		}
-	}
+        public override string ToString() => $"{Position} ({Index})";
+    }
 }

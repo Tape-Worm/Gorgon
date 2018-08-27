@@ -354,9 +354,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
         /// <returns>true if the current object is equal to the <paramref name="state" /> parameter; otherwise, false.</returns>
         /// <param name="state">An object to compare with this object.</param>
-        public bool Equals(GorgonRasterState state)
-        {
-            return (this == state) || ((state != null)
+        public bool Equals(GorgonRasterState state) => (this == state) || ((state != null)
                                        && (IsAntialiasedLineEnabled == state.IsAntialiasedLineEnabled)
                                        && (CullMode == state.CullMode)
                                        && (DepthBias == state.DepthBias)
@@ -369,7 +367,6 @@ namespace Gorgon.Graphics.Core
                                        && (HasScissors == state.HasScissors)
                                        && (SlopeScaledDepthBias.EqualsEpsilon(state.SlopeScaledDepthBias))
                                        && (UseConservativeRasterization == state.UseConservativeRasterization));
-        }
         #endregion
 
         #region Constructor/Finalizer.

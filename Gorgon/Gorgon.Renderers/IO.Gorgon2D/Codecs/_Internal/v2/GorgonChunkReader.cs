@@ -39,7 +39,7 @@ namespace GorgonLibrary.IO
 	/// it allows Gorgon's file formats to be future proof.  That is, if a later version of Gorgon has support for a feature
 	/// that does not exist in a previous version, then the older version will be able to read the file and skip the 
 	/// unnecessary parts.</remarks>
-	class GorgonChunkReader
+	internal class GorgonChunkReader
 		: GorgonChunkedFormat
     {
         #region Methods.
@@ -315,10 +315,7 @@ namespace GorgonLibrary.IO
         /// </exception>
         /// <exception cref="IOException">Thrown when the stream is write-only.</exception>
         public void ReadRange<T>(T[] value, int count)
-            where T : unmanaged
-        {
-            ReadRange(value, 0, count);
-        }
+            where T : unmanaged => ReadRange(value, 0, count);
 
         /// <summary>
         /// Function to read a range of generic values.
@@ -353,17 +350,14 @@ namespace GorgonLibrary.IO
 
             return array;
         }
-                
+
         /// <summary>
-		/// Function to read a generic value from the stream.
-		/// </summary>
-		/// <typeparam name="T">Type of value to read.  Must be a value type.</typeparam>
-		/// <returns>The value in the stream.</returns>
-		public T Read<T>()
-			where T : unmanaged
-		{
-		    return Reader.ReadValue<T>();
-		}
+        /// Function to read a generic value from the stream.
+        /// </summary>
+        /// <typeparam name="T">Type of value to read.  Must be a value type.</typeparam>
+        /// <returns>The value in the stream.</returns>
+        public T Read<T>()
+            where T : unmanaged => Reader.ReadValue<T>();
 
         /// <summary>
         /// Function to read a point from the stream.

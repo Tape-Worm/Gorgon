@@ -198,20 +198,17 @@ namespace Gorgon.Graphics.Fonts
 
 			return result;
 		}
-		#endregion
+        #endregion
 
-		#region Constructor
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonGlyphPathGradientBrush"/> class.
-		/// </summary>
-		public GorgonGlyphLinearGradientBrush()
-		{
-			Interpolation = new List<GorgonGlyphBrushInterpolator>
-			                {
-				                new GorgonGlyphBrushInterpolator(0, GorgonColor.Black),
-				                new GorgonGlyphBrushInterpolator(1, GorgonColor.White)
-			                };
-		}
-		#endregion
-	}
+        #region Constructor
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonGlyphPathGradientBrush"/> class.
+        /// </summary>
+        public GorgonGlyphLinearGradientBrush() => Interpolation = new List<GorgonGlyphBrushInterpolator>
+                            {
+                                new GorgonGlyphBrushInterpolator(0, GorgonColor.Black),
+                                new GorgonGlyphBrushInterpolator(1, GorgonColor.White)
+                            };
+        #endregion
+    }
 }

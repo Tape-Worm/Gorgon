@@ -154,10 +154,7 @@ namespace Gorgon.Renderers
         /// Initializes a new instance of the <see cref="GorgonRectangleOffsets"/> class.
         /// </summary>
         /// <param name="renderable">The renderable to update.</param>
-        internal GorgonRectangleOffsets(BatchRenderable renderable)
-	    {
-	        _renderable = renderable;
-	    }
+        internal GorgonRectangleOffsets(BatchRenderable renderable) => _renderable = renderable;
         #endregion
-	}
+    }
 }

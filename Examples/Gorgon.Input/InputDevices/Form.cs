@@ -224,47 +224,40 @@ namespace Gorgon.Examples
                                                 , _keyboard.Info.Description);				
 		}
 
-		/// <summary>
-		/// Handles the PointingDeviceUp event of the _mouse control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="GorgonMouseEventArgs" /> instance containing the event data.</param>
-		/// <exception cref="System.NotSupportedException"></exception>
-		private void _mouse_ButtonUp(object sender, GorgonMouseEventArgs e)
-		{
-			// Update the buttons so that only the buttons we have held down are showing.
+        /// <summary>
+        /// Handles the PointingDeviceUp event of the _mouse control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="GorgonMouseEventArgs" /> instance containing the event data.</param>
+        /// <exception cref="System.NotSupportedException"></exception>
+        private void _mouse_ButtonUp(object sender, GorgonMouseEventArgs e) =>
+            // Update the buttons so that only the buttons we have held down are showing.
             UpdateMouse(e.RelativePosition, e.ShiftButtons & ~e.Buttons);
-		}
 
-		/// <summary>
-		/// Handles the PointingDeviceDown event of the _mouse control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="GorgonMouseEventArgs" /> instance containing the event data.</param>
-		/// <exception cref="System.NotSupportedException"></exception>
-        private void _mouse_ButtonDown(object sender, GorgonMouseEventArgs e)
-		{
+        /// <summary>
+        /// Handles the PointingDeviceDown event of the _mouse control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="GorgonMouseEventArgs" /> instance containing the event data.</param>
+        /// <exception cref="System.NotSupportedException"></exception>
+        private void _mouse_ButtonDown(object sender, GorgonMouseEventArgs e) => UpdateMouse(e.RelativePosition, e.Buttons | e.ShiftButtons);
+
+        /// <summary>
+        /// Handles the PointingDeviceMove event of the _mouse control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="GorgonMouseEventArgs" /> instance containing the event data.</param>
+        /// <exception cref="System.NotSupportedException"></exception>
+        private void _mouse_Move(object sender, GorgonMouseEventArgs e) =>
+            // Lock the cursor in place as well so that we can, again, fake an "exclusive" mode.
             UpdateMouse(e.RelativePosition, e.Buttons | e.ShiftButtons);
-		}
 
-		/// <summary>
-		/// Handles the PointingDeviceMove event of the _mouse control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="GorgonMouseEventArgs" /> instance containing the event data.</param>
-		/// <exception cref="System.NotSupportedException"></exception>
-		private void _mouse_Move(object sender, GorgonMouseEventArgs e)
-		{
-			// Lock the cursor in place as well so that we can, again, fake an "exclusive" mode.
-            UpdateMouse(e.RelativePosition, e.Buttons | e.ShiftButtons);
-		}
-
-		/// <summary>
-		/// Handles the KeyUp event of the _keyboard control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="GorgonKeyboardEventArgs" /> instance containing the event data.</param>
-		private void _keyboard_KeyUp(object sender, GorgonKeyboardEventArgs e)
+        /// <summary>
+        /// Handles the KeyUp event of the _keyboard control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="GorgonKeyboardEventArgs" /> instance containing the event data.</param>
+        private void _keyboard_KeyUp(object sender, GorgonKeyboardEventArgs e)
 		{
 			// If we press "P", then switch between polling and events.
 			if (e.Key == Keys.P)
@@ -498,16 +491,13 @@ namespace Gorgon.Examples
 
 			_spray?.Dispose();
 		}
-		#endregion
+        #endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Form" /> class.
-		/// </summary>
-		public Form()
-		{
-			InitializeComponent();
-		}
-		#endregion
-	}
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Form" /> class.
+        /// </summary>
+        public Form() => InitializeComponent();
+        #endregion
+    }
 }

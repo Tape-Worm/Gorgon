@@ -351,31 +351,25 @@ namespace Gorgon.Graphics
 			byte a = (byte)(rgbaColor & 0xff);
 
 			return new GorgonColor(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
-		}		
+		}
 
         /// <summary>
-		/// Function to compare two colors for equality.
-		/// </summary>
-		/// <param name="left">Left color to compare.</param>
-		/// <param name="right">Right color to compare.</param>
-		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-		public static bool Equals(in GorgonColor left, in GorgonColor right)
-		{
-			// ReSharper disable CompareOfFloatsByEqualityOperator
-			return left.Red == right.Red && left.Green == right.Green && left.Blue == right.Blue && left.Alpha == right.Alpha;
-			// ReSharper restore CompareOfFloatsByEqualityOperator
-		}
+        /// Function to compare two colors for equality.
+        /// </summary>
+        /// <param name="left">Left color to compare.</param>
+        /// <param name="right">Right color to compare.</param>
+        /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+        public static bool Equals(in GorgonColor left, in GorgonColor right) =>
+            // ReSharper disable CompareOfFloatsByEqualityOperator
+            left.Red == right.Red && left.Green == right.Green && left.Blue == right.Blue && left.Alpha == right.Alpha;// ReSharper restore CompareOfFloatsByEqualityOperator
 
-		/// <summary>
-		/// Returns a hash code for this instance.
-		/// </summary>
-		/// <returns>
-		/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
-		/// </returns>
-		public override int GetHashCode()
-		{
-			return 281.GenerateHash(Red).GenerateHash(Green).GenerateHash(Blue).GenerateHash(Alpha);
-		}
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// </returns>
+        public override int GetHashCode() => 281.GenerateHash(Red).GenerateHash(Green).GenerateHash(Blue).GenerateHash(Alpha);
 
         /// <summary>
         /// Returns a <see cref="string"/> that represents this instance.
@@ -383,37 +377,28 @@ namespace Gorgon.Graphics
         /// <returns>
         /// A <see cref="string"/> that represents this instance.
         /// </returns>
-        public override string ToString()
-		{
-		    return string.Format(Resources.GOR_TOSTR_GORGONCOLOR, Red, Green, Blue, Alpha);
-		}
+        public override string ToString() => string.Format(Resources.GOR_TOSTR_GORGONCOLOR, Red, Green, Blue, Alpha);
 
         /// <summary>
         /// Function to clamp the color ranges from 0 to 1.
         /// </summary>
         /// <param name="color">The color to clamp.</param>
         /// <returns>The clamped color.</returns>
-	    public static GorgonColor Clamp(GorgonColor color)
-	    {
-	        return new GorgonColor(color.Red.Max(0).Min(1),
-	                               color.Green.Max(0).Min(1),
-	                               color.Blue.Max(0).Min(1),
-	                               color.Alpha.Max(0).Min(1));
-	    }
+	    public static GorgonColor Clamp(GorgonColor color) => new GorgonColor(color.Red.Max(0).Min(1),
+                                   color.Green.Max(0).Min(1),
+                                   color.Blue.Max(0).Min(1),
+                                   color.Alpha.Max(0).Min(1));
 
-	    /// <summary>
-	    /// Function to clamp the color ranges from 0 to 1.
-	    /// </summary>
-	    /// <param name="color">The color to clamp.</param>
-	    /// <param name="result">The clamped color.</param>
-	    /// <returns>The clamped color.</returns>
-	    public static void Clamp(in GorgonColor color, out GorgonColor result)
-	    {
-	        result = new GorgonColor(color.Red.Max(0).Min(1),
-	                                 color.Green.Max(0).Min(1),
-	                                 color.Blue.Max(0).Min(1),
-	                                 color.Alpha.Max(0).Min(1));
-	    }
+        /// <summary>
+        /// Function to clamp the color ranges from 0 to 1.
+        /// </summary>
+        /// <param name="color">The color to clamp.</param>
+        /// <param name="result">The clamped color.</param>
+        /// <returns>The clamped color.</returns>
+        public static void Clamp(in GorgonColor color, out GorgonColor result) => result = new GorgonColor(color.Red.Max(0).Min(1),
+                                     color.Green.Max(0).Min(1),
+                                     color.Blue.Max(0).Min(1),
+                                     color.Alpha.Max(0).Min(1));
 
         /// <summary>
 		/// Function to apply an alpha value to the specified <see cref="GorgonColor"/>.
@@ -422,35 +407,29 @@ namespace Gorgon.Graphics
         /// <param name="alpha">The alpha value to set.</param>
 		/// <param name="result">The resulting updated <see cref="GorgonColor"/>.</param>
 		/// <returns>A new <see cref="GorgonColor"/> instance with the same <see cref="Red"/>, <see cref="Green"/>, and <see cref="Blue"/> values but with a modified <see cref="Alpha"/> component.</returns>
-        public static void SetAlpha(in GorgonColor color, float alpha, out GorgonColor result)
-        {
-            result = new GorgonColor(color, alpha);
-        }
+        public static void SetAlpha(in GorgonColor color, float alpha, out GorgonColor result) => result = new GorgonColor(color, alpha);
 
-	    /// <summary>
-	    /// Function to apply an alpha value to the specified <see cref="GorgonColor"/>.
-	    /// </summary>
-	    /// <param name="color">The <see cref="GorgonColor"/> to update.</param>
-	    /// <param name="alpha">The alpha value to set.</param>
-	    /// <returns>A new <see cref="GorgonColor"/> instance with the same <see cref="Red"/>, <see cref="Green"/>, and <see cref="Blue"/> values but with a modified <see cref="Alpha"/> component.</returns>
-	    public static GorgonColor SetAlpha(GorgonColor color, float alpha)
-	    {
-	        return new GorgonColor(color, alpha);
-	    }
+        /// <summary>
+        /// Function to apply an alpha value to the specified <see cref="GorgonColor"/>.
+        /// </summary>
+        /// <param name="color">The <see cref="GorgonColor"/> to update.</param>
+        /// <param name="alpha">The alpha value to set.</param>
+        /// <returns>A new <see cref="GorgonColor"/> instance with the same <see cref="Red"/>, <see cref="Green"/>, and <see cref="Blue"/> values but with a modified <see cref="Alpha"/> component.</returns>
+        public static GorgonColor SetAlpha(GorgonColor color, float alpha) => new GorgonColor(color, alpha);
 
-		/// <summary>
-		/// Function to perform linear interpolation between two <see cref="GorgonColor"/> values.
-		/// </summary>
-		/// <param name="start">The starting <see cref="GorgonColor"/>.</param>
-		/// <param name="end">The ending <see cref="GorgonColor"/>.</param>
-		/// <param name="weight">Value between 0 and 1.0f to indicate weighting between start and end.</param>
-		/// <returns>The new <see cref="GorgonColor"/> representing a color between the <paramin name="start"/> and <paramin name="end"/> values.</returns>
-		/// <remarks>
-		/// This will compute a new <see cref="GorgonColor"/> from the <paramin name="start"/> and <paramin name="end"/> parameters based on the <paramin name="weight"/> passed in. For example, if the 
-		/// <paramin name="start"/> is Red = 0, Green = 0, Blue = 0, and Alpha = 0, and the <paramin name="end"/> is Red = 1, Green = 0, Blue = 1, and Alpha 0.5f. Then, with a <paramin name="weight"/> of 
-		/// 0.5f, the result will be Red = 0.5f, Green = 0, Blue = 0.5f, and an Alpha = 0.25f.
-		/// </remarks>
-		public static GorgonColor Lerp(GorgonColor start, GorgonColor end, float weight)
+        /// <summary>
+        /// Function to perform linear interpolation between two <see cref="GorgonColor"/> values.
+        /// </summary>
+        /// <param name="start">The starting <see cref="GorgonColor"/>.</param>
+        /// <param name="end">The ending <see cref="GorgonColor"/>.</param>
+        /// <param name="weight">Value between 0 and 1.0f to indicate weighting between start and end.</param>
+        /// <returns>The new <see cref="GorgonColor"/> representing a color between the <paramin name="start"/> and <paramin name="end"/> values.</returns>
+        /// <remarks>
+        /// This will compute a new <see cref="GorgonColor"/> from the <paramin name="start"/> and <paramin name="end"/> parameters based on the <paramin name="weight"/> passed in. For example, if the 
+        /// <paramin name="start"/> is Red = 0, Green = 0, Blue = 0, and Alpha = 0, and the <paramin name="end"/> is Red = 1, Green = 0, Blue = 1, and Alpha 0.5f. Then, with a <paramin name="weight"/> of 
+        /// 0.5f, the result will be Red = 0.5f, Green = 0, Blue = 0.5f, and an Alpha = 0.25f.
+        /// </remarks>
+        public static GorgonColor Lerp(GorgonColor start, GorgonColor end, float weight)
 		{
 		    GorgonColor outColor = new GorgonColor(
 		        start.Red + ((end.Red - start.Red) * weight),
@@ -461,149 +440,122 @@ namespace Gorgon.Graphics
 			return outColor;
 		}
 
-		/// <summary>
-		/// Function to perform linear interpolation between two <see cref="GorgonColor"/> values.
-		/// </summary>
-		/// <param name="start">The starting <see cref="GorgonColor"/>.</param>
-		/// <param name="end">The ending <see cref="GorgonColor"/>.</param>
-		/// <param name="weight">Value between 0 and 1.0f to indicate weighting between start and end.</param>
-		/// <param name="outColor">The new <see cref="GorgonColor"/> representing a color between the <paramin name="start"/> and <paramin name="end"/> values.</param>
-		/// <remarks>
-		/// This will compute a new <see cref="GorgonColor"/> from the <paramin name="start"/> and <paramin name="end"/> parameters based on the <paramin name="weight"/> passed in. For example, if the 
-		/// <paramin name="start"/> is Red = 0, Green = 0, Blue = 0, and Alpha = 0, and the <paramin name="end"/> is Red = 1, Green = 0, Blue = 1, and Alpha 0.5f. Then, with a <paramin name="weight"/> of 
-		/// 0.5f, the result will be Red = 0.5f, Green = 0, Blue = 0.5f, and an Alpha = 0.25f.
-		/// </remarks>
-		public static void Lerp(in GorgonColor start, in GorgonColor end, float weight, out GorgonColor outColor)
-		{
-            outColor = new GorgonColor(start.Red + ((end.Red - start.Red) * weight),
+        /// <summary>
+        /// Function to perform linear interpolation between two <see cref="GorgonColor"/> values.
+        /// </summary>
+        /// <param name="start">The starting <see cref="GorgonColor"/>.</param>
+        /// <param name="end">The ending <see cref="GorgonColor"/>.</param>
+        /// <param name="weight">Value between 0 and 1.0f to indicate weighting between start and end.</param>
+        /// <param name="outColor">The new <see cref="GorgonColor"/> representing a color between the <paramin name="start"/> and <paramin name="end"/> values.</param>
+        /// <remarks>
+        /// This will compute a new <see cref="GorgonColor"/> from the <paramin name="start"/> and <paramin name="end"/> parameters based on the <paramin name="weight"/> passed in. For example, if the 
+        /// <paramin name="start"/> is Red = 0, Green = 0, Blue = 0, and Alpha = 0, and the <paramin name="end"/> is Red = 1, Green = 0, Blue = 1, and Alpha 0.5f. Then, with a <paramin name="weight"/> of 
+        /// 0.5f, the result will be Red = 0.5f, Green = 0, Blue = 0.5f, and an Alpha = 0.25f.
+        /// </remarks>
+        public static void Lerp(in GorgonColor start, in GorgonColor end, float weight, out GorgonColor outColor) => outColor = new GorgonColor(start.Red + ((end.Red - start.Red) * weight),
                 start.Green + ((end.Green - start.Green) * weight),
                 start.Blue + ((end.Blue - start.Blue) * weight),
                 start.Alpha + ((end.Alpha - start.Alpha) * weight));
-		}
 
-		/// <summary>
-		/// Function to add two <see cref="GorgonColor"/> values together.
-		/// </summary>
-		/// <param name="left">The left color to add.</param>
-		/// <param name="right">The right color to add.</param>
-		/// <param name="outColor">The total of the two colors.</param>
-		/// <remarks>
-		/// This method does not clamp its output. Values greater than 1 or less than 0 are possible.
-		/// </remarks>
-		public static void Add(in GorgonColor left, in GorgonColor right, out GorgonColor outColor)
-		{
-            outColor = new GorgonColor(left.Red + right.Red,
+        /// <summary>
+        /// Function to add two <see cref="GorgonColor"/> values together.
+        /// </summary>
+        /// <param name="left">The left color to add.</param>
+        /// <param name="right">The right color to add.</param>
+        /// <param name="outColor">The total of the two colors.</param>
+        /// <remarks>
+        /// This method does not clamp its output. Values greater than 1 or less than 0 are possible.
+        /// </remarks>
+        public static void Add(in GorgonColor left, in GorgonColor right, out GorgonColor outColor) => outColor = new GorgonColor(left.Red + right.Red,
                                         left.Green + right.Green,
                                         left.Blue + right.Blue,
                                         left.Alpha + right.Alpha);
-		}
 
-		/// <summary>
-		/// Function to add two <see cref="GorgonColor"/> values together.
-		/// </summary>
-		/// <param name="left">The left color to add.</param>
-		/// <param name="right">The right color to add.</param>
-		/// <returns>The total of the two colors.</returns>
-		/// <remarks>
-		/// This method does not clamp its output. Values greater than 1 or less than 0 are possible.
-		/// </remarks>
-		public static GorgonColor Add(GorgonColor left, GorgonColor right)
-		{
-			return new GorgonColor(left.Red + right.Red,
-			                       left.Green + right.Green,
-			                       left.Blue + right.Blue,
-			                       left.Alpha + right.Alpha);
-		}
+        /// <summary>
+        /// Function to add two <see cref="GorgonColor"/> values together.
+        /// </summary>
+        /// <param name="left">The left color to add.</param>
+        /// <param name="right">The right color to add.</param>
+        /// <returns>The total of the two colors.</returns>
+        /// <remarks>
+        /// This method does not clamp its output. Values greater than 1 or less than 0 are possible.
+        /// </remarks>
+        public static GorgonColor Add(GorgonColor left, GorgonColor right) => new GorgonColor(left.Red + right.Red,
+                                   left.Green + right.Green,
+                                   left.Blue + right.Blue,
+                                   left.Alpha + right.Alpha);
 
-		/// <summary>
-		/// Function to subtract two <see cref="GorgonColor"/> values from each other.
-		/// </summary>
-		/// <param name="left">The left color to subtract.</param>
-		/// <param name="right">The right color to subtract.</param>
-		/// <param name="outColor">The difference between the two colors.</param>
-		/// <remarks>
-		/// This method does not clamp its output. Values greater than 1 or less than 0 are possible.
-		/// </remarks>
-		public static void Subtract(in GorgonColor left, in GorgonColor right, out GorgonColor outColor)
-		{
-            outColor = new GorgonColor(left.Red - right.Red,
+        /// <summary>
+        /// Function to subtract two <see cref="GorgonColor"/> values from each other.
+        /// </summary>
+        /// <param name="left">The left color to subtract.</param>
+        /// <param name="right">The right color to subtract.</param>
+        /// <param name="outColor">The difference between the two colors.</param>
+        /// <remarks>
+        /// This method does not clamp its output. Values greater than 1 or less than 0 are possible.
+        /// </remarks>
+        public static void Subtract(in GorgonColor left, in GorgonColor right, out GorgonColor outColor) => outColor = new GorgonColor(left.Red - right.Red,
                                         left.Green - right.Green,
                                         left.Blue - right.Blue,
                                         left.Alpha - right.Alpha);
-        }
 
-		/// <summary>
-		/// Function to subtract two <see cref="GorgonColor"/> values from each other.
-		/// </summary>
-		/// <param name="left">The left color to subtract.</param>
-		/// <param name="right">The right color to subtract.</param>
-		/// <returns>The difference between the two colors.</returns>
-		/// <remarks>
-		/// This method does not clamp its output. Values greater than 1 or less than 0 are possible.
-		/// </remarks>
-		public static GorgonColor Subtract(GorgonColor left, GorgonColor right)
-		{
-			return new GorgonColor(left.Red - right.Red,
-			                       left.Green - right.Green,
-			                       left.Blue - right.Blue,
-			                       left.Alpha - right.Alpha);
-		}
+        /// <summary>
+        /// Function to subtract two <see cref="GorgonColor"/> values from each other.
+        /// </summary>
+        /// <param name="left">The left color to subtract.</param>
+        /// <param name="right">The right color to subtract.</param>
+        /// <returns>The difference between the two colors.</returns>
+        /// <remarks>
+        /// This method does not clamp its output. Values greater than 1 or less than 0 are possible.
+        /// </remarks>
+        public static GorgonColor Subtract(GorgonColor left, GorgonColor right) => new GorgonColor(left.Red - right.Red,
+                                   left.Green - right.Green,
+                                   left.Blue - right.Blue,
+                                   left.Alpha - right.Alpha);
 
-		/// <summary>
-		/// Function to multiply two <see cref="GorgonColor"/> values together.
-		/// </summary>
-		/// <param name="left">The left color to multiply.</param>
-		/// <param name="right">The right color to multiply.</param>
-		/// <param name="outColor">Product of the two colors.</param>
-		public static void Multiply(in GorgonColor left, in GorgonColor right, out GorgonColor outColor)
-		{
-            outColor = new GorgonColor(left.Red * right.Red,
+        /// <summary>
+        /// Function to multiply two <see cref="GorgonColor"/> values together.
+        /// </summary>
+        /// <param name="left">The left color to multiply.</param>
+        /// <param name="right">The right color to multiply.</param>
+        /// <param name="outColor">Product of the two colors.</param>
+        public static void Multiply(in GorgonColor left, in GorgonColor right, out GorgonColor outColor) => outColor = new GorgonColor(left.Red * right.Red,
                                         left.Green * right.Green,
                                         left.Blue * right.Blue,
                                         left.Alpha * right.Alpha);
-		}
 
-		/// <summary>
-		/// Function to multiply two <see cref="GorgonColor"/> values together.
-		/// </summary>
-		/// <param name="left">The left color to multiply.</param>
-		/// <param name="right">The right color to multiply.</param>
-		/// <returns>Product of the two colors.</returns>
-		public static GorgonColor Multiply(GorgonColor left, GorgonColor right)
-		{
-			return new GorgonColor(left.Red * right.Red,
-			                       left.Green * right.Green,
-			                       left.Blue * right.Blue,
-			                       left.Alpha * right.Alpha);
-		}
+        /// <summary>
+        /// Function to multiply two <see cref="GorgonColor"/> values together.
+        /// </summary>
+        /// <param name="left">The left color to multiply.</param>
+        /// <param name="right">The right color to multiply.</param>
+        /// <returns>Product of the two colors.</returns>
+        public static GorgonColor Multiply(GorgonColor left, GorgonColor right) => new GorgonColor(left.Red * right.Red,
+                                   left.Green * right.Green,
+                                   left.Blue * right.Blue,
+                                   left.Alpha * right.Alpha);
 
-		/// <summary>
-		/// Function to multiply a <see cref="GorgonColor"/> by a value.
-		/// </summary>
-		/// <param name="color">The color to multiply.</param>
-		/// <param name="value">The value to multiply.</param>
-		/// <param name="outColor">Product of the <paramin name="color"/> and the <paramin name="value"/>.</param>
-		public static void Multiply(in GorgonColor color, float value, out GorgonColor outColor)
-		{
-		    outColor = new GorgonColor(color.Red * value,
-		                               color.Green * value,
-		                               color.Blue * value,
-		                               color.Alpha * value);
-		}
+        /// <summary>
+        /// Function to multiply a <see cref="GorgonColor"/> by a value.
+        /// </summary>
+        /// <param name="color">The color to multiply.</param>
+        /// <param name="value">The value to multiply.</param>
+        /// <param name="outColor">Product of the <paramin name="color"/> and the <paramin name="value"/>.</param>
+        public static void Multiply(in GorgonColor color, float value, out GorgonColor outColor) => outColor = new GorgonColor(color.Red * value,
+                                       color.Green * value,
+                                       color.Blue * value,
+                                       color.Alpha * value);
 
-		/// <summary>
-		/// Function to multiply a <see cref="GorgonColor"/> by a value.
-		/// </summary>
-		/// <param name="color">The color to multiply.</param>
-		/// <param name="value">The value to multiply.</param>
-		/// <returns>Product of the <paramin name="color"/> and the <paramin name="value"/>.</returns>
-		public static GorgonColor Multiply(GorgonColor color, float value)
-		{
-			return new GorgonColor(color.Red * value,
-			                       color.Green * value,
-			                       color.Blue * value,
-			                       color.Alpha * value);
-		}
+        /// <summary>
+        /// Function to multiply a <see cref="GorgonColor"/> by a value.
+        /// </summary>
+        /// <param name="color">The color to multiply.</param>
+        /// <param name="value">The value to multiply.</param>
+        /// <returns>Product of the <paramin name="color"/> and the <paramin name="value"/>.</returns>
+        public static GorgonColor Multiply(GorgonColor color, float value) => new GorgonColor(color.Red * value,
+                                   color.Green * value,
+                                   color.Blue * value,
+                                   color.Alpha * value);
 
         /// <summary>
         /// Function to convert this <see cref="GorgonColor"/> value into a hexadecimal formatting string.
@@ -615,23 +567,20 @@ namespace Gorgon.Graphics
         /// </para>
         /// </remarks>
         [Pure]
-	    public string ToHex()
-        {
-            return $"{(int)(Alpha * 255):x2}{(int)(Red * 255):x2}{(int)(Green * 255):x2}{(int)(Blue * 255):x2}".ToUpperInvariant();
-        }
+        public string ToHex() => $"{(int)(Alpha * 255):x2}{(int)(Red * 255):x2}{(int)(Green * 255):x2}{(int)(Blue * 255):x2}".ToUpperInvariant();
 
-		/// <summary>
-		/// Function to convert this <see cref="GorgonColor"/> value into an <see cref="int"/> value with a ARGB format.
-		/// </summary>
-		/// <returns>An <see cref="int"/> representing the color value in ARGB format.</returns>
-		/// <remarks>
-		/// The format indicates the byte position of each color component in the <see cref="int"/> value.
-		/// </remarks>
-		[Pure]
+        /// <summary>
+        /// Function to convert this <see cref="GorgonColor"/> value into an <see cref="int"/> value with a ARGB format.
+        /// </summary>
+        /// <returns>An <see cref="int"/> representing the color value in ARGB format.</returns>
+        /// <remarks>
+        /// The format indicates the byte position of each color component in the <see cref="int"/> value.
+        /// </remarks>
+        [Pure]
 		public int ToARGB()
 		{
-		    uint result = (((uint)(Alpha * 255.0f)) & 0xff) << 24 | (((uint)(Red * 255.0f)) & 0xff) << 16 |
-		                  (((uint)(Green * 255.0f)) & 0xff) << 8 | ((uint)(Blue * 255.0f)) & 0xff;
+		    uint result = ((((uint)(Alpha * 255.0f)) & 0xff) << 24) | ((((uint)(Red * 255.0f)) & 0xff) << 16) |
+		                  ((((uint)(Green * 255.0f)) & 0xff) << 8) | (((uint)(Blue * 255.0f)) & 0xff);
 			return (int)result;
 		}
 
@@ -645,8 +594,8 @@ namespace Gorgon.Graphics
 		[Pure]
 		public int ToRGBA()
 		{
-		    uint result = (((uint)(Red * 255.0f)) & 0xff) << 24 | (((uint)(Green * 255.0f)) & 0xff) << 16 |
-		                  (((uint)(Blue * 255.0f)) & 0xff) << 8 | ((uint)(Alpha * 255.0f)) & 0xff;
+		    uint result = ((((uint)(Red * 255.0f)) & 0xff) << 24) | ((((uint)(Green * 255.0f)) & 0xff) << 16) |
+		                  ((((uint)(Blue * 255.0f)) & 0xff) << 8) | (((uint)(Alpha * 255.0f)) & 0xff);
 			return (int)result;
 		}
 
@@ -660,8 +609,8 @@ namespace Gorgon.Graphics
 		[Pure]
 		public int ToBGRA()
 		{
-		    uint result = (((uint)(Blue * 255.0f)) & 0xff) << 24 | (((uint)(Green * 255.0f)) & 0xff) << 16 |
-		                  (((uint)(Red * 255.0f)) & 0xff) << 8 | ((uint)(Alpha * 255.0f)) & 0xff;
+		    uint result = ((((uint)(Blue * 255.0f)) & 0xff) << 24) | ((((uint)(Green * 255.0f)) & 0xff) << 16) |
+		                  ((((uint)(Red * 255.0f)) & 0xff) << 8) | (((uint)(Alpha * 255.0f)) & 0xff);
 			return (int)result;
 		}
 
@@ -675,91 +624,73 @@ namespace Gorgon.Graphics
 		[Pure]
 		public int ToABGR()
 		{
-		    uint result = (((uint)(Alpha * 255.0f)) & 0xff) << 24 | (((uint)(Blue * 255.0f)) & 0xff) << 16 |
-		                  (((uint)(Green * 255.0f)) & 0xff) << 8 | ((uint)(Red * 255.0f)) & 0xff;
+		    uint result = ((((uint)(Alpha * 255.0f)) & 0xff) << 24) | ((((uint)(Blue * 255.0f)) & 0xff) << 16) |
+		                  ((((uint)(Green * 255.0f)) & 0xff) << 8) | (((uint)(Red * 255.0f)) & 0xff);
 			return (int)result;
 		}
 
-		/// <summary>
-		/// Function to convert this <see cref="GorgonColor"/> into a <see cref="Color"/>.
-		/// </summary>
-		/// <returns>The <see cref="Color"/> value.</returns>
-		[Pure]
-		public Color ToColor()
-		{
-			return Color.FromArgb(ToARGB());
-		}
+        /// <summary>
+        /// Function to convert this <see cref="GorgonColor"/> into a <see cref="Color"/>.
+        /// </summary>
+        /// <returns>The <see cref="Color"/> value.</returns>
+        [Pure]
+        public Color ToColor() => Color.FromArgb(ToARGB());
 
-		/// <summary>
-		/// Function to convert this <see cref="GorgonColor"/> into a <see cref="DX.Vector3"/>.
-		/// </summary>
-		/// <returns>The <see cref="DX.Vector3"/> value.</returns>
-		/// <remarks>
-		/// This will map the <see cref="Red"/>, <see cref="Green"/> and <see cref="Blue"/> components to the <see cref="DX.Vector3.X"/>, <see cref="DX.Vector3.Y"/> and <see cref="DX.Vector3.Z"/> values respectively.
-		/// </remarks>
-		[Pure]
-		public DX.Vector3 ToVector3()
-		{
-			return new DX.Vector3(Red, Green, Blue);
-		}
+        /// <summary>
+        /// Function to convert this <see cref="GorgonColor"/> into a <see cref="DX.Vector3"/>.
+        /// </summary>
+        /// <returns>The <see cref="DX.Vector3"/> value.</returns>
+        /// <remarks>
+        /// This will map the <see cref="Red"/>, <see cref="Green"/> and <see cref="Blue"/> components to the <see cref="DX.Vector3.X"/>, <see cref="DX.Vector3.Y"/> and <see cref="DX.Vector3.Z"/> values respectively.
+        /// </remarks>
+        [Pure]
+        public DX.Vector3 ToVector3() => new DX.Vector3(Red, Green, Blue);
 
-		/// <summary>
-		/// Function to convert this <see cref="GorgonColor"/> into a <see cref="DX.Vector4"/>.
-		/// </summary>
-		/// <returns>The <see cref="DX.Vector4"/> value.</returns>
-		/// <remarks>
-		/// This will map the <see cref="Red"/>, <see cref="Green"/>, <see cref="Blue"/> and <see cref="Alpha"/> components to the <see cref="DX.Vector4.X"/>, <see cref="DX.Vector4.Y"/>, <see cref="DX.Vector4.Z"/> and <see cref="DX.Vector4.W"/> values respectively.
-		/// </remarks>
-		[Pure]
-		public DX.Vector4 ToVector4()
-		{
-			return new DX.Vector4(Red, Green, Blue, Alpha);
-		}
+        /// <summary>
+        /// Function to convert this <see cref="GorgonColor"/> into a <see cref="DX.Vector4"/>.
+        /// </summary>
+        /// <returns>The <see cref="DX.Vector4"/> value.</returns>
+        /// <remarks>
+        /// This will map the <see cref="Red"/>, <see cref="Green"/>, <see cref="Blue"/> and <see cref="Alpha"/> components to the <see cref="DX.Vector4.X"/>, <see cref="DX.Vector4.Y"/>, <see cref="DX.Vector4.Z"/> and <see cref="DX.Vector4.W"/> values respectively.
+        /// </remarks>
+        [Pure]
+        public DX.Vector4 ToVector4() => new DX.Vector4(Red, Green, Blue, Alpha);
 
-	    /// <summary>
-	    /// Indicates whether the current object is equal to another object of the same type.
-	    /// </summary>
-	    /// <param name="other">An object to compare with this object.</param>
-	    /// <returns>
-	    /// true if the current object is equal to the <paramin name="other"/> parameter; otherwise, false.
-	    /// </returns>
-	    public bool Equals(GorgonColor other)
-	    {
-	        return Equals(in this, in other);
-	    }
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// true if the current object is equal to the <paramin name="other"/> parameter; otherwise, false.
+        /// </returns>
+        public bool Equals(GorgonColor other) => Equals(in this, in other);
 
-	    /// <summary>
-	    /// Indicates whether the current object is equal to another object of the same type by reference.
-	    /// </summary>
-	    /// <param name="other">An object to compare with this object.</param>
-	    /// <returns>
-	    /// true if the current object is equal to the <paramin name="other"/> parameter; otherwise, false.
-	    /// </returns>
-	    public bool Equals(in GorgonColor other)
-	    {
-	        return Equals(in this, in other);
-	    }
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type by reference.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// true if the current object is equal to the <paramin name="other"/> parameter; otherwise, false.
+        /// </returns>
+        public bool Equals(in GorgonColor other) => Equals(in this, in other);
 
-	    /// <summary>
-	    /// Populates a <see cref="T:System.Runtime.Serialization.SerializationInfo" /> with the data needed to serialize the target object.
-	    /// </summary>
-	    /// <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> to populate with data.</param>
-	    /// <param name="context">The destination (see <see cref="T:System.Runtime.Serialization.StreamingContext" />) for this serialization.</param>
-	    void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
-	    {
-	        info.AddValue("Color", ToARGB());
-	    }
+        /// <summary>
+        /// Populates a <see cref="T:System.Runtime.Serialization.SerializationInfo" /> with the data needed to serialize the target object.
+        /// </summary>
+        /// <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> to populate with data.</param>
+        /// <param name="context">The destination (see <see cref="T:System.Runtime.Serialization.StreamingContext" />) for this serialization.</param>
+        void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context) => info.AddValue("Color", ToARGB());
 
-		/// <summary>
-		/// An operator to add two <see cref="GorgonColor"/> values together.
-		/// </summary>
-		/// <param name="left">The left value.</param>
-		/// <param name="right">The right value.</param>
-		/// <returns>The result of the operator.</returns>
-		/// <remarks>
-		/// This method does not clamp its output. Values greater than 1 or less than 0 are possible.
-		/// </remarks>
-		public static GorgonColor operator +(GorgonColor left, GorgonColor right)
+        /// <summary>
+        /// An operator to add two <see cref="GorgonColor"/> values together.
+        /// </summary>
+        /// <param name="left">The left value.</param>
+        /// <param name="right">The right value.</param>
+        /// <returns>The result of the operator.</returns>
+        /// <remarks>
+        /// This method does not clamp its output. Values greater than 1 or less than 0 are possible.
+        /// </remarks>
+        public static GorgonColor operator +(GorgonColor left, GorgonColor right)
 		{
 
 			Add(in left, in right, out GorgonColor result);

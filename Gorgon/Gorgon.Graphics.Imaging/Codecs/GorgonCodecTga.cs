@@ -468,7 +468,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 					// Do expansion.
 					if (expand)
 					{
-						pixel = (uint)(reader.ReadByte() << 16 | reader.ReadByte() << 8 | reader.ReadByte() | 0xFF000000);
+						pixel = (uint)((reader.ReadByte() << 16) | (reader.ReadByte() << 8) | reader.ReadByte() | 0xFF000000);
 						result = false;
 					}
 					else
@@ -592,7 +592,7 @@ namespace Gorgon.Graphics.Imaging.Codecs
 
 						if (expand)
 						{
-							pixel = (uint)(reader.ReadByte() << 16 | reader.ReadByte() << 8 | reader.ReadByte() | 0xFF000000);
+							pixel = (uint)((reader.ReadByte() << 16) | (reader.ReadByte() << 8) | reader.ReadByte() | 0xFF000000);
 							result = false;
 						}
 						else
@@ -1077,18 +1077,15 @@ namespace Gorgon.Graphics.Imaging.Codecs
 			return ((header.ImageType != TgaImageType.BlackAndWhite) && (header.ImageType != TgaImageType.BlackAndWhiteRLE)) ||
 			       (header.BPP == 8);
         }
-		#endregion
+        #endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonCodecTga" /> class.
-		/// </summary>
-		/// <param name="decodingOptions">[Optional] Codec specific options to use when decoding image data.</param>
-		public GorgonCodecTga(GorgonTgaDecodingOptions decodingOptions = null)
-            : base(null, decodingOptions)
-		{
-			CodecCommonExtensions = new[] { "tga", "tpic" };
-		}
-		#endregion
-	}
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonCodecTga" /> class.
+        /// </summary>
+        /// <param name="decodingOptions">[Optional] Codec specific options to use when decoding image data.</param>
+        public GorgonCodecTga(GorgonTgaDecodingOptions decodingOptions = null)
+            : base(null, decodingOptions) => CodecCommonExtensions = new[] { "tga", "tpic" };
+        #endregion
+    }
 }

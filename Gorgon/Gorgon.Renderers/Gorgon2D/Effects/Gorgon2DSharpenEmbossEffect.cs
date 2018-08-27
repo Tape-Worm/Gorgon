@@ -163,27 +163,24 @@ namespace Gorgon.Renderers
 		    _isUpdated = false;
 		}
 
-	    /// <summary>
-	    /// Function called to render a single effect pass.
-	    /// </summary>
-	    /// <param name="passIndex">The index of the pass being rendered.</param>
-	    /// <param name="renderMethod">The method used to render a scene for the effect.</param>
-	    /// <param name="output">The render target that will receive the final render data.</param>
-	    /// <remarks>
-	    /// <para>
-	    /// Applications must implement this in order to see any results from the effect.
-	    /// </para>
-	    /// </remarks>
-	    protected override void OnRenderPass(int passIndex, Action<int, int, DX.Size2> renderMethod, GorgonRenderTargetView output)
-	    {
-	        renderMethod(passIndex, PassCount, new DX.Size2(output.Width, output.Height));
-	    }
+        /// <summary>
+        /// Function called to render a single effect pass.
+        /// </summary>
+        /// <param name="passIndex">The index of the pass being rendered.</param>
+        /// <param name="renderMethod">The method used to render a scene for the effect.</param>
+        /// <param name="output">The render target that will receive the final render data.</param>
+        /// <remarks>
+        /// <para>
+        /// Applications must implement this in order to see any results from the effect.
+        /// </para>
+        /// </remarks>
+        protected override void OnRenderPass(int passIndex, Action<int, int, DX.Size2> renderMethod, GorgonRenderTargetView output) => renderMethod(passIndex, PassCount, new DX.Size2(output.Width, output.Height));
 
-	    /// <summary>
-		/// Releases unmanaged and - optionally - managed resources
-		/// </summary>
-		/// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
-		protected override void Dispose(bool disposing)
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources
+        /// </summary>
+        /// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
+        protected override void Dispose(bool disposing)
 		{
 		    GorgonConstantBufferView buffer = Interlocked.Exchange(ref _sharpenEmbossBuffer, null);
 		    Gorgon2DShader<GorgonPixelShader> shader1 = Interlocked.Exchange(ref _sharpenShader, null);
@@ -193,7 +190,7 @@ namespace Gorgon.Renderers
             shader1?.Dispose();
             shader2?.Dispose();
 		}
-	    #endregion
+        #endregion
 
         #region Constructor/Destructor.
         /// <summary>
@@ -201,10 +198,7 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="renderer">The renderer used to render this effect.</param>
         public Gorgon2DSharpenEmbossEffect(Gorgon2D renderer)
-			: base(renderer, Resources.GOR2D_EFFECT_SHARPEMBOSS, Resources.GOR2D_EFFECT_SHARPEMBOSS_DESC, 1)
-		{
-			Macros.Add(new GorgonShaderMacro("SHARPEN_EMBOSS_EFFECT"));
-		}
-		#endregion
-	}
+            : base(renderer, Resources.GOR2D_EFFECT_SHARPEMBOSS, Resources.GOR2D_EFFECT_SHARPEMBOSS_DESC, 1) => Macros.Add(new GorgonShaderMacro("SHARPEN_EMBOSS_EFFECT"));
+        #endregion
+    }
 }

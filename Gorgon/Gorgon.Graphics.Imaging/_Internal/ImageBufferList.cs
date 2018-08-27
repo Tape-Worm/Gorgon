@@ -193,23 +193,20 @@ namespace Gorgon.Graphics.Imaging
 			}
 		}
 
-		/// <summary>
-		/// Returns an enumerator that iterates through a collection.
-		/// </summary>
-		/// <returns>
-		/// An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.
-		/// </returns>
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return _buffers.GetEnumerator();
-		}
+        /// <summary>
+        /// Returns an enumerator that iterates through a collection.
+        /// </summary>
+        /// <returns>
+        /// An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.
+        /// </returns>
+        IEnumerator IEnumerable.GetEnumerator() => _buffers.GetEnumerator();
 
-		/// <summary>
-		/// Function to retrieve the index of a given buffer within the list.
-		/// </summary>
-		/// <param name="buffer">The buffer to look up.</param>
-		/// <returns>The index of the buffer within the list, or -1 if not found.</returns>
-		public int IndexOf(IGorgonImageBuffer buffer)
+        /// <summary>
+        /// Function to retrieve the index of a given buffer within the list.
+        /// </summary>
+        /// <param name="buffer">The buffer to look up.</param>
+        /// <returns>The index of the buffer within the list, or -1 if not found.</returns>
+        public int IndexOf(IGorgonImageBuffer buffer)
 		{
 			if (buffer == null)
 			{
@@ -244,24 +241,21 @@ namespace Gorgon.Graphics.Imaging
 			return offsetSize.Item1;
 		}
 
-		/// <summary>
-		/// Function to determine if a buffer with the given mip level and optional depth slice or array index.
-		/// </summary>
-		/// <param name="mipLevel">The mip map level to look up.</param>
-		/// <param name="depthSliceOrArrayIndex">[Optional] The depth slice (for 3D images) or array index (for 1D or 2D images) to look up.</param>
-		/// <returns></returns>
-		public bool Contains(int mipLevel, int depthSliceOrArrayIndex = 0)
-		{
-			return IndexOf(mipLevel, depthSliceOrArrayIndex) != -1;
-		}
-		#endregion
+        /// <summary>
+        /// Function to determine if a buffer with the given mip level and optional depth slice or array index.
+        /// </summary>
+        /// <param name="mipLevel">The mip map level to look up.</param>
+        /// <param name="depthSliceOrArrayIndex">[Optional] The depth slice (for 3D images) or array index (for 1D or 2D images) to look up.</param>
+        /// <returns></returns>
+        public bool Contains(int mipLevel, int depthSliceOrArrayIndex = 0) => IndexOf(mipLevel, depthSliceOrArrayIndex) != -1;
+        #endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="ImageBufferList"/> class.
-		/// </summary>
-		/// <param name="image">The image that owns this list.</param>
-		internal ImageBufferList(IGorgonImage image)
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ImageBufferList"/> class.
+        /// </summary>
+        /// <param name="image">The image that owns this list.</param>
+        internal ImageBufferList(IGorgonImage image)
 		{
 			_image = image;
 			_buffers = new IGorgonImageBuffer[0];

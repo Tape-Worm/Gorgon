@@ -70,47 +70,38 @@ namespace Gorgon.Graphics.Core
 			get;
 	        internal set;
 	    }
-		#endregion
+        #endregion
 
-		#region Methods.
-	    /// <summary>
-	    /// Function called when a dirty item is found and added.
-	    /// </summary>
-	    /// <param name="dirtyIndex">The index that is considered dirty.</param>
-	    /// <param name="value">The dirty value.</param>
-	    protected override void OnDirtyItemAdded(int dirtyIndex, GorgonVertexBufferBinding value)
-	    {
-	        Native[dirtyIndex] = value.ToVertexBufferBinding();
-	    }
+        #region Methods.
+        /// <summary>
+        /// Function called when a dirty item is found and added.
+        /// </summary>
+        /// <param name="dirtyIndex">The index that is considered dirty.</param>
+        /// <param name="value">The dirty value.</param>
+        protected override void OnDirtyItemAdded(int dirtyIndex, GorgonVertexBufferBinding value) => Native[dirtyIndex] = value.ToVertexBufferBinding();
 
-	    /// <summary>
-	    /// Function called when a dirty item was not found, and is removed from the dirty list.
-	    /// </summary>
-	    /// <param name="dirtyIndex">The index that is considered dirty.</param>
-	    protected override void OnDirtyItemCleaned(int dirtyIndex)
-	    {
-	        Native[dirtyIndex] = default;
-	    }
+        /// <summary>
+        /// Function called when a dirty item was not found, and is removed from the dirty list.
+        /// </summary>
+        /// <param name="dirtyIndex">The index that is considered dirty.</param>
+        protected override void OnDirtyItemCleaned(int dirtyIndex) => Native[dirtyIndex] = default;
 
-	    /// <summary>
-		/// Function called when the array is cleared.
-		/// </summary>
-		protected override void OnClear()
-		{
-			Array.Clear(Native, 0, Native.Length);
-		}
+        /// <summary>
+        /// Function called when the array is cleared.
+        /// </summary>
+        protected override void OnClear() => Array.Clear(Native, 0, Native.Length);
 
-	    /// <summary>
-	    /// Function to find the index of a <see cref="GorgonStreamOutBinding"/> with the specified buffer.
-	    /// </summary>
-	    /// <param name="buffer">The buffer to look up.</param>
-	    /// <returns>The index of the <see cref="GorgonStreamOutBinding"/>, or -1 if not found.</returns>
-	    /// <remarks>
-	    /// <para>
-	    /// For the sake of efficiency, this checks the dirty items in the list only.
-	    /// </para>
-	    /// </remarks>
-	    internal int IndexOf(GorgonGraphicsResource buffer)
+        /// <summary>
+        /// Function to find the index of a <see cref="GorgonStreamOutBinding"/> with the specified buffer.
+        /// </summary>
+        /// <param name="buffer">The buffer to look up.</param>
+        /// <returns>The index of the <see cref="GorgonStreamOutBinding"/>, or -1 if not found.</returns>
+        /// <remarks>
+        /// <para>
+        /// For the sake of efficiency, this checks the dirty items in the list only.
+        /// </para>
+        /// </remarks>
+        internal int IndexOf(GorgonGraphicsResource buffer)
 	    {
             (int start, int count) = GetDirtyItems(true);
             
@@ -135,10 +126,7 @@ namespace Gorgon.Graphics.Core
         /// Initializes a new instance of the <see cref="GorgonVertexBufferBindings" /> class.
         /// </summary>
         internal GorgonVertexBufferBindings()
-            : base(MaximumVertexBufferCount)
-        {
-            Native = new D3D11.VertexBufferBinding[MaximumVertexBufferCount];
-        }
+            : base(MaximumVertexBufferCount) => Native = new D3D11.VertexBufferBinding[MaximumVertexBufferCount];
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonVertexBufferBindings"/> class.

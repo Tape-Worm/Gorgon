@@ -282,90 +282,87 @@ namespace Gorgon.Graphics.Core
 			return result;
 		}
 
-		/// <summary>
-		/// Function to build an input layout using the fields from a value type.
-		/// </summary>
-		/// <typeparam name="T">The type to evaluate. This must be an unmanaged value type.</typeparam>
-		/// <param name="graphics">The graphics interface used to create the input layout.</param>
-		/// <param name="shader">Vertex shader to bind the layout with.</param>
-		/// <returns>A new <see cref="GorgonInputLayout"/> for the type passed to <typeparamref name="T"/>.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, or the <paramref name="shader"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentException">Thrown when an element with the same context, slot and index appears more than once in the members of the <typeparamref name="T"/> type.</exception>
-		/// <exception cref="GorgonException">Thrown when the type specified by <typeparamref name="T"/> is not safe for use with native functions (see <see cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>).
-		/// <para>-or-</para>
-		/// <para>Thrown when the type specified by <typeparamref name="T"/> does not contain any public members.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown if the type specified by <typeparamref name="T"/> does not have a <see cref="LayoutKind"/> of <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/>.</para>
-		/// </exception>
-		/// <remarks>
-		/// <para>
-		/// This will build a new <see cref="GorgonInputLayout"/> using the fields within a value type (<c>struct</c>). Each of the members that are to be included in the layout must be decorated with a 
-		/// <see cref="InputElementAttribute"/>. If a member is not decorated with this attribute, then it will be ignored.
-		/// </para>
-		/// <para>
-		/// The type parameter <typeparamref name="T"/> must be an unmanaged value type (<c>struct</c>), reference types are not supported. The members of the type must also be public fields. Properties are not 
-		/// supported. Futhermore, the struct must be decorated with a <see cref="StructLayoutAttribute"/> that defines a <see cref="LayoutKind"/> of <see cref="LayoutKind.Sequential"/> or 
-		/// <see cref="LayoutKind.Explicit"/>. This is necessary to ensure that the member of the value type are in the correct order when writing to a <see cref="GorgonVertexBuffer"/> or when 
-		/// generating a <see cref="GorgonInputLayout"/> from a type.
-		/// </para>
-		/// <para>
-		/// If the type specified by <typeparamref name="T"/> has members that are not primitive types or value types with a <see cref="StructLayoutAttribute"/>, or the member has a 
-		/// <see cref="MarshalAsAttribute"/>, then an exception is thrown.  Gorgon does not support marshalling of complex types for vertices.
-		/// </para>
-		/// <para>
-		/// The types of the fields must be one of the following types:
-		/// <para>
-		/// <list type="bullet">
-		///		<item>
-		///			<description><see cref="byte"/></description>
-		///		</item>
-		///		<item>
-		///			<description><see cref="sbyte"/></description>
-		///		</item>
-		///		<item>
-		///			<description><see cref="short"/></description>
-		///		</item>
-		///		<item>
-		///			<description><see cref="ushort"/></description>
-		///		</item>
-		///		<item>
-		///			<description><see cref="int"/></description>
-		///		</item>
-		///		<item>
-		///			<description><see cref="uint"/></description>
-		///		</item>
-		///		<item>
-		///			<description><see cref="long"/></description>
-		///		</item>
-		///		<item>
-		///			<description><see cref="ulong"/></description>
-		///		</item>
-		///		<item>
-		///			<description><see cref="float"/></description>
-		///		</item>
-		///		<item>
-		///			<description><c>Vector2</c></description>
-		///		</item>
-		///		<item>
-		///			<description><c>Vector3</c></description>
-		///		</item>
-		///		<item>
-		///			<description><c>Vector4</c></description>
-		///		</item>
-		///		<item>
-		///			<description><see cref="GorgonColor"/></description>
-		///		</item>
-		/// </list>
-		/// </para>
-		/// If the type of the member does not match, an exception will be thrown.
-		/// </para>
-		/// </remarks>
-		/// <seealso cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>
-		public static GorgonInputLayout CreateUsingType<T>(GorgonGraphics graphics, GorgonVertexShader shader)
-			where T : unmanaged
-		{
-		    return CreateUsingType(graphics, typeof(T), shader);
-		}
+        /// <summary>
+        /// Function to build an input layout using the fields from a value type.
+        /// </summary>
+        /// <typeparam name="T">The type to evaluate. This must be an unmanaged value type.</typeparam>
+        /// <param name="graphics">The graphics interface used to create the input layout.</param>
+        /// <param name="shader">Vertex shader to bind the layout with.</param>
+        /// <returns>A new <see cref="GorgonInputLayout"/> for the type passed to <typeparamref name="T"/>.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, or the <paramref name="shader"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentException">Thrown when an element with the same context, slot and index appears more than once in the members of the <typeparamref name="T"/> type.</exception>
+        /// <exception cref="GorgonException">Thrown when the type specified by <typeparamref name="T"/> is not safe for use with native functions (see <see cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>).
+        /// <para>-or-</para>
+        /// <para>Thrown when the type specified by <typeparamref name="T"/> does not contain any public members.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown if the type specified by <typeparamref name="T"/> does not have a <see cref="LayoutKind"/> of <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/>.</para>
+        /// </exception>
+        /// <remarks>
+        /// <para>
+        /// This will build a new <see cref="GorgonInputLayout"/> using the fields within a value type (<c>struct</c>). Each of the members that are to be included in the layout must be decorated with a 
+        /// <see cref="InputElementAttribute"/>. If a member is not decorated with this attribute, then it will be ignored.
+        /// </para>
+        /// <para>
+        /// The type parameter <typeparamref name="T"/> must be an unmanaged value type (<c>struct</c>), reference types are not supported. The members of the type must also be public fields. Properties are not 
+        /// supported. Futhermore, the struct must be decorated with a <see cref="StructLayoutAttribute"/> that defines a <see cref="LayoutKind"/> of <see cref="LayoutKind.Sequential"/> or 
+        /// <see cref="LayoutKind.Explicit"/>. This is necessary to ensure that the member of the value type are in the correct order when writing to a <see cref="GorgonVertexBuffer"/> or when 
+        /// generating a <see cref="GorgonInputLayout"/> from a type.
+        /// </para>
+        /// <para>
+        /// If the type specified by <typeparamref name="T"/> has members that are not primitive types or value types with a <see cref="StructLayoutAttribute"/>, or the member has a 
+        /// <see cref="MarshalAsAttribute"/>, then an exception is thrown.  Gorgon does not support marshalling of complex types for vertices.
+        /// </para>
+        /// <para>
+        /// The types of the fields must be one of the following types:
+        /// <para>
+        /// <list type="bullet">
+        ///		<item>
+        ///			<description><see cref="byte"/></description>
+        ///		</item>
+        ///		<item>
+        ///			<description><see cref="sbyte"/></description>
+        ///		</item>
+        ///		<item>
+        ///			<description><see cref="short"/></description>
+        ///		</item>
+        ///		<item>
+        ///			<description><see cref="ushort"/></description>
+        ///		</item>
+        ///		<item>
+        ///			<description><see cref="int"/></description>
+        ///		</item>
+        ///		<item>
+        ///			<description><see cref="uint"/></description>
+        ///		</item>
+        ///		<item>
+        ///			<description><see cref="long"/></description>
+        ///		</item>
+        ///		<item>
+        ///			<description><see cref="ulong"/></description>
+        ///		</item>
+        ///		<item>
+        ///			<description><see cref="float"/></description>
+        ///		</item>
+        ///		<item>
+        ///			<description><c>Vector2</c></description>
+        ///		</item>
+        ///		<item>
+        ///			<description><c>Vector3</c></description>
+        ///		</item>
+        ///		<item>
+        ///			<description><c>Vector4</c></description>
+        ///		</item>
+        ///		<item>
+        ///			<description><see cref="GorgonColor"/></description>
+        ///		</item>
+        /// </list>
+        /// </para>
+        /// If the type of the member does not match, an exception will be thrown.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>
+        public static GorgonInputLayout CreateUsingType<T>(GorgonGraphics graphics, GorgonVertexShader shader)
+            where T : unmanaged => CreateUsingType(graphics, typeof(T), shader);
 
         /// <summary>
         /// Function to build an input layout using the fields from a value type.

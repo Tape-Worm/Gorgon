@@ -131,16 +131,13 @@ namespace Gorgon.Graphics.Core
         /// <param name="left">The left value to compare.</param>
         /// <param name="right">The right value to compare.</param>
         /// <returns><b>true</b> if the modes are equal, <b>false</b> if not.</returns>
-        public static bool Equals(in GorgonVideoMode left, in GorgonVideoMode right)
-        {
-            return left.Width == right.Width
+        public static bool Equals(in GorgonVideoMode left, in GorgonVideoMode right) => left.Width == right.Width
                    && left.Height == right.Height
                    && left.Format == right.Format
                    && left.RefreshRate.Equals(right.RefreshRate)
                    && left.Scaling == right.Scaling
                    && left.ScanlineOrder == right.ScanlineOrder
                    && left.SupportsStereo == right.SupportsStereo;
-        }
 
         /// <summary>Indicates whether this instance and a specified object are equal.</summary>
         /// <param name="obj">The object to compare with the current instance. </param>
@@ -158,11 +155,8 @@ namespace Gorgon.Graphics.Core
 
         /// <summary>Returns the hash code for this instance.</summary>
         /// <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
-        public override int GetHashCode()
-        {
-            return 397.GenerateHash(Width).GenerateHash(Height).GenerateHash(Format).GenerateHash(RefreshRate).GenerateHash(Scaling)
+        public override int GetHashCode() => 397.GenerateHash(Width).GenerateHash(Height).GenerateHash(Format).GenerateHash(RefreshRate).GenerateHash(Scaling)
                       .GenerateHash(ScanlineOrder).GenerateHash(SupportsStereo);
-        }
 
         /// <summary>Returns the fully qualified type name of this instance.</summary>
         /// <returns>The fully qualified type name.</returns>
@@ -205,10 +199,7 @@ namespace Gorgon.Graphics.Core
         /// <summary>Compares the current instance with another object of the same type and returns an integer that indicates whether the current instance precedes, follows, or occurs in the same position in the sort order as the other object. </summary>
         /// <param name="other">An object to compare with this instance. </param>
         /// <returns>A value that indicates the relative order of the objects being compared. The return value has these meanings: Value Meaning Less than zero This instance precedes <paramref name="other" /> in the sort order.  Zero This instance occurs in the same position in the sort order as <paramref name="other" />. Greater than zero This instance follows <paramref name="other" /> in the sort order. </returns>
-        int IComparable<GorgonVideoMode>.CompareTo(GorgonVideoMode other)
-        {
-            return CompareTo(in this, in other);
-        }
+        int IComparable<GorgonVideoMode>.CompareTo(GorgonVideoMode other) => CompareTo(in this, in other);
 
         /// <summary>
         /// Operator to determine if the left instance is less than the right instance.

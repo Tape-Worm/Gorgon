@@ -175,30 +175,27 @@ namespace Gorgon.IO
 		/// property.
 		/// </remarks>
 		public string Name => PhysicalFile.Name;
-		#endregion
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to open a stream to the file on the physical file system.
-		/// </summary>
-		/// <returns>The open <see cref="Stream"/> object.</returns>
-		/// <remarks>
-		/// This will open a <see cref="Stream"/> to the physical file for reading. Applications that open a stream to a file are responsible for closing the <see cref="Stream"/> when they are done.
-		/// </remarks>
-		public Stream OpenStream()
-        {
-	        return MountPoint.Provider.OpenFileStream(this);
-        }
-		#endregion
+        #region Methods.
+        /// <summary>
+        /// Function to open a stream to the file on the physical file system.
+        /// </summary>
+        /// <returns>The open <see cref="Stream"/> object.</returns>
+        /// <remarks>
+        /// This will open a <see cref="Stream"/> to the physical file for reading. Applications that open a stream to a file are responsible for closing the <see cref="Stream"/> when they are done.
+        /// </remarks>
+        public Stream OpenStream() => MountPoint.Provider.OpenFileStream(this);
+        #endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="VirtualFile"/> class.
-		/// </summary>
-		/// <param name="mountPoint">The mount point that supplies this file.</param>
-		/// <param name="fileInfo">Information about the physical file.</param>
-		/// <param name="parent">The parent directory for this file..</param>
-		public VirtualFile(GorgonFileSystemMountPoint mountPoint, IGorgonPhysicalFileInfo fileInfo, VirtualDirectory parent)
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="VirtualFile"/> class.
+        /// </summary>
+        /// <param name="mountPoint">The mount point that supplies this file.</param>
+        /// <param name="fileInfo">Information about the physical file.</param>
+        /// <param name="parent">The parent directory for this file..</param>
+        public VirtualFile(GorgonFileSystemMountPoint mountPoint, IGorgonPhysicalFileInfo fileInfo, VirtualDirectory parent)
 		{
 			MountPoint = mountPoint;
 			PhysicalFile = fileInfo;

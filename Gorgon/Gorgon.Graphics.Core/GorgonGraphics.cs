@@ -1668,10 +1668,7 @@ namespace Gorgon.Graphics.Core
         /// <returns>An amended change set, or the changeset provided by <paramref name="currentChanges"/> if nothing was changed.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static DrawCallChanges GetResourceChanges<T>(IGorgonReadOnlyArray<T> array, DrawCallChanges changeType, DrawCallChanges currentChanges)
-            where T : IEquatable<T>
-        {
-            return array.IsDirty ? (currentChanges | changeType) : currentChanges;
-        }
+            where T : IEquatable<T> => array.IsDirty ? (currentChanges | changeType) : currentChanges;
 
         /// <summary>
         /// Function to build a merged draw state.
@@ -2804,10 +2801,7 @@ namespace Gorgon.Graphics.Core
         /// Function to reset the values for per/frame draw call statistics.
         /// </summary>
         /// <seealso cref="DrawCallCount"/>
-        public void ResetDrawCallStatistics()
-        {
-            DrawCallCount = 0;
-        }
+        public void ResetDrawCallStatistics() => DrawCallCount = 0;
 
         /// <summary>
         /// Function to submit a basic draw call to the GPU.
@@ -3042,9 +3036,7 @@ namespace Gorgon.Graphics.Core
                                 GorgonBlendState blendState = null,
                                 GorgonSamplerState samplerState = null,
                                 GorgonPixelShader pixelShader = null,
-                                GorgonConstantBuffers psConstantBuffers = null)
-        {
-            _textureBlitter.Value.Blit(texture,
+                                GorgonConstantBuffers psConstantBuffers = null) => _textureBlitter.Value.Blit(texture,
                                        new DX.Rectangle(destination.X, destination.Y, texture.Width, texture.Height),
                                        DX.Point.Zero,
                                        color ?? GorgonColor.White,
@@ -3053,7 +3045,6 @@ namespace Gorgon.Graphics.Core
                                        samplerState,
                                        pixelShader,
                                        psConstantBuffers);
-        }
 
         /// <summary>
         /// Function to draw a texture to the current render target.
@@ -3088,9 +3079,7 @@ namespace Gorgon.Graphics.Core
                                 GorgonBlendState blendState = null,
                                 GorgonSamplerState samplerState = null,
                                 GorgonPixelShader pixelShader = null,
-                                GorgonConstantBuffers psConstantBuffers = null)
-        {
-            _textureBlitter.Value.Blit(texture,
+                                GorgonConstantBuffers psConstantBuffers = null) => _textureBlitter.Value.Blit(texture,
                                        destinationRectangle,
                                        sourceOffset,
                                        color ?? GorgonColor.White,
@@ -3099,7 +3088,6 @@ namespace Gorgon.Graphics.Core
                                        samplerState,
                                        pixelShader,
                                        psConstantBuffers);
-        }
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.

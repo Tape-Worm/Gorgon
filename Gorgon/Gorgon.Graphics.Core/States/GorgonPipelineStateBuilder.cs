@@ -83,10 +83,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="state">The rasterizer state to apply.</param>
         /// <returns>The fluent interface for this builder.</returns>
-        public GorgonPipelineStateBuilder RasterState(GorgonRasterStateBuilder state)
-        {
-            return RasterState(state?.Build());
-        }
+        public GorgonPipelineStateBuilder RasterState(GorgonRasterStateBuilder state) => RasterState(state?.Build());
 
         /// <summary>
         /// Function to add a rasterizer state to this pipeline state.
@@ -104,10 +101,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="state">The depth/stencil state to apply.</param>
         /// <returns>The fluent interface for this builder.</returns>
-        public GorgonPipelineStateBuilder DepthStencilState(GorgonDepthStencilStateBuilder state)
-        {
-            return DepthStencilState(state?.Build());
-        }
+        public GorgonPipelineStateBuilder DepthStencilState(GorgonDepthStencilStateBuilder state) => DepthStencilState(state?.Build());
 
         /// <summary>
         /// Function to add a depth/stencil state to this pipeline state.
@@ -308,11 +302,9 @@ namespace Gorgon.Graphics.Core
         /// Function to build a pipeline state.
         /// </summary>
         /// <returns>A new pipeline state.</returns>
-        public GorgonPipelineState Build()
-        {
+        public GorgonPipelineState Build() =>
             // Build the actual state.
-            return Graphics.CachePipelineState(_workState);
-        }
+            Graphics.CachePipelineState(_workState);
         #endregion
 
         #region Constructor.

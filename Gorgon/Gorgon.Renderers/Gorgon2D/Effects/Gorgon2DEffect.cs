@@ -264,10 +264,7 @@ namespace Gorgon.Renderers
         /// <param name="entryPoint">The entry point function in the shader to execute.</param>
         /// <returns>A new shader.</returns>
         protected T CompileShader<T>(string shaderSource, string entryPoint)
-            where T : GorgonShader
-        {
-            return GorgonShaderFactory.Compile<T>(Graphics, shaderSource, entryPoint, GorgonGraphics.IsDebugEnabled, Macros);
-        }
+            where T : GorgonShader => GorgonShaderFactory.Compile<T>(Graphics, shaderSource, entryPoint, GorgonGraphics.IsDebugEnabled, Macros);
 
         /// <summary>
         /// Function called to initialize the effect.
@@ -312,7 +309,7 @@ namespace Gorgon.Renderers
         protected virtual void OnAfterRender(GorgonRenderTargetView output)
         {
         }
-        
+
         /// <summary>
         /// Function called prior to rendering a pass.
         /// </summary>
@@ -325,10 +322,7 @@ namespace Gorgon.Renderers
         /// </remarks>
         /// <seealso cref="PassContinuationState"/>
         [Obsolete("Get rid of this.")]
-        protected virtual PassContinuationState OnBeforeRenderPass(int passIndex)
-        {
-            return PassContinuationState.Continue;
-        }
+        protected virtual PassContinuationState OnBeforeRenderPass(int passIndex) => PassContinuationState.Continue;
 
         /// <summary>
         /// Function called prior to rendering a pass.
@@ -342,11 +336,8 @@ namespace Gorgon.Renderers
         /// </para>
         /// </remarks>
         /// <seealso cref="PassContinuationState"/>
-        
-        protected virtual PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output)
-        {
-            return PassContinuationState.Continue;
-        }
+
+        protected virtual PassContinuationState OnBeforeRenderPass(int passIndex, GorgonRenderTargetView output) => PassContinuationState.Continue;
 
         /// <summary>
         /// Function called after a pass is finished rendering.

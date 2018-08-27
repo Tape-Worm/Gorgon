@@ -633,23 +633,20 @@ namespace Gorgon.Graphics.Example
 			}
 		}
 
-	    /// <summary>
-	    /// Handles the BeforeResize event of the swap chain.
-	    /// </summary>
-	    /// <param name="sender">The sender.</param>
-	    /// <param name="e">The <see cref="BeforeSwapChainResizedEventArgs" /> instance containing the event data.</param>
-	    private static void Swap_BeforeResized(object sender, BeforeSwapChainResizedEventArgs e)
-	    {
-	        _graphics.SetDepthStencil(null);
-	    }
+        /// <summary>
+        /// Handles the BeforeResize event of the swap chain.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="BeforeSwapChainResizedEventArgs" /> instance containing the event data.</param>
+        private static void Swap_BeforeResized(object sender, BeforeSwapChainResizedEventArgs e) => _graphics.SetDepthStencil(null);
 
-		/// <summary>
-		/// Handles the Resized event of the _swap control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="AfterSwapChainResizedEventArgs" /> instance containing the event data.</param>
-		/// <exception cref="System.NotSupportedException"></exception>
-		private static void Swap_AfterResized(object sender, AfterSwapChainResizedEventArgs e)
+        /// <summary>
+        /// Handles the Resized event of the _swap control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="AfterSwapChainResizedEventArgs" /> instance containing the event data.</param>
+        /// <exception cref="System.NotSupportedException"></exception>
+        private static void Swap_AfterResized(object sender, AfterSwapChainResizedEventArgs e)
 		{
 			// This method allows us to restore projection matrix after the swap chain has been resized.  If we didn't do this, we'd have a weird looking (e.g. distorted)
             // image because the old projection matrix would be in place for the previous swap chain size.

@@ -71,15 +71,12 @@ namespace Gorgon.Renderers
         /// <param name="position">The position of the vertex.</param>
         /// <param name="color">The color for the vertex.</param>
         /// <param name="textureCoordinate">The texture coordinates.</param>
-        public GorgonPolySpriteVertex(DX.Vector2 position, GorgonColor color, DX.Vector2 textureCoordinate)
+        public GorgonPolySpriteVertex(DX.Vector2 position, GorgonColor color, DX.Vector2 textureCoordinate) => Vertex = new Gorgon2DVertex
         {
-            Vertex = new Gorgon2DVertex
-            {
-                Position = new DX.Vector4(position, 0, 1.0f),
-                Color = color,
-                UV = new DX.Vector3(textureCoordinate, 0)
-            };
-        }
+            Position = new DX.Vector4(position, 0, 1.0f),
+            Color = color,
+            UV = new DX.Vector3(textureCoordinate, 0)
+        };
         #endregion
     }
 }

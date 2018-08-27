@@ -192,24 +192,21 @@ namespace Gorgon.Graphics.Core
 			}
 		}
 
-	    /// <summary>
-	    /// Function to retrieve a copy of this buffer as a staging resource.
-	    /// </summary>
-	    /// <returns>The staging buffer to retrieve.</returns>
-	    protected override GorgonBufferCommon GetStagingInternal()
-	    {
-	        return GetStaging();
-	    }
+        /// <summary>
+        /// Function to retrieve a copy of this buffer as a staging resource.
+        /// </summary>
+        /// <returns>The staging buffer to retrieve.</returns>
+        protected override GorgonBufferCommon GetStagingInternal() => GetStaging();
 
-	    /// <summary>
-	    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-	    /// </summary>
-	    /// <remarks>
-	    /// <para>
-	    /// Objects that override this method should be sure to call this base method or else a memory leak may occur.
-	    /// </para>
-	    /// </remarks>
-	    public override void Dispose()
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Objects that override this method should be sure to call this base method or else a memory leak may occur.
+        /// </para>
+        /// </remarks>
+        public override void Dispose()
 	    {
 	        List<GorgonConstantBufferView> cbvs = Interlocked.Exchange(ref _cbvs, null);
 

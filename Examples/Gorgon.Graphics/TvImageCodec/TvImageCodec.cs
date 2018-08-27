@@ -446,21 +446,19 @@ namespace Gorgon.Graphics.Example
         }
         #endregion
 
-		#region Constructor
-		/// <summary>
-		/// Initializes a new instance of the <see cref="TvImageCodec"/> class.
-		/// </summary>
-	    public TvImageCodec()
-            : base(null, null)
-		{
-			// Tell the codec which image file name extensions are commonly used to 
-			// identify the image data type.  This is use by applications to determine 
-			// which codec to use when loading an image.
-			CodecCommonExtensions = new[]
-			                        {
-										"tv"
-			                        };
-		}
-		#endregion
-	}
+        #region Constructor
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TvImageCodec"/> class.
+        /// </summary>
+        public TvImageCodec()
+            : base(null, null) =>
+            // Tell the codec which image file name extensions are commonly used to 
+            // identify the image data type.  This is use by applications to determine 
+            // which codec to use when loading an image.
+            CodecCommonExtensions = new[]
+                                    {
+                                        "tv"
+                                    };
+        #endregion
+    }
 }

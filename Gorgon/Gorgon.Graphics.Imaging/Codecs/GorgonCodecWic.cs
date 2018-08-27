@@ -113,37 +113,31 @@ namespace Gorgon.Graphics.Imaging.Codecs
         /// Property to return the supported pixel formats for this codec.
         /// </summary>
         public override IReadOnlyList<BufferFormat> SupportedPixelFormats => _supportedFormats;
-		#endregion
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to retrieve custom metadata when encoding an image frame.
-		/// </summary>
-		/// <param name="frameIndex">The index of the frame being encoded.</param>
-		/// <param name="settings">The settings for the image being encoded.</param>
-		/// <returns>A dictionary containing the key/value pair describing the metadata to write to the frame, or <b>null</b> if the frame contains no metadata.</returns>
-		protected virtual IReadOnlyDictionary<string, object> GetCustomEncodingMetadata(int frameIndex, IGorgonImageInfo settings)
-		{
-			return null;
-		}
+        #region Methods.
+        /// <summary>
+        /// Function to retrieve custom metadata when encoding an image frame.
+        /// </summary>
+        /// <param name="frameIndex">The index of the frame being encoded.</param>
+        /// <param name="settings">The settings for the image being encoded.</param>
+        /// <returns>A dictionary containing the key/value pair describing the metadata to write to the frame, or <b>null</b> if the frame contains no metadata.</returns>
+        protected virtual IReadOnlyDictionary<string, object> GetCustomEncodingMetadata(int frameIndex, IGorgonImageInfo settings) => null;
 
-		/// <summary>
-		/// Function to retrieve the names of the metadata items used to get frame offsets.
-		/// </summary>
-		/// <returns>A hashset of metadata names.</returns>
-		protected virtual HashSet<string> GetFrameOffsetMetadataNames()
-		{
-			return new HashSet<string>();
-		}
+        /// <summary>
+        /// Function to retrieve the names of the metadata items used to get frame offsets.
+        /// </summary>
+        /// <returns>A hashset of metadata names.</returns>
+        protected virtual HashSet<string> GetFrameOffsetMetadataNames() => new HashSet<string>();
 
-		/// <summary>
-		/// Function to load an image from a stream.
-		/// </summary>
-		/// <param name="stream">The stream containing the image data to read.</param>
-		/// <param name="size">The size of the image within the stream, in bytes.</param>
-		/// <returns>A <see cref="IGorgonImage"/> containing the image data from the stream.</returns>
-		/// <exception cref="GorgonException">Thrown when the image data in the stream has a pixel format that is unsupported.</exception>
-		protected override IGorgonImage OnDecodeFromStream(Stream stream, long size)
+        /// <summary>
+        /// Function to load an image from a stream.
+        /// </summary>
+        /// <param name="stream">The stream containing the image data to read.</param>
+        /// <param name="size">The size of the image within the stream, in bytes.</param>
+        /// <returns>A <see cref="IGorgonImage"/> containing the image data from the stream.</returns>
+        /// <exception cref="GorgonException">Thrown when the image data in the stream has a pixel format that is unsupported.</exception>
+        protected override IGorgonImage OnDecodeFromStream(Stream stream, long size)
 		{
 			WicUtilities wic = new WicUtilities();
 			Stream streamAlias = stream;

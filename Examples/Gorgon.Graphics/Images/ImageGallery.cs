@@ -124,7 +124,7 @@ namespace Gorgon.Examples
 
                     int pixelStride = sourceImage.Buffers[0].PitchInformation.RowPitch / sourceImage.Buffers[0].Width;
                     // This is the position inside of the buffer, in bytes.
-                    int position = y * sourceImage.Buffers[0].PitchInformation.RowPitch + (x * pixelStride);
+                    int position = (y * sourceImage.Buffers[0].PitchInformation.RowPitch) + (x * pixelStride);
                     var color = new GorgonColor(rColorFade, 1.0f - rColorFade, bColorFade, 1.0f);
 
                     // Notice we're using ReadAs here.  This allows us to read a value as another type.  In this case, we've chosen an 

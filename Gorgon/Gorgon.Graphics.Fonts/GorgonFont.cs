@@ -522,34 +522,31 @@ namespace Gorgon.Graphics.Fonts
 			return glyph;
 		}
 
-		/// <summary>
-		/// Function to retrieve the glyph used for the default character assigned in the font <see cref="Info"/>.
-		/// </summary>
-		/// <returns><b>true</b> if the glyph was found, or <b>false</b> if not.</returns>
-		/// <remarks>
-		/// <para>
-		/// The default character is assigned to the <see cref="IGorgonFontInfo.DefaultCharacter"/> property of the <see cref="IGorgonFontInfo"/> type passed to the constructor of the font.
-		/// </para>
-		/// </remarks>
-		/// <seealso cref="IGorgonFontInfo"/>
-		public bool TryGetDefaultGlyph(out GorgonGlyph glyph)
-		{
-			return Glyphs.TryGetValue(Info.DefaultCharacter, out glyph);
-		}
+        /// <summary>
+        /// Function to retrieve the glyph used for the default character assigned in the font <see cref="Info"/>.
+        /// </summary>
+        /// <returns><b>true</b> if the glyph was found, or <b>false</b> if not.</returns>
+        /// <remarks>
+        /// <para>
+        /// The default character is assigned to the <see cref="IGorgonFontInfo.DefaultCharacter"/> property of the <see cref="IGorgonFontInfo"/> type passed to the constructor of the font.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="IGorgonFontInfo"/>
+        public bool TryGetDefaultGlyph(out GorgonGlyph glyph) => Glyphs.TryGetValue(Info.DefaultCharacter, out glyph);
 
-		/// <summary>
-		/// Function to perform word wrapping on a string based on this font.
-		/// </summary>
-		/// <param name="text">The text to word wrap.</param>
-		/// <param name="wordWrapWidth">The maximum width, in pixels, that must be met for word wrapping to occur.</param>
-		/// <returns>The string with word wrapping.</returns>
-		/// <remarks>
-		/// <para>
-		/// The <paramref name="wordWrapWidth"/> is the maximum number of pixels required for word wrapping, if an individual font glyph cell width (the <see cref="GorgonGlyph.Offset"/> + 
-		/// <see cref="GorgonGlyph.Advance"/>) exceeds that of the <paramref name="wordWrapWidth"/>, then the parameter value is updated to glyph cell width.
-		/// </para>
-		/// </remarks>
-		public string WordWrap(string text, float wordWrapWidth)
+        /// <summary>
+        /// Function to perform word wrapping on a string based on this font.
+        /// </summary>
+        /// <param name="text">The text to word wrap.</param>
+        /// <param name="wordWrapWidth">The maximum width, in pixels, that must be met for word wrapping to occur.</param>
+        /// <returns>The string with word wrapping.</returns>
+        /// <remarks>
+        /// <para>
+        /// The <paramref name="wordWrapWidth"/> is the maximum number of pixels required for word wrapping, if an individual font glyph cell width (the <see cref="GorgonGlyph.Offset"/> + 
+        /// <see cref="GorgonGlyph.Advance"/>) exceeds that of the <paramref name="wordWrapWidth"/>, then the parameter value is updated to glyph cell width.
+        /// </para>
+        /// </remarks>
+        public string WordWrap(string text, float wordWrapWidth)
 		{
 			if (string.IsNullOrEmpty(text))
 			{
@@ -764,7 +761,7 @@ namespace Gorgon.Graphics.Fonts
 			else
 			{
 				// For a modified line spacing, we have to adjust for the last line not being affected by the line spacing.
-				result.Height = (lines.Length - 1) * (((fontHeight) * lineSpacing)) + (fontHeight);
+				result.Height = ((lines.Length - 1) * (((fontHeight) * lineSpacing))) + (fontHeight);
 			}
 
 			if ((HasOutline) && (useOutline))

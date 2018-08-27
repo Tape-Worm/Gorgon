@@ -115,8 +115,8 @@ namespace Gorgon.Examples
                     Size = new DX.Size2F(6 + _sprite1.Size.Width, 6 + _sprite1.Size.Height),
                     Color = new GorgonColor(GorgonColor.White, 0.85f),
                     Anchor = new DX.Vector2(0.5f, 0.5f),
-                    TextureRegion = resultTexture.ToTexel(new DX.Rectangle((int)(_sprite1.Position.X - _sprite1.Size.Width / 2 - 10),
-                                                                           (int)(_sprite1.Position.Y - _sprite1.Size.Height / 2 - 10),
+                    TextureRegion = resultTexture.ToTexel(new DX.Rectangle((int)(_sprite1.Position.X - (_sprite1.Size.Width / 2) - 10),
+                                                                           (int)(_sprite1.Position.Y - (_sprite1.Size.Height / 2) - 10),
                                                                            (int)_sprite1.Size.Width + 20,
                                                                            (int)_sprite1.Size.Height + 20)),
 
@@ -127,8 +127,8 @@ namespace Gorgon.Examples
                     Size = new DX.Size2F(6 + _sprite2.Size.Width, 6 + _sprite2.Size.Height),
                     Color = new GorgonColor(GorgonColor.White, 0.85f),
                     Anchor = new DX.Vector2(0.5f, 0.5f),
-                    TextureRegion = resultTexture.ToTexel(new DX.Rectangle((int)(_sprite2.Position.X - _sprite2.Size.Width / 2 - 10),
-                                                                           (int)(_sprite2.Position.Y - _sprite2.Size.Height / 2 - 10),
+                    TextureRegion = resultTexture.ToTexel(new DX.Rectangle((int)(_sprite2.Position.X - (_sprite2.Size.Width / 2) - 10),
+                                                                           (int)(_sprite2.Position.Y - (_sprite2.Size.Height / 2) - 10),
                                                                            (int)_sprite2.Size.Width + 20,
                                                                            (int)_sprite2.Size.Height + 20)),
 

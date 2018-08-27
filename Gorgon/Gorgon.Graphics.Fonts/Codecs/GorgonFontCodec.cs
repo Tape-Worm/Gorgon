@@ -125,49 +125,46 @@ namespace Gorgon.Graphics.Fonts.Codecs
 		/// property.
 		/// </remarks>
 		string IGorgonNamedObject.Name => Codec;
-		#endregion
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to create a glyph.
-		/// </summary>
-		/// <param name="character">The character that the glyph represents.</param>
-		/// <param name="advance">The horizontal advance amount for the character.</param>
-		/// <returns>A new <seealso cref="GorgonGlyph"/>.</returns>
-		/// <remarks>
-		/// <para>
-		/// The <paramref name="advance"/> value represents the distance between the previous position and the next when rendering. If this value is not correct, then the font will render incorrectly.
-		/// </para>
-		/// </remarks>
-		protected GorgonGlyph CreateGlyph(char character, int advance)
-		{
-			return new GorgonGlyph(character, advance);
-		}
+        #region Methods.
+        /// <summary>
+        /// Function to create a glyph.
+        /// </summary>
+        /// <param name="character">The character that the glyph represents.</param>
+        /// <param name="advance">The horizontal advance amount for the character.</param>
+        /// <returns>A new <seealso cref="GorgonGlyph"/>.</returns>
+        /// <remarks>
+        /// <para>
+        /// The <paramref name="advance"/> value represents the distance between the previous position and the next when rendering. If this value is not correct, then the font will render incorrectly.
+        /// </para>
+        /// </remarks>
+        protected GorgonGlyph CreateGlyph(char character, int advance) => new GorgonGlyph(character, advance);
 
-		/// <summary>
-		/// Function to build the font from the data provided.
-		/// </summary>
-		/// <param name="info">The font information used to generate the font.</param>
-		/// <param name="fontHeight">The height of the font, in pixels.</param>
-		/// <param name="lineHeight">The height of a line, in pixels.</param>
-		/// <param name="ascent">The ascent for the font, in pixels.</param>
-		/// <param name="descent">The descent for the font, in pixels.</param>
-		/// <param name="textures">The textures associated with the font.</param>
-		/// <param name="glyphs">The glyphs associated with the font.</param>
-		/// <param name="kerningValues">The kerning values, if any, associated with the font.</param>
-		/// <returns>A new <seealso cref="GorgonFont"/>.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/>, <paramref name="textures"/>, or the <paramref name="glyphs"/> parameter is <b>null</b>.</exception>
-		/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="textures"/>, or the <paramref name="glyphs"/> parameter is empty.</exception>
-		/// <remarks>
-		/// <para>
-		/// Codec implementors should call this method once all information has been gathered for the font. This will load the font data into the <seealso cref="GorgonFont"/>, and store that font in the 
-		/// <seealso cref="Factory"/> cache for reuse.
-		/// </para>
-		/// <para>
-		/// This method must be called because an application will not be able to create a <seealso cref="GorgonFont"/> directly.
-		/// </para>
-		/// </remarks>
-		protected GorgonFont BuildFont(IGorgonFontInfo info,
+        /// <summary>
+        /// Function to build the font from the data provided.
+        /// </summary>
+        /// <param name="info">The font information used to generate the font.</param>
+        /// <param name="fontHeight">The height of the font, in pixels.</param>
+        /// <param name="lineHeight">The height of a line, in pixels.</param>
+        /// <param name="ascent">The ascent for the font, in pixels.</param>
+        /// <param name="descent">The descent for the font, in pixels.</param>
+        /// <param name="textures">The textures associated with the font.</param>
+        /// <param name="glyphs">The glyphs associated with the font.</param>
+        /// <param name="kerningValues">The kerning values, if any, associated with the font.</param>
+        /// <returns>A new <seealso cref="GorgonFont"/>.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/>, <paramref name="textures"/>, or the <paramref name="glyphs"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="textures"/>, or the <paramref name="glyphs"/> parameter is empty.</exception>
+        /// <remarks>
+        /// <para>
+        /// Codec implementors should call this method once all information has been gathered for the font. This will load the font data into the <seealso cref="GorgonFont"/>, and store that font in the 
+        /// <seealso cref="Factory"/> cache for reuse.
+        /// </para>
+        /// <para>
+        /// This method must be called because an application will not be able to create a <seealso cref="GorgonFont"/> directly.
+        /// </para>
+        /// </remarks>
+        protected GorgonFont BuildFont(IGorgonFontInfo info,
 									   float fontHeight,
 									   float lineHeight,
 									   float ascent,
@@ -428,25 +425,22 @@ namespace Gorgon.Graphics.Fonts.Codecs
 			}
 		}
 
-		/// <summary>
-		/// Returns a <see cref="string" /> that represents this instance.
-		/// </summary>
-		/// <returns>
-		/// A <see cref="string" /> that represents this instance.
-		/// </returns>
-		public override string ToString()
-		{
-			return string.Format(Resources.GORGFX_TOSTR_FONT_CODEC, Codec);
-		}
-		#endregion
+        /// <summary>
+        /// Returns a <see cref="string" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="string" /> that represents this instance.
+        /// </returns>
+        public override string ToString() => string.Format(Resources.GORGFX_TOSTR_FONT_CODEC, Codec);
+        #endregion
 
-		#region Constructor/Finalizer.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonCodecGorFont"/> class.
-		/// </summary>
-		/// <param name="factory">The font factory that holds cached font information.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="factory"/> parameter is <b>null</b>.</exception>
-		protected GorgonFontCodec(GorgonFontFactory factory)
+        #region Constructor/Finalizer.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonCodecGorFont"/> class.
+        /// </summary>
+        /// <param name="factory">The font factory that holds cached font information.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="factory"/> parameter is <b>null</b>.</exception>
+        protected GorgonFontCodec(GorgonFontFactory factory)
 		{
 			Factory = factory ?? throw new ArgumentNullException(nameof(factory));
 			CodecCommonExtensions = new string[] { };

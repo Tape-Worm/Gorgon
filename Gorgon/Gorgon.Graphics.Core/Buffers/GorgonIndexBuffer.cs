@@ -208,20 +208,17 @@ namespace Gorgon.Graphics.Core
 		}
 
 
-	    /// <summary>
-	    /// Function to retrieve a copy of this buffer as a staging resource.
-	    /// </summary>
-	    /// <returns>The staging buffer to retrieve.</returns>
-	    protected override GorgonBufferCommon GetStagingInternal()
-	    {
-	        return GetStaging();
-	    }
+        /// <summary>
+        /// Function to retrieve a copy of this buffer as a staging resource.
+        /// </summary>
+        /// <returns>The staging buffer to retrieve.</returns>
+        protected override GorgonBufferCommon GetStagingInternal() => GetStaging();
 
-	    /// <summary>
-	    /// Function to retrieve a copy of this buffer as a staging resource.
-	    /// </summary>
-	    /// <returns>The staging buffer to retrieve.</returns>
-	    public GorgonIndexBuffer GetStaging()
+        /// <summary>
+        /// Function to retrieve a copy of this buffer as a staging resource.
+        /// </summary>
+        /// <returns>The staging buffer to retrieve.</returns>
+        public GorgonIndexBuffer GetStaging()
 	    {
 	        GorgonIndexBuffer buffer = new GorgonIndexBuffer(Graphics,
 	                                                         new GorgonIndexBufferInfo(_info, $"{Name}_Staging")

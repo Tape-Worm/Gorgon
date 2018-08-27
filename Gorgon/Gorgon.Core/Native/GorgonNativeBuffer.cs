@@ -529,10 +529,7 @@ namespace Gorgon.Native
         /// </para>
         /// </remarks>
         public GorgonNativeBuffer<TCastType> Cast<TCastType>()
-            where TCastType : unmanaged
-        {
-            return new GorgonNativeBuffer<TCastType>(_memoryBlock, SizeInBytes);
-        }
+            where TCastType : unmanaged => new GorgonNativeBuffer<TCastType>(_memoryBlock, SizeInBytes);
 
         /// <summary>
         /// Function to determine if this buffer is equal to another.
@@ -625,10 +622,7 @@ namespace Gorgon.Native
         /// Function to fill the buffer with a specific value.
         /// </summary>
         /// <param name="clearValue">The value used to fill the buffer.</param>
-        public void Fill(byte clearValue)
-        {
-            Unsafe.InitBlock(_memoryBlock, clearValue, (uint)SizeInBytes);
-        }
+        public void Fill(byte clearValue) => Unsafe.InitBlock(_memoryBlock, clearValue, (uint)SizeInBytes);
 
         /// <summary>
         /// Function to return a stream wrapping this buffer.

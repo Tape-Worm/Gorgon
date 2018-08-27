@@ -162,28 +162,25 @@ namespace Gorgon.Graphics.Core
 			return base.Equals(obj);
 		}
 
-		/// <summary>
-		/// Function to determine if two instances are equal.
-		/// </summary>
-		/// <param name="left">The first instance to compare.</param>
-		/// <param name="right">The second instance to compare.</param>
-		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-		public static bool Equals(in GorgonInputElement left, in GorgonInputElement right)
-		{
-			return (string.Equals(left.Context, right.Context, StringComparison.OrdinalIgnoreCase)) && (left.Format == right.Format) && (left.Index == right.Index) &&
-			       (left.InstanceCount == right.InstanceCount) && (left.Instanced == right.Instanced) && (left.Offset == right.Offset) &&
-			       (left.SizeInBytes == right.SizeInBytes) && (left.Slot == right.Slot);
-		}
+        /// <summary>
+        /// Function to determine if two instances are equal.
+        /// </summary>
+        /// <param name="left">The first instance to compare.</param>
+        /// <param name="right">The second instance to compare.</param>
+        /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+        public static bool Equals(in GorgonInputElement left, in GorgonInputElement right) => (string.Equals(left.Context, right.Context, StringComparison.OrdinalIgnoreCase)) && (left.Format == right.Format) && (left.Index == right.Index) &&
+                   (left.InstanceCount == right.InstanceCount) && (left.Instanced == right.Instanced) && (left.Offset == right.Offset) &&
+                   (left.SizeInBytes == right.SizeInBytes) && (left.Slot == right.Slot);
 
-		/// <summary>
-		/// Implements the operator ==.
-		/// </summary>
-		/// <param name="left">The left.</param>
-		/// <param name="right">The right.</param>
-		/// <returns>
-		/// The result of the operator.
-		/// </returns>
-		public static bool operator ==(in GorgonInputElement left, in GorgonInputElement right)
+        /// <summary>
+        /// Implements the operator ==.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>
+        /// The result of the operator.
+        /// </returns>
+        public static bool operator ==(in GorgonInputElement left, in GorgonInputElement right)
 		{
 			return Equals(in left, in right);
 		}
@@ -201,46 +198,36 @@ namespace Gorgon.Graphics.Core
 			return !Equals(in left, in right);
 		}
 
-		/// <summary>
-		/// Returns a hash code for this instance.
-		/// </summary>
-		/// <returns>
-		/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
-		/// </returns>
-		public override int GetHashCode()
-		{
-			return
-				281.GenerateHash(Context.GetHashCode())
-				   .GenerateHash(Index)
-				   .GenerateHash(Format)
-				   .GenerateHash(Offset)
-				   .GenerateHash(Slot)
-				   .GenerateHash(Instanced.GetHashCode())
-				   .GenerateHash(InstanceCount)
-				   .GenerateHash(SizeInBytes);
-		}
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// </returns>
+        public override int GetHashCode() => 281.GenerateHash(Context.GetHashCode())
+                   .GenerateHash(Index)
+                   .GenerateHash(Format)
+                   .GenerateHash(Offset)
+                   .GenerateHash(Slot)
+                   .GenerateHash(Instanced.GetHashCode())
+                   .GenerateHash(InstanceCount)
+                   .GenerateHash(SizeInBytes);
 
-		/// <summary>
-		/// Indicates whether the current object is equal to another object of the same type.
-		/// </summary>
-		/// <param name="other">An object to compare with this object.</param>
-		/// <returns>
-		/// true if the current object is equal to the other parameter; otherwise, false.
-		/// </returns>
-		public bool Equals(GorgonInputElement other)
-		{
-			return Equals(in this, in other);
-		}
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// true if the current object is equal to the other parameter; otherwise, false.
+        /// </returns>
+        public bool Equals(GorgonInputElement other) => Equals(in this, in other);
 
-	    /// <summary>
-	    /// Function to compare this instance with another.
-	    /// </summary>
-	    /// <param name="other">The other instance to use for comparison.</param>
-	    /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-	    public bool Equals(in GorgonInputElement other)
-        {
-            return Equals(in this, in other);
-        }
+        /// <summary>
+        /// Function to compare this instance with another.
+        /// </summary>
+        /// <param name="other">The other instance to use for comparison.</param>
+        /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+        public bool Equals(in GorgonInputElement other) => Equals(in this, in other);
         #endregion
 
         #region Constructor/Destructor.

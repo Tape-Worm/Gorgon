@@ -289,59 +289,41 @@ namespace Gorgon.Graphics.Core
 		    return ref _dirtyItems;
 		}
 
-		/// <summary>Removes the <see cref="T:System.Collections.Generic.IList`1" /> item at the specified index.</summary>
-		/// <param name="index">The zero-based index of the item to remove.</param>
-		/// <exception cref="T:System.ArgumentOutOfRangeException">
-		/// <paramref name="index" /> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1" />.</exception>
-		/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IList`1" /> is read-only.</exception>
-		void IList<GorgonShaderResourceView>.RemoveAt(int index)
-		{
-			throw new NotSupportedException();
-		}
+        /// <summary>Removes the <see cref="T:System.Collections.Generic.IList`1" /> item at the specified index.</summary>
+        /// <param name="index">The zero-based index of the item to remove.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        /// <paramref name="index" /> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1" />.</exception>
+        /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IList`1" /> is read-only.</exception>
+        void IList<GorgonShaderResourceView>.RemoveAt(int index) => throw new NotSupportedException();
 
-		/// <summary>Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
-		/// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
-		/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</exception>
-		void ICollection<GorgonShaderResourceView>.Add(GorgonShaderResourceView item)
-		{
-			throw new NotSupportedException();
-		}
+        /// <summary>Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
+        /// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+        /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</exception>
+        void ICollection<GorgonShaderResourceView>.Add(GorgonShaderResourceView item) => throw new NotSupportedException();
 
-		/// <summary>Inserts an item to the <see cref="T:System.Collections.Generic.IList`1" /> at the specified index.</summary>
-		/// <param name="index">The zero-based index at which <paramref name="item" /> should be inserted.</param>
-		/// <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1" />.</param>
-		/// <exception cref="T:System.ArgumentOutOfRangeException">
-		/// <paramref name="index" /> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1" />.</exception>
-		/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IList`1" /> is read-only.</exception>
-		void IList<GorgonShaderResourceView>.Insert(int index, GorgonShaderResourceView item)
-		{
-			throw new NotSupportedException();
-		}
+        /// <summary>Inserts an item to the <see cref="T:System.Collections.Generic.IList`1" /> at the specified index.</summary>
+        /// <param name="index">The zero-based index at which <paramref name="item" /> should be inserted.</param>
+        /// <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1" />.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        /// <paramref name="index" /> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1" />.</exception>
+        /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IList`1" /> is read-only.</exception>
+        void IList<GorgonShaderResourceView>.Insert(int index, GorgonShaderResourceView item) => throw new NotSupportedException();
 
-		/// <summary>Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
-		/// <returns>true if <paramref name="item" /> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
-		/// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
-		/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</exception>
-		bool ICollection<GorgonShaderResourceView>.Remove(GorgonShaderResourceView item)
-		{
-			throw new NotSupportedException();
-		}
+        /// <summary>Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
+        /// <returns>true if <paramref name="item" /> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
+        /// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+        /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</exception>
+        bool ICollection<GorgonShaderResourceView>.Remove(GorgonShaderResourceView item) => throw new NotSupportedException();
 
-		/// <summary>Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1" />.</summary>
-		/// <returns>The index of <paramref name="item" /> if found in the list; otherwise, -1.</returns>
-		/// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.IList`1" />.</param>
-		public int IndexOf(GorgonShaderResourceView item)
-		{
-			return Array.IndexOf(_backingArray, item);
-		}
+        /// <summary>Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1" />.</summary>
+        /// <returns>The index of <paramref name="item" /> if found in the list; otherwise, -1.</returns>
+        /// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.IList`1" />.</param>
+        public int IndexOf(GorgonShaderResourceView item) => Array.IndexOf(_backingArray, item);
 
-		/// <summary>Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.</summary>
-		/// <returns>true if <paramref name="item" /> is found in the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false.</returns>
-		/// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
-		public bool Contains(GorgonShaderResourceView item)
-		{
-			return IndexOf(item) != -1;
-		}
+        /// <summary>Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.</summary>
+        /// <returns>true if <paramref name="item" /> is found in the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false.</returns>
+        /// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+        public bool Contains(GorgonShaderResourceView item) => IndexOf(item) != -1;
 
         /// <summary>
         /// Function to find the index of the resource bound to a shader resource view.
@@ -369,24 +351,21 @@ namespace Gorgon.Graphics.Core
             return -1;
         }
 
-		/// <summary>Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1" /> to an <see cref="T:System.Array" />, starting at a particular <see cref="T:System.Array" /> index.</summary>
-		/// <param name="array">The one-dimensional <see cref="T:System.Array" /> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1" />. The <see cref="T:System.Array" /> must have zero-based indexing.</param>
-		/// <param name="arrayIndex">The zero-based index in <paramref name="array" /> at which copying begins.</param>
-		/// <exception cref="T:System.ArgumentNullException">
-		/// <paramref name="array" /> is null.</exception>
-		/// <exception cref="T:System.ArgumentOutOfRangeException">
-		/// <paramref name="arrayIndex" /> is less than 0.</exception>
-		/// <exception cref="T:System.ArgumentException">The number of elements in the source <see cref="T:System.Collections.Generic.ICollection`1" /> is greater than the available space from <paramref name="arrayIndex" /> to the end of the destination <paramref name="array" />.</exception>
-		public void CopyTo(GorgonShaderResourceView[] array, int arrayIndex)
-		{
-			_backingArray.CopyTo(array, arrayIndex);
-		}
-		
-		/// <summary>Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1" /> to an <see cref="T:System.Array" />, starting at a particular <see cref="T:System.Array" /> index.</summary>
-		/// <param name="array">The one-dimensional <see cref="T:System.Array" /> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1" />. The <see cref="T:System.Array" /> must have zero-based indexing.</param>
-		/// <param name="destIndex">[Optional] The destination index in this array to start writing into.</param>
-		/// <exception cref="T:System.ArgumentNullException"><paramref name="array" /> is null.</exception>
-		public void CopyTo(GorgonShaderResourceViews array, int destIndex = 0)
+        /// <summary>Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1" /> to an <see cref="T:System.Array" />, starting at a particular <see cref="T:System.Array" /> index.</summary>
+        /// <param name="array">The one-dimensional <see cref="T:System.Array" /> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1" />. The <see cref="T:System.Array" /> must have zero-based indexing.</param>
+        /// <param name="arrayIndex">The zero-based index in <paramref name="array" /> at which copying begins.</param>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// <paramref name="array" /> is null.</exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        /// <paramref name="arrayIndex" /> is less than 0.</exception>
+        /// <exception cref="T:System.ArgumentException">The number of elements in the source <see cref="T:System.Collections.Generic.ICollection`1" /> is greater than the available space from <paramref name="arrayIndex" /> to the end of the destination <paramref name="array" />.</exception>
+        public void CopyTo(GorgonShaderResourceView[] array, int arrayIndex) => _backingArray.CopyTo(array, arrayIndex);
+
+        /// <summary>Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1" /> to an <see cref="T:System.Array" />, starting at a particular <see cref="T:System.Array" /> index.</summary>
+        /// <param name="array">The one-dimensional <see cref="T:System.Array" /> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1" />. The <see cref="T:System.Array" /> must have zero-based indexing.</param>
+        /// <param name="destIndex">[Optional] The destination index in this array to start writing into.</param>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="array" /> is null.</exception>
+        public void CopyTo(GorgonShaderResourceViews array, int destIndex = 0)
 		{
 			if (array == null)
 			{
@@ -465,19 +444,16 @@ namespace Gorgon.Graphics.Core
 			}
 		}
 
-		/// <summary>Returns an enumerator that iterates through a collection.</summary>
-		/// <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
-		/// <filterpriority>2</filterpriority>
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return _backingArray.GetEnumerator();
-		}
+        /// <summary>Returns an enumerator that iterates through a collection.</summary>
+        /// <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
+        /// <filterpriority>2</filterpriority>
+        IEnumerator IEnumerable.GetEnumerator() => _backingArray.GetEnumerator();
 
-	    /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
-	    /// <param name="other">An object to compare with this object.</param>
-	    /// <returns>
-	    /// <see langword="true" /> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <see langword="false" />.</returns>
-	    public bool Equals(IReadOnlyList<GorgonShaderResourceView> other)
+        /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// <see langword="true" /> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <see langword="false" />.</returns>
+        public bool Equals(IReadOnlyList<GorgonShaderResourceView> other)
         {
             if (other == null)
             {

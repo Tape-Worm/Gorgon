@@ -176,23 +176,20 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		{
 			get;
 		}
-		#endregion
+        #endregion
 
-		#region Constructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonPngEncodingOptions"/> class.
-		/// </summary>
-		public GorgonPngEncodingOptions()
-		{
-			Options = new GorgonOptionBag(new []
-			                              {
-				                              GorgonOption.CreateOption(nameof(Dithering), ImageDithering.None, Resources.GORIMG_OPT_WIC_DITHERING),
-											  GorgonOption.CreateOption(nameof(Filter), PngFilter.None, Resources.GORIMG_OPT_PNG_FILTERING),
-											  GorgonOption.CreateOption(nameof(Interlacing), false, Resources.GORIMG_OPT_PNG_INTERLACED),
-											  GorgonOption.CreateOption(nameof(DpiX), 72, Resources.GORIMG_OPT_WIC_DPIX),
-											  GorgonOption.CreateOption(nameof(DpiY), 72, Resources.GORIMG_OPT_WIC_DPIY)
-			                              });
-		}
-		#endregion
-	}
+        #region Constructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonPngEncodingOptions"/> class.
+        /// </summary>
+        public GorgonPngEncodingOptions() => Options = new GorgonOptionBag(new[]
+                                          {
+                                              GorgonOption.CreateOption(nameof(Dithering), ImageDithering.None, Resources.GORIMG_OPT_WIC_DITHERING),
+                                              GorgonOption.CreateOption(nameof(Filter), PngFilter.None, Resources.GORIMG_OPT_PNG_FILTERING),
+                                              GorgonOption.CreateOption(nameof(Interlacing), false, Resources.GORIMG_OPT_PNG_INTERLACED),
+                                              GorgonOption.CreateOption(nameof(DpiX), 72, Resources.GORIMG_OPT_WIC_DPIX),
+                                              GorgonOption.CreateOption(nameof(DpiY), 72, Resources.GORIMG_OPT_WIC_DPIY)
+                                          });
+        #endregion
+    }
 }

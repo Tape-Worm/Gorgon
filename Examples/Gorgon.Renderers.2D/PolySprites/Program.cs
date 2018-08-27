@@ -91,20 +91,20 @@ namespace Gorgon.Examples
             _renderer.Begin();
 
             _renderer.DrawString("Polygonal Sprite",
-                                 new DX.Vector2(_screen.Width / 4.0f - _polySprite.Size.Width * 0.5f,
-                                                (_screen.Height / 4.0f) - _polySprite.Size.Height * 0.5f - _renderer.DefaultFont.LineHeight));
+                                 new DX.Vector2((_screen.Width / 4.0f) - (_polySprite.Size.Width * 0.5f),
+                                                (_screen.Height / 4.0f) - (_polySprite.Size.Height * 0.5f) - _renderer.DefaultFont.LineHeight));
 
             _renderer.DrawString("Polygonal Sprite (Wireframe)",
-                                 new DX.Vector2(_screen.Width - (_screen.Width / 4.0f) - _polySprite.Size.Width * 0.5f,
-                                                (_screen.Height / 4.0f) - _polySprite.Size.Height * 0.5f - _renderer.DefaultFont.LineHeight));
+                                 new DX.Vector2(_screen.Width - (_screen.Width / 4.0f) - (_polySprite.Size.Width * 0.5f),
+                                                (_screen.Height / 4.0f) - (_polySprite.Size.Height * 0.5f) - _renderer.DefaultFont.LineHeight));
 
             _renderer.DrawString("Rectangular Sprite",
-                                 new DX.Vector2(_screen.Width / 4.0f - _polySprite.Size.Width * 0.5f,
-                                                _screen.Height - (_screen.Height / 4.0f) - _polySprite.Size.Height * 0.5f - _renderer.DefaultFont.LineHeight));
+                                 new DX.Vector2((_screen.Width / 4.0f) - (_polySprite.Size.Width * 0.5f),
+                                                _screen.Height - (_screen.Height / 4.0f) - (_polySprite.Size.Height * 0.5f) - _renderer.DefaultFont.LineHeight));
 
             _renderer.DrawString("Rectangular Sprite (Wireframe)",
-                                 new DX.Vector2(_screen.Width - (_screen.Width / 4.0f) - _polySprite.Size.Width * 0.5f,
-                                                _screen.Height - (_screen.Height / 4.0f) - _polySprite.Size.Height * 0.5f - _renderer.DefaultFont.LineHeight));
+                                 new DX.Vector2(_screen.Width - (_screen.Width / 4.0f) - (_polySprite.Size.Width * 0.5f),
+                                                _screen.Height - (_screen.Height / 4.0f) - (_polySprite.Size.Height * 0.5f) - _renderer.DefaultFont.LineHeight));
 
             _normalSprite.Texture = _texture;
             _normalSprite.Angle = _angle1;

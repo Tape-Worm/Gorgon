@@ -91,7 +91,7 @@ namespace Gorgon.Graphics.Example
 
 	            for (int segment = 0; segment <= segmentCount; segment++)
 	            {
-	                DX.Vector2 textureDelta = new DX.Vector2(1.0f - segment / (float)segmentCount, 1.0f - ring / (float)ringCount);
+	                DX.Vector2 textureDelta = new DX.Vector2(1.0f - (segment / (float)segmentCount), 1.0f - (ring / (float)ringCount));
 	                float segmentAngle = deltaSegAngle * segment;
 
 	                position.X = ringSin * segmentAngle.Sin() * radius;

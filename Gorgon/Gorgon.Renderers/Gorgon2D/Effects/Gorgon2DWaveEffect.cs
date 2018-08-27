@@ -326,29 +326,26 @@ namespace Gorgon.Renderers
 	        return _batchState;
 	    }
 
-	    /// <summary>
-	    /// Function called to render a single effect pass.
-	    /// </summary>
-	    /// <param name="passIndex">The index of the pass being rendered.</param>
-	    /// <param name="renderMethod">The method used to render a scene for the effect.</param>
-	    /// <param name="output">The render target that will receive the final render data.</param>
-	    /// <remarks>
-	    /// <para>
-	    /// Applications must implement this in order to see any results from the effect.
-	    /// </para>
-	    /// </remarks>
-	    protected override void OnRenderPass(int passIndex, Action<int, int, DX.Size2> renderMethod, GorgonRenderTargetView output)
-	    {
-            renderMethod(passIndex, PassCount, new DX.Size2(output.Width, output.Height));
-	    }
-		#endregion
+        /// <summary>
+        /// Function called to render a single effect pass.
+        /// </summary>
+        /// <param name="passIndex">The index of the pass being rendered.</param>
+        /// <param name="renderMethod">The method used to render a scene for the effect.</param>
+        /// <param name="output">The render target that will receive the final render data.</param>
+        /// <remarks>
+        /// <para>
+        /// Applications must implement this in order to see any results from the effect.
+        /// </para>
+        /// </remarks>
+        protected override void OnRenderPass(int passIndex, Action<int, int, DX.Size2> renderMethod, GorgonRenderTargetView output) => renderMethod(passIndex, PassCount, new DX.Size2(output.Width, output.Height));
+        #endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Gorgon2DWaveEffect"/> class.
-		/// </summary>
-		/// <param name="renderer">The renderer used to render the effect.</param>
-		public Gorgon2DWaveEffect(Gorgon2D renderer)
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Gorgon2DWaveEffect"/> class.
+        /// </summary>
+        /// <param name="renderer">The renderer used to render the effect.</param>
+        public Gorgon2DWaveEffect(Gorgon2D renderer)
 			: base(renderer, Resources.GOR2D_EFFECT_WAVE, Resources.GOR2D_EFFECT_WAVE_DESC, 1)
 		{
 		}

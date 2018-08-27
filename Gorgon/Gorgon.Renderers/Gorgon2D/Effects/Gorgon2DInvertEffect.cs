@@ -126,27 +126,24 @@ namespace Gorgon.Renderers
 	        }
 	    }
 
-	    /// <summary>
-	    /// Function called to render a single effect pass.
-	    /// </summary>
-	    /// <param name="passIndex">The index of the pass being rendered.</param>
-	    /// <param name="renderMethod">The method used to render a scene for the effect.</param>
-	    /// <param name="output">The render target that will receive the final render data.</param>
-	    /// <remarks>
-	    /// <para>
-	    /// Applications must implement this in order to see any results from the effect.
-	    /// </para>
-	    /// </remarks>
-	    protected override void OnRenderPass(int passIndex, Action<int, int, DX.Size2> renderMethod, GorgonRenderTargetView output)
-	    {
-	        renderMethod(passIndex, PassCount, new DX.Size2(output.Width, output.Height));
-	    }
+        /// <summary>
+        /// Function called to render a single effect pass.
+        /// </summary>
+        /// <param name="passIndex">The index of the pass being rendered.</param>
+        /// <param name="renderMethod">The method used to render a scene for the effect.</param>
+        /// <param name="output">The render target that will receive the final render data.</param>
+        /// <remarks>
+        /// <para>
+        /// Applications must implement this in order to see any results from the effect.
+        /// </para>
+        /// </remarks>
+        protected override void OnRenderPass(int passIndex, Action<int, int, DX.Size2> renderMethod, GorgonRenderTargetView output) => renderMethod(passIndex, PassCount, new DX.Size2(output.Width, output.Height));
 
-	    /// <summary>
-		/// Releases unmanaged and - optionally - managed resources
-		/// </summary>
-		/// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
-		protected override void Dispose(bool disposing)
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources
+        /// </summary>
+        /// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
+        protected override void Dispose(bool disposing)
 	    {
 	        GorgonConstantBufferView buffer = Interlocked.Exchange(ref _invertBuffer, null);
 	        Gorgon2DShader<GorgonPixelShader> pixelShader = Interlocked.Exchange(ref _shader, null);
@@ -162,10 +159,7 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="renderer">The renderer used to draw with this effect.</param>
         public Gorgon2DInvertEffect(Gorgon2D renderer)
-			: base(renderer, Resources.GOR2D_EFFECT_INVERT, Resources.GOR2D_EFFECT_INVERT_DESC, 1)
-		{
-            Macros.Add(new GorgonShaderMacro("INVERSE_EFFECT"));
-		}
-		#endregion
-	}
+            : base(renderer, Resources.GOR2D_EFFECT_INVERT, Resources.GOR2D_EFFECT_INVERT_DESC, 1) => Macros.Add(new GorgonShaderMacro("INVERSE_EFFECT"));
+        #endregion
+    }
 }

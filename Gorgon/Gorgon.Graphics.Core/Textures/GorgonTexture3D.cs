@@ -522,32 +522,29 @@ namespace Gorgon.Graphics.Core
 			Graphics.D3DDeviceContext.CopyResource(D3DResource, destTexture.D3DResource);
 		}
 
-	    /// <summary>
-	    /// Function to calculate the size of a texture, in bytes with the given parameters.
-	    /// </summary>
-	    /// <param name="width">The width of the texture.</param>
-	    /// <param name="height">The height of the texture.</param>
-	    /// <param name="depth">The depth of the texture.</param>
-	    /// <param name="format">The format for the texture.</param>
-	    /// <param name="mipCount">The number of mip map levels.</param>
-	    /// <returns>The number of bytes for the texture.</returns>
-	    public static int CalculateSizeInBytes(int width, int height, int depth, BufferFormat format, int mipCount)
-	    {
-	        return GorgonImage.CalculateSizeInBytes(ImageType.Image3D,
-	                                                width,
-	                                                height,
-	                                                depth,
-	                                                format,
-	                                                mipCount);
-	    }
+        /// <summary>
+        /// Function to calculate the size of a texture, in bytes with the given parameters.
+        /// </summary>
+        /// <param name="width">The width of the texture.</param>
+        /// <param name="height">The height of the texture.</param>
+        /// <param name="depth">The depth of the texture.</param>
+        /// <param name="format">The format for the texture.</param>
+        /// <param name="mipCount">The number of mip map levels.</param>
+        /// <returns>The number of bytes for the texture.</returns>
+        public static int CalculateSizeInBytes(int width, int height, int depth, BufferFormat format, int mipCount) => GorgonImage.CalculateSizeInBytes(ImageType.Image3D,
+                                                    width,
+                                                    height,
+                                                    depth,
+                                                    format,
+                                                    mipCount);
 
-	    /// <summary>
-	    /// Function to calculate the size of a texture, in bytes with the given parameters.
-	    /// </summary>
-	    /// <param name="info">The <see cref="IGorgonTexture3DInfo"/> used to define a texture.</param>
-	    /// <returns>The number of bytes for the texture.</returns>
-	    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
-	    public static int CalculateSizeInBytes(IGorgonTexture3DInfo info)
+        /// <summary>
+        /// Function to calculate the size of a texture, in bytes with the given parameters.
+        /// </summary>
+        /// <param name="info">The <see cref="IGorgonTexture3DInfo"/> used to define a texture.</param>
+        /// <returns>The number of bytes for the texture.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="info"/> parameter is <b>null</b>.</exception>
+        public static int CalculateSizeInBytes(IGorgonTexture3DInfo info)
 	    {
 	        if (info == null)
 	        {
@@ -1386,56 +1383,41 @@ namespace Gorgon.Graphics.Core
 			}
 		}
 
-		/// <summary>
-		/// Function to convert a texel coordinate into a pixel coordinate and a depth slice.
-		/// </summary>
-		/// <param name="texelCoordinates">The texel coordinates to convert.</param>
-		/// <returns>The pixel coordinates.</returns>
-		public (DX.Point, int) ToPixel(DX.Vector3 texelCoordinates)
-		{
-			return (new DX.Point((int)(texelCoordinates.X * Width), (int)(texelCoordinates.Y * Height)), (int)(texelCoordinates.Z * Depth));
-		}
+        /// <summary>
+        /// Function to convert a texel coordinate into a pixel coordinate and a depth slice.
+        /// </summary>
+        /// <param name="texelCoordinates">The texel coordinates to convert.</param>
+        /// <returns>The pixel coordinates.</returns>
+        public (DX.Point, int) ToPixel(DX.Vector3 texelCoordinates) => (new DX.Point((int)(texelCoordinates.X * Width), (int)(texelCoordinates.Y * Height)), (int)(texelCoordinates.Z * Depth));
 
-		/// <summary>
-		/// Function to convert a pixel coordinate into a texel coordinate.
-		/// </summary>
-		/// <param name="pixelCoordinates">The pixel coordinate to convert.</param>
-		/// <param name="depthSlice">The depth slice to convert.</param>
-		/// <returns>The texel coordinates.</returns>
-		public DX.Vector3 ToTexel(DX.Point pixelCoordinates, int depthSlice)
-		{
-			return new DX.Vector3(pixelCoordinates.X / (float)Width, pixelCoordinates.Y / (float)Height, depthSlice / (float)Depth);
-		}
+        /// <summary>
+        /// Function to convert a pixel coordinate into a texel coordinate.
+        /// </summary>
+        /// <param name="pixelCoordinates">The pixel coordinate to convert.</param>
+        /// <param name="depthSlice">The depth slice to convert.</param>
+        /// <returns>The texel coordinates.</returns>
+        public DX.Vector3 ToTexel(DX.Point pixelCoordinates, int depthSlice) => new DX.Vector3(pixelCoordinates.X / (float)Width, pixelCoordinates.Y / (float)Height, depthSlice / (float)Depth);
 
-		/// <summary>
-		/// Function to convert a pixel coordinate into a texel coordinate.
-		/// </summary>
-		/// <param name="pixelCoordinates">The pixel coordinate to convert.</param>
-		/// <returns>The texel coordinates.</returns>
-		public DX.Vector3 ToTexel(DX.Vector3 pixelCoordinates)
-		{
-			return new DX.Vector3(pixelCoordinates.X / Width, pixelCoordinates.Y / Height, pixelCoordinates.Z / Depth);
-		}
+        /// <summary>
+        /// Function to convert a pixel coordinate into a texel coordinate.
+        /// </summary>
+        /// <param name="pixelCoordinates">The pixel coordinate to convert.</param>
+        /// <returns>The texel coordinates.</returns>
+        public DX.Vector3 ToTexel(DX.Vector3 pixelCoordinates) => new DX.Vector3(pixelCoordinates.X / Width, pixelCoordinates.Y / Height, pixelCoordinates.Z / Depth);
 
-		/// <summary>
-		/// Function to convert a texel size into a pixel size.
-		/// </summary>
-		/// <param name="texelCoordinates">The texel size to convert.</param>
-		/// <returns>The pixel size.</returns>
-		public DX.Size2 ToPixel(DX.Size2F texelCoordinates)
-		{
-			return new DX.Size2((int)(texelCoordinates.Width * Width), (int)(texelCoordinates.Height * Height));
-		}
+        /// <summary>
+        /// Function to convert a texel size into a pixel size.
+        /// </summary>
+        /// <param name="texelCoordinates">The texel size to convert.</param>
+        /// <returns>The pixel size.</returns>
+        public DX.Size2 ToPixel(DX.Size2F texelCoordinates) => new DX.Size2((int)(texelCoordinates.Width * Width), (int)(texelCoordinates.Height * Height));
 
-		/// <summary>
-		/// Function to convert a pixel size into a texel size.
-		/// </summary>
-		/// <param name="pixelCoordinates">The pixel size to convert.</param>
-		/// <returns>The texel size.</returns>
-		public DX.Size2F ToTexel(DX.Size2 pixelCoordinates)
-		{
-			return new DX.Size2F(pixelCoordinates.Width / (float)Width, pixelCoordinates.Height / (float)Height);
-		}
+        /// <summary>
+        /// Function to convert a pixel size into a texel size.
+        /// </summary>
+        /// <param name="pixelCoordinates">The pixel size to convert.</param>
+        /// <returns>The texel size.</returns>
+        public DX.Size2F ToTexel(DX.Size2 pixelCoordinates) => new DX.Size2F(pixelCoordinates.Width / (float)Width, pixelCoordinates.Height / (float)Height);
 
         /// <summary>
         /// Function to create a new <see cref="GorgonTexture3DView"/> for this texture.

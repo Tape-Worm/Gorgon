@@ -186,7 +186,7 @@ namespace Gorgon.Examples
 		{
 			GorgonRange xRange = controller.Info.AxisInfo[GamingDeviceAxis.LeftStickX].Range;
 			GorgonRange yRange = controller.Info.AxisInfo[GamingDeviceAxis.LeftStickY].Range;
-			int playerColorValue = (int)((uint)0xFF << (index * 8) | 0xFF000000);						// Get the color based on the controller index.			
+			int playerColorValue = (int)(((uint)0xFF << (index * 8)) | 0xFF000000);						// Get the color based on the controller index.			
 			Size cursorSize = new Size(_surface.CursorSize.Width / 2, _surface.CursorSize.Height / 2);	// Get the cursor size with offset.
 
 			// Transform the axis into a -1 .. 1 range.				
@@ -421,16 +421,13 @@ namespace Gorgon.Examples
 			_surface.Dispose();
 			_surface = null;
 		}
-		#endregion
+        #endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Form" /> class.
-		/// </summary>
-		public Form()
-		{
-			InitializeComponent();
-		}
-		#endregion
-	}
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Form" /> class.
+        /// </summary>
+        public Form() => InitializeComponent();
+        #endregion
+    }
 }

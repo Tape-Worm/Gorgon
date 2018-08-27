@@ -66,10 +66,7 @@ namespace Gorgon.Graphics.Core
         /// Returns a hash code for this instance.
         /// </summary>
         /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
-        public override int GetHashCode()
-        {
-            return 281.GenerateHash(Start).GenerateHash(Count).GenerateHash(DataType);
-        }
+        public override int GetHashCode() => 281.GenerateHash(Start).GenerateHash(Count).GenerateHash(DataType);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BufferShaderViewKey"/> struct.
@@ -111,9 +108,6 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="other">An object to compare with this object.</param>
         /// <returns><see langword="true" /> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <see langword="false" />.</returns>
-        public bool Equals(BufferShaderViewKey other)
-        {
-            return Start == other.Start && Count == other.Count && DataType == other.DataType;
-        }
+        public bool Equals(BufferShaderViewKey other) => Start == other.Start && Count == other.Count && DataType == other.DataType;
     }
 }

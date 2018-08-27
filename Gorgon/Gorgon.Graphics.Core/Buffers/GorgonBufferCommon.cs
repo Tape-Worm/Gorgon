@@ -238,10 +238,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="key">The unique key for the shader view.</param>
         /// <param name="view">The view to register.</param>
-        internal void RegisterView(BufferShaderViewKey key, GorgonShaderResourceView view)
-        {
-            _shaderViews[key] = view;
-        }
+        internal void RegisterView(BufferShaderViewKey key, GorgonShaderResourceView view) => _shaderViews[key] = view;
 
         /// <summary>
         /// Function to return a cached shader resource view.
@@ -270,10 +267,7 @@ namespace Gorgon.Graphics.Core
         /// </summary>
         /// <param name="key">The unique key for the shader view.</param>
         /// <param name="view">The view to register.</param>
-        internal void RegisterReadWriteView(BufferShaderViewKey key, GorgonReadWriteView view)
-        {
-            _uavs[key] = view;
-        }
+        internal void RegisterReadWriteView(BufferShaderViewKey key, GorgonReadWriteView view) => _uavs[key] = view;
 
         /// <summary>
         /// Function to validate the parameters for the Get/SetData methods.

@@ -73,19 +73,13 @@ namespace Gorgon.Animation
         /// Function to edit the <see cref="IGorgonAnimation.PositionTrack">position track</see> of an animation.
         /// </summary>
         /// <returns>A <see cref="IGorgonTrackKeyBuilder{GorgonKeyVector3}"/> fluent interface for building track keys.</returns>
-        public IGorgonTrackKeyBuilder<GorgonKeyVector3> EditPositions()
-        {
-            return _trackPositions;
-        }
+        public IGorgonTrackKeyBuilder<GorgonKeyVector3> EditPositions() => _trackPositions;
 
         /// <summary>
         /// Function to edit the <see cref="IGorgonAnimation.ScaleTrack">scaling track</see> of an animation.
         /// </summary>
         /// <returns>A <see cref="IGorgonTrackKeyBuilder{GorgonKeyVector3}"/> fluent interface for building track keys.</returns>
-        public IGorgonTrackKeyBuilder<GorgonKeyVector3> EditScale()
-        {
-            return _trackScale;
-        }
+        public IGorgonTrackKeyBuilder<GorgonKeyVector3> EditScale() => _trackScale;
 
         /// <summary>
         /// Function to edit the <see cref="IGorgonAnimation.RotationTrack">rotation track</see> of an animation.
@@ -96,19 +90,13 @@ namespace Gorgon.Animation
         /// The values for the key frame use a 3 component vector representing the X, Y, and Z axis of rotation. Each axis is in degrees.
         /// </para>
         /// </remarks>
-        public IGorgonTrackKeyBuilder<GorgonKeyVector3> EditRotation()
-        {
-            return _trackRotation;
-        }
+        public IGorgonTrackKeyBuilder<GorgonKeyVector3> EditRotation() => _trackRotation;
 
         /// <summary>
         /// Function to edit the <see cref="IGorgonAnimation.ColorTrack">color track</see> of an animation.
         /// </summary>
         /// <returns>A <see cref="IGorgonTrackKeyBuilder{GorgonKeyGorgonColor}"/> fluent interface for building track keys.</returns>
-        public IGorgonTrackKeyBuilder<GorgonKeyGorgonColor> EditColors()
-        {
-            return _trackColors;
-        }
+        public IGorgonTrackKeyBuilder<GorgonKeyGorgonColor> EditColors() => _trackColors;
 
         /// <summary>
         /// Function to edit the <see cref="IGorgonAnimation.RectBoundsTrack">rectangular boundaries track</see> of an animation.
@@ -119,19 +107,13 @@ namespace Gorgon.Animation
         /// Some controllers will not use this track, while others may only use the width/height.
         /// </para>
         /// </remarks>
-        public IGorgonTrackKeyBuilder<GorgonKeyRectangle> EditRectangularBounds()
-        {
-            return _trackRectBounds;
-        }
+        public IGorgonTrackKeyBuilder<GorgonKeyRectangle> EditRectangularBounds() => _trackRectBounds;
 
         /// <summary>
         /// Function to edit the <see cref="IGorgonAnimation.Texture2DTrack">rectangular boundaries track</see> of an animation.
         /// </summary>
         /// <returns>A <see cref="IGorgonTrackKeyBuilder{GorgonKeyTexture2D}"/> fluent interface for building track keys.</returns>
-        public IGorgonTrackKeyBuilder<GorgonKeyTexture2D> Edit2DTexture()
-        {
-            return _trackTexture2D;
-        }
+        public IGorgonTrackKeyBuilder<GorgonKeyTexture2D> Edit2DTexture() => _trackTexture2D;
 
         /// <summary>
         /// Function to change the interpolation mode of the <see cref="IGorgonAnimation.PositionTrack"/>.

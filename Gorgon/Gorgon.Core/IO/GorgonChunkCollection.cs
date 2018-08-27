@@ -50,47 +50,38 @@ namespace Gorgon.IO
 			get => _list[index];
 			set => _list[index] = value;
 		}
-		#endregion
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1" />.
-		/// </summary>
-		/// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.IList`1" />.</param>
-		/// <returns>The index of <paramref name="item" /> if found in the list; otherwise, -1.</returns>
-		public int IndexOf(GorgonChunk item)
-		{
-			return _list.IndexOf(item);
-		}
+        #region Methods.
+        /// <summary>
+        /// Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1" />.
+        /// </summary>
+        /// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.IList`1" />.</param>
+        /// <returns>The index of <paramref name="item" /> if found in the list; otherwise, -1.</returns>
+        public int IndexOf(GorgonChunk item) => _list.IndexOf(item);
 
-		/// <summary>
-		/// Inserts an item to the <see cref="T:System.Collections.Generic.IList`1" /> at the specified index.
-		/// </summary>
-		/// <param name="index">The zero-based index at which <paramref name="item" /> should be inserted.</param>
-		/// <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1" />.</param>
-		public void Insert(int index, GorgonChunk item)
-		{
-			_list.Insert(index, item);
-		}
+        /// <summary>
+        /// Inserts an item to the <see cref="T:System.Collections.Generic.IList`1" /> at the specified index.
+        /// </summary>
+        /// <param name="index">The zero-based index at which <paramref name="item" /> should be inserted.</param>
+        /// <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1" />.</param>
+        public void Insert(int index, GorgonChunk item) => _list.Insert(index, item);
 
-		/// <summary>
-		/// Removes the <see cref="T:System.Collections.Generic.IList`1" /> item at the specified index.
-		/// </summary>
-		/// <param name="index">The zero-based index of the item to remove.</param>
-		public void RemoveAt(int index)
-		{
-			_list.RemoveAt(index);
-		}
-		#endregion
-		#endregion
+        /// <summary>
+        /// Removes the <see cref="T:System.Collections.Generic.IList`1" /> item at the specified index.
+        /// </summary>
+        /// <param name="index">The zero-based index of the item to remove.</param>
+        public void RemoveAt(int index) => _list.RemoveAt(index);
+        #endregion
+        #endregion
 
-		#region ICollection<GorgonChunk> Members
-		#region Properties.
-		/// <summary>
-		/// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.
-		/// </summary>
-		/// <value>The count.</value>
-		public int Count => _list.Count;
+        #region ICollection<GorgonChunk> Members
+        #region Properties.
+        /// <summary>
+        /// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.
+        /// </summary>
+        /// <value>The count.</value>
+        public int Count => _list.Count;
 
 		/// <summary>
 		/// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.
@@ -98,89 +89,68 @@ namespace Gorgon.IO
 		/// <value><b>true</b> if this instance is read only; otherwise, <b>false</b>.</value>
 		bool ICollection<GorgonChunk>.IsReadOnly => false;
 
-		#endregion
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.
-		/// </summary>
-		/// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
-		public void Add(GorgonChunk item)
-		{
-			_list.Add(item);
-		}
+        #region Methods.
+        /// <summary>
+        /// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.
+        /// </summary>
+        /// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+        public void Add(GorgonChunk item) => _list.Add(item);
 
-		/// <summary>
-		/// Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1" />.
-		/// </summary>
-		public void Clear()
-		{
-			_list.Clear();
-		}
+        /// <summary>
+        /// Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1" />.
+        /// </summary>
+        public void Clear() => _list.Clear();
 
-		/// <summary>
-		/// Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.
-		/// </summary>
-		/// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
-		/// <returns>true if <paramref name="item" /> is found in the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false.</returns>
-		public bool Contains(GorgonChunk item)
-		{
-			return IndexOf(item) != -1;
-		}
+        /// <summary>
+        /// Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.
+        /// </summary>
+        /// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+        /// <returns>true if <paramref name="item" /> is found in the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false.</returns>
+        public bool Contains(GorgonChunk item) => IndexOf(item) != -1;
 
-		/// <summary>
-		/// Copies to.
-		/// </summary>
-		/// <param name="array">The array.</param>
-		/// <param name="arrayIndex">Index of the array.</param>
-		public void CopyTo(GorgonChunk[] array, int arrayIndex)
-		{
-			_list.CopyTo(array, arrayIndex);
-		}
+        /// <summary>
+        /// Copies to.
+        /// </summary>
+        /// <param name="array">The array.</param>
+        /// <param name="arrayIndex">Index of the array.</param>
+        public void CopyTo(GorgonChunk[] array, int arrayIndex) => _list.CopyTo(array, arrayIndex);
 
-		/// <summary>
-		/// Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1" />.
-		/// </summary>
-		/// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
-		/// <returns>true if <paramref name="item" /> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
-		public bool Remove(GorgonChunk item)
-		{
-			return _list.Remove(item);
-		}
-		#endregion
-		#endregion
+        /// <summary>
+        /// Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1" />.
+        /// </summary>
+        /// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+        /// <returns>true if <paramref name="item" /> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
+        public bool Remove(GorgonChunk item) => _list.Remove(item);
+        #endregion
+        #endregion
 
-		#region IEnumerable<GorgonChunk> Members
-		/// <summary>
-		/// Returns an enumerator that iterates through the collection.
-		/// </summary>
-		/// <returns>A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.</returns>
-		public IEnumerator<GorgonChunk> GetEnumerator()
-		{
-			return _list.GetEnumerator();
-		}
-		#endregion
+        #region IEnumerable<GorgonChunk> Members
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.</returns>
+        public IEnumerator<GorgonChunk> GetEnumerator() => _list.GetEnumerator();
+        #endregion
 
-		#region IEnumerable Members
-		/// <summary>
-		/// Returns an enumerator that iterates through a collection.
-		/// </summary>
-		/// <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return ((IEnumerable)_list).GetEnumerator();
-		}
-		#endregion
+        #region IEnumerable Members
+        /// <summary>
+        /// Returns an enumerator that iterates through a collection.
+        /// </summary>
+        /// <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
+        IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)_list).GetEnumerator();
+        #endregion
 
-		#region IGorgonReadOnlyChunkCollection Members
-		#region Properties.
-		/// <summary>
-		/// Property to return a chunk by a string identifier.
-		/// </summary>
-		/// <remarks>
-		/// If the chunk is not found, then this property will return <b>null</b>.
-		/// </remarks>
-		public GorgonChunk this[string chunkName]
+        #region IGorgonReadOnlyChunkCollection Members
+        #region Properties.
+        /// <summary>
+        /// Property to return a chunk by a string identifier.
+        /// </summary>
+        /// <remarks>
+        /// If the chunk is not found, then this property will return <b>null</b>.
+        /// </remarks>
+        public GorgonChunk this[string chunkName]
 		{
 			get
 			{
@@ -225,22 +195,19 @@ namespace Gorgon.IO
 			return IndexOf(id);
 		}
 
-		/// <summary>
-		/// Function to return whether a chunk exists in this collection or not.
-		/// </summary>
-		/// <param name="chunkName">A text representation of the <see cref="ulong"/> chunk ID.</param>
-		/// <returns><b>true</b> if a chunk exists with the specified <paramref name="chunkName"/>, <b>false</b> if not.</returns>
-		public bool Contains(string chunkName)
-		{
-			return IndexOf(chunkName) != -1;
-		}
+        /// <summary>
+        /// Function to return whether a chunk exists in this collection or not.
+        /// </summary>
+        /// <param name="chunkName">A text representation of the <see cref="ulong"/> chunk ID.</param>
+        /// <returns><b>true</b> if a chunk exists with the specified <paramref name="chunkName"/>, <b>false</b> if not.</returns>
+        public bool Contains(string chunkName) => IndexOf(chunkName) != -1;
 
-		/// <summary>
-		/// Function to return the index of a chunk by its name.
-		/// </summary>
-		/// <param name="chunkID">The <see cref="ulong"/> ID of the chunk.</param>
-		/// <returns>The index of the chunk with the specific <paramref name="chunkID"/>, or -1 if not found.</returns>
-		public int IndexOf(ulong chunkID)
+        /// <summary>
+        /// Function to return the index of a chunk by its name.
+        /// </summary>
+        /// <param name="chunkID">The <see cref="ulong"/> ID of the chunk.</param>
+        /// <returns>The index of the chunk with the specific <paramref name="chunkID"/>, or -1 if not found.</returns>
+        public int IndexOf(ulong chunkID)
 		{
 			for (int i = 0; i < _list.Count; ++i)
 			{
@@ -253,16 +220,13 @@ namespace Gorgon.IO
 			return -1;
 		}
 
-		/// <summary>
-		/// Function to return whether a chunk exists in this collection or not.
-		/// </summary>
-		/// <param name="chunkID">The <see cref="ulong"/> ID of the chunk.</param>
-		/// <returns><b>true</b> if a chunk exists with the specified <paramref name="chunkID"/>, <b>false</b> if not.</returns>
-		public bool Contains(ulong chunkID)
-		{
-			return IndexOf(chunkID) != -1;
-		}
-		#endregion
-		#endregion
-	}
+        /// <summary>
+        /// Function to return whether a chunk exists in this collection or not.
+        /// </summary>
+        /// <param name="chunkID">The <see cref="ulong"/> ID of the chunk.</param>
+        /// <returns><b>true</b> if a chunk exists with the specified <paramref name="chunkID"/>, <b>false</b> if not.</returns>
+        public bool Contains(ulong chunkID) => IndexOf(chunkID) != -1;
+        #endregion
+        #endregion
+    }
 }

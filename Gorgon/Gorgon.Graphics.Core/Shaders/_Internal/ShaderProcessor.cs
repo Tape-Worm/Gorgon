@@ -228,16 +228,13 @@ namespace Gorgon.Graphics.Core
 
 			return result.ToString();
 		}
-		#endregion
+        #endregion
 
-		#region Constructor
-		/// <summary>
-		/// Initializes a new instance of the <see cref="ShaderProcessor"/> class.
-		/// </summary>
-		public ShaderProcessor()
-		{
-			CachedIncludes = new Dictionary<string, GorgonShaderInclude>();
-		}
-		#endregion
-	}
+        #region Constructor
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ShaderProcessor"/> class.
+        /// </summary>
+        public ShaderProcessor() => CachedIncludes = new Dictionary<string, GorgonShaderInclude>();
+        #endregion
+    }
 }

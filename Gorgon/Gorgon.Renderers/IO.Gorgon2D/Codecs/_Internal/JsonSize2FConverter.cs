@@ -84,9 +84,6 @@ namespace Gorgon.IO
         /// <returns>
         /// 	<c>true</c> if this instance can convert the specified object type; otherwise, <c>false</c>.
         /// </returns>
-        public override bool CanConvert(Type objectType)
-        {
-            return (objectType == typeof(DX.Size2F));
-        }
+        public override bool CanConvert(Type objectType) => (objectType == typeof(DX.Size2F));
     }
 }

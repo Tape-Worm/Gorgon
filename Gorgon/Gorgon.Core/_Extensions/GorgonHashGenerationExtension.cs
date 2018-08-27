@@ -62,7 +62,7 @@ namespace Gorgon.Core
 		{
 			unchecked
 			{
-				return 397 * previousHash + item.GetHashCode();		// 397 is our magic prime number.
+				return (397 * previousHash) + item.GetHashCode();		// 397 is our magic prime number.
 			}
 		}
 	}

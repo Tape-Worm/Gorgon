@@ -161,30 +161,24 @@ namespace Gorgon.Input
 			return result;
 		}
 
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		/// <remarks>
-		/// For implementors of a <see cref="GorgonGamingDeviceDriver"/> this dispose method is used to clean up any native resources that may be allocated by the driver. In such a case, put the clean up code for 
-		/// the native resources in an override of this method. If the driver does not use native resources, then this method should be left alone.
-		/// </remarks>
-		public virtual void Dispose()
-		{
-			GC.SuppressFinalize(this);
-		}
-		#endregion
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <remarks>
+        /// For implementors of a <see cref="GorgonGamingDeviceDriver"/> this dispose method is used to clean up any native resources that may be allocated by the driver. In such a case, put the clean up code for 
+        /// the native resources in an override of this method. If the driver does not use native resources, then this method should be left alone.
+        /// </remarks>
+        public virtual void Dispose() => GC.SuppressFinalize(this);
+        #endregion
 
-		#region Constructor/Finalizer.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonGamingDeviceDriver"/> class.
-		/// </summary>
-		/// <param name="description">The human readable description of the driver.</param>
-		protected GorgonGamingDeviceDriver(string description)
-			: base(description)
-		{
-			Log = GorgonLog.NullLog;
-		}
-		#endregion
+        #region Constructor/Finalizer.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonGamingDeviceDriver"/> class.
+        /// </summary>
+        /// <param name="description">The human readable description of the driver.</param>
+        protected GorgonGamingDeviceDriver(string description)
+            : base(description) => Log = GorgonLog.NullLog;
+        #endregion
 
-	}
+    }
 }

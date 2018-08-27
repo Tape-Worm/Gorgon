@@ -492,25 +492,22 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		/// </remarks>
 		public abstract IGorgonImageInfo GetMetaData(Stream stream);
 
-		/// <summary>
-		/// Returns a <see cref="string" /> that represents this instance.
-		/// </summary>
-		/// <returns>
-		/// A <see cref="string" /> that represents this instance.
-		/// </returns>
-		public override string ToString()
-        {
-	        return string.Format(Resources.GORIMG_TOSTR_IMAGE_CODEC, Codec);
-        }
-		#endregion
+        /// <summary>
+        /// Returns a <see cref="string" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="string" /> that represents this instance.
+        /// </returns>
+        public override string ToString() => string.Format(Resources.GORIMG_TOSTR_IMAGE_CODEC, Codec);
+        #endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonImageCodec{TEncOpt, TDecOpt}" /> class.
-		/// </summary>
-		/// <param name="encodingOptions">Codec specific options to use when encoding image data.</param>
-		/// <param name="decodingOptions">Codec specific options to use when decoding image data.</param>
-		protected GorgonImageCodec(TEncOpt encodingOptions, TDecOpt decodingOptions)
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonImageCodec{TEncOpt, TDecOpt}" /> class.
+        /// </summary>
+        /// <param name="encodingOptions">Codec specific options to use when encoding image data.</param>
+        /// <param name="decodingOptions">Codec specific options to use when decoding image data.</param>
+        protected GorgonImageCodec(TEncOpt encodingOptions, TDecOpt decodingOptions)
 		{
 		    EncodingOptions = encodingOptions;
 		    DecodingOptions = decodingOptions;

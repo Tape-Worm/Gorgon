@@ -224,18 +224,12 @@ namespace Gorgon.IO
         /// <param name="hasExistingValue">The existing value has a value.</param>
         /// <param name="serializer">The calling serializer.</param>
         /// <returns>The object value.</returns>
-        public override GorgonTexture2DView ReadJson(JsonReader reader, Type objectType, GorgonTexture2DView existingValue, bool hasExistingValue, JsonSerializer serializer)
-        {
-            return ReadTexture(reader, out string _);
-        }
+        public override GorgonTexture2DView ReadJson(JsonReader reader, Type objectType, GorgonTexture2DView existingValue, bool hasExistingValue, JsonSerializer serializer) => ReadTexture(reader, out string _);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonTexture2DConverter"/> class.
         /// </summary>
         /// <param name="graphics">The graphics interface used for resource lookup.</param>
-        public JsonTexture2DConverter(GorgonGraphics graphics)
-        {
-            _graphics = graphics;
-        }
+        public JsonTexture2DConverter(GorgonGraphics graphics) => _graphics = graphics;
     }
 }

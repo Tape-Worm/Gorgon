@@ -633,8 +633,8 @@ namespace Gorgon.Examples
 				Screen currentScreen = Screen.FromHandle(Handle);
 
 				// Relocate the window to the center of the screen.				
-				Location = new Point(currentScreen.Bounds.Left + (currentScreen.WorkingArea.Width / 2) - ClientSize.Width / 2,
-				                     currentScreen.Bounds.Top + (currentScreen.WorkingArea.Height / 2) - ClientSize.Height / 2);
+				Location = new Point(currentScreen.Bounds.Left + (currentScreen.WorkingArea.Width / 2) - (ClientSize.Width / 2),
+				                     currentScreen.Bounds.Top + (currentScreen.WorkingArea.Height / 2) - (ClientSize.Height / 2));
 
 
 				// Create the 2D renderer.
@@ -739,16 +739,13 @@ namespace Gorgon.Examples
 				GorgonApplication.Quit();
 			}
 		}
-	    #endregion
+        #endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		public MainForm()
-		{
-			InitializeComponent();
-		}
-		#endregion
-	}
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        public MainForm() => InitializeComponent();
+        #endregion
+    }
 }

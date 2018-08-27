@@ -296,7 +296,7 @@ namespace Gorgon.Graphics.Example
                 _vsConstants = GorgonConstantBufferView.CreateConstantBuffer(_graphics,
                                                                              new GorgonConstantBufferInfo("WorldProjection CBuffer")
                                                                              {
-                                                                                 SizeInBytes = DX.Matrix.SizeInBytes * 2 + DX.Vector4.SizeInBytes
+                                                                                 SizeInBytes = (DX.Matrix.SizeInBytes * 2) + DX.Vector4.SizeInBytes
                                                                              });
                 _vsConstants.Buffer.SetData(ref _projection, copyMode: CopyMode.Discard);
                 _vsConstants.Buffer.SetData(ref _worldMatrix, 64, CopyMode.NoOverwrite);

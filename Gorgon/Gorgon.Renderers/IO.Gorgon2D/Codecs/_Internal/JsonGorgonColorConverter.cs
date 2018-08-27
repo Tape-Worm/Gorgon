@@ -41,10 +41,7 @@ namespace Gorgon.Renderers
         /// <param name="writer">The <see cref="T:Newtonsoft.Json.JsonWriter" /> to write to.</param>
         /// <param name="value">The value.</param>
         /// <param name="serializer">The calling serializer.</param>
-        public override void WriteJson(JsonWriter writer, GorgonColor value, JsonSerializer serializer)
-        {
-            serializer.Serialize(writer, value.ToARGB());
-        }
+        public override void WriteJson(JsonWriter writer, GorgonColor value, JsonSerializer serializer) => serializer.Serialize(writer, value.ToARGB());
 
         /// <summary>Reads the JSON representation of the object.</summary>
         /// <param name="reader">The <see cref="T:Newtonsoft.Json.JsonReader" /> to read from.</param>

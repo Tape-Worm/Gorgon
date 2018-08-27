@@ -48,22 +48,19 @@ namespace GorgonTriangulator
         /// Initializes a new instance of the <see cref="Triangulator"/> class.
         /// </summary>
         /// <param name="log">The log used for debug messages..</param>
-        public Triangulator(IGorgonLog log)
-	    {
-	        _log = log ?? GorgonLog.NullLog;
-	    }
+        public Triangulator(IGorgonLog log) => _log = log ?? GorgonLog.NullLog;
         #endregion
 
 
-		#region Public Methods
+        #region Public Methods
 
-		/// <summary>
-		/// Triangulates a 2D polygon produced the indexes required to render the points as a triangle list.
-		/// </summary>
-		/// <param name="inputVertices">The polygon vertices in counter-clockwise winding order.</param>
-		/// <param name="desiredWindingOrder">The desired output winding order.</param>
-		/// <returns>A tuple containing a list of vertices, indices and bounds.</returns>
-		public (GorgonNativeBuffer<int> indices, RectangleF bounds) Triangulate(Gorgon2DVertex[] inputVertices, WindingOrder desiredWindingOrder)
+        /// <summary>
+        /// Triangulates a 2D polygon produced the indexes required to render the points as a triangle list.
+        /// </summary>
+        /// <param name="inputVertices">The polygon vertices in counter-clockwise winding order.</param>
+        /// <param name="desiredWindingOrder">The desired output winding order.</param>
+        /// <returns>A tuple containing a list of vertices, indices and bounds.</returns>
+        public (GorgonNativeBuffer<int> indices, RectangleF bounds) Triangulate(Gorgon2DVertex[] inputVertices, WindingOrder desiredWindingOrder)
 		{
 			Log("\nBeginning triangulation...");
             
@@ -373,7 +370,7 @@ namespace GorgonTriangulator
 			    Vector4.Subtract(ref p1, ref p2, out Vector4 e1);
                 Vector4.Subtract(ref p3, ref p2, out Vector4 e2);
 
-				if (e1.X * e2.Y - e1.Y * e2.X >= 0)
+				if ((e1.X * e2.Y) - (e1.Y * e2.X) >= 0)
 					clockWiseCount++;
 				else
 					counterClockWiseCount++;

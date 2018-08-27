@@ -228,27 +228,21 @@ namespace Gorgon.Graphics.Fonts
 			OutlineTextureCoordinates = texture.ToTexel(outlineCoordinates);
 		}
 
-		/// <summary>
-		/// Returns a hash code for this instance.
-		/// </summary>
-		/// <returns>
-		/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
-		/// </returns>
-		public override int GetHashCode()
-		{
-			return Character.GetHashCode();
-		}
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// </returns>
+        public override int GetHashCode() => Character.GetHashCode();
 
-		/// <summary>
-		/// Returns a <see cref="string"/> that represents this instance.
-		/// </summary>
-		/// <returns>
-		/// A <see cref="string"/> that represents this instance.
-		/// </returns>
-		public override string ToString()
-		{
-			return string.Format(Resources.GORGFX_TOSTR_FONT_GLYPH, Character);
-		}
+        /// <summary>
+        /// Returns a <see cref="string"/> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="string"/> that represents this instance.
+        /// </returns>
+        public override string ToString() => string.Format(Resources.GORGFX_TOSTR_FONT_GLYPH, Character);
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.

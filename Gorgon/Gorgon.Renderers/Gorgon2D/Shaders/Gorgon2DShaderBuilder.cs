@@ -183,10 +183,7 @@ namespace Gorgon.Renderers
         /// <param name="sampler">The sampler to assign.</param>
         /// <param name="index">[Optional] The index of the sampler.</param>
         /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="index"/> parameter is less than 0, or greater than/equal to <see cref="GorgonSamplerStates.MaximumSamplerStateCount"/>.</exception>
-        public Gorgon2DShaderBuilder<T> SamplerState(GorgonSamplerStateBuilder sampler, int index = 0)
-        {
-            return SamplerState(sampler.Build(), index);
-        }
+        public Gorgon2DShaderBuilder<T> SamplerState(GorgonSamplerStateBuilder sampler, int index = 0) => SamplerState(sampler.Build(), index);
 
         /// <summary>
         /// Function to assign a sampler to a shader on the pipeline.

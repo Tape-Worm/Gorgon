@@ -264,10 +264,7 @@ namespace Gorgon.Examples
         /// <summary>
         /// Initializes a new instance of the <see cref="Form"/> class.
         /// </summary>
-        public Form()
-        {
-            InitializeComponent();
-        }
+        public Form() => InitializeComponent();
         #endregion
     }
 }

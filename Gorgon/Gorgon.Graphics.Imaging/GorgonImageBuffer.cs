@@ -354,10 +354,7 @@ namespace Gorgon.Graphics.Imaging
         /// Function to fill the entire buffer with the specified byte value.
         /// </summary>
         /// <param name="value">The byte value used to fill the buffer.</param>
-        public void Fill(byte value)
-        {
-            Data.Fill(value);
-        }
+        public void Fill(byte value) => Data.Fill(value);
         #endregion
 
         #region Constructor/Destructor.

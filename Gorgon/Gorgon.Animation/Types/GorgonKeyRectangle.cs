@@ -78,10 +78,7 @@ namespace Gorgon.Animation
         /// Function to clone an object.
         /// </summary>
         /// <returns>The cloned object.</returns>
-        public IGorgonKeyFrame Clone()
-        {
-            return new GorgonKeyRectangle(Time, Value);
-        }
+        public IGorgonKeyFrame Clone() => new GorgonKeyRectangle(Time, Value);
         #endregion
 
         #region Constructor/Finalizer.

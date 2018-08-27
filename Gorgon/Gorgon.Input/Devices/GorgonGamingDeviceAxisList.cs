@@ -93,63 +93,51 @@ namespace Gorgon.Input
 			_infoList[axisData.Axis] = axisData;
 		}
 
-		/// <summary>
-		/// Returns an enumerator that iterates through the collection.
-		/// </summary>
-		/// <returns>
-		/// An enumerator that can be used to iterate through the collection.
-		/// </returns>
-		/// <filterpriority>1</filterpriority>
-		public IEnumerator<T> GetEnumerator()
-		{
-			return _infoList.Select(item => item.Value).GetEnumerator();
-		}
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>
+        /// An enumerator that can be used to iterate through the collection.
+        /// </returns>
+        /// <filterpriority>1</filterpriority>
+        public IEnumerator<T> GetEnumerator() => _infoList.Select(item => item.Value).GetEnumerator();
 
-		/// <summary>
-		/// Returns an enumerator that iterates through a collection.
-		/// </summary>
-		/// <returns>
-		/// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
-		/// </returns>
-		/// <filterpriority>2</filterpriority>
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return ((IEnumerable)_infoList.Values).GetEnumerator();
-		}
+        /// <summary>
+        /// Returns an enumerator that iterates through a collection.
+        /// </summary>
+        /// <returns>
+        /// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
+        /// </returns>
+        /// <filterpriority>2</filterpriority>
+        IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)_infoList.Values).GetEnumerator();
 
 
-		/// <summary>
-		/// Function to determine if a specific <see cref="GamingDeviceAxis"/> is supported.
-		/// </summary>
-		/// <param name="axis">Axis to look up.</param>
-		/// <returns><b>true</b> if the axis is supported, <b>false</b> if not.</returns>
-		public bool Contains(GamingDeviceAxis axis)
-		{
-			return _infoList.ContainsKey(axis);
-		}
+        /// <summary>
+        /// Function to determine if a specific <see cref="GamingDeviceAxis"/> is supported.
+        /// </summary>
+        /// <param name="axis">Axis to look up.</param>
+        /// <returns><b>true</b> if the axis is supported, <b>false</b> if not.</returns>
+        public bool Contains(GamingDeviceAxis axis) => _infoList.ContainsKey(axis);
 
-		/// <summary>
-		/// Function to retrieve a <see cref="GorgonGamingDeviceAxisInfo"/>.
-		/// </summary>
-		/// <param name="axis">The axis to look up.</param>
-		/// <param name="result">The <see cref="GorgonGamingDeviceAxisInfo"/> specified by the axis.</param>
-		/// <returns><b>true</b> if the axis was found in this list, or <b>false</b> if not.</returns>
-		/// <remarks>
-		/// If the <paramref name="axis"/> was not found, then the <paramref name="result"/> parameter will return a <see cref="GorgonGamingDeviceAxisInfo"/> with default values. Because of this, it is strongly 
-		/// recommened to use the method return value to determine if the item exists or not.
-		/// </remarks>
-		public bool TryGetValue(GamingDeviceAxis axis, out T result)
-		{
-			return _infoList.TryGetValue(axis, out result);
-		}
-		#endregion
+        /// <summary>
+        /// Function to retrieve a <see cref="GorgonGamingDeviceAxisInfo"/>.
+        /// </summary>
+        /// <param name="axis">The axis to look up.</param>
+        /// <param name="result">The <see cref="GorgonGamingDeviceAxisInfo"/> specified by the axis.</param>
+        /// <returns><b>true</b> if the axis was found in this list, or <b>false</b> if not.</returns>
+        /// <remarks>
+        /// If the <paramref name="axis"/> was not found, then the <paramref name="result"/> parameter will return a <see cref="GorgonGamingDeviceAxisInfo"/> with default values. Because of this, it is strongly 
+        /// recommened to use the method return value to determine if the item exists or not.
+        /// </remarks>
+        public bool TryGetValue(GamingDeviceAxis axis, out T result) => _infoList.TryGetValue(axis, out result);
+        #endregion
 
-		#region Constructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonGamingDeviceAxisList{T}" /> class.
-		/// </summary>
-		/// <param name="data">A list of items to add to the collection.</param>
-		public GorgonGamingDeviceAxisList(IEnumerable<T> data)
+        #region Constructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonGamingDeviceAxisList{T}" /> class.
+        /// </summary>
+        /// <param name="data">A list of items to add to the collection.</param>
+        public GorgonGamingDeviceAxisList(IEnumerable<T> data)
 		{
 			foreach (T item in data)
 			{

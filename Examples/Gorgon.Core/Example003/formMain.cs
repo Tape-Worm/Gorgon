@@ -149,40 +149,28 @@ namespace Gorgon.Examples
 			}
 		}
 
-		/// <summary>
-		/// Function to draw the FPS on the screen.
-		/// </summary>
-		/// <param name="fps">Frames per second.</param>
-		public void DrawFPS(string fps)
-		{
-			labelFPS.Text = fps;
-		}
+        /// <summary>
+        /// Function to draw the FPS on the screen.
+        /// </summary>
+        /// <param name="fps">Frames per second.</param>
+        public void DrawFPS(string fps) => labelFPS.Text = fps;
 
-		/// <summary>
-		/// Function to perform a page flip.
-		/// </summary>
-		public void Flip()
-		{
-			_formGraphics.DrawImageUnscaled(_bitmap, 0, 0, _bitmap.Width, _bitmap.Height);
-		}
+        /// <summary>
+        /// Function to perform a page flip.
+        /// </summary>
+        public void Flip() => _formGraphics.DrawImageUnscaled(_bitmap, 0, 0, _bitmap.Width, _bitmap.Height);
 
-		/// <summary>
-		/// Function to clear the buffer.
-		/// </summary>
-		public void Clear()
-		{
-			_graphics.Clear(Color.Black);
-		}
-		#endregion
+        /// <summary>
+        /// Function to clear the buffer.
+        /// </summary>
+        public void Clear() => _graphics.Clear(Color.Black);
+        #endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="formMain" /> class.
-		/// </summary>
-		public formMain()
-		{
-			InitializeComponent();
-		}
-		#endregion
-	}
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="formMain" /> class.
+        /// </summary>
+        public formMain() => InitializeComponent();
+        #endregion
+    }
 }

@@ -61,19 +61,19 @@ namespace Gorgon.Renderers
 					leftTop.X += calc;
 					break;
 				case Alignment.CenterLeft:
-					calc = (int)(layoutSize.Height / 2.0f - textHeight / 2.0f);
+					calc = (int)((layoutSize.Height / 2.0f) - (textHeight / 2.0f));
 					leftTop.Y += calc;
 					break;
 				case Alignment.Center:
 					calc = (int)((layoutSize.Width / 2.0f) - (lineLength / 2.0f));
 					leftTop.X += calc;
-					calc = (int)(layoutSize.Height / 2.0f - textHeight / 2.0f);
+					calc = (int)((layoutSize.Height / 2.0f) - (textHeight / 2.0f));
 					leftTop.Y += calc;
 					break;
 				case Alignment.CenterRight:
 					calc = (int)(layoutSize.Width - lineLength);
 					leftTop.X += calc;
-					calc = (int)(layoutSize.Height / 2.0f - textHeight / 2.0f);
+					calc = (int)((layoutSize.Height / 2.0f) - (textHeight / 2.0f));
 					leftTop.Y += calc;
 					break;
 				case Alignment.LowerLeft:
@@ -206,26 +206,26 @@ namespace Gorgon.Renderers
 
             if (angleRads != 0.0f)
             {
-                v0.Position = new DX.Vector4((glyphBounds.Left * angleCos - glyphBounds.Top * angleSin) + spriteBounds.X,
-                                             (glyphBounds.Left * angleSin + glyphBounds.Top * angleCos) + spriteBounds.Y,
+                v0.Position = new DX.Vector4(((glyphBounds.Left * angleCos) - (glyphBounds.Top * angleSin)) + spriteBounds.X,
+                                             ((glyphBounds.Left * angleSin) + (glyphBounds.Top * angleCos)) + spriteBounds.Y,
                                              depth,
                                              1.0f);
                 v0.Angle = new DX.Vector2(angleCos, angleSin);
 
-                v1.Position = new DX.Vector4((glyphBounds.Right * angleCos - glyphBounds.Top * angleSin) + spriteBounds.X,
-                                             (glyphBounds.Right * angleSin + glyphBounds.Top * angleCos) + spriteBounds.Y,
+                v1.Position = new DX.Vector4(((glyphBounds.Right * angleCos) - (glyphBounds.Top * angleSin)) + spriteBounds.X,
+                                             ((glyphBounds.Right * angleSin) + (glyphBounds.Top * angleCos)) + spriteBounds.Y,
                                              depth,
                                              1.0f);
                 v1.Angle = new DX.Vector2(angleCos, angleSin);
 
-                v2.Position = new DX.Vector4((glyphBounds.Left * angleCos - glyphBounds.Bottom * angleSin) + spriteBounds.X,
-                                             (glyphBounds.Left * angleSin + glyphBounds.Bottom * angleCos) + spriteBounds.Y,
+                v2.Position = new DX.Vector4(((glyphBounds.Left * angleCos) - (glyphBounds.Bottom * angleSin)) + spriteBounds.X,
+                                             ((glyphBounds.Left * angleSin) + (glyphBounds.Bottom * angleCos)) + spriteBounds.Y,
                                              depth,
                                              1.0f);
                 v2.Angle = new DX.Vector2(angleCos, angleSin);
 
-                v3.Position = new DX.Vector4((glyphBounds.Right * angleCos - glyphBounds.Bottom * angleSin) + spriteBounds.X,
-                                             (glyphBounds.Right * angleSin + glyphBounds.Bottom * angleCos) + spriteBounds.Y,
+                v3.Position = new DX.Vector4(((glyphBounds.Right * angleCos) - (glyphBounds.Bottom * angleSin)) + spriteBounds.X,
+                                             ((glyphBounds.Right * angleSin) + (glyphBounds.Bottom * angleCos)) + spriteBounds.Y,
                                              depth,
                                              1.0f);
                 v3.Angle = new DX.Vector2(angleCos, angleSin);

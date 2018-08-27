@@ -253,17 +253,14 @@ namespace Gorgon.Input
 				hook.UninstallWindowProcedure();
 			}
 		}
-		#endregion
+        #endregion
 
-		#region Constructor/Finalizer.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="MessageFilterHook"/> class.
-		/// </summary>
-		/// <param name="hwnd">The window handle to hook.</param>
-		private MessageFilterHook(IntPtr hwnd)
-		{
-			_hwnd = hwnd;
-		}
-		#endregion
-	}
+        #region Constructor/Finalizer.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MessageFilterHook"/> class.
+        /// </summary>
+        /// <param name="hwnd">The window handle to hook.</param>
+        private MessageFilterHook(IntPtr hwnd) => _hwnd = hwnd;
+        #endregion
+    }
 }
