@@ -25,11 +25,7 @@
 #endregion
 
 using System;
-using System.IO;
 using System.Windows.Forms;
-using Gorgon.Core;
-using Gorgon.Examples.Properties;
-using Gorgon.IO;
 using Gorgon.UI;
 
 namespace Gorgon.Examples
