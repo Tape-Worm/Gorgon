@@ -352,7 +352,7 @@ namespace Gorgon.Examples
                 _graphics.SetRenderTarget(_screen.RenderTargetView);
 
                 // Initialize the renderer so that we are able to draw stuff.
-                _renderer = new Gorgon2D(_screen.RenderTargetView);
+                _renderer = new Gorgon2D(_graphics);
 
                 // Create the displacement effect used for the "cloaking" effect.
                 _displacement = new Gorgon2DDisplacementEffect(_renderer)

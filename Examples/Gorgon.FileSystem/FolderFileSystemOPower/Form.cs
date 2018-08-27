@@ -299,7 +299,7 @@ namespace Gorgon.Examples
 		    }
 
 		    // Build up our 2D renderer.
-		    _renderer = new Gorgon2D(_screen.RenderTargetView);
+		    _renderer = new Gorgon2D(_graphics);
 
             // Load in the logo texture from our resources.
             GorgonExample.LoadResources(_graphics);

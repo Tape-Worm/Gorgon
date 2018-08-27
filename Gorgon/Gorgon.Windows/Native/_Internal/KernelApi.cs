@@ -24,8 +24,11 @@
 // 
 #endregion
 
+using System;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Security;
+using Microsoft.Win32.SafeHandles;
 
 namespace Gorgon.Native
 {
@@ -63,6 +66,13 @@ namespace Gorgon.Native
 	[SuppressUnmanagedCodeSecurity]
 	internal static class KernelApi
 	{
+        #region Constants.
+	    /// <summary>
+	    /// Standard output handle.
+	    /// </summary>
+	    public const int StdOutputHandle = -11;
+        #endregion
+
 		#region Properties.
 		/// <summary>
 		/// Property to return the number of bytes of installed physical RAM.
@@ -118,7 +128,69 @@ namespace Gorgon.Native
 
 		#region Methods.
         /// <summary>
-        /// Function to set up a console control handler to intercept console close events.
+        /// Function to retrieve the standard handle.
+        /// </summary>
+        /// <param name="nStdHandle">The standard handle.</param>
+        /// <returns></returns>
+	    [DllImport("kernel32.dll")]
+	    public static extern IntPtr GetStdHandle(int nStdHandle);
+
+	    /// <summary>
+	    /// 
+	    /// </summary>
+	    /// <param name="lpFileName"></param>
+	    /// <param name="dwDesiredAccess"></param>
+	    /// <param name="dwShareMode"></param>
+	    /// <param name="lpSecurityAttributes"></param>
+	    /// <param name="dwCreationDisposition"></param>
+	    /// <param name="dwFlagsAndAttributes"></param>
+	    /// <param name="hTemplateFile"></param>
+	    /// <returns></returns>
+	    [DllImport("kernel32.dll",
+	        EntryPoint = "CreateFileW",
+	        SetLastError = true,
+	        CharSet = CharSet.Unicode,
+	        CallingConvention = CallingConvention.StdCall)]
+	    public static extern IntPtr CreateFileW(
+	        string lpFileName,
+	        uint dwDesiredAccess,
+	        uint dwShareMode,
+	        IntPtr lpSecurityAttributes,
+	        uint dwCreationDisposition,
+	        uint dwFlagsAndAttributes,
+	        IntPtr hTemplateFile);
+
+	    /// <summary>
+	    /// 
+	    /// </summary>
+	    /// <param name="handle"></param>
+	    /// <param name="mode"></param>
+	    /// <returns></returns>
+	    [DllImport("kernel32.dll", SetLastError = true)]
+	    [return: MarshalAs(UnmanagedType.Bool)]
+	    public static extern bool SetConsoleMode(IntPtr handle, uint mode);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="hConsoleHandle"></param>
+        /// <param name="mode"></param>
+        /// <returns></returns>
+        [DllImport("kernel32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+	    public static extern bool GetConsoleMode(IntPtr hConsoleHandle, out uint mode);
+
+	    /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="nStdHandle"></param>
+        /// <param name="handle"></param>
+	    [DllImport("kernel32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+	    public static extern bool SetStdHandle(int nStdHandle, IntPtr handle);
+
+        /// <summary>
+	    /// Function to set up a console control handler to intercept console close events.
         /// </summary>
         /// <param name="handler">The handler to assign.</param>
         /// <param name="add"><b>true</b> to add the handler, <b>false</b> to remove it.</param>
@@ -170,6 +242,13 @@ namespace Gorgon.Native
 		[DllImport("kernel32", CharSet = CharSet.Auto)]
 		[return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool QueryPerformanceCounter(out long PerformanceCount);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [DllImport("kernel32")]
+	    public static extern uint GetLastError();
 		#endregion
 
 		#region Constructor.

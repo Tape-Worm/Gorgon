@@ -374,7 +374,7 @@ namespace Gorgon.Examples
                 _graphics.SetRenderTarget(_screen.RenderTargetView);
 
                 // Initialize the renderer so that we are able to draw stuff.
-                _renderer = new Gorgon2D(_screen.RenderTargetView);
+                _renderer = new Gorgon2D(_graphics);
 
                 // Load our logo.
                 GorgonExample.LoadResources(_graphics);

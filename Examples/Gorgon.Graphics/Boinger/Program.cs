@@ -595,7 +595,7 @@ namespace Gorgon.Graphics.Example
 		        InitializeStates();
 
 		        // Initialize 2D rendering.
-		        _2D = new Gorgon2D(_swap.RenderTargetView);
+		        _2D = new Gorgon2D(_graphics);
 
 		        // I know, there's a lot in here.  Thing is, if this were Direct 3D 11 code, it'd probably MUCH 
 		        // more code and that's even before creating our planes and sphere.

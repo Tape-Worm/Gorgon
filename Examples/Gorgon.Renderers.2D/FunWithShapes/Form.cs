@@ -221,7 +221,7 @@ namespace Gorgon.Examples
 		        _halfSize = new DX.Size2F(_screen.Width / 2.0f, _screen.Height / 2.0f);
 
 		        // Create our 2D renderer so we can draw stuff.
-		        _renderer = new Gorgon2D(_screen.RenderTargetView);
+		        _renderer = new Gorgon2D(_graphics);
 
 		        LabelPleaseWait.Visible = false;
 

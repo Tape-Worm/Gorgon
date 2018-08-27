@@ -622,6 +622,7 @@ namespace Gorgon.Examples
                                                                    Height = Settings.Default.Resolution.Height,
                                                                    Format = BufferFormat.R8G8B8A8_UNorm
                                                                });
+                _graphics.SetRenderTarget(_screen.RenderTargetView);
 
 			    if (!Settings.Default.IsWindowed)
 			    {
@@ -637,7 +638,7 @@ namespace Gorgon.Examples
 
 
 				// Create the 2D renderer.
-                _2D = new Gorgon2D(_screen.RenderTargetView);
+                _2D = new Gorgon2D(_graphics);
 				
 				// Create the text font.
                 var fontFactory = new GorgonFontFactory(_graphics);

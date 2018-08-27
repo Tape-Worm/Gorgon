@@ -189,7 +189,7 @@ namespace Gorgon.Examples
                                                   Height = GroupControl2.ClientSize.Height
                                               });
 
-            _renderer = new Gorgon2D(_leftPanel.RenderTargetView);
+            _renderer = new Gorgon2D(_graphics);
 
             _fontFactory = new GorgonFontFactory(_graphics);
             _appFont = _fontFactory.GetFont(new GorgonFontInfo(Font.FontFamily.Name, Font.Size * 1.33333f, FontHeightMode.Points, "Form Font")

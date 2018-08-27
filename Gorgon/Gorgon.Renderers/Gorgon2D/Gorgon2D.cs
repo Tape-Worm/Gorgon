@@ -103,8 +103,6 @@ namespace Gorgon.Renderers
         #region Variables.
         // The flag to indicate that the renderer is initialized.
         private int _initialized = Uninitialized;
-        // The primary render target.
-        private readonly GorgonRenderTarget2DView _primaryTarget;
         // World matrix vertex shader.
         private Gorgon2DShader<GorgonVertexShader> _polyTransformVertexShader = new Gorgon2DShader<GorgonVertexShader>();
         // The default pixel shader used by the renderer.
@@ -406,12 +404,6 @@ namespace Gorgon.Renderers
                 _lastBatchState.RasterState = GorgonRasterState.Default;
                 _lastBatchState.DepthStencilState = GorgonDepthStencilState.Default;
 
-                // Set the initial render target.
-                if (Graphics.RenderTargets[0] == null)
-                {
-                    Graphics.SetRenderTarget(_primaryTarget);
-                }
-
                 _defaultCamera = new Gorgon2DOrthoCamera(this,
                                                          new DX.Size2F(Graphics.Viewports[0].Width, Graphics.Viewports[0].Height),
                                                          0,
@@ -529,12 +521,6 @@ namespace Gorgon.Renderers
             if (_initialized != Initialized)
             {
                 Initialize();
-            }
-            else if (Graphics.RenderTargets[0] == null)
-            {
-                // If we attempt to render with no render target, then reset to our primary.
-                // This will trigger the event that will update the camera.
-                Graphics.SetRenderTarget(_primaryTarget, Graphics.DepthStencilView);
             }
 
             _cameraController.UpdateCamera(camera ?? _defaultCamera);
@@ -2294,12 +2280,11 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Initializes a new instance of the <see cref="Gorgon2D"/> class.
         /// </summary>
-        /// <param name="defaultTarget">The default render target that will receive the rendering data.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="defaultTarget"/> parameter is <b>null</b>.</exception>
-        public Gorgon2D(GorgonRenderTarget2DView defaultTarget)
+        /// <param name="graphics">The graphics interface to use for rendering.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
+        public Gorgon2D(GorgonGraphics graphics)
         {
-            _primaryTarget = defaultTarget ?? throw new ArgumentNullException(nameof(defaultTarget));
-            Graphics = _primaryTarget.Graphics;
+            Graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
             _defaultFontFactory = new Lazy<GorgonFontFactory>(() => new GorgonFontFactory(Graphics), true);
 
             if (!GorgonShaderFactory.Includes.ContainsKey("Gorgon2DShaders"))

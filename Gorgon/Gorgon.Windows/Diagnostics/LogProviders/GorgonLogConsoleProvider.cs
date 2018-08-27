@@ -27,9 +27,11 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 using System.Threading;
 using Gorgon.Native;
 using Gorgon.Windows.Properties;
+using Microsoft.Win32.SafeHandles;
 
 namespace Gorgon.Diagnostics.LogProviders
 {
@@ -98,6 +100,42 @@ namespace Gorgon.Diagnostics.LogProviders
                     }
 
                     _ownsConsole = true;
+                }
+            }
+
+            // If we have Enable Native Debugging turned on, all output is redirected to the debug window.
+            // This will reset that back to our logging window.
+            if (Console.IsOutputRedirected)
+            {
+                const uint genericRead = 0x80000000;
+                const uint genericWrite = 0x40000000;
+
+                IntPtr filePtr = KernelApi.CreateFileW("CONOUT$",
+                                                       (genericRead | genericWrite),
+                                                       (uint)FileShare.ReadWrite,
+                                                       IntPtr.Zero,
+                                                       (uint)FileMode.Open,
+                                                       0,
+                                                       IntPtr.Zero);
+                var handle = new SafeFileHandle(filePtr, true);
+                if (handle.IsInvalid)
+                {
+                    handle.Dispose();
+                    return;
+                }
+
+                KernelApi.SetStdHandle(KernelApi.StdOutputHandle, filePtr);
+
+                var stream = new FileStream(handle, FileAccess.Write);
+                var writer = new StreamWriter(stream, Encoding.Default)
+                             {
+                                 AutoFlush = true
+                             };
+                Console.SetOut(writer);
+
+                if (KernelApi.GetConsoleMode(filePtr, out uint consoleMode))
+                {
+                    KernelApi.SetConsoleMode(filePtr, consoleMode | 0x200);
                 }
             }
 

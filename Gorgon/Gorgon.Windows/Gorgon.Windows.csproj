@@ -26,6 +26,7 @@
     <CodeAnalysisRuleSet>..\NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <UseVSHostingProcess>false</UseVSHostingProcess>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -37,6 +38,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DocumentationFile>bin\Release\Gorgon.Windows.xml</DocumentationFile>
     <UseVSHostingProcess>true</UseVSHostingProcess>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
@@ -65,6 +67,7 @@
     <Compile Include="Native\_Internal\Win32 Structs\HDITEM.cs" />
     <Compile Include="Native\_Internal\Win32 Structs\MEMORYSTATUSEX.cs" />
     <Compile Include="Native\_Internal\Win32 Structs\MSG.cs" />
+    <Compile Include="Native\_Internal\Win32 Structs\SECURITY_ATTRIBUTES.cs" />
     <Compile Include="Native\_Internal\Win32 Structs\TIMECAPS.cs" />
     <Compile Include="Native\_Internal\WinMultimediaApi.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

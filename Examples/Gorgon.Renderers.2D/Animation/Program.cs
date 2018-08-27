@@ -247,7 +247,7 @@ namespace Gorgon.Examples
 
                 GorgonExample.LoadResources(_graphics);
 
-                _renderer = new Gorgon2D(_screen.RenderTargetView);
+                _renderer = new Gorgon2D(_graphics);
                 _animatedSprite = new GorgonSprite
                                   {
                                       Position = new DX.Vector2(_screen.Width / 2, _screen.Height / 2),

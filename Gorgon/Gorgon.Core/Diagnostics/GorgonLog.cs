@@ -391,7 +391,7 @@ namespace Gorgon.Diagnostics
 		public void Print(string formatSpecifier, LoggingLevel level, params object[] arguments)
 		{
 			if ((LogFilterLevel == LoggingLevel.NoLogging) || 
-				((LogFilterLevel != LoggingLevel.All) && (level != LoggingLevel.All) && (level >= LogFilterLevel)))
+				((LogFilterLevel != LoggingLevel.All) && (level != LoggingLevel.All) && (level <= LogFilterLevel)))
 			{
 				return;
 			}

@@ -454,7 +454,7 @@ namespace Gorgon.Examples
 		                                                    });
 
 		        // Create the 2D interface.
-		        _2D = new Gorgon2D(_mainScreen.RenderTargetView);
+		        _2D = new Gorgon2D(_graphics);
 
 		        // Create the wall sprite.
 		        _wall = new GorgonSprite

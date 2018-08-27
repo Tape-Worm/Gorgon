@@ -29,7 +29,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics.Fonts;
@@ -674,7 +673,7 @@ namespace Gorgon.Examples
 		                                         OutlineSize = 2, OutlineColor1 = GorgonColor.Black, OutlineColor2 = GorgonColor.Black
 		                                     });
 
-		        _2DRenderer = new Gorgon2D(_swapChain.RenderTargetView);
+		        _2DRenderer = new Gorgon2D(_graphics);
 
 		        _textSprite = new GorgonTextSprite(_font)
 		                      {

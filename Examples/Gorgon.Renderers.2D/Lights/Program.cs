@@ -229,7 +229,7 @@ namespace Gorgon.Examples
                 UpdateRenderTarget();
 
                 // Initialize the renderer so that we are able to draw stuff.
-                _renderer = new Gorgon2D(_screen.RenderTargetView);
+                _renderer = new Gorgon2D(_graphics);
 
                 _logoSprite = new GorgonSprite
                               {
