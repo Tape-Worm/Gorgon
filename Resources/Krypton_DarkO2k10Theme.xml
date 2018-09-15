@@ -2,7 +2,7 @@
 <!--Created by exporting the settings of a KryptonPalette instance.-->
 <!--For more information about Krypton visit www.ComponentFactory.com-->
 <!--WARNING: Modifying this file may render it invalid for importing.-->
-<KryptonPalette Version="18" Generated="Saturday, 08 September 2018, 15:29">
+<KryptonPalette Version="18" Generated="Saturday, 15 September 2018, 12:50">
   <Properties>
     <ButtonStyles>
       <ButtonCommon>
@@ -979,15 +979,6 @@
       </PanelCustom1>
     </PanelStyles>
     <Ribbon>
-      <RibbonAppButton>
-        <StateCommon>
-          <BackColor1 Type="Color" Value="Blue" />
-          <BackColor2 Type="Color" Value="Blue" />
-          <BackColor3 Type="Color" Value="Blue" />
-          <BackColor4 Type="Color" Value="Blue" />
-          <BackColor5 Type="Color" Value="Blue" />
-        </StateCommon>
-      </RibbonAppButton>
       <RibbonGeneral>
         <GroupSeparatorDark Type="Color" Value="64, 64, 64" />
         <GroupSeparatorLight Type="Color" Value="64, 64, 64" />
@@ -997,11 +988,11 @@
       </RibbonGeneral>
       <RibbonGroupArea>
         <StateCommon>
-          <BackColor1 Type="Color" Value="104, 104, 104" />
-          <BackColor2 Type="Color" Value="104, 104, 104" />
-          <BackColor3 Type="Color" Value="104, 104, 104" />
-          <BackColor4 Type="Color" Value="104, 104, 104" />
-          <BackColor5 Type="Color" Value="104, 104, 104" />
+          <BackColor1 Type="Color" Value="80, 80, 80" />
+          <BackColor2 Type="Color" Value="80, 80, 80" />
+          <BackColor3 Type="Color" Value="80, 80, 80" />
+          <BackColor4 Type="Color" Value="80, 80, 80" />
+          <BackColor5 Type="Color" Value="80, 80, 80" />
         </StateCommon>
       </RibbonGroupArea>
       <RibbonGroupButtonText>
@@ -1009,7 +1000,7 @@
           <TextColor Type="Color" Value="White" />
         </StateCommon>
         <StateDisabled>
-          <TextColor Type="Color" Value="DimGray" />
+          <TextColor Type="Color" Value="Black" />
         </StateDisabled>
       </RibbonGroupButtonText>
       <RibbonGroupCheckBoxText>
@@ -1022,11 +1013,11 @@
       </RibbonGroupCheckBoxText>
       <RibbonGroupNormalBorder>
         <StateCommon>
-          <BackColor1 Type="Color" Value="64, 64, 64" />
-          <BackColor2 Type="Color" Value="64, 64, 64" />
+          <BackColor1 Type="Color" Value="80, 80, 80" />
+          <BackColor2 Type="Color" Value="80, 80, 80" />
           <BackColor3 Type="Color" Value="64, 64, 64" />
           <BackColor4 Type="Color" Value="64, 64, 64" />
-          <BackColor5 Type="Color" Value="64, 64, 64" />
+          <BackColor5 Type="Color" Value="80, 80, 80" />
         </StateCommon>
       </RibbonGroupNormalBorder>
       <RibbonGroupNormalTitle>
@@ -1052,16 +1043,13 @@
       </RibbonGroupRadioButtonText>
       <RibbonTab>
         <StateCommon>
-          <BackColor1 Type="Color" Value="104, 104, 104" />
-          <BackColor2 Type="Color" Value="104, 104, 104" />
-          <BackColor3 Type="Color" Value="104, 104, 104" />
-          <BackColor4 Type="Color" Value="104, 104, 104" />
-          <BackColor5 Type="Color" Value="104, 104, 104" />
+          <BackColor1 Type="Color" Value="80, 80, 80" />
+          <BackColor2 Type="Color" Value="80, 80, 80" />
+          <BackColor3 Type="Color" Value="80, 80, 80" />
+          <BackColor4 Type="Color" Value="80, 80, 80" />
+          <BackColor5 Type="Color" Value="80, 80, 80" />
           <TextColor Type="Color" Value="White" />
         </StateCommon>
-        <StateNormal>
-          <TextColor Type="Color" Value="Gray" />
-        </StateNormal>
         <StateTracking>
           <BackColor1 Type="Color" Value="SteelBlue" />
           <BackColor2 Type="Color" Value="SteelBlue" />

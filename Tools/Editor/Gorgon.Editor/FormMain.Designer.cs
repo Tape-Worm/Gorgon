@@ -43,6 +43,7 @@ namespace Gorgon.Editor
             this.AppPalette = new ComponentFactory.Krypton.Toolkit.KryptonPalette(this.components);
             this.PanelWorkSpace = new ComponentFactory.Krypton.Toolkit.KryptonPanel();
             this.PanelProject = new Gorgon.Editor.Views.EditorProject();
+            this.ProgressScreen = new Gorgon.UI.GorgonProgressScreenPanel();
             this.WaitScreen = new Gorgon.UI.GorgonWaitScreenPanel();
             this.RibbonMain = new ComponentFactory.Krypton.Ribbon.KryptonRibbon();
             this.TabFileSystem = new ComponentFactory.Krypton.Ribbon.KryptonRibbonTab();
@@ -544,42 +545,36 @@ namespace Gorgon.Editor
             this.AppPalette.PanelStyles.PanelCustom1.StateCommon.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(204)))), ((int)(((byte)(204)))), ((int)(((byte)(204)))));
             this.AppPalette.PanelStyles.PanelCustom1.StateCommon.Color2 = System.Drawing.Color.FromArgb(((int)(((byte)(204)))), ((int)(((byte)(204)))), ((int)(((byte)(204)))));
             this.AppPalette.PanelStyles.PanelCustom1.StateCommon.Draw = ComponentFactory.Krypton.Toolkit.InheritBool.True;
-            this.AppPalette.Ribbon.RibbonAppButton.StateCommon.BackColor1 = System.Drawing.Color.Blue;
-            this.AppPalette.Ribbon.RibbonAppButton.StateCommon.BackColor2 = System.Drawing.Color.Blue;
-            this.AppPalette.Ribbon.RibbonAppButton.StateCommon.BackColor3 = System.Drawing.Color.Blue;
-            this.AppPalette.Ribbon.RibbonAppButton.StateCommon.BackColor4 = System.Drawing.Color.Blue;
-            this.AppPalette.Ribbon.RibbonAppButton.StateCommon.BackColor5 = System.Drawing.Color.Blue;
             this.AppPalette.Ribbon.RibbonGeneral.GroupSeparatorDark = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.AppPalette.Ribbon.RibbonGeneral.GroupSeparatorLight = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.AppPalette.Ribbon.RibbonGeneral.MinimizeBarDarkColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.AppPalette.Ribbon.RibbonGeneral.MinimizeBarLightColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.AppPalette.Ribbon.RibbonGeneral.TextFont = new System.Drawing.Font("Segoe UI", 9F);
-            this.AppPalette.Ribbon.RibbonGroupArea.StateCommon.BackColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(104)))), ((int)(((byte)(104)))), ((int)(((byte)(104)))));
-            this.AppPalette.Ribbon.RibbonGroupArea.StateCommon.BackColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(104)))), ((int)(((byte)(104)))), ((int)(((byte)(104)))));
-            this.AppPalette.Ribbon.RibbonGroupArea.StateCommon.BackColor3 = System.Drawing.Color.FromArgb(((int)(((byte)(104)))), ((int)(((byte)(104)))), ((int)(((byte)(104)))));
-            this.AppPalette.Ribbon.RibbonGroupArea.StateCommon.BackColor4 = System.Drawing.Color.FromArgb(((int)(((byte)(104)))), ((int)(((byte)(104)))), ((int)(((byte)(104)))));
-            this.AppPalette.Ribbon.RibbonGroupArea.StateCommon.BackColor5 = System.Drawing.Color.FromArgb(((int)(((byte)(104)))), ((int)(((byte)(104)))), ((int)(((byte)(104)))));
+            this.AppPalette.Ribbon.RibbonGroupArea.StateCommon.BackColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(80)))), ((int)(((byte)(80)))));
+            this.AppPalette.Ribbon.RibbonGroupArea.StateCommon.BackColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(80)))), ((int)(((byte)(80)))));
+            this.AppPalette.Ribbon.RibbonGroupArea.StateCommon.BackColor3 = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(80)))), ((int)(((byte)(80)))));
+            this.AppPalette.Ribbon.RibbonGroupArea.StateCommon.BackColor4 = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(80)))), ((int)(((byte)(80)))));
+            this.AppPalette.Ribbon.RibbonGroupArea.StateCommon.BackColor5 = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(80)))), ((int)(((byte)(80)))));
             this.AppPalette.Ribbon.RibbonGroupButtonText.StateCommon.TextColor = System.Drawing.Color.White;
             this.AppPalette.Ribbon.RibbonGroupButtonText.StateDisabled.TextColor = System.Drawing.Color.Black;
             this.AppPalette.Ribbon.RibbonGroupCheckBoxText.StateCommon.TextColor = System.Drawing.Color.White;
             this.AppPalette.Ribbon.RibbonGroupCheckBoxText.StateDisabled.TextColor = System.Drawing.Color.DimGray;
             this.AppPalette.Ribbon.RibbonGroupLabelText.StateCommon.TextColor = System.Drawing.Color.White;
             this.AppPalette.Ribbon.RibbonGroupLabelText.StateDisabled.TextColor = System.Drawing.Color.DimGray;
-            this.AppPalette.Ribbon.RibbonGroupNormalBorder.StateCommon.BackColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.AppPalette.Ribbon.RibbonGroupNormalBorder.StateCommon.BackColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.AppPalette.Ribbon.RibbonGroupNormalBorder.StateCommon.BackColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(80)))), ((int)(((byte)(80)))));
+            this.AppPalette.Ribbon.RibbonGroupNormalBorder.StateCommon.BackColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(80)))), ((int)(((byte)(80)))));
             this.AppPalette.Ribbon.RibbonGroupNormalBorder.StateCommon.BackColor3 = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.AppPalette.Ribbon.RibbonGroupNormalBorder.StateCommon.BackColor4 = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.AppPalette.Ribbon.RibbonGroupNormalBorder.StateCommon.BackColor5 = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.AppPalette.Ribbon.RibbonGroupNormalBorder.StateCommon.BackColor5 = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(80)))), ((int)(((byte)(80)))));
             this.AppPalette.Ribbon.RibbonGroupNormalTitle.StateCommon.TextColor = System.Drawing.Color.White;
             this.AppPalette.Ribbon.RibbonGroupRadioButtonText.StateCommon.TextColor = System.Drawing.Color.White;
             this.AppPalette.Ribbon.RibbonGroupRadioButtonText.StateDisabled.TextColor = System.Drawing.Color.DimGray;
-            this.AppPalette.Ribbon.RibbonTab.StateCommon.BackColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(104)))), ((int)(((byte)(104)))), ((int)(((byte)(104)))));
-            this.AppPalette.Ribbon.RibbonTab.StateCommon.BackColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(104)))), ((int)(((byte)(104)))), ((int)(((byte)(104)))));
-            this.AppPalette.Ribbon.RibbonTab.StateCommon.BackColor3 = System.Drawing.Color.FromArgb(((int)(((byte)(104)))), ((int)(((byte)(104)))), ((int)(((byte)(104)))));
-            this.AppPalette.Ribbon.RibbonTab.StateCommon.BackColor4 = System.Drawing.Color.FromArgb(((int)(((byte)(104)))), ((int)(((byte)(104)))), ((int)(((byte)(104)))));
-            this.AppPalette.Ribbon.RibbonTab.StateCommon.BackColor5 = System.Drawing.Color.FromArgb(((int)(((byte)(104)))), ((int)(((byte)(104)))), ((int)(((byte)(104)))));
+            this.AppPalette.Ribbon.RibbonTab.StateCommon.BackColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(80)))), ((int)(((byte)(80)))));
+            this.AppPalette.Ribbon.RibbonTab.StateCommon.BackColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(80)))), ((int)(((byte)(80)))));
+            this.AppPalette.Ribbon.RibbonTab.StateCommon.BackColor3 = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(80)))), ((int)(((byte)(80)))));
+            this.AppPalette.Ribbon.RibbonTab.StateCommon.BackColor4 = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(80)))), ((int)(((byte)(80)))));
+            this.AppPalette.Ribbon.RibbonTab.StateCommon.BackColor5 = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(80)))), ((int)(((byte)(80)))));
             this.AppPalette.Ribbon.RibbonTab.StateCommon.TextColor = System.Drawing.Color.White;
-            this.AppPalette.Ribbon.RibbonTab.StateNormal.TextColor = System.Drawing.Color.Gray;
             this.AppPalette.Ribbon.RibbonTab.StateTracking.BackColor1 = System.Drawing.Color.SteelBlue;
             this.AppPalette.Ribbon.RibbonTab.StateTracking.BackColor2 = System.Drawing.Color.SteelBlue;
             this.AppPalette.Ribbon.RibbonTab.StateTracking.BackColor3 = System.Drawing.Color.SteelBlue;
@@ -607,6 +602,20 @@ namespace Gorgon.Editor
             this.PanelProject.TabIndex = 0;
             this.PanelProject.RenameBegin += new System.EventHandler(this.PanelProject_RenameBegin);
             this.PanelProject.RenameEnd += new System.EventHandler(this.PanelProject_RenameEnd);
+            // 
+            // ProgressScreen
+            // 
+            this.ProgressScreen.AllowCancellation = true;
+            this.ProgressScreen.CurrentValue = 0F;
+            this.ProgressScreen.Location = new System.Drawing.Point(0, 0);
+            this.ProgressScreen.MeterStyle = System.Windows.Forms.ProgressBarStyle.Continuous;
+            this.ProgressScreen.Name = "ProgressScreen";
+            this.ProgressScreen.ProgressMessage = "Something";
+            this.ProgressScreen.ProgressMessageFont = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ProgressScreen.ProgressTitle = "Title";
+            this.ProgressScreen.Size = new System.Drawing.Size(1019, 424);
+            this.ProgressScreen.TabIndex = 1;
+            this.ProgressScreen.TabStop = true;
             // 
             // WaitScreen
             // 
@@ -724,6 +733,7 @@ namespace Gorgon.Editor
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.ClientSize = new System.Drawing.Size(1264, 761);
+            this.Controls.Add(this.ProgressScreen);
             this.Controls.Add(this.StageLauncher);
             this.Controls.Add(this.WaitScreen);
             this.Controls.Add(this.RibbonMain);
@@ -759,6 +769,7 @@ namespace Gorgon.Editor
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonFileSystemRename;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple2;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonFileSystemDelete;
+        private Gorgon.UI.GorgonProgressScreenPanel ProgressScreen;
     }
 }
 

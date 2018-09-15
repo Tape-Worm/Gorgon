@@ -427,4 +427,7 @@ Are you sure you wish to delete this directory?</value>
   <data name="wait_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\wait_48x48.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="GOR_TEXT_PROGRESS" xml:space="preserve">
+    <value>Updating...</value>
+  </data>
 </root>

@@ -71,6 +71,15 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="UI\_Controls\GorgonProgressScreenPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UI\_Controls\_Internal\ProgressPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\_Controls\_Internal\ProgressPanel.Designer.cs">
+      <DependentUpon>ProgressPanel.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\_Controls\_Internal\WaitMessagePanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -162,6 +171,9 @@
     <None Include="Resources\Maximize.png" />
     <None Include="Resources\Info_48x48.png" />
     <None Include="Resources\Info_16x16.png" />
+    <EmbeddedResource Include="UI\_Controls\_Internal\ProgressPanel.resx">
+      <DependentUpon>ProgressPanel.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UI\_Controls\_Internal\WaitMessagePanel.resx">
       <DependentUpon>WaitMessagePanel.cs</DependentUpon>
     </EmbeddedResource>

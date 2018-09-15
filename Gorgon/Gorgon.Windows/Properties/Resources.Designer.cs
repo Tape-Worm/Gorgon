@@ -506,6 +506,15 @@ namespace Gorgon.Windows.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Updating....
+        /// </summary>
+        internal static string GOR_TEXT_PROGRESS {
+            get {
+                return ResourceManager.GetString("GOR_TEXT_PROGRESS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Save theme as....
         /// </summary>
         internal static string GOR_TEXT_SAVE_THEME {
