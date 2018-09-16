@@ -87,6 +87,14 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Property to return the command to execute when including or excluding a node.
+        /// </summary>
+        public IEditorCommand<bool> IncludeExcludeCommand
+        {
+            get;
+        }
+
+        /// <summary>
         /// Property to return the command to execute when a node is selected.
         /// </summary>
         public IEditorCommand<IFileExplorerNodeVm> SelectNodeCommand
@@ -214,7 +222,7 @@ namespace Gorgon.Editor.ViewModels
                 DirectoryInfo newDir = _fileSystemService.CreateDirectory(node.FullPath);
 
                 // Update the metadata 
-                var metaData = new IncludedFileSystemPathMetadata(_project.ProjectWorkSpace, newDir);
+                var metaData = new IncludedFileSystemPathMetadata(newDir.ToFileSystemPath(_project.ProjectWorkSpace));
                 _project.Metadata.IncludedPaths[metaData.Path] = metaData;
 
                 // Create the node for the directory.
@@ -252,6 +260,68 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Function to include or exclude a node from the project.
+        /// </summary>
+        /// <param name="include"><b>true</b> to include, <b>false</b> to exclude.</param>
+        private void DoIncludeExcludeNode(bool include)
+        {
+            IFileExplorerNodeVm node = SelectedNode ?? RootNode;
+
+            _busyService.SetBusy();
+            try
+            {
+                // Function to set the include/exclude flag recursively.
+                void SetIncludeExclude(IReadOnlyList<IFileExplorerNodeVm> children)
+                {
+                    foreach (IFileExplorerNodeVm child in children)
+                    {
+                        if (child.Children.Count > 0)
+                        {
+                            SetIncludeExclude(child.Children);
+                        }
+                        
+                        child.Included = include;
+
+                        if (include)
+                        {
+                            _project.Metadata.IncludedPaths[child.FullPath] = new IncludedFileSystemPathMetadata(child.FullPath);
+                        }
+                        else
+                        {
+                            if (_project.Metadata.IncludedPaths.Contains(child.FullPath))
+                            {
+                                _project.Metadata.IncludedPaths.Remove(child.FullPath);
+                            }                            
+                        }
+                    }
+                }
+
+                SetIncludeExclude(node.Children);
+                node.Included = include;
+
+                if (include)
+                {
+                    _project.Metadata.IncludedPaths[node.FullPath] = new IncludedFileSystemPathMetadata(node.FullPath);
+                }
+                else
+                {
+                    if (_project.Metadata.IncludedPaths.Contains(node.FullPath))
+                    {
+                        _project.Metadata.IncludedPaths.Remove(node.FullPath);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _messageService.ShowError(ex, Resources.GOREDIT_ERR_RENAMING_FILE);
+            }
+            finally
+            {
+                _busyService.SetIdle();
+            }
+        }
+
+        /// <summary>
         /// Function to determine if a node can be renamed or not.
         /// </summary>
         /// <param name="args">The arguments for renaming.</param>
@@ -259,6 +329,33 @@ namespace Gorgon.Editor.ViewModels
         private bool CanRenameNode(FileExplorerNodeRenameArgs args) => (SelectedNode != null)
                     && (!string.IsNullOrWhiteSpace(args.NewName))
                     && (!string.Equals(args.NewName, args.OldName, StringComparison.CurrentCultureIgnoreCase));
+
+        /// <summary>
+        /// Function to rename items in meta data.
+        /// </summary>
+        /// <param name="oldPath">The old path for the items.</param>
+        /// <param name="newPath">The new path for the items.</param>
+        private void RenameIncludedMetadataItems(string oldPath, string newPath)
+        {
+            IncludedFileSystemPathMetadata[] oldIncluded = _project.Metadata.IncludedPaths.Where(item => item.Path.StartsWith(oldPath, StringComparison.OrdinalIgnoreCase))
+                                                        .ToArray();
+
+            if (oldIncluded.Length == 0)
+            {
+                return;
+            }
+
+            for (int i = 0; i < oldIncluded.Length; ++i)
+            {
+                IncludedFileSystemPathMetadata metadata = oldIncluded[i];
+
+                string oldPathRoot = metadata.Path.Substring(oldPath.Length);
+                string newPathRoot = newPath + oldPathRoot;
+
+                _project.Metadata.IncludedPaths.Remove(metadata);
+                _project.Metadata.IncludedPaths.Add(new IncludedFileSystemPathMetadata(newPathRoot));
+            }
+        }
 
         /// <summary>
         /// Function to rename the node and its backing file on the file system.
@@ -288,7 +385,13 @@ namespace Gorgon.Editor.ViewModels
                     return;
                 }
 
+                string oldPath = SelectedNode.FullPath;
+
                 SelectedNode.RenameNode(_fileSystemService, args.NewName);
+
+                string newPath = SelectedNode.FullPath;
+
+                RenameIncludedMetadataItems(oldPath, newPath);
             }
             catch (Exception ex)
             {
@@ -332,6 +435,7 @@ namespace Gorgon.Editor.ViewModels
             CreateNodeCommand = new EditorCommand<CreateNodeArgs>(DoCreateNode, CanCreateNode);
             RenameNodeCommand = new EditorCommand<FileExplorerNodeRenameArgs>(DoRenameNode, CanRenameNode);
             DeleteNodeCommand = new EditorCommand<object>(DoDeleteNode, CanDeleteNode);
+            IncludeExcludeCommand = new EditorCommand<bool>(DoIncludeExcludeNode);
         }
         #endregion
     }

@@ -271,8 +271,11 @@ namespace Gorgon.Editor.Views
 
             switch (e.PropertyName)
             {
-                case nameof(IFileExplorerNodeVm.Included):                    
-                    UpdateNodeVisualState(treeNode, node);
+                case nameof(IFileExplorerNodeVm.Included):
+                    if (treeNode != null)
+                    {
+                        UpdateNodeVisualState(treeNode, node);
+                    }                    
                     break;
             }
         }
@@ -284,14 +287,14 @@ namespace Gorgon.Editor.Views
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void ItemIncludeInProject_Click(object sender, EventArgs e)
         {
-            if (DataContext?.SelectedNode == null)
+            if ((DataContext?.SelectedNode == null) 
+                || (DataContext?.IncludeExcludeCommand == null) 
+                || (!DataContext.IncludeExcludeCommand.CanExecute(ItemIncludeInProject.Checked)))
             {
                 return;
             }
 
-#warning We have to include all sub directories and files under a directory, so we need to populate the paths for this child items.
-            Gorgon.UI.GorgonDialogs.ErrorBox(ParentForm, "This is not done yet.  Needs to include all child items.");
-            //DataContext.SelectedNode.Included = ItemIncludeInProject.Checked;
+            DataContext.IncludeExcludeCommand.Execute(ItemIncludeInProject.Checked);                        
         }
 
         /// <summary>

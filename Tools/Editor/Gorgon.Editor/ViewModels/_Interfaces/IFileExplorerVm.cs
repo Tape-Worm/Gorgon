@@ -58,6 +58,14 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Property to return the command to execute when including or excluding a node.
+        /// </summary>
+        IEditorCommand<bool> IncludeExcludeCommand
+        {
+            get;
+        }
+
+        /// <summary>
         /// Property to return the command to execute when a node is selected.
         /// </summary>
         IEditorCommand<IFileExplorerNodeVm> SelectNodeCommand

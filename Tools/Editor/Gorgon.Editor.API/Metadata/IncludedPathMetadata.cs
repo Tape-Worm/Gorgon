@@ -56,29 +56,23 @@ namespace Gorgon.Editor.Metadata
         /// <summary>
         /// Initializes a new instance of the <see cref="IncludedFileSystemPathMetadata"/> class.
         /// </summary>
-        /// <param name="root">The root of the file system.</param>
-        /// <param name="fileSystemItem">The file system item to include.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="root"/>, or the <paramref name="fileSystemItem"/> parameter is <b>null</b>.</exception>
-        public IncludedFileSystemPathMetadata(DirectoryInfo root, FileSystemInfo fileSystemItem)
-        {
-            if (root == null)
-            {
-                throw new ArgumentNullException(nameof(root));
-            }
-
-            if (fileSystemItem == null)
-            {
-                throw new ArgumentNullException(nameof(fileSystemItem));
-            }
-            
-            Path = fileSystemItem.ToFileSystemPath(root);
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="IncludedFileSystemPathMetadata"/> class.
-        /// </summary>
         /// <param name="path">The path to the included item.</param>
-        internal IncludedFileSystemPathMetadata(string path) => Path = path;
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
+        public IncludedFileSystemPathMetadata(string path)
+        {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentEmptyException(nameof(path));
+            }
+
+            Path = path;
+        }
         #endregion
     }
 }

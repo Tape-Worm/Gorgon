@@ -295,7 +295,9 @@ namespace Gorgon.Editor.Services
                 return false;
             }
 
+            onDelete?.Invoke(directory);
             directory.Delete(true);
+
             return true;
         }
         #endregion

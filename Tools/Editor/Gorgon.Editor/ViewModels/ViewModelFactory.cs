@@ -140,7 +140,7 @@ namespace Gorgon.Editor.ViewModels
                 children.Add(CreateFileExplorerFileNodeVm(project, result, file));
             }
 
-            result.Initialize(project, directory, parentNode, children, _messageBoxService, _waitCursorService);
+            result.Initialize(project, directory.Name, parentNode, children, _messageBoxService, _waitCursorService);
 
             return result;
         }
@@ -181,7 +181,7 @@ namespace Gorgon.Editor.ViewModels
             }
             
             // This is a special node, used internally.
-            root.Initialize(project, project.ProjectWorkSpace, new FileExplorerDirectoryNodeVm(), nodes, _messageBoxService, _waitCursorService);
+            root.Initialize(project, "/", null, nodes, _messageBoxService, _waitCursorService);
             
             result.Initialize(this, project, fileSystemService,  root, _messageBoxService, _waitCursorService);
 

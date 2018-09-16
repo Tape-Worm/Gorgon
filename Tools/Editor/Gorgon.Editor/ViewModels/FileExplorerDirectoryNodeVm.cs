@@ -60,8 +60,6 @@ namespace Gorgon.Editor.ViewModels
         private bool _included;
         // The name of the file.
         private string _name;
-        // The full path to the file.
-        private string _fullPath;
         #endregion
 
         #region Properties.
@@ -144,21 +142,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the full path to the node.
         /// </summary>
-        public string FullPath
-        {
-            get => _fullPath;
-            private set
-            {
-                if (string.Equals(value, _fullPath, StringComparison.OrdinalIgnoreCase))
-                {
-                    return;
-                }
-
-                OnPropertyChanging();
-                _fullPath = value;
-                OnPropertyChanged();
-            }
-        }
+        public string FullPath => _parent == null ? "/" : (_parent.FullPath + Name).FormatDirectory('/');
 
         /// <summary>
         /// Property to return the image name to use for the node type.
@@ -232,7 +216,7 @@ namespace Gorgon.Editor.ViewModels
                 throw new ArgumentEmptyException(nameof(newName));
             }
 
-            FullPath = fileSystemService.RenameDirectory(FullPath, newName);
+            fileSystemService.RenameDirectory(FullPath, newName);
             Name = newName;
         }
 
@@ -240,25 +224,31 @@ namespace Gorgon.Editor.ViewModels
         /// Function used to initialize the view model.
         /// </summary>
         /// <param name="project">The project data.</param>
-        /// <param name="directory">The virtual file system directory to use.</param>
+        /// <param name="name">The directory name.</param>
         /// <param name="parent">The parent for this node.</param>
         /// <param name="children">The child nodes for this directory.</param>
         /// <param name="messageService">The message display service to use.</param>
         /// <param name="busyService">The busy state service to use.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="project"/>, <paramref name="directory"/>, <paramref name="parent"/>, <paramref name="messageService"/>, or the <paramref name="busyService"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="project"/>, <paramref name="name"/>, <paramref name="messageService"/>, or the <paramref name="busyService"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
         public void Initialize(IProject project,
-                               DirectoryInfo directory,
+                               string name,
                                IFileExplorerNodeVm parent,
                                ObservableCollection<IFileExplorerNodeVm> children,
                                IMessageDisplayService messageService,
                                IBusyStateService busyService)
         {
             _project = project ?? throw new ArgumentNullException(nameof(project));
-            _name = directory?.Name ?? throw new ArgumentNullException(nameof(directory));
-            _fullPath = directory.ToFileSystemPath(project.ProjectWorkSpace);
+            _name = name ?? throw new ArgumentNullException(nameof(name));
+
+            if (string.IsNullOrWhiteSpace(_name))
+            {
+                throw new ArgumentEmptyException(nameof(name));
+            }
+
             _messageService = messageService ?? throw new ArgumentNullException(nameof(messageService));
             _busyService = busyService ?? throw new ArgumentNullException(nameof(busyService));
-            _parent = parent ?? throw new ArgumentNullException(nameof(parent));
+            _parent = parent;
 
             Children = children ?? new ObservableCollection<IFileExplorerNodeVm>();
             // Determine if we are included in the project or not.
