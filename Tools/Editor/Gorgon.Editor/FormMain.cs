@@ -27,12 +27,14 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Threading;
 using System.Windows.Forms;
 using ComponentFactory.Krypton.Ribbon;
 using ComponentFactory.Krypton.Toolkit;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.ViewModels;
+using Gorgon.Timing;
 
 namespace Gorgon.Editor
 {
@@ -45,6 +47,12 @@ namespace Gorgon.Editor
         #region Variables.
         // A registry of actions to execute for a ribbon button.
         private readonly Dictionary<KryptonRibbonGroupButton, Action> _ribbonButtonRegistry = new Dictionary<KryptonRibbonGroupButton, Action>();
+        // The current action to use when cancelling an operation in progress.
+        private Action _progressCancelAction;
+        // The timer used to indicate how fast messages can be sent to the progress meter.
+        private IGorgonTimer _progressTimer;
+        // The current synchronization context.
+        private SynchronizationContext _syncContext;
         #endregion
 
         #region Properties.
@@ -177,6 +185,71 @@ namespace Gorgon.Editor
         }
 
         /// <summary>
+        /// Handles the ProgressDeactivated event of the DataContext control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void DataContext_ProgressDeactivated(object sender, EventArgs e)
+        {
+            _progressCancelAction = null;
+            ProgressScreen.Visible = false;
+            ProgressScreen.OperationCancelled -= ProgressScreen_OperationCancelled;
+            _progressTimer = null;
+        }
+
+        /// <summary>
+        /// Datas the context progress updated.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The e.</param>
+        private void DataContext_ProgressUpdated(object sender, ProgressPanelUpdateArgs e)
+        {
+            // Drop the message if it's been less than 10 milliseconds since our last call.
+            // This will keep us from flooding the window message queue with very fast operations.
+            if ((_progressTimer != null) && (_progressTimer.Milliseconds < 10))
+            {
+                return;
+            }
+
+            // The actual method to execute on the main thread.
+            void UpdateProgressPanel(ProgressPanelUpdateArgs args)
+            {
+                ProgressScreen.ProgressTitle = e.Title ?? string.Empty;
+                ProgressScreen.ProgressMessage = e.Message ?? string.Empty;
+                ProgressScreen.CurrentValue = e.PercentageComplete;
+
+                if (ProgressScreen.Visible)
+                {
+                    _progressTimer?.Reset();
+                    return;
+                }
+
+                _progressTimer = GorgonTimerQpc.SupportsQpc() ? (IGorgonTimer)new GorgonTimerQpc() : new GorgonTimerMultimedia();
+                _progressCancelAction = e.CancelAction;
+                ProgressScreen.OperationCancelled += ProgressScreen_OperationCancelled;
+                ProgressScreen.MeterStyle = e.IsMarquee ? ProgressBarStyle.Marquee : ProgressBarStyle.Continuous;
+                ProgressScreen.Visible = true;
+                ProgressScreen.BringToFront();
+                ProgressScreen.Invalidate();
+            }
+
+            if (InvokeRequired)
+            {
+                _syncContext.Send(args => UpdateProgressPanel((ProgressPanelUpdateArgs)args), e);
+                return;
+            }
+
+            UpdateProgressPanel(e);
+        }
+
+        /// <summary>
+        /// Handles the OperationCancelled event of the ProgressScreen control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ProgressScreen_OperationCancelled(object sender, EventArgs e) => _progressCancelAction?.Invoke();
+
+        /// <summary>
         /// Handles the WaitPanelDeactivated event of the DataContext control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -289,6 +362,9 @@ namespace Gorgon.Editor
         /// </summary>
         private void UnassignEvents()
         {
+            _progressCancelAction = null;
+            ProgressScreen.OperationCancelled -= ProgressScreen_OperationCancelled;
+
             if (DataContext == null)
             {
                 return;
@@ -297,8 +373,10 @@ namespace Gorgon.Editor
             if (DataContext.CurrentProject?.FileExplorer != null)
             {
                 DataContext.CurrentProject.FileExplorer.PropertyChanged -= FileExplorer_PropertyChanged;
-            }            
+            }
 
+            DataContext.ProgressUpdated -= DataContext_ProgressUpdated;
+            DataContext.ProgressDeactivated -= DataContext_ProgressDeactivated;
             DataContext.WaitPanelActivated -= DataContext_WaitPanelActivated;
             DataContext.WaitPanelDeactivated -= DataContext_WaitPanelDeactivated;
             DataContext.PropertyChanged -= DataContext_PropertyChanged;
@@ -370,6 +448,8 @@ namespace Gorgon.Editor
                     DataContext.CurrentProject.FileExplorer.PropertyChanged += FileExplorer_PropertyChanged;
                 }
 
+                DataContext.ProgressUpdated += DataContext_ProgressUpdated;
+                DataContext.ProgressDeactivated += DataContext_ProgressDeactivated;
                 DataContext.WaitPanelActivated += DataContext_WaitPanelActivated;
                 DataContext.WaitPanelDeactivated += DataContext_WaitPanelDeactivated;
                 DataContext.PropertyChanged += DataContext_PropertyChanged;
@@ -403,6 +483,7 @@ namespace Gorgon.Editor
             InitializeComponent();
 
             StageLauncher.StageNewProject.ProjectCreated += StageNewProject_ProjectCreated;
+            _syncContext = SynchronizationContext.Current;
         }
         #endregion
     }

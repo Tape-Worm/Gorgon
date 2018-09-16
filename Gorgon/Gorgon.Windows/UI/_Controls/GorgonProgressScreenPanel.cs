@@ -45,6 +45,8 @@ namespace Gorgon.UI
         private ProgressPanel _messagePanel;
         // The synchronization context to use.
         private SynchronizationContext _syncContext;
+        // The current progress percentage.
+        private float _progress;
         #endregion
 
         #region Events.
@@ -52,7 +54,7 @@ namespace Gorgon.UI
         /// Event triggered when an operation is cancelled.
         /// </summary>
         [Description("Triggered when an operation is cancelled via this panel."), Category("Behavior")]
-        public EventHandler OperationCancelled;
+        public event EventHandler OperationCancelled;
         #endregion
 
         #region Properties.
@@ -97,19 +99,13 @@ namespace Gorgon.UI
                     return;
                 }
 
+                if (string.IsNullOrWhiteSpace(value))
+                {
+
+                }
+
+                _messagePanel.LabelProgressMessage.Visible = !string.IsNullOrEmpty(value);
                 _messagePanel.LabelProgressMessage.Text = value;
-
-                if (string.IsNullOrEmpty(_messagePanel.LabelProgressMessage.Text))
-                {
-                    _messagePanel.TableProgress.RowStyles[1].SizeType = SizeType.Absolute;
-                    _messagePanel.TableProgress.RowStyles[1].Height = 0;
-                }
-                else
-                {
-                    _messagePanel.TableProgress.RowStyles[1].SizeType = SizeType.AutoSize;
-                }
-
-                Invalidate();
             }
         }
 
@@ -130,21 +126,8 @@ namespace Gorgon.UI
                     return;
                 }
 
+                _messagePanel.LabelTitle.Visible = !string.IsNullOrEmpty(value);
                 _messagePanel.LabelTitle.Text = value;
-
-                if (string.IsNullOrEmpty(_messagePanel.LabelTitle.Text))
-                {
-                    _messagePanel.LabelProgressMessage.Anchor = AnchorStyles.Left;
-                    _messagePanel.TableProgress.RowStyles[0].SizeType = SizeType.Absolute;
-                    _messagePanel.TableProgress.RowStyles[0].Height = 0;
-                }
-                else
-                {
-                    _messagePanel.LabelProgressMessage.Anchor = AnchorStyles.Left | AnchorStyles.Top;
-                    _messagePanel.TableProgress.RowStyles[0].SizeType = SizeType.AutoSize;
-                }
-                
-                Invalidate();
             }
         }
 
@@ -159,11 +142,7 @@ namespace Gorgon.UI
         public Font ProgressMessageFont
         {
             get => _messagePanel.LabelProgressMessage.Font;
-            set
-            {
-                _messagePanel.LabelProgressMessage.Font = value;
-                Invalidate();
-            }
+            set => _messagePanel.LabelProgressMessage.Font = value;
         }
 
         /// <summary>
@@ -177,11 +156,7 @@ namespace Gorgon.UI
         public Font ProgressTitleFont
         {
             get => _messagePanel.LabelTitle.Font;
-            set
-            {
-                _messagePanel.LabelTitle.Font = value;
-                Invalidate();
-            }
+            set => _messagePanel.LabelTitle.Font = value;
         }
 
         /// <summary>
@@ -190,7 +165,7 @@ namespace Gorgon.UI
         [Browsable(false)]
         public float CurrentValue
         {
-            get => _messagePanel.ProgressMeter.Value / 100.0f;
+            get => _progress;
             set => SetProgressValue(value);
         }
 
@@ -205,11 +180,7 @@ namespace Gorgon.UI
         public ProgressBarStyle MeterStyle
         {
             get => _messagePanel.ProgressMeter.Style;
-            set
-            {
-                _messagePanel.ProgressMeter.Style = value;
-                Invalidate();
-            }
+            set => _messagePanel.ProgressMeter.Style = value;
         }
 
         /// <summary>
@@ -223,11 +194,7 @@ namespace Gorgon.UI
         public bool AllowCancellation
         {
             get => _messagePanel.ButtonCancel.Visible;
-            set
-            {
-                _messagePanel.ButtonCancel.Visible = value;
-                Invalidate();
-            }
+            set => _messagePanel.ButtonCancel.Visible = value;
         }
         #endregion
 
@@ -249,15 +216,15 @@ namespace Gorgon.UI
         /// <param name="value">The value to set.</param>
         private void SetProgressValue(float value)
         {
-            value = value.Min(1.0f).Max(0);
+            _progress = value.Min(1.0f).Max(0);
 
             if ((_syncContext != null) && (InvokeRequired))
             {
-                _syncContext.Post(progValue => SetProgressValue((float)progValue), value);
+                _syncContext.Post(progValue => SetProgressValue((float)progValue), _progress);
                 return;
             }
 
-            _messagePanel.ProgressMeter.Value = (int)(value * 100.0f);
+            _messagePanel.ProgressMeter.Value = (int)(_progress * 100.0f);
         }
 
         /// <summary>Releases the unmanaged resources used by the <see cref="T:System.Windows.Forms.Control" /> and its child controls and optionally releases the managed resources.</summary>
@@ -275,11 +242,26 @@ namespace Gorgon.UI
                     return;
                 }
 
+                panel.Resize -= MessagePanel_Resize;
                 panel.ButtonCancel.Click -= ButtonCancel_Click;
                 panel.Dispose();
             }
 
             base.Dispose(disposing);
+        }
+
+        /// <summary>
+        /// Handles the Resize event of the MessagePanel control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void MessagePanel_Resize(object sender, EventArgs e)
+        {
+            if (!_messagePanel.IsHandleCreated)
+            {
+                _messagePanel.CreateControl();
+            }
+            _messagePanel.Location = new Point((ClientSize.Width / 2) - (_messagePanel.Width / 2), (ClientSize.Height / 2) - (_messagePanel.Height / 2));
         }
 
         /// <summary>
@@ -290,11 +272,7 @@ namespace Gorgon.UI
         {
             base.OnOverlayPainted(e);
 
-            if (!_messagePanel.IsHandleCreated)
-            {
-                _messagePanel.CreateControl();
-            }
-            _messagePanel.Location = new Point((ClientSize.Width / 2) - (_messagePanel.Width / 2), (ClientSize.Height / 2) - (_messagePanel.Height / 2));
+            MessagePanel_Resize(this, EventArgs.Empty);
         }
         #endregion
 
@@ -323,12 +301,14 @@ namespace Gorgon.UI
 
             Controls.Add(_messagePanel);
 
-            if (LicenseManager.UsageMode == LicenseUsageMode.Designtime)
+            if (LicenseManager.UsageMode != LicenseUsageMode.Designtime)
             {
                 _syncContext = SynchronizationContext.Current;
                 _messagePanel.ButtonCancel.Click += ButtonCancel_Click;
             }
-        }
+
+            _messagePanel.Resize += MessagePanel_Resize;
+        }        
         #endregion
     }
 }

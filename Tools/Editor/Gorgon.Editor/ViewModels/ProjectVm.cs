@@ -132,6 +132,20 @@ namespace Gorgon.Editor.ViewModels
 
         #region Methods.
         /// <summary>
+        /// Handles the ProgressDeactivated event of the FileExplorer control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void FileExplorer_ProgressDeactivated(object sender, EventArgs e) => HideProgress();
+
+        /// <summary>
+        /// Function called when the progress panel is shown or updated.
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="e">The event parameters.</param>
+        private void FileExplorer_ProgressUpdated(object sender, ProgressPanelUpdateArgs e) => UpdateProgress(e);
+
+        /// <summary>
         /// Function called to deactivate the wait panel.
         /// </summary>
         /// <param name="sender">The sender.</param>
@@ -157,6 +171,8 @@ namespace Gorgon.Editor.ViewModels
 
             FileExplorer.WaitPanelActivated += FileExplorer_WaitPanelActivated;
             FileExplorer.WaitPanelDeactivated += FileExplorer_WaitPanelDeactivated;
+            FileExplorer.ProgressUpdated += FileExplorer_ProgressUpdated;
+            FileExplorer.ProgressDeactivated += FileExplorer_ProgressDeactivated;
         }
 
         /// <summary>
@@ -169,6 +185,8 @@ namespace Gorgon.Editor.ViewModels
                 return;
             }
 
+            FileExplorer.ProgressUpdated -= FileExplorer_ProgressUpdated;
+            FileExplorer.ProgressDeactivated -= FileExplorer_ProgressDeactivated;
             FileExplorer.WaitPanelActivated -= FileExplorer_WaitPanelActivated;
             FileExplorer.WaitPanelDeactivated -= FileExplorer_WaitPanelDeactivated;
         }
@@ -198,6 +216,7 @@ namespace Gorgon.Editor.ViewModels
         public override void OnUnload()
         {
             HideWaitPanel();
+            HideProgress();
             UnassignEvents();
         }
         #endregion

@@ -607,15 +607,15 @@ namespace Gorgon.Editor
             // 
             this.ProgressScreen.AllowCancellation = true;
             this.ProgressScreen.CurrentValue = 0F;
-            this.ProgressScreen.Location = new System.Drawing.Point(0, 0);
-            this.ProgressScreen.MeterStyle = System.Windows.Forms.ProgressBarStyle.Continuous;
+            this.ProgressScreen.Location = new System.Drawing.Point(560, 120);
             this.ProgressScreen.Name = "ProgressScreen";
-            this.ProgressScreen.ProgressMessage = "Something";
+            this.ProgressScreen.ProgressMessage = resources.GetString("ProgressScreen.ProgressMessage");
             this.ProgressScreen.ProgressMessageFont = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ProgressScreen.ProgressTitle = "Title";
-            this.ProgressScreen.Size = new System.Drawing.Size(1019, 424);
+            this.ProgressScreen.ProgressTitle = resources.GetString("ProgressScreen.ProgressTitle");
+            this.ProgressScreen.Size = new System.Drawing.Size(640, 200);
             this.ProgressScreen.TabIndex = 1;
             this.ProgressScreen.TabStop = true;
+            this.ProgressScreen.Visible = false;
             // 
             // WaitScreen
             // 

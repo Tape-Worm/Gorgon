@@ -79,6 +79,8 @@ namespace Gorgon.Editor.ViewModels
                 {
                     _currentProject.WaitPanelActivated -= CurrentProject_WaitPanelActivated;
                     _currentProject.WaitPanelDeactivated -= CurrentProject_WaitPanelDeactivated;
+                    _currentProject.ProgressDeactivated -= CurrentProject_ProgressDeactivated;
+                    _currentProject.ProgressUpdated -= CurrentProject_ProgressUpdated;
                     _currentProject.PropertyChanged -= CurrentProject_PropertyChanged;
                 }
 
@@ -96,6 +98,8 @@ namespace Gorgon.Editor.ViewModels
                 _currentProject.PropertyChanged += CurrentProject_PropertyChanged;
                 _currentProject.WaitPanelActivated += CurrentProject_WaitPanelActivated;
                 _currentProject.WaitPanelDeactivated += CurrentProject_WaitPanelDeactivated;
+                _currentProject.ProgressDeactivated += CurrentProject_ProgressDeactivated;
+                _currentProject.ProgressUpdated += CurrentProject_ProgressUpdated;
             }
         }
 
@@ -133,6 +137,20 @@ namespace Gorgon.Editor.ViewModels
                     break;
             }
         }
+
+        /// <summary>
+        /// Function called when the progress panel is shown or updated.
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="e">The event parameters.</param>
+        private void CurrentProject_ProgressUpdated(object sender, ProgressPanelUpdateArgs e) => UpdateProgress(e);
+
+        /// <summary>
+        /// Handles the ProgressDeactivated event of the CurrentProject control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void CurrentProject_ProgressDeactivated(object sender, EventArgs e) => HideProgress();
 
         /// <summary>
         /// Handles the WaitPanelDeactivated event of the CurrentProject control.

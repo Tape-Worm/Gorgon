@@ -292,6 +292,6 @@ Are you sure you wish to continue?</value>
 Please try again.</value>
   </data>
   <data name="GOREDIT_TEXT_DELETING" xml:space="preserve">
-    <value>Deleting '{0}'...</value>
+    <value>Deleting...</value>
   </data>
 </root>

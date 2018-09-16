@@ -446,7 +446,7 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Deleting &apos;{0}&apos;....
+        ///   Looks up a localized string similar to Deleting....
         /// </summary>
         internal static string GOREDIT_TEXT_DELETING {
             get {
@@ -507,14 +507,14 @@ namespace Gorgon.Editor.Properties {
         ///&lt;!--Created by exporting the settings of a KryptonPalette instance.--&gt;
         ///&lt;!--For more information about Krypton visit www.ComponentFactory.com--&gt;
         ///&lt;!--WARNING: Modifying this file may render it invalid for importing.--&gt;
-        ///&lt;KryptonPalette Version=&quot;18&quot; Generated=&quot;Tuesday, 04 September 2018, 14:23&quot;&gt;
+        ///&lt;KryptonPalette Version=&quot;18&quot; Generated=&quot;Saturday, 15 September 2018, 12:50&quot;&gt;
         ///  &lt;Properties&gt;
         ///    &lt;ButtonStyles&gt;
         ///      &lt;ButtonCommon&gt;
         ///        &lt;StateCommon&gt;
         ///          &lt;Back&gt;
-        ///            &lt;GraphicsHint Type=&quot;PaletteGraphicsHint&quot; Value=&quot;AntiAlias&quot; /&gt;
-        ///            &lt;Color [rest of string was truncated]&quot;;.
+        ///            &lt;Color1 Type=&quot;Color&quot; Value=&quot;Transparent&quot; /&gt;
+        ///            &lt;Color2 Type=&quot;Color&quot; Va [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Krypton_DarkO2k10Theme {
             get {

@@ -32,19 +32,20 @@
             this.ButtonCancel = new System.Windows.Forms.Button();
             this.LabelTitle = new System.Windows.Forms.Label();
             this.LabelProgressMessage = new System.Windows.Forms.Label();
-            this.TableProgress = new System.Windows.Forms.TableLayoutPanel();
-            this.TableProgress.SuspendLayout();
+            this.PanelLayout = new System.Windows.Forms.FlowLayoutPanel();
+            this.PanelLayout.SuspendLayout();
             this.SuspendLayout();
             // 
             // ProgressMeter
             // 
             this.ProgressMeter.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.ProgressMeter.ForeColor = System.Drawing.Color.Lime;
-            this.ProgressMeter.Location = new System.Drawing.Point(3, 49);
+            this.ProgressMeter.Location = new System.Drawing.Point(3, 67);
             this.ProgressMeter.MarqueeAnimationSpeed = 33;
             this.ProgressMeter.MaximumSize = new System.Drawing.Size(500, 23);
+            this.ProgressMeter.MinimumSize = new System.Drawing.Size(500, 23);
             this.ProgressMeter.Name = "ProgressMeter";
-            this.ProgressMeter.Size = new System.Drawing.Size(474, 23);
+            this.ProgressMeter.Size = new System.Drawing.Size(500, 23);
             this.ProgressMeter.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
             this.ProgressMeter.TabIndex = 2;
             // 
@@ -53,9 +54,9 @@
             this.ButtonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.ButtonCancel.AutoSize = true;
             this.ButtonCancel.ForeColor = System.Drawing.Color.Black;
-            this.ButtonCancel.Location = new System.Drawing.Point(395, 78);
+            this.ButtonCancel.Location = new System.Drawing.Point(414, 96);
             this.ButtonCancel.Name = "ButtonCancel";
-            this.ButtonCancel.Size = new System.Drawing.Size(82, 25);
+            this.ButtonCancel.Size = new System.Drawing.Size(89, 25);
             this.ButtonCancel.TabIndex = 3;
             this.ButtonCancel.Text = "Cancel";
             this.ButtonCancel.UseVisualStyleBackColor = true;
@@ -64,51 +65,47 @@
             // LabelTitle
             // 
             this.LabelTitle.AutoEllipsis = true;
-            this.LabelTitle.AutoSize = true;
+            this.LabelTitle.Dock = System.Windows.Forms.DockStyle.Top;
             this.LabelTitle.Font = new System.Drawing.Font("Segoe UI", 14F);
             this.LabelTitle.ForeColor = System.Drawing.Color.DimGray;
             this.LabelTitle.Location = new System.Drawing.Point(0, 0);
             this.LabelTitle.Margin = new System.Windows.Forms.Padding(0);
             this.LabelTitle.MaximumSize = new System.Drawing.Size(506, 64);
+            this.LabelTitle.MinimumSize = new System.Drawing.Size(506, 32);
             this.LabelTitle.Name = "LabelTitle";
-            this.LabelTitle.Size = new System.Drawing.Size(48, 25);
+            this.LabelTitle.Size = new System.Drawing.Size(506, 32);
             this.LabelTitle.TabIndex = 0;
             this.LabelTitle.Text = "Title";
+            this.LabelTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // LabelProgressMessage
             // 
+            this.LabelProgressMessage.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.LabelProgressMessage.AutoEllipsis = true;
-            this.LabelProgressMessage.AutoSize = true;
             this.LabelProgressMessage.ForeColor = System.Drawing.Color.Black;
-            this.LabelProgressMessage.Location = new System.Drawing.Point(3, 28);
-            this.LabelProgressMessage.Margin = new System.Windows.Forms.Padding(3);
-            this.LabelProgressMessage.MaximumSize = new System.Drawing.Size(506, 120);
+            this.LabelProgressMessage.Location = new System.Drawing.Point(3, 32);
+            this.LabelProgressMessage.MaximumSize = new System.Drawing.Size(500, 32);
+            this.LabelProgressMessage.MinimumSize = new System.Drawing.Size(500, 32);
             this.LabelProgressMessage.Name = "LabelProgressMessage";
-            this.LabelProgressMessage.Size = new System.Drawing.Size(52, 15);
+            this.LabelProgressMessage.Size = new System.Drawing.Size(500, 32);
             this.LabelProgressMessage.TabIndex = 1;
             this.LabelProgressMessage.Text = "Progress";
             this.LabelProgressMessage.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // TableProgress
+            // PanelLayout
             // 
-            this.TableProgress.AutoSize = true;
-            this.TableProgress.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.TableProgress.ColumnCount = 1;
-            this.TableProgress.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.TableProgress.Controls.Add(this.LabelTitle, 0, 0);
-            this.TableProgress.Controls.Add(this.ButtonCancel, 0, 3);
-            this.TableProgress.Controls.Add(this.LabelProgressMessage, 0, 1);
-            this.TableProgress.Controls.Add(this.ProgressMeter, 0, 2);
-            this.TableProgress.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.TableProgress.Location = new System.Drawing.Point(0, 0);
-            this.TableProgress.Name = "TableProgress";
-            this.TableProgress.RowCount = 4;
-            this.TableProgress.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.TableProgress.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.TableProgress.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.TableProgress.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.TableProgress.Size = new System.Drawing.Size(480, 106);
-            this.TableProgress.TabIndex = 0;
+            this.PanelLayout.AutoSize = true;
+            this.PanelLayout.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.PanelLayout.Controls.Add(this.LabelTitle);
+            this.PanelLayout.Controls.Add(this.LabelProgressMessage);
+            this.PanelLayout.Controls.Add(this.ProgressMeter);
+            this.PanelLayout.Controls.Add(this.ButtonCancel);
+            this.PanelLayout.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this.PanelLayout.Location = new System.Drawing.Point(0, 0);
+            this.PanelLayout.Name = "PanelLayout";
+            this.PanelLayout.Size = new System.Drawing.Size(506, 124);
+            this.PanelLayout.TabIndex = 4;
             // 
             // ProgressPanel
             // 
@@ -118,15 +115,14 @@
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.BackColor = System.Drawing.Color.White;
             this.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.Controls.Add(this.TableProgress);
+            this.Controls.Add(this.PanelLayout);
             this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ForeColor = System.Drawing.Color.Black;
-            this.MaximumSize = new System.Drawing.Size(512, 200);
-            this.MinimumSize = new System.Drawing.Size(320, 32);
+            this.MaximumSize = new System.Drawing.Size(512, 125);
             this.Name = "ProgressPanel";
-            this.Size = new System.Drawing.Size(480, 106);
-            this.TableProgress.ResumeLayout(false);
-            this.TableProgress.PerformLayout();
+            this.Size = new System.Drawing.Size(509, 123);
+            this.PanelLayout.ResumeLayout(false);
+            this.PanelLayout.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -138,6 +134,6 @@
         internal System.Windows.Forms.Button ButtonCancel;
         internal System.Windows.Forms.Label LabelTitle;
         internal System.Windows.Forms.Label LabelProgressMessage;
-        internal System.Windows.Forms.TableLayoutPanel TableProgress;
+        private System.Windows.Forms.FlowLayoutPanel PanelLayout;
     }
 }

@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Gorgon.Core;
 using Gorgon.Editor.Properties;
@@ -242,9 +243,17 @@ namespace Gorgon.Editor.Services
         /// Function to delete a directory.
         /// </summary>
         /// <param name="directoryPath">The path to the directory to delete.</param>
+        /// <param name="onDelete">The method to call when a directory or a child of the directory is deleted.</param>
+        /// <param name="cancelToken">A token used to cancel the operation.</param>
+        /// <returns><b>true</b> if the directory was deleted, <b>false</b> if not.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="directoryPath"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="directoryPath"/> parameter is empty.</exception>
-        public void DeleteDirectory(string directoryPath)
+        /// <remarks>
+        /// <para>
+        /// The <paramref name="onDelete"/> parameter sends a file system information object that contains the name of the item currently being deleted.
+        /// </para>
+        /// </remarks>
+        public bool DeleteDirectory(string directoryPath, Action<FileSystemInfo> onDelete, CancellationToken cancelToken)
         {
             if (directoryPath == null)
             {
@@ -259,14 +268,35 @@ namespace Gorgon.Editor.Services
             directoryPath = ConvertPathToPhysical(directoryPath, true);
 
             var directory = new DirectoryInfo(directoryPath);
+            IEnumerable<FileSystemInfo> subItems = directory.GetFiles("*", SearchOption.AllDirectories)
+                .Cast<FileSystemInfo>()
+                .Concat(directory.GetDirectories("*", SearchOption.AllDirectories).OrderByDescending(item => item.FullName.Length));
 
             // If the directory is already gone, then we don't care.  
             if (!directory.Exists)
             {
-                return;
+                return true;
             }
-                        
+
+            foreach (FileSystemInfo info in subItems)
+            {
+                if (cancelToken.IsCancellationRequested)
+                {
+                    return false;
+                }
+
+                onDelete?.Invoke(info);
+
+                info.Delete();
+            }
+
+            if (cancelToken.IsCancellationRequested)
+            {
+                return false;
+            }
+
             directory.Delete(true);
+            return true;
         }
         #endregion
 

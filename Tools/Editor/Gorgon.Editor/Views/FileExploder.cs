@@ -136,7 +136,9 @@ namespace Gorgon.Editor.Views
 
                 var parentTreeNode = deleteTreeNode.Parent as KryptonTreeNode;
                 var nextSibling = deleteTreeNode.NextNode as KryptonTreeNode;
+#pragma warning disable IDE0019 // Use pattern matching  Seriously, this break so very fucking badly.  Did no one test these idiotic suggestions??
                 var prevSibling = deleteTreeNode.PrevNode as KryptonTreeNode;
+#pragma warning restore IDE0019 // Use pattern matching
 
                 TreeNodeCollection nodes = parentTreeNode?.Nodes ?? TreeFileSystem.Nodes;
                 nodes.Remove(deleteTreeNode);
@@ -380,10 +382,7 @@ namespace Gorgon.Editor.Views
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="CancelEventArgs"/> instance containing the event data.</param>
-        private void MenuOperations_Opening(object sender, CancelEventArgs e)
-        {
-            ValidateMenuItems(DataContext);
-        }
+        private void MenuOperations_Opening(object sender, CancelEventArgs e) => ValidateMenuItems(DataContext);
 
         /// <summary>
         /// Function to perform a node selection operation.

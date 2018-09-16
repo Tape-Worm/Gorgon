@@ -30,6 +30,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Gorgon.Core;
 using Gorgon.Editor.Metadata;
@@ -175,22 +176,36 @@ namespace Gorgon.Editor.ViewModels
         /// Function to delete the node.
         /// </summary>
         /// <param name="fileSystemService">The file system service to use when deleting.</param>
+        /// <param name="onDeleted">[Optional] A function to call when a node or a child node is deleted.</param>
+        /// <param name="cancelToken">[Optional] A cancellation token used to cancel the operation.</param>
         /// <returns>A task for asynchronous operation.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileSystemService" /> parameter is <b>null</b>.</exception>        
-        public async Task DeleteNodeAsync(IFileSystemService fileSystemService)
+        /// <remarks>
+        /// <para>
+        /// The <paramref name="onDeleted"/> parameter passes a file system information that contains name of the node being deleted, so callers can use that information for their own purposes.
+        /// </para>
+        /// </remarks>
+        public async Task DeleteNodeAsync(IFileSystemService fileSystemService, Action<FileSystemInfo> onDeleted = null, CancellationToken? cancelToken = null)
         {
             if (fileSystemService == null)
             {
                 throw new ArgumentNullException(nameof(fileSystemService));
             }
 
-            // Delete the physical object first. If we fail here, our node will survive.
+            // Delete the physical objects first. If we fail here, our node will survive.
             // We do this asynchronously because deleting a directory with a lot of files may take a while.
-            await Task.Run(() => fileSystemService.DeleteDirectory(FullPath));
+            bool dirDeleted = await Task.Run(() => fileSystemService.DeleteDirectory(FullPath, onDeleted, cancelToken ?? CancellationToken.None));
+
+            // If, for some reason, our directory was not deleted, then do not remove the node.
+            if (!dirDeleted)
+            {
+                return;                
+            }
 
             // Drop us from the parent list.
             // This will begin a chain reaction that will remove us from the UI.
             Parent.Children.Remove(this);
+            Parent = null;
         }
 
         /// <summary>

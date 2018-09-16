@@ -31,6 +31,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.ProjectData;
@@ -146,6 +147,8 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         private async void DoDeleteNode()
         {
+            var cancelSource = new CancellationTokenSource();
+
             try
             {
                 bool hasChildren = SelectedNode.Children.Count != 0;
@@ -157,19 +160,35 @@ namespace Gorgon.Editor.ViewModels
                     return;
                 }
 
-                ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_DELETING, SelectedNode.FullPath));
-
-                await SelectedNode.DeleteNodeAsync(_fileSystemService);
-
-                // Update metadata.
-                IncludedFileSystemPathMetadata[] included = _project.Metadata.IncludedPaths
-                                                                            .Where(item => item.Path.StartsWith(SelectedNode.FullPath, StringComparison.OrdinalIgnoreCase))
-                                                                            .ToArray();
-
-                for (int i = 0; i < included.Length; ++i)
+                if (!hasChildren)
                 {
-                    _project.Metadata.IncludedPaths.Remove(included[i]);
-                }                
+                    // If we only have the 1 item to delete, then don't send in the update stuff since we won't see it anyway.
+                    await SelectedNode.DeleteNodeAsync(_fileSystemService);
+                    return;
+                }
+
+                // Function to update the delete progress information and handle metadata update.
+                void UpdateDeleteProgress(FileSystemInfo fileSystemItem)
+                {
+                    string path = fileSystemItem.ToFileSystemPath(_project.ProjectWorkSpace);
+                    UpdateMarequeeProgress($"{path}", Resources.GOREDIT_TEXT_DELETING, cancelSource.Cancel);
+                    
+                    // Update metadata.
+                    IncludedFileSystemPathMetadata[] included = _project.Metadata.IncludedPaths
+                                                                                .Where(item => item.Path.StartsWith(path, StringComparison.OrdinalIgnoreCase))
+                                                                                .ToArray();
+
+                    for (int i = 0; i < included.Length; ++i)
+                    {
+                        _project.Metadata.IncludedPaths.Remove(included[i]);
+                    }
+
+                    // Give our UI time to update.  
+                    // We do this here so the user is able to click the Cancel button should they need it.
+                    Task.Delay(16).Wait();
+                }
+
+                await SelectedNode.DeleteNodeAsync(_fileSystemService, UpdateDeleteProgress, cancelSource.Token);
             }
             catch (Exception ex)
             {
@@ -177,7 +196,8 @@ namespace Gorgon.Editor.ViewModels
             }
             finally
             {
-                HideWaitPanel();
+                HideProgress();
+                cancelSource.Dispose();
             }
         }
 

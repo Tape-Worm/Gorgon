@@ -39,6 +39,7 @@ using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 using Gorgon.Editor;
+using System.Threading;
 
 namespace Gorgon.Editor.ViewModels
 {
@@ -230,15 +231,23 @@ namespace Gorgon.Editor.ViewModels
         /// Function to delete the node.
         /// </summary>
         /// <param name="fileSystemService">The file system service to use when deleting.</param>
+        /// <param name="onDeleted">[Optional] A function to call when a node or a child node is deleted.</param>
+        /// <param name="cancelToken">[Optional] A cancellation token used to cancel the operation.</param>
         /// <returns>A task for asynchronous operation.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileSystemService"/> parameter is <b>null</b>.</exception>
-        public Task DeleteNodeAsync(IFileSystemService fileSystemService)
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileSystemService" /> parameter is <b>null</b>.</exception>        
+        /// <remarks>
+        /// <para>
+        /// The <paramref name="onDeleted"/> parameter is not used for this type.
+        /// </para>
+        /// </remarks>
+        public Task DeleteNodeAsync(IFileSystemService fileSystemService, Action<FileSystemInfo> onDeleted = null, CancellationToken? cancelToken = null)
         {
             if (fileSystemService == null)
             {
                 throw new ArgumentNullException(nameof(fileSystemService));
             }
 
+            // There's no need to make this asynchronous, nor have a status display associated with it.  
             var tcs = new TaskCompletionSource<object>();
 
             // Delete the physical object first. If we fail here, our node will survive.
@@ -247,6 +256,7 @@ namespace Gorgon.Editor.ViewModels
             // Drop us from the parent list.
             // This will begin a chain reaction that will remove us from the UI.
             Parent.Children.Remove(this);
+            Parent = null;
 
             return tcs.Task;
         }

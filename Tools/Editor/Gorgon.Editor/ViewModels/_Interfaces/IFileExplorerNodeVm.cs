@@ -27,8 +27,10 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
@@ -147,8 +149,15 @@ namespace Gorgon.Editor.ViewModels
         /// Function to delete the node.
         /// </summary>
         /// <param name="fileSystemService">The file system service to use when deleting.</param>
+        /// <param name="onDeleted">[Optional] A function to call when a node or a child node is deleted.</param>
+        /// <param name="cancelToken">[Optional] A cancellation token used to cancel the operation.</param>
         /// <returns>A task for asynchronous operation.</returns>
-        Task DeleteNodeAsync(IFileSystemService fileSystemService);
+        /// <remarks>
+        /// <para>
+        /// The <paramref name="onDeleted"/> parameter passes a file system information that contains name of the node being deleted, so callers can use that information for their own purposes.
+        /// </para>
+        /// </remarks>
+        Task DeleteNodeAsync(IFileSystemService fileSystemService, Action<FileSystemInfo> onDeleted = null, CancellationToken? cancelToken = null);
         #endregion
     }
 }

@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Gorgon.Editor.Services
@@ -79,7 +80,15 @@ namespace Gorgon.Editor.Services
         /// Function to delete a directory.
         /// </summary>
         /// <param name="directoryPath">The path to the directory to delete.</param>
-        void DeleteDirectory(string directoryPath);
+        /// <param name="onDelete">The method to call when a directory or a child of the directory is deleted.</param>
+        /// <param name="cancelToken">A token used to cancel the operation.</param>
+        /// <returns><b>true</b> if the directory was deleted, <b>false</b> if not.</returns>
+        /// <remarks>
+        /// <para>
+        /// The <paramref name="onDelete"/> parameter sends a file system information object that contains the name of the item currently being deleted.
+        /// </para>
+        /// </remarks>
+        bool DeleteDirectory(string directoryPath, Action<FileSystemInfo> onDelete, CancellationToken cancelToken);
 
         /// <summary>
         /// Function to delete a file.

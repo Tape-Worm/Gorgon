@@ -44,7 +44,17 @@ namespace Gorgon.Editor.UI
         /// <summary>
         /// Event triggered when a wait overlay panel needs to be deactivated.
         /// </summary>
-        event EventHandler WaitPanelDeactivated;  
+        event EventHandler WaitPanelDeactivated;
+
+        /// <summary>
+        /// Event triggered when the progress overlay panel over needs to be updated.
+        /// </summary>
+        event EventHandler<ProgressPanelUpdateArgs> ProgressUpdated;
+
+        /// <summary>
+        /// Event triggered when the progress overlay should be deactivated.
+        /// </summary>
+        event EventHandler ProgressDeactivated;
         #endregion
 
         #region Methods.

@@ -73,6 +73,7 @@
     <Compile Include="UI\EditorAsyncCommand.cs" />
     <Compile Include="UI\EditorCommand.cs" />
     <Compile Include="UI\CommandRegistry.cs" />
+    <Compile Include="UI\ViewModels\ProgressPanelUpdateArgs.cs" />
     <Compile Include="UI\ViewModels\WaitPanelActivateArgs.cs" />
     <Compile Include="UI\Views\EditorBaseControl.cs">
       <SubType>UserControl</SubType>

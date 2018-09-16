@@ -30,6 +30,7 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Gorgon.Core;
 using Gorgon.Editor.Properties;
+using Gorgon.Math;
 
 namespace Gorgon.Editor.UI
 {
@@ -58,7 +59,17 @@ namespace Gorgon.Editor.UI
         /// <summary>
         /// Event triggered when a wait overlay panel needs to be deactivated.
         /// </summary>
-        public event EventHandler WaitPanelDeactivated;  
+        public event EventHandler WaitPanelDeactivated;
+
+        /// <summary>
+        /// Event triggered when the progress overlay panel over needs to be updated.
+        /// </summary>
+        public event EventHandler<ProgressPanelUpdateArgs> ProgressUpdated;
+
+        /// <summary>
+        /// Event triggered when the progress overlay should be deactivated.
+        /// </summary>
+        public event EventHandler ProgressDeactivated;
         #endregion
 
         #region Variables.
@@ -107,15 +118,83 @@ namespace Gorgon.Editor.UI
 		}
 
         /// <summary>
+        /// Function to activate and/or update the progress panel overlay on the view, if the view supports it.
+        /// </summary>
+        /// <param name="message">The message to display.</param>
+        /// <param name="percentage">The percentage complete as a normalized value (0..1).</param>
+        /// <param name="title">[Optional] The title for the panel.</param>
+        /// <param name="cancelAction">[Optional] The action to execute if the operation is cancelled.</param>
+        protected void UpdateProgress(string message, float percentage, string title = null, Action cancelAction = null) => UpdateProgress(new ProgressPanelUpdateArgs
+        {
+            IsMarquee = false,
+            Message = message,
+            Title = title,
+            PercentageComplete = percentage.Max(0).Min(1.0f),
+            CancelAction = cancelAction
+        });
+
+        /// <summary>
+        /// Function to activate and/or update the progress panel overlay on the view, if the view supports it.
+        /// </summary>
+        /// <param name="args">The event message arguments.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="args"/> parameter is <b>null</b>.</exception>
+        protected void UpdateProgress(ProgressPanelUpdateArgs args)
+        {
+            if (args == null)
+            {
+                throw new ArgumentNullException(nameof(args));
+            }
+
+            EventHandler<ProgressPanelUpdateArgs> handler = ProgressUpdated;
+            handler?.Invoke(this, args);
+        }
+
+        /// <summary>
+        /// Function to activate and/or update the progress panel overlay on the view as a marquee progress meter, if the view supports it.
+        /// </summary>
+        /// <param name="message">The message to display.</param>
+        /// <param name="title">[Optional] The title for the panel.</param>
+        /// <param name="cancelAction">[Optional] The action to execute if the operation is cancelled.</param>
+        protected void UpdateMarequeeProgress(string message, string title = null, Action cancelAction = null) => UpdateProgress(new ProgressPanelUpdateArgs
+        {
+            IsMarquee = true,
+            Message = message,
+            Title = title,
+            PercentageComplete = 0,
+            CancelAction = cancelAction
+        });
+
+        /// <summary>
+        /// Function to hide the progress overlay panel on the view, if the view supports it.
+        /// </summary>
+        protected void HideProgress()
+        {
+            EventHandler handler = ProgressDeactivated;
+            ProgressDeactivated?.Invoke(this, EventArgs.Empty);
+        }
+
+        /// <summary>
+        /// Function to activate a wait overlay panel on the view, if the view supports it.
+        /// </summary>
+        /// <param name="args">The event message arguments.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="args"/> parameter is <b>null</b>.</exception>
+        protected void ShowWaitPanel(WaitPanelActivateArgs args)
+        {
+            if (args == null)
+            {
+                throw new ArgumentNullException(nameof(args));
+            }
+
+            EventHandler<WaitPanelActivateArgs> handler = WaitPanelActivated;
+            handler?.Invoke(this, args);
+        }
+
+        /// <summary>
         /// Function to activate a wait overlay panel on the view, if the view supports it.
         /// </summary>
         /// <param name="message">The message for the wait overlay.</param>
         /// <param name="title">[Optional] The title for the overlay.</param>
-        protected void ShowWaitPanel(string message, string title = null)
-        {
-            EventHandler<WaitPanelActivateArgs> handler = WaitPanelActivated;
-            handler?.Invoke(this, new WaitPanelActivateArgs(message, title));
-        }
+        protected void ShowWaitPanel(string message, string title = null) => ShowWaitPanel(new WaitPanelActivateArgs(message, title));        
 
         /// <summary>
         /// Function to deactivate an active wait panel overlay on the view, if the view supports it.
