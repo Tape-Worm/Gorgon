@@ -61,42 +61,9 @@ namespace Gorgon.Editor.Services
 
         #region Methods.
         /// <summary>
-        /// Function to convert a file system path to a physical path.
+        /// Function to create a new directory.
         /// </summary>
-        /// <param name="path">The file system path.</param>
-        /// <param name="isDirectory"><b>true</b> if the path is for a directory, or <b>false</b> if not.</param>
-        /// <returns>The path on the physical file system.</returns>
-        private string ConvertPathToPhysical(string path, bool isDirectory)
-        {
-            if (isDirectory)
-            {
-                if (path.StartsWith("/", StringComparison.OrdinalIgnoreCase))
-                {
-                    path = path.Substring(1);
-                }
-
-                path = path.FormatDirectory(Path.DirectorySeparatorChar);
-            }
-            else
-            {
-                string dirName = Path.GetDirectoryName(path)?.FormatDirectory('/') ?? string.Empty;
-
-                if (dirName.StartsWith("/", StringComparison.OrdinalIgnoreCase))
-                {
-                    dirName = dirName.Substring(1);
-                }
-
-                string fileName = Path.GetFileName(path);
-                path = Path.Combine(dirName?.FormatDirectory(Path.DirectorySeparatorChar) ?? string.Empty, fileName);
-            }
-
-            return Path.Combine(RootDirectory.FullName, path);
-        }
-
-        /// <summary>
-        /// Function to create a directory a new directory.
-        /// </summary>
-        /// <param name="parentDirectory">The parent directory.</param>
+        /// <param name="parentDirectory">The parent directory on the physical file system.</param>
         /// <returns>A new directory information object for the new directory.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="parentDirectory"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="parentDirectory"/> parameter is empty.</exception>
@@ -111,8 +78,6 @@ namespace Gorgon.Editor.Services
             {
                 throw new ArgumentEmptyException(nameof(parentDirectory));
             }
-
-            parentDirectory = ConvertPathToPhysical(parentDirectory, true);
 
             int count = 0;
             string newDirName = Path.Combine(parentDirectory, Resources.GOREDIT_NEW_DIR_NAME);
@@ -135,9 +100,9 @@ namespace Gorgon.Editor.Services
         /// <summary>
         /// Function to rename a directory.
         /// </summary>
-        /// <param name="directoryPath">The path to the directory to rename.</param>
+        /// <param name="directoryPath">The physical file system path to the directory to rename.</param>
         /// <param name="newName">The new directory name.</param>
-        /// <returns>The full file system path of the new directory name.</returns>
+        /// <returns>The full physical file system path of the new directory name.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="directoryPath"/>, or the <paramref name="newName"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="directoryPath"/>, or the <paramref name="newName"/> parameter is empty.</exception>
         public string RenameDirectory(string directoryPath, string newName)
@@ -162,20 +127,18 @@ namespace Gorgon.Editor.Services
                 throw new ArgumentEmptyException(nameof(newName));
             }
 
-            directoryPath = ConvertPathToPhysical(directoryPath, true);
-
             var directory = new DirectoryInfo(directoryPath);
             directory.MoveTo(Path.Combine(directory.Parent.FullName, newName));
 
-            return directory.ToFileSystemPath(RootDirectory);
+            return directory.FullName;
         }
 
         /// <summary>
         /// Function to rename a file.
         /// </summary>
-        /// <param name="filePath">The path to the file to rename.</param>
+        /// <param name="filePath">The physical file system path to the file to rename.</param>
         /// <param name="newName">The new name of the file.</param>
-        /// <returns>The full file system path of the new file name.</returns>
+        /// <returns>The full physical file system path of the new file name.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath"/>, or the <paramref name="newName"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="filePath"/>, or the <paramref name="newName"/> parameter is empty.</exception>
         public string RenameFile(string filePath, string newName)
@@ -200,18 +163,16 @@ namespace Gorgon.Editor.Services
                 throw new ArgumentEmptyException(nameof(newName));
             }
 
-            filePath = ConvertPathToPhysical(filePath, false);
-
             var file = new FileInfo(filePath);
             file.MoveTo(Path.Combine(file.Directory.FullName, newName));
 
-            return file.ToFileSystemPath(RootDirectory);
+            return file.FullName;
         }
 
         /// <summary>
         /// Function to delete a file.
         /// </summary>
-        /// <param name="filePath">The path to the file to delete.</param>
+        /// <param name="filePath">The path to the file on the physical file system to delete.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath"/> parameter is <b>null</b>.</exception>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="filePath"/> parameter is empty.</exception>
         public void DeleteFile(string filePath)
@@ -225,8 +186,6 @@ namespace Gorgon.Editor.Services
             {
                 throw new ArgumentEmptyException(nameof(filePath));
             }
-
-            filePath = ConvertPathToPhysical(filePath, false);
 
             var file = new FileInfo(filePath);
 
@@ -242,7 +201,7 @@ namespace Gorgon.Editor.Services
         /// <summary>
         /// Function to delete a directory.
         /// </summary>
-        /// <param name="directoryPath">The path to the directory to delete.</param>
+        /// <param name="directoryPath">The physical file system path to the directory to delete.</param>
         /// <param name="onDelete">The method to call when a directory or a child of the directory is deleted.</param>
         /// <param name="cancelToken">A token used to cancel the operation.</param>
         /// <returns><b>true</b> if the directory was deleted, <b>false</b> if not.</returns>
@@ -264,8 +223,6 @@ namespace Gorgon.Editor.Services
             {
                 throw new ArgumentEmptyException(nameof(directoryPath));
             }
-
-            directoryPath = ConvertPathToPhysical(directoryPath, true);
 
             var directory = new DirectoryInfo(directoryPath);
             IEnumerable<FileSystemInfo> subItems = directory.GetFiles("*", SearchOption.AllDirectories)

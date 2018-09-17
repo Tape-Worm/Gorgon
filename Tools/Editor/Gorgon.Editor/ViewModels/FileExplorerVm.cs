@@ -64,6 +64,15 @@ namespace Gorgon.Editor.ViewModels
         private ViewModelFactory _factory;
         // The file system service for the project.
         private IFileSystemService _fileSystemService;
+        // The manager used to handle project metadata.
+        private IMetadataManager _metaDataManager;
+        #endregion
+
+        #region Events.
+        /// <summary>
+        /// Event triggered when the file system is changed.
+        /// </summary>
+        public event EventHandler FileSystemChanged;
         #endregion
 
         #region Properties.
@@ -134,9 +143,26 @@ namespace Gorgon.Editor.ViewModels
         {
             get;
         }
+
+        /// <summary>
+        /// Property to return the command used to refresh the specified node children.
+        /// </summary>
+        public IEditorCommand<IFileExplorerNodeVm> RefreshNodeCommand
+        {
+            get;
+        }
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function called when the file system was changed.
+        /// </summary>
+        private void OnFileSystemChanged()
+        {
+            EventHandler handler = FileSystemChanged;
+            handler?.Invoke(this, EventArgs.Empty);
+        }
+
         /// <summary>
         /// Function to determine if a node can be created under the selected node.
         /// </summary>
@@ -170,7 +196,7 @@ namespace Gorgon.Editor.ViewModels
 
                 if (!hasChildren)
                 {
-                    // If we only have the 1 item to delete, then don't send in the update stuff since we won't see it anyway.
+                    _metaDataManager.DeleteFromIncludeMetadata(SelectedNode.FullPath);
                     await SelectedNode.DeleteNodeAsync(_fileSystemService);
                     return;
                 }
@@ -180,15 +206,11 @@ namespace Gorgon.Editor.ViewModels
                 {
                     string path = fileSystemItem.ToFileSystemPath(_project.ProjectWorkSpace);
                     UpdateMarequeeProgress($"{path}", Resources.GOREDIT_TEXT_DELETING, cancelSource.Cancel);
-                    
-                    // Update metadata.
-                    IncludedFileSystemPathMetadata[] included = _project.Metadata.IncludedPaths
-                                                                                .Where(item => item.Path.StartsWith(path, StringComparison.OrdinalIgnoreCase))
-                                                                                .ToArray();
 
-                    for (int i = 0; i < included.Length; ++i)
+                    if (_metaDataManager.PathInProject(path))
                     {
-                        _project.Metadata.IncludedPaths.Remove(included[i]);
+                        _metaDataManager.DeleteFromIncludeMetadata(path);
+                        OnFileSystemChanged();
                     }
 
                     // Give our UI time to update.  
@@ -219,7 +241,7 @@ namespace Gorgon.Editor.ViewModels
 
             try
             {
-                DirectoryInfo newDir = _fileSystemService.CreateDirectory(node.FullPath);
+                DirectoryInfo newDir = _fileSystemService.CreateDirectory(node.PhysicalPath);
 
                 // Update the metadata 
                 var metaData = new IncludedFileSystemPathMetadata(newDir.ToFileSystemPath(_project.ProjectWorkSpace));
@@ -266,6 +288,7 @@ namespace Gorgon.Editor.ViewModels
         private void DoIncludeExcludeNode(bool include)
         {
             IFileExplorerNodeVm node = SelectedNode ?? RootNode;
+            var paths = new List<string>();
 
             _busyService.SetBusy();
             try
@@ -274,46 +297,45 @@ namespace Gorgon.Editor.ViewModels
                 void SetIncludeExclude(IReadOnlyList<IFileExplorerNodeVm> children)
                 {
                     foreach (IFileExplorerNodeVm child in children)
-                    {
+                    {                       
+                        child.Included = include;
+                        paths.Add(child.FullPath);
+
                         if (child.Children.Count > 0)
                         {
                             SetIncludeExclude(child.Children);
                         }
-                        
-                        child.Included = include;
-
-                        if (include)
-                        {
-                            _project.Metadata.IncludedPaths[child.FullPath] = new IncludedFileSystemPathMetadata(child.FullPath);
-                        }
-                        else
-                        {
-                            if (_project.Metadata.IncludedPaths.Contains(child.FullPath))
-                            {
-                                _project.Metadata.IncludedPaths.Remove(child.FullPath);
-                            }                            
-                        }
                     }
                 }
 
-                SetIncludeExclude(node.Children);
+                paths.Add(SelectedNode.FullPath);
                 node.Included = include;
+
+                // If our parent node is not included, and we've included this node, then we'll include it now.
+                // If we exclude the node, we'll leave the parent included. This is the behavior in Visual Studio, so we'll mimic that here.
+                if ((node.Parent != null) && (!node.Parent.Included) && (include))
+                {
+                    paths.Add(node.Parent.FullPath);
+                    node.Parent.Included = true;
+                }
+
+                // Add child nodes.
+                SetIncludeExclude(node.Children);
 
                 if (include)
                 {
-                    _project.Metadata.IncludedPaths[node.FullPath] = new IncludedFileSystemPathMetadata(node.FullPath);
+                    _metaDataManager.IncludePaths(paths);
                 }
                 else
                 {
-                    if (_project.Metadata.IncludedPaths.Contains(node.FullPath))
-                    {
-                        _project.Metadata.IncludedPaths.Remove(node.FullPath);
-                    }
+                    _metaDataManager.ExcludePaths(paths);
                 }
+
+                OnFileSystemChanged();
             }
             catch (Exception ex)
             {
-                _messageService.ShowError(ex, Resources.GOREDIT_ERR_RENAMING_FILE);
+                _messageService.ShowError(ex, string.Format(Resources.GOREDIT_ERR_INCLUDE_NODE, node?.Name));
             }
             finally
             {
@@ -329,33 +351,6 @@ namespace Gorgon.Editor.ViewModels
         private bool CanRenameNode(FileExplorerNodeRenameArgs args) => (SelectedNode != null)
                     && (!string.IsNullOrWhiteSpace(args.NewName))
                     && (!string.Equals(args.NewName, args.OldName, StringComparison.CurrentCultureIgnoreCase));
-
-        /// <summary>
-        /// Function to rename items in meta data.
-        /// </summary>
-        /// <param name="oldPath">The old path for the items.</param>
-        /// <param name="newPath">The new path for the items.</param>
-        private void RenameIncludedMetadataItems(string oldPath, string newPath)
-        {
-            IncludedFileSystemPathMetadata[] oldIncluded = _project.Metadata.IncludedPaths.Where(item => item.Path.StartsWith(oldPath, StringComparison.OrdinalIgnoreCase))
-                                                        .ToArray();
-
-            if (oldIncluded.Length == 0)
-            {
-                return;
-            }
-
-            for (int i = 0; i < oldIncluded.Length; ++i)
-            {
-                IncludedFileSystemPathMetadata metadata = oldIncluded[i];
-
-                string oldPathRoot = metadata.Path.Substring(oldPath.Length);
-                string newPathRoot = newPath + oldPathRoot;
-
-                _project.Metadata.IncludedPaths.Remove(metadata);
-                _project.Metadata.IncludedPaths.Add(new IncludedFileSystemPathMetadata(newPathRoot));
-            }
-        }
 
         /// <summary>
         /// Function to rename the node and its backing file on the file system.
@@ -391,7 +386,13 @@ namespace Gorgon.Editor.ViewModels
 
                 string newPath = SelectedNode.FullPath;
 
-                RenameIncludedMetadataItems(oldPath, newPath);
+                if (!_metaDataManager.PathInProject(oldPath))
+                {
+                    return;
+                }
+
+                _metaDataManager.RenameIncludedPaths(oldPath, newPath);
+                OnFileSystemChanged();
             }
             catch (Exception ex)
             {
@@ -405,19 +406,62 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Function to refresh the nodes under the specified node, or for the entire tree.
+        /// </summary>
+        /// <param name="node">The node to refresh.</param>
+        private void DoRefreshSelectedNode(IFileExplorerNodeVm node)
+        {
+            _busyService.SetBusy();
+
+            try
+            {
+                IFileExplorerNodeVm nodeToRefresh = node ?? RootNode;
+
+                nodeToRefresh.Children.Clear();
+
+                var parent = new DirectoryInfo(nodeToRefresh == RootNode ? _project.ProjectWorkSpace.FullName : nodeToRefresh.PhysicalPath);
+
+                if (!parent.Exists)
+                {
+                    return;
+                }
+
+                foreach (DirectoryInfo rootDir in _metaDataManager.GetIncludedDirectories(parent.FullName))
+                {
+                    nodeToRefresh.Children.Add(_factory.CreateFileExplorerDirectoryNodeVm(_project, nodeToRefresh, rootDir));
+                }
+
+                foreach (FileInfo file in _metaDataManager.GetIncludedFiles(parent.FullName))
+                {
+                    nodeToRefresh.Children.Add(_factory.CreateFileExplorerFileNodeVm(_project, nodeToRefresh, file));
+                }
+            }
+            catch (Exception ex)
+            {
+                _messageService.ShowError(ex, Resources.GOREDIT_ERR_REFRESH);
+            }
+            finally
+            {
+                _busyService.SetIdle();
+            }
+        }
+
+        /// <summary>
         /// Function to initialize the view model.
         /// </summary>
         /// <param name="factory">The factory used to build view models.</param>
         /// <param name="project">The project data.</param>
+        /// <param name="metaDataManager">The manager used to handle metadata.</param>
         /// <param name="fileSystemService">The file system service for the project.</param>
         /// <param name="rootNode">The root node for this file system.</param>
         /// <param name="messageService">The message display service to use.</param>
         /// <param name="busyService">The busy state service to use.</param>
         /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public void Initialize(ViewModelFactory factory, IProject project, IFileSystemService fileSystemService, IFileExplorerNodeVm rootNode, IMessageDisplayService messageService, IBusyStateService busyService)
+        public void Initialize(ViewModelFactory factory, IProject project, IMetadataManager metaDataManager, IFileSystemService fileSystemService, IFileExplorerNodeVm rootNode, IMessageDisplayService messageService, IBusyStateService busyService)
         {
             _factory = factory ?? throw new ArgumentNullException(nameof(factory));
             _project = project ?? throw new ArgumentNullException(nameof(project));
+            _metaDataManager = metaDataManager ?? throw new ArgumentNullException(nameof(metaDataManager));
             _fileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
             _messageService = messageService ?? throw new ArgumentNullException(nameof(messageService));
             _busyService = busyService ?? throw new ArgumentNullException(nameof(busyService));
@@ -436,6 +480,7 @@ namespace Gorgon.Editor.ViewModels
             RenameNodeCommand = new EditorCommand<FileExplorerNodeRenameArgs>(DoRenameNode, CanRenameNode);
             DeleteNodeCommand = new EditorCommand<object>(DoDeleteNode, CanDeleteNode);
             IncludeExcludeCommand = new EditorCommand<bool>(DoIncludeExcludeNode);
+            RefreshNodeCommand = new EditorCommand<IFileExplorerNodeVm>(DoRefreshSelectedNode);
         }
         #endregion
     }

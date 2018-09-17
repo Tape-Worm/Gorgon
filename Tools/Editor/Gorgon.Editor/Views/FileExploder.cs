@@ -289,12 +289,12 @@ namespace Gorgon.Editor.Views
         {
             if ((DataContext?.SelectedNode == null) 
                 || (DataContext?.IncludeExcludeCommand == null) 
-                || (!DataContext.IncludeExcludeCommand.CanExecute(ItemIncludeInProject.Checked)))
+                || (!DataContext.IncludeExcludeCommand.CanExecute(MenuItemIncludeInProject.Checked)))
             {
                 return;
             }
 
-            DataContext.IncludeExcludeCommand.Execute(ItemIncludeInProject.Checked);                        
+            DataContext.IncludeExcludeCommand.Execute(MenuItemIncludeInProject.Checked);                        
         }
 
         /// <summary>
@@ -312,11 +312,13 @@ namespace Gorgon.Editor.Views
         private void ItemDelete_Click(object sender, EventArgs e)
         {
             if ((DataContext?.DeleteNodeCommand == null)
-                || (!DataContext.DeleteNodeCommand.CanExecute(null)))
+                || (!DataContext.DeleteNodeCommand.CanExecute(null))
+                // If we're renaming, then ignore our delete.
+                || ((TreeFileSystem.SelectedNode != null) && (TreeFileSystem.SelectedNode.IsEditing)))
             {
                 return;
             }
-
+            
             DataContext.DeleteNodeCommand.Execute(null);
         }
 
@@ -362,22 +364,22 @@ namespace Gorgon.Editor.Views
             {
                 MenuSep1.Visible = false;
                 MenuSep2.Visible = false;
-                ItemCreateDirectory.Visible = true;
-                ItemDelete.Visible = false;
-                ItemRename.Visible = false;
-                ItemIncludeInProject.Visible = false;
+                MenuItemCreateDirectory.Visible = true;
+                MenuItemDelete.Visible = false;
+                MenuItemRename.Visible = false;
+                MenuItemIncludeInProject.Visible = false;
                 return;
             }
 
             MenuSep1.Visible = true;
-            ItemRename.Visible = true;
-            ItemIncludeInProject.Visible = true;
+            MenuItemRename.Visible = true;
+            MenuItemIncludeInProject.Visible = true;
 
-            ItemCreateDirectory.Visible = dataContext.CreateNodeCommand?.CanExecute(null) ?? false;
-            ItemDelete.Visible = dataContext.DeleteNodeCommand?.CanExecute(null) ?? false;
-            ItemIncludeInProject.Checked = dataContext.SelectedNode.Included;
+            MenuItemCreateDirectory.Visible = dataContext.CreateNodeCommand?.CanExecute(null) ?? false;
+            MenuItemDelete.Visible = dataContext.DeleteNodeCommand?.CanExecute(null) ?? false;
+            MenuItemIncludeInProject.Checked = dataContext.SelectedNode.Included;
 
-            MenuSep2.Visible = ItemCreateDirectory.Visible;
+            MenuSep2.Visible = MenuItemCreateDirectory.Visible;
         }
 
         /// <summary>
@@ -435,7 +437,7 @@ namespace Gorgon.Editor.Views
 
             if (e.Button == MouseButtons.Right)
             {
-                MenuOperations.Show(this, Cursor.Position);
+                MenuOptions.Show(this, PointToClient(Cursor.Position));
             }
         }
 
@@ -449,7 +451,19 @@ namespace Gorgon.Editor.Views
             switch (e.KeyCode)
             {
                 case Keys.F2:
-                    TreeFileSystem.SelectedNode?.BeginEdit();
+                    if ((TreeFileSystem.SelectedNode != null) && (!TreeFileSystem.SelectedNode.IsEditing))
+                    {
+                        TreeFileSystem.SelectedNode?.BeginEdit();
+                    }                    
+                    break;
+                case Keys.Delete:
+                    if ((TreeFileSystem.SelectedNode != null) && (!TreeFileSystem.SelectedNode.IsEditing))
+                    {
+                        MenuItemDelete.PerformClick();
+                    }
+                    break;
+                case Keys.F5:
+                    RefreshTree();
                     break;
             }
         }
@@ -534,19 +548,29 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
-            // Do not hang on to tree nodes that don't need to be kept.
-            foreach (KryptonTreeNode treeNode in e.Node.Nodes.OfType<KryptonTreeNode>())
+            // Recursively remove all links.
+            void RemoveLinksRecursive(IEnumerable<KryptonTreeNode> treeNodes)
             {
-                _nodeLinks.TryGetValue(treeNode, out IFileExplorerNodeVm fsNode);
-                // Remove from our tree node linkage so we don't keep old nodes alive.                
-                _nodeLinks.Remove(treeNode);
-
-                if (fsNode != null)
+                // Do not hang on to tree nodes that don't need to be kept.
+                foreach (KryptonTreeNode treeNode in treeNodes)
                 {
-                    _revNodeLinks.Remove(fsNode);
+                    if (treeNode.Nodes.Count > 0)
+                    {
+                        RemoveLinksRecursive(treeNode.Nodes.OfType<KryptonTreeNode>());
+                    }
+
+                    _nodeLinks.TryGetValue(treeNode, out IFileExplorerNodeVm fsNode);
+                    // Remove from our tree node linkage so we don't keep old nodes alive.                
+                    _nodeLinks.Remove(treeNode);
+
+                    if (fsNode != null)
+                    {
+                        _revNodeLinks.Remove(fsNode);
+                    }
                 }
             }
 
+            RemoveLinksRecursive(e.Node.Nodes.OfType<KryptonTreeNode>());
             e.Node.Nodes.Clear();
 
             if ((!_nodeLinks.TryGetValue((KryptonTreeNode)e.Node, out IFileExplorerNodeVm node))
@@ -608,14 +632,24 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
-            e.Node.Nodes.Clear();
+            e.Node.Nodes.Clear();            
 
             if (!_nodeLinks.TryGetValue((KryptonTreeNode)e.Node, out IFileExplorerNodeVm parentNode))
             {
                 return;
             }
 
+            // Turn off events for this nodes children since they'll be destroyed anyway, and we really don't want to trigger the events during a refresh.
+            UnassignNodeEvents(parentNode.Children);
+
+            if ((DataContext?.RefreshNodeCommand != null) && (DataContext.RefreshNodeCommand.CanExecute(parentNode)))
+            {
+                DataContext.RefreshNodeCommand.Execute(parentNode);
+            }
+
             FillTree(e.Node.Nodes, parentNode.Children);
+
+            AssignNodeEvents(parentNode.Children);
         }
 
         /// <summary>
@@ -642,11 +676,51 @@ namespace Gorgon.Editor.Views
         }
 
         /// <summary>
+        /// Function to refresh the tree, or a branch on the tree.
+        /// </summary>
+        private void RefreshTree()
+        {
+            if (DataContext == null)
+            {
+                return;
+            }
+
+            if (TreeFileSystem.SelectedNode == null)
+            {
+                _nodeLinks.Clear();
+                _revNodeLinks.Clear();
+
+                UnassignNodeEvents(DataContext.RootNode.Children);
+
+                if ((DataContext.RefreshNodeCommand != null) && (DataContext.RefreshNodeCommand.CanExecute(DataContext.RootNode)))
+                {
+                    DataContext.RefreshNodeCommand.Execute(DataContext.RootNode);
+                }
+
+                FillTree(TreeFileSystem.Nodes, DataContext.RootNode.Children);
+
+                AssignNodeEvents(DataContext.RootNode.Children);
+                return;
+            }
+
+            bool isExpanded = TreeFileSystem.SelectedNode.IsExpanded;
+            TreeFileSystem.SelectedNode.Collapse();
+
+            // Collapsing the node will clear all links for any children.
+            if ((TreeFileSystem.SelectedNode.Nodes.Count == 0) || (!isExpanded))
+            {
+                return;
+            }
+            
+            TreeFileSystem.SelectedNode.Expand();
+        }
+
+        /// <summary>
         /// Function to populate the tree with file system nodes.
         /// </summary>
         /// <param name="treeNodes">The node collection on the tree to update.</param>
         /// <param name="nodes">The nodes used to populate.</param>
-        private void FillTree(TreeNodeCollection treeNodes,IReadOnlyList<IFileExplorerNodeVm> nodes)
+        private void FillTree(TreeNodeCollection treeNodes, IReadOnlyList<IFileExplorerNodeVm> nodes)
         {
             TreeFileSystem.BeginUpdate();
 
@@ -728,7 +802,7 @@ namespace Gorgon.Editor.Views
         /// <param name="nodes">The nodes to evaluate.</param>
         private void UnassignNodeEvents(ObservableCollection<IFileExplorerNodeVm> nodes)
         {
-            if ((nodes == null) || (nodes.Count == 0))
+            if (nodes == null)
             {
                 return;
             }
@@ -744,8 +818,7 @@ namespace Gorgon.Editor.Views
                 UnassignNodeEvents(node.Children);
             }
         }
-
-
+        
         /// <summary>
         /// Function unassign events after the data context is unassigned.
         /// </summary>
@@ -806,13 +879,86 @@ namespace Gorgon.Editor.Views
         }
 
         /// <summary>
+        /// Function to expand the currently selected file system node.
+        /// </summary>
+        public void Expand()
+        {
+            if (DataContext?.SelectedNode == null)
+            {
+                return;
+            }
+
+            if (!_revNodeLinks.TryGetValue(DataContext.SelectedNode, out KryptonTreeNode treeNode))
+            {
+                return;
+            }
+
+            treeNode.Expand();
+        }
+
+        /// <summary>
+        /// Function to collapse the currently selected file system node.
+        /// </summary>
+        public void Collapse()
+        {
+            if (DataContext?.SelectedNode == null)
+            {
+                return;
+            }
+
+            if (!_revNodeLinks.TryGetValue(DataContext.SelectedNode, out KryptonTreeNode treeNode))
+            {
+                return;
+            }
+
+            treeNode.Collapse();
+        }
+
+        /// <summary>
+        /// Function to refresh the entire file system.
+        /// </summary>
+        public void RefreshFileSystem()
+        {
+            TreeFileSystem.BeforeExpand -= TreeFileSystem_BeforeExpand;
+            TreeFileSystem.AfterCollapse -= TreeFileSystem_AfterCollapse;
+            TreeFileSystem.AfterSelect -= TreeFileSystem_AfterSelect;
+
+            try
+            {
+                SelectNode(null);
+
+                UnassignNodeEvents(DataContext?.RootNode?.Children);
+                
+                TreeFileSystem.Nodes.Clear();
+                _nodeLinks.Clear();
+                _revNodeLinks.Clear();
+
+                if ((DataContext?.RootNode == null) || (DataContext.RefreshNodeCommand == null) || (!DataContext.RefreshNodeCommand.CanExecute(DataContext.RootNode)))
+                {
+                    return;
+                }
+
+                DataContext.RefreshNodeCommand.Execute(DataContext.RootNode);
+                FillTree(TreeFileSystem.Nodes, DataContext.RootNode.Children);
+
+                AssignNodeEvents(DataContext.RootNode.Children);                
+            }
+            finally
+            {
+                TreeFileSystem.BeforeExpand += TreeFileSystem_BeforeExpand;
+                TreeFileSystem.AfterCollapse += TreeFileSystem_AfterCollapse;
+                TreeFileSystem.AfterSelect += TreeFileSystem_AfterSelect;
+            }
+        }
+
+        /// <summary>
         /// Function to delete a file or directory.
         /// </summary>
         public void Delete()
         {
-            if ((ItemDelete.Visible) && (ItemDelete.Enabled))
+            if ((MenuItemDelete.Visible) && (MenuItemDelete.Enabled))
             {
-                ItemDelete.PerformClick();
+                MenuItemDelete.PerformClick();
             }
         }
 
@@ -821,9 +967,9 @@ namespace Gorgon.Editor.Views
         /// </summary>
         public void CreateDirectory()
         {
-            if ((ItemCreateDirectory.Visible) && (ItemCreateDirectory.Enabled))
+            if ((MenuItemCreateDirectory.Visible) && (MenuItemCreateDirectory.Enabled))
             {
-                ItemCreateDirectory.PerformClick();
+                MenuItemCreateDirectory.PerformClick();
             }
         }
 
@@ -832,9 +978,9 @@ namespace Gorgon.Editor.Views
         /// </summary>
         public void RenameNode()
         {
-            if ((ItemRename.Visible) && (ItemRename.Enabled))
+            if ((MenuItemRename.Visible) && (MenuItemRename.Enabled))
             {
-                ItemRename.PerformClick();
+                MenuItemRename.PerformClick();
             }
         }
 
@@ -877,7 +1023,7 @@ namespace Gorgon.Editor.Views
                         
             _excludedFont = new Font(KryptonManager.CurrentGlobalPalette
                                                    .GetContentShortTextFont((PaletteContentStyle)TreeFileSystem.ItemStyle, PaletteState.Normal),
-                                     FontStyle.Italic);
+                                     FontStyle.Italic);            
         }
         #endregion
     }

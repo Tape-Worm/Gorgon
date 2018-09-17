@@ -53,8 +53,12 @@ namespace Gorgon.Editor
             this.RibbonGroupFileSystemOrganize = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup();
             this.kryptonRibbonGroupTriple2 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple();
             this.ButtonFileSystemDelete = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.kryptonRibbonGroupSeparator1 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator();
             this.kryptonRibbonGroupLines1 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines();
             this.ButtonFileSystemRename = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.CheckShowAllFiles = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.ButtonExpand = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.ButtonCollapse = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.StageLauncher = new Gorgon.Editor.Views.StageLaunch();
             ((System.ComponentModel.ISupportInitialize)(this.PanelWorkSpace)).BeginInit();
             this.PanelWorkSpace.SuspendLayout();
@@ -445,6 +449,78 @@ namespace Gorgon.Editor
             this.AppPalette.Common.StateDisabled.Content.ShortText.Color1 = System.Drawing.Color.Silver;
             this.AppPalette.Common.StateDisabled.Content.ShortText.Color2 = System.Drawing.Color.Silver;
             this.AppPalette.Common.StateDisabled.Content.ShortText.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.AppPalette.ContextMenu.StateChecked.ItemImage.Back.Color1 = System.Drawing.Color.SteelBlue;
+            this.AppPalette.ContextMenu.StateChecked.ItemImage.Back.Color2 = System.Drawing.Color.SteelBlue;
+            this.AppPalette.ContextMenu.StateChecked.ItemImage.Border.Color1 = System.Drawing.Color.CornflowerBlue;
+            this.AppPalette.ContextMenu.StateChecked.ItemImage.Border.Color2 = System.Drawing.Color.CornflowerBlue;
+            this.AppPalette.ContextMenu.StateChecked.ItemImage.Border.Draw = ComponentFactory.Krypton.Toolkit.InheritBool.False;
+            this.AppPalette.ContextMenu.StateChecked.ItemImage.Border.DrawBorders = ((ComponentFactory.Krypton.Toolkit.PaletteDrawBorders)((((ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Top | ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Bottom) 
+            | ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Left) 
+            | ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Right)));
+            this.AppPalette.ContextMenu.StateChecked.ItemImage.Border.Rounding = 2;
+            this.AppPalette.ContextMenu.StateChecked.ItemImage.Content.Draw = ComponentFactory.Krypton.Toolkit.InheritBool.False;
+            this.AppPalette.ContextMenu.StateChecked.ItemImage.Content.Image.Effect = ComponentFactory.Krypton.Toolkit.PaletteImageEffect.LightLight;
+            this.AppPalette.ContextMenu.StateChecked.ItemImage.Content.Image.ImageColorMap = System.Drawing.Color.White;
+            this.AppPalette.ContextMenu.StateChecked.ItemImage.Content.Image.ImageColorTo = System.Drawing.Color.Fuchsia;
+            this.AppPalette.ContextMenu.StateCommon.ControlInner.Back.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.AppPalette.ContextMenu.StateCommon.ControlInner.Back.Color2 = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.AppPalette.ContextMenu.StateCommon.ControlInner.Back.Draw = ComponentFactory.Krypton.Toolkit.InheritBool.False;
+            this.AppPalette.ContextMenu.StateCommon.ControlInner.Border.DrawBorders = ((ComponentFactory.Krypton.Toolkit.PaletteDrawBorders)((((ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Top | ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Bottom) 
+            | ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Left) 
+            | ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Right)));
+            this.AppPalette.ContextMenu.StateCommon.ControlOuter.Back.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.AppPalette.ContextMenu.StateCommon.ControlOuter.Back.Color2 = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.AppPalette.ContextMenu.StateCommon.ControlOuter.Border.Draw = ComponentFactory.Krypton.Toolkit.InheritBool.False;
+            this.AppPalette.ContextMenu.StateCommon.ControlOuter.Border.DrawBorders = ((ComponentFactory.Krypton.Toolkit.PaletteDrawBorders)((((ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Top | ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Bottom) 
+            | ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Left) 
+            | ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Right)));
+            this.AppPalette.ContextMenu.StateCommon.Heading.Back.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.AppPalette.ContextMenu.StateCommon.Heading.Back.Color2 = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.AppPalette.ContextMenu.StateCommon.Heading.Border.Color1 = System.Drawing.Color.Silver;
+            this.AppPalette.ContextMenu.StateCommon.Heading.Border.Color2 = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(80)))), ((int)(((byte)(80)))));
+            this.AppPalette.ContextMenu.StateCommon.Heading.Border.ColorAngle = 180F;
+            this.AppPalette.ContextMenu.StateCommon.Heading.Border.ColorStyle = ComponentFactory.Krypton.Toolkit.PaletteColorStyle.Rounded;
+            this.AppPalette.ContextMenu.StateCommon.Heading.Border.DrawBorders = ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Bottom;
+            this.AppPalette.ContextMenu.StateCommon.Heading.Border.Width = 1;
+            this.AppPalette.ContextMenu.StateCommon.Heading.Content.ShortText.Color1 = System.Drawing.Color.White;
+            this.AppPalette.ContextMenu.StateCommon.Heading.Content.ShortText.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.AppPalette.ContextMenu.StateCommon.ItemHighlight.Back.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.AppPalette.ContextMenu.StateCommon.ItemHighlight.Back.Color2 = System.Drawing.Color.SteelBlue;
+            this.AppPalette.ContextMenu.StateCommon.ItemHighlight.Back.GraphicsHint = ComponentFactory.Krypton.Toolkit.PaletteGraphicsHint.None;
+            this.AppPalette.ContextMenu.StateCommon.ItemHighlight.Border.Color1 = System.Drawing.Color.SteelBlue;
+            this.AppPalette.ContextMenu.StateCommon.ItemHighlight.Border.Color2 = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.AppPalette.ContextMenu.StateCommon.ItemHighlight.Border.ColorStyle = ComponentFactory.Krypton.Toolkit.PaletteColorStyle.Solid;
+            this.AppPalette.ContextMenu.StateCommon.ItemHighlight.Border.DrawBorders = ((ComponentFactory.Krypton.Toolkit.PaletteDrawBorders)((((ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Top | ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Bottom) 
+            | ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Left) 
+            | ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Right)));
+            this.AppPalette.ContextMenu.StateCommon.ItemHighlight.Border.Rounding = 2;
+            this.AppPalette.ContextMenu.StateCommon.ItemHighlight.Border.Width = 2;
+            this.AppPalette.ContextMenu.StateCommon.ItemImageColumn.Back.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.AppPalette.ContextMenu.StateCommon.ItemImageColumn.Back.Color2 = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.AppPalette.ContextMenu.StateCommon.ItemImageColumn.Border.Draw = ComponentFactory.Krypton.Toolkit.InheritBool.False;
+            this.AppPalette.ContextMenu.StateCommon.ItemImageColumn.Border.DrawBorders = ((ComponentFactory.Krypton.Toolkit.PaletteDrawBorders)((((ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Top | ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Bottom) 
+            | ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Left) 
+            | ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Right)));
+            this.AppPalette.ContextMenu.StateCommon.ItemImageColumn.Border.GraphicsHint = ComponentFactory.Krypton.Toolkit.PaletteGraphicsHint.None;
+            this.AppPalette.ContextMenu.StateCommon.Separator.Back.Color1 = System.Drawing.Color.Silver;
+            this.AppPalette.ContextMenu.StateCommon.Separator.Back.Color2 = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.AppPalette.ContextMenu.StateCommon.Separator.Back.ColorAlign = ComponentFactory.Krypton.Toolkit.PaletteRectangleAlign.Local;
+            this.AppPalette.ContextMenu.StateCommon.Separator.Back.ColorAngle = 180F;
+            this.AppPalette.ContextMenu.StateCommon.Separator.Back.ColorStyle = ComponentFactory.Krypton.Toolkit.PaletteColorStyle.Linear50;
+            this.AppPalette.ContextMenu.StateCommon.Separator.Back.GraphicsHint = ComponentFactory.Krypton.Toolkit.PaletteGraphicsHint.None;
+            this.AppPalette.ContextMenu.StateCommon.Separator.Border.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.AppPalette.ContextMenu.StateCommon.Separator.Border.Color2 = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.AppPalette.ContextMenu.StateCommon.Separator.Border.ColorStyle = ComponentFactory.Krypton.Toolkit.PaletteColorStyle.Solid;
+            this.AppPalette.ContextMenu.StateCommon.Separator.Border.DrawBorders = ((ComponentFactory.Krypton.Toolkit.PaletteDrawBorders)((((ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Top | ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Bottom) 
+            | ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Left) 
+            | ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Right)));
+            this.AppPalette.ContextMenu.StateCommon.Separator.Border.GraphicsHint = ComponentFactory.Krypton.Toolkit.PaletteGraphicsHint.None;
+            this.AppPalette.ContextMenu.StateNormal.ItemShortcutText.ShortText.Color1 = System.Drawing.Color.Silver;
+            this.AppPalette.ContextMenu.StateNormal.ItemShortcutText.ShortText.Color2 = System.Drawing.Color.Silver;
+            this.AppPalette.ContextMenu.StateNormal.ItemShortcutText.ShortText.Font = new System.Drawing.Font("Segoe UI", 7.25F, System.Drawing.FontStyle.Bold);
+            this.AppPalette.ContextMenu.StateNormal.ItemTextStandard.ShortText.Color1 = System.Drawing.Color.White;
+            this.AppPalette.ContextMenu.StateNormal.ItemTextStandard.ShortText.Color2 = System.Drawing.Color.White;
+            this.AppPalette.ContextMenu.StateNormal.ItemTextStandard.ShortText.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.AppPalette.ControlStyles.ControlAlternate.StateCommon.Back.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.AppPalette.ControlStyles.ControlAlternate.StateCommon.Back.Color2 = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.AppPalette.ControlStyles.ControlAlternate.StateCommon.Border.Draw = ComponentFactory.Krypton.Toolkit.InheritBool.False;
@@ -546,7 +622,7 @@ namespace Gorgon.Editor
             this.AppPalette.PanelStyles.PanelCustom1.StateCommon.Color2 = System.Drawing.Color.FromArgb(((int)(((byte)(204)))), ((int)(((byte)(204)))), ((int)(((byte)(204)))));
             this.AppPalette.PanelStyles.PanelCustom1.StateCommon.Draw = ComponentFactory.Krypton.Toolkit.InheritBool.True;
             this.AppPalette.Ribbon.RibbonGeneral.GroupSeparatorDark = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.AppPalette.Ribbon.RibbonGeneral.GroupSeparatorLight = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.AppPalette.Ribbon.RibbonGeneral.GroupSeparatorLight = System.Drawing.Color.FromArgb(((int)(((byte)(80)))), ((int)(((byte)(80)))), ((int)(((byte)(80)))));
             this.AppPalette.Ribbon.RibbonGeneral.MinimizeBarDarkColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.AppPalette.Ribbon.RibbonGeneral.MinimizeBarLightColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.AppPalette.Ribbon.RibbonGeneral.TextFont = new System.Drawing.Font("Segoe UI", 9F);
@@ -581,6 +657,66 @@ namespace Gorgon.Editor
             this.AppPalette.Ribbon.RibbonTab.StateTracking.BackColor4 = System.Drawing.Color.SteelBlue;
             this.AppPalette.Ribbon.RibbonTab.StateTracking.BackColor5 = System.Drawing.Color.SteelBlue;
             this.AppPalette.Ribbon.RibbonTab.StateTracking.TextColor = System.Drawing.Color.White;
+            this.AppPalette.ToolMenuStatus.Button.ButtonCheckedGradientBegin = System.Drawing.Color.SteelBlue;
+            this.AppPalette.ToolMenuStatus.Button.ButtonCheckedGradientEnd = System.Drawing.Color.SteelBlue;
+            this.AppPalette.ToolMenuStatus.Button.ButtonCheckedGradientMiddle = System.Drawing.Color.SteelBlue;
+            this.AppPalette.ToolMenuStatus.Button.ButtonCheckedHighlight = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.AppPalette.ToolMenuStatus.Button.ButtonCheckedHighlightBorder = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.AppPalette.ToolMenuStatus.Button.ButtonPressedBorder = System.Drawing.Color.CornflowerBlue;
+            this.AppPalette.ToolMenuStatus.Button.ButtonPressedGradientBegin = System.Drawing.Color.CornflowerBlue;
+            this.AppPalette.ToolMenuStatus.Button.ButtonPressedGradientEnd = System.Drawing.Color.CornflowerBlue;
+            this.AppPalette.ToolMenuStatus.Button.ButtonPressedGradientMiddle = System.Drawing.Color.CornflowerBlue;
+            this.AppPalette.ToolMenuStatus.Button.ButtonPressedHighlight = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.AppPalette.ToolMenuStatus.Button.ButtonPressedHighlightBorder = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.AppPalette.ToolMenuStatus.Button.ButtonSelectedBorder = System.Drawing.Color.SteelBlue;
+            this.AppPalette.ToolMenuStatus.Button.ButtonSelectedGradientBegin = System.Drawing.Color.SteelBlue;
+            this.AppPalette.ToolMenuStatus.Button.ButtonSelectedGradientEnd = System.Drawing.Color.SteelBlue;
+            this.AppPalette.ToolMenuStatus.Button.ButtonSelectedGradientMiddle = System.Drawing.Color.SteelBlue;
+            this.AppPalette.ToolMenuStatus.Button.ButtonSelectedHighlight = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.AppPalette.ToolMenuStatus.Button.ButtonSelectedHighlightBorder = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.AppPalette.ToolMenuStatus.Button.CheckBackground = System.Drawing.Color.SteelBlue;
+            this.AppPalette.ToolMenuStatus.Button.CheckPressedBackground = System.Drawing.Color.CornflowerBlue;
+            this.AppPalette.ToolMenuStatus.Button.CheckSelectedBackground = System.Drawing.Color.SteelBlue;
+            this.AppPalette.ToolMenuStatus.Button.OverflowButtonGradientBegin = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.AppPalette.ToolMenuStatus.Button.OverflowButtonGradientEnd = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.AppPalette.ToolMenuStatus.Button.OverflowButtonGradientMiddle = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.AppPalette.ToolMenuStatus.Grip.GripDark = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.AppPalette.ToolMenuStatus.Grip.GripLight = System.Drawing.Color.Silver;
+            this.AppPalette.ToolMenuStatus.Menu.ImageMarginGradientBegin = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.AppPalette.ToolMenuStatus.Menu.ImageMarginGradientEnd = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.AppPalette.ToolMenuStatus.Menu.ImageMarginGradientMiddle = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.AppPalette.ToolMenuStatus.Menu.ImageMarginRevealedGradientBegin = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.AppPalette.ToolMenuStatus.Menu.ImageMarginRevealedGradientEnd = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.AppPalette.ToolMenuStatus.Menu.ImageMarginRevealedGradientMiddle = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.AppPalette.ToolMenuStatus.Menu.MenuBorder = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(96)))), ((int)(((byte)(96)))));
+            this.AppPalette.ToolMenuStatus.Menu.MenuItemBorder = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.AppPalette.ToolMenuStatus.Menu.MenuItemPressedGradientBegin = System.Drawing.Color.CornflowerBlue;
+            this.AppPalette.ToolMenuStatus.Menu.MenuItemPressedGradientEnd = System.Drawing.Color.CornflowerBlue;
+            this.AppPalette.ToolMenuStatus.Menu.MenuItemPressedGradientMiddle = System.Drawing.Color.CornflowerBlue;
+            this.AppPalette.ToolMenuStatus.Menu.MenuItemSelected = System.Drawing.Color.SteelBlue;
+            this.AppPalette.ToolMenuStatus.Menu.MenuItemSelectedGradientBegin = System.Drawing.Color.SteelBlue;
+            this.AppPalette.ToolMenuStatus.Menu.MenuItemSelectedGradientEnd = System.Drawing.Color.SteelBlue;
+            this.AppPalette.ToolMenuStatus.Menu.MenuItemText = System.Drawing.Color.White;
+            this.AppPalette.ToolMenuStatus.MenuStrip.MenuStripFont = new System.Drawing.Font("Segoe UI", 9F);
+            this.AppPalette.ToolMenuStatus.MenuStrip.MenuStripGradientBegin = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.AppPalette.ToolMenuStatus.MenuStrip.MenuStripGradientEnd = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.AppPalette.ToolMenuStatus.MenuStrip.MenuStripText = System.Drawing.Color.White;
+            this.AppPalette.ToolMenuStatus.Rafting.RaftingContainerGradientBegin = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.AppPalette.ToolMenuStatus.Rafting.RaftingContainerGradientEnd = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.AppPalette.ToolMenuStatus.Separator.SeparatorDark = System.Drawing.Color.Silver;
+            this.AppPalette.ToolMenuStatus.Separator.SeparatorLight = System.Drawing.Color.Silver;
+            this.AppPalette.ToolMenuStatus.ToolStrip.ToolStripBorder = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.AppPalette.ToolMenuStatus.ToolStrip.ToolStripContentPanelGradientBegin = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.AppPalette.ToolMenuStatus.ToolStrip.ToolStripContentPanelGradientEnd = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.AppPalette.ToolMenuStatus.ToolStrip.ToolStripDropDownBackground = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.AppPalette.ToolMenuStatus.ToolStrip.ToolStripFont = new System.Drawing.Font("Segoe UI", 9F);
+            this.AppPalette.ToolMenuStatus.ToolStrip.ToolStripGradientBegin = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.AppPalette.ToolMenuStatus.ToolStrip.ToolStripGradientEnd = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.AppPalette.ToolMenuStatus.ToolStrip.ToolStripGradientMiddle = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.AppPalette.ToolMenuStatus.ToolStrip.ToolStripPanelGradientBegin = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.AppPalette.ToolMenuStatus.ToolStrip.ToolStripPanelGradientEnd = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.AppPalette.ToolMenuStatus.ToolStrip.ToolStripText = System.Drawing.Color.White;
+            this.AppPalette.ToolMenuStatus.UseRoundedEdges = ComponentFactory.Krypton.Toolkit.InheritBool.False;
             // 
             // PanelWorkSpace
             // 
@@ -682,6 +818,7 @@ namespace Gorgon.Editor
             this.RibbonGroupFileSystemOrganize.DialogBoxLauncher = false;
             this.RibbonGroupFileSystemOrganize.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupContainer[] {
             this.kryptonRibbonGroupTriple2,
+            this.kryptonRibbonGroupSeparator1,
             this.kryptonRibbonGroupLines1});
             this.RibbonGroupFileSystemOrganize.KeyTipGroup = "O";
             this.RibbonGroupFileSystemOrganize.TextLine1 = "Organize";
@@ -703,7 +840,10 @@ namespace Gorgon.Editor
             // kryptonRibbonGroupLines1
             // 
             this.kryptonRibbonGroupLines1.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
-            this.ButtonFileSystemRename});
+            this.ButtonFileSystemRename,
+            this.CheckShowAllFiles,
+            this.ButtonExpand,
+            this.ButtonCollapse});
             // 
             // ButtonFileSystemRename
             // 
@@ -714,6 +854,35 @@ namespace Gorgon.Editor
             this.ButtonFileSystemRename.TextLine1 = "Rename";
             this.ButtonFileSystemRename.ToolTipBody = "Rename the selected file system item.";
             this.ButtonFileSystemRename.Click += new System.EventHandler(this.ButtonFileSystemRename_Click);
+            // 
+            // CheckShowAllFiles
+            // 
+            this.CheckShowAllFiles.ButtonType = ComponentFactory.Krypton.Ribbon.GroupButtonType.Check;
+            this.CheckShowAllFiles.ImageLarge = global::Gorgon.Editor.Properties.Resources.show_external_48x48;
+            this.CheckShowAllFiles.ImageSmall = global::Gorgon.Editor.Properties.Resources.show_external_16x16;
+            this.CheckShowAllFiles.TextLine1 = "Show all";
+            this.CheckShowAllFiles.ToolTipBody = "Show or hide all files/directories that are not included in the project.";
+            this.CheckShowAllFiles.Click += new System.EventHandler(this.CheckShowAllFiles_Click);
+            // 
+            // ButtonExpand
+            // 
+            this.ButtonExpand.Enabled = false;
+            this.ButtonExpand.ImageLarge = global::Gorgon.Editor.Properties.Resources.expand_48x48;
+            this.ButtonExpand.ImageSmall = global::Gorgon.Editor.Properties.Resources.expand_16x16;
+            this.ButtonExpand.KeyTip = "E";
+            this.ButtonExpand.TextLine1 = "Expand";
+            this.ButtonExpand.ToolTipBody = "Expand the currently selected file/directory.";
+            this.ButtonExpand.Click += new System.EventHandler(this.ButtonExpand_Click);
+            // 
+            // ButtonCollapse
+            // 
+            this.ButtonCollapse.Enabled = false;
+            this.ButtonCollapse.ImageLarge = global::Gorgon.Editor.Properties.Resources.collapse_48x48;
+            this.ButtonCollapse.ImageSmall = global::Gorgon.Editor.Properties.Resources.collapse_16x16;
+            this.ButtonCollapse.KeyTip = "C";
+            this.ButtonCollapse.TextLine1 = "Collapse";
+            this.ButtonCollapse.ToolTipBody = "Collapse the currently selected file/directory.";
+            this.ButtonCollapse.Click += new System.EventHandler(this.ButtonCollapse_Click);
             // 
             // StageLauncher
             // 
@@ -770,6 +939,10 @@ namespace Gorgon.Editor
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple2;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonFileSystemDelete;
         private Gorgon.UI.GorgonProgressScreenPanel ProgressScreen;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton CheckShowAllFiles;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonExpand;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonCollapse;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator kryptonRibbonGroupSeparator1;
     }
 }
 

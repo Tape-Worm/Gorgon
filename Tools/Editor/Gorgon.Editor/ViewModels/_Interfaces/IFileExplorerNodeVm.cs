@@ -113,6 +113,14 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Property to return the physical path to the node.
+        /// </summary>
+        string PhysicalPath
+        {
+            get;
+        }
+
+        /// <summary>
         /// Property to return the image name to use for the node type.
         /// </summary>
         string ImageName

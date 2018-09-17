@@ -103,6 +103,26 @@ namespace Gorgon.Editor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap collapse_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("collapse_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap collapse_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("collapse_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap drive_48x48 {
             get {
                 object obj = ResourceManager.GetObject("drive_48x48", resourceCulture);
@@ -146,6 +166,26 @@ namespace Gorgon.Editor.Properties {
         internal static System.Drawing.Bitmap drive_remove_48x48 {
             get {
                 object obj = ResourceManager.GetObject("drive_remove_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap expand_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("expand_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap expand_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("expand_48x48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -281,6 +321,17 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was an error including/excluding &apos;{0}&apos;.
+        ///
+        ///Please try again..
+        /// </summary>
+        internal static string GOREDIT_ERR_INCLUDE_NODE {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_INCLUDE_NODE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was an error while showing the New Project screen.
         ///Please try again..
         /// </summary>
@@ -337,6 +388,16 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_ERR_PATH_IS_NOT_IN_PROJECT_FILESYSTEM {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_PATH_IS_NOT_IN_PROJECT_FILESYSTEM", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error while refreshing the file system.
+        ///Please try again..
+        /// </summary>
+        internal static string GOREDIT_ERR_REFRESH {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_REFRESH", resourceCulture);
             }
         }
         
@@ -568,6 +629,26 @@ namespace Gorgon.Editor.Properties {
         internal static System.Drawing.Bitmap rename_16x16 {
             get {
                 object obj = ResourceManager.GetObject("rename_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap show_external_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("show_external_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap show_external_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("show_external_48x48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

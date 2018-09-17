@@ -124,7 +124,7 @@ namespace Gorgon.Editor.Metadata
         public IList<IncludedFileSystemPathMetadata> GetIncludedPaths()
         {
             using (SQLiteConnection conn = GetConnection())
-            using (SQLiteCommand command = new SQLiteCommand(SelectIncludedPaths, conn))
+            using (var command = new SQLiteCommand(SelectIncludedPaths, conn))
             using (SQLiteDataReader reader = command.ExecuteReader(CommandBehavior.CloseConnection))
             {
                 var result = new List<IncludedFileSystemPathMetadata>();

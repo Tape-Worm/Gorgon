@@ -30,7 +30,6 @@ using System.Data.SQLite;
 using System.IO;
 using System.Linq;
 using Gorgon.Core;
-using Gorgon.Editor.Metadata;
 using Gorgon.Editor.Properties;
 
 namespace Gorgon.Editor.ProjectData
@@ -45,7 +44,8 @@ namespace Gorgon.Editor.ProjectData
         private const string ProjectMetadataCreate = @"CREATE TABLE IF NOT EXISTS ProjectMetadata (
                                                             ProjectName TEXT NOT NULL,
                                                             Version TEXT NOT NULL,
-                                                            WorkspaceLocation TEXT NOT NULL
+                                                            WorkspaceLocation TEXT NOT NULL,
+                                                            ShowExternalObjects INT NOT NULL
                                                        ) ";
 
         // The query used to create a table for file/folder exclusions in the project.
@@ -55,7 +55,7 @@ namespace Gorgon.Editor.ProjectData
                                                        ) ";
 
         // The query used to create the inital project metadata.
-        private const string AddProjectMetadata = @"INSERT INTO ProjectMetadata (ProjectName, Version, WorkspaceLocation) VALUES (@PName, @PVersion, @PWorkspace)";
+        private const string AddProjectMetadata = @"INSERT INTO ProjectMetadata (ProjectName, Version, WorkspaceLocation, ShowExternalObjects) VALUES (@PName, @PVersion, @PWorkspace, @PShowExtern)";
 
         // The query used to retrieve the name of the project from the metadata.
         private const string GetProjectNameFromMetadata = @"SELECT ProjectName FROM ProjectMetadata";
@@ -69,20 +69,16 @@ namespace Gorgon.Editor.ProjectData
         /// <summary>
         /// Function to build the metadata database for our project.
         /// </summary>
-        /// <param name="workspace">The workspace directory.</param>
-        /// <param name="name">The name of the project.</param>
-        /// <returns>The file information for the database file.</returns>
-        private static FileInfo BuildMetadataDatabase(DirectoryInfo workspace, string name)
+        /// <param name="project">The project that contains the initial data to write.</param>
+        private static void BuildMetadataDatabase(Project project)
         {
-            var fileLocation = new FileInfo(Path.Combine(workspace.FullName, CommonEditorConstants.EditorMetadataFileName));
-
-            if (fileLocation.Exists)
+            if (project.MetadataFile.Exists)
             {
-                fileLocation.Delete();
-                fileLocation.Refresh();
+                project.MetadataFile.Delete();
+                project.MetadataFile.Refresh();
             }
 
-            using (SQLiteConnection conn = GetConnection(workspace))
+            using (SQLiteConnection conn = GetConnection(project.ProjectWorkSpace))
             {
                 using (var command = new SQLiteCommand(ProjectMetadataCreate, conn))
                 {
@@ -96,18 +92,17 @@ namespace Gorgon.Editor.ProjectData
 
                 using (var command = new SQLiteCommand(AddProjectMetadata, conn))
                 {
-                    command.Parameters.AddWithValue("PName", name);
+                    command.Parameters.AddWithValue("PName", project.ProjectName);
                     command.Parameters.AddWithValue("PVersion", CommonEditorConstants.EditorCurrentProjectVersion);
-                    command.Parameters.AddWithValue("PWorkspace", workspace.FullName);
+                    command.Parameters.AddWithValue("PWorkspace", project.ProjectWorkSpace.FullName);
+                    command.Parameters.AddWithValue("PShowExtern", Convert.ToInt32(project.ShowExternalItems));
 
                     command.ExecuteNonQuery();
                 }
             }
 
-            fileLocation.Attributes = FileAttributes.Hidden | FileAttributes.Archive | FileAttributes.Normal;
-            fileLocation.Refresh();
-
-            return fileLocation;
+            project.MetadataFile.Attributes = FileAttributes.Hidden | FileAttributes.Archive | FileAttributes.Normal;
+            project.MetadataFile.Refresh();
         }
 
         /// <summary>
@@ -287,9 +282,16 @@ namespace Gorgon.Editor.ProjectData
             //workspace.Create();
             workspace.Refresh();
 
-            FileInfo metadataFile = BuildMetadataDatabase(workspace, projectName);
+            var metadataFile = new FileInfo(Path.Combine(workspace.FullName, CommonEditorConstants.EditorMetadataFileName));
 
-            return new Project(projectName, metadataFile);
+            var result = new Project(projectName, metadataFile)
+                            {
+                                ShowExternalItems = true
+                            };
+
+            BuildMetadataDatabase(result);
+
+            return result;
         }
         #endregion
 

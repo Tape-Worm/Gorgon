@@ -60,6 +60,8 @@ namespace Gorgon.Editor.ViewModels
         private bool _included;
         // The name of the file.
         private string _name;
+        // The physical file system path to the node.
+        private string _physicalPath;
         #endregion
 
         #region Properties.
@@ -153,6 +155,22 @@ namespace Gorgon.Editor.ViewModels
         /// Property to return whether or not the allow this node to be deleted.
         /// </summary>
         public bool AllowDelete => true;
+
+        public string PhysicalPath
+        {
+            get => _physicalPath;
+            private set
+            {
+                if (string.Equals(_physicalPath, value, StringComparison.OrdinalIgnoreCase))
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _physicalPath = value;
+                OnPropertyChanged();
+            }
+        }
         #endregion
 
         #region Methods.
@@ -178,7 +196,7 @@ namespace Gorgon.Editor.ViewModels
 
             // Delete the physical objects first. If we fail here, our node will survive.
             // We do this asynchronously because deleting a directory with a lot of files may take a while.
-            bool dirDeleted = await Task.Run(() => fileSystemService.DeleteDirectory(FullPath, onDeleted, cancelToken ?? CancellationToken.None));
+            bool dirDeleted = await Task.Run(() => fileSystemService.DeleteDirectory(PhysicalPath, onDeleted, cancelToken ?? CancellationToken.None));
 
             // If, for some reason, our directory was not deleted, then do not remove the node.
             if (!dirDeleted)
@@ -216,36 +234,41 @@ namespace Gorgon.Editor.ViewModels
                 throw new ArgumentEmptyException(nameof(newName));
             }
 
-            fileSystemService.RenameDirectory(FullPath, newName);
+            PhysicalPath = fileSystemService.RenameDirectory(PhysicalPath, newName);
             Name = newName;
+            NotifyPropertyChanged(nameof(FullPath));
         }
 
         /// <summary>
         /// Function used to initialize the view model.
         /// </summary>
         /// <param name="project">The project data.</param>
-        /// <param name="name">The directory name.</param>
+        /// <param name="directory">The directory name.</param>
         /// <param name="parent">The parent for this node.</param>
         /// <param name="children">The child nodes for this directory.</param>
         /// <param name="messageService">The message display service to use.</param>
         /// <param name="busyService">The busy state service to use.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="project"/>, <paramref name="name"/>, <paramref name="messageService"/>, or the <paramref name="busyService"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="project"/>, <paramref name="directory"/>, <paramref name="messageService"/>, or the <paramref name="busyService"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="directory"/> parameter is empty.</exception>
         public void Initialize(IProject project,
-                               string name,
+                               DirectoryInfo directory,
                                IFileExplorerNodeVm parent,
                                ObservableCollection<IFileExplorerNodeVm> children,
                                IMessageDisplayService messageService,
                                IBusyStateService busyService)
         {
             _project = project ?? throw new ArgumentNullException(nameof(project));
-            _name = name ?? throw new ArgumentNullException(nameof(name));
-
-            if (string.IsNullOrWhiteSpace(_name))
+            if (parent != null)
             {
-                throw new ArgumentEmptyException(nameof(name));
+                _name = directory?.Name ?? throw new ArgumentNullException(nameof(directory));
+            }
+            else
+            {
+                // Our name is root if we have no parent.
+                _name = "/";
             }
 
+            _physicalPath = directory.FullName;
             _messageService = messageService ?? throw new ArgumentNullException(nameof(messageService));
             _busyService = busyService ?? throw new ArgumentNullException(nameof(busyService));
             _parent = parent;

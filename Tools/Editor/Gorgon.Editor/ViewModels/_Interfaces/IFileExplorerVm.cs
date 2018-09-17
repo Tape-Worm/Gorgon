@@ -42,6 +42,11 @@ namespace Gorgon.Editor.ViewModels
         : IViewModel
     {
         /// <summary>
+        /// Event triggered when the file system was altered.
+        /// </summary>
+        event EventHandler FileSystemChanged;
+
+        /// <summary>
         /// Property to return the currently selected node for the file system.
         /// </summary>
         IFileExplorerNodeVm SelectedNode
@@ -93,6 +98,14 @@ namespace Gorgon.Editor.ViewModels
         /// Property to return the command used to delete the selected node.
         /// </summary>
         IEditorCommand<object> DeleteNodeCommand
+        {
+            get;
+        }
+
+        /// <summary>
+        /// Property to return the command used to refresh the specified node children.
+        /// </summary>
+        IEditorCommand<IFileExplorerNodeVm> RefreshNodeCommand
         {
             get;
         }

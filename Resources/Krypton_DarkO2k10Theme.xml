@@ -2,7 +2,7 @@
 <!--Created by exporting the settings of a KryptonPalette instance.-->
 <!--For more information about Krypton visit www.ComponentFactory.com-->
 <!--WARNING: Modifying this file may render it invalid for importing.-->
-<KryptonPalette Version="18" Generated="Saturday, 15 September 2018, 12:50">
+<KryptonPalette Version="18" Generated="Sunday, 16 September 2018, 16:50">
   <Properties>
     <ButtonStyles>
       <ButtonCommon>
@@ -777,6 +777,122 @@
         </StateDisabled>
       </ControlCustom1>
     </ControlStyles>
+    <ContextMenu>
+      <StateCommon>
+        <ControlInner>
+          <Back>
+            <Draw Type="InheritBool" Value="False" />
+            <Color1 Type="Color" Value="64, 64, 64" />
+            <Color2 Type="Color" Value="64, 64, 64" />
+          </Back>
+          <Border>
+            <DrawBorders Type="PaletteDrawBorders" Value="Top,Bottom,Left,Right" />
+          </Border>
+        </ControlInner>
+        <ControlOuter>
+          <Back>
+            <Color1 Type="Color" Value="64, 64, 64" />
+            <Color2 Type="Color" Value="64, 64, 64" />
+          </Back>
+          <Border>
+            <Draw Type="InheritBool" Value="False" />
+            <DrawBorders Type="PaletteDrawBorders" Value="Top,Bottom,Left,Right" />
+          </Border>
+        </ControlOuter>
+        <Heading>
+          <Back>
+            <Color1 Type="Color" Value="64, 64, 64" />
+            <Color2 Type="Color" Value="64, 64, 64" />
+          </Back>
+          <Border>
+            <DrawBorders Type="PaletteDrawBorders" Value="Bottom" />
+            <Color1 Type="Color" Value="Silver" />
+            <Color2 Type="Color" Value="80, 80, 80" />
+            <ColorStyle Type="PaletteColorStyle" Value="Rounded" />
+            <ColorAngle Type="Single" Value="180" />
+            <Width Type="Int" Value="1" />
+          </Border>
+          <Content>
+            <ShortText>
+              <Font Type="Font" Value="Segoe UI, 9pt, style=Bold" />
+              <Color1 Type="Color" Value="White" />
+            </ShortText>
+          </Content>
+        </Heading>
+        <ItemImageColumn>
+          <Back>
+            <Color1 Type="Color" Value="64, 64, 64" />
+            <Color2 Type="Color" Value="64, 64, 64" />
+          </Back>
+          <Border>
+            <Draw Type="InheritBool" Value="False" />
+            <DrawBorders Type="PaletteDrawBorders" Value="Top,Bottom,Left,Right" />
+            <GraphicsHint Type="PaletteGraphicsHint" Value="None" />
+          </Border>
+        </ItemImageColumn>
+        <Separator>
+          <Back>
+            <GraphicsHint Type="PaletteGraphicsHint" Value="None" />
+            <Color1 Type="Color" Value="Silver" />
+            <Color2 Type="Color" Value="64, 64, 64" />
+            <ColorStyle Type="PaletteColorStyle" Value="Linear50" />
+            <ColorAlign Type="PaletteRectangleAlign" Value="Local" />
+            <ColorAngle Type="Single" Value="180" />
+          </Back>
+          <Border>
+            <DrawBorders Type="PaletteDrawBorders" Value="Top,Bottom,Left,Right" />
+            <GraphicsHint Type="PaletteGraphicsHint" Value="None" />
+            <Color1 Type="Color" Value="64, 64, 64" />
+            <Color2 Type="Color" Value="64, 64, 64" />
+            <ColorStyle Type="PaletteColorStyle" Value="Solid" />
+          </Border>
+        </Separator>
+      </StateCommon>
+      <StateNormal>
+        <ItemShortcutText>
+          <AdjacentGap Type="Int" Value="-1" />
+          <DrawFocus Type="InheritBool" Value="Inherit" />
+          <ShortText>
+            <Font Type="Font" Value="Segoe UI, 7.25pt, style=Bold" />
+            <Color1 Type="Color" Value="Silver" />
+            <Color2 Type="Color" Value="Silver" />
+          </ShortText>
+        </ItemShortcutText>
+        <ItemTextStandard>
+          <DrawFocus Type="InheritBool" Value="Inherit" />
+          <ShortText>
+            <Font Type="Font" Value="Segoe UI, 9pt" />
+            <Color1 Type="Color" Value="White" />
+            <Color2 Type="Color" Value="White" />
+          </ShortText>
+        </ItemTextStandard>
+      </StateNormal>
+      <StateChecked>
+        <ItemImage>
+          <Back>
+            <Color1 Type="Color" Value="SteelBlue" />
+            <Color2 Type="Color" Value="SteelBlue" />
+          </Back>
+          <Border>
+            <Draw Type="InheritBool" Value="False" />
+            <DrawBorders Type="PaletteDrawBorders" Value="Top,Bottom,Left,Right" />
+            <Color1 Type="Color" Value="CornflowerBlue" />
+            <Color2 Type="Color" Value="CornflowerBlue" />
+            <Rounding Type="Int" Value="2" />
+          </Border>
+          <Content>
+            <DrawFocus Type="InheritBool" Value="Inherit" />
+            <AdjacentGap Type="Int" Value="-1" />
+            <Draw Type="InheritBool" Value="False" />
+            <Image>
+              <Effect Type="PaletteImageEffect" Value="LightLight" />
+              <ImageColorMap Type="Color" Value="White" />
+              <ImageColorTo Type="Color" Value="Fuchsia" />
+            </Image>
+          </Content>
+        </ItemImage>
+      </StateChecked>
+    </ContextMenu>
     <FormStyles>
       <FormCommon>
         <StateCommon>
@@ -1060,6 +1176,82 @@
         </StateTracking>
       </RibbonTab>
     </Ribbon>
+    <ToolMenuStatus>
+      <Button>
+        <ButtonCheckedGradientBegin Type="Color" Value="SteelBlue" />
+        <ButtonCheckedGradientEnd Type="Color" Value="SteelBlue" />
+        <ButtonCheckedGradientMiddle Type="Color" Value="SteelBlue" />
+        <ButtonCheckedHighlight Type="Color" Value="255, 128, 0" />
+        <ButtonCheckedHighlightBorder Type="Color" Value="255, 128, 0" />
+        <ButtonPressedBorder Type="Color" Value="CornflowerBlue" />
+        <ButtonPressedGradientBegin Type="Color" Value="CornflowerBlue" />
+        <ButtonPressedGradientEnd Type="Color" Value="CornflowerBlue" />
+        <ButtonPressedGradientMiddle Type="Color" Value="CornflowerBlue" />
+        <ButtonPressedHighlight Type="Color" Value="255, 128, 0" />
+        <ButtonPressedHighlightBorder Type="Color" Value="255, 128, 0" />
+        <ButtonSelectedBorder Type="Color" Value="SteelBlue" />
+        <ButtonSelectedGradientBegin Type="Color" Value="SteelBlue" />
+        <ButtonSelectedGradientEnd Type="Color" Value="SteelBlue" />
+        <ButtonSelectedGradientMiddle Type="Color" Value="SteelBlue" />
+        <ButtonSelectedHighlight Type="Color" Value="255, 128, 0" />
+        <ButtonSelectedHighlightBorder Type="Color" Value="255, 128, 0" />
+        <CheckBackground Type="Color" Value="SteelBlue" />
+        <CheckPressedBackground Type="Color" Value="CornflowerBlue" />
+        <CheckSelectedBackground Type="Color" Value="SteelBlue" />
+        <OverflowButtonGradientBegin Type="Color" Value="64, 64, 64" />
+        <OverflowButtonGradientEnd Type="Color" Value="64, 64, 64" />
+        <OverflowButtonGradientMiddle Type="Color" Value="64, 64, 64" />
+      </Button>
+      <Grip>
+        <GripDark Type="Color" Value="64, 64, 64" />
+        <GripLight Type="Color" Value="Silver" />
+      </Grip>
+      <Menu>
+        <ImageMarginGradientBegin Type="Color" Value="64, 64, 64" />
+        <ImageMarginGradientEnd Type="Color" Value="64, 64, 64" />
+        <ImageMarginGradientMiddle Type="Color" Value="64, 64, 64" />
+        <ImageMarginRevealedGradientBegin Type="Color" Value="64, 64, 64" />
+        <ImageMarginRevealedGradientEnd Type="Color" Value="64, 64, 64" />
+        <ImageMarginRevealedGradientMiddle Type="Color" Value="64, 64, 64" />
+        <MenuBorder Type="Color" Value="96, 96, 96" />
+        <MenuItemText Type="Color" Value="White" />
+        <MenuItemBorder Type="Color" Value="64, 64, 64" />
+        <MenuItemPressedGradientBegin Type="Color" Value="CornflowerBlue" />
+        <MenuItemPressedGradientEnd Type="Color" Value="CornflowerBlue" />
+        <MenuItemPressedGradientMiddle Type="Color" Value="CornflowerBlue" />
+        <MenuItemSelected Type="Color" Value="SteelBlue" />
+        <MenuItemSelectedGradientBegin Type="Color" Value="SteelBlue" />
+        <MenuItemSelectedGradientEnd Type="Color" Value="SteelBlue" />
+      </Menu>
+      <Rafting>
+        <RaftingContainerGradientBegin Type="Color" Value="64, 64, 64" />
+        <RaftingContainerGradientEnd Type="Color" Value="64, 64, 64" />
+      </Rafting>
+      <MenuStrip>
+        <MenuStripText Type="Color" Value="White" />
+        <MenuStripFont Type="Font" Value="Segoe UI, 9pt" />
+        <MenuStripGradientBegin Type="Color" Value="64, 64, 64" />
+        <MenuStripGradientEnd Type="Color" Value="64, 64, 64" />
+      </MenuStrip>
+      <Separator>
+        <SeparatorDark Type="Color" Value="Silver" />
+        <SeparatorLight Type="Color" Value="Silver" />
+      </Separator>
+      <ToolStrip>
+        <ToolStripText Type="Color" Value="White" />
+        <ToolStripFont Type="Font" Value="Segoe UI, 9pt" />
+        <ToolStripBorder Type="Color" Value="64, 64, 64" />
+        <ToolStripContentPanelGradientBegin Type="Color" Value="64, 64, 64" />
+        <ToolStripContentPanelGradientEnd Type="Color" Value="64, 64, 64" />
+        <ToolStripDropDownBackground Type="Color" Value="64, 64, 64" />
+        <ToolStripGradientBegin Type="Color" Value="64, 64, 64" />
+        <ToolStripGradientEnd Type="Color" Value="64, 64, 64" />
+        <ToolStripGradientMiddle Type="Color" Value="64, 64, 64" />
+        <ToolStripPanelGradientBegin Type="Color" Value="64, 64, 64" />
+        <ToolStripPanelGradientEnd Type="Color" Value="64, 64, 64" />
+      </ToolStrip>
+      <UseRoundedEdges Type="InheritBool" Value="False" />
+    </ToolMenuStatus>
     <BasePaletteMode Type="PaletteMode" Value="Office 2010 - Black" />
   </Properties>
   <Images />

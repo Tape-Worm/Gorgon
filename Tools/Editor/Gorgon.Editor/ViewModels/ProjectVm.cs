@@ -58,6 +58,25 @@ namespace Gorgon.Editor.ViewModels
 
         #region Properties.
         /// <summary>
+        /// Property to set or return whether to show external items that are not included in the project file system.
+        /// </summary>
+        public bool ShowExternalItems
+        {
+            get => _projectData.ShowExternalItems;
+            set
+            {
+                if (_projectData.ShowExternalItems == value)
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _projectData.ShowExternalItems = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
         /// Property to set or return the file explorer view model for use with the file explorer subview.
         /// </summary>
         public IFileExplorerVm FileExplorer
@@ -160,6 +179,23 @@ namespace Gorgon.Editor.ViewModels
         private void FileExplorer_WaitPanelActivated(object sender, WaitPanelActivateArgs e) => ShowWaitPanel(e.Message, e.Title);
 
         /// <summary>
+        /// Handles the FileSystemChanged event of the FileExplorer control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void FileExplorer_FileSystemChanged(object sender, EventArgs e)
+        {
+            // Indicate that the file system has changes now.
+            // This will only be triggered if a change is made to a file that is included in our project.  Excluded files don't matter as they don't get saved.
+            if (_state != ProjectState.Unmodified)
+            {
+                return;
+            }
+
+            ProjectState = ProjectState.Modified;
+        }
+
+        /// <summary>
         /// Function to assign events for the child view models.
         /// </summary>
         private void AssignEvents()
@@ -173,7 +209,8 @@ namespace Gorgon.Editor.ViewModels
             FileExplorer.WaitPanelDeactivated += FileExplorer_WaitPanelDeactivated;
             FileExplorer.ProgressUpdated += FileExplorer_ProgressUpdated;
             FileExplorer.ProgressDeactivated += FileExplorer_ProgressDeactivated;
-        }
+            FileExplorer.FileSystemChanged += FileExplorer_FileSystemChanged;
+        }        
 
         /// <summary>
         /// Function to unassign events from the child view models.
@@ -189,6 +226,7 @@ namespace Gorgon.Editor.ViewModels
             FileExplorer.ProgressDeactivated -= FileExplorer_ProgressDeactivated;
             FileExplorer.WaitPanelActivated -= FileExplorer_WaitPanelActivated;
             FileExplorer.WaitPanelDeactivated -= FileExplorer_WaitPanelDeactivated;
+            FileExplorer.FileSystemChanged -= FileExplorer_FileSystemChanged;
         }
 
         /// <summary>

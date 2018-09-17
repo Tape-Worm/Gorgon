@@ -75,6 +75,7 @@
     <Compile Include="FormSplash.designer.cs">
       <DependentUpon>FormSplash.cs</DependentUpon>
     </Compile>
+    <Compile Include="ProjectData\MetadataManager.cs" />
     <Compile Include="Services\FileSystemService.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="ProjectData\Project.cs" />
@@ -181,6 +182,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\expand_48x48.png" />
+    <None Include="Resources\expand_16x16.png" />
+    <None Include="Resources\collapse_48x48.png" />
+    <None Include="Resources\collapse_16x16.png" />
+    <None Include="Resources\show_external_16x16.png" />
+    <None Include="Resources\show_external_48x48.png" />
     <None Include="Resources\icons8_16x16.png" />
     <None Include="Resources\icons8_48x48.png" />
     <None Include="Resources\rename_16x16.png" />

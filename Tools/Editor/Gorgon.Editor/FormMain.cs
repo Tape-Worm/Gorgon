@@ -121,11 +121,13 @@ namespace Gorgon.Editor
         /// </summary>
         private void ValidateRibbonButtons()
         {
-            IFileExplorerVm fileExplorer = DataContext?.CurrentProject?.FileExplorer;
+            IProjectVm project = DataContext?.CurrentProject;
+            IFileExplorerVm fileExplorer = project?.FileExplorer;
 
-            if (fileExplorer == null)
+            if ((project == null) || (fileExplorer == null))
             {
                 TabFileSystem.Visible = false;
+                CheckShowAllFiles.Enabled = CheckShowAllFiles.Checked = false;
                 return;
             }
 
@@ -137,8 +139,14 @@ namespace Gorgon.Editor
             ButtonFileSystemRename.Enabled = (fileExplorer.RenameNodeCommand != null)
                                             && (fileExplorer.SelectedNode != null);
 
+            ButtonExpand.Enabled = (fileExplorer.SelectedNode != null) && (fileExplorer.SelectedNode.Children.Count > 0);
+            ButtonCollapse.Enabled = (fileExplorer.SelectedNode != null) && (fileExplorer.SelectedNode.Children.Count > 0);
+
             ButtonFileSystemDelete.Enabled = (fileExplorer.DeleteNodeCommand != null)
                                             && (fileExplorer.DeleteNodeCommand.CanExecute(null));
+
+            CheckShowAllFiles.Enabled = true;
+            CheckShowAllFiles.Checked = project.ShowExternalItems;
         }
 
         /// <summary>
@@ -388,21 +396,108 @@ namespace Gorgon.Editor
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ButtonFileSystemNewDirectory_Click(object sender, EventArgs e) => PanelProject.FileExplorer.CreateDirectory();
+        private void ButtonFileSystemNewDirectory_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                PanelProject.FileExplorer.CreateDirectory();
+            }
+            finally
+            {
+                ValidateRibbonButtons();
+            }
+        }
 
         /// <summary>
         /// Handles the Click event of the ButtonFileSystemRename control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ButtonFileSystemRename_Click(object sender, EventArgs e) => PanelProject.FileExplorer.RenameNode();
+        private void ButtonFileSystemRename_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                PanelProject.FileExplorer.RenameNode();
+            }
+            finally
+            {
+                ValidateRibbonButtons();
+            }
+        }
 
         /// <summary>
         /// Handles the Click event of the ButtonFileSystemDelete control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ButtonFileSystemDelete_Click(object sender, EventArgs e) => PanelProject.FileExplorer.Delete();
+        private void ButtonFileSystemDelete_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                PanelProject.FileExplorer.Delete();
+            }
+            finally
+            {
+                ValidateRibbonButtons();
+            }
+        }
+
+        /// <summary>
+        /// Handles the Click event of the ButtonExpand control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonExpand_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                PanelProject.FileExplorer.Expand();
+            }
+            finally
+            {
+                ValidateRibbonButtons();
+            }
+        }
+
+        /// <summary>
+        /// Handles the Click event of the ButtonCollapse control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonCollapse_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                PanelProject.FileExplorer.Collapse();
+            }
+            finally
+            {
+                ValidateRibbonButtons();
+            }
+        }
+
+        /// <summary>
+        /// Handles the Click event of the CheckShowAllFiles control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void CheckShowAllFiles_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (DataContext?.CurrentProject == null)
+                {
+                    return;
+                }
+
+                DataContext.CurrentProject.ShowExternalItems = CheckShowAllFiles.Checked;
+                PanelProject.FileExplorer.RefreshFileSystem();
+            }
+            finally
+            {
+                ValidateRibbonButtons();
+            }
+        }
 
         /// <summary>Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.</summary>
         /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data. </param>

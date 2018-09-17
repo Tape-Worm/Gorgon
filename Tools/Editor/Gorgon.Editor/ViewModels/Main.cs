@@ -190,7 +190,7 @@ namespace Gorgon.Editor.ViewModels
 
             try
             {
-                CurrentProject = _viewModelFactory.CreateProjectViewModel(project);
+                CurrentProject = _viewModelFactory.CreateProjectViewModel(project, new MetadataManager(project));
             }
             catch (Exception ex)
             {

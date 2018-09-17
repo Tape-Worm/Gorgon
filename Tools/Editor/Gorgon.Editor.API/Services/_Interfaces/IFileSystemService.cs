@@ -54,32 +54,32 @@ namespace Gorgon.Editor.Services
 
         #region Methods.
         /// <summary>
-        /// Function to create a directory a new directory.
+        /// Function to create a new directory.
         /// </summary>
-        /// <param name="parentDirectory">The parent directory.</param>
+        /// <param name="parentDirectory">The parent directory on the physical file system.</param>
         /// <returns>A new directory information object for the new directory.</returns>
         DirectoryInfo CreateDirectory(string parentDirectory);
 
         /// <summary>
         /// Function to rename a directory.
         /// </summary>
-        /// <param name="directoryPath">The path to the directory to rename.</param>
+        /// <param name="directoryPath">The physical file system path to the directory to rename.</param>
         /// <param name="newName">The new directory name.</param>
-        /// <returns>The full file system path of the new directory name.</returns>
+        /// <returns>The full physical file system path of the new directory name.</returns>
         string RenameDirectory(string directoryPath, string newName);
 
         /// <summary>
         /// Function to rename a file.
         /// </summary>
-        /// <param name="filePath">The path to the file to rename.</param>
+        /// <param name="filePath">The physical file system path to the file to rename.</param>
         /// <param name="newName">The new name of the file.</param>
-        /// <returns>The full file system path of the new file name.</returns>
+        /// <returns>The full physical file system path of the new file name.</returns>
         string RenameFile(string filePath, string newName);
 
         /// <summary>
         /// Function to delete a directory.
         /// </summary>
-        /// <param name="directoryPath">The path to the directory to delete.</param>
+        /// <param name="directoryPath">The physical file system path to the directory to delete.</param>
         /// <param name="onDelete">The method to call when a directory or a child of the directory is deleted.</param>
         /// <param name="cancelToken">A token used to cancel the operation.</param>
         /// <returns><b>true</b> if the directory was deleted, <b>false</b> if not.</returns>
@@ -93,7 +93,7 @@ namespace Gorgon.Editor.Services
         /// <summary>
         /// Function to delete a file.
         /// </summary>
-        /// <param name="filePath">The path to the file to delete.</param>
+        /// <param name="filePath">The path to the file on the physical file system to delete.</param>
         void DeleteFile(string filePath);
         #endregion
     }

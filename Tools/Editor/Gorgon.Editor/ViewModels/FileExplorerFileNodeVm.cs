@@ -64,6 +64,8 @@ namespace Gorgon.Editor.ViewModels
         private string _name;
         // The full path to the file.
         private string _fullPath;
+        // The path to the file on the physical file system.
+        private string _physicalPath;
         #endregion
 
         #region Properties.
@@ -146,18 +148,23 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the full path to the node.
         /// </summary>
-        public string FullPath
+        public string FullPath => (_parent == null ? "/" : _parent.FullPath) + Name;
+
+        /// <summary>
+        /// Property to return the physical path to the node.
+        /// </summary>
+        public string PhysicalPath
         {
-            get => _fullPath;
+            get => _physicalPath;
             private set
             {
-                if (string.Equals(value, _fullPath, StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(_physicalPath, value, StringComparison.OrdinalIgnoreCase))
                 {
                     return;
                 }
 
                 OnPropertyChanging();
-                _fullPath = value;
+                _physicalPath = value;
                 OnPropertyChanged();
             }
         }
@@ -198,8 +205,9 @@ namespace Gorgon.Editor.ViewModels
                 throw new ArgumentEmptyException(nameof(newName));
             }
 
-            FullPath = fileSystemService.RenameFile(FullPath, newName);
+            PhysicalPath = fileSystemService.RenameFile(PhysicalPath, newName);
             Name = newName;
+            NotifyPropertyChanged(nameof(FullPath));
         }
 
         /// <summary>
@@ -216,6 +224,7 @@ namespace Gorgon.Editor.ViewModels
         {
             _project = project ?? throw new ArgumentNullException(nameof(project));
             _name = file?.Name ?? throw new ArgumentNullException(nameof(file));
+            _physicalPath = file.FullName;
             _fullPath = file.ToFileSystemPath(project.ProjectWorkSpace);
             _parent = parent ?? throw new ArgumentNullException(nameof(parent));
             _messageService = messageService ?? throw new ArgumentNullException(nameof(messageService));
@@ -251,7 +260,7 @@ namespace Gorgon.Editor.ViewModels
             var tcs = new TaskCompletionSource<object>();
 
             // Delete the physical object first. If we fail here, our node will survive.
-            fileSystemService.DeleteFile(FullPath);
+            fileSystemService.DeleteFile(PhysicalPath);
 
             // Drop us from the parent list.
             // This will begin a chain reaction that will remove us from the UI.
