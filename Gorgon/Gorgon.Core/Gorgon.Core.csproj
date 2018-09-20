@@ -85,6 +85,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArgumentEmptyException.cs" />
+    <Compile Include="ArgumentMissingException.cs" />
     <Compile Include="Collections\GorgonArray.cs" />
     <Compile Include="Collections\GorgonEpsilonFloatComparer.cs" />
     <Compile Include="Collections\_Extensions\GorgonIReadOnlyListExtensions.cs" />

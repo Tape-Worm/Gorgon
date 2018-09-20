@@ -54,6 +54,13 @@ namespace Gorgon.Editor.ProjectData
             get;
         }
 
+        /// <summary>
+        /// Property to return the metadata file location.
+        /// </summary>
+        FileInfo MetadataFile
+        {
+            get;
+        }
 
         /// <summary>
         /// Property to return the list of excluded paths.

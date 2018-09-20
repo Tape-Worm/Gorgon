@@ -54,9 +54,9 @@
     <Compile Include="CommonEditorConstants.cs" />
     <Compile Include="Metadata\_Interfaces\IMetadataManager.cs" />
     <Compile Include="Services\_Interfaces\IFileSystemService.cs" />
-    <Compile Include="Metadata\EditorMetadata.cs" />
+    <Compile Include="Metadata\SqliteMetadataProvider.cs" />
     <Compile Include="Metadata\IncludedPathMetadata.cs" />
-    <Compile Include="Metadata\_Interfaces\IEditorMetadata.cs" />
+    <Compile Include="Metadata\_Interfaces\IMetadataProvider.cs" />
     <Compile Include="Metadata\_Interfaces\IProjectMetadata.cs" />
     <Compile Include="ProjectData\_Interfaces\IProject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -76,6 +76,7 @@
     <Compile Include="UI\CommandRegistry.cs" />
     <Compile Include="UI\ViewModels\ProgressPanelUpdateArgs.cs" />
     <Compile Include="UI\ViewModels\WaitPanelActivateArgs.cs" />
+    <Compile Include="UI\ViewModels\_Interfaces\IViewModelInjection.cs" />
     <Compile Include="UI\Views\EditorBaseControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -102,9 +103,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Dapper">
-      <Version>1.50.5</Version>
-    </PackageReference>
     <PackageReference Include="Krypton.Components.Suite">
       <Version>4.5.9</Version>
     </PackageReference>

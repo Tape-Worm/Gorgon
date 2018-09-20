@@ -284,10 +284,7 @@ namespace Gorgon.Editor.ProjectData
 
             var metadataFile = new FileInfo(Path.Combine(workspace.FullName, CommonEditorConstants.EditorMetadataFileName));
 
-            var result = new Project(projectName, metadataFile)
-                            {
-                                ShowExternalItems = true
-                            };
+            var result = new Project(projectName, metadataFile);
 
             BuildMetadataDatabase(result);
 

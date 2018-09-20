@@ -44,7 +44,7 @@ namespace Gorgon.Editor.ViewModels
     /// A view model for the new project interface.
     /// </summary>
     internal class NewProject
-        : ViewModelBase, INewProject
+        : ViewModelBase<NewProjectParameters>, INewProject
     {
         #region Variables.
         // The title for the project.
@@ -134,7 +134,7 @@ namespace Gorgon.Editor.ViewModels
         /// <summary>
         /// Property to return the command to execute when the project should be created.
         /// </summary>
-        public IEditorCommand<ProjectCreateArgs> CreateProjectCommand
+        public IEditorAsyncCommand<ProjectCreateArgs> CreateProjectCommand
         {
             get;
         }
@@ -184,7 +184,7 @@ namespace Gorgon.Editor.ViewModels
         /// Function called when a project should be created.
         /// </summary>
         /// <param name="args">The command arguments.</param>
-        private async void DoCreateProjectCommand(ProjectCreateArgs args)
+        private async Task DoCreateProjectCommandAsync(ProjectCreateArgs args)
         {
             try
             {
@@ -209,9 +209,7 @@ namespace Gorgon.Editor.ViewModels
 
                 _settings.LastWorkSpacePath = WorkspacePath.FullName.FormatDirectory(Path.DirectorySeparatorChar);
 
-                args.Project = _projectManager.CreateProject(WorkspacePath, Title);
-
-                await Task.Delay(2500);
+                args.Project = await Task.Run(() =>_projectManager.CreateProject(WorkspacePath, Title));
             }
             catch (Exception ex)
             {
@@ -221,6 +219,20 @@ namespace Gorgon.Editor.ViewModels
             {
                 HideWaitPanel();
             }
+        }
+
+        /// <summary>
+        /// Function to inject dependencies for the view model.
+        /// </summary>
+        /// <param name="injectionParameters">The parameters to inject.</param>
+        /// <remarks>Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.</remarks>
+        protected override void OnInitialize(NewProjectParameters injectionParameters)
+        {
+            _workspaceTester = injectionParameters.WorkspaceTester ?? throw new ArgumentMissingException(nameof(NewProjectParameters.WorkspaceTester), nameof(injectionParameters));
+            _projectManager = injectionParameters.ProjectManager ?? throw new ArgumentMissingException(nameof(NewProjectParameters.ProjectManager), nameof(injectionParameters));
+            _settings = injectionParameters.EditorSettings ?? throw new ArgumentMissingException(nameof(NewProjectParameters.EditorSettings), nameof(injectionParameters));
+            _messageService = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(NewProjectParameters.MessageDisplay), nameof(injectionParameters));
+            _busyService = injectionParameters.BusyState ?? throw new ArgumentMissingException(nameof(NewProjectParameters.BusyState), nameof(injectionParameters));
         }
 
         /// <summary>
@@ -269,24 +281,6 @@ namespace Gorgon.Editor.ViewModels
                 _busyService.SetIdle();
             }
         }
-
-        /// <summary>
-        /// Function called on view creation.
-        /// </summary>
-        /// <param name="workspaceLocator">The workspace locator used to find the most suitable file system location for our workspace.</param>
-        /// <param name="projectManager">The project manager used to build projects.</param>
-        /// <param name="editorSettings">The settings for the editor.</param>
-        /// <param name="messageService">The message display service.</param>
-        /// <param name="busyService">The busy state service.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="workspaceLocator"/>, <paramref name="projectManager"/>, <paramref name="editorSettings"/> <paramref name="messageService"/>, or the <paramref name="busyService"/> parameter is <b>null</b>.</exception>
-        public void Initialize(IWorkspaceTester workspaceLocator, IProjectManager projectManager, EditorSettings editorSettings, IMessageDisplayService messageService, IBusyStateService busyService)
-        {
-            _workspaceTester = workspaceLocator ?? throw new ArgumentNullException(nameof(workspaceLocator));
-            _projectManager = projectManager ?? throw new ArgumentNullException(nameof(projectManager));
-            _settings = editorSettings ?? throw new ArgumentNullException(nameof(editorSettings));
-            _messageService = messageService ?? throw new ArgumentNullException(nameof(messageService));
-            _busyService = busyService ?? throw new ArgumentNullException(nameof(busyService));
-        }
         #endregion
 
         #region Constructor/Finalizer.
@@ -296,7 +290,7 @@ namespace Gorgon.Editor.ViewModels
         public NewProject()
         {
             WorkspaceSelectedCommand = new EditorCommand<WorkspaceSelectedArgs>(DoWorkspaceSelected);
-            CreateProjectCommand = new EditorCommand<ProjectCreateArgs>(DoCreateProjectCommand, _ => CanCreateProject());
+            CreateProjectCommand = new EditorAsyncCommand<ProjectCreateArgs>(DoCreateProjectCommandAsync, _ => CanCreateProject());
         }
         #endregion
     }

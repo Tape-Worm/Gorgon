@@ -60,8 +60,18 @@ namespace Gorgon.Editor.ViewModels
             var newProjectVm = new NewProject();
             var mainVm = new Main();
 
-            newProjectVm.Initialize(new WorkspaceTester(_projectManager), _projectManager, _settings, _messageBoxService, _waitCursorService);
-            mainVm.Initialize(newProjectVm, this, _projectManager, _messageBoxService, _waitCursorService);
+            newProjectVm.Initialize(new NewProjectParameters(_projectManager, 
+                                                            new WorkspaceTester(_projectManager), 
+                                                            _settings, 
+                                                            this, 
+                                                            _messageBoxService, 
+                                                            _waitCursorService));
+
+            mainVm.Initialize(new MainParameters(_projectManager, 
+                                                newProjectVm, 
+                                                this, 
+                                                _messageBoxService, 
+                                                _waitCursorService));
 
             return mainVm;
         }
@@ -87,8 +97,12 @@ namespace Gorgon.Editor.ViewModels
             }
 
             var result = new FileExplorerFileNodeVm();
+
             // TODO: Add links as children.
-            result.Initialize(project, file, parent, null, _messageBoxService, _waitCursorService);
+            result.Initialize(new FileExplorerNodeParameters(project, file, this, _messageBoxService, _waitCursorService)
+            {
+                Parent = parent
+            });
 
             return result;
         }
@@ -98,11 +112,12 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <param name="project">The project data.</param>
         /// <param name="parentNode">The parent for the node.</param>
+        /// <param name="metadataManager">The metadata manager to use.</param>
         /// <param name="directory">The file system directory to wrap in the view model.</param>
         /// <param name="rootDirectory">The root directory.</param>
         /// <returns>The new file explorer node view model.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="project"/>, <paramref name="parentNode"/>, or the <paramref name="directory"/> parameter is <b>null</b>.</exception>
-        public IFileExplorerNodeVm CreateFileExplorerDirectoryNodeVm(IProject project, IFileExplorerNodeVm parentNode, DirectoryInfo directory)
+        public IFileExplorerNodeVm CreateFileExplorerDirectoryNodeVm(IProject project, IFileExplorerNodeVm parentNode, IMetadataManager metadataManager, DirectoryInfo directory)
         {
             if (project == null)
             {
@@ -119,28 +134,30 @@ namespace Gorgon.Editor.ViewModels
                 throw new ArgumentNullException(nameof(directory));
             }
 
+            if (metadataManager == null)
+            {
+                throw new ArgumentNullException(nameof(metadataManager));
+            }
+
             var result = new FileExplorerDirectoryNodeVm();
 
             var children = new ObservableCollection<IFileExplorerNodeVm>();
 
-            DirectoryInfo[] subDirs = directory.GetDirectories("*", SearchOption.TopDirectoryOnly);
-
-            foreach (DirectoryInfo subDir in subDirs.Where(item => (item.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden))
+            foreach (DirectoryInfo subDir in metadataManager.GetIncludedDirectories(directory.FullName))
             {
-                children.Add(CreateFileExplorerDirectoryNodeVm(project, result, subDir));
+                children.Add(CreateFileExplorerDirectoryNodeVm(project, result, metadataManager, subDir));
             }
 
-            FileInfo[] files = directory.GetFiles("*", SearchOption.TopDirectoryOnly);
-
-            foreach (FileInfo file in files.Where(item => ((item.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden)
-                                                          && (!string.Equals(item.Name,
-                                                                             CommonEditorConstants.EditorMetadataFileName,
-                                                                             StringComparison.OrdinalIgnoreCase))))
+            foreach (FileInfo file in metadataManager.GetIncludedFiles(directory.FullName))
             {
                 children.Add(CreateFileExplorerFileNodeVm(project, result, file));
             }
 
-            result.Initialize(project, directory, parentNode, children, _messageBoxService, _waitCursorService);
+            result.Initialize(new FileExplorerNodeParameters(project, directory, this, _messageBoxService, _waitCursorService)
+            {
+                Parent = parentNode,
+                Children = children
+            });            
 
             return result;
         }
@@ -167,18 +184,27 @@ namespace Gorgon.Editor.ViewModels
 
             foreach (DirectoryInfo rootDir in metadataManager.GetIncludedDirectories(project.ProjectWorkSpace.FullName))
             {
-                nodes.Add(CreateFileExplorerDirectoryNodeVm(project, root, rootDir));
+                nodes.Add(CreateFileExplorerDirectoryNodeVm(project, root, metadataManager, rootDir));
             }
 
             foreach (FileInfo file in metadataManager.GetIncludedFiles(project.ProjectWorkSpace.FullName))
             {
                 nodes.Add(CreateFileExplorerFileNodeVm(project, root, file));
             }
-            
+
             // This is a special node, used internally.
-            root.Initialize(project, project.ProjectWorkSpace, null, nodes, _messageBoxService, _waitCursorService);
-            
-            result.Initialize(this, project, metadataManager, fileSystemService,  root, _messageBoxService, _waitCursorService);
+            root.Initialize(new FileExplorerNodeParameters(project, project.ProjectWorkSpace, this, _messageBoxService, _waitCursorService)
+            {                
+                Children = nodes
+            });
+
+            result.Initialize(new FileExplorerParameters(project,
+                                                        fileSystemService,
+                                                        metadataManager,
+                                                        root,
+                                                        this, 
+                                                        _messageBoxService, 
+                                                        _waitCursorService));
 
             return result;
         }
@@ -187,26 +213,26 @@ namespace Gorgon.Editor.ViewModels
         /// Function to create a project view model.
         /// </summary>
         /// <param name="projectData">The project data to assign to the project view model.</param>
-        /// <param name="metaDataManager">The metadata manager to use.</param>
         /// <returns>The project view model.</returns>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="projectData"/> parameter is <b>null</b>.</exception>
-        public IProjectVm CreateProjectViewModel(IProject projectData, IMetadataManager metaDataManager)
+        public IProjectVm CreateProjectViewModel(IProject projectData)
         {
             if (projectData == null)
             {
                 throw new ArgumentNullException(nameof(projectData));
             }
-
-            if (metaDataManager == null)
-            {
-                throw new ArgumentNullException(nameof(metaDataManager));
-            }
-
             
             var result = new ProjectVm();
             var fileSystemService = new FileSystemService(projectData.ProjectWorkSpace);
-            result.Initialize(projectData, _messageBoxService, _waitCursorService);
+
+            var metaDataManager = new MetadataManager(projectData, new SqliteMetadataProvider(projectData.MetadataFile));
+
             result.FileExplorer = CreateFileExplorerViewModel(projectData, metaDataManager, fileSystemService);
+            result.Initialize(new ProjectVmParameters(projectData,
+                                                    metaDataManager,
+                                                    this,
+                                                    _messageBoxService,
+                                                    _waitCursorService));
 
             return result;
         }

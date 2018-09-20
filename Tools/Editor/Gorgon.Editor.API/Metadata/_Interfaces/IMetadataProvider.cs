@@ -38,7 +38,7 @@ namespace Gorgon.Editor.Metadata
     /// Plug in writers can use this to create, remove and retrieve metadata items for their plug ins, plus handle standard meta data items.
     /// </para>
     /// </remarks>
-    public interface IEditorMetadata
+    public interface IMetadataProvider
     {
         /// <summary>
         /// Property to return the file pointing to the metadata database.

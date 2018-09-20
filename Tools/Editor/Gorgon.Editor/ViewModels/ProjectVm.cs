@@ -30,6 +30,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Gorgon.Editor.Metadata;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
@@ -41,11 +42,13 @@ namespace Gorgon.Editor.ViewModels
     /// The view model for the project editor interface.
     /// </summary>
     internal class ProjectVm
-        : ViewModelBase, IProjectVm
+        : ViewModelBase<ProjectVmParameters>, IProjectVm
     {
         #region Variables.
         // The project data for the view model.
         private IProject _projectData;
+        // The metadata manager for the project.
+        private IMetadataManager _metadataManager;
         // The message display service.
         private IMessageDisplayService _messageService;
         // The busy state service.
@@ -228,7 +231,7 @@ namespace Gorgon.Editor.ViewModels
             FileExplorer.WaitPanelDeactivated -= FileExplorer_WaitPanelDeactivated;
             FileExplorer.FileSystemChanged -= FileExplorer_FileSystemChanged;
         }
-
+        
         /// <summary>
         /// Function used to initialize the view model with dependencies.
         /// </summary>
@@ -236,17 +239,37 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="messageService">The message display service.</param>
         /// <param name="busyService">The busy state indicator service.</param>
         /// <exception cref="ArgumentNullException">Thrown if any argument is <b>null</b>.</exception>
-        public void Initialize(IProject projectData, IMessageDisplayService messageService, IBusyStateService busyService)
+        protected override void OnInitialize(ProjectVmParameters injectionParameters)
         {
-            _projectData = projectData ?? throw new ArgumentNullException(nameof(projectData));
-            _messageService = messageService ?? throw new ArgumentNullException(nameof(messageService));
-            _busyService = busyService ?? throw new ArgumentNullException(nameof(busyService));
+            _projectData = injectionParameters.Project ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.Project), nameof(injectionParameters));
+            _messageService = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.MessageDisplay), nameof(injectionParameters));
+            _busyService = injectionParameters.BusyState ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.BusyState), nameof(injectionParameters));
+            _metadataManager = injectionParameters.MetadataManager ?? throw new ArgumentMissingException(nameof(ProjectVmParameters.MetadataManager), nameof(injectionParameters));
         }
 
         /// <summary>
         /// Function called when the associated view is loaded.
         /// </summary>
-        public override void OnLoad() => AssignEvents();
+        public override void OnLoad()
+        {
+            _busyService.SetBusy();
+
+            try
+            {
+                AssignEvents();
+
+                // Load data from the metadata store.
+                _metadataManager.Load();
+            }
+            catch (Exception ex)
+            {
+                _messageService.ShowError(ex);
+            }
+            finally
+            {
+                _busyService.SetIdle();
+            }
+        }
 
         /// <summary>
         /// Function called when the associated view is unloaded.

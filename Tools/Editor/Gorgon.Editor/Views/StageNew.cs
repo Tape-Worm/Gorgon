@@ -66,7 +66,7 @@ namespace Gorgon.Editor.Views
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void ButtonCreate_Click(object sender, EventArgs e)
+        private async void ButtonCreate_Click(object sender, EventArgs e)
         {
             if (DataContext?.CreateProjectCommand == null) 
             {
@@ -80,7 +80,7 @@ namespace Gorgon.Editor.Views
                 return;
             }
 
-            DataContext.CreateProjectCommand.Execute(args);
+            await DataContext.CreateProjectCommand.ExecuteAsync(args);
 
             EventHandler<ProjectCreateArgs> handler = ProjectCreated;
             handler?.Invoke(this, args);

@@ -41,11 +41,14 @@ namespace Gorgon.Editor.ViewModels
     internal interface IFileExplorerVm
         : IViewModel
     {
+        #region Events.
         /// <summary>
-        /// Event triggered when the file system was altered.
+        /// Event triggered when the file system is changed.
         /// </summary>
         event EventHandler FileSystemChanged;
+        #endregion
 
+        #region Properties.
         /// <summary>
         /// Property to return the currently selected node for the file system.
         /// </summary>
@@ -109,5 +112,6 @@ namespace Gorgon.Editor.ViewModels
         {
             get;
         }
+        #endregion
     }
 }

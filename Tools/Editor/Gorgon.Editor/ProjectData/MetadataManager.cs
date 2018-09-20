@@ -28,8 +28,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Gorgon.Core;
 using Gorgon.Editor.Metadata;
 
@@ -44,6 +42,8 @@ namespace Gorgon.Editor.ProjectData
         #region Variables.
         // The project that contains the metadata to manage.
         private readonly IProject _project;
+        // The provider to use to persist metadata information.
+        private readonly IMetadataProvider _metadataProvider;
         #endregion
 
         #region Properties.
@@ -51,6 +51,30 @@ namespace Gorgon.Editor.ProjectData
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to load the metadata for a project from metadata store.
+        /// </summary>
+        public void Load()
+        {
+            _project.Metadata.IncludedPaths.Clear();
+
+            IList<IncludedFileSystemPathMetadata> paths = _metadataProvider.GetIncludedPaths();
+
+            foreach (IncludedFileSystemPathMetadata path in paths)
+            {
+                _project.Metadata.IncludedPaths[path.Path] = path;
+            }            
+        }
+
+        /// <summary>
+        /// Function to save the metadata to the metadata store in the project.
+        /// </summary>
+        public void Save()
+        {
+            // TODO: Add more stuff.
+            _metadataProvider.UpdateIncludedPaths(_project.Metadata.IncludedPaths);
+        }
+
         /// <summary>
         /// Function to rename items in meta data.
         /// </summary>
@@ -274,10 +298,12 @@ namespace Gorgon.Editor.ProjectData
         /// Initializes a new instance of the <see cref="MetadataManager"/> class.
         /// </summary>
         /// <param name="project">The project to manage metadata for.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="project"/> parameter is <b>null</b>.</exception>
-        public MetadataManager(IProject project)
+        /// <param name="provider">The provider used to store or retrieve metadata.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="project"/>, or the <paramref name="provider"/> parameter is <b>null</b>.</exception>        
+        public MetadataManager(IProject project, IMetadataProvider provider)
         {
             _project = project ?? throw new ArgumentNullException(nameof(project));
+            _metadataProvider = provider ?? throw new ArgumentNullException(nameof(provider));
         }
         #endregion
     }

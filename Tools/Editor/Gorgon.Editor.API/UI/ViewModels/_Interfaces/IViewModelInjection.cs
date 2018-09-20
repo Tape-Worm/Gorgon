@@ -20,62 +20,38 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: August 27, 2018 12:52:19 AM
+// Created: September 17, 2018 7:58:15 AM
 // 
 #endregion
 
-using System.IO;
-using Gorgon.Editor.UI;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Gorgon.Editor.Services;
 
-namespace Gorgon.Editor.ViewModels
+namespace Gorgon.Editor.UI
 {
     /// <summary>
-    /// A new project view model.
+    /// Defines values to inject into a view model.
     /// </summary>
-    internal interface INewProject    
-        : IViewModel
+    public interface IViewModelInjection
     {
-        #region Properties.
         /// <summary>
-        /// Property to set or return the title for the project.
+        /// Property to return the serivce used to show busy states.
         /// </summary>
-        string Title
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to return the reason why a workspace directory is not suitable.
-        /// </summary>
-        string WorkspaceNotSuitableReason
+        IBusyStateService BusyState
         {
             get;
         }
 
         /// <summary>
-        /// Property to return the workspace path.
+        /// Property to return the service used to show message dialogs.
         /// </summary>
-        DirectoryInfo WorkspacePath
+        IMessageDisplayService MessageDisplay
         {
             get;
         }
-
-        /// <summary>
-        /// Property to return the command to execute when a folder is selected for a workspace.
-        /// </summary>
-        IEditorCommand<WorkspaceSelectedArgs> WorkspaceSelectedCommand
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the command to execute when the project should be created.
-        /// </summary>
-        IEditorAsyncCommand<ProjectCreateArgs> CreateProjectCommand
-        {
-            get;
-        }
-        #endregion
     }
 }

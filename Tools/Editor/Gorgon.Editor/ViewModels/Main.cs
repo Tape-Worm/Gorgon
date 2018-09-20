@@ -26,6 +26,7 @@
 
 using System;
 using System.ComponentModel;
+using Gorgon.Editor.Metadata;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
@@ -37,7 +38,7 @@ namespace Gorgon.Editor.ViewModels
     /// The view model for the main window.
     /// </summary>
     internal class Main
-        : ViewModelBase, IMain
+        : ViewModelBase<MainParameters>, IMain
     {
         #region Variables.
         // The project manager used to handle project data.
@@ -123,6 +124,20 @@ namespace Gorgon.Editor.ViewModels
 
         #region Methods.
         /// <summary>
+        /// Function to inject dependencies for the view model.
+        /// </summary>
+        /// <param name="injectionParameters">The parameters to inject.</param>
+        /// <remarks>Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.</remarks>
+        protected override void OnInitialize(MainParameters injectionParameters)
+        {
+            _projectManager = injectionParameters.ProjectManager ?? throw new ArgumentMissingException(nameof(MainParameters.ProjectManager), nameof(injectionParameters));
+            _viewModelFactory = injectionParameters.ViewModelFactory ?? throw new ArgumentMissingException(nameof(MainParameters.ViewModelFactory), nameof(injectionParameters));
+            _messageService = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(MainParameters.MessageDisplay), nameof(injectionParameters));
+            _busyService = injectionParameters.BusyState ?? throw new ArgumentMissingException(nameof(MainParameters.BusyState), nameof(injectionParameters));
+            NewProject = injectionParameters.NewProject ?? throw new ArgumentMissingException(nameof(MainParameters.NewProject), nameof(injectionParameters));
+        }
+
+        /// <summary>
         /// Handles the PropertyChanged event of the CurrentProject control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -190,7 +205,7 @@ namespace Gorgon.Editor.ViewModels
 
             try
             {
-                CurrentProject = _viewModelFactory.CreateProjectViewModel(project, new MetadataManager(project));
+                CurrentProject = _viewModelFactory.CreateProjectViewModel(project);
             }
             catch (Exception ex)
             {
@@ -224,29 +239,6 @@ namespace Gorgon.Editor.ViewModels
 
             NewProject.WaitPanelActivated -= NewProject_WaitPanelActivated;
             NewProject.WaitPanelDeactivated -= NewProject_WaitPanelDeactivated;
-        }
-
-        /// <summary>
-        /// Function to perform first time initialization of a view model.
-        /// </summary>
-        /// <param name="newProject">The new project view model to inject.</param>
-        /// <param name="viewModelFactory">The factory used to build view models.</param>
-        /// <param name="projectManager">The project manager interface.</param>
-        /// <param name="messageService">The message display service.</param>
-        /// <param name="busyService">The busy state service.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="newProject"/>, <paramref name="viewModelFactory"/>, <paramref name="projectManager"/>, <paramref name="messageService"/> or the <paramref name="busyService"/> parameter is <b>null</b>.</exception>
-        /// <remarks>
-        /// <para>
-        /// Applications should use this do any initial set up of the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up.
-        /// </para>
-        /// </remarks>
-        public void Initialize(INewProject newProject, ViewModelFactory viewModelFactory, IProjectManager projectManager, IMessageDisplayService messageService, IBusyStateService busyService)
-        {
-            _projectManager = projectManager ?? throw new ArgumentNullException(nameof(projectManager));
-            _viewModelFactory = viewModelFactory ?? throw new ArgumentNullException(nameof(viewModelFactory));
-            _messageService = messageService ?? throw new ArgumentNullException(nameof(messageService));
-            _busyService = busyService ?? throw new ArgumentNullException(nameof(busyService));
-            NewProject = newProject ?? throw new ArgumentNullException(nameof(newProject));
         }
         #endregion
 

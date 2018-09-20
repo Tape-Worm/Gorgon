@@ -35,8 +35,8 @@ namespace Gorgon.Editor.Metadata
     /// <summary>
     /// Metadata access interface.
     /// </summary>
-    public class EditorMetadata 
-        : IEditorMetadata
+    public class SqliteMetadataProvider 
+        : IMetadataProvider
     {
         #region Queries.
         // Query to remove all included paths from the metadata.
@@ -141,11 +141,11 @@ namespace Gorgon.Editor.Metadata
 
         #region Constructor/Finalizer.
         /// <summary>
-        /// Initializes a new instance of the <see cref="EditorMetadata"/> class.
+        /// Initializes a new instance of the <see cref="SqliteMetadataProvider"/> class.
         /// </summary>
         /// <param name="metadataFile">The metadata file.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="metadataFile"/> parameter is <b>null</b>.</exception>
-        public EditorMetadata(FileInfo metadataFile) => MetadataFile = metadataFile ?? throw new ArgumentNullException(nameof(metadataFile));
+        public SqliteMetadataProvider(FileInfo metadataFile) => MetadataFile = metadataFile ?? throw new ArgumentNullException(nameof(metadataFile));
         #endregion
     }
 }

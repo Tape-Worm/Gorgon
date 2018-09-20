@@ -20,62 +20,45 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: August 27, 2018 12:52:19 AM
+// Created: September 17, 2018 8:50:22 AM
 // 
 #endregion
 
-using System.IO;
-using Gorgon.Editor.UI;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Gorgon.Editor.Metadata;
+using Gorgon.Editor.ProjectData;
+using Gorgon.Editor.Services;
 
 namespace Gorgon.Editor.ViewModels
 {
     /// <summary>
-    /// A new project view model.
+    /// Parameters for the <see cref="IProjectVm"/> view model.
     /// </summary>
-    internal interface INewProject    
-        : IViewModel
+    internal class ProjectVmParameters
+        : ViewModelCommonParameters
     {
-        #region Properties.
         /// <summary>
-        /// Property to set or return the title for the project.
+        /// Property to set or return the metadata manager for the project.
         /// </summary>
-        string Title
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to return the reason why a workspace directory is not suitable.
-        /// </summary>
-        string WorkspaceNotSuitableReason
+        public IMetadataManager MetadataManager
         {
             get;
         }
 
         /// <summary>
-        /// Property to return the workspace path.
+        /// Initializes a new instance of the <see cref="ProjectVmParameters"/> class.
         /// </summary>
-        DirectoryInfo WorkspacePath
+        /// <param name="viewModelFactory">The view model factory for creating view models.</param>
+        /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
+        public ProjectVmParameters(IProject project, IMetadataManager metadataManager, ViewModelFactory viewModelFactory, IMessageDisplayService messageDisplay, IBusyStateService busyService)
+            : base(viewModelFactory, messageDisplay, busyService)
         {
-            get;
+            Project = project ?? throw new ArgumentNullException(nameof(project));
+            MetadataManager = metadataManager ?? throw new ArgumentNullException(nameof(metadataManager));
         }
-
-        /// <summary>
-        /// Property to return the command to execute when a folder is selected for a workspace.
-        /// </summary>
-        IEditorCommand<WorkspaceSelectedArgs> WorkspaceSelectedCommand
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the command to execute when the project should be created.
-        /// </summary>
-        IEditorAsyncCommand<ProjectCreateArgs> CreateProjectCommand
-        {
-            get;
-        }
-        #endregion
     }
 }

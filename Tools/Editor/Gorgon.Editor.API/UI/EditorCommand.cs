@@ -63,12 +63,7 @@ namespace Gorgon.Editor.UI
                 return true;
             }
 
-            if (_canExecute != null)
-            {
-                return _canExecute(args);
-            }
-
-            return _canExecuteNoArgs();
+            return _canExecute != null ? _canExecute(args) : _canExecuteNoArgs();
         }
 
         /// <summary>

@@ -115,6 +115,15 @@ namespace Gorgon.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The parameter {0} is not initialized or missing on the parameter {1}..
+        /// </summary>
+        internal static string GOR_ERR_ARGUMENT_MISSING {
+            get {
+                return ResourceManager.GetString("GOR_ERR_ARGUMENT_MISSING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The array is read only..
         /// </summary>
         internal static string GOR_ERR_ARRAY_READ_ONLY {

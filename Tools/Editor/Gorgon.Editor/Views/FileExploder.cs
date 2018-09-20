@@ -362,24 +362,24 @@ namespace Gorgon.Editor.Views
         {
             if (dataContext?.SelectedNode == null)
             {
-                MenuSep1.Visible = false;
-                MenuSep2.Visible = false;
-                MenuItemCreateDirectory.Visible = true;
-                MenuItemDelete.Visible = false;
-                MenuItemRename.Visible = false;
-                MenuItemIncludeInProject.Visible = false;
+                MenuSep1.Available = false;
+                MenuSep2.Available = false;
+                MenuItemCreateDirectory.Available = true;
+                MenuItemDelete.Available = false;
+                MenuItemRename.Available = false;
+                MenuItemIncludeInProject.Available = false;
                 return;
             }
 
-            MenuSep1.Visible = true;
-            MenuItemRename.Visible = true;
-            MenuItemIncludeInProject.Visible = true;
+            MenuSep1.Available = true;
+            MenuItemRename.Available = true;
+            MenuItemIncludeInProject.Available = true;
 
-            MenuItemCreateDirectory.Visible = dataContext.CreateNodeCommand?.CanExecute(null) ?? false;
-            MenuItemDelete.Visible = dataContext.DeleteNodeCommand?.CanExecute(null) ?? false;
+            MenuItemCreateDirectory.Available = dataContext.CreateNodeCommand?.CanExecute(null) ?? false;
+            MenuItemDelete.Available = dataContext.DeleteNodeCommand?.CanExecute(null) ?? false;
             MenuItemIncludeInProject.Checked = dataContext.SelectedNode.Included;
 
-            MenuSep2.Visible = MenuItemCreateDirectory.Visible;
+            MenuSep2.Visible = MenuItemCreateDirectory.Available;
         }
 
         /// <summary>
@@ -948,6 +948,8 @@ namespace Gorgon.Editor.Views
                 TreeFileSystem.BeforeExpand += TreeFileSystem_BeforeExpand;
                 TreeFileSystem.AfterCollapse += TreeFileSystem_AfterCollapse;
                 TreeFileSystem.AfterSelect += TreeFileSystem_AfterSelect;
+
+                ValidateMenuItems(DataContext);
             }
         }
 
@@ -956,7 +958,7 @@ namespace Gorgon.Editor.Views
         /// </summary>
         public void Delete()
         {
-            if ((MenuItemDelete.Visible) && (MenuItemDelete.Enabled))
+            if ((MenuItemDelete.Available) && (MenuItemDelete.Enabled))
             {
                 MenuItemDelete.PerformClick();
             }
@@ -967,7 +969,7 @@ namespace Gorgon.Editor.Views
         /// </summary>
         public void CreateDirectory()
         {
-            if ((MenuItemCreateDirectory.Visible) && (MenuItemCreateDirectory.Enabled))
+            if ((MenuItemCreateDirectory.Available) && (MenuItemCreateDirectory.Enabled))
             {
                 MenuItemCreateDirectory.PerformClick();
             }
@@ -978,7 +980,7 @@ namespace Gorgon.Editor.Views
         /// </summary>
         public void RenameNode()
         {
-            if ((MenuItemRename.Visible) && (MenuItemRename.Enabled))
+            if ((MenuItemRename.Available) && (MenuItemRename.Enabled))
             {
                 MenuItemRename.PerformClick();
             }

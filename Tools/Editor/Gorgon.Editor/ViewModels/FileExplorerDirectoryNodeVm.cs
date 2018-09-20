@@ -45,7 +45,7 @@ namespace Gorgon.Editor.ViewModels
     /// A node for a file system directory.
     /// </summary>
     internal class FileExplorerDirectoryNodeVm
-        : ViewModelBase, IFileExplorerNodeVm
+        : ViewModelBase<FileExplorerNodeParameters>, IFileExplorerNodeVm
     {
         #region Variables.
         // The parent for this node.
@@ -54,8 +54,6 @@ namespace Gorgon.Editor.ViewModels
         private IMessageDisplayService _messageService;
         // The busy state service.
         private IBusyStateService _busyService;
-        // The project data.
-        private IProject _project;
         // Flag to indicate that this node is included in the project.
         private bool _included;
         // The name of the file.
@@ -175,6 +173,33 @@ namespace Gorgon.Editor.ViewModels
 
         #region Methods.
         /// <summary>
+        /// Function to inject dependencies for the view model.
+        /// </summary>
+        /// <param name="injectionParameters">The parameters to inject.</param>
+        /// <remarks>Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.</remarks>
+        protected override void OnInitialize(FileExplorerNodeParameters injectionParameters)
+        {
+            if (injectionParameters.Project == null)
+            {
+                throw new ArgumentMissingException(nameof(FileExplorerNodeParameters.Project), nameof(injectionParameters));
+            }
+
+            _physicalPath = injectionParameters.FileSystemObject?.FullName ?? throw new ArgumentMissingException(nameof(FileExplorerNodeParameters.FileSystemObject), nameof(injectionParameters));
+
+            // This is the root node if we have no parent.
+            _name = injectionParameters.Parent == null ? "/" : injectionParameters.FileSystemObject.Name;            
+            _messageService = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(FileExplorerNodeParameters.MessageDisplay), nameof(injectionParameters));
+            _busyService = injectionParameters.BusyState ?? throw new ArgumentMissingException(nameof(FileExplorerNodeParameters.BusyState), nameof(injectionParameters));
+
+            // Optional.
+            _parent = injectionParameters.Parent;
+
+            Children = injectionParameters.Children ?? new ObservableCollection<IFileExplorerNodeVm>();
+            // Determine if we are included in the project or not.
+            _included = injectionParameters.Project.Metadata.IncludedPaths.Any(item => string.Equals(item.Path, FullPath, StringComparison.OrdinalIgnoreCase));
+        }
+
+        /// <summary>
         /// Function to delete the node.
         /// </summary>
         /// <param name="fileSystemService">The file system service to use when deleting.</param>
@@ -237,45 +262,6 @@ namespace Gorgon.Editor.ViewModels
             PhysicalPath = fileSystemService.RenameDirectory(PhysicalPath, newName);
             Name = newName;
             NotifyPropertyChanged(nameof(FullPath));
-        }
-
-        /// <summary>
-        /// Function used to initialize the view model.
-        /// </summary>
-        /// <param name="project">The project data.</param>
-        /// <param name="directory">The directory name.</param>
-        /// <param name="parent">The parent for this node.</param>
-        /// <param name="children">The child nodes for this directory.</param>
-        /// <param name="messageService">The message display service to use.</param>
-        /// <param name="busyService">The busy state service to use.</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="project"/>, <paramref name="directory"/>, <paramref name="messageService"/>, or the <paramref name="busyService"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="directory"/> parameter is empty.</exception>
-        public void Initialize(IProject project,
-                               DirectoryInfo directory,
-                               IFileExplorerNodeVm parent,
-                               ObservableCollection<IFileExplorerNodeVm> children,
-                               IMessageDisplayService messageService,
-                               IBusyStateService busyService)
-        {
-            _project = project ?? throw new ArgumentNullException(nameof(project));
-            if (parent != null)
-            {
-                _name = directory?.Name ?? throw new ArgumentNullException(nameof(directory));
-            }
-            else
-            {
-                // Our name is root if we have no parent.
-                _name = "/";
-            }
-
-            _physicalPath = directory.FullName;
-            _messageService = messageService ?? throw new ArgumentNullException(nameof(messageService));
-            _busyService = busyService ?? throw new ArgumentNullException(nameof(busyService));
-            _parent = parent;
-
-            Children = children ?? new ObservableCollection<IFileExplorerNodeVm>();
-            // Determine if we are included in the project or not.
-            _included = project.Metadata.IncludedPaths.Any(item => string.Equals(item.Path, FullPath, StringComparison.OrdinalIgnoreCase));
         }
         #endregion
 

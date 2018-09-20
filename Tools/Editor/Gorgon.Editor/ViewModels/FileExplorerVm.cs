@@ -45,7 +45,7 @@ namespace Gorgon.Editor.ViewModels
     /// The file explorer view model.
     /// </summary>
     internal class FileExplorerVm
-        : ViewModelBase, IFileExplorerVm
+        : ViewModelBase<FileExplorerParameters>, IFileExplorerVm
     {
         #region Variables.
         // Illegal file name characters.
@@ -248,7 +248,7 @@ namespace Gorgon.Editor.ViewModels
                 _project.Metadata.IncludedPaths[metaData.Path] = metaData;
 
                 // Create the node for the directory.
-                IFileExplorerNodeVm newNode = _factory.CreateFileExplorerDirectoryNodeVm(_project, node, newDir);
+                IFileExplorerNodeVm newNode = _factory.CreateFileExplorerDirectoryNodeVm(_project, node, _metaDataManager, newDir);
 
                 node.Children.Add(newNode);
             }
@@ -428,7 +428,7 @@ namespace Gorgon.Editor.ViewModels
 
                 foreach (DirectoryInfo rootDir in _metaDataManager.GetIncludedDirectories(parent.FullName))
                 {
-                    nodeToRefresh.Children.Add(_factory.CreateFileExplorerDirectoryNodeVm(_project, nodeToRefresh, rootDir));
+                    nodeToRefresh.Children.Add(_factory.CreateFileExplorerDirectoryNodeVm(_project, nodeToRefresh, _metaDataManager, rootDir));
                 }
 
                 foreach (FileInfo file in _metaDataManager.GetIncludedFiles(parent.FullName))
@@ -447,25 +447,19 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
-        /// Function to initialize the view model.
+        /// Function to inject dependencies for the view model.
         /// </summary>
-        /// <param name="factory">The factory used to build view models.</param>
-        /// <param name="project">The project data.</param>
-        /// <param name="metaDataManager">The manager used to handle metadata.</param>
-        /// <param name="fileSystemService">The file system service for the project.</param>
-        /// <param name="rootNode">The root node for this file system.</param>
-        /// <param name="messageService">The message display service to use.</param>
-        /// <param name="busyService">The busy state service to use.</param>
-        /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public void Initialize(ViewModelFactory factory, IProject project, IMetadataManager metaDataManager, IFileSystemService fileSystemService, IFileExplorerNodeVm rootNode, IMessageDisplayService messageService, IBusyStateService busyService)
+        /// <param name="injectionParameters">The parameters to inject.</param>
+        /// <remarks>Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.</remarks>
+        protected override void OnInitialize(FileExplorerParameters injectionParameters)
         {
-            _factory = factory ?? throw new ArgumentNullException(nameof(factory));
-            _project = project ?? throw new ArgumentNullException(nameof(project));
-            _metaDataManager = metaDataManager ?? throw new ArgumentNullException(nameof(metaDataManager));
-            _fileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
-            _messageService = messageService ?? throw new ArgumentNullException(nameof(messageService));
-            _busyService = busyService ?? throw new ArgumentNullException(nameof(busyService));
-            RootNode = rootNode ?? throw new ArgumentNullException(nameof(rootNode));
+            _factory = injectionParameters.ViewModelFactory ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.ViewModelFactory), nameof(injectionParameters));
+            _project = injectionParameters.Project ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.Project), nameof(injectionParameters));
+            _metaDataManager = injectionParameters.MetadataManager ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.MetadataManager), nameof(injectionParameters));
+            _fileSystemService = injectionParameters.FileSystemService ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.FileSystemService), nameof(injectionParameters));
+            _messageService = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.MessageDisplay), nameof(injectionParameters));
+            _busyService = injectionParameters.BusyState ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.BusyState), nameof(injectionParameters));
+            RootNode = injectionParameters.RootNode ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.RootNode), nameof(injectionParameters));
         }
         #endregion
 

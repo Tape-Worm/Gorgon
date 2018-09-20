@@ -37,8 +37,11 @@ namespace Gorgon.Editor.UI
     /// <summary>
     /// A base view model for the gorgon editor.
     /// </summary>
-    public class ViewModelBase
+    /// <typeparam name="T">The type of injection parameters for the view model.  Must implement <see cref="IViewModelInjection"/> and be a reference type.</typeparam>
+    /// <seealso cref="IViewModelInjection"/>
+    public abstract class ViewModelBase<T>
         : IViewModel
+        where T : class, IViewModelInjection
     {
         #region Events.
         /// <summary>
@@ -320,6 +323,17 @@ namespace Gorgon.Editor.UI
 		}
 
         /// <summary>
+        /// Function to inject dependencies for the view model.
+        /// </summary>
+        /// <param name="injectionParameters">The parameters to inject.</param>
+        /// <remarks>
+        /// <para>
+        /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
+        /// </para>
+        /// </remarks>
+        protected abstract void OnInitialize(T injectionParameters);
+
+        /// <summary>
         /// Function called when the associated view is loaded.
         /// </summary>
         public virtual void OnLoad()
@@ -334,11 +348,24 @@ namespace Gorgon.Editor.UI
         {
 
         }
+
+        /// <summary>
+        /// Function to inject dependencies for the view model.
+        /// </summary>
+        /// <param name="injectionParameters">The parameters to inject.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="injectionParameters"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="ArgumentMissingException">Thrown when a required parameter is <b>null</b> or missing from the <paramref name="injectionParameters"/>.</exception>
+        /// <remarks>
+        /// <para>
+        /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
+        /// </para>
+        /// </remarks>
+        public void Initialize(T injectionParameters) => OnInitialize(injectionParameters ?? throw new ArgumentNullException(nameof(injectionParameters)));
         #endregion
 
         #region Constructor.
         /// <summary>
-        /// Initializes a new instance of the <see cref="ViewModelBase"/> class.
+        /// Initializes a new instance of the <see cref="ViewModelBase{T}"/> class.
         /// </summary>
         protected ViewModelBase()
         {

@@ -39,6 +39,16 @@ namespace Gorgon.Editor.Metadata
     public interface IMetadataManager
     {
         /// <summary>
+        /// Function to load the metadata for a project from metadata store.
+        /// </summary>
+        void Load();
+
+        /// <summary>
+        /// Function to save the metadata to the metadata store in the project.
+        /// </summary>
+        void Save();
+
+        /// <summary>
         /// Function to rename items in meta data.
         /// </summary>
         /// <param name="oldPath">The old path for the items.</param>
