@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -63,6 +64,9 @@ namespace Gorgon.Editor.ViewModels
         #endregion
 
         #region Variables.
+        // A lookup used to find nodes.
+        private Dictionary<string, IFileExplorerNodeVm> _nodePathLookup = new Dictionary<string, IFileExplorerNodeVm>(StringComparer.OrdinalIgnoreCase);
+
         // Illegal file name characters.
         private static readonly HashSet<char> _illegalChars = new HashSet<char>(Path.GetInvalidFileNameChars()
                                                                              .Concat(Path.GetInvalidPathChars())
@@ -192,6 +196,32 @@ namespace Gorgon.Editor.ViewModels
         /// </summary>
         /// <returns><b>true</b> if the node can be deleted, <b>false</b> if not.</returns>
         private bool CanDeleteNode() => SelectedNode?.AllowDelete ?? false;
+
+        /// <summary>
+        /// Function to remove the specified node, and any children from the cache.
+        /// </summary>
+        /// <param name="node">The node to remove.</param>
+        /// <param name="removeSelf"><b>true</b> to remove the specified node along with its children, or <b>false</b> to only remove children.</param>
+        private void RemoveFromCache(IFileExplorerNodeVm node, bool removeSelf)
+        {
+            IFileExplorerNodeVm[] children = _nodePathLookup.Where(item => (item.Key.StartsWith(node.FullPath, StringComparison.OrdinalIgnoreCase)) && (item.Value != node))
+                                                            .Select(item => item.Value)
+                                                            .ToArray();
+
+            foreach (IFileExplorerNodeVm child in children)
+            {
+                child.Children.CollectionChanged -= Children_CollectionChanged;
+                _nodePathLookup.Remove(child.FullPath);
+            }
+
+            if ((node == RootNode) || (!removeSelf))
+            {
+                return;
+            }
+
+            node.Children.CollectionChanged -= Children_CollectionChanged;
+            _nodePathLookup.Remove(node.FullPath);
+        }
 
         /// <summary>
         /// Function to delete the selected node.
@@ -375,10 +405,15 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="args">The arguments for renaming.</param>
         private void DoRenameNode(FileExplorerNodeRenameArgs args)
         {
-            _busyService.SetBusy();
+            IFileExplorerNodeVm selected = SelectedNode;
 
+            _busyService.SetBusy();
+            
             try
             {
+                // We need to update the cache so that all paths are changed for children under the selected nodes.
+                RemoveFromCache(selected, true);
+
                 // Ensure the name is valid.
                 if (args.NewName.Any(item => _illegalChars.Contains(item)))
                 {
@@ -398,9 +433,9 @@ namespace Gorgon.Editor.ViewModels
                 }
 
                 string oldPath = SelectedNode.FullPath;
-
+                
                 SelectedNode.RenameNode(_fileSystemService, args.NewName);
-
+                
                 string newPath = SelectedNode.FullPath;
 
                 if (!_metaDataManager.PathInProject(oldPath))
@@ -418,6 +453,7 @@ namespace Gorgon.Editor.ViewModels
             }
             finally
             {
+                EnumerateChildren(selected);
                 _busyService.SetIdle();
             }
         }
@@ -462,6 +498,62 @@ namespace Gorgon.Editor.ViewModels
                 _busyService.SetIdle();
             }
         }
+               
+        /// <summary>
+        /// Function to enumerate all child nodes and cache them in a look up for quick access.
+        /// </summary>
+        /// <param name="parent">The parent node to start enumerating from.</param>
+        private void EnumerateChildren(IFileExplorerNodeVm parent)
+        {
+            void EnumerateChildren(ObservableCollection<IFileExplorerNodeVm> children)
+            {
+                children.CollectionChanged += Children_CollectionChanged;
+
+                for (int i = 0; i < children.Count; ++i)
+                {
+                    IFileExplorerNodeVm child = children[i];
+
+                    _nodePathLookup[child.FullPath] = child;
+                    EnumerateChildren(child.Children);
+                }
+            }
+
+            if (parent == RootNode)
+            {
+                _nodePathLookup["/"] = RootNode;
+            }
+            else
+            {
+                _nodePathLookup[parent.FullPath] = parent;
+            }
+            
+            EnumerateChildren(parent.Children);
+        }
+
+        /// <summary>
+        /// Function called when a child node collection is updated.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="NotifyCollectionChangedEventArgs" /> instance containing the event data.</param>
+        private void Children_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    IFileExplorerNodeVm added = e.NewItems.OfType<IFileExplorerNodeVm>().First();
+                    EnumerateChildren(added);
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    IFileExplorerNodeVm removed = e.OldItems.OfType<IFileExplorerNodeVm>().First();
+                    RemoveFromCache(removed, true);
+                    break;
+                case NotifyCollectionChangedAction.Reset:
+                    IFileExplorerNodeVm parentNode = _nodePathLookup.Where(item => item.Value.Children == sender).First().Value;
+                    Debug.Assert(parentNode != null, "Cannot locate the parent node!");
+                    RemoveFromCache(parentNode, false);
+                    break;
+            }
+        }
 
         /// <summary>
         /// Function to inject dependencies for the view model.
@@ -478,6 +570,8 @@ namespace Gorgon.Editor.ViewModels
             _busyService = injectionParameters.BusyState ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.BusyState), nameof(injectionParameters));
             RootNode = injectionParameters.RootNode ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.RootNode), nameof(injectionParameters));
             _clipboard = injectionParameters.ClipboardService ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.ClipboardService), nameof(injectionParameters));
+
+            EnumerateChildren(RootNode);
         }
 
         /// <summary>
