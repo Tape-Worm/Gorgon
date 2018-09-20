@@ -57,9 +57,30 @@ namespace Gorgon.Editor.ViewModels
         private ProjectState _state = ProjectState.New;
         // The file explorer view model.
         private IFileExplorerVm _fileExplorer;
+        // The current clipboard handler context.
+        private IClipboardHandler _clipboardContext;
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to set or return the active clipboard handler context.
+        /// </summary>
+        public IClipboardHandler ClipboardContext
+        {
+            get => _clipboardContext;
+            set
+            {
+                if (_clipboardContext == value)
+                {
+                    return;
+                }
+
+                OnPropertyChanging();
+                _clipboardContext = value;
+                OnPropertyChanged();
+            }
+        }
+
         /// <summary>
         /// Property to set or return whether to show external items that are not included in the project file system.
         /// </summary>

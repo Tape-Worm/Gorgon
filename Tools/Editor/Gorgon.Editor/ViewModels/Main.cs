@@ -26,7 +26,6 @@
 
 using System;
 using System.ComponentModel;
-using Gorgon.Editor.Metadata;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
@@ -120,6 +119,11 @@ namespace Gorgon.Editor.ViewModels
         {
             get;
         }
+
+        /// <summary>
+        /// Property to return the current clipboard context.
+        /// </summary>
+        public IClipboardHandler ClipboardContext => CurrentProject?.ClipboardContext;
         #endregion
 
         #region Methods.
@@ -146,6 +150,9 @@ namespace Gorgon.Editor.ViewModels
         {
             switch (e.PropertyName)
             {
+                case nameof(IProjectVm.ClipboardContext):
+                    NotifyPropertyChanged(nameof(ClipboardContext));
+                    break;
                 case nameof(IProjectVm.ProjectTitle):
                 case nameof(IProjectVm.ProjectState):
                     NotifyPropertyChanged(nameof(Text));

@@ -63,6 +63,7 @@
     </Compile>
     <Compile Include="Boot.cs" />
     <Compile Include="CommonCommands.cs" />
+    <Compile Include="Data\FileSystemClipboardData.cs" />
     <Compile Include="FormMain.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -90,6 +91,7 @@
     <Compile Include="ViewModels\CreateNodeArgs.cs" />
     <Compile Include="ViewModels\FileExplorerFileNodeVm.cs" />
     <Compile Include="ViewModels\FileExplorerDirectoryNodeVm.cs" />
+    <Compile Include="ViewModels\FileExplorerNodeCommon.cs" />
     <Compile Include="ViewModels\FileExplorerNodeParameters.cs" />
     <Compile Include="ViewModels\FileExplorerNodeRenameArgs.cs" />
     <Compile Include="ViewModels\FileExplorerParameters.cs" />
@@ -188,6 +190,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\paste_16x16.png" />
+    <None Include="Resources\copy_16x16.png" />
+    <None Include="Resources\copy_48x48.png" />
+    <None Include="Resources\cut_48x48.png" />
+    <None Include="Resources\cut_16x16.png" />
+    <None Include="Resources\paste_48x48.png" />
     <None Include="Resources\expand_48x48.png" />
     <None Include="Resources\expand_16x16.png" />
     <None Include="Resources\collapse_48x48.png" />

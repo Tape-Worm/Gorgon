@@ -53,6 +53,8 @@ namespace Gorgon.Editor
         private IGorgonTimer _progressTimer;
         // The current synchronization context.
         private SynchronizationContext _syncContext;
+        // The context for a clipboard handler object.
+        private IClipboardHandler _clipboardContext;
         #endregion
 
         #region Properties.
@@ -126,8 +128,7 @@ namespace Gorgon.Editor
 
             if ((project == null) || (fileExplorer == null))
             {
-                TabFileSystem.Visible = false;
-                CheckShowAllFiles.Enabled = CheckShowAllFiles.Checked = false;
+                TabFileSystem.Visible = false;                
                 return;
             }
 
@@ -147,6 +148,10 @@ namespace Gorgon.Editor
 
             CheckShowAllFiles.Enabled = true;
             CheckShowAllFiles.Checked = project.ShowExternalItems;
+
+            ButtonFileSystemCopy.Enabled = _clipboardContext?.CanCopy() ?? false;
+            ButtonFileSystemCut.Enabled = _clipboardContext?.CanCut() ?? false;
+            ButtonFileSystemPaste.Enabled = _clipboardContext?.CanPaste() ?? false;
         }
 
         /// <summary>
@@ -322,6 +327,13 @@ namespace Gorgon.Editor
         }
 
         /// <summary>
+        /// Handles the DataUpdated event of the ClipboardContext control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ClipboardContext_DataUpdated(object sender, EventArgs e) => ValidateRibbonButtons();
+
+        /// <summary>
         /// Handles the PropertyChanged event of the DataContext control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -332,6 +344,19 @@ namespace Gorgon.Editor
             {
                 case nameof(IMain.Text):
                     Text = DataContext.Text;
+                    break;
+                case nameof(IMain.ClipboardContext):
+                    if (_clipboardContext != null)
+                    {
+                        _clipboardContext.DataUpdated -= ClipboardContext_DataUpdated;
+                    }
+
+                    _clipboardContext = DataContext.ClipboardContext;
+
+                    if (_clipboardContext != null)
+                    {
+                        _clipboardContext.DataUpdated += ClipboardContext_DataUpdated;
+                    }
                     break;
                 case nameof(IMain.CurrentProject):
                     NavigateToProjectView(DataContext);
@@ -356,6 +381,7 @@ namespace Gorgon.Editor
         {
             if (dataContext == null)
             {
+                _clipboardContext = null;
                 Text = Resources.GOREDIT_CAPTION_NO_FILE;
                 StageLauncher.ShowBackButton = false;
                 return;
@@ -363,8 +389,14 @@ namespace Gorgon.Editor
 
             Text = dataContext.Text;
             StageLauncher.ShowBackButton = dataContext.CurrentProject != null;
-        }
+            _clipboardContext = dataContext.CurrentProject?.ClipboardContext;
 
+            if (_clipboardContext != null)
+            {
+                _clipboardContext.DataUpdated += ClipboardContext_DataUpdated;
+            }            
+        }
+        
         /// <summary>
         /// Function to unassign the events from the data context.
         /// </summary>
@@ -376,6 +408,11 @@ namespace Gorgon.Editor
             if (DataContext == null)
             {
                 return;
+            }
+
+            if (_clipboardContext != null)
+            {
+                _clipboardContext.DataUpdated -= ClipboardContext_DataUpdated;
             }
 
             if (DataContext.CurrentProject?.FileExplorer != null)
@@ -497,6 +534,21 @@ namespace Gorgon.Editor
             {
                 ValidateRibbonButtons();
             }
+        }
+
+        /// <summary>
+        /// Handles the Click event of the ButtonFileSystemCopy control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ButtonFileSystemCopy_Click(object sender, EventArgs e)
+        {
+            if (_clipboardContext == null)
+            {
+                return;
+            }
+
+            _clipboardContext.Copy();
         }
 
         /// <summary>Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.</summary>

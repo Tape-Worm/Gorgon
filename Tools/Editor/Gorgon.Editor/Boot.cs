@@ -301,7 +301,8 @@ namespace Gorgon.Editor
                 var factory = new ViewModelFactory(_settings,
                                                    _projectManager,
                                                    new MessageBoxService(),
-                                                   new WaitCursorBusyState());
+                                                   new WaitCursorBusyState(),
+                                                   new ClipboardService());
 
                 _mainForm.SetDataContext(factory.CreateMainViewModel());
                 _mainForm.Show();

@@ -66,6 +66,15 @@ namespace Gorgon.Editor.ViewModels
 
         #region Properties.
         /// <summary>
+        /// Property to set or return the active clipboard handler context.
+        /// </summary>
+        IClipboardHandler ClipboardContext
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Property to set or return whether to show external items that are not included in the project file system.
         /// </summary>
         bool ShowExternalItems

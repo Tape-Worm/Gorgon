@@ -50,6 +50,12 @@ namespace Gorgon.Editor
             this.RibbonGroupFileSystemNew = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup();
             this.kryptonRibbonGroupTriple1 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple();
             this.ButtonFileSystemNewDirectory = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.GroupFileSystemEdit = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup();
+            this.kryptonRibbonGroupTriple3 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple();
+            this.ButtonFileSystemPaste = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.kryptonRibbonGroupLines2 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines();
+            this.ButtonFileSystemCopy = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.ButtonFileSystemCut = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
             this.RibbonGroupFileSystemOrganize = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup();
             this.kryptonRibbonGroupTriple2 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple();
             this.ButtonFileSystemDelete = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
@@ -775,7 +781,6 @@ namespace Gorgon.Editor
             this.RibbonMain.RibbonAppButton.AppButtonShowRecentDocs = false;
             this.RibbonMain.RibbonTabs.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonTab[] {
             this.TabFileSystem});
-            this.RibbonMain.SelectedContext = null;
             this.RibbonMain.SelectedTab = this.TabFileSystem;
             this.RibbonMain.ShowMinimizeButton = false;
             this.RibbonMain.Size = new System.Drawing.Size(1264, 115);
@@ -787,6 +792,7 @@ namespace Gorgon.Editor
             // 
             this.TabFileSystem.Groups.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup[] {
             this.RibbonGroupFileSystemNew,
+            this.GroupFileSystemEdit,
             this.RibbonGroupFileSystemOrganize});
             this.TabFileSystem.KeyTip = "F";
             this.TabFileSystem.Text = "File System";
@@ -811,6 +817,58 @@ namespace Gorgon.Editor
             this.ButtonFileSystemNewDirectory.ImageSmall = global::Gorgon.Editor.Properties.Resources.add_directory_16x16;
             this.ButtonFileSystemNewDirectory.TextLine1 = "Directory";
             this.ButtonFileSystemNewDirectory.Click += new System.EventHandler(this.ButtonFileSystemNewDirectory_Click);
+            // 
+            // GroupFileSystemEdit
+            // 
+            this.GroupFileSystemEdit.AllowCollapsed = false;
+            this.GroupFileSystemEdit.DialogBoxLauncher = false;
+            this.GroupFileSystemEdit.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupContainer[] {
+            this.kryptonRibbonGroupTriple3,
+            this.kryptonRibbonGroupLines2});
+            this.GroupFileSystemEdit.KeyTipGroup = "E";
+            this.GroupFileSystemEdit.TextLine1 = "Edit";
+            // 
+            // kryptonRibbonGroupTriple3
+            // 
+            this.kryptonRibbonGroupTriple3.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
+            this.ButtonFileSystemPaste});
+            // 
+            // ButtonFileSystemPaste
+            // 
+            this.ButtonFileSystemPaste.Enabled = false;
+            this.ButtonFileSystemPaste.ImageLarge = global::Gorgon.Editor.Properties.Resources.paste_48x48;
+            this.ButtonFileSystemPaste.ImageSmall = global::Gorgon.Editor.Properties.Resources.paste_16x16;
+            this.ButtonFileSystemPaste.KeyTip = "P";
+            this.ButtonFileSystemPaste.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
+            this.ButtonFileSystemPaste.TextLine1 = "Paste";
+            this.ButtonFileSystemPaste.ToolTipBody = "Paste the copied or cut file or directory from the editor.";
+            // 
+            // kryptonRibbonGroupLines2
+            // 
+            this.kryptonRibbonGroupLines2.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
+            this.ButtonFileSystemCopy,
+            this.ButtonFileSystemCut});
+            // 
+            // ButtonFileSystemCopy
+            // 
+            this.ButtonFileSystemCopy.Enabled = false;
+            this.ButtonFileSystemCopy.ImageLarge = global::Gorgon.Editor.Properties.Resources.copy_48x48;
+            this.ButtonFileSystemCopy.ImageSmall = global::Gorgon.Editor.Properties.Resources.copy_16x16;
+            this.ButtonFileSystemCopy.KeyTip = "C";
+            this.ButtonFileSystemCopy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
+            this.ButtonFileSystemCopy.TextLine1 = "Copy";
+            this.ButtonFileSystemCopy.ToolTipBody = "Copy the selected file/directory to the clipboard.";
+            this.ButtonFileSystemCopy.Click += new System.EventHandler(this.ButtonFileSystemCopy_Click);
+            // 
+            // ButtonFileSystemCut
+            // 
+            this.ButtonFileSystemCut.Enabled = false;
+            this.ButtonFileSystemCut.ImageLarge = global::Gorgon.Editor.Properties.Resources.cut_48x48;
+            this.ButtonFileSystemCut.ImageSmall = global::Gorgon.Editor.Properties.Resources.cut_16x16;
+            this.ButtonFileSystemCut.KeyTip = "X";
+            this.ButtonFileSystemCut.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
+            this.ButtonFileSystemCut.TextLine1 = "Cut";
+            this.ButtonFileSystemCut.ToolTipBody = "Cut the selected file or directory into the clipboard.";
             // 
             // RibbonGroupFileSystemOrganize
             // 
@@ -943,6 +1001,12 @@ namespace Gorgon.Editor
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonExpand;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonCollapse;
         private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupSeparator kryptonRibbonGroupSeparator1;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup GroupFileSystemEdit;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple3;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonFileSystemPaste;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines kryptonRibbonGroupLines2;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonFileSystemCopy;
+        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton ButtonFileSystemCut;
     }
 }
 

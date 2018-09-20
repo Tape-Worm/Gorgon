@@ -66,6 +66,14 @@ namespace Gorgon.Editor.ViewModels
         }
 
         /// <summary>
+        /// Property to return the application clipboard service to use.
+        /// </summary>
+        public IClipboardService ClipboardService
+        {
+            get;
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="FileExplorerParameters" /> class.
         /// </summary>
         /// <param name="project">The project data.</param>
@@ -75,14 +83,16 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="viewModelFactory">The view model factory.</param>
         /// <param name="messageDisplay">The message display service to use.</param>
         /// <param name="busyService">The busy state service to use.</param>
+        /// <param name="clipboardService">The application clipboard service to use.</param>
         /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-        public FileExplorerParameters(IProject project, IFileSystemService fileSystemService, IMetadataManager metadataManager, IFileExplorerNodeVm rootNode, ViewModelFactory viewModelFactory, IMessageDisplayService messageDisplay, IBusyStateService busyService)
+        public FileExplorerParameters(IProject project, IFileSystemService fileSystemService, IMetadataManager metadataManager, IFileExplorerNodeVm rootNode, ViewModelFactory viewModelFactory, IMessageDisplayService messageDisplay, IBusyStateService busyService, IClipboardService clipboardService)
             : base(viewModelFactory, messageDisplay, busyService)
         {
             Project = project ?? throw new ArgumentNullException(nameof(project));
             FileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
             MetadataManager = metadataManager ?? throw new ArgumentNullException(nameof(metadataManager));
             RootNode = rootNode ?? throw new ArgumentNullException(nameof(rootNode));
+            ClipboardService = clipboardService ?? throw new ArgumentNullException(nameof(clipboardService));
         }
     }
 }

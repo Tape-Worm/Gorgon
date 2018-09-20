@@ -53,6 +53,8 @@
     </Compile>
     <Compile Include="CommonEditorConstants.cs" />
     <Compile Include="Metadata\_Interfaces\IMetadataManager.cs" />
+    <Compile Include="Services\ClipboardService.cs" />
+    <Compile Include="Services\_Interfaces\IClipboardService.cs" />
     <Compile Include="Services\_Interfaces\IFileSystemService.cs" />
     <Compile Include="Metadata\SqliteMetadataProvider.cs" />
     <Compile Include="Metadata\IncludedPathMetadata.cs" />
@@ -83,6 +85,7 @@
     <Compile Include="UI\Views\EditorBaseControl.Designer.cs">
       <DependentUpon>EditorBaseControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\_Interfaces\IClipboardHandler.cs" />
     <Compile Include="UI\_Interfaces\IEditorAsyncCommand.cs" />
     <Compile Include="UI\_Interfaces\IEditorCommand.cs" />
     <Compile Include="UI\ViewModels\ViewModelBase.cs" />

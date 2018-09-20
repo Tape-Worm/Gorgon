@@ -61,6 +61,15 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There is no data of the type &apos;{0}&apos; on the clipboard..
+        /// </summary>
+        internal static string GOREDIT_ERR_CLIPBOARD_NO_DATA_OF_TYPE {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_CLIPBOARD_NO_DATA_OF_TYPE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The property &apos;{0}&apos; is not a member of this object..
         /// </summary>
         internal static string GOREDIT_ERR_PROPERTY_DOES_NOT_EXIST {

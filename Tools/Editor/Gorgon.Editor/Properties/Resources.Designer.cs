@@ -123,6 +123,46 @@ namespace Gorgon.Editor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap copy_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("copy_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap copy_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("copy_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap cut_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("cut_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap cut_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("cut_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap drive_48x48 {
             get {
                 object obj = ResourceManager.GetObject("drive_48x48", resourceCulture);
@@ -278,6 +318,16 @@ namespace Gorgon.Editor.Properties {
         internal static string GOREDIT_ERR_CANNOT_CREATE_DIR {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_CANNOT_CREATE_DIR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error copying &apos;{0}&apos; to the clipboard.
+        ///Please try again..
+        /// </summary>
+        internal static string GOREDIT_ERR_COPYING_FILE_OR_DIR {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_COPYING_FILE_OR_DIR", resourceCulture);
             }
         }
         
@@ -609,6 +659,26 @@ namespace Gorgon.Editor.Properties {
         internal static System.Drawing.Bitmap openproject_48x48 {
             get {
                 object obj = ResourceManager.GetObject("openproject_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap paste_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("paste_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap paste_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("paste_48x48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

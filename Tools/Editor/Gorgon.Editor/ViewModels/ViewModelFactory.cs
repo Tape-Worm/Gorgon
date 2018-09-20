@@ -48,6 +48,8 @@ namespace Gorgon.Editor.ViewModels
         private readonly WaitCursorBusyState _waitCursorService;
         // The project manager for the application.
         private readonly ProjectManager _projectManager;
+        // The clip board service to use.
+        private readonly ClipboardService _clipboard;
         #endregion
         
         #region Methods.
@@ -204,7 +206,8 @@ namespace Gorgon.Editor.ViewModels
                                                         root,
                                                         this, 
                                                         _messageBoxService, 
-                                                        _waitCursorService));
+                                                        _waitCursorService,
+                                                        _clipboard));
 
             return result;
         }
@@ -246,13 +249,15 @@ namespace Gorgon.Editor.ViewModels
         /// <param name="projectManager">The application project manager.</param>
         /// <param name="messages">The message dialog service.</param>
         /// <param name="waitState">The wait state service.</param>
+        /// <param name="clipboardService">The application clipboard service.</param>
         /// <exception cref="ArgumentNullException">Thrown when any parameter is <b>null</b>.</exception>
-        public ViewModelFactory(EditorSettings settings, ProjectManager projectManager, MessageBoxService messages, WaitCursorBusyState waitState)
+        public ViewModelFactory(EditorSettings settings, ProjectManager projectManager, MessageBoxService messages, WaitCursorBusyState waitState, ClipboardService clipboardService)
         {
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
             _projectManager = projectManager ?? throw new ArgumentNullException(nameof(projectManager));
             _messageBoxService = messages ?? throw new ArgumentNullException(nameof(messages));
             _waitCursorService = waitState ?? throw new ArgumentNullException(nameof(waitState));
+            _clipboard = clipboardService ?? throw new ArgumentNullException(nameof(clipboardService));
         }
         #endregion
     }

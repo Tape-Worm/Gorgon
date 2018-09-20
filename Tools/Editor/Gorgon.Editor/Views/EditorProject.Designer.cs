@@ -69,6 +69,8 @@
             this.FileExplorer.Name = "FileExplorer";
             this.FileExplorer.Size = new System.Drawing.Size(288, 596);
             this.FileExplorer.TabIndex = 0;
+            this.FileExplorer.Enter += new System.EventHandler(this.FileExplorer_Enter);
+            this.FileExplorer.Leave += new System.EventHandler(this.FileExplorer_Enter);
             // 
             // EditorProject
             // 

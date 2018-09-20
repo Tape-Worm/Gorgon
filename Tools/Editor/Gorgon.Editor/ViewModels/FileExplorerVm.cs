@@ -33,6 +33,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Gorgon.Editor.Data;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
@@ -45,8 +46,22 @@ namespace Gorgon.Editor.ViewModels
     /// The file explorer view model.
     /// </summary>
     internal class FileExplorerVm
-        : ViewModelBase<FileExplorerParameters>, IFileExplorerVm
+        : ViewModelBase<FileExplorerParameters>, IFileExplorerVm, IClipboardHandler
     {
+        #region Events.
+        // Event triggered when the clipboard is updated from the file explorer.
+        private event EventHandler _clipboardUpdated;
+
+        /// <summary>
+        /// Event triggered when data is stored or cleared on the clipboard.
+        /// </summary>
+        event EventHandler IClipboardHandler.DataUpdated
+        {
+            add => _clipboardUpdated += value;
+            remove => _clipboardUpdated -= value;
+        }
+        #endregion
+
         #region Variables.
         // Illegal file name characters.
         private static readonly HashSet<char> _illegalChars = new HashSet<char>(Path.GetInvalidFileNameChars()
@@ -66,6 +81,8 @@ namespace Gorgon.Editor.ViewModels
         private IFileSystemService _fileSystemService;
         // The manager used to handle project metadata.
         private IMetadataManager _metaDataManager;
+        // The clipboard service to use.
+        private IClipboardService _clipboard;
         #endregion
 
         #region Events.
@@ -460,7 +477,72 @@ namespace Gorgon.Editor.ViewModels
             _messageService = injectionParameters.MessageDisplay ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.MessageDisplay), nameof(injectionParameters));
             _busyService = injectionParameters.BusyState ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.BusyState), nameof(injectionParameters));
             RootNode = injectionParameters.RootNode ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.RootNode), nameof(injectionParameters));
+            _clipboard = injectionParameters.ClipboardService ?? throw new ArgumentMissingException(nameof(FileExplorerParameters.ClipboardService), nameof(injectionParameters));
         }
+
+        /// <summary>
+        /// Function to return whether or not the item can use the cut functionality for the clipboard.
+        /// </summary>
+        /// <returns><b>true</b> if the clipboard handler can cut an item, <b>false</b> if not.</returns>
+        bool IClipboardHandler.CanCut() => (SelectedNode != null) && (SelectedNode.AllowDelete);
+
+        /// <summary>
+        /// Function to return whether or not the item can use the copy functionality for the clipboard.
+        /// </summary>
+        /// <returns><b>true</b> if the clipboard handler can copy an item, <b>false</b> if not.</returns>
+        bool IClipboardHandler.CanCopy() => SelectedNode != null;
+
+        /// <summary>
+        /// Function to return whether or not the item can use the paste functionality for the clipboard.
+        /// </summary>
+        /// <returns><b>true</b> if the clipboard handler can paste an item, <b>false</b> if not.</returns>
+        bool IClipboardHandler.CanPaste()
+        {
+            // TODO: We need a little more sophisticated means of determining if we can paste or not.
+            if ((!_clipboard.IsType<FileSystemClipboardData>()) || 
+                ((SelectedNode != null) && (!SelectedNode.AllowChildCreation)))
+            {
+                return false;
+            }
+
+            FileSystemClipboardData data = _clipboard.GetData<FileSystemClipboardData>();
+
+            if (string.IsNullOrWhiteSpace(data.FullPath))
+            {
+                return false;
+            }
+
+            // Do not allow us to cut and paste into ourselves.  That way lies madness.
+            return ((SelectedNode == null) || ((!string.Equals(SelectedNode.FullPath, data.FullPath, StringComparison.OrdinalIgnoreCase))));
+        }
+
+        /// <summary>
+        /// Function to store an item to copy onto the clipboard.
+        /// </summary>
+        void IClipboardHandler.Copy()
+        {
+            EventHandler handler = _clipboardUpdated;
+
+            try
+            {
+                _clipboard.CopyItem(new FileSystemClipboardData
+                {
+                    Copy = true,
+                    FullPath = SelectedNode.FullPath
+                });
+
+                handler?.Invoke(this, EventArgs.Empty);
+            }
+            catch (Exception ex)
+            {
+                _messageService.ShowError(ex, string.Format(Resources.GOREDIT_ERR_COPYING_FILE_OR_DIR, SelectedNode.Name));
+            }
+        }
+
+        /// <summary>
+        /// Function called when the associated view is unloaded.
+        /// </summary>
+        public override void OnUnload() => _clipboardUpdated = null;
         #endregion
 
         #region Constructor/Finalizer.

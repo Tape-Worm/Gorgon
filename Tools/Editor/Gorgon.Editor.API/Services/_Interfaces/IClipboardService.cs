@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: August 26, 2018 9:34:44 PM
+// Created: September 19, 2018 8:08:47 PM
 // 
 #endregion
 
@@ -29,69 +29,54 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Gorgon.Editor.ProjectData;
-using Gorgon.Editor.UI;
 
-namespace Gorgon.Editor.ViewModels
+namespace Gorgon.Editor.Services
 {
     /// <summary>
-    /// The view model for the main window.
+    /// An interface for accessing or storing data on the clipboard.
     /// </summary>
-    internal interface IMain
-        : IViewModel
+    public interface IClipboardService
     {
-        #region Variables.
-
-        #endregion
-
         #region Properties.
         /// <summary>
-        /// Property to return the current clipboard context.
+        /// Property to return whether or not there is data on the clipboard.
         /// </summary>
-        IClipboardHandler ClipboardContext
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the view model for the new project child view.
-        /// </summary>
-        INewProject NewProject
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the view model for the current project.
-        /// </summary>
-        IProjectVm CurrentProject
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the text for the caption.
-        /// </summary>
-        string Text
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the command used to assign a project to the application.
-        /// </summary>
-        IEditorCommand<IProject> AssignProjectCommand
+        bool HasData
         {
             get;
         }
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to return whether or not the data on the clipboard is of the type specified.
+        /// </summary>
+        /// <typeparam name="T">The type to check.</typeparam>
+        /// <returns><b>true</b> if the data is of the type specified, <b>false</b> if not.</returns>
+        /// <remarks>
+        /// <para>
+        /// If there is no data on the clipboard, then this should always return <b>false</b>.
+        /// </para>
+        /// </remarks>
+        bool IsType<T>();
 
-        #endregion
+        /// <summary>
+        /// Function to return the data from the clipboard as the specified type.
+        /// </summary>
+        /// <returns>The data as the specified type.</returns>
+        /// <remarks>
+        /// <para>
+        /// If there is no data of the specified type on the clipboard, then this method should throw an exception. Check for data of the specified type using the <see cref="IsType{T}"/> method prior to 
+        /// calling this method.
+        /// </para>
+        /// </remarks>
+        T GetData<T>();
 
-        #region Constructor/Finalizer.
-
+        /// <summary>
+        /// Function to place an item on the clipboard for copying.
+        /// </summary>
+        /// <param name="item">The item to copy.</param>
+        void CopyItem(object item);
         #endregion
     }
 }

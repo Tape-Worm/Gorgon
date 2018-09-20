@@ -151,6 +151,19 @@ namespace Gorgon.Editor.Views
             DataContext.PropertyChanged -= DataContext_PropertyChanged;
         }
 
+        /// <summary>
+        /// Handles the Enter event of the FileExplorer control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void FileExplorer_Enter(object sender, EventArgs e)
+        {
+            if (DataContext != null)
+            {
+                DataContext.ClipboardContext = DataContext.FileExplorer as IClipboardHandler;
+            }
+        }
+
         /// <summary>Raises the <see cref="E:System.Windows.Forms.UserControl.Load" /> event.</summary>
         /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data. </param>
         protected override void OnLoad(EventArgs e)

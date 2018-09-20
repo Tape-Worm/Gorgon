@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: August 26, 2018 9:34:44 PM
+// Created: September 19, 2018 8:25:24 PM
 // 
 #endregion
 
@@ -29,69 +29,44 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Gorgon.Editor.ProjectData;
-using Gorgon.Editor.UI;
 
-namespace Gorgon.Editor.ViewModels
+namespace Gorgon.Editor.UI
 {
     /// <summary>
-    /// The view model for the main window.
+    /// Defines an interface that can handle clipboard functionality.
     /// </summary>
-    internal interface IMain
-        : IViewModel
+    public interface IClipboardHandler
     {
-        #region Variables.
-
-        #endregion
-
-        #region Properties.
+        #region Events.
         /// <summary>
-        /// Property to return the current clipboard context.
+        /// Event triggered when data is stored or cleared on the clipboard.
         /// </summary>
-        IClipboardHandler ClipboardContext
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the view model for the new project child view.
-        /// </summary>
-        INewProject NewProject
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the view model for the current project.
-        /// </summary>
-        IProjectVm CurrentProject
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the text for the caption.
-        /// </summary>
-        string Text
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to return the command used to assign a project to the application.
-        /// </summary>
-        IEditorCommand<IProject> AssignProjectCommand
-        {
-            get;
-        }
+        event EventHandler DataUpdated;
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to store an item to copy onto the clipboard.
+        /// </summary>
+        void Copy();
 
-        #endregion
+        /// <summary>
+        /// Function to return whether or not the item can use the cut functionality for the clipboard.
+        /// </summary>
+        /// <returns><b>true</b> if the clipboard handler can cut an item, <b>false</b> if not.</returns>
+        bool CanCut();
 
-        #region Constructor/Finalizer.
+        /// <summary>
+        /// Function to return whether or not the item can use the copy functionality for the clipboard.
+        /// </summary>
+        /// <returns><b>true</b> if the clipboard handler can copy an item, <b>false</b> if not.</returns>
+        bool CanCopy();
 
+        /// <summary>
+        /// Function to return whether or not the item can use the paste functionality for the clipboard.
+        /// </summary>
+        /// <returns><b>true</b> if the clipboard handler can paste an item, <b>false</b> if not.</returns>
+        bool CanPaste();
         #endregion
     }
 }

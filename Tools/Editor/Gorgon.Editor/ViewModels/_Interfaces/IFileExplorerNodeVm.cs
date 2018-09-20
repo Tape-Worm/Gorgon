@@ -147,6 +147,13 @@ namespace Gorgon.Editor.ViewModels
 
         #region Methods.
         /// <summary>
+        /// Function to determine if this node is an ancestor of the specified parent node.
+        /// </summary>
+        /// <param name="parent">The parent node to look for.</param>
+        /// <returns><b>true</b> if the node is an ancestor, <b>false</b> if not.</returns>
+        bool IsAncestorOf(IFileExplorerNodeVm parent);
+
+        /// <summary>
         /// Function to rename the node.
         /// </summary>
         /// <param name="fileSystemService">The file system service to use when renaming.</param>
